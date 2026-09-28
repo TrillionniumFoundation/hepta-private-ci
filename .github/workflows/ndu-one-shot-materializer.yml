@@ -1,0 +1,147 @@
+name: NDU one-shot convergence materializer
+
+on:
+  push:
+    branches:
+      - work/utility-ndu-recovery-observability-20260928
+    paths:
+      - .github/workflows/ndu-one-shot-materializer.yml
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify expected parent and apply reviewed patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor b5ffce675ca2d80db3d6780e1bc36f51f6f0346b HEAD
+          cat > /tmp/ndu-final.patch <<'PATCH'
+          diff --git a/scripts/hepta_ndu_observer.py b/scripts/hepta_ndu_observer.py
+          index 776eab5a8738a99fa080d4fc319221a4020503de..98a5a7c84609fad5bc44a20bd4090f3c55547ce7 100644
+          --- a/scripts/hepta_ndu_observer.py
+          +++ b/scripts/hepta_ndu_observer.py
+          @@ -51,9 +51,11 @@ def validate(frame: bytes, agent: str, generation: int, request_id: int, version:
+               if not isinstance(data, dict) or set(data) != envelope:
+                   raise ValueError("response envelope schema mismatch")
+               expected = {"schema_version": 2, "request_id": request_id, "agent_id": agent,
+          -                "spawn_generation": generation, "current_generation": generation}
+          +                "spawn_generation": generation}
+               if any(type(data[k]) is not type(v) or data[k] != v for k, v in expected.items()):
+                   raise ValueError("response identity mismatch")
+          +    if not integer(data["current_generation"]) or data["current_generation"] == 0:
+          +        raise ValueError("invalid current lifecycle generation")
+               result = data["payload"]
+               fields = V1 if version == "metrics_v1" else V2
+               if not isinstance(result, dict) or set(result) != fields | {"type", "result"}:
+          @@ -114,7 +116,10 @@ def request(path: Path, agent: str, generation: int, request_id: int, version: st
+                       frame.extend(chunk)
+                       if len(frame) > MAX_FRAME or b"\n" in frame[:-1]:
+                           raise ValueError("oversized or multiple response frames")
+          -        return validate(bytes(frame), agent, generation, request_id, version), identity
+          +        validated = validate(bytes(frame), agent, generation, request_id, version)
+          +        envelope = json.loads(bytes(frame), object_pairs_hook=unique_object)
+          +        identity = (*identity, envelope["current_generation"])
+          +        return validated, identity
+           
+           
+           def collect(path: Path, agent: str, generation: int, timeout: float) -> tuple[dict, dict, str]:
+          @@ -218,8 +223,13 @@ def main() -> int:
+               sample = None
+               try:
+                   sample = collect(args.socket, args.agent_id, args.generation, args.timeout)
+          -    except (OSError, ValueError, KeyError, IndexError, TypeError, RecursionError):
+          -        print("NDU-OBS-001: collection failed; no current owner observation", file=sys.stderr)
+          +    except (OSError, ValueError, KeyError, IndexError, TypeError, RecursionError) as error:
+          +        detail = re.sub(r"\s+", " ", str(error)).strip()[:240]
+          +        print(
+          +            f"NDU-OBS-001: collection failed; no current owner observation; "
+          +            f"{type(error).__name__}: {detail}",
+          +            file=sys.stderr,
+          +        )
+               try:
+                   publish(args.output, render(args.agent_id, args.generation, int(time.time()), sample))
+               except (OSError, ValueError):
+          diff --git a/scripts/test_hepta_ndu_observer.py b/scripts/test_hepta_ndu_observer.py
+          index 208900a0bb8e95abf11cdf662d0a5406785a8437..8a8d683de99839f84c2ed3f20dfe061acce1d855 100644
+          --- a/scripts/test_hepta_ndu_observer.py
+          +++ b/scripts/test_hepta_ndu_observer.py
+          @@ -47,7 +47,9 @@ class ObserverTests(unittest.TestCase):
+                   for version in ("metrics_v1", "metrics_v2"):
+                       good = frame(version, 1)
+                       self.assertEqual(observer.validate(json.dumps(good).encode() + b"\n", "11111111-1111-4111-8111-111111111111", 7, 1, version), good["payload"])
+          -            for key, value in (("request_id", True), ("current_generation", 8), ("spawn_generation", 8), ("agent_id", "other"), ("schema_version", 1)):
+          +            distinct = copy.deepcopy(good); distinct["current_generation"] = 11
+          +            self.assertEqual(observer.validate(json.dumps(distinct).encode() + b"\n", "11111111-1111-4111-8111-111111111111", 7, 1, version), good["payload"])
+          +            for key, value in (("request_id", True), ("current_generation", 0), ("spawn_generation", 8), ("agent_id", "other"), ("schema_version", 1)):
+                           bad = copy.deepcopy(good); bad[key] = value
+                           with self.subTest(version=version, field=key), self.assertRaises(ValueError):
+                               observer.validate(json.dumps(bad).encode() + b"\n", "11111111-1111-4111-8111-111111111111", 7, 1, version)
+          @@ -123,7 +125,9 @@ class ObserverTests(unittest.TestCase):
+           
+               def test_generation_switch_is_not_combined_into_one_sample(self):
+                   v1, v2 = payload("metrics_v1"), payload("metrics_v2")
+          -        with patch.object(observer, "request", side_effect=[(v2, (1, 2, 3, 4)), (v1, (5, 2, 3, 4))]), self.assertRaises(ValueError):
+          +        with patch.object(observer, "request", side_effect=[(v2, (1, 2, 3, 4, 11)), (v1, (5, 2, 3, 4, 11))]), self.assertRaises(ValueError):
+          +            observer.collect(self.root / "control.sock", "11111111-1111-4111-8111-111111111111", 7, 1)
+          +        with patch.object(observer, "request", side_effect=[(v2, (1, 2, 3, 4, 11)), (v1, (1, 2, 3, 4, 12))]), self.assertRaises(ValueError):
+                       observer.collect(self.root / "control.sock", "11111111-1111-4111-8111-111111111111", 7, 1)
+           
+               def test_deadline_and_unsafe_endpoint_fail_closed(self):
+          diff --git a/codex-rs/hepta-agentd/tests/ndu_process_e2e.rs b/codex-rs/hepta-agentd/tests/ndu_process_e2e.rs
+          index b5dc3f4ff05c2ec1ef68c11fbc750ab2b78cb503..7920337c2c1d52ef657d7c178a89959c79a9139b 100644
+          --- a/codex-rs/hepta-agentd/tests/ndu_process_e2e.rs
+          +++ b/codex-rs/hepta-agentd/tests/ndu_process_e2e.rs
+          @@ -197,7 +197,7 @@ async fn normal_agentd_ndu_mutation_lost_ack_revocation_and_process_recovery() ->
+               )?;
+               let (client, health) = harness.wait_ready(&agent, 1).await?;
+               #[cfg(target_os = "linux")]
+          -    ndu_observer::verify(&agent.layout.agentd_control_socket(), &agent.agent_id, 1).await?;
+          +    ndu_observer::verify(agent.layout.agentd_control_socket(), &agent.agent_id, 1).await?;
+               ensure!(
+                   matches!(
+                       NduProjectionStoreV1::open(&store),
+          @@ -331,7 +331,7 @@ async fn normal_agentd_ndu_mutation_lost_ack_revocation_and_process_recovery() ->
+                       bail!("restarted owner did not expose its generation");
+                   };
+                   ndu_observer::verify(
+          -            &agent.layout.agentd_control_socket(),
+          +            agent.layout.agentd_control_socket(),
+                       &agent.agent_id,
+                       host_generation,
+                   )
+          PATCH
+          sed -i 's/^          //' /tmp/ndu-final.patch
+          git apply --check /tmp/ndu-final.patch
+          git apply /tmp/ndu-final.patch
+          test "$(git hash-object scripts/hepta_ndu_observer.py)" = 98a5a7c84609fad5bc44a20bd4090f3c55547ce7
+          test "$(git hash-object scripts/test_hepta_ndu_observer.py)" = 8a8d683de99839f84c2ed3f20dfe061acce1d855
+          test "$(git hash-object codex-rs/hepta-agentd/tests/ndu_process_e2e.rs)" = 7920337c2c1d52ef657d7c178a89959c79a9139b
+
+      - name: Verify observer contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=scripts python3 -m unittest scripts.test_hepta_ndu_observer -v
+          python3 -m py_compile scripts/hepta_ndu_observer.py scripts/test_hepta_ndu_observer.py
+
+      - name: Commit reviewed source repair and remove materializer
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/ndu-one-shot-materializer.yml
+          git config user.name hepta-ndu-convergence
+          git config user.email qualification@invalid
+          git add scripts/hepta_ndu_observer.py scripts/test_hepta_ndu_observer.py codex-rs/hepta-agentd/tests/ndu_process_e2e.rs
+          git commit -m "fix(ndu): bind observer lifecycle and close product lint"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
