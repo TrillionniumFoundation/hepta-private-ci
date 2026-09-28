@@ -281,17 +281,6 @@ async fn execute_publication_request(
                 ],
             )?;
             let digest = evidence_recovery_frontier_v2_sha256(&proposed).map_err(evidence_error)?;
-            // The exact operation identity is durable BEFORE any CAS can run.
-            store
-                .mark_publication_dispatched(
-                    &lease,
-                    &batch_id,
-                    &digest,
-                    &config.backend_identity_sha256,
-                    current_time_millis()?,
-                )
-                .await
-                .map_err(evidence_error)?;
             if read_owner_file(descriptor_file, identity)?.as_slice() != descriptor_bytes
                 || read_external_private_file(
                     signer_trust_file,
@@ -304,22 +293,55 @@ async fn execute_publication_request(
                     "publication controls changed before dispatch",
                 ));
             }
-            // Recovery re-fsyncs a matching stored record. A latest read alone
-            // is never converted into a successful durability acknowledgement.
+            // Checking only at acknowledgement is too late: a revoked or
+            // replaced issuer policy must not authorize an external CAS.
+            let dispatch_trust = VerifiedEvidenceTrustSnapshot::load_owner_registry(
+                store,
+                issuer_trust_file,
+                identity.agent_id.as_str(),
+                Some(&predecessor.issuer_trust_registry_sha256),
+            )
+            .map_err(evidence_error)?;
+            if !dispatch_trust.is_monotonic()
+                || dispatch_trust.registry_generation() != issuer.registry_generation()
+                || dispatch_trust.registry_sha256() != issuer.registry_sha256()
+            {
+                return Err(recovery_required(
+                    "publication issuer authority changed before dispatch",
+                ));
+            }
+            // Recheck the durable owner AFTER expensive file/backup reads.
+            // The exact operation identity remains durable before any CAS.
+            store
+                .mark_publication_dispatched(
+                    &lease,
+                    &batch_id,
+                    &digest,
+                    &config.backend_identity_sha256,
+                    current_time_millis()?,
+                )
+                .await
+                .map_err(evidence_error)?;
             process_guard
                 .validate()
                 .map_err(|error| recovery_required(&format!("publication owner fence: {error}")))?;
+            require_publication_dispatch_lease(&lease, current_time_millis()?)?;
+            // Recovery re-fsyncs a matching stored record. A latest read alone
+            // is never converted into a successful durability acknowledgement.
             let result = match backend.recover_durable_acknowledgement(
                 &config.store_id,
                 proposed.frontier_generation,
                 &digest,
             ) {
                 Ok(Some(ack)) => Ok(ack),
-                Ok(None) => backend.compare_and_swap(
-                    &config.store_id,
-                    batch.expected_frontier_generation,
-                    &proposed,
-                ),
+                Ok(None) => {
+                    require_publication_dispatch_lease(&lease, current_time_millis()?)?;
+                    backend.compare_and_swap(
+                        &config.store_id,
+                        batch.expected_frontier_generation,
+                        &proposed,
+                    )
+                }
                 Err(error) => Err(error),
             };
             let acknowledgement = match result {
@@ -371,6 +393,21 @@ async fn execute_publication_request(
             Ok(serde_json::to_string(&acknowledgement)?)
         }
     }
+}
+
+fn require_publication_dispatch_lease(
+    lease: &codex_hepta_evidence::EvidencePublicationOwnerLeaseV1,
+    now_unix_ms: u64,
+) -> Result<(), AgentdError> {
+    if now_unix_ms == 0
+        || lease.owner_generation == 0
+        || now_unix_ms >= lease.lease_expires_at_unix_ms
+    {
+        return Err(recovery_required(
+            "publication owner lease expired before external dispatch",
+        ));
+    }
+    Ok(())
 }
 
 fn validate_publication_continuation(
