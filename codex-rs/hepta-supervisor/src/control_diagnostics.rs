@@ -83,8 +83,9 @@ impl ResourceEnforcementStatus {
 #[serde(deny_unknown_fields)]
 pub struct ControlDiagnosticsSnapshot {
     pub agent_id: AgentId,
-    /// Monotone owner-local operation identity. It is diagnostic only; callers
-    /// must continue using the complete control fence for mutation admission.
+    /// Owner-local request identity. The complete control fence remains the
+    /// only mutation CAS and must be refreshed after a daemon restart.
+    pub operation_id: Option<String>,
     pub operation_revision: u64,
     pub target_spawn_generation: Option<u64>,
     pub target_runtime_generation: Option<u64>,
@@ -124,27 +125,29 @@ impl<D: ProcessDriver> Supervisor<D> {
         let record = fleet
             .agent(agent_id)
             .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
-        let snapshot = self
-            .snapshot(agent_id)
-            .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
-        let recovery_required = self.production_recovery_required(agent_id)?;
-        Ok(derive(
-            agent_id.clone(),
-            record.lifecycle.lifecycle,
-            snapshot,
-            recovery_required,
-            self.config.restart_max_attempts,
-        ))
+        self.control_diagnostics_for_lifecycle(agent_id, record.lifecycle.lifecycle)
     }
 
     pub fn operational_summary(&self) -> Result<SupervisorOperationalSummary, SupervisorError> {
+        // Load the Fleet projection once. A periodic operational snapshot must
+        // not amplify one read into N registry scans for a 256-Agent roster.
         let fleet = self.registry.load()?;
         let mut summary = SupervisorOperationalSummary {
             registered_agents: u64::try_from(fleet.agents.len()).unwrap_or(u64::MAX),
             ..SupervisorOperationalSummary::default()
         };
-        for agent_id in fleet.agents.keys() {
-            let diagnostic = self.control_diagnostics(agent_id)?;
+        for (agent_id, record) in &fleet.agents {
+            let diagnostic = match self
+                .control_diagnostics_for_lifecycle(agent_id, record.lifecycle.lifecycle)
+            {
+                Ok(diagnostic) => diagnostic,
+                Err(_) => {
+                    summary.blocked_agents = summary.blocked_agents.saturating_add(1);
+                    summary.control_state_unavailable =
+                        summary.control_state_unavailable.saturating_add(1);
+                    continue;
+                }
+            };
             if diagnostic.resource_enforcement.has_declared_only_limits() {
                 summary.resource_enforcement_gaps =
                     summary.resource_enforcement_gaps.saturating_add(1);
@@ -189,6 +192,24 @@ impl<D: ProcessDriver> Supervisor<D> {
         }
         Ok(summary)
     }
+
+    fn control_diagnostics_for_lifecycle(
+        &self,
+        agent_id: &AgentId,
+        lifecycle: AgentLifecycle,
+    ) -> Result<ControlDiagnosticsSnapshot, SupervisorError> {
+        let snapshot = self
+            .snapshot(agent_id)
+            .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
+        let recovery_required = self.production_recovery_required(agent_id)?;
+        Ok(derive(
+            agent_id.clone(),
+            lifecycle,
+            snapshot,
+            recovery_required,
+            self.config.restart_max_attempts,
+        ))
+    }
 }
 
 fn derive(
@@ -198,15 +219,28 @@ fn derive(
     recovery_required: bool,
     restart_max_attempts: u32,
 ) -> ControlDiagnosticsSnapshot {
-    let persistence_uncertain = snapshot.runtime_fenced
-        || snapshot.events.iter().rev().take(8).any(|event| {
-            matches!(
-                event.kind,
-                SupervisorEventKind::OrphanRejected
-                    | SupervisorEventKind::MatrixOrphanRejected
-                    | SupervisorEventKind::DriverFault(_)
+    let effect_in_flight = snapshot.release_change_pending
+        || snapshot.restart_pending
+        || matches!(
+            snapshot.runtime_phase,
+            Some(
+                ControlRuntimePhase::Draining
+                    | ControlRuntimePhase::Stopping
+                    | ControlRuntimePhase::Killing
             )
-        });
+        );
+    let recent_recovery_fault = snapshot.events.iter().rev().take(8).any(|event| {
+        matches!(
+            event.kind,
+            SupervisorEventKind::OrphanRejected | SupervisorEventKind::MatrixOrphanRejected
+        )
+    });
+    let latest_driver_fault = snapshot.events.last().is_some_and(|event| {
+        matches!(event.kind, SupervisorEventKind::DriverFault(_))
+    });
+    let persistence_uncertain = snapshot.runtime_fenced
+        || recent_recovery_fault
+        || (latest_driver_fault && effect_in_flight);
     let restart_exhausted = snapshot.restart_attempt >= restart_max_attempts
         || snapshot.matrix.restart_attempt >= restart_max_attempts
         || snapshot.events.iter().rev().take(8).any(|event| {
@@ -255,7 +289,11 @@ fn derive(
         Some(ControlBlocker::RestartBackoff)
     } else if matches!(
         snapshot.runtime_phase,
-        Some(ControlRuntimePhase::Draining | ControlRuntimePhase::Stopping | ControlRuntimePhase::Killing)
+        Some(
+            ControlRuntimePhase::Draining
+                | ControlRuntimePhase::Stopping
+                | ControlRuntimePhase::Killing
+        )
     ) {
         Some(ControlBlocker::AwaitingProcessExit)
     } else if matches!(
@@ -268,8 +306,11 @@ fn derive(
         None
     };
 
+    let operation_id = (snapshot.control_revision > 0)
+        .then(|| format!("{}:{}", agent_id, snapshot.control_revision));
     ControlDiagnosticsSnapshot {
         agent_id,
+        operation_id,
         operation_revision: snapshot.control_revision,
         target_spawn_generation: snapshot.spawn_generation,
         target_runtime_generation: snapshot.runtime_generation,
@@ -365,6 +406,10 @@ mod tests {
         );
         assert_eq!(diagnostic.blocker, Some(ControlBlocker::TargetIdentityChanged));
         assert_eq!(diagnostic.operation_revision, 9);
+        assert_eq!(
+            diagnostic.operation_id.as_deref(),
+            Some("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12:9")
+        );
         assert_eq!(diagnostic.target_spawn_generation, Some(6));
     }
 
@@ -383,5 +428,23 @@ mod tests {
             diagnostic.resource_enforcement.operation_timeout,
             EnforcementLevel::Enforced
         );
+    }
+
+    #[test]
+    fn historical_driver_fault_without_inflight_effect_is_not_persistence_uncertain() {
+        let mut state = snapshot();
+        state.events.push(SupervisorEvent {
+            generation: 7,
+            kind: SupervisorEventKind::DriverFault("redacted".to_string()),
+        });
+        let diagnostic = derive(
+            agent(),
+            AgentLifecycle::Running,
+            state,
+            false,
+            5,
+        );
+        assert!(!diagnostic.persistence_uncertain);
+        assert_eq!(diagnostic.blocker, None);
     }
 }
