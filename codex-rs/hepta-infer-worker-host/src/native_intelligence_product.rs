@@ -260,3 +260,66 @@ fn local_terminal_receipt_v1(
         idempotent: value.idempotent,
     })
 }
+
+#[cfg(test)]
+mod tests {
+    use codex_hepta_types::StableId;
+
+    use super::*;
+    use crate::native_app_server::NativeBoundaryStatus;
+    use crate::native_app_server::NativeOwnerAuthority;
+    use crate::native_app_server::NativeRunStatus;
+
+    fn learning_receipt(
+        disposition: AgentdIntelligenceLearningDispositionV1,
+    ) -> AgentdIntelligenceLearningReceiptV1 {
+        AgentdIntelligenceLearningReceiptV1 {
+            operation_id: StableId::new("intelligence.operation.test").expect("operation id"),
+            disposition,
+            evidence_digest: Digest32::of_bytes(b"learning evidence"),
+            append: None,
+        }
+    }
+
+    fn native_output(terminal_observed: bool) -> NativeRunOutput {
+        NativeRunOutput {
+            thread_id: "thread.test".to_string(),
+            turn_id: "turn.test".to_string(),
+            model: "model.test".to_string(),
+            model_provider: "provider.test".to_string(),
+            status: NativeRunStatus::Completed,
+            boundary_status: NativeBoundaryStatus::Succeeded,
+            output: "observed output".to_string(),
+            observed_output_tokens: Some(7),
+            terminal_observed,
+            stop_reason: None,
+            owner_authority: NativeOwnerAuthority::ObservedReady,
+            codex_terminal_correlation_digest: Some(Digest32::of_bytes(b"correlation").to_string()),
+        }
+    }
+
+    #[test]
+    fn decision_disposition_without_append_never_authorizes_physical_progression() {
+        let acknowledged_without_append =
+            learning_receipt(AgentdIntelligenceLearningDispositionV1::Acknowledged);
+        assert!(require_acknowledged("Decision", &acknowledged_without_append).is_err());
+
+        let indeterminate =
+            learning_receipt(AgentdIntelligenceLearningDispositionV1::Indeterminate);
+        assert!(require_acknowledged("Decision", &indeterminate).is_err());
+    }
+
+    #[test]
+    fn provider_terminal_digest_requires_terminal_observation_and_binds_full_output() {
+        let mut output = native_output(false);
+        assert!(native_provider_terminal_digest_v1(&output).is_err());
+
+        output.terminal_observed = true;
+        let original = native_provider_terminal_digest_v1(&output).expect("terminal digest");
+        assert!(!original.is_zero());
+
+        output.output.push_str(" changed");
+        let changed = native_provider_terminal_digest_v1(&output).expect("changed terminal digest");
+        assert_ne!(original, changed);
+    }
+}
