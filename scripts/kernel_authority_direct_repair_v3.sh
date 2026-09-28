@@ -84,8 +84,8 @@ python3 scripts/kernel_authority_status.py check
 python3 qualification/kernel-authority/generate_status.py --check
 python3 scripts/verify_hepta_callers.py
 python3 scripts/hepta-implementation-maps.py verify \
-  --expected-sha "$SOURCE_COMMIT" \
-  --expected-tree "$SOURCE_TREE"
+  --expected-sha "$PROJECTION_COMMIT" \
+  --expected-tree "$PROJECTION_TREE"
 python3 qualification/kernel-authority/verify.py self-test
 python3 -m unittest discover -s qualification/kernel-authority -p 'test_*.py' -v
 python3 qa/b4-no-bypass/test_kernel_authority_closed_world.py -v
