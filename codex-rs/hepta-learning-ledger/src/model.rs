@@ -87,19 +87,16 @@ pub struct RetrievalAssignmentFact {
     pub enumerated_candidate_digests: Vec<Digest32>,
     pub legal_candidate_indices: Vec<u32>,
     pub selected_candidate_indices: Vec<u32>,
-    /// Exact ordered subset prepared for the named product consumer after
-    /// downstream learned reranking, response budget, NDU planning and final
-    /// owner/currentness fences. Vector position is the serialized response
-    /// position; normalization must not sort this field. External publication
-    /// and native use are proved separately by the inference journal.
+    /// Legacy asserted delivery order. Preserve the exact stored values and
+    /// positions; do not silently reinterpret historical tag-9 records.
     pub delivered_candidate_indices: Vec<u32>,
-    /// Historical field name retained in the durable V1 codec. `true` means a
-    /// non-empty owner response was prepared, not that a socket write, provider
-    /// acceptance or native turn was observed.
+    /// Legacy assertion, not independently authenticated publication evidence.
+    /// Some historical producer revisions reused this bit for preparation.
+    /// Such records must never be automatically promoted to physical exposure.
+    /// New product preparation writes use RetrievalPrepared (tag 10).
     pub context_exposed: bool,
-    /// Digest of the exact prepared CognitiveContextSnapshot. The native journal
-    /// must carry the same digest before a later receipt can establish physical
-    /// publication, native start or terminal outcome.
+    /// Historical asserted context identity. Actual publication/native use
+    /// requires independently owned consumer evidence, not this digest alone.
     pub published_context_digest: Option<Digest32>,
     pub omitted_by_policy_limits: u32,
     pub assignment_propensity: ProbabilityQ32,
@@ -285,6 +282,7 @@ pub struct UnlearningLineageEventV1 {
 pub enum LedgerEvent {
     Decision(EpisodeDecision),
     RetrievalAssignment(RetrievalAssignmentFact),
+    RetrievalPrepared(crate::RetrievalPreparationFactV1),
     Outcome(OutcomeObservation),
     Credit(CreditAssignment),
     PromptDelivery(PromptDeliveryObservation),
@@ -300,6 +298,7 @@ impl LedgerEvent {
         match self {
             Self::Decision(value) => &value.record_id,
             Self::RetrievalAssignment(value) => &value.record_id,
+            Self::RetrievalPrepared(value) => &value.assignment.record_id,
             Self::Outcome(value) => &value.record_id,
             Self::Credit(value) => &value.record_id,
             Self::PromptDelivery(value) => &value.record_id,

@@ -1,4 +1,4 @@
-//! Concrete durable learning-ledger sink for retrieval assignment evidence.
+//! Concrete durable learning-ledger sink for unexposed retrieval preparations.
 //!
 //! This adapter owns one host-authorized DurableLedger handle. Agentd never
 //! invents a parallel file format or treats an in-memory callback as durable
@@ -10,7 +10,7 @@ use codex_hepta_contracts::AgentId;
 use codex_hepta_learning_ledger::AppendReceipt;
 use codex_hepta_learning_ledger::LedgerEvent;
 use codex_hepta_learning_ledger::LedgerWriter;
-use codex_hepta_learning_ledger::retrieval_assignment_event_with_delivery_policy;
+use codex_hepta_learning_ledger::retrieval_preparation_event_v1;
 use codex_hepta_memory_retrieval::RetrievalAssignmentObservationV1;
 use codex_hepta_memory_retrieval::RetrievalCandidateIdentityV1;
 use codex_hepta_types::Digest32;
@@ -29,6 +29,7 @@ impl CognitiveRetrievalLearningSink {
         }
     }
 
+    #[cfg(test)]
     pub(crate) fn append(
         &self,
         owner: &AgentId,
@@ -49,6 +50,8 @@ impl CognitiveRetrievalLearningSink {
         )
     }
 
+    #[cfg(test)]
+    #[allow(clippy::too_many_arguments)]
     pub(crate) fn append_with_delivery(
         &self,
         owner: &AgentId,
@@ -72,6 +75,7 @@ impl CognitiveRetrievalLearningSink {
         )
     }
 
+    #[cfg(test)]
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn append_with_delivery_policy(
         &self,
@@ -85,13 +89,40 @@ impl CognitiveRetrievalLearningSink {
         downstream_policy_digest: Option<Digest32>,
         delivery_propensity: ProbabilityQ32,
     ) -> Result<AppendReceipt, String> {
+        if context_exposed == delivered_candidates.is_empty() {
+            return Err("preparation shape mismatch".to_string());
+        }
+        self.append_preparation(
+            owner,
+            body_generation,
+            request_id,
+            observation,
+            delivered_candidates,
+            published_context_digest,
+            downstream_policy_digest,
+            delivery_propensity,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn append_preparation(
+        &self,
+        owner: &AgentId,
+        body_generation: u64,
+        request_id: u64,
+        observation: &RetrievalAssignmentObservationV1,
+        prepared_candidates: &[RetrievalCandidateIdentityV1],
+        prepared_context_digest: Option<Digest32>,
+        downstream_policy_digest: Option<Digest32>,
+        delivery_propensity: ProbabilityQ32,
+    ) -> Result<AppendReceipt, String> {
         let episode_id = StableId::new(format!(
             "retrieval-episode:{}:{body_generation}:{request_id}",
             owner.as_str()
         ))
         .map_err(|error| error.to_string())?;
 
-        let mut identity_bytes = b"hepta.agentd.retrieval-assignment.v1".to_vec();
+        let mut identity_bytes = b"hepta.agentd.retrieval-preparation.v1".to_vec();
         let owner_bytes = owner.as_str().as_bytes();
         identity_bytes.extend_from_slice(
             &u64::try_from(owner_bytes.len())
@@ -102,18 +133,17 @@ impl CognitiveRetrievalLearningSink {
         identity_bytes.extend_from_slice(&body_generation.to_be_bytes());
         identity_bytes.extend_from_slice(&request_id.to_be_bytes());
         let record_id = StableId::new(format!(
-            "retrieval-assignment:{}",
+            "retrieval-preparation:{}",
             Digest32::of_bytes(&identity_bytes)
         ))
         .map_err(|error| error.to_string())?;
 
-        let event = retrieval_assignment_event_with_delivery_policy(
+        let event = retrieval_preparation_event_v1(
             record_id,
             episode_id,
             observation,
-            delivered_candidates,
-            context_exposed,
-            published_context_digest,
+            prepared_candidates,
+            prepared_context_digest,
             downstream_policy_digest,
             delivery_propensity,
         )
@@ -122,11 +152,11 @@ impl CognitiveRetrievalLearningSink {
             .writer
             .lock()
             .map_err(|_| "retrieval learning ledger writer lock poisoned".to_string())?;
-        let LedgerEvent::RetrievalAssignment(assignment) = event else {
+        let LedgerEvent::RetrievalPrepared(assignment) = event else {
             return Err("retrieval assignment bridge emitted wrong event kind".to_string());
         };
         writer
-            .append_retrieval_assignment_current(assignment)
+            .append_retrieval_preparation_current(assignment)
             .map_err(|error| error.to_string())
     }
 }

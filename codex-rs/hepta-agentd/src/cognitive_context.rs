@@ -559,10 +559,9 @@ pub(crate) async fn read_with_retrieval_executor(
             return Err(CognitiveContextError::RetrievalContextUnavailable);
         }
     }
-    // Every owner, ranker and retrieval-lifecycle fence has passed. The
-    // append below is the idempotent AssignmentPrepared commit point.
-    // It is not publication or native-consumption evidence; those facts
-    // are joined from the durable native journal by exact context digest.
+    // Append only a separately tagged, unexposed preparation. The append may
+    // outlive a cancelled waiter; final freshness is checked again afterwards.
+    // Neither this event nor an equal digest authenticates consumer publication.
     if let Some(sink) = learning_sink.filter(|_| pending_assignment.is_some()) {
         let assignment =
             pending_assignment.ok_or(CognitiveContextError::RetrievalLearningUnavailable)?;
@@ -597,8 +596,8 @@ pub(crate) async fn read_with_retrieval_executor(
             downstream_policy_digest = None;
             delivery_propensity = ProbabilityQ32::ONE;
         }
-        let context_exposed = !delivered_candidates.is_empty();
-        let published_context_digest = if context_exposed {
+        let has_prepared_context = !delivered_candidates.is_empty();
+        let prepared_context_digest = if has_prepared_context {
             Some(Digest32::of_bytes(&serde_json::to_vec(&response).map_err(
                 |error| CognitiveStoreError::Invalid(error.to_string()),
             )?))
@@ -610,14 +609,13 @@ pub(crate) async fn read_with_retrieval_executor(
         let appended = executor
             .run(retrieval_work, move |work| {
                 work.checkpoint().map_err(|error| error.to_string())?;
-                let receipt = sink.append_with_delivery_policy(
+                let receipt = sink.append_preparation(
                     &owner,
                     body_generation,
                     request_id,
                     &assignment,
                     &delivered_candidates,
-                    context_exposed,
-                    published_context_digest,
+                    prepared_context_digest,
                     downstream_policy_digest,
                     delivery_propensity,
                 )?;
@@ -632,10 +630,51 @@ pub(crate) async fn read_with_retrieval_executor(
             eprintln!("shadow retrieval assignment append unavailable; no exposure recorded");
         }
     }
-    // No fallible owner operation may follow a successful preparation
-    // append: a late failure would create a durable fact for a response
-    // the caller never received. External publication remains a separate
-    // native-journal observation.
+    // An immutable preparation is allowed to survive failure. It cannot be
+    // interpreted as publication, so freshness must not be weakened to avoid
+    // recording an unexposed attempt whose response was never delivered.
+    // A concurrent correction, deletion, changed citation, expiry or restored
+    // older database must not leak a stale projection into the response.
+    let final_fence_now = now_seconds()?;
+    executor
+        .run_async(&request_work, {
+            let store = store.clone();
+            let access = access.clone();
+            let scope = scope.clone();
+            let cut = cut.clone();
+            async move {
+                store
+                    .revalidate_lane_c_snapshot(&access, &scope, &cut, final_fence_now)
+                    .await
+            }
+        })
+        .await
+        .map_err(|_| CognitiveContextError::RetrievalContextUnavailable)??;
+    if let Some(ranker) = ranker {
+        let ranker = std::sync::Arc::clone(ranker);
+        executor
+            .run(&request_work, move |work| {
+                work.checkpoint().map_err(|error| error.to_string())?;
+                ranker.revalidate()?;
+                work.checkpoint().map_err(|error| error.to_string())?;
+                Ok(())
+            })
+            .await
+            .map_err(|_| CognitiveContextError::RankerUnavailable)?;
+    }
+    if let (Some(current), Some(expected)) = (current_retrieval, expected_retrieval_context_digest)
+    {
+        let actual =
+            load_retrieval_context(current, owner, body_generation, executor, &request_work)
+                .await?
+                .binding_digest();
+        if actual != expected {
+            return Err(CognitiveContextError::RetrievalContextUnavailable);
+        }
+    }
+    request_work
+        .checkpoint()
+        .map_err(|_| CognitiveContextError::RetrievalContextUnavailable)?;
     Ok(response)
 }
 

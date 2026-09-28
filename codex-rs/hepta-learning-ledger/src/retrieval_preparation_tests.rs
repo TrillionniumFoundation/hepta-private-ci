@@ -44,9 +44,11 @@ fn preparation() -> RetrievalPreparationFactV1 {
 #[test]
 fn preparation_replay_preserves_order_without_asserting_exposure() {
     let prepared = preparation();
-    let expected_order = prepared.prepared_candidate_indices.iter().map(|index| {
-        prepared.assignment.enumerated_candidate_digests[*index as usize]
-    }).collect::<Vec<_>>();
+    let expected_order = prepared
+        .prepared_candidate_indices
+        .iter()
+        .map(|index| prepared.assignment.enumerated_candidate_digests[*index as usize])
+        .collect::<Vec<_>>();
     let event = LedgerEvent::RetrievalPrepared(prepared.clone());
     let mut ledger = LearningLedger::new();
     let first = must(ledger.append(event.clone()));
@@ -60,15 +62,22 @@ fn preparation_replay_preserves_order_without_asserting_exposure() {
     assert!(!actual.assignment.context_exposed);
     assert!(actual.assignment.delivered_candidate_indices.is_empty());
     assert!(actual.assignment.published_context_digest.is_none());
-    assert_eq!(actual.prepared_context_digest, prepared.prepared_context_digest);
-    let actual_order = actual.prepared_candidate_indices.iter().map(|index| {
-        actual.assignment.enumerated_candidate_digests[*index as usize]
-    }).collect::<Vec<_>>();
+    assert_eq!(
+        actual.prepared_context_digest,
+        prepared.prepared_context_digest
+    );
+    let actual_order = actual
+        .prepared_candidate_indices
+        .iter()
+        .map(|index| actual.assignment.enumerated_candidate_digests[*index as usize])
+        .collect::<Vec<_>>();
     assert_eq!(actual_order, expected_order);
     let mut reordered = prepared;
     reordered.prepared_candidate_indices.reverse();
-    assert!(matches!(ledger.append(LedgerEvent::RetrievalPrepared(reordered)),
-        Err(LedgerError::IdentityConflict(_))));
+    assert!(matches!(
+        ledger.append(LedgerEvent::RetrievalPrepared(reordered)),
+        Err(LedgerError::IdentityConflict(_))
+    ));
 }
 
 #[test]
@@ -81,12 +90,20 @@ fn preparation_codec_is_distinct_and_legacy_exposure_is_not_reinterpreted() {
     let tag_offset = b"hepta.learning-ledger.event.v1".len();
     assert_eq!(encoded[tag_offset], 10);
     assert_eq!(legacy_encoded[tag_offset], 9);
-    assert_ne!(Digest32::of_bytes(&encoded), Digest32::of_bytes(&legacy_encoded));
+    assert_ne!(
+        Digest32::of_bytes(&encoded),
+        Digest32::of_bytes(&legacy_encoded)
+    );
     assert_eq!(must(crate::durable_codec::decode_event(&encoded)), event);
-    assert_eq!(must(crate::durable_codec::decode_event(&legacy_encoded)), legacy);
+    assert_eq!(
+        must(crate::durable_codec::decode_event(&legacy_encoded)),
+        legacy
+    );
     for length in 0..encoded.len() {
-        assert!(crate::durable_codec::decode_event(&encoded[..length]).is_err(),
-            "truncated preparation decoded at {length}");
+        assert!(
+            crate::durable_codec::decode_event(&encoded[..length]).is_err(),
+            "truncated preparation decoded at {length}"
+        );
     }
 }
 
@@ -101,7 +118,11 @@ fn preparation_rejects_forged_exposure_fields_and_oversized_vectors() {
             3 => prepared.prepared_candidate_indices = vec![0; 17],
             _ => unreachable!(),
         }
-        assert!(LearningLedger::new().append(LedgerEvent::RetrievalPrepared(prepared)).is_err());
+        assert!(
+            LearningLedger::new()
+                .append(LedgerEvent::RetrievalPrepared(prepared))
+                .is_err()
+        );
     }
 }
 

@@ -284,3 +284,37 @@ fn indexed_historical_identity_does_not_accept_changed_assignment() {
     assert_eq!(writer.witness_frontier().expect("frontier"), before);
     assert_eq!(writer.snapshot().expect("snapshot").records().len(), 2);
 }
+
+#[test]
+fn product_sink_nonempty_context_is_a_preparation_not_an_exposure() {
+    let (_temp, sink) = sink();
+    let observation = observation("prepared-packet");
+    sink.append_preparation(
+        &owner(),
+        1,
+        707,
+        &observation,
+        &observation.selected_candidates,
+        Some(digest("exact-response")),
+        None,
+        ProbabilityQ32::ONE,
+    )
+    .expect("prepare");
+    let snapshot = sink
+        .writer
+        .lock()
+        .expect("lock")
+        .snapshot()
+        .expect("snapshot");
+    let LedgerEvent::RetrievalPrepared(prepared) = &snapshot.records()[0].event else {
+        panic!("product sink emitted a legacy exposure event");
+    };
+    assert!(!prepared.assignment.context_exposed);
+    assert!(prepared.assignment.delivered_candidate_indices.is_empty());
+    assert!(prepared.assignment.published_context_digest.is_none());
+    assert_eq!(prepared.prepared_candidate_indices, vec![0]);
+    assert_eq!(
+        prepared.prepared_context_digest,
+        Some(digest("exact-response"))
+    );
+}
