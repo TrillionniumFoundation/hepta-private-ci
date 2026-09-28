@@ -32,6 +32,8 @@ jobs:
           mkdir -p "$RUNNER_TEMP/cognitive-source"
           git rev-parse HEAD > "$RUNNER_TEMP/cognitive-source/source-sha.txt"
           git rev-parse HEAD^{tree} > "$RUNNER_TEMP/cognitive-source/source-tree.txt"
+          # Keep one complete immutable archive so authorized development can
+          # patch the exact remote tree without a write-capable CI workflow.
           git archive --format=tar HEAD > "$RUNNER_TEMP/cognitive-source/source.tar"
           git bundle create "$RUNNER_TEMP/cognitive-source/source.bundle" HEAD refs/remotes/origin/main refs/remotes/origin/codex/cognitive-types-production-hardening-20260926
           cd "$RUNNER_TEMP/cognitive-source"
