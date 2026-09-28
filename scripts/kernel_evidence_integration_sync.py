@@ -26,65 +26,98 @@ The integration candidate is `work/kernel-evidence-ad-integration-20260928`
 2026-09-28 follow-up. Do not add the capabilities of unmerged branches together
 or count a source-rewriting script as compiled implementation.
 
-Production publication uses two complementary fences. The durable SQLite lease
-binds owner and generation across restart; a nonblocking OS lock on the canonical
-private Agent home serializes publication/reconciliation processes for the
-entire prepare or publish request. A reused logical owner ID does not permit a
-second process to enter. The directory descriptor remains alive through external
-CAS/recovery, policy rechecks, SQLite acknowledgement and store close. Identity
-and private mode are rechecked before external dispatch and acknowledgement.
-The descriptor lifetime releases ownership; no process unlinks a lock file.
+Production publication uses complementary physical and durable fences. A
+nonblocking OS lock on the canonical private Agent home serializes publication
+processes for the entire request. The SQLite owner lease binds identity and
+generation across restart. After the exact Dispatching record has committed,
+`with_publication_dispatch_guard` takes a `BEGIN IMMEDIATE` writer reservation.
+It checks the enrolled store, exact prepared snapshot/proposal, currently
+accepted predecessor, owner identity/expiry and accepted issuer trust generation
+in that one transaction. The reservation remains held across the synchronous
+external recovery/CAS call, so another database connection cannot commit owner
+or trust replacement halfway through dispatch. The callback must not re-enter
+this SQLite store. Agentd uses `try_compare_and_swap`, whose active/store lock
+admission fails immediately on contention; the ordinary CAS interface retains
+its previous blocking contention contract. Neither path invents a conflict or
+a durable acknowledgement when the backend is merely unavailable.
 
-`evidence_publication_process_lock_tests.rs` includes separate-open, real
-subprocess contention, successor acquisition, directory replacement and mode
-mutation tests. The subprocess must produce an observed-disposition record;
-a child that executes zero tests cannot satisfy the test. These source tests
-require execution on the exact candidate. File-lock semantics on a different
-storage platform still require independent operational qualification.
+The process directory descriptor stays alive through external I/O, policy
+rechecks, acknowledgement and store close. It is never unlinked as a lock-file
+recovery technique. Identity/private mode, current issuer file and lease are
+rechecked at the effect boundary. A lease or policy change after an external
+write leaves the SAME batch unresolved. Filesystem read/fsync latency still
+requires target-platform measurement and fault qualification; a nonblocking
+lock alone is not a wall-clock I/O SLA.
 
-Local receipt commit and external anchoring are separate states. Publication
-preparation, immutable batch identity, dispatch, uncertain result and accepted
-frontier are durable. A matching latest record is not by itself a durable ACK:
-reconciliation must recover and synchronize the matching external record before
-acknowledging the batch. Changed policy, expired ownership or uncertain I/O
-leave the same batch unresolved; they never allocate a replacement successful
-history. Normal writes do not silently promise zero-loss external anchoring.
+`acknowledge_publication_with_trust` checks current trust, owner and the exact
+backend observation in the same transaction that accepts the frontier and
+acknowledges every batch intent. A commit whose result is unknown is explicitly
+indeterminate. The raw compatibility acknowledgement API is not Agentd's
+production path. An already acknowledged batch enters `RecoverOnly`: the
+external record must be found and re-synchronized. Missing historical data is
+corruption requiring reconciliation, never permission to issue a new CAS.
+
+Durable acknowledgement JSON uses exactly `backendId`,
+`backendIdentitySha256`, `storeId`, `frontierGeneration`, `frontierSha256` and
+`auditSequence`. Serialization does not make arbitrary inbound JSON a verified
+backend handle, and it carries no activation, acceptance or release flag.
+
+`publication_dispatch_tests.rs` uses real migrated stores and authenticated
+append to cover stale owner, replaced proposal, unknown external result,
+policy replacement, acknowledged-only recovery, durable trust rollback and a
+second SQLite connection attempting to enter the held write epoch. The Agentd
+lease-boundary and backend acknowledgement-wire/lock regressions remain
+separate. These are source tests until executed on the exact candidate.
+
+Local receipt commit and external anchoring are separate states. Preparation,
+immutable batch identity, dispatch, uncertain result and accepted frontier are
+durable. A matching latest record is not itself an ACK: reconciliation must
+synchronize the exact external record before acknowledging the batch. Normal
+writes do not silently promise zero-loss external anchoring.
 
 Cursor paging is a bounded live query, not a frozen historical snapshot unless
-the caller binds a separately retained frontier. A verification summary proves
-only its registered profile; consumers must require the profile appropriate to
-the decision they are making, rather than accepting any `supported` value.
+the caller binds a retained frontier. A verification summary proves only its
+registered profile; consumers must require the profile appropriate to their
+decision rather than accepting any `supported` value.
 
 The A-D diagnostic workflow tests exact source and a deterministic merge against
 fixed main `a126987b84737dbc2ee2592442a314117bddb4a2`. It never repairs the
-working tree under test. Formatter suggestions are created in a separate
-worktree and become new source only after review/commit. Standalone solver,
-Python, evidence package, Agentd library/product, doctest, strict lint, build,
-Lane-A, documents and implementation-map records remain distinct. A failed,
-missing or skipped command does not qualify either candidate.
+working tree under test. Formatter output becomes a new source only through a
+separate bounded delivery commit. Standalone solver, Python/SQLite probes,
+evidence package, Agentd product, doctest, strict lint, build, Lane-A, documents
+and implementation-map records remain distinct. Failed, missing, skipped or
+queued commands cannot qualify either candidate. SQLite probes do not replace
+Rust execution or external crash/power-loss drills.
 
-Canonical status anchors source and workflow files to an immutable code commit;
-generated projections and the guide may be metadata-only descendants. The
-implementation map is then bound to the actual documentation commit. This
-avoids self-referential Git identities without transferring old test results.
-Independent acceptance, external storage, real backup/restore and power-loss
-drills, canary, promotion and release remain separate external receipts.
+Canonical status binds source/workflow files to an immutable code commit;
+generated projections and the guide may be metadata-only descendants. The map
+then binds the actual documentation commit. This avoids self-referential Git
+identities without transferring old test results. Independent acceptance,
+external storage, witnessed backup/restore and power-loss drills, capacity,
+canary, promotion and release require their own exact authority receipts.
 """
 
-STORE_NOTE = """## Publication process ownership
+STORE_NOTE = """## Publication process ownership and durable epochs
 
-The owner-bound publication CLI also holds a nonblocking OS lock on the private
-canonical Agent home for its entire request. The durable lease is still required;
-the physical lock prevents two processes sharing the same logical owner from
-simultaneously entering external CAS. The lock descriptor is not inherited across
-exec and is released by close or process exit, never by unlinking a lock file.
-Directory replacement or mode drift before dispatch/acknowledgement fails closed.
+The owner publication CLI holds a nonblocking OS lock on the canonical private
+Agent home for its entire request. The lease remains required. A second process
+with the same logical owner cannot enter. The descriptor is not inherited by
+exec and is released by close/exit, never by unlinking a lock file.
 
-If another publisher is active, retry the same request after it completes; do not
-remove files, clear a batch, change the owner registry or force a new generation.
-After an uncertain external write, use the same batch reconciliation path, which
-re-synchronizes the exact matching record before recovering an acknowledgement.
-A latest-frontier read alone is not evidence of durable acknowledgement.
+After durable Dispatching, the production path reserves one SQLite write epoch
+across current trust/owner/predecessor/batch checks and external recovery/CAS.
+Backend lock contention fails immediately. The callback cannot re-enter SQLite.
+The transaction writes no rows and cannot erase the earlier dispatch record on
+rollback, crash or uncertain I/O. The separate production acknowledgement
+transaction checks current trust again and commits frontier acceptance plus
+all exact batch intents atomically. Unknown commit results remain unresolved.
+
+Already-acknowledged batches are recovery-only: missing external history cannot
+be recreated by another CAS. Reconciliation re-synchronizes the exact matching
+record before recovering an ACK. A latest-frontier read alone is insufficient.
+Do not clear a batch, restore old trust, remove lock paths or force a new owner
+to hide an uncertain result. File/fsync delay and crash behavior still require
+physical platform qualification; the source does not claim a latency bound.
 """
 
 
@@ -163,20 +196,13 @@ def sync_metadata(anchor: str) -> None:
     status["asOfCommit"] = identity["commit"]
     status["asOfTree"] = identity["tree"]
     status["sourcePaths"] = source_inventory(anchor)
-    # This tool cannot authenticate execution or external acceptance receipts.
     if any(status[gate] for gate, _ in status_tools.GATES):
         raise ValueError("qualified status requires a separate reviewed transition")
-    if (
-        status["evidenceReceipts"]
-        or status["workflowRunId"]
-        or status["artifactDigest"]
-    ):
+    if status["evidenceReceipts"] or status["workflowRunId"] or status["artifactDigest"]:
         raise ValueError("do not overwrite existing authority receipts")
     dump(status_tools.STATUS_PATH, status)
     replace_block(GUIDE, INTEGRATION_GUIDE)
-    replace_block(
-        ROOT / "docs/lane-a-foundation/kernel.evidence/STORE_V1.md", STORE_NOTE
-    )
+    replace_block(ROOT / "docs/lane-a-foundation/kernel.evidence/STORE_V1.md", STORE_NOTE)
     store_path = ROOT / "docs/lane-a-foundation/kernel.evidence/STORE_V1.md"
     store_text = store_path.read_text(encoding="utf-8")
     store_text = store_text.replace(
@@ -187,20 +213,16 @@ def sync_metadata(anchor: str) -> None:
     status_tools.validate_status(status)
     status_tools.sync(status)
     index = json.loads(INDEX.read_text(encoding="utf-8"))
-    entries = [
-        entry for entry in index["modules"] if entry["module"] == "kernel.evidence"
-    ]
+    entries = [entry for entry in index["modules"] if entry["module"] == "kernel.evidence"]
     if len(entries) != 1:
         raise ValueError("ambiguous kernel.evidence document registry")
     data = GUIDE.read_bytes()
-    entries[0].update(
-        {
-            "sha256": hashlib.sha256(data).hexdigest(),
-            "bytes": len(data),
-            "words": len(re.findall(r"\b[\w.-]+\b", data.decode("utf-8"))),
-            "production_implementation": False,
-        }
-    )
+    entries[0].update({
+        "sha256": hashlib.sha256(data).hexdigest(),
+        "bytes": len(data),
+        "words": len(re.findall(r"\b[\w.-]+\b", data.decode("utf-8"))),
+        "production_implementation": False,
+    })
     dump(INDEX, index)
     status_tools.verify(status)
 
@@ -211,13 +233,43 @@ def bind_map(anchor: str) -> None:
     mapping["sourceBase"] = identity
     mapping["productionImplementation"] = False
     for key in (
-        "productionImplementation",
-        "productExecutionProved",
-        "independentAcceptance",
-        "activation",
-        "release",
+        "productionImplementation", "productExecutionProved", "independentAcceptance",
+        "activation", "release",
     ):
         mapping["claimBoundary"][key] = False
+    new_operations = [
+        (
+            "guard_publication_dispatch", "HeptaEvidenceStore::with_publication_dispatch_guard",
+            "codex-rs/hepta-evidence/src/publication_dispatch.rs",
+            "codex-rs/hepta-evidence/src/publication_dispatch_tests.rs",
+            "current_trust_and_owner_fenced_publication_dispatch",
+        ),
+        (
+            "acknowledge_publication_with_trust", "HeptaEvidenceStore::acknowledge_publication_with_trust",
+            "codex-rs/hepta-evidence/src/publication_dispatch.rs",
+            "codex-rs/hepta-evidence/src/publication_dispatch_tests.rs",
+            "atomic_current_trust_frontier_and_batch_acknowledgement",
+        ),
+        (
+            "frontier_try_compare_and_swap", "LockedFileEvidenceFrontierBackend::try_compare_and_swap",
+            "codex-rs/hepta-evidence/src/frontier_backend_file/segmented/trait.rs",
+            "codex-rs/hepta-evidence/src/frontier_backend_file/segmented/trait.rs",
+            "nonblocking_lock_admission_for_existing_durable_cas",
+        ),
+    ]
+    for operation, symbol, source, test, authority in new_operations:
+        entry = {
+            "operation": operation, "nativeSymbol": symbol, "sourcePath": source,
+            "state": "source_implemented_product_composed", "authority": authority,
+            "tests": [test], "sourcePathExists": True,
+        }
+        existing = [item for item in mapping["operations"] if item["operation"] == operation]
+        if len(existing) > 1:
+            raise ValueError(f"ambiguous operation mapping: {operation}")
+        if existing:
+            existing[0].update(entry)
+        else:
+            mapping["operations"].append(entry)
     dump(MAP, mapping)
 
 
