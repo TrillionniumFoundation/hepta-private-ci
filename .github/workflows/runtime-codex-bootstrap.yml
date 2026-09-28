@@ -3,7 +3,7 @@ name: runtime.codex closure bootstrap
 on:
   push:
     branches:
-      - runtime-codex-closure-20260928
+      - runtime-codex-closure-arm-20260928
 
 permissions:
   contents: write
@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   apply-and-verify:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 180
     steps:
       - name: Checkout exact closure branch
@@ -22,7 +22,7 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: true
-          ref: runtime-codex-closure-20260928
+          ref: runtime-codex-closure-arm-20260928
 
       - name: Set up repository CI prerequisites
         uses: ./.github/actions/setup-ci
@@ -48,13 +48,12 @@ jobs:
       - name: Resolve verified sandboxed V8 artifacts
         uses: ./.github/actions/setup-rusty-v8
         with:
-          target: x86_64-unknown-linux-gnu
+          target: aarch64-unknown-linux-gnu
 
       - name: Apply runtime.codex closure transformation
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = "fcb6201123b34ea3306d2628295592785eeb2700" || true
           for patch in scripts/runtime_codex_patch_{1..4}.py; do python3 "$patch"; done
           python3 -m py_compile scripts/runtime_codex_patch_{1..4}.py scripts/runtime-codex-qualification.py
           cargo fmt --manifest-path codex-rs/Cargo.toml --all
@@ -132,4 +131,4 @@ jobs:
           git config user.name "runtime-codex-closure-bot"
           git config user.email "runtime-codex-closure-bot@users.noreply.github.com"
           git commit -m "runtime.codex: close pre-effect ownership and qualification gaps"
-          git push origin HEAD:runtime-codex-closure-20260928
+          git push origin HEAD:runtime-codex-closure-arm-20260928
