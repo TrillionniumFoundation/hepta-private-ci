@@ -1,0 +1,115 @@
+name: Hepta memory retrieval A-E exact-head validation
+
+on:
+  push:
+    branches:
+      - work/memory-retrieval-ae-convergence-20260928
+  pull_request:
+    branches:
+      - work/memory-retrieval-hardening-20260927
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: memory-retrieval-ae-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  exact-head:
+    name: exact-head native validation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      CARGO_TERM_COLOR: always
+      CARGO_INCREMENTAL: "0"
+      RUST_BACKTRACE: "1"
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Prove exact checkout and clean tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          test -z "$(git status --porcelain --untracked-files=all)"
+          git diff --check HEAD^
+          printf 'validated_head=%s\n' "$(git rev-parse HEAD)"
+          printf 'validated_tree=%s\n' "$(git rev-parse HEAD^{tree})"
+
+      - name: Verify materialized A-E source contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            scripts/hepta_memory_retrieval_apply_closure.py \
+            scripts/hepta_memory_retrieval_phase_a.py \
+            scripts/hepta_memory_retrieval_completion.py
+          test -f codex-rs/hepta-agentd/src/retrieval_delivery.rs
+          test -f codex-rs/hepta-agentd/src/retrieval_delivery_tests.rs
+          test -f codex-rs/hepta-agentd/src/retrieval_executor.rs
+          test -f codex-rs/hepta-memory/src/cognitive_proposition_writer.rs
+          test -f codex-rs/hepta-memory/src/production_writer.rs
+          grep -q 'AssignmentPrepared' codex-rs/hepta-agentd/src/retrieval_delivery.rs
+          grep -q 'NativeStarted' codex-rs/hepta-agentd/src/retrieval_delivery.rs
+          grep -q 'OutcomeObserved' codex-rs/hepta-agentd/src/retrieval_delivery.rs
+          grep -q 'run_async' codex-rs/hepta-agentd/src/retrieval_executor.rs
+          grep -q 'MAX_PROVIDER_REQUEST_TIMEOUT_MS: u64 = 800' \
+            codex-rs/hepta-agentd/src/cognitive_retrieval_bootstrap.rs
+          grep -q 'cannot enable Vector without an authenticated generation-bound encoder/index owner' \
+            codex-rs/hepta-agentd/src/cognitive_retrieval_bootstrap.rs
+          ! grep -q 'delivered_candidate_indices.sort_unstable' \
+            codex-rs/hepta-learning-ledger/src/ledger.rs
+
+      - name: Report native toolchain
+        shell: bash
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          rustc --version --verbose
+          cargo --version --verbose
+          rustup show active-toolchain
+
+      - name: Check formatting
+        shell: bash
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo fmt --all -- --check
+
+      - name: Resolve locked workspace
+        shell: bash
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo metadata --locked --no-deps --format-version 1 >/tmp/memory-retrieval-metadata.json
+          test -s /tmp/memory-retrieval-metadata.json
+
+      - name: Run complete affected-package tests
+        shell: bash
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo test --locked \
+            -p codex-hepta-memory-retrieval \
+            -p codex-hepta-memory \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-agentd \
+            --all-targets
+
+      - name: Run strict affected-package Clippy
+        shell: bash
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo clippy --locked \
+            -p codex-hepta-memory-retrieval \
+            -p codex-hepta-memory \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-agentd \
+            --all-targets --all-features -- -D warnings
