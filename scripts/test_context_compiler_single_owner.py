@@ -57,11 +57,7 @@ class ContextCompilerSingleOwnerTests(unittest.TestCase):
         self.assertEqual(runtime.count("pub fn compile_and_stage_v3"), 1)
         self.assertIn(".with_final_request_observer", runtime)
         self.assertIn(".with_final_terminal_observer", runtime)
-        self.assertIn("self.exact", runtime)
-        self.assertIn(".stage(", runtime)
-        self.assertIn("compiled.runtime_compiled.clone()", runtime)
-        self.assertIn("compiled.security_profile", runtime)
-        self.assertIn("compiled.security_runtime", runtime)
+        self.assertIn("self.exact\n            .stage(thread_id, turn_id, compiled.clone())", runtime)
 
         v3_definition = ROOT / "codex-rs/ext/hepta-prompt/src/v3.rs"
         for path in sorted((ROOT / "codex-rs").rglob("*.rs")):
