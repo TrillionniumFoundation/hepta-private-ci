@@ -134,6 +134,26 @@ async fn missing_canonical_recall_result_fails_before_owner_use() {
     }
 }
 
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn canonical_abstention_from_another_run_fails_before_owner_use() {
+    let mut fixture = fixture();
+    fixture.inputs.canonical_recall = Some(explicit_absence_recall(id("run:other")));
+    let directory = tempfile::tempdir().expect("directory");
+    let runner = AgentdIntelligenceProductRunnerV1::new(
+        directory.path().join("unused-authority.json"),
+        authority_verifier(),
+    )
+    .expect("runner");
+    assert!(matches!(
+        runner
+            .prepare(&product_test_coordinator(), fixture.request, fixture.inputs)
+            .await,
+        Err(AgentdIntelligenceProductError::Canonical(
+            CanonicalIntelligenceError::CanonicalRecallRunMismatch
+        ))
+    ));
+}
+
 #[test]
 fn canonical_recall_uses_real_context_compiler_and_rejects_source_replacement() {
     let (mut ports, input, recall) = canonical_context();

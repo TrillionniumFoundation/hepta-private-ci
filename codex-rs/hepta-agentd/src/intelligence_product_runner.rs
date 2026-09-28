@@ -122,6 +122,11 @@ impl AgentdIntelligenceProductRunnerV1 {
         recall
             .validate()
             .map_err(AgentdIntelligenceProductError::Canonical)?;
+        if recall.run_id != request.run_id {
+            return Err(AgentdIntelligenceProductError::Canonical(
+                CanonicalIntelligenceError::CanonicalRecallRunMismatch,
+            ));
+        }
         let (selected_recall, recall_policy_digest) = if recall.packet.abstain.is_some() {
             let reason_digest = Digest32::of_parts(&[
                 b"hepta.agentd.canonical-recall-explicit-abstention.v1\0",
