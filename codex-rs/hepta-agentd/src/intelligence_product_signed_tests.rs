@@ -24,8 +24,37 @@ fn signed_fixture() -> (
     })
     .expect("snapshot with real test evaluator key");
     value.inputs.context_request.run_snapshot_digest = value.request.snapshot.digest();
-    let context = compile(value.inputs.context_request.clone()).expect("context compilation");
+
     let legal = build_legal_candidates(value.request.legal_candidates.clone()).expect("legal set");
+    let (_, neural) = sparse_tick(
+        &value.inputs.neural_config,
+        &value.inputs.neural_tick,
+        value.inputs.neural_previous.as_ref(),
+    )
+    .expect("neural stage");
+    super::super::runner::bind_prompt_request_v1(
+        &mut value.inputs.prompt_request,
+        neural.checkpoint_after,
+        legal.candidate_set_digest,
+    )
+    .expect("bind prompt request");
+    let prompt = optimize(value.inputs.prompt_request.clone()).expect("prompt stage");
+    super::super::runner::bind_intuition_request_v1(
+        &mut value.inputs.intuition_request,
+        prompt.receipt_digest,
+        legal.candidate_set_digest,
+    )
+    .expect("bind intuition request");
+    let intuition =
+        decide_calibrated_v2(value.inputs.intuition_request.clone()).expect("intuition stage");
+    super::super::runner::bind_context_request_v1(
+        &mut value.inputs.context_request,
+        prompt.receipt_digest,
+        intuition.receipt_digest,
+        legal.candidate_set_digest,
+    )
+    .expect("bind context request");
+    let context = compile(value.inputs.context_request.clone()).expect("context compilation");
     let binding = AgentdEvaluationBindingV1 {
         run_id: value.request.run_id.clone(),
         objective_digest: value.request.snapshot.objective_digest(),
