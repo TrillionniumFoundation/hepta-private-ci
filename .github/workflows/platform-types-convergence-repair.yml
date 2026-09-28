@@ -1,4 +1,4 @@
-name: platform.types one-shot convergence repair
+name: platform.types one-shot exact-candidate repair
 
 on:
   push:
@@ -11,28 +11,33 @@ permissions:
   contents: write
 
 concurrency:
-  group: platform-types-one-shot-convergence-repair
+  group: platform-types-one-shot-exact-candidate-repair
   cancel-in-progress: false
 
 jobs:
   repair:
-    name: Repair exact candidate and canonical lock
+    name: Repair source, lock, evidence, and remove migration workflow
     runs-on: ubuntu-22.04
-    timeout-minutes: 90
+    timeout-minutes: 120
     env:
       BRANCH: codex/platform-types-production-convergence-20260925
+      RUSTUP_TOOLCHAIN: "1.96.0"
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: codex/platform-types-production-convergence-20260925
+          ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Apply fail-closed source repairs
+      - name: Install pinned native toolchain
+        uses: dtolnay/rust-toolchain@1.96.0
+        with:
+          components: rustfmt, clippy
+
+      - name: Apply guarded implementation, evidence, and documentation changes
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git branch --show-current)" = "$BRANCH"
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           python3 - <<'PY'
           from pathlib import Path
@@ -45,24 +50,42 @@ jobs:
                   raise SystemExit(f"{path}: expected one replacement anchor, found {count}")
               file.write_text(text.replace(old, new), encoding="utf-8")
 
+          def insert_before_once(path: str, marker: str, addition: str, sentinel: str) -> None:
+              file = Path(path)
+              text = file.read_text(encoding="utf-8")
+              if sentinel in text:
+                  raise SystemExit(f"{path}: insertion already present")
+              if text.count(marker) != 1:
+                  raise SystemExit(f"{path}: insertion anchor drifted")
+              file.write_text(text.replace(marker, addition + marker), encoding="utf-8")
+
+          def append_once(path: str, addition: str, sentinel: str) -> None:
+              file = Path(path)
+              text = file.read_text(encoding="utf-8")
+              if sentinel in text:
+                  raise SystemExit(f"{path}: append already present")
+              file.write_text(text.rstrip() + "\n\n" + addition.strip() + "\n", encoding="utf-8")
+
           replace_once(
               "codex-rs/hepta-wire/src/platform_manifest_json.rs",
-              ".ok_or_else(|| PlatformManifestJsonError::InvalidTimestamp(field))?;",
-              ".ok_or(PlatformManifestJsonError::InvalidTimestamp(field))?;",
+              ".set(index.checked_add(1).ok_or_else(|| StrictJsonError::InvalidValue(field))?);",
+              ".set(index.checked_add(1).ok_or(StrictJsonError::InvalidValue(field))?);",
           )
 
           replace_once(
               "scripts/platform_types_rustdoc_api.py",
               'ID_LIST_KEYS = frozenset({"fields", "variants"})',
-              'ID_LIST_KEYS = frozenset({"fields", "variants", "tuple"})',
+              '# Tuple-variant payloads are also Vec<Id>; raw numeric IDs are not stable.\n    ID_LIST_KEYS = frozenset({"fields", "variants", "tuple"})',
           )
 
-          test_path = Path("scripts/test_platform_types_rustdoc_api.py")
-          test_text = test_path.read_text(encoding="utf-8")
-          marker = "\n\nif __name__ == \"__main__\":\n"
-          if test_text.count(marker) != 1:
-              raise SystemExit("rustdoc API test insertion anchor drifted")
-          regression = r'''
+          rustdoc_tests = Path("scripts/test_platform_types_rustdoc_api.py")
+          rustdoc_text = rustdoc_tests.read_text(encoding="utf-8")
+          rustdoc_marker = "\n\nif __name__ == \"__main__\":\n"
+          if "test_tuple_variant_item_ids_normalize_to_owned_signatures" in rustdoc_text:
+              raise SystemExit("rustdoc tuple regression already present")
+          if rustdoc_text.count(rustdoc_marker) != 1:
+              raise SystemExit("rustdoc test insertion anchor drifted")
+          rustdoc_regression = r'''
 
     def test_tuple_variant_item_ids_normalize_to_owned_signatures(self):
         def with_tuple_variant(value: dict, offset: int) -> dict:
@@ -117,56 +140,756 @@ jobs:
         self.assertEqual(first["items"], shifted["items"])
         self.assertEqual(first["snapshotSha256"], shifted["snapshotSha256"])
 '''
-          test_path.write_text(test_text.replace(marker, regression + marker), encoding="utf-8")
+          rustdoc_tests.write_text(
+              rustdoc_text.replace(rustdoc_marker, rustdoc_regression + rustdoc_marker),
+              encoding="utf-8",
+          )
 
           replace_once(
               "codex-rs/network-proxy/Cargo.toml",
-              '''rama = "0.3.0-alpha.4"
-rama-http = { version = "0.3.0-alpha.4", features = ["compression"] }
-rama-net = { version = "0.3.0-alpha.4", features = ["http-full"] }''',
-              '''# Rama pre-release crates share private APIs and must remain on one exact
-# generation. Cargo's ordinary pre-release range can otherwise select the
-# incompatible 0.3.0 stable sibling crates.
-rama = "=0.3.0-alpha.4"
+              '''rama-core = { version = "=0.3.0-alpha.4" }
+rama-http = { version = "=0.3.0-alpha.4" }
+rama-http-backend = { version = "=0.3.0-alpha.4", features = ["tls"] }
+rama-net = { version = "=0.3.0-alpha.4", features = ["http", "tls"] }
+rama-socks5 = { version = "=0.3.0-alpha.4" }
+rama-tcp = { version = "=0.3.0-alpha.4", features = ["http"] }
+rama-tls-rustls = { version = "=0.3.0-alpha.4", features = ["http"] }''',
+              '''# Rama prerelease crates share private APIs. Exact direct constraints keep
+# Cargo from combining the alpha.4 public crates with incompatible 0.3.0
+# stable support crates during a later lock refresh.
+rama-core = { version = "=0.3.0-alpha.4" }
 rama-error = "=0.3.0-alpha.4"
-rama-http = { version = "=0.3.0-alpha.4", features = ["compression"] }
+rama-http = { version = "=0.3.0-alpha.4" }
+rama-http-backend = { version = "=0.3.0-alpha.4", features = ["tls"] }
 rama-macros = "=0.3.0-alpha.4"
-rama-net = { version = "=0.3.0-alpha.4", features = ["http-full"] }
+rama-net = { version = "=0.3.0-alpha.4", features = ["http", "tls"] }
+rama-socks5 = { version = "=0.3.0-alpha.4" }
+rama-tcp = { version = "=0.3.0-alpha.4", features = ["http"] }
+rama-tls-rustls = { version = "=0.3.0-alpha.4", features = ["http"] }
 rama-utils = "=0.3.0-alpha.4"''',
           )
+
+          replace_once(
+              "codex-rs/hepta-types/src/registry.rs",
+              '''/// Bounded immutable in-process registry. There is no global singleton or
+/// mutation API; callers construct one generation and pass it explicitly.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ContractRegistryV1 {
+    entries: Vec<RegistryDefinitionV1>,
+    numeric_profiles: Vec<NumericProfileDefinitionV1>,
+}''',
+              '''#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+struct RegistryDigestIndexEntryV1 {
+    kind: RegistryKindV1,
+    digest: Digest32,
+    entry_index: usize,
+}
+
+/// Bounded immutable in-process registry. There is no global singleton or
+/// mutation API; callers construct one generation and pass it explicitly.
+/// Private lookup indexes are derived once at construction and never enter the
+/// canonical registry digest or any persisted protocol representation.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ContractRegistryV1 {
+    entries: Vec<RegistryDefinitionV1>,
+    numeric_profiles: Vec<NumericProfileDefinitionV1>,
+    digest_index: Vec<RegistryDigestIndexEntryV1>,
+}''',
+          )
+          replace_once(
+              "codex-rs/hepta-types/src/registry.rs",
+              '''        Ok(Self {
+            entries,
+            numeric_profiles,
+        })''',
+              '''        let mut digest_index = entries
+            .iter()
+            .enumerate()
+            .map(|(entry_index, entry)| RegistryDigestIndexEntryV1 {
+                kind: entry.kind,
+                digest: entry.digest,
+                entry_index,
+            })
+            .collect::<Vec<_>>();
+        digest_index.sort_unstable_by_key(|entry| {
+            (entry.kind, entry.digest, entry.entry_index)
+        });
+        Ok(Self {
+            entries,
+            numeric_profiles,
+            digest_index,
+        })''',
+          )
+          replace_once(
+              "codex-rs/hepta-types/src/registry.rs",
+              '''        self.entries
+            .iter()
+            .find(|entry| entry.kind == kind && entry.id == *id && entry.version == version)''',
+              '''        let entry_index = self
+            .entries
+            .binary_search_by(|entry| {
+                (entry.kind, entry.id.as_str(), entry.version)
+                    .cmp(&(kind, id.as_str(), version))
+            })
+            .ok()?;
+        self.entries.get(entry_index)''',
+          )
+          replace_once(
+              "codex-rs/hepta-types/src/registry.rs",
+              '''        self.entries
+            .iter()
+            .find(|entry| entry.kind == kind && entry.digest == digest)''',
+              '''        let index_position = self.digest_index.partition_point(|entry| {
+            (entry.kind, entry.digest) < (kind, digest)
+        });
+        let index_entry = self.digest_index.get(index_position)?;
+        if (index_entry.kind, index_entry.digest) != (kind, digest) {
+            return None;
+        }
+        self.entries.get(index_entry.entry_index)''',
+          )
+          replace_once(
+              "codex-rs/hepta-types/src/registry.rs",
+              '''        self.numeric_profiles
+            .iter()
+            .find(|definition| definition.profile() == profile)
+            .ok_or(RegistryError::UnknownNumericProfile)''',
+              '''        let profile_index = self
+            .numeric_profiles
+            .binary_search_by_key(&profile, |definition| definition.profile())
+            .map_err(|_| RegistryError::UnknownNumericProfile)?;
+        Ok(&self.numeric_profiles[profile_index])''',
+          )
+
+          append_once(
+              "codex-rs/hepta-types/src/registry_tests.rs",
+              r'''
+#[test]
+fn derived_indexes_preserve_lookup_and_digest_semantics_at_capacity() {
+    let mut entries = (0..MAX_REGISTRY_ENTRIES_V1)
+        .map(|index| {
+            definition(
+                RegistryKindV1::Schema,
+                &format!("schema:index-{index}"),
+                1,
+                &format!("field=value-{index}:u64"),
+            )
+        })
+        .collect::<Vec<_>>();
+    let expected = entries.clone();
+    entries.reverse();
+    let registry = ContractRegistryV1::new(entries)
+        .unwrap_or_else(|error| panic!("indexed registry fixture: {error}"));
+
+    for entry in &expected {
+        assert_eq!(
+            registry.resolve(entry.kind(), entry.id(), entry.version()),
+            Some(entry)
+        );
+        assert_eq!(
+            registry.resolve_digest(entry.kind(), entry.digest()),
+            Some(entry)
+        );
+    }
+
+    let reordered = ContractRegistryV1::new(expected)
+        .unwrap_or_else(|error| panic!("reordered registry fixture: {error}"));
+    assert_eq!(registry.registry_digest(), reordered.registry_digest());
+}
+''',
+              "derived_indexes_preserve_lookup_and_digest_semantics_at_capacity",
+          )
+
+          replace_once(
+              "codex-rs/hepta-types/src/numeric_registry_v2.rs",
+              '''//! The existing V1 registered receipt remains a content-addressed compatibility
+//! receipt. V2 adds a caller-owned monotonic snapshot generation, explicit
+//! definition digests and a full recomputation verifier without changing V1.''',
+              '''//! The existing V1 registered receipt remains a content-addressed compatibility
+//! receipt. V2 adds a caller-owned monotonic snapshot generation, explicit
+//! definition digests and a full recomputation verifier without changing V1.
+//!
+//! Registry identity is the versioned canonical SHA-256 `Digest32` produced by
+//! `ContractRegistryV1::registry_digest`. It is a strong semantic content
+//! identity, not a signature, publisher authentication, or freshness claim.
+//! Product owners authenticate and pin the current generation independently.''',
+          )
+          replace_once(
+              "codex-rs/hepta-types/src/numeric_registry_v2.rs",
+              '''#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct RegistrySnapshotIdentityV1 {''',
+              '''/// Owner-selected generation paired with a canonical SHA-256 registry digest.
+/// The digest detects semantic content substitution; the owner remains
+/// responsible for authentic publication, monotonic advancement and rollback
+/// policy.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct RegistrySnapshotIdentityV1 {''',
+          )
+
+          Path("scripts/platform_types_rama_lock_guard.py").write_text(r'''#!/usr/bin/env python3
+"""Reject incoherent Rama prerelease selections in platform.types qualification."""
+
+from __future__ import annotations
+
+import argparse
+import sys
+import tomllib
+from pathlib import Path
+from typing import Any
+
+EXPECTED_VERSION = "0.3.0-alpha.4"
+REQUIRED_PACKAGES = (
+    "rama-core",
+    "rama-error",
+    "rama-http",
+    "rama-http-backend",
+    "rama-macros",
+    "rama-net",
+    "rama-socks5",
+    "rama-tcp",
+    "rama-tls-rustls",
+    "rama-unix",
+    "rama-utils",
+)
+
+
+class RamaLockError(RuntimeError):
+    """The manifest or selected Cargo graph mixes Rama generations."""
+
+
+def _read_toml(path: Path) -> dict[str, Any]:
+    try:
+        with path.open("rb") as stream:
+            value = tomllib.load(stream)
+    except (OSError, tomllib.TOMLDecodeError) as error:
+        raise RamaLockError(f"cannot read {path}: {error}") from error
+    if not isinstance(value, dict):
+        raise RamaLockError(f"TOML object required: {path}")
+    return value
+
+
+def _dependency_versions(value: Any) -> dict[str, set[str]]:
+    found: dict[str, set[str]] = {}
+
+    def visit(node: Any) -> None:
+        if not isinstance(node, dict):
+            return
+        dependencies = node.get("dependencies")
+        if isinstance(dependencies, dict):
+            for name, declaration in dependencies.items():
+                version: str | None = None
+                if isinstance(declaration, str):
+                    version = declaration
+                elif isinstance(declaration, dict) and isinstance(
+                    declaration.get("version"), str
+                ):
+                    version = declaration["version"]
+                if version is not None:
+                    found.setdefault(str(name), set()).add(version)
+        for child in node.values():
+            visit(child)
+
+    visit(value)
+    return found
+
+
+def validate(manifest_path: Path, lock_path: Path) -> None:
+    manifest = _read_toml(manifest_path)
+    lock = _read_toml(lock_path)
+    declared = _dependency_versions(manifest)
+    errors: list[str] = []
+    exact = f"={EXPECTED_VERSION}"
+    for package in REQUIRED_PACKAGES:
+        versions = declared.get(package, set())
+        if versions != {exact}:
+            errors.append(
+                f"manifest {package} must be pinned exactly to {exact}; found {sorted(versions)}"
+            )
+
+    selected: dict[str, set[str]] = {}
+    packages = lock.get("package")
+    if not isinstance(packages, list):
+        errors.append("Cargo.lock package array is missing")
+    else:
+        for row in packages:
+            if not isinstance(row, dict):
+                continue
+            name = row.get("name")
+            version = row.get("version")
+            if isinstance(name, str) and isinstance(version, str):
+                selected.setdefault(name, set()).add(version)
+        for package in REQUIRED_PACKAGES:
+            versions = selected.get(package, set())
+            if versions != {EXPECTED_VERSION}:
+                errors.append(
+                    f"lock {package} must select only {EXPECTED_VERSION}; found {sorted(versions)}"
+                )
+
+    if errors:
+        raise RamaLockError("; ".join(errors))
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--manifest",
+        type=Path,
+        default=Path("codex-rs/network-proxy/Cargo.toml"),
+    )
+    parser.add_argument("--lock", type=Path, default=Path("codex-rs/Cargo.lock"))
+    args = parser.parse_args()
+    try:
+        validate(args.manifest, args.lock)
+    except RamaLockError as error:
+        print(f"platform.types Rama lock guard failed: {error}", file=sys.stderr)
+        return 1
+    print(
+        "platform.types Rama lock guard: coherent "
+        f"({len(REQUIRED_PACKAGES)} packages at {EXPECTED_VERSION})"
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
+''', encoding="utf-8")
+
+          Path("scripts/test_platform_types_rama_lock_guard.py").write_text(r'''"""Regression tests for exact Rama prerelease graph enforcement."""
+
+from __future__ import annotations
+
+import tempfile
+import unittest
+from pathlib import Path
+
+from platform_types_rama_lock_guard import (
+    EXPECTED_VERSION,
+    REQUIRED_PACKAGES,
+    RamaLockError,
+    validate,
+)
+
+
+def manifest_text(*, stable_error: bool = False, omit_utils: bool = False) -> str:
+    rows = ["[dependencies]"]
+    for package in REQUIRED_PACKAGES:
+        if package == "rama-unix":
+            continue
+        if omit_utils and package == "rama-utils":
+            continue
+        version = "0.3.0" if stable_error and package == "rama-error" else EXPECTED_VERSION
+        rows.append(f'{package} = "={version}"')
+    rows.extend(
+        [
+            "",
+            "[target.'cfg(target_family = \"unix\")'.dependencies]",
+            f'rama-unix = "={EXPECTED_VERSION}"',
+        ]
+    )
+    return "\n".join(rows) + "\n"
+
+
+def lock_text(*, stable_error: bool = False) -> str:
+    rows = ["version = 4", ""]
+    for package in REQUIRED_PACKAGES:
+        version = "0.3.0" if stable_error and package == "rama-error" else EXPECTED_VERSION
+        rows.extend(
+            [
+                "[[package]]",
+                f'name = "{package}"',
+                f'version = "{version}"',
+                "",
+            ]
+        )
+    return "\n".join(rows)
+
+
+class RamaLockGuardTests(unittest.TestCase):
+    def validate_fixture(self, manifest: str, lock: str) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            manifest_path = root / "Cargo.toml"
+            lock_path = root / "Cargo.lock"
+            manifest_path.write_text(manifest, encoding="utf-8")
+            lock_path.write_text(lock, encoding="utf-8")
+            validate(manifest_path, lock_path)
+
+    def test_coherent_exact_prerelease_graph_passes(self):
+        self.validate_fixture(manifest_text(), lock_text())
+
+    def test_stable_support_crate_is_rejected(self):
+        with self.assertRaises(RamaLockError):
+            self.validate_fixture(manifest_text(), lock_text(stable_error=True))
+
+    def test_missing_direct_constraint_is_rejected(self):
+        with self.assertRaises(RamaLockError):
+            self.validate_fixture(manifest_text(omit_utils=True), lock_text())
+
+
+if __name__ == "__main__":
+    unittest.main()
+''', encoding="utf-8")
+
+          Path("codex-rs/hepta-types/src/bin/platform-types-registry-bench.rs").write_text(r'''use std::env;
+use std::error::Error;
+use std::fs;
+use std::hint::black_box;
+use std::io;
+use std::path::PathBuf;
+use std::time::Instant;
+
+use codex_hepta_types::{
+    ContractRegistryV1, MAX_REGISTRY_ENTRIES_V1, RegistryDefinitionV1,
+    RegistryKindV1, StableId,
+};
+
+#[derive(Clone, Copy)]
+struct BenchmarkResult {
+    entry_count: usize,
+    identity_elapsed_ns: u128,
+    digest_elapsed_ns: u128,
+}
+
+fn invalid_input(message: impl Into<String>) -> io::Error {
+    io::Error::new(io::ErrorKind::InvalidInput, message.into())
+}
+
+fn parse_arguments() -> Result<(u64, PathBuf), Box<dyn Error>> {
+    let mut arguments = env::args().skip(1);
+    let iterations = arguments
+        .next()
+        .ok_or(invalid_input("iterations argument is required"))?
+        .parse::<u64>()?;
+    if iterations == 0 {
+        return Err(invalid_input("iterations must be positive").into());
+    }
+    let output = arguments
+        .next()
+        .map(PathBuf::from)
+        .ok_or(invalid_input("output path argument is required"))?;
+    if arguments.next().is_some() {
+        return Err(invalid_input("unexpected extra benchmark arguments").into());
+    }
+    Ok((iterations, output))
+}
+
+fn benchmark_case(
+    entry_count: usize,
+    iterations: u64,
+) -> Result<BenchmarkResult, Box<dyn Error>> {
+    let entries = (0..entry_count)
+        .map(|index| {
+            let id = StableId::new(&format!("schema:benchmark-{index}"))?;
+            RegistryDefinitionV1::new(
+                RegistryKindV1::Schema,
+                id,
+                1,
+                &format!("field=value-{index}:u64"),
+            )
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    let target = entries[entry_count / 2].clone();
+    let target_id = target.id().clone();
+    let target_digest = target.digest();
+    let registry = ContractRegistryV1::new(entries)?;
+
+    let identity_started = Instant::now();
+    for _ in 0..iterations {
+        let Some(resolved) = registry.resolve(RegistryKindV1::Schema, &target_id, 1) else {
+            return Err(invalid_input("identity lookup unexpectedly failed").into());
+        };
+        black_box(resolved);
+    }
+    let identity_elapsed_ns = identity_started.elapsed().as_nanos();
+
+    let digest_started = Instant::now();
+    for _ in 0..iterations {
+        let Some(resolved) =
+            registry.resolve_digest(RegistryKindV1::Schema, target_digest)
+        else {
+            return Err(invalid_input("digest lookup unexpectedly failed").into());
+        };
+        black_box(resolved);
+    }
+    let digest_elapsed_ns = digest_started.elapsed().as_nanos();
+
+    Ok(BenchmarkResult {
+        entry_count,
+        identity_elapsed_ns,
+        digest_elapsed_ns,
+    })
+}
+
+fn main() -> Result<(), Box<dyn Error>> {
+    let (iterations, output) = parse_arguments()?;
+    let results = [8, MAX_REGISTRY_ENTRIES_V1]
+        .into_iter()
+        .map(|entry_count| benchmark_case(entry_count, iterations))
+        .collect::<Result<Vec<_>, _>>()?;
+    let divisor = u128::from(iterations);
+    let rows = results
+        .iter()
+        .map(|result| {
+            format!(
+                "    {{\"entryCount\":{},\"identityElapsedNs\":{},\"identityNsPerLookup\":{},\"digestElapsedNs\":{},\"digestNsPerLookup\":{}}}",
+                result.entry_count,
+                result.identity_elapsed_ns,
+                result.identity_elapsed_ns / divisor,
+                result.digest_elapsed_ns,
+                result.digest_elapsed_ns / divisor,
+            )
+        })
+        .collect::<Vec<_>>()
+        .join(",\n");
+    let document = format!(
+        "{{\n  \"schema\": \"hepta.platform-types.registry-lookup-benchmark.v1\",\n  \"schemaVersion\": 1,\n  \"iterationsPerLookup\": {iterations},\n  \"acceptanceThreshold\": null,\n  \"cases\": [\n{rows}\n  ]\n}}\n"
+    );
+    if let Some(parent) = output.parent() {
+        fs::create_dir_all(parent)?;
+    }
+    fs::write(&output, document)?;
+    println!(
+        "platform.types registry benchmark: {} iterations, {} cases, output={}",
+        iterations,
+        results.len(),
+        output.display()
+    );
+    Ok(())
+}
+''', encoding="utf-8")
+
+          replace_once(
+              "scripts/run_platform_types_deep_qualification.sh",
+              '''  python3 scripts/platform_types_candidate_bundle.py self-test
+  python3 scripts/platform_types_public_api.py''',
+              '''  python3 scripts/platform_types_candidate_bundle.py self-test
+  python3 scripts/platform_types_rama_lock_guard.py
+  python3 -m unittest \\
+    scripts/test_platform_types_rama_lock_guard.py \\
+    scripts/test_platform_types_rustdoc_api.py
+  python3 scripts/platform_types_public_api.py''',
+          )
+          replace_once(
+              "scripts/run_platform_types_deep_qualification.sh",
+              '''  bash scripts/run_platform_types_consumer_qualification.sh
+  git diff --check''',
+              '''  bash scripts/run_platform_types_consumer_qualification.sh
+  cargo run --release --locked --manifest-path "$MANIFEST" \\
+    --package "$PACKAGE" --bin platform-types-registry-bench -- \\
+    100000 "$OUT/registry-benchmark.json"
+  git diff --check''',
+          )
+          replace_once(
+              "scripts/run_platform_types_deep_qualification.sh",
+              '''  --evidence "property-report=$OUT/property-report.json"
+  --evidence "protocol-catalog=$OUT/protocol-catalog.json"''',
+              '''  --evidence "property-report=$OUT/property-report.json"
+  --evidence "registry-benchmark=$OUT/registry-benchmark.json"
+  --evidence "protocol-catalog=$OUT/protocol-catalog.json"''',
+          )
+
+          insert_before_once(
+              "docs/lane-a-foundation/platform.types/CURRENT_IMPLEMENTATION.md",
+              "## Public symbols and source bindings\n",
+              r'''## Acceptance-state ladder and exact owner paths
+
+Completion is represented as separate facts rather than one overloaded boolean:
+
+| Layer | Current meaning |
+| --- | --- |
+| Contract specified | Normative protocol and technical documents exist. |
+| Source implemented | Native constructors, strict codecs and named owner callsites exist in the candidate tree. |
+| Focused checks passed | Unit, conformance, strict-lint and dependency-coherence checks pass for that exact checkout. |
+| Exact source-head qualified | A retained deep receipt exists for the final source SHA; pending until the hosted lane succeeds. |
+| Synthetic merge qualified | A separate retained deep receipt exists for the deterministic merge of the same source/base pair; pending until that lane succeeds. |
+| Independently accepted | An eligible non-author approval is bound to the exact final head; separate from technical qualification. |
+| Deployed or released | Operator, promotion and release evidence exists; currently not granted by this module. |
+
+The executable source-owner map is deliberately concrete:
+
+| Product boundary | Source path | Validation and owner context |
+| --- | --- | --- |
+| Registered numeric evaluation | `codex-rs/hepta-ndu/src/owner.rs` | Admits utility axes through the immutable registry and binds the admission digest into the production policy digest. Generation-sensitive callers additionally pin `RegistrySnapshotIdentityV1` and use `verify_for_snapshot`. |
+| Random-stream admission | `codex-rs/hepta-ndu/src/random_stream_owner.rs` | Checks root-seed digest, namespace, generator/version, episode, decision and counter window before use. |
+| Runtime topology admission | `codex-rs/hepta-supervisor/src/module_runtime.rs` | Calls candidate validation before registering the selected topology; raw DTOs are not the accepted product value. |
+| External-system and sensor admission | `codex-rs/hepta-supervisor/src/platform_manifest_admission.rs` | Applies host/authorization or hardware/calibration/clock/failure-policy context before returning deny-only receipts. |
+| Prompt production and durable consumption | `codex-rs/hepta-codex-adapter/src/lib.rs`; `codex-rs/hepta-learning-ledger/src/ledger.rs` | Preserves the frozen V1 semantic digest on the compatibility path; V2 migration remains explicitly versioned. |
+
+`ContractRegistryV1` now derives immutable binary-search indexes once during
+construction for identity, digest and numeric-profile lookups. Those indexes are
+private process-local acceleration data: they do not enter canonical registry
+bytes, receipts or persistence. The deep lane retains a small/maximum-capacity
+lookup benchmark as comparative evidence, with no machine-independent pass
+threshold. A timing observation is not deployment or resource acceptance.
+
+Registry identity itself is not a non-cryptographic cache checksum. It is the
+versioned canonical SHA-256 `Digest32` of registry semantics. That content identity
+detects substitution but does not authenticate a publisher, select the current
+generation or grant authority; those remain owner responsibilities.
+
+''',
+              "## Acceptance-state ladder and exact owner paths",
+          )
+
+          append_once(
+              "docs/modules/platform.types/QUALIFICATION_HARDENING_20260928.md",
+              r'''## Exact-candidate closure repair
+
+The retained run for source `8376d8426518dc3a2661ce4ba3756d965f13ff64`
+failed the same three groups in both source-head and synthetic-merge lanes. The
+failure set was not a merge-only conflict and was not accurately described by a
+single resource/performance label:
+
+- `truth` and `native` exposed one strict-Clippy error and an incoherent Rama
+  prerelease lock selection (`rama-core` alpha.4 with stable `rama-error`);
+- `api` exposed raw rustdoc numeric IDs leaking through tuple-variant payloads,
+  producing 15 false signature mutations;
+- provenance, schema, MSRV, Miri, fuzz and document-bundle checks succeeded for
+  that older exact candidate but are not inherited by a later commit.
+
+The repair keeps all Rama family declarations on one exact prerelease, adds an
+executable manifest/lock coherence guard and regression suite, normalizes tuple
+variant `Vec<Id>` fields, removes the strict-Clippy violation and restores the
+lock workflow to `contents: read`. The temporary migration workflow deletes
+itself after a race-checked lock regeneration and focused verification; it is not
+part of the final qualification architecture.
+
+The immutable registry now builds private indexes once at construction and uses
+binary search for identity, digest and profile resolution. A bounded benchmark
+records small and maximum-capacity lookup observations in each deep-lane artifact.
+The benchmark has no universal timing threshold and is not relabeled as production
+performance acceptance.
+
+Registry snapshot identity is explicitly the canonical SHA-256 semantic digest
+plus caller-owned generation. It is not a signature, authenticated publication,
+owner-current freshness proof or authorization. The real NDU and Supervisor
+consumer paths remain the acceptance boundary; no parallel demonstration owner
+was added.
+
+These source repairs do not mark the final rows above as passed. Only new retained
+receipts for the exact repaired source and its deterministic merge may close the
+two technical qualification rows. Independent review, deployment and release
+remain separate.
+''',
+              "## Exact-candidate closure repair",
+          )
+
+          Path(".github/workflows/platform-types-lock-refresh.yml").write_text(r'''name: Platform Types Lock Verification
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'codex-rs/Cargo.toml'
+      - 'codex-rs/Cargo.lock'
+      - 'codex-rs/network-proxy/Cargo.toml'
+      - 'codex-rs/hepta-types/**'
+      - 'scripts/platform_types_rama_lock_guard.py'
+      - 'scripts/test_platform_types_rama_lock_guard.py'
+      - '.github/workflows/platform-types-lock-refresh.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify platform.types lock with Rust 1.96
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@1.96.0
+        with:
+          components: rustfmt, clippy
+
+      - name: Verify prerelease dependency coherence
+        run: |
+          python3 scripts/platform_types_rama_lock_guard.py
+          python3 -m unittest scripts/test_platform_types_rama_lock_guard.py
+
+      - name: Inspect the locked graph
+        run: |
+          cargo metadata --manifest-path codex-rs/Cargo.toml --locked --no-deps > /dev/null
+          cargo tree --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-types > /dev/null
+          cargo tree --manifest-path codex-rs/Cargo.toml --locked -p codex-network-proxy > /dev/null
+
+      - name: Run focused native truth gates
+        run: |
+          cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-types -p codex-network-proxy
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-types --all-targets
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-types -p codex-network-proxy --all-targets -- -D warnings
+
+      - name: Exercise the registry lookup workload matrix
+        run: |
+          cargo run --release --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-types --bin platform-types-registry-bench -- \
+            50000 "$RUNNER_TEMP/platform-types-registry-benchmark.json"
+          python3 - "$RUNNER_TEMP/platform-types-registry-benchmark.json" <<'PY'
+          import json
+          import pathlib
+          import sys
+          value = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
+          assert value["schema"] == "hepta.platform-types.registry-lookup-benchmark.v1"
+          assert [row["entryCount"] for row in value["cases"]] == [8, 256]
+          PY
+
+      - name: Prove the lockfile is immutable
+        run: git diff --exit-code -- codex-rs/Cargo.lock
+''', encoding="utf-8")
           PY
 
       - name: Regenerate the authoritative Cargo lock
         shell: bash
         run: |
           set -euo pipefail
-          cargo update --manifest-path codex-rs/Cargo.toml \
-            -p rama-error@0.3.0 --precise 0.3.0-alpha.4
-          cargo update --manifest-path codex-rs/Cargo.toml \
-            -p rama-macros@0.3.0 --precise 0.3.0-alpha.4
-          cargo update --manifest-path codex-rs/Cargo.toml \
-            -p rama-utils@0.3.0 --precise 0.3.0-alpha.4
+          for package in rama-error rama-macros rama-utils; do
+            cargo update --manifest-path codex-rs/Cargo.toml \
+              --package "$package" --precise 0.3.0-alpha.4
+          done
           cargo metadata --manifest-path codex-rs/Cargo.toml --locked --no-deps >/dev/null
 
-      - name: Verify focused repairs
+      - name: Verify focused repairs before publishing
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m unittest scripts/test_platform_types_rustdoc_api.py
+          python3 scripts/platform_types_rama_lock_guard.py
+          python3 -m unittest \
+            scripts/test_platform_types_rama_lock_guard.py \
+            scripts/test_platform_types_rustdoc_api.py
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
           cargo check --locked --manifest-path codex-rs/Cargo.toml \
-            -p codex-hepta-wire --all-targets
+            -p codex-hepta-types -p codex-hepta-wire -p codex-network-proxy --all-targets
+          cargo test --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-types -p codex-hepta-wire --all-targets
           cargo clippy --locked --manifest-path codex-rs/Cargo.toml \
-            -p codex-hepta-wire --all-targets -- -D warnings
+            -p codex-hepta-types -p codex-hepta-wire -p codex-network-proxy \
+            --all-targets -- -D warnings
+          cargo run --release --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-types --bin platform-types-registry-bench -- \
+            50000 /tmp/platform-types-registry-benchmark.json
+          python3 - /tmp/platform-types-registry-benchmark.json <<'PY'
+          import json
+          import pathlib
+          import sys
+          value = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
+          assert value["schema"] == "hepta.platform-types.registry-lookup-benchmark.v1"
+          assert [row["entryCount"] for row in value["cases"]] == [8, 256]
+          PY
           git diff --check
 
-      - name: Commit canonical repair and remove one-shot workflow
+      - name: Commit only after exact-head race check
         shell: bash
         run: |
           set -euo pipefail
+          git fetch origin "$BRANCH"
+          test "$(git rev-parse "refs/remotes/origin/$BRANCH")" = "$GITHUB_SHA"
           rm .github/workflows/platform-types-convergence-repair.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           test -n "$(git status --porcelain)"
-          git commit -m "fix(platform.types): close qualification regressions"
+          git commit -m "fix(platform.types): close exact-candidate qualification gaps"
           git push origin "HEAD:$BRANCH"
