@@ -12,6 +12,7 @@ use std::sync::Mutex;
 use codex_hepta_infer_core::FileNeuronFeatureExecutionStoreV1;
 use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_neuron::DurableNeuronInferenceControlPortV1;
+use codex_hepta_neuron::DurablePreparedNeuronInferenceControlPortV1;
 use codex_hepta_neuron::InferenceControlModelPort;
 use codex_hepta_neuron::NeuronAdmissionError;
 use codex_hepta_neuron::NeuronAdmissionGuard;
@@ -21,6 +22,7 @@ use codex_hepta_neuron::NeuronRuntimeConfigV1;
 use codex_hepta_neuron::NeuronRuntimeError;
 use codex_hepta_neuron::NeuronRuntimeOutputV1;
 use codex_hepta_neuron::NeuronTickInputV1;
+use codex_hepta_neuron::PreparedNeuronInferenceControlPort;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
@@ -29,6 +31,11 @@ use codex_hepta_types::StableId;
 /// install another executor, scheduler, authority issuer or model selector.
 pub type AgentdDurableNeuronOwner<W, P> =
     AgentdNeuronOwner<W, DurableNeuronInferenceControlPortV1<P>>;
+
+/// The product-owner shape for a backend that separates current admission from
+/// physical model entry and can reconcile an already-fenced exact operation.
+pub type AgentdPreparedDurableNeuronOwner<W, P> =
+    AgentdNeuronOwner<W, DurablePreparedNeuronInferenceControlPortV1<P>>;
 
 pub struct AgentdNeuronOwner<W, P>
 where
@@ -54,6 +61,29 @@ where
         Self::new(
             runtime,
             DurableNeuronInferenceControlPortV1::new(execution_store, inference_control),
+        )
+    }
+}
+
+impl<W, P> AgentdNeuronOwner<W, DurablePreparedNeuronInferenceControlPortV1<P>>
+where
+    W: AnchorWitnessStore,
+    P: PreparedNeuronInferenceControlPort,
+{
+    /// Bind the two-phase backend to the same durable journal and long-lived
+    /// Agentd owner. Recovery may observe an exact fenced operation but cannot
+    /// reacquire preparation or enter the model a second time.
+    pub fn new_durable_prepared(
+        runtime: NeuronRuntime<W>,
+        execution_store: FileNeuronFeatureExecutionStoreV1,
+        inference_control: P,
+    ) -> Self {
+        Self::new(
+            runtime,
+            DurablePreparedNeuronInferenceControlPortV1::new(
+                execution_store,
+                inference_control,
+            ),
         )
     }
 }
