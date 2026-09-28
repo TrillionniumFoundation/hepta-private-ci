@@ -223,7 +223,6 @@ impl CanonicalIntelligenceProductLoopV1 {
                 return Ok(indeterminate_receipt(
                     &prepared,
                     decision_operation_id,
-                    None,
                 ));
             }
             AgentdIntelligenceLearningDispositionV1::Rejected
@@ -274,7 +273,6 @@ impl CanonicalIntelligenceProductLoopV1 {
                         return Ok(indeterminate_receipt(
                             &prepared,
                             decision_operation_id,
-                            None,
                         ));
                     }
                     return Err(AgentdError::Protocol(format!(
@@ -290,22 +288,25 @@ impl CanonicalIntelligenceProductLoopV1 {
                 return Ok(indeterminate_receipt(
                     &prepared,
                     decision_operation_id,
-                    None,
                 ));
             }
         };
-        let terminal = match self.current_terminal_receipt(&attached.run_id).await? {
-            Some(value) if terminal_matches_output(&value, &physical) => value,
-            _ => {
-                return Ok(indeterminate_receipt(
+        let terminal = match matching_terminal_receipt(
+            self.current_terminal_receipt(&attached.run_id).await,
+            &physical,
+        ) {
+            Some(value) => value,
+            None => {
+                return Ok(reconciliation_required_receipt(
                     &prepared,
                     decision_operation_id,
-                    Some(provider_terminal_digest),
+                    None,
+                    provider_terminal_digest,
                 ));
             }
         };
 
-        let outcome_request = timeout(
+        let outcome_request = match timeout(
             self.owner_input_budget,
             self.owner.build_terminal_outcome(
                 &prepared,
@@ -315,18 +316,45 @@ impl CanonicalIntelligenceProductLoopV1 {
             ),
         )
         .await
-        .map_err(|_| AgentdError::Overloaded {
-            retry_after_ms: duration_millis(self.owner_input_budget),
-        })??;
-        let outcome_operation_id = self
+        {
+            Ok(Ok(value)) => value,
+            Ok(Err(_)) | Err(_) => {
+                return Ok(reconciliation_required_receipt(
+                    &prepared,
+                    decision_operation_id,
+                    None,
+                    provider_terminal_digest,
+                ));
+            }
+        };
+        let outcome_operation_id = match self
             .learning
             .outcome_operation_id_for(&prepared, &outcome_request)
-            .map_err(learning_error)?;
-        self.learning
+        {
+            Ok(value) => value,
+            Err(_) => {
+                return Ok(reconciliation_required_receipt(
+                    &prepared,
+                    decision_operation_id,
+                    None,
+                    provider_terminal_digest,
+                ));
+            }
+        };
+        if self
+            .learning
             .enqueue_outcome(&prepared, outcome_request)
             .await
-            .map_err(learning_error)?;
-        let outcome = self
+            .is_err()
+        {
+            return Ok(reconciliation_required_receipt(
+                &prepared,
+                decision_operation_id,
+                Some(outcome_operation_id),
+                provider_terminal_digest,
+            ));
+        }
+        let outcome = match self
             .learning
             .settle_operation_current(
                 &scope_id,
@@ -334,7 +362,17 @@ impl CanonicalIntelligenceProductLoopV1 {
                 self.settlement_steps,
             )
             .await
-            .map_err(learning_error)?;
+        {
+            Ok(value) => value,
+            Err(_) => {
+                return Ok(reconciliation_required_receipt(
+                    &prepared,
+                    decision_operation_id,
+                    Some(outcome_operation_id),
+                    provider_terminal_digest,
+                ));
+            }
+        };
         match outcome.disposition {
             AgentdIntelligenceLearningDispositionV1::Acknowledged => {
                 Ok(AgentdIntelligenceProductLoopReceiptV1 {
@@ -345,21 +383,15 @@ impl CanonicalIntelligenceProductLoopV1 {
                     disposition: AgentdIntelligenceProductLoopDispositionV1::Completed,
                 })
             }
-            AgentdIntelligenceLearningDispositionV1::Indeterminate => Ok(
-                AgentdIntelligenceProductLoopReceiptV1 {
-                    run_id: prepared.envelope.run_id.clone(),
-                    decision_operation_id,
-                    outcome_operation_id: Some(outcome_operation_id),
-                    physical_terminal_digest: Some(provider_terminal_digest),
-                    disposition: AgentdIntelligenceProductLoopDispositionV1::Indeterminate,
-                },
-            ),
-            AgentdIntelligenceLearningDispositionV1::Rejected
+            AgentdIntelligenceLearningDispositionV1::Indeterminate
+            | AgentdIntelligenceLearningDispositionV1::Rejected
             | AgentdIntelligenceLearningDispositionV1::Revoked => {
-                Err(AgentdError::Protocol(format!(
-                    "canonical Outcome was terminally rejected: {:?}",
-                    outcome.disposition
-                )))
+                Ok(reconciliation_required_receipt(
+                    &prepared,
+                    decision_operation_id,
+                    Some(outcome_operation_id),
+                    provider_terminal_digest,
+                ))
             }
         }
     }
@@ -465,6 +497,16 @@ fn protocol_receipt(value: AgentRunReceipt) -> Result<RunReceipt, AgentdError> {
     })
 }
 
+fn matching_terminal_receipt(
+    observed: Result<Option<RunReceipt>, AgentdError>,
+    output: &NativeRunOutput,
+) -> Option<RunReceipt> {
+    match observed {
+        Ok(Some(receipt)) if terminal_matches_output(&receipt, output) => Some(receipt),
+        Ok(_) | Err(_) => None,
+    }
+}
+
 fn terminal_matches_output(receipt: &RunReceipt, output: &NativeRunOutput) -> bool {
     if !receipt.terminal_observed || !output.terminal_observed {
         return false;
@@ -491,14 +533,28 @@ fn physical_terminal_digest(output: &NativeRunOutput) -> Option<Digest32> {
 fn indeterminate_receipt(
     prepared: &PreparedAgentdIntelligenceRunV1,
     decision_operation_id: StableId,
-    physical_terminal_digest: Option<Digest32>,
 ) -> AgentdIntelligenceProductLoopReceiptV1 {
     AgentdIntelligenceProductLoopReceiptV1 {
         run_id: prepared.envelope.run_id.clone(),
         decision_operation_id,
         outcome_operation_id: None,
-        physical_terminal_digest,
+        physical_terminal_digest: None,
         disposition: AgentdIntelligenceProductLoopDispositionV1::Indeterminate,
+    }
+}
+
+fn reconciliation_required_receipt(
+    prepared: &PreparedAgentdIntelligenceRunV1,
+    decision_operation_id: StableId,
+    outcome_operation_id: Option<StableId>,
+    physical_terminal_digest: Digest32,
+) -> AgentdIntelligenceProductLoopReceiptV1 {
+    AgentdIntelligenceProductLoopReceiptV1 {
+        run_id: prepared.envelope.run_id.clone(),
+        decision_operation_id,
+        outcome_operation_id,
+        physical_terminal_digest: Some(physical_terminal_digest),
+        disposition: AgentdIntelligenceProductLoopDispositionV1::ReconciliationRequired,
     }
 }
 
@@ -538,6 +594,24 @@ mod tests {
         }
     }
 
+    fn terminal_receipt(phase: RunPhase) -> RunReceipt {
+        RunReceipt {
+            run_id: "run.test".to_string(),
+            revision: 4,
+            phase,
+            context_digest: Some("context".to_string()),
+            authority_epoch: 1,
+            generation: 2,
+            fence_digest: "fence".to_string(),
+            deadline_ms: 100,
+            cancel_reason: None,
+            cancel_ack_deadline_ms: None,
+            compilation_receipt_digest: Some("envelope".to_string()),
+            terminal_observed: true,
+            idempotent: false,
+        }
+    }
+
     #[test]
     fn provider_terminal_requires_exact_correlation_digest() {
         assert!(physical_terminal_digest(&terminal_output(
@@ -557,21 +631,7 @@ mod tests {
 
     #[test]
     fn protocol_and_physical_terminal_must_agree() {
-        let receipt = RunReceipt {
-            run_id: "run.test".to_string(),
-            revision: 4,
-            phase: RunPhase::Succeeded,
-            context_digest: Some("context".to_string()),
-            authority_epoch: 1,
-            generation: 2,
-            fence_digest: "fence".to_string(),
-            deadline_ms: 100,
-            cancel_reason: None,
-            cancel_ack_deadline_ms: None,
-            compilation_receipt_digest: Some("envelope".to_string()),
-            terminal_observed: true,
-            idempotent: false,
-        };
+        let receipt = terminal_receipt(RunPhase::Succeeded);
         assert!(terminal_matches_output(
             &receipt,
             &terminal_output(
@@ -586,6 +646,40 @@ mod tests {
                 Some(&Digest32::of_bytes(b"terminal").to_string())
             )
         ));
+    }
+
+    #[test]
+    fn terminal_control_loss_never_discards_a_provider_terminal_into_replay() {
+        let output = terminal_output(
+            NativeRunStatus::Completed,
+            Some(&Digest32::of_bytes(b"terminal").to_string()),
+        );
+        assert!(
+            matching_terminal_receipt(
+                Err(AgentdError::Protocol("temporarily unavailable".to_string())),
+                &output,
+            )
+            .is_none()
+        );
+        assert!(matching_terminal_receipt(Ok(None), &output).is_none());
+        assert!(matching_terminal_receipt(
+            Ok(Some(terminal_receipt(RunPhase::Failed))),
+            &output,
+        )
+        .is_none());
+        assert!(matching_terminal_receipt(
+            Ok(Some(terminal_receipt(RunPhase::Succeeded))),
+            &output,
+        )
+        .is_some());
+    }
+
+    #[test]
+    fn unknown_dispatch_and_post_terminal_reconciliation_are_distinct() {
+        assert_ne!(
+            AgentdIntelligenceProductLoopDispositionV1::Indeterminate,
+            AgentdIntelligenceProductLoopDispositionV1::ReconciliationRequired
+        );
     }
 
     #[test]
