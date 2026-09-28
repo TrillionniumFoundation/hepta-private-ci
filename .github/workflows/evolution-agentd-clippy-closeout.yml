@@ -1,0 +1,108 @@
+name: Evolution Agentd strict-lint closeout
+
+on:
+  push:
+    branches: [ops/evolution-agentd-clippy-closeout-20260929]
+    paths:
+      - '.github/workflows/evolution-agentd-clippy-closeout.yml'
+      - '.github/scripts/apply_evolution_agentd_clippy_closeout.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: evolution-agentd-clippy-closeout-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  EXPECTED_SOURCE: 14ceaff8a398ef8bbb02ac8a98a8777fdd2fa3a2
+  EXPECTED_TREE: 202224e6a820252edf49a69fd8eda1d1e401be44
+  TARGET_BRANCH: codex/evolution-convergence-20260928
+  PYTHONDONTWRITEBYTECODE: '1'
+  CARGO_BUILD_JOBS: '2'
+  CARGO_INCREMENTAL: '0'
+  CARGO_PROFILE_TEST_DEBUG: '0'
+  CARGO_PROFILE_DEV_DEBUG: '0'
+
+jobs:
+  verify-and-publish:
+    name: verify and publish exact Agentd source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.EXPECTED_SOURCE }}
+          fetch-depth: 1
+          persist-credentials: true
+
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Materialize exact reviewed source delta
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          test "$(git rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          curl --proto '=https' --tlsv1.2 --fail --silent --show-error --location \
+            "https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${GITHUB_SHA}/.github/scripts/apply_evolution_agentd_clippy_closeout.py" \
+            -o "$RUNNER_TEMP/apply-evolution-agentd-closeout.py"
+          python3 "$RUNNER_TEMP/apply-evolution-agentd-closeout.py" \
+            | tee "$RUNNER_TEMP/patch-digest.txt"
+
+      - name: Verify committed formatting contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-agentd -- --check
+
+      - name: Compile and test the existing Agentd owner
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo check --locked -p codex-hepta-agentd --all-targets
+          just test --locked --lib -p codex-hepta-agentd \
+            --retries 0 --test-threads=1
+
+      - name: Deny Agentd warnings without waivers
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --locked -p codex-hepta-agentd --all-targets \
+            --no-deps -- -D warnings
+
+      - name: Commit ordinary source and fast-forward the integration line
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A -- codex-rs/hepta-agentd/src
+          git diff --cached --check
+          git commit -m 'fix(agentd): close product strict-lint debt through typed boundaries'
+          test "$(git rev-parse HEAD^)" = "$EXPECTED_SOURCE"
+          git fetch --no-tags origin "+refs/heads/$TARGET_BRANCH:refs/remotes/origin/$TARGET_BRANCH"
+          test "$(git rev-parse refs/remotes/origin/$TARGET_BRANCH)" = "$EXPECTED_SOURCE"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          mkdir -p "$RUNNER_TEMP/evolution-agentd-closeout"
+          cp "$RUNNER_TEMP/patch-digest.txt" "$RUNNER_TEMP/evolution-agentd-closeout/"
+          git rev-parse HEAD > "$RUNNER_TEMP/evolution-agentd-closeout/source-sha.txt"
+          git rev-parse 'HEAD^{tree}' > "$RUNNER_TEMP/evolution-agentd-closeout/source-tree.txt"
+          git show --stat --oneline HEAD > "$RUNNER_TEMP/evolution-agentd-closeout/commit.txt"
+
+      - name: Retain exact authored-source receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: evolution-agentd-clippy-closeout-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/evolution-agentd-closeout/
+          if-no-files-found: warn
+          retention-days: 14
