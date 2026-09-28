@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - work/memory-retrieval-ae-convergence-20260928
-  pull_request:
-    branches:
-      - work/memory-retrieval-hardening-20260927
   workflow_dispatch:
 
 permissions:
@@ -14,13 +11,13 @@ permissions:
 
 concurrency:
   group: memory-retrieval-ae-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   exact-head:
     name: exact-head native validation
-    runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    runs-on: ubuntu-slim
+    timeout-minutes: 90
     env:
       CARGO_TERM_COLOR: always
       CARGO_INCREMENTAL: "0"
@@ -41,6 +38,13 @@ jobs:
           git diff --check HEAD^
           printf 'validated_head=%s\n' "$(git rev-parse HEAD)"
           printf 'validated_tree=%s\n' "$(git rev-parse HEAD^{tree})"
+          printf 'validated_parent=%s\n' "$(git rev-parse HEAD^)"
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: "1.95.0"
+          components: rustfmt,clippy,rust-src
 
       - name: Verify materialized A-E source contracts
         shell: bash
@@ -56,6 +60,7 @@ jobs:
           test -f codex-rs/hepta-memory/src/cognitive_proposition_writer.rs
           test -f codex-rs/hepta-memory/src/production_writer.rs
           grep -q 'AssignmentPrepared' codex-rs/hepta-agentd/src/retrieval_delivery.rs
+          grep -q 'Published' codex-rs/hepta-agentd/src/retrieval_delivery.rs
           grep -q 'NativeStarted' codex-rs/hepta-agentd/src/retrieval_delivery.rs
           grep -q 'OutcomeObserved' codex-rs/hepta-agentd/src/retrieval_delivery.rs
           grep -q 'run_async' codex-rs/hepta-agentd/src/retrieval_executor.rs
@@ -74,20 +79,21 @@ jobs:
           rustc --version --verbose
           cargo --version --verbose
           rustup show active-toolchain
+          test "$(rustc --version | awk '{print $2}')" = "1.95.0"
 
       - name: Check formatting
         shell: bash
         working-directory: codex-rs
         run: |
           set -euo pipefail
-          cargo fmt --all -- --check
+          cargo +1.95.0 fmt --all -- --check
 
       - name: Resolve locked workspace
         shell: bash
         working-directory: codex-rs
         run: |
           set -euo pipefail
-          cargo metadata --locked --no-deps --format-version 1 >/tmp/memory-retrieval-metadata.json
+          cargo +1.95.0 metadata --locked --no-deps --format-version 1 >/tmp/memory-retrieval-metadata.json
           test -s /tmp/memory-retrieval-metadata.json
 
       - name: Run complete affected-package tests
@@ -95,7 +101,7 @@ jobs:
         working-directory: codex-rs
         run: |
           set -euo pipefail
-          cargo test --locked \
+          cargo +1.95.0 test --locked \
             -p codex-hepta-memory-retrieval \
             -p codex-hepta-memory \
             -p codex-hepta-learning-ledger \
@@ -107,9 +113,15 @@ jobs:
         working-directory: codex-rs
         run: |
           set -euo pipefail
-          cargo clippy --locked \
+          cargo +1.95.0 clippy --locked \
             -p codex-hepta-memory-retrieval \
             -p codex-hepta-memory \
             -p codex-hepta-learning-ledger \
             -p codex-hepta-agentd \
             --all-targets --all-features -- -D warnings
+
+      - name: Prove validation left source clean
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain --untracked-files=all)"
