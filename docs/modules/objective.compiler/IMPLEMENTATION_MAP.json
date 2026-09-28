@@ -527,8 +527,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceBase": {
-    "commit": "3ff6ccefc0483bd3c6947a1941302bf0e257cd24",
-    "tree": "a6adbab03b4c8d3a09e55bdf650bbe9e0da3d147"
+    "commit": "ecd73b3fd97427e335e733eecc590814ff58b140",
+    "tree": "3a08bf52b1db9f84485c4ce481114e846e7ff390"
   },
   "repositoryControlledGaps": [
     "Obtain successful read-only source-head and deterministic synthetic-merge receipts for one final canonical candidate checkout.",
@@ -680,7 +680,7 @@
   "sourceObjects": [
     {
       "path": ".github/workflows/hepta-objective-admission.yml",
-      "object": "e0c49da2ac0503f73e935eb2dd92364cca0aa22e"
+      "object": "4ccce06b47d37049ff664a47916e257f67f07c8b"
     },
     {
       "path": ".github/workflows/hepta-objective-product-composition.yml",
@@ -712,7 +712,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
-      "object": "5a8077a92ec1a30442bb755a4d6983d55f6ddc54"
+      "object": "5cef8c159b0ecaed4a48f1d643f8c52873c95806"
     },
     {
       "path": "codex-rs/hepta-agentd/src/objective_runtime_replay.rs",
@@ -728,7 +728,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/tests/objective_product_e2e.rs",
-      "object": "ff90d2f1b7a414d746dd061970bc9f6ccc6a905d"
+      "object": "71f2369a00fee6938e9648c064eeb6c540686c36"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/objective_product_e2e/replay.rs",
@@ -740,7 +740,7 @@
     },
     {
       "path": "codex-rs/hepta-intelligence/src/objective_run.rs",
-      "object": "6d2530b74f91102b7563ad171c55eed6f16ed5fb"
+      "object": "c25eb8c25cda2c7637b608e943b34ec6c7677f4b"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/objective_run_tests.rs",
@@ -768,15 +768,15 @@
     },
     {
       "path": "codex-rs/hepta-objective",
-      "object": "f9c731b781e1729e1b126160751816954108083e"
+      "object": "89a1d52dcc5ea94e916f873140f9506ed9144c0c"
     },
     {
       "path": "codex-rs/hepta-objective/src/compiler.rs",
-      "object": "74d3da0017f74320ac47839e46988f8cd051c587"
+      "object": "b3d006089a5256045f651eb009535fcbc84166aa"
     },
     {
       "path": "codex-rs/hepta-objective/src/compiler_tests.rs",
-      "object": "3debd314419d0c3143e9b8287288709ef53fa54d"
+      "object": "7dc29fa41d0846adc337580197e93602b25bf1f0"
     },
     {
       "path": "codex-rs/hepta-objective/src/feasibility.rs",
@@ -792,23 +792,31 @@
     },
     {
       "path": "codex-rs/hepta-objective/src/lib.rs",
-      "object": "f1596740d6cf1ec969102f3af11ff1fa8bb05b3a"
+      "object": "5e3857123f69172242d300009544e57540b0d2d8"
     },
     {
       "path": "codex-rs/hepta-objective/src/objective_admission.rs",
-      "object": "87f72baa003556720db120827442a838b391cd3f"
+      "object": "278b60eb86eac02fa5a301c3b1e66b2caecbca8e"
     },
     {
       "path": "codex-rs/hepta-objective/src/objective_admission_tests.rs",
-      "object": "5a52048e6542dababa20825243de2b96e011b1e2"
+      "object": "d150722e6d1e2138c01d57797f7a051fe6170f5e"
     },
     {
       "path": "codex-rs/hepta-objective/src/objective_function_v1.rs",
-      "object": "516739b6edbf6a885c73b043cf6f3bd4655ca7fa"
+      "object": "884d7fa914e9d7195dc04d4f434987ccde2c5bf4"
     },
     {
       "path": "codex-rs/hepta-objective/src/objective_function_v1_strict_tests.rs",
       "object": "056b891c9bb452c4651ea632ca4ae4924bb303fe"
+    },
+    {
+      "path": "codex-rs/hepta-objective/src/proof_projection.rs",
+      "object": "ab1d72081a1272b68d31cd9c894be4999f44b4ce"
+    },
+    {
+      "path": "codex-rs/hepta-objective/src/proof_projection_tests.rs",
+      "object": "eaeeceb9d12a587a7df41ba1cbe7803e0b4c03b9"
     },
     {
       "path": "codex-rs/hepta-objective/src/source_envelope_json.rs",
@@ -827,8 +835,16 @@
       "object": "5dc5676e23de3b4a661e1520a0c5ae4a1dc2020d"
     },
     {
+      "path": "codex-rs/hepta-objective/src/validated_admission.rs",
+      "object": "acfecea48be893bbb5a1c883c08e3de9c70964d5"
+    },
+    {
+      "path": "codex-rs/hepta-objective/src/validated_admission_tests.rs",
+      "object": "a6d5fbd003f6b69ab192252e58ea29da84b96e49"
+    },
+    {
       "path": "docs/modules/objective.compiler/TECHNICAL.md",
-      "object": "f99b2a19fa39473925e74ff553009dab39bff246"
+      "object": "0fa7ed5be7b46138ae5d03f4c854a5d5c5ed677f"
     },
     {
       "path": "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
@@ -840,11 +856,11 @@
     },
     {
       "path": "qualification/module-execution-dossiers/detail/objective.compiler.md",
-      "object": "3aef6e3d64c6ca3e4f207ee2f684896bc3330718"
+      "object": "5ccf7433e9cad86c94bcebbe6b9853762675133e"
     },
     {
       "path": "scripts/hepta-objective-target-measure.py",
-      "object": "b10ba3e3fe445108ce5697f9187e78f9d5bd2b33"
+      "object": "466372170bbdadf58697ff37601bff657549067b"
     }
   ],
   "status": {
