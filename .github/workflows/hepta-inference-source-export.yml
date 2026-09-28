@@ -21,7 +21,7 @@ concurrency:
 
 env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-  EXPECTED_PARENT: 6d03ec072d2e0ecfc8d2f22352c4d49330356544
+  EXPECTED_PARENT: 65822d52842662038812aa03fc8640f2e25983d7
   RESTORE_COMMIT: a80f50a552d2608f238a9e934bf6fade66876912
   RESTORE_BLOB: c8fe5357b5b8efac14a220c29f94ba061a5f5c34
   PATCH_SHA256: c2599a124d0e1574aaebaadf3ce0313d4f906a9e9f9f1472c10491fa83100f57
@@ -36,9 +36,7 @@ jobs:
       (github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'codex/inference-control-v2-closure-20260927')
     permissions:
       contents: read
-    runs-on:
-      group: trillionnium-android-gpu
-      labels: [self-hosted, linux, x64]
+    runs-on: [self-hosted, linux, x64, rog]
     timeout-minutes: 60
     env:
       GH_TOKEN: ${{ github.token }}
@@ -100,9 +98,7 @@ jobs:
     needs: verify
     permissions:
       contents: write
-    runs-on:
-      group: trillionnium-android-gpu
-      labels: [self-hosted, linux, x64]
+    runs-on: [self-hosted, linux, x64, rog]
     timeout-minutes: 10
     env:
       GH_TOKEN: ${{ github.token }}
