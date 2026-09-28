@@ -24,7 +24,7 @@ cargo test --locked -p codex-hepta-agentd \
 | `operational_pipeline_compile_stage_final_use_profile` | Authenticated fixture's real compile-and-stage, preparation current-use gate and owner-local validation timings | 31 one-realization runs; no actual provider network; setup/admission excluded from the marked intervals |
 
 Each scale fixture is semantically validated. Bulk fixture construction is
-reported separately, not counted as durable registration throughput. A actual
+reported separately, not counted as durable registration throughput. An actual
 single durable registration is timed after reopen. The logical record count
 includes factor and realization records rather than pretending that every
 record is a full-sized payload. A 64 KiB maximum payload combined with a 32 MiB

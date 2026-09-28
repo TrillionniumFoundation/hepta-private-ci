@@ -25,7 +25,7 @@ use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
 fn id(value: &str) -> StableId {
-    StableId::new(value).expect("stable id")
+    StableId::new(value).unwrap_or_else(|error| panic!("stable id: {error}"))
 }
 
 fn digest(value: &str) -> Digest32 {
@@ -35,7 +35,7 @@ fn digest(value: &str) -> Digest32 {
 fn now_unix_ms() -> u64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
-        .expect("clock after epoch")
+        .unwrap_or_else(|error| panic!("clock after epoch: {error}"))
         .as_millis() as u64
 }
 
@@ -59,12 +59,12 @@ fn register_admitted(
     };
     registry
         .register_factor(factor.clone())
-        .expect("register factor");
+        .unwrap_or_else(|error| panic!("register factor: {error}"));
     let reviewer = id("reviewer:durable-v4-test");
     let scope = digest(&format!("scope:{factor_id}"));
     let evidence = digest(&format!("evidence:{factor_id}"));
     let binding = final_use_admission_binding(&factor, &reviewer, scope, evidence)
-        .expect("admission binding");
+        .unwrap_or_else(|error| panic!("admission binding: {error}"));
     let now = now_unix_ms();
     let grant = FinalUseGrant {
         schema_version: 1,
@@ -78,14 +78,18 @@ fn register_admitted(
     };
     let signed = SignedFinalUseGrant {
         signature: key
-            .sign(&grant.signing_bytes().expect("grant signing bytes"))
+            .sign(
+                &grant
+                    .signing_bytes()
+                    .unwrap_or_else(|error| panic!("grant signing bytes: {error}")),
+            )
             .to_bytes()
             .to_vec(),
         grant,
     };
     registry
         .admit_factor_final_use(authority, &signed, &factor.factor_id, scope, evidence)
-        .expect("admit factor");
+        .unwrap_or_else(|error| panic!("admit factor: {error}"));
 }
 
 fn populated_registry(root: &std::path::Path) -> Digest32 {
@@ -100,10 +104,10 @@ fn populated_registry(root: &std::path::Path) -> Digest32 {
             revoked_grant_ids: BTreeSet::new(),
         },
     )
-    .expect("authority");
+    .unwrap_or_else(|error| panic!("authority: {error}"));
     let registry_path = root.join("registry");
-    let mut registry =
-        DurablePromptRegistry::open_state_dir(&registry_path, 64).expect("registry owner");
+    let mut registry = DurablePromptRegistry::open_state_dir(&registry_path, 64)
+        .unwrap_or_else(|error| panic!("registry owner: {error}"));
     register_admitted(&mut registry, &authority, &key, "factor:left", 1);
     register_admitted(&mut registry, &authority, &key, "factor:right", 2);
     registry
@@ -114,10 +118,10 @@ fn populated_registry(root: &std::path::Path) -> Digest32 {
             kind: PromptFactorRelationKind::Conflicts,
             evidence_digest: digest("relation evidence"),
         })
-        .expect("durable relation");
+        .unwrap_or_else(|error| panic!("durable relation: {error}"));
     registry
         .registry()
-        .expect("authoritative registry")
+        .unwrap_or_else(|error| panic!("authoritative registry: {error}"))
         .snapshot_digest()
 }
 

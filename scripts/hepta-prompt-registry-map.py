@@ -35,7 +35,6 @@ INPUTS = [
     "codex-rs/hepta-prompt-optimizer",
     "codex-rs/hepta-agentd/src/prompt_runtime.rs",
     "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs",
-    "codex-rs/hepta-agentd/src/prompt_runtime_commit.rs",
     FINAL_USE,
     FINAL_USE_TESTS,
     "codex-rs/hepta-agentd/src/prompt_final_use_store.rs",
@@ -46,6 +45,8 @@ INPUTS = [
     "codex-rs/hepta-codex-adapter/Cargo.toml",
     "codex-rs/hepta-codex-adapter/src/lib.rs",
     "codex-rs/Cargo.toml", "codex-rs/Cargo.lock", "codex-rs/rust-toolchain.toml",
+    "scripts/hepta-implementation-maps.py",
+    "scripts/hepta_module_source_roots.py",
     "scripts/hepta-prompt-registry-map.py",
     "scripts/hepta-prompt-registry-qualify.py",
     "docs/modules/prompt.registry/TECHNICAL.md",
@@ -96,7 +97,9 @@ def build(observation: dict[str, str]) -> dict:
     if git("rev-parse", observation["commit"] + "^{tree}") != observation["tree"]:
         raise ValueError("invalid source observation tree")
     subprocess.run(["git", "merge-base", "--is-ancestor", observation["commit"], "HEAD"], cwd=ROOT, check=True)
-    paths = sorted(git("ls-files", "--", *INPUTS).splitlines())
+    committed_paths = git("ls-tree", "-r", "--name-only", "HEAD").splitlines()
+    paths = sorted(path for path in committed_paths
+                   if any(path == item or path.startswith(item + "/") for item in INPUTS))
     if not paths:
         raise ValueError("empty source inventory")
     for required in INPUTS:
@@ -150,7 +153,7 @@ def build(observation: dict[str, str]) -> dict:
         "mappingSourceIdentityMode": "exact_blob", "sourceBase": SOURCE_BASE,
         "observedAtHead": observation, "observedSourcePaths": sorted(INPUTS),
         "exactSourceEvidence": {"kind": "path_blob_manifest_v1", "entries": entries},
-        "sourceObjects": entries,
+        "sourceObjects": [{"path": path, "object": git("rev-parse", f"HEAD:{path}")} for path in sorted(set(paths + [CORE]))],
         "closedWorldPublicFunctions": False,
         "mappingCoverage": "curated_owner_and_boundary_operations_not_all_public_functions",
         "activePersistentSchema": 4, "operations": operations, "productCallers": callers,

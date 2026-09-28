@@ -153,8 +153,12 @@ def main() -> None:
         if code == 0 and name == "pipeline-profile" and len([r for r in rows if r.get("schema") == "hepta.prompt-registry.pipeline-profile.v1"]) != 31:
             checks.append("expected 31 pipeline measurement rows")
         if name == "source-graph" and code == 0:
-            graph = json.loads(text)
-            names = {package["name"] for package in graph["packages"]}
+            try:
+                graph = json.loads(text[text.index("{"):])
+                names = {package["name"] for package in graph["packages"]}
+            except (ValueError, KeyError, TypeError):
+                checks.append("invalid Cargo source graph output")
+                names = set()
             if not {"codex-hepta-prompt-registry", "codex-hepta-prompt-extension", "codex-hepta-agentd"}.issubset(names):
                 checks.append("missing required workspace package")
         if name == "clean-after" and (git("status", "--porcelain", "--untracked-files=no") or git("rev-parse", "HEAD") != tested):

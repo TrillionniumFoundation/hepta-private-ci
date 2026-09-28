@@ -1,150 +1,80 @@
-# prompt.registry: implementation and qualification dossier
+# prompt.registry implementation and qualification dossier
 
-Parent: `docs/modules/prompt.registry/TECHNICAL.md`. Qualification lane:
-`prompt.registry` exact-head plus deterministic base-merge. Common execution
-semantics remain governed by `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`.
+Parent: `docs/modules/prompt.registry/TECHNICAL.md`. Canonical plan:
+`docs/DEVELOPMENT.md`, selected by `docs/CURRENT.json`.
 
 ## 1. Claim boundary
 
-The current remediation candidate distinguishes five independent states:
+Source implemented: true. Source composed: true. Product activated: false.
+Independently accepted: false. Released: false. Production ready: false.
+Current-source files, operation/test navigation and actual executed receipts are
+separate evidence. A core-only pass, a generated source archive or a historic
+run cannot qualify the current product candidate.
 
-| State | Value |
-| --- | --- |
-| source implemented | true |
-| source composed | true |
-| product activated | false |
-| independently accepted | false |
-| released | false |
+## 2. Source and ownership
 
-Source implementation and source composition do not grant deployment,
-external-effect, merge, acceptance or release authority. `productionReady` is
-false until current exact-head and base-merge qualification receipts are green
-and protected postmerge checks pass.
+The deterministic owner is `codex-rs/hepta-prompt-registry`. Agentd composition
+is `codex-rs/hepta-agentd/src/prompt_runtime.rs`, not a phantom prompt_pipeline.rs.
+Final-use validation and durable leases live in prompt_final_use.rs and
+prompt_final_use_store.rs. The actual cached/provider-policy consumer is
+`codex-rs/ext/hepta-prompt`; the intelligence compiler remains in
+`codex-rs/hepta-intelligence/src/prompt_delivery.rs`. The optimizer is read-only.
+Historical apply-prompt scripts are not part of the delivered build path.
 
-## 2. Source and work envelope
+## 3. Public operations
 
-Primary roots:
+Signed operation-bound publication/admission/relation/realization/lifecycle
+paths are conventional checked-in source. Factor lifecycle is Draft, Admitted,
+Retired, Revoked. Model compatibility includes model/version, tokenizer,
+template, tool schema, context profile, locale, role and payload identity.
+Registry insertion does not auto-select or activate a factor.
+The complete bounded API and typed recovery policy are in
+`docs/modules/prompt.registry/API_CONTRACT.md`.
 
-- `codex-rs/hepta-prompt-registry`
-- `codex-rs/hepta-prompt-optimizer`
-- Agentd prompt owner/runtime/final-use integration
-- `codex-rs/hepta-intelligence/src/prompt_delivery.rs`
-- `docs/modules/prompt.registry`
+## 4. Durable storage and maintenance
 
-The registry remains the authoritative prompt-factor owner. The optimizer is a
-read-only consumer. Agentd owns product composition and dispatch-time final-use
-fencing. No parallel authority or execution spine is introduced.
+Strict V4 metadata retains factors, realizations, bindings, relations,
+supersession, payload references and lifecycle events. Immutable extents precede
+atomic metadata selection. An uncertain post-rename outcome poisons the writer
+until reopen/reconciliation; diagnostics do not expose authoritative access.
+Copy-compaction omits inactive payloads, preserves retained-history identity,
+and does not change or erase the original owner. Identical completed checkpoint
+retries are idempotent. Partial/different/unsafe destinations are not overwritten.
+Strict restore verification requires a trusted exact identity and never repairs
+or creates the candidate. The detailed runbook is `OPERATIONS.md` beside the API.
 
-## 3. Public operations and contract
+## 5. Actual-use boundary
 
-The implemented contract separates semantic factor identity from
-model-specific realization identity. It includes governed factor registration
-and admission, relation registration, realization plus payload publication,
-retirement and terminal revocation, exact-model compatible enumeration,
-payload dereference and dispatch-time final-use validation.
+Preparation and durable dispatch claims share the current-use validator with a
+trusted host clock. Cached ready attachments reconsult the owner and reject
+identity changes. A revoked staged context must fail before dispatch recording,
+and still fail after restart, leaving no dispatch claim for the rejected attempt.
+The extension separately tests owner withdrawal before provider-policy begin.
+These are source-level owner/consumer tests. Strong cancellation after an already
+admitted dispatch, live transport, streaming/final-output consumers and deployed
+host-configuration freshness are not established by this source test alone.
+Terminal outcomes continue to record what physically happened.
 
-Model compatibility binds the complete model tuple, including model/version,
-tokenizer, template, tool schema, context profile and locale. Consumer
-capabilities filter unsupported roles before staging. Registry insertion does
-not automatically select or activate a factor in a running request.
+## 6. Verification and performance
 
-## 4. State, storage and recovery
+The read-only module workflow freezes one source and base identity for core and
+product profiles, each on exact-head and deterministic synthetic-merge lanes.
+Each command produces an exit status and log digest. Compiled test inventories
+must contain named regressions; zero matched tests cannot count as success.
+Checkpoints/restore failures, corruption, pre-rename failures, post-rename
+poisoning, orphan tails and idempotent reconciliation have native test cases.
+This is not a complete real-power-loss or device-failure campaign.
 
-`DurablePromptRegistry` owns one bounded in-process image under an exclusive
-state-directory lock. The strict V4 semantic image durably includes factors,
-realizations, bindings, payload references, relations, supersession and
-lifecycle events. V1, V2, V3 and the transitional outer-V4/inner-V2 layout are
-migrated forward to strict V4; a validated strict-V4 reopen is read-only apart
-from trimming an unselected payload tail.
+Actual ignored profiles measure 1k/8k/16k logical records, bounded fsync samples
+and the one-realization Agentd compile-stage/current-use path. Their sample and
+memory interpretation is in `PERFORMANCE.md`. Retained event history still grows;
+metadata capacity, original/backups erasure, and oldest-reclaimable timestamps
+are not magically solved by omitting inactive bytes from a new checkpoint.
 
-New payload extents are synchronized before metadata publication. Metadata is
-written to a temporary file, synchronized, renamed and followed by directory
-synchronization. Failure after rename is treated as indeterminate durability:
-the writer is poisoned and must be reopened and reconciled instead of silently
-retrying over an outcome that may already be durable.
+## 7. Remaining evidence gates
 
-Revocation is terminal in the registry image. Frozen snapshots, payload
-dereference and final-use validation all re-check lifecycle state; the Agentd
-runtime carries a bounded final-use lease from staging to dispatch recording.
-That source-level fence is not, by itself, evidence that a deployed provider
-adapter has been activated or independently accepted.
-
-## 5. Capacity and performance contract
-
-The current canonical bounds include the registry record limit and a 64 KiB
-maximum realization payload. Storage remains bounded by the payload extent
-limit and metadata-size limit. These are safety ceilings, not scale evidence.
-
-The source owner now exposes unified logical-record/payload/byte quota
-metrics, consistent checkpoint export, copy-compaction/GC into a fresh V4
-directory, restore verification and bounded fsync probes. The qualification
-workflow executes the 1k/8k/16k logical-scale and fsync profiles and binds the
-profile digest into each exact-candidate receipt. No WAL, Merkle or incremental
-digest design is justified unless those measurements identify a material
-bottleneck.
-
-## 6. Required verification
-
-The module-specific workflow must execute both current source-head and a
-deterministic synthetic merge against the bound base. Each lane must prove:
-
-- formatting without source mutation;
-- registry unit and durable-recovery tests;
-- optimizer relation/capability integration tests;
-- Agentd prompt pipeline and final-use tests;
-- strict Clippy for owned packages;
-- Cargo closed-world source-graph validation;
-- protocol/schema and implementation-map validation.
-
-The emitted receipt binds run ID and attempt, lane, source/base/tested SHA,
-tested tree and owned source blob digests. Queued, skipped, cancelled,
-historical or unrelated results are not passes.
-
-Required product scenario:
-
-```text
-bootstrap
-→ authenticated factor registration/admission
-→ realization and payload publication
-→ candidate enumeration
-→ optimization
-→ compile and stage
-→ revoke before dispatch
-→ dispatch must fail closed
-→ restart
-→ revocation and failure remain effective
-```
-
-## 7. Current native implementation
-
-Implemented source includes:
-
-- core factor, realization, relation, lifecycle and snapshot semantics;
-- strict durable V4 relation persistence and legacy migration;
-- authenticated factor/realization/relation publication paths;
-- exact-model and consumer-capability compatible enumeration;
-- payload-digest verification and bounded dereference;
-- Agentd prompt owner/runtime composition;
-- dispatch-time final-use lease and durable final-use records;
-- included optimizer relation graph tests rather than an orphan source file;
-- copy-compacted V4 checkpoints, unified quota metrics, restore verification,
-  bounded fsync probes and operational scale profiles.
-
-The machine-generated implementation map and qualification receipts, not this
-narrative, are authoritative for exact source identities and executed tests.
-
-## 8. Remaining work and non-claims
-
-Before any production-ready statement:
-
-1. make both exact-head and base-merge module qualification lanes green;
-2. commit the exact generated implementation map for the qualified candidate;
-3. complete the end-to-end revoke-before-dispatch and restart scenario;
-4. review the emitted 1k/8k/16k and fsync profiles and record whether any
-   WAL, Merkle or incremental-digest work is justified;
-5. qualify external quiescent checkpoint activation and rollback in the named
-   product environment;
-6. obtain independent product activation, acceptance and release decisions.
-
-No source change in this dossier self-accepts, self-merges, self-deploys or
-self-releases the module.
+Passing all current exact-head/base-merge core and product checks; independently
+validated live transport/output cancellation; externally fenced checkpoint
+activation and raw-byte retention/disposal; a durable age policy where required;
+target-host security/semantic review, protected postmerge checks, operator
+activation/acceptance and release. No source change grants these decisions.
