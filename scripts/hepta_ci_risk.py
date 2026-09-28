@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from pathlib import Path
 
 try:
     from scripts.hepta_ci_scope import changed_paths
@@ -21,7 +22,9 @@ except ModuleNotFoundError as error:
 
 def classify(scope: dict[str, bool]) -> str:
     if scope["full_repo"]:
-        return "release"
+        # Impact breadth is not release authority. Unknown shared code still
+        # gets deep effect/recovery checks, but release is an explicit input.
+        return "effect"
     if scope["effects"]:
         return "effect"
     if scope["lifecycle"] or scope["learning"] or scope["objective"]:
@@ -29,12 +32,13 @@ def classify(scope: dict[str, bool]) -> str:
     return "ordinary"
 
 
-def project(scope: dict[str, bool]) -> dict[str, object]:
-    risk = classify(scope)
+def project(scope: dict[str, bool], *, change_risk: str | None = None, reasons: list[str] | None = None) -> dict[str, object]:
+    risk = change_risk if change_risk is not None else classify(scope)
     policy = load_policy()
     ordinary = risk == "ordinary"
     return {
         "risk": risk,
+        "risk_reasons": reasons or [],
         "lanes": ["source-head"] if ordinary else ["source-head", "base-merge"],
         "require_exact_source": not ordinary,
         "ordinary_feedback_target_minutes": policy["ordinaryFeedbackTargetMinutes"],
@@ -65,7 +69,23 @@ def main() -> None:
     scope = select(paths, force_full=args.full)
     if not args.full:
         scope = include_input_scope(scope, paths, args.base, args.head)
-    result = project(scope)
+    if args.full:
+        result = project(scope)
+    else:
+        try:
+            from scripts.hepta_ci_modules import assess_changes
+        except ModuleNotFoundError as error:
+            if error.name != "scripts":
+                raise
+            from hepta_ci_modules import assess_changes
+        risk, reasons = assess_changes(Path.cwd(), paths, args.base, args.head)
+        # Embedded/opaque source inputs may look like prose. A source owner
+        # discovered by the existing impact planner keeps its deeper boundary.
+        raw = select(paths)
+        if scope != raw:
+            from_rank = {"ordinary": 0, "stateful": 1, "effect": 2, "release": 3}
+            risk = max((risk, classify(scope)), key=from_rank.get)
+        result = project(scope, change_risk=risk, reasons=reasons)
     if args.github_output:
         with open(args.github_output, "a", encoding="utf-8") as target:
             target.write(f"risk={result['risk']}\n")

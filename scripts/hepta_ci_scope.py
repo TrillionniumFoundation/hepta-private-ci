@@ -56,6 +56,11 @@ def generated_package_groups(root: Path = ROOT) -> dict[str, set[str]]:
 
 
 PACKAGE_GROUPS = generated_package_groups()
+MODULE_MANIFEST = re.compile(r"docs/modules/[a-z0-9_.-]+/module\.toml\Z")
+MODULE_GROUPS: dict[str, set[str]] = {}
+for _row in json.loads((ROOT / "docs/modules/CI_MATRIX.json").read_text())["packages"]:
+    MODULE_GROUPS.setdefault(_row["module"], set()).update(_row["ciGroups"])
+
 
 DERIVED_ONLY_DOCS = frozenset({
     "docs/STATUS.md",
@@ -106,6 +111,16 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
         if path in {"README.md", "CONTRIBUTING.md"} or (
             path.startswith("docs/") and path.endswith(".md")
         ):
+            continue
+
+        if MODULE_MANIFEST.fullmatch(path):
+            # This is the canonical module input, not an unfamiliar TOML file.
+            # Keep lifecycle validation and the module's owner lanes. Deleted
+            # or newly introduced owners conservatively keep all Hepta lanes,
+            # but never become a non-Hepta/full-repository change by suffix.
+            selected.update(MODULE_GROUPS.get(parts[2], GROUPS))
+            selected.add("lifecycle")
+            derived = True
             continue
 
         if path in CANONICAL_DOC_GROUPS:

@@ -361,6 +361,25 @@ def graph(root: Path, revision: str) -> Graph:
     conservative = bool(root_manifest.get("replace"))
     source_inputs = cargo_source_inputs(manifests, owners)
     inputs, opaque = embedded_inputs(root, revision, owners, source_inputs)
+    try:
+        from scripts.hepta_ci_modules import load_catalog
+    except ModuleNotFoundError as error:
+        if error.name != "scripts":
+            raise
+        from hepta_ci_modules import load_catalog
+    module_inputs = set()
+    for path, row in load_catalog(root, revision, paths).items():
+        for package in row.get("cargoPackages", []):
+            folder = package["path"]
+            if folder in owners:
+                module_inputs.add((path, owners[folder]))
+    # A manifest also feeds the generated MODULES runtime catalog. Preserve
+    # actual embedded consumers rather than treating it as unowned documentation.
+    catalog_consumers = {owner for path, owner in inputs if path == "docs/modules/MODULES.json"}
+    module_inputs.update((path, owner) for path in paths
+                         if path.startswith("docs/modules/") and path.endswith("/module.toml")
+                         for owner in catalog_consumers)
+    inputs |= frozenset(module_inputs)
     # Build scripts are programs, not just include! declarations. They can read
     # an input under another Cargo owner's directory, even without an include
     # macro. Do not execute them or trust candidate-declared input lists while
