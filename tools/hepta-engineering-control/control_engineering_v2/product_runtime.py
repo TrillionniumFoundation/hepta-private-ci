@@ -9,8 +9,14 @@ release, deployment, or runtime capability authority.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Iterable
+from typing import Callable, Iterable, TypeVar
 
+from .audit_checkpoint import (
+    AuditCheckpoint,
+    advance_audit_checkpoint,
+    create_audit_checkpoint,
+    verify_audit_checkpoint,
+)
 from .capacity_policy import (
     DatabaseCapacityDecision,
     DatabaseCapacityPolicy,
@@ -20,6 +26,7 @@ from .capacity_policy import (
 from .clock_policy import ClockPolicy
 from .control_plane import EngineeringError, EngineeringStore, WorkEnvelope
 from .evidence import SignatureTrustStore
+from .git_security import run_git
 from .integration_controller import (
     IntegrationQueueGeneration,
     IntegrationQueueItem,
@@ -61,6 +68,8 @@ from .worker_lifecycle import (
     worker_completion_observation_digest,
 )
 
+_T = TypeVar("_T")
+
 
 class EngineeringControlProduct:
     def __init__(
@@ -83,7 +92,7 @@ class EngineeringControlProduct:
         self.expected_repository = expected_repository
         self.trust_store = trust_store
         self.clock_policy = clock_policy
-        self.capacity_policy = capacity_policy
+        self.capacity_policy = capacity_policy or DatabaseCapacityPolicy()
         self.store = EngineeringStore(database)
         self._startup_reconciled = False
 
@@ -100,18 +109,34 @@ class EngineeringControlProduct:
     def close(self) -> None:
         self.store.close()
 
+    def _capacity_guarded_write(self, operation: Callable[[], _T]) -> _T:
+        """Run one product mutation inside a capacity-checked owner transaction.
+
+        Lower-level operations already use the store transaction helper.  The helper
+        is deliberately re-entrant, so this outer boundary makes the post-mutation
+        capacity check part of the same commit.  A write that crosses a hard ceiling
+        is rolled back rather than retained with a later warning.
+        """
+        with self.store._transaction():
+            enforce_database_capacity(self.store, self.capacity_policy)
+            result = operation()
+            enforce_database_capacity(self.store, self.capacity_policy)
+            return result
+
     def admit_repository_envelope(
         self,
         envelope: WorkEnvelope,
         *,
         now_ns: int | None = None,
     ) -> WorkEnvelope:
-        return issue_repository_work_envelope(
-            self.repository,
-            self.store,
-            envelope,
-            expected_repository=self.expected_repository,
-            now_ns=now_ns,
+        return self._capacity_guarded_write(
+            lambda: issue_repository_work_envelope(
+                self.repository,
+                self.store,
+                envelope,
+                expected_repository=self.expected_repository,
+                now_ns=now_ns,
+            )
         )
 
     def acquire_lease(
@@ -125,14 +150,17 @@ class EngineeringControlProduct:
         expires_unix_ns: int,
         now_ns: int | None = None,
     ):
-        return self.store.acquire_path_lease(
-            lease_id,
-            envelope_id,
-            holder,
-            paths,
-            authority_epoch=authority_epoch,
-            expires_unix_ns=expires_unix_ns,
-            now_ns=now_ns,
+        paths_value = tuple(paths)
+        return self._capacity_guarded_write(
+            lambda: self.store.acquire_path_lease(
+                lease_id,
+                envelope_id,
+                holder,
+                paths_value,
+                authority_epoch=authority_epoch,
+                expires_unix_ns=expires_unix_ns,
+                now_ns=now_ns,
+            )
         )
 
     def plan_work(
@@ -146,16 +174,21 @@ class EngineeringControlProduct:
         generation_id: str,
         now_ns: int | None = None,
     ) -> EngineeringPlan:
-        return plan_engineering_work(
-            self.store,
-            envelope,
-            packages,
-            workers,
-            completion_receipts,
-            self.trust_store,
-            capacity,
-            generation_id=generation_id,
-            now_ns=now_ns,
+        packages_value = tuple(packages)
+        workers_value = tuple(workers)
+        completions_value = tuple(completion_receipts)
+        return self._capacity_guarded_write(
+            lambda: plan_engineering_work(
+                self.store,
+                envelope,
+                packages_value,
+                workers_value,
+                completions_value,
+                self.trust_store,
+                capacity,
+                generation_id=generation_id,
+                now_ns=now_ns,
+            )
         )
 
     def startup_reconcile(
@@ -163,16 +196,51 @@ class EngineeringControlProduct:
         *,
         now_ns: int | None = None,
     ) -> WorkerRecoveryReport:
-        report = recover_worker_lifecycle(self.store, now_ns=now_ns)
-        if self.capacity_policy is not None:
-            enforce_database_capacity(self.store, self.capacity_policy)
+        report = self._capacity_guarded_write(
+            lambda: recover_worker_lifecycle(self.store, now_ns=now_ns)
+        )
         self._startup_reconciled = True
         return report
 
     def database_capacity(self) -> DatabaseCapacityDecision:
-        return evaluate_database_capacity(
+        return evaluate_database_capacity(self.store, self.capacity_policy)
+
+    def create_audit_checkpoint(self, *, observed_unix_ns: int) -> AuditCheckpoint:
+        source_commit = run_git(self.repository, "rev-parse", "HEAD")
+        source_tree = run_git(self.repository, "rev-parse", "HEAD^{tree}")
+        return create_audit_checkpoint(
             self.store,
-            self.capacity_policy or DatabaseCapacityPolicy(),
+            source_commit=source_commit,
+            source_tree=source_tree,
+            observed_unix_ns=observed_unix_ns,
+        )
+
+    def advance_audit_checkpoint(
+        self,
+        checkpoint: AuditCheckpoint,
+        *,
+        observed_unix_ns: int,
+    ) -> AuditCheckpoint:
+        source_commit = run_git(self.repository, "rev-parse", "HEAD")
+        source_tree = run_git(self.repository, "rev-parse", "HEAD^{tree}")
+        return advance_audit_checkpoint(
+            self.store,
+            checkpoint,
+            source_commit=source_commit,
+            source_tree=source_tree,
+            observed_unix_ns=observed_unix_ns,
+        )
+
+    def verify_audit_checkpoint(
+        self,
+        checkpoint: AuditCheckpoint,
+        *,
+        require_current_state: bool = True,
+    ) -> None:
+        verify_audit_checkpoint(
+            self.store,
+            checkpoint,
+            require_current_state=require_current_state,
         )
 
     def worker_capacity(self, worker_id: str):
@@ -184,11 +252,13 @@ class EngineeringControlProduct:
         *,
         now_ns: int | None = None,
     ) -> str:
-        return register_worker(
-            self.store,
-            receipt,
-            self.trust_store,
-            now_ns=now_ns,
+        return self._capacity_guarded_write(
+            lambda: register_worker(
+                self.store,
+                receipt,
+                self.trust_store,
+                now_ns=now_ns,
+            )
         )
 
     def renew_worker(
@@ -197,12 +267,14 @@ class EngineeringControlProduct:
         *,
         now_ns: int,
     ) -> WorkerRegistrationRenewalDecision:
-        return renew_worker_registration(
-            self.store,
-            receipt,
-            self.trust_store,
-            now_ns=now_ns,
-            clock_policy=self.clock_policy,
+        return self._capacity_guarded_write(
+            lambda: renew_worker_registration(
+                self.store,
+                receipt,
+                self.trust_store,
+                now_ns=now_ns,
+                clock_policy=self.clock_policy,
+            )
         )
 
     def claim(
@@ -217,16 +289,16 @@ class EngineeringControlProduct:
     ) -> WorkerClaim:
         if not self._startup_reconciled:
             raise EngineeringError("product_startup_reconciliation_required")
-        if self.capacity_policy is not None:
-            enforce_database_capacity(self.store, self.capacity_policy)
-        return claim_assignment(
-            self.store,
-            generation_id,
-            package_id,
-            worker_id,
-            lease_id,
-            heartbeat_ttl_ns=heartbeat_ttl_ns,
-            now_ns=now_ns,
+        return self._capacity_guarded_write(
+            lambda: claim_assignment(
+                self.store,
+                generation_id,
+                package_id,
+                worker_id,
+                lease_id,
+                heartbeat_ttl_ns=heartbeat_ttl_ns,
+                now_ns=now_ns,
+            )
         )
 
     def heartbeat(
@@ -236,12 +308,14 @@ class EngineeringControlProduct:
         heartbeat_ttl_ns: int,
         now_ns: int | None = None,
     ) -> WorkerClaim:
-        return heartbeat_claim(
-            self.store,
-            receipt,
-            self.trust_store,
-            heartbeat_ttl_ns=heartbeat_ttl_ns,
-            now_ns=now_ns,
+        return self._capacity_guarded_write(
+            lambda: heartbeat_claim(
+                self.store,
+                receipt,
+                self.trust_store,
+                heartbeat_ttl_ns=heartbeat_ttl_ns,
+                now_ns=now_ns,
+            )
         )
 
     def submit_result(
@@ -250,11 +324,13 @@ class EngineeringControlProduct:
         *,
         now_ns: int | None = None,
     ) -> WorkerClaim:
-        return submit_worker_result(
-            self.store,
-            receipt,
-            self.trust_store,
-            now_ns=now_ns,
+        return self._capacity_guarded_write(
+            lambda: submit_worker_result(
+                self.store,
+                receipt,
+                self.trust_store,
+                now_ns=now_ns,
+            )
         )
 
     def observe_completion(
@@ -265,13 +341,15 @@ class EngineeringControlProduct:
         *,
         now_ns: int | None = None,
     ) -> WorkerClaim:
-        return observe_claim_completion(
-            self.store,
-            claim_id,
-            envelope,
-            completion,
-            self.trust_store,
-            now_ns=now_ns,
+        return self._capacity_guarded_write(
+            lambda: observe_claim_completion(
+                self.store,
+                claim_id,
+                envelope,
+                completion,
+                self.trust_store,
+                now_ns=now_ns,
+            )
         )
 
     def claim_state(self, claim_id: str) -> WorkerClaim:
@@ -289,13 +367,15 @@ class EngineeringControlProduct:
         base_tree: str,
         now_ns: int | None = None,
     ) -> IntegrationQueueGeneration:
-        return publish_integration_queue(
-            self.store,
-            plan,
-            queue_generation_id=queue_generation_id,
-            base_commit=base_commit,
-            base_tree=base_tree,
-            now_ns=now_ns,
+        return self._capacity_guarded_write(
+            lambda: publish_integration_queue(
+                self.store,
+                plan,
+                queue_generation_id=queue_generation_id,
+                base_commit=base_commit,
+                base_tree=base_tree,
+                now_ns=now_ns,
+            )
         )
 
     def reconcile_integration(
@@ -313,26 +393,30 @@ class EngineeringControlProduct:
         if stage_receipt is not None:
             if terminal_outcome is not None or terminal_receipt is not None:
                 raise ValueError("integration_stage_terminal_mix")
-            return observe_integration_stage(
+            return self._capacity_guarded_write(
+                lambda: observe_integration_stage(
+                    self.store,
+                    queue_generation_id,
+                    package_id,
+                    current_base_commit=current_base_commit,
+                    current_base_tree=current_base_tree,
+                    receipt=stage_receipt,
+                    trust_store=self.trust_store,
+                    now_ns=now_ns,
+                )
+            )
+        return self._capacity_guarded_write(
+            lambda: reconcile_integration_item(
                 self.store,
                 queue_generation_id,
                 package_id,
                 current_base_commit=current_base_commit,
                 current_base_tree=current_base_tree,
-                receipt=stage_receipt,
+                terminal_outcome=terminal_outcome,
+                terminal_receipt=terminal_receipt,
                 trust_store=self.trust_store,
                 now_ns=now_ns,
             )
-        return reconcile_integration_item(
-            self.store,
-            queue_generation_id,
-            package_id,
-            current_base_commit=current_base_commit,
-            current_base_tree=current_base_tree,
-            terminal_outcome=terminal_outcome,
-            terminal_receipt=terminal_receipt,
-            trust_store=self.trust_store,
-            now_ns=now_ns,
         )
 
     def integration_item(
