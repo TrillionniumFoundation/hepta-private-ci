@@ -34,6 +34,8 @@
     {
       "id": "seven_owner_currentness",
       "tests": [
+        "signed_evaluation_completes_existing_owner_preparation_and_run_admission",
+        "signed_input_cannot_install_host_trust_or_change_actual_context",
         "canonical_selected_path_has_first_class_ndu_and_all_seven_owners",
         "abstention_stops_before_context_and_evaluation",
         "owner_generation_change_between_call_and_publication_fails_closed",
@@ -52,6 +54,7 @@
     {
       "id": "actual_owner_outputs",
       "tests": [
+        "objective_owner_rejects_forbidden_and_undeclared_candidates_before_utility",
         "utility_universe_rejects_foreign_and_missing_candidates",
         "actual_stage_outputs_fill_templates_but_reject_substitution",
         "prompt_conditioned_state_rejects_either_stage_substitution"
@@ -140,6 +143,24 @@
     }
   ],
   "ordinaryProductTests": [
+    {
+      "name": "objective_owner_rejects_forbidden_and_undeclared_candidates_before_utility",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "signed_evaluation_completes_existing_owner_preparation_and_run_admission",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "signed_input_cannot_install_host_trust_or_change_actual_context",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
     {
       "name": "raw_candidate_order_does_not_change_canonical_identity",
       "sourcePath": "codex-rs/hepta-intelligence/src/canonical_invariants.rs",
