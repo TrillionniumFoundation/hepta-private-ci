@@ -14,6 +14,8 @@ on:
       - docs/modules/objective.compiler/**
       - scripts/hepta-objective-qualify-exact.py
       - scripts/test_hepta_objective_qualify_exact.py
+      - scripts/hepta-objective-evidence-project.py
+      - scripts/test_hepta_objective_evidence_project.py
       - .github/workflows/hepta-objective-exact-execution.yml
   workflow_dispatch:
     inputs:
@@ -67,6 +69,9 @@ jobs:
       - name: Test recorder failure semantics
         shell: bash
         run: python3 -m unittest -v scripts.test_hepta_objective_qualify_exact
+      - name: Test evidence projection semantics
+        shell: bash
+        run: python3 -m unittest -v scripts.test_hepta_objective_evidence_project
       - name: Qualify source and deterministic merge without source writes
         shell: bash
         run: |
@@ -76,6 +81,15 @@ jobs:
             --merge-base "$MERGE_BASE_SHA" \
             --out "$RUNNER_TEMP/objective-exact-evidence" \
             --command-timeout 1800
+      - name: Project the observed execution receipt
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          receipt="$RUNNER_TEMP/objective-exact-evidence/receipt.json"
+          if [[ -f "$receipt" ]]; then
+            python3 scripts/hepta-objective-evidence-project.py               --source-commit "$SOURCE_SHA"               --source-tree "$(git rev-parse HEAD^{tree})"               --exact-execution "$receipt"               --output "$RUNNER_TEMP/objective-exact-evidence/evidence-projection.json"
+          fi
       - name: Preserve observed failures and partial execution as evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

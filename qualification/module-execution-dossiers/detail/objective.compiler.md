@@ -1,5 +1,50 @@
 # objective.compiler: implementation design
 
+<!-- BEGIN GENERATED OBJECTIVE.COMPILER STATUS -->
+## Generated implementation status
+
+This block is generated from `docs/modules/objective.compiler/CURRENT_STATE.json`. It is a source-state declaration, not an activation or release receipt.
+
+- Manifest SHA-256: `ce7142bba220f7318d8cae66823197124a51f6b5abd4eb95b30dcf0efcfc128b`
+- Core: `source_complete`
+- Product composition: `source_composed_durable_proof_bound_not_activated`
+- Semantic hardening: `source_complete_pending_exact_head_qualification`
+- Current-head qualification: `required_check_not_embedded_in_source`
+- Synthetic-merge qualification: `required_check_not_embedded_in_source`
+- Target-host qualification: `selected_target_host_receipt_absent`
+- Independent acceptance: `absent`
+- Canary/promotion/rollback: `source_policy_not_activated`
+
+| Claim | Value |
+| --- | --- |
+| `productionImplementation` | `false` |
+| `accepted` | `false` |
+| `activated` | `false` |
+| `released` | `false` |
+
+### Required repository checks
+
+- `Hepta objective admission qualification`
+- `Hepta objective product composition / source-head`
+- `Hepta objective product composition / synthetic-merge`
+- `Hepta Lane D semantic conformance`
+- `objective.compiler current-state projection`
+- `Agentd objective product E2E`
+- `strict objective clippy`
+- `objective release guard`
+
+### External evidence gates
+
+- selected deployment target-host measurement and resource-policy acceptance
+- independent semantic and security review
+- operator acceptance
+- canary observation
+- promotion approval
+- rollback authority validation
+- release authority approval
+
+<!-- END GENERATED OBJECTIVE.COMPILER STATUS -->
+
 Parent: `docs/modules/objective.compiler/TECHNICAL.md`. Lane: `LANE-D-OBJECTIVE-VALUE`.
 Status: source candidate and authenticated Agentd product-source composition implemented; exact-head/synthetic-merge qualification, named target-host observation, independent acceptance and activation remain separate. Common requirements: `../EXECUTION_SEMANTICS.md`, `../TECHNICAL.md`, `docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md` and `docs/contracts/OBJECTIVE_ERRORS.json`.
 

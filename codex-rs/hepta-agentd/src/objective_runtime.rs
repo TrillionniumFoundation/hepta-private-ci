@@ -18,15 +18,15 @@ use codex_hepta_authbus::SignedMessageClaims;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_intelligence::ObjectiveRunBindingsV1;
 use codex_hepta_intelligence::ObjectiveRunError;
-use codex_hepta_intelligence::compile_and_publish_objective_run_v1;
+use codex_hepta_intelligence::compile_and_publish_validated_objective_run_v1;
 use codex_hepta_learning_ledger::DurableRunStartStore;
 use codex_hepta_learning_ledger::RunStartAppendDisposition;
 use codex_hepta_learning_ledger::RunStartAuthenticationV1;
 use codex_hepta_learning_ledger::RunStartObjectiveDispositionV1;
 use codex_hepta_learning_ledger::RunStartRecordV1;
 use codex_hepta_objective::ObjectiveAdmissionContextV1;
-use codex_hepta_objective::ObjectiveAdmissionProfileV1;
 use codex_hepta_objective::ObjectiveSourceAuthenticationV1;
+use codex_hepta_objective::ValidatedAdmissionProfileV1;
 use codex_hepta_objective::decode_admission_profile_json_v1;
 use codex_hepta_objective::decode_source_envelope_json_v1;
 use codex_hepta_types::Digest32;
@@ -65,7 +65,7 @@ pub(crate) enum ObjectiveStartResult {
 }
 
 pub(crate) struct ObjectiveRuntimeHost {
-    profile: ObjectiveAdmissionProfileV1,
+    profile: ValidatedAdmissionProfileV1,
     profile_digest: Digest32,
     state: Mutex<ObjectiveHostState>,
 }
@@ -89,9 +89,9 @@ impl ObjectiveRuntimeHost {
                 "objective profile must register at least one signed adapter identity",
             ));
         }
-        let profile_digest = profile
-            .digest()
+        let profile = ValidatedAdmissionProfileV1::new(profile)
             .map_err(|error| invalid(&format!("objective profile: {error}")))?;
+        let profile_digest = profile.profile_digest();
         let journal = open_run_start_store(identity, profile_digest, checkpoint_file)?;
         let highest_sequences = replay_frontier(&journal)?;
         Ok(Self {
@@ -253,7 +253,7 @@ impl ObjectiveRuntimeHost {
                         .map_err(store_error)?;
 
                     let expected_run_start_head = state.journal.head_digest();
-                    let published = match compile_and_publish_objective_run_v1(
+                    let published = match compile_and_publish_validated_objective_run_v1(
                         &source,
                         &self.profile,
                         &context,

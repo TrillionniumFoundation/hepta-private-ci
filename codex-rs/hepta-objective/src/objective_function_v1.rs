@@ -197,6 +197,27 @@ pub(crate) fn encode_objective_function_v1(
     encode_validated(compiled, source, profile, admission)
 }
 
+/// Strict projection for a profile whose static validation is already frozen.
+///
+/// The cached digest is accepted only from the opaque validated profile type.
+/// Source structure, intent, timestamps, receipt binding, native semantics and
+/// canonical decode remain mandatory.
+pub(crate) fn encode_validated_profile_objective_function_v1(
+    compiled: &ObjectiveCompileReceipt,
+    source: &ObjectiveSourceEnvelopeV1,
+    profile: &crate::ValidatedAdmissionProfileV1,
+    admission: &ObjectiveAdmissionReceiptV1,
+) -> Result<ObjectiveFunctionV1Artifact, ObjectiveFunctionV1Error> {
+    validate_projection_binding_with_digest(
+        compiled,
+        source,
+        profile.profile(),
+        profile.profile_digest(),
+        admission,
+    )?;
+    encode_validated(compiled, source, profile.profile(), admission)
+}
+
 /// Product-strength projection boundary.
 ///
 /// Re-running authenticated admission and deterministic compilation prevents a
@@ -237,14 +258,24 @@ fn validate_projection_binding(
     profile: &ObjectiveAdmissionProfileV1,
     admission: &ObjectiveAdmissionReceiptV1,
 ) -> Result<(), ObjectiveFunctionV1Error> {
+    let profile_digest = profile
+        .digest()
+        .map_err(|_| ObjectiveFunctionV1Error::ProjectionMismatch("profile"))?;
+    validate_projection_binding_with_digest(compiled, source, profile, profile_digest, admission)
+}
+
+fn validate_projection_binding_with_digest(
+    compiled: &ObjectiveCompileReceipt,
+    source: &ObjectiveSourceEnvelopeV1,
+    profile: &ObjectiveAdmissionProfileV1,
+    profile_digest: Digest32,
+    admission: &ObjectiveAdmissionReceiptV1,
+) -> Result<(), ObjectiveFunctionV1Error> {
     source
         .validate_structure()
         .map_err(|_| ObjectiveFunctionV1Error::ProjectionMismatch("source structure"))?;
     let intent_digest = canonical_objective_intent_digest_v1(source)
         .map_err(|_| ObjectiveFunctionV1Error::ProjectionMismatch("source intent"))?;
-    let profile_digest = profile
-        .digest()
-        .map_err(|_| ObjectiveFunctionV1Error::ProjectionMismatch("profile"))?;
     let observed_at_unix_micros = parse_utc_micros(&source.observed_at).ok_or(
         ObjectiveFunctionV1Error::ProjectionMismatch("observed timestamp"),
     )?;

@@ -444,6 +444,34 @@ pub fn admit_objective_v1(
 ) -> Result<AdmittedObjectiveV1, ObjectiveAdmissionError> {
     envelope.validate_structure()?;
     let profile_digest = profile.digest()?;
+    admit_profile_bound_objective_v1(envelope, profile, context, profile_digest)
+}
+
+/// Internal typed boundary for a process-generation-frozen profile.
+///
+/// Only static validation, indexes and the exact profile digest are reused.
+/// Authentication, source identity, freshness, deadline and every final-use
+/// check remain request-local and execute below on every call.
+pub(crate) fn admit_frozen_objective_v1(
+    envelope: &ObjectiveSourceEnvelopeV1,
+    profile: &crate::validated_admission::ValidatedAdmissionProfileV1,
+    context: &ObjectiveAdmissionContextV1,
+) -> Result<AdmittedObjectiveV1, ObjectiveAdmissionError> {
+    envelope.validate_structure()?;
+    admit_profile_bound_objective_v1(
+        envelope,
+        profile.profile(),
+        context,
+        profile.profile_digest(),
+    )
+}
+
+fn admit_profile_bound_objective_v1(
+    envelope: &ObjectiveSourceEnvelopeV1,
+    profile: &ObjectiveAdmissionProfileV1,
+    context: &ObjectiveAdmissionContextV1,
+    profile_digest: Digest32,
+) -> Result<AdmittedObjectiveV1, ObjectiveAdmissionError> {
     if context.selected_profile_digest != profile_digest {
         return Err(ObjectiveAdmissionError::ProfileDigestMismatch);
     }

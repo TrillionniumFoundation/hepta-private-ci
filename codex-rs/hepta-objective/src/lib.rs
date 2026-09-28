@@ -109,6 +109,7 @@ pub use source_envelope_v1::ObjectiveStructuredIntentV1;
 pub use source_envelope_validation::ObjectiveStructureError;
 pub use validated_admission::ObjectiveAdmissionProofV1;
 pub use validated_admission::ProofBearingObjectiveCompileV1;
+pub use validated_admission::ValidatedAdmissionProfileReuseKeyV1;
 pub use validated_admission::ValidatedAdmissionProfileV1;
 pub use validated_admission::ValidatedObjectiveAdmissionV1;
 pub use validated_admission::admit_validated_objective_v1;

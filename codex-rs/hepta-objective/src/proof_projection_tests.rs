@@ -240,8 +240,7 @@ fn proof_projection_matches_independent_authenticated_recompilation() {
     let source = source();
     let frozen = ValidatedAdmissionProfileV1::from_profile(&raw).expect("frozen");
     let context = context(&raw, &source);
-    let result =
-        compile_authoritative_objective_v1(&source, &frozen, &context).expect("compile");
+    let result = compile_authoritative_objective_v1(&source, &frozen, &context).expect("compile");
     let expected = encode_authenticated_objective_function_v1(
         result.outcome().compile_result.as_ref().expect("feasible"),
         &source,
@@ -325,7 +324,10 @@ fn frozen_profile_does_not_cache_authentication_or_freshness() {
     let second =
         compile_authoritative_objective_v1(&source, &frozen, &changed).expect("fresh check");
     assert_ne!(first.proof().proof_digest(), second.proof().proof_digest());
-    assert_eq!(first.outcome().compile_result, second.outcome().compile_result);
+    assert_eq!(
+        first.outcome().compile_result,
+        second.outcome().compile_result
+    );
 }
 
 #[test]

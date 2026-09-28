@@ -283,7 +283,10 @@ fn proof_binds_source_profile_context_and_compiler_contract() {
     let second = compile_authoritative_objective_v1(&source, &validated, &later_context)
         .expect("second authoritative compile");
     assert_ne!(first.proof().proof_digest(), second.proof().proof_digest());
-    assert_eq!(first.outcome().compile_result, second.outcome().compile_result);
+    assert_eq!(
+        first.outcome().compile_result,
+        second.outcome().compile_result
+    );
 }
 
 #[test]
@@ -294,8 +297,65 @@ fn explicit_preflight_matches_authoritative_native_outcome() {
     let preflight =
         preflight_validate_objective_v1(&source, &profile, &context).expect("preflight");
     let validated = ValidatedAdmissionProfileV1::from_profile(&profile).expect("validated");
-    let authoritative = compile_authoritative_objective_v1(&source, &validated, &context)
-        .expect("authoritative");
+    let authoritative =
+        compile_authoritative_objective_v1(&source, &validated, &context).expect("authoritative");
 
     assert_eq!(preflight, authoritative);
+}
+
+#[test]
+fn frozen_profile_reuse_never_caches_authentication_time_or_profile_selection() {
+    let raw = profile();
+    let source = source();
+    let frozen = ValidatedAdmissionProfileV1::from_profile(&raw).expect("frozen profile");
+    let key = frozen.reuse_key();
+    let current = context(&raw, &source);
+
+    let first = compile_authoritative_objective_v1(&source, &frozen, &current)
+        .expect("current authenticated admission");
+
+    let mut wrong_source = current.clone();
+    wrong_source.source_authentication = ObjectiveSourceAuthenticationV1::Principal {
+        principal_scope_digest: source.principal_scope_digest,
+        source_digest: digest("not-the-authenticated-source"),
+    };
+    assert!(compile_authoritative_objective_v1(&source, &frozen, &wrong_source).is_err());
+
+    let mut wrong_scope = current.clone();
+    wrong_scope.source_authentication = ObjectiveSourceAuthenticationV1::Principal {
+        principal_scope_digest: digest("another-principal"),
+        source_digest: source.structured_intent.provenance.source_digest,
+    };
+    assert!(compile_authoritative_objective_v1(&source, &frozen, &wrong_scope).is_err());
+
+    let mut stale = current.clone();
+    stale.now_unix_micros = stale
+        .now_unix_micros
+        .checked_add(raw.maximum_source_age_micros + 1)
+        .expect("test timestamp");
+    assert_eq!(
+        compile_authoritative_objective_v1(&source, &frozen, &stale),
+        Err(ObjectiveAdmissionError::SourceStale)
+    );
+
+    let mut wrong_profile = current.clone();
+    wrong_profile.selected_profile_digest = digest("another-profile");
+    assert_eq!(
+        compile_authoritative_objective_v1(&source, &frozen, &wrong_profile),
+        Err(ObjectiveAdmissionError::ProfileDigestMismatch)
+    );
+
+    let mut next = current;
+    next.now_unix_micros += 1;
+    let second = compile_authoritative_objective_v1(&source, &frozen, &next)
+        .expect("new request-local admission");
+    assert_ne!(first.proof().proof_digest(), second.proof().proof_digest());
+    assert_eq!(
+        first.outcome().compile_result,
+        second.outcome().compile_result
+    );
+    assert_eq!(frozen.reuse_key(), key);
+    assert_eq!(key.profile_digest, frozen.profile_digest());
+    assert_eq!(key.profile_revision, raw.profile_revision.get());
+    assert!(!key.compiler_contract_digest.is_zero());
 }

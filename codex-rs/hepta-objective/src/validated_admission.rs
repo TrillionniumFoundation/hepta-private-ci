@@ -27,11 +27,23 @@ use crate::ObjectiveSoftDimensionProfileV1;
 use crate::ObjectiveSourceAuthenticationV1;
 use crate::ObjectiveSourceEnvelopeV1;
 use crate::ObjectiveSourceTrustV1;
-use crate::admit_objective_v1;
 use crate::canonical_objective_intent_digest_v1;
 use crate::compile_admitted_objective_v1;
+use crate::objective_admission::admit_frozen_objective_v1;
 
 const COMPILER_CONTRACT_V1: &[u8] = b"hepta.objective.compiler.contract.v1:indexed-profile:exact-ms-deadline:proof-bearing-admission";
+
+/// Exact identity of reusable static profile validation.
+///
+/// This key deliberately excludes authentication, time, revocation, generation,
+/// fence and effect authority. Those facts are request- or final-use-local and
+/// are never cached by the compiler.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct ValidatedAdmissionProfileReuseKeyV1 {
+    pub profile_digest: Digest32,
+    pub profile_revision: u64,
+    pub compiler_contract_digest: Digest32,
+}
 
 /// Frozen profile plus indexes and collision proofs used by authoritative
 /// product composition.
@@ -168,21 +180,25 @@ impl ValidatedAdmissionProfileV1 {
         self.profile_digest
     }
 
+    /// Static semantic reuse identity. This is never an authorization result.
     #[must_use]
-    pub fn constraint(
-        &self,
-        source_id: &str,
-    ) -> Option<&ObjectiveConstraintProfileV1> {
+    pub fn reuse_key(&self) -> ValidatedAdmissionProfileReuseKeyV1 {
+        ValidatedAdmissionProfileReuseKeyV1 {
+            profile_digest: self.profile_digest,
+            profile_revision: self.profile.profile_revision.get(),
+            compiler_contract_digest: Digest32::of_bytes(COMPILER_CONTRACT_V1),
+        }
+    }
+
+    #[must_use]
+    pub fn constraint(&self, source_id: &str) -> Option<&ObjectiveConstraintProfileV1> {
         self.constraint_sources
             .get(source_id)
             .and_then(|index| self.profile.constraints.get(*index))
     }
 
     #[must_use]
-    pub fn predicate(
-        &self,
-        source_id: &str,
-    ) -> Option<&ObjectivePredicateProfileV1> {
+    pub fn predicate(&self, source_id: &str) -> Option<&ObjectivePredicateProfileV1> {
         self.predicate_sources
             .get(source_id)
             .and_then(|index| self.profile.predicates.get(*index))
@@ -196,20 +212,14 @@ impl ValidatedAdmissionProfileV1 {
     }
 
     #[must_use]
-    pub fn soft_dimension(
-        &self,
-        source_id: &str,
-    ) -> Option<&ObjectiveSoftDimensionProfileV1> {
+    pub fn soft_dimension(&self, source_id: &str) -> Option<&ObjectiveSoftDimensionProfileV1> {
         self.soft_sources
             .get(source_id)
             .and_then(|index| self.profile.soft_dimensions.get(*index))
     }
 
     #[must_use]
-    pub fn evidence_requirement(
-        &self,
-        source_id: &str,
-    ) -> Option<&ObjectiveEvidenceProfileV1> {
+    pub fn evidence_requirement(&self, source_id: &str) -> Option<&ObjectiveEvidenceProfileV1> {
         self.evidence_sources
             .get(source_id)
             .and_then(|index| self.profile.evidence_requirements.get(*index))
@@ -316,7 +326,7 @@ pub fn admit_validated_objective_v1(
     profile: &ValidatedAdmissionProfileV1,
     context: &ObjectiveAdmissionContextV1,
 ) -> Result<ValidatedObjectiveAdmissionV1, ObjectiveAdmissionError> {
-    let admitted = admit_objective_v1(envelope, profile.profile(), context)?;
+    let admitted = admit_frozen_objective_v1(envelope, profile, context)?;
     if admitted
         .receipt()
         .deadline_unix_micros
@@ -347,9 +357,7 @@ pub fn compile_authoritative_objective_v1(
     profile: &ValidatedAdmissionProfileV1,
     context: &ObjectiveAdmissionContextV1,
 ) -> Result<ProofBearingObjectiveCompileV1, ObjectiveAdmissionError> {
-    compile_validated_objective_v1(admit_validated_objective_v1(
-        envelope, profile, context,
-    )?)
+    compile_validated_objective_v1(admit_validated_objective_v1(envelope, profile, context)?)
 }
 
 /// Compatibility preflight with an explicit non-publication name. It performs
@@ -505,7 +513,11 @@ fn generated_constraint_ids(profile: &ObjectiveAdmissionProfileV1) -> Vec<Stable
         profile.resources.compute_micros.constraint_id.clone(),
         profile.resources.memory_bytes.constraint_id.clone(),
         profile.resources.network_bytes.constraint_id.clone(),
-        profile.resources.external_effect_count.constraint_id.clone(),
+        profile
+            .resources
+            .external_effect_count
+            .constraint_id
+            .clone(),
         profile.risk.risk_constraint_id.clone(),
         profile.risk.rollback_constraint_id.clone(),
         profile.risk.compensation_constraint_id.clone(),

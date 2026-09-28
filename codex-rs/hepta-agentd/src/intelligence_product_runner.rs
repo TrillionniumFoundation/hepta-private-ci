@@ -151,6 +151,7 @@ impl AgentdIntelligenceProductRunnerV1 {
 
         match outcome {
             CanonicalRunOutcomeV1::Ready(envelope) => {
+                let envelope = *envelope;
                 let mut oracle = FileBackedFreshnessOracleV1::new(
                     self.authority_file.clone(),
                     self.authority_verifier.clone(),

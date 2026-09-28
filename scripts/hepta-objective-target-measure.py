@@ -5,6 +5,7 @@ import argparse
 import json
 import os
 import platform
+import resource
 import socket
 import subprocess
 import sys
@@ -42,6 +43,24 @@ def git(*args: str) -> str:
     return command("git", *args).strip()
 
 
+def latency_distribution(value: Any, field: str) -> dict[str, int]:
+    if not isinstance(value, dict):
+        fail(f"missing latency distribution for {field}")
+    ordered = [value.get(key) for key in ("p50", "p95", "p99")]
+    if not all(type(item) is int and item >= 0 for item in ordered):
+        fail(f"invalid latency percentiles for {field}")
+    if ordered != sorted(ordered):
+        fail(f"non-monotone latency percentiles for {field}")
+    return value
+
+
+def observed_children_peak_resident_set_bytes() -> int:
+    value = resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss
+    # Darwin reports bytes; Linux and BSD-compatible CI images report KiB.
+    scale = 1 if platform.system() == "Darwin" else 1024
+    return max(0, int(value) * scale)
+
+
 def parse_measurement(output: str, expected_path: str) -> dict[str, Any]:
     rows = [line.split(PREFIX, 1)[1] for line in output.splitlines() if PREFIX in line]
     if len(rows) != 1:
@@ -67,14 +86,22 @@ def parse_measurement(output: str, expected_path: str) -> dict[str, Any]:
         fail(f"unexpected measurement schema for {expected_path}")
     if value.get("path") != expected_path:
         fail(f"unexpected measurement path: {value.get('path')!r}")
-    latency = value.get("latencyNanoseconds")
-    if not isinstance(latency, dict):
-        fail(f"missing latency distribution for {expected_path}")
-    ordered = [latency.get(key) for key in ("p50", "p95", "p99")]
-    if not all(type(item) is int and item >= 0 for item in ordered):
-        fail(f"invalid latency percentiles for {expected_path}")
-    if ordered != sorted(ordered):
-        fail(f"non-monotone latency percentiles for {expected_path}")
+    latency_distribution(value.get("latencyNanoseconds"), expected_path)
+    if expected_path == "ordinary_authenticated_admission_compile":
+        phases = value.get("phaseLatencyNanoseconds")
+        expected_phases = {
+            "coldProfileValidation",
+            "warmAuthenticatedAdmission",
+            "nativeCompile",
+            "protocolEncode",
+            "protocolDecode",
+        }
+        if not isinstance(phases, dict) or set(phases) != expected_phases:
+            fail("ordinary measurement phase set is incomplete")
+        for name, distribution in phases.items():
+            latency_distribution(distribution, f"ordinary.{name}")
+        if value.get("dynamicAuthorizationCached") is not False:
+            fail("ordinary measurement must state that dynamic authorization is not cached")
     return value
 
 
@@ -99,25 +126,24 @@ def parse_product_measurement(output: str) -> dict[str, Any]:
     samples = value.get("samples")
     if type(samples) is not int or samples <= 0:
         fail("invalid product measurement sample count")
-    latency = value.get("latencyNanoseconds")
-    if not isinstance(latency, dict):
-        fail("missing product latency distribution")
-    ordered = [latency.get(key) for key in ("p50", "p95", "p99")]
-    if not all(type(item) is int and item >= 0 for item in ordered):
-        fail("invalid product latency percentiles")
-    if ordered != sorted(ordered):
-        fail("non-monotone product latency percentiles")
+    latency_distribution(value.get("latencyNanoseconds"), "product")
+    phases = value.get("phaseLatencyNanoseconds")
+    expected_phases = {
+        "signedIngressCompileDurableAppendCheckpointAndAgentdHandoff",
+        "compiledPublicationAndAgentdHandoff",
+        "contextAttachment",
+        "currentFinalUseProviderAndTerminalObservation",
+    }
+    if not isinstance(phases, dict) or set(phases) != expected_phases:
+        fail("product measurement phase set is incomplete")
+    for name, distribution in phases.items():
+        latency_distribution(distribution, f"product.{name}")
+    if value.get("atomicOwnerBoundaryNotSplit") is not True:
+        fail("product measurement must preserve the atomic owner boundary")
     execution_samples = value.get("executionSamples")
     if type(execution_samples) is not int or execution_samples <= 0:
         fail("invalid product execution sample count")
-    execution_latency = value.get("executionLatencyNanoseconds")
-    if not isinstance(execution_latency, dict):
-        fail("missing product execution latency distribution")
-    execution_ordered = [execution_latency.get(key) for key in ("p50", "p95", "p99")]
-    if not all(type(item) is int and item >= 0 for item in execution_ordered):
-        fail("invalid product execution latency percentiles")
-    if execution_ordered != sorted(execution_ordered):
-        fail("non-monotone product execution latency percentiles")
+    latency_distribution(value.get("executionLatencyNanoseconds"), "product execution")
     for field in (
         "exactReplayNanoseconds",
         "executionExactReplayNanoseconds",
@@ -171,6 +197,12 @@ def run_product_fixture(samples: int, execution_samples: int) -> dict[str, Any]:
     ):
         fail("product fixture sample count differs from requested measurement")
     measurement["harnessWallNanoseconds"] = harness_ns
+    measurement["observedChildrenPeakResidentSetBytes"] = (
+        observed_children_peak_resident_set_bytes()
+    )
+    measurement["memoryObservationScope"] = (
+        "cumulative process-tree peak through this fixture; not per-phase isolation"
+    )
     return measurement
 
 
@@ -197,6 +229,12 @@ def run_fixture(test_name: str, expected_path: str, samples: int) -> dict[str, A
     if measurement["samples"] != samples:
         fail("fixture sample count differs from requested measurement")
     measurement["harnessWallNanoseconds"] = harness_ns
+    measurement["observedChildrenPeakResidentSetBytes"] = (
+        observed_children_peak_resident_set_bytes()
+    )
+    measurement["memoryObservationScope"] = (
+        "cumulative process-tree peak through this fixture; not per-phase isolation"
+    )
     return measurement
 
 
@@ -204,7 +242,14 @@ def self_test() -> int:
     fixture = (
         'OBJECTIVE_MEASUREMENT={"schema":"hepta.objective-target-measurement.v1",'
         '"path":"ordinary_authenticated_admission_compile","samples":3,'
-        '"latencyNanoseconds":{"p50":10,"p95":20,"p99":30}}'
+        '"latencyNanoseconds":{"p50":10,"p95":20,"p99":30},'
+        '"phaseLatencyNanoseconds":{'
+        '"coldProfileValidation":{"p50":1,"p95":2,"p99":3},'
+        '"warmAuthenticatedAdmission":{"p50":1,"p95":2,"p99":3},'
+        '"nativeCompile":{"p50":1,"p95":2,"p99":3},'
+        '"protocolEncode":{"p50":1,"p95":2,"p99":3},'
+        '"protocolDecode":{"p50":1,"p95":2,"p99":3}},'
+        '"dynamicAuthorizationCached":false}'
     )
     parsed = parse_measurement(fixture, "ordinary_authenticated_admission_compile")
     if parsed["latencyNanoseconds"]["p99"] != 30:
@@ -213,6 +258,14 @@ def self_test() -> int:
         'OBJECTIVE_PRODUCT_MEASUREMENT={"schema":"hepta.objective-product-target-measurement.v1",'
         '"path":"signed_objective_daemon_round_trip","samples":3,'
         '"latencyNanoseconds":{"p50":100,"p95":200,"p99":300},'
+        '"phaseLatencyNanoseconds":{'
+        '"signedIngressCompileDurableAppendCheckpointAndAgentdHandoff":'
+        '{"p50":100,"p95":200,"p99":300},'
+        '"compiledPublicationAndAgentdHandoff":{"p50":10,"p95":20,"p99":30},'
+        '"contextAttachment":{"p50":10,"p95":20,"p99":30},'
+        '"currentFinalUseProviderAndTerminalObservation":'
+        '{"p50":100,"p95":200,"p99":300}},'
+        '"atomicOwnerBoundaryNotSplit":true,'
         '"exactReplayNanoseconds":80,"executionSamples":2,'
         '"executionLatencyNanoseconds":{"p50":150,"p95":250,"p99":350},'
         '"executionExactReplayNanoseconds":90,"physicalProviderSends":2,'
@@ -333,6 +386,10 @@ def measure(args: argparse.Namespace) -> int:
             "ciRunnerIsNotProductionEvidence": True,
             "controlledModelProviderAndContextFixture": True,
             "storageQualificationProved": False,
+            "staticProfileReuseMeasuredSeparately": True,
+            "dynamicAuthorizationCachingAllowed": False,
+            "memoryIsObservedProcessTreePeakNotPhaseIsolation": True,
+            "atomicAppendCheckpointHandoffBoundaryPreserved": True,
             "activationGranted": False,
             "releaseGranted": False,
         },

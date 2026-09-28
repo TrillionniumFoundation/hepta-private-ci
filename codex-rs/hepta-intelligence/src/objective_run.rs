@@ -114,13 +114,34 @@ pub fn compile_and_publish_objective_run_v1(
     journal: &mut dyn RunStartJournal,
 ) -> Result<PublishedObjectiveRunV1, ObjectiveRunError> {
     let validated_profile = ValidatedAdmissionProfileV1::from_profile(profile)?;
-    let proof_bearing =
-        compile_authoritative_objective_v1(envelope, &validated_profile, context)?;
+    compile_and_publish_validated_objective_run_v1(
+        envelope,
+        &validated_profile,
+        context,
+        bindings,
+        journal,
+    )
+}
+
+/// Product entrypoint for a process-generation-frozen validated profile.
+///
+/// Static profile validation and indexes are reused. The supplied admission
+/// context is still authenticated and checked for source identity, freshness,
+/// deadline and exact profile binding on every invocation. The destination
+/// journal remains the only durable run-start owner.
+pub fn compile_and_publish_validated_objective_run_v1(
+    envelope: &ObjectiveSourceEnvelopeV1,
+    profile: &ValidatedAdmissionProfileV1,
+    context: &ObjectiveAdmissionContextV1,
+    bindings: ObjectiveRunBindingsV1,
+    journal: &mut dyn RunStartJournal,
+) -> Result<PublishedObjectiveRunV1, ObjectiveRunError> {
+    let proof_bearing = compile_authoritative_objective_v1(envelope, profile, context)?;
     let protocol = if proof_bearing.outcome().compile_result.is_ok() {
         Some(encode_proof_bearing_objective_function_v1(
             &proof_bearing,
             envelope,
-            &validated_profile,
+            profile,
         )?)
     } else {
         None

@@ -1,0 +1,91 @@
+name: Hepta objective target measurement
+
+on:
+  push:
+    branches:
+      - work/objective-compiler-production-convergence-20260927
+    paths:
+      - codex-rs/hepta-objective/**
+      - codex-rs/hepta-intelligence/**
+      - codex-rs/hepta-agentd/**
+      - codex-rs/hepta-learning-ledger/**
+      - scripts/hepta-objective-target-measure.py
+      - scripts/hepta-objective-evidence-project.py
+      - scripts/test_hepta_objective_evidence_project.py
+      - .github/workflows/hepta-objective-target-measurement.yml
+  workflow_dispatch:
+    inputs:
+      source_commit:
+        description: Full immutable source commit; checkout uses this value
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  SOURCE_SHA: ${{ inputs.source_commit || github.sha }}
+
+concurrency:
+  group: objective-target-measurement-${{ inputs.source_commit || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  measure:
+    runs-on: macos-15
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind immutable qualification host candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+      - name: Test measurement and evidence recorders
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-objective-target-measure.py --self-test
+          python3 -m unittest -v scripts.test_hepta_objective_evidence_project
+      - name: Measure named qualification host
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/objective-target-measurement"
+          mkdir -p "$out"
+          python3 scripts/hepta-objective-target-measure.py \
+            --expected-sha "$SOURCE_SHA" \
+            --host-profile-id "github-actions-macos-15-qualification-not-deployment-acceptance" \
+            --ordinary-samples 128 \
+            --conflict-samples 8 \
+            --product-samples 8 \
+            --execution-samples 2 \
+            --output "$out/measurement.json"
+          python3 scripts/hepta-objective-evidence-project.py \
+            --source-commit "$SOURCE_SHA" \
+            --source-tree "$(git rev-parse HEAD^{tree})" \
+            --target-measurement "$out/measurement.json" \
+            --output "$out/evidence-projection.json"
+      - name: Preserve measurement or observed failure evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: objective-target-measurement-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/objective-target-measurement
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Verify source remained immutable
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"

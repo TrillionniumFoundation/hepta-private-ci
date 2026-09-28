@@ -41,7 +41,11 @@ use crate::ObjectiveSourceEnvelopeV1;
 use crate::ObjectiveSourcePredicateV1;
 use crate::ObjectiveSourceTrustV1;
 use crate::ObjectiveStructuredIntentV1;
-use crate::encode_objective_function_v1;
+use crate::ValidatedAdmissionProfileV1;
+use crate::admit_validated_objective_v1;
+use crate::compile_validated_objective_v1;
+use crate::decode_objective_function_v1;
+use crate::encode_proof_bearing_objective_function_v1;
 
 const OBSERVED_MICROS: u64 = 1_788_861_600_000_000;
 const NOW_MICROS: u64 = OBSERVED_MICROS + 1_000_000;
@@ -498,38 +502,81 @@ fn measured_percentiles(mut samples_ns: Vec<u128>) -> (u128, u128, u128) {
 #[test]
 #[ignore = "run only on a named target host through hepta-objective-target-measure.py"]
 fn measurement_ordinary_admission_compile_v1() {
-    let profile = profile();
+    let raw_profile = profile();
     let envelope = envelope();
-    let context = context(&profile, &envelope);
+    let context = context(&raw_profile, &envelope);
+    let frozen = ValidatedAdmissionProfileV1::from_profile(&raw_profile)
+        .expect("frozen measurement profile");
     let samples = measurement_sample_count(1_000, 100_000);
-    let mut timings = Vec::with_capacity(samples);
+
+    let mut cold_profile = Vec::with_capacity(samples);
+    let mut warm_admission = Vec::with_capacity(samples);
+    let mut native_compile = Vec::with_capacity(samples);
+    let mut protocol_encode = Vec::with_capacity(samples);
+    let mut protocol_decode = Vec::with_capacity(samples);
+    let mut warm_total = Vec::with_capacity(samples);
 
     for _ in 0..samples {
         let started = Instant::now();
-        let admitted =
-            admit_objective_v1(&envelope, &profile, &context).expect("measurement admission");
-        let outcome =
-            compile_admitted_objective_v1(admitted).expect("measurement admitted compile");
-        let compiled = outcome
-            .compile_result
-            .as_ref()
-            .expect("measurement fixture must compile without conflict");
+        let cold = ValidatedAdmissionProfileV1::from_profile(&raw_profile)
+            .expect("cold profile validation");
+        cold_profile.push(started.elapsed().as_nanos());
+        black_box(cold.reuse_key());
+
+        let total_started = Instant::now();
+
+        let started = Instant::now();
+        let admitted = admit_validated_objective_v1(&envelope, &frozen, &context)
+            .expect("warm authenticated admission");
+        warm_admission.push(started.elapsed().as_nanos());
+
+        let started = Instant::now();
+        let proof_bearing =
+            compile_validated_objective_v1(admitted).expect("native deterministic compile");
+        native_compile.push(started.elapsed().as_nanos());
+
+        let started = Instant::now();
         let protocol =
-            encode_objective_function_v1(compiled, &envelope, &profile, &outcome.receipt)
-                .expect("measurement canonical ObjectiveFunctionV1 projection");
-        timings.push(started.elapsed().as_nanos());
+            encode_proof_bearing_objective_function_v1(&proof_bearing, &envelope, &frozen)
+                .expect("proof-bound canonical protocol encoding");
+        protocol_encode.push(started.elapsed().as_nanos());
+
+        let started = Instant::now();
+        let decoded = decode_objective_function_v1(protocol.canonical_bytes())
+            .expect("strict canonical protocol decode");
+        protocol_decode.push(started.elapsed().as_nanos());
+
+        warm_total.push(total_started.elapsed().as_nanos());
+        black_box(decoded);
         black_box(protocol);
-        black_box(outcome);
+        black_box(proof_bearing);
     }
 
-    let (p50, p95, p99) = measured_percentiles(timings);
+    let distribution = |values: Vec<u128>| {
+        let (p50, p95, p99) = measured_percentiles(values);
+        serde_json::json!({"p50": p50, "p95": p95, "p99": p99})
+    };
+    let key = frozen.reuse_key();
     println!(
         "OBJECTIVE_MEASUREMENT={}",
         serde_json::json!({
             "schema": "hepta.objective-target-measurement.v1",
             "path": "ordinary_authenticated_admission_compile",
             "samples": samples,
-            "latencyNanoseconds": {"p50": p50, "p95": p95, "p99": p99}
+            "latencyNanoseconds": distribution(warm_total),
+            "phaseLatencyNanoseconds": {
+                "coldProfileValidation": distribution(cold_profile),
+                "warmAuthenticatedAdmission": distribution(warm_admission),
+                "nativeCompile": distribution(native_compile),
+                "protocolEncode": distribution(protocol_encode),
+                "protocolDecode": distribution(protocol_decode)
+            },
+            "staticProfileReuseKey": {
+                "profileDigest": key.profile_digest.to_string(),
+                "profileRevision": key.profile_revision,
+                "compilerContractDigest": key.compiler_contract_digest.to_string()
+            },
+            "dynamicAuthorizationCached": false
         })
     );
 }

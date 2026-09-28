@@ -982,6 +982,9 @@ async fn measurement_signed_objective_daemon_round_trip() -> Result<()> {
     )?;
     let cancellation = CancellationToken::new();
     let mut execution_timings = Vec::with_capacity(execution_samples);
+    let mut compiled_publication_timings = Vec::with_capacity(execution_samples);
+    let mut context_attachment_timings = Vec::with_capacity(execution_samples);
+    let mut final_use_terminal_timings = Vec::with_capacity(execution_samples);
     let mut last_execution = None;
     for sample in 1..=execution_samples {
         let sequence = u64::try_from(samples.checked_add(sample).context("sequence overflow")?)?;
@@ -990,7 +993,9 @@ async fn measurement_signed_objective_daemon_round_trip() -> Result<()> {
         let native_request_id = format!("objective-product-measure-turn-{sequence}");
         let prompt = "Return the exact phrase objective product e2e.".to_string();
         let started = Instant::now();
+        let publication_started = Instant::now();
         let receipt = admitted(control.objective_start(request).await?)?;
+        compiled_publication_timings.push(publication_started.elapsed().as_nanos());
         ensure!(receipt.disposition == "compiled");
         let execution = receipt
             .execution
@@ -1004,6 +1009,7 @@ async fn measurement_signed_objective_daemon_round_trip() -> Result<()> {
             "{:064x}",
             sequence.checked_add(1_000_000).context("digest overflow")?
         );
+        let context_attachment_started = Instant::now();
         let attached = control
             .run_attach_context(
                 admitted_run.revision,
@@ -1022,12 +1028,14 @@ async fn measurement_signed_objective_daemon_round_trip() -> Result<()> {
                 },
             )
             .await?;
+        context_attachment_timings.push(context_attachment_started.elapsed().as_nanos());
         let binding = NativeIntelligenceRunBinding {
             run_id: receipt.run_id.clone(),
             expected_revision: attached.revision,
             context_digest,
             envelope_digest,
         };
+        let final_use_terminal_started = Instant::now();
         let output = driver
             .run_intelligence(
                 &mut durable,
@@ -1050,6 +1058,7 @@ async fn measurement_signed_objective_daemon_round_trip() -> Result<()> {
             .await?
             .context("compiled measurement terminal disappeared")?;
         ensure!(terminal.phase == AgentRunPhase::Succeeded && terminal.terminal_observed);
+        final_use_terminal_timings.push(final_use_terminal_started.elapsed().as_nanos());
         execution_timings.push(started.elapsed().as_nanos());
         last_execution = Some((native_request_id, prompt, binding, output));
     }
@@ -1111,6 +1120,12 @@ async fn measurement_signed_objective_daemon_round_trip() -> Result<()> {
     )?;
     let (p50, p95, p99) = measured_percentiles(timings)?;
     let (execution_p50, execution_p95, execution_p99) = measured_percentiles(execution_timings)?;
+    let (compiled_publication_p50, compiled_publication_p95, compiled_publication_p99) =
+        measured_percentiles(compiled_publication_timings)?;
+    let (context_attachment_p50, context_attachment_p95, context_attachment_p99) =
+        measured_percentiles(context_attachment_timings)?;
+    let (final_use_terminal_p50, final_use_terminal_p95, final_use_terminal_p99) =
+        measured_percentiles(final_use_terminal_timings)?;
     println!(
         "OBJECTIVE_PRODUCT_MEASUREMENT={}",
         json!({
@@ -1125,6 +1140,29 @@ async fn measurement_signed_objective_daemon_round_trip() -> Result<()> {
                 "p95": execution_p95,
                 "p99": execution_p99
             },
+            "phaseLatencyNanoseconds": {
+                "signedIngressCompileDurableAppendCheckpointAndAgentdHandoff": {
+                    "p50": p50,
+                    "p95": p95,
+                    "p99": p99
+                },
+                "compiledPublicationAndAgentdHandoff": {
+                    "p50": compiled_publication_p50,
+                    "p95": compiled_publication_p95,
+                    "p99": compiled_publication_p99
+                },
+                "contextAttachment": {
+                    "p50": context_attachment_p50,
+                    "p95": context_attachment_p95,
+                    "p99": context_attachment_p99
+                },
+                "currentFinalUseProviderAndTerminalObservation": {
+                    "p50": final_use_terminal_p50,
+                    "p95": final_use_terminal_p95,
+                    "p99": final_use_terminal_p99
+                }
+            },
+            "atomicOwnerBoundaryNotSplit": true,
             "executionExactReplayNanoseconds": execution_replay_ns,
             "physicalProviderSends": physical_sends,
             "terminalObservations": execution_samples,

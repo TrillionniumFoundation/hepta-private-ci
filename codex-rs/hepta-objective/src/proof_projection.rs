@@ -40,13 +40,13 @@ pub fn encode_proof_bearing_objective_function_v1(
     let compiled = outcome.compile_result.as_ref().map_err(|_| {
         ObjectiveFunctionV1Error::ProjectionMismatch("compiled/conflict disposition")
     })?;
-    // Deliberately retain all native/source/profile/receipt and canonical-wire
-    // validation. The removed work is duplicate admission and feasibility, not
-    // authorization or validation of arbitrary caller-created receipts.
-    crate::objective_function_v1::encode_objective_function_v1(
+    // Deliberately retain all native/source/receipt and canonical-wire
+    // validation. Static profile validation and its exact digest come only from
+    // the opaque validated profile; no caller-controlled skip flag exists.
+    crate::objective_function_v1::encode_validated_profile_objective_function_v1(
         compiled,
         source,
-        profile.profile(),
+        profile,
         &outcome.receipt,
     )
 }

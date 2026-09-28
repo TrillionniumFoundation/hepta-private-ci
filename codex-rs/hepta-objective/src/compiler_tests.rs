@@ -122,10 +122,9 @@ fn forbidden_requested_action_returns_conflict() {
 #[test]
 fn multiple_action_overlaps_return_one_canonical_minimal_conflict() {
     let mut source = envelope();
-    source.allowed_actions.extend([
-        action("zeta-effect"),
-        action("alpha-effect"),
-    ]);
+    source
+        .allowed_actions
+        .extend([action("zeta-effect"), action("alpha-effect")]);
     source
         .forbidden_actions
         .extend([id("zeta-effect"), id("alpha-effect")]);

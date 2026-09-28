@@ -77,18 +77,35 @@ activation and release false. These cannot be derived from local command success
 claim of current qualification in a status paragraph must reference the exact source,
 run identity, result and artifact evidence; historical green checks cannot certify a new tree.
 
-## Remaining work, not promoted to completed state
+## Current source additions and remaining gates
 
-Full generation-local validated-profile reuse, consolidation of proof framing into one
-owner helper, versioned durable admission-proof persistence/recovery, and complete
-migration of planned typed semantics into the product source protocol remain separate
-source tasks. Current per-request raw-profile validation has not been described as cached.
+Generation-local validated-profile reuse is now implemented on the existing product path:
+`ObjectiveRuntimeHost::open` constructs one `ValidatedAdmissionProfileV1`, and submit calls
+the validated intelligence facade. Only static profile validation, indexes and the exact
+profile digest/revision/compiler-contract identity are reused. Per-request authentication,
+source identity, freshness, deadline and profile selection remain live checks, while trust,
+generation, fence and final-use authority remain product-owner checks. This is a source
+claim pending the exact candidate and deterministic-merge execution receipts.
 
-Selected-host measurement must distinguish cold profile setup, warm admission, native
-compile, maximum-conflict extraction, encode/decode, durable append, checkpoint sync and
-Agentd handoff. Record input class, repetitions, warmup, exact binary/toolchain identity,
-latency distribution and measured resource use. Missing observations stay missing; neither
-this procedure nor the removal of one repeated solve is a measured performance result.
+The target-host recorder now distinguishes cold profile setup, warm authenticated admission,
+native compile, protocol encode/decode, maximum-conflict extraction and observable product
+boundaries. The destination-owned durable append, checkpoint CAS and Agentd handoff remain
+one atomic externally observable boundary and are not assigned invented sub-timings. The
+recorder also captures an observed process-tree peak resident-set value and labels it as
+cumulative rather than per-phase isolation. Input class, sample counts, exact source/tree,
+toolchain and host identity remain in the receipt.
+
+Every exact-execution and target-measurement run derives an
+`evidence-projection.json` from its actual receipt. The projection records source-head,
+synthetic-merge and measurement observations with artifact hashes and run identity while
+forcing independent acceptance, deployment-host acceptance, activation and release to
+remain false/unverified. It supplements rather than replaces `CURRENT_STATE.json`.
+
+Consolidation of proof framing into one owner helper, versioned durable admission-proof
+persistence/recovery, complete migration of planned typed semantics into the product source
+protocol, selected deployment-host crash/backpressure qualification and independent
+acceptance remain separate work. Missing observations stay missing; source optimizations
+are not measured performance results until the corresponding artifact exists.
 
 Current exact-candidate source/merge passes, crash-cut/retry/revocation validation on the
 selected deployment host, independent acceptance and operator approvals still require
