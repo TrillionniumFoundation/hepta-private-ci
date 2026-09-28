@@ -163,6 +163,40 @@ fn delivery_aware_bridge_binds_only_the_final_exposed_subset() {
 }
 
 #[test]
+fn delivered_indices_preserve_serialized_response_order_and_position() {
+    let observation = observation(8, true);
+    let delivered = vec![
+        observation.selected_candidates[3].clone(),
+        observation.selected_candidates[1].clone(),
+        observation.selected_candidates[2].clone(),
+    ];
+    let event = retrieval_assignment_event_with_delivery(
+        id("record:ordered-delivery"),
+        id("episode:ordered-delivery"),
+        &observation,
+        &delivered,
+        true,
+        Some(digest("prepared-context")),
+    )
+    .expect("ordered delivery bridge");
+    let expected = delivered
+        .iter()
+        .map(candidate_identity_digest)
+        .collect::<Vec<_>>();
+    let mut ledger = LearningLedger::new();
+    ledger.append(event).expect("append");
+    let LedgerEvent::RetrievalAssignment(fact) = &ledger.records()[0].event else {
+        panic!("retrieval assignment");
+    };
+    let actual = fact
+        .delivered_candidate_indices
+        .iter()
+        .map(|index| fact.enumerated_candidate_digests[*index as usize])
+        .collect::<Vec<_>>();
+    assert_eq!(actual, expected);
+}
+
+#[test]
 fn downstream_policy_and_delivery_propensity_are_bound_separately() {
     let observation = observation(20, true);
     let delivered = vec![observation.selected_candidates[0].clone()];

@@ -11,7 +11,10 @@ use codex_hepta_memory_retrieval::MAX_ENGRAM_NODES;
 use codex_hepta_memory_retrieval::MAX_ENGRAM_SETTLING_STEPS;
 use codex_hepta_memory_retrieval::MAX_ENGRAM_SYNAPSES;
 use codex_hepta_memory_retrieval::MAX_GENERATION_BOUND_CANDIDATES;
+use codex_hepta_memory_retrieval::RetrievalChannelV1;
+use codex_hepta_memory_retrieval::RetrievalPolicyV1;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::FixedQ32;
 use serde::Deserialize;
 #[cfg(unix)]
 use std::fs::File;
@@ -37,6 +40,7 @@ const MAX_PUBLICATION_BYTES: usize = 2 * codec::MAX_CONTEXT_BYTES;
 const PPM_SCALE: u32 = 1_000_000;
 const LEGACY_CANARY_THRESHOLD_PPM: u32 = 50_000;
 const LEGACY_CANARY_COHORT_DOMAIN: &[u8] = b"hepta.retrieval.default-canary-cohort.v1";
+const MAX_PROVIDER_REQUEST_TIMEOUT_MS: u64 = 800;
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -217,6 +221,14 @@ pub(super) fn load(
     let descriptor: BootstrapDescriptor = serde_json::from_slice(&descriptor_bytes)
         .map_err(|error| format!("invalid retrieval bootstrap descriptor: {error}"))?;
     let delivery = DeliverySettings::from_descriptor(&descriptor)?;
+    if descriptor.request_timeout_ms == 0
+        || descriptor.request_timeout_ms > MAX_PROVIDER_REQUEST_TIMEOUT_MS
+    {
+        return Err(
+            "retrieval frontier timeout must fit the 1..=800ms host delivery budget"
+                .to_string(),
+        );
+    }
     if descriptor.owner_id != identity.agent_id.as_str()
         || descriptor.body_generation != identity.spawn_generation
     {
@@ -298,16 +310,33 @@ fn decode_publication(bytes: &[u8]) -> Result<SignedMemoryRetrievalContextV1, St
     if wire.schema != "hepta.agentd.retrieval-publication-file.v1" {
         return Err("unsupported retrieval publication file schema".to_string());
     }
+    let context = codec::decode(wire.context_json.as_bytes())?;
+    ensure_bootstrap_supported_policy(&context.retrieval_policy)?;
     Ok(SignedMemoryRetrievalContextV1 {
         owner: AgentId::parse(wire.owner_id).map_err(|error| error.to_string())?,
         body_generation: wire.body_generation,
         sequence: wire.sequence,
         not_before_unix_ms: wire.not_before_unix_ms,
         expires_unix_ms: wire.expires_unix_ms,
-        context: codec::decode(wire.context_json.as_bytes())?,
+        context,
         signature: hex_array(&wire.signature_hex)?,
     })
 }
+
+fn ensure_bootstrap_supported_policy(policy: &RetrievalPolicyV1) -> Result<(), String> {
+    if policy
+        .channel_weights
+        .iter()
+        .any(|row| row.channel == RetrievalChannelV1::Vector && row.weight > FixedQ32::ZERO)
+    {
+        return Err(
+            "ordinary retrieval bootstrap cannot enable Vector without an authenticated generation-bound encoder/index owner"
+                .to_string(),
+        );
+    }
+    Ok(())
+}
+
 fn hex_array<const N: usize>(text: &str) -> Result<[u8; N], String> {
     if text.len() != 2 * N
         || !text

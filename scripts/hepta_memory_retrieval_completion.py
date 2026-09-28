@@ -21,10 +21,16 @@ FILES = (
 
 
 def replace_once(text: str, old: str, new: str, label: str) -> str:
+    expected_count = 2 if label in {
+        "final sqlite publication fence",
+        "ranker final fence bounded",
+    } else 1
     count = text.count(old)
-    if count != 1:
-        raise ValueError(f"{label}: expected one preimage, found {count}")
-    return text.replace(old, new, 1)
+    if count != expected_count:
+        raise ValueError(
+            f"{label}: expected {expected_count} preimages, found {count}"
+        )
+    return text.replace(old, new, expected_count)
 
 
 def update(path: Path, edits: list[tuple[str, str, str]]) -> dict[str, str]:
@@ -191,6 +197,24 @@ def apply(root: Path) -> list[dict[str, str]]:
                     "        .map_err(|_| CognitiveContextError::RetrievalContextUnavailable)??;\n",
                 ),
                 (
+                    "revalidation snapshot deadline",
+                    "    let cut = store\n"
+                    "        .lane_c_snapshot(&access, &scope, now_seconds()?)\n"
+                    "        .await?;\n",
+                    "    let revalidation_snapshot_now = now_seconds()?;\n"
+                    "    let cut = executor\n"
+                    "        .run_async(\n"
+                    "            &request_work,\n"
+                    "            store.lane_c_snapshot(\n"
+                    "                &access,\n"
+                    "                &scope,\n"
+                    "                revalidation_snapshot_now,\n"
+                    "            ),\n"
+                    "        )\n"
+                    "        .await\n"
+                    "        .map_err(|_| CognitiveContextError::RetrievalContextUnavailable)??;\n",
+                ),
+                (
                     "final sqlite publication fence",
                     "    store\n"
                     "        .revalidate_lane_c_snapshot(&access, &scope, &cut, now_seconds()?)\n"
@@ -313,7 +337,7 @@ def main() -> int:
     receipts = apply(root)
     output = json.dumps(
         {
-            "schema": "hepta.memory-retrieval.completion-transform.v1",
+            "schema": "hepta.memory-retrieval.completion-transform.v2",
             "files": receipts,
             "production_activation": False,
             "release": False,

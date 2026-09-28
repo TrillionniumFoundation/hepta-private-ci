@@ -2,6 +2,7 @@
 //! Capacity belongs to the actual blocking closure, not the waiting future.
 //! Timeout/cancellation cannot release a slot while its worker is still alive.
 
+use std::future::Future;
 use std::sync::Arc;
 use std::time::Duration;
 use std::time::Instant;
@@ -45,8 +46,30 @@ impl RetrievalExecutor {
 
     pub(crate) fn profile_digest(&self) -> Digest32 {
         Digest32::of_bytes(
-            b"hepta.retrieval.executor.v1:delivery=2,800ms;shadow=1,40ms;work=250000;queue=0",
+            b"hepta.retrieval.executor.v2:delivery=2,800ms;shadow=1,40ms;work=250000;queue=0;async=absolute-deadline",
         )
+    }
+
+    pub(crate) async fn run_async<T, F>(
+        &self,
+        request: &RetrievalRequestWork,
+        operation: F,
+    ) -> Result<T, String>
+    where
+        F: Future<Output = T>,
+    {
+        request.checkpoint()?;
+        let value = tokio::time::timeout_at(
+            tokio::time::Instant::from_std(request.deadline),
+            operation,
+        )
+        .await
+        .map_err(|_| {
+            request.control.cancel();
+            "retrieval request deadline exceeded".to_string()
+        })?;
+        request.checkpoint()?;
+        Ok(value)
     }
 
     pub(crate) async fn run<T, F>(
@@ -106,6 +129,18 @@ pub(crate) struct RetrievalRequestWork {
     control: RecallWorkControlV1,
     deadline: Instant,
     class: RetrievalWorkClass,
+}
+
+impl RetrievalRequestWork {
+    pub(crate) fn checkpoint(&self) -> Result<(), String> {
+        if Instant::now() >= self.deadline {
+            self.control.cancel();
+            return Err("retrieval request deadline exceeded".to_string());
+        }
+        self.control
+            .checkpoint()
+            .map_err(|error| error.to_string())
+    }
 }
 
 impl Drop for RetrievalRequestWork {

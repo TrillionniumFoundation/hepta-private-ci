@@ -1,4 +1,8 @@
 use super::*;
+use codex_hepta_memory::sqlite_owner_retrieval_policy_v1;
+use codex_hepta_memory_retrieval::RetrievalChannelV1;
+use codex_hepta_memory_retrieval::RetrievalChannelWeightV1;
+use codex_hepta_types::FixedQ32;
 use serde_json::json;
 
 #[test]
@@ -43,6 +47,24 @@ fn publication_decoder_does_not_treat_a_signature_string_as_verified_context() {
         "context_json":"{}", "signature_hex":"00".repeat(64)
     });
     assert!(decode_publication(&serde_json::to_vec(&value).expect("json")).is_err());
+}
+
+#[test]
+fn ordinary_bootstrap_rejects_positive_vector_without_composed_owner() {
+    let mut policy = sqlite_owner_retrieval_policy_v1().expect("owner policy");
+    assert!(ensure_bootstrap_supported_policy(&policy).is_ok());
+    policy.channel_weights.push(RetrievalChannelWeightV1 {
+        channel: RetrievalChannelV1::Vector,
+        weight: FixedQ32::ONE,
+        maximum_candidates: 32,
+    });
+    assert_eq!(
+        ensure_bootstrap_supported_policy(&policy),
+        Err(
+            "ordinary retrieval bootstrap cannot enable Vector without an authenticated generation-bound encoder/index owner"
+                .to_string()
+        )
+    );
 }
 
 #[cfg(unix)]

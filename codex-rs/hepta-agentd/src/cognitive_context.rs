@@ -184,10 +184,20 @@ pub(crate) async fn read_with_retrieval_executor(
     }
     let mut pending_assignment = None;
 
-    let cut = store.lane_c_snapshot(&access, &scope, now).await?;
-    let observation = store
-        .observe_memory_retrieval(&access, &RetrievalRequest::new(query, now))
-        .await?;
+    let cut = executor
+        .run_async(&request_work, store.lane_c_snapshot(&access, &scope, now))
+        .await
+        .map_err(|_| CognitiveContextError::RetrievalContextUnavailable)??;
+    let observation = executor
+        .run_async(
+            &request_work,
+            store.observe_memory_retrieval(
+                &access,
+                &RetrievalRequest::new(query, now),
+            ),
+        )
+        .await
+        .map_err(|_| CognitiveContextError::RetrievalContextUnavailable)??;
     let mut record_ids = observation
         .candidates()
         .iter()
@@ -198,6 +208,9 @@ pub(crate) async fn read_with_retrieval_executor(
         .collect::<Result<Vec<_>, _>>()?;
     record_ids.sort();
     record_ids.dedup();
+    request_work
+        .checkpoint()
+        .map_err(|_| CognitiveContextError::RetrievalContextUnavailable)?;
     let admission_read = cut
         .read_ids(ReadIdsRequestV1 {
             snapshot_digest: cut.snapshot().snapshot_digest,
@@ -363,18 +376,20 @@ pub(crate) async fn read_with_retrieval_executor(
         let ranker = std::sync::Arc::clone(ranker);
         let rank_owner = owner.clone();
         let rank_query = query.to_string();
-        let (ranked_items, rank_observation) = tokio::task::spawn_blocking(move || {
-            let observation = ranker.rank(
-                &rank_owner,
-                body_generation,
-                &rank_query,
-                &mut admitted_items,
-            )?;
-            Ok::<_, String>((admitted_items, observation))
-        })
-        .await
-        .map_err(|_| CognitiveContextError::RankerUnavailable)?
-        .map_err(|_| CognitiveContextError::RankerUnavailable)?;
+        let (ranked_items, rank_observation) = executor
+            .run(&request_work, move |work| {
+                work.checkpoint().map_err(|error| error.to_string())?;
+                let observation = ranker.rank(
+                    &rank_owner,
+                    body_generation,
+                    &rank_query,
+                    &mut admitted_items,
+                )?;
+                work.checkpoint().map_err(|error| error.to_string())?;
+                Ok((admitted_items, observation))
+            })
+            .await
+            .map_err(|_| CognitiveContextError::RankerUnavailable)?;
         admitted_items = ranked_items;
         if rank_observation.applied {
             downstream_policy_digest = Some(rank_observation.policy_digest);
@@ -395,9 +410,18 @@ pub(crate) async fn read_with_retrieval_executor(
                 })
         })
         .collect::<Result<Vec<_>, _>>()?;
-    let statuses = store
-        .revalidate_memory_candidates(&access, &ordered_bindings, now_seconds()?)
-        .await?;
+    let revalidation_now = now_seconds()?;
+    let statuses = executor
+        .run_async(
+            &request_work,
+            store.revalidate_memory_candidates(
+                &access,
+                &ordered_bindings,
+                revalidation_now,
+            ),
+        )
+        .await
+        .map_err(|_| CognitiveContextError::RetrievalContextUnavailable)??;
 
     // Materialize raw text only after final ordering and revalidation. The
     // complete JSON budget is still enforced before response publication.
@@ -487,14 +511,29 @@ pub(crate) async fn read_with_retrieval_executor(
 
     // A concurrent correction, deletion, changed citation, expiry or restored
     // older database must not leak a stale projection into the response.
-    store
-        .revalidate_lane_c_snapshot(&access, &scope, &cut, now_seconds()?)
-        .await?;
+    let final_fence_now = now_seconds()?;
+    executor
+        .run_async(
+            &request_work,
+            store.revalidate_lane_c_snapshot(
+                &access,
+                &scope,
+                &cut,
+                final_fence_now,
+            ),
+        )
+        .await
+        .map_err(|_| CognitiveContextError::RetrievalContextUnavailable)??;
     if let Some(ranker) = ranker {
         let ranker = std::sync::Arc::clone(ranker);
-        tokio::task::spawn_blocking(move || ranker.revalidate())
+        executor
+            .run(&request_work, move |work| {
+                work.checkpoint().map_err(|error| error.to_string())?;
+                ranker.revalidate()?;
+                work.checkpoint().map_err(|error| error.to_string())?;
+                Ok(())
+            })
             .await
-            .map_err(|_| CognitiveContextError::RankerUnavailable)?
             .map_err(|_| CognitiveContextError::RankerUnavailable)?;
     }
     if let (Some(current), Some(expected)) = (current_retrieval, expected_retrieval_context_digest)
@@ -507,6 +546,10 @@ pub(crate) async fn read_with_retrieval_executor(
             return Err(CognitiveContextError::RetrievalContextUnavailable);
         }
     }
+    // Every owner, ranker and retrieval-lifecycle fence has passed. The
+    // append below is the idempotent AssignmentPrepared commit point.
+    // It is not publication or native-consumption evidence; those facts
+    // are joined from the durable native journal by exact context digest.
     if let Some(sink) = learning_sink.filter(|_| pending_assignment.is_some()) {
         let assignment =
             pending_assignment.ok_or(CognitiveContextError::RetrievalLearningUnavailable)?;
@@ -551,43 +594,35 @@ pub(crate) async fn read_with_retrieval_executor(
         };
         let sink = std::sync::Arc::clone(sink);
         let owner = owner.clone();
-        let appended = tokio::task::spawn_blocking(move || {
-            sink.append_with_delivery_policy(
-                &owner,
-                body_generation,
-                request_id,
-                &assignment,
-                &delivered_candidates,
-                context_exposed,
-                published_context_digest,
-                downstream_policy_digest,
-                delivery_propensity,
-            )
-        })
-        .await
-        .map_err(|_| CognitiveContextError::RetrievalLearningUnavailable)
-        .and_then(|result| result.map_err(|_| CognitiveContextError::RetrievalLearningUnavailable));
+        let appended = executor
+            .run(&request_work, move |work| {
+                work.checkpoint().map_err(|error| error.to_string())?;
+                let receipt = sink.append_with_delivery_policy(
+                    &owner,
+                    body_generation,
+                    request_id,
+                    &assignment,
+                    &delivered_candidates,
+                    context_exposed,
+                    published_context_digest,
+                    downstream_policy_digest,
+                    delivery_propensity,
+                )?;
+                work.checkpoint().map_err(|error| error.to_string())?;
+                Ok(receipt)
+            })
+            .await
+            .map_err(|_| CognitiveContextError::RetrievalLearningUnavailable);
         if delivers_hnmf {
             appended?;
         } else if appended.is_err() {
             eprintln!("shadow retrieval assignment append unavailable; no exposure recorded");
         }
     }
-    // Append completion is not a freshness fence. A prepared assignment does
-    // not prove native consumption; publication still requires current owners.
-    store
-        .revalidate_lane_c_snapshot(&access, &scope, &cut, now_seconds()?)
-        .await?;
-    if let (Some(current), Some(expected)) = (current_retrieval, expected_retrieval_context_digest)
-    {
-        if load_retrieval_context(current, owner, body_generation, executor, &request_work)
-            .await?
-            .binding_digest()
-            != expected
-        {
-            return Err(CognitiveContextError::RetrievalContextUnavailable);
-        }
-    }
+    // No fallible owner operation may follow a successful preparation
+    // append: a late failure would create a durable fact for a response
+    // the caller never received. External publication remains a separate
+    // native-journal observation.
     Ok(response)
 }
 
@@ -700,9 +735,18 @@ pub(crate) async fn revalidate_with_retrieval_executor(
     }
     let access = CognitiveAccess::agent_private(owner.clone());
     let scope = CognitiveScope::AgentPrivate;
-    let cut = store
-        .lane_c_snapshot(&access, &scope, now_seconds()?)
-        .await?;
+    let revalidation_snapshot_now = now_seconds()?;
+    let cut = executor
+        .run_async(
+            &request_work,
+            store.lane_c_snapshot(
+                &access,
+                &scope,
+                revalidation_snapshot_now,
+            ),
+        )
+        .await
+        .map_err(|_| CognitiveContextError::RetrievalContextUnavailable)??;
     if cut.snapshot().snapshot_digest != expected_snapshot {
         return Err(CognitiveStoreError::Conflict(
             "cognitive context snapshot is stale".to_string(),
@@ -768,16 +812,31 @@ pub(crate) async fn revalidate_with_retrieval_executor(
     // underlying memory rows remain unchanged.
     if let Some(ranker) = ranker {
         let ranker = std::sync::Arc::clone(ranker);
-        tokio::task::spawn_blocking(move || ranker.revalidate())
+        executor
+            .run(&request_work, move |work| {
+                work.checkpoint().map_err(|error| error.to_string())?;
+                ranker.revalidate()?;
+                work.checkpoint().map_err(|error| error.to_string())?;
+                Ok(())
+            })
             .await
-            .map_err(|_| CognitiveContextError::RankerUnavailable)?
             .map_err(|_| CognitiveContextError::RankerUnavailable)?;
     }
 
     // The optional ranker above may await. Recheck both owners after that gap.
-    store
-        .revalidate_lane_c_snapshot(&access, &scope, &cut, now_seconds()?)
-        .await?;
+    let final_fence_now = now_seconds()?;
+    executor
+        .run_async(
+            &request_work,
+            store.revalidate_lane_c_snapshot(
+                &access,
+                &scope,
+                &cut,
+                final_fence_now,
+            ),
+        )
+        .await
+        .map_err(|_| CognitiveContextError::RetrievalContextUnavailable)??;
     if let (Some(current), Some(expected)) = (current_retrieval, retrieval_context_digest) {
         if load_retrieval_context(current, owner, body_generation, executor, &request_work)
             .await?

@@ -1165,8 +1165,9 @@ fn normalize_event(event: &mut LedgerEvent) -> Result<(), LedgerError> {
                 return Err(LedgerError::RetrievalCandidateLimitExceeded);
             }
             // Every index refers to an identity, not its pre-normalization slot.
-            // Reorder the bounded identity vector and remap all three index sets
-            // together, so sorting cannot change which memory was delivered.
+            // Reorder the bounded identity vector and remap both canonical sets
+            // plus the ordered delivered sequence. The delivered vector's offset
+            // is the serialized response position and must not be sorted.
             let original = &assignment.enumerated_candidate_digests;
             let mut order: Vec<usize> = (0..original.len()).collect();
             order.sort_by_key(|index| original[*index]);
@@ -1201,7 +1202,11 @@ fn normalize_event(event: &mut LedgerEvent) -> Result<(), LedgerError> {
             }
             assignment.legal_candidate_indices.sort_unstable();
             assignment.selected_candidate_indices.sort_unstable();
-            assignment.delivered_candidate_indices.sort_unstable();
+            let delivered_unique = assignment
+                .delivered_candidate_indices
+                .iter()
+                .copied()
+                .collect::<BTreeSet<_>>();
             if assignment
                 .legal_candidate_indices
                 .windows(2)
@@ -1210,10 +1215,7 @@ fn normalize_event(event: &mut LedgerEvent) -> Result<(), LedgerError> {
                     .selected_candidate_indices
                     .windows(2)
                     .any(|pair| pair[0] == pair[1])
-                || assignment
-                    .delivered_candidate_indices
-                    .windows(2)
-                    .any(|pair| pair[0] == pair[1])
+                || delivered_unique.len() != assignment.delivered_candidate_indices.len()
             {
                 return Err(LedgerError::DuplicateRetrievalIndex);
             }

@@ -42,6 +42,7 @@ mod production_writer_host;
 mod prompt_runtime;
 mod qualification_writer;
 mod retrieval_executor;
+pub mod retrieval_delivery;
 mod retrieval_product_mode;
 mod runtime;
 mod runtime_tasks;
