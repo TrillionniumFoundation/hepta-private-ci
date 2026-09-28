@@ -16,9 +16,9 @@ permissions:
   contents: read
 
 concurrency:
-  # v2 deliberately bypasses pre-remediation runs that were queued with
-  # cancel-in-progress=false. Future v2 candidates cancel one another.
-  group: runtime-codex-qualification-v2-${{ github.event.pull_request.number || github.ref }}
+  # Candidate-scoped groups prevent a frozen queued run from blocking a newer
+  # exact source identity. No receipt is reused across candidate SHAs.
+  group: runtime-codex-qualification-v3-${{ github.sha }}
   cancel-in-progress: true
 
 jobs:
