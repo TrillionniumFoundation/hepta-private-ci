@@ -14,6 +14,13 @@ import tempfile
 
 SCHEMA = "hepta.cognitive.read.sqlite-capacity.v1"
 TEST_NAME = "cognitive_read_sqlite_capacity_report"
+TIME_FIELDS = (
+    "User time (seconds)",
+    "System time (seconds)",
+    "Percent of CPU this job got",
+    "Elapsed (wall clock) time (h:mm:ss or m:ss)",
+    "Maximum resident set size (kbytes)",
+)
 
 
 def git(root: Path, *args: str) -> str:
@@ -39,11 +46,13 @@ def parse_elapsed(value: str) -> int:
 
 def parse_time_report(path: Path) -> dict[str, int]:
     values: dict[str, str] = {}
-    for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
-        if ":" not in line:
-            continue
-        key, value = line.strip().split(":", 1)
-        values[key] = value.strip()
+    for raw_line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+        line = raw_line.strip()
+        for key in TIME_FIELDS:
+            prefix = f"{key}:"
+            if line.startswith(prefix):
+                values[key] = line[len(prefix) :].strip()
+                break
 
     def required(key: str) -> str:
         if key not in values:
