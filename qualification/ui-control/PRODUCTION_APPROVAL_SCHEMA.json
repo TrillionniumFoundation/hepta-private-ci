@@ -28,7 +28,7 @@
     "approvals": {
       "type": "array",
       "minItems": 3,
-      "maxItems": 16,
+      "maxItems": 3,
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -66,7 +66,7 @@
       "additionalProperties": false,
       "required": ["kind", "digest"],
       "properties": {
-        "kind": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "kind": { "const": "sigstore-bundle" },
         "digest": { "$ref": "#/$defs/sha256" }
       }
     },

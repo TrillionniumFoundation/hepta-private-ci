@@ -51,6 +51,9 @@ export const EXTERNAL_EVIDENCE_CLAIM_ORDER = Object.freeze([
 
 const SHA256 = /^[0-9a-f]{64}$/u;
 const FINAL_OUTCOMES = new Set(["passed", "failed", "not-required"]);
+const RELEASE_PREREQUISITES = Object.freeze(
+  EXTERNAL_EVIDENCE_STAGE_ORDER.filter(stage => stage !== "production-approval"),
+);
 
 function ledgerError(code, message) {
   const error = new Error(message);
@@ -152,12 +155,8 @@ export function createExternalEvidenceStageLedger() {
 
   const fail = (stage, failureCode) => {
     const current = requireStage(stage);
-    if (current.acceptedEvidence || current.observedOutcome === "passed") {
-      return;
-    }
-    if (current.observedOutcome === "not-required") {
-      return;
-    }
+    if (current.acceptedEvidence || current.observedOutcome === "passed") return;
+    if (current.observedOutcome === "not-required") return;
     results[stage] = {
       ...current,
       observedOutcome: "failed",
@@ -174,6 +173,13 @@ export function createExternalEvidenceStageLedger() {
     for (const stage of EXTERNAL_EVIDENCE_STAGE_ORDER) {
       if (!results[stage].acceptedEvidence) continue;
       for (const claim of STAGE_CLAIMS[stage]) projected[claim] = true;
+    }
+    const releasePrerequisitesAccepted = RELEASE_PREREQUISITES.every(
+      stage => results[stage].acceptedEvidence,
+    );
+    if (!releasePrerequisitesAccepted) {
+      projected.productionDeploymentApproved = false;
+      projected.releaseAuthorized = false;
     }
     return projected;
   };

@@ -1,17 +1,17 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { execFileSync, spawnSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
+import { execFileSync } from "node:child_process";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
+  REQUIRED_DEPLOYMENT_SECURITY_CHECKS,
+  REQUIRED_REAL_BACKEND_CASES,
   deploymentSubject,
   safeFailure,
-  sha256,
+  validateAuthorityEvidence,
   validateChaosEvidence,
   validateDeploymentSecurityReceipt,
-  validateAuthorityEvidence,
   validateIndependentAcceptance,
   validateIndependentSecurityReview,
   validateOperationalExercise,
@@ -19,6 +19,7 @@ import {
   validateRealBackendReceipt,
   validateRepositoryQualificationReceipt,
 } from "../../../qualification/ui-control/external-evidence-lib.mjs";
+import { UI_CONTROL_CSRF_SUBSTITUTION_KIND } from "../../../qualification/ui-control/deployment-asset-invariants.mjs";
 
 const commit = "a".repeat(40);
 const tree = "b".repeat(40);
@@ -27,6 +28,7 @@ const raw = "d".repeat(64);
 const now = Date.parse("2026-09-28T00:00:00Z");
 const executedAt = "2026-09-27T00:00:00Z";
 const expected = { candidateCommit: commit, candidateTree: tree, backendDeploymentDigest: digest };
+const fingerprint = Array.from({ length: 32 }, () => "AA").join(":");
 
 function chaosEvidence() {
   return {
@@ -43,6 +45,64 @@ function chaosEvidence() {
       { id: "restart-reconciles-terminal-state", status: "passed", operationId: "op-4", observedRecordCount: 1, observedSideEffectCount: 1, terminalStatus: "succeeded", rawEvidenceDigest: raw },
     ],
     rawEvidenceDigest: raw,
+  };
+}
+
+function deploymentReceipt() {
+  return {
+    schema: "hepta.ui-control.deployment-security-receipt.v2",
+    status: "passed",
+    candidateCommit: commit,
+    candidateTree: tree,
+    backendDeploymentDigest: digest,
+    deployment: { observedAt: executedAt },
+    source: { browserBuildManifestSha256: "2".repeat(64) },
+    tls: {
+      protocol: "TLSv1.3",
+      cipher: "TLS_AES_256_GCM_SHA384",
+      certificateValidTo: "2027-09-27T00:00:00Z",
+      certificateFingerprint256: fingerprint,
+    },
+    assets: {
+      verifiedAssetCount: 17,
+      runtimeSubstitutions: [{ path: "index.html", kind: UI_CONTROL_CSRF_SUBSTITUTION_KIND }],
+    },
+    checks: [...REQUIRED_DEPLOYMENT_SECURITY_CHECKS],
+    claims: { deployedSecurityObserved: true, exactCandidateAssetsObserved: true },
+  };
+}
+
+function backendReceipt() {
+  return {
+    schema: "hepta.ui-control.real-backend-receipt.v2",
+    status: "passed",
+    candidateCommit: commit,
+    candidateTree: tree,
+    backendDeploymentDigest: digest,
+    backend: {
+      observedAt: executedAt,
+      primaryIdentity: "operator-primary",
+      secondaryIdentity: "operator-secondary",
+      runtimeGeneration: 7,
+      runtimeRevision: 12,
+    },
+    cases: [...REQUIRED_REAL_BACKEND_CASES],
+    terminalObservations: {
+      duplicateOperation: "succeeded",
+      responseLossOperation: "succeeded",
+    },
+    evidence: {
+      chaosEvidenceSha256: "3".repeat(64),
+      chaosRawEvidenceDigest: "4".repeat(64),
+      authorityEvidenceSha256: "5".repeat(64),
+    },
+    claims: {
+      realBackendSemanticsQualified: true,
+      durableIdempotencyQualified: true,
+      crashRestartQualified: true,
+      permissionRevisionAndRevocationQualified: true,
+      sessionSwitchQualified: true,
+    },
   };
 }
 
@@ -178,7 +238,6 @@ test("failure projection strips control characters and bounds output", () => {
   assert.ok(!projected.message.includes("\u0000"));
 });
 
-
 test("repository, deployment, and real-backend receipts remain exact-subject gates", () => {
   const source = {
     schema: "hepta.ui-control.qualification-receipt.v2",
@@ -212,42 +271,20 @@ test("repository, deployment, and real-backend receipts remain exact-subject gat
   const merge = structuredClone(source);
   merge.candidate.kind = "synthetic-merge";
   merge.candidate.evaluated = { sha: "e".repeat(40), tree: "f".repeat(40) };
+  merge.candidate.base = { sha: "1".repeat(40), tree: "2".repeat(40) };
   merge.verificationStages.mergeTreePassed.state = "passed";
   merge.claims.deterministicMergeQualified = true;
   assert.doesNotThrow(() => validateRepositoryQualificationReceipt(merge, "synthetic-merge", expected));
 
-  const deployment = {
-    schema: "hepta.ui-control.deployment-security-receipt.v2",
-    status: "passed",
-    candidateCommit: commit,
-    candidateTree: tree,
-    backendDeploymentDigest: digest,
-    deployment: { observedAt: executedAt },
-    source: { browserBuildManifestSha256: "2".repeat(64) },
-    assets: { verifiedAssetCount: 17 },
-    claims: { deployedSecurityObserved: true, exactCandidateAssetsObserved: true },
-  };
+  const deployment = deploymentReceipt();
   assert.doesNotThrow(() => validateDeploymentSecurityReceipt(deployment, expected, { now }));
+  deployment.checks = deployment.checks.slice(1);
+  assert.throws(() => validateDeploymentSecurityReceipt(deployment, expected, { now }), /deployment checks/u);
 
-  const backend = {
-    schema: "hepta.ui-control.real-backend-receipt.v2",
-    status: "passed",
-    candidateCommit: commit,
-    candidateTree: tree,
-    backendDeploymentDigest: digest,
-    backend: { observedAt: executedAt },
-    cases: ["duplicate", "conflict", "restart"],
-    claims: {
-      realBackendSemanticsQualified: true,
-      durableIdempotencyQualified: true,
-      crashRestartQualified: true,
-      permissionRevisionAndRevocationQualified: true,
-      sessionSwitchQualified: true,
-    },
-  };
+  const backend = backendReceipt();
   assert.doesNotThrow(() => validateRealBackendReceipt(backend, expected, { now }));
-  backend.claims.crashRestartQualified = false;
-  assert.throws(() => validateRealBackendReceipt(backend, expected, { now }), /crashRestartQualified/u);
+  backend.cases = backend.cases.slice(1);
+  assert.throws(() => validateRealBackendReceipt(backend, expected, { now }), /real-backend cases/u);
 });
 
 test("all external qualification command modules parse under the supported Node runtime", () => {
@@ -260,7 +297,6 @@ test("all external qualification command modules parse under the supported Node 
     execFileSync(process.execPath, ["--check", `${root}${relativePath}`], { stdio: "pipe" });
   }
 });
-
 
 test("external evidence schemas remain valid JSON contracts", () => {
   const root = fileURLToPath(new URL("../../../", import.meta.url));

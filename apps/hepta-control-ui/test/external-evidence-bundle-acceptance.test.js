@@ -6,11 +6,16 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
+  REQUIRED_DEPLOYMENT_SECURITY_CHECKS,
+  REQUIRED_REAL_BACKEND_CASES,
   deploymentSubject,
   sha256,
 } from "../../../qualification/ui-control/external-evidence-lib.mjs";
+import { UI_CONTROL_CSRF_SUBSTITUTION_KIND } from "../../../qualification/ui-control/deployment-asset-invariants.mjs";
 
-test("bundle validation accepts one exact, mutually bound evidence set", () => {
+const fingerprint = Array.from({ length: 32 }, () => "AA").join(":");
+
+test("bundle validation accepts one exact, mutually bound evidence set on main", () => {
   const root = fileURLToPath(new URL("../../../", import.meta.url));
   const directory = mkdtempSync(join(tmpdir(), "ui-control-external-accepted-"));
   try {
@@ -22,9 +27,11 @@ test("bundle validation accepts one exact, mutually bound evidence set", () => {
     execFileSync("git", ["commit", "-q", "-m", "candidate"], { cwd: directory });
     const candidateCommit = execFileSync("git", ["rev-parse", "HEAD"], { cwd: directory, encoding: "utf8" }).trim();
     const candidateTree = execFileSync("git", ["rev-parse", "HEAD^{tree}"], { cwd: directory, encoding: "utf8" }).trim();
+    execFileSync("git", ["update-ref", "refs/remotes/origin/main", candidateCommit], { cwd: directory });
     const selected = deploymentSubject("https://control.example.test/console", "release-accepted");
     const observedAt = new Date().toISOString();
     const approvalExpiry = new Date(Date.now() + 24 * 60 * 60_000).toISOString();
+    const certificateExpiry = new Date(Date.now() + 365 * 24 * 60 * 60_000).toISOString();
     const manifestDigest = "8".repeat(64);
     const evidenceRaw = "9".repeat(64);
     const writeReceipt = (name, value) => {
@@ -86,7 +93,17 @@ test("bundle validation accepts one exact, mutually bound evidence set", () => {
       backendDeploymentDigest: selected.digest,
       source: { sha: candidateCommit, tree: candidateTree, browserBuildManifestSha256: manifestDigest },
       deployment: { ...selected.subject, observedAt },
-      assets: { verifiedAssetCount: 19 },
+      tls: {
+        protocol: "TLSv1.3",
+        cipher: "TLS_AES_256_GCM_SHA384",
+        certificateValidTo: certificateExpiry,
+        certificateFingerprint256: fingerprint,
+      },
+      assets: {
+        verifiedAssetCount: 19,
+        runtimeSubstitutions: [{ path: "index.html", kind: UI_CONTROL_CSRF_SUBSTITUTION_KIND }],
+      },
+      checks: [...REQUIRED_DEPLOYMENT_SECURITY_CHECKS],
       claims: { deployedSecurityObserved: true, exactCandidateAssetsObserved: true },
     });
     const backendReceipt = writeReceipt("backend.json", {
@@ -95,8 +112,24 @@ test("bundle validation accepts one exact, mutually bound evidence set", () => {
       candidateCommit,
       candidateTree,
       backendDeploymentDigest: selected.digest,
-      backend: { ...selected.subject, observedAt },
-      cases: ["idempotency", "response-loss", "revocation", "restart"],
+      backend: {
+        ...selected.subject,
+        observedAt,
+        primaryIdentity: "operator-primary",
+        secondaryIdentity: "operator-secondary",
+        runtimeGeneration: 7,
+        runtimeRevision: 12,
+      },
+      cases: [...REQUIRED_REAL_BACKEND_CASES],
+      terminalObservations: {
+        duplicateOperation: "succeeded",
+        responseLossOperation: "succeeded",
+      },
+      evidence: {
+        chaosEvidenceSha256: "3".repeat(64),
+        chaosRawEvidenceDigest: "4".repeat(64),
+        authorityEvidenceSha256: "5".repeat(64),
+      },
       claims: {
         realBackendSemanticsQualified: true,
         durableIdempotencyQualified: true,
@@ -182,7 +215,6 @@ test("bundle validation accepts one exact, mutually bound evidence set", () => {
           UI_CONTROL_INDEPENDENT_SECURITY_RECEIPT: securityReceipt.path,
           UI_CONTROL_OPERATIONAL_EXERCISE_RECEIPT: operationsReceipt.path,
           UI_CONTROL_PRODUCTION_APPROVAL_RECEIPT: approvalReceipt.path,
-          UI_CONTROL_REQUIRE_MAIN_ANCESTRY: "false",
         },
         encoding: "utf8",
       },
@@ -192,6 +224,7 @@ test("bundle validation accepts one exact, mutually bound evidence set", () => {
     assert.equal(bundle.status, "accepted");
     assert.equal(bundle.claims.productionDeploymentApproved, true);
     assert.equal(bundle.claims.releaseAuthorized, true);
+    assert.equal(bundle.stageResults["main-ancestry"].acceptedEvidence, true);
     assert.equal(bundle.stageResults["production-approval"].observedOutcome, "passed");
     assert.equal(bundle.stageResults["production-approval"].acceptedEvidence, true);
     assert.deepEqual(bundle.evidenceDigests, { ...approvalEvidenceDigests, productionApproval: approvalReceipt.digest });

@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 import { execFileSync } from "node:child_process";
-import { readFile, stat, writeFile } from "node:fs/promises";
+import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
-import { mkdir } from "node:fs/promises";
 import {
   assertEvidence,
   deploymentSubject,
@@ -79,21 +78,17 @@ try {
   };
   ledger.accept(stage);
 
-  if (process.env.UI_CONTROL_REQUIRE_MAIN_ANCESTRY === "true") {
-    stage = "main-ancestry";
-    ledger.begin(stage);
-    const mainRef = process.env.UI_CONTROL_MAIN_REF || "refs/remotes/origin/main";
-    try {
-      execFileSync("git", ["merge-base", "--is-ancestor", candidate.commit, mainRef], { stdio: "pipe" });
-    } catch {
-      const error = new Error(`candidate ${candidate.commit} is not reachable from ${mainRef}`);
-      error.code = "UI_CONTROL_CANDIDATE_NOT_ON_MAIN";
-      throw error;
-    }
-    ledger.accept(stage);
-  } else {
-    ledger.skip("main-ancestry", "not-required-by-this-invocation");
+  stage = "main-ancestry";
+  ledger.begin(stage);
+  const mainRef = "refs/remotes/origin/main";
+  try {
+    execFileSync("git", ["merge-base", "--is-ancestor", candidate.commit, mainRef], { stdio: "pipe" });
+  } catch {
+    const error = new Error(`candidate ${candidate.commit} is not reachable from ${mainRef}`);
+    error.code = "UI_CONTROL_CANDIDATE_NOT_ON_MAIN";
+    throw error;
   }
+  ledger.accept(stage);
 
   stage = "repository-source-head";
   ledger.begin(stage);
@@ -150,6 +145,12 @@ try {
   );
   validateProductionApproval(productionApproval, expected, approvalBoundDigests);
   ledger.accept(stage);
+  const claims = ledger.claims();
+  assertEvidence(
+    claims.productionDeploymentApproved === true && claims.releaseAuthorized === true,
+    "UI_CONTROL_RELEASE_PREREQUISITES",
+    "production approval cannot authorize release until every prerequisite stage is accepted",
+  );
 
   await emit({
     schema: "hepta.ui-control.external-evidence-bundle.v1",
@@ -161,7 +162,7 @@ try {
     backendDeploymentDigest,
     evidenceDigests,
     stageResults: ledger.snapshot(),
-    claims: ledger.claims(),
+    claims,
   });
 } catch (error) {
   const failure = safeFailure(error, stage);

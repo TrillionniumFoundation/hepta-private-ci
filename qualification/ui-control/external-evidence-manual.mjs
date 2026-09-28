@@ -155,19 +155,28 @@ export function validateOperationalExercise(receipt, expected, options = {}) {
 export function validateProductionApproval(receipt, expected, evidenceDigests, options = {}) {
   const now = options.now ?? Date.now();
   validateCommonReceipt(receipt, "hepta.ui-control.production-approval-receipt.v1", expected, now, options.maxAgeMs ?? 30 * 24 * 60 * 60_000);
+  const approvedAt = Date.parse(receipt.approvedAt);
   const expiresAt = Date.parse(receipt.expiresAt);
-  assertEvidence(Number.isFinite(expiresAt), "UI_CONTROL_EVIDENCE_TIME", "expiresAt is not a valid timestamp");
-  assertEvidence(expiresAt > now, "UI_CONTROL_APPROVAL_EXPIRED", "production approval is expired");
-  assertEvidence(receipt.signature?.kind && SHA256.test(receipt.signature?.digest ?? ""), "UI_CONTROL_APPROVAL_SIGNATURE", "retained approval signature metadata is required");
+  assertEvidence(Number.isFinite(approvedAt) && Number.isFinite(expiresAt), "UI_CONTROL_EVIDENCE_TIME", "approval timestamps are invalid");
+  assertEvidence(expiresAt > now && expiresAt > approvedAt, "UI_CONTROL_APPROVAL_EXPIRED", "production approval is expired or has an invalid lifetime");
+  assertEvidence(expiresAt <= approvedAt + 90 * 24 * 60 * 60_000, "UI_CONTROL_APPROVAL_LIFETIME", "production approval lifetime exceeds 90 days");
+  assertEvidence(receipt.signature?.kind === "sigstore-bundle" && SHA256.test(receipt.signature?.digest ?? ""), "UI_CONTROL_APPROVAL_SIGNATURE", "retained Sigstore bundle metadata is required");
   assertEvidence(Array.isArray(receipt.approvals), "UI_CONTROL_APPROVALS", "production approvals are required");
   const roles = new Set();
+  const identities = new Set();
   for (const item of receipt.approvals) {
-    boundedText(item?.identity, "approval.identity");
+    const identity = boundedText(item?.identity, "approval.identity");
     assertEvidence(["deployment-authority", "release-authority", "security-authority"].includes(item?.role), "UI_CONTROL_APPROVAL_ROLE", `unsupported approval role: ${item?.role ?? "unknown"}`);
     assertEvidence(!roles.has(item.role), "UI_CONTROL_APPROVAL_DUPLICATE_ROLE", `duplicate approval role: ${item.role}`);
+    assertEvidence(!identities.has(identity), "UI_CONTROL_APPROVAL_DUPLICATE_IDENTITY", "deployment, release, and security approvals require distinct identities");
     roles.add(item.role);
+    identities.add(identity);
   }
   assertEvidence(["deployment-authority", "release-authority", "security-authority"].every(role => roles.has(role)), "UI_CONTROL_APPROVAL_ROLES", "deployment, release, and security authorities must approve");
+  assertEvidence(identities.size >= 3, "UI_CONTROL_APPROVAL_IDENTITIES", "three distinct approval identities are required");
+  const expectedKeys = Object.keys(evidenceDigests).sort();
+  const actualKeys = Object.keys(receipt.evidenceDigests ?? {}).sort();
+  assertEvidence(JSON.stringify(actualKeys) === JSON.stringify(expectedKeys), "UI_CONTROL_APPROVAL_EVIDENCE_KEYS", "production approval evidence digest set is incomplete or contains extras");
   for (const [key, digest] of Object.entries(evidenceDigests)) {
     assertEvidence(receipt.evidenceDigests?.[key] === digest, "UI_CONTROL_APPROVAL_EVIDENCE_DIGEST", `production approval does not bind ${key}`);
   }

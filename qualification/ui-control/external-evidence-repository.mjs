@@ -1,10 +1,62 @@
 import {
   SHA1,
   SHA256,
+  TERMINAL,
   assertEvidence,
+  boundedText,
   exactSha,
   parseTimestamp,
 } from "./external-evidence-primitives.mjs";
+import { UI_CONTROL_CSRF_SUBSTITUTION_KIND } from "./deployment-asset-invariants.mjs";
+
+export const REQUIRED_DEPLOYMENT_SECURITY_CHECKS = Object.freeze([
+  "tls-1.2-or-newer-and-valid-certificate",
+  "csp",
+  "hsts",
+  "no-store",
+  "browser-isolation-headers",
+  "bounded-csrf-bootstrap-substitution",
+  "exact-deployed-asset-manifest",
+  "csrf-before-connect",
+  "cors-preflight-rejection",
+  "cross-origin-rejection",
+  "authenticated-connect",
+  "secure-httponly-samesite-host-only-cookie",
+  "authenticated-view",
+  "mutation-csrf-precheck",
+  "authenticated-close",
+]);
+
+export const REQUIRED_REAL_BACKEND_CASES = Object.freeze([
+  "crash-restart-evidence",
+  "permission-revision-and-revocation-evidence",
+  "two-authenticated-identities",
+  "concurrent-identical-operation",
+  "changed-payload-conflict",
+  "rejected-before-admission-no-record",
+  "cross-identity-lookup-denied",
+  "first-operation-terminal-lookup",
+  "fresh-snapshot-before-next-mutation",
+  "accepted-response-loss-lookup",
+  "response-loss-terminal-lookup",
+  "post-qualification-snapshot-continuity",
+  "session-revocation",
+  "session-switch-principal-continuity",
+  "secondary-session-close",
+]);
+
+function assertExactStringSet(values, required, code, label) {
+  assertEvidence(Array.isArray(values), code, `${label} must be an array`);
+  assertEvidence(values.length === required.length, code, `${label} must contain exactly the required entries`);
+  const observed = new Set();
+  for (const value of values) {
+    assertEvidence(typeof value === "string" && required.includes(value), code, `${label} contains an unexpected entry: ${String(value)}`);
+    assertEvidence(!observed.has(value), code, `${label} contains a duplicate entry: ${value}`);
+    observed.add(value);
+  }
+  assertEvidence(required.every(value => observed.has(value)), code, `${label} is incomplete`);
+  return observed;
+}
 
 export function validateRepositoryQualificationReceipt(receipt, kind, expected) {
   assertEvidence(receipt && typeof receipt === "object" && !Array.isArray(receipt), "UI_CONTROL_QUALIFICATION_RECEIPT", "repository qualification receipt must be an object");
@@ -20,6 +72,10 @@ export function validateRepositoryQualificationReceipt(receipt, kind, expected) 
   if (kind === "source-head") {
     assertEvidence(receipt.candidate.evaluated.sha === expected.candidateCommit, "UI_CONTROL_SOURCE_RECEIPT_COMMIT", "source-head evaluated another commit");
     assertEvidence(receipt.candidate.evaluated.tree === expected.candidateTree, "UI_CONTROL_SOURCE_RECEIPT_TREE", "source-head evaluated another tree");
+  } else {
+    exactSha(receipt.candidate?.base?.sha, "candidate.base.sha", SHA1);
+    exactSha(receipt.candidate?.base?.tree, "candidate.base.tree", SHA1);
+    assertEvidence(receipt.candidate.evaluated.sha !== expected.candidateCommit, "UI_CONTROL_MERGE_RECEIPT_COMMIT", "synthetic-merge receipt did not evaluate a merge commit");
   }
   assertEvidence(receipt.verificationStages?.sourceTestsPassed?.state === "passed", "UI_CONTROL_QUALIFICATION_SOURCE", `${kind} source tests were not accepted`);
   assertEvidence(receipt.verificationStages?.browserTestsPassed?.state === "passed", "UI_CONTROL_QUALIFICATION_BROWSER", `${kind} browser tests were not accepted`);
@@ -34,6 +90,7 @@ export function validateRepositoryQualificationReceipt(receipt, kind, expected) 
   exactSha(receipt.artifacts?.statusManifestSha256, "artifacts.statusManifestSha256", SHA256);
   return Object.freeze({
     evaluated: Object.freeze({ ...receipt.candidate.evaluated }),
+    base: receipt.candidate.base ? Object.freeze({ ...receipt.candidate.base }) : null,
     browserBuildManifestSha256: receipt.artifacts.browserBuildManifestSha256,
   });
 }
@@ -53,7 +110,21 @@ export function validateDeploymentSecurityReceipt(receipt, expected, options = {
   exactSha(receipt.source?.browserBuildManifestSha256, "source.browserBuildManifestSha256", SHA256);
   assertEvidence(receipt.claims?.deployedSecurityObserved === true, "UI_CONTROL_DEPLOYMENT_CLAIM", "deployed security was not accepted");
   assertEvidence(receipt.claims?.exactCandidateAssetsObserved === true, "UI_CONTROL_DEPLOYMENT_ASSET_CLAIM", "exact candidate assets were not observed");
-  assertEvidence(Number.isInteger(receipt.assets?.verifiedAssetCount) && receipt.assets.verifiedAssetCount > 0, "UI_CONTROL_DEPLOYMENT_ASSETS", "no deployed assets were verified");
+  assertEvidence(Number.isInteger(receipt.assets?.verifiedAssetCount) && receipt.assets.verifiedAssetCount > 1, "UI_CONTROL_DEPLOYMENT_ASSETS", "the deployed browser asset set was not fully verified");
+  assertEvidence(
+    Array.isArray(receipt.assets?.runtimeSubstitutions) &&
+      receipt.assets.runtimeSubstitutions.length === 1 &&
+      receipt.assets.runtimeSubstitutions[0]?.path === "index.html" &&
+      receipt.assets.runtimeSubstitutions[0]?.kind === UI_CONTROL_CSRF_SUBSTITUTION_KIND,
+    "UI_CONTROL_DEPLOYMENT_SUBSTITUTION",
+    "deployment receipt does not bind the sole allowed CSRF bootstrap substitution",
+  );
+  assertExactStringSet(receipt.checks, REQUIRED_DEPLOYMENT_SECURITY_CHECKS, "UI_CONTROL_DEPLOYMENT_CHECKS", "deployment checks");
+  assertEvidence(["TLSv1.2", "TLSv1.3"].includes(receipt.tls?.protocol), "UI_CONTROL_DEPLOYMENT_TLS", "deployment receipt has an unsupported TLS protocol");
+  boundedText(receipt.tls?.cipher, "tls.cipher", 128);
+  const certificateValidTo = Date.parse(receipt.tls?.certificateValidTo);
+  assertEvidence(Number.isFinite(certificateValidTo) && certificateValidTo > now, "UI_CONTROL_DEPLOYMENT_TLS_CERTIFICATE", "deployment TLS certificate is expired or invalid");
+  assertEvidence(/^(?:[0-9A-F]{2}:){31}[0-9A-F]{2}$/u.test(receipt.tls?.certificateFingerprint256 ?? ""), "UI_CONTROL_DEPLOYMENT_TLS_FINGERPRINT", "deployment TLS certificate fingerprint is missing or invalid");
   return Object.freeze({ browserBuildManifestSha256: receipt.source.browserBuildManifestSha256 });
 }
 
@@ -69,6 +140,17 @@ export function validateRealBackendReceipt(receipt, expected, options = {}) {
   assertEvidence(receipt.candidateTree === expected.candidateTree, "UI_CONTROL_BACKEND_TREE", "real-backend receipt is bound to another candidate tree");
   assertEvidence(receipt.backendDeploymentDigest === expected.backendDeploymentDigest, "UI_CONTROL_BACKEND_DEPLOYMENT", "real-backend receipt is bound to another deployment");
   parseTimestamp(receipt.backend?.observedAt, "backend observedAt", now, options.maxAgeMs ?? 30 * 24 * 60 * 60_000);
+  const primaryIdentity = boundedText(receipt.backend?.primaryIdentity, "backend.primaryIdentity", 192);
+  const secondaryIdentity = boundedText(receipt.backend?.secondaryIdentity, "backend.secondaryIdentity", 192);
+  assertEvidence(primaryIdentity !== secondaryIdentity, "UI_CONTROL_BACKEND_IDENTITY_ISOLATION", "real-backend receipt reused one identity for both qualification principals");
+  assertEvidence(Number.isSafeInteger(receipt.backend?.runtimeGeneration) && receipt.backend.runtimeGeneration > 0, "UI_CONTROL_BACKEND_GENERATION", "real-backend runtime generation is invalid");
+  assertEvidence(Number.isSafeInteger(receipt.backend?.runtimeRevision) && receipt.backend.runtimeRevision > 0, "UI_CONTROL_BACKEND_REVISION", "real-backend runtime revision is invalid");
+  assertExactStringSet(receipt.cases, REQUIRED_REAL_BACKEND_CASES, "UI_CONTROL_BACKEND_CASES", "real-backend cases");
+  assertEvidence(TERMINAL.has(receipt.terminalObservations?.duplicateOperation), "UI_CONTROL_BACKEND_TERMINAL", "duplicate operation lacks a terminal observation");
+  assertEvidence(TERMINAL.has(receipt.terminalObservations?.responseLossOperation), "UI_CONTROL_BACKEND_TERMINAL", "response-loss operation lacks a terminal observation");
+  exactSha(receipt.evidence?.chaosEvidenceSha256, "evidence.chaosEvidenceSha256", SHA256);
+  exactSha(receipt.evidence?.chaosRawEvidenceDigest, "evidence.chaosRawEvidenceDigest", SHA256);
+  exactSha(receipt.evidence?.authorityEvidenceSha256, "evidence.authorityEvidenceSha256", SHA256);
   for (const claim of [
     "realBackendSemanticsQualified",
     "durableIdempotencyQualified",
@@ -78,5 +160,5 @@ export function validateRealBackendReceipt(receipt, expected, options = {}) {
   ]) {
     assertEvidence(receipt.claims?.[claim] === true, "UI_CONTROL_BACKEND_CLAIM", `real-backend claim is not accepted: ${claim}`);
   }
-  return Object.freeze({ cases: Object.freeze([...(receipt.cases ?? [])]) });
+  return Object.freeze({ cases: Object.freeze([...receipt.cases]) });
 }

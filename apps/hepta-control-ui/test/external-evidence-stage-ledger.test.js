@@ -79,3 +79,14 @@ test("accepted stage evidence is monotone and cannot be erased by failure handli
     error => error?.code === "UI_CONTROL_EVIDENCE_LEDGER_TRANSITION",
   );
 });
+
+test("production approval cannot authorize release while any prerequisite stage is absent", () => {
+  const ledger = createExternalEvidenceStageLedger();
+  ledger.begin("production-approval");
+  ledger.attachEvidence("production-approval", digest("f"));
+  ledger.accept("production-approval");
+  const claims = ledger.claims();
+  assert.equal(claims.productionDeploymentApproved, false);
+  assert.equal(claims.releaseAuthorized, false);
+  assert.equal(ledger.snapshot()["production-approval"].acceptedEvidence, true);
+});

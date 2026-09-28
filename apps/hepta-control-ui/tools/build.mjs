@@ -2,6 +2,10 @@ import { createHash } from "node:crypto";
 import { cp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
+import {
+  UI_CONTROL_BROWSER_BUILD_SCHEMA,
+  UI_CONTROL_RUNTIME_SUBSTITUTIONS,
+} from "../../../qualification/ui-control/deployment-asset-invariants.mjs";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const dist = join(root, "dist");
@@ -21,7 +25,8 @@ async function collect(directory) {
 await collect(dist);
 
 const manifest = {
-  schema: "hepta.ui-control.browser-build.v1",
+  schema: UI_CONTROL_BROWSER_BUILD_SCHEMA,
+  runtimeSubstitutions: UI_CONTROL_RUNTIME_SUBSTITUTIONS,
   files: {},
 };
 for (const path of files.sort()) {

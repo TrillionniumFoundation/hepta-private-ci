@@ -86,10 +86,50 @@ test("bundle validation emits a structured fail-closed receipt", () => {
   }
 });
 
+
+test("off-main candidate fails before production evidence can authorize release", () => {
+  const directory = mkdtempSync(join(tmpdir(), "ui-control-external-off-main-"));
+  try {
+    const candidate = initializeCandidate(directory);
+    execFileSync("git", ["checkout", "--orphan", "unrelated-main"], { cwd: directory, stdio: "ignore" });
+    execFileSync("git", ["rm", "-rf", "."], { cwd: directory, stdio: "ignore" });
+    writeFileSync(join(directory, "main.txt"), "unrelated main\n");
+    execFileSync("git", ["add", "main.txt"], { cwd: directory });
+    execFileSync("git", ["commit", "-q", "-m", "unrelated main"], { cwd: directory });
+    const unrelatedMain = execFileSync("git", ["rev-parse", "HEAD"], { cwd: directory, encoding: "utf8" }).trim();
+    execFileSync("git", ["update-ref", "refs/remotes/origin/main", unrelatedMain], { cwd: directory });
+    execFileSync("git", ["checkout", "--detach", candidate.commit], { cwd: directory, stdio: "ignore" });
+    const output = join(directory, "bundle.json");
+    const result = spawnSync(
+      process.execPath,
+      [resolve(root, "qualification/ui-control/validate-external-evidence.mjs"), output],
+      {
+        cwd: directory,
+        env: {
+          ...process.env,
+          HEPTA_UI_CONTROL_BASE_URL: "https://control.example.test/console",
+          HEPTA_UI_CONTROL_DEPLOYMENT_ID: "release-off-main",
+        },
+        encoding: "utf8",
+      },
+    );
+    assert.notEqual(result.status, 0);
+    const receipt = JSON.parse(readFileSync(output, "utf8"));
+    assert.equal(receipt.failure.stage, "main-ancestry");
+    assert.equal(receipt.failure.code, "UI_CONTROL_CANDIDATE_NOT_ON_MAIN");
+    assert.equal(receipt.stageResults["main-ancestry"].acceptedEvidence, false);
+    assert.equal(receipt.claims.productionDeploymentApproved, false);
+    assert.equal(receipt.claims.releaseAuthorized, false);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
 test("later bundle failure retains exact earlier accepted stage evidence", () => {
   const directory = mkdtempSync(join(tmpdir(), "ui-control-external-partial-"));
   try {
     const candidate = initializeCandidate(directory);
+    execFileSync("git", ["update-ref", "refs/remotes/origin/main", candidate.commit], { cwd: directory });
     const manifestDigest = "8".repeat(64);
     const source = writeReceipt(
       directory,
@@ -114,7 +154,6 @@ test("later bundle failure retains exact earlier accepted stage evidence", () =>
           HEPTA_UI_CONTROL_DEPLOYMENT_ID: "release-partial",
           UI_CONTROL_SOURCE_HEAD_RECEIPT: source.path,
           UI_CONTROL_MERGE_TREE_RECEIPT: merge.path,
-          UI_CONTROL_REQUIRE_MAIN_ANCESTRY: "false",
         },
         encoding: "utf8",
       },

@@ -2,8 +2,14 @@
 import { execFileSync } from "node:child_process";
 import { readFile, writeFile } from "node:fs/promises";
 import { isIP } from "node:net";
-import { resolve } from "node:path";
+import { dirname, resolve } from "node:path";
 import { connect as tlsConnect } from "node:tls";
+import {
+  assertRuntimeSubstitutionManifest,
+  UI_CONTROL_BROWSER_BUILD_SCHEMA,
+  verifyCsrfBootstrapAsset,
+  verifyExactAsset,
+} from "./deployment-asset-invariants.mjs";
 import {
   assertEvidence,
   deploymentSubject,
@@ -73,11 +79,16 @@ async function observeTls(base) {
         assertEvidence(certificate && certificate.valid_to, "UI_CONTROL_TLS_CERTIFICATE", "peer certificate metadata is unavailable");
         const validTo = Date.parse(certificate.valid_to);
         assertEvidence(Number.isFinite(validTo) && validTo > Date.now(), "UI_CONTROL_TLS_CERTIFICATE_EXPIRED", "peer certificate is expired");
+        assertEvidence(
+          typeof certificate.fingerprint256 === "string" && certificate.fingerprint256.length > 0,
+          "UI_CONTROL_TLS_CERTIFICATE_FINGERPRINT",
+          "peer certificate SHA-256 fingerprint is unavailable",
+        );
         resolveTls({
           protocol,
           cipher: socket.getCipher()?.standardName || socket.getCipher()?.name || null,
           certificateValidTo: new Date(validTo).toISOString(),
-          certificateFingerprint256: certificate.fingerprint256 || null,
+          certificateFingerprint256: certificate.fingerprint256,
         });
       } catch (error) {
         rejectTls(error);
@@ -104,12 +115,18 @@ try {
   const prefix = subject.basePath === "/" ? "" : subject.basePath;
   const rootUrl = new URL(`${prefix}/`, origin);
   const apiBase = new URL(`${prefix}/api/ui-control/v1/`, origin);
-  const buildManifestText = await readFile(
-    resolve(process.env.HEPTA_UI_CONTROL_BUILD_MANIFEST || "apps/hepta-control-ui/dist/build-manifest.json"),
-    "utf8",
+  const buildManifestPath = resolve(
+    process.env.HEPTA_UI_CONTROL_BUILD_MANIFEST || "apps/hepta-control-ui/dist/build-manifest.json",
   );
+  const buildRoot = dirname(buildManifestPath);
+  const buildManifestText = await readFile(buildManifestPath, "utf8");
   const buildManifest = JSON.parse(buildManifestText);
-  assertEvidence(buildManifest.schema === "hepta.ui-control.browser-build.v1", "UI_CONTROL_BUILD_MANIFEST_SCHEMA", "unsupported browser build manifest");
+  assertEvidence(
+    buildManifest.schema === UI_CONTROL_BROWSER_BUILD_SCHEMA,
+    "UI_CONTROL_BUILD_MANIFEST_SCHEMA",
+    "unsupported browser build manifest",
+  );
+  assertRuntimeSubstitutionManifest(buildManifest.runtimeSubstitutions);
 
   async function request(url, options = {}) {
     const response = await fetch(url, {
@@ -146,8 +163,10 @@ try {
     "script-src 'self'",
     "style-src 'self'",
     "connect-src 'self'",
+    "img-src 'self' data:",
     "object-src 'none'",
     "base-uri 'none'",
+    "form-action 'self'",
     "frame-ancestors 'none'",
   ]) {
     assertEvidence(csp.includes(directive), "UI_CONTROL_CSP_DIRECTIVE", `root: CSP missing ${directive}`);
@@ -159,6 +178,10 @@ try {
   assertEvidence((root.headers.get("referrer-policy") || "").toLowerCase() === "no-referrer", "UI_CONTROL_REFERRER_POLICY", "root: no-referrer is required");
   assertEvidence((root.headers.get("cross-origin-opener-policy") || "").toLowerCase() === "same-origin", "UI_CONTROL_COOP", "root: COOP same-origin is required");
   assertEvidence((root.headers.get("cross-origin-resource-policy") || "").toLowerCase() === "same-origin", "UI_CONTROL_CORP", "root: CORP same-origin is required");
+  const permissionsPolicy = (root.headers.get("permissions-policy") || "").replace(/\s+/gu, "").toLowerCase();
+  for (const directive of ["camera=()", "microphone=()", "geolocation=()", "payment=()"]) {
+    assertEvidence(permissionsPolicy.includes(directive), "UI_CONTROL_PERMISSIONS_POLICY", `root: Permissions-Policy missing ${directive}`);
+  }
   assertEvidence(/(?:^|,)\s*(?:no-store|private\s*,?\s*no-store)/iu.test(root.headers.get("cache-control") || ""), "UI_CONTROL_CACHE_CONTROL", "root: Cache-Control must prevent shared or persistent caching");
   checks.push("csp", "hsts", "no-store", "browser-isolation-headers");
 
@@ -166,17 +189,29 @@ try {
   const rootBytes = Buffer.from(await root.arrayBuffer());
   const expectedRoot = buildManifest.files?.["index.html"];
   assertEvidence(expectedRoot, "UI_CONTROL_ASSET_MANIFEST", "build manifest is missing index.html");
-  assertEvidence(rootBytes.length === expectedRoot.bytes && sha256(rootBytes) === expectedRoot.sha256, "UI_CONTROL_DEPLOYED_ASSET_DRIFT", "deployed index.html does not match the exact candidate build");
+  const candidateRootBytes = await readFile(resolve(buildRoot, "index.html"));
+  assertEvidence(
+    candidateRootBytes.length === expectedRoot.bytes && sha256(candidateRootBytes) === expectedRoot.sha256,
+    "UI_CONTROL_BUILD_MANIFEST_DRIFT",
+    "candidate index.html does not match its build manifest",
+  );
+  const rootVerification = verifyCsrfBootstrapAsset(candidateRootBytes, rootBytes, csrfToken);
   let verifiedAssetCount = 1;
   for (const [relativePath, expected] of Object.entries(buildManifest.files || {})) {
     if (relativePath === "index.html") continue;
+    const candidateBytes = await readFile(resolve(buildRoot, relativePath));
+    assertEvidence(
+      candidateBytes.length === expected.bytes && sha256(candidateBytes) === expected.sha256,
+      "UI_CONTROL_BUILD_MANIFEST_DRIFT",
+      `${relativePath}: candidate bytes do not match the build manifest`,
+    );
     const response = await request(new URL(`${prefix}/${relativePath}`, origin), { headers: { accept: "*/*" } });
     assertEvidence(response.ok, "UI_CONTROL_ASSET_HTTP", `${relativePath}: expected 2xx, got ${response.status}`);
-    const bytes = Buffer.from(await response.arrayBuffer());
-    assertEvidence(bytes.length === expected.bytes && sha256(bytes) === expected.sha256, "UI_CONTROL_DEPLOYED_ASSET_DRIFT", `${relativePath}: deployed bytes do not match the exact candidate build`);
+    const deployedBytes = Buffer.from(await response.arrayBuffer());
+    verifyExactAsset(candidateBytes, deployedBytes, relativePath);
     verifiedAssetCount += 1;
   }
-  checks.push("exact-deployed-asset-manifest");
+  checks.push("bounded-csrf-bootstrap-substitution", "exact-deployed-asset-manifest");
 
   const connectBody = JSON.stringify({
     protocolVersion: "hepta.ui-control.v1",
@@ -283,7 +318,10 @@ try {
     },
     deployment: { ...subject, observedAt: new Date().toISOString() },
     tls,
-    assets: { verifiedAssetCount },
+    assets: {
+      verifiedAssetCount,
+      runtimeSubstitutions: [{ path: "index.html", kind: rootVerification.kind }],
+    },
     checks,
     claims: {
       deployedSecurityObserved: true,
