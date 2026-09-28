@@ -8,6 +8,8 @@ on:
       - 'codex-rs/Cargo.lock'
       - 'codex-rs/network-proxy/Cargo.toml'
       - 'codex-rs/hepta-types/**'
+      - 'scripts/platform_types_rama_lock_guard.py'
+      - 'scripts/test_platform_types_rama_lock_guard.py'
       - '.github/workflows/platform-types-lock-refresh.yml'
 
 permissions:
@@ -17,7 +19,7 @@ jobs:
   verify:
     name: Verify platform.types lock with Rust 1.96
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     steps:
       - uses: actions/checkout@v4
@@ -26,6 +28,11 @@ jobs:
         uses: dtolnay/rust-toolchain@1.96.0
         with:
           components: rustfmt, clippy
+
+      - name: Verify prerelease dependency coherence
+        run: |
+          python3 scripts/platform_types_rama_lock_guard.py
+          python3 -m unittest scripts/test_platform_types_rama_lock_guard.py
 
       - name: Inspect the locked graph
         run: |
@@ -38,6 +45,13 @@ jobs:
           cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-types -p codex-network-proxy
           cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-types --all-targets
           cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-types -p codex-network-proxy --all-targets -- -D warnings
+
+      - name: Exercise the registry lookup workload matrix
+        run: |
+          cargo run --release --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-types --bin platform-types-registry-bench -- \
+            50000 "$RUNNER_TEMP/platform-types-registry-benchmark.json"
+          python3 -c 'import json, pathlib, os; value=json.loads(pathlib.Path(os.environ["RUNNER_TEMP"], "platform-types-registry-benchmark.json").read_text()); assert value["schema"] == "hepta.platform-types.registry-lookup-benchmark.v1"; assert [row["entryCount"] for row in value["cases"]] == [8, 256]'
 
       - name: Prove the lockfile is immutable
         run: git diff --exit-code -- codex-rs/Cargo.lock
