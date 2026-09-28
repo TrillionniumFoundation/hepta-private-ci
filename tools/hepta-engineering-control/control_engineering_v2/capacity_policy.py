@@ -1,10 +1,9 @@
 """Owner-database capacity observations; never execution authorization.
 
 The optional monitor is a connection-local TEMP projection. The persistent
-EngineeringStore remains the sole fact owner. Its ordinary writes update the
+EngineeringStore remains the sole fact owner. Ordinary writes update the
 projection in the same SQLite transaction; another connection's commit causes
-rebuild, not reuse of a stale observation. Initial rebuild and calibration scan
-history explicitly and are not advertised as constant-time operations.
+rebuild. Initial rebuild and calibration explicitly scan history.
 """
 from __future__ import annotations
 
@@ -50,11 +49,12 @@ def _actual_counts(connection: sqlite3.Connection) -> StoreCapacityCounts:
 
 
 class StoreCapacityMonitor:
-    """One derived counter projection for one owner connection lifetime.
+    """Derived counters for one owner connection lifetime, without grants.
 
-    Only counts are reused: no policy result, grant, revocation decision or
-    authorization is cached. Nested caller transactions bypass caching. A
-    detected calibration mismatch quarantines this monitor until owner reopen.
+    Nested caller transactions bypass caching. Calibration mismatch quarantines
+    this monitor until owner reopen. Missing foreign-connection updates may make
+    TEMP counters temporarily negative: they must not block primary writes, and
+    data_version invalidation prevents them from being returned as observations.
     """
 
     def __init__(self, store: EngineeringStore, *, calibration_interval_ns: int = 60_000_000_000):
@@ -63,11 +63,12 @@ class StoreCapacityMonitor:
         if type(calibration_interval_ns) is not int or calibration_interval_ns < 1:
             raise EngineeringError("invalid_capacity_calibration_interval")
         self._store = store
+        self._connection = store.connection
         self._interval = calibration_interval_ns
         self._version: int | None = None
         self._last_calibration = 0
         self._quarantined = False
-        connection = store.connection
+        connection = self._connection
         if connection.in_transaction:
             raise EngineeringError("capacity_monitor_requires_idle_owner")
         if connection.execute(
@@ -80,8 +81,7 @@ class StoreCapacityMonitor:
             connection.execute(
                 "CREATE TEMP TABLE _ce_capacity_counts ("
                 "singleton INTEGER PRIMARY KEY CHECK(singleton=1),"
-                "audit_events INTEGER NOT NULL CHECK(audit_events>=0),"
-                "active_claims INTEGER NOT NULL CHECK(active_claims>=0))"
+                "audit_events INTEGER NOT NULL,active_claims INTEGER NOT NULL)"
             )
             counts = _actual_counts(connection)
             connection.execute(
@@ -101,7 +101,7 @@ class StoreCapacityMonitor:
                  "active_claims=active_claims+(NEW.state IN ('claimed','running'))"
                  "-(OLD.state IN ('claimed','running'))"),
             ):
-                # All identifiers and SQL fragments above are fixed literals.
+                # Identifiers and SQL fragments are fixed literals, not input.
                 connection.execute(
                     f"CREATE TEMP TRIGGER _ce_capacity_{name} {clause} BEGIN "
                     f"UPDATE _ce_capacity_counts SET {body} WHERE singleton=1; END"
@@ -115,10 +115,10 @@ class StoreCapacityMonitor:
         self._last_calibration = time.monotonic_ns()
 
     def _data_version(self) -> int:
-        return int(self._store.connection.execute("PRAGMA main.data_version").fetchone()[0])
+        return int(self._connection.execute("PRAGMA main.data_version").fetchone()[0])
 
     def _cached_counts(self) -> StoreCapacityCounts:
-        row = self._store.connection.execute(
+        row = self._connection.execute(
             "SELECT audit_events,active_claims FROM _ce_capacity_counts WHERE singleton=1"
         ).fetchone()
         if row is None:
@@ -126,12 +126,14 @@ class StoreCapacityMonitor:
         return StoreCapacityCounts(int(row[0]), int(row[1]))
 
     def _observe(self, *, calibrate: bool) -> StoreCapacityCounts:
+        if self._store.connection is not self._connection:
+            raise EngineeringError("capacity_monitor_owner_mismatch")
         if self._quarantined:
             raise EngineeringError("capacity_projection_quarantined")
-        connection = self._store.connection
+        connection = self._connection
         if connection.in_transaction:
-            # The caller may later roll back. Never publish a Python cache
-            # generation from such a transaction or finish its transaction.
+            # Never publish a cache generation from a caller's transaction,
+            # which might later roll back. Do not finish that transaction.
             self._version = None
             return _actual_counts(connection)
         for _ in range(3):
@@ -140,7 +142,6 @@ class StoreCapacityMonitor:
             now = time.monotonic_ns()
             refreshed = False
             try:
-                # Pin a main-database read snapshot even on a TEMP-cache hit.
                 connection.execute("SELECT sequence FROM main.audit_events LIMIT 1").fetchone()
                 cached = self._cached_counts()
                 if self._version != before:
@@ -158,6 +159,9 @@ class StoreCapacityMonitor:
                     refreshed = True
                 else:
                     counts = cached
+                if counts.audit_events < 0 or counts.active_claims < 0:
+                    self._quarantined = True
+                    raise EngineeringError("capacity_projection_drift")
                 connection.commit()
             except BaseException:
                 connection.rollback()
@@ -165,9 +169,8 @@ class StoreCapacityMonitor:
                 raise
             after = self._data_version()
             if before != after:
-                # Includes a writer committing between the initial version read
-                # and snapshot acquisition. Retry boundedly; do not relabel old
-                # counts with a newer data_version.
+                # Also catches a commit between the initial version read and
+                # snapshot acquisition. Never tag old counts with a new version.
                 self._version = None
                 continue
             self._version = after
@@ -180,11 +183,11 @@ class StoreCapacityMonitor:
         return self._observe(calibrate=False)
 
     def reconcile(self) -> StoreCapacityCounts:
-        """Compare derived counts with owner facts, rejecting unexplained drift."""
+        """Compare derived counts with owner facts; reject unexplained drift."""
         return self._observe(calibrate=True)
 
     def counts_for(self, store: EngineeringStore) -> StoreCapacityCounts:
-        if store is not self._store or store.connection is not self._store.connection:
+        if store is not self._store or store.connection is not self._connection:
             raise EngineeringError("capacity_monitor_owner_mismatch")
         return self.observe()
 
