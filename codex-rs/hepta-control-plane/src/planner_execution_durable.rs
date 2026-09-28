@@ -13,7 +13,6 @@ use super::PlannerExecutionError;
 use super::PlannerExecutionGrantV1;
 use super::PlannerTerminalReceiptSinkV1;
 use super::PlannerTerminalReceiptV1;
-use super::core;
 use super::codec::decode_dispatch_claim;
 use super::codec::decode_terminal_receipt;
 use super::codec::digest_terminal_receipt;
@@ -28,6 +27,7 @@ use super::codec::validate_existing_operation;
 use super::codec::validate_grant;
 use super::codec::validate_request_expiry;
 use super::codec::validate_request_identity;
+use super::core;
 
 use crate::GrantRequestV1;
 use crate::PlannerDispatchClaimOutcomeV1;
@@ -75,12 +75,7 @@ where
     )?;
     match state {
         PlannerDispatchClaimOutcomeV1::Acquired => execute_claimed_dispatch(
-            request,
-            now_micros,
-            authority,
-            executor,
-            sink,
-            &grant,
+            request, now_micros, authority, executor, sink, &grant,
         ),
         existing => resolve_existing_dispatch(request, executor, sink, existing),
     }
@@ -114,14 +109,18 @@ where
             original_grant_digest,
         }) => {
             if original_grant_digest != grant_digest {
-                return Err(store_error("reconciliation grant does not match durable claim"));
+                return Err(store_error(
+                    "reconciliation grant does not match durable claim",
+                ));
             }
             core::reconcile_planner_request_v1(request, original_grant_digest, executor, sink)
         }
-        Some(PlannerDispatchClaimOutcomeV1::Acquired) => {
-            Err(store_error("invalid acquired state during reconciliation"))
-        }
-        None => Err(store_error("reconciliation requires a durable dispatch claim")),
+        Some(PlannerDispatchClaimOutcomeV1::Acquired) => Err(store_error(
+            "invalid acquired state during reconciliation",
+        )),
+        None => Err(store_error(
+            "reconciliation requires a durable dispatch claim",
+        )),
     }
 }
 
@@ -145,9 +144,9 @@ where
             executor,
             sink,
         ),
-        PlannerDispatchClaimOutcomeV1::Acquired => {
-            Err(store_error("invalid acquired state while resolving durable dispatch"))
-        }
+        PlannerDispatchClaimOutcomeV1::Acquired => Err(store_error(
+            "invalid acquired state while resolving durable dispatch",
+        )),
     }
 }
 
@@ -336,8 +335,7 @@ impl PlannerDispatchClaimSinkV1 for PlannerStoreV1 {
         }
         if let Some(receipt) = latest_receipt {
             return match receipt.disposition {
-                PlannerEffectDispositionV1::Succeeded
-                | PlannerEffectDispositionV1::Failed => {
+                PlannerEffectDispositionV1::Succeeded | PlannerEffectDispositionV1::Failed => {
                     Ok(Some(PlannerDispatchClaimOutcomeV1::ExistingTerminal {
                         receipt: Box::new(receipt),
                     }))
@@ -407,7 +405,7 @@ impl PlannerDispatchClaimSinkV1 for PlannerStoreV1 {
             claimed_at_micros,
             claim_digest,
         );
-        self.append(
+        self.append_execution_record(
             PlannerStoreRecordKindV1::Selection,
             claim_identity_digest,
             claim_digest,

@@ -42,6 +42,12 @@ const FRAME_DIGEST_BYTES: u64 = 32;
 const FRAME_FIXED_BYTES: u64 = 8 + 2 + 1 + 8 + 32 + 32 + 4 + 32;
 const MAX_TOTAL_STORE_BYTES: u64 = 256 * 1024 * 1024;
 const RECOVERY_REQUIRED: &str = "planner store recovery required; drop and reopen";
+const DISPATCH_CLAIM_ENVELOPE_DOMAIN_V1: &[u8] =
+    b"hepta.control.execution-dispatch-claim-envelope.v1";
+const DISPATCH_CLAIM_ENVELOPE_DOMAIN_V2: &[u8] =
+    b"hepta.control.execution-dispatch-claim-envelope.v2";
+const TERMINAL_ENVELOPE_DOMAIN_V1: &[u8] =
+    b"hepta.control.execution-terminal-envelope.v1";
 
 pub struct PlannerStoreV1 {
     root: PathBuf,
@@ -92,7 +98,51 @@ impl PlannerStoreV1 {
         self.inner.set_failpoint(failpoint);
     }
 
+    /// Append a generic planner record.
+    ///
+    /// Durable dispatch claims and execution observations are reserved for the
+    /// typed execution state machine. Accepting those record kinds or canonical
+    /// envelope domains through this generic entry would permit callers to
+    /// bypass claim, grant and terminal-transition validation.
     pub fn append(
+        &mut self,
+        kind: PlannerStoreRecordKindV1,
+        operation_identity_digest: Digest32,
+        payload_digest: Digest32,
+        envelope: &[u8],
+    ) -> Result<PlannerStoreRecordV1, PlannerStoreError> {
+        if is_reserved_execution_record(kind, envelope) {
+            return Err(PlannerStoreError::InvalidConfiguration);
+        }
+        self.append_owner_record(
+            kind,
+            operation_identity_digest,
+            payload_digest,
+            envelope,
+        )
+    }
+
+    /// Crate-local write port used only after the execution state machine has
+    /// validated the durable claim or terminal transition.
+    pub(crate) fn append_execution_record(
+        &mut self,
+        kind: PlannerStoreRecordKindV1,
+        operation_identity_digest: Digest32,
+        payload_digest: Digest32,
+        envelope: &[u8],
+    ) -> Result<PlannerStoreRecordV1, PlannerStoreError> {
+        if !is_reserved_execution_record(kind, envelope) {
+            return Err(PlannerStoreError::InvalidConfiguration);
+        }
+        self.append_owner_record(
+            kind,
+            operation_identity_digest,
+            payload_digest,
+            envelope,
+        )
+    }
+
+    fn append_owner_record(
         &mut self,
         kind: PlannerStoreRecordKindV1,
         operation_identity_digest: Digest32,
@@ -333,6 +383,15 @@ fn preflight_log(
     Ok(())
 }
 
+fn is_reserved_execution_record(kind: PlannerStoreRecordKindV1, envelope: &[u8]) -> bool {
+    matches!(
+        kind,
+        PlannerStoreRecordKindV1::TerminalReceipt | PlannerStoreRecordKindV1::Reconciliation
+    ) || envelope.starts_with(DISPATCH_CLAIM_ENVELOPE_DOMAIN_V1)
+        || envelope.starts_with(DISPATCH_CLAIM_ENVELOPE_DOMAIN_V2)
+        || envelope.starts_with(TERMINAL_ENVELOPE_DOMAIN_V1)
+}
+
 fn semantic_retain_count(records: &[PlannerStoreRecordV1], requested: usize) -> usize {
     if requested == 0 || records.is_empty() || requested >= records.len() {
         return requested;
@@ -446,7 +505,10 @@ mod hardening_tests {
             digest("payload-two"),
             b"two",
         );
-        assert!(matches!(second, Err(PlannerStoreError::Io(message)) if message.contains("recovery required")));
+        assert!(matches!(
+            second,
+            Err(PlannerStoreError::Io(message)) if message.contains("recovery required")
+        ));
     }
 
     #[test]
@@ -496,6 +558,34 @@ mod hardening_tests {
     }
 
     #[test]
+    fn generic_append_rejects_reserved_execution_records_without_poisoning() {
+        let directory = tempdir().unwrap();
+        let mut store =
+            PlannerStoreV1::open(directory.path(), PlannerStoreConfigV1::default()).unwrap();
+
+        let terminal = store.append(
+            PlannerStoreRecordKindV1::TerminalReceipt,
+            digest("terminal-operation"),
+            digest("terminal-payload"),
+            TERMINAL_ENVELOPE_DOMAIN_V1,
+        );
+        assert!(matches!(
+            terminal,
+            Err(PlannerStoreError::InvalidConfiguration)
+        ));
+
+        let claim = store.append(
+            PlannerStoreRecordKindV1::Selection,
+            digest("claim-operation"),
+            digest("claim-payload"),
+            DISPATCH_CLAIM_ENVELOPE_DOMAIN_V2,
+        );
+        assert!(matches!(claim, Err(PlannerStoreError::InvalidConfiguration)));
+        assert!(store.records().is_empty());
+        assert!(!store.recovery_required());
+    }
+
+    #[test]
     fn oversized_existing_log_is_rejected_before_read_to_end() {
         let directory = tempdir().unwrap();
         let log = File::create(directory.path().join(LOG_NAME)).unwrap();
@@ -503,7 +593,10 @@ mod hardening_tests {
         drop(log);
 
         let result = PlannerStoreV1::open(directory.path(), PlannerStoreConfigV1::default());
-        assert!(matches!(result, Err(PlannerStoreError::RecordLimitExceeded)));
+        assert!(matches!(
+            result,
+            Err(PlannerStoreError::RecordLimitExceeded)
+        ));
     }
 
     #[test]
@@ -557,27 +650,30 @@ mod hardening_tests {
         store
             .append(
                 PlannerStoreRecordKindV1::Selection,
-                digest("dispatch-claim"),
-                digest("dispatch-claim-payload"),
-                b"dispatch claim",
+                digest("selection"),
+                digest("selection-payload"),
+                b"generic selection",
             )
             .unwrap();
         store
             .append(
-                PlannerStoreRecordKindV1::TerminalReceipt,
-                digest("terminal"),
-                digest("terminal-payload"),
-                b"terminal",
+                PlannerStoreRecordKindV1::Revocation,
+                digest("revocation"),
+                digest("revocation-payload"),
+                b"revocation",
             )
             .unwrap();
 
         store.compact(1).unwrap();
         assert_eq!(store.records().len(), 3);
         assert_eq!(store.records()[0].kind, PlannerStoreRecordKindV1::Snapshot);
-        assert_eq!(store.records()[1].kind, PlannerStoreRecordKindV1::Selection);
+        assert_eq!(
+            store.records()[1].kind,
+            PlannerStoreRecordKindV1::Selection
+        );
         assert_eq!(
             store.records()[2].kind,
-            PlannerStoreRecordKindV1::TerminalReceipt
+            PlannerStoreRecordKindV1::Revocation
         );
     }
 }

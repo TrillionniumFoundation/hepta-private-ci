@@ -86,6 +86,7 @@
       "notes": [
         "The public owner wrapper holds an operating-system-backed lock across open, backup and restore; uncertain mutation errors poison the current handle until drop and reopen.",
         "A poisoned handle rejects authoritative checkpoint verification and dispatch-state inspection; its retained in-memory records are diagnostic only.",
+        "Generic append rejects execution-reserved dispatch-claim, terminal and reconciliation records; only the crate-local typed execution state machine can write their canonical envelopes.",
         "Compaction preserves all non-snapshot semantic evidence and its preceding snapshot; independent anchor ownership and two-process target-host recovery remain external gates."
       ]
     },

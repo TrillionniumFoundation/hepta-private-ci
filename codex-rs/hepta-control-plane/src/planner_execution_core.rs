@@ -326,7 +326,7 @@ fn append_store_receipt(
     receipt: &PlannerTerminalReceiptV1,
 ) -> Result<(), PlannerExecutionError> {
     let envelope = encode_terminal_receipt(receipt);
-    store.append(kind, identity_digest, receipt.receipt_digest, &envelope)?;
+    store.append_execution_record(kind, identity_digest, receipt.receipt_digest, &envelope)?;
     Ok(())
 }
 
@@ -338,7 +338,10 @@ fn validate_request(
     require_digest(request.final_payload_digest, "request final payload")?;
     require_digest(request.objective_digest, "request objective")?;
     require_digest(request.snapshot_digest, "request snapshot")?;
-    require_digest(request.revocation_frontier_digest, "request revocation frontier")?;
+    require_digest(
+        request.revocation_frontier_digest,
+        "request revocation frontier",
+    )?;
     if now_micros >= request.expires_at_micros {
         return Err(PlannerExecutionError::ExpiredRequest);
     }
