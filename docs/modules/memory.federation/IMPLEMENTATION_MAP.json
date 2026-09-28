@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "75a993bbe47eaf107ea10097b26ea2566174ac7a",
-    "tree": "622f86a0fd29669a385f3d4ec7ac0ed6b867fb49"
+    "commit": "1b2d9fae8914c9c543cc98a79976563405c2d754",
+    "tree": "60ede1f630b5e8a622ceb14a6f893669f37cc780"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.federation",
@@ -87,9 +87,9 @@
   "headAttestation": {
     "candidateBranch": "feat/memory-federation-full-closure-20260927",
     "baseCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
-    "candidateHead": "75a993bbe47eaf107ea10097b26ea2566174ac7a",
-    "candidateTree": "622f86a0fd29669a385f3d4ec7ac0ed6b867fb49",
-    "headMeaning": "canonical_v2 bounded_discovery_reserved_read_budget deterministic_peer_selection final_use_revalidation private_verified_frame monotonic_partitioned_replay authenticated_transport_identity durable_replay_attempt_recovery restart_surviving_cancellation owner_cut_witness scoped_canonical_map_verification pre_post_execution_guard canonical_capability_status retained_logical_capacity_metrics terminal_request_credential_currentness issuing_host_token_binding actual_command_execution locked_input_revalidation ordered_merge_parents authenticated_product_body_bridge atomic_product_preflight retry_safe_client_inbound_commit v4_combined_attachment_partial_peer_evidence",
+    "candidateHead": "1b2d9fae8914c9c543cc98a79976563405c2d754",
+    "candidateTree": "60ede1f630b5e8a622ceb14a6f893669f37cc780",
+    "headMeaning": "canonical_v2 bounded_discovery_reserved_read_budget deterministic_peer_selection final_use_revalidation private_verified_frame monotonic_partitioned_replay authenticated_transport_identity durable_replay_attempt_recovery restart_surviving_cancellation owner_cut_witness scoped_canonical_map_verification pre_post_execution_guard canonical_capability_status retained_logical_capacity_metrics terminal_request_credential_currentness issuing_host_token_binding actual_command_execution locked_input_revalidation ordered_merge_parents authenticated_product_body_bridge atomic_product_preflight retry_safe_client_inbound_commit v4_combined_attachment_partial_peer_evidence single_pr_qualification_owner_required_fanin",
     "status": "pending_exact_current_head_and_merge_candidate_execution",
     "scope": [
       "remote_response_field_binding",
@@ -138,7 +138,8 @@
       "canonical_v2_authenticated_product_body_bridge",
       "product_body_preflight_before_replay_or_terminal_commit",
       "retry_safe_client_inbound_atomic_recovery",
-      "v4_combined_attachment_partial_peer_evidence"
+      "v4_combined_attachment_partial_peer_evidence",
+      "single_pr_qualification_owner_required_fanin"
     ],
     "productCallsites": [
       "codex-rs/hepta-agentd/src/runtime.rs",
@@ -148,7 +149,6 @@
     ],
     "evidencePaths": [
       ".github/workflows/blocking-ci.yml",
-      ".github/workflows/memory-federation-pr-qualification.yml",
       ".github/workflows/memory-federation-slim-smoke.yml",
       ".github/workflows/memory-federation-v2-final-verify.yml",
       "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
@@ -185,19 +185,18 @@
       "scripts/verify_memory_federation_implementation.py",
       "scripts/verify_memory_federation_status.py"
     ],
-    "note": "sourceBase and observedAtHead bind the immediately preceding source-and-test candidate. This implementation-map-only rebind records actual Git objects, not execution success. The normal combined local-plus-federated model-input path now admits the current V4 attachment schema, carries partial_peers into compact evidence, binds it through the existing source digest, and tests both V4 composition and revoke-before-physical-send behavior. The existing V2 product path, authority ownership and half-budget read reservation remain unchanged. Terminal completion still rechecks incoming directional credentials and issuing host identity; qualification retains real subprocess outcomes and logs under one locked command contract. Full exact-head/synthetic-merge qualification, selected authenticated transport, selected-host durable recovery, real-host faults/SLOs, independent acceptance and activation/release remain separately gated. Native build outputs remain outside the qualified source roots and retained receipt directory; source cleanliness is not weakened.",
+    "note": "sourceBase and observedAtHead bind the immediately preceding source, test and qualification-topology candidate. This implementation-map-only rebind records actual Git objects, not execution success. The normal combined local-plus-federated model-input path admits the current V4 attachment schema, carries partial_peers into compact evidence, binds it through the existing source digest, and tests both V4 composition and revoke-before-physical-send behavior. Pull requests now have one qualification owner: required blocking-ci invokes the reusable exact-head and deterministic-merge matrix. Direct branch pushes retain exact-head verification, and workflow_call plus workflow_dispatch remain available; no command, merge-candidate check, retained payload or artifact-digest envelope was removed. The existing V2 product path, authority ownership and half-budget read reservation remain unchanged. Full exact-head/synthetic-merge qualification, selected authenticated transport, selected-host durable recovery, real-host faults/SLOs, independent acceptance and activation/release remain separately gated. Native build outputs remain outside the qualified source roots and retained receipt directory; source cleanliness is not weakened.",
     "metadataOnlyPaths": [
       "docs/modules/memory.federation/IMPLEMENTATION_MAP.json"
     ]
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "75a993bbe47eaf107ea10097b26ea2566174ac7a",
-    "tree": "622f86a0fd29669a385f3d4ec7ac0ed6b867fb49"
+    "commit": "1b2d9fae8914c9c543cc98a79976563405c2d754",
+    "tree": "60ede1f630b5e8a622ceb14a6f893669f37cc780"
   },
   "observedSourcePaths": [
     ".github/workflows/blocking-ci.yml",
-    ".github/workflows/memory-federation-pr-qualification.yml",
     ".github/workflows/memory-federation-slim-smoke.yml",
     ".github/workflows/memory-federation-v2-final-verify.yml",
     "codex-rs/Cargo.lock",
@@ -255,16 +254,12 @@
       "object": "52efd785dc1c102992cfd6a801fbcb24383dad75"
     },
     {
-      "path": ".github/workflows/memory-federation-pr-qualification.yml",
-      "object": "2d2d3bfa5200b7b18be8531598e0bd2840a9e360"
-    },
-    {
       "path": ".github/workflows/memory-federation-slim-smoke.yml",
       "object": "febf3e60bacfa47ff2e9b647499c696c95c96ce3"
     },
     {
       "path": ".github/workflows/memory-federation-v2-final-verify.yml",
-      "object": "c2194e41e3ad38d2218ce95b049eb963579da2f1"
+      "object": "f4808523a71fcd9f8d6e1ebd882b6ef562ee9048"
     },
     {
       "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
