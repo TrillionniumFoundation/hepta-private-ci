@@ -79,13 +79,15 @@ jobs:
           persist-credentials: false
 
       - id: identity
-        name: Pin control, candidate, collector, policy, and driver identities
+        name: Pin current main control, candidate, collector, policy, and driver identities
         shell: bash
         run: |
           set -euo pipefail
           control="$GITHUB_WORKSPACE/control"
           subject="$GITHUB_WORKSPACE/subject"
           test "$(git -C "$control" rev-parse HEAD)" = "$GITHUB_SHA"
+          git -C "$control" fetch --no-tags origin refs/heads/main:refs/remotes/origin/main
+          test "$(git -C "$control" rev-parse refs/remotes/origin/main)" = "$GITHUB_SHA"
           test "$(git -C "$subject" rev-parse HEAD)" = "$CANDIDATE_SHA"
           test -z "$(git -C "$control" status --porcelain)"
           test -z "$(git -C "$subject" status --porcelain)"
@@ -137,19 +139,24 @@ jobs:
             --output-dir "$EVIDENCE_ROOT/collection" \
             --timeout-seconds 3600
 
-      - name: Reopen and validate the retained collection
+      - name: Reopen and byte-verify the retained collection
         shell: bash
         run: |
           set -euo pipefail
           python3 "$GITHUB_WORKSPACE/control/qualification/kernel-authority/capacity_matrix.py" validate \
             --plan "$EVIDENCE_ROOT/plan.json" \
             --collection "$EVIDENCE_ROOT/collection/capacity-collection.json"
-          python3 - "$EVIDENCE_ROOT/collection/capacity-collection.json" <<'PY'
+          python3 - "$EVIDENCE_ROOT/collection/capacity-collection.json" "$EVIDENCE_ROOT/collection" <<'PY'
+          import hashlib
           import json
           import pathlib
           import sys
 
-          receipt = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
+          collection_path = pathlib.Path(sys.argv[1]).resolve()
+          root = pathlib.Path(sys.argv[2]).resolve()
+          if collection_path != root / "capacity-collection.json" or not root.is_dir():
+              raise SystemExit("capacity collection root mismatch")
+          receipt = json.loads(collection_path.read_text(encoding="utf-8"))
           if receipt.get("synthetic") is not False or receipt.get("passed") is not True:
               raise SystemExit("target collection is not a real validated pass")
           for field in (
@@ -167,6 +174,45 @@ jobs:
               raise SystemExit("target collection does not contain eight fault rows")
           if len(receipt.get("hotPathDiagnostics", [])) != 25:
               raise SystemExit("target collection does not contain 25 diagnostics")
+
+          artifacts = receipt.get("artifacts")
+          if not isinstance(artifacts, list) or len(artifacts) != 267:
+              raise SystemExit("target collection does not contain 267 artifact identities")
+          expected = {}
+          for row in artifacts:
+              if not isinstance(row, dict) or set(row) != {"path", "sha256"}:
+                  raise SystemExit("invalid capacity artifact identity")
+              relative = row["path"]
+              digest = row["sha256"]
+              if (
+                  not isinstance(relative, str)
+                  or not relative
+                  or relative in expected
+                  or not isinstance(digest, str)
+                  or len(digest) != 64
+                  or any(character not in "0123456789abcdef" for character in digest)
+              ):
+                  raise SystemExit("invalid or duplicate capacity artifact identity")
+              path = (root / relative).resolve()
+              try:
+                  path.relative_to(root)
+              except ValueError as error:
+                  raise SystemExit("capacity artifact escapes collection root") from error
+              if path.is_symlink() or not path.is_file():
+                  raise SystemExit("capacity artifact is missing, non-regular, or a symlink")
+              observed = hashlib.sha256(path.read_bytes()).hexdigest()
+              if observed != digest:
+                  raise SystemExit("capacity artifact digest mismatch")
+              expected[relative] = digest
+
+          actual = set()
+          for path in root.rglob("*"):
+              if path.is_symlink():
+                  raise SystemExit("capacity collection contains a symlink")
+              if path.is_file():
+                  actual.add(path.relative_to(root).as_posix())
+          if actual != set(expected) | {"capacity-collection.json"}:
+              raise SystemExit("capacity collection contains missing or unbound files")
           PY
 
       - name: Apply independent hot-path policy
@@ -201,6 +247,99 @@ jobs:
           git -C "$GITHUB_WORKSPACE/control" diff --check
           test -z "$(git -C "$GITHUB_WORKSPACE/control" status --porcelain)"
           test -z "$(git -C "$GITHUB_WORKSPACE/subject" status --porcelain)"
+
+      - name: Seal one content-addressed target evidence envelope
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - "$EVIDENCE_ROOT" "$PROFILE_ID" "$SAMPLES" <<'PY'
+          import hashlib
+          import json
+          import os
+          import pathlib
+          import re
+          import sys
+
+          root = pathlib.Path(sys.argv[1]).resolve()
+          profile_id = sys.argv[2]
+          samples = int(sys.argv[3])
+          sha1 = re.compile(r"[0-9a-f]{40}")
+          sha256 = re.compile(r"[0-9a-f]{64}")
+
+          def text(name):
+              value = (root / name).read_text(encoding="utf-8").strip()
+              if not value:
+                  raise SystemExit(f"empty identity file: {name}")
+              return value
+
+          def digest(name):
+              return hashlib.sha256((root / name).read_bytes()).hexdigest()
+
+          candidate_commit = text("candidate-commit.txt")
+          candidate_tree = text("candidate-tree.txt")
+          control_commit = text("control-commit.txt")
+          control_tree = text("control-tree.txt")
+          for label, value in (
+              ("candidateCommit", candidate_commit),
+              ("candidateTree", candidate_tree),
+              ("controlCommit", control_commit),
+              ("controlTree", control_tree),
+          ):
+              if sha1.fullmatch(value) is None:
+                  raise SystemExit(f"invalid {label}")
+          identities = {
+              "collectorSha256": text("collector-sha256.txt"),
+              "hotPathGateSha256": text("hot-path-gate-sha256.txt"),
+              "policySha256": text("policy-sha256.txt"),
+              "driverSha256": text("driver-sha256.txt"),
+          }
+          if any(sha256.fullmatch(value) is None for value in identities.values()):
+              raise SystemExit("invalid content identity")
+
+          envelope = {
+              "schema": "hepta.kernel-authority-target-evidence-envelope.v1",
+              "schemaVersion": 1,
+              "candidate": {"commit": candidate_commit, "tree": candidate_tree},
+              "control": {"commit": control_commit, "tree": control_tree},
+              "profileId": profile_id,
+              "samplesPerRow": samples,
+              "runnerName": text("runner-name.txt"),
+              "workflowRunId": os.environ["GITHUB_RUN_ID"],
+              "workflowRunAttempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              **identities,
+              "planSha256": digest("plan.json"),
+              "collectionSha256": digest("collection/capacity-collection.json"),
+              "hotPathDecisionSha256": digest("hot-path-decision.json"),
+              "collectionArtifactCount": 267,
+              "productionEvidenceAdmissible": False,
+              "runtimeOptimizationAuthorized": False,
+              "productionSloGranted": False,
+              "independentAcceptance": False,
+              "activationGranted": False,
+              "releaseGranted": False,
+          }
+          target = root / "target-evidence-envelope.json"
+          temporary = target.with_name(target.name + ".next")
+          temporary.write_text(
+              json.dumps(envelope, sort_keys=True, separators=(",", ":")) + "\n",
+              encoding="utf-8",
+          )
+          os.replace(temporary, target)
+
+          reopened = json.loads(target.read_text(encoding="utf-8"))
+          if reopened != envelope:
+              raise SystemExit("target evidence envelope failed exact reopen")
+          for field in (
+              "productionEvidenceAdmissible",
+              "runtimeOptimizationAuthorized",
+              "productionSloGranted",
+              "independentAcceptance",
+              "activationGranted",
+              "releaseGranted",
+          ):
+              if reopened.get(field) is not False:
+                  raise SystemExit(f"target evidence envelope overclaims {field}")
+          PY
 
       - name: Retain candidate-bound target evidence
         if: always()

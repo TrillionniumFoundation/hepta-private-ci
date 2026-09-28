@@ -30,6 +30,22 @@ class TargetCapacityWorkflowTest(unittest.TestCase):
         self.assertIn("cancel-in-progress: false", self.workflow)
         self.assertEqual(self.workflow.count("persist-credentials: false"), 2)
 
+    def test_control_checkout_must_still_be_current_main(self) -> None:
+        self.assertIn(
+            "git -C \"$control\" fetch --no-tags origin "
+            "refs/heads/main:refs/remotes/origin/main",
+            self.workflow,
+        )
+        self.assertIn(
+            "test \"$(git -C \"$control\" rev-parse refs/remotes/origin/main)\" "
+            "= \"$GITHUB_SHA\"",
+            self.workflow,
+        )
+        self.assertIn(
+            "Pin current main control, candidate, collector, policy, and driver identities",
+            self.workflow,
+        )
+
     def test_candidate_checkout_is_identity_only(self) -> None:
         self.assertIn("path: control", self.workflow)
         self.assertIn("path: subject", self.workflow)
@@ -77,10 +93,15 @@ class TargetCapacityWorkflowTest(unittest.TestCase):
         plan = self.workflow.index("capacity_matrix.py\" plan")
         collect = self.workflow.index("capacity_matrix.py\" collect")
         validate = self.workflow.index("capacity_matrix.py\" validate")
-        gate = self.workflow.index("hot_path_gate.py\"")
+        gate = self.workflow.rindex(
+            'python3 "$GITHUB_WORKSPACE/control/qualification/'
+            'kernel-authority/hot_path_gate.py"'
+        )
+        envelope = self.workflow.index("Seal one content-addressed target evidence envelope")
         self.assertLess(plan, collect)
         self.assertLess(collect, validate)
         self.assertLess(validate, gate)
+        self.assertLess(gate, envelope)
         self.assertIn(
             'test "$(git -C "$subject" rev-parse HEAD)" = "$CANDIDATE_SHA"',
             self.workflow,
@@ -91,6 +112,32 @@ class TargetCapacityWorkflowTest(unittest.TestCase):
         self.assertIn("five metrics", self.workflow)
         self.assertIn("if: always()", self.workflow)
         self.assertIn("actions/upload-artifact@", self.workflow)
+
+    def test_collection_files_are_reopened_and_byte_verified(self) -> None:
+        self.assertIn("267 artifact identities", self.workflow)
+        self.assertIn("capacity artifact digest mismatch", self.workflow)
+        self.assertIn("capacity collection contains a symlink", self.workflow)
+        self.assertIn("capacity collection contains missing or unbound files", self.workflow)
+        self.assertIn('hashlib.sha256(path.read_bytes()).hexdigest()', self.workflow)
+        self.assertIn('{"capacity-collection.json"}', self.workflow)
+
+    def test_one_envelope_binds_all_target_identities_without_granting_authority(self) -> None:
+        self.assertIn(
+            "hepta.kernel-authority-target-evidence-envelope.v1",
+            self.workflow,
+        )
+        for field in (
+            "collectorSha256",
+            "hotPathGateSha256",
+            "policySha256",
+            "driverSha256",
+            "planSha256",
+            "collectionSha256",
+            "hotPathDecisionSha256",
+            "collectionArtifactCount",
+        ):
+            self.assertIn(field, self.workflow)
+        self.assertIn("target evidence envelope failed exact reopen", self.workflow)
 
     def test_workflow_cannot_promote_collection_to_authority(self) -> None:
         for field in (

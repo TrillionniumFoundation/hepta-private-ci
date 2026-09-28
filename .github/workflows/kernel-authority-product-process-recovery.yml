@@ -5,48 +5,44 @@ on:
     branches:
       - work/kernel-authority-convergence-20260925
     paths:
-      - 'codex-rs/hepta-agentd/src/automation_effect_host.rs'
-      - 'codex-rs/hepta-agentd/src/authority_effect_tasks.rs'
-      - 'codex-rs/hepta-agentd/src/authority_feed_clock.rs'
-      - 'codex-rs/hepta-agentd/src/authority_trust_host.rs'
-      - 'codex-rs/hepta-agentd/src/client.rs'
-      - 'codex-rs/hepta-agentd/src/control.rs'
-      - 'codex-rs/hepta-agentd/src/runtime.rs'
-      - 'codex-rs/hepta-agentd/src/state_control.rs'
-      - 'codex-rs/hepta-agentd/tests/authority_effect_process_restart.rs'
+      - 'codex-rs/hepta-contracts/**'
+      - 'codex-rs/hepta-fleet/**'
+      - 'codex-rs/hepta-agentd/**'
       - 'codex-rs/hepta-agent-protocol/**'
-      - 'codex-rs/hepta-automation/src/authorized_effect.rs'
-      - 'codex-rs/hepta-automation/src/effect_dispatch_ledger.rs'
-      - 'codex-rs/hepta-automation/migrations/**'
-      - 'codex-rs/hepta-contracts/src/final_use.rs'
-      - 'codex-rs/hepta-contracts/src/final_use_store.rs'
-      - 'codex-rs/hepta-contracts/src/authority_trust.rs'
+      - 'codex-rs/hepta-automation/**'
+      - 'codex-rs/model-provider/**'
+      - 'codex-rs/Cargo.*'
+      - 'codex-rs/rust-toolchain*'
+      - 'codex-rs/.cargo/**'
+      - 'codex-rs/.config/**'
+      - 'justfile'
+      - 'scripts/just-shell.py'
+      - 'CALLERS.toml'
       - 'qualification/kernel-authority/prepare_candidate.py'
       - 'qualification/kernel-authority/product_process_recovery.py'
       - 'qualification/kernel-authority/test_product_process_recovery.py'
+      - 'qualification/kernel-authority/test_product_process_workflow.py'
       - 'docs/modules/kernel.authority/PRODUCT_PROCESS_RECOVERY.md'
       - '.github/workflows/kernel-authority-product-process-recovery.yml'
   pull_request:
     paths:
-      - 'codex-rs/hepta-agentd/src/automation_effect_host.rs'
-      - 'codex-rs/hepta-agentd/src/authority_effect_tasks.rs'
-      - 'codex-rs/hepta-agentd/src/authority_feed_clock.rs'
-      - 'codex-rs/hepta-agentd/src/authority_trust_host.rs'
-      - 'codex-rs/hepta-agentd/src/client.rs'
-      - 'codex-rs/hepta-agentd/src/control.rs'
-      - 'codex-rs/hepta-agentd/src/runtime.rs'
-      - 'codex-rs/hepta-agentd/src/state_control.rs'
-      - 'codex-rs/hepta-agentd/tests/authority_effect_process_restart.rs'
+      - 'codex-rs/hepta-contracts/**'
+      - 'codex-rs/hepta-fleet/**'
+      - 'codex-rs/hepta-agentd/**'
       - 'codex-rs/hepta-agent-protocol/**'
-      - 'codex-rs/hepta-automation/src/authorized_effect.rs'
-      - 'codex-rs/hepta-automation/src/effect_dispatch_ledger.rs'
-      - 'codex-rs/hepta-automation/migrations/**'
-      - 'codex-rs/hepta-contracts/src/final_use.rs'
-      - 'codex-rs/hepta-contracts/src/final_use_store.rs'
-      - 'codex-rs/hepta-contracts/src/authority_trust.rs'
+      - 'codex-rs/hepta-automation/**'
+      - 'codex-rs/model-provider/**'
+      - 'codex-rs/Cargo.*'
+      - 'codex-rs/rust-toolchain*'
+      - 'codex-rs/.cargo/**'
+      - 'codex-rs/.config/**'
+      - 'justfile'
+      - 'scripts/just-shell.py'
+      - 'CALLERS.toml'
       - 'qualification/kernel-authority/prepare_candidate.py'
       - 'qualification/kernel-authority/product_process_recovery.py'
       - 'qualification/kernel-authority/test_product_process_recovery.py'
+      - 'qualification/kernel-authority/test_product_process_workflow.py'
       - 'docs/modules/kernel.authority/PRODUCT_PROCESS_RECOVERY.md'
       - '.github/workflows/kernel-authority-product-process-recovery.yml'
   workflow_dispatch:
@@ -114,6 +110,7 @@ jobs:
       CARGO_PROFILE_DEV_DEBUG: 0
       CARGO_PROFILE_TEST_DEBUG: 0
       RUST_BACKTRACE: 1
+      PYTHONDONTWRITEBYTECODE: 1
     steps:
       - name: Checkout pinned source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -136,7 +133,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/kernel-authority-product-process"
-          python3 qualification/kernel-authority/prepare_candidate.py \
+          python3 -B qualification/kernel-authority/prepare_candidate.py \
             --mode '${{ matrix.mode }}' \
             --base-sha '${{ needs.identity.outputs.base }}' \
             --output "$RUNNER_TEMP/kernel-authority-product-process/identity.json"
@@ -145,11 +142,12 @@ jobs:
         with:
           toolchain: 1.95.0
           components: rustfmt, clippy
-      - name: Validate parser and exact Rust target
+      - name: Validate workflow, parser, and exact Rust target
         shell: bash
         run: |
           set -euo pipefail
-          python3 qualification/kernel-authority/test_product_process_recovery.py
+          python3 -B qualification/kernel-authority/test_product_process_workflow.py
+          python3 -B qualification/kernel-authority/test_product_process_recovery.py
           cd codex-rs
           cargo fmt --check -p codex-hepta-agentd
           cargo clippy --locked -p codex-hepta-agentd \
@@ -158,7 +156,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 qualification/kernel-authority/product_process_recovery.py \
+          python3 -B qualification/kernel-authority/product_process_recovery.py \
             --identity "$RUNNER_TEMP/kernel-authority-product-process/identity.json" \
             --output-dir "$RUNNER_TEMP/kernel-authority-product-process/recovery"
           git diff --check
