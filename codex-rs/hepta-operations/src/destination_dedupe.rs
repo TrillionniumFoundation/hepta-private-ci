@@ -32,6 +32,10 @@ pub struct DestinationDedupeStore {
 impl DestinationDedupeStore {
     /// Standalone qualification/store mode. Product owners should normally add
     /// the table to their own migration lineage and call `from_migrated_pool`.
+    #[expect(
+        clippy::disallowed_methods,
+        reason = "standalone qualification storage owns this isolated SQLite pool; product owners inject an already-migrated pool"
+    )]
     pub async fn open_standalone(path: &Path) -> Result<Self, DurableOperationError> {
         if let Some(parent) = path.parent() {
             std::fs::create_dir_all(parent)
