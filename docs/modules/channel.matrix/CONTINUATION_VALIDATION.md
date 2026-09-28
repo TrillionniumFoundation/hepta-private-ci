@@ -90,3 +90,14 @@ The six new Rust tests were not compiled or executed in the current tool host,
 which had no Rust/just toolchain. No exact-head native pass, real Synapse run,
 encryption/rotation qualification, authenticated restore, acceptance or release
 is claimed. Consult the final commit's actual CI artifacts for later execution.
+
+## Materialized-candidate revalidation
+
+The reviewed terminal-attempt patch is now materialized in repository source,
+including migration `0012_matrix_terminal_any_entered_attempt.sql`. The exact
+source-head and deterministic base-merge lanes must therefore run again against
+the materialized commit rather than reuse the earlier `c535c458` failure. The
+workflow remains fail-closed: static candidate binding, locked native tests,
+strict owner lint and formatting all have to complete on unchanged source bytes
+before any pass claim is emitted. This section records the reason for the new
+run; it is not itself an execution receipt or qualification claim.
