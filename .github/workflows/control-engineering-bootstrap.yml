@@ -7,6 +7,7 @@ on:
     paths:
       - tools/hepta-engineering-control/**
       - docs/modules/control.engineering/**
+      - qualification/control-engineering/**
       - scripts/control_engineering_*.py
       - .github/workflows/control-engineering-bootstrap.yml
 
@@ -14,13 +15,13 @@ permissions:
   contents: read
 
 concurrency:
-  group: control-engineering-readonly-${{ github.sha }}
-  cancel-in-progress: false
+  group: control-engineering-readonly-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   source-evidence:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -30,10 +31,18 @@ jobs:
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.12'
-      - name: Capture immutable tracked source and base identity
+      - name: Pin immutable source and base before any qualification
+        id: identity
         shell: bash
+        env:
+          EXPECTED_SOURCE: ${{ github.sha }}
         run: |
           set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          test -z "$(git status --porcelain --untracked-files=no)"
+          source_sha="$(git rev-parse HEAD)"
+          base_sha="$(git rev-parse origin/main)"
+          printf 'CE_SOURCE_SHA=%s\nCE_BASE_SHA=%s\n' "$source_sha" "$base_sha" >> "$GITHUB_ENV"
           mkdir -p "$RUNNER_TEMP/control-engineering-source"
           git archive --format=tar HEAD | gzip -n > "$RUNNER_TEMP/control-engineering-source/source.tar.gz"
           python3 - <<'PY'
@@ -41,6 +50,8 @@ jobs:
           def git(*args):
               return subprocess.check_output(['git', *args], text=True).strip()
           root = pathlib.Path(os.environ['RUNNER_TEMP']) / 'control-engineering-source'
+          with (root / 'source.tar.gz').open('rb') as archive:
+              archive_digest = hashlib.file_digest(archive, 'sha256').hexdigest()
           record = {
               'schemaVersion': 1,
               'sourceCommit': git('rev-parse', 'HEAD'),
@@ -53,39 +64,58 @@ jobs:
               'runnerImage': os.environ.get('ImageOS'),
               'runnerImageVersion': os.environ.get('ImageVersion'),
               'python': platform.python_version(),
-              'archiveSha256': hashlib.file_digest((root / 'source.tar.gz').open('rb'), 'sha256').hexdigest(),
+              'archiveSha256': archive_digest,
               'qualification': 'not_claimed',
               'productionAcceptance': False,
           }
           (root / 'identity.json').write_text(json.dumps(record, indent=2) + '\n')
           PY
-      - name: Retain immutable tracked source
+      - name: Retain immutable source before tests
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: control-engineering-source-${{ github.sha }}
           path: ${{ runner.temp }}/control-engineering-source
           if-no-files-found: error
           retention-days: 14
-      - name: Run unmodified source tests
+      - name: Install qualification tools on disposable runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install coverage==7.10.7 mypy==1.18.2 ruff==0.13.2
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends bubblewrap
+          python3 -m pip freeze > "$RUNNER_TEMP/control-engineering-toolchain.txt"
+          git --version >> "$RUNNER_TEMP/control-engineering-toolchain.txt"
+          bwrap --version >> "$RUNNER_TEMP/control-engineering-toolchain.txt"
+          sqlite3 --version >> "$RUNNER_TEMP/control-engineering-toolchain.txt"
+      - name: Qualify unmodified source and fixed synthetic merge
+        if: ${{ always() && steps.identity.outcome == 'success' }}
         env:
           PYTHONDONTWRITEBYTECODE: '1'
           PYTHONPATH: tools/hepta-engineering-control
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m unittest discover -v -s tools/hepta-engineering-control -p 'test_*.py' 2>&1 | tee "$RUNNER_TEMP/control-engineering-unittest.log"
-      - name: Verify qualification did not modify tracked source
+          python3 scripts/control_engineering_candidate_evidence.py \
+            --source-commit "$CE_SOURCE_SHA" \
+            --base-commit "$CE_BASE_SHA" \
+            --output "$RUNNER_TEMP/control-engineering-qualification" \
+            2>&1 | tee "$RUNNER_TEMP/control-engineering-qualification.log"
+      - name: Check tracked source remained unchanged
         if: always()
         shell: bash
         run: |
           set -euo pipefail
-          git diff --exit-code
+          git diff --exit-code HEAD
           test -z "$(git status --porcelain --untracked-files=no)"
-      - name: Retain test log including failures
+      - name: Retain all execution evidence including failures
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: control-engineering-unittest-${{ github.sha }}
-          path: ${{ runner.temp }}/control-engineering-unittest.log
+          name: control-engineering-qualification-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/control-engineering-qualification
+            ${{ runner.temp }}/control-engineering-qualification.log
+            ${{ runner.temp }}/control-engineering-toolchain.txt
           if-no-files-found: warn
-          retention-days: 14
+          retention-days: 30
