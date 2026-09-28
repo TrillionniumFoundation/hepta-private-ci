@@ -1,52 +1,80 @@
-# prompt.registry: implementation design
+# prompt.registry implementation and qualification dossier
 
-Parent: `docs/modules/prompt.registry/TECHNICAL.md`. Lane: `LANE-C-MEMORY`.
-Status: factor lifecycle and exact-model V2 realization lookup implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Parent: `docs/modules/prompt.registry/TECHNICAL.md`. Canonical plan:
+`docs/DEVELOPMENT.md`, selected by `docs/CURRENT.json`.
 
-## 1. Source and work envelope
+## 1. Claim boundary
 
-Roots: `codex-rs/hepta-prompt-registry`.
-Packages: `PIM-0-PROMPT-INTERVENTION-CONTRACTS`, `PIM-1-PROMPT-FACTOR-REGISTRY`.
+Source implemented: true. Source composed: true. Product activated: false.
+Independently accepted: false. Released: false. Production ready: false.
+Current-source files, operation/test navigation and actual executed receipts are
+separate evidence. A core-only pass, a generated source archive or a historic
+run cannot qualify the current product candidate.
 
-Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
+## 2. Source and ownership
 
-## 2. Public operations and contract details
+The deterministic owner is `codex-rs/hepta-prompt-registry`. Agentd composition
+is `codex-rs/hepta-agentd/src/prompt_runtime.rs`, not a phantom prompt_pipeline.rs.
+Final-use validation and durable leases live in prompt_final_use.rs and
+prompt_final_use_store.rs. The actual cached/provider-policy consumer is
+`codex-rs/ext/hepta-prompt`; the intelligence compiler remains in
+`codex-rs/hepta-intelligence/src/prompt_delivery.rs`. The optimizer is read-only.
+Historical apply-prompt scripts are not part of the delivered build path.
 
-`admit_factor(factor, reviewed_scope) -> FactorRevision`; `register_realization(factor_revision, model_profile, payload_digest) -> RealizationRevision`; `revoke_factor(id, reason, cutoff) -> LifecycleReceipt`; `read_compatible(snapshot, model_tuple, context_profile) -> FactorSet`. Factor semantics and model-specific realization text are separate identities. External content must undergo governed admission before becoming an instruction factor.
+## 3. Public operations
 
-## 3. State records and transaction design
+Signed operation-bound publication/admission/relation/realization/lifecycle
+paths are conventional checked-in source. Factor lifecycle is Draft, Admitted,
+Retired, Revoked. Model compatibility includes model/version, tokenizer,
+template, tool schema, context profile, locale, role and payload identity.
+Registry insertion does not auto-select or activate a factor.
+The complete bounded API and typed recovery policy are in
+`docs/modules/prompt.registry/API_CONTRACT.md`.
 
-`prompt_factor_registry` stores semantic factor ID, supported task classes, provenance and revision. `prompt_realization_registry` binds model/version/tokenizer/template/tool schema, locale, role, payload digest, token cost and expiry. `prompt_factor_lifecycle` stores proposed/admitted/revoked/retired transitions and supersession. Registry append and lifecycle publication are atomic for one owner revision; optimizer access is read-only.
+## 4. Durable storage and maintenance
 
-## 4. Deterministic algorithm and scheduling
+Strict V4 metadata retains factors, realizations, bindings, relations,
+supersession, payload references and lifecycle events. Immutable extents precede
+atomic metadata selection. An uncertain post-rename outcome poisons the writer
+until reopen/reconciliation; diagnostics do not expose authoritative access.
+Copy-compaction omits inactive payloads, preserves retained-history identity,
+and does not change or erase the original owner. Identical completed checkpoint
+retries are idempotent. Partial/different/unsafe destinations are not overwritten.
+Strict restore verification requires a trusted exact identity and never repairs
+or creates the candidate. The detailed runbook is `OPERATIONS.md` beside the API.
 
-Validate source trust and owner authorization; dedupe semantic factors without merging incompatible realizations; validate model/template compatibility and payload bounds; append immutable revisions; publish lifecycle. Readers freeze one registry generation and reject expired or revoked realizations at delivery revalidation. No registry insertion automatically selects a factor in a running request.
+## 5. Actual-use boundary
 
-## 5. Capacity and performance profile
+Preparation and durable dispatch claims share the current-use validator with a
+trusted host clock. Cached ready attachments reconsult the owner and reject
+identity changes. A revoked staged context must fail before dispatch recording,
+and still fail after restart, leaving no dispatch claim for the rejected attempt.
+The extension separately tests owner withdrawal before provider-policy begin.
+These are source-level owner/consumer tests. Strong cancellation after an already
+admitted dispatch, live transport, streaming/final-output consumers and deployed
+host-configuration freshness are not established by this source test alone.
+Terminal outcomes continue to record what physically happened.
 
-Pilot candidate read <=128 factors, realization payload <=64 KiB subject to model-context limits, support references <=64 per factor. Count tokenizer cost under the exact selected tokenizer rather than character length. Measure lookup, lifecycle propagation and model-version fanout.
+## 6. Verification and performance
 
-Pilot ceilings are design targets, not measurements. Stricter canonical limits prevail. Bind actual schema/migration, host and measurements before composition; stateless modules prove absence rather than inventing state.
+The read-only module workflow freezes one source and base identity for core and
+product profiles, each on exact-head and deterministic synthetic-merge lanes.
+Each command produces an exit status and log digest. Compiled test inventories
+must contain named regressions; zero matched tests cannot count as success.
+Checkpoints/restore failures, corruption, pre-rename failures, post-rename
+poisoning, orphan tails and idempotent reconciliation have native test cases.
+This is not a complete real-power-loss or device-failure campaign.
 
-## 6. Concrete verification cases
+Actual ignored profiles measure 1k/8k/16k logical records, bounded fsync samples
+and the one-realization Agentd compile-stage/current-use path. Their sample and
+memory interpretation is in `PERFORMANCE.md`. Retained event history still grows;
+metadata capacity, original/backups erasure, and oldest-reclaimable timestamps
+are not magically solved by omitting inactive bytes from a new checkpoint.
 
-- PREG-01: same factor with incompatible tokenizer/template is not delivered by implicit fallback.
-- PREG-02: untrusted page text cannot self-register as system instruction.
-- PREG-03: revocation between optimization and delivery invalidates the selected realization.
-- PREG-04: duplicate revision semantics are idempotent; changed payload under the same identity conflicts.
+## 7. Remaining evidence gates
 
-These are required product test designs, not executed-test receipts. Each implementation supplies native test identity, exact input/output and independent oracle evidence.
-
-## 7. Integration, rollback and capability ceiling
-
-KG holds rebuildable factor interactions; learning.ledger owns causal exposure/outcome, not this registry. Rollback may choose a compatible non-revoked predecessor, but never restore an old lifecycle snapshot before a revocation.
-
-Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
-
-## 8. Current native implementation
-
-- **Implemented entrypoints:** `PromptRegistry` in [codex-rs/hepta-prompt-registry/src/lib.rs](../../../codex-rs/hepta-prompt-registry/src/lib.rs); `register_realization_v2` in [codex-rs/hepta-prompt-registry/src/v2.rs](../../../codex-rs/hepta-prompt-registry/src/v2.rs); `read_compatible_v2` in [codex-rs/hepta-prompt-registry/src/v2.rs](../../../codex-rs/hepta-prompt-registry/src/v2.rs). Factor lifecycle and exact-model V2 realization lookup implemented.
-- **State and recovery:** The registry uses bounded in-memory factor/realization maps with revision and terminal revocation cascade. V2 lookup checks the exact model tuple, active realization, expiry and required factors; snapshots bind content but do not add durable storage.
-- **Source tests:** [codex-rs/hepta-prompt-registry/src/v2_tests.rs](../../../codex-rs/hepta-prompt-registry/src/v2_tests.rs), [codex-rs/hepta-prompt-registry/src/lib_tests.rs](../../../codex-rs/hepta-prompt-registry/src/lib_tests.rs). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [docs/modules/prompt.registry/TECHNICAL.md](../../../docs/modules/prompt.registry/TECHNICAL.md).
-- **Remaining work:** Connect authenticated admission/current revocation and durable owner publication/reopen; digest-only realizations do not prove that a model received their actual instructions.
+Passing all current exact-head/base-merge core and product checks; independently
+validated live transport/output cancellation; externally fenced checkpoint
+activation and raw-byte retention/disposal; a durable age policy where required;
+target-host security/semantic review, protected postmerge checks, operator
+activation/acceptance and release. No source change grants these decisions.

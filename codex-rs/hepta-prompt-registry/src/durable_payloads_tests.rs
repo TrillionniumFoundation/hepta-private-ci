@@ -236,7 +236,9 @@ fn v2_migration_preserves_payloads_frontiers_and_semantic_identity() {
     let manifest: serde_json::Value =
         serde_json::from_slice(&std::fs::read(path.join("registry.json")).must("manifest"))
             .must("json");
-    assert_eq!(manifest["schema"], 3);
+    assert_eq!(manifest["schema"], 4);
+    assert_eq!(manifest["state"]["schema"], 4);
+    assert_eq!(manifest["state"]["relations"], serde_json::json!([]));
     assert_eq!(manifest["state"]["payloads"], serde_json::json!([]));
     assert!(path.join(payloads::FILE_NAME).is_file());
 }
@@ -285,6 +287,8 @@ fn malformed_extent_manifests_cannot_reinterpret_or_trim_committed_bytes() {
         "duplicate",
         "inline-payload",
         "schema",
+        "inner-schema",
+        "missing-relations",
     ] {
         let temp = tempfile::tempdir().must("temp");
         let path = temp.path().join("owner");
@@ -309,7 +313,14 @@ fn malformed_extent_manifests_cannot_reinterpret_or_trim_committed_bytes() {
                     {"realization_id": "realization:0", "payload": [1]}
                 ])
             }
-            "schema" => value["schema"] = 4.into(),
+            "schema" => value["schema"] = 5.into(),
+            "inner-schema" => value["state"]["schema"] = 5.into(),
+            "missing-relations" => {
+                value["state"]
+                    .as_object_mut()
+                    .must("state object")
+                    .remove("relations");
+            }
             _ => unreachable!(),
         }
         std::fs::write(&manifest, serde_json::to_vec(&value).must("encode")).must("mutate");

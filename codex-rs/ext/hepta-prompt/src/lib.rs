@@ -498,7 +498,10 @@ impl PromptRuntimeExtension {
     ) -> ResolvedAttachment {
         let state = turn_store.get_or_init(PromptRuntimeTurnState::default);
         let mut resolved = state.resolved.lock().await;
-        if let Some(value) = resolved.as_ref() {
+        let previous = resolved.as_ref().cloned();
+        if let Some(value) = previous.as_ref()
+            && !matches!(value, ResolvedAttachment::Ready(_))
+        {
             return value.clone();
         }
         let value = match self
@@ -519,6 +522,23 @@ impl PromptRuntimeExtension {
             },
             Ok(None) => ResolvedAttachment::None,
             Err(error) => ResolvedAttachment::Failed(error),
+        };
+        let value = match (previous, value) {
+            (Some(ResolvedAttachment::Ready(previous)), ResolvedAttachment::Ready(current))
+                if previous != current =>
+            {
+                ResolvedAttachment::Failed(PromptRuntimeHostError::new(
+                    "prompt_runtime_cached_binding_changed",
+                    "an injected attachment changed; recompile in a fresh turn",
+                ))
+            }
+            (Some(ResolvedAttachment::Ready(_)), ResolvedAttachment::None) => {
+                ResolvedAttachment::Failed(PromptRuntimeHostError::new(
+                    "prompt_runtime_cached_attachment_removed",
+                    "the owner no longer exposes the injected attachment",
+                ))
+            }
+            (_, value) => value,
         };
         *resolved = Some(value.clone());
         value

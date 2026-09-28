@@ -1414,40 +1414,51 @@
       ],
       "guide": "docs/modules/prompt.registry/TECHNICAL.md",
       "design": "qualification/module-execution-dossiers/detail/prompt.registry.md",
-      "implementationState": "specified_not_product_evidence",
-      "apiContract": "admit_factor(factor,reviewedScope); register_realization(factorRevision,modelProfile,digest); revoke_factor(id,cutoff); read_compatible(snapshot,modelTuple,contextProfile).",
-      "stateAndEncoding": "Factor semantic identity differs from realization text. Realization binds model/version/tokenizer/template/tool schema,locale,role,payload,token cost,expiry. Lifecycle transitions append by owner revision.",
-      "linearizationAndRecovery": "Atomic immutable revision+lifecycle publication. Optimizer is read-only. Revalidate revocation between selection and physical delivery. Registry insertion never selects a current-run factor.",
-      "algorithmAndBounds": "Candidates<=128,realization<=64 KiB,refs<=64; actual tokenizer cost,not character count. External evidence needs independent governed admission before an instruction role.",
-      "acceptanceOracle": "Same factor/incompatible tokenizer cannot silently reuse text. Page content cannot self-admit. Revoke after optimization prevents delivery. Duplicate revision with altered payload conflicts.",
+      "implementationState": "durable_v4_source_composed_product_activation_pending",
+      "apiContract": "DurablePromptRegistry owns authenticated factor, relation and realization publication; exact-model and consumer-capability reads; payload dereference; copy-compacted V4 checkpoints; unified quota metrics; restore verification; and bounded fsync probes. Source composition does not activate a deployed product.",
+      "stateAndEncoding": "Strict V4 metadata binds factors, realizations, bindings, relations, supersession and lifecycle history. Immutable payload extents are selected by atomic metadata. Inactive realizations may omit payload bytes in a verified compacted checkpoint; active realizations may not.",
+      "linearizationAndRecovery": "New payload bytes sync before metadata rename and directory sync. Post-rename uncertainty poisons the writer until reopen. Export and compaction write a fresh directory and reopen it before receipt; neither self-switches the live owner.",
+      "algorithmAndBounds": "Logical records <=16384, one payload <=64 KiB, selected physical payload extent <=32 MiB and metadata <=32 MiB. Metrics report logical, payload and byte high-water values. Qualification measures 1k/8k/16k snapshots and bounded fsync latency before any WAL or incremental-digest decision.",
+      "acceptanceOracle": "Relations and revocation survive reopen; unsupported consumer roles are filtered before staging; revoke-before-dispatch fails closed and remains revoked after restart; unselected payload and metadata tails never become facts; compacted checkpoints reopen with identical retained semantics and without inactive payload bytes.",
       "nativeMappingRequired": true,
       "productTestsExecuted": false,
       "deploymentQualified": false,
       "nativeImplementation": {
         "entrypoints": [
           {
-            "path": "codex-rs/hepta-prompt-registry/src/lib.rs",
-            "symbol": "PromptRegistry"
+            "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
+            "symbol": "DurablePromptRegistry"
           },
           {
-            "path": "codex-rs/hepta-prompt-registry/src/v2.rs",
-            "symbol": "register_realization_v2"
+            "path": "codex-rs/hepta-prompt-registry/src/durable_maintenance.rs",
+            "symbol": "DurablePromptRegistry::checkpoint_compacted"
           },
           {
-            "path": "codex-rs/hepta-prompt-registry/src/v2.rs",
-            "symbol": "read_compatible_v2"
+            "path": "codex-rs/hepta-agentd/src/prompt_pipeline.rs",
+            "symbol": "AgentdPromptPipelineOwner"
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/prompt_final_use_store.rs",
+            "symbol": "PromptFinalUseStore"
           }
         ],
-        "stateAndRecovery": "The registry uses bounded in-memory factor/realization maps with revision and terminal revocation cascade. V2 lookup checks the exact model tuple, active realization, expiry and required factors; snapshots bind content but do not add durable storage.",
+        "stateAndRecovery": "Strict durable V4 with exclusive private state-directory ownership, immutable payload extents, atomic metadata publication, poison-and-reopen after indeterminate directory sync, authenticated publisher ingress, dispatch-time final-use fencing, and independently reopenable copy checkpoints.",
         "testFiles": [
-          "codex-rs/hepta-prompt-registry/src/v2_tests.rs",
-          "codex-rs/hepta-prompt-registry/src/lib_tests.rs"
+          "codex-rs/hepta-prompt-registry/src/lib_tests.rs",
+          "codex-rs/hepta-prompt-registry/src/durable_payloads_tests.rs",
+          "codex-rs/hepta-prompt-registry/src/durable_maintenance.rs",
+          "codex-rs/hepta-prompt-optimizer/tests/registry_graph.rs",
+          "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs"
         ],
         "runtimeDocuments": [
-          "docs/modules/prompt.registry/TECHNICAL.md"
+          "docs/modules/prompt.registry/TECHNICAL.md",
+          "docs/modules/prompt.registry/QUALIFICATION_STATUS.md",
+          "qualification/module-execution-dossiers/detail/prompt.registry.md"
         ],
         "remainingWork": [
-          "Connect authenticated admission/current revocation and durable owner publication/reopen; digest-only realizations do not prove that a model received their actual instructions."
+          "Make exact-head and deterministic base-merge qualification receipts and protected postmerge checks green for the current candidate.",
+          "Review measured 1k/8k/16k and fsync profiles before approving any WAL, Merkle or incremental-digest work.",
+          "Qualify external quiescent checkpoint activation and rollback, then obtain independent product activation, acceptance and release decisions."
         ]
       }
     },

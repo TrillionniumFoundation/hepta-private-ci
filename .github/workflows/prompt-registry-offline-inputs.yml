@@ -1,0 +1,51 @@
+name: Prompt registry pinned native inputs
+on:
+  push:
+    branches: [codex/prompt-registry-remediation-20260927]
+    paths: [.github/workflows/prompt-registry-offline-inputs.yml]
+permissions:
+  contents: read
+jobs:
+  inputs:
+    runs-on: ubuntu-slim
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+      - name: Package pinned host compiler
+        run: |
+          set -eu
+          mkdir -p "$RUNNER_TEMP/compiler" "$RUNNER_TEMP/dependencies"
+          tar -C "$HOME/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu" -czf "$RUNNER_TEMP/compiler/compiler.tar.gz" .
+          cd "$RUNNER_TEMP/compiler"
+          sha256sum compiler.tar.gz > SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-registry-compiler-1.95.0
+          path: ${{ runner.temp }}/compiler/
+          compression-level: 0
+          retention-days: 3
+      - name: Export locked dependency sources without credentials
+        working-directory: codex-rs
+        run: |
+          set -eu
+          cargo vendor --locked --versioned-dirs "$RUNNER_TEMP/dependencies/vendor" > "$RUNNER_TEMP/dependencies/config.toml"
+          sha256sum Cargo.lock > "$RUNNER_TEMP/dependencies/lock.sha256"
+          git diff --exit-code
+          cd "$RUNNER_TEMP/dependencies"
+          tar -czf dependencies.tar.gz vendor config.toml lock.sha256
+          sha256sum dependencies.tar.gz > SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-registry-locked-dependencies-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/dependencies/dependencies.tar.gz
+            ${{ runner.temp }}/dependencies/SHA256SUMS
+          compression-level: 0
+          retention-days: 3

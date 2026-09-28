@@ -324,16 +324,22 @@ fn emit_prerequisites(
     Ok(())
 }
 
+#[derive(Clone, Copy)]
+struct PortfolioSelectionState<'a> {
+    selected: &'a BTreeSet<StableId>,
+    used_tokens: u32,
+}
+
 fn evaluate_package(
     root: &StableId,
-    selected: &BTreeSet<StableId>,
     price_map: &BTreeMap<StableId, &PromptPricingReceiptV1>,
     constraints: &ConstraintIndex,
     interactions: &InteractionIndex,
     missing_policy: PromptMissingInteractionPolicyV1,
     budget: &PromptPortfolioBudgetV1,
-    used_tokens: u32,
+    selection: PortfolioSelectionState<'_>,
 ) -> Result<Option<PackageEvaluation>, PolicyError> {
+    let PortfolioSelectionState { selected, used_tokens } = selection;
     let ordered_package = ordered_prerequisite_package(root, constraints, selected)?;
     if ordered_package.is_empty() {
         return Ok(None);
@@ -450,13 +456,12 @@ fn portfolio_candidate_audit(
         } else {
             classify_unselected_factor(
                 factor_id,
-                selected,
                 price_map,
                 constraints,
                 interaction_index,
                 graph.missing_interaction_policy,
                 budget,
-                used_tokens,
+                PortfolioSelectionState { selected, used_tokens },
             )?
         };
         decisions.push(PromptPortfolioCandidateAuditV1 {
@@ -469,14 +474,14 @@ fn portfolio_candidate_audit(
 
 fn classify_unselected_factor(
     factor_id: &StableId,
-    selected: &BTreeSet<StableId>,
     price_map: &BTreeMap<StableId, &PromptPricingReceiptV1>,
     constraints: &ConstraintIndex,
     interaction_index: &InteractionIndex,
     missing_policy: PromptMissingInteractionPolicyV1,
     budget: &PromptPortfolioBudgetV1,
-    used_tokens: u32,
+    selection: PortfolioSelectionState<'_>,
 ) -> Result<PromptPortfolioDispositionV1, PolicyError> {
+    let PortfolioSelectionState { selected, used_tokens } = selection;
     let package = ordered_prerequisite_package(factor_id, constraints, selected)?;
     if package_conflicts(&package, selected, constraints) {
         return Ok(PromptPortfolioDispositionV1::HardConflict);
@@ -505,13 +510,12 @@ fn classify_unselected_factor(
     }
     let Some(evaluation) = evaluate_package(
         factor_id,
-        selected,
         price_map,
         constraints,
         interaction_index,
         missing_policy,
         budget,
-        used_tokens,
+        PortfolioSelectionState { selected, used_tokens },
     )? else {
         return Ok(PromptPortfolioDispositionV1::HeuristicExcluded);
     };
