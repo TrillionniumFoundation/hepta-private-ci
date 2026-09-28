@@ -1,0 +1,99 @@
+name: channel.matrix one-time rustfmt convergence
+
+on:
+  push:
+    branches: [codex/channel-matrix-full-closure-20260927]
+    paths:
+      - '.github/workflows/channel-matrix-format-finalize.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: channel-matrix-one-time-rustfmt
+  cancel-in-progress: false
+
+jobs:
+  finalize:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/codex/channel-matrix-full-closure-20260927'
+    runs-on: macos-latest
+    timeout-minutes: 45
+    env:
+      EXPECTED_SHA: ${{ github.sha }}
+      SOURCE_PARENT: c558e5fee36572f7297f52b7bbfd9476aa8cf303
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Checkout exact staging candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Format only the reviewed Matrix boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test "$(git rev-parse HEAD^)" = "$SOURCE_PARENT"
+          test "$(git diff --name-only HEAD^ HEAD)" = '.github/workflows/channel-matrix-format-finalize.yml'
+
+          (
+            cd codex-rs
+            cargo fmt --all
+          )
+
+          cat > "$RUNNER_TEMP/allowed-rustfmt-paths" <<'EOF'
+          codex-rs/hepta-matrix-sdk/src/lib.rs
+          codex-rs/hepta-matrix-sdk/src/outbound_v2/gate.rs
+          codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs
+          codex-rs/hepta-matrix-sdk/src/outbound_v2/permit.rs
+          codex-rs/hepta-matrix-sdk/src/sdk.rs
+          codex-rs/hepta-matrix-sdk/tests/durable_transport.rs
+          codex-rs/hepta-matrix-sdk/tests/pending_poll_regressions.rs
+          EOF
+          git diff --name-only | LC_ALL=C sort > "$RUNNER_TEMP/actual-rustfmt-paths"
+          test -s "$RUNNER_TEMP/actual-rustfmt-paths"
+          grep -Fx 'codex-rs/hepta-matrix-sdk/tests/durable_transport.rs' "$RUNNER_TEMP/actual-rustfmt-paths"
+          if comm -23 "$RUNNER_TEMP/actual-rustfmt-paths" "$RUNNER_TEMP/allowed-rustfmt-paths" | grep -q .; then
+            echo 'rustfmt changed an unreviewed path' >&2
+            comm -23 "$RUNNER_TEMP/actual-rustfmt-paths" "$RUNNER_TEMP/allowed-rustfmt-paths" >&2
+            exit 1
+          fi
+          git diff --check
+          (
+            cd codex-rs
+            cargo fmt --all -- --check
+            cargo check --locked -p codex-hepta-matrix-sdk --all-targets
+            cargo test --locked -p codex-hepta-matrix-sdk --test pending_poll_regressions
+          )
+          python3 -m unittest discover -s scripts/tests -p 'test_channel_matrix_transport_boundary.py' -v
+          python3 -m unittest discover -s scripts/tests -p 'test_channel_matrix_qualification.py' -v
+
+          git rm .github/workflows/channel-matrix-format-finalize.yml
+          git add -u
+          git diff --cached --check
+          git diff --cached --name-only | LC_ALL=C sort > "$RUNNER_TEMP/staged-paths"
+          sed '/^$/d' "$RUNNER_TEMP/staged-paths" > "$RUNNER_TEMP/staged-paths.nonempty"
+          test -s "$RUNNER_TEMP/staged-paths.nonempty"
+
+      - name: Commit and fast-forward the formatted candidate
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit \
+            -m 'channel.matrix: format sealed transport boundary' \
+            -m 'Apply rustfmt only to the reviewed Matrix SDK boundary, retain the native constructor-time revocation regression, and remove the one-time formatter workflow. This grants no target, operator, activation, or release acceptance.'
+          final=$(git rev-parse HEAD)
+          echo "FINAL_COMMIT=$final"
+          git diff --exit-code
+          git diff --cached --exit-code
+          auth=$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 | tr -d '\n')
+          echo "::add-mask::$auth"
+          remote=$(git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" ls-remote origin refs/heads/codex/channel-matrix-full-closure-20260927 | cut -f1)
+          test "$remote" = "$EXPECTED_SHA"
+          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" push origin HEAD:refs/heads/codex/channel-matrix-full-closure-20260927
