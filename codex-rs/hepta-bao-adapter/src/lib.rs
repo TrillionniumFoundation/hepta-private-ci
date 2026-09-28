@@ -15,6 +15,12 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 mod authbus_saga;
+mod blocking_ingress;
+pub use blocking_ingress::{BaoBlockingIngress, BaoOwnedRead, BaoWorkerError};
+mod runtime_metrics;
+mod sensitive_debug;
+pub use runtime_metrics::{BaoLatencySnapshot, BaoRuntimeSnapshot};
+pub use lease_lifecycle::{BaoOwnerDiagnostics, BaoRecoveryPage};
 mod final_use_host;
 mod operation_execution;
 mod https_consumer;
@@ -47,7 +53,7 @@ pub use lease_lifecycle::LeaseRegistryErrorV1;
 pub use lease_lifecycle::ProviderLeaseObservationV1;
 pub use lease_lifecycle::SecretLeaseMetadataV1;
 pub use lease_lifecycle::SecretLeaseStateV1;
-pub use lease_lifecycle::{BaoConsumptionOperationV1, BaoConsumptionStateV1};
+pub use lease_lifecycle::{BaoConsumptionOperationV1, BaoConsumptionStateV1, BaoConsumptionPhase, BaoRecoveryAction};
 
 pub use secret_boundary_v1::AUTHBUS_POLICY_PRODUCER_ID;
 pub use secret_boundary_v1::HEPTABAO_BACKEND_ID;
@@ -67,14 +73,14 @@ pub use secret_boundary_v1::SecretPermissionStatusV1;
 pub use secret_boundary_v1::assess_secret_boundary_v1;
 pub use secret_boundary_v1::secret_boundary_request_digest_v1;
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub struct SecretReference {
     pub secret_id: StableId,
     pub version: u64,
     pub secret_digest: Digest32,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub struct SecretLease {
     pub lease_id: StableId,
     pub secret_id: StableId,
@@ -85,7 +91,7 @@ pub struct SecretLease {
     pub revoked: bool,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub struct SecretRequest {
     pub request_id: StableId,
     pub reference: SecretReference,
@@ -93,7 +99,7 @@ pub struct SecretRequest {
     pub deadline_ms: u64,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub struct OpaqueSecretReceipt {
     pub request_id: StableId,
     pub lease_id: StableId,

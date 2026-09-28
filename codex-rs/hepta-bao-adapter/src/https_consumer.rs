@@ -51,7 +51,7 @@ impl fmt::Debug for BaoToken {
 }
 
 /// One exact KV v2 version and string field, bound to one named consumer.
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct BaoReadRequest {
     pub subject_id: String,
@@ -267,13 +267,7 @@ impl BaoClient {
             grant,
             request,
         } = read;
-        if admission.policy_revision == 0
-            || admission.expected_quota_revision == 0
-            || admission.amount == 0
-            || admission.expires_at_ms == 0
-        {
-            return Err(BaoClientError::InvalidRequest.into());
-        }
+        admission.validate()?;
         let binding = self.binding(request)?;
         let principal = StableId::new(binding.subject_id.clone())
             .map_err(|_| BaoClientError::InvalidRequest)?;

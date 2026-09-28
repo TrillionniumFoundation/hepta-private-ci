@@ -420,7 +420,7 @@ fn legacy_v1_store_migrates_without_inventing_ambiguous_provider_facts() {
     drop(registry);
 
     let stored: serde_json::Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
-    assert_eq!(stored["schema_version"], 3);
+    assert_eq!(stored["schema_version"], 4);
     assert!(stored["revision"].as_u64().unwrap() >= 2);
     DurableLeaseRegistryV1::open(&path).unwrap();
 }

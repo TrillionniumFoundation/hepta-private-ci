@@ -24,11 +24,19 @@ use serde::Serialize;
 
 #[path = "consumption_lifecycle.rs"]
 mod consumption;
-pub use consumption::{BaoConsumptionOperationV1, BaoConsumptionStateV1, BaoSecretReceipt};
+pub use consumption::{BaoConsumptionOperationV1, BaoConsumptionStateV1, BaoSecretReceipt, BaoConsumptionPhase, BaoRecoveryAction};
+
+#[path = "owner_diagnostics.rs"]
+mod diagnostics;
+pub use diagnostics::{BaoOwnerDiagnostics, BaoRecoveryPage};
+pub(crate) use diagnostics::lock_owner;
+
+pub(crate) use consumption::BaoAbortStage;
 
 const LEGACY_SCHEMA_VERSION: u32 = 1;
 const PREVIOUS_SCHEMA_VERSION: u32 = 2;
-const SCHEMA_VERSION: u32 = 3;
+const CONSUMPTION_LEGACY_SCHEMA_VERSION: u32 = 3;
+const SCHEMA_VERSION: u32 = 4;
 const MAX_RECORDS: usize = 65_536;
 const MAX_METADATA_BYTES: usize = 16 * 1024;
 const MAX_STORE_BYTES: usize = 8 * 1024 * 1024;
@@ -175,6 +183,7 @@ pub struct DurableLeaseRegistryV1 {
     state: StoredRegistryV1,
     persistence: Arc<dyn LeaseRegistryPersistenceV1>,
     fenced: bool,
+    counters: diagnostics::OwnerCounters,
 }
 
 impl std::fmt::Debug for DurableLeaseRegistryV1 {
@@ -340,6 +349,7 @@ impl DurableLeaseRegistryV1 {
             state,
             persistence,
             fenced: false,
+            counters: Default::default(),
         })
     }
 
@@ -840,6 +850,8 @@ impl DurableLeaseRegistryV1 {
         required_reserve: usize,
     ) -> Result<(), LeaseRegistryErrorV1> {
         self.ensure_writable()?;
+        let started = std::time::Instant::now();
+        self.counters.commit_attempts = self.counters.commit_attempts.saturating_add(1);
         next.schema_version = SCHEMA_VERSION;
         next.revision = self
             .state
@@ -848,13 +860,18 @@ impl DurableLeaseRegistryV1 {
             .ok_or(LeaseRegistryErrorV1::InvalidTransition)?;
         validate_state(&next)?;
         let bytes = encode_state(&next, required_reserve)?;
-        match persist_bytes(&self.path, &bytes, self.persistence.as_ref()) {
+        self.counters.encoded_bytes_submitted = self.counters.encoded_bytes_submitted.saturating_add(bytes.len() as u64);
+        let result = persist_bytes(&self.path, &bytes, self.persistence.as_ref());
+        self.counters.commit_nanoseconds = self.counters.commit_nanoseconds.saturating_add(started.elapsed().as_nanos().min(u128::from(u64::MAX)) as u64);
+        match result {
             Ok(()) => {
+                self.counters.commits_confirmed = self.counters.commits_confirmed.saturating_add(1);
                 self.state = next;
                 Ok(())
             }
             Err(PersistFailure::NotApplied) => Err(LeaseRegistryErrorV1::Unavailable),
             Err(PersistFailure::Indeterminate) => {
+                self.counters.writer_fencing_events = self.counters.writer_fencing_events.saturating_add(1);
                 self.state = next;
                 self.fenced = true;
                 Err(LeaseRegistryErrorV1::CommitIndeterminate)
@@ -1007,20 +1024,24 @@ fn migrate_state(mut state: StoredRegistryV1) -> Result<StoredRegistryV1, LeaseR
     }
     if !matches!(
         state.schema_version,
-        LEGACY_SCHEMA_VERSION | PREVIOUS_SCHEMA_VERSION
+        LEGACY_SCHEMA_VERSION | PREVIOUS_SCHEMA_VERSION | CONSUMPTION_LEGACY_SCHEMA_VERSION
     ) {
         return Err(LeaseRegistryErrorV1::CorruptState);
     }
+    let legacy_lease_bindings = state.schema_version < CONSUMPTION_LEGACY_SCHEMA_VERSION;
     state.schema_version = SCHEMA_VERSION;
     state.revision = state.revision.max(1);
+    for row in state.consumptions.values_mut() {
+        consumption::migrate_legacy_consumption(row)?;
+    }
     for operation in state.operations.values_mut() {
         // An old mutable lease row is not the original operation result. Neither
         // a singleton nor the current generation proves a lost historical fact.
-        if matches!(
+        if legacy_lease_bindings && (matches!(
             operation.state,
             LeaseOperationStateV1::Applied | LeaseOperationStateV1::Denied
         ) || (operation.kind != LeaseOperationKindV1::Issue
-            && operation.expected_generation.is_none())
+            && operation.expected_generation.is_none()))
         {
             operation.legacy_binding_incomplete = true;
         }
@@ -1300,7 +1321,7 @@ fn encode_state(
     let consumption_reserve = state
         .consumptions
         .values()
-        .filter(|row| row.state != BaoConsumptionStateV1::Succeeded)
+        .filter(|row| !row.state.is_terminal())
         .count()
         .checked_mul(4096)
         .ok_or(LeaseRegistryErrorV1::CapacityExceeded)?;

@@ -1249,3 +1249,29 @@ async fn consumer_configuration_is_inside_the_independently_signed_request() {
     ));
     task.abort();
 }
+
+
+#[tokio::test]
+async fn invalid_admission_is_rejected_before_claim_or_reservation() {
+    let (endpoint, ca, server_task) = server(200, body(), || async {}).await.unwrap();
+    let client = BaoClient::new(&endpoint, ca.as_bytes(), BaoToken::new("synthetic-token".into()).unwrap(), Duration::from_secs(3)).unwrap();
+    let mut request = read_request(); request.consumer_configuration_sha256 = Some([97; 32]);
+    let now = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis() as u64;
+    let (_db, _checkpoint, authbus, mut evidence, admission) = authbus_host_with_lifetime(180_000, &client, &request, now).await.unwrap();
+    let (authority, grant, _authority_root) = product_grant(&client, &request).unwrap();
+    let (host, approval) = registered_product_host(authority, &grant, Arc::new(|_,_,_| panic!("invalid admission reached consumer")),
+        Arc::new(|_,_| Ok(crate::BaoConsumerObservationV1::Unknown)), [97; 32]).unwrap();
+    let (_root, registry) = product_registry().unwrap();
+    for field in 0..4 {
+        let mut invalid = admission.clone();
+        match field { 0 => invalid.policy_revision = 0, 1 => invalid.expected_quota_revision = 0,
+            2 => invalid.amount = 0, 3 => invalid.expires_at_ms = 0, _ => unreachable!() }
+        let result = host.consume_kv_v2_with_authbus(&client, &authbus, &registry,
+            crate::BaoApprovedReadV1 { admission: &invalid, grant: &grant, approval: &approval, request: &request }, &mut evidence).await;
+        assert!(matches!(result, Err(crate::BaoProductHostError::Host(crate::BaoFinalUseHostError::Client(BaoClientError::InvalidRequest)))));
+        assert_eq!(registry.lock().unwrap().consumption_result(admission.operation_id.as_str()), Err(crate::LeaseRegistryErrorV1::OperationNotFound));
+        assert!(authbus.reservation_by_operation(&admission.operation_id).await.unwrap().is_none());
+    }
+    assert_eq!(host.runtime_metrics().full_requests.total_observations, 4);
+    server_task.abort(); let _ = server_task.await;
+}

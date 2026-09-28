@@ -5,13 +5,21 @@
 use super::*;
 use codex_hepta_types::Digest32;
 
+#[path = "consumption_policy.rs"]
+mod policy;
+pub use policy::{BaoConsumptionPhase, BaoRecoveryAction};
+pub(crate) use policy::BaoAbortStage;
+#[path = "consumption_migration.rs"]
+mod migration;
+pub(super) use migration::migrate_legacy_consumption;
+
 const TERMINAL_SUCCESS: &str = "success";
 const TERMINAL_PROVIDER_FAILURE: &str = "provider_failure";
 const TERMINAL_CONSUMER_NOT_APPLIED: &str = "consumer_not_applied";
 const TERMINAL_ABORTED_BEFORE_RESERVATION: &str = "aborted_before_reservation";
 const TERMINAL_ABORTED_BEFORE_DISPATCH: &str = "aborted_before_dispatch";
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Clone, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct BaoSecretReceipt {
     pub request_sha256: [u8; 32],
@@ -34,11 +42,15 @@ pub enum BaoConsumptionStateV1 {
     Indeterminate,
     Succeeded,
     Failed,
+    /// Old success without the current immutable settlement binding.
+    LegacyConsumerSucceeded,
+    /// Old settled success; AuthBus must confirm the original terminal tuple.
+    LegacySucceeded,
     /// Schema-3 compatibility only. New operations never enter this state.
     DispatchAttempted,
 }
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Clone, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct BaoConsumptionOperationV1 {
     pub operation_id: String,
@@ -48,6 +60,9 @@ pub struct BaoConsumptionOperationV1 {
     pub consumer_id: String,
     pub consumer_configuration_sha256: [u8; 32],
     pub amount: u64,
+    /// Host-observed creation time. Absent on migrated records; never invented.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub created_at_unix_ms: Option<u64>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub reservation_id: Option<String>,
     pub state: BaoConsumptionStateV1,
@@ -114,6 +129,7 @@ impl DurableLeaseRegistryV1 {
         operation_id: &str,
         reservation_id: String,
     ) -> Result<(), LeaseRegistryErrorV1> {
+        self.ensure_writable()?;
         if !identifier(&reservation_id) {
             return Err(LeaseRegistryErrorV1::InvalidInput);
         }
@@ -142,6 +158,8 @@ impl DurableLeaseRegistryV1 {
                     | BaoConsumptionStateV1::Indeterminate
                     | BaoConsumptionStateV1::Succeeded
                     | BaoConsumptionStateV1::Failed
+                    | BaoConsumptionStateV1::LegacyConsumerSucceeded
+                    | BaoConsumptionStateV1::LegacySucceeded
             )
         {
             return Ok(());
@@ -169,6 +187,7 @@ impl DurableLeaseRegistryV1 {
         operation_id: &str,
         reservation_id: &str,
     ) -> Result<(), LeaseRegistryErrorV1> {
+        self.ensure_writable()?;
         let current = self
             .state
             .consumptions
@@ -188,6 +207,8 @@ impl DurableLeaseRegistryV1 {
                 | BaoConsumptionStateV1::Indeterminate
                 | BaoConsumptionStateV1::Succeeded
                 | BaoConsumptionStateV1::Failed
+                | BaoConsumptionStateV1::LegacyConsumerSucceeded
+                | BaoConsumptionStateV1::LegacySucceeded
         ) {
             return Ok(());
         }
@@ -212,6 +233,7 @@ impl DurableLeaseRegistryV1 {
         operation_id: &str,
         receipt: BaoSecretReceipt,
     ) -> Result<(), LeaseRegistryErrorV1> {
+        self.ensure_writable()?;
         validate_receipt_for_request(&receipt, None)?;
         let current = self
             .state
@@ -255,6 +277,7 @@ impl DurableLeaseRegistryV1 {
         operation_id: &str,
         succeeded: bool,
     ) -> Result<(), LeaseRegistryErrorV1> {
+        self.ensure_writable()?;
         if !succeeded {
             return self.mark_consumption_indeterminate(operation_id);
         }
@@ -298,6 +321,7 @@ impl DurableLeaseRegistryV1 {
         operation_id: &str,
         evidence_sha256: [u8; 32],
     ) -> Result<(), LeaseRegistryErrorV1> {
+        self.ensure_writable()?;
         if evidence_sha256 == [0; 32] {
             return Err(LeaseRegistryErrorV1::InvalidInput);
         }
@@ -347,6 +371,7 @@ impl DurableLeaseRegistryV1 {
         &mut self,
         operation_id: &str,
     ) -> Result<(), LeaseRegistryErrorV1> {
+        self.ensure_writable()?;
         let current = self
             .state
             .consumptions
@@ -379,6 +404,7 @@ impl DurableLeaseRegistryV1 {
         evidence_sha256: [u8; 32],
         observed_cost: u64,
     ) -> Result<(), LeaseRegistryErrorV1> {
+        self.ensure_writable()?;
         if !provider_error_code(error_code)
             || evidence_sha256 == [0; 32]
             || observed_cost == 0
@@ -428,10 +454,11 @@ impl DurableLeaseRegistryV1 {
     pub(crate) fn record_consumption_abort(
         &mut self,
         operation_id: &str,
-        before_dispatch: bool,
+        stage: BaoAbortStage,
         code: &str,
         evidence_sha256: [u8; 32],
     ) -> Result<BaoConsumptionOperationV1, LeaseRegistryErrorV1> {
+        self.ensure_writable()?;
         if evidence_sha256 == [0; 32]
             || !matches!(
                 code,
@@ -443,7 +470,7 @@ impl DurableLeaseRegistryV1 {
         {
             return Err(LeaseRegistryErrorV1::InvalidInput);
         }
-        let kind = if before_dispatch {
+        let kind = if stage == BaoAbortStage::BeforeDispatch {
             TERMINAL_ABORTED_BEFORE_DISPATCH
         } else {
             TERMINAL_ABORTED_BEFORE_RESERVATION
@@ -459,7 +486,7 @@ impl DurableLeaseRegistryV1 {
         {
             return Ok(current);
         }
-        let valid = if before_dispatch {
+        let valid = if stage == BaoAbortStage::BeforeDispatch {
             matches!(
                 current.state,
                 BaoConsumptionStateV1::Reserved | BaoConsumptionStateV1::DispatchAttempted
@@ -488,6 +515,7 @@ impl DurableLeaseRegistryV1 {
         &mut self,
         operation_id: &str,
     ) -> Result<BaoSecretReceipt, LeaseRegistryErrorV1> {
+        self.ensure_writable()?;
         let current = self
             .state
             .consumptions
@@ -525,6 +553,7 @@ impl DurableLeaseRegistryV1 {
         &mut self,
         operation_id: &str,
     ) -> Result<BaoConsumptionOperationV1, LeaseRegistryErrorV1> {
+        self.ensure_writable()?;
         let current = self
             .state
             .consumptions
@@ -637,6 +666,7 @@ pub(super) fn validate_consumption(
     if !identifier(&row.operation_id)
         || !identifier(&row.consumer_id)
         || row.amount == 0
+        || row.created_at_unix_ms == Some(0)
         || [
             row.semantic_sha256,
             row.effect_sha256,
@@ -703,6 +733,9 @@ pub(super) fn validate_consumption(
                     .terminal_observed_cost
                     .is_some_and(|cost| cost != 0 && cost <= row.amount)
         }
+        BaoConsumptionStateV1::LegacyConsumerSucceeded | BaoConsumptionStateV1::LegacySucceeded => {
+            row.reservation_id.is_some() && row.receipt.is_some() && no_terminal
+        }
         BaoConsumptionStateV1::Failed => validate_failed_terminal(row),
         BaoConsumptionStateV1::DispatchAttempted => row.receipt.is_none() && no_terminal,
     };
@@ -763,3 +796,7 @@ fn validate_failed_terminal(row: &BaoConsumptionOperationV1) -> bool {
 #[cfg(all(test, unix))]
 #[path = "consumption_lifecycle_saga_tests.rs"]
 mod saga_tests;
+
+#[cfg(all(test, unix))]
+#[path = "consumption_optimization_tests.rs"]
+mod optimization_tests;

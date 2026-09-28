@@ -2,9 +2,9 @@ use super::*;
 use std::os::unix::fs::PermissionsExt;
 
 fn registry_path() -> (tempfile::TempDir, std::path::PathBuf) {
-    let directory = tempfile::tempdir().expect("temporary directory");
+    let directory = tempfile::tempdir().unwrap();
     std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
-        .expect("private directory");
+        .unwrap();
     let path = directory.path().join("consumption-owner.json");
     (directory, path)
 }
@@ -18,6 +18,7 @@ fn operation() -> BaoConsumptionOperationV1 {
         consumer_id: "model-provider".into(),
         consumer_configuration_sha256: [4; 32],
         amount: 1,
+        created_at_unix_ms: None,
         reservation_id: None,
         state: BaoConsumptionStateV1::Claimed,
         receipt: None,
@@ -39,21 +40,21 @@ fn receipt() -> BaoSecretReceipt {
 }
 
 fn reopen(path: &std::path::Path) -> DurableLeaseRegistryV1 {
-    DurableLeaseRegistryV1::open(path).expect("reopen durable owner")
+    DurableLeaseRegistryV1::open(path).unwrap()
 }
 
 #[test]
 fn claimed_reserved_and_dispatch_fenced_are_distinct_durable_states() {
     let (_directory, path) = registry_path();
     let mut owner = reopen(&path);
-    owner.claim_consumption(operation()).expect("durable claim");
+    owner.claim_consumption(operation()).unwrap();
     drop(owner);
 
     let mut owner = reopen(&path);
     assert_eq!(
         owner
             .consumption_result("operation:consumption-saga")
-            .expect("claimed row")
+            .unwrap()
             .state,
         BaoConsumptionStateV1::Claimed
     );
@@ -62,14 +63,14 @@ fn claimed_reserved_and_dispatch_fenced_are_distinct_durable_states() {
             "operation:consumption-saga",
             "reservation:consumption-saga".into(),
         )
-        .expect("bind reservation");
+        .unwrap();
     drop(owner);
 
     let mut owner = reopen(&path);
     assert_eq!(
         owner
             .consumption_result("operation:consumption-saga")
-            .expect("reserved row")
+            .unwrap()
             .state,
         BaoConsumptionStateV1::Reserved
     );
@@ -78,14 +79,14 @@ fn claimed_reserved_and_dispatch_fenced_are_distinct_durable_states() {
             "operation:consumption-saga",
             "reservation:consumption-saga",
         )
-        .expect("commit dispatch fence");
+        .unwrap();
     drop(owner);
 
     let owner = reopen(&path);
     assert_eq!(
         owner
             .consumption_result("operation:consumption-saga")
-            .expect("dispatch-fenced row")
+            .unwrap()
             .state,
         BaoConsumptionStateV1::DispatchFenced
     );
@@ -297,7 +298,7 @@ fn predispatch_crash_recovery_can_close_claimed_or_reserved_rows() {
     owner
         .record_consumption_abort(
             "operation:consumption-saga",
-            false,
+            crate::lease_lifecycle::BaoAbortStage::BeforeReservation,
             "no_reservation",
             [13; 32],
         )
@@ -322,7 +323,7 @@ fn predispatch_crash_recovery_can_close_claimed_or_reserved_rows() {
     owner
         .record_consumption_abort(
             "operation:reserved-crash",
-            true,
+            crate::lease_lifecycle::BaoAbortStage::BeforeDispatch,
             "reservation_cancelled",
             [14; 32],
         )
