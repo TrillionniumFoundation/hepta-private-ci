@@ -41,8 +41,8 @@ jobs:
           node-version: '20'
       - name: Receipt verifier adversarial tests
         run: python3 -B -m unittest discover -s scripts/qualification -p 'test_agentd_exact_head.py' -v
-      - name: Validate dynamic status generator
-        run: python3 -B -m py_compile scripts/qualification/runtime_agentd_current_status.py
+      - name: Dynamic status generator tests
+        run: python3 -B -m unittest scripts.qualification.test_runtime_agentd_current_status -v
       - name: Derived projections and source ownership
         if: ${{ always() }}
         run: node scripts/architecture/ci-source-ownership.mjs
