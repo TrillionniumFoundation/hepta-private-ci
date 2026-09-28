@@ -1,0 +1,85 @@
+name: control.engineering one-shot convergence bootstrap
+
+on:
+  push:
+    branches:
+      - codex/control-engineering-post-merge-closure-20260928
+    paths:
+      - scripts/patch_existing_control_engineering.py
+      - .github/workflows/control-engineering-bootstrap.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: control-engineering-bootstrap-20260928
+  cancel-in-progress: false
+
+jobs:
+  patch-and-qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/control-engineering-post-merge-closure-20260928
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Apply fail-closed source patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/patch_existing_control_engineering.py
+          git diff --check
+          git config user.name "Hepta Control Engineering Bot"
+          git config user.email "hepta-control-engineering@users.noreply.github.com"
+          git add -A
+          git commit -m "control.engineering: close identity renewal and external ports"
+      - name: Rebind exact source manifest and generated status
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py migrate --module control.engineering
+          python3 scripts/control_engineering_status.py --write
+          python3 scripts/control_engineering_api.py --write
+          git diff --check
+          git add docs/modules/control.engineering/IMPLEMENTATION_MAP.json \
+            docs/modules/control.engineering/STATUS.json \
+            qualification/control-engineering/PUBLIC_API.json
+          git commit -m "docs(control.engineering): bind exact manifest and status"
+      - name: Synchronize canonical document metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-gap-closure.py normalize
+          if ! git diff --quiet; then
+            git diff --check
+            git add -A
+            git commit -m "docs: synchronize control.engineering metadata"
+          fi
+      - name: Run focused and global source qualification
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+          PYTHONPATH: tools/hepta-engineering-control
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m compileall -q \
+            tools/hepta-engineering-control/control_engineering_v2 \
+            scripts/control_engineering_status.py \
+            scripts/control_engineering_api.py
+          python3 -m unittest -v scripts/test_hepta_exact_blob_squash.py
+          python3 -m unittest -v \
+            tools/hepta-engineering-control/test_control_engineering_extensions.py
+          python3 -m unittest discover -v \
+            -s tools/hepta-engineering-control -p 'test_*.py'
+          python3 scripts/control_engineering_status.py --check
+          python3 scripts/control_engineering_api.py --check
+          python3 scripts/hepta-gap-closure.py verify
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+      - name: Push qualified branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git push origin HEAD:codex/control-engineering-post-merge-closure-20260928
