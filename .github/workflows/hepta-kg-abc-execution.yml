@@ -22,7 +22,7 @@ env:
 
 jobs:
   bind:
-    runs-on: macos-14
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     permissions:
       contents: write
