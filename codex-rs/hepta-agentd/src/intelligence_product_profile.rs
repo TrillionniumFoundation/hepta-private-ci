@@ -29,6 +29,12 @@ where
         + Sync
         + 'static,
 {
+    if !runner.canonical_profile_ready() {
+        return Err(AgentdError::Invalid(
+            "canonical intelligence runner requires an independently retained authority anti-rollback witness"
+                .to_string(),
+        ));
+    }
     let provider = SupervisedHostOwnedAgentdIntelligenceInvocationProviderV1::new(factory)
         .with_product_continuation(continuation)?;
     let telemetry = runner.telemetry();

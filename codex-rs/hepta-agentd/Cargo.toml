@@ -87,6 +87,7 @@ http = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 sha2 = { workspace = true }
+rustix = { workspace = true, features = ["fs", "process"] }
 thiserror = { workspace = true }
 tokio = { workspace = true, features = [
     "fs",

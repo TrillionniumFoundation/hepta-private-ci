@@ -13,7 +13,11 @@ const REQUIREMENT_MAP: &str = include_str!(
 const PRODUCT_ROUTE: &str = include_str!("../state_intelligence_product_loop.rs");
 const LEARNING_PRODUCT_API: &str = include_str!("../intelligence_learning_product_api.rs");
 const RUNTIME_PROFILE_GATE: &str = include_str!("../runtime.rs");
-const STAGE_BOUND_PORTS: &str = include_str!("../intelligence_stage_bound_ports.rs");
+const PRODUCT_PROFILE: &str = include_str!("../intelligence_product_profile.rs");
+const OWNER_PORTS: &str = include_str!("../intelligence_product_ports.rs");
+const PROMPT_BINDING: &str = include_str!("../intelligence_prompt_binding.rs");
+const PRODUCT_BASE: &str = include_str!("../intelligence_product_base.rs");
+const RUNNER_BASE: &str = include_str!("../intelligence_product_runner_base.rs");
 
 #[test]
 fn current_candidate_workflow_requires_source_and_merge_native_execution() {
@@ -85,17 +89,64 @@ fn canonical_product_route_requires_continuation_before_admission() {
 }
 
 #[test]
-fn canonical_stage_semantics_bind_objective_and_ndu_candidate_domains() {
+fn canonical_stage_semantics_bind_real_owner_results() {
     for required in [
-        "validate_objective_candidate_universe",
-        "validate_utility_candidate_universe",
-        "objective_action_domain_is_a_hard_candidate_upper_bound",
-        "utility_candidate_universe_rejects_hidden_actions_but_allows_abstain",
+        "objective legal candidate binding",
+        "validate_utility_universe",
         "intuition bypassed utility infeasibility",
+        "prompt_conditioned_state_digest_v1",
+        "owner-backed prompt delivery",
+        "owner-backed context delivery",
     ] {
         assert!(
-            STAGE_BOUND_PORTS.contains(required),
-            "stage-bound product path omitted semantic guard: {required}"
+            OWNER_PORTS.contains(required),
+            "owner-bound product path omitted semantic guard: {required}"
+        );
+    }
+}
+
+#[test]
+fn prompt_payload_and_context_attachment_are_frozen_in_prepared_run() {
+    for required in [
+        "PreparedPromptDeliveryV1",
+        "AgentdIntelligencePhysicalPromptV1",
+        "pub fn physical_prompt",
+        "owner-backed prompt delivery",
+    ] {
+        assert!(
+            PRODUCT_BASE.contains(required),
+            "prepared intelligence run omitted Prompt delivery binding: {required}"
+        );
+    }
+    for required in [
+        "serialized_payload.is_empty()",
+        "payload_digest",
+        "context_attachment_digest",
+        "prompt_stage_digest",
+        "prompt realization membership",
+    ] {
+        assert!(
+            PROMPT_BINDING.contains(required),
+            "Prompt delivery validation omitted: {required}"
+        );
+    }
+}
+
+#[test]
+fn canonical_profile_requires_external_rollback_witness_and_independent_watchdog() {
+    assert!(
+        PRODUCT_PROFILE.contains("runner.canonical_profile_ready()"),
+        "canonical profile must reject a runner without an independent rollback witness"
+    );
+    for required in [
+        "with_authority_rollback_guard",
+        "canonical_profile_ready",
+        "WorkerCompletionV1::supervise",
+        "spawn_owner_work_with_budget",
+    ] {
+        assert!(
+            RUNNER_BASE.contains(required),
+            "runner omitted required currentness/supervision guard: {required}"
         );
     }
 }
