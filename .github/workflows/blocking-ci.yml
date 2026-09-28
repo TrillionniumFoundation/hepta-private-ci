@@ -10,7 +10,9 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
+  actions: read
   contents: read
+  pull-requests: read
 
 jobs:
   scope:
@@ -116,6 +118,11 @@ jobs:
     needs: scope
     if: needs.scope.outputs.full_repo == 'true'
     uses: ./.github/workflows/sdk.yml
+    secrets: inherit
+
+  control-engineering:
+    name: control.engineering gates
+    uses: ./.github/workflows/control-engineering-required.yml
     secrets: inherit
 
   hepta-scoped:
@@ -224,6 +231,7 @@ jobs:
       - repo-checks
       - rust-ci
       - sdk
+      - control-engineering
       - hepta-scoped
       - lightweight
     runs-on: ubuntu-24.04
