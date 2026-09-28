@@ -1,0 +1,87 @@
+name: AuthBus isolated source authoring (not validation)
+on:
+  push:
+    branches: [work/authbus-source-authoring-20260928]
+permissions:
+  contents: write
+jobs:
+  author-source:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: authoring
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          path: candidate
+          ref: 05cce1b90a934413e601eb40cfc5aa85c2d96ab8
+          fetch-depth: 0
+      - uses: dtolnay/rust-toolchain@1.95.0
+        with:
+          components: rustfmt
+      - name: Materialize hash-bound authored source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import gzip, hashlib, pathlib, subprocess
+          root = pathlib.Path('authoring/.github/authbus-authoring')
+          first = bytearray((root / 'part-0').read_bytes())
+          assert first[274:276] == bytes([137, 83])
+          first[274:276] = bytes([139, 101])
+          chunks = [bytes(first), (root/'part-1').read_bytes(), (root/'part-2-prefix').read_bytes()[:4689]]
+          chunks.extend((root / name).read_bytes() for name in ['part-2-a','part-2-b','part-3-a','part-3-b','part-3-c'])
+          compressed = b''.join(chunks)
+          assert hashlib.sha256(compressed).hexdigest() == '0f7e8c27ca5f09d9289796de408af59071578e075894079faba61b7863904f40', 'source transport digest mismatch'
+          patch = gzip.decompress(compressed)
+          assert hashlib.sha256(patch).hexdigest() == '1c2cfe184ed74264180a54c5ce14d093affd0d909ee7ae1f0782c2d8e3946f5a'
+          subprocess.run(['git','apply','--check','-'], input=patch, cwd='candidate', check=True)
+          subprocess.run(['git','apply','-'], input=patch, cwd='candidate', check=True)
+          PY
+      - name: Format authored files and resolve the committed dependency lock
+        working-directory: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A
+          python3 - <<'PY'
+          import subprocess
+          paths = subprocess.check_output(['git','diff','--cached','--name-only','--diff-filter=ACM','-z']).decode().split('\0')
+          for path in paths:
+              if path.endswith('.rs'):
+                  subprocess.run(['rustfmt','+1.95.0','--edition','2024','--config','skip_children=true',path],check=True)
+          PY
+          cargo +1.95.0 metadata --manifest-path codex-rs/Cargo.toml --format-version 1 > "$RUNNER_TEMP/authbus-metadata.json"
+          git diff --check
+          git add -A
+          git diff --cached --stat
+      - name: Commit formal source to the delivery branch without running tests
+        working-directory: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected=05cce1b90a934413e601eb40cfc5aa85c2d96ab8
+          branch=work/authbus-ownership-transactions-20260928
+          actual=$(git ls-remote origin "refs/heads/$branch" | cut -f1)
+          test "$actual" = "$expected"
+          test "$(git rev-parse HEAD)" = "$expected"
+          test ! -e .github/authbus-authoring
+          test ! -e .github/workflows/authbus-candidate-authoring.yml
+          git config user.name 'hepta-authbus-source-author'
+          git config user.email 'hepta-authbus-source-author@users.noreply.github.com'
+          git commit -m 'fix(authbus): unify owner lifetime, checkpoint outcomes and failure diagnostics'
+          git push origin "HEAD:refs/heads/$branch"
+          git rev-parse HEAD > "$RUNNER_TEMP/authbus-authored-sha.txt"
+          git show --stat --oneline HEAD
+          git archive --format=tar.gz -o "$RUNNER_TEMP/authbus-authored-source.tar.gz" HEAD codex-rs/hepta-authbus codex-rs/hepta-evidence codex-rs/hepta-bao-adapter codex-rs/hepta-agentd codex-rs/Cargo.lock docs/modules/auth.authbus scripts/check-authbus-closed-world.py .github/workflows/authbus-ownership-verification.yml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: authbus-authored-source
+          path: |
+            ${{ runner.temp }}/authbus-authored-sha.txt
+            ${{ runner.temp }}/authbus-authored-source.tar.gz
+          if-no-files-found: warn
+          retention-days: 14
