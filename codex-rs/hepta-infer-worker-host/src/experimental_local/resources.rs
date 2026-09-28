@@ -44,6 +44,9 @@ struct ResourceState {
     device_epoch: u64,
     maximum_bytes: u64,
     maximum_concurrency: u32,
+    /// Includes in-progress physical loads and failed loads whose cleanup was
+    /// not independently confirmed. Repair-held bytes remain here until the
+    /// whole generation is externally reconciled or discarded.
     pending_model_bytes: u64,
     committed_model_bytes: u64,
     request_bytes: u64,
@@ -72,6 +75,18 @@ impl ResourceState {
             return Err(LocalWorkerError::CapacityExceeded);
         }
         Ok(())
+    }
+}
+
+fn fence_state(state: &mut ResourceState, reason: String) {
+    state.fenced_reason = Some(reason);
+    for model in state.models.values_mut() {
+        if model.lifecycle != ModelLifecycle::Zombie {
+            model.lifecycle = ModelLifecycle::RepairRequired;
+        }
+    }
+    for request in state.requests.values_mut() {
+        request.lifecycle = RequestLifecycle::Quarantined;
     }
 }
 
@@ -119,15 +134,7 @@ impl ResourceManager {
             return Err(LocalWorkerError::InvalidIdentity("generation fence reason"));
         }
         let mut state = self.lock()?;
-        state.fenced_reason = Some(reason);
-        for model in state.models.values_mut() {
-            if model.lifecycle != ModelLifecycle::Zombie {
-                model.lifecycle = ModelLifecycle::RepairRequired;
-            }
-        }
-        for request in state.requests.values_mut() {
-            request.lifecycle = RequestLifecycle::Quarantined;
-        }
+        fence_state(&mut state, reason);
         Ok(())
     }
 
@@ -207,7 +214,7 @@ impl ResourceManager {
         Ok(ModelReservation {
             manager: self.clone(),
             expected_bytes,
-            committed: false,
+            retained: false,
         })
     }
 
@@ -348,11 +355,14 @@ pub struct ResourceSnapshot {
 pub(super) struct ModelReservation {
     manager: ResourceManager,
     expected_bytes: u64,
-    committed: bool,
+    retained: bool,
 }
 
 impl ModelReservation {
-    pub(super) fn commit(mut self, handle: &AttestedModelHandle) -> Result<(), LocalWorkerError> {
+    pub(super) fn commit(
+        &mut self,
+        handle: &AttestedModelHandle,
+    ) -> Result<(), LocalWorkerError> {
         let mut state = self.manager.lock()?;
         if state.models.contains_key(handle.handle_id()) {
             return Err(LocalWorkerError::InvalidTransition(
@@ -385,22 +395,47 @@ impl ModelReservation {
                 lifecycle: ModelLifecycle::Ready,
             },
         );
-        self.committed = true;
+        self.retained = true;
+        Ok(())
+    }
+
+    /// Preserve the physical-load reservation when cleanup could not be
+    /// independently established. The bytes remain charged and the generation
+    /// is fenced; silently releasing them would under-report possible device
+    /// residency.
+    pub(super) fn retain_for_repair(
+        &mut self,
+        reason: impl Into<String>,
+    ) -> Result<(), LocalWorkerError> {
+        let reason = reason.into();
+        if reason.is_empty() || reason.len() > 4096 {
+            return Err(LocalWorkerError::InvalidIdentity(
+                "model reservation repair reason",
+            ));
+        }
+        let mut state = self.manager.lock()?;
+        if state.pending_model_bytes < self.expected_bytes {
+            return Err(LocalWorkerError::ArithmeticOverflow);
+        }
+        fence_state(&mut state, reason);
+        self.retained = true;
         Ok(())
     }
 }
 
 impl Drop for ModelReservation {
     fn drop(&mut self) {
-        if self.committed {
+        if self.retained {
             return;
         }
         if let Ok(mut state) = self.manager.inner.lock() {
             match state.pending_model_bytes.checked_sub(self.expected_bytes) {
                 Some(value) => state.pending_model_bytes = value,
                 None => {
-                    state.fenced_reason =
-                        Some("model reservation accounting underflow; repair required".to_string());
+                    fence_state(
+                        &mut state,
+                        "model reservation accounting underflow; repair required".to_string(),
+                    );
                 }
             }
         }
@@ -456,8 +491,10 @@ impl Drop for RequestReservation {
         if let Ok(mut state) = self.manager.inner.lock()
             && release_request_locked(&mut state, &self.operation_id).is_err()
         {
-            state.fenced_reason =
-                Some("request reservation accounting failure; repair required".to_string());
+            fence_state(
+                &mut state,
+                "request reservation accounting failure; repair required".to_string(),
+            );
         }
     }
 }
