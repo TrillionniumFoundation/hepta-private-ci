@@ -31,8 +31,10 @@ concurrency:
 jobs:
   collect:
     name: Collect exact target-host matrix
+    if: github.ref == 'refs/heads/main'
+    environment: kernel-authority-target
     runs-on: [self-hosted, kernel-authority-target]
-    timeout-minutes: 1440
+    timeout-minutes: 360
     env:
       DRIVER: /opt/hepta/bin/kernel-authority-capacity-driver
       CANDIDATE_SHA: ${{ inputs.candidate_sha }}
@@ -41,7 +43,7 @@ jobs:
       EXPECTED_DRIVER_SHA256: ${{ inputs.driver_sha256 }}
       EVIDENCE_ROOT: ${{ runner.temp }}/kernel-authority-target-capacity
     steps:
-      - name: Validate dispatch inputs before checkout
+      - name: Validate dispatch inputs
         shell: bash
         run: |
           set -euo pipefail
@@ -51,49 +53,69 @@ jobs:
           test "$SAMPLES" -ge 100
           test "$SAMPLES" -le 1000000
           [[ "$EXPECTED_DRIVER_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          mkdir -p "$EVIDENCE_ROOT"
 
-      - name: Checkout exact candidate
+      - name: Checkout trusted collector from exact main dispatch source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+          path: control
+          persist-credentials: false
+
+      - name: Checkout candidate as a non-executed identity subject
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
           ref: ${{ inputs.candidate_sha }}
+          path: subject
           persist-credentials: false
 
       - id: identity
-        name: Pin candidate and protected driver identities
+        name: Pin control, candidate, collector, and driver identities
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
-          candidate_tree="$(git rev-parse 'HEAD^{tree}')"
-          test -n "$candidate_tree"
-          test -z "$(git status --porcelain)"
+          control="$GITHUB_WORKSPACE/control"
+          subject="$GITHUB_WORKSPACE/subject"
+          test "$(git -C "$control" rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git -C "$subject" rev-parse HEAD)" = "$CANDIDATE_SHA"
+          test -z "$(git -C "$control" status --porcelain)"
+          test -z "$(git -C "$subject" status --porcelain)"
+          collector="$control/qualification/kernel-authority/capacity_matrix.py"
+          test -f "$collector"
           test -f "$DRIVER"
           test -x "$DRIVER"
-          observed_driver_sha256="$(sha256sum "$DRIVER" | awk '{print $1}')"
+          candidate_tree="$(git -C "$subject" rev-parse 'HEAD^{tree}')"
+          control_tree="$(git -C "$control" rev-parse 'HEAD^{tree}')"
+          collector_sha256="$(python3 -c 'import hashlib,pathlib,sys; print(hashlib.sha256(pathlib.Path(sys.argv[1]).read_bytes()).hexdigest())' "$collector")"
+          observed_driver_sha256="$(python3 -c 'import hashlib,pathlib,sys; print(hashlib.sha256(pathlib.Path(sys.argv[1]).read_bytes()).hexdigest())' "$DRIVER")"
           test "$observed_driver_sha256" = "$EXPECTED_DRIVER_SHA256"
-          mkdir -p "$EVIDENCE_ROOT"
+          printf '%s\n' "$CANDIDATE_SHA" > "$EVIDENCE_ROOT/candidate-commit.txt"
           printf '%s\n' "$candidate_tree" > "$EVIDENCE_ROOT/candidate-tree.txt"
+          printf '%s\n' "$GITHUB_SHA" > "$EVIDENCE_ROOT/control-commit.txt"
+          printf '%s\n' "$control_tree" > "$EVIDENCE_ROOT/control-tree.txt"
+          printf '%s\n' "$collector_sha256" > "$EVIDENCE_ROOT/collector-sha256.txt"
           printf '%s\n' "$observed_driver_sha256" > "$EVIDENCE_ROOT/driver-sha256.txt"
           printf '%s\n' "${RUNNER_NAME:-unknown}" > "$EVIDENCE_ROOT/runner-name.txt"
           printf 'candidate_tree=%s\n' "$candidate_tree" >> "$GITHUB_OUTPUT"
 
-      - name: Build exact measurement plan
+      - name: Build exact measurement plan with trusted collector
         shell: bash
         run: |
           set -euo pipefail
-          python3 qualification/kernel-authority/capacity_matrix.py plan \
+          python3 "$GITHUB_WORKSPACE/control/qualification/kernel-authority/capacity_matrix.py" plan \
             --candidate-commit "$CANDIDATE_SHA" \
             --candidate-tree '${{ steps.identity.outputs.candidate_tree }}' \
             --profile-id "$PROFILE_ID" \
             --samples "$SAMPLES" \
             --output "$EVIDENCE_ROOT/plan.json"
 
-      - name: Collect real target-host rows
+      - name: Collect real target-host rows with pinned host driver
         shell: bash
         run: |
           set -euo pipefail
-          python3 qualification/kernel-authority/capacity_matrix.py collect \
+          python3 "$GITHUB_WORKSPACE/control/qualification/kernel-authority/capacity_matrix.py" collect \
             --plan "$EVIDENCE_ROOT/plan.json" \
             --driver "$DRIVER" \
             --output-dir "$EVIDENCE_ROOT/collection" \
@@ -103,7 +125,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 qualification/kernel-authority/capacity_matrix.py validate \
+          python3 "$GITHUB_WORKSPACE/control/qualification/kernel-authority/capacity_matrix.py" validate \
             --plan "$EVIDENCE_ROOT/plan.json" \
             --collection "$EVIDENCE_ROOT/collection/capacity-collection.json"
           python3 - "$EVIDENCE_ROOT/collection/capacity-collection.json" <<'PY'
@@ -130,8 +152,9 @@ jobs:
           if len(receipt.get("hotPathDiagnostics", [])) != 25:
               raise SystemExit("target collection does not contain 25 diagnostics")
           PY
-          git diff --check
-          test -z "$(git status --porcelain)"
+          git -C "$GITHUB_WORKSPACE/control" diff --check
+          test -z "$(git -C "$GITHUB_WORKSPACE/control" status --porcelain)"
+          test -z "$(git -C "$GITHUB_WORKSPACE/subject" status --porcelain)"
 
       - name: Retain candidate-bound target evidence
         if: always()

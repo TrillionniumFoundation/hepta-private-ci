@@ -20,19 +20,37 @@ class TargetCapacityWorkflowTest(unittest.TestCase):
         self.assertNotRegex(self.workflow, r"(?m)^\s{2}(push|pull_request):")
         self.assertIn("permissions:\n  contents: read", self.workflow)
         self.assertNotIn("contents: write", self.workflow)
+        self.assertIn("if: github.ref == 'refs/heads/main'", self.workflow)
+        self.assertIn("environment: kernel-authority-target", self.workflow)
         self.assertIn(
             "runs-on: [self-hosted, kernel-authority-target]",
             self.workflow,
         )
+        self.assertIn("timeout-minutes: 360", self.workflow)
         self.assertIn("cancel-in-progress: false", self.workflow)
-        self.assertIn("persist-credentials: false", self.workflow)
+        self.assertEqual(self.workflow.count("persist-credentials: false"), 2)
+
+    def test_candidate_checkout_is_identity_only(self) -> None:
+        self.assertIn("path: control", self.workflow)
+        self.assertIn("path: subject", self.workflow)
+        self.assertIn(
+            "Checkout candidate as a non-executed identity subject",
+            self.workflow,
+        )
+        trusted = (
+            'python3 "$GITHUB_WORKSPACE/control/qualification/'
+            'kernel-authority/capacity_matrix.py"'
+        )
+        self.assertEqual(self.workflow.count(trusted), 3)
+        self.assertNotIn("subject/qualification/kernel-authority", self.workflow)
+        self.assertIn("No script, action, build hook, or binary from `subject`", self.runbook)
 
     def test_driver_is_fixed_and_content_addressed(self) -> None:
         self.assertIn(
             "DRIVER: /opt/hepta/bin/kernel-authority-capacity-driver",
             self.workflow,
         )
-        self.assertIn('sha256sum "$DRIVER"', self.workflow)
+        self.assertIn("hashlib.sha256", self.workflow)
         self.assertIn(
             'test "$observed_driver_sha256" = "$EXPECTED_DRIVER_SHA256"',
             self.workflow,
@@ -41,12 +59,15 @@ class TargetCapacityWorkflowTest(unittest.TestCase):
         self.assertIn("expected SHA-256", self.runbook)
 
     def test_exact_plan_collection_and_revalidation_are_required(self) -> None:
-        plan = self.workflow.index("capacity_matrix.py plan")
-        collect = self.workflow.index("capacity_matrix.py collect")
-        validate = self.workflow.index("capacity_matrix.py validate")
+        plan = self.workflow.index("capacity_matrix.py\" plan")
+        collect = self.workflow.index("capacity_matrix.py\" collect")
+        validate = self.workflow.index("capacity_matrix.py\" validate")
         self.assertLess(plan, collect)
         self.assertLess(collect, validate)
-        self.assertIn('test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"', self.workflow)
+        self.assertIn(
+            'test "$(git -C "$subject" rev-parse HEAD)" = "$CANDIDATE_SHA"',
+            self.workflow,
+        )
         self.assertIn("55 measurement rows", self.workflow)
         self.assertIn("eight fault rows", self.workflow)
         self.assertIn("25 diagnostics", self.workflow)
@@ -62,12 +83,9 @@ class TargetCapacityWorkflowTest(unittest.TestCase):
             "releaseGranted",
         ):
             self.assertIn(field, self.workflow)
-            self.assertRegex(
-                self.runbook,
-                re.escape(field),
-            )
+            self.assertRegex(self.runbook, re.escape(field))
         self.assertIn("not production acceptance", self.runbook)
-        self.assertIn("must not create a second", self.runbook)
+        self.assertIn("must not:", self.runbook)
         self.assertIn("unknown provider result", self.runbook)
 
 
