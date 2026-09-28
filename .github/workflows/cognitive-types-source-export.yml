@@ -4,12 +4,17 @@ on:
   push:
     branches: ['codex/cognitive-types-full-closure-20260927']
     paths:
+      - 'codex-rs/Cargo.toml'
+      - 'codex-rs/Cargo.lock'
       - 'codex-rs/hepta-cognitive-types/**'
       - 'codex-rs/hepta-cognitive-read/**'
       - 'codex-rs/hepta-cognitive-store/**'
       - 'codex-rs/hepta-memory-retrieval/**'
       - 'codex-rs/hepta-compact-engine/**'
       - 'codex-rs/hepta-intelligence/**'
+      - 'codex-rs/hepta-memory/**'
+      - 'codex-rs/hepta-authbus/**'
+      - 'codex-rs/state/**'
       - 'codex-rs/hepta-agentd/src/intelligence_product*.rs'
       - 'codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs'
       - 'docs/modules/cognitive.types/**'
