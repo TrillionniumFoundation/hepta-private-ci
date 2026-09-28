@@ -26,7 +26,11 @@ pub(crate) fn distinct_identity_assignment<R: Copy + Ord>(
     }
     let mut principals = BTreeSet::new();
     let mut keys = BTreeSet::new();
-    for (principal, key) in ordered.iter().filter_map(|role| identities.get(role)).flatten() {
+    for (principal, key) in ordered
+        .iter()
+        .filter_map(|role| identities.get(role))
+        .flatten()
+    {
         principals.insert(principal.as_str());
         keys.insert(key.as_str());
     }
@@ -122,12 +126,41 @@ mod tests {
     }
 
     #[test]
+    fn budget_error_unwinds_only_current_search_reservations() {
+        let identities = BTreeMap::from([
+            (0, options(&[("alice", "key-1")])),
+            (1, options(&[("bob", "key-2")])),
+        ]);
+        let mut principals = BTreeSet::from(["ancestor"]);
+        let mut keys = BTreeSet::from(["ancestor-key"]);
+        let mut budget = 1;
+        assert_eq!(
+            search(
+                0,
+                &[0, 1],
+                &identities,
+                &mut principals,
+                &mut keys,
+                &mut budget,
+            ),
+            Err(AssignmentBudgetExceeded)
+        );
+        assert_eq!(principals, BTreeSet::from(["ancestor"]));
+        assert_eq!(keys, BTreeSet::from(["ancestor-key"]));
+        assert_eq!(budget, 0);
+    }
+
+    #[test]
     fn all_three_role_subsets_and_orders_match_cartesian_product_oracle() {
         // Independent oracle: Cartesian product, not another DFS implementation.
         let universe = [("a", "1"), ("a", "2"), ("b", "2"), ("c", "3")];
         let orders = [
-            [0, 1, 2], [0, 2, 1], [1, 0, 2],
-            [1, 2, 0], [2, 0, 1], [2, 1, 0],
+            [0, 1, 2],
+            [0, 2, 1],
+            [1, 0, 2],
+            [1, 2, 0],
+            [2, 0, 1],
+            [2, 1, 0],
         ];
         for a in 0_u8..16 {
             for b in 0_u8..16 {
@@ -145,15 +178,21 @@ mod tests {
                     let expected = identities[&0].iter().any(|x| {
                         identities[&1].iter().any(|y| {
                             identities[&2].iter().any(|z| {
-                                x.0 != y.0 && x.0 != z.0 && y.0 != z.0
-                                    && x.1 != y.1 && x.1 != z.1 && y.1 != z.1
+                                x.0 != y.0
+                                    && x.0 != z.0
+                                    && y.0 != z.0
+                                    && x.1 != y.1
+                                    && x.1 != z.1
+                                    && y.1 != z.1
                             })
                         })
                     });
                     for roles in orders {
                         assert_eq!(
                             distinct_identity_assignment(
-                                &roles, &identities, DEFAULT_ASSIGNMENT_BUDGET
+                                &roles,
+                                &identities,
+                                DEFAULT_ASSIGNMENT_BUDGET
                             ),
                             Ok(expected),
                             "masks={a}/{b}/{c}, roles={roles:?}"
