@@ -9,8 +9,10 @@
 use std::sync::Arc;
 use std::sync::Mutex;
 
+use codex_hepta_infer_core::FileNeuronFeatureExecutionStoreV1;
 use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_neuron::InferenceControlModelPort;
+use codex_hepta_neuron::DurableNeuronInferenceControlPortV1;
 use codex_hepta_neuron::NeuronAdmissionError;
 use codex_hepta_neuron::NeuronAdmissionGuard;
 use codex_hepta_neuron::NeuronInferenceControlPort;
@@ -22,6 +24,12 @@ use codex_hepta_neuron::NeuronTickInputV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+/// The concrete product-owner shape used when Neuron calls cross the durable
+/// inference dispatch boundary. This remains the same Agentd owner and does not
+/// install another executor, scheduler, authority issuer or model selector.
+pub type AgentdDurableNeuronOwner<W, P> =
+    AgentdNeuronOwner<W, DurableNeuronInferenceControlPortV1<P>>;
+
 pub struct AgentdNeuronOwner<W, P>
 where
     W: AnchorWitnessStore,
@@ -29,6 +37,25 @@ where
 {
     runtime: NeuronRuntime<W>,
     inference_control: P,
+}
+
+impl<W, P> AgentdNeuronOwner<W, DurableNeuronInferenceControlPortV1<P>>
+where
+    W: AnchorWitnessStore,
+    P: NeuronInferenceControlPort,
+{
+    /// Bind the existing Neuron runtime, inference execution journal and
+    /// concrete backend as one long-lived Agentd product owner.
+    pub fn new_durable(
+        runtime: NeuronRuntime<W>,
+        execution_store: FileNeuronFeatureExecutionStoreV1,
+        inference_control: P,
+    ) -> Self {
+        Self::new(
+            runtime,
+            DurableNeuronInferenceControlPortV1::new(execution_store, inference_control),
+        )
+    }
 }
 
 impl<W, P> AgentdNeuronOwner<W, P>
