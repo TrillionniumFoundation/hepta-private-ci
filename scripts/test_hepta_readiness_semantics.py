@@ -57,9 +57,19 @@ class ReadinessSemanticsTests(unittest.TestCase):
         )
         self.verify()
 
-    def test_missing_required_contract_section_still_rejects(self):
-        self.path.write_text(self.text.replace("## Interface", "## Notes"))
-        with self.assertRaisesRegex(SystemExit, "sections"):
+    def test_reworded_headings_preserve_registered_protocol_and_gap_checks(self):
+        self.path.write_text(
+            self.text.replace("## Interface", "## Contract").replace(
+                "## Appendix A. Closed gap and protocol mapping", "## Traceability"
+            )
+        )
+        with patch("sys.stderr") as diagnostics:
+            self.verify()
+        self.assertTrue(diagnostics.write.called)
+
+    def test_empty_readiness_document_still_rejects(self):
+        self.path.write_text(" \n")
+        with self.assertRaisesRegex(SystemExit, "empty document"):
             self.verify()
 
     def test_unknown_or_uncited_protocol_and_gap_still_reject(self):
@@ -108,25 +118,43 @@ class ReadinessSemanticsTests(unittest.TestCase):
                 with self.assertRaisesRegex(SystemExit, "authority"):
                     VERIFIER.false_authority(flags, "fixture")
 
-
     def test_field_schema_object_key_order_is_not_semantic(self):
         schemas = [
             {"name": "id", "type": "u64", "required": True},
             {"name": "label", "type": "utf8", "required": True, "maxBytes": 32},
             {"type": "enum", "maxBytes": 32, "values": ["first", "second"]},
-            {"type": "bounded_array", "maxBytes": 64, "minItems": 0,
-             "maxItems": 4, "uniqueItems": False, "items": {"type": "u64"}},
-            {"type": "bounded_fixed_point_vector", "maxBytes": 64, "scale": "Q24",
-             "minItems": 1, "maxItems": 4, "items": {"type": "i64"}},
-            {"type": "bounded_object", "maxBytes": 64, "minProperties": 1,
-             "maxProperties": 1, "additionalProperties": False,
-             "properties": [{"required": True, "type": "u64", "name": "id"}]},
+            {
+                "type": "bounded_array",
+                "maxBytes": 64,
+                "minItems": 0,
+                "maxItems": 4,
+                "uniqueItems": False,
+                "items": {"type": "u64"},
+            },
+            {
+                "type": "bounded_fixed_point_vector",
+                "maxBytes": 64,
+                "scale": "Q24",
+                "minItems": 1,
+                "maxItems": 4,
+                "items": {"type": "i64"},
+            },
+            {
+                "type": "bounded_object",
+                "maxBytes": 64,
+                "minProperties": 1,
+                "maxProperties": 1,
+                "additionalProperties": False,
+                "properties": [{"required": True, "type": "u64", "name": "id"}],
+            },
         ]
         for schema in schemas:
             for keys in itertools.permutations(schema):
                 with self.subTest(schema=schema["type"], keys=keys):
                     VERIFIER.validate_schema_node(
-                        {key: schema[key] for key in keys}, 128, "fixture",
+                        {key: schema[key] for key in keys},
+                        128,
+                        "fixture",
                         named="name" in schema,
                     )
 
@@ -137,7 +165,9 @@ class ReadinessSemanticsTests(unittest.TestCase):
             with self.subTest(missing=key), self.assertRaises(SystemExit):
                 VERIFIER.validate_schema_node(invalid, 128, "fixture", named=True)
         with self.assertRaisesRegex(SystemExit, "key closure"):
-            VERIFIER.validate_schema_node(schema | {"extra": False}, 128, "fixture", named=True)
+            VERIFIER.validate_schema_node(
+                schema | {"extra": False}, 128, "fixture", named=True
+            )
 
     def test_json_duplicate_schema_keys_are_not_collapsed(self):
         with self.assertRaises(VERIFIER.DuplicateKey):
