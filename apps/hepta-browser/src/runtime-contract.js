@@ -141,6 +141,10 @@ export function admitNewOperation(state, input, now) {
     throw new TypeError("typed action destination does not match destinationOrigin");
   }
   const finalPayloadDigest = digest(input.finalPayloadDigest, "finalPayloadDigest");
+  const sourceActionDigest =
+    input.sourceActionDigest === undefined
+      ? null
+      : digest(input.sourceActionDigest, "sourceActionDigest");
   if (browserActionDigest(typedAction) !== finalPayloadDigest) {
     throw new TypeError("finalPayloadDigest does not bind typedAction");
   }
@@ -170,6 +174,7 @@ export function admitNewOperation(state, input, now) {
     typedAction,
     destinationOrigin,
     finalPayloadDigest,
+    ...(sourceActionDigest === null ? {} : { sourceActionDigest }),
     profileGrantDigest: state.grantDigest,
     effectGrantDigest,
     authorityEpoch,
@@ -196,6 +201,9 @@ export function reconciliationRequestDigest(state, input, stored) {
     typedAction,
     destinationOrigin: canonicalOrigin(input.destinationOrigin),
     finalPayloadDigest: digest(input.finalPayloadDigest, "finalPayloadDigest"),
+    ...(stored.sourceActionDigest === undefined
+      ? {}
+      : { sourceActionDigest: digest(stored.sourceActionDigest, "sourceActionDigest") }),
     profileGrantDigest: state.grantDigest,
     effectGrantDigest: digest(input.effectGrantDigest, "effectGrantDigest"),
     authorityEpoch: positiveInteger(input.authorityEpoch, "authorityEpoch"),
