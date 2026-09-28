@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any
 
 SCHEMA = "hepta.platform-wire.managed-profile.v1"
-PAIRS = {(payload, chunk) for payload in (0, 64, 4096) for chunk in (1, 37, 512)}
+PAIRS = {(payload, chunk) for payload in (1, 64, 4096) for chunk in (1, 37, 512)}
 NONCLAIMS = (
     "independent_acceptance", "authenticated_network_ingress", "host_rss_measured",
     "allocator_calls_measured", "queue_wait_measured",
@@ -38,7 +38,7 @@ def validate(report: Any, iterations: int = 256) -> None:
     for row in rows:
         if not isinstance(row, dict):
             raise ValueError("scenario must be an object")
-        payload = integer(row.get("payload_bytes"), "payload_bytes")
+        payload = integer(row.get("payload_bytes"), "payload_bytes", 1)
         chunk = integer(row.get("chunk_bytes"), "chunk_bytes", 1)
         pair = (payload, chunk)
         if pair not in PAIRS or pair in seen:
@@ -48,7 +48,7 @@ def validate(report: Any, iterations: int = 256) -> None:
         delivered = integer(row.get("delivered_frames"), "delivered_frames", 1)
         if count != iterations or delivered != count:
             raise ValueError("missing, duplicated or insufficient measured frames")
-        if row.get("max_feed_bytes") != 37 or row.get("max_records_per_feed") != 1:
+        if integer(row.get("max_feed_bytes"), "max_feed_bytes", 1) != 37 or integer(row.get("max_records_per_feed"), "max_records_per_feed", 1) != 1:
             raise ValueError("work budgets differ from the qualification profile")
         calls = integer(row.get("feed_calls"), "feed_calls", count)
         yields = integer(row.get("budget_yields"), "budget_yields")
@@ -62,7 +62,7 @@ def validate(report: Any, iterations: int = 256) -> None:
             raise ValueError("wire accounting omits authenticated framing")
         if buffered > capacity or capacity > 2 * (wire_bytes // count):
             raise ValueError("record buffer capacity is inconsistent with measured input")
-        if row.get("returned_payload_bytes_per_frame") != payload:
+        if integer(row.get("returned_payload_bytes_per_frame"), "returned payload", 1) != payload:
             raise ValueError("returned payload accounting mismatch")
         integer(row.get("decode_and_delivery_total_ns"), "decode total", 1)
         for stage in ("seal", "decode_and_delivery"):
@@ -110,9 +110,15 @@ class ProfileTests(unittest.TestCase):
                 validate(report)
 
     def test_rejects_zero_bool_and_missing_frame_counts(self) -> None:
-        for value in (0, True, None, 255, 257):
+        for field in ("delivered_frames", "payload_bytes", "max_records_per_feed", "returned_payload_bytes_per_frame"):
+            for value in (0, True, None):
+                report = fixture()
+                report["scenarios"][0][field] = value
+                with self.assertRaises(ValueError):
+                    validate(report)
+        for count in (255, 257):
             report = fixture()
-            report["scenarios"][0]["delivered_frames"] = value
+            report["scenarios"][0]["delivered_frames"] = count
             with self.assertRaises(ValueError):
                 validate(report)
 

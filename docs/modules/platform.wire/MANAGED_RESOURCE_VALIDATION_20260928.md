@@ -33,9 +33,11 @@ The same owner is retired after terminal framing or authentication error. Alread
 
 The existing `managed_records` libFuzzer target is extended from five to seven modes: valid fragmentation, tamper, replay, wrong binding, reflection, speculative-body announcement and next-sequence MAC corruption after a valid prefix. Every mode uses the existing managed owner with byte/record budgets. The target checks terminal retirement, prefix preservation and progress; it does not bypass authentication with a mock decoder.
 
+The positive-path `managed_fixture` maps empty corpus data to a one-byte legal payload. It does not widen the frozen nonempty-payload contract or suppress constructor errors. Raw invalid records are still passed unchanged to the receive boundary. `tests/fuzz_fixture_smoke.rs` imports that actual fixture and verifies empty/short corpus operation, authenticated exchange, producer denial and direct rejection of an empty HPTA V2 envelope. This catches fixture construction failures in ordinary native CI before an expensive fuzz campaign.
+
 ## Measured managed-path profile
 
-`examples/managed_record_profile.rs` executes nine release-build scenarios: payload sizes 0, 64 and 4096 bytes crossed with transport fragments of 1, 37 and 512 bytes. Each scenario processes 256 records in qualification, using a 37-byte and one-record per-feed budget. It records:
+`examples/managed_record_profile.rs` executes nine release-build scenarios: payload sizes 1, 64 and 4096 bytes crossed with transport fragments of 1, 37 and 512 bytes. One byte is the protocol's legal minimum; zero-byte envelopes remain rejected. Each scenario processes 256 records in qualification, using a 37-byte and one-record per-feed budget. It records:
 
 - seal and decode-plus-delivery p50/p95/p99 nanoseconds;
 - exact delivered frame counts, wire bytes, feed calls and budget yields;
@@ -44,11 +46,11 @@ The existing `managed_records` libFuzzer target is extended from five to seven m
 
 Decode-plus-delivery includes the measurement consumer's frame comparison and explicit thread yield; it is not a measurement of an async production scheduler. Capacity-growth events are not allocator-call counts. The profile does not measure queue waiting, full-process RSS, secret-copy destruction, real TLS ingress or independent acceptance. Those nonclaims are machine-readable and must remain false.
 
-`scripts/platform_wire_managed_profile.py` validates complete scenario coverage, exact counts, release mode, timing shape, bounded buffer accounting and required yields. Its eight Python self-tests use synthetic validator fixtures; those values are never published as performance measurements. The validator enforces measurement completeness and invariants, not a host-independent latency SLO or a proven speedup against a historical baseline.
+`scripts/platform_wire_managed_profile.py` validates complete scenario coverage, exact counts, release mode, timing shape, bounded buffer accounting and required yields. Its eight Python self-tests use synthetic validator fixtures; those values are never published as performance measurements. Boolean values cannot substitute for numeric payload or budget fields. The validator enforces measurement completeness and invariants, not a host-independent latency SLO or a proven speedup against a historical baseline.
 
 ## Qualification commands and evidence
 
-The existing read-only `platform-wire-core.yml` executes both source-head and deterministic ordered base-merge lanes. It retains all existing checks, raises the wire test floor to 91 and the isolated HTTP parser floor to eight, and adds explicit six-test resource regression selection, eight validator self-tests, release example build/run and measurement validation. Raw measurements and command logs are hashed into the same source/tree/tested-tree-bound artifact. A failed command fails the job; measurements do not produce acceptance or release receipts.
+The existing read-only `platform-wire-core.yml` executes both source-head and deterministic ordered base-merge lanes. It retains all existing checks, requires at least 91 wire tests and eight isolated HTTP parser tests, and adds explicit six-test resource regression selection, eight validator self-tests, release example build/run and measurement validation. The new fuzz fixture smoke regression is included by `--all-targets`. Raw measurements and command logs are hashed into the same source/tree/tested-tree-bound artifact. A failed command fails the job; measurements do not produce acceptance or release receipts.
 
 Manual dispatch now requires an immutable distinct `base_sha`; it no longer silently tests a source against itself as the integration base. PR runs continue to use the PR's fixed head/base tuple.
 
@@ -62,7 +64,7 @@ cargo run --release --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-
 python3 scripts/platform_wire_managed_profile.py --input /tmp/managed-wire-profile.json --iterations 256
 ```
 
-At publication, source existence is not a final execution result. The immediate predecessor `8fd0884b360269495fd6d9361e7237a1a6bfd2c0` has an inspected source-head artifact from run `36415738779`: 91 native tests passed; strict Clippy failed on a redundant method closure in the newly added test. This revision fixes that closure without disabling the lint. That predecessor result must not be inherited as the result of this later revision. The final SHA requires its own run and artifacts.
+At publication, source existence is not a final execution result. Predecessor `8fd0884b360269495fd6d9361e7237a1a6bfd2c0` source-head artifact from run `36415738779` reported 91 native tests passed and a strict Clippy failure on a redundant method closure; that closure was fixed without disabling the lint. The next candidate `0aa386c8a30eaacbd910acc19bc62b920e838d72`, run `36417599924`, base-merge artifact `10967427736`, passed native tests and strict Clippy but rejected the initial zero-byte measurement payload. This revision corrects the measurement/fixture setup while retaining protocol rejection. Neither predecessor result is inherited as a passing result of this revision. The final SHA requires its own run and artifacts.
 
 ## Remaining independent product evidence
 

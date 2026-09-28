@@ -173,7 +173,8 @@ fn main() -> ProfileResult<()> {
         return Err("iterations must be in 64..4096".into());
     }
     let mut scenarios = Vec::new();
-    for payload_bytes in [0, 64, 4096] {
+    // HPTA intentionally rejects empty payloads; one byte is the legal minimum.
+    for payload_bytes in [1, 64, 4096] {
         for chunk_bytes in [1, 37, 512] {
             scenarios.push(measure(iterations, payload_bytes, chunk_bytes)?);
         }
