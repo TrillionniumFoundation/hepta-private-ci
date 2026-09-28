@@ -152,8 +152,8 @@ impl PolicyDecision {
 /// they must query by the request's stable identity and reconcile first.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum AuthBusMutationDisposition {
-    /// Validation, conflict, capacity or other deterministic rejection occurred
-    /// before the requested mutation committed.
+    /// Validation, conflict, capacity, or fail-closed admission rejection
+    /// occurred before the requested mutation was polled.
     NotCommitted,
     /// The authoritative SQLite transaction committed, but publication of the
     /// independent checkpoint did not complete.
@@ -171,6 +171,8 @@ pub enum AuthBusAuthorityError {
     CorruptState(&'static str),
     #[error("AuthBus authority storage is unavailable: {0}")]
     Storage(String),
+    #[error("AuthBus authority use is blocked until checkpoint reconciliation completes: {0}")]
+    AuthorityUseBlocked(String),
     #[error("AuthBus mutation committed but its external checkpoint requires reconciliation: {0}")]
     CheckpointReconciliationRequired(String),
     #[error("AuthBus mutation outcome is unknown and must be reconciled: {0}")]
