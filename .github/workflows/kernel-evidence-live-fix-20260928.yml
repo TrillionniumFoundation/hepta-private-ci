@@ -1,4 +1,4 @@
-name: Kernel evidence live fix 20260928
+name: Kernel evidence live fix diagnostics 20260928
 
 on:
   push:
@@ -11,14 +11,14 @@ permissions:
   contents: write
 
 concurrency:
-  group: kernel-evidence-live-fix-20260928
+  group: kernel-evidence-live-fix-diagnostics-20260928
   cancel-in-progress: false
 
 jobs:
-  apply-and-verify:
-    if: ${{ contains(github.event.head_commit.message, '[kernel-evidence-live-fix-arm]') }}
+  materialize:
+    if: ${{ contains(github.event.head_commit.message, '[kernel-evidence-live-fix-debug]') }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 120
+    timeout-minutes: 30
     steps:
       - name: Check out exact closure branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -27,60 +27,36 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Verify immutable repair ancestry
+      - name: Materialize audited patch and exact dry-run diagnostics
         shell: bash
         run: |
           set -euo pipefail
           git merge-base --is-ancestor 99419dedbd83684cc7a9ace31a2fb6ece0d9140f HEAD
           test -s qualification/kernel-evidence/live-fix-20260928.patch.gz.b64
-
-      - uses: ./.github/actions/setup-ci
-
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
-        with:
-          components: rustfmt,clippy
-
-      - name: Apply audited source and truth patch
-        shell: bash
-        run: |
-          set -euo pipefail
           base64 --decode qualification/kernel-evidence/live-fix-20260928.patch.gz.b64 \
-            | gzip -dc > /tmp/kernel-evidence-live-fix.patch
-          patch --dry-run --fuzz=0 -p1 < /tmp/kernel-evidence-live-fix.patch
-          patch --fuzz=0 -p1 < /tmp/kernel-evidence-live-fix.patch
-          rm -f qualification/kernel-evidence/live-fix-20260928.patch.gz.b64
-          rm -f .github/workflows/kernel-evidence-live-fix-20260928.yml
-          cargo fmt --all
-          git diff --check
+            | gzip -dc > qualification/kernel-evidence/live-fix-20260928.patch
+          {
+            echo "head=$(git rev-parse HEAD)"
+            echo "tree=$(git rev-parse HEAD^{tree})"
+            echo
+            set +e
+            patch --dry-run --fuzz=0 --verbose -p1 \
+              < qualification/kernel-evidence/live-fix-20260928.patch
+            status=$?
+            set -e
+            echo
+            echo "patch_dry_run_exit=$status"
+          } > qualification/kernel-evidence/live-fix-20260928.patch-check.txt 2>&1
 
-      - name: Verify Lane A closed-world truth
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 scripts/verify_lane_a_foundation.py verify
-
-      - name: Test kernel evidence native package
-        shell: bash
-        working-directory: codex-rs
-        run: |
-          set -euo pipefail
-          cargo test -p codex-hepta-evidence --locked
-
-      - name: Test Agentd kernel evidence profile
-        shell: bash
-        working-directory: codex-rs
-        run: |
-          set -euo pipefail
-          cargo test -p codex-hepta-agentd --locked --test kernel_evidence_profile
-
-      - name: Commit one verified fast-forward repair
+      - name: Commit diagnostic materialization
         shell: bash
         run: |
           set -euo pipefail
           git config user.name "kernel-evidence-closure-bot"
           git config user.email "kernel-evidence-closure-bot@users.noreply.github.com"
-          git add -A
-          git commit -m "fix(kernel.evidence): restore native compile and Lane-A truth [kernel-evidence-closure] [kernel-evidence-status-sync] [kernel-evidence-live-fix]"
+          git add qualification/kernel-evidence/live-fix-20260928.patch \
+            qualification/kernel-evidence/live-fix-20260928.patch-check.txt
+          git commit -m "chore(kernel.evidence): materialize audited live-fix diagnostics [kernel-evidence-closure] [kernel-evidence-live-fix-debug-output]"
           git fetch origin fix/kernel-evidence-production-closure
           test "$(git rev-parse HEAD^)" = "$(git rev-parse origin/fix/kernel-evidence-production-closure)"
           git push origin HEAD:fix/kernel-evidence-production-closure
