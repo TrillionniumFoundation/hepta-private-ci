@@ -14,7 +14,6 @@ use codex_extension_api::ExtensionMetrics;
 use codex_extension_api::ModelProviderPolicyError;
 use codex_extension_api::ModelProviderPolicyFuture;
 use codex_extension_api::ModelProviderRequestKind;
-use codex_extension_api::ModelProviderSha256Digest;
 use codex_extension_api::TurnInputContext;
 use codex_extension_api::TurnInputContributor;
 use codex_hepta_contracts::AgentId;
@@ -490,9 +489,10 @@ struct FederatedAttachment<'a> {
     memories: &'a [FederatedAttachmentMemory],
 }
 
-// Internal model-context V3 keeps every provenance value but uses bounded
-// field labels. Full V2 labels alone exceed the conservative 999-byte budget
-// for a single ordinary memory; raising that budget would hide the regression.
+// Internal federated attachment V4 keeps every provenance value but uses
+// bounded field labels. Full V2 labels alone exceed the conservative 999-byte
+// budget for a single ordinary memory; raising that budget would hide the
+// regression.
 #[derive(Clone, Serialize)]
 struct FederatedAttachmentMemory {
     #[serde(rename = "a")]
@@ -538,7 +538,7 @@ fn combine_cognitive_materials(
     let memory = federated_value.get("memories")?.as_array()?.first()?;
     let federated_memory = match federated_value.get("schema_version")?.as_u64()? {
         2 => compact_federated_memory(memory)?,
-        3 => compact_federated_memory_v3(memory)?,
+        3 | 4 => compact_federated_memory_v3(memory)?,
         _ => return None,
     };
     let federation_coverage = federated_value.get("coverage")?.as_object()?;
@@ -546,6 +546,7 @@ fn combine_cognitive_materials(
         "requested_peers",
         "completed_peers",
         "failed_peers",
+        "partial_peers",
         "truncated_peers",
         "omitted_peer_candidates",
         "truncated_items",
@@ -562,7 +563,7 @@ fn combine_cognitive_materials(
     ] {
         failures.get(field)?.as_u64()?;
     }
-    // V2 shortens labels, not evidence: r/c/f/t/o/i retain all peer/item
+    // Short labels do not remove evidence: r/c/f/p/t/o/i retain all peer/item
     // counts; x.d/e/a/i/t retain discovery/deadline/authority/integrity/
     // transport failures. The full source coverage remains in both the source
     // binding and final-use guard. Do not raise the physical attachment budget.
@@ -570,6 +571,7 @@ fn combine_cognitive_materials(
         "r": federation_coverage.get("requested_peers")?,
         "c": federation_coverage.get("completed_peers")?,
         "f": federation_coverage.get("failed_peers")?,
+        "p": federation_coverage.get("partial_peers")?,
         "t": federation_coverage.get("truncated_peers")?,
         "o": federation_coverage.get("omitted_peer_candidates")?,
         "i": federation_coverage.get("truncated_items")?,
@@ -863,12 +865,6 @@ fn federation_source_binding(
     ))
 }
 
-fn api_digest(
-    digest: &Sha256Digest,
-) -> Result<ModelProviderSha256Digest, ModelProviderPolicyError> {
-    ModelProviderSha256Digest::parse(digest.as_str())
-}
-
 fn final_use_capability_window_current(
     revalidation_started_at: i64,
     final_use_now: i64,
@@ -912,6 +908,7 @@ mod tests {
     use codex_utils_path_uri::PathUri;
 
     use super::COMBINED_COGNITIVE_SOURCE;
+    use super::FEDERATED_ATTACHMENT_SCHEMA_VERSION;
     use super::FEDERATED_COGNITIVE_SOURCE;
     use super::FederatedAttachmentCoverage;
     use super::FederatedAttachmentFailureCoverage;
@@ -1046,6 +1043,7 @@ mod tests {
         );
         assert_eq!(payload["f"]["c"], serde_json::json!(1));
         assert_eq!(payload["f"]["f"], serde_json::json!(1));
+        assert_eq!(payload["f"]["p"], serde_json::json!(0));
         assert_eq!(
             payload["f"]["x"]["t"],
             serde_json::json!(1),
@@ -1103,13 +1101,55 @@ mod tests {
     }
 
     #[test]
+    fn combined_proposal_accepts_v4_and_preserves_partial_peer_coverage() {
+        let temp = tempfile::tempdir().expect("tempdir");
+        let workspace = temp.path().canonicalize().expect("workspace");
+        let session_store = ExtensionData::new("combined-v4-session");
+        let thread_store = ExtensionData::new(THREAD_ID);
+        thread_store.insert(HeptaMemoryThreadState::for_cognitive_test(true));
+        let turn_store = ExtensionData::new("combined-v4-turn");
+        let base_logical_request_sha256 =
+            ModelProviderSha256Digest::parse("11".repeat(32)).expect("base digest");
+        let input = EphemeralModelInputContext {
+            schema_version: EPHEMERAL_MODEL_INPUT_SCHEMA_VERSION,
+            session_store: &session_store,
+            thread_store: &thread_store,
+            turn_store: &turn_store,
+            attempt_id: "combined-v4-attempt",
+            base_logical_request_sha256: &base_logical_request_sha256,
+            thread_id: thread_store.level_id(),
+            turn_id: turn_store.level_id(),
+            cwd: &workspace,
+            request_kind: ModelProviderRequestKind::Turn,
+            provider_id: "provider",
+            model: "model",
+            transport: ModelProviderTransport::Http,
+            generate: true,
+            model_context_window: Some(100_000),
+            max_content_bytes: EPHEMERAL_MODEL_INPUT_MAX_CONTENT_BYTES,
+            max_content_tokens: EPHEMERAL_MODEL_INPUT_MAX_CONTENT_TOKENS,
+        };
+
+        let combined = combine_cognitive_materials(
+            &input,
+            local_material(0),
+            compact_federated_material_v4(1),
+        )
+        .expect("V4 federated material must remain combinable");
+        assert_eq!(combined.source, COMBINED_COGNITIVE_SOURCE);
+        let payload =
+            serde_json::from_str::<serde_json::Value>(&combined.content).expect("combined payload");
+        assert_eq!(payload["f"]["p"], serde_json::json!(1));
+    }
+
+    #[test]
     fn v3_compact_memory_preserves_v2_combined_fields_and_coverage_source() {
         let legacy = federated_material(OWNER_ID, "federation:v1:example", 0);
         let value: serde_json::Value = serde_json::from_str(&legacy.content).expect("legacy");
         let record = &value["memories"][0];
         let compact = super::compact_federated_memory(record).expect("V2 projection");
         assert_eq!(
-            super::compact_federated_memory_v3(&compact).expect("V3 projection"),
+            super::compact_federated_memory_v3(&compact).expect("V3/V4 projection"),
             compact
         );
         for field in ["a", "p", "g", "v", "m", "r", "c", "h", "q"] {
@@ -1165,6 +1205,7 @@ mod tests {
                 "requested_peers": 2,
                 "completed_peers": 1,
                 "failed_peers": 1,
+                "partial_peers": 0,
                 "truncated_peers": 0,
                 "omitted_peer_candidates": 0,
                 "truncated_items": 0,
@@ -1204,6 +1245,54 @@ mod tests {
             source_binding_sha256: Sha256Digest::for_bytes(
                 format!("federated-binding:{owner_agent_id}:{capability_id}").as_bytes(),
             ),
+            content_sha256: Sha256Digest::for_bytes(content.as_bytes()),
+            claimed_token_count: u32::try_from(content.len()).expect("federated length"),
+            final_use_guard: None,
+            content,
+        }
+    }
+
+    fn compact_federated_material_v4(partial_peers: u32) -> CognitiveProposalMaterial {
+        let content = serde_json::to_string(&serde_json::json!({
+            "schema_version": FEDERATED_ATTACHMENT_SCHEMA_VERSION,
+            "source": "explicit_federated_verified_memory",
+            "coverage": {
+                "requested_peers": 2,
+                "completed_peers": 1,
+                "failed_peers": 0,
+                "partial_peers": partial_peers,
+                "truncated_peers": 0,
+                "omitted_peer_candidates": 0,
+                "truncated_items": 0,
+                "failures": {
+                    "discovery_unavailable": 0,
+                    "deadline_or_cancelled": 0,
+                    "authority_rejected": 0,
+                    "integrity_rejected": 0,
+                    "transport_unavailable": 0
+                }
+            },
+            "memories": [{
+                "a": OWNER_ID,
+                "p": "federation:v1:compact",
+                "g": 11,
+                "v": 12,
+                "m": "00000000-0000-4000-8000-000000000703",
+                "r": 9,
+                "c": "compact federated memory",
+                "h": "44".repeat(32),
+                "q": [{
+                    "a": OWNER_ID,
+                    "s": "00000000-0000-4000-8000-000000000704",
+                    "r": 4,
+                    "h": "55".repeat(32),
+                }],
+            }],
+        }))
+        .expect("compact federated content");
+        CognitiveProposalMaterial {
+            source: FEDERATED_COGNITIVE_SOURCE,
+            source_binding_sha256: Sha256Digest::for_bytes(b"compact-federated-binding"),
             content_sha256: Sha256Digest::for_bytes(content.as_bytes()),
             claimed_token_count: u32::try_from(content.len()).expect("federated length"),
             final_use_guard: None,
@@ -1350,7 +1439,10 @@ mod tests {
         );
         let payload: serde_json::Value =
             serde_json::from_str(&first_content).expect("model context");
-        assert_eq!(payload["schema_version"], 3);
+        assert_eq!(
+            payload["schema_version"],
+            FEDERATED_ATTACHMENT_SCHEMA_VERSION
+        );
         assert_eq!(payload["memories"][0]["a"], OWNER_ID);
         assert_eq!(payload["memories"][0]["p"], capability.id().as_str());
         assert_eq!(payload["memories"][0]["q"][0]["a"], OWNER_ID);
