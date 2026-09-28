@@ -135,7 +135,7 @@ jobs:
         run: |
           set -euo pipefail
           git diff --check
-          git checkout HEAD^ -- .github/workflows/hepta-intuition-qualification.yml
+          git checkout add0691b43c4bd70774cb469675dd4c4e1ce1193 -- .github/workflows/hepta-intuition-qualification.yml
           rm -f .github/workflows/intuition-closure-authoring-once.yml
           rm -f scripts/intuition_closure_author_once.b85.part*
           python3 - <<'PY'
