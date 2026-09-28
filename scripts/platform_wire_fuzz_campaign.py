@@ -6,9 +6,11 @@ import argparse
 import datetime as dt
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import re
+import signal
 import subprocess
 import time
 
@@ -16,6 +18,14 @@ TARGETS = ("decode_frames", "managed_records", "policy_admission")
 SCHEMA = "hepta.platform-wire.fuzz-campaign.v2"
 SHA = re.compile(r"[0-9a-f]{40}")
 EXECUTIONS = re.compile(r"stat::number_of_executed_units:\s*(\d+)")
+CONTEXT = {
+    "toolchain": "FUZZ_TOOLCHAIN", "cargo_fuzz_version": "CARGO_FUZZ_VERSION",
+    "installer_toolchain": "FUZZ_INSTALL_TOOLCHAIN",
+    "workflow_sha": "GITHUB_WORKFLOW_SHA", "workflow_ref": "GITHUB_WORKFLOW_REF",
+    "run_id": "GITHUB_RUN_ID", "run_attempt": "GITHUB_RUN_ATTEMPT",
+    "event": "GITHUB_EVENT_NAME", "runner_image": "ImageOS",
+    "runner_image_version": "ImageVersion",
+}
 
 
 def utc_now() -> str:
@@ -47,10 +57,13 @@ def seconds(event: str, requested: str) -> int:
 
 
 def command(target: str, duration: int) -> list[str]:
-    if target not in TARGETS or not 20 <= duration <= 600:
+    if target not in TARGETS or type(duration) is not int or not 20 <= duration <= 600:
         raise ValueError("invalid bounded target or duration")
+    toolchain = os.environ.get("FUZZ_TOOLCHAIN", "")
+    if not re.fullmatch(r"[A-Za-z0-9_.-]+", toolchain):
+        raise ValueError("missing or invalid fuzz toolchain")
     return [
-        "cargo", "+" + os.environ["FUZZ_TOOLCHAIN"], "fuzz", "run", target,
+        "cargo", "+" + toolchain, "fuzz", "run", target,
         "fuzz/corpus/" + target, "--", f"-max_total_time={duration}",
         "-timeout=10", "-rss_limit_mb=2048", "-max_len=65536", "-seed=1",
         "-print_final_stats=1", f"-artifact_prefix=fuzz/artifacts/{target}/",
@@ -86,21 +99,32 @@ def save(path: Path, receipt: dict) -> None:
     temporary.replace(path)
 
 
+def context() -> dict:
+    return {field: os.environ.get(variable) for field, variable in CONTEXT.items()}
+
+
+def validate_binding(root: Path, receipt: dict) -> int:
+    if receipt.get("schema") != SCHEMA:
+        raise ValueError("campaign schema mismatch")
+    for key, value in {**subject(root), **context()}.items():
+        if key not in receipt or receipt[key] != value:
+            raise ValueError(f"campaign {key} mismatch")
+    duration = seconds(os.environ.get("GITHUB_EVENT_NAME", ""), os.environ.get("REQUESTED_SECONDS", ""))
+    if type(receipt.get("duration_seconds")) is not int or receipt["duration_seconds"] != duration:
+        raise ValueError("campaign duration mismatch")
+    if receipt.get("engine") != "libFuzzer" or receipt.get("sanitizer") != "address":
+        raise ValueError("campaign engine or sanitizer mismatch")
+    return duration // len(TARGETS)
+
+
 def initialize(root: Path, path: Path) -> dict:
     receipt = {
         "schema": SCHEMA, "status": "not_run", "created_at": utc_now(),
         "source_sha": os.environ.get("SOURCE_SHA"), "tested_sha": None,
-        "toolchain": os.environ.get("FUZZ_TOOLCHAIN"),
-        "cargo_fuzz_version": os.environ.get("CARGO_FUZZ_VERSION"),
-        "engine": "libFuzzer", "sanitizer": "address",
-        "workflow_sha": os.environ.get("GITHUB_WORKFLOW_SHA"),
-        "workflow_ref": os.environ.get("GITHUB_WORKFLOW_REF"),
-        "run_id": os.environ.get("GITHUB_RUN_ID"),
-        "run_attempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
-        "event": os.environ.get("GITHUB_EVENT_NAME"),
-        "runner_image": os.environ.get("ImageOS"),
-        "runner_image_version": os.environ.get("ImageVersion"),
+        **context(), "engine": "libFuzzer", "sanitizer": "address",
         "targets": {t: {"status": "not_run", "reason": "preparation_incomplete"} for t in TARGETS},
+        "production_activation": False, "independent_acceptance": False,
+        "real_transport_acceptance": False,
     }
     # Write before parsing inputs or invoking git: preparation failure is evidence.
     save(path, receipt)
@@ -133,26 +157,51 @@ def seed(root: Path) -> None:
     (corpus / "empty").write_bytes(b"")
 
 
+def run_bounded(argv: list[str], *, cwd: Path, stdout, timeout: float) -> int:
+    """Retire Cargo and its entire process group, not just the wrapper process.
+
+    Qualification uses a Linux runner. Do not silently use weaker termination
+    on unsupported hosts. Popen.wait always reaps the directly owned child.
+    """
+    if os.name != "posix":
+        raise OSError("POSIX process-group ownership required")
+    env = os.environ.copy()
+    env["RUSTUP_TOOLCHAIN"] = os.environ["FUZZ_TOOLCHAIN"]
+    with subprocess.Popen(argv, cwd=cwd, env=env, stdout=stdout,
+                          stderr=subprocess.STDOUT, start_new_session=True) as process:
+        try:
+            return process.wait(timeout=timeout)
+        finally:
+            try:
+                os.killpg(process.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+            process.wait()
+
+
 def run(root: Path, path: Path) -> None:
     receipt = json.loads(path.read_text())
-    if any(receipt.get(k) != v for k, v in subject(root).items()):
-        raise ValueError("source changed since campaign initialization")
-    duration = receipt["duration_seconds"] // len(TARGETS)
+    duration = validate_binding(root, receipt)
+    receipt["status"] = "running"
+    receipt["targets"] = {t: {"status": "not_run"} for t in TARGETS}
+    save(path, receipt)  # Invalidate old successes before the first child starts.
     for target in TARGETS:
+        validate_binding(root, receipt)
         log = path.parent / (target + ".log")
         argv = command(target, duration)
         row = {"status": "running", "command": argv, "started_at": utc_now(),
-               "cwd": "codex-rs/hepta-wire", "duration_seconds": duration}
+               "cwd": "codex-rs/hepta-wire", "duration_seconds": duration,
+               "timeout_seconds": duration + 120}
         receipt["targets"][target] = row
         save(path, receipt)
         started = time.monotonic()
         try:
             with log.open("w") as output:
-                result = subprocess.run(argv, cwd=root / "codex-rs/hepta-wire", stdout=output,
-                                        stderr=subprocess.STDOUT, timeout=duration + 120, check=False)
-            row["exit_code"] = result.returncode
+                code = run_bounded(argv, cwd=root / "codex-rs/hepta-wire", stdout=output,
+                                   timeout=duration + 120)
+            row["exit_code"] = code
             row["executed_units"] = executed_units(log)
-            row["status"] = "passed" if result.returncode == 0 and row["executed_units"] > 0 else "failed"
+            row["status"] = "passed" if code == 0 and row["executed_units"] > 0 else "failed"
             if row["status"] != "passed":
                 row["reason"] = "nonzero_exit_or_no_execution_statistics"
         except (OSError, subprocess.TimeoutExpired) as error:
@@ -165,37 +214,65 @@ def run(root: Path, path: Path) -> None:
     # A failing target does not prevent the other scenarios from executing.
 
 
+def valid_execution(row: dict, target: str, duration: int, log: Path) -> bool:
+    elapsed = row.get("elapsed_seconds")
+    return (
+        row.get("command") == command(target, duration)
+        and row.get("cwd") == "codex-rs/hepta-wire"
+        and type(row.get("duration_seconds")) is int and row["duration_seconds"] == duration
+        and type(row.get("timeout_seconds")) is int and row["timeout_seconds"] == duration + 120
+        and type(row.get("exit_code")) is int and row["exit_code"] == 0
+        and type(row.get("executed_units")) is int and row["executed_units"] > 0
+        and type(elapsed) in (int, float) and math.isfinite(elapsed) and elapsed > 0
+        and log.is_file() and digest(log) == row.get("log_sha256")
+        and executed_units(log) == row["executed_units"]
+    )
+
+
 def finalize(root: Path, path: Path) -> bool:
-    if not path.exists():
-        save(path, {"schema": SCHEMA, "targets": {}, "status": "not_run"})
-    receipt = json.loads(path.read_text())
-    bound = False
+    # A malformed/stale receipt must replace, never preserve, a passing result.
     try:
-        bound = all(receipt.get(k) == v for k, v in subject(root).items())
+        receipt = json.loads(path.read_text())
+        if not isinstance(receipt, dict):
+            raise ValueError("campaign receipt must be an object")
+    except (OSError, ValueError) as error:
+        receipt = {"schema": SCHEMA, "targets": {}, "status": "failed",
+                   "finalization_error": type(error).__name__}
+    bound = False
+    duration = 0
+    try:
+        duration = validate_binding(root, receipt)
+        bound = True
     except (ValueError, OSError, subprocess.SubprocessError) as error:
         receipt["finalization_error"] = str(error)
+    if not isinstance(receipt.get("targets"), dict):
+        receipt["targets"] = {}
+        bound = False
     for target in TARGETS:
-        row = receipt.setdefault("targets", {}).setdefault(target, {"status": "not_run"})
-        if row["status"] in ("not_run", "running"):
+        row = receipt["targets"].setdefault(target, {"status": "not_run"})
+        if not isinstance(row, dict):
+            row = receipt["targets"][target] = {"status": "failed", "reason": "malformed_target"}
+        if row.get("status") in ("not_run", "running"):
             row["reason"] = "preparation_failed_or_execution_interrupted"
-        if row["status"] == "running":
+        if row.get("status") == "running":
             row["status"] = "failed"
         log = path.parent / (target + ".log")
-        if row["status"] == "passed" and (
-            not log.is_file() or digest(log) != row.get("log_sha256")
-            or executed_units(log) != row.get("executed_units")
-            or row.get("exit_code") != 0 or row.get("executed_units", 0) <= 0
-        ):
-            row.update(status="failed", reason="execution_evidence_mismatch")
+        if row.get("status") == "passed":
+            try:
+                valid = bound and valid_execution(row, target, duration, log)
+            except (OSError, ValueError):
+                valid = False
+            if not valid:
+                row.update(status="failed", reason="execution_evidence_mismatch")
         for kind in ("corpus", "artifacts"):
             row[kind] = inventory(root / "codex-rs/hepta-wire/fuzz" / kind / target)
-    passed = bound and all(receipt["targets"][t]["status"] == "passed" for t in TARGETS)
-    receipt.update(status="passed" if passed else "failed", finalized_at=utc_now())
+    passed = bound and all(receipt["targets"][t].get("status") == "passed" for t in TARGETS)
+    receipt.update(status="passed" if passed else "failed", finalized_at=utc_now(),
+                   production_activation=False, independent_acceptance=False,
+                   real_transport_acceptance=False)
     receipt["logs"] = inventory(path.parent / "preparation")
-    receipt["fuzz_lock_sha256"] = (
-        digest(root / "codex-rs/hepta-wire/fuzz/Cargo.lock")
-        if (root / "codex-rs/hepta-wire/fuzz/Cargo.lock").is_file() else None
-    )
+    lock = root / "codex-rs/hepta-wire/fuzz/Cargo.lock"
+    receipt["fuzz_lock_sha256"] = digest(lock) if lock.is_file() else None
     save(path, receipt)
     return passed
 
