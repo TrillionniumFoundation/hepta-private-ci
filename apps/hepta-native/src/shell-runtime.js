@@ -1,3 +1,6 @@
+import { decodeComputerActionFrameV1 } from "../../../codex-rs/hepta-wire/js/computer-action-ir.js";
+import { nativeOperationFromComputerActionV1 } from "./computer-action.js";
+
 const STABLE_ID = /^[A-Za-z0-9._:-]{1,128}$/;
 const DIGEST = /^[0-9a-f]{64}$/;
 const ZERO_DIGEST = "0".repeat(64);
@@ -51,12 +54,12 @@ function result(value) {
   });
 }
 
-function platformInput(input) {
+function platformInput(input, expectedKeys = PLATFORM_INPUT_KEYS) {
   record(input, "input");
   const descriptors = Object.getOwnPropertyDescriptors(input);
   const keys = Reflect.ownKeys(descriptors);
-  if (keys.length !== PLATFORM_INPUT_KEYS.length ||
-      PLATFORM_INPUT_KEYS.some((key) => !Object.hasOwn(descriptors, key)) ||
+  if (keys.length !== expectedKeys.length ||
+      expectedKeys.some((key) => !Object.hasOwn(descriptors, key)) ||
       keys.some((key) => typeof key !== "string" ||
         !Object.hasOwn(descriptors[key], "value") || !descriptors[key].enumerable)) {
     throw new TypeError("platform input must contain exact own data fields");
@@ -72,8 +75,11 @@ export class NativeShellRuntime {
   #view = null;
   #operations = new Map();
   #connectionVersion = 0;
+  #binary = null;
+  #lastMonotonic = 0;
+  #resolving = 0;
 
-  constructor({ backend, platform, updater }) {
+  constructor({ backend, platform, updater, principalId, binaryResolver, monotonicMicros }) {
     for (const [name, value, methods] of [
       ["backend", backend, ["connect", "request", "close"]],
       ["platform", platform, ["permission", "invoke"]],
@@ -89,6 +95,14 @@ export class NativeShellRuntime {
     this.#backend = backend;
     this.#platform = platform;
     this.#updater = updater;
+    if ([principalId, binaryResolver, monotonicMicros].some((value) => value !== undefined)) {
+      if (!binaryResolver || typeof binaryResolver.resolve !== "function" ||
+          typeof monotonicMicros !== "function") {
+        throw new TypeError("binary profile requires owner resolver and monotonic clock");
+      }
+      this.#binary = Object.freeze({ principalId: stableId(principalId, "principalId"),
+        resolver: binaryResolver, monotonicMicros });
+    }
   }
 
   async connectRuntime(manifest) {
@@ -158,6 +172,58 @@ export class NativeShellRuntime {
   }
 
   async requestPlatformCapability(input) {
+    return this.#requestPlatformCapability(input, null);
+  }
+
+  #now() {
+    const now = positive(this.#binary.monotonicMicros(), "monotonic clock");
+    if (now < this.#lastMonotonic) throw new TypeError("monotonic clock regressed");
+    this.#lastMonotonic = now;
+    return now;
+  }
+
+  async #withinDeadline(promise, deadline) {
+    const remaining = deadline - this.#now();
+    if (remaining <= 0) throw new TypeError("binary native deadline has expired");
+    // Node timers cannot represent an arbitrary u64 horizon. Reject, do not clamp.
+    if (remaining > 2_147_483_647_000) throw new TypeError("binary deadline exceeds timer range");
+    let timer;
+    try {
+      return await Promise.race([promise, new Promise((_, reject) => {
+        timer = setTimeout(() => reject(new TypeError("binary native deadline has expired")),
+          Math.max(1, Math.ceil(remaining / 1000)));
+      })]);
+    } finally { clearTimeout(timer); }
+  }
+
+  async requestPlatformCapabilityBinary(input) {
+    this.#requireView();
+    if (!this.#binary) throw new TypeError("binary native profile is not installed");
+    const { frameBytes, grantPayloadDigest } = platformInput(input,
+      ["frameBytes", "grantPayloadDigest"]);
+    if (this.#resolving >= 16) throw new TypeError("binary resolver capacity exceeded");
+    const session = this.#session, view = this.#view;
+    // Decode synchronously before awaiting the owner-controlled reference resolver.
+    const frame = decodeComputerActionFrameV1(frameBytes);
+    const ownedBytes = Buffer.from(frameBytes);
+    const now = this.#now();
+    if (frame.deadlineMonotonicMicros <= now) throw new TypeError("binary native deadline has expired");
+    ++this.#resolving;
+    const resolution = nativeOperationFromComputerActionV1({ frameBytes: ownedBytes,
+      principalId: this.#binary.principalId, sessionGeneration: session.generation,
+      viewGeneration: view.generation, viewRevision: view.revision, viewDigest: view.digest,
+      grantPayloadDigest, currentMonotonicMicros: now, resolver: this.#binary.resolver });
+    void resolution.then(() => --this.#resolving, () => --this.#resolving);
+    const prepared = await this.#withinDeadline(resolution, frame.deadlineMonotonicMicros);
+    if (this.#session !== session || this.#view !== view) {
+      throw new TypeError("platform context changed during binary resolution");
+    }
+    const { sourceActionDigest, deadlineMonotonicMicros, ...request } = prepared;
+    return this.#requestPlatformCapability(request,
+      Object.freeze({ sourceActionDigest, deadlineMonotonicMicros }));
+  }
+
+  async #requestPlatformCapability(input, binary) {
     this.#requireView();
     const request = platformInput(input);
     const operationId = stableId(request.operationId, "operationId");
@@ -176,7 +242,7 @@ export class NativeShellRuntime {
     const view = this.#view;
     const binding = JSON.stringify([
       session.sessionId, session.generation, view.generation, view.revision,
-      view.digest, request.action, resource, finalPayloadDigest,
+      view.digest, request.action, resource, finalPayloadDigest, binary?.sourceActionDigest ?? null,
     ]);
     const prior = this.#operations.get(operationId);
     if (prior) {
@@ -192,12 +258,21 @@ export class NativeShellRuntime {
     const entry = { binding, promise: null };
     this.#operations.set(operationId, entry);
     entry.promise = Promise.resolve().then(async () => {
-      const permission = record(await this.#platform.permission({
-        action: request.action, resource,
-      }), "platform permission");
+      if (binary && binary.deadlineMonotonicMicros <= this.#now()) {
+        throw new TypeError("binary native deadline has expired");
+      }
+      const authorityContext = binary ? { operationId, finalPayloadDigest, ...binary,
+        sessionId: session.sessionId, sessionGeneration: session.generation } : {};
+      const permissionCall = Promise.resolve().then(() => this.#platform.permission({
+        action: request.action, resource, ...authorityContext,
+      }));
+      const permission = record(await (binary
+        ? this.#withinDeadline(permissionCall, binary.deadlineMonotonicMicros)
+        : permissionCall), "platform permission");
       const common = {
         kind: "PlatformDecisionV1", operationId, action: request.action,
         sessionId: session.sessionId, sessionGeneration: session.generation,
+        ...(binary ? { sourceActionDigest: binary.sourceActionDigest } : {}),
       };
       if (permission.allowed !== true) {
         return result({ ...common, status: "rejected", terminalObserved: true,
@@ -208,13 +283,20 @@ export class NativeShellRuntime {
       if (this.#session !== session || this.#view !== view) {
         throw new TypeError("platform context changed before dispatch");
       }
+      if (binary && binary.deadlineMonotonicMicros <= this.#now()) {
+        throw new TypeError("binary native deadline has expired");
+      }
       const indeterminate = result({ ...common, status: "indeterminate",
         terminalObserved: false, outcomeDigest: null });
       try {
-        const observed = record(await this.#platform.invoke({
+        const invocation = this.#platform.invoke({
           sessionId: session.sessionId, sessionGeneration: session.generation,
           operationId, action: request.action, resource, finalPayloadDigest,
-        }), "platform observation");
+          ...(binary ?? {}),
+        });
+        const observed = record(await (binary
+          ? this.#withinDeadline(Promise.resolve(invocation), binary.deadlineMonotonicMicros)
+          : invocation), "platform observation");
         if (observed.terminalObserved !== true) return indeterminate;
         if (observed.status !== "succeeded" && observed.status !== "failed") {
           return indeterminate;

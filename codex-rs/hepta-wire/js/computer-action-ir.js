@@ -264,7 +264,7 @@ class Decoder {
   u64(name) {
     const value = this.take(8).readBigUInt64BE();
     if (value > BigInt(Number.MAX_SAFE_INTEGER)) fail(`${name} exceeds the safe integer limit`);
-    return Number(value);
+    return positive(Number(value), name);
   }
 
   id(name) {
@@ -310,7 +310,11 @@ function decodePayload(opcode, bytes) {
 }
 
 export function decodeComputerActionFrameV1(value) {
-  const bytes = Buffer.isBuffer(value) ? value : Buffer.from(value);
+  if (!(value instanceof Uint8Array)) fail("frame must be a byte array");
+  if (value.buffer instanceof SharedArrayBuffer) fail("shared frame storage is forbidden");
+  if (value.byteLength > MAX_COMPUTER_ACTION_FRAME_BYTES) fail("frame exceeds the byte limit");
+  // Own the decoded bytes; no caller-owned buffer is retained past admission.
+  const bytes = Buffer.from(value);
   if (bytes.length > MAX_COMPUTER_ACTION_FRAME_BYTES) fail("frame exceeds the byte limit");
   if (bytes.length < 32) fail("frame is truncated");
   const body = bytes.subarray(0, bytes.length - 32);
