@@ -8,6 +8,7 @@ on:
 permissions:
   contents: read
 
+# Isolated source materialization only; this branch is never merged.
 jobs:
   export:
     runs-on: ubuntu-24.04
