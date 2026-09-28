@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "540750ca5675100a4d18fc18d4ac0afea2e33306",
-    "tree": "993bcee6d34a681477af358c500482fed7d2ed50"
+    "commit": "49df616c21a17591ca5e0cd4af0500fa2bbcb6db",
+    "tree": "3c25307745d9fcb1a216e5ea86b9e586b268d0f2"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.federation",
@@ -87,8 +87,8 @@
   "headAttestation": {
     "candidateBranch": "feat/memory-federation-full-closure-20260927",
     "baseCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
-    "candidateHead": "540750ca5675100a4d18fc18d4ac0afea2e33306",
-    "candidateTree": "993bcee6d34a681477af358c500482fed7d2ed50",
+    "candidateHead": "49df616c21a17591ca5e0cd4af0500fa2bbcb6db",
+    "candidateTree": "3c25307745d9fcb1a216e5ea86b9e586b268d0f2",
     "headMeaning": "canonical_v2 bounded_discovery_reserved_read_budget deterministic_peer_selection final_use_revalidation private_verified_frame monotonic_partitioned_replay authenticated_transport_identity durable_replay_attempt_recovery restart_surviving_cancellation owner_cut_witness scoped_canonical_map_verification pre_post_execution_guard canonical_capability_status retained_logical_capacity_metrics terminal_request_credential_currentness issuing_host_token_binding actual_command_execution locked_input_revalidation ordered_merge_parents",
     "status": "pending_exact_current_head_and_merge_candidate_execution",
     "scope": [
@@ -133,7 +133,8 @@
       "tracked_lockfile_byte_identity",
       "workflow_run_attempt_and_job_binding",
       "ordered_base_then_source_merge_parents",
-      "exact_capacity_workload_and_execution_binding"
+      "exact_capacity_workload_and_execution_binding",
+      "build_outputs_outside_source_and_receipt_artifact"
     ],
     "productCallsites": [
       "codex-rs/hepta-agentd/src/runtime.rs",
@@ -180,15 +181,15 @@
       "scripts/verify_memory_federation_implementation.py",
       "scripts/verify_memory_federation_status.py"
     ],
-    "note": "sourceBase and observedAtHead bind the immediately preceding source-and-document candidate. This implementation-map-only rebind records actual current Git objects, not execution success. The existing V2 product path and half-budget read reservation remain unchanged. Terminal completion rechecks incoming directional credentials and issuing host identity; qualification retains real subprocess outcomes and logs under one locked command contract. Full exact-head/synthetic-merge qualification, selected authenticated transport, selected-host durable recovery, real-host faults/SLOs, independent acceptance and activation/release remain separately gated.",
+    "note": "sourceBase and observedAtHead bind the immediately preceding source-and-document candidate. This implementation-map-only rebind records actual current Git objects, not execution success. The existing V2 product path and half-budget read reservation remain unchanged. Terminal completion rechecks incoming directional credentials and issuing host identity; qualification retains real subprocess outcomes and logs under one locked command contract. Full exact-head/synthetic-merge qualification, selected authenticated transport, selected-host durable recovery, real-host faults/SLOs, independent acceptance and activation/release remain separately gated. Native build outputs are explicitly located outside the qualified source roots and retained receipt directory; source cleanliness is not weakened.",
     "metadataOnlyPaths": [
       "docs/modules/memory.federation/IMPLEMENTATION_MAP.json"
     ]
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "540750ca5675100a4d18fc18d4ac0afea2e33306",
-    "tree": "993bcee6d34a681477af358c500482fed7d2ed50"
+    "commit": "49df616c21a17591ca5e0cd4af0500fa2bbcb6db",
+    "tree": "3c25307745d9fcb1a216e5ea86b9e586b268d0f2"
   },
   "observedSourcePaths": [
     ".github/workflows/blocking-ci.yml",
@@ -255,7 +256,7 @@
     },
     {
       "path": ".github/workflows/memory-federation-slim-smoke.yml",
-      "object": "c7932f78e31261cc64189513884608cb57c4e8af"
+      "object": "dd6a182bdd923cc9145ab42c05f8dea830f078d6"
     },
     {
       "path": ".github/workflows/memory-federation-v2-final-verify.yml",
@@ -379,7 +380,7 @@
     },
     {
       "path": "scripts/memory_federation_execution_receipt.py",
-      "object": "55a0f3350d6303d98f0efec0dc1e1389807d607c"
+      "object": "ca2926cbb473e89a2e2348dfa8a2ea4222d4f0ec"
     },
     {
       "path": "scripts/memory_federation_full_attestation.py",
