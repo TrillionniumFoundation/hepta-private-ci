@@ -86,6 +86,22 @@ fn candidate(name: &str, payloads: Vec<Digest32>) -> PlanCandidateV1 {
     }
 }
 
+fn planning_request(now_micros: u64, candidates: Vec<PlanCandidateV1>) -> PlanningRequestV1 {
+    PlanningRequestV1 {
+        plan_id: id("plan-run-1"),
+        now_micros,
+        deadline_micros: 1_900,
+        evaluation_policy_digest: digest("policy"),
+        resource_profile_digest: digest("resource-profile"),
+        candidates,
+        resource_reservations: vec![ResourceReservationV1 {
+            axis: id("compute"),
+            endowment: q32(10),
+            essential_floor: FixedQ32::ZERO,
+        }],
+    }
+}
+
 #[test]
 fn supplied_owner_must_belong_to_the_exact_required_set() {
     let error = must_err(collect_snapshot(
@@ -105,26 +121,63 @@ fn duplicate_final_payload_is_rejected_instead_of_repaired() {
         vec![summary("planner")],
     ));
     let repeated = digest("payload:work");
-    let request = PlanningRequestV1 {
-        plan_id: id("plan-run-1"),
-        now_micros: 1_000,
-        deadline_micros: 1_900,
-        evaluation_policy_digest: digest("policy"),
-        resource_profile_digest: digest("resource-profile"),
-        candidates: vec![
-            candidate("abstain", Vec::new()),
-            candidate("work", vec![repeated, repeated]),
-        ],
-        resource_reservations: vec![ResourceReservationV1 {
-            axis: id("compute"),
-            endowment: q32(10),
-            essential_floor: FixedQ32::ZERO,
-        }],
-    };
-
-    let error = must_err(prepare_plan(&snapshot, request));
+    let error = must_err(prepare_plan(
+        &snapshot,
+        planning_request(
+            1_000,
+            vec![
+                candidate("abstain", Vec::new()),
+                candidate("work", vec![repeated, repeated]),
+            ],
+        ),
+    ));
     assert!(matches!(
         error,
         PlannerError::DuplicateCandidate(message) if message.contains("repeats a final payload")
     ));
+}
+
+#[test]
+fn planning_time_cannot_precede_snapshot_collection() {
+    let snapshot = must(collect_snapshot(
+        snapshot_request(),
+        vec![summary("planner")],
+    ));
+    let error = must_err(prepare_plan(
+        &snapshot,
+        planning_request(999, vec![candidate("abstain", Vec::new())]),
+    ));
+    assert_eq!(
+        error,
+        PlannerError::InvalidTime("planning time before snapshot collection")
+    );
+}
+
+#[test]
+fn owner_age_is_rechecked_at_plan_use() {
+    let snapshot = must(collect_snapshot(
+        snapshot_request(),
+        vec![summary("planner")],
+    ));
+    let error = must_err(prepare_plan(
+        &snapshot,
+        planning_request(1_051, vec![candidate("abstain", Vec::new())]),
+    ));
+    assert_eq!(error, PlannerError::SnapshotExpired);
+}
+
+#[test]
+fn abstain_cannot_carry_an_effect_payload() {
+    let snapshot = must(collect_snapshot(
+        snapshot_request(),
+        vec![summary("planner")],
+    ));
+    let error = must_err(prepare_plan(
+        &snapshot,
+        planning_request(
+            1_000,
+            vec![candidate("abstain", vec![digest("must-not-execute")])],
+        ),
+    ));
+    assert_eq!(error, PlannerError::AbstainUnavailable);
 }
