@@ -3,6 +3,10 @@ use std::collections::BTreeSet;
 use std::collections::VecDeque;
 use std::error::Error;
 use std::fs;
+#[cfg(unix)]
+use std::fs::File;
+#[cfg(unix)]
+use std::io::Read;
 use std::sync::Mutex;
 #[cfg(unix)]
 use std::sync::atomic::AtomicU64;
@@ -89,6 +93,13 @@ const SECOND_AGENT: &str = "019153a4-3088-7e03-a56a-9b1964f75dd3";
 const AGENT_MXID: &str = "@agent:example.test";
 const ALLOWED_SENDER: &str = "@owner:example.test";
 const ALLOWED_ROOM: &str = "!allowed:example.test";
+
+#[cfg(unix)]
+fn test_material() -> TestResult<[u8; 32]> {
+    let mut material = [0_u8; 32];
+    File::open("/dev/urandom")?.read_exact(&mut material)?;
+    Ok(material)
+}
 
 fn agent(value: &str) -> TestResult<AgentId> {
     Ok(AgentId::parse(value)?)
@@ -261,7 +272,7 @@ impl TestAuthorizer {
 
         let directory = TempDir::new()?;
         std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
-        let signer = SigningKey::from_bytes(&[91; 32]);
+        let signer = SigningKey::from_bytes(&test_material()?);
         let authority = FinalUseAuthority::open_state_dir(
             directory.path(),
             "matrix-test-owner".to_string(),
@@ -308,9 +319,7 @@ impl MatrixOutboundAuthorizer for TestAuthorizer {
             .map_err(|_| MatrixAuthorityError::Unavailable)
             .map(|duration| duration.as_millis() as u64);
         let signed = now.and_then(|now| {
-            let mut nonce = [0_u8; 32];
-            nonce[..8].copy_from_slice(&sequence.to_be_bytes());
-            nonce[8..16].copy_from_slice(&request.attempt.to_be_bytes());
+            let nonce = test_material().map_err(|_| MatrixAuthorityError::Unavailable)?;
             let grant = FinalUseGrant {
                 schema_version: 1,
                 signer_id: "matrix-test-owner".to_string(),
@@ -325,7 +334,9 @@ impl MatrixOutboundAuthorizer for TestAuthorizer {
                 .signing_bytes()
                 .map_err(|_| MatrixAuthorityError::InvalidBinding)?;
             let signature = if self.wrong_signer {
-                SigningKey::from_bytes(&[92; 32])
+                SigningKey::from_bytes(
+                    &test_material().map_err(|_| MatrixAuthorityError::Unavailable)?,
+                )
                     .sign(&signing_bytes)
                     .to_bytes()
                     .to_vec()

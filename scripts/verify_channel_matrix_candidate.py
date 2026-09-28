@@ -20,7 +20,7 @@ REQUIRED_DOCS = (
     "ARCHITECTURE.md", "STATE_MACHINE.md", "STORAGE_SCHEMA.md",
     "MATRIX_PROTOCOL.md", "CONFIGURATION.md", "FAILURE_AND_RECOVERY.md",
     "OPERATIONS_RUNBOOK.md", "SECURITY_MODEL.md", "QUALIFICATION_MATRIX.md",
-    "FINAL_CONTENT_BOUNDARY_V2.md",
+    "FINAL_CONTENT_BOUNDARY_V2.md", "OPTIMIZATION_CONTRACT.md",
 )
 SOURCE_MARKERS = {
     "codex-rs/hepta-supervisor/src/matrix.rs": ("fn start_matrix_companion(", "spawn_matrixd(&spec)"),
@@ -28,11 +28,23 @@ SOURCE_MARKERS = {
     "codex-rs/hepta-matrixd/src/final_use.rs": ("HOST_CONFIG_SCHEMA_VERSION: u32 = 1", "BROKER_WIRE_SCHEMA_VERSION: u32 = MATRIX_FINAL_USE_REQUEST_SCHEMA_VERSION", "response.schema_version != BROKER_WIRE_SCHEMA_VERSION"),
     "codex-rs/hepta-matrix-sdk/src/lib.rs": ("mod outbound_v2;", "pub use outbound_v2::run_outbox_sender;", "pub use outbound_v2::MatrixSendPermit;"),
     "codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs": (
-        "claim_outbox_fenced(", "prepare_outbox_dispatch(record, prepared_at_ms)",
-        "pin_outbox_content(", "record_outbox_authorized(", "record_outbox_dispatching(",
-        "refresh_revocations()", "enter_verified_use(token, &request.binding)",
-        "finish_outbox_transport_accepted(", "finish_outbox_indeterminate("),
-    "codex-rs/hepta-matrix-sdk/src/outbound_v2/gate.rs": ("enter_verified_use(token, binding)", "MatrixSendPermit::new(", "send_authorized(self.record, permit)", "outbound_payload_digest(self.record)"),
+        "claim_outbox_fenced(", "Admission::Entered(entered)",
+        "settle_entered(store, &entered", "TelemetryWindow::new()"),
+    "codex-rs/hepta-matrix-sdk/src/outbound_v2/admission.rs": (
+        "prepare_outbox_dispatch(record, prepared_at_ms)", "pin_outbox_content(",
+        "record_outbox_authorized(", "record_outbox_dispatching(",
+        "refresh_revocations()", "enter_verified_use(token, &request.binding, stats)"),
+    "codex-rs/hepta-matrix-sdk/src/outbound_v2/settlement.rs": (
+        "entered: &EnteredSend<'_>", "finish_outbox_transport_accepted(",
+        "finish_outbox_indeterminate("),
+    "codex-rs/hepta-matrix-sdk/src/outbound_v2/gate.rs": (
+        "enter_verified_use(token, binding)", "MatrixSendPermit::new(",
+        "send_authorized(self.record, permit)", "outbound_payload_digest(self.record)",
+        "async fn continue_entered(", ") -> EnteredSend<'claim> {",
+        "self.preflight(grant, stats)", "self.require_live_window(grant.expires_at_ms)"),
+    "codex-rs/hepta-matrix-sdk/src/outbound_v2/telemetry.rs": (
+        "hepta.channel-matrix-runtime-metrics.v1", "post_entry_failures",
+        "payload_digest_checks", "dynamic_checks"),
     "codex-rs/hepta-matrix-sdk/src/outbound_v2/permit.rs": ("pub struct MatrixSendPermit", "proof.matches(&self.binding)", "outbound_payload_digest(record)"),
     "codex-rs/hepta-matrix-sdk/src/outbound_v2/retry.rs": ("classified_retry_at(", "stable_jitter_ms(", "MatrixAttemptFailureClass::RateLimited", "MatrixAttemptFailureClass::ResponseLost"),
     "codex-rs/hepta-matrix-sdk/src/authority.rs": ("MATRIX_FINAL_USE_REQUEST_SCHEMA_VERSION: u32 = 2", "pub struct MatrixFinalUseRequest", "pub trait MatrixOutboundAuthorizer", "outbound_payload_digest(record)"),
@@ -48,9 +60,11 @@ SOURCE_MARKERS = {
     "codex-rs/hepta-matrix-store/migrations/0007_matrix_claim_fencing.sql": ("CREATE TABLE matrix_dispatch_attempt_claims", "CREATE TABLE matrix_dispatch_active_claims", "CREATE TABLE matrix_dispatch_authority_witnesses", "CREATE TABLE matrix_dispatch_attempt_events", "Matrix attempt history is append-only"),
     "codex-rs/hepta-matrix-store/migrations/0008_matrix_content_binding.sql": ("CREATE TABLE matrix_dispatch_content_bindings", "matrix_dispatch_content_bindings_no_update", "matrix_dispatch_content_bindings_no_delete"),
     "codex-rs/hepta-matrix-store/migrations/0009_matrix_legacy_content_holds.sql": ("CREATE TABLE matrix_dispatch_legacy_content_holds", "message.attempts > 0", "matrix_dispatch_legacy_content_holds_no_insert", "matrix_dispatch_legacy_content_holds_no_delete"),
-    "codex-rs/hepta-matrix-store/migrations/0010_matrix_entered_use_proofs.sql": ("CREATE TABLE matrix_dispatch_use_entries", "matrix_dispatch_use_entries_no_update", "matrix_dispatch_succeeded_requires_entered_use"),
+    "codex-rs/hepta-matrix-store/migrations/0010_matrix_entered_use_proofs.sql": ("CREATE TABLE matrix_dispatch_use_entries", "matrix_dispatch_use_entries_no_update", "CREATE TRIGGER matrix_dispatch_succeeded_requires_authority_claim", "qualified Matrix success requires a durable entered-use proof", "FROM matrix_dispatch_use_entries AS entry"),
     "codex-rs/hepta-matrix-store/migrations/0011_matrix_legacy_hold_remediation.sql": ("INSERT INTO matrix_dispatch_ledger", "9223372036854775807", "matrix_dispatch_legacy_hold_no_reactivate"),
     "codex-rs/hepta-matrix-store/migrations/0012_matrix_terminal_any_entered_attempt.sql": ("entry.attempt <= NEW.attempts", "matrix_dispatch_succeeded_requires_authority_claim", "matrix_dispatch_redacted_requires_authority_claim"),
+    "scripts/channel_matrix_diagnostics.py": ("query_only=ON", "?mode=ro", "not_in_snapshot"),
+    "scripts/channel_matrix_status.py": ("command_state(", "workingDirectory", "independent_acceptance"),
     "codex-rs/state/src/capability_random.rs": ("pub fn random_capability_bytes() -> [u8; 32]", "Uuid::new_v4()"),
 }
 DENIED_CLAIMS = (
@@ -119,12 +133,49 @@ def checked_observation(value: object, head: str, label: str) -> tuple[str, str]
     return commit, tree
 
 
+def load_implementation_map(payload: str) -> dict[str, object]:
+    """Reject ambiguous JSON and untyped schema identities before using a map."""
+    def unique(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise RuntimeError(f"duplicate implementation-map key: {key}")
+            result[key] = value
+        return result
+
+    row = json.loads(payload, object_pairs_hook=unique)
+    if not isinstance(row, dict):
+        raise RuntimeError("implementation map must be an object")
+    if (row.get("schema") != "hepta.module-implementation-map.v3"
+            or type(row.get("schemaVersion")) is not int
+            or row["schemaVersion"] != 3):
+        raise RuntimeError("unsupported implementation-map schema")
+    return row
+
+
+def require_operation_inventory(operations: object) -> None:
+    """All three owner operations are mandatory; duplicates are not coverage."""
+    expected = {"admit_event", "prepare_send", "observe_send"}
+    if not isinstance(operations, list):
+        raise RuntimeError("implementation map lacks typed operations")
+    observed = []
+    for operation in operations:
+        if not isinstance(operation, dict):
+            raise RuntimeError("implementation operation must be an object")
+        name = operation.get("operation")
+        if not isinstance(name, str) or name != operation.get("designOperation"):
+            raise RuntimeError("implementation operation/design identity mismatch")
+        observed.append(name)
+    if len(observed) != len(expected) or set(observed) != expected:
+        raise RuntimeError("implementation map must cover each Matrix operation exactly once")
+
+
 def verify(expected_sha: str | None) -> dict[str, object]:
     head, tree = rev("HEAD"), rev("HEAD^{tree}")
     if expected_sha is not None and head != expected_sha:
         raise RuntimeError(f"candidate mismatch: expected {expected_sha}, got {head}")
     map_file = ROOT / MAP_PATH
-    row = json.loads(map_file.read_text(encoding="utf-8"))
+    row = load_implementation_map(map_file.read_text(encoding="utf-8"))
     if row.get("module") != "channel.matrix":
         raise RuntimeError("implementation-map module identity mismatch")
     if row.get("candidateBindingPolicy") != "immutable_source_anchor_plus_exact_head_receipt":
@@ -143,6 +194,7 @@ def verify(expected_sha: str | None) -> dict[str, object]:
     operations = row.get("operations")
     if not isinstance(operations, list) or not operations:
         raise RuntimeError("implementation map lacks operations")
+    require_operation_inventory(operations)
     for operation in operations:
         source, symbol = operation["sourcePath"], operation["nativeSymbol"]
         require_markers(source, (symbol,))

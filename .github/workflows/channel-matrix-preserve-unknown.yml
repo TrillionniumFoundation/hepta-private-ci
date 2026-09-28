@@ -60,6 +60,8 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           mkdir -p "$RUNNER_TEMP/matrix-evidence"
+          exec > >(tee "$RUNNER_TEMP/matrix-evidence/freeze.log") 2>&1
+          echo "TESTED_SHA=$SOURCE_SHA" >> "$GITHUB_ENV"
           if [ -z "$BASE_SHA" ]; then
             BASE_SHA="$(git rev-parse origin/main)"
           fi
@@ -111,6 +113,10 @@ jobs:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
+      - name: Locked all-target Matrix compilation
+        run: >-
+          python3 scripts/channel_matrix_evidence.py run
+          --directory "$RUNNER_TEMP/matrix-evidence" --label compile
       - name: Locked Matrix tests, including store and protocol
         run: >-
           python3 scripts/channel_matrix_evidence.py run
@@ -133,6 +139,11 @@ jobs:
             --expected-sha "$TESTED_SHA" --lane "$HEPTA_CI_LANE" \
             --output "$RUNNER_TEMP/matrix-evidence/source-after.json"
           cmp "$RUNNER_TEMP/matrix-evidence/source.json" "$RUNNER_TEMP/matrix-evidence/source-after.json"
+      - name: Derive separate source, compile, test and target status
+        if: always()
+        run: >-
+          python3 scripts/channel_matrix_status.py
+          --directory "$RUNNER_TEMP/matrix-evidence"
       - name: Record command outcome and artifact digests
         if: always()
         env:

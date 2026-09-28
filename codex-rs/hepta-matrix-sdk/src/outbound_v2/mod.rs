@@ -317,7 +317,7 @@ pub async fn run_outbox_sender<
     let mut telemetry = TelemetryWindow::new();
     loop {
         if cancel.is_cancelled() {
-            telemetry.flush(/*error*/ None);
+            telemetry.observe(&OutboxDispatchStats { cancelled: true, ..OutboxDispatchStats::default() }, /*error*/ None);
             return Ok(());
         }
         let mut stats = OutboxDispatchStats::default();

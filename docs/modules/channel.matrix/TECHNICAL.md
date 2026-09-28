@@ -87,7 +87,7 @@ Wire and storage identities are versioned and bounded. Unknown critical fields, 
 
 ## 6. Data authority, persistence and migrations
 
-`MatrixDurableStore` owns one private per-Agent SQLite database. Migrations 1-5 own the existing room/inbox/outbox/sync/control surfaces. Migration 6 adds the immutable dispatch ledger, observations and authority claims. Migration 7 adds random-capability attempt claims, active claim phases, verified-use/revocation-head witnesses and append-only attempt events. Migration 8 pins canonical Matrix content and scope, migration 9 seals inherited unpinned attempts, migration 10 persists the non-constructible entered-use proof, and migration 11 parks every legacy hold behind authenticated reconciliation while materializing its unresolved durable ledger state.
+`MatrixDurableStore` owns one private per-Agent SQLite database. Migrations 1-5 own the existing room/inbox/outbox/sync/control surfaces. Migration 6 adds the immutable dispatch ledger, observations and authority claims. Migration 7 adds random-capability attempt claims, active claim phases, verified-use/revocation-head witnesses and append-only attempt events. Migration 8 pins canonical Matrix content and scope, migration 9 seals inherited unpinned attempts, migration 10 persists the non-constructible entered-use proof, and migration 11 parks every legacy hold behind authenticated reconciliation while materializing its unresolved durable ledger state. Migration 12 qualifies a stable transaction against any matching entered attempt no newer than the current attempt.
 
 Operation ID, stable transaction ID and event IDs are independently unique. Logical identity columns are immutable; audit rows cannot be deleted. Store open validates migration history, exact table/index/view/trigger SQL, constraints, foreign keys, integrity and legacy-hold parking before work.
 
@@ -178,10 +178,24 @@ This navigation receipt identifies the current native surfaces; execution claims
 | Operation | Native owner | Product callsite / terminal observer |
 |---|---|---|
 | `admit_event` | `codex-rs/hepta-matrixd/src/runtime.rs` — `process_event` | runner recovery/inbox dispatcher |
-| `prepare_send` | `codex-rs/hepta-matrix-store/src/dispatch.rs` — `prepare_outbox_dispatch` | `codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs` |
-| claim/authorize/dispatch | `codex-rs/hepta-matrix-store/src/claim/store.rs` | `outbound_v2` final-use sequence |
+| `prepare_send` | `codex-rs/hepta-matrix-store/src/dispatch.rs` — `prepare_outbox_dispatch` | `codex-rs/hepta-matrix-sdk/src/outbound_v2/admission.rs` |
+| claim/authorize/dispatch | `codex-rs/hepta-matrix-store/src/claim/store.rs` | `outbound_v2/admission.rs` final-use sequence |
 | transport classification | `codex-rs/hepta-matrix-sdk/src/sdk.rs` | typed `MatrixTransportError` and retry policy |
 | `observe_send` | `codex-rs/hepta-matrix-store/src/dispatch.rs` | `sync_v2.rs` authenticated `/sync` reconciliation |
 | lifecycle composition | `codex-rs/hepta-supervisor/src/matrix.rs` | `codex-rs/hepta-matrixd/src/runner.rs` |
 
 Use [`IMPLEMENTATION_MAP.json`](IMPLEMENTATION_MAP.json) and run [`scripts/verify_channel_matrix_candidate.py`](../../../scripts/verify_channel_matrix_candidate.py) with the exact candidate SHA. A passing navigation receipt is not a real homeserver, encryption, restore, acceptance or release receipt.
+
+## 18. Typed sender optimization contract
+
+See [OPTIMIZATION_CONTRACT.md](OPTIMIZATION_CONTRACT.md). Admission and
+post-entry settlement are separate typed phases. Every entered result carries
+the real kernel proof and the exact fenced claim. `claim_limit` bounds work per
+pass; a single lease is acquired immediately before preparation. The gate
+checks immutable canonical payload bytes once and measures their cost, while
+revocations, transport identity, expiry and cancellation are checked at every
+continuation poll. Diagnostic windows are observations, not dispatch truth.
+
+The schema compatibility floor for startup/rollback is migration **12**,
+including cross-attempt terminal qualification. A binary compatible only with
+migrations 1-11 is not a qualified rollback target.

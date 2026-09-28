@@ -291,6 +291,13 @@ async fn check_interruption(interruption: Interruption) -> TestResult {
         now_ms()?,
     )
     .await?;
+    // Even on later revocation, immutable digest work is one per entry;
+    // every transport poll still has a live authority/session/time check.
+    assert_eq!(stats.entered_attempts, 1);
+    assert_eq!(stats.payload_digest_checks, 1);
+    assert_eq!(stats.claim_to_first_poll_samples, 1);
+    assert!(stats.dynamic_checks >= stats.transport_polls);
+    assert_eq!(stats.transport_polls, polls.load(Ordering::SeqCst));
     let continuing = matches!(
         interruption,
         Interruption::None | Interruption::UnrelatedNonce

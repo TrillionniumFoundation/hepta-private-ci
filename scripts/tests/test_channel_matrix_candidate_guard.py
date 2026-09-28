@@ -1,5 +1,6 @@
 """Verifier unit contracts in temporary Git fixtures, not product qualification."""
 import importlib.util
+import json
 from pathlib import Path
 import subprocess
 import tempfile
@@ -69,6 +70,40 @@ class CandidateGuardTests(unittest.TestCase):
         self.assertEqual(guard.checked_observation({"commit": head, "tree": tree}, head, "fixture"), (head, tree))
         with self.assertRaises(RuntimeError):
             guard.checked_observation({"commit": head, "tree": "0" * 40}, head, "fixture")
+
+    def test_operation_inventory_requires_every_owner_operation_once(self):
+        names = ("admit_event", "prepare_send", "observe_send")
+        rows = [{"operation": name, "designOperation": name} for name in names]
+        guard.require_operation_inventory(rows)
+        for invalid in (None, {}, [], rows[:2], rows + [rows[0]],
+                        [rows[0], rows[0], rows[2]], [None],
+                        [{"operation": "admit_event", "designOperation": "observe_send"}]):
+            with self.subTest(invalid=invalid), self.assertRaises(RuntimeError):
+                guard.require_operation_inventory(invalid)
+
+    def test_duplicate_map_fields_are_rejected_at_every_depth(self):
+        prefix = '{"schema":"hepta.module-implementation-map.v3","schemaVersion":3,'
+        for tail in ('"activation":true,"activation":false}',
+                     '"claimBoundary":{"activation":true,"activation":false}}'):
+            with self.subTest(tail=tail), self.assertRaises(RuntimeError):
+                guard.load_implementation_map(prefix + tail)
+
+    def test_map_schema_identity_requires_exact_types(self):
+        row = {"schema": "hepta.module-implementation-map.v3", "schemaVersion": 3}
+        self.assertEqual(guard.load_implementation_map(json.dumps(row)), row)
+        for invalid in (None, [], {**row, "schemaVersion": True},
+                        {**row, "schemaVersion": 3.0}, {**row, "schemaVersion": "3"},
+                        {**row, "schema": "hepta.module-implementation-map.v2"}):
+            with self.subTest(invalid=invalid), self.assertRaises(RuntimeError):
+                guard.load_implementation_map(json.dumps(invalid))
+
+    def test_registered_source_markers_match_the_actual_files(self):
+        # Catch source-navigation drift before it blocks all native tests.
+        root = Path(__file__).resolve().parents[2]
+        for path, markers in guard.SOURCE_MARKERS.items():
+            text = (root / path).read_text(encoding="utf-8")
+            with self.subTest(path=path):
+                self.assertEqual([marker for marker in markers if marker not in text], [])
 
     def test_expected_sha_mismatch_fails_before_any_map_claim(self):
         with self.assertRaises(RuntimeError):

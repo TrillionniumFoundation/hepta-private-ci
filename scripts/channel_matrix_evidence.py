@@ -19,16 +19,19 @@ SOURCE_ROOTS = (
     "docs/modules/channel.matrix", "scripts/verify_channel_matrix_candidate.py",
     "scripts/channel_matrix_evidence.py", "scripts/tests/test_channel_matrix_evidence.py",
     ".github/workflows/channel-matrix-preserve-unknown.yml",
-    "codex-rs/Cargo.lock", "MODULE.bazel.lock",
+    "codex-rs/Cargo.lock", "MODULE.bazel.lock", "codex-rs/Cargo.toml",
+    "codex-rs/rust-toolchain.toml", "justfile",
+    "scripts/*channel_matrix*", "scripts/tests/test_channel_matrix*",
 )
 PACKAGES = ("codex-hepta-matrix-protocol", "codex-hepta-matrix-store",
             "codex-hepta-matrix-sdk", "codex-hepta-matrixd")
 PACKAGE_ARGS = [item for package in PACKAGES for item in ("-p", package)]
 COMMANDS = {
+    "compile": ["cargo", "check", "--locked", *PACKAGE_ARGS, "--all-targets"],
     "focused-tests": ["just", "test", "--locked", *PACKAGE_ARGS],
-    "clippy": ["cargo", "clippy", "--manifest-path", "codex-rs/Cargo.toml",
+    "clippy": ["cargo", "clippy",
                "--locked", *PACKAGE_ARGS, "--all-targets", "--", "-D", "warnings"],
-    "format": ["cargo", "fmt", "--manifest-path", "codex-rs/Cargo.toml",
+    "format": ["cargo", "fmt",
                *[item for package in PACKAGES for item in ("--package", package)], "--", "--check"],
 }
 MAX_LOG_BYTES = 64 * 1024 * 1024
@@ -151,7 +154,7 @@ def run_command(root: Path, directory: Path, label: str) -> int:
     launch_error = None
     with log.open("xb") as stream:
         try:
-            code = subprocess.run(COMMANDS[label], cwd=root, stdout=stream,
+            code = subprocess.run(COMMANDS[label], cwd=root / "codex-rs", stdout=stream,
                                   stderr=subprocess.STDOUT, check=False).returncode
         except OSError as exc:
             launch_error = type(exc).__name__
@@ -165,7 +168,8 @@ def run_command(root: Path, directory: Path, label: str) -> int:
         pass
     bounded = log.stat().st_size <= MAX_LOG_BYTES
     value = {"schema": "hepta.channel-matrix-command.v1", "label": label,
-             "arguments": COMMANDS[label], "testedSha": source["testedSha"],
+             "arguments": COMMANDS[label], "workingDirectory": "codex-rs",
+             "testedSha": source["testedSha"],
              "sourceSnapshotSha256": source_digest, "exitCode": code,
              "completed": code is not None, "launchError": launch_error,
              "durationNs": time.monotonic_ns() - started, "sourceUnchanged": unchanged,
@@ -213,6 +217,7 @@ def manifest(directory: Path, status: str) -> dict[str, Any]:
             log = directory / f"{label}.log"
             if (row.get("schema") != "hepta.channel-matrix-command.v1"
                     or row.get("label") != label or row.get("arguments") != arguments
+                    or row.get("workingDirectory") != "codex-rs"
                     or row.get("testedSha") != source["testedSha"]
                     or row.get("sourceSnapshotSha256") != source_digest
                     or type(row.get("exitCode")) is not int or row["exitCode"] != 0

@@ -504,3 +504,6 @@ async fn read_timeout_parks_the_same_transaction_and_retains_the_error_class() -
     store.close().await;
     Ok(())
 }
+
+#[path = "final_poll_regressions/optimization.rs"]
+mod optimization;

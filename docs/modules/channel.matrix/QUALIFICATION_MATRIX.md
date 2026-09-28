@@ -85,3 +85,14 @@ Historical source-head run `36278075076`, candidate `b09690f5c25c6cf9c2e834335ee
 ## 6. Promotion rule
 
 No product-execution, deployment, independent-acceptance, activation or release claim is granted by this increment. Keep `--locked`; commit only the pinned resolver's scoped lockfile result. The source now contains the kernel entered-use proof, durable authority/content binding, stable-transaction terminal qualification across retry attempts, exact whole-store startup validation and legacy-hold parking/reconciliation path, but those claims require passing exact-head and deterministic-merge native receipts. Real homeserver, encryption/rotation, restore/capacity and independent target profiles remain mandatory. A workflow file and local SQLite success cannot close those gates.
+
+## 7. Typed sender optimization increment
+
+See [OPTIMIZATION_CONTRACT.md](OPTIMIZATION_CONTRACT.md). Q23 retains its
+post-entry uncertainty requirement. New JIT lease/cancellation and repeated-poll
+measurement regressions are source fixtures, not executed native receipts.
+Current CI separately runs locked all-target compilation, locked focused tests,
+strict lint and owner formatting from `codex-rs`, preserving the pinned toolchain.
+The evidence directory's generated `status.json`/`status.md` separates those
+states from real target qualification and independent acceptance. Historical
+local pass counts above apply only to their stated snapshots and test scopes.

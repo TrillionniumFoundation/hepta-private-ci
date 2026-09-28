@@ -60,8 +60,8 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {"role": "durable_dispatch_owner_entrypoint", "path": "codex-rs/hepta-matrix-store/src/dispatch.rs", "symbol": "pub async fn prepare_outbox_dispatch(", "buildTarget": "codex-hepta-matrix-store"},
       "delegatedCallees": [
-        {"role": "fenced_authorized_sender_callsite", "path": "codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs", "symbol": "prepare_outbox_dispatch(record, prepared_at_ms)"},
-        {"role": "canonical_content_pin_callsite", "path": "codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs", "symbol": ".pin_outbox_content("},
+        {"role": "fenced_authorized_sender_callsite", "path": "codex-rs/hepta-matrix-sdk/src/outbound_v2/admission.rs", "symbol": "prepare_outbox_dispatch(record, prepared_at_ms)"},
+        {"role": "canonical_content_pin_callsite", "path": "codex-rs/hepta-matrix-sdk/src/outbound_v2/admission.rs", "symbol": ".pin_outbox_content("},
         {"role": "physical_final_use_entry", "path": "codex-rs/hepta-matrix-sdk/src/outbound_v2/gate.rs", "symbol": "send_authorized(self.record, permit)"}
       ],
       "tests": [

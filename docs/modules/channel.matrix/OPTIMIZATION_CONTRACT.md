@@ -1,0 +1,108 @@
+# channel.matrix typed sender and observable qualification
+
+Status: source implementation; native and target execution require exact receipts.
+This document grants no activation, independent acceptance or release authority.
+
+## 1. Entry ownership and failure types
+
+`outbound_v2/admission.rs` performs pre-entry preparation and can return an
+ordinary admission error. Its successful result is either `AlreadyTerminal` or
+`Entered(EnteredSend)`. `EnteredSend` has private fields containing the actual
+kernel `EnteredUseToken` and a borrow of the exact fenced claim. It is not
+cloneable and cannot be constructed by external transport implementations.
+
+`gate.rs::continue_entered` returns `EnteredSend`, not a fallible admission
+result. The inner asynchronous result absorbs binding, timestamp, proof-write,
+freshness, cancellation, permit and adapter failures into an indeterminate
+transport observation. The outer caller retains the proof through
+`settlement.rs::settle_entered`. Settlement has no pre-entry cleanup arm. A
+failed outcome write leaves the live claim fenced for lease-expiry recovery and
+normal authenticated sync reconciliation. Kernel entry alone does not prove
+network entry, remote acceptance or logical success.
+
+The sender no longer maintains an independent `entered_effect` Boolean. A
+post-entry error cannot cause a later caller to treat the current claim as
+unentered merely because an await failed before the Boolean was set.
+
+## 2. Just-in-time claims and measurement
+
+`claim_limit` remains a bound from 1 to 256, but now means maximum work per pass.
+The sender acquires one lease immediately before preparing that record; later
+messages remain unclaimed. This removes speculative lease waiting without
+introducing concurrency, a second writer, a fresh transaction ID or renewal of
+existing deadlines. Existing retry limits, grant checks and sync terminality
+remain in force. Cancellation cannot increment attempts on messages that have
+not begun their execution turn.
+
+Per-pass and production-window measurements include claim-to-first-transport-poll
+sample count, sum and maximum milliseconds. This measures admission overhead
+plus preparation/broker work, not end-to-end delivery. Percentiles require an
+external histogram implementation; a maximum or mean is not a p95/p99. No
+throughput or latency improvement is claimed until measured on the target host.
+
+## 3. Immutable work versus live checks
+
+An `OutboxRecord` owns its content bytes and remains immutably borrowed with its
+binding for the lifetime of a gate. Canonical payload verification is performed
+once by that gate. The existing sealed permit separately validates the content
+at adapter construction. Neither the signed content nor the durable pin is
+changed by this optimization.
+
+On every continuation poll, cancellation, absolute grant expiry, physical lease
+deadline, authenticated revocation epoch/revision and exact transport/session
+identity are checked again. None of those dynamic results is cached. Time is
+checked both before and after synchronous refresh/identity work. Gate digest
+count/time and dynamic-check count/time are distinct counters. The digest count
+covers the gate only, not earlier request canonicalization or permit validation.
+
+## 4. Operations without a second state owner
+
+`telemetry.rs` emits bounded numeric windows from the production sender every
+10 seconds or at task exit. Its schema is
+`hepta.channel-matrix-runtime-metrics.v1`. No transaction/room/user/grant labels,
+message text, tokens or raw capabilities enter those windows. The collector's
+stderr handling is an integration prerequisite, not a claimed deployed dashboard.
+A partial failed pass still contributes measurements before the task exits.
+
+`scripts/channel_matrix_diagnostics.py` exposes JSON, parameterized transaction
+explanations, Prometheus text and `--check` alert exit status. It opens the
+canonical database read-only, reads a consistent snapshot with a resource
+budget, and never edits, migrates, retries or grants anything. Unknown live
+measurements are explicitly unavailable; a missing checkpoint is not zero lag.
+See the runbook for policy thresholds and safe corrective actions.
+
+## 5. Receipt-derived status and compatibility
+
+`scripts/channel_matrix_status.py` generates `status.json` and `status.md` in the
+external evidence directory. Source navigation, all-target compilation, native
+tests, strict lint and formatting have independent states. A successful compile
+cannot imply test execution. Missing, failed, interrupted, stale-source and
+hash-mismatched evidence cannot silently become success. The working directory
+is recorded as `codex-rs`, so the pinned Rust toolchain and Cargo configuration
+are used by all native commands.
+
+Target qualification and independent acceptance remain `not_proved` in this
+local-command view. Their separately governed receipts cannot be manufactured
+by a generator. The final artifact manifest binds the generated status and
+logs. `sourceBase`/`observedAtHead` remain provenance ancestors; exact current
+commit, tree and blob identities belong to external candidate receipts.
+
+Migration compatibility is **12**, including stable-transaction terminal proof
+across attempts. Startup/rollback documentation must not approve an older
+binary that only understands migration 11.
+
+## 6. Regression inventory
+
+| Scenario | Source coverage | Required execution |
+|---|---|---|
+| Later messages have no speculative lease; work-per-pass bound remains | `final_poll_regressions/optimization.rs` | locked native test |
+| Cancellation after entry leaves current unknown and later attempts untouched | same fixture | locked native test |
+| Multiple polls retain one gate digest and fresh dynamic checks | `pending_poll_regressions.rs` | locked native test |
+| Typed entered result preserves post-entry errors | gate/settlement plus existing entry/reopen cases | locked native test |
+| Numeric telemetry saturation and identity-free output | `outbound_v2/telemetry_tests.rs` | locked native unit test |
+| Diagnostic read-only, missing measurement, capacity, parameterization and migration rejection | `test_channel_matrix_diagnostics.py` | Python with real SQLite migrations |
+| Receipt scope separation, stale/mutated/Boolean/duplicate rejection | `test_channel_matrix_status.py` | Python evidence fixtures |
+
+Real encrypted-session rotation, authenticated restore, sustained retention,
+paired-runtime Synapse qualification and independent operator/security
+acceptance remain required; these source fixtures do not replace them.

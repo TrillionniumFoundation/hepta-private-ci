@@ -2,7 +2,7 @@
 
 ## 1. Readiness
 
-Treat Matrix as ready only when the supervisor reports the exact companion healthy and matrixd reports: store/migrations 1-11 and their exact schema/invariants verified, final-use broker reachable, authenticated revocation feed current, Agentd connected, initial durable sync complete and continuous sync connected. Queue acceptance or process liveness alone is not readiness.
+Treat Matrix as ready only when the supervisor reports the exact companion healthy and matrixd reports: store/migrations 1-12 and their exact schema/invariants verified, final-use broker reachable, authenticated revocation feed current, Agentd connected, initial durable sync complete and continuous sync connected. Queue acceptance or process liveness alone is not readiness.
 
 ## 2. Required metrics
 
@@ -59,8 +59,41 @@ Drain the old companion, commit the new public binding/session generation throug
 
 ## 6. Rollout and rollback
 
-Roll out with a canary Agent and bounded room set. Require current exact-head and synthetic-merge receipts plus applicable real homeserver qualification before promotion. Roll back only to a binary compatible with migrations 1-11, including canonical pins, entered-use proofs and parked legacy holds; otherwise roll forward. Keep matrixd and agentd as one paired release and verify both program digests.
+Roll out with a canary Agent and bounded room set. Require current exact-head and synthetic-merge receipts plus applicable real homeserver qualification before promotion. Roll back only to a binary compatible with migrations 1-12, including canonical pins, entered-use proofs, parked legacy holds and migration-12 cross-attempt terminal qualification; otherwise roll forward. Keep matrixd and agentd as one paired release and verify both program digests.
 
 ## 7. Evidence collection
 
 Every qualification/runbook execution retains exact source/tree, source blob hashes, workflow/run/job identity, binary/container digests, configuration digest, homeserver image/version/Git SHA, authority/binding identities, structured result, failure-injection parameters, bounded redacted logs and artifact-manifest digest. `skip` is not pass, and a successful unit test is not a real homeserver, encrypted-room, restore, operator-acceptance or release receipt.
+
+## 8. Executable diagnostics and alert policy
+
+Run the read-only diagnostic tool on the private owner database:
+
+```sh
+python3 scripts/channel_matrix_diagnostics.py --database /private/matrix_1.sqlite3
+python3 scripts/channel_matrix_diagnostics.py --database /private/matrix_1.sqlite3 --transaction EXACT_TXN_ID
+python3 scripts/channel_matrix_diagnostics.py --database /private/matrix_1.sqlite3 --format prometheus
+```
+
+The tool uses `mode=ro`, `query_only`, a consistent read transaction and a bounded
+SQLite instruction budget. It performs no migrations, writes, retries, grant
+issuance or automatic remediation. It reads only counts/timestamps and explicitly
+selected state fields; payloads and credential material are never queried.
+`--transaction` is parameterized and its value is not echoed. Diagnostic schema
+checks are not a substitute for the native store-open integrity validator.
+
+Default policy (tune to a measured deployment, not a claimed SLO): warning when
+unresolved capacity reaches 80%, queue age exceeds 300s or a claim is expired;
+critical at capacity or when pending outbound work has no sync checkpoint or a
+checkpoint older than 120s. A slow/idle checkpoint is a freshness warning, not
+a claim that the network is disconnected. Capacity is a policy input and must
+match the deployed owner configuration. Prometheus labels are closed enums only.
+The `--check` exit status is 0 healthy, 1 warning, 2 critical/error. Transport
+window counters come from the production sender's ten-second structured stderr
+events (`hepta.channel-matrix-runtime-metrics.v1`); the normal log collector must
+retain them before an external dashboard can display the measurements.
+
+Unmeasured live broker/revocation freshness, redaction propagation latency,
+supervisor restart counts and encrypted-session continuity remain explicitly
+`not_in_snapshot`, never zero-valued green signals. Missing metrics require
+independent live probes/receipts; the tool does not authorize rollout.
