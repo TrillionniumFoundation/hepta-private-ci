@@ -167,7 +167,7 @@ fn binding_constructor_cannot_self_promote_a_pending_consumer() {
 fn payload_consumer_matrix_fails_closed() {
     assert!(
         bind_recall_packet_consumer_v1(
-            id("operation:bad"),
+            id("operation:bad-recall"),
             CanonicalConsumerV1::CompactEngine,
             &recall(),
             digest('5').digest(),
@@ -177,6 +177,26 @@ fn payload_consumer_matrix_fails_closed() {
         )
         .is_err()
     );
+    for consumer in [
+        CanonicalConsumerV1::MemoryRetrieval,
+        CanonicalConsumerV1::IntelligenceControl,
+    ] {
+        assert_eq!(
+            bind_memory_event_consumer_v1(
+                id("operation:bad-event"),
+                consumer,
+                &event(),
+                digest('5').digest(),
+                digest('6').digest(),
+                Some(digest('7').digest()),
+                CanonicalMigrationPostureV1::CompatibilityBound,
+            ),
+            Err(CanonicalConsumerBindingError::ConsumerPayloadMismatch {
+                consumer,
+                payload: CanonicalPayloadKindV1::MemoryEvent,
+            })
+        );
+    }
 }
 
 #[test]
