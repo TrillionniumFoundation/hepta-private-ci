@@ -74,9 +74,7 @@ fn agentd_neuron_owner_is_a_compiled_product_surface() {
 
 #[test]
 fn agentd_durable_neuron_owner_is_the_existing_product_owner_shape() {
-    let name = std::any::type_name::<
-        AgentdDurableNeuronOwner<StubWitness, StubInferenceControl>,
-    >();
+    let name = std::any::type_name::<AgentdDurableNeuronOwner<StubWitness, StubInferenceControl>>();
     assert!(name.contains("AgentdNeuronOwner"));
     assert!(name.contains("DurableNeuronInferenceControlPortV1"));
 }

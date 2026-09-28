@@ -80,10 +80,7 @@ where
     ) -> Self {
         Self::new(
             runtime,
-            DurablePreparedNeuronInferenceControlPortV1::new(
-                execution_store,
-                inference_control,
-            ),
+            DurablePreparedNeuronInferenceControlPortV1::new(execution_store, inference_control),
         )
     }
 }
