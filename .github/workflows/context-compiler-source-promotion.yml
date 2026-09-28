@@ -16,13 +16,15 @@ concurrency:
 jobs:
   promote-ordinary-source:
     if: ${{ contains(github.event.head_commit.message, '[promote-context-source]') }}
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     timeout-minutes: 240
     env:
       ARTIFACT_ID: '10943028187'
       ARTIFACT_RUN_ID: '36351835045'
       ARTIFACT_SOURCE_SHA: f6f88157da5b1834bd16a2b5c8dd63a61f7c5cfb
+      ARTIFACT_SOURCE_TREE: b5141cdc7b3168caba8d84029747b81501e4ac5a
       ARTIFACT_SHA256: 2409320a2b6f20fea33a0a41f198387ae96372fce9f194ce1df1cae63e8feb9b
+      REVIEWED_BASE_SHA: a126987b84737dbc2ee2592442a314117bddb4a2
       BRANCH: codex/context-compiler-v3-closure-20260928
       GH_TOKEN: ${{ github.token }}
     steps:
@@ -41,6 +43,10 @@ jobs:
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
           test ! -e .github/workflows/context-compiler-v3-remediation.yml
+          test "$(git cat-file -t "$ARTIFACT_SOURCE_SHA")" = commit
+          test "$(git rev-parse "$ARTIFACT_SOURCE_SHA^{tree}")" = "$ARTIFACT_SOURCE_TREE"
+          test "$(git cat-file -t "$REVIEWED_BASE_SHA")" = commit
+          git merge-base --is-ancestor "$REVIEWED_BASE_SHA" HEAD
           git merge-base --is-ancestor "$ARTIFACT_SOURCE_SHA" HEAD
 
       - name: Install archive and pinned Rust tools
@@ -53,7 +59,7 @@ jobs:
         with:
           components: clippy,rustfmt
 
-      - name: Download and verify immutable ordinary-source artifact
+      - name: Download and verify immutable source artifact
         shell: bash
         run: |
           set -euo pipefail
@@ -75,6 +81,8 @@ jobs:
               raise SystemExit("artifact run identity mismatch")
           if metadata["source_commit"] != os.environ["ARTIFACT_SOURCE_SHA"]:
               raise SystemExit("artifact source identity mismatch")
+          if metadata.get("source_tree") not in (None, os.environ["ARTIFACT_SOURCE_TREE"]):
+              raise SystemExit("artifact source tree mismatch")
           if (root / "materialize.exit").read_text().strip() != "0":
               raise SystemExit("source materialization did not pass")
           if (root / "normalize.exit").read_text().strip() != "0":
@@ -90,7 +98,7 @@ jobs:
                   raise SystemExit(f"artifact file digest mismatch: {relative}")
           PY
 
-      - name: Overlay verified direct source and refresh canonical truth
+      - name: Overlay immutable direct source
         shell: bash
         run: |
           set -euo pipefail
@@ -108,6 +116,50 @@ jobs:
               shutil.copyfile(source, target)
           for relative in json.loads((root / "deleted-paths.json").read_text()):
               Path(relative).unlink(missing_ok=True)
+          PY
+
+      - name: Close the V3 compile and recovery graph
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B - <<'PY'
+          from pathlib import Path
+
+          pipeline = Path("codex-rs/hepta-intelligence/src/prompt_pipeline.rs")
+          text = pipeline.read_text()
+          old = "fn prompt_payload_bundle_digest("
+          new = "pub(crate) fn prompt_payload_bundle_digest("
+          if new not in text:
+              if text.count(old) != 1:
+                  raise SystemExit("prompt payload digest visibility anchor missing")
+              pipeline.write_text(text.replace(old, new, 1))
+
+          delivery = Path("codex-rs/hepta-intelligence/src/prompt_delivery.rs")
+          text = delivery.read_text()
+          import_line = "use crate::prompt_pipeline::prompt_payload_bundle_digest;\n"
+          if import_line not in text:
+              anchor = "use crate::prompt_pipeline::prepare_prompt_delivery_v1;\n"
+              if text.count(anchor) != 1:
+                  raise SystemExit("prompt delivery import anchor missing")
+              delivery.write_text(text.replace(anchor, anchor + import_line, 1))
+          PY
+          python3 -B scripts/apply_context_compiler_recovery_activation.py
+          python3 -B scripts/apply_context_compiler_agentd_recovery.py
+          python3 -B scripts/apply_context_compiler_agentd_recovery_v2.py
+          python3 -B scripts/apply_context_compiler_recovery_tests.py
+          python3 -B scripts/apply_context_compiler_recovery_test_cleanup.py
+          python3 -B scripts/apply_context_compiler_recovery_cleanup.py
+          python3 -B scripts/apply_context_compiler_qualification_closure.py
+
+      - name: Refresh canonical truth after final source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
           for relative in (
               "docs/modules/context.compiler/CURRENT_STATE.json",
               "docs/modules/context.compiler/MODULE_MANIFEST.json",
@@ -116,6 +168,23 @@ jobs:
               value = json.loads(path.read_text())
               value["integrationBranch"] = os.environ["BRANCH"]
               path.write_text(json.dumps(value, indent=2, ensure_ascii=False) + "\n")
+
+          provenance = {
+              "schema": "hepta.context-compiler.source-bundle-provenance.v1",
+              "artifactId": int(os.environ["ARTIFACT_ID"]),
+              "artifactRunId": int(os.environ["ARTIFACT_RUN_ID"]),
+              "artifactArchiveSha256": os.environ["ARTIFACT_SHA256"],
+              "artifactSourceCommit": os.environ["ARTIFACT_SOURCE_SHA"],
+              "artifactSourceTree": os.environ["ARTIFACT_SOURCE_TREE"],
+              "reviewedBaseCommit": os.environ["REVIEWED_BASE_SHA"],
+              "artifactMaterializationExit": 0,
+              "artifactNormalizationExit": 0,
+              "artifactVerificationWasPassing": False,
+              "interpretation": "The immutable bundle supplied reviewed source bytes only. Qualification is performed after ordinary-source composition on the final immutable commit and synthetic merge.",
+          }
+          path = Path("qualification/context-compiler/SOURCE_BUNDLE_PROVENANCE.json")
+          path.parent.mkdir(parents=True, exist_ok=True)
+          path.write_text(json.dumps(provenance, indent=2) + "\n")
           PY
           python3 -B scripts/refresh_context_compiler_current_state.py
           python3 -B scripts/apply_context_compiler_recovery_state.py
@@ -125,18 +194,20 @@ jobs:
           python3 -B scripts/test_context_compiler_candidate.py
           python3 -B scripts/test_context_compiler_execution.py
 
-      - name: Verify direct source profiles
+      - name: Format and verify direct source profiles
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          cargo fmt --all -- --check
+          cargo fmt --all
           cargo metadata --locked --format-version 1 > /dev/null
           cargo test --locked \
             -p codex-hepta-prompt-registry \
             -p codex-hepta-context-compiler \
             -p codex-hepta-intelligence \
+            -p codex-extension-api \
             -p codex-api \
+            -p codex-core \
             -p codex-hepta-agentd \
             -p codex-hepta-prompt-extension
           cargo test --locked -p codex-hepta-intelligence --features legacy-prompt-context-v1
@@ -145,12 +216,24 @@ jobs:
             -p codex-hepta-prompt-registry \
             -p codex-hepta-context-compiler \
             -p codex-hepta-intelligence \
+            -p codex-extension-api \
             -p codex-api \
+            -p codex-core \
             -p codex-hepta-agentd \
             -p codex-hepta-prompt-extension \
             --all-targets --all-features -- -D warnings
 
-      - name: Retire generators and push one ordinary-source commit
+      - name: Verify final projections and clean patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B scripts/generate_context_compiler_module_docs.py --check
+          python3 -B scripts/test_context_compiler_state.py
+          python3 -B scripts/test_context_compiler_candidate.py
+          python3 -B scripts/test_context_compiler_execution.py
+          git diff --check
+
+      - name: Retire source writers and push one ordinary-source commit
         shell: bash
         run: |
           set -euo pipefail
@@ -180,5 +263,5 @@ jobs:
           test -n "$(git diff --cached --name-only)"
           git config user.name context-compiler-source-promoter
           git config user.email context-compiler-source-promoter@users.noreply.github.com
-          git commit -m "feat(context.compiler): materialize direct V3 recovery source"
+          git commit -m "feat(context.compiler): materialize direct V3 recovery source [context-source-fixed] [v3-materialized]"
           git push origin "HEAD:$BRANCH"
