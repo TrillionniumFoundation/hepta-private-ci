@@ -1,15 +1,18 @@
 //! Stage-local dataflow closure for the canonical intelligence product path.
 //!
 //! The existing owner adapters remain the only algorithm callers. This wrapper
-//! mutates only the successor request identity/binding fields immediately before
-//! the owner call, using the actual output digest returned by the predecessor.
-//! It therefore closes semantic substitution without introducing another
-//! facade, store, owner, or execution spine.
+//! binds the actual compiled Objective, utility feasibility, Neural output,
+//! Prompt output and Intuition output into the successor owner request. A
+//! receipt predecessor alone is never treated as semantic authorization.
+
+use std::collections::BTreeSet;
 
 use super::super::*;
 
 pub(super) struct StageBoundAgentdOwnerPortsV1 {
     inner: AgentdOwnerPortsV1,
+    legal_candidates: BTreeSet<StableId>,
+    feasible_candidates: Option<BTreeSet<StableId>>,
     prompt_output: Option<Digest32>,
     intuition_output: Option<Digest32>,
 }
@@ -20,8 +23,19 @@ impl StageBoundAgentdOwnerPortsV1 {
         evaluation_session: Option<AgentdEvaluationSessionV1>,
         telemetry: Arc<crate::AgentdIntelligenceTelemetryV1>,
     ) -> Self {
+        // The runner has already proved equality with the canonical legal set.
+        // Retain the IDs here so the compiled Objective and NDU owners become
+        // hard semantic boundaries, not merely adjacent receipt producers.
+        let legal_candidates = value
+            .intuition_request
+            .candidates
+            .iter()
+            .map(|candidate| candidate.candidate_id.clone())
+            .collect();
         Self {
             inner: AgentdOwnerPortsV1::new(value, evaluation_session, telemetry),
+            legal_candidates,
+            feasible_candidates: None,
             prompt_output: None,
             intuition_output: None,
         }
@@ -37,14 +51,107 @@ impl CanonicalOwnerPortsV1 for StageBoundAgentdOwnerPortsV1 {
         &mut self,
         input: &CanonicalPortInputV1,
     ) -> Result<CanonicalPortReceiptV1, CanonicalPortFailureV1> {
-        CanonicalOwnerPortsV1::validate_objective(&mut self.inner, input)
+        let envelope = AgentdOwnerPortsV1::take(
+            &mut self.inner.objective_envelope,
+            input.stage,
+            "objective envelope",
+        )?;
+        let profile = AgentdOwnerPortsV1::take(
+            &mut self.inner.objective_profile,
+            input.stage,
+            "objective profile",
+        )?;
+        let context = AgentdOwnerPortsV1::take(
+            &mut self.inner.objective_context,
+            input.stage,
+            "objective context",
+        )?;
+        let started = Instant::now();
+        let outcome = admit_and_compile_objective_v1(&envelope, &profile, &context);
+        self.inner.within_budget(input, started)?;
+        let outcome = outcome.map_err(|_| Self::reject(input.stage, "objective admission"))?;
+        if outcome.receipt.authority.grants_any() {
+            return Err(Self::reject(input.stage, "objective authority"));
+        }
+        let receipt = outcome
+            .compile_result
+            .map_err(|_| Self::reject(input.stage, "objective conflict"))?;
+        if receipt.disposition != CompileDisposition::Compiled
+            || receipt.objective.semantic_digest != input.objective_digest
+        {
+            return Err(Self::reject(input.stage, "objective binding"));
+        }
+        let compiled_legal = receipt
+            .objective
+            .legal_actions
+            .iter()
+            .map(|action| action.id.clone())
+            .collect::<BTreeSet<_>>();
+        validate_objective_candidate_universe(&self.legal_candidates, &compiled_legal)
+            .map_err(|label| Self::reject(input.stage, label))?;
+        AgentdOwnerPortsV1::receipt(
+            input,
+            "objective.compiler",
+            receipt.objective.semantic_digest,
+            CanonicalPortDecisionV1::Continue,
+        )
     }
 
     fn evaluate_utility(
         &mut self,
         input: &CanonicalPortInputV1,
     ) -> Result<CanonicalPortReceiptV1, CanonicalPortFailureV1> {
-        CanonicalOwnerPortsV1::evaluate_utility(&mut self.inner, input)
+        let set = AgentdOwnerPortsV1::take(
+            &mut self.inner.utility_contributions,
+            input.stage,
+            "utility contributions",
+        )?;
+        if set.objective_digest != input.objective_digest {
+            return Err(Self::reject(input.stage, "utility objective"));
+        }
+        let actual_candidates = set
+            .contributions
+            .iter()
+            .map(|contribution| contribution.candidate_id.clone())
+            .collect::<BTreeSet<_>>();
+        validate_utility_candidate_universe(&self.legal_candidates, &actual_candidates)
+            .map_err(|label| Self::reject(input.stage, label))?;
+        let profile = AgentdOwnerPortsV1::take(
+            &mut self.inner.utility_profile,
+            input.stage,
+            "utility profile",
+        )?;
+        let scalarization = AgentdOwnerPortsV1::take(
+            &mut self.inner.utility_scalarization,
+            input.stage,
+            "utility scalarization",
+        )?;
+        let policy = AgentdOwnerPortsV1::take(
+            &mut self.inner.utility_policy,
+            input.stage,
+            "utility policy",
+        )?;
+        let started = Instant::now();
+        let receipt = evaluate_candidates_with_policy(set, profile, scalarization, policy);
+        self.inner.within_budget(input, started)?;
+        let receipt = receipt.map_err(|_| Self::reject(input.stage, "utility evaluation"))?;
+        if receipt.base.objective_digest != input.objective_digest {
+            return Err(Self::reject(input.stage, "utility receipt objective"));
+        }
+        self.feasible_candidates = Some(
+            receipt
+                .base
+                .evaluated_candidates
+                .iter()
+                .map(|candidate| candidate.candidate_id.clone())
+                .collect(),
+        );
+        AgentdOwnerPortsV1::receipt(
+            input,
+            "utility.ndu",
+            receipt.evaluation_digest_v2,
+            CanonicalPortDecisionV1::Continue,
+        )
     }
 
     fn collect_neural_signal(
@@ -80,6 +187,28 @@ impl CanonicalOwnerPortsV1 for StageBoundAgentdOwnerPortsV1 {
     ) -> Result<CanonicalPortReceiptV1, CanonicalPortFailureV1> {
         if self.prompt_output != Some(input.predecessor_digest) {
             return Err(Self::reject(input.stage, "prompt predecessor"));
+        }
+        let feasible = self
+            .feasible_candidates
+            .as_ref()
+            .ok_or_else(|| Self::reject(input.stage, "utility feasibility"))?;
+        let violates_feasibility = self
+            .inner
+            .intuition_request
+            .as_ref()
+            .ok_or_else(|| Self::reject(input.stage, "intuition request"))?
+            .candidates
+            .iter()
+            .any(|candidate| {
+                candidate.legal
+                    && !candidate.hard_veto
+                    && !feasible.contains(&candidate.candidate_id)
+            });
+        if violates_feasibility {
+            return Err(Self::reject(
+                input.stage,
+                "intuition bypassed utility infeasibility",
+            ));
         }
         let request = self
             .inner
@@ -131,6 +260,30 @@ impl CanonicalOwnerPortsV1 for StageBoundAgentdOwnerPortsV1 {
     ) -> Result<CanonicalPortReceiptV1, CanonicalPortFailureV1> {
         CanonicalOwnerPortsV1::evaluate_candidate(&mut self.inner, input)
     }
+}
+
+fn validate_objective_candidate_universe(
+    canonical: &BTreeSet<StableId>,
+    compiled_legal: &BTreeSet<StableId>,
+) -> Result<(), &'static str> {
+    if canonical.is_empty() || !canonical.is_subset(compiled_legal) {
+        return Err("objective legal candidate binding");
+    }
+    Ok(())
+}
+
+fn validate_utility_candidate_universe(
+    canonical: &BTreeSet<StableId>,
+    utility: &BTreeSet<StableId>,
+) -> Result<(), &'static str> {
+    if !canonical.is_subset(utility)
+        || utility
+            .iter()
+            .any(|candidate| !canonical.contains(candidate) && candidate.as_str() != "abstain")
+    {
+        return Err("utility candidate universe");
+    }
+    Ok(())
 }
 
 pub(super) fn bind_prompt_request_v1(
@@ -248,6 +401,10 @@ mod tests {
         Digest32::of_bytes(value.as_bytes())
     }
 
+    fn ids(values: &[&str]) -> BTreeSet<StableId> {
+        values.iter().map(|value| id(value)).collect()
+    }
+
     #[test]
     fn successor_request_bindings_change_with_real_predecessor() {
         let mut left = OptimizationRequest {
@@ -264,6 +421,42 @@ mod tests {
         bind_prompt_request_v1(&mut right, digest("neural.right"), digest("set"))
             .expect("right binding");
         assert_ne!(left.decision_id, right.decision_id);
+    }
+
+    #[test]
+    fn objective_action_domain_is_a_hard_candidate_upper_bound() {
+        assert!(
+            validate_objective_candidate_universe(
+                &ids(&["action.read"]),
+                &ids(&["action.read", "action.write"])
+            )
+            .is_ok()
+        );
+        assert!(
+            validate_objective_candidate_universe(
+                &ids(&["action.read", "action.network"]),
+                &ids(&["action.read"])
+            )
+            .is_err()
+        );
+    }
+
+    #[test]
+    fn utility_candidate_universe_rejects_hidden_actions_but_allows_abstain() {
+        assert!(
+            validate_utility_candidate_universe(
+                &ids(&["action.read"]),
+                &ids(&["action.read", "abstain"])
+            )
+            .is_ok()
+        );
+        assert!(
+            validate_utility_candidate_universe(
+                &ids(&["action.read"]),
+                &ids(&["action.read", "action.hidden", "abstain"])
+            )
+            .is_err()
+        );
     }
 
     #[test]
