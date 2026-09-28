@@ -125,20 +125,29 @@ and produce independently authenticated terminal learning evidence.
 
 ## 7. Worker and recovery bounds
 
-Each computation retains a slot through actual completion. A worker-owned
-completion guard starts an independent OS-thread watchdog before the work and
-joins it before releasing capacity. Dropping/aborting the request future cannot
-cancel supervision. Explicit hard-timeout policy exits code 70 only after its
-configured grace; Supervisor replacement and durable recovery require separate
-real-process evidence.
+Each cognition computation retains a slot through actual completion. A
+worker-owned completion guard starts an independent OS-thread watchdog before
+the work and joins it before releasing capacity. Dropping or aborting the request
+future cannot cancel supervision. Explicit cognition hard-timeout policy exits
+code 70 only after its configured grace.
 
 Cognition and final currentness reads share the remaining monotonic budget.
 Input factory work is inside the same supervised bounded-worker lifetime and
-uses the earlier of its host budget and durable deadline. Learning grant, payload
-and LedgerWriter work runs outside Tokio control threads with four actual-worker
-permits and a 30-second caller budget. A dropped or timed-out receiver cannot
-release the live worker's permit. Learning I/O timeout remains Indeterminate;
-this does not claim hard termination of an arbitrary filesystem or writer call.
+uses the earlier of its host budget and durable deadline. Learning grant,
+payload and `LedgerWriter` work runs outside Tokio control threads with four
+actual-worker permits and a 30-second caller budget. A dropped or timed-out
+receiver cannot release the live worker's permit.
+
+Every learning-I/O worker now also owns an independent OS-thread watchdog.
+Returning `IoIndeterminate` at the 30-second caller budget does not release the
+worker or infer destination failure. If that exact worker is still alive after
+the additional 30-second hard-timeout grace, the watchdog exits the fenced
+Agentd process with code 70. The durable operation remains unsettled; only the
+successor Supervisor generation may adopt it and perform destination-first exact
+reconciliation. A child-process regression proves that a real non-returning
+worker reaches the exit boundary. Target-host Supervisor replacement and
+generation-adoption measurements remain separate execution evidence.
+
 The concrete native embedding serializes its one existing execution journal and
 bounds independent evidence workers; Busy preserves the original run identity.
 
@@ -177,34 +186,39 @@ codes and the mapped tests observed passing in their correct package/profile.
 Qualification-only tests remain separate. Native command failures stay failures.
 
 The independent Linux workflow preserves source-head and deterministic merge
-lanes and adds operation-owner tests. Supplementary read-only native diagnostics
-may generate a formatter patch in a separate worktree; they do not alter source,
-self-merge or replace mandatory checks.
+lanes and adds operation-owner tests. `scripts/hepta-intelligence-acceptance.py`
+groups the reviewed declarations into the five A-D acceptance objectives and
+admits an `ACCEPTANCE_RECEIPT.json` only after the same exact command records
+have passed and the two new learning-I/O containment tests are observed in the
+default Agentd log. Supplementary read-only native diagnostics may generate a
+formatter patch in a separate worktree; they do not alter source, self-merge or
+replace mandatory checks.
 
 ## 10. Acceptance still required
 
-Supply and qualify the real embedding's authenticated owner/evidence sources;
-execute the normal ObjectiveStart-to-provider-to-Outcome path, including every
-process-loss and acknowledgement boundary, on the exact candidate. Qualify
-Supervisor replacement, learning-I/O hard-failure containment, write-side root
-replacement/backup/orphan behavior, current source and merge native checks,
-latency/RSS/saturation and task-quality baselines. Independent semantic/security
-and operator acceptance remain separate. No missing observation is invented to
+Supply and qualify the real embedding's authenticated owner/evidence sources.
+Execute the normal ObjectiveStart-to-provider-to-Outcome path across every
+process-loss and acknowledgement boundary on the exact candidate. Measure the
+Supervisor replacement and successor-generation adoption that follow exit 70,
+write-side root replacement/backup/orphan behavior, target-host latency, RSS,
+saturation and task-quality baselines. Independent semantic/security and
+operator acceptance remain separate. No missing observation is invented to
 satisfy these gates, and source/test presence is not execution evidence.
 
 ## 11. Independent authority-manifest rollback floor
 
-The canonical runner now requires a host-owned `IntelligenceAuthorityRollbackGuardV1` before
-runner/provider composition can be advertised or executed. The witness is retained outside the
-Agent home and run roots, holds a single-process lock, and durably records the greatest admitted
-authority epoch together with the exact signed-manifest digest. Lower epochs and same-epoch byte
-substitution fail closed after reopen. Signature verification still occurs on every use; the
-rollback record grants no authority and cannot replace current owner, key, epoch, or revocation
-checks.
+The canonical runner requires a host-owned
+`IntelligenceAuthorityRollbackGuardV1` before runner/provider composition can be
+advertised or executed. The witness is retained outside the Agent home and run
+roots, holds a single-process lock, and durably records the greatest admitted
+authority epoch together with the exact signed-manifest digest. Lower epochs and
+same-epoch byte substitution fail closed after reopen. Signature verification
+still occurs on every use; the rollback record grants no authority and cannot
+replace current owner, key, epoch, or revocation checks.
 
-This closes the repository-owned signed-backup replay primitive. Target-host backup separation,
-privileged host-root replacement, process-crash injection, independent security review,
-and activation remain separate evidence gates.
+This closes the repository-owned signed-backup replay primitive. Target-host
+backup separation, privileged host-root replacement, process-crash injection,
+independent security review and activation remain separate evidence gates.
 
 ## 12. Embedding assembly and outcome semantics
 
@@ -241,3 +255,28 @@ reads, temporary creation and atomic record replacement all use that same open
 directory. Uncertain write/fsync failure fences the guard until reopen rather
 than reusing the old in-memory epoch. This does not make a full host backup an
 independent rollback witness or grant an Agent permission to reset the floor.
+
+## 13. Five-objective A-D acceptance contract
+
+The repository-controlled acceptance order is fixed:
+
+1. **A1 — cross-stage semantic closure:** actual owner outputs drive the next
+   request identity; substitutions, foreign candidates and receipt-only lineage
+   fail closed.
+2. **A2 — current-time recovery closure:** historical event time remains
+   immutable while first application and replay use the current trusted clock.
+3. **B — single product execution closure:** authenticated ObjectiveStart,
+   Decision-before-send, the existing App Server path, exact terminal receipt
+   and independently authenticated Outcome remain one run-bound chain.
+4. **C — bounded recovery and file closure:** worker permits, hard containment,
+   fair reconciliation, exact pre-dispatch deferral, no-follow bounded files and
+   the independent rollback floor share one failure model.
+5. **D — exact-candidate acceptance:** source-head and deterministic base-merge
+   lanes must retain all command records and an exact acceptance receipt.
+
+The acceptance verifier reads the reviewed implementation/test declarations; it
+does not discover completion from symbol names. A passed receipt binds checkout
+HEAD, lane, command/log digests, the observed mapped tests and the two direct
+learning-I/O watchdog tests. It deliberately keeps real-provider E2E,
+target-host qualification, independent acceptance, activation and release
+false. Those facts require their own immutable external evidence.

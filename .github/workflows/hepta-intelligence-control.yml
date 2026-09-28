@@ -130,11 +130,12 @@ jobs:
           test -z "$(git status --porcelain --untracked-files=normal)"
           printf 'TESTED_SHA=%s\n' "$TESTED_SHA" >> "$GITHUB_ENV"
 
-      - name: Validate explicit source and test mappings
+      - name: Validate explicit source, test and A-D acceptance mappings
         run: |
           set -euo pipefail
           python3 scripts/hepta-intelligence-control-status.py --check-tracked
           python3 scripts/hepta-intelligence-control-status-tests.py
+          python3 scripts/hepta-intelligence-acceptance.py --check
           test "$(git rev-parse HEAD)" = "$TESTED_SHA"
           git diff --exit-code
 
@@ -251,10 +252,16 @@ jobs:
             --lane "${{ matrix.lane }}" \
             --command-records "$RUNNER_TEMP/intelligence-command-records" \
             --output-dir "$output"
+          python3 scripts/hepta-intelligence-acceptance.py \
+            --source-head "$TESTED_SHA" \
+            --execution-status passed \
+            --lane "${{ matrix.lane }}" \
+            --command-records "$RUNNER_TEMP/intelligence-command-records" \
+            --output "$output/ACCEPTANCE_RECEIPT.json"
           test "$(git rev-parse HEAD)" = "$TESTED_SHA"
           git diff --exit-code
 
-      - name: Retain exact status and command records
+      - name: Retain exact status, acceptance and command records
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
