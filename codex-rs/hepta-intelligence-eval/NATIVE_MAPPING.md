@@ -1,11 +1,13 @@
 # `learning.eval` native implementation mapping
 
 This file maps the current estimator, admission, product, persistence, recovery
-and consumer design to concrete Rust symbols. It is synchronized to the immutable
-source observation `a43cbc5c167f9acfb8130c108693623641662ff0` / tree
-`2fbe5a357dd1a4c7217320e91b9027b477d61b96`. Source presence is not execution,
-target-host qualification, independent acceptance, activation or release. The
-normative contracts are [`PRODUCTION_CONTRACT.md`](PRODUCTION_CONTRACT.md) and
+and consumer design to concrete Rust symbols. The immutable executable-source
+observation for the final candidate is recorded in
+[`IMPLEMENTATION_MAP.json`](../../docs/modules/learning.eval/IMPLEMENTATION_MAP.json);
+this document does not self-reference a mutable head. Source presence is not
+execution, target-host qualification, independent acceptance, activation or
+release. The normative contracts are
+[`PRODUCTION_CONTRACT.md`](PRODUCTION_CONTRACT.md) and
 [`RECOVERY_CONTRACT.md`](RECOVERY_CONTRACT.md); generated lexical truth is
 [`CURRENT_STATUS.json`](../../docs/modules/learning.eval/CURRENT_STATUS.json).
 
@@ -33,8 +35,10 @@ identification.
 | Operation | Native symbol | Source | Scope |
 |---|---|---|---|
 | product plan freeze | `freeze_product_evaluation_plan_v1` | `src/product_runner.rs` | public production plan freeze |
-| recorded temporal comparison | `RecordedProductEvaluationRunnerV1::evaluate_temporal_comparison` | `src/recorded_runner.rs` | default product ingress |
-| signed product qualification | `RecordedProductEvaluationRunnerV1::qualify_and_persist` | `src/recorded_runner.rs` | exact bound V2/V3 qualification |
+| recorded temporal comparison | `RecordedProductEvaluationRunnerV1::evaluate_temporal_comparison` | `src/recorded_runner.rs` | default product evaluation ingress |
+| archived single-outcome qualification | `RecordedProductEvaluationRunnerV1::qualify_and_persist_with_artifacts` | `src/qualification_artifacts.rs` | public product qualification ingress; canonical typed archive precedes decision |
+| selected-host qualification | `RecordedProductEvaluationRunnerV1::{qualify_and_persist_on_selected_host,qualify_outcomes_and_persist_on_selected_host}` | `src/selected_host_facade.rs` | public concrete archive/publication composition |
+| unarchived signed qualification helper | `RecordedProductEvaluationRunnerV1::qualify_and_persist` | `src/recorded_runner.rs` | crate-internal only; never cross-crate product ingress |
 | consumer-bound admission | `admit_signed_eligibility_v2` | `src/signed_admission.rs` | public, sealed, `DENY_ALL`, one exact consumer use |
 | signed V2 primitive | `decide_with_signed_evidence_v2` | `src/signed_evaluation.rs` | crate-internal |
 | signed V3 primitive | `decide_with_signed_longitudinal_evidence_v3` | `src/longitudinal_time.rs` | crate-internal |
@@ -44,7 +48,9 @@ identification.
 Default recorded operations require
 `DurableProductEvaluationAttemptJournalV1`. Production manifests must exclude
 `trusted-inprocess-eval`, including transitive feature unification. Compiler
-negative fixtures, not lexical comments, enforce the cross-crate boundary.
+negative fixtures, not lexical comments, enforce that low-level decisions, the
+raw runner, unverified publication resume and the unarchived recorded
+qualification helper are unavailable to another crate.
 
 ## Attempt owner, capacity and checkpoint mapping
 
@@ -99,7 +105,8 @@ The archive replaces parallel caller-supplied Debug/opaque byte vectors. Recover
 accepts typed archived inputs and constructs the decision only after current
 trust, signature, expiry, revocation, role, objective, scope and V3 timing checks.
 `PublicationPending` remains a read-only reconciliation state: absence is not
-permission to issue another write.
+permission to issue another write. No default cross-crate qualification method
+can skip archive persistence and directly append `QualificationDecided`.
 
 ## Holdout and publication ownership
 
@@ -153,8 +160,9 @@ This block records lexical source facts only; compilation, product invocation an
 current-tree execution remain separate evidence.
 
 - Default ingress uses `RecordedProductEvaluationRunnerV1` with the independently
-  anchored durable journal capability; raw and direct decision surfaces remain
-  compatibility/crate-internal only.
+  anchored durable journal capability. Public qualification persists the typed
+  archive before decision; the unarchived helper, raw runner and direct decision
+  surfaces remain crate-internal or compatibility-only.
 - The successful attempt lifecycle contains seven durable events, including
   `QualificationArtifactsPersisted`; the 4,096-attempt sustained source profile
   therefore contains 28,672 events.
