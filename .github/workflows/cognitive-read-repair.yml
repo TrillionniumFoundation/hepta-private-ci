@@ -1,0 +1,176 @@
+name: Repair cognitive.read convergence
+
+on:
+  push:
+    branches:
+      - work/cognitive-read-production-convergence-20260927
+    paths:
+      - ".github/workflows/cognitive-read-repair.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cognitive-read-repair-${{ github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  RUST_MIN_STACK: "8388608"
+  TARGET_BRANCH: work/cognitive-read-production-convergence-20260927
+  SOURCE_SHA: ${{ github.sha }}
+
+jobs:
+  repair:
+    name: Materialize and verify cognitive.read candidate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Check out exact branch head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Prepare repository CI tools
+        uses: ./.github/actions/setup-ci
+
+      - name: Materialize reviewed convergence source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Cognitive Read Repair'
+          git config user.email 'cognitive-read-repair@users.noreply.github.com'
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git switch -C "$TARGET_BRANCH"
+
+          # Restore the read-only focused qualification workflow before source
+          # mapping so the final candidate never retains a write-capable gate.
+          git show a16fa81bfec716037332ed30ab3c4e82d91c8636:.github/workflows/cognitive-read-qualification.yml \
+            > .github/workflows/cognitive-read-qualification.yml
+
+          cat .github/scripts/cognitive_read_converge.py.xz.b64.0[0-3] \
+            | base64 --decode \
+            | xz --decompress > "$RUNNER_TEMP/cognitive_read_converge.py"
+          python3 -m py_compile "$RUNNER_TEMP/cognitive_read_converge.py"
+          python3 "$RUNNER_TEMP/cognitive_read_converge.py" patch
+
+          python3 - <<'PY'
+          from pathlib import Path
+
+          golden = Path("codex-rs/hepta-cognitive-read/src/golden_vectors.rs")
+          body = golden.read_text(encoding="utf-8")
+          body = body.replace(r'            "{\n",', r'            "{{\n",')
+          body = body.replace(
+              '            "}"\n        ),\n        EXPECTED_CANONICAL_HEX',
+              '            "}}"\n        ),\n        EXPECTED_CANONICAL_HEX',
+          )
+          if r'            "{{\n",' not in body or '            "}}"' not in body:
+              raise SystemExit("golden-vector format braces were not repaired")
+          golden.write_text(body, encoding="utf-8")
+
+          properties = Path("codex-rs/hepta-cognitive-read/src/property_tests.rs")
+          body = properties.read_text(encoding="utf-8")
+          body = body.replace(
+              "record_ids: candidate_ids,",
+              "record_ids: candidate_ids.clone(),",
+          )
+          if "record_ids: candidate_ids.clone()," not in body:
+              raise SystemExit("property permutation ownership was not repaired")
+          properties.write_text(body, encoding="utf-8")
+
+          context = Path("codex-rs/hepta-agentd/src/cognitive_context.rs")
+          body = context.read_text(encoding="utf-8")
+          call = "        response.omitted_records = record_omissions(\n"
+          argument = "            expected_omitted - omitted_records,\n"
+          if call not in body or argument not in body:
+              raise SystemExit("expected omitted-record borrow pattern was not found")
+          body = body.replace(
+              call,
+              "        let unclassified_omissions =\n"
+              "            expected_omitted.saturating_sub(omitted_records);\n"
+              + call,
+              1,
+          )
+          body = body.replace(
+              argument,
+              "            unclassified_omissions,\n",
+              1,
+          )
+          context.write_text(body, encoding="utf-8")
+          PY
+
+          python3 -m py_compile \
+            scripts/emit-cognitive-read-qualification.py \
+            scripts/verify-cognitive-read-constants.py \
+            scripts/verify-cognitive-read-map.py
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all
+          cargo metadata --manifest-path codex-rs/Cargo.toml \
+            --format-version=1 --all-features \
+            --filter-platform x86_64-unknown-linux-gnu >/dev/null
+          cargo metadata --manifest-path codex-rs/Cargo.toml \
+            --format-version=1 --all-features \
+            --filter-platform aarch64-unknown-linux-gnu >/dev/null
+          rm -f codex-rs/hepta-cognitive-read/fuzz/Cargo.lock
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
+          git diff --check
+          git add -A
+          git commit -m 'feat(cognitive.read): close bounded product and evidence contracts'
+
+      - name: Atomically rebind every affected implementation map
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$RUNNER_TEMP/cognitive_read_converge.py" rebind-maps \
+            | tee "$RUNNER_TEMP/rebound-maps.json"
+          git diff --check
+          git add docs/modules
+          git diff --cached --quiet || \
+            git commit -m 'docs(cognitive.read): atomically rebind affected implementation maps'
+
+      - name: Verify source, contracts, maps, build, and tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          candidate="$(git rev-parse HEAD)"
+          tree="$(git rev-parse HEAD^{tree})"
+          python3 .github/scripts/verify_cargo_workspace_manifests.py
+          python3 scripts/verify-cognitive-read-constants.py
+          python3 scripts/verify-cognitive-read-map.py --expected-sha "$candidate"
+          python3 scripts/hepta-implementation-maps.py verify \
+            --expected-sha "$candidate" \
+            --expected-tree "$tree"
+          PYTHONPATH=scripts python3 -m unittest scripts/test_hepta_implementation_maps.py
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
+          cargo check --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-cognitive-read \
+            -p codex-hepta-agentd \
+            -p codex-hepta-infer-core \
+            -p codex-hepta-infer-worker-host \
+            --all-targets
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-cognitive-read --lib
+          cargo check --manifest-path codex-rs/hepta-cognitive-read/fuzz/Cargo.toml \
+            --all-targets
+          rm -f codex-rs/hepta-cognitive-read/fuzz/Cargo.lock
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Retire bootstrap material and push sealed candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f \
+            .github/scripts/cognitive_read_converge.py.xz.b64.* \
+            .github/workflows/cognitive-read-one-shot.yml \
+            .github/workflows/cognitive-read-repair.yml
+          git add -A
+          git commit -m 'ci(cognitive.read): retire convergence bootstrap'
+          python3 scripts/verify-cognitive-read-map.py \
+            --expected-sha "$(git rev-parse HEAD)"
+          python3 scripts/hepta-implementation-maps.py verify \
+            --expected-sha "$(git rev-parse HEAD)" \
+            --expected-tree "$(git rev-parse HEAD^{tree})"
+          test -z "$(git status --porcelain)"
+          git push origin "HEAD:$TARGET_BRANCH" \
+            --force-with-lease="refs/heads/$TARGET_BRANCH:$SOURCE_SHA"
