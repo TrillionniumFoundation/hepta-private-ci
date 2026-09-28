@@ -37,7 +37,7 @@
         {
           "role": "supporting_algorithm",
           "path": "codex-rs/hepta-infer-worker-host/src/experimental_local/resources.rs",
-          "symbol": "pub fn reserve_model(",
+          "symbol": "pub(super) fn reserve_model(",
           "buildTarget": "codex-hepta-infer-worker-host::experimental_local::resources",
           "ownerModule": "inference.worker"
         }
@@ -128,7 +128,7 @@
         {
           "role": "supporting_algorithm",
           "path": "codex-rs/hepta-infer-worker-host/src/experimental_local/resources.rs",
-          "symbol": "pub fn begin_unload(",
+          "symbol": "pub(super) fn begin_unload(",
           "buildTarget": "codex-hepta-infer-worker-host::experimental_local::resources",
           "ownerModule": "inference.worker"
         }
