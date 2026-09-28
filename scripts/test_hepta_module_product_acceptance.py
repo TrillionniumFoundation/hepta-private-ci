@@ -4,6 +4,7 @@ The historical filename is retained for CI callers. Sentinel hosts prove only
 projection independence, not real Agentd execution, safe writer handoff or
 product throughput. Those boundaries have separate native integration tests.
 """
+
 from __future__ import annotations
 
 import importlib.util
@@ -20,7 +21,7 @@ HERE = Path(__file__).resolve().parent
 
 def load_script(name: str):
     path = HERE / name
-    spec = importlib.util.spec_from_file_location(name.removesuffix('.py'), path)
+    spec = importlib.util.spec_from_file_location(name.removesuffix(".py"), path)
     assert spec and spec.loader
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -48,12 +49,14 @@ class ModuleProjectionAcceptanceTests(unittest.TestCase):
             encoding="utf-8",
         )
         (self.root / "codex-rs/Cargo.toml").write_text(
-            "[workspace]\nmembers = [\"hepta-*\"]\nresolver = \"2\"\n\n"
-            "[workspace.package]\nversion = \"0.0.0\"\nedition = \"2024\"\n"
-            "license = \"Apache-2.0\"\n",
+            '[workspace]\nmembers = ["hepta-*"]\nresolver = "2"\n\n'
+            '[workspace.package]\nversion = "0.0.0"\nedition = "2024"\n'
+            'license = "Apache-2.0"\n',
             encoding="utf-8",
         )
-        self.write_package("hepta-types", "codex-hepta-types", "pub struct StableType;\n")
+        self.write_package(
+            "hepta-types", "codex-hepta-types", "pub struct StableType;\n"
+        )
         platform = self.root / "docs/modules/platform.types"
         platform.mkdir()
         platform_manifest = fixtures.module_text(
@@ -75,8 +78,8 @@ class ModuleProjectionAcceptanceTests(unittest.TestCase):
         # resolve the same glob without making it a generated Hepta module.
         agentd = self.root / "codex-rs/hepta-agentd"
         (agentd / "Cargo.toml").write_text(
-            "[package]\nname = \"sentinel-agentd\"\nversion = \"0.0.0\"\n"
-            "edition = \"2024\"\n\n[lib]\npath = \"src/lib.rs\"\n",
+            '[package]\nname = "sentinel-agentd"\nversion = "0.0.0"\n'
+            'edition = "2024"\n\n[lib]\npath = "src/lib.rs"\n',
             encoding="utf-8",
         )
         (agentd / "src/lib.rs").write_text("// sentinel crate\n", encoding="utf-8")
@@ -95,7 +98,9 @@ class ModuleProjectionAcceptanceTests(unittest.TestCase):
             self.root / "codex-rs/app-server/src/lib.rs"
         ).read_bytes()
 
-    def run_command(self, command: list[str], **kwargs) -> subprocess.CompletedProcess[str]:
+    def run_command(
+        self, command: list[str], **kwargs
+    ) -> subprocess.CompletedProcess[str]:
         env = os.environ.copy()
         env.setdefault("CARGO_INCREMENTAL", "0")
         env["CARGO_HOME"] = str(self.root / ".cargo-home")
@@ -116,8 +121,8 @@ class ModuleProjectionAcceptanceTests(unittest.TestCase):
         (root / "src").mkdir(parents=True)
         (root / "Cargo.toml").write_text(
             f'''[package]\nname = "{package}"\nversion.workspace = true\n'''
-            '''edition.workspace = true\nlicense.workspace = true\n\n'''
-            '''[lib]\npath = "src/lib.rs"\n''',
+            """edition.workspace = true\nlicense.workspace = true\n\n"""
+            """[lib]\npath = "src/lib.rs"\n""",
             encoding="utf-8",
         )
         (root / "src/lib.rs").write_text(source, encoding="utf-8")
@@ -149,13 +154,13 @@ class ModuleProjectionAcceptanceTests(unittest.TestCase):
         )
 
     def assert_reachable(self) -> None:
-        metadata = reachability.cargo_metadata(
-            self.root, Path("codex-rs/Cargo.toml")
-        )
+        metadata = reachability.cargo_metadata(self.root, Path("codex-rs/Cargo.toml"))
         report = reachability.scan(self.root, metadata)
         self.assertEqual(report["status"], "aligned", report)
 
-    def test_stateless_leaf_add_compile_remove_has_no_host_or_projection_residue(self) -> None:
+    def test_stateless_leaf_add_compile_remove_has_no_host_or_projection_residue(
+        self,
+    ) -> None:
         self.write_package(
             "hepta-feature-sample",
             "codex-hepta-feature-sample",
@@ -165,7 +170,7 @@ class ModuleProjectionAcceptanceTests(unittest.TestCase):
         sample_cargo = self.root / "codex-rs/hepta-feature-sample/Cargo.toml"
         sample_cargo.write_text(
             sample_cargo.read_text(encoding="utf-8")
-            + '\n[dependencies]\n'
+            + "\n[dependencies]\n"
             + 'codex-hepta-types = { path = "../hepta-types" }\n',
             encoding="utf-8",
         )
@@ -201,9 +206,7 @@ class ModuleProjectionAcceptanceTests(unittest.TestCase):
             (self.root / "docs/modules/CI_MATRIX.json").read_text(encoding="utf-8")
         )
         graph = json.loads(
-            (self.root / "docs/modules/COMPILE_GRAPH.json").read_text(
-                encoding="utf-8"
-            )
+            (self.root / "docs/modules/COMPILE_GRAPH.json").read_text(encoding="utf-8")
         )
         self.assertIn("feature.sample", {row["id"] for row in modules["modules"]})
         self.assertIn(
@@ -218,7 +221,11 @@ class ModuleProjectionAcceptanceTests(unittest.TestCase):
             },
         )
         self.assert_hosts_untouched()
-        changed = set(self.run_command(["git", "diff", "--cached", "--name-only"]).stdout.splitlines())
+        changed = set(
+            self.run_command(
+                ["git", "diff", "--cached", "--name-only"]
+            ).stdout.splitlines()
+        )
         self.assertNotIn("codex-rs/Cargo.toml", changed)
         self.assertNotIn("codex-rs/hepta-agentd/src/runtime.rs", changed)
         self.assertNotIn("codex-rs/app-server/src/lib.rs", changed)
@@ -250,10 +257,16 @@ class ModuleProjectionAcceptanceTests(unittest.TestCase):
             )
         self.assertNotIn(
             "codex-rs/Cargo.toml",
-            set(self.run_command(["git", "diff", "--cached", "--name-only"]).stdout.splitlines()),
+            set(
+                self.run_command(
+                    ["git", "diff", "--cached", "--name-only"]
+                ).stdout.splitlines()
+            ),
         )
 
-    def test_catalog_growth_keeps_fixture_hosts_and_workspace_membership_stable(self) -> None:
+    def test_catalog_growth_keeps_fixture_hosts_and_workspace_membership_stable(
+        self,
+    ) -> None:
         for index in range(40):
             directory = f"hepta-scale-{index:02d}"
             package = f"codex-hepta-scale-{index:02d}"
@@ -267,7 +280,7 @@ class ModuleProjectionAcceptanceTests(unittest.TestCase):
             cargo = self.root / "codex-rs" / directory / "Cargo.toml"
             cargo.write_text(
                 cargo.read_text(encoding="utf-8")
-                + '\n[dependencies]\n'
+                + "\n[dependencies]\n"
                 + 'codex-hepta-types = { path = "../hepta-types" }\n',
                 encoding="utf-8",
             )
@@ -290,7 +303,6 @@ class ModuleProjectionAcceptanceTests(unittest.TestCase):
         self.assertEqual(len(modules["modules"]), 41)
         self.assert_hosts_untouched()
         self.assert_reachable()
-
 
 
 if __name__ == "__main__":

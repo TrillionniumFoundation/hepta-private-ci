@@ -50,9 +50,7 @@ class CiRiskTests(unittest.TestCase):
             encoding="utf-8"
         )
 
-        self.assertIn(
-            "lane: ${{ fromJSON(needs.plan.outputs.lanes) }}", architecture
-        )
+        self.assertIn("lane: ${{ fromJSON(needs.plan.outputs.lanes) }}", architecture)
         self.assertNotIn(
             "github.event_name == 'pull_request' && '[\"source-head\",\"base-merge\"]'",
             architecture,
@@ -69,9 +67,7 @@ class CiRiskTests(unittest.TestCase):
             "scoped_timeout_minutes: ${{ steps.scope.outputs.scoped_timeout_minutes }}",
             blocking,
         )
-        scoped = blocking.split("  hepta-scoped:", 1)[1].split(
-            "  lightweight:", 1
-        )[0]
+        scoped = blocking.split("  hepta-scoped:", 1)[1].split("  lightweight:", 1)[0]
         self.assertIn(
             "timeout-minutes: ${{ fromJSON(needs.scope.outputs.scoped_timeout_minutes) }}",
             scoped,
@@ -111,25 +107,48 @@ class ExactModuleRiskTests(unittest.TestCase):
 
     def setUp(self):
         from scripts.test_hepta_module_manifest import module_text
+
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name)
         self.git("init", "-q")
         self.git("config", "user.name", "CI module test")
         self.git("config", "user.email", "ci-module@example.invalid")
-        self.put("codex-rs/Cargo.toml", '[workspace]\nmembers=["hepta-leaf", "hepta-host", "hepta-unrelated"]\n')
+        self.put(
+            "codex-rs/Cargo.toml",
+            '[workspace]\nmembers=["hepta-leaf", "hepta-host", "hepta-unrelated"]\n',
+        )
         for name in ("leaf", "host", "unrelated"):
-            self.put(f"codex-rs/hepta-{name}/Cargo.toml", f'[package]\nname="codex-hepta-{name}"\nversion="0.1.0"\n')
-            self.put(f"codex-rs/hepta-{name}/src/lib.rs", "pub fn value() -> u32 { 1 }\n")
+            self.put(
+                f"codex-rs/hepta-{name}/Cargo.toml",
+                f'[package]\nname="codex-hepta-{name}"\nversion="0.1.0"\n',
+            )
+            self.put(
+                f"codex-rs/hepta-{name}/src/lib.rs", "pub fn value() -> u32 { 1 }\n"
+            )
         host = self.root / "codex-rs/hepta-host/Cargo.toml"
-        host.write_text(host.read_text() + '[dependencies]\ncodex-hepta-leaf={path="../hepta-leaf"}\n')
+        host.write_text(
+            host.read_text()
+            + '[dependencies]\ncodex-hepta-leaf={path="../hepta-leaf"}\n'
+        )
         self.manifest = "docs/modules/feature.leaf/module.toml"
         self.source = "codex-rs/hepta-leaf/src/lib.rs"
-        self.put(self.manifest, module_text("feature.leaf", 0, "codex-rs/hepta-leaf").replace('ciGroups = ["lifecycle"]', 'ciGroups = ["learning"]'))
+        self.put(
+            self.manifest,
+            module_text("feature.leaf", 0, "codex-rs/hepta-leaf").replace(
+                'ciGroups = ["lifecycle"]', 'ciGroups = ["learning"]'
+            ),
+        )
         self.base = self.commit()
 
     def git(self, *args):
-        return subprocess.check_output(["git", "-C", str(self.root), *args], stderr=subprocess.PIPE).decode().strip()
+        return (
+            subprocess.check_output(
+                ["git", "-C", str(self.root), *args], stderr=subprocess.PIPE
+            )
+            .decode()
+            .strip()
+        )
 
     def put(self, path, value):
         target = self.root / path
@@ -149,11 +168,13 @@ class ExactModuleRiskTests(unittest.TestCase):
 
     def risk(self, paths, base=None):
         from scripts.hepta_ci_modules import assess_changes
+
         head = self.commit()
         return assess_changes(self.root, paths, base or self.base, head)[0]
 
     def test_module_manifest_is_not_unknown_toml_or_release(self):
         from scripts.hepta_ci_scope import select
+
         scope = select(["docs/modules/memory.retrieval/module.toml"])
         self.assertFalse(scope["full_repo"])
         self.assertTrue(scope["learning"])
@@ -184,15 +205,19 @@ class ExactModuleRiskTests(unittest.TestCase):
         self.assertEqual(self.risk([self.source, self.manifest], base), "stateful")
 
     def test_authority_change_keeps_effect_boundary(self):
-        self.replace(self.manifest, 'writes = []', 'writes = ["private_data"]')
+        self.replace(self.manifest, "writes = []", 'writes = ["private_data"]')
         self.assertEqual(self.risk([self.manifest]), "effect")
 
     def test_unknown_manifest_field_is_not_presentation(self):
-        self.replace(self.manifest, 'order = 0', 'order = 0\nnew_critical_semantics = true')
+        self.replace(
+            self.manifest, "order = 0", "order = 0\nnew_critical_semantics = true"
+        )
         self.assertEqual(self.risk([self.manifest]), "stateful")
 
     def test_unknown_state_fails_instead_of_becoming_stateless(self):
-        self.replace(self.manifest, 'state = "stateless"', 'state = "new_unknown_state"')
+        self.replace(
+            self.manifest, 'state = "stateless"', 'state = "new_unknown_state"'
+        )
         with self.assertRaises(ValueError):
             self.risk([self.manifest])
 
@@ -207,6 +232,7 @@ class ExactModuleRiskTests(unittest.TestCase):
 
     def test_manifest_impact_selects_actual_owner_and_reverse_consumer(self):
         from scripts.hepta_ci_dependencies import plan
+
         self.replace(self.manifest, "order = 0", "order = 1")
         result = plan(self.root, self.base, self.commit())
         self.assertEqual(result["packages"], ["codex-hepta-host", "codex-hepta-leaf"])
@@ -214,6 +240,7 @@ class ExactModuleRiskTests(unittest.TestCase):
 
     def test_deleted_manifest_preserves_old_consumer_edges(self):
         from scripts.hepta_ci_dependencies import plan
+
         (self.root / self.manifest).unlink()
         result = plan(self.root, self.base, self.commit())
         self.assertEqual(result["packages"], ["codex-hepta-host", "codex-hepta-leaf"])
@@ -221,18 +248,27 @@ class ExactModuleRiskTests(unittest.TestCase):
 
     def test_runtime_catalog_embedding_is_an_input_edge(self):
         from scripts.hepta_ci_dependencies import plan
+
         self.put("docs/modules/MODULES.json", '{"modules": []}')
-        self.put("codex-rs/hepta-unrelated/src/lib.rs", 'const CATALOG: &str = include_str!("../../../docs/modules/MODULES.json");\n')
+        self.put(
+            "codex-rs/hepta-unrelated/src/lib.rs",
+            'const CATALOG: &str = include_str!("../../../docs/modules/MODULES.json");\n',
+        )
         base = self.commit()
         self.replace(self.manifest, "order = 0", "order = 1")
         result = plan(self.root, base, self.commit())
-        self.assertEqual(result["packages"], ["codex-hepta-host", "codex-hepta-leaf", "codex-hepta-unrelated"])
+        self.assertEqual(
+            result["packages"],
+            ["codex-hepta-host", "codex-hepta-leaf", "codex-hepta-unrelated"],
+        )
         self.assertFalse(result["full_workspace"])
 
     def test_release_is_explicit_not_full_workspace_synonym(self):
         self.put(".github/workflows/release.yml", "name: fixture\n")
         self.assertEqual(self.risk([".github/workflows/release.yml"]), "release")
-        self.assertEqual(classify({group: True for group in GROUPS} | {"full_repo": True}), "effect")
+        self.assertEqual(
+            classify({group: True for group in GROUPS} | {"full_repo": True}), "effect"
+        )
 
     def test_build_program_cannot_use_read_only_owner_shortcut(self):
         self.put("codex-rs/hepta-leaf/build.rs", "fn main() {}\n")
@@ -245,13 +281,21 @@ class ExactModuleRiskTests(unittest.TestCase):
 
     def test_dirty_worktree_does_not_change_pinned_risk(self):
         from scripts.hepta_ci_modules import assess_changes
+
         self.put(self.source, "pub fn value() -> u32 { 2 }\n")
         head = self.commit()
         self.put(self.manifest, "deliberately invalid uncommitted TOML")
-        self.assertEqual(assess_changes(self.root, [self.source], self.base, head)[0], "ordinary")
+        self.assertEqual(
+            assess_changes(self.root, [self.source], self.base, head)[0], "ordinary"
+        )
 
     def test_duplicate_package_owner_is_rejected(self):
-        self.put("docs/modules/feature.other/module.toml", (self.root / self.manifest).read_text().replace("feature.leaf", "feature.other"))
+        self.put(
+            "docs/modules/feature.other/module.toml",
+            (self.root / self.manifest)
+            .read_text()
+            .replace("feature.leaf", "feature.other"),
+        )
         with self.assertRaises(ValueError):
             self.risk(["docs/modules/feature.other/module.toml"])
 

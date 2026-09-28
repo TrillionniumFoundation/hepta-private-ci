@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Project exact diff scope into ordinary, stateful, effect or release CI."""
+
 from __future__ import annotations
 
 import argparse
@@ -32,7 +33,12 @@ def classify(scope: dict[str, bool]) -> str:
     return "ordinary"
 
 
-def project(scope: dict[str, bool], *, change_risk: str | None = None, reasons: list[str] | None = None) -> dict[str, object]:
+def project(
+    scope: dict[str, bool],
+    *,
+    change_risk: str | None = None,
+    reasons: list[str] | None = None,
+) -> dict[str, object]:
     risk = change_risk if change_risk is not None else classify(scope)
     policy = load_policy()
     ordinary = risk == "ordinary"
@@ -95,13 +101,9 @@ def main() -> None:
                 + "\n"
             )
             target.write(
-                "lanes="
-                + json.dumps(result["lanes"], separators=(",", ":"))
-                + "\n"
+                "lanes=" + json.dumps(result["lanes"], separators=(",", ":")) + "\n"
             )
-            target.write(
-                f"scoped_timeout_minutes={result['scoped_timeout_minutes']}\n"
-            )
+            target.write(f"scoped_timeout_minutes={result['scoped_timeout_minutes']}\n")
             target.write(
                 "architecture_timeout_minutes="
                 f"{result['architecture_timeout_minutes']}\n"
