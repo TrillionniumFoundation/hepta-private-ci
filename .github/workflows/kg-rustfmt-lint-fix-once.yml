@@ -14,6 +14,7 @@ concurrency:
   group: knowledge-graph-rustfmt-lint-fix-once
   cancel-in-progress: false
 
+# Existing-on-branch trigger; the repair job removes this file before commit.
 jobs:
   repair:
     runs-on: ubuntu-24.04
