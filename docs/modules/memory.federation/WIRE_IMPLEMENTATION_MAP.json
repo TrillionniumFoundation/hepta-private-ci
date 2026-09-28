@@ -7,7 +7,8 @@
   "statusSource": "docs/modules/memory.federation/CAPABILITY_STATE.json",
   "sourceRoot": "codex-rs/hepta-memory-federation-wire",
   "technicalGuide": "docs/modules/memory.federation/WIRE_V1.md",
-  "qualificationGuide": "qualification/memory-federation/FULL_CLOSURE.md",
+  "productBridgeGuide": "docs/modules/memory.federation/PRODUCT_BRIDGE_V1.md",
+  "deploymentProfile": "docs/modules/memory.federation/DEPLOYMENT_PROFILE.json",
   "operations": [
     {
       "name": "encode_decode_registered_frame",
@@ -66,6 +67,24 @@
       "state": "source_candidate_pending_exact_head_product_qualification"
     },
     {
+      "name": "bind_canonical_v2_query_and_response_body_to_authenticated_frame",
+      "source": "codex-rs/hepta-memory-federation-wire/src/product/mod.rs",
+      "tests": "codex-rs/hepta-memory-federation-wire/src/product_tests/mod.rs",
+      "state": "source_candidate_pending_exact_head_product_qualification"
+    },
+    {
+      "name": "reject_product_body_tamper_before_durable_replay_or_terminal_commit",
+      "source": "codex-rs/hepta-memory-federation-wire/src/product/mod.rs",
+      "tests": "codex-rs/hepta-memory-federation-wire/src/product_tests/mod.rs",
+      "state": "source_candidate_pending_exact_head_product_qualification"
+    },
+    {
+      "name": "adapt_authenticated_product_exchange_to_canonical_v2_transport",
+      "source": "codex-rs/hepta-memory-federation-wire/src/product/mod.rs",
+      "tests": "codex-rs/hepta-memory-federation-wire/src/product_tests/mod.rs",
+      "state": "source_candidate_not_agentd_serving_composed"
+    },
+    {
       "name": "atomic_single_writer_unix_file_recovery",
       "source": "codex-rs/hepta-memory-federation-wire/src/file_store.rs",
       "tests": "codex-rs/hepta-memory-federation-wire/src/file_store_tests.rs",
@@ -89,6 +108,7 @@
     "deterministicCurrentBaseMergeRequired": true,
     "wireLibraryTestsRequired": true,
     "wireCompileFailDoctestsRequired": true,
+    "productBridgeTestsRequired": true,
     "capacityMetricsRequiredForSuccess": true,
     "actualCommandExecutionRequiredForSuccess": true,
     "trackedLockedInputsRequired": true,

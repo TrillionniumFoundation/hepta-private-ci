@@ -18,9 +18,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4e7648175b45a9a48536d676f68d918270699102aa8dab5496df06904c914600"
 
 [[package]]
+name = "codex-hepta-memory-federation"
+version = "0.0.0"
+dependencies = [
+ "codex-hepta-types",
+]
+
+[[package]]
 name = "codex-hepta-memory-federation-wire"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-memory-federation",
  "codex-hepta-types",
  "codex-hepta-wire",
  "hmac",

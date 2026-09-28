@@ -6,6 +6,7 @@ version = "0.0.0"
 publish = false
 
 [dependencies]
+codex-hepta-memory-federation = { path = "../hepta-memory-federation" }
 codex-hepta-types = { path = "../hepta-types" }
 codex-hepta-wire = { path = "../hepta-wire" }
 hmac = "0.12.1"
@@ -16,7 +17,7 @@ sha2 = "0.10"
 thiserror = "2.0.17"
 zeroize = "1.8.2"
 
-# Keep the authenticated cross-host protocol independently buildable until a
-# product host explicitly composes it. This prevents merely adding the protocol
-# source from widening the existing in-process workspace/product claim.
+# Keep the authenticated cross-host protocol and its canonical V2 bridge
+# independently buildable. Adding this source does not select a network
+# transport, configure Agentd serving, or widen activation/release claims.
 [workspace]

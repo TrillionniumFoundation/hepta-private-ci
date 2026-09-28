@@ -12,6 +12,8 @@
   ],
   "implementationMap": "docs/modules/memory.federation/IMPLEMENTATION_MAP.json",
   "wireImplementationMap": "docs/modules/memory.federation/WIRE_IMPLEMENTATION_MAP.json",
+  "productBridgeGuide": "docs/modules/memory.federation/PRODUCT_BRIDGE_V1.md",
+  "deploymentProfile": "docs/modules/memory.federation/DEPLOYMENT_PROFILE.json",
   "qualificationScript": "scripts/run_memory_federation_qualification.sh",
   "attestationScript": "scripts/memory_federation_full_attestation.py",
   "capabilities": {
@@ -25,6 +27,9 @@
     "replayAdmission": "bounded_fail_closed_monotonic_clock_per_credential_partition",
     "cancellationFence": "restart_surviving_cancel_fences_late_terminal",
     "crossHostProductTransport": "transport_neutral_host_boundary_source_candidate_not_agentd_composed",
+    "crossHostProductBridge": "canonical_v2_transport_adapter_source_candidate_pending_execution",
+    "authenticatedTransportContext": "peer_profile_channel_binding_and_lifetime_required",
+    "productBodyAtomicity": "bounded_body_preflight_before_durable_replay_or_terminal_commit",
     "durableAttemptReplayRecovery": "host_store_snapshot_source_candidate_pending_selected_backend",
     "clientInboundAtomicity": "staged_replay_and_recovery_commit_retryable_without_restart",
     "logicalCapacityProbe": "source_candidate_retained_metrics_pending_execution",
