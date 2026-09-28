@@ -11,6 +11,8 @@
     "currentTimeEvidenceSemanticsImplemented": true,
     "supervisedOwnerBoundariesImplemented": true,
     "exactOperationSettlementImplemented": true,
+    "postTerminalReconciliationStateImplemented": true,
+    "macOsPrivateStateGatePresent": true,
     "realProcessE2EProved": false,
     "targetHostQualified": false,
     "activation": false,
@@ -204,6 +206,39 @@
       ]
     },
     {
+      "id": "INT-B-POST-TERMINAL-RECONCILIATION",
+      "phase": "B",
+      "statement": "Once a provider terminal digest exists, Agentd terminal-control loss or incomplete authenticated Outcome closure returns a distinct reconciliation-required receipt retaining that digest and never authorizes logical-turn redispatch.",
+      "source": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_ingress.rs",
+          "symbol": "ReconciliationRequired"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/canonical_intelligence_product_loop_base.rs",
+          "symbol": "reconciliation_required_receipt"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
+          "symbol": "canonical_reconciliation_required"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/canonical_intelligence_product_loop_base.rs",
+          "name": "terminal_control_loss_never_discards_a_provider_terminal_into_replay"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/canonical_intelligence_product_loop_base.rs",
+          "name": "unknown_dispatch_and_post_terminal_reconciliation_are_distinct"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_control_internal/intelligence_acceptance_tests.rs",
+          "name": "post_terminal_failures_are_reconciliation_required_not_redispatchable_errors"
+        }
+      ]
+    },
+    {
       "id": "INT-C-INVOCATION-FACTORY-BOUND",
       "phase": "C",
       "statement": "Host-owned seven-owner input construction is panic-safe, bounded and retains its physical worker reservation after caller timeout until the worker exits.",
@@ -345,6 +380,35 @@
         {
           "path": "codex-rs/hepta-agentd/src/intelligence_control_internal/intelligence_acceptance_tests.rs",
           "name": "generated_truth_reads_active_split_implementation_files"
+        }
+      ]
+    },
+    {
+      "id": "INT-D-UNIX-PORTABILITY",
+      "phase": "D",
+      "statement": "The signed-authority, anti-rollback, bounded-file and strict NDU compatibility boundaries execute on macOS as well as the Linux source/merge lanes, with temporary test roots explicitly provisioned as private directories.",
+      "source": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs",
+          "symbol": "private signed-authority fixture root"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_control_internal/intelligence_acceptance_tests.rs",
+          "symbol": "portability_workflow_executes_private_state_and_dependency_boundaries"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs",
+          "name": "signed_evaluation_completes_existing_owner_preparation_and_run_admission"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs",
+          "name": "signed_input_cannot_install_host_trust_or_change_actual_context"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_control_internal/intelligence_acceptance_tests.rs",
+          "name": "portability_workflow_executes_private_state_and_dependency_boundaries"
         }
       ]
     }
