@@ -758,7 +758,7 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
     let reason = digest("revoke-reason:agentd-product");
     let cutoff = prompt_host_now_unix_ms().unwrap_or_else(|error| panic!("clock: {error}"));
     {
-        let mut registry = pipeline
+        let registry = pipeline
             .registry
             .lock()
             .unwrap_or_else(std::sync::PoisonError::into_inner);
@@ -793,8 +793,9 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
                 .to_vec(),
             grant,
         };
-        registry
-            .revoke_factor_final_use(
+        drop(registry);
+        pipeline
+            .revoke_factor(
                 &authority, &signed, &factor_id, &actor, scope, reason, cutoff,
             )
             .unwrap_or_else(|error| panic!("revoke: {error}"));

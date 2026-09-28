@@ -642,7 +642,10 @@ impl AgentdPromptPipelineOwner {
             .map_err(|error| AgentdPromptPipelineError::Publisher(error.to_string()))
     }
 
-    #[allow(clippy::too_many_arguments)]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "Preserve explicit signed operation-bound fields"
+    )]
     pub fn publish_realization(
         &self,
         authority: &FinalUseAuthority,
@@ -683,6 +686,58 @@ impl AgentdPromptPipelineOwner {
             .map_err(|error| AgentdPromptPipelineError::Publisher(error.to_string()))
     }
 
+    pub fn retire_factor(
+        &self,
+        authority: &FinalUseAuthority,
+        signed: &SignedFinalUseGrant,
+        factor_id: &StableId,
+        actor_id: &StableId,
+        scope_digest: Digest32,
+        reason_digest: Digest32,
+    ) -> Result<RegistryReceipt, AgentdPromptPipelineError> {
+        self.registry
+            .lock()
+            .map_err(|_| AgentdPromptPipelineError::StatePoisoned)?
+            .retire_factor_final_use(
+                authority,
+                signed,
+                factor_id,
+                actor_id,
+                scope_digest,
+                reason_digest,
+            )
+            .map_err(|error| AgentdPromptPipelineError::Publisher(error.to_string()))
+    }
+
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "Preserve explicit signed operation-bound fields"
+    )]
+    pub fn revoke_factor(
+        &self,
+        authority: &FinalUseAuthority,
+        signed: &SignedFinalUseGrant,
+        factor_id: &StableId,
+        actor_id: &StableId,
+        scope_digest: Digest32,
+        reason_digest: Digest32,
+        cutoff_unix_ms: u64,
+    ) -> Result<RegistryReceipt, AgentdPromptPipelineError> {
+        self.registry
+            .lock()
+            .map_err(|_| AgentdPromptPipelineError::StatePoisoned)?
+            .revoke_factor_final_use(
+                authority,
+                signed,
+                factor_id,
+                actor_id,
+                scope_digest,
+                reason_digest,
+                cutoff_unix_ms,
+            )
+            .map_err(|error| AgentdPromptPipelineError::Publisher(error.to_string()))
+    }
+
     /// Enumerate candidates from this owner's exact current durable registry.
     pub fn enumerate_candidates(
         &self,
@@ -703,7 +758,10 @@ impl AgentdPromptPipelineOwner {
         .map_err(|error| AgentdPromptPipelineError::CandidateSource(error.to_string()))
     }
 
-    #[allow(clippy::too_many_arguments)]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "Preserve explicit signed operation-bound fields"
+    )]
     pub fn compile_and_stage(
         &self,
         thread_id: &str,

@@ -279,7 +279,9 @@ impl PromptFinalUseLeaseError {
         match error {
             DurableRegistryError::ReopenRequired => Self::ReopenRequired,
             DurableRegistryError::IndeterminateDurability => Self::IndeterminateDurability,
-            DurableRegistryError::CapacityExceeded | DurableRegistryError::StorageFull => {
+            DurableRegistryError::CapacityExceeded
+            | DurableRegistryError::StorageFull
+            | DurableRegistryError::Core(codex_hepta_prompt_registry::Error::CapacityExceeded) => {
                 Self::CapacityExceeded
             }
             DurableRegistryError::Unavailable | DurableRegistryError::StateLocked => {
@@ -419,6 +421,6 @@ fn increment(counter: &AtomicU64, amount: u64) {
     });
 }
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 #[path = "prompt_final_use_tests.rs"]
 mod tests;
