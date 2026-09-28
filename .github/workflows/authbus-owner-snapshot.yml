@@ -1,0 +1,58 @@
+name: AuthBus published owner snapshot diagnostics
+on:
+  push:
+    branches: [work/authbus-owner-diagnostics-20260928]
+permissions:
+  contents: read
+jobs:
+  core-snapshot:
+    runs-on: macos-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: a3cca36738a2af77b453559a37c7f853ee4669f3
+          persist-credentials: false
+      - name: Bind diagnostics to the actual checked-out source
+        run: |
+          mkdir -p "$RUNNER_TEMP/owner-snapshot"
+          test "$(git rev-parse HEAD)" = a3cca36738a2af77b453559a37c7f853ee4669f3
+          git rev-parse HEAD > "$RUNNER_TEMP/owner-snapshot/source-sha.txt"
+          echo '${{ github.sha }}' > "$RUNNER_TEMP/owner-snapshot/workflow-sha.txt"
+      - uses: dtolnay/rust-toolchain@1.95.0
+        with:
+          components: clippy
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: codex-rs
+          save-if: true
+      - name: Owner regression tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-authbus -p codex-hepta-authbus-p1-3-qualification --all-targets 2>&1 | tee "$RUNNER_TEMP/owner-snapshot/owner-tests.log"
+      - name: Retain owner failure or success without waiting for other suites
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: owner-tests-a3cca36738a2af77b453559a37c7f853ee4669f3
+          path: ${{ runner.temp }}/owner-snapshot/
+          retention-days: 14
+      - name: Strict owner lint
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-authbus --all-targets --all-features -- -D warnings 2>&1 | tee "$RUNNER_TEMP/owner-snapshot/owner-clippy.log"
+      - name: Check unchanged source
+        if: ${{ !cancelled() }}
+        run: |
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=all)"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: owner-snapshot-a3cca36738a2af77b453559a37c7f853ee4669f3
+          path: ${{ runner.temp }}/owner-snapshot/
+          retention-days: 14
