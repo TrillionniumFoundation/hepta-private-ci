@@ -8,7 +8,7 @@ to the named product owner. It has no fixture fallback and grants no authority.
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping
 from dataclasses import asdict, dataclass
 
 from .control_plane import (
@@ -17,6 +17,7 @@ from .control_plane import (
     LeaseReceipt,
     WorkEnvelope,
     checked_id,
+    checked_sha256,
     semantic_digest,
 )
 from .evidence import SignatureTrustStore
@@ -31,6 +32,7 @@ from .external_controls import (
     verify_production_controls,
 )
 from .external_runtime import (
+    ExternalProviderEndpoint,
     ExternalProviderObservation,
     ExternalReceiptClient,
     JsonTransport,
@@ -98,7 +100,7 @@ class ProductionExternalControlClient:
         self.trust_store = trust_store
         self.transport = transport
 
-    def _client(self, endpoint) -> ExternalReceiptClient:
+    def _client(self, endpoint: ExternalProviderEndpoint) -> ExternalReceiptClient:
         return ExternalReceiptClient(endpoint, transport=self.transport)
 
     @staticmethod
@@ -264,6 +266,9 @@ class ProductionExternalControlClient:
         now_ns: int,
     ) -> IndependentCompletionObservation:
         checked_id(claim_id, "claim_id")
+        checked_sha256(expected_result_digest, "expected_result_digest")
+        if expected_result_digest == "0" * 64:
+            raise EngineeringError("expected_result_digest_empty")
         observation = self._client(self.providers.independent_completion).invoke(
             "completion-observation",
             {
@@ -307,6 +312,8 @@ class ProductionExternalControlClient:
         source_tree: str,
         now_ns: int,
     ) -> IndependentTerminalObservation:
+        checked_id(queue_generation_id, "queue_generation_id")
+        checked_id(package_id, "package_id")
         if terminal_outcome not in {"merged", "failed"}:
             raise EngineeringError("integration_terminal_outcome")
         observation = self._client(self.providers.integration_terminal).invoke(
