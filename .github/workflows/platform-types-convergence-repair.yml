@@ -22,6 +22,7 @@ jobs:
     env:
       BRANCH: codex/platform-types-production-convergence-20260925
       RUSTUP_TOOLCHAIN: "1.96.0"
+      PYTHONPATH: scripts
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -39,7 +40,12 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           python3 scripts/platform_types_apply_closure_repair.py
-          cargo fmt --manifest-path codex-rs/Cargo.toml --all
+          rustfmt --edition 2024 --emit files \
+            codex-rs/hepta-types/src/registry.rs \
+            codex-rs/hepta-types/src/registry_tests.rs \
+            codex-rs/hepta-types/src/numeric_registry_v2.rs \
+            codex-rs/hepta-types/src/bin/platform-types-registry-bench.rs \
+            codex-rs/hepta-wire/src/platform_manifest_json.rs
 
       - name: Regenerate the authoritative Cargo lock
         run: |
