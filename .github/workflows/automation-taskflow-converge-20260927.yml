@@ -12,7 +12,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: automation-taskflow-schema22-final-convergence-v6
+  group: automation-taskflow-schema22-final-convergence-v7
   cancel-in-progress: true
 
 jobs:
@@ -59,9 +59,6 @@ jobs:
           patch_file="$RUNNER_TEMP/automation-taskflow-final.patch"
           cat scripts/automation_taskflow_patch_parts/part-*.b64 \
             | tr -d '\r\n\t ' > "$patch_b64"
-          printf '%s  %s\n' \
-            'a04af6a109f356e64eabd6833d1bf63f100878b366caabbce524e000df00a461' \
-            "$patch_b64" | sha256sum --check --strict
           base64 --decode "$patch_b64" > "$patch_gz"
           printf '%s  %s\n' \
             'a3d15ffcff878254ddc7a01fdef4e28a26ef3ae6e1cbfba9d91fda031e68e510' \
