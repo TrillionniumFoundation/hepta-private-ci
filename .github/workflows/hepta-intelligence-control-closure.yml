@@ -1,0 +1,107 @@
+name: intelligence.control closure traceability
+
+on:
+  push:
+    paths:
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "docs/modules/intelligence.control/**"
+      - "scripts/hepta-intelligence-control-closure.py"
+      - ".github/workflows/hepta-intelligence-control-closure.yml"
+      - ".github/actions/hepta-synthetic-merge/**"
+  pull_request:
+    paths:
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "docs/modules/intelligence.control/**"
+      - "scripts/hepta-intelligence-control-closure.py"
+      - ".github/workflows/hepta-intelligence-control-closure.yml"
+      - ".github/actions/hepta-synthetic-merge/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: intelligence-control-closure-${{ github.event.pull_request.number || github.ref }}-${{ github.event_name }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  traceability:
+    name: closure map (${{ matrix.lane }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+    steps:
+      - name: Check out source candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Resolve current pull-request base
+        id: current-base
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$BASE_REF"
+          CURRENT_BASE="$(git rev-parse "refs/remotes/origin/${BASE_REF}^{commit}")"
+          [[ "$CURRENT_BASE" =~ ^[0-9a-f]{40}$ ]]
+          printf 'sha=%s\n' "$CURRENT_BASE" >> "$GITHUB_OUTPUT"
+
+      - name: Construct deterministic merge candidate
+        id: synthetic
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ steps.current-base.outputs.sha || env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Intelligence Closure CI
+          author-email: hepta-intelligence-closure-ci@users.noreply.github.com
+          message: intelligence.control closure synthetic merge
+
+      - name: Bind exact candidate identity
+        env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
+
+      - name: Verify explicit requirement/source/test mapping
+        run: python3 scripts/hepta-intelligence-control-closure.py
+
+      - name: Preserve exact map receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/intelligence-control-closure"
+          python3 scripts/hepta-intelligence-control-closure.py \
+            > "$RUNNER_TEMP/intelligence-control-closure/${{ matrix.lane }}.json"
+          printf '%s\n' "$(git rev-parse HEAD)" \
+            > "$RUNNER_TEMP/intelligence-control-closure/${{ matrix.lane }}.sha"
+
+      - name: Upload exact traceability receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intelligence-control-closure-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
+          path: ${{ runner.temp }}/intelligence-control-closure/*
+          if-no-files-found: error
+          retention-days: 30
