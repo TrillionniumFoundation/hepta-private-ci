@@ -10,7 +10,7 @@ permissions:
 jobs:
   reviewed-delivery:
     if: contains(github.event.head_commit.message, '[kernel-evidence-native-delivery]')
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     timeout-minutes: 25
     env:
       RUSTUP_TOOLCHAIN: 1.95.0
@@ -24,7 +24,7 @@ jobs:
         with:
           toolchain: 1.95.0
           components: rustfmt, clippy
-      - name: Materialize reviewed repairs and synchronize actual source
+      - name: Format directly committed source and synchronize metadata
         shell: bash
         env:
           EXPECTED_HEAD: ${{ github.sha }}
@@ -37,23 +37,25 @@ jobs:
           test -z "$(git status --porcelain)"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          python3 scripts/kernel_evidence_compile_repair_20260928.py | tee "$out/source-repair.log"
+          printf '%s\n' 'Runtime repairs are already committed. This lane does not execute a source-repair generator.' > "$out/source-boundary.txt"
           python3 -m venv "$RUNNER_TEMP/kernel-evidence-format-env"
           "$RUNNER_TEMP/kernel-evidence-format-env/bin/pip" install 'black==23.11.0' > "$out/black-install.log" 2>&1
-          "$RUNNER_TEMP/kernel-evidence-format-env/bin/python" -m black scripts/kernel_evidence_integration_sync.py scripts/kernel_evidence_compile_repair_20260928.py > "$out/python-format.log" 2>&1
+          "$RUNNER_TEMP/kernel-evidence-format-env/bin/python" -m black scripts/kernel_evidence_integration_sync.py scripts/kernel_evidence_compile_repair_20260928.py scripts/tests/test_kernel_evidence_publication_epoch_sql.py > "$out/python-format.log" 2>&1
           (cd codex-rs && cargo fmt -p codex-hepta-evidence -p codex-hepta-agentd -p codex-hepta-agent-protocol -p codex-state) > "$out/rust-format.log" 2>&1
           python3 - <<'PY'
           import subprocess
           allowed = ('codex-rs/hepta-evidence/', 'codex-rs/hepta-agentd/', 'codex-rs/hepta-agent-protocol/', 'codex-rs/state/')
-          scripts = {'scripts/kernel_evidence_integration_sync.py', 'scripts/kernel_evidence_compile_repair_20260928.py'}
+          scripts = {'scripts/kernel_evidence_integration_sync.py', 'scripts/kernel_evidence_compile_repair_20260928.py', 'scripts/tests/test_kernel_evidence_publication_epoch_sql.py'}
           for path in subprocess.check_output(['git','diff','--name-only'], text=True).splitlines():
               if path not in scripts and not path.startswith(allowed):
                   raise SystemExit(f'out-of-scope source mutation: {path}')
           PY
           git diff --check
           git diff --binary > "$out/reviewed-source.patch"
-          git add -- codex-rs/hepta-evidence codex-rs/hepta-agentd codex-rs/hepta-agent-protocol codex-rs/state scripts/kernel_evidence_integration_sync.py scripts/kernel_evidence_compile_repair_20260928.py
-          git commit -s -m 'fix(kernel.evidence): apply native SQL, fixture and ownership repairs with rustfmt [kernel-evidence-closure] [kernel-evidence-status-sync]'
+          git add -- codex-rs/hepta-evidence codex-rs/hepta-agentd codex-rs/hepta-agent-protocol codex-rs/state scripts/kernel_evidence_integration_sync.py scripts/kernel_evidence_compile_repair_20260928.py scripts/tests/test_kernel_evidence_publication_epoch_sql.py
+          if ! git diff --cached --quiet; then
+            git commit -s -m 'style(kernel.evidence): format directly delivered publication sources [kernel-evidence-closure] [kernel-evidence-status-sync]'
+          fi
           source="$(git rev-parse HEAD)"
           printf '%s\n' "$source" "$(git rev-parse HEAD^{tree})" > "$out/source-anchor.txt"
           python3 scripts/kernel_evidence_integration_sync.py metadata "$source" > "$out/metadata-sync.log" 2>&1
@@ -75,12 +77,16 @@ jobs:
           PY
           git diff --check
           git add -- qualification/kernel-evidence/STATUS_SOURCE.json qualification/kernel-evidence/TRACEABILITY.md qualification/kernel-evidence/RELEASE_DASHBOARD.md qualification/module-execution-dossiers/detail/kernel.evidence.md docs/modules/kernel.evidence/TECHNICAL.md docs/modules/MODULE_DOCS.json docs/lane-a-foundation/kernel.evidence/CURRENT_IMPLEMENTATION.md docs/lane-a-foundation/kernel.evidence/STORE_V1.md
-          git commit -s -m 'docs(kernel.evidence): synchronize guide, store protocol and canonical source inventory [kernel-evidence-closure] [kernel-evidence-status-sync]'
+          if ! git diff --cached --quiet; then
+            git commit -s -m 'docs(kernel.evidence): synchronize guide, store protocol and canonical inventory [kernel-evidence-closure] [kernel-evidence-status-sync]'
+          fi
           documentation="$(git rev-parse HEAD)"
           printf '%s\n' "$documentation" "$(git rev-parse HEAD^{tree})" > "$out/documentation-anchor.txt"
           python3 scripts/kernel_evidence_integration_sync.py map "$documentation"
           git add -- docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json
-          git commit -s -m 'docs(kernel.evidence): bind implementation map to integrated source and guide [kernel-evidence-closure] [kernel-evidence-status-sync]'
+          if ! git diff --cached --quiet; then
+            git commit -s -m 'docs(kernel.evidence): bind guarded publication map to current source and guide [kernel-evidence-closure] [kernel-evidence-status-sync]'
+          fi
           python3 scripts/kernel_evidence_status.py verify > "$out/status-verify.log" 2>&1
           test -z "$(git status --porcelain)"
           test "$(git ls-remote origin "refs/heads/$branch" | cut -f1)" = "$EXPECTED_HEAD"
@@ -89,7 +95,7 @@ jobs:
           git rev-parse HEAD HEAD^{tree} > "$out/delivered-identity.txt"
           git log -3 --format='%H %s' > "$out/delivered-commits.txt"
           git archive --format=tar.gz HEAD > "$out/delivered-source.tar.gz"
-      - name: Execute native publisher guard tests from delivered source
+      - name: Execute scoped native and SQL diagnostics from delivered source
         if: success()
         shell: bash
         run: |
@@ -110,15 +116,30 @@ jobs:
           tempfile = "=3.27.0"
           TOML
           printf '%s\n' '#[path = "evidence_publication_process_lock.rs"]' 'mod publication_process_lock;' > "$probe/src/lib.rs"
-          sha256sum codex-rs/hepta-agentd/src/evidence_publication_process_lock*.rs > "$out/lock-source-sha256.txt"
-          set +e
-          cargo test --manifest-path "$probe/Cargo.toml" -- --nocapture > "$out/native-lock-tests.log" 2>&1
-          rc=$?
-          set -e
-          printf '%s\n' "$rc" > "$out/native-lock-tests.exit"
-          cp "$probe/Cargo.lock" "$out/lock-probe-Cargo.lock"
-          tail -n 60 "$out/native-lock-tests.log"
-          test "$rc" -eq 0
+          sha256sum codex-rs/hepta-agentd/src/evidence_publication_process_lock*.rs codex-rs/hepta-evidence/src/identity_assignment.rs scripts/tests/test_kernel_evidence_publication_epoch_sql.py > "$out/probe-source-sha256.txt"
+          failures=0
+          run_check() {
+            local name="$1"; shift
+            printf '%q ' "$@" > "$out/$name.command"
+            printf '\n' >> "$out/$name.command"
+            set +e
+            "$@" > "$out/$name.log" 2>&1
+            local rc=$?
+            set -e
+            printf '%s\n' "$rc" > "$out/$name.exit"
+            tail -n 40 "$out/$name.log"
+            if [ "$rc" -ne 0 ]; then failures=$((failures + 1)); fi
+          }
+          rustc --version --verbose > "$out/rustc.txt"
+          run_check identity-compile rustc --edition=2024 --test codex-rs/hepta-evidence/src/identity_assignment.rs -o "$out/identity-tests"
+          if [ "$(cat "$out/identity-compile.exit")" = 0 ]; then
+            run_check identity-tests "$out/identity-tests" --nocapture
+          fi
+          run_check publication-epoch-sql python3 -m unittest discover -s scripts/tests -p test_kernel_evidence_publication_epoch_sql.py -v
+          run_check native-lock-tests cargo test --manifest-path "$probe/Cargo.toml" -- --nocapture
+          if [ -f "$probe/Cargo.lock" ]; then cp "$probe/Cargo.lock" "$out/lock-probe-Cargo.lock"; fi
+          test -z "$(git status --porcelain)"
+          test "$failures" -eq 0
       - name: Retain delivery and execution identity
         if: always()
         shell: bash
