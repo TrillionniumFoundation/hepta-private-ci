@@ -45,12 +45,51 @@ jobs:
           python3 .github/maintenance/objective_evidence_edit.py
           python3 .github/maintenance/objective_docs_edit.py
           python3 - <<'PY'
+          from pathlib import Path
+
+          def replace_exact(path: str, old: str, new: str) -> None:
+              target = Path(path)
+              text = target.read_text()
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"{path}: expected one match, found {count}: {old!r}")
+              target.write_text(text.replace(old, new, 1))
+
+          replace_exact(
+              "codex-rs/hepta-intelligence/src/canonical.rs",
+              "    Ready(IntelligenceHostEnvelopeV1),\n",
+              "    Ready(Box<IntelligenceHostEnvelopeV1>),\n",
+          )
+          replace_exact(
+              "codex-rs/hepta-intelligence/src/canonical.rs",
+              "    Ok(CanonicalRunOutcomeV1::Ready(IntelligenceHostEnvelopeV1 {\n",
+              "    Ok(CanonicalRunOutcomeV1::Ready(Box::new(IntelligenceHostEnvelopeV1 {\n",
+          )
+          replace_exact(
+              "codex-rs/hepta-intelligence/src/canonical.rs",
+              "        authority: AuthorityPosture::DENY_ALL,\n    }))\n}\n\nfn run_stage",
+              "        authority: AuthorityPosture::DENY_ALL,\n    })))\n}\n\nfn run_stage",
+          )
+          replace_exact(
+              "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
+              "            CanonicalRunOutcomeV1::Ready(envelope) => {\n                let mut oracle = FileBackedFreshnessOracleV1::new(\n",
+              "            CanonicalRunOutcomeV1::Ready(envelope) => {\n                let envelope = *envelope;\n                let mut oracle = FileBackedFreshnessOracleV1::new(\n",
+          )
+          replace_exact(
+              "codex-rs/hepta-objective/src/objective_admission_tests.rs",
+              "use crate::encode_objective_function_v1;\n",
+              "",
+          )
+          PY
+          python3 - <<'PY'
           import subprocess
           expected = {
               '.github/workflows/hepta-objective-exact-execution.yml',
               '.github/workflows/hepta-objective-target-measurement.yml',
+              'codex-rs/hepta-agentd/src/intelligence_product_runner.rs',
               'codex-rs/hepta-agentd/src/objective_runtime.rs',
               'codex-rs/hepta-agentd/tests/objective_product_e2e.rs',
+              'codex-rs/hepta-intelligence/src/canonical.rs',
               'codex-rs/hepta-intelligence/src/lib.rs',
               'codex-rs/hepta-intelligence/src/objective_run.rs',
               'codex-rs/hepta-objective/src/lib.rs',
@@ -72,8 +111,10 @@ jobs:
               raise SystemExit(f'editing scope mismatch: missing={expected-changed}; unexpected={changed-expected}')
           PY
           rustfmt --edition 2024 --config skip_children=true \
+            codex-rs/hepta-agentd/src/intelligence_product_runner.rs \
             codex-rs/hepta-agentd/src/objective_runtime.rs \
             codex-rs/hepta-agentd/tests/objective_product_e2e.rs \
+            codex-rs/hepta-intelligence/src/canonical.rs \
             codex-rs/hepta-intelligence/src/lib.rs \
             codex-rs/hepta-intelligence/src/objective_run.rs \
             codex-rs/hepta-objective/src/lib.rs \
@@ -145,8 +186,10 @@ jobs:
               '.github/workflows/hepta-objective-exact-execution.yml',
               '.github/workflows/hepta-objective-remaining-four-edit.yml',
               '.github/workflows/hepta-objective-target-measurement.yml',
+              'codex-rs/hepta-agentd/src/intelligence_product_runner.rs',
               'codex-rs/hepta-agentd/src/objective_runtime.rs',
               'codex-rs/hepta-agentd/tests/objective_product_e2e.rs',
+              'codex-rs/hepta-intelligence/src/canonical.rs',
               'codex-rs/hepta-intelligence/src/lib.rs',
               'codex-rs/hepta-intelligence/src/objective_run.rs',
               'codex-rs/hepta-objective/src/compiler_tests.rs',
