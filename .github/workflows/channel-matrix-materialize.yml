@@ -1,153 +1,163 @@
-name: channel.matrix materialize
+name: channel.matrix bounded source publication
 
-# One bounded recovery on this continuation branch. Successful materialization
-# removes this push trigger; normal source qualification remains read-only.
 on:
-  # BEGIN ONE-TIME RECOVERY TRIGGER
+  # BEGIN_ONETIME_OPTIMIZATION_PUSH
   push:
     branches: [codex/channel-matrix-full-closure-20260927]
     paths:
-      - '.github/channel-matrix-local-patch/**'
+      - '.github/channel-matrix-optimization/**'
       - '.github/workflows/channel-matrix-materialize.yml'
-  # END ONE-TIME RECOVERY TRIGGER
-  workflow_dispatch: {}
+  # END_ONETIME_OPTIMIZATION_PUSH
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: channel-matrix-materialize-${{ github.ref }}
+  group: channel-matrix-bounded-source-publication
   cancel-in-progress: false
 
 jobs:
-  materialize:
+  publish-reviewed-source:
     if: >-
-      github.actor != 'github-actions[bot]' &&
-      github.ref == 'refs/heads/codex/channel-matrix-full-closure-20260927'
-    runs-on: ubuntu-22.04
-    timeout-minutes: 15
+      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
+      github.ref == 'refs/heads/codex/channel-matrix-full-closure-20260927' &&
+      github.actor != 'github-actions[bot]'
+    runs-on: macos-latest
+    timeout-minutes: 30
+    env:
+      EXPECTED_SHA: ${{ github.sha }}
+      PYTHONDONTWRITEBYTECODE: '1'
+      CARGO_INCREMENTAL: '0'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_PROFILE_DEV_DEBUG: '0'
     steps:
-      - name: Checkout exact recovery branch head
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: false
-
-      - name: Apply all source changes without dropping rejected hunks
-        env:
-          EXPECTED_SHA: ${{ github.sha }}
-          TARGET_REF: ${{ github.ref_name }}
+      - name: Bind and apply the exact reviewed source patch
         shell: bash
         run: |
           set -euo pipefail
-          test "$TARGET_REF" = codex/channel-matrix-full-closure-20260927
-          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          mkdir -p "$RUNNER_TEMP/matrix-authoring-evidence"
+          test "$(git rev-parse HEAD^)" = 516fe78a0e123ef5d981f62947a5c9ca27898f28
           python3 - <<'PY'
-          import os
-          from pathlib import Path
-          import shlex
-          import subprocess
-
-          directory = Path('.github/channel-matrix-local-patch')
-          parts = sorted(directory.glob('part-*'))
-          if not parts or any(not p.is_file() or p.is_symlink() for p in parts):
-              raise SystemExit('Missing or invalid staged Matrix recovery patch')
-          payload = ''.join(p.read_text(encoding='utf-8').rstrip('\n') + '\n' for p in parts)
+          import base64, hashlib, lzma, os, pathlib, re, subprocess
+          root = pathlib.Path.cwd()
+          directory = root / '.github/channel-matrix-optimization'
+          pieces = sorted(directory.iterdir())
+          if [p.name for p in pieces] != [f'part-{i:03}' for i in range(1, 7)]:
+              raise SystemExit('optimization payload inventory mismatch')
+          if any(not p.is_file() or p.is_symlink() for p in pieces):
+              raise SystemExit('optimization payload must use regular files')
+          encoded = ''.join(p.read_text().strip() for p in pieces)
+          packed = base64.b64decode(encoded, validate=True)
+          if hashlib.sha256(packed).hexdigest() != 'db8756ec846404f24fc98459a9e7403fda999b1042aba83cb747595ae70d65fe':
+              raise SystemExit('optimization transport hash mismatch')
+          payload = lzma.decompress(packed, memlimit=256*1024*1024)
+          if len(payload) != 98523 or hashlib.sha256(payload).hexdigest() != '124b26fa3db2b9358e9c27795e1c565678a96efa25d1f7538b8a0d8c1c529231':
+              raise SystemExit('reviewed source patch mismatch')
           allowed = {
-              '.github/workflows/channel-matrix-materialize.yml',
-              'codex-rs/hepta-matrix-sdk/src/outbound_v2/gate.rs',
+              '.github/channel-matrix-local-patch/part-001',
+              '.github/workflows/channel-matrix-preserve-unknown.yml',
+              'codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs',
               'codex-rs/hepta-matrix-sdk/tests/durable_transport.rs',
+              'codex-rs/hepta-matrix-sdk/tests/final_poll_regressions.rs',
+              'codex-rs/hepta-matrix-sdk/tests/final_poll_regressions/optimization.rs',
+              'codex-rs/hepta-matrix-sdk/tests/pending_poll_regressions.rs',
               'docs/modules/channel.matrix/CONTINUATION_VALIDATION.md',
+              'docs/modules/channel.matrix/IMPLEMENTATION_MAP.json',
+              'docs/modules/channel.matrix/OPERATIONS_RUNBOOK.md',
+              'docs/modules/channel.matrix/OPTIMIZATION_CONTRACT.md',
+              'docs/modules/channel.matrix/QUALIFICATION_MATRIX.md',
+              'docs/modules/channel.matrix/TECHNICAL.md',
+              'scripts/channel_matrix_diagnostics.py',
+              'scripts/channel_matrix_evidence.py',
+              'scripts/channel_matrix_status.py',
               'scripts/tests/test_channel_matrix_candidate_guard.py',
+              'scripts/tests/test_channel_matrix_diagnostics.py',
+              'scripts/tests/test_channel_matrix_status.py',
               'scripts/verify_channel_matrix_candidate.py',
           }
-          seen = []
-          for line in payload.splitlines():
-              if line.startswith('diff --git '):
-                  fields = shlex.split(line)
-                  if len(fields) != 4 or not fields[2].startswith('a/') or not fields[3].startswith('b/'):
-                      raise SystemExit('Invalid patch path header')
-                  old, new = fields[2][2:], fields[3][2:]
-                  if old != new or old not in allowed or old in seen:
-                      raise SystemExit('Unexpected, renamed, or duplicate recovery path: ' + old)
-                  seen.append(old)
-              if line.startswith(('new file mode ', 'deleted file mode ', 'rename from ', 'rename to ', 'GIT binary patch')):
-                  raise SystemExit('Recovery only supports existing text files')
-          if set(seen) != allowed:
-              raise SystemExit('Incomplete source recovery patch')
-          patch = Path(os.environ['RUNNER_TEMP']) / 'channel-matrix-source.patch'
-          patch.write_text(payload, encoding='utf-8')
-          # Recount repairs transport-damaged hunk counts, not source context.
-          # No fuzz, reverse application, three-way merge, or reject suppression.
-          # The old workflow hunk is explicitly superseded by the fenced runner
-          # in this file. All five implementation/test/document hunks are required.
-          args = ['git', 'apply', '--recount', '--exclude=.github/workflows/channel-matrix-materialize.yml']
-          subprocess.run(args + ['--check', str(patch)], check=True)
-          subprocess.run(args + ['--index', str(patch)], check=True)
-          changed = set(subprocess.check_output(['git', 'diff', '--cached', '--name-only'], text=True).splitlines())
-          if changed != allowed - {'.github/workflows/channel-matrix-materialize.yml'}:
-              raise SystemExit('Applied source inventory differs from required recovery')
-          workflow = Path('.github/workflows/channel-matrix-materialize.yml')
-          text = workflow.read_text(encoding='utf-8')
-          start = text.index('  # BEGIN ONE-TIME RECOVERY TRIGGER\n')
-          end = text.index('  # END ONE-TIME RECOVERY TRIGGER\n', start) + len('  # END ONE-TIME RECOVERY TRIGGER\n')
-          workflow.write_text(text[:start] + text[end:], encoding='utf-8')
+          text = payload.decode('utf-8')
+          headers = re.findall(r'^diff --git a/(\S+) b/(\S+)$', text, re.M)
+          if len(headers) != len(allowed) or any(a != b for a, b in headers) or {a for a,b in headers} != allowed:
+              raise SystemExit('reviewed source inventory mismatch')
+          if re.search(r'^(?:new file mode|old mode|new mode) (?:120000|160000)$', text, re.M) or 'GIT binary patch' in text:
+              raise SystemExit('non-source patch mode rejected')
+          patch = pathlib.Path(os.environ['RUNNER_TEMP']) / 'matrix-reviewed.patch'
+          patch.write_bytes(payload)
+          subprocess.run(['git','apply','--index','--check',str(patch)], check=True)
+          subprocess.run(['git','apply','--index',str(patch)], check=True)
+          actual = set(subprocess.check_output(['git','diff','--cached','--name-only'], text=True).splitlines())
+          if actual != allowed:
+              raise SystemExit('applied source inventory mismatch')
+          subprocess.run(['git','rm','-r','.github/channel-matrix-optimization'], check=True)
+          workflow = root / '.github/workflows/channel-matrix-materialize.yml'
+          original = workflow.read_text()
+          updated, count = re.subn(r'(?ms)^  # BEGIN_ONETIME_OPTIMIZATION_PUSH\n.*?^  # END_ONETIME_OPTIMIZATION_PUSH\n', '', original)
+          if count != 1:
+              raise SystemExit('one-time trigger retirement mismatch')
+          workflow.write_text(updated)
+          subprocess.run(['git','add',str(workflow)], check=True)
+          evidence = pathlib.Path(os.environ['RUNNER_TEMP']) / 'matrix-authoring-evidence'
+          (evidence/'reviewed-patch.sha256').write_text(hashlib.sha256(payload).hexdigest()+'\n')
+          (evidence/'parent.txt').write_text(os.environ['EXPECTED_SHA']+'\n')
           PY
-          git rm -r .github/channel-matrix-local-patch
-          git add .github/workflows/channel-matrix-materialize.yml
+      - name: Format authored Matrix Rust sources with the pinned toolchain
+        shell: bash
+        run: |
+          set -uo pipefail
+          cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-matrix-sdk > "$RUNNER_TEMP/matrix-authoring-evidence/authoring-format.log" 2>&1
+          result=$?
+          printf '%s\n' "$result" > "$RUNNER_TEMP/matrix-authoring-evidence/authoring-format-status.txt"
+          git add codex-rs/hepta-matrix-sdk
+          # Formatting availability does not invent a native qualification pass.
+          exit 0
+      - name: Execute Python and SQLite source regressions
+        shell: bash
+        run: |
+          set -euo pipefail
           git diff --cached --check
-
-      - name: Verify Python and real SQLite fixtures
+          git write-tree > "$RUNNER_TEMP/matrix-authoring-evidence/tested-tree.txt"
+          python3 -m unittest discover -s scripts/tests -p 'test_channel_matrix*.py' -v 2>&1 | tee "$RUNNER_TEMP/matrix-authoring-evidence/python-tests.log"
+      - name: Commit and publish only the validated Matrix source tree
+        id: publish
         shell: bash
-        run: |
-          set -euo pipefail
-          python3 -m py_compile scripts/verify_channel_matrix_candidate.py
-          python3 -m unittest discover -s scripts/tests -p 'test_channel_matrix*.py' -v \
-            2>&1 | tee "$RUNNER_TEMP/channel-matrix-python-tests.log"
-
-      - name: Bind and publish the exact source commit
         env:
-          EXPECTED_SHA: ${{ github.sha }}
-          TARGET_REF: ${{ github.ref_name }}
           GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'channel.matrix: materialize reviewed diagnostics, exact evidence, and JIT regressions' -m 'Carry forward pending entropy/parser fixes, retire recovery staging, and retain migration-12 compatibility. Python/SQLite execution is not Rust, homeserver, encryption or independent acceptance.'
+          test "$(git rev-parse HEAD^{tree})" = "$(cat "$RUNNER_TEMP/matrix-authoring-evidence/tested-tree.txt")"
+          head=$(git rev-parse HEAD)
+          python3 scripts/verify_channel_matrix_candidate.py --expected-sha "$head" --output "$RUNNER_TEMP/matrix-authoring-evidence/candidate.json"
+          git diff --exit-code
+          git diff --cached --exit-code
+          auth=$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 | tr -d '\n')
+          echo "::add-mask::$auth"
+          remote=$(git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" ls-remote origin refs/heads/codex/channel-matrix-full-closure-20260927 | cut -f1)
+          test "$remote" = "$EXPECTED_SHA"
+          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" push origin HEAD:refs/heads/codex/channel-matrix-full-closure-20260927
+          printf '%s\n' "$head" > "$RUNNER_TEMP/matrix-authoring-evidence/source-head.txt"
+          echo "sha=$head" >> "$GITHUB_OUTPUT"
+          echo "Published source $head. See retained Python logs; native and target qualification remain independent." >> "$GITHUB_STEP_SUMMARY"
+      - name: Read-only locked native probe on the published source
+        if: steps.publish.outcome == 'success'
         shell: bash
         run: |
           set -euo pipefail
-          test "$TARGET_REF" = codex/channel-matrix-full-closure-20260927
-          git config user.name 'channel.matrix convergence bot'
-          git config user.email 'channel-matrix@users.noreply.github.com'
-          git commit --signoff -m 'channel.matrix: preserve entered sends and enforce complete candidate mapping'
-          tested_sha="$(git rev-parse HEAD)"
-          python3 scripts/verify_channel_matrix_candidate.py \
-            --expected-sha "$tested_sha" \
-            --output "$RUNNER_TEMP/channel-matrix-candidate.json"
-          test -z "$(git status --porcelain --untracked-files=no)"
-          auth="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
-          echo "::add-mask::$auth"
-          remote_sha="$(git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" \
-            ls-remote origin "refs/heads/$TARGET_REF" | cut -f1)"
-          test "$remote_sha" = "$EXPECTED_SHA" || {
-            echo 'Recovery branch moved; refusing publication.' >&2
-            exit 1
-          }
-          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" \
-            push origin "HEAD:refs/heads/$TARGET_REF"
-          {
-            echo '## Matrix source materialization'
-            echo "Source commit: $tested_sha"
-            echo 'Python/SQLite tests and static candidate binding passed.'
-            echo 'Rust execution, real Synapse, acceptance, activation and release are NOT proved by this job.'
-          } >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Upload static materialization evidence
+          cd codex-rs
+          cargo check --locked -p codex-hepta-matrix-protocol -p codex-hepta-matrix-store -p codex-hepta-matrix-sdk -p codex-hepta-matrixd --all-targets > "$RUNNER_TEMP/matrix-authoring-evidence/locked-check.log" 2>&1
+      - name: Retain source publication and failed native evidence
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: channel-matrix-materialize-${{ github.run_id }}-${{ github.run_attempt }}
-          path: |
-            ${{ runner.temp }}/channel-matrix-candidate.json
-            ${{ runner.temp }}/channel-matrix-python-tests.log
-            ${{ runner.temp }}/channel-matrix-source.patch
-          if-no-files-found: warn
+          name: channel-matrix-source-publication-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/matrix-authoring-evidence/
+          if-no-files-found: error
           retention-days: 14
