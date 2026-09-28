@@ -44,9 +44,19 @@ jobs:
           BRANCH = 'work/memory-retrieval-hardening-20260927'
           PATCH = 'scripts/patches/memory_retrieval_reviewed_changes.json'
           ALLOWED = {
-              'codex-rs/hepta-learning-ledger/src/production.rs',
-              'codex-rs/hepta-learning-ledger/src/production_tests.rs',
+              'codex-rs/hepta-memory-retrieval/src/generator_tests.rs',
               'codex-rs/hepta-learning-ledger/src/production_retrieval_preparation_tests.rs',
+              'codex-rs/hepta-agentd/src/cognitive_context.rs',
+              'codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs',
+              'codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs',
+              'codex-rs/hepta-agentd/src/lib.rs',
+              'codex-rs/hepta-agentd/src/main.rs',
+              'codex-rs/hepta-agentd/src/retrieval_executor.rs',
+              'codex-rs/hepta-agentd/src/retrieval_executor_tests.rs',
+              'codex-rs/hepta-agentd/src/retrieval_learning_bootstrap.rs',
+              'codex-rs/hepta-agentd/src/retrieval_learning_files.rs',
+              'codex-rs/hepta-agentd/src/retrieval_learning_trust.rs',
+              'codex-rs/hepta-agentd/src/retrieval_learning_bootstrap_tests.rs',
           }
           def api(method, endpoint, payload=None):
               request = urllib.request.Request(
@@ -182,8 +192,10 @@ jobs:
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/retrieval-tools"
           cp "$(rustup which --toolchain 1.95.0 rustfmt)" "$RUNNER_TEMP/retrieval-tools/rustfmt"
+          mkdir -p "$RUNNER_TEMP/retrieval-tools/lib"
+          cp "$(rustc --print sysroot)"/lib/*.so* "$RUNNER_TEMP/retrieval-tools/lib/"
           rustc -Vv > "$RUNNER_TEMP/retrieval-tools/toolchain.txt"
-          (cd "$RUNNER_TEMP/retrieval-tools"; sha256sum rustfmt > SHA256SUMS)
+          (cd "$RUNNER_TEMP/retrieval-tools"; sha256sum rustfmt lib/* > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: retrieval-formatter-${{ github.run_id }}
@@ -212,5 +224,61 @@ jobs:
           path: |
             ${{ runner.temp }}/retrieval-checks/
             ${{ runner.temp }}/retrieval-tools/
+          retention-days: 30
+          if-no-files-found: error
+
+  qualify-product:
+    needs: publish
+    runs-on: ubuntu-slim
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    env:
+      SOURCE_SHA: ${{ needs.publish.outputs.source_sha }}
+      TESTED_SHA: ${{ needs.publish.outputs.source_sha }}
+      HEPTA_CI_LANE: source-head
+      PYTHONDONTWRITEBYTECODE: '1'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_INCREMENTAL: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ needs.publish.outputs.source_sha }}
+          fetch-depth: 2
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: '1.95.0'
+          components: rustfmt,clippy
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - name: Resolve verified native V8 inputs
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Check and test actual product crates
+        shell: bash
+        run: |
+          set -uo pipefail
+          out="$RUNNER_TEMP/retrieval-product"
+          mkdir -p "$out"
+          git show -s --format='%H%n%T%n%P' HEAD > "$out/identity.txt"
+          failed=0
+          python3 scripts/hepta_ci_exec.py --output "$out/check.json" --timeout-seconds 1800 -- cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-agentd --all-targets || failed=1
+          if test "$failed" = 0; then
+            python3 scripts/hepta_ci_exec.py --output "$out/tests.json" --minimum-tests 1 --timeout-seconds 1200 -- just test --locked -p codex-hepta-agentd retrieval_ || failed=1
+            python3 scripts/hepta_ci_exec.py --output "$out/clippy.json" --timeout-seconds 1200 -- cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-agentd --all-targets -- -D warnings || failed=1
+          fi
+          exit "$failed"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: retrieval-reviewed-product-${{ github.run_id }}
+          path: ${{ runner.temp }}/retrieval-product/
           retention-days: 30
           if-no-files-found: error
