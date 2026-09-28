@@ -7,6 +7,8 @@
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use codex_hepta_operations::DurableOperationState;
+
 use super::*;
 
 impl AgentdIntelligenceLearningHostV1 {
@@ -23,6 +25,13 @@ impl AgentdIntelligenceLearningHostV1 {
     ) -> Result<Vec<AgentdIntelligenceLearningReceiptV1>, AgentdIntelligenceLearningErrorV1> {
         self.reconcile_unsettled_at(limit, current_validation_time()?)
             .await
+    }
+
+    pub fn learning_scope_id_for(
+        &self,
+        prepared: &PreparedAgentdIntelligenceRunV1,
+    ) -> Result<StableId, AgentdIntelligenceLearningErrorV1> {
+        parse_id(&prepared.run_snapshot().run_id)
     }
 
     pub fn decision_operation_id_for(
@@ -56,6 +65,86 @@ impl AgentdIntelligenceLearningHostV1 {
             physical_binding,
         )
     }
+
+    /// Advance and inspect one exact durable operation. This method never treats
+    /// enqueue, claim, dispatch or transport acknowledgement as ledger success.
+    /// Only a persisted `Applied` terminal state returns `Acknowledged`.
+    pub async fn settle_operation_current(
+        &self,
+        scope_id: &StableId,
+        operation_id: &StableId,
+        maximum_steps: u32,
+    ) -> Result<AgentdIntelligenceLearningReceiptV1, AgentdIntelligenceLearningErrorV1> {
+        if maximum_steps == 0 || maximum_steps > MAX_RECONCILE_BATCH {
+            return Err(AgentdIntelligenceLearningErrorV1::Invalid(
+                "operation settlement steps",
+            ));
+        }
+        for _ in 0..maximum_steps {
+            let record = self
+                .operations
+                .operation(scope_id, operation_id)
+                .await?
+                .ok_or_else(|| {
+                    AgentdIntelligenceLearningErrorV1::Operation(
+                        DurableOperationError::Missing(operation_id.clone()),
+                    )
+                })?;
+            if record.state.is_terminal() {
+                return terminal_receipt(record);
+            }
+            match record.state {
+                DurableOperationState::Prepared => {
+                    let _ = self.dispatch_next_current().await?;
+                }
+                DurableOperationState::Dispatching
+                | DurableOperationState::Dispatched
+                | DurableOperationState::Indeterminate => {
+                    let _ = self
+                        .reconcile_unsettled_current(maximum_steps)
+                        .await?;
+                }
+                DurableOperationState::Applied
+                | DurableOperationState::NotApplied
+                | DurableOperationState::Quarantined => unreachable!(),
+            }
+        }
+
+        let mut bytes = b"hepta.agentd.intelligence-learning-settlement-budget.v1\0".to_vec();
+        push_id(&mut bytes, scope_id)?;
+        push_id(&mut bytes, operation_id)?;
+        bytes.extend_from_slice(&maximum_steps.to_be_bytes());
+        Ok(AgentdIntelligenceLearningReceiptV1 {
+            operation_id: operation_id.clone(),
+            disposition: AgentdIntelligenceLearningDispositionV1::Indeterminate,
+            evidence_digest: Digest32::of_bytes(&bytes),
+            append: None,
+        })
+    }
+}
+
+fn terminal_receipt(
+    record: codex_hepta_operations::DurableOperationRecord,
+) -> Result<AgentdIntelligenceLearningReceiptV1, AgentdIntelligenceLearningErrorV1> {
+    let evidence_digest = record.terminal_evidence_digest.ok_or(
+        AgentdIntelligenceLearningErrorV1::Invalid("terminal operation evidence"),
+    )?;
+    let disposition = match record.state {
+        DurableOperationState::Applied => AgentdIntelligenceLearningDispositionV1::Acknowledged,
+        DurableOperationState::NotApplied => AgentdIntelligenceLearningDispositionV1::Rejected,
+        DurableOperationState::Quarantined => AgentdIntelligenceLearningDispositionV1::Revoked,
+        _ => {
+            return Err(AgentdIntelligenceLearningErrorV1::Invalid(
+                "nonterminal operation settlement",
+            ));
+        }
+    };
+    Ok(AgentdIntelligenceLearningReceiptV1 {
+        operation_id: record.intent.operation_id,
+        disposition,
+        evidence_digest,
+        append: None,
+    })
 }
 
 fn current_validation_time() -> Result<u64, AgentdIntelligenceLearningErrorV1> {
