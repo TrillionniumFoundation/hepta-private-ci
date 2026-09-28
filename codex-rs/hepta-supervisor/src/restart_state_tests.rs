@@ -204,6 +204,16 @@ fn clock_rollback_is_normalized_durably_without_erasing_main_budget() -> Result<
         attempts: 2,
         pending: false,
         next_eligible_unix_ms: wall,
+        target_release: None,
+        operation_started_unix_ms: None,
+        predecessor: None,
+        predecessor_drain_deadline_unix_ms: None,
+        predecessor_stop_deadline_unix_ms: None,
+        predecessor_exit_observed_unix_ms: None,
+        replacement: None,
+        replacement_healthy_unix_ms: None,
+        terminal: None,
+        terminal_unix_ms: None,
     };
     write_main_restart_budget(&fixture.run_root, &main)?;
     fixture.recover()?;
