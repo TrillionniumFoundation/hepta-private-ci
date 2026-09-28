@@ -1,0 +1,85 @@
+name: Intuition isolated source authoring
+on:
+  push:
+    branches: [codex/intuition-policy-source-authoring-20260928]
+    paths:
+      - scripts/intuition_source_authoring.py
+      - .github/workflows/intuition-source-authoring.yml
+permissions:
+  contents: write
+jobs:
+  source:
+    runs-on: windows-2025
+    timeout-minutes: 40
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_BUILD_JOBS: "2"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: rustfmt,clippy
+      - name: Apply the reviewed bounded edits as ordinary source
+        shell: pwsh
+        env:
+          AUTHORING_FILES: ${{ runner.temp }}/intuition-authoring-files.json
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ((git rev-parse HEAD).Trim() -ne $env:GITHUB_SHA) { throw 'source identity drift' }
+          git config core.autocrlf false
+          python scripts/intuition_source_authoring.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $files = Get-Content $env:AUTHORING_FILES | ConvertFrom-Json
+          foreach ($file in $files) {
+            if ($file.EndsWith('.rs')) {
+              rustfmt --edition 2024 --config skip_children=true $file
+              if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            }
+          }
+          Push-Location codex-rs
+          try {
+            cargo metadata --format-version 1 > "$env:RUNNER_TEMP/intuition-authoring-metadata.json"
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            cargo metadata --locked --format-version 1 --no-deps > $null
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          } finally { Pop-Location }
+          Remove-Item scripts/intuition_source_authoring.py
+          Remove-Item .github/workflows/intuition-source-authoring.yml
+          git diff --check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git diff --stat
+          git config user.name 'Hepta Intuition Source Authoring'
+          git config user.email 'hepta-intuition-authoring@users.noreply.github.com'
+          git add codex-rs scripts/intuition_source_authoring.py .github/workflows/intuition-source-authoring.yml .github/workflows/intuition-lockfile-authoring-once.yml .github/workflows/intuition-toolchain-export.yml
+          git commit -m 'fix(intuition): retain authenticated admission, freeze startup profile and route V4 natively'
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git push origin HEAD:codex/intuition-policy-source-authoring-20260928
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git show --stat --oneline HEAD
+          git rev-parse HEAD | Set-Content "$env:RUNNER_TEMP/intuition-authored-sha.txt"
+      - name: Execute development kernel checks on the resulting source, not acceptance
+        shell: pwsh
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intuition-authoring-target
+        run: |
+          $ErrorActionPreference = 'Stop'
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-intuition 2>&1 | Tee-Object "$env:RUNNER_TEMP/intuition-authoring-kernel.log"
+          $result = $LASTEXITCODE
+          $result | Set-Content "$env:RUNNER_TEMP/intuition-authoring-kernel-exit.txt"
+          exit $result
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: intuition-source-authoring-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/intuition-authored-sha.txt
+            ${{ runner.temp }}/intuition-authoring-files.json
+            ${{ runner.temp }}/intuition-authoring-kernel.log
+            ${{ runner.temp }}/intuition-authoring-kernel-exit.txt
+          if-no-files-found: warn
+          retention-days: 7
