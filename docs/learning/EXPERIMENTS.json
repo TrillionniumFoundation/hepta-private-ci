@@ -560,5 +560,93 @@
       "SM-09",
       "SM-10"
     ]
+  },
+  "decisionCellBackendDesign": {
+    "status": "planned_not_executed",
+    "specification": "docs/learning/CAUSAL_LONGITUDINAL_SPEC.md#decisioncell-qualification-panels",
+    "workPackage": "NEU-1-LOCAL-MODEL-BAKEOFF",
+    "familyIds": [
+      "decision_cell_cooperation",
+      "decision_cell_serving_scale"
+    ],
+    "candidateArms": [
+      {
+        "id": "deterministic_existing",
+        "backend": "comparator",
+        "headProfile": "deterministic_reference"
+      },
+      {
+        "id": "pinned_laya",
+        "backend": "laya",
+        "headProfile": "matched_typed_heads"
+      },
+      {
+        "id": "pinned_encoder_candidate",
+        "backend": "encoder",
+        "headProfile": "matched_typed_heads"
+      }
+    ],
+    "pairedArmIds": [
+      "deterministic_existing",
+      "pinned_laya",
+      "pinned_encoder_candidate"
+    ],
+    "seedReplicates": [
+      17,
+      29,
+      43
+    ],
+    "splitWindowOrder": {
+      "training": 0,
+      "calibration": 1,
+      "selection": 2,
+      "future_1": 3,
+      "future_2": 4
+    },
+    "disjointGroupKeys": [
+      "principal",
+      "source_root",
+      "episode",
+      "task_template"
+    ],
+    "commonInputRoles": [
+      "question",
+      "options",
+      "state"
+    ],
+    "quantitativeProfile": "adaptive_longitudinal_v1",
+    "oodThresholdRule": "multiplicity_adjusted_one_sided_upper_bound",
+    "resourceLimits": {
+      "maximumBackendCandidates": 8,
+      "maximumSearchTrialsPerArm": 12,
+      "maximumParallelTrainingJobs": 1,
+      "maximumEvaluationRows": 1000000,
+      "maximumTotalWallTimeSeconds": null,
+      "maximumDeviceMemoryMiB": null,
+      "maximumTotalLifecycleCostUnits": null
+    },
+    "unboundResourceDisposition": "execution_blocked",
+    "adaptationArmIds": [
+      "head_only",
+      "organ_only",
+      "cell_only",
+      "organ_and_cell"
+    ],
+    "teacher": {
+      "arms": [
+        "no_teacher",
+        "permitted_local_teacher",
+        "qualified_external_teacher"
+      ],
+      "providerQualification": "unconfirmed",
+      "dataUseRights": "unconfirmed",
+      "unconfirmedDisposition": "teacher_collection_and_training_blocked"
+    },
+    "executionCompleted": false,
+    "trainingCompleted": false,
+    "backendSelected": false,
+    "calibratedTrustEstablished": false,
+    "futureWindowEfficacyEstablished": false,
+    "authorityDelta": "none"
   }
 }

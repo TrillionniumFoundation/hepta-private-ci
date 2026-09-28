@@ -400,6 +400,113 @@ safety floors; do not lower them after observing results. Insufficient evidence
 means no adoption. Observed before/after improvement without controlled assignment
 is not by itself causal credit or proof of multiscale self-evolution.
 
+### DecisionCell qualification panels
+
+`EXPERIMENTS.json#decisionCellBackendDesign` refines the existing cooperation and
+serving families under `NEU-1-LOCAL-MODEL-BAKEOFF`. All panels are planned; neither
+these identifiers nor passing document validation select a backend, register a
+runtime schema, establish calibrated trust or attest training/efficacy. The head
+profile names are comparison roles, not installed artifacts or registered codecs.
+
+Before execution, freeze exact code/weights/tokenizer/preprocessing, model license
+and permitted dataset revisions, trainable tensor masks, candidate/head grammar,
+precision/device/runtime, hardware, seeds, search budget and resource ceilings.
+Null resource limits mean unbound and block execution. The bounded pilot seeds
+specify repetitions, not independent data or adequate power. Bind actual timestamp
+ranges and immutable group manifests to the declared split order; calibration and
+selection precede both future windows. For the backend/transfer panel, keep the
+registered principal/source-root/episode/template groups disjoint across splits,
+including paraphrases and teacher derivatives. This estimates transfer to held-out
+groups; it does not estimate future improvement within the same principal/cell.
+Predeclare minimum detectable effect, cluster-level power, censoring and sequential
+stops; retain failures, exclusions, expired jobs and no-gain runs in the denominator.
+
+Compare the existing deterministic baseline, pinned Laya and a separately pinned
+encoder candidate on paired read-only retrieval episodes. Exact encoder candidates
+remain unresolved until preregistration. Give all arms the same admitted question,
+options, state, candidate order and observation horizon; a state-only cache is not
+a substitute for Laya's question-conditioned input. Match learned head capacity,
+training/search budgets and typed output grammar while reporting unavoidable
+backend differences. Separate cold load, warm inference, adapter miss and queue
+cost through the actual inference owner, and record real consumed bundle identity.
+Evaluate latency/memory/utility under fixed serving and full lifecycle budgets;
+report infeasible arms instead of choosing a winner by selectively dropping costs.
+Backend comparison precedes adaptation attribution; changing both at once cannot
+identify which caused a gain. Use the existing artifact and runtime receipt owners.
+
+Within one pinned base, compare head-only, organ-only, cell-only and organ-plus-cell
+parameter masks at matched trainable capacity and total budget. Cross the relevant
+arms with local versus organ credit while fixing data, base, seeds and critic
+versions. Preserve masked-modulator and temporal-state controls. A manifest naming
+an adapter does not establish consumption: verify effective tensor composition,
+permitted output sensitivity and exact predecessor reload through the real consumer.
+Absent consumption evidence makes that arm unqualified, not a measured null effect.
+A base replacement is a separate matched panel with fresh consumer qualification;
+this design does not authorize full-base training or selected-weight mutation.
+
+Scope-local adaptation and old-task retention need a separately preregistered
+temporal panel: retain the same authorized principal/cell and returning task class,
+but hold out new episodes and their source/teacher derivatives after snapshot freeze.
+Cluster assignment and uncertainty by principal and correlated source; preserve the
+existing cross-principal outcome-model cross-fitting requirement for DR evaluation.
+Do not export a private adapter to a held-out principal to satisfy the transfer
+panel. Report transfer and within-scope estimates separately; neither substitutes
+for the other or permits reusing consumed holdouts.
+
+Fit prediction calibration and OOD thresholds only on calibration data; freeze them
+before selection and future evaluation. Independent labels define supported versus
+shifted/OOD examples before detector scores are inspected. Include unseen language,
+source/task family, corrupted evidence and changed candidate support. Report each
+slice's eligible count, actual accepted count, false accepts, abstention, task error,
+coverage, proper scoring loss and calibration error with uncertainty. OOD false
+acceptance is accepted OOD decisions divided by eligible OOD decisions, not all
+traffic; selective error uses accepted decisions and coverage uses all eligible
+ones. Gate the multiplicity-adjusted one-sided upper bound using the existing OOD
+ceiling, with cluster-valid uncertainty and adequate per-slice support. Zero observed
+errors is not zero risk; unsupported slices abstain/escalate and cannot inherit a
+pooled trust claim. Threshold retuning consumes the holdout and requires a new one.
+
+Teacher panels compare no teacher, a permitted local teacher and a qualified
+external teacher with matched data and total collection/training/evaluation cost.
+Provider qualification binds exact provider/model revision, request/response schema,
+timeout/retry/budget, malformed-output handling and durable dispatch evidence through
+existing inference owners. Separately require current source and provider-term
+references covering collection, retention, training/distillation, target parameter
+scope and derived-artifact use; access credentials and a successful call prove none
+of these rights. Unconfirmed qualification or rights blocks the affected teacher
+collection/training. Teacher answers are proposed supervision, never independent
+outcome receipts or permission to train on future questions/answers/derivatives.
+
+The offline teacher record contract below is an implementation target, not a new
+registered runtime protocol. `learning.ledger` retains source/outcome lineage;
+`learning.eval` validates evidence, and `learning.operator` admits eligible training
+rows through the existing artifact lifecycle. A provider response alone remains
+quarantined proposed supervision.
+
+| Record component | Required binding and rejection behavior |
+|---|---|
+| Request and proposal | Exact provider/model revision, request/response digests, prompt/preprocessor version, frozen input/legal-set/target order, student snapshot and collection policy; reject malformed or out-of-set labels. |
+| Permission and purpose | Principal, source-root grants, permitted operations and parameter/artifact scope, terms revision, validity/revocation frontier and deletion lineage; unknown or conflicting permissions withhold the row. |
+| Independent verification | Actual delivered choice plus outcome-owner reference, verifier identity and validation disposition; teacher confidence and student agreement cannot fill missing outcomes. |
+| Corpus assignment | Immutable split/group IDs, duplicate/derivative lineage, collection round and weight/propensity semantics; retries and paraphrases do not create new independent examples. |
+
+Student-state aggregation must sample states reached after student mistakes, with a
+frozen query/abstention policy and independent outcomes; successful teacher-only
+trajectories cannot estimate deployment-state coverage. Recheck permissions and
+revocation before each corpus materialization and training run. Revocation removes
+affected rows and invalidates dependent candidate eligibility until the existing
+unlearning/non-resurrection process resolves them; retaining a digest is not a right
+to retain the underlying payload. Qualified provider operation and permitted data
+use are independently scoped decisions, not booleans issued by the model.
+
+Training consumes verified immutable dataset inputs through `learning.operator`
+and emits candidates through `learning.artifacts`, retaining optimizer, source,
+permission and revocation lineage. Independently observe future utility and old-task
+retention at the registered cluster unit; apply all existing numeric floors to each
+required window and protected slice. A training loss decrease, synthetic/replay
+pass, teacher agreement or serving benchmark cannot discharge future-window efficacy,
+production activation, operator acceptance, selection, merge, promotion or release.
+
 ### Reusable-circuit acceptance experiment
 
 Run one fixed definition through sufficient-evidence, conflicting-evidence,

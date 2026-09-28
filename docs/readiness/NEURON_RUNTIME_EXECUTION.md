@@ -12,14 +12,33 @@ The runtime consumes `NeuronRuntimeConfigV1` and `NeuronTickInputV1`, emits `Neu
 
 ### DecisionCell host integration
 
-The existing runtime also hosts logical DecisionCell slots defined by
-`../learning/NEURAL_BIOMIMICRY_SPEC.md`. Laya is the initial backend candidate,
-not a required public protocol. The host supplies exact effective base/organ/cell
-parameters through existing inference admission; the cell does not call providers
+The DecisionCell target extends the existing runtime with logical slots defined by
+`../learning/NEURAL_BIOMIMICRY_SPEC.md`; this is not a completed durable integration.
+Laya is a source-reviewed comparison baseline, not a selected backend or required
+public protocol. The host supplies one exact effective base/organ/cell/head bundle
+through existing inference admission; the cell does not call providers
 or install a model itself. Shared workers serve many logical cells; checkpoint
 ownership stays with the existing neuron owner and principal/subject scope.
 Prediction, action strategy and state-successor outputs remain typed and separate.
 A model's raw probability is not automatically the behavior propensity.
+
+### Backend-neutral invocation contract target
+
+Before inference, bind principal/purpose, subject/organ/cell, activation/operation
+identity, objective/NDU/body revisions, causal source frontier, state predecessor,
+complete legal-action and admitted-target sets (including canonical order), exact
+backend/encoder/tokenizer/normalizer/parameter/calibration bundle, budget and deadline.
+Backend replacement preserves these semantics; it cannot reinterpret a V1 record.
+Outputs distinguish prediction, policy distribution, typed action/target/bounded
+arguments, expected postcondition, value/cost, uncertainty/OOD, disposition and
+bounded state successor. Stop, abstain, request-evidence and slow-path are explicit.
+An expected postcondition is a prediction, never an observed terminal result.
+
+Host validation owns complete-set admission, masking, exploration and the recorded
+behavior propensity. Missing candidates, stale target generations, unknown output
+fields or incompatible bundles reject before choice publication. The backend cannot
+emit authority or dispatch effects. Action serialization belongs to its versioned
+deterministic codec and consumer; this contract does not register ComputerActionIR.
 
 ## 2. Runtime state layout
 
@@ -84,6 +103,46 @@ calibration and recurrent state. Check current revocation even for a cached bund
 A compatible bundle is published at a future snapshot; unrelated organs need not
 restart. Never mutate selected tensors through a training optimizer or clear old
 writer fences merely to reuse a logical name.
+
+### V2 durable DecisionCell migration target and failure matrix
+
+Current source separates V1 `NeuronRuntime`/`SparseJournal` persistence from the
+pure `PopulationSparse*V2` mechanism. The journal's `HPTNSJ02` successor-segment
+header is not a DecisionCell V2 schema or migration. No migration completion is
+inferred from a V2 type, replay fixture or existing package source-complete status.
+The following states are design labels, not newly registered wire enum values.
+
+| State | Required evidence before the next transition |
+|---|---|
+| V1 retained | Inventory actual readers/writers and retained anchors; preserve exact historical V1 decoding and digests. |
+| Prepared | Register V2 config/input/checkpoint/result/receipt codecs, hash domains, bounds and consumer dispatch; freeze mapping, compatibility/reset policy and rollback predecessor. |
+| Fenced | Drain or reconcile admitted work; record final V1 checkpoint and independently retained acknowledged frontier; fence every old writer. |
+| Transformed | Write a separate V2 candidate with scoped cell key, source anchor, effective bundle, state mapping and migration digest; verify reopen and bounded parity without editing V1 history. |
+| Published | Atomically publish the owner selection pointer only after candidate data and its independent witness are durable; allow one writer generation. |
+| Observed | Reopen through actual readers, exercise duplicate/lost-ack/fault cases and preserve committed choices; record exact host/source evidence. |
+
+V2 durable results must retain commitments to the exact admitted input, legal set,
+order and bundle, post-mask policy/assignment evidence, chosen outcome and state successor
+so recovery reads the committed choice without rerunning a model. Scope includes
+principal/purpose/subject/organ/cell; operation identity is independent of retry count.
+State may reset only through an explicit admitted reset transition with no unresolved
+dependent choice/effect; it may not silently drop acknowledged history. Compatibility
+must cover encoder, shapes, normalizer, calibration, caches and deletion lineage.
+
+| Failure or interruption | Required disposition |
+|---|---|
+| Unknown version, missing consumer or incompatible transform | Keep current selection; reject candidate without coercing it into V1. |
+| Crash before candidate/witness durability | Recover the fenced predecessor or retry the same migration identity; do not publish. |
+| Crash during publication or lost acknowledgement | Read owner pointer and retained witness; reconcile the exact migration/result, never select by newest filename. |
+| Two writers or same operation with changed semantics | Reject stale fence or semantic conflict; exactly one predecessor may advance. |
+| Truncated acknowledged history, witness mismatch or uncertain sync | Quarantine/poison the affected handle and withhold publication; partial-tail repair cannot fabricate acknowledged success. |
+| Expiry, cancellation or revocation before choice commit | Emit the declared rejection/fallback without advancing the cell; recheck current source rights on retry. |
+| Cancellation or downstream acknowledgement loss after choice commit | Return/reconcile the retained choice; the action owner resolves any indeterminate effect without resampling. |
+| Rollback after V2 writes | Fence V2; retain its committed choices and outcomes; use a tested reverse transform or admitted new-generation reset, never resume V1 behind acknowledged progress. |
+
+Fault injection is required at each data/witness/pointer write and synchronization
+boundary, including restart, deletion and wrong-principal replay. Passing this future
+suite demonstrates only the tested migration profile, not production activation.
 
 ### Neural Circuit call and result handoff
 

@@ -37,6 +37,15 @@ weights never imply shared working context or permission to widen training scope
 
 ## Validation
 
+The [DecisionCell qualification panels](CAUSAL_LONGITUDINAL_SPEC.md#decisioncell-qualification-panels)
+and `EXPERIMENTS.json` define the backend, parameter, OOD and teacher comparisons.
+The existing algorithm verifier checks design consistency, including paired arms,
+split order and resource bounds. It does not inspect actual data partitions, verify
+provider credentials or establish training rights. The planned panel stays
+unexecuted until immutable inputs, permissions, target resources and an independent
+evaluator are supplied. Experiment observations belong in run evidence, not in the
+design registry's completion flags.
+
 ```bash
 python3 scripts/hepta-paper-evidence.py self-test
 python3 scripts/hepta-paper-evidence.py verify

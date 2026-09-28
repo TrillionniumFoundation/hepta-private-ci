@@ -15,7 +15,8 @@ This design is functional biomimicry, not anatomical identity. Biological names 
 
 The adaptive target is DecisionCell -> organ -> cooperating organs -> system.
 A cell is the backend-neutral Neuron/Intuition unit specified in
-`../learning/NEURAL_BIOMIMICRY_SPEC.md`, initially specialized from Laya. NDU
+`../learning/NEURAL_BIOMIMICRY_SPEC.md`, with its backend pending the registered
+Laya/encoder comparison. NDU
 supplies common state/preference, recursive-utility, resource and adaptation
 semantics; it does not mandate a separate heavy solver at every cell. Existing
 system/domain/agent/episode subjects own the scoped objective and boundary.
@@ -314,6 +315,44 @@ Metacognition tracks capability limits, calibration, model and tool identity, fa
 The action gate receives the complete generator-relative legal set, propensities and hard vetoes. The no-op/abstain action is always legal. `motor.plan` converts a selected semantic action into `ActuationIntentV1`, binding objective, body generation, target actuator, final payload digest, safety envelope, deadline, idempotency key and authority witness.
 
 Before adapter entry, `spinal.reflex-safety` evaluates current body state and rule generation. Collision, force, speed, temperature, tilt, stale state, human stop or integrity breach produces `ReflexVetoV1`. The veto occurs before dispatch and remains independent of plan utility or model confidence.
+
+### ComputerActionIR registration and consumer implementation target
+
+`ComputerActionIR` is a proposed compact representation of an already validated
+semantic action. This document does not register its schema or provide a binary
+consumer. Production protocol identity remains owned by
+`docs/contracts/CONTRACTS.json` and `docs/contracts/PROTOCOL_SCHEMAS.json`;
+`platform.types` and `platform.wire` own typed values and canonical bytes. Browser
+and native owners must each admit the exact version through their existing ports.
+
+Before registration, freeze the tag/version, byte order, size and count limits,
+canonical field ordering, unknown-tag policy and digest domain. Bind operation,
+principal, body/surface generation, observation and target identity, action kind,
+bounded typed arguments, deadline and final payload digest. Coordinates bind a
+viewport/display transform; element handles bind the observed document or native
+surface generation. A valid digest cannot turn a stale target into a valid target.
+Do not encode credentials, arbitrary executable code or authority in model output.
+
+The intended path is typed cell proposal -> semantic validation -> registered
+codec -> existing browser/native action owner -> final-use authorization -> motor
+dispatch -> independent result. The cell neither serializes arbitrary tool calls
+nor dispatches effects. The action owner resolves current targets and repeats
+revocation, deadline, generation and final-payload checks immediately before use.
+Retries read the durable operation result; a lost dispatch acknowledgment remains
+indeterminate until reconciled. Cancellation cannot convert an unknown effect into
+not-applied, and a changed target requires a new authorized operation.
+
+| Implementation evidence | Required behavior |
+|---|---|
+| Cross-language golden frames | Rust and browser codec agree on canonical bytes and digest; roundtrip alone is insufficient. |
+| Hostile frames | Truncation, overflow, over-limit lengths, duplicate fields, unknown versions/tags and trailing bytes fail before dispatch. |
+| Actual browser and native consumers | Each product path consumes the registered bytes, resolves the bound target and returns the owner result; an in-memory callback is not product evidence. |
+| Effect-boundary fault cuts | Stale document/display, revoked grant, expired deadline and payload drift produce zero dispatch; lost acknowledgment and restart reconcile without duplicate effect. |
+
+Schema registration, codec tests and each real consumer are separate deliverables.
+Browser evidence cannot qualify native execution. Their later receipts bind exact
+source, binary, host and protocol identities; they confer no activation, acceptance,
+promotion or release through this specification.
 
 ## 12. Effect execution and terminal observation
 

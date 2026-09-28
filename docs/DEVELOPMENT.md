@@ -244,9 +244,9 @@ Low-risk, read-only, reversible and supported decisions may use the fast path. H
 ### Unified DecisionCell and recursive organ composition
 
 The selected target architecture is a backend-neutral **DecisionCell** implemented
-inside the existing Neuron/Intuition modules. Laya is the initial open-weight,
-locally trainable implementation candidate, not a permanent framework dependency
-and not an already activated Hepta model. A cell owns a logical identity, bounded
+inside the existing Neuron/Intuition modules. Laya is an initial candidate to
+compare with pinned encoder alternatives under the same typed heads and total
+budget; no backend is selected by this specification. A cell owns a logical identity, bounded
 state, effective parameter identity, typed observation/action contract and learning
 history. It does not automatically own a process, database, model server, optimizer
 service or top-level module entry. The forty-module ownership model is unchanged.
@@ -277,7 +277,7 @@ publication. Lack of data permits no update; model count is not an efficacy metr
 Authority, goals and observer criteria remain outside learned parameter blocks.
 
 Implementation is ordered through existing work packages: define the cell contract
-and measured Laya profile; run a read-only retrieval organ with deterministic and
+and preregister the backend comparison; run a read-only retrieval organ with deterministic and
 shared-model baselines; add node-local adaptation; add organ-level credit; then
 qualify structural surgery and slower shared-base consolidation. Count training,
 inference, evaluation and migration cost in every comparison. Existing source and
@@ -285,6 +285,13 @@ product claims do not advance from this design amendment. Detailed cell mechanic
 live in `docs/learning/NEURAL_BIOMIMICRY_SPEC.md`; organ mechanics live in
 `docs/cns/TECHNICAL.md`; rollout and experiments live in the existing learning
 specifications and registries. Do not create another global plan or per-cell gate.
+
+The [qualification panels](learning/CAUSAL_LONGITUDINAL_SPEC.md#decisioncell-qualification-panels)
+separate backend comparison, parameter consumption, OOD calibration, teacher
+provider qualification, data-use permission and future-window evaluation. Design
+validation establishes consistency only. Real model runs, durable V2 migration,
+registered binary codecs and product consumers require their own owner evidence;
+none follows from a document, candidate branch or deterministic fixture.
 
 ### Neural Circuits and the Nervous System
 

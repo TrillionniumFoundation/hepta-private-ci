@@ -15,9 +15,10 @@ The term “neuron” does not claim biological equivalence. NDU supplies prefer
 ### DecisionCell is the common trainable unit
 
 A Hepta DecisionCell is a logical, stateful decision unit within the existing
-Neuron/Intuition substrate. Laya is its initial trainable backend candidate;
-backend-neutral ports also admit qualified compact/distilled or numerical models.
-The stable unit is the decision contract, not the vendor model or Python API.
+Neuron/Intuition substrate. Laya is retained as a source-reviewed choice/score
+baseline, not a selected default. Backend-neutral ports admit qualified encoder,
+compact/distilled or numerical profiles. The stable unit is the decision contract,
+not the vendor model, Python API or transport codec.
 A cell is not a biological neuron, top-level module, process, database or complete
 NDU subject. Its purpose is an uncertain semantic decision that can improve from
 experience. Exact arithmetic, schema checks, signature verification, truth
@@ -30,6 +31,25 @@ not each instantiate a heavy solver or an independently running trainer.
 `NDU_FBSDE_SPEC.md` owns that optimization semantics; `../cns/TECHNICAL.md` owns
 organ composition. This extension specifies a target and does not relabel native
 sparse kernels, model receipts or fixture tests as a trained cell implementation.
+
+### Typed DecisionCell contract and backend selection
+
+Use the [runtime invocation contract](../readiness/NEURON_RUNTIME_EXECUTION.md#backend-neutral-invocation-contract-target)
+for scoped inputs, complete candidate sets, coherent bundles and distinct prediction,
+policy, action, disposition and state outputs. These are design requirements, not a
+registered `DecisionCellInputV2`/`DecisionCellOutputV2` codec. Durable serialization
+and consumer migration follow the runtime's explicit V2 migration target.
+
+Separate encoder/policy inference, retrieval/reranking, shared visual grounding and
+deterministic action encoding. A retrieval shortlist declares its omissions and
+cannot masquerade as a complete legal set. An encoder benchmark cannot qualify a
+policy head, a teacher or an effect consumer. The actual backend remains undecided
+until a matched panel compares Laya and encoder candidates using identical admitted
+episodes, candidate semantics, head objectives, resource budgets and recovery cases.
+Freeze exact code/weight/tokenizer/preprocessor revisions, license/SBOM, target host,
+precision and measurement method for each arm. Report quality, abstention/calibration,
+OOD, latency/memory and lifecycle cost under the existing experiment registry;
+public benchmarks or source review do not constitute a Hepta bakeoff result.
 
 ## 2. Symbols, dimensions, units and normalization
 
@@ -117,6 +137,27 @@ exception justified by task separation, data support and equal-budget benefit.
 Data-poor cells may use a shared head plus isolated state indefinitely; no update
 is a normal outcome. A default head is not assumed small: count actual trainable
 tensors, optimizer memory and activations for the selected profile.
+
+### Evidence of actual parameter consumption
+
+An artifact digest, model name or accepted manifest does not prove that serving used
+its tensors. Qualification must trace the existing inference owner into the actual
+backend forward path, bind loaded base/organ/cell/head bytes to layer names, shapes,
+rank/scaling/composition order, and bind that effective bundle to each result.
+Explicit identity/absent adapters are legal profiles; a missing required adapter
+must fail rather than be replaced by an unreported base-only forward pass.
+
+In an isolated qualification harness, use a frozen diagnostic input and candidate
+copies with known nonzero, layer-local perturbations to show that each enabled
+parameter group reaches its intended activation/output. Include
+zero-delta/base parity, adapter swap with controlled expected change, wrong-base and
+wrong-shape rejection, eviction/reload parity and restart with the same bundle.
+If a group has zero effect on an input, establish consumption with an instrumented
+activation trace and another discriminating input; identical logits alone prove
+neither use nor non-use. Preserve numeric tolerances and counterfactual controls.
+Profile actual trainable tensors/optimizer state and verify selected bytes remain
+unchanged during inference. Synthetic digest substitution and fixture-only model
+ports cannot satisfy this evidence requirement or prove learning efficacy.
 
 ### Cells participate in circuits; not every control node is a cell
 
@@ -272,9 +313,9 @@ L=L_{task}+\lambda_pL_{prediction}+\lambda_cL_{calibration}
 
 A local three-factor rule is not assumed equivalent to backpropagation. Its cosine agreement, utility effect, stability and retention are measured. Candidates with high agreement but poor causal utility fail. Hyperparameters and replay mixture are immutable manifests and evaluated on future windows.
 
-### Local Laya adaptation and consolidation
+### Backend-neutral adaptation, Laya baseline and consolidation
 
-The source-review candidate is NandhaKishorM/laya at
+The source-review baseline is NandhaKishorM/laya at
 `c7527708f9f5220c669d8aa385077cd28d04708a`. Its `DecisionModel` exposes an encoder,
 typed head, scorer and act head; `Agent.system_one` is a no-gradient inference
 entry. Local training must use the underlying tensor model rather than returned
@@ -296,7 +337,7 @@ at the correlated episode and source-group level.
 Three-factor eligibility updates remain a candidate mechanism for bounded local
 heads. They are not the exact gradient of a full Transformer. Measure alignment
 with a bounded gradient oracle, organ utility and retention before use. Larger
-Laya updates use conventional local tensor training through learning.operator;
+backend-specific updates use conventional local tensor training through learning.operator;
 learning.plasticity bounds candidate parameter groups and structural proposals.
 NDU's stochastic Z is not a weight gradient. Selection remains outside the trainer.
 
@@ -541,6 +582,35 @@ Their definition here is not a test-pass receipt.
 | Deleted-row replay | `0` |
 
 Functional biomimicry requires the full ablation and longitudinal evidence set; passing runtime unit tests is insufficient.
+
+### Calibrated OOD trust and measurement evidence
+
+The existing `NeuronCalibrationProfileV1` validates supplied profile fields;
+nonzero artifact digests and in-range measurements do not authenticate their origin
+or demonstrate a learned detector. The existing intuition qualified-profile and
+signed-evidence consumer surfaces supply trust checks, but a real DecisionCell must
+still bind its actual serving bundle and outputs through that owner path.
+
+Freeze disjoint train/calibration/evaluation/future splits by correlated episode and
+source group. Bind detector, confidence semantics, objective/risk class, language and
+task slices, support definition, thresholds, sample counts and evaluation code to
+the exact encoder/base/organ/cell/head/normalizer/precision bundle. Threshold fitting
+uses calibration data only. Report ECE with its fixed binning plus proper scoring
+and risk/coverage; measure OOD false acceptance as accepted OOD examples divided by
+all OOD examples, with abstention and in-domain rejection reported separately.
+Preregister intervals, slice minima and multiplicity treatment; require the upper
+confidence bound to meet the false-acceptance gate. Insufficient support withholds
+qualification even when the observed error count is zero.
+
+The consumer authenticates an independent evaluator's exact profile/measurement
+commitment against current trusted signer roles, scope, generation, validity window
+and revocation state; model output cannot attest to itself. Bind runtime requests
+and assignment evidence so authenticated metadata cannot be replayed around another
+score or candidate set. Revalidate after bundle/support changes and at final use.
+Expired, revoked, unsupported or mismatched evidence disables the learned fast path
+and routes to the declared deterministic fallback/slow-path/abstain. These are future
+qualification requirements; neither signed fixtures nor document closure establishes
+calibrated OOD trust, future-window efficacy or operator acceptance.
 
 ## 12. Paper traceability and Hepta extensions
 

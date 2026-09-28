@@ -11,7 +11,8 @@ The exact incremental import and conflict decisions are recorded in [`qualificat
 Adaptive and longitudinal specifications start at [`docs/learning/README.md`](docs/learning/README.md). Paper evidence is recomputed from the original pinned commit retained in `main` ancestry, not from a mutable side-branch name or verifier constants. Preserve that ancestry in subsequent merges and recovery.
 
 The target adaptive implementation uses backend-neutral DecisionCells inside the
-existing Neuron/Intuition modules, initially profiled with Laya. Shared base,
+existing Neuron/Intuition modules, with Laya and encoder candidates awaiting the
+[preregistered comparison](docs/learning/CAUSAL_LONGITUDINAL_SPEC.md#decisioncell-qualification-panels). Shared base,
 organ and cell parameters support local specialization; NDU-guided recursive
 utility and organ credit guide actions and future parameter updates. See the
 [global design](docs/DEVELOPMENT.md#8-neuron-and-intuition),
