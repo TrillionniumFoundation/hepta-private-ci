@@ -52,3 +52,4 @@ pub(crate) use transport::logical_compaction_request;
 pub(crate) use transport::logical_responses_request;
 pub(crate) use transport::provider_websocket_wire_payload;
 pub(crate) use transport::responses_lite_from_http_header;
+pub(crate) use transport::responses_lite_from_ws_metadata;
