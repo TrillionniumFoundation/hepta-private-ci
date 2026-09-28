@@ -1,0 +1,249 @@
+name: NDU final A-D evidence sync
+
+on:
+  push:
+    branches: [work/utility-ndu-abcd-convergence-20260928]
+    paths: [.github/workflows/hepta-ndu-final-evidence-sync.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ndu-final-evidence-sync
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    outputs:
+      source: ${{ steps.source.outputs.source }}
+      base: ${{ steps.source.outputs.base }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - name: Bind status and implementation map to this qualification run
+        id: source
+        shell: bash
+        env:
+          REQUEST_SHA: ${{ github.sha }}
+          QUALIFICATION_RUN_ID: ${{ github.run_id }}
+          PRIOR_QUALIFIED_SOURCE: e2508be90cbb13c0a1828b9af2e2438b5db500ad
+          PRIOR_QUALIFIED_TREE: 5102bbad33709af64e17d5d4d451274cecd9ce4b
+          PRIOR_QUALIFIED_RUN: '36383272993'
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$REQUEST_SHA"
+          BASE=$(git rev-parse refs/remotes/origin/main)
+          git merge-base --is-ancestor "$BASE" HEAD
+          export BASE
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          map_path = Path('docs/modules/utility.ndu/IMPLEMENTATION_MAP.json')
+          status_path = Path('docs/modules/utility.ndu/STATUS.md')
+          mapping = json.loads(map_path.read_text(encoding='utf-8'))
+
+          completion = mapping.setdefault('completion', {})
+          completion['exactHeadQualification'] = 'qualified_exact_candidate_dual_lane_receipts_retained'
+          completion['namedHostQualification'] = 'qualified_named_ci_host_receipts_retained_production_target_pending'
+          completion['localDeterministicProcess'] = 'qualified_exact_candidate_ci_host_production_trust_pending'
+
+          boundary = mapping.setdefault('claimBoundary', {})
+          boundary['namedHostQualificationReceiptProved'] = True
+          boundary['namedLocalDeterministicCiExecutionProved'] = True
+          boundary['productionWriterActivated'] = False
+          boundary['activation'] = False
+          boundary['release'] = False
+
+          profiles = mapping.setdefault('productCallerProfiles', {})
+          local = profiles.get('localDeterministicProcess')
+          if isinstance(local, dict):
+              local['state'] = 'qualified_exact_candidate_ci_host_production_trust_pending'
+
+          mapping['sourceBase'] = {
+              'commit': os.environ['PRIOR_QUALIFIED_SOURCE'],
+              'tree': os.environ['PRIOR_QUALIFIED_TREE'],
+          }
+
+          gaps = [
+              gap for gap in mapping.get('repositoryControlledGaps', [])
+              if not gap.startswith('Run the exact-current-head')
+              and not gap.startswith('Retain passing named-host')
+          ]
+          production_host_gap = (
+              'Enroll and qualify the selected production host/filesystem/shared-volume profile; '
+              'retained exact CI-host receipts do not establish production-target acceptance.'
+          )
+          if production_host_gap not in gaps:
+              gaps.insert(0, production_host_gap)
+          mapping['repositoryControlledGaps'] = gaps
+          map_path.write_text(json.dumps(mapping, indent=2) + '\n', encoding='utf-8')
+
+          run_id = os.environ['QUALIFICATION_RUN_ID']
+          prior_run = os.environ['PRIOR_QUALIFIED_RUN']
+          status = status_path.read_text(encoding='utf-8')
+          status = status.replace(
+              '## Recovery/observability follow-up (2026-09-28)',
+              '## Earlier recovery/observability follow-up (2026-09-28)',
+              1,
+          )
+          marker = '# utility.ndu status and claim boundary\n'
+          exact = f'''## Exact A–D engineering qualification binding (2026-09-28)\n\nThe current convergence branch is `work/utility-ndu-abcd-convergence-20260928`.\nThis document and the implementation map are bound to qualification workflow run\n`{run_id}`. Its materialize job emits one exact descendant source SHA; the same run\nexecutes source-head and deterministic synthetic-merge lanes for source, core,\ncallers, product, strict lint and host suites, then independently reopens and\nverifies every retained command receipt and checksum. The successful predecessor\nqualification is run `{prior_run}`; it is historical evidence, not a substitute\nfor this changed exact head.\n\nA successful `ndu-qualified-evidence-<exact-source-sha>` aggregate establishes the\nengineering qualification fields below for that exact source only. It does not\nselect or activate a production writer, enroll a production clock/frontier, prove\nphysical power-loss durability, or grant release authority.\n\n'''
+          if '## Exact A–D engineering qualification binding (2026-09-28)' not in status:
+              if marker not in status:
+                  raise SystemExit('STATUS.md claim-boundary marker missing')
+              status = status.replace(marker, exact + marker, 1)
+          old = (
+              '`exactHeadSourceQualification` remains pending until the exact candidate/head named by the maturity claim has a passing workflow result. '
+              'Do not promote that field merely because an older source base passed scoped tests or because the NDU source files were unchanged between two commits.'
+          )
+          new = (
+              f'`exactHeadSourceQualification` for this revision is bound to workflow run `{run_id}` and is established only when that run finishes with a successful aggregate for its emitted exact source SHA. '
+              'An older source result, an unchanged code subtree, or a workflow definition is never substituted for that receipt.'
+          )
+          if old not in status:
+              raise SystemExit('STATUS.md exact-head paragraph missing')
+          status = status.replace(old, new, 1)
+          status_path.write_text(status, encoding='utf-8')
+          PY
+
+          git add docs/modules/utility.ndu/IMPLEMENTATION_MAP.json docs/modules/utility.ndu/STATUS.md
+          python3 scripts/hepta_ndu_map_integrity.py \
+            --rebind-index \
+            --candidate-branch "$GITHUB_REF_NAME" \
+            --baseline-main "$BASE"
+          export QUALIFICATION_RUN_ID
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          path = Path('docs/modules/utility.ndu/IMPLEMENTATION_MAP.json')
+          mapping = json.loads(path.read_text(encoding='utf-8'))
+          evidence = mapping.setdefault('currentSourceEvidence', {})
+          evidence.update({
+              'qualificationWorkflow': '.github/workflows/hepta-ndu-final-evidence-sync.yml',
+              'qualificationRunId': int(os.environ['QUALIFICATION_RUN_ID']),
+              'qualificationArtifactPattern': 'ndu-qualified-evidence-<exact-source-sha>',
+              'priorQualifiedSourceCommit': os.environ['PRIOR_QUALIFIED_SOURCE'],
+              'priorQualifiedRunId': int(os.environ['PRIOR_QUALIFIED_RUN']),
+              'namedCiHostReceiptProved': True,
+              'productionActivation': False,
+          })
+          path.write_text(json.dumps(mapping, indent=2) + '\n', encoding='utf-8')
+          PY
+          git add docs/modules/utility.ndu/IMPLEMENTATION_MAP.json
+          python3 scripts/test_hepta_ndu_map_integrity.py
+          python3 scripts/test_hepta_ndu_source_policy.py
+          git diff --cached --check
+          git config user.name hepta-ndu-remediation
+          git config user.email qualification@invalid
+          git commit -s -m 'docs(ndu): bind A-D status to exact retained qualification'
+          test -z "$(git status --porcelain --untracked-files=all)"
+          python3 scripts/hepta-ndu-implementation-map-closed-world.py \
+            --expected-sha "$(git rev-parse HEAD)" \
+            --expected-tree "$(git rev-parse HEAD^{tree})"
+          git push origin "HEAD:$GITHUB_REF_NAME"
+          echo "source=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "base=$BASE" >> "$GITHUB_OUTPUT"
+
+  qualify:
+    needs: materialize
+    name: NDU final ${{ matrix.lane }} / ${{ matrix.suite }}
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, synthetic-merge]
+        suite: [source, core, callers, product, lint, host]
+    env:
+      SOURCE_SHA: ${{ needs.materialize.outputs.source }}
+      BASE_SHA: ${{ needs.materialize.outputs.base }}
+      CARGO_NET_GIT_FETCH_WITH_CLI: 'true'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_INCREMENTAL: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind exact source or deterministic merge
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          if [ '${{ matrix.lane }}' = synthetic-merge ]; then
+            TREE=$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")
+            export GIT_AUTHOR_NAME=hepta-qualification GIT_COMMITTER_NAME=hepta-qualification
+            export GIT_AUTHOR_EMAIL=qualification@invalid GIT_COMMITTER_EMAIL=qualification@invalid
+            export GIT_AUTHOR_DATE=2000-01-01T00:00:00Z GIT_COMMITTER_DATE=2000-01-01T00:00:00Z
+            MERGE=$(printf '%s\n' 'Qualification only; no selection or release' | git commit-tree "$TREE" -p "$BASE_SHA" -p "$SOURCE_SHA")
+            test "$(git show -s --format=%P "$MERGE")" = "$BASE_SHA $SOURCE_SHA"
+            git checkout --detach "$MERGE"
+          fi
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+          checksum: true
+      - name: Execute independent suite
+        run: python3 scripts/hepta-ndu-qualification.py --suite '${{ matrix.suite }}' --lane '${{ matrix.lane }}' --output '${{ runner.temp }}/ndu-${{ matrix.lane }}-${{ matrix.suite }}'
+      - name: Retain exact-source receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ndu-final-${{ matrix.lane }}-${{ matrix.suite }}-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/ndu-${{ matrix.lane }}-${{ matrix.suite }}/
+          if-no-files-found: error
+          retention-days: 30
+
+  aggregate:
+    needs: [materialize, qualify]
+    runs-on: ubuntu-22.04
+    env:
+      SOURCE_SHA: ${{ needs.materialize.outputs.source }}
+      BASE_SHA: ${{ needs.materialize.outputs.base }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          pattern: ndu-final-*-*-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/ndu-evidence
+      - name: Revalidate all twelve native suites, identities and checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          TREE=$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")
+          export GIT_AUTHOR_NAME=hepta-qualification GIT_COMMITTER_NAME=hepta-qualification
+          export GIT_AUTHOR_EMAIL=qualification@invalid GIT_COMMITTER_EMAIL=qualification@invalid
+          export GIT_AUTHOR_DATE=2000-01-01T00:00:00Z GIT_COMMITTER_DATE=2000-01-01T00:00:00Z
+          MERGE=$(printf '%s\n' 'Qualification only; no selection or release' | git commit-tree "$TREE" -p "$BASE_SHA" -p "$SOURCE_SHA")
+          python3 scripts/hepta_ndu_evidence.py aggregate \
+            --root "$RUNNER_TEMP/ndu-evidence" \
+            --source "$SOURCE_SHA" \
+            --base "$BASE_SHA" \
+            --merge "$MERGE" \
+            --output "$RUNNER_TEMP/ndu-evidence/aggregate.json"
+          python3 scripts/hepta_ndu_evidence.py seal --root "$RUNNER_TEMP/ndu-evidence"
+          python3 scripts/hepta_ndu_evidence.py verify --root "$RUNNER_TEMP/ndu-evidence"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ndu-qualified-evidence-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/ndu-evidence/
+          if-no-files-found: error
+          retention-days: 30
