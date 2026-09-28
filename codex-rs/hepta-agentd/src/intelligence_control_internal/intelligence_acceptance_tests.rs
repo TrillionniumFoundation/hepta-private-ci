@@ -7,9 +7,6 @@
 const WORKFLOW: &str = include_str!(
     "../../../../.github/workflows/hepta-intelligence-control-closure.yml"
 );
-const PORTABILITY_WORKFLOW: &str = include_str!(
-    "../../../../.github/workflows/hepta-intelligence-control-portability.yml"
-);
 const REQUIREMENT_MAP: &str = include_str!(
     "../../../../docs/modules/intelligence.control/REQUIREMENT_TEST_MAP.json"
 );
@@ -64,8 +61,8 @@ fn portability_workflow_executes_private_state_and_dependency_boundaries() {
         "SOURCE_SHA",
     ] {
         assert!(
-            PORTABILITY_WORKFLOW.contains(required),
-            "portability workflow omitted required gate: {required}"
+            WORKFLOW.contains(required),
+            "closure portability job omitted required gate: {required}"
         );
     }
 }
