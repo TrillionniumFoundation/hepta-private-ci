@@ -318,3 +318,131 @@ fn product_sink_nonempty_context_is_a_preparation_not_an_exposure() {
         Some(digest("exact-response"))
     );
 }
+
+#[test]
+fn durable_native_reopen_never_promotes_write_ahead_dispatch_to_exposure() {
+    use crate::retrieval_delivery::RetrievalDeliveryStageV1;
+    use crate::retrieval_delivery::RetrievalNativeBindingV1;
+    use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+    use codex_hepta_infer_core::durable_control::native::NativeDispatch;
+    use codex_hepta_infer_core::durable_control::native::NativeRequest;
+    use serde_json::json;
+
+    let (temp, sink) = sink();
+    let observation = observation("durable-reconciliation");
+    let context = digest("exact-response");
+    let first = sink
+        .append_preparation(
+            &owner(),
+            1,
+            707,
+            &observation,
+            &observation.selected_candidates,
+            Some(context),
+            None,
+            ProbabilityQ32::ONE,
+        )
+        .expect("durable preparation");
+    let snapshot = sink
+        .writer
+        .lock()
+        .expect("lock")
+        .snapshot()
+        .expect("snapshot");
+    let preparation_id = snapshot.records()[0].event.record_id().clone();
+    let binding = RetrievalNativeBindingV1 {
+        request_id: "native-request".to_string(),
+        principal_id: "principal".to_string(),
+        worker_generation: 7,
+    };
+    let journal_path = temp.path().join("native.journal");
+    let mut native = DurableInferenceControl::open(&journal_path, 16).expect("native owner");
+    let prepared = sink
+        .native_delivery_receipt(&preparation_id, &binding, &native)
+        .expect("prepared");
+    assert_eq!(prepared.stage, RetrievalDeliveryStageV1::AssignmentPrepared);
+    native
+        .reserve_native(
+            NativeRequest {
+                request_id: binding.request_id.clone(),
+                principal_id: binding.principal_id.clone(),
+                worker_generation: binding.worker_generation,
+                model: "model".to_string(),
+                payload_digest: digest("payload").to_string(),
+            },
+            2,
+        )
+        .expect("reserve");
+    let dispatch: NativeDispatch = serde_json::from_value(json!({
+        "thread_id": "thread", "model_provider": "provider",
+        "context_digest": digest("additional-context").to_string(),
+        "owner_context_digest": context.to_string(),
+    }))
+    .expect("dispatch");
+    native
+        .dispatch_native(&binding.request_id, dispatch)
+        .expect("write-ahead dispatch");
+    let before_crash = sink
+        .native_delivery_receipt(&preparation_id, &binding, &native)
+        .expect("WAL");
+    assert_eq!(
+        before_crash.stage,
+        RetrievalDeliveryStageV1::AssignmentPrepared
+    );
+    drop(native);
+    let mut native = DurableInferenceControl::open(&journal_path, 16).expect("reopen");
+    let after_crash = sink
+        .native_delivery_receipt(&preparation_id, &binding, &native)
+        .expect("reconcile");
+    assert_eq!(after_crash, before_crash);
+    native
+        .native_started(&binding.request_id, "turn".to_string())
+        .expect("durable native start");
+    let started = sink
+        .native_delivery_receipt(&preparation_id, &binding, &native)
+        .expect("start");
+    assert_eq!(started.stage, RetrievalDeliveryStageV1::NativeStarted);
+    drop(native);
+    let native = DurableInferenceControl::open(&journal_path, 16).expect("reopen started");
+    assert_eq!(
+        sink.native_delivery_receipt(&preparation_id, &binding, &native)
+            .expect("stable"),
+        started
+    );
+    let replay = sink
+        .append_preparation(
+            &owner(),
+            1,
+            707,
+            &observation,
+            &observation.selected_candidates,
+            Some(context),
+            None,
+            ProbabilityQ32::ONE,
+        )
+        .expect("idempotent retry");
+    assert_eq!(replay.event_digest, first.event_digest);
+    assert_eq!(replay.disposition, AppendDisposition::IdempotentReplay);
+    assert_eq!(
+        sink.writer
+            .lock()
+            .expect("lock")
+            .snapshot()
+            .expect("snapshot")
+            .records()
+            .len(),
+        1
+    );
+    assert!(
+        sink.native_delivery_receipt(&id("absent"), &binding, &native)
+            .is_err()
+    );
+    let wrong = RetrievalNativeBindingV1 {
+        principal_id: "another-principal".to_string(),
+        ..binding
+    };
+    assert!(
+        sink.native_delivery_receipt(&preparation_id, &wrong, &native)
+            .is_err()
+    );
+}

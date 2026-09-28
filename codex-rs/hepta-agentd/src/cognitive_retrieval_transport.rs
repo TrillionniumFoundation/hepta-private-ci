@@ -68,6 +68,21 @@ impl MemoryRetrievalFrontierOwnerV1 for LoopbackFrontierClient {
         let deadline = Instant::now()
             .checked_add(self.timeout)
             .ok_or_else(|| "retrieval frontier deadline overflow".to_string())?;
+        self.observe_before(owner, body_generation, challenge, deadline)
+    }
+
+    fn observe_before(
+        &self,
+        owner: &AgentId,
+        body_generation: u64,
+        challenge: [u8; 32],
+        request_deadline: Instant,
+    ) -> Result<MemoryRetrievalFrontierV1, String> {
+        let configured_deadline = Instant::now()
+            .checked_add(self.timeout)
+            .ok_or_else(|| "retrieval frontier deadline overflow".to_string())?;
+        let deadline = request_deadline.min(configured_deadline);
+        remaining(deadline)?;
         let request = serde_json::to_vec(&Request {
             schema: SCHEMA,
             owner: owner.as_str(),

@@ -980,9 +980,10 @@ async fn load_retrieval_context(
 ) -> Result<AcquiredRetrievalContext, CognitiveContextError> {
     let current = std::sync::Arc::clone(current);
     let owner = owner.clone();
+    let deadline = request_work.deadline();
     let (context, lifecycle_binding, lease_expires_unix_ms) = executor
         .run(request_work, move |_| {
-            current.acquire_context(&owner, body_generation)
+            current.acquire_context_before(&owner, body_generation, deadline)
         })
         .await
         .map_err(|_| CognitiveContextError::RetrievalContextUnavailable)?;

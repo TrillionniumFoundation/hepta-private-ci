@@ -257,6 +257,21 @@ pub(super) fn load(
     Ok(provider)
 }
 impl CurrentMemoryRetrievalContext for FilePublicationProvider {
+    fn acquire_context_before(
+        &self,
+        owner: &AgentId,
+        body_generation: u64,
+        deadline: std::time::Instant,
+    ) -> Result<(RetrievalExecutionContextV1, Digest32, Option<u64>), String> {
+        crate::cognitive_retrieval_context::check_retrieval_deadline(deadline)?;
+        let bytes = read_host_file(&self.publication_path, MAX_PUBLICATION_BYTES)?;
+        let publication = self
+            .parsed
+            .decode(&bytes, MAX_PUBLICATION_BYTES, decode_publication)?;
+        self.inner
+            .install_and_acquire_before(publication, owner, body_generation, deadline)
+    }
+
     fn canary_policy_version(&self) -> u8 {
         self.delivery.canary_policy_version
     }

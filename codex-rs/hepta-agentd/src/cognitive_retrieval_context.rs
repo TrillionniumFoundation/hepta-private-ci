@@ -69,6 +69,21 @@ pub trait CurrentMemoryRetrievalContext: Send + Sync {
         body_generation: u64,
     ) -> Result<RetrievalExecutionContextV1, String>;
 
+    /// Acquire within the request's existing absolute budget. Custom providers
+    /// must override this to pass the deadline to blocking transports. The
+    /// compatibility default rejects expired/late results but cannot preempt I/O.
+    fn acquire_context_before(
+        &self,
+        owner: &AgentId,
+        body_generation: u64,
+        deadline: std::time::Instant,
+    ) -> Result<(RetrievalExecutionContextV1, Digest32, Option<u64>), String> {
+        check_retrieval_deadline(deadline)?;
+        let result = self.acquire_context(owner, body_generation)?;
+        check_retrieval_deadline(deadline)?;
+        Ok(result)
+    }
+
     /// Atomically return payload, lifecycle binding and absolute lease deadline.
     /// The binding must cover the payload AND publication epoch/sequence/lease.
     /// Separate current/epoch/deadline reads are not an atomic observation.
@@ -83,5 +98,14 @@ pub trait CurrentMemoryRetrievalContext: Send + Sync {
         context.validate().map_err(|error| error.to_string())?;
         let binding = context.binding_digest();
         Ok((context, binding, None))
+    }
+}
+
+/// Expiry cannot be renewed by moving to another stage or provider operation.
+pub(crate) fn check_retrieval_deadline(deadline: std::time::Instant) -> Result<(), String> {
+    if std::time::Instant::now() >= deadline {
+        Err("retrieval provider request deadline exceeded".to_string())
+    } else {
+        Ok(())
     }
 }

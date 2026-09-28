@@ -29,6 +29,42 @@ impl CognitiveRetrievalLearningSink {
         }
     }
 
+    /// Read-only reconciliation across the two existing durable owners. This
+    /// does not create a second delivery journal or upgrade prepared events.
+    /// The host must supply its expected native binding, not one copied from an
+    /// untrusted receipt. A missing/revoked preparation fails closed.
+    pub fn native_delivery_receipt(
+        &self,
+        preparation_record_id: &StableId,
+        binding: &crate::retrieval_delivery::RetrievalNativeBindingV1,
+        native_owner: &codex_hepta_infer_core::durable_control::DurableInferenceControl,
+    ) -> Result<crate::retrieval_delivery::RetrievalDeliveryReceiptV1, String> {
+        let writer = self
+            .writer
+            .lock()
+            .map_err(|_| "retrieval learning ledger writer lock poisoned".to_string())?;
+        // This is an offline reconciliation port, not the latency-sensitive
+        // append path. Replay reuses the canonical correction/revocation rules.
+        let ledger = codex_hepta_learning_ledger::LearningLedger::from_snapshot(
+            writer.snapshot().map_err(|error| error.to_string())?,
+        )
+        .map_err(|error| error.to_string())?;
+        let record = ledger
+            .active_records()
+            .into_iter()
+            .find(|record| record.event.record_id() == preparation_record_id)
+            .ok_or_else(|| "retrieval preparation is absent or inactive".to_string())?;
+        let LedgerEvent::RetrievalPrepared(preparation) = &record.event else {
+            return Err("record is not a tag-10 retrieval preparation".to_string());
+        };
+        crate::retrieval_delivery::verify_retrieval_delivery_v1(
+            preparation,
+            binding,
+            native_owner.native_record(&binding.request_id),
+        )
+        .map_err(|error| error.to_string())
+    }
+
     #[cfg(test)]
     pub(crate) fn append(
         &self,

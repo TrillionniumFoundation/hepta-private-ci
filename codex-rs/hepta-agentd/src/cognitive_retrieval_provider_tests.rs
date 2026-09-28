@@ -347,3 +347,19 @@ fn concurrent_reads_keep_one_exact_context_identity() {
         assert_eq!(thread.join().expect("join"), expected);
     }
 }
+
+#[test]
+fn expired_request_cannot_install_or_reuse_a_signed_publication() {
+    let (publication, _frontier, provider) = fixture();
+    let expired = Instant::now();
+    assert!(
+        provider
+            .install_and_acquire_before(publication, &owner(), 9, expired)
+            .is_err()
+    );
+    assert!(
+        provider
+            .acquire_context_before(&owner(), 9, expired)
+            .is_err()
+    );
+}

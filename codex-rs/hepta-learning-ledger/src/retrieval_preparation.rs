@@ -25,6 +25,15 @@ pub struct RetrievalPreparationFactV1 {
 }
 
 impl RetrievalPreparationFactV1 {
+    /// Validate the same bounded shape, provenance digests and index relations
+    /// as the owner ledger without appending a fact or granting authority.
+    pub fn validate(&self) -> Result<(), LedgerError> {
+        self.validate_unexposed()?;
+        crate::LearningLedger::new()
+            .prepare(LedgerEvent::RetrievalPrepared(self.clone()))
+            .map(|_| ())
+    }
+
     pub(crate) fn from_wire_assignment(mut assignment: RetrievalAssignmentFact) -> Self {
         let prepared_candidate_indices =
             std::mem::take(&mut assignment.delivered_candidate_indices);

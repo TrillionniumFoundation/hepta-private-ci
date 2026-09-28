@@ -179,3 +179,61 @@ fn silent_owner_cannot_hold_retrieval_past_the_total_deadline() {
     server.join().expect("server");
     assert!(elapsed < Duration::from_secs(2));
 }
+
+#[test]
+fn expired_request_budget_does_not_contact_the_frontier_owner() {
+    let listener = TcpListener::bind("127.0.0.1:0").expect("listener");
+    listener.set_nonblocking(true).expect("nonblocking");
+    let client = LoopbackFrontierClient::new(
+        listener.local_addr().expect("address"),
+        Duration::from_secs(5),
+    )
+    .expect("client");
+    assert!(
+        client
+            .observe_before(&owner(), 9, [7; 32], Instant::now())
+            .is_err()
+    );
+    assert_eq!(
+        listener.accept().expect_err("no connection").kind(),
+        std::io::ErrorKind::WouldBlock
+    );
+}
+
+#[test]
+fn request_deadline_wins_over_a_long_configured_provider_timeout() {
+    let listener = TcpListener::bind("127.0.0.1:0").expect("listener");
+    let endpoint = listener.local_addr().expect("address");
+    let (released_tx, released_rx) = std::sync::mpsc::channel();
+    let server = std::thread::spawn(move || {
+        let (mut socket, _) = listener.accept().expect("accept");
+        socket
+            .set_read_timeout(Some(Duration::from_secs(2)))
+            .expect("bound server");
+        let mut buffer = [0_u8; 512];
+        loop {
+            match socket.read(&mut buffer) {
+                Ok(0) => break,
+                Ok(_) => {}
+                Err(_) => return false,
+            }
+        }
+        released_tx.send(()).expect("release observed");
+        true
+    });
+    let client = LoopbackFrontierClient::new(endpoint, Duration::from_secs(5)).expect("client");
+    assert!(
+        client
+            .observe_before(
+                &owner(),
+                9,
+                [7; 32],
+                Instant::now() + Duration::from_millis(100)
+            )
+            .is_err()
+    );
+    released_rx
+        .recv_timeout(Duration::from_secs(2))
+        .expect("socket closed after request expiry");
+    assert!(server.join().expect("server"));
+}

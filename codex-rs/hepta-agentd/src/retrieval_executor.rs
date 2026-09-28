@@ -4,6 +4,9 @@
 
 use std::future::Future;
 use std::sync::Arc;
+use std::sync::atomic::AtomicU8;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
 use std::time::Duration;
 use std::time::Instant;
 
@@ -20,6 +23,7 @@ pub(crate) enum RetrievalWorkClass {
 pub(crate) struct RetrievalExecutor {
     delivery: Arc<Semaphore>,
     shadow: Arc<Semaphore>,
+    next_worker_id: AtomicU64,
 }
 
 impl RetrievalExecutor {
@@ -27,6 +31,7 @@ impl RetrievalExecutor {
         Self {
             delivery: Arc::new(Semaphore::new(2)),
             shadow: Arc::new(Semaphore::new(1)),
+            next_worker_id: AtomicU64::new(1),
         }
     }
 
@@ -58,7 +63,7 @@ impl RetrievalExecutor {
 
     pub(crate) fn profile_digest(&self) -> Digest32 {
         Digest32::of_bytes(
-            b"hepta.retrieval.executor.v3:delivery=2,800ms;shadow=1,40ms,parent-bounded;work=250000;queue=0;async=owned-supervised;shadow-cancellation=independent",
+            b"hepta.retrieval.executor.v4:delivery=2,800ms;shadow=1,40ms,parent-bounded;work=250000;queue=0;async=owned-supervised;shadow-cancellation=independent;provider-deadline=request-absolute;worker-exit=observed",
         )
     }
 
@@ -79,9 +84,23 @@ impl RetrievalExecutor {
         let permit = Arc::clone(slots)
             .try_acquire_owned()
             .map_err(|_| "retrieval execution capacity exhausted".to_string())?;
+        let worker_id = self
+            .next_worker_id
+            .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |value| {
+                value.checked_add(1)
+            })
+            .map_err(|_| "retrieval worker identity exhausted".to_string())?;
+        let activity = Arc::new(WorkerActivity {
+            id: worker_id,
+            class: request.class,
+            started: Instant::now(),
+            state: AtomicU8::new(0),
+        });
+        let worker_exit = WorkerExit(Arc::clone(&activity));
         let control = request.control.clone();
         let mut cancel_on_drop = CancelOnDrop {
             control: control.clone(),
+            activity,
             armed: true,
         };
         // The owner operation, not its waiter, retains the capacity charge.
@@ -89,6 +108,7 @@ impl RetrievalExecutor {
         // command. Keep the owned operation alive until it really returns.
         let mut worker = tokio::spawn(async move {
             let _permit = permit;
+            let _worker_exit = worker_exit;
             control.checkpoint().map_err(|error| error.to_string())?;
             let value = operation.await;
             control.checkpoint().map_err(|error| error.to_string())?;
@@ -122,10 +142,7 @@ impl RetrievalExecutor {
         T: Send + 'static,
         F: FnOnce(RecallWorkControlV1) -> Result<T, String> + Send + 'static,
     {
-        request
-            .control
-            .checkpoint()
-            .map_err(|error| error.to_string())?;
+        request.checkpoint()?;
         let slots = match request.class {
             RetrievalWorkClass::Delivery => &self.delivery,
             RetrievalWorkClass::Shadow => &self.shadow,
@@ -133,13 +150,28 @@ impl RetrievalExecutor {
         let permit = Arc::clone(slots)
             .try_acquire_owned()
             .map_err(|_| "retrieval execution capacity exhausted".to_string())?;
+        let worker_id = self
+            .next_worker_id
+            .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |value| {
+                value.checked_add(1)
+            })
+            .map_err(|_| "retrieval worker identity exhausted".to_string())?;
+        let activity = Arc::new(WorkerActivity {
+            id: worker_id,
+            class: request.class,
+            started: Instant::now(),
+            state: AtomicU8::new(0),
+        });
+        let worker_exit = WorkerExit(Arc::clone(&activity));
         let control = request.control.clone();
         let mut cancel_on_drop = CancelOnDrop {
             control: control.clone(),
+            activity,
             armed: true,
         };
         let mut worker = tokio::task::spawn_blocking(move || {
             let _permit = permit;
+            let _worker_exit = worker_exit;
             control.checkpoint().map_err(|error| error.to_string())?;
             let value = operation(control.clone())?;
             control.checkpoint().map_err(|error| error.to_string())?;
@@ -173,6 +205,10 @@ pub(crate) struct RetrievalRequestWork {
 }
 
 impl RetrievalRequestWork {
+    pub(crate) fn deadline(&self) -> Instant {
+        self.deadline
+    }
+
     pub(crate) fn checkpoint(&self) -> Result<(), String> {
         if Instant::now() >= self.deadline {
             self.control.cancel();
@@ -188,8 +224,33 @@ impl Drop for RetrievalRequestWork {
     }
 }
 
+struct WorkerActivity {
+    id: u64,
+    class: RetrievalWorkClass,
+    started: Instant,
+    // 0 = owned, 1 = abandoned waiter / still owned, 2 = actual exit.
+    state: AtomicU8,
+}
+
+struct WorkerExit(Arc<WorkerActivity>);
+
+impl Drop for WorkerExit {
+    fn drop(&mut self) {
+        let previous = self.0.state.swap(2, Ordering::AcqRel);
+        if previous == 1 {
+            tracing::warn!(worker_id = self.0.id, class = ?self.0.class,
+                elapsed_ms = u64::try_from(self.0.started.elapsed().as_millis()).unwrap_or(u64::MAX),
+                "abandoned retrieval worker actually exited");
+        } else {
+            tracing::debug!(worker_id = self.0.id, class = ?self.0.class,
+                "retrieval worker actually exited");
+        }
+    }
+}
+
 struct CancelOnDrop {
     control: RecallWorkControlV1,
+    activity: Arc<WorkerActivity>,
     armed: bool,
 }
 
@@ -197,6 +258,15 @@ impl Drop for CancelOnDrop {
     fn drop(&mut self) {
         if self.armed {
             self.control.cancel();
+            if self
+                .activity
+                .state
+                .compare_exchange(0, 1, Ordering::AcqRel, Ordering::Acquire)
+                .is_ok()
+            {
+                tracing::warn!(worker_id = self.activity.id, class = ?self.activity.class,
+                    "retrieval waiter abandoned; worker retains capacity until actual exit");
+            }
         }
     }
 }

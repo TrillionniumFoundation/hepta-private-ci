@@ -145,3 +145,30 @@ async fn cancelled_async_wait_keeps_the_owner_operation_charged() {
     .await
     .unwrap();
 }
+
+#[test]
+fn actual_worker_exit_and_abandonment_are_monotonic_observations() {
+    let activity = Arc::new(WorkerActivity {
+        id: 1,
+        class: RetrievalWorkClass::Delivery,
+        started: Instant::now(),
+        state: AtomicU8::new(0),
+    });
+    let exit = WorkerExit(Arc::clone(&activity));
+    let control = RecallWorkControlV1::bounded(Instant::now() + Duration::from_secs(1), 10);
+    drop(CancelOnDrop {
+        control,
+        activity: Arc::clone(&activity),
+        armed: true,
+    });
+    assert_eq!(activity.state.load(Ordering::Acquire), 1);
+    drop(exit);
+    assert_eq!(activity.state.load(Ordering::Acquire), 2);
+    let control = RecallWorkControlV1::bounded(Instant::now() + Duration::from_secs(1), 10);
+    drop(CancelOnDrop {
+        control,
+        activity: Arc::clone(&activity),
+        armed: true,
+    });
+    assert_eq!(activity.state.load(Ordering::Acquire), 2);
+}

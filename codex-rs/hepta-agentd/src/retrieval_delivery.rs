@@ -13,17 +13,17 @@ use std::fmt;
 
 use codex_hepta_infer_core::durable_control::native::NativeRunRecord;
 use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
-use codex_hepta_learning_ledger::RetrievalAssignmentFact;
+use codex_hepta_learning_ledger::RetrievalPreparationFactV1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
-const RECEIPT_DOMAIN: &[u8] = b"hepta.retrieval-native-delivery-receipt.v2";
+const RECEIPT_DOMAIN: &[u8] = b"hepta.retrieval-native-delivery-receipt.v3";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum RetrievalDeliveryStageV1 {
-    /// Final owner/ranker/lifecycle fences passed and the idempotent assignment
-    /// fact is durable. No external effect is claimed.
+    /// An idempotent preparation is durable. Later freshness fences may still
+    /// fail. Neither publication nor consumer use is claimed.
     AssignmentPrepared,
     /// The App Server returned a typed response before turn/start. Successful
     /// requests normally advance directly to `NativeStarted`.
@@ -38,9 +38,13 @@ pub enum RetrievalDeliveryStageV1 {
 pub struct RetrievalDeliveryReceiptV1 {
     pub assignment_record_id: StableId,
     pub native_request_id: Option<String>,
+    pub native_principal_id: String,
+    pub native_worker_generation: u64,
     /// Exact prepared owner-context digest. Its presence alone is never treated
     /// as publication evidence.
     pub context_digest: Option<Digest32>,
+    /// Exact candidate identities in prepared position order, never a sorted set.
+    pub prepared_candidate_digests: Vec<Digest32>,
     pub native_revision: Option<u64>,
     pub stage: RetrievalDeliveryStageV1,
     /// Digest of a typed pre-start server response when `stage == Published`.
@@ -51,8 +55,20 @@ pub struct RetrievalDeliveryReceiptV1 {
     pub authority: AuthorityPosture,
 }
 
+/// The native owner supplies the expected run identity independently of the
+/// record being inspected. Context equality alone cannot correlate two runs.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct RetrievalNativeBindingV1 {
+    pub request_id: String,
+    pub principal_id: String,
+    pub worker_generation: u64,
+}
+
 impl RetrievalDeliveryReceiptV1 {
     pub fn validate(&self) -> Result<(), RetrievalDeliveryError> {
+        if self.native_principal_id.is_empty() || self.native_worker_generation == 0 {
+            return Err(RetrievalDeliveryError::NativeIdentityMismatch);
+        }
         if self.authority.grants_any() {
             return Err(RetrievalDeliveryError::AuthorityGranted);
         }
@@ -62,6 +78,30 @@ impl RetrievalDeliveryReceiptV1 {
                 .is_some_and(Digest32::is_zero)
         {
             return Err(RetrievalDeliveryError::InvalidContextDigest);
+        }
+        if self.prepared_candidate_digests.len() > 16
+            || self
+                .prepared_candidate_digests
+                .iter()
+                .any(|value| value.is_zero())
+            || self
+                .prepared_candidate_digests
+                .iter()
+                .collect::<std::collections::BTreeSet<_>>()
+                .len()
+                != self.prepared_candidate_digests.len()
+            || self.context_digest.is_some() == self.prepared_candidate_digests.is_empty()
+        {
+            return Err(RetrievalDeliveryError::AssignmentPreparationMismatch);
+        }
+        if self
+            .native_request_id
+            .as_ref()
+            .is_some_and(|value| value.is_empty())
+            || self.native_revision == Some(0)
+            || self.turn_id.as_ref().is_some_and(|value| value.is_empty())
+        {
+            return Err(RetrievalDeliveryError::InvalidStageEvidence);
         }
         if self.native_request_id.is_some() != self.native_revision.is_some() {
             return Err(RetrievalDeliveryError::InvalidStageEvidence);
@@ -117,7 +157,13 @@ impl RetrievalDeliveryReceiptV1 {
         let mut bytes = RECEIPT_DOMAIN.to_vec();
         push_text(&mut bytes, self.assignment_record_id.as_str());
         push_optional_text(&mut bytes, self.native_request_id.as_deref());
+        push_text(&mut bytes, &self.native_principal_id);
+        bytes.extend_from_slice(&self.native_worker_generation.to_be_bytes());
         push_optional_digest(&mut bytes, self.context_digest);
+        bytes.extend_from_slice(&(self.prepared_candidate_digests.len() as u64).to_be_bytes());
+        for candidate in &self.prepared_candidate_digests {
+            bytes.extend_from_slice(candidate.as_array());
+        }
         match self.native_revision {
             Some(revision) => {
                 bytes.push(1);
@@ -142,6 +188,7 @@ impl RetrievalDeliveryReceiptV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum RetrievalDeliveryError {
     AssignmentPreparationMismatch,
+    NativeIdentityMismatch,
     InvalidContextDigest,
     NativeDispatchMissingContext,
     NativeContextDigestMismatch,
@@ -160,7 +207,9 @@ impl fmt::Display for RetrievalDeliveryError {
 
 impl StdError for RetrievalDeliveryError {}
 
-/// Join one durable retrieval assignment with at most one durable native run.
+/// Join a tag-10 unexposed preparation with one independently named native run.
+/// Inputs must come from their owning durable stores, not caller wire structs.
+/// The returned digest is an integrity receipt, never an authority credential.
 ///
 /// The result is the highest stage established by durable evidence. A successful
 /// request may advance directly from `AssignmentPrepared` to `NativeStarted`;
@@ -168,18 +217,26 @@ impl StdError for RetrievalDeliveryError {}
 /// dispatch never produces `Published`. A typed server rejection establishes
 /// `Published` without claiming a native turn.
 pub fn verify_retrieval_delivery_v1(
-    assignment: &RetrievalAssignmentFact,
+    preparation: &RetrievalPreparationFactV1,
+    binding: &RetrievalNativeBindingV1,
     native: Option<&NativeRunRecord>,
 ) -> Result<RetrievalDeliveryReceiptV1, RetrievalDeliveryError> {
-    let prepared = assignment.published_context_digest;
-    if assignment.context_exposed != prepared.is_some()
-        || assignment.context_exposed == assignment.delivered_candidate_indices.is_empty()
+    preparation
+        .validate()
+        .map_err(|_| RetrievalDeliveryError::AssignmentPreparationMismatch)?;
+    if binding.request_id.is_empty()
+        || binding.principal_id.is_empty()
+        || binding.worker_generation == 0
+        || native.is_some_and(|record| {
+            record.request.request_id != binding.request_id
+                || record.request.principal_id != binding.principal_id
+                || record.request.worker_generation != binding.worker_generation
+                || record.revision == 0
+        })
     {
-        return Err(RetrievalDeliveryError::AssignmentPreparationMismatch);
+        return Err(RetrievalDeliveryError::NativeIdentityMismatch);
     }
-    if prepared.is_some_and(Digest32::is_zero) {
-        return Err(RetrievalDeliveryError::InvalidContextDigest);
-    }
+    let prepared = preparation.prepared_context_digest;
 
     let (
         native_request_id,
@@ -226,9 +283,23 @@ pub fn verify_retrieval_delivery_v1(
         (Some(expected), Some(record)) => {
             let request_id = Some(record.request.request_id.clone());
             let revision = Some(record.revision);
+            if record.pre_dispatch_stop.is_some()
+                && (record.turn_id.is_some()
+                    || record.observation.is_some()
+                    || record.dispatch_rejection.is_some())
+            {
+                return Err(RetrievalDeliveryError::InvalidStageEvidence);
+            }
             let Some(dispatch) = &record.dispatch else {
+                if record.turn_id.is_some()
+                    || record.observation.is_some()
+                    || record.dispatch_rejection.is_some()
+                {
+                    return Err(RetrievalDeliveryError::InvalidStageEvidence);
+                }
                 return receipt(
-                    assignment,
+                    preparation,
+                    binding,
                     request_id,
                     revision,
                     RetrievalDeliveryStageV1::AssignmentPrepared,
@@ -293,7 +364,11 @@ pub fn verify_retrieval_delivery_v1(
                     None,
                 ),
                 (Some(turn_id), Some(observation), None) => {
-                    if observation.turn_id != *turn_id {
+                    if observation.turn_id != *turn_id
+                        || observation.thread_id != dispatch.thread_id
+                        || observation.model != record.request.model
+                        || observation.model_provider != dispatch.model_provider
+                    {
                         return Err(RetrievalDeliveryError::NativeTurnMismatch);
                     }
                     if observation.terminal_observed {
@@ -320,7 +395,8 @@ pub fn verify_retrieval_delivery_v1(
         }
     };
     receipt(
-        assignment,
+        preparation,
+        binding,
         native_request_id,
         native_revision,
         stage,
@@ -330,8 +406,10 @@ pub fn verify_retrieval_delivery_v1(
     )
 }
 
+#[allow(clippy::too_many_arguments)]
 fn receipt(
-    assignment: &RetrievalAssignmentFact,
+    preparation: &RetrievalPreparationFactV1,
+    binding: &RetrievalNativeBindingV1,
     native_request_id: Option<String>,
     native_revision: Option<u64>,
     stage: RetrievalDeliveryStageV1,
@@ -340,9 +418,23 @@ fn receipt(
     terminal_status: Option<NativeRunStatus>,
 ) -> Result<RetrievalDeliveryReceiptV1, RetrievalDeliveryError> {
     let mut value = RetrievalDeliveryReceiptV1 {
-        assignment_record_id: assignment.record_id.clone(),
+        assignment_record_id: preparation.assignment.record_id.clone(),
         native_request_id,
-        context_digest: assignment.published_context_digest,
+        native_principal_id: binding.principal_id.clone(),
+        native_worker_generation: binding.worker_generation,
+        context_digest: preparation.prepared_context_digest,
+        prepared_candidate_digests: preparation
+            .prepared_candidate_indices
+            .iter()
+            .map(|index| {
+                preparation
+                    .assignment
+                    .enumerated_candidate_digests
+                    .get(*index as usize)
+                    .copied()
+                    .ok_or(RetrievalDeliveryError::AssignmentPreparationMismatch)
+            })
+            .collect::<Result<Vec<_>, _>>()?,
         native_revision,
         stage,
         publication_receipt_digest,
