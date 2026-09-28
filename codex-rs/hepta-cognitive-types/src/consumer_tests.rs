@@ -2,6 +2,7 @@ use super::consumer::*;
 use super::consumer_adapters::*;
 use super::hnmf::*;
 use super::hnmf_learning::*;
+use super::wire::ContractDigestProfileV1;
 use std::collections::BTreeSet;
 
 fn id(value: &str) -> ContractIdV1 {
@@ -243,5 +244,42 @@ fn consumer_registration_schemas_match_runtime_adapters() {
     assert_eq!(
         INTELLIGENCE_CONTROL_CONSUMER_V1.canonical_schema,
         "hepta.hnmf.recall-packet.v1"
+    );
+}
+
+#[test]
+fn historical_validation_preserves_retired_compatibility_evidence() {
+    let binding = bind_memory_event_consumer_v1(
+        id("operation:historical"),
+        CanonicalConsumerV1::CognitiveRead,
+        &event(),
+        digest('5').digest(),
+        digest('6').digest(),
+        Some(digest('7').digest()),
+        CanonicalMigrationPostureV1::CompatibilityBound,
+    )
+    .expect("current compatibility binding");
+
+    assert_eq!(
+        binding.payload_digest_profile(),
+        ContractDigestProfileV1::FrozenCanonicalJsonV1
+    );
+    binding
+        .validate_historical()
+        .expect("frozen historical evidence remains structurally valid");
+    assert!(!migration_posture_authorized_for_state_v1(
+        ConsumerConvergenceStateV1::LegacyRetired,
+        CanonicalMigrationPostureV1::CompatibilityBound,
+    ));
+    assert!(migration_posture_authorized_for_state_v1(
+        ConsumerConvergenceStateV1::LegacyRetired,
+        CanonicalMigrationPostureV1::Native,
+    ));
+
+    let mut tampered = binding;
+    tampered.source_snapshot_sha256 = digest('9');
+    assert_eq!(
+        tampered.validate_historical(),
+        Err(CanonicalConsumerBindingError::BindingDigestMismatch)
     );
 }
