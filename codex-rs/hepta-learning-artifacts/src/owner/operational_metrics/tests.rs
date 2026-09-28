@@ -13,6 +13,8 @@ mod tests {
             ArtifactOwnerStageV1::PayloadWriteSync,
             Duration::from_micros(4_000),
         );
+        metrics.increment_withdrawal_blocked();
+        metrics.increment_capacity_rejection();
         metrics.report_resource_usage(ArtifactOwnerResourceUsageV1 {
             observed_at: 20,
             pinned_bytes: 100,
@@ -32,7 +34,9 @@ mod tests {
             },
         );
         assert_eq!(snapshot.oldest_pending_attempt_age_seconds, Some(5));
+        assert_eq!(snapshot.withdrawal_blocked_total, 1);
         assert_eq!(snapshot.withdrawal_blocked_duration_seconds, Some(2));
+        assert_eq!(snapshot.capacity_rejections, 1);
         assert_eq!(snapshot.write_amplification_ppm, Some(2_500_000));
         let stage = snapshot
             .stage_latency
