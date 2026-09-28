@@ -1,0 +1,294 @@
+name: Runtime supervisor production closure
+
+on:
+  push:
+    branches:
+      - codex/runtime-supervisor-production-closure-20260928
+    paths:
+      - codex-rs/hepta-supervisor/**
+      - codex-rs/hepta-agentd/**
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - codex-rs/rust-toolchain.toml
+      - docs/modules/runtime.supervisor/**
+      - scripts/hepta_supervisor_ci.py
+      - .github/workflows/runtime-supervisor-production-closure.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: runtime-supervisor-production-closure-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_INCREMENTAL: "0"
+  RUST_BACKTRACE: "1"
+
+jobs:
+  linux-native:
+    name: Linux native, package and strict lint
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install exact toolchain and native prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends pkg-config libssl-dev protobuf-compiler
+          rustup toolchain install 1.95.0 --profile minimal --component clippy,rustfmt
+          printf 'RUSTUP_TOOLCHAIN=1.95.0\n' >> "$GITHUB_ENV"
+      - name: Execute exact-candidate checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          log="$RUNNER_TEMP/runtime-supervisor-linux-native.log"
+          exec > >(tee "$log") 2>&1
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          test -z "$(git status --porcelain)"
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
+          cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor --all-targets
+          cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor --all-targets --all-features
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor --all-features
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-agentd
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor --all-targets --all-features --no-deps -- -D warnings
+          test -z "$(git status --porcelain)"
+      - name: Retain Linux native log
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-supervisor-linux-native-${{ github.sha }}
+          path: ${{ runner.temp }}/runtime-supervisor-linux-native.log
+          if-no-files-found: warn
+          retention-days: 14
+
+  fault-matrix:
+    name: Durable control and concurrency fault matrix
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install exact toolchain and native prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends pkg-config libssl-dev protobuf-compiler
+          rustup toolchain install 1.95.0 --profile minimal
+          printf 'RUSTUP_TOOLCHAIN=1.95.0\n' >> "$GITHUB_ENV"
+      - name: Execute crash, retry, fencing and quarantine fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          log="$RUNNER_TEMP/runtime-supervisor-fault-matrix.log"
+          exec > >(tee "$log") 2>&1
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor stop_retry_preserves_original_deadline_and_recovers_exact_target -- --nocapture
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor kill_supersedes_stop_only_for_same_process_and_absence_completes -- --nocapture
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor tampering_is_rejected -- --nocapture
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor durable_restart -- --nocapture
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor restart_budget -- --nocapture
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor recovery -- --nocapture
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor --test rejected_adoption_quarantine -- --nocapture
+          test -z "$(git status --porcelain)"
+      - name: Retain fault-matrix log
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-supervisor-fault-matrix-${{ github.sha }}
+          path: ${{ runner.temp }}/runtime-supervisor-fault-matrix.log
+          if-no-files-found: warn
+          retention-days: 14
+
+  macos-native:
+    name: macOS native build and tests
+    runs-on: macos-15-intel
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install exact toolchain and native prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          brew install protobuf
+          rustup toolchain install 1.95.0 --profile minimal --component clippy,rustfmt
+          printf 'RUSTUP_TOOLCHAIN=1.95.0\n' >> "$GITHUB_ENV"
+      - name: Execute macOS source-head checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          log="$RUNNER_TEMP/runtime-supervisor-macos-native.log"
+          exec > >(tee "$log") 2>&1
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor --all-targets --all-features
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor --all-features
+          test -z "$(git status --porcelain)"
+      - name: Retain macOS native log
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-supervisor-macos-native-${{ github.sha }}
+          path: ${{ runner.temp }}/runtime-supervisor-macos-native.log
+          if-no-files-found: warn
+          retention-days: 14
+
+  host-evidence:
+    name: Linux process-host and resource evidence
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Probe process ownership primitives and record enforcement truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          import platform
+          import resource
+          import signal
+          import subprocess
+          from pathlib import Path
+
+          pidfd_supported = hasattr(os, "pidfd_open")
+          pidfd_observed = False
+          process = subprocess.Popen(["sleep", "60"], start_new_session=True)
+          try:
+              if pidfd_supported:
+                  descriptor = os.pidfd_open(process.pid, 0)
+                  os.close(descriptor)
+                  pidfd_observed = True
+              os.killpg(process.pid, signal.SIGTERM)
+              process.wait(timeout=10)
+          finally:
+              if process.poll() is None:
+                  os.killpg(process.pid, signal.SIGKILL)
+                  process.wait(timeout=10)
+          controllers = ""
+          controller_path = Path("/sys/fs/cgroup/cgroup.controllers")
+          if controller_path.is_file():
+              controllers = controller_path.read_text(encoding="utf-8").strip()
+          evidence = {
+              "schema_version": 1,
+              "tested_sha": os.environ["GITHUB_SHA"],
+              "platform": platform.platform(),
+              "machine": platform.machine(),
+              "pidfd_supported": pidfd_supported,
+              "pidfd_observed": pidfd_observed,
+              "process_group_reaped": process.returncode is not None,
+              "cgroup_v2_controllers": controllers.split(),
+              "rlimit_nofile": list(resource.getrlimit(resource.RLIMIT_NOFILE)),
+              "resource_enforcement": {
+                  "operation_timeout": "enforced",
+                  "memory_mb": "declared_only",
+                  "max_subprocesses": "declared_only",
+                  "network": "declared_only",
+              },
+          }
+          output = Path(os.environ["RUNNER_TEMP"]) / "runtime-supervisor-host-evidence.json"
+          output.write_text(json.dumps(evidence, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          if not pidfd_observed or not evidence["process_group_reaped"]:
+              raise SystemExit("required Linux process ownership primitive was not observed")
+          PY
+          cat "$RUNNER_TEMP/runtime-supervisor-host-evidence.json"
+      - name: Retain host evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-supervisor-host-evidence-${{ github.sha }}
+          path: ${{ runner.temp }}/runtime-supervisor-host-evidence.json
+          if-no-files-found: error
+          retention-days: 30
+
+  document-truth:
+    name: Documentation and implementation-map truth
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify source/document claims are closed-world
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path.cwd()
+          receipt = json.loads((root / "docs/modules/runtime.supervisor/PRODUCTION_CLOSURE.json").read_text(encoding="utf-8"))
+          assert receipt["schemaVersion"] == 1
+          assert receipt["module"] == "runtime.supervisor"
+          assert receipt["candidateBranch"] == "codex/runtime-supervisor-production-closure-20260928"
+          assert all(receipt["implemented"].values())
+          assert receipt["resourceEnforcement"] == {
+              "operationTimeout": "enforced",
+              "memoryMb": "declared_only",
+              "maxSubprocesses": "declared_only",
+              "network": "declared_only",
+          }
+          assert receipt["verificationWorkflow"] == ".github/workflows/runtime-supervisor-production-closure.yml"
+          assert not (root / ".github/runtime-supervisor-final-materialize.py").exists()
+          assert not (root / ".github/workflows/runtime-supervisor-final-materialize.yml").exists()
+          lib = (root / "codex-rs/hepta-supervisor/src/lib.rs").read_text(encoding="utf-8")
+          control = (root / "codex-rs/hepta-supervisor/src/control.rs").read_text(encoding="utf-8")
+          daemon = (root / "codex-rs/hepta-supervisor/src/daemon.rs").read_text(encoding="utf-8")
+          tick = (root / "codex-rs/hepta-supervisor/src/tick.rs").read_text(encoding="utf-8")
+          assert "mod control_latency;" in lib
+          assert "pub use control_latency::control_latency_snapshot;" in lib
+          assert "pub use error::ControlFailureDisposition;" in lib
+          assert "ControlLatencyStage::IntentPersistence" in control
+          assert "hepta_supervisord_control_audit" in daemon
+          assert "ControlLatencyStage::ExitObservation" in tick
+          PY
+          git diff --check
+          test -z "$(git status --porcelain)"
+
+  closure-gate:
+    name: Production-closure exact-candidate gate
+    if: always()
+    needs:
+      - linux-native
+      - fault-matrix
+      - macos-native
+      - host-evidence
+      - document-truth
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 5
+    steps:
+      - name: Require every independent lane
+        shell: bash
+        env:
+          LINUX_NATIVE: ${{ needs.linux-native.result }}
+          FAULT_MATRIX: ${{ needs.fault-matrix.result }}
+          MACOS_NATIVE: ${{ needs.macos-native.result }}
+          HOST_EVIDENCE: ${{ needs.host-evidence.result }}
+          DOCUMENT_TRUTH: ${{ needs.document-truth.result }}
+        run: |
+          set -euo pipefail
+          for result in "$LINUX_NATIVE" "$FAULT_MATRIX" "$MACOS_NATIVE" "$HOST_EVIDENCE" "$DOCUMENT_TRUTH"; do
+            test "$result" = success
+          done
