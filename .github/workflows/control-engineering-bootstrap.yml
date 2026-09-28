@@ -13,7 +13,7 @@ permissions:
 
 concurrency:
   group: control-engineering-bootstrap-20260928
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   patch-and-qualify:
