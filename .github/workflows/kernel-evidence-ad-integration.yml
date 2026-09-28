@@ -98,6 +98,13 @@ jobs:
           git diff --name-only -- codex-rs/hepta-evidence codex-rs/hepta-agentd codex-rs/hepta-agent-protocol codex-rs/state > "$out/formatted-paths.txt"
           git diff --check
           git archive --format=tar.gz HEAD codex-rs/hepta-evidence codex-rs/hepta-agentd codex-rs/hepta-agent-protocol > "$out/tested-module-source.tar.gz"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: kernel-evidence-ad-early-${{ matrix.lane }}-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.event_name }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/kernel-evidence-ad
+          if-no-files-found: error
+          retention-days: 14
       - uses: ./.github/actions/setup-ci
         if: ${{ !cancelled() && hashFiles('codex-rs/hepta-evidence/Cargo.toml') != '' }}
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
@@ -133,8 +140,10 @@ jobs:
           run_check strict-clippy cargo clippy --locked -p codex-hepta-evidence -p codex-hepta-agentd --all-targets -- -D warnings
           run_check build cargo build --locked -p codex-hepta-evidence -p codex-hepta-agentd
           cd ..
-          run_check lane-a python3 scripts/verify_lane_a_truth.py
-          run_check status python3 scripts/kernel_evidence_status.py check
+          run_check lane-a python3 scripts/verify_lane_a_foundation.py verify
+          run_check status python3 scripts/kernel_evidence_status.py verify
+          run_check docs python3 scripts/hepta-docs.py verify
+          run_check implementation-maps python3 scripts/hepta-implementation-maps.py verify
           git status --porcelain > "$out/dirty-after.txt"
           if [ -s "$out/dirty-after.txt" ]; then failures=$((failures + 1)); fi
           printf '%s\n' "$failures" > "$out/failed-check-count.txt"
