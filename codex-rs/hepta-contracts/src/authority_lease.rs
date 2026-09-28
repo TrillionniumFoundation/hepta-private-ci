@@ -169,6 +169,15 @@ struct Stored {
     state: State,
 }
 
+// Serialize the already-owned transaction candidate by reference. This keeps
+// schema V2 bytes identical without cloning its entire history a second time.
+#[derive(Serialize)]
+struct StoredRef<'a> {
+    schema_version: u32,
+    owner_id: &'a str,
+    state: &'a State,
+}
+
 struct Store {
     root: File,
     owner_id: String,
@@ -292,7 +301,7 @@ impl AuthorityLeaseRegistry {
         {
             return Err(AuthorityLeaseError::InvalidTrust);
         }
-        clock.now_unix_ms().map_err(map_trust_error)?;
+        sample_lease_clock(clock.as_ref())?;
         let (store, state) = Store::open(directory, &owner_id, trusted_frontier)?;
         Ok(Self(Arc::new(Inner {
             owner_id,
@@ -312,7 +321,7 @@ impl AuthorityLeaseRegistry {
         if !identifier(&owner_id) {
             return Err(AuthorityLeaseError::InvalidTrust);
         }
-        clock.now_unix_ms().map_err(map_trust_error)?;
+        sample_lease_clock(clock.as_ref())?;
         let trusted_frontier = frontier_store.load(&owner_id).map_err(map_trust_error)?;
         if trusted_frontier.authority_epoch == 0
             || trusted_frontier.store_revision == 0
@@ -463,10 +472,6 @@ impl AuthorityLeaseRegistry {
         if !identifier(lease_id) || reason_sha256 == [0; 32] {
             return Err(AuthorityLeaseError::InvalidRevocation);
         }
-        let revoked_at_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
-        if revoked_at_unix_ms == 0 {
-            return Err(AuthorityLeaseError::InvalidRevocation);
-        }
         let mut state = self.lock_state()?;
         if let Some(existing) = state.revocations.get(lease_id) {
             if existing.lease_revision == expected_revision.saturating_add(1)
@@ -487,6 +492,9 @@ impl AuthorityLeaseRegistry {
         if current.revision != expected_revision {
             return Err(AuthorityLeaseError::RevisionMismatch);
         }
+        // An exact retry above only reads the original receipt. A new revoke
+        // samples its owner time after acquiring the mutation lock.
+        let (revoked_at_unix_ms, _) = sample_lease_clock(self.0.clock.as_ref())?;
         let lease_revision = next_revision(current.revision)?;
         let mut next = state.clone();
         next.store_revision = next_revision(next.store_revision)?;
@@ -516,13 +524,16 @@ impl AuthorityLeaseRegistry {
         if max_to_prune == 0 || max_to_prune > MAX_AUTHORITY_PRUNE_BATCH {
             return Err(AuthorityLeaseError::InvalidPrune);
         }
-        let now_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
         let mut state = self.lock_state()?;
+        let (now_unix_ms, uncertainty_ms) = sample_lease_clock(self.0.clock.as_ref())?;
+        // Pruning requires definite expiry, not merely possible expiry.
+        let definitely_elapsed = now_unix_ms - uncertainty_ms;
         let candidates: Vec<String> = state
             .leases
             .iter()
             .filter(|(id, lease)| {
-                lease.expires_at_unix_ms <= now_unix_ms && !state.revocations.contains_key(*id)
+                lease.expires_at_unix_ms <= definitely_elapsed
+                    && !state.revocations.contains_key(*id)
             })
             .take(max_to_prune)
             .map(|(id, _)| id.clone())
@@ -592,6 +603,10 @@ impl AuthorityLeaseRegistry {
         state: &mut std::sync::MutexGuard<'_, State>,
         next: State,
     ) -> Result<(), AuthorityLeaseError> {
+        // Production constructors retain custody in this clock adapter. New
+        // mutations revalidate it before external CAS; reads and exact receipt
+        // retries do not create fresh authority and remain separate.
+        sample_lease_clock(self.0.clock.as_ref())?;
         if let Some(frontier_store) = &self.0.frontier_store {
             let expected = frontier_for_state(state);
             let advanced = frontier_for_state(&next);
@@ -673,12 +688,19 @@ impl AuthorityLeaseVerifier {
         expected: &AuthorityLeaseBinding,
     ) -> Result<LeaseVerifiedUseToken, AuthorityLeaseError> {
         let state = self.lock_state()?;
-        let now_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
+        let (now_unix_ms, uncertainty_ms) = sample_lease_clock(self.0.clock.as_ref())?;
         let lease = state
             .leases
             .get(lease_id)
             .ok_or(AuthorityLeaseError::LeaseNotFound)?;
-        validate_live(lease, &state, expected_revision, expected, now_unix_ms)?;
+        validate_live(
+            lease,
+            &state,
+            expected_revision,
+            expected,
+            now_unix_ms,
+            uncertainty_ms,
+        )?;
         Ok(LeaseVerifiedUseToken {
             owner: Arc::clone(&self.0),
             lease: lease.clone(),
@@ -724,13 +746,14 @@ impl AuthorityLeaseVerifier {
             return Err(AuthorityLeaseError::BindingMismatch);
         }
         let state = self.lock_state()?;
-        let now_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
+        let (now_unix_ms, uncertainty_ms) = sample_lease_clock(self.0.clock.as_ref())?;
         validate_live(
             &token.lease,
             &state,
             token.lease.revision,
             expected,
             now_unix_ms,
+            uncertainty_ms,
         )?;
         let witness = VerifiedUseTokenWitnessV1::authority_lease(
             state.authority_epoch,
@@ -758,13 +781,14 @@ impl AuthorityLeaseVerifier {
             return Err(AuthorityLeaseError::BindingMismatch);
         }
         let state = self.lock_state()?;
-        let now_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
+        let (now_unix_ms, uncertainty_ms) = sample_lease_clock(self.0.clock.as_ref())?;
         validate_live(
             &token.lease,
             &state,
             token.lease.revision,
             expected,
             now_unix_ms,
+            uncertainty_ms,
         )?;
         Ok(VerifiedUseTokenWitnessV1::authority_lease(
             state.authority_epoch,
@@ -849,12 +873,27 @@ fn map_trust_error(error: AuthorityTrustError) -> AuthorityLeaseError {
     }
 }
 
+// One coherent centre/radius sample; never resample the two endpoints.
+// Invalid arithmetic is a trust failure, not permission to clamp the interval.
+fn sample_lease_clock(clock: &dyn AuthorityClock) -> Result<(u64, u64), AuthorityLeaseError> {
+    let (now, uncertainty) = clock.now_with_uncertainty().map_err(map_trust_error)?;
+    if now == 0
+        || uncertainty > crate::authority_trust::MAX_PRODUCTION_CLOCK_UNCERTAINTY_MS
+        || now.checked_sub(uncertainty).is_none()
+        || now.checked_add(uncertainty).is_none()
+    {
+        return Err(AuthorityLeaseError::InvalidTrust);
+    }
+    Ok((now, uncertainty))
+}
+
 fn validate_live(
     lease: &AuthorityLease,
     state: &State,
     expected_revision: u64,
     expected: &AuthorityLeaseBinding,
     now_unix_ms: u64,
+    uncertainty_ms: u64,
 ) -> Result<(), AuthorityLeaseError> {
     if lease.authority_epoch != state.authority_epoch {
         return Err(AuthorityLeaseError::EpochMismatch);
@@ -875,10 +914,16 @@ fn validate_live(
     if current != lease || current.revision != expected_revision {
         return Err(AuthorityLeaseError::RevisionMismatch);
     }
-    if now_unix_ms < lease.issued_at_unix_ms {
+    let earliest = now_unix_ms
+        .checked_sub(uncertainty_ms)
+        .ok_or(AuthorityLeaseError::InvalidTrust)?;
+    let latest = now_unix_ms
+        .checked_add(uncertainty_ms)
+        .ok_or(AuthorityLeaseError::InvalidTrust)?;
+    if earliest < lease.issued_at_unix_ms {
         return Err(AuthorityLeaseError::NotYetValid);
     }
-    if now_unix_ms >= lease.expires_at_unix_ms {
+    if latest >= lease.expires_at_unix_ms {
         return Err(AuthorityLeaseError::Expired);
     }
     Ok(())
@@ -967,10 +1012,10 @@ impl Store {
     }
 
     fn persist(&self, state: &State) -> Result<(), AuthorityLeaseError> {
-        let stored = Stored {
+        let stored = StoredRef {
             schema_version: STORE_SCHEMA_VERSION,
-            owner_id: self.owner_id.clone(),
-            state: state.clone(),
+            owner_id: &self.owner_id,
+            state,
         };
         let bytes = serde_json::to_vec(&stored).map_err(|_| AuthorityLeaseError::Unavailable)?;
         let mut file = open_private(&self.root, "authority-leases.next", Access::Create)?;
@@ -1849,3 +1894,7 @@ mod tests {
         assert_eq!(registry.capacity().unwrap().leases, 0);
     }
 }
+
+#[cfg(all(test, unix))]
+#[path = "authority_lease_interval_tests.rs"]
+mod interval_tests;
