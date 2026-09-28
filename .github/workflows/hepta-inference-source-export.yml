@@ -15,7 +15,7 @@ concurrency:
 
 env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
-  EXPECTED_PARENT: e32c64a263c84440445f30cdc68dd96115bad546
+  EXPECTED_PARENT: 99a4c491be2932b2248322b00cedf8a8eac3b746
   RESTORE_COMMIT: a80f50a552d2608f238a9e934bf6fade66876912
   PATCH_SHA256: c2599a124d0e1574aaebaadf3ce0313d4f906a9e9f9f1472c10491fa83100f57
   PATCH_PATH: .github/remediation/inference-control-remediation.patch.gz
