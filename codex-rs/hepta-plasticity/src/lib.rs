@@ -8,6 +8,7 @@
 
 #![forbid(unsafe_code)]
 
+mod coverage_v1;
 mod durable_registry;
 mod generator_v3;
 mod legacy;
@@ -20,6 +21,14 @@ mod topology_registry;
 mod topology_v2;
 mod types;
 
+pub use coverage_v1::GeneratorCoverageDispositionV1;
+pub use coverage_v1::GeneratorCoverageErrorV1;
+pub use coverage_v1::GeneratorCoverageExclusionV1;
+pub use coverage_v1::GeneratorCoverageReceiptV1;
+pub use coverage_v1::GeneratorCoverageRequestV1;
+pub use coverage_v1::build_generator_coverage_receipt_v1;
+pub use coverage_v1::generator_coverage_signing_payload_v1;
+pub use coverage_v1::verify_generator_coverage_receipt_v1;
 pub use durable_registry::DurableProposalAppendReceiptV1;
 pub use durable_registry::DurableProposalRegistry;
 pub use durable_registry::DurableProposalRegistryError;
