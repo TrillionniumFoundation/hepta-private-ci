@@ -25,20 +25,7 @@ fn manager() -> ResourceManager {
 }
 
 fn handle() -> AttestedModelHandle {
-    AttestedModelHandle {
-        handle_id: "handle.1".to_string(),
-        model_id: "model.1".to_string(),
-        model_digest: "1".repeat(64),
-        weights_digest: "2".repeat(64),
-        runtime_digest: "3".repeat(64),
-        device_uuid: "device.1".to_string(),
-        device_epoch: 11,
-        worker_generation: 7,
-        resident_memory_bytes: 100,
-        manifest_semantic_digest: "4".repeat(64),
-        grant_witness_digest: "5".repeat(64),
-        resource_attestation_digest: "6".repeat(64),
-    }
+    AttestedModelHandle::test_fixture("handle.1", 7, 11, 100)
 }
 
 #[test]
