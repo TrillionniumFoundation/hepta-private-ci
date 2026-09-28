@@ -2,18 +2,43 @@ use std::any::type_name;
 use std::fs;
 use std::path::PathBuf;
 
+use codex_hepta_intelligence_eval::AnchoredProductEvaluationAttemptJournalV1;
 use codex_hepta_intelligence_eval::DurableProductEvaluationAttemptJournalV1;
 use codex_hepta_intelligence_eval::FinalHoldoutProviderV1;
 use codex_hepta_intelligence_eval::LockedFileFinalHoldoutCasStoreV1;
-use codex_hepta_intelligence_eval::LockedFileProductEvaluationAttemptJournalV1;
+use codex_hepta_intelligence_eval::ProductEvaluationAttemptAnchorStoreV1;
+use codex_hepta_intelligence_eval::ProductEvaluationAttemptAnchorV1;
+use codex_hepta_intelligence_eval::ProductEvaluationAttemptJournalErrorV1;
 use codex_hepta_intelligence_eval::ProductQualificationEvidenceSinkV1;
 use codex_hepta_intelligence_eval::RecordedProductEvaluationRunnerV1;
+use codex_hepta_types::Digest32;
+
+struct CompileAnchor;
+
+impl ProductEvaluationAttemptAnchorStoreV1 for CompileAnchor {
+    fn load(
+        &mut self,
+        _binding: Digest32,
+    ) -> Result<Option<ProductEvaluationAttemptAnchorV1>, ProductEvaluationAttemptJournalErrorV1>
+    {
+        Ok(None)
+    }
+
+    fn compare_and_swap(
+        &mut self,
+        _binding: Digest32,
+        _expected: Option<ProductEvaluationAttemptAnchorV1>,
+        _next: ProductEvaluationAttemptAnchorV1,
+    ) -> Result<(), ProductEvaluationAttemptJournalErrorV1> {
+        Ok(())
+    }
+}
 
 fn assert_durable_journal<T: DurableProductEvaluationAttemptJournalV1>() {}
 
 #[test]
 fn recorded_production_surface_is_public_and_composable() {
-    assert_durable_journal::<LockedFileProductEvaluationAttemptJournalV1>();
+    assert_durable_journal::<AnchoredProductEvaluationAttemptJournalV1<CompileAnchor>>();
     let runner = type_name::<
         RecordedProductEvaluationRunnerV1<LockedFileFinalHoldoutCasStoreV1>,
     >();
