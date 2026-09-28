@@ -304,6 +304,60 @@ def include_input_scope(
     return {key: value or extra[key] for key, value in scope.items()}
 
 
+def include_module_scope(
+    scope: dict[str, bool],
+    paths: list[str],
+    base: str,
+    head: str,
+    *,
+    root: Path = ROOT,
+) -> dict[str, bool]:
+    """Keep old owner lanes and semantic safety tests when manifests change.
+
+    A high risk label alone does not run tests: workflow steps consume these
+    booleans. Neither removing a CI group nor changing an authority field may
+    omit its actual effect/recovery tests. Impact breadth remains independent.
+    """
+    manifests = [path for path in paths if MODULE_MANIFEST.fullmatch(path)]
+    if not manifests:
+        return scope
+    try:
+        from scripts.hepta_ci_modules import load_catalog, manifest_risk
+    except ModuleNotFoundError as error:
+        if error.name != "scripts":
+            raise
+        from hepta_ci_modules import load_catalog, manifest_risk
+    import tomllib
+
+    after = load_catalog(root, head)
+    try:
+        before = load_catalog(root, base)
+    except (ValueError, subprocess.CalledProcessError, tomllib.TOMLDecodeError):
+        return select([], force_full=True)
+    result = dict(scope)
+    for path in manifests:
+        old, new = before.get(path), after.get(path)
+        if old is None and new is None:
+            raise ValueError(f"changed manifest absent from both exact trees: {path}")
+        for row in (old, new):
+            if row is None:
+                continue
+            for package in row.get("cargoPackages", []):
+                groups = package.get("ciGroups", [])
+                if not isinstance(groups, list) or any(
+                    group not in GROUPS for group in groups
+                ):
+                    raise ValueError(f"invalid module CI groups: {path}")
+                result.update({group: True for group in groups})
+        risk = manifest_risk(old, new)
+        if risk in {"stateful", "effect", "release"}:
+            result["lifecycle"] = True
+        if risk in {"effect", "release"}:
+            result["effects"] = True
+    result["native"] = any(result[group] for group in GROUPS)
+    return result
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--base")
@@ -319,6 +373,7 @@ def main() -> None:
     scope = select(paths, force_full=args.full)
     if not args.full:
         scope = include_input_scope(scope, paths, args.base, args.head)
+        scope = include_module_scope(scope, paths, args.base, args.head)
     print(
         json.dumps(
             {

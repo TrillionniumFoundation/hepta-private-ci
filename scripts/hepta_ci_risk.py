@@ -10,6 +10,7 @@ from pathlib import Path
 try:
     from scripts.hepta_ci_scope import changed_paths
     from scripts.hepta_ci_scope import include_input_scope
+    from scripts.hepta_ci_scope import include_module_scope
     from scripts.hepta_ci_scope import select
     from scripts.hepta_repository_surface import load_policy
 except ModuleNotFoundError as error:
@@ -17,6 +18,7 @@ except ModuleNotFoundError as error:
         raise
     from hepta_ci_scope import changed_paths
     from hepta_ci_scope import include_input_scope
+    from hepta_ci_scope import include_module_scope
     from hepta_ci_scope import select
     from hepta_repository_surface import load_policy
 
@@ -73,8 +75,10 @@ def main() -> None:
         parser.error("an exact --base is required unless --full is selected")
     paths = [] if args.full else changed_paths(args.base, args.head)
     scope = select(paths, force_full=args.full)
+    input_scope = scope
     if not args.full:
-        scope = include_input_scope(scope, paths, args.base, args.head)
+        input_scope = include_input_scope(scope, paths, args.base, args.head)
+        scope = include_module_scope(input_scope, paths, args.base, args.head)
     if args.full:
         result = project(scope)
     else:
@@ -88,7 +92,7 @@ def main() -> None:
         # Embedded/opaque source inputs may look like prose. A source owner
         # discovered by the existing impact planner keeps its deeper boundary.
         raw = select(paths)
-        if scope != raw:
+        if input_scope != raw:
             from_rank = {"ordinary": 0, "stateful": 1, "effect": 2, "release": 3}
             risk = max((risk, classify(scope)), key=from_rank.get)
         result = project(scope, change_risk=risk, reasons=reasons)

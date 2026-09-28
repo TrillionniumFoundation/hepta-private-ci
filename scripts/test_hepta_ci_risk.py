@@ -279,6 +279,48 @@ class ExactModuleRiskTests(unittest.TestCase):
         self.replace(path, 'version="0.1.0"', 'version="0.1.1"')
         self.assertEqual(self.risk([path]), "stateful")
 
+    def test_authority_delta_schedules_effect_tests_not_only_high_risk_label(self):
+        from scripts.hepta_ci_scope import include_module_scope
+
+        self.replace(self.manifest, "writes = []", 'writes = ["private_data"]')
+        scope = {group: group == "learning" for group in GROUPS}
+        scope.update(native=True, derived=True, full_repo=False)
+        result = include_module_scope(
+            scope, [self.manifest], self.base, self.commit(), root=self.root
+        )
+        self.assertTrue(result["effects"])
+        self.assertTrue(result["lifecycle"])
+        self.assertFalse(result["full_repo"])
+
+    def test_removing_ci_group_cannot_skip_old_effect_regressions(self):
+        from scripts.hepta_ci_scope import include_module_scope
+
+        self.replace(self.manifest, 'ciGroups = ["learning"]', 'ciGroups = ["effects"]')
+        base = self.commit()
+        self.replace(self.manifest, 'ciGroups = ["effects"]', 'ciGroups = ["learning"]')
+        scope = {group: group == "learning" for group in GROUPS}
+        scope.update(native=True, derived=True, full_repo=False)
+        result = include_module_scope(
+            scope, [self.manifest, self.source], base, self.commit(), root=self.root
+        )
+        self.assertTrue(result["effects"])
+        self.assertTrue(result["learning"])
+        self.assertFalse(result["full_repo"])
+
+    def test_deleted_owner_source_retains_old_native_lane(self):
+        from scripts.hepta_ci_scope import include_module_scope
+
+        self.replace(self.manifest, 'ciGroups = ["learning"]', 'ciGroups = ["effects"]')
+        base = self.commit()
+        (self.root / self.manifest).unlink()
+        scope = {group: False for group in GROUPS}
+        scope.update(native=False, derived=True, full_repo=False)
+        result = include_module_scope(
+            scope, [self.manifest, self.source], base, self.commit(), root=self.root
+        )
+        self.assertTrue(result["effects"])
+        self.assertTrue(result["native"])
+
     def test_dirty_worktree_does_not_change_pinned_risk(self):
         from scripts.hepta_ci_modules import assess_changes
 
