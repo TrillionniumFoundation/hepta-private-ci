@@ -1,0 +1,40 @@
+name: runtime.codex isolated source snapshot
+
+on:
+  push:
+    branches: [fix/runtime-codex-owner-recovery-20260928]
+    paths: [.github/workflows/runtime-codex-source-snapshot.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Retain reviewed source identity and exact tracked bytes
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git diff --exit-code
+          git diff --cached --exit-code
+          mkdir -p "$RUNNER_TEMP/runtime-codex-source"
+          git archive --format=tar.gz HEAD > "$RUNNER_TEMP/runtime-codex-source/source.tar.gz"
+          git rev-parse HEAD > "$RUNNER_TEMP/runtime-codex-source/head.txt"
+          git rev-parse 'HEAD^{tree}' > "$RUNNER_TEMP/runtime-codex-source/tree.txt"
+          sha256sum "$RUNNER_TEMP/runtime-codex-source/source.tar.gz" > "$RUNNER_TEMP/runtime-codex-source/archive.sha256"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-codex-source-${{ github.sha }}
+          path: ${{ runner.temp }}/runtime-codex-source/*
+          if-no-files-found: error
+          retention-days: 7
