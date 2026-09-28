@@ -22,6 +22,7 @@ use sha2::Digest;
 use sha2::Sha256;
 use std::fs::File;
 use std::fs::OpenOptions;
+use std::io::Read;
 use std::path::Path;
 use std::sync::Arc;
 use std::time::Duration;
@@ -54,7 +55,7 @@ pub(crate) async fn run_supervisord_product(
     FleetRegistry::open_existing(fleet_root.clone())?;
 
     #[cfg(target_os = "linux")]
-    let identity = Some(LocalFleetIdentityV1::discover()?);
+    let identity = Some(LocalFleetIdentityV1::discover(&state_root)?);
     #[cfg(not(target_os = "linux"))]
     let identity: Option<LocalFleetIdentityV1> = None;
 
@@ -134,7 +135,15 @@ fn perform_maintenance(
             "configure runtime.fleet capacity observer: {error}"
         ))
     })?;
-    let capacity_operation_id = format!("supervisor-capacity-slot-{maintenance_slot}");
+    // A reboot within the same maintenance slot must not replay the previous
+    // incarnation's capacity receipt. Hash the complete identity, not its order.
+    let identity_digest = Sha256::digest(
+        format!("{}:{}", identity.host_id, identity.host_generation).as_bytes(),
+    );
+    let capacity_operation_id = format!(
+        "supervisor-capacity-{}-slot-{maintenance_slot}",
+        hex_prefix(&identity_digest, 64)
+    );
     match refresh_capacity_idempotent(&mut owner, &capacity_operation_id, &observer) {
         Ok(_) => Ok(()),
         // Pressure is an observed unavailable state, not fabricated zero
@@ -186,9 +195,15 @@ fn open_product_owner_lock(path: &Path) -> Result<File, SupervisorError> {
         .write(true)
         .create(true)
         .truncate(false)
+        .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC)
         .mode(0o600)
         .open(path)?;
-    std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))?;
+    if !file.metadata()?.is_file() {
+        return Err(SupervisorError::Invalid(
+            "runtime.fleet product owner lock is not a regular file".to_string(),
+        ));
+    }
+    file.set_permissions(std::fs::Permissions::from_mode(0o600))?;
     Ok(file)
 }
 
@@ -211,7 +226,7 @@ struct LocalFleetIdentityV1 {
 }
 
 impl LocalFleetIdentityV1 {
-    fn discover() -> Result<Self, SupervisorError> {
+    fn discover(state_root: &Path) -> Result<Self, SupervisorError> {
         let configured = (
             std::env::var(HOST_ID_ENV).ok(),
             std::env::var(FAILURE_DOMAIN_ENV).ok(),
@@ -219,47 +234,70 @@ impl LocalFleetIdentityV1 {
         );
         match configured {
             (Some(host_id), Some(failure_domain_id), Some(generation)) => {
-                let host_generation = generation.parse::<u64>().map_err(|error| {
+                let requested_generation = generation.parse::<u64>().map_err(|error| {
                     SupervisorError::Invalid(format!("{HOST_GENERATION_ENV} is invalid: {error}"))
                 })?;
-                if host_generation == 0 {
-                    return Err(SupervisorError::Invalid(format!(
-                        "{HOST_GENERATION_ENV} must be non-zero"
-                    )));
-                }
-                Ok(Self {
+                // Operator overrides use the same observed boot and durable
+                // monotonic fence. Neither configuration nor wall time may
+                // resurrect an old incarnation.
+                let boot_identity = observed_boot_identity()?;
+                Self::resolve(
+                    state_root,
                     host_id,
                     failure_domain_id,
-                    host_generation,
-                })
+                    &boot_identity,
+                    Some(requested_generation),
+                )
             }
-            (None, None, None) => Self::discover_linux(),
+            (None, None, None) => Self::discover_linux(state_root),
             _ => Err(SupervisorError::Invalid(format!(
                 "{HOST_ID_ENV}, {FAILURE_DOMAIN_ENV}, and {HOST_GENERATION_ENV} must be configured together"
             ))),
         }
     }
 
-    #[cfg(target_os = "linux")]
-    fn discover_linux() -> Result<Self, SupervisorError> {
-        let machine_id = read_bounded("/etc/machine-id", 4_096)?;
-        let boot_id = read_bounded("/proc/sys/kernel/random/boot_id", 4_096)?;
-        let machine_digest = Sha256::digest(machine_id.as_slice().trim_ascii());
-        let boot_digest = Sha256::digest(boot_id.as_slice().trim_ascii());
-        let host_id = format!("host-{}", hex_prefix(&machine_digest, 16));
-        let failure_domain_id = format!("local-{}", hex_prefix(&machine_digest, 16));
-        let mut generation_bytes = [0_u8; 8];
-        generation_bytes.copy_from_slice(&boot_digest[..8]);
-        let host_generation = u64::from_be_bytes(generation_bytes).max(1);
+    fn resolve(
+        state_root: &Path,
+        host_id: String,
+        failure_domain_id: String,
+        boot_identity: &str,
+        requested_generation: Option<u64>,
+    ) -> Result<Self, SupervisorError> {
+        let mut owner = DurableFleetOwner::open_supervisor_state_root(
+            state_root,
+            Arc::new(SystemFleetClock),
+        )
+        .map_err(map_owner_error)?;
+        let incarnation = owner
+            .resolve_host_incarnation(
+                &host_id,
+                &failure_domain_id,
+                boot_identity,
+                requested_generation,
+            )
+            .map_err(map_owner_error)?;
         Ok(Self {
             host_id,
             failure_domain_id,
-            host_generation,
+            host_generation: incarnation.host_generation,
         })
     }
 
+    #[cfg(target_os = "linux")]
+    fn discover_linux(state_root: &Path) -> Result<Self, SupervisorError> {
+        let machine_id = read_bounded("/etc/machine-id", 4_096)?;
+        let machine_digest = Sha256::digest(machine_id.as_slice().trim_ascii());
+        Self::resolve(
+            state_root,
+            format!("host-{}", hex_prefix(&machine_digest, 16)),
+            format!("local-{}", hex_prefix(&machine_digest, 16)),
+            &observed_boot_identity()?,
+            None,
+        )
+    }
+
     #[cfg(not(target_os = "linux"))]
-    fn discover_linux() -> Result<Self, SupervisorError> {
+    fn discover_linux(_state_root: &Path) -> Result<Self, SupervisorError> {
         Err(SupervisorError::Invalid(
             "automatic runtime.fleet host discovery is currently implemented only for Linux"
                 .to_string(),
@@ -267,22 +305,41 @@ impl LocalFleetIdentityV1 {
     }
 }
 
+fn observed_boot_identity() -> Result<String, SupervisorError> {
+    let bytes = read_bounded("/proc/sys/kernel/random/boot_id", 4_096)?;
+    // The digest is an opaque identity. Its numeric ordering is never a host
+    // generation; the existing durable owner allocates that separately.
+    Ok(hex_prefix(&Sha256::digest(bytes.as_slice().trim_ascii()), 64))
+}
+
 fn read_bounded(path: &str, maximum: usize) -> Result<Vec<u8>, SupervisorError> {
-    let metadata = std::fs::symlink_metadata(path)?;
-    if !metadata.file_type().is_file() || metadata.file_type().is_symlink() {
+    let mut options = OpenOptions::new();
+    options.read(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC);
+    }
+    let file = options.open(path)?;
+    let metadata = file.metadata()?;
+    if !metadata.file_type().is_file() {
         return Err(SupervisorError::Invalid(format!(
             "runtime.fleet identity source is not a regular file: {path}"
         )));
     }
     let maximum_u64 = u64::try_from(maximum)
         .map_err(|_| SupervisorError::Invalid("identity bound exceeds u64".to_string()))?;
+    let read_limit = maximum_u64
+        .checked_add(1)
+        .ok_or_else(|| SupervisorError::Invalid("identity bound overflow".to_string()))?;
     if metadata.len() > maximum_u64 {
         return Err(SupervisorError::Invalid(format!(
             "runtime.fleet identity source exceeds {maximum} bytes: {path}"
         )));
     }
-    let bytes = std::fs::read(path)?;
-    if bytes.is_empty() || bytes.len() > maximum {
+    let mut bytes = Vec::new();
+    file.take(read_limit).read_to_end(&mut bytes)?;
+    if bytes.as_slice().trim_ascii().is_empty() || bytes.len() > maximum {
         return Err(SupervisorError::Invalid(format!(
             "runtime.fleet identity source has invalid length: {path}"
         )));
@@ -306,4 +363,68 @@ fn unix_ms() -> Result<u64, SupervisorError> {
         .map_err(|error| SupervisorError::Invalid(format!("system clock before epoch: {error}")))?;
     u64::try_from(duration.as_millis())
         .map_err(|_| SupervisorError::Invalid("system time exceeds u64 milliseconds".to_string()))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn product_identity_survives_reopen_and_orders_boots_by_commit_not_hash() {
+        let directory = tempfile::tempdir().expect("tempdir");
+        let root = directory.path();
+        let resolve = |boot: &str, requested| {
+            LocalFleetIdentityV1::resolve(
+                root,
+                "host-test".to_string(),
+                "domain-test".to_string(),
+                boot,
+                requested,
+            )
+        };
+        let first = resolve(&"f".repeat(64), None).expect("first boot");
+        let reopened = resolve(&"f".repeat(64), None).expect("same boot restart");
+        assert_eq!(first.host_generation, reopened.host_generation);
+        let second = resolve(&"1".repeat(64), None).expect("new lower-valued identity");
+        assert_eq!(second.host_generation, first.host_generation + 1);
+        assert!(resolve(&"f".repeat(64), None).is_err());
+        assert!(resolve(&"1".repeat(64), Some(first.host_generation)).is_err());
+    }
+
+    #[test]
+    fn identity_read_rejects_missing_empty_and_oversized_sources() {
+        let directory = tempfile::tempdir().expect("tempdir");
+        let path = directory.path().join("boot-id");
+        let name = path.to_str().expect("path");
+        assert!(read_bounded(name, 32).is_err());
+        assert!(!path.exists());
+        std::fs::write(&path, " \n").expect("write empty");
+        assert!(read_bounded(name, 32).is_err());
+        std::fs::write(&path, "x".repeat(33)).expect("write oversized");
+        assert!(read_bounded(name, 32).is_err());
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn actual_linux_boot_identity_is_stable_across_owner_reopens() {
+        let directory = tempfile::tempdir().expect("tempdir");
+        let first = LocalFleetIdentityV1::discover_linux(directory.path()).expect("native discovery");
+        let second = LocalFleetIdentityV1::discover_linux(directory.path()).expect("native reopen");
+        assert_eq!(first.host_id, second.host_id);
+        assert_eq!(first.host_generation, second.host_generation);
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn identity_reader_and_product_lock_reject_symlinks() {
+        use std::os::unix::fs::symlink;
+        let directory = tempfile::tempdir().expect("tempdir");
+        let target = directory.path().join("target");
+        std::fs::write(&target, "boot-identity").expect("write target");
+        let link = directory.path().join("link");
+        symlink(&target, &link).expect("symlink");
+        assert!(read_bounded(link.to_str().expect("path"), 32).is_err());
+        assert!(open_product_owner_lock(&link).is_err());
+        assert_eq!(std::fs::read_to_string(target).expect("target"), "boot-identity");
+    }
 }
