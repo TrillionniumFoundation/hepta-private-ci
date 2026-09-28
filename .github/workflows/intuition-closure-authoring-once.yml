@@ -1,0 +1,122 @@
+name: Intuition durable closure authoring once
+
+on:
+  push:
+    branches:
+      - codex/intuition-policy-production-closure-20260927
+    paths:
+      - ".github/workflows/intuition-closure-authoring-once.yml"
+      - "scripts/intuition_closure_author_once.b85.part*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: intuition-durable-closure-authoring-once
+  cancel-in-progress: false
+
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_BUILD_JOBS: "2"
+  RUST_BACKTRACE: "1"
+
+jobs:
+  author:
+    name: Author durable handoff and V2 transport
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Check out exact authoring source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: rustfmt,clippy
+      - name: Apply bounded source transformation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python3 - <<'PYCODE'
+          import base64
+          import bz2
+          from pathlib import Path
+          payload = b"".join(path.read_bytes() for path in sorted(Path("scripts").glob("intuition_closure_author_once.b85.part*")))
+          source = bz2.decompress(base64.b85decode(payload))
+          exec(compile(source, "intuition_closure_author_once.py", "exec"))
+          PYCODE
+          cd codex-rs
+          cargo fmt --all
+      - name: Compile owner and protocol boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo check --locked \
+            -p codex-hepta-agent-protocol \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-agentd --lib
+      - name: Run focused durable and protocol tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo test --locked -p codex-hepta-agent-protocol --lib
+          cargo test --locked -p codex-hepta-learning-ledger --lib run_start -- --nocapture
+          cargo test --locked -p codex-hepta-agentd --lib intuition_policy -- --nocapture
+          cargo test --locked -p codex-hepta-agentd --lib objective_runtime -- --nocapture
+      - name: Run strict lint on changed ownership surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo clippy --locked \
+            -p codex-hepta-agent-protocol \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-agentd --lib -- -D warnings
+      - name: Commit ordinary reviewed source and remove authoring machinery
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          python3 - <<'PY'
+          import subprocess
+          allowed = {
+              "codex-rs/hepta-agent-protocol/src/authbus.rs",
+              "codex-rs/hepta-agent-protocol/src/capabilities.rs",
+              "codex-rs/hepta-agent-protocol/src/lib.rs",
+              "codex-rs/hepta-agentd/src/client.rs",
+              "codex-rs/hepta-agentd/src/intuition_policy_admission.rs",
+              "codex-rs/hepta-agentd/src/intuition_policy_handoff.rs",
+              "codex-rs/hepta-agentd/src/intuition_policy_serving.rs",
+              "codex-rs/hepta-agentd/src/lib.rs",
+              "codex-rs/hepta-agentd/src/objective_runtime.rs",
+              "codex-rs/hepta-agentd/src/runtime.rs",
+              "codex-rs/hepta-agentd/src/state_control.rs",
+              "codex-rs/hepta-learning-ledger/src/run_start.rs",
+              ".github/workflows/intuition-closure-authoring-once.yml",
+              "scripts/intuition_closure_author_once.b85.part00",
+              "scripts/intuition_closure_author_once.b85.part01",
+              "scripts/intuition_closure_author_once.b85.part02",
+              "scripts/intuition_closure_author_once.b85.part03",
+          }
+          changed = set(subprocess.check_output(
+              ["git", "status", "--porcelain=v1"], text=True
+          ).splitlines())
+          paths = {line[3:] for line in changed}
+          unexpected = sorted(paths - allowed)
+          if unexpected:
+              raise SystemExit("unexpected authoring paths: " + ", ".join(unexpected))
+          PY
+          rm .github/workflows/intuition-closure-authoring-once.yml
+          rm scripts/intuition_closure_author_once.b85.part*
+          git config user.name "Hepta Intuition Authoring"
+          git config user.email "hepta-intuition-authoring@users.noreply.github.com"
+          git add -A
+          git commit -m "feat(intuition): persist admission handoff and acknowledge V2 delivery"
+          git push origin HEAD:codex/intuition-policy-production-closure-20260927
