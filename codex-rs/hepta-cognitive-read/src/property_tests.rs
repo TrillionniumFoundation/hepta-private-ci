@@ -91,7 +91,7 @@ fn exact_id_result_is_invariant_under_snapshot_request_and_field_permutations() 
                     &candidate_snapshot,
                     ReadIdsRequestV1 {
                         snapshot_digest: candidate_snapshot.snapshot_digest,
-                        record_ids: candidate_ids,
+                        record_ids: candidate_ids.clone(),
                         fields: candidate_fields,
                         maximum_encoded_bytes: 8192,
                     },
