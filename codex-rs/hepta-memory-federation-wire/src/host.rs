@@ -57,10 +57,14 @@ impl FederationOutboundCredentialV1 {
 /// and durable pending-attempt intent have all been admitted.
 ///
 /// Fields are private so callers cannot forge an admission token and bypass the
-/// durable replay/attempt boundary.
+/// durable replay/attempt boundary. The issuing host and directional request
+/// credential remain bound to the token and are checked again before completion.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AdmittedFederationQueryV1 {
     peer_id: StableId,
+    receiver_peer_id: StableId,
+    request_key_id: StableId,
+    request_key_generation: u64,
     query: FederationQueryMessageV1,
     admitted_unix_ms: u64,
     response_expiry_ceiling_unix_ms: u64,
@@ -263,6 +267,8 @@ where
             frame.expires_unix_ms,
             now_unix_ms,
         )?;
+        let request_key_id = frame.key_id.clone();
+        let request_key_generation = frame.key_generation;
         let verified = frame.verify(
             &self.local_peer_id,
             now_unix_ms,
@@ -286,6 +292,9 @@ where
                 )?;
                 FederationHostAdmissionV1::Query(AdmittedFederationQueryV1 {
                     peer_id: verified.sender_peer_id().clone(),
+                    receiver_peer_id: self.local_peer_id.clone(),
+                    request_key_id,
+                    request_key_generation,
                     query,
                     admitted_unix_ms: now_unix_ms,
                     response_expiry_ceiling_unix_ms: verified.expires_unix_ms(),
@@ -319,6 +328,19 @@ where
         result: FederationHostQueryResultV1,
         now_unix_ms: u64,
     ) -> Result<Vec<u8>, FederationHostError> {
+        // Admission is not perpetual authority. A live outbound signing key
+        // cannot authorize a response to a request whose inbound credential was
+        // revoked, rotated or expired while the owner read was in progress.
+        if admitted.receiver_peer_id != self.local_peer_id {
+            return Err(FederationHostError::AdmissionHostMismatch);
+        }
+        self.credentials.require_current(
+            &admitted.peer_id,
+            &self.local_peer_id,
+            &admitted.request_key_id,
+            admitted.request_key_generation,
+            now_unix_ms,
+        )?;
         if result.frontier.owner_peer_id != self.local_peer_id {
             return Err(FederationHostError::FrontierOwnerMismatch);
         }
@@ -446,6 +468,7 @@ pub enum FederationHostError {
     MissingOutboundCredential,
     PeerCapacityExhausted,
     TransportPeerMismatch,
+    AdmissionHostMismatch,
     EmptyResultDigest,
     FrontierOwnerMismatch,
     FrontierClockInvalid,
@@ -471,6 +494,9 @@ impl fmt::Display for FederationHostError {
             }
             Self::TransportPeerMismatch => {
                 formatter.write_str("secure transport peer identity does not match frame sender")
+            }
+            Self::AdmissionHostMismatch => {
+                formatter.write_str("query admission was issued by a different federation host")
             }
             Self::EmptyResultDigest => {
                 formatter.write_str("federation query result digest cannot be zero")
