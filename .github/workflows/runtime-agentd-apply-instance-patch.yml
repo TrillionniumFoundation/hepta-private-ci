@@ -22,7 +22,7 @@ jobs:
     timeout-minutes: 180
     env:
       BASE_SHA: 35a87891852355e75a350973c33871d2b0889fd5
-      PATCH_SHA256: 01122ea4d8abeab07df292dfc56334a6d6d2c3bc85b5cb240f9e108fe0fae4c1
+      PATCH_SHA256: fd4fe4668e1029d7b1ed0429b50ef6cd58a75d737c7b75866b3a0ef5a7b54201
       PATCH_PATH: .github/runtime-agentd-instance.patch.gz
       CARGO_INCREMENTAL: '0'
     steps:
