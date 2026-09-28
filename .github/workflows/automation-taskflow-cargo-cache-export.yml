@@ -1,0 +1,47 @@
+name: Automation TaskFlow cargo cache export
+
+on:
+  push:
+    branches:
+      - ops/automation-taskflow-source-snapshot-20260928
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-slim
+    timeout-minutes: 45
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+
+      - name: Fetch locked dependency graph
+        shell: bash
+        env:
+          CARGO_HOME: ${{ runner.temp }}/cargo-home
+        run: |
+          set -euo pipefail
+          cargo fetch --locked --manifest-path codex-rs/Cargo.toml
+          find "$CARGO_HOME" -type f -print0 | sort -z | xargs -0 sha256sum > "$RUNNER_TEMP/cargo-home-files.sha256"
+          tar -C "$RUNNER_TEMP" -czf "$RUNNER_TEMP/cargo-home.tar.gz" cargo-home
+          sha256sum "$RUNNER_TEMP/cargo-home.tar.gz" > "$RUNNER_TEMP/cargo-home.tar.gz.sha256"
+
+      - name: Retain locked dependency cache
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: automation-taskflow-cargo-home-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/cargo-home.tar.gz
+            ${{ runner.temp }}/cargo-home.tar.gz.sha256
+            ${{ runner.temp }}/cargo-home-files.sha256
+          if-no-files-found: error
+          retention-days: 1
