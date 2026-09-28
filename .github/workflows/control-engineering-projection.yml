@@ -3,7 +3,11 @@ name: control-engineering-projection
 on:
   pull_request:
     paths:
+      - .github/workflows/blocking-ci.yml
+      - .github/workflows/control-engineering-production-acceptance.yml
       - .github/workflows/control-engineering-projection.yml
+      - .github/workflows/control-engineering-required.yml
+      - .github/workflows/hepta-consolidated-source.yml
       - docs/modules/control.engineering/**
       - tools/hepta-engineering-control/**
   push:
@@ -11,7 +15,11 @@ on:
       - main
       - codex/control-engineering-final-closure-20260928
     paths:
+      - .github/workflows/blocking-ci.yml
+      - .github/workflows/control-engineering-production-acceptance.yml
       - .github/workflows/control-engineering-projection.yml
+      - .github/workflows/control-engineering-required.yml
+      - .github/workflows/hepta-consolidated-source.yml
       - docs/modules/control.engineering/**
       - tools/hepta-engineering-control/**
   workflow_dispatch: {}
