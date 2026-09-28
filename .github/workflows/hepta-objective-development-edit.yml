@@ -1,0 +1,87 @@
+name: Hepta objective bounded development edit
+
+on:
+  push:
+    branches:
+      - work/objective-compiler-production-convergence-20260927
+    paths:
+      - .github/workflows/hepta-objective-development-edit.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: objective-development-edit
+  cancel-in-progress: false
+
+jobs:
+  edit-source:
+    name: Commit source edit only - not qualification
+    runs-on: macos-15
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - name: Apply bounded source changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain)"
+          python3 .github/maintenance/objective_profile_reuse_edit.py
+          python3 - <<'PY'
+          import subprocess
+          allowed = {
+              'codex-rs/hepta-objective/src/objective_admission.rs',
+              'codex-rs/hepta-objective/src/validated_admission.rs',
+              'codex-rs/hepta-objective/src/objective_function_v1.rs',
+              'codex-rs/hepta-objective/src/lib.rs',
+              'codex-rs/hepta-objective/src/validated_admission_tests.rs',
+              'codex-rs/hepta-intelligence/src/objective_run.rs',
+              'codex-rs/hepta-intelligence/src/lib.rs',
+              'codex-rs/hepta-agentd/src/objective_runtime.rs',
+          }
+          changed = set(subprocess.check_output(['git', 'diff', '--name-only'], text=True).splitlines())
+          if changed != allowed:
+              raise SystemExit(f'editing scope mismatch: missing={allowed-changed}; unexpected={changed-allowed}')
+          subprocess.run(['rustfmt', '--edition', '2024', '--config', 'skip_children=true', *sorted(changed)], check=True)
+          changed_after = set(subprocess.check_output(['git', 'diff', '--name-only'], text=True).splitlines())
+          if changed_after != allowed:
+              raise SystemExit('formatter changed the editing scope')
+          PY
+          git diff --check
+      - name: Publish ordinary source commit without qualification claims
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch=work/objective-compiler-production-convergence-20260927
+          remote=$(git ls-remote origin "refs/heads/$branch" | cut -f1)
+          test "$remote" = "$GITHUB_SHA"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- codex-rs/hepta-objective/src/objective_admission.rs codex-rs/hepta-objective/src/validated_admission.rs codex-rs/hepta-objective/src/objective_function_v1.rs codex-rs/hepta-objective/src/lib.rs codex-rs/hepta-objective/src/validated_admission_tests.rs codex-rs/hepta-intelligence/src/objective_run.rs codex-rs/hepta-intelligence/src/lib.rs codex-rs/hepta-agentd/src/objective_runtime.rs
+          git commit -m 'perf(objective): reuse frozen profiles and encode opaque authoritative outcomes'
+          git push origin "HEAD:refs/heads/$branch"
+          printf 'Published ordinary source commit: %s\nQualification: not executed by this development job.\n' "$(git rev-parse HEAD)" >> "$GITHUB_STEP_SUMMARY"
+      - name: Capture exact development result
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/objective-development-result"
+          mkdir -p "$out"
+          git archive --format=tar.gz HEAD > "$out/source.tar.gz"
+          git diff > "$out/uncommitted.patch"
+          git log -1 --format='%H %T %s' > "$out/commit.txt"
+          printf '%s\n' 'This artifact records a development edit, not a compilation, test, qualification, host measurement, independent acceptance or release result.' > "$out/STATUS.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: objective-development-result-${{ github.sha }}
+          path: ${{ runner.temp }}/objective-development-result
+          if-no-files-found: error
+          retention-days: 7
