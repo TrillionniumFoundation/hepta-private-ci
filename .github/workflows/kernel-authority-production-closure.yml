@@ -180,11 +180,15 @@ jobs:
               ;;
             product-pilot)
               python3 -B qualification/kernel-authority/runtime_qualification.py \
-                --identity "$identity" --output-dir "$output" pilot
+                --identity "$identity" --output-dir "$output/product-paths" pilot
+              python3 -B qualification/kernel-authority/owner_runtime_qualification.py \
+                --identity "$identity" --output-dir "$output/owned-effect-runtime"
               ;;
             performance)
               python3 -B qualification/kernel-authority/runtime_qualification.py \
-                --identity "$identity" --output-dir "$output" benchmark --samples 128
+                --identity "$identity" --output-dir "$output/source-benchmark" benchmark --samples 128
+              python3 -B qualification/kernel-authority/capacity_matrix.py self-test \
+                --output "$output/capacity-matrix-self-test.json"
               ;;
             *) exit 2 ;;
           esac

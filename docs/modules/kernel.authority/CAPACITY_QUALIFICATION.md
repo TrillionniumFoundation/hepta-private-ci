@@ -1,6 +1,6 @@
 # kernel.authority capacity and durability qualification
 
-Status: **measurement contract; no production latency claim is implied by source limits**.
+Status: **measurement contract and executable collector; no production latency claim is implied by source limits or collector self-tests**.
 
 The authority implementations intentionally bound state, but bounded state is not
 the same as qualified performance. A selected host must produce exact-candidate
@@ -38,6 +38,11 @@ constant-cost production admission: a production-oriented claim also computes
 and CAS-advances the external frontier, whose current digest covers the complete
 revocation head and nonce set. Both modes therefore require exact-host
 measurement at realistic history sizes.
+
+The Agentd compatibility trust host persists a monotonic clock floor. Its
+filesystem write, file fsync, rename and directory fsync costs are part of the
+observed authorization path and must not be hidden by measuring only signature
+verification or an in-memory fixture.
 
 ## Mandatory v2 measurement matrix
 
@@ -80,6 +85,71 @@ settings, external frontier implementation, clock implementation, operating
 system, Rust profile and candidate SHA/tree. Compatibility constructors without
 external trust may be measured separately but cannot stand in for the selected
 production configuration.
+
+## Exact target-host collector
+
+`qualification/kernel-authority/capacity_matrix.py` is the read-only orchestration
+and validation boundary for this matrix. It never embeds a production driver and
+cannot substitute a hosted-runner fixture for a selected target profile.
+
+Create an immutable plan:
+
+```bash
+python3 -B qualification/kernel-authority/capacity_matrix.py plan \
+  --candidate-commit "$(git rev-parse HEAD)" \
+  --candidate-tree "$(git rev-parse 'HEAD^{tree}')" \
+  --profile-id <selected-profile-id> \
+  --samples 100 \
+  --output /secure/evidence/kernel-authority/capacity-plan.json
+```
+
+Run one explicitly selected executable target driver. The driver receives
+`--request <path> --output <path>` for each row and must return an exact typed
+response bound to the candidate, profile and one identical host description:
+
+```bash
+python3 -B qualification/kernel-authority/capacity_matrix.py collect \
+  --plan /secure/evidence/kernel-authority/capacity-plan.json \
+  --driver /opt/hepta/bin/kernel-authority-target-driver \
+  --output-dir /secure/evidence/kernel-authority/capacity-run
+```
+
+Re-open the retained aggregate independently:
+
+```bash
+python3 -B qualification/kernel-authority/capacity_matrix.py validate \
+  --plan /secure/evidence/kernel-authority/capacity-plan.json \
+  --collection /secure/evidence/kernel-authority/capacity-run/capacity-collection.json
+```
+
+The collector requires exactly 55 operation rows, all eight fault cases, one
+reserve observation and 25 history-sensitive diagnostics. It rejects booleans
+masquerading as integers, duplicate or missing identities, candidate/profile
+mismatch, mixed hosts, synthetic results, percentile contradictions, unsafe
+fault outcomes and any activation/release claim. It retains request, response
+and log digests for every invocation.
+
+The CI command `capacity_matrix.py self-test` exercises only schema and negative
+logic with explicitly synthetic data. Its receipt sets
+`productionEvidenceAdmissible=false`; it is not one row of the target matrix.
+
+## History-sensitive diagnostics
+
+At every state point the selected driver additionally measures:
+
+- `final_use_frontier_hash`;
+- `lease_state_clone`;
+- `lease_image_serialize`;
+- `clock_floor_persist`;
+- `restart_rebuild`.
+
+These diagnostic rows record history units, bytes touched, peak RSS and
+microsecond distributions. They are not SLO rows and do not independently grant
+a pass. Their purpose is to decide, from target evidence, whether an incremental
+authenticated digest, checkpoint or different persistence representation is
+necessary. No optimization may weaken rollback fencing, nonce retention,
+pending-revocation recovery or the single-owner boundary merely to improve a
+source-only timing.
 
 ## Fault-injection matrix
 
@@ -126,16 +196,23 @@ Schema `hepta.kernel-authority-production-evidence.v2` requires the complete
 alert. Missing rows, fewer than 100 samples, percentile contradictions, p99 over
 budget, unsafe reopen outcomes or prose-only pass flags are machine failures.
 
+The collector aggregate remains `productionEvidenceAdmissible=false`; its rows
+must still be wrapped in the independently retained evidence envelopes expected
+by `verify.py`, alongside trusted-time, frontier, key-custody, revocation and
+operator-acceptance receipts. Collection and production admission are deliberately
+separate authorities.
+
 ## Pass criterion
 
 Capacity qualification is PASS only when:
 
-- the complete v2 matrix has exact-candidate artifacts;
+- the complete v2 matrix has exact-candidate artifacts from one selected target profile;
 - no p99 violates its declared target-host latency budget;
 - maximum state remains inside the restart/read and memory envelopes;
 - fault injection preserves fail-closed recovery and indeterminate outcomes;
 - reserve/rollover alerts are demonstrated before hard capacity;
 - independent review accepts the measured profile.
 
-Until then the repository may claim bounded source behavior, but not production
-throughput, tail latency, durability performance or deployment activation.
+Until then the repository may claim bounded source behavior and an executable
+collector, but not production throughput, tail latency, durability performance
+or deployment activation.
