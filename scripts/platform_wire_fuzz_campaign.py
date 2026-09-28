@@ -15,6 +15,11 @@ import subprocess
 import time
 
 TARGETS = ("decode_frames", "managed_records", "policy_admission")
+SEED_MODES = {
+    "decode_frames": range(5),
+    "managed_records": range(7),
+    "policy_admission": range(5),
+}
 SCHEMA = "hepta.platform-wire.fuzz-campaign.v2"
 SHA = re.compile(r"[0-9a-f]{40}")
 EXECUTIONS = re.compile(r"stat::number_of_executed_units:\s*(\d+)")
@@ -147,7 +152,7 @@ def seed(root: Path) -> None:
     for target in TARGETS:
         (fuzz / "corpus" / target).mkdir(parents=True, exist_ok=True)
         (fuzz / "artifacts" / target).mkdir(parents=True, exist_ok=True)
-        for mode in range(5):
+        for mode in SEED_MODES[target]:
             (fuzz / "corpus" / target / f"mode-{mode}").write_bytes(bytes([mode, 13]) + b"wire-seed")
     vector = json.loads((root / "docs/lane-a-foundation/platform.wire/HPTA_V2_CONFORMANCE.json").read_text())
     corpus = fuzz / "corpus/decode_frames"
