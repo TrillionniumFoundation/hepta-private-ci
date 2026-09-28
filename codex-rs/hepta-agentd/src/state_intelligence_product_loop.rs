@@ -1,16 +1,18 @@
 //! Canonical intelligence product continuation from Agentd-owned run state.
 //!
-//! The existing `start_canonical_intelligence` method remains the sole owner of
-//! seven-stage preparation plus run/context admission. This module can invoke a
-//! host continuation only after that method has returned a `Ready` value whose
-//! exact envelope is already frozen as `ContextAttached`.
+//! Canonical product capability requires a configured physical/learning
+//! continuation. A runner/provider pair without that continuation is explicit
+//! source-only compatibility mode and must not admit a half-closed canonical
+//! run before falling back to the ordinary durable RunStart path.
 
 use super::*;
 
 impl AgentdState {
-    /// Execute the configured canonical product continuation after the exact
-    /// prepared run is already admitted. Absence of a continuation is explicit
-    /// source-only compatibility mode and preserves the existing return value.
+    /// Execute the complete canonical product path only when the configured
+    /// provider also owns the physical/learning continuation. The continuation
+    /// is resolved before seven-owner preparation or Agentd run admission so a
+    /// source-only profile cannot publish `ContextAttached` and then stop at a
+    /// misleading `canonical_ready` state.
     pub(crate) async fn start_canonical_intelligence_product_loop(
         &self,
         record: &RunStartRecordV1,
@@ -21,6 +23,14 @@ impl AgentdState {
         )>,
         AgentdError,
     > {
+        let continuation = match self.intelligence_invocation.get() {
+            Some(provider) => match provider.product_continuation() {
+                Some(value) => value,
+                None => return Ok(None),
+            },
+            None => return Ok(None),
+        };
+
         let Some(admitted) = self.start_canonical_intelligence(record).await? else {
             return Ok(None);
         };
@@ -29,21 +39,11 @@ impl AgentdState {
             crate::AgentdIntelligenceAdmittedOutcomeV1::Ready {
                 prepared,
                 run_receipt,
-            } => {
-                let provider = self.intelligence_invocation.get().ok_or_else(|| {
-                    AgentdError::Protocol(
-                        "canonical intelligence provider disappeared after admission".to_string(),
-                    )
-                })?;
-                match provider.product_continuation() {
-                    Some(continuation) => Some(
-                        continuation
-                            .continue_ready(prepared.clone(), run_receipt.clone())
-                            .await?,
-                    ),
-                    None => None,
-                }
-            }
+            } => Some(
+                continuation
+                    .continue_ready(prepared.clone(), run_receipt.clone())
+                    .await?,
+            ),
             crate::AgentdIntelligenceAdmittedOutcomeV1::Abstained
             | crate::AgentdIntelligenceAdmittedOutcomeV1::SlowPath => None,
         };
