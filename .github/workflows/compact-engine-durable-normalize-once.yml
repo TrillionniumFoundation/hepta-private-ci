@@ -9,12 +9,12 @@ permissions:
   contents: write
 
 concurrency:
-  group: compact-engine-source-remediation-once-final
+  group: compact-engine-source-remediation-once-parallel-24
   cancel-in-progress: false
 
 jobs:
   remediate:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
       CARGO_INCREMENTAL: "0"
@@ -35,7 +35,7 @@ jobs:
       - name: Apply reviewed compact.engine remediation
         shell: bash
         env:
-          EXPECTED_PARENT: 78791267ea64003398e3206c1d503c2087d366c7
+          EXPECTED_PARENT: 37dd4424aab3ce240ade6f63817f0068cb9da688
           WORKFLOW_PATH: .github/workflows/compact-engine-durable-normalize-once.yml
           PATCH_PATH: .github/compact-engine-stage-bc.patch
         run: |
