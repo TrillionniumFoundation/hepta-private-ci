@@ -1,0 +1,24 @@
+name: Dispatch evolution unified closeout
+
+on:
+  push:
+    branches: [ops/evolution-agentd-clippy-closeout-20260929]
+    paths: ['.github/workflows/evolution-unified-closeout-dispatch.yml']
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-slim
+    steps:
+      - name: Dispatch the canonical exact-source gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run evolution-unified-closeout-trigger.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref "$GITHUB_REF_NAME"
