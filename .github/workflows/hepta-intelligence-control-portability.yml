@@ -1,0 +1,129 @@
+name: intelligence.control portability
+
+on:
+  push:
+    paths:
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-ndu/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - ".github/workflows/hepta-intelligence-control-portability.yml"
+  pull_request:
+    paths:
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-ndu/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - ".github/workflows/hepta-intelligence-control-portability.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: intelligence-control-portability-${{ github.event.pull_request.number || github.ref }}-${{ github.event_name }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  macos-private-state-and-lint:
+    name: macOS private state and strict NDU lint
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - name: Check out exact source candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind exact source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
+
+      - name: Install DotSlash
+        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+
+      - name: Check formatting
+        working-directory: codex-rs
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/intelligence-portability-fmt.json"
+          -- cargo fmt --all -- --check
+
+      - name: Exercise signed authority profile on macOS
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-portability-target
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/intelligence-portability-signed-ready.json" \
+            -- cargo test --locked -p codex-hepta-agentd --lib \
+              signed_evaluation_completes_existing_owner_preparation_and_run_admission \
+              -- --nocapture
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/intelligence-portability-signed-substitution.json" \
+            -- cargo test --locked -p codex-hepta-agentd --lib \
+              signed_input_cannot_install_host_trust_or_change_actual_context \
+              -- --nocapture
+
+      - name: Exercise anti-rollback and private-file boundaries
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-portability-target
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/intelligence-portability-rollback.json" \
+            -- cargo test --locked -p codex-hepta-agentd --lib \
+              guard_rejects_rollback_and_same_epoch_drift_and_survives_reopen \
+              -- --nocapture
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/intelligence-portability-files.json" \
+            -- cargo test --locked -p codex-hepta-agentd --lib \
+              authority_read_rejects_parent_leaf_links_and_oversize \
+              -- --nocapture
+
+      - name: Strict lint NDU compatibility boundary
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-portability-target
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/intelligence-portability-ndu-clippy.json"
+          -- cargo clippy --locked -p codex-hepta-ndu --all-targets -- -D warnings
+
+      - name: Verify exact source remains clean
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
+
+      - name: Retain portability command records
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intelligence-control-portability-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/intelligence-portability-*.json
+          if-no-files-found: warn
+          retention-days: 30
