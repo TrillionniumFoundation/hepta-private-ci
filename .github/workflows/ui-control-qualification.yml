@@ -1,5 +1,4 @@
 name: ui.control exact-head qualification
-
 on:
   push:
     branches:
@@ -10,10 +9,11 @@ on:
       - "docs/modules/ui.control/**"
       - "qualification/ui-control/**"
       - "qualification/module-execution-dossiers/detail/ui.control.md"
-      - "scripts/ui-control-artifacts.mjs"
-      - "scripts/ui-control-status.mjs"
+      - "scripts/ui-control-*.mjs"
       - "scripts/hepta-lane-b-path-guard.py"
       - "scripts/test_hepta_lane_b_path_guard.py"
+      - "scripts/hepta-lane-b-truth.py"
+      - "scripts/test_hepta_lane_b_truth.py"
       - ".github/workflows/ui-control-qualification.yml"
   pull_request:
     paths:
@@ -21,23 +21,20 @@ on:
       - "docs/modules/ui.control/**"
       - "qualification/ui-control/**"
       - "qualification/module-execution-dossiers/detail/ui.control.md"
-      - "scripts/ui-control-artifacts.mjs"
-      - "scripts/ui-control-status.mjs"
+      - "scripts/ui-control-*.mjs"
       - "scripts/hepta-lane-b-path-guard.py"
       - "scripts/test_hepta_lane_b_path_guard.py"
+      - "scripts/hepta-lane-b-truth.py"
+      - "scripts/test_hepta_lane_b_truth.py"
       - ".github/workflows/ui-control-qualification.yml"
   workflow_dispatch:
-
 permissions:
   contents: read
-
 concurrency:
   group: ui-control-qualification-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
-
 env:
   UI_CONTROL_APP: apps/hepta-control-ui
-
 jobs:
   exact-head:
     name: exact head / unit / contract / three browsers / axe
@@ -50,8 +47,8 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
           fetch-depth: 0
-
-      - name: Bind exact source identity
+      - id: bind
+        name: Bind exact source identity
         env:
           EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         shell: bash
@@ -63,13 +60,12 @@ jobs:
             printf 'sha=%s\n' "$(git rev-parse HEAD)"
             printf 'tree=%s\n' "$(git rev-parse HEAD^{tree})"
           } > ui-control-evidence/source.txt
-
       - name: Setup Node.js 22
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version: 22
-
-      - name: Install exact locked browser-test dependencies
+      - id: dependency
+        name: Install exact locked browser-test dependencies
         working-directory: ${{ env.UI_CONTROL_APP }}
         shell: bash
         run: |
@@ -78,51 +74,62 @@ jobs:
           sha256sum package-lock.json > ../../ui-control-evidence/dependency-lock.sha256
           npm ci --ignore-scripts --no-audit --no-fund
           npm ls --all --json > ../../ui-control-evidence/npm-resolution.json
-
-      - name: Lint and unsafe-sink checks
+      - id: lint
+        name: Lint and unsafe-sink checks
         working-directory: ${{ env.UI_CONTROL_APP }}
         run: npm run lint
-
-      - name: Unit and concurrency qualification
+      - id: unit
+        name: Unit and concurrency qualification
         working-directory: ${{ env.UI_CONTROL_APP }}
         run: npm test
-
-      - name: Contract and package-boundary qualification
+      - id: contract
+        name: Contract and package-boundary qualification
         working-directory: ${{ env.UI_CONTROL_APP }}
         shell: bash
         run: |
           set -euo pipefail
           npm run test:contract
           npm pack --dry-run --json > ../../ui-control-evidence/package-dry-run.json
-
-      - name: Deterministic browser build
+      - id: build
+        name: Deterministic browser build
         working-directory: ${{ env.UI_CONTROL_APP }}
         run: npm run build
-
       - name: Install Playwright browser engines
         working-directory: ${{ env.UI_CONTROL_APP }}
         run: npx playwright install --with-deps chromium firefox webkit
-
-      - name: Browser E2E, keyboard, focus, and axe qualification
+      - id: browser
+        name: Browser E2E, keyboard, focus, and axe qualification
         working-directory: ${{ env.UI_CONTROL_APP }}
         env:
           CI: "1"
         run: npm run test:e2e
-
-      - name: Verify generated technical truth
+      - id: generated
+        name: Verify generated ui.control truth with exact diff
+        run: node scripts/ui-control-verify-generated.mjs
+      - id: lane_b_guard
+        name: Verify ui.control Lane B source and module truth
         shell: bash
         run: |
           set -euo pipefail
-          node scripts/ui-control-artifacts.mjs --check
-          node scripts/ui-control-status.mjs --check
           python3 scripts/hepta-lane-b-path-guard.py self-test
           python3 -m unittest scripts/test_hepta_lane_b_path_guard.py
           python3 scripts/hepta-lane-b-path-guard.py verify
-          python3 scripts/hepta-lane-b-truth.py self-test
-          python3 -m unittest scripts/test_hepta_lane_b_truth.py
-          python3 scripts/hepta-lane-b-truth.py verify
-
-      - name: Emit exact-head qualification receipt
+          node scripts/ui-control-truth.mjs
+      - id: repository_lane_b_diagnostic
+        name: Observe repository-wide Lane B truth without cross-module qualification coupling
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p ui-control-evidence
+          {
+            set -e
+            python3 scripts/hepta-lane-b-truth.py self-test
+            python3 -m unittest scripts/test_hepta_lane_b_truth.py
+            python3 scripts/hepta-lane-b-truth.py verify
+          } 2>&1 | tee ui-control-evidence/repository-lane-b-diagnostic.log
+      - id: acceptance
+        name: Emit exact-head qualification receipt
         working-directory: ${{ env.UI_CONTROL_APP }}
         env:
           UI_CONTROL_CANDIDATE_KIND: source-head
@@ -137,18 +144,37 @@ jobs:
           UI_CONTROL_LANE_B_GUARD: passed
           UI_CONTROL_DOCS: passed
         run: npm run receipt -- ../../ui-control-evidence/receipt.json
-
       - name: Copy browser build manifest
         run: cp apps/hepta-control-ui/dist/build-manifest.json ui-control-evidence/build-manifest.json
-
-      - name: Verify tracked tree remains clean
+      - id: clean
+        name: Verify tracked tree remains clean
         shell: bash
         run: |
           set -euo pipefail
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
-
+      - name: Emit exact-head observation or failure receipt
+        if: always()
+        env:
+          UI_CONTROL_OBSERVATION_STAGE: source-head
+          UI_CONTROL_JOB_STATUS: ${{ job.status }}
+          UI_CONTROL_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          UI_CONTROL_ACCEPTANCE_RECEIPT: ui-control-evidence/receipt.json
+          UI_CONTROL_CHECK_BIND: ${{ steps.bind.outcome }}
+          UI_CONTROL_CHECK_DEPENDENCY: ${{ steps.dependency.outcome }}
+          UI_CONTROL_CHECK_LINT: ${{ steps.lint.outcome }}
+          UI_CONTROL_CHECK_UNIT: ${{ steps.unit.outcome }}
+          UI_CONTROL_CHECK_CONTRACT: ${{ steps.contract.outcome }}
+          UI_CONTROL_CHECK_BUILD: ${{ steps.build.outcome }}
+          UI_CONTROL_CHECK_BROWSER: ${{ steps.browser.outcome }}
+          UI_CONTROL_CHECK_GENERATED: ${{ steps.generated.outcome }}
+          UI_CONTROL_CHECK_LANE_B_GUARD: ${{ steps.lane_b_guard.outcome }}
+          UI_CONTROL_CHECK_REPOSITORY_LANE_B_DIAGNOSTIC: ${{ steps.repository_lane_b_diagnostic.outcome }}
+          UI_CONTROL_CHECK_ACCEPTANCE: ${{ steps.acceptance.outcome }}
+          UI_CONTROL_CHECK_CLEAN: ${{ steps.clean.outcome }}
+        run: node scripts/ui-control-write-observation-receipt.mjs ui-control-evidence/source-head-observation.json
       - name: Publish qualification summary
+        if: always()
         shell: bash
         run: |
           {
@@ -156,12 +182,17 @@ jobs:
             echo
             echo "- SHA: \`$(git rev-parse HEAD)\`"
             echo "- Tree: \`$(git rev-parse HEAD^{tree})\`"
-            echo '- Source tests: passed'
-            echo '- Chromium/Firefox/WebKit: passed'
-            echo '- axe/keyboard/focus: passed'
-            echo '- Merge-tree, real-backend, and production-deployment stages: not claimed by this job'
+            if [ "$GITHUB_REF" = "refs/heads/main" ]; then
+              echo '- Candidate merged to main: yes'
+            else
+              echo '- Candidate merged to main: no'
+            fi
+            echo '- Browser matrix: ${{ steps.browser.outcome }}'
+            echo '- Generated/module truth: ${{ steps.generated.outcome }} / ${{ steps.lane_b_guard.outcome }}'
+            echo '- Repository-wide Lane B diagnostic: ${{ steps.repository_lane_b_diagnostic.outcome }} (diagnostic only; verifier remains strict)'
+            echo '- Accepted exact-head receipt: ${{ steps.acceptance.outcome }}'
+            echo '- Real-backend, production-deployment, independent security, and manual screen-reader stages: not claimed'
           } >> "$GITHUB_STEP_SUMMARY"
-
       - name: Upload immutable qualification evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -173,7 +204,6 @@ jobs:
             apps/hepta-control-ui/test-results/
           if-no-files-found: warn
           retention-days: 30
-
   synthetic-merge:
     name: deterministic synthetic merge / full browser requalification
     if: github.event_name == 'pull_request'
@@ -186,9 +216,8 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
           fetch-depth: 0
-
-      - name: Resolve current base
-        id: base
+      - id: base
+        name: Resolve current base
         env:
           BASE_REF: ${{ github.base_ref }}
         shell: bash
@@ -196,9 +225,8 @@ jobs:
           set -euo pipefail
           value="$(git rev-parse "refs/remotes/origin/${BASE_REF}^{commit}")"
           printf 'sha=%s\n' "$value" >> "$GITHUB_OUTPUT"
-
-      - name: Construct deterministic synthetic merge
-        id: merge
+      - id: merge
+        name: Construct deterministic synthetic merge
         uses: ./.github/actions/hepta-synthetic-merge
         with:
           base-sha: ${{ steps.base.outputs.sha }}
@@ -207,8 +235,8 @@ jobs:
           author-name: ui.control qualification
           author-email: ui-control-qualification@users.noreply.github.com
           message: Synthetic ui.control merge
-
-      - name: Bind synthetic-merge identity
+      - id: bind
+        name: Bind synthetic-merge identity
         env:
           EXPECTED_SHA: ${{ steps.merge.outputs.sha }}
         shell: bash
@@ -222,13 +250,12 @@ jobs:
             printf 'source_sha=%s\n' "${{ github.event.pull_request.head.sha }}"
             printf 'base_sha=%s\n' "${{ steps.base.outputs.sha }}"
           } > ui-control-evidence/source.txt
-
       - name: Setup Node.js 22
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version: 22
-
-      - name: Install exact locked merge-test dependencies
+      - id: dependency
+        name: Install exact locked merge-test dependencies
         working-directory: ${{ env.UI_CONTROL_APP }}
         shell: bash
         run: |
@@ -237,8 +264,8 @@ jobs:
           sha256sum package-lock.json > ../../ui-control-evidence/dependency-lock.sha256
           npm ci --ignore-scripts --no-audit --no-fund
           npm ls --all --json > ../../ui-control-evidence/npm-resolution.json
-
-      - name: Requalify merged source, contract, and build
+      - id: source
+        name: Requalify merged source, contract, and build
         working-directory: ${{ env.UI_CONTROL_APP }}
         shell: bash
         run: |
@@ -248,31 +275,42 @@ jobs:
           npm run test:contract
           npm pack --dry-run --json > ../../ui-control-evidence/package-dry-run.json
           npm run build
-
       - name: Install Playwright browser engines for merge candidate
         working-directory: ${{ env.UI_CONTROL_APP }}
         run: npx playwright install --with-deps chromium firefox webkit
-
-      - name: Requalify merged Chromium, Firefox, WebKit, keyboard, focus, and axe
+      - id: browser
+        name: Requalify merged Chromium, Firefox, WebKit, keyboard, focus, and axe
         working-directory: ${{ env.UI_CONTROL_APP }}
         env:
           CI: "1"
         run: npm run test:e2e
-
-      - name: Verify merged generated truth
+      - id: generated
+        name: Verify merged generated ui.control truth with exact diff
+        run: node scripts/ui-control-verify-generated.mjs
+      - id: lane_b_guard
+        name: Verify merged ui.control Lane B source and module truth
         shell: bash
         run: |
           set -euo pipefail
-          node scripts/ui-control-artifacts.mjs --check
-          node scripts/ui-control-status.mjs --check
           python3 scripts/hepta-lane-b-path-guard.py self-test
           python3 -m unittest scripts/test_hepta_lane_b_path_guard.py
           python3 scripts/hepta-lane-b-path-guard.py verify
-          python3 scripts/hepta-lane-b-truth.py self-test
-          python3 -m unittest scripts/test_hepta_lane_b_truth.py
-          python3 scripts/hepta-lane-b-truth.py verify
-
-      - name: Emit synthetic-merge qualification receipt
+          node scripts/ui-control-truth.mjs
+      - id: repository_lane_b_diagnostic
+        name: Observe merged repository-wide Lane B truth without cross-module qualification coupling
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p ui-control-evidence
+          {
+            set -e
+            python3 scripts/hepta-lane-b-truth.py self-test
+            python3 -m unittest scripts/test_hepta_lane_b_truth.py
+            python3 scripts/hepta-lane-b-truth.py verify
+          } 2>&1 | tee ui-control-evidence/repository-lane-b-diagnostic.log
+      - id: acceptance
+        name: Emit synthetic-merge qualification receipt
         working-directory: ${{ env.UI_CONTROL_APP }}
         env:
           UI_CONTROL_CANDIDATE_KIND: synthetic-merge
@@ -288,18 +326,37 @@ jobs:
           UI_CONTROL_LANE_B_GUARD: passed
           UI_CONTROL_DOCS: passed
         run: npm run receipt -- ../../ui-control-evidence/receipt.json
-
       - name: Copy merged browser build manifest
         run: cp apps/hepta-control-ui/dist/build-manifest.json ui-control-evidence/build-manifest.json
-
-      - name: Verify merged tracked tree remains clean
+      - id: clean
+        name: Verify merged tracked tree remains clean
         shell: bash
         run: |
           set -euo pipefail
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
-
+      - name: Emit synthetic-merge observation or failure receipt
+        if: always()
+        env:
+          UI_CONTROL_OBSERVATION_STAGE: synthetic-merge
+          UI_CONTROL_JOB_STATUS: ${{ job.status }}
+          UI_CONTROL_SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          UI_CONTROL_BASE_SHA: ${{ steps.base.outputs.sha }}
+          UI_CONTROL_ACCEPTANCE_RECEIPT: ui-control-evidence/receipt.json
+          UI_CONTROL_CHECK_BASE: ${{ steps.base.outcome }}
+          UI_CONTROL_CHECK_MERGE: ${{ steps.merge.outcome }}
+          UI_CONTROL_CHECK_BIND: ${{ steps.bind.outcome }}
+          UI_CONTROL_CHECK_DEPENDENCY: ${{ steps.dependency.outcome }}
+          UI_CONTROL_CHECK_SOURCE: ${{ steps.source.outcome }}
+          UI_CONTROL_CHECK_BROWSER: ${{ steps.browser.outcome }}
+          UI_CONTROL_CHECK_GENERATED: ${{ steps.generated.outcome }}
+          UI_CONTROL_CHECK_LANE_B_GUARD: ${{ steps.lane_b_guard.outcome }}
+          UI_CONTROL_CHECK_REPOSITORY_LANE_B_DIAGNOSTIC: ${{ steps.repository_lane_b_diagnostic.outcome }}
+          UI_CONTROL_CHECK_ACCEPTANCE: ${{ steps.acceptance.outcome }}
+          UI_CONTROL_CHECK_CLEAN: ${{ steps.clean.outcome }}
+        run: node scripts/ui-control-write-observation-receipt.mjs ui-control-evidence/synthetic-merge-observation.json
       - name: Publish synthetic-merge qualification summary
+        if: always()
         shell: bash
         run: |
           {
@@ -307,17 +364,20 @@ jobs:
             echo
             echo "- Merge SHA: \`$(git rev-parse HEAD)\`"
             echo "- Merge tree: \`$(git rev-parse HEAD^{tree})\`"
-            echo '- Source tests: passed'
-            echo '- Chromium/Firefox/WebKit: passed'
-            echo '- axe/keyboard/focus: passed'
-            echo '- Real-backend and production-deployment stages: not claimed by this job'
+            echo "- Source head: \`${{ github.event.pull_request.head.sha }}\`"
+            echo "- Base: \`${{ steps.base.outputs.sha }}\`"
+            echo '- Candidate merged to main: no'
+            echo '- Browser matrix: ${{ steps.browser.outcome }}'
+            echo '- Generated/module truth: ${{ steps.generated.outcome }} / ${{ steps.lane_b_guard.outcome }}'
+            echo '- Repository-wide Lane B diagnostic: ${{ steps.repository_lane_b_diagnostic.outcome }} (diagnostic only; verifier remains strict)'
+            echo '- Accepted synthetic-merge receipt: ${{ steps.acceptance.outcome }}'
+            echo '- Real-backend, production-deployment, independent security, and manual screen-reader stages: not claimed'
           } >> "$GITHUB_STEP_SUMMARY"
-
       - name: Upload immutable synthetic-merge evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: ui-control-synthetic-merge-${{ steps.merge.outputs.sha }}
+          name: ui-control-synthetic-merge-${{ steps.merge.outputs.sha || github.event.pull_request.head.sha }}
           path: |
             ui-control-evidence/
             apps/hepta-control-ui/playwright-report/

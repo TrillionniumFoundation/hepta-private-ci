@@ -1,5 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
+import { loadControlConsole } from "./readiness.mjs";
 
 function redactedIdentifier(value) {
   const input = String(value);
@@ -14,10 +15,11 @@ async function reset(request) {
 }
 
 async function loadConsole(page) {
-  await page.goto("/");
+  const receipt = await loadControlConsole(page);
   await expect(page.getByText("Connected", { exact: true })).toBeVisible();
   await expect(page.getByRole("cell", { name: "runtime.agentd" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Request start" })).toBeEnabled();
+  return receipt;
 }
 
 test.beforeEach(async ({ request }) => { await reset(request); });
@@ -114,7 +116,7 @@ test("unexpected storage errors remain private and preserve read-only diagnostic
   await page.addInitScript(() => {
     Storage.prototype.getItem = function sensitiveStorageFailure() { throw new Error("session-cookie=must-not-appear"); };
   });
-  await page.goto("/");
+  await page.goto("/", { waitUntil: "commit" });
   await expect(page.getByRole("cell", { name: "runtime.agentd" })).toBeVisible();
   await expect(page.getByRole("alert")).toContainText("UI_CONTROL_STORAGE");
   await expect(page.getByRole("alert")).not.toContainText("session-cookie=must-not-appear");

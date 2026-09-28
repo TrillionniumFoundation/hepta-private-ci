@@ -1,10 +1,12 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { loadControlConsole } from "./readiness.mjs";
 
 async function load(page) {
-  await page.goto("/", { waitUntil: "domcontentloaded" });
+  const receipt = await loadControlConsole(page);
   await expect(page.getByText("Connected", { exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Request start", exact: true })).toBeEnabled();
+  return receipt;
 }
 async function records(page) {
   return page.evaluate(() => Object.keys(localStorage)
@@ -102,8 +104,17 @@ test("response held after server admission survives page loss without a replacem
   }
 });
 
-test("two tabs retain both operation identities without whole-ledger overwrites", async ({ page, context, request }) => {
-  await load(page); const other = await context.newPage(); await load(other);
+test("two tabs keep tab-private sessions while sharing scoped recovery records", async ({ page, context, request }) => {
+  const firstReadiness = await load(page);
+  const other = await context.newPage();
+  const secondReadiness = await load(other);
+
+  expect(secondReadiness.tabId).not.toBe(firstReadiness.tabId);
+  expect(firstReadiness.stateOwnership.activeSession).toBe("tab-private");
+  expect(secondReadiness.stateOwnership.activeSession).toBe("tab-private");
+  expect(firstReadiness.stateOwnership.recoveryRecords)
+    .toBe("endpoint-protocol-identity-scoped-cross-tab");
+
   await Promise.all([submit(page, "First tab operation."), submit(other, "Second tab operation.")]);
   await expect(page.getByRole("dialog")).toBeHidden();
   await expect(other.getByRole("dialog")).toBeHidden();
