@@ -1,0 +1,132 @@
+name: Hepta objective remaining four rescue ARM
+
+on:
+  push:
+    branches:
+      - work/objective-compiler-production-convergence-20260927
+    paths:
+      - .github/workflows/hepta-objective-remaining-four-rescue-arm.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: objective-remaining-four-rescue
+  cancel-in-progress: true
+
+jobs:
+  rescue:
+    name: Repair one-shot source driver on ARM
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 90
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - name: Execute bounded ordinary-source closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/objective-strict-driver-fix.py" <<'PY'
+          from pathlib import Path
+
+          path = Path('.github/maintenance/objective_strict_clippy_edit.py')
+          text = path.read_text(encoding='utf-8')
+          old = '''    count = text.count(old)
+              if count != 1:
+                  raise RuntimeError(f"{path}: expected one match, found {count}: {old[:160]!r}")
+              target.write_text(text.replace(old, new, 1), encoding="utf-8")
+          '''
+          new = '''    count = text.count(old)
+              duplicate_first_only = (
+                  path == "codex-rs/hepta-intelligence/tests/intuition_frozen_qualification.rs"
+                  and count == 2
+                  and old in {
+                      "        let x: i64 = fields[1].parse().unwrap();\\n",
+                      "        let y: i64 = fields[2].parse().unwrap();\\n",
+                  }
+              )
+              if count != 1 and not duplicate_first_only:
+                  raise RuntimeError(f"{path}: expected one match, found {count}: {old[:160]!r}")
+              target.write_text(text.replace(old, new, 1), encoding="utf-8")
+          '''
+          if text.count(old) != 1:
+              raise SystemExit('strict driver function shape drifted')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+
+          python3 - <<'PY'
+          from pathlib import Path
+          import textwrap
+
+          workflow = Path('.github/workflows/hepta-objective-remaining-four-edit.yml').read_text(encoding='utf-8')
+          marker = '''      - name: Apply, validate and publish bounded source closure
+                  shell: bash
+                  run: |
+          '''
+          start = workflow.index(marker) + len(marker)
+          end = workflow.index('      - name: Capture development result\n', start)
+          script = textwrap.dedent(workflow[start:end])
+
+          strict = 'python3 .github/maintenance/objective_strict_clippy_edit.py\n'
+          if script.count(strict) != 1:
+              raise SystemExit('strict driver invocation drifted')
+          script = script.replace(
+              strict,
+              'python3 "$RUNNER_TEMP/objective-strict-driver-fix.py"\n' + strict,
+              1,
+          )
+
+          first_scope = "expected = {\n    '.github/workflows/hepta-objective-exact-execution.yml',"
+          if script.count(first_scope) != 1:
+              raise SystemExit('first source-scope declaration drifted')
+          script = script.replace(
+              first_scope,
+              "expected = {\n    '.github/maintenance/objective_strict_clippy_edit.py',\n    '.github/workflows/hepta-objective-exact-execution.yml',",
+              1,
+          )
+
+          retire = '  .github/workflows/hepta-objective-remaining-four-edit.yml\n'
+          if script.count(retire) != 1:
+              raise SystemExit('one-shot retirement list drifted')
+          script = script.replace(
+              retire,
+              '  .github/workflows/hepta-objective-remaining-four-edit.yml \\\n  .github/workflows/hepta-objective-remaining-four-rescue.yml \\\n  .github/workflows/hepta-objective-remaining-four-rescue-linux.yml \\\n  .github/workflows/hepta-objective-remaining-four-rescue-arm.yml\n',
+              1,
+          )
+
+          final_scope = "    '.github/workflows/hepta-objective-remaining-four-edit.yml',\n    '.github/workflows/hepta-objective-target-measurement.yml',"
+          if script.count(final_scope) != 1:
+              raise SystemExit('final source-scope declaration drifted')
+          script = script.replace(
+              final_scope,
+              "    '.github/workflows/hepta-objective-remaining-four-edit.yml',\n    '.github/workflows/hepta-objective-remaining-four-rescue.yml',\n    '.github/workflows/hepta-objective-remaining-four-rescue-linux.yml',\n    '.github/workflows/hepta-objective-remaining-four-rescue-arm.yml',\n    '.github/workflows/hepta-objective-target-measurement.yml',",
+              1,
+          )
+
+          target = Path('/tmp/objective-remaining-four-rescue.sh')
+          target.write_text('#!/usr/bin/env bash\n' + script, encoding='utf-8')
+          target.chmod(0o700)
+          PY
+
+          /tmp/objective-remaining-four-rescue.sh
+      - name: Capture rescue result
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/objective-remaining-four-development"
+          mkdir -p "$out"
+          git log -3 --format='%H %T %s' > "$out/rescue-commits.txt"
+          git status --short > "$out/rescue-status.txt"
+          printf '%s\n' 'Development artifact only. Qualification remains a separate read-only exact-candidate workflow.' > "$out/RESCUE_CLAIM_BOUNDARY.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: objective-remaining-four-rescue-arm-${{ github.sha }}
+          path: ${{ runner.temp }}/objective-remaining-four-development
+          if-no-files-found: error
+          retention-days: 7
