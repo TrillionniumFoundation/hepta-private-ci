@@ -175,6 +175,15 @@ jobs:
           --output "$RUNNER_TEMP/intelligence-command-records/intelligence-tests.json"
           -- cargo test --locked -p codex-hepta-intelligence
 
+      - name: Test NDU policy and deprecated compatibility boundary
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-target
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/intelligence-command-records/ndu-tests.json"
+          -- cargo test --locked -p codex-hepta-ndu
+
       - name: Test operation-owner recovery and claim boundaries
         working-directory: codex-rs
         env:
@@ -238,7 +247,8 @@ jobs:
           python3 ../scripts/hepta_ci_exec.py
           --output "$RUNNER_TEMP/intelligence-command-records/clippy.json"
           -- cargo clippy --locked -p codex-hepta-intelligence
-          -p codex-hepta-agentd -p codex-hepta-operations --all-targets -- -D warnings
+          -p codex-hepta-agentd -p codex-hepta-operations -p codex-hepta-ndu
+          --all-targets -- -D warnings
 
       - name: Project only observed exact execution evidence
         shell: bash
