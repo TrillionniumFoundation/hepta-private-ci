@@ -6,8 +6,13 @@ on:
   pull_request:
     paths:
       - 'codex-rs/hepta-authbus/**'
+      - 'codex-rs/hepta-authbus-p1-3-qualification/**'
       - 'codex-rs/hepta-evidence/**'
       - 'codex-rs/hepta-bao-adapter/**'
+      - 'codex-rs/hepta-agentd/tests/kernel_evidence_product.rs'
+      - 'codex-rs/Cargo.lock'
+      - 'docs/modules/auth.authbus/**'
+      - 'scripts/check-authbus-closed-world.py'
       - '.github/workflows/authbus-ownership-verification.yml'
 
 permissions:
@@ -29,6 +34,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+          fetch-depth: 0
       - name: Retain exact input identity and sources
         shell: bash
         run: |
@@ -42,35 +48,61 @@ jobs:
           name: authbus-inputs-${{ github.sha }}
           path: ${{ runner.temp }}/authbus-evidence/
           retention-days: 14
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@1.95.0
         with:
           components: rustfmt, clippy
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: codex-rs
-      - name: AuthBus and qualification tests
+      - name: Exact-source format and public-boundary inventory
         shell: bash
         run: |
           set -euo pipefail
-          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-authbus -p codex-hepta-authbus-p1-3-qualification --all-targets 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/authbus-tests.log"
+          rustc +1.95.0 --version --verbose > "$RUNNER_TEMP/authbus-evidence/toolchain.txt"
+          python3 scripts/check-authbus-closed-world.py --check
+          git diff --name-only f998dc1bc952f09ca38cfce13448eca36043c429 HEAD -- '*.rs' | while IFS= read -r path; do
+            [ -f "$path" ] || continue
+            rustfmt +1.95.0 --edition 2024 --config skip_children=true --check "$path"
+          done
+      - name: AuthBus and qualification tests
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-authbus -p codex-hepta-authbus-p1-3-qualification --all-targets 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/authbus-tests.log"
       - name: Evidence regression tests
         if: ${{ !cancelled() }}
         shell: bash
         run: |
           set -euo pipefail
-          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-evidence --all-targets 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/evidence-tests.log"
+          cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-evidence --all-targets 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/evidence-tests.log"
       - name: Bao integration tests
         if: ${{ !cancelled() }}
         shell: bash
         run: |
           set -euo pipefail
-          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-bao-adapter --all-targets 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/bao-tests.log"
+          cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-bao-adapter --all-targets 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/bao-tests.log"
+      - name: Agentd signed-ingress integration
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --test kernel_evidence_product 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/agentd-tests.log"
       - name: Strict AuthBus lint
         if: ${{ !cancelled() }}
         shell: bash
         run: |
           set -euo pipefail
-          cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-authbus --all-targets --all-features -- -D warnings 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/authbus-clippy.log"
+          cargo +1.95.0 clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-authbus --all-targets --all-features -- -D warnings 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/authbus-clippy.log"
+      - name: Full-owner-operation diagnostic workload
+        if: ${{ !cancelled() }}
+        shell: bash
+        env:
+          CARGO_TARGET_DIR: ${{ github.workspace }}/codex-rs/target
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 build --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-authbus --example owner_latency
+          /usr/bin/time -l "$CARGO_TARGET_DIR/debug/examples/owner_latency" 64 > "$RUNNER_TEMP/authbus-evidence/owner-latency.json" 2> "$RUNNER_TEMP/authbus-evidence/owner-peak-rss.txt"
       - name: Check unchanged tracked source
         if: ${{ !cancelled() }}
         shell: bash
@@ -79,6 +111,7 @@ jobs:
           git diff --check
           git diff --exit-code
           git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=all)"
       - name: Retain execution evidence
         if: always()
         uses: actions/upload-artifact@v4
