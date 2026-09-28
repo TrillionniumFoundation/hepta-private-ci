@@ -67,6 +67,7 @@ jobs:
               'scripts/test_hepta_objective_evidence_project.py',
           }
           changed = set(subprocess.check_output(['git', 'diff', '--name-only'], text=True).splitlines())
+          changed.update(subprocess.check_output(['git', 'ls-files', '--others', '--exclude-standard'], text=True).splitlines())
           if changed != expected:
               raise SystemExit(f'editing scope mismatch: missing={expected-changed}; unexpected={changed-expected}')
           PY
@@ -151,6 +152,7 @@ jobs:
               'scripts/test_hepta_objective_evidence_project.py',
           }
           changed = set(subprocess.check_output(['git', 'diff', '--name-only', 'HEAD'], text=True).splitlines())
+          changed.update(subprocess.check_output(['git', 'ls-files', '--others', '--exclude-standard'], text=True).splitlines())
           if changed != expected:
               raise SystemExit(f'final scope mismatch: missing={expected-changed}; unexpected={changed-expected}')
           PY
