@@ -66,13 +66,17 @@ jobs:
           echo "canonical_patch_sha256=$patch_sha"
           test -s "$patch_file"
           # The canonical patch was authored against the last disposable
-          # delivery-workflow baseline. Restore only that file in the worktree;
-          # this run keeps executing the checked-in current workflow definition,
-          # and the file is deleted before the source commit is published.
+          # delivery-workflow baseline. Restore and stage only that file so the
+          # patch's embedded Git blob identities can drive a strict three-way
+          # merge against the current branch. Any overlap that cannot be merged
+          # remains a hard failure; no reject, partial or ignored hunk is allowed.
           git show f0170332115434b1b950dfd4f9c747e05f68d146:.github/workflows/automation-taskflow-converge-20260927.yml \
             > .github/workflows/automation-taskflow-converge-20260927.yml
-          git apply --check --whitespace=error-all "$patch_file"
-          git apply --whitespace=error-all "$patch_file"
+          git add -- .github/workflows/automation-taskflow-converge-20260927.yml
+          grep -Eq '^index [0-9a-f]+\.\.[0-9a-f]+' "$patch_file"
+          git apply --3way --index --whitespace=error-all "$patch_file"
+          test -z "$(git diff --name-only --diff-filter=U)"
+          git diff --cached --check
           git diff --check
 
       - name: Converge schema, capability and documentation truth
