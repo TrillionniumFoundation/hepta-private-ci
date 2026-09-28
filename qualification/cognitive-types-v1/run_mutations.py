@@ -18,6 +18,8 @@ import tempfile
 import quality_checks as quality
 from run_qualification import git, run_check
 
+TARGETED_MUTATION_SCOPE = "eight-targeted-source-mutants-not-global-mutation-coverage"
+
 RECIPES = [
     {
         "name": "provenance-logical-identity",
@@ -38,6 +40,30 @@ RECIPES = [
         "negative": True,
     },
     {
+        "name": "recall-active-node-logical-identity",
+        "file": "codex-rs/hepta-cognitive-types/src/hnmf_learning.rs",
+        "old": '''        ensure_strict_identity_order(&self.active_nodes, "activeNodes", |left, right| {
+            left.node_id.cmp(&right.node_id)
+        })?;''',
+        "new": '''        ensure_strict_order(&self.active_nodes, "activeNodes")?;''',
+        "case": "recall:logical-active-node-conflict",
+        "negative": True,
+    },
+    {
+        "name": "recall-activation-path-logical-identity",
+        "file": "codex-rs/hepta-cognitive-types/src/hnmf_learning.rs",
+        "old": '''        ensure_strict_identity_order(&self.activation_paths, "activationPaths", |left, right| {
+            (&left.source_node_id, &left.target_node_id, left.relation).cmp(&(
+                &right.source_node_id,
+                &right.target_node_id,
+                right.relation,
+            ))
+        })?;''',
+        "new": '''        ensure_strict_order(&self.activation_paths, "activationPaths")?;''',
+        "case": "recall:logical-activation-path-conflict",
+        "negative": True,
+    },
+    {
         "name": "plasticity-weight-target-logical-identity",
         "file": "codex-rs/hepta-cognitive-types/src/hnmf_learning.rs",
         "old": '''        ensure_strict_identity_order(&self.weight_proposals, "weightProposals", |left, right| {
@@ -49,6 +75,18 @@ RECIPES = [
         })?;''',
         "new": '''        ensure_strict_order(&self.weight_proposals, "weightProposals")?;''',
         "case": "plasticity:logical-target-conflict",
+        "negative": True,
+    },
+    {
+        "name": "plasticity-threshold-target-logical-identity",
+        "file": "codex-rs/hepta-cognitive-types/src/hnmf_learning.rs",
+        "old": '''        ensure_strict_identity_order(
+            &self.threshold_proposals,
+            "thresholdProposals",
+            |left, right| left.node_id.cmp(&right.node_id),
+        )?;''',
+        "new": '''        ensure_strict_order(&self.threshold_proposals, "thresholdProposals")?;''',
+        "case": "plasticity:logical-threshold-conflict",
         "negative": True,
     },
     {
@@ -196,7 +234,7 @@ def main():
         "candidate_tree": tree,
         "candidate_unchanged": clean,
         "passed": passed,
-        "scope": "five-targeted-source-mutants-not-global-mutation-coverage",
+        "scope": TARGETED_MUTATION_SCOPE,
         "results": results,
     }
     (output / "mutation-receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")

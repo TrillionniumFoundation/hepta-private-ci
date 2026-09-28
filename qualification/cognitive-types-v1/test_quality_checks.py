@@ -54,6 +54,60 @@ class LosslessOracleTests(unittest.TestCase):
             with self.subTest(mutant=mutant):
                 self.assertTrue(self.oracle(mutant)["passed"])
 
+    def test_logical_identity_cases_cover_every_reviewed_key(self):
+        root = Path(__file__).resolve().parents[2]
+        _, negative = quality.cases(quality.load_vectors(root))
+        cases = dict(negative)
+        expected = {
+            "event:logical-provenance-conflict",
+            "recall:logical-event-conflict",
+            "recall:logical-active-node-conflict",
+            "recall:logical-activation-path-conflict",
+            "plasticity:logical-target-conflict",
+            "plasticity:logical-threshold-conflict",
+            "topology:logical-node-conflict",
+        }
+        self.assertTrue(expected <= set(cases))
+
+        event = json.loads(cases["event:logical-provenance-conflict"])
+        left, right = event["payload"]["provenance"]
+        self.assertEqual((left["sourceId"], left["sourceRevision"]),
+                         (right["sourceId"], right["sourceRevision"]))
+        self.assertLess(left["observedAtUnixMs"], right["observedAtUnixMs"])
+
+        recall = json.loads(cases["recall:logical-event-conflict"])
+        left, right = recall["payload"]["selectedEvents"]
+        self.assertEqual((left["eventId"], left["revision"]),
+                         (right["eventId"], right["revision"]))
+        self.assertLess(left["eventDigest"], right["eventDigest"])
+
+        recall = json.loads(cases["recall:logical-active-node-conflict"])
+        left, right = recall["payload"]["activeNodes"]
+        self.assertEqual(left["nodeId"], right["nodeId"])
+        self.assertLess(left["activationPpm"], right["activationPpm"])
+
+        recall = json.loads(cases["recall:logical-activation-path-conflict"])
+        left, right = recall["payload"]["activationPaths"]
+        self.assertEqual((left["sourceNodeId"], left["targetNodeId"], left["relation"]),
+                         (right["sourceNodeId"], right["targetNodeId"], right["relation"]))
+        self.assertLess(left["contributionPpm"], right["contributionPpm"])
+
+        plasticity = json.loads(cases["plasticity:logical-target-conflict"])
+        left, right = plasticity["payload"]["weightProposals"]
+        self.assertEqual((left["sourceNodeId"], left["targetNodeId"], left["relation"]),
+                         (right["sourceNodeId"], right["targetNodeId"], right["relation"]))
+        self.assertLess(left["newWeightQ16"], right["newWeightQ16"])
+
+        plasticity = json.loads(cases["plasticity:logical-threshold-conflict"])
+        left, right = plasticity["payload"]["thresholdProposals"]
+        self.assertEqual(left["nodeId"], right["nodeId"])
+        self.assertLess(left["newThresholdQ16"], right["newThresholdQ16"])
+
+        topology = json.loads(cases["topology:logical-node-conflict"])
+        left, right = topology["payload"]["typedNodesEdges"]["nodes"]
+        self.assertEqual(left["nodeId"], right["nodeId"])
+        self.assertLess(left["label"], right["label"])
+
     def test_process_crash_cannot_count_as_semantic_rejection(self):
         result = quality.invoke([sys.executable, "-c", "raise SystemExit(101)"], b"invalid")
         self.assertFalse(result["passed"])

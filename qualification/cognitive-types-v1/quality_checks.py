@@ -104,11 +104,41 @@ def cases(vectors):
     recall["payload"]["selectedEvents"].append(row)
     recall["payload"]["resourceReceipt"]["candidateEventCount"] = 2
     negative.append(("recall:logical-event-conflict", canonical(recall)))
+
+    recall = copy.deepcopy(envelopes["RecallPacketV1"])
+    row = copy.deepcopy(recall["payload"]["activeNodes"][0])
+    row["activationPpm"] += 1
+    recall["payload"]["activeNodes"].append(row)
+    recall["payload"]["resourceReceipt"]["activeNodeCount"] = 2
+    recall["payload"]["resourceReceipt"]["nodeCount"] = 2
+    negative.append(("recall:logical-active-node-conflict", canonical(recall)))
+
+    recall = copy.deepcopy(envelopes["RecallPacketV1"])
+    path = {
+        "sourceNodeId": "node:1",
+        "targetNodeId": "node:2",
+        "relation": "associative",
+        "contributionPpm": 1,
+    }
+    duplicate_path = copy.deepcopy(path)
+    duplicate_path["contributionPpm"] = 2
+    recall["payload"]["activationPaths"] = [path, duplicate_path]
+    recall["payload"]["resourceReceipt"]["nodeCount"] = 2
+    recall["payload"]["resourceReceipt"]["synapseCount"] = 1
+    negative.append(("recall:logical-activation-path-conflict", canonical(recall)))
+
     plasticity = copy.deepcopy(envelopes["PlasticityBatchV1"])
     row = copy.deepcopy(plasticity["payload"]["weightProposals"][0])
     row["newWeightQ16"], row["deltaPpm"] = 1024, 15625
     plasticity["payload"]["weightProposals"].insert(0, row)
     negative.append(("plasticity:logical-target-conflict", canonical(plasticity)))
+
+    plasticity = copy.deepcopy(envelopes["PlasticityBatchV1"])
+    row = copy.deepcopy(plasticity["payload"]["thresholdProposals"][0])
+    row["newThresholdQ16"], row["deltaPpm"] = -1024, -15625
+    plasticity["payload"]["thresholdProposals"].append(row)
+    negative.append(("plasticity:logical-threshold-conflict", canonical(plasticity)))
+
     topology = copy.deepcopy(envelopes["TopologyProposalV1"])
     row = copy.deepcopy(topology["payload"]["typedNodesEdges"]["nodes"][0])
     row["label"] = "other-label"
