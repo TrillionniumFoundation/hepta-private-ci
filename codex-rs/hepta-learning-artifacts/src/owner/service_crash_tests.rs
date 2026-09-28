@@ -42,13 +42,9 @@ fn request_and_registry(
 ) -> (LearningArtifactPublishRequestV1, ArtifactRegistry) {
     let predecessor = service.registry().snapshot().head_digest;
     let withdrawals = service.withdrawal_registry();
-    let admission = admit_manifest_at_withdrawal_head_v3(
-        withdrawals,
-        withdrawals.head_digest(),
-        manifest(),
-        20,
-    )
-    .fixture("admission");
+    let admission =
+        admit_manifest_at_withdrawal_head_v3(withdrawals, withdrawals.head_digest(), manifest(), 20)
+            .fixture("admission");
     let mut staged = service.registry().clone();
     let preview = ArtifactPublicationTransactionV1::begin(
         id("operation"),
@@ -63,12 +59,7 @@ fn request_and_registry(
         .host
         .stage_compatibility_registration(&preview, &mut staged, 20)
         .fixture("preview registration");
-    let request = publish_request(
-        &key(),
-        withdrawals,
-        predecessor,
-        staged.snapshot().head_digest,
-    );
+    let request = publish_request(&key(), withdrawals, predecessor, staged.snapshot().head_digest);
     (request, staged)
 }
 
@@ -81,11 +72,13 @@ fn phase_worker() {
         .fixture("phase")
         .parse::<u8>()
         .fixture("phase number");
-    assert!(phase <= 4);
+    assert!(phase <= 5);
     let root = PathBuf::from(root);
-    let service =
+    let mut service =
         LearningArtifactOwnerService::open(config(root.join("store"))).fixture("worker service");
     let (request, staged) = request_and_registry(&service);
+    bind_fixture_request(&mut service, &request);
+    if phase > 0 {
     let withdrawals = service.withdrawal_registry();
     let mut transaction = service
         .host
@@ -98,40 +91,30 @@ fn phase_worker() {
             20,
         )
         .fixture("prepare");
-    if phase >= 1 {
+    if phase >= 2 {
         service
             .host
             .ensure_payload_durable(&mut transaction, &staged, &request.payload, 20)
             .fixture("payload");
     }
-    if phase >= 2 {
-        service
-            .host
-            .ensure_registry_durable(
-                &mut transaction,
-                &staged,
-                withdrawals,
-                digest("binding"),
-                20,
-            )
-            .fixture("registry");
-    }
     if phase >= 3 {
         service
             .host
-            .ensure_witness_durable(
-                &mut transaction,
-                &request.signed_current_head,
-                withdrawals,
-                20,
-            )
+            .ensure_registry_durable(&mut transaction, &staged, withdrawals, digest("binding"), 20)
+            .fixture("registry");
+    }
+    if phase >= 4 {
+        service
+            .host
+            .ensure_witness_durable(&mut transaction, &request.signed_current_head, withdrawals, 20)
             .fixture("witness");
     }
-    if phase == 4 {
+    if phase == 5 {
         service
             .host
             .acknowledge(&mut transaction, withdrawals, 20)
             .fixture("acknowledge");
+    }
     }
     let mut barrier = fs::OpenOptions::new()
         .write(true)
@@ -148,7 +131,7 @@ fn phase_worker() {
 
 #[test]
 fn sigkill_every_durable_phase_reconciles_exactly_and_preserves_writer_exclusion() {
-    for phase in 0u8..=4 {
+    for phase in 0u8..=5 {
         let directory = TestDir::new();
         let store = directory.0.join("store");
         fs::create_dir(&store).fixture("store directory");
@@ -177,10 +160,7 @@ fn sigkill_every_durable_phase_reconciles_exactly_and_preserves_writer_exclusion
                 break;
             }
             assert!(child.0.try_wait().fixture("worker status").is_none());
-            assert!(
-                Instant::now() < deadline,
-                "phase worker did not reach barrier"
-            );
+            assert!(Instant::now() < deadline, "phase worker did not reach barrier");
             thread::sleep(Duration::from_millis(5));
         }
         assert!(matches!(
@@ -192,11 +172,11 @@ fn sigkill_every_durable_phase_reconciles_exactly_and_preserves_writer_exclusion
         child.0.kill().fixture("SIGKILL worker");
         assert!(!child.0.wait().fixture("reap worker").success());
         let mut recovery_config = config(store);
-        if phase >= 3 {
+        if phase >= 4 {
             recovery_config.required_current_head = Some(request.signed_current_head.clone());
         }
         let mut recovered = LearningArtifactOwnerService::open(recovery_config).fixture("reopen");
-        if phase < 4 {
+        if phase < 5 {
             assert_eq!(recovered.recovery_required(), Some(&request.operation_id));
             assert!(matches!(
                 recovered.current_registry_view(20),
@@ -213,10 +193,7 @@ fn sigkill_every_durable_phase_reconciles_exactly_and_preserves_writer_exclusion
             receipt.registry_head_digest,
             request.signed_current_head.witness.head_digest
         );
-        assert_eq!(
-            recovered.publish(request).fixture("terminal retry"),
-            receipt
-        );
+        assert_eq!(recovered.publish(request).fixture("terminal retry"), receipt);
         assert!(recovered.recovery_required().is_none());
         assert_eq!(
             recovered

@@ -28,13 +28,9 @@ fn request_for(
 ) -> LearningArtifactPublishRequestV1 {
     let mut staged = service.registry().clone();
     let predecessor = staged.snapshot().head_digest;
-    let admission = admit_manifest_at_withdrawal_head_v3(
-        withdrawals,
-        withdrawals.head_digest(),
-        manifest(),
-        20,
-    )
-    .fixture("preview admission");
+    let admission =
+        admit_manifest_at_withdrawal_head_v3(withdrawals, withdrawals.head_digest(), manifest(), 20)
+            .fixture("preview admission");
     let preview = ArtifactPublicationTransactionV1::begin(
         id("operation"),
         admission,
@@ -90,9 +86,7 @@ fn drain_serves_exact_terminal_receipt_without_reopening_admission() {
     let receipt = service.publish(request.clone()).fixture("publish");
     service.begin_drain();
     assert_eq!(
-        service
-            .publish(request.clone())
-            .fixture("historical receipt"),
+        service.publish(request.clone()).fixture("historical receipt"),
         receipt
     );
     let mut altered = request.clone();
@@ -116,9 +110,10 @@ fn drain_resumes_only_pending_publication_and_keeps_writer_fence() {
     let directory = TestDir::new();
     let key = key();
     let withdrawals = DatasetWithdrawalRegistry::new_scoped(scope());
-    let service = LearningArtifactOwnerService::open(config(&directory, &key, &withdrawals))
+    let mut service = LearningArtifactOwnerService::open(config(&directory, &key, &withdrawals))
         .fixture("open service");
     let request = request_for(&service, &key, &withdrawals);
+    bind_fixture_request(&mut service, &request);
     let _prepared = service
         .host
         .begin_publication(
@@ -200,11 +195,8 @@ fn durable_drain_survives_restart_and_remains_idempotent() {
         Err(LearningArtifactOwnerServiceError::Draining)
     ));
     assert!(
-        service
-            .host
-            .recover_publication(&request.operation_id)
-            .fixture("no Prepared")
-            .is_none()
+        service.host.recover_publication(&request.operation_id)
+            .fixture("no Prepared").is_none()
     );
 }
 
@@ -269,16 +261,10 @@ fn wrong_signed_head_is_rejected_before_prepared() {
     let mut request = request_for(&service, &key, &withdrawals);
     request.signed_current_head.witness.head_digest = digest("wrong proposed registry");
     request.signed_current_head.signature = key
-        .sign(&request.signed_current_head.signing_bytes())
-        .to_bytes();
+        .sign(&request.signed_current_head.signing_bytes()).to_bytes();
     assert!(service.publish(request.clone()).is_err());
-    assert!(
-        service
-            .host
-            .recover_publication(&request.operation_id)
-            .fixture("no Prepared for rejected head")
-            .is_none()
-    );
+    assert!(service.host.recover_publication(&request.operation_id)
+        .fixture("no Prepared for rejected head").is_none());
     assert!(service.recovery_required().is_none());
 }
 
@@ -287,29 +273,23 @@ fn recovered_payload_is_reopened_before_publication_advances() {
     let directory = TestDir::new();
     let key = key();
     let withdrawals = DatasetWithdrawalRegistry::new_scoped(scope());
-    let service = LearningArtifactOwnerService::open(config(&directory, &key, &withdrawals))
+    let mut service = LearningArtifactOwnerService::open(config(&directory, &key, &withdrawals))
         .fixture("open service");
     let request = request_for(&service, &key, &withdrawals);
-    let mut transaction = service
-        .host
-        .begin_publication(
-            request.operation_id.clone(),
-            request.admission.clone(),
-            &withdrawals,
-            service.registry(),
-            request.expected_registry_predecessor_head,
-            request.now,
-        )
-        .fixture("prepare");
+    bind_fixture_request(&mut service, &request);
+    let mut transaction = service.host.begin_publication(
+        request.operation_id.clone(),
+        request.admission.clone(),
+        &withdrawals,
+        service.registry(),
+        request.expected_registry_predecessor_head,
+        request.now,
+    ).fixture("prepare");
     let mut staged = service.registry().clone();
-    service
-        .host
-        .stage_compatibility_registration(&transaction, &mut staged, 20)
-        .fixture("stage");
-    let path = service
-        .host
-        .ensure_payload_durable(&mut transaction, &staged, &request.payload, 20)
-        .fixture("payload phase");
+    service.host.stage_compatibility_registration(&transaction, &mut staged, 20).fixture("stage");
+    let path = service.host.ensure_payload_durable(
+        &mut transaction, &staged, &request.payload, 20,
+    ).fixture("payload phase");
     drop(service);
     fs::write(directory.0.join(path), b"damaged").fixture("inject post-checkpoint corruption");
     let mut service = LearningArtifactOwnerService::open(config(&directory, &key, &withdrawals))
@@ -317,13 +297,8 @@ fn recovered_payload_is_reopened_before_publication_advances() {
     assert!(service.publish(request.clone()).is_err());
     assert_eq!(service.recovery_required(), Some(&request.operation_id));
     assert_eq!(
-        service
-            .host
-            .recover_publication(&request.operation_id)
-            .fixture("checkpoint")
-            .fixture("present")
-            .checkpoint
-            .phase,
+        service.host.recover_publication(&request.operation_id)
+            .fixture("checkpoint").fixture("present").checkpoint.phase,
         ArtifactPublicationPhaseV1::PayloadDurable
     );
     service.begin_drain();
@@ -343,9 +318,8 @@ fn durable_stop_survives_sigkill() {
         let directory = TestDir(PathBuf::from(root));
         let key = key();
         let withdrawals = DatasetWithdrawalRegistry::new_scoped(scope());
-        let mut service =
-            LearningArtifactOwnerService::open(config(&directory, &key, &withdrawals))
-                .fixture("child open");
+        let mut service = LearningArtifactOwnerService::open(config(&directory, &key, &withdrawals))
+            .fixture("child open");
         service.begin_drain_durable().fixture("child durable stop");
         fs::write(directory.0.join("child-ready"), b"durable").fixture("child ready");
         loop {
@@ -367,8 +341,7 @@ fn durable_stop_survives_sigkill() {
             .arg("owner_service::tests::drain::durable_stop_survives_sigkill")
             .arg("--nocapture")
             .env(CHILD_ROOT, &directory.0)
-            .spawn()
-            .fixture("spawn real writer child"),
+            .spawn().fixture("spawn real writer child")
     );
     let started = Instant::now();
     while !directory.0.join("child-ready").exists() {
@@ -376,10 +349,7 @@ fn durable_stop_survives_sigkill() {
             child.0.try_wait().fixture("child status").is_none(),
             "child exited before stop"
         );
-        assert!(
-            started.elapsed() < Duration::from_secs(15),
-            "child readiness timeout"
-        );
+        assert!(started.elapsed() < Duration::from_secs(15), "child readiness timeout");
         std::thread::sleep(Duration::from_millis(10));
     }
     let key = key();
