@@ -4,7 +4,7 @@ This package-local qualification harness compares frozen pretrained encoders wit
 real, separately trained organ/cell adapters and typed heads. It is not a second
 Neuron owner, inference runtime, artifact selector, or computer-effect executor.
 The authoritative product path remains the guarded V2 owner described in
-[the V2 development guide](../../../../docs/modules/neuron.runtime/V2_DEVELOPMENT.md).
+[the V2 development guide](../../../docs/modules/neuron.runtime/V2_DEVELOPMENT.md).
 
 ## Scope and evidence
 
