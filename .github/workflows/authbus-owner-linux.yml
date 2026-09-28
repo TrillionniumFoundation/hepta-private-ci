@@ -1,0 +1,61 @@
+name: AuthBus Linux owner verification
+on:
+  push:
+    branches: [work/authbus-ownership-transactions-20260928]
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-authbus/**'
+      - 'codex-rs/hepta-authbus-p1-3-qualification/**'
+      - 'codex-rs/Cargo.lock'
+      - '.github/workflows/authbus-owner-linux.yml'
+permissions:
+  contents: read
+concurrency:
+  group: authbus-owner-linux-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  CARGO_TERM_COLOR: never
+  RUST_BACKTRACE: 1
+jobs:
+  owner-linux:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Retain input identity
+        run: |
+          mkdir -p "$RUNNER_TEMP/authbus-linux"
+          git rev-parse HEAD > "$RUNNER_TEMP/authbus-linux/source-sha.txt"
+          git rev-parse HEAD^{tree} > "$RUNNER_TEMP/authbus-linux/source-tree.txt"
+      - uses: dtolnay/rust-toolchain@1.95.0
+        with:
+          components: clippy
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: codex-rs
+          save-if: ${{ !cancelled() }}
+      - name: Owner and qualification regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-authbus -p codex-hepta-authbus-p1-3-qualification --all-targets 2>&1 | tee "$RUNNER_TEMP/authbus-linux/owner-tests.log"
+      - name: Strict owner lint
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-authbus --all-targets --all-features -- -D warnings 2>&1 | tee "$RUNNER_TEMP/authbus-linux/owner-clippy.log"
+      - name: Unchanged-source check
+        if: ${{ !cancelled() }}
+        run: |
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=all)"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: authbus-linux-${{ github.sha }}
+          path: ${{ runner.temp }}/authbus-linux/
+          retention-days: 14
