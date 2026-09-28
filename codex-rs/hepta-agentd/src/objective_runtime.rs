@@ -178,7 +178,7 @@ impl ObjectiveRuntimeHost {
             now_unix_micros,
             selected_profile_digest: self.profile_digest,
             source_authentication: ObjectiveSourceAuthenticationV1::AuthorizedAdapter {
-                source_identity: issuer.issuer_id,
+                source_identity: issuer.issuer_id.clone(),
                 source_digest: source.structured_intent.provenance.source_digest,
             },
         };

@@ -239,15 +239,10 @@ impl DurableLeaseRegistryV1 {
             return Err(LeaseRegistryErrorV1::InvalidTransition);
         }
         operation.state = LeaseOperationStateV1::Unknown;
-        if let Some(lease_id) = operation.lease_id.as_ref() {
-            if let Some(lease) = next.leases.get_mut(lease_id) {
-                lease.state = match operation.kind {
-                    LeaseOperationKindV1::Renew => SecretLeaseStateV1::RenewUnknown,
-                    LeaseOperationKindV1::Revoke => SecretLeaseStateV1::RevokeUnknown,
-                    LeaseOperationKindV1::Issue => lease.state,
-                };
-            }
-        }
+        let operation = operation.clone();
+        // Uncertainty is derived from all unresolved operations, not whichever
+        // callback arrives last. Terminal leases must never be resurrected.
+        refresh_lease_uncertainty(&mut next, &operation)?;
         self.commit(next)?;
         self.operation(operation_id)
             .cloned()
@@ -275,7 +270,7 @@ impl DurableLeaseRegistryV1 {
         let mut next = self.state.clone();
         match (&current.kind, observation) {
             (LeaseOperationKindV1::Issue, ProviderLeaseObservationV1::IssueApplied { lease }) => {
-                validate_lease(&lease)?;
+                validate_new_lease(&lease)?;
                 if next.leases.contains_key(&lease.lease_id) {
                     return Err(LeaseRegistryErrorV1::ObservationMismatch);
                 }
@@ -303,6 +298,15 @@ impl DurableLeaseRegistryV1 {
                     .leases
                     .get_mut(&lease_id)
                     .ok_or(LeaseRegistryErrorV1::LeaseNotFound)?;
+                if !matches!(
+                    lease.state,
+                    SecretLeaseStateV1::Active | SecretLeaseStateV1::RenewUnknown
+                ) {
+                    return Err(LeaseRegistryErrorV1::InvalidTransition);
+                }
+                if observed_at_unix_ms < lease.issued_at_unix_ms {
+                    return Err(LeaseRegistryErrorV1::ObservationMismatch);
+                }
                 lease.expires_at_unix_ms = expires_at_unix_ms;
                 lease.renewable = renewable;
                 lease.provider_metadata_sha256 = provider_metadata_sha256;
@@ -310,9 +314,9 @@ impl DurableLeaseRegistryV1 {
                     .generation
                     .checked_add(1)
                     .ok_or(LeaseRegistryErrorV1::InvalidTransition)?;
-                lease.state = SecretLeaseStateV1::Active;
                 next.operations.get_mut(operation_id).unwrap().state =
                     LeaseOperationStateV1::Applied;
+                refresh_lease_uncertainty(&mut next, &current)?;
             }
             (
                 LeaseOperationKindV1::Revoke,
@@ -342,12 +346,12 @@ impl DurableLeaseRegistryV1 {
             (_, ProviderLeaseObservationV1::Denied) => {
                 next.operations.get_mut(operation_id).unwrap().state =
                     LeaseOperationStateV1::Denied;
-                restore_unknown_lease_state(&mut next, &current)?;
+                refresh_lease_uncertainty(&mut next, &current)?;
             }
             (_, ProviderLeaseObservationV1::NotApplied) => {
                 next.operations.get_mut(operation_id).unwrap().state =
                     LeaseOperationStateV1::Denied;
-                restore_unknown_lease_state(&mut next, &current)?;
+                refresh_lease_uncertainty(&mut next, &current)?;
             }
             _ => return Err(LeaseRegistryErrorV1::ObservationMismatch),
         }
@@ -431,7 +435,7 @@ impl DurableLeaseRegistryV1 {
     }
 }
 
-fn restore_unknown_lease_state(
+fn refresh_lease_uncertainty(
     state: &mut StoredRegistryV1,
     operation: &LeaseOperationV1,
 ) -> Result<(), LeaseRegistryErrorV1> {
@@ -444,10 +448,27 @@ fn restore_unknown_lease_state(
         .ok_or(LeaseRegistryErrorV1::LeaseNotFound)?;
     if matches!(
         lease.state,
-        SecretLeaseStateV1::RenewUnknown | SecretLeaseStateV1::RevokeUnknown
+        SecretLeaseStateV1::Revoked | SecretLeaseStateV1::Expired
     ) {
-        lease.state = SecretLeaseStateV1::Active;
+        return Ok(());
     }
+    let mut uncertainty = SecretLeaseStateV1::Active;
+    for pending in state.operations.values() {
+        if pending.lease_id.as_ref() != Some(lease_id)
+            || pending.state != LeaseOperationStateV1::Unknown
+        {
+            continue;
+        }
+        match pending.kind {
+            LeaseOperationKindV1::Revoke => {
+                uncertainty = SecretLeaseStateV1::RevokeUnknown;
+                break;
+            }
+            LeaseOperationKindV1::Renew => uncertainty = SecretLeaseStateV1::RenewUnknown,
+            LeaseOperationKindV1::Issue => {}
+        }
+    }
+    lease.state = uncertainty;
     Ok(())
 }
 
@@ -469,17 +490,33 @@ fn validate_state(state: &StoredRegistryV1) -> Result<(), LeaseRegistryErrorV1> 
         {
             return Err(LeaseRegistryErrorV1::CorruptState);
         }
+        match (operation.kind, operation.lease_id.as_ref()) {
+            (LeaseOperationKindV1::Issue, None) => {}
+            (LeaseOperationKindV1::Renew | LeaseOperationKindV1::Revoke, Some(lease_id))
+                if state.leases.contains_key(lease_id) => {}
+            _ => return Err(LeaseRegistryErrorV1::CorruptState),
+        }
     }
     for (id, lease) in &state.leases {
         if id != &lease.lease_id {
             return Err(LeaseRegistryErrorV1::CorruptState);
         }
-        validate_lease(lease).map_err(|_| LeaseRegistryErrorV1::CorruptState)?;
+        // Recovery accepts durable uncertainty and terminal states. The
+        // stronger Active-only requirement belongs to new issue observations.
+        validate_lease_metadata(lease).map_err(|_| LeaseRegistryErrorV1::CorruptState)?;
     }
     Ok(())
 }
 
-fn validate_lease(lease: &SecretLeaseMetadataV1) -> Result<(), LeaseRegistryErrorV1> {
+fn validate_new_lease(lease: &SecretLeaseMetadataV1) -> Result<(), LeaseRegistryErrorV1> {
+    validate_lease_metadata(lease)?;
+    if lease.state != SecretLeaseStateV1::Active {
+        return Err(LeaseRegistryErrorV1::InvalidInput);
+    }
+    Ok(())
+}
+
+fn validate_lease_metadata(lease: &SecretLeaseMetadataV1) -> Result<(), LeaseRegistryErrorV1> {
     if !identifier(&lease.lease_id)
         || !identifier(&lease.secret_reference_id)
         || !identifier(&lease.consumer_id)
@@ -487,7 +524,6 @@ fn validate_lease(lease: &SecretLeaseMetadataV1) -> Result<(), LeaseRegistryErro
         || lease.provider_metadata_sha256 == [0; 32]
         || lease.generation == 0
         || lease.expires_at_unix_ms <= lease.issued_at_unix_ms
-        || lease.state != SecretLeaseStateV1::Active
     {
         return Err(LeaseRegistryErrorV1::InvalidInput);
     }
@@ -528,3 +564,7 @@ fn identifier(value: &str) -> bool {
 #[cfg(test)]
 #[path = "lease_lifecycle_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "lease_lifecycle_recovery_tests.rs"]
+mod recovery_tests;

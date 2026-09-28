@@ -286,10 +286,12 @@ async fn expiry_and_current_revocation_are_terminal_and_never_acknowledged() {
     let store = HeptaEvidenceStore::open(&config(temp.path()))
         .await
         .unwrap();
-    let (mut issuer, message) = fixture(1, u64::MAX);
+    let (_, message) = fixture(1, u64::MAX);
     let id = enqueue(&store, 1).await.delivery_id;
     let delivery = claim(&store, id, 60_000).await.unwrap();
-    issuer.revoked = true;
+    // Obtain a revoked registration through the authority-backed fixture;
+    // sealed issuer material must not become mutable for negative tests.
+    let issuer = issuer_registration("issuer:queue", 1, &SigningKey::from_bytes(&[37; 32]), true);
     assert!(
         store
             .ack_authbus_delivery(&issuer, &delivery.lease, Digest32::of_bytes(b"ack"))
