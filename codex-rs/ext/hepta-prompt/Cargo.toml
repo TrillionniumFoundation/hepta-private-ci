@@ -7,8 +7,13 @@ publish = false
 
 [lib]
 name = "codex_hepta_prompt_extension"
-path = "src/lib.rs"
+path = "src/root.rs"
 doctest = false
+
+[features]
+default = ["prompt-context-v3"]
+prompt-context-v3 = []
+qualification-context-fixtures = ["prompt-context-v3"]
 
 [lints]
 workspace = true
@@ -16,6 +21,8 @@ workspace = true
 [dependencies]
 codex-api = { workspace = true }
 codex-extension-api = { workspace = true }
+codex-hepta-contracts = { workspace = true }
+codex-hepta-governance = { workspace = true }
 codex-hepta-types = { path = "../../hepta-types" }
 tokio = { workspace = true, features = ["sync"] }
 

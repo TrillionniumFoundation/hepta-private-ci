@@ -11,8 +11,13 @@ path = "src/lib.rs"
 doctest = false
 
 [features]
-default = []
+default = ["prompt-context-v3"]
+prompt-context-v3 = ["codex-hepta-prompt-registry/prompt-context-v3"]
 legacy-prompt-context-v1 = []
+qualification-context-fixtures = [
+    "prompt-context-v3",
+    "codex-hepta-prompt-registry/qualification-context-fixtures",
+]
 
 [lints]
 workspace = true
@@ -30,7 +35,7 @@ codex-hepta-ndu = { path = "../hepta-ndu" }
 codex-hepta-neuron = { path = "../hepta-neuron" }
 codex-hepta-objective = { path = "../hepta-objective" }
 codex-hepta-prompt-optimizer = { path = "../hepta-prompt-optimizer" }
-codex-hepta-prompt-registry = { path = "../hepta-prompt-registry" }
+codex-hepta-prompt-registry = { path = "../hepta-prompt-registry", default-features = false }
 codex-hepta-plasticity = { path = "../hepta-plasticity" }
 codex-hepta-types = { path = "../hepta-types" }
 serde = { workspace = true, features = ["derive"] }

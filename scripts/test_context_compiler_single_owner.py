@@ -19,23 +19,38 @@ class ContextCompilerSingleOwnerTests(unittest.TestCase):
         self.assertEqual(intelligence.count("mod prompt_product_v3;"), 1)
         self.assertIn("pub use prompt_product_v3::compile_prompt_registry_v3;", intelligence)
 
-    def test_legacy_context_is_explicit_and_default_off(self):
+    def test_v3_is_default_legacy_is_explicit_and_fixtures_are_qualification_only(self):
+        registry = read("codex-rs/hepta-prompt-registry/Cargo.toml")
         intelligence = read("codex-rs/hepta-intelligence/Cargo.toml")
+        extension = read("codex-rs/ext/hepta-prompt/Cargo.toml")
         agentd = read("codex-rs/hepta-agentd/Cargo.toml")
-        self.assertIn("[features]\ndefault = []", intelligence)
+
+        self.assertIn('default = ["prompt-context-v3"]', registry)
+        self.assertIn('default = ["prompt-context-v3"]', intelligence)
+        self.assertIn('default = ["prompt-context-v3"]', extension)
+        self.assertIn(
+            'default = ["production-cognitive-write", "prompt-context-v3"]',
+            agentd,
+        )
         self.assertIn("legacy-prompt-context-v1 = []", intelligence)
         self.assertIn(
             'legacy-prompt-context-v1 = ["codex-hepta-intelligence/legacy-prompt-context-v1"]',
             agentd,
         )
+        for manifest in (registry, intelligence, extension, agentd):
+            self.assertIn("qualification-context-fixtures", manifest)
+        self.assertIn("default-features = false", intelligence)
+        self.assertGreaterEqual(agentd.count("default-features = false"), 2)
 
     def test_only_existing_prompt_runtime_owns_the_physical_send(self):
-        extension = read("codex-rs/ext/hepta-prompt/src/lib.rs")
+        extension_root = read("codex-rs/ext/hepta-prompt/src/root.rs")
+        canonical_extension = read("codex-rs/ext/hepta-prompt/src/lib.rs")
         agentd_root = read("codex-rs/hepta-agentd/src/lib.rs")
         runtime = read("codex-rs/hepta-agentd/src/prompt_runtime.rs")
-        self.assertEqual(extension.count("pub fn install_prompt_runtime<"), 1)
-        self.assertNotIn("mod v3;", extension)
-        self.assertNotIn("install_prompt_runtime_v3", extension)
+
+        self.assertIn("pub mod v3;", extension_root)
+        self.assertEqual(canonical_extension.count("pub fn install_prompt_runtime<"), 1)
+        self.assertNotIn("install_prompt_runtime_v3", canonical_extension)
         self.assertEqual(agentd_root.count("mod exact_context_delivery;"), 1)
         self.assertEqual(agentd_root.count("mod prompt_runtime;"), 1)
         self.assertNotIn("mod prompt_product_v3;", agentd_root)
@@ -44,20 +59,21 @@ class ContextCompilerSingleOwnerTests(unittest.TestCase):
         self.assertIn(".with_final_terminal_observer", runtime)
         self.assertIn("self.exact\n            .stage(thread_id, turn_id, compiled.clone())", runtime)
 
-    def test_parallel_historical_files_cannot_become_implicit_owners(self):
-        extension_root = read("codex-rs/ext/hepta-prompt/src/lib.rs")
+        v3_definition = ROOT / "codex-rs/ext/hepta-prompt/src/v3.rs"
+        for path in sorted((ROOT / "codex-rs").rglob("*.rs")):
+            if path == v3_definition:
+                continue
+            self.assertNotIn(
+                "install_prompt_runtime_v3",
+                path.read_text(encoding="utf-8"),
+                str(path),
+            )
+
+    def test_parallel_agentd_owner_cannot_become_implicit(self):
         agentd_root = read("codex-rs/hepta-agentd/src/lib.rs")
-        historical = (
-            (ROOT / "codex-rs/ext/hepta-prompt/src/v3.rs", "mod v3;", extension_root),
-            (
-                ROOT / "codex-rs/hepta-agentd/src/prompt_product_v3.rs",
-                "mod prompt_product_v3;",
-                agentd_root,
-            ),
-        )
-        for path, declaration, module_root in historical:
-            if path.exists():
-                self.assertNotIn(declaration, module_root, str(path))
+        historical = ROOT / "codex-rs/hepta-agentd/src/prompt_product_v3.rs"
+        if historical.exists():
+            self.assertNotIn("mod prompt_product_v3;", agentd_root, str(historical))
 
     def test_context_workflows_are_read_only_and_source_writers_are_retired(self):
         forbidden = (
