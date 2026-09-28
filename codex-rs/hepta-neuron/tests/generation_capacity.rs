@@ -159,7 +159,10 @@ fn replay_budget_is_also_a_new_work_admission_budget() -> Result<(), Box<dyn Err
         store.admit_operation(&first.key, /*expected_anchor*/ None, 128, 256),
         Err(GenerationStoreError::Capacity)
     );
-    assert_eq!(store.commit_result(first), Err(GenerationStoreError::Capacity));
+    assert_eq!(
+        store.commit_result(first),
+        Err(GenerationStoreError::Capacity)
+    );
     drop(store);
     let reopened = FileNeuronGenerationStoreV2::open_existing(&path, limits)?;
     assert_eq!(reopened.current_anchor()?, None);
@@ -215,7 +218,10 @@ fn exact_capacity_finishes_and_preserves_full_result_and_conflict() -> Result<()
     );
     let mut changed = first;
     changed.key.input_semantic_digest = digest("changed-input");
-    assert_eq!(reopened.commit_result(changed), Err(GenerationStoreError::Conflict));
+    assert_eq!(
+        reopened.commit_result(changed),
+        Err(GenerationStoreError::Conflict)
+    );
     drop(reopened);
     let reopened = FileNeuronGenerationStoreV2::open_existing(&path, limits.clone())?;
     assert_eq!(reopened.find_operation(&expected.key)?, Some(expected));
@@ -245,7 +251,11 @@ fn index_frame_sizes() -> Result<(u64, u64, u64), Box<dyn Error>> {
     index.prepare(first.key.clone(), /*expected_anchor*/ None)?;
     let prepared_end = fs::metadata(&path)?.len();
     index.complete(&first.key, first.next_anchor, digest("committed-operation"))?;
-    Ok((header, prepared_end - header, fs::metadata(path)?.len() - prepared_end))
+    Ok((
+        header,
+        prepared_end - header,
+        fs::metadata(path)?.len() - prepared_end,
+    ))
 }
 
 #[test]

@@ -30,10 +30,10 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use crate::JournalAnchor;
-use crate::runtime_file_v2::MeasuredFileV2;
-use crate::runtime_file_v2::open_regular;
 use crate::JournalScope;
 use crate::NeuronOperationKeyV2;
+use crate::runtime_file_v2::MeasuredFileV2;
+use crate::runtime_file_v2::open_regular;
 
 #[path = "runtime_index_v2_capacity.rs"]
 mod capacity;
@@ -478,29 +478,39 @@ impl FileNeuronRuntimeIndexV2 {
         }
     }
 
-    pub(crate) fn capacity_snapshot(&self) -> Result<crate::NeuronStorageCapacityV2, NeuronRuntimeIndexError> {
+    pub(crate) fn capacity_snapshot(
+        &self,
+    ) -> Result<crate::NeuronStorageCapacityV2, NeuronRuntimeIndexError> {
         self.ensure_healthy()?;
         Ok(crate::NeuronStorageCapacityV2 {
             records: self.records.len() + self.failures.len() + usize::from(self.pending.is_some()),
             record_limit: self.context.max_records,
             file_bytes: self.file.metadata()?.len(),
-            byte_limit: self.context.max_file_bytes.min(self.context.max_startup_replay_bytes),
-            reserved_bytes: self.pending.as_ref().map(|pending| {
-                self.remaining_reservation(&pending.key, pending.expected_anchor, !self.dispatched)
-            }).transpose()?.unwrap_or(0),
+            byte_limit: self
+                .context
+                .max_file_bytes
+                .min(self.context.max_startup_replay_bytes),
+            reserved_bytes: self
+                .pending
+                .as_ref()
+                .map(|pending| {
+                    self.remaining_reservation(
+                        &pending.key,
+                        pending.expected_anchor,
+                        !self.dispatched,
+                    )
+                })
+                .transpose()?
+                .unwrap_or(0),
         })
     }
 
-    pub fn records(
-        &self,
-    ) -> Result<Vec<NeuronRuntimeIndexRecordV2>, NeuronRuntimeIndexError> {
+    pub fn records(&self) -> Result<Vec<NeuronRuntimeIndexRecordV2>, NeuronRuntimeIndexError> {
         self.ensure_healthy()?;
         Ok(self.records.clone())
     }
 
-    pub fn pending(
-        &self,
-    ) -> Result<Option<NeuronRuntimeIndexPendingV2>, NeuronRuntimeIndexError> {
+    pub fn pending(&self) -> Result<Option<NeuronRuntimeIndexPendingV2>, NeuronRuntimeIndexError> {
         self.ensure_healthy()?;
         Ok(self.pending.clone())
     }
@@ -733,7 +743,10 @@ fn apply_event(
     }
     let legacy_prepared = matches!(&decoded.event, IndexEventV2::Prepared { .. });
     match decoded.event {
-        IndexEventV2::Reserved { key, expected_anchor }
+        IndexEventV2::Reserved {
+            key,
+            expected_anchor,
+        }
         | IndexEventV2::Prepared {
             key,
             expected_anchor,
@@ -783,9 +796,7 @@ fn apply_event(
             let key = key.into_key()?;
             let next_anchor = next_anchor.into_anchor()?;
             let generation_operation_digest = parse_digest(&generation_operation_digest)?;
-            let prepared = pending
-                .as_ref()
-                .ok_or(NeuronRuntimeIndexError::Corrupt)?;
+            let prepared = pending.as_ref().ok_or(NeuronRuntimeIndexError::Corrupt)?;
             if prepared.key != key
                 || prepared.expected_anchor != *frontier
                 || !is_successor(prepared.expected_anchor, next_anchor)

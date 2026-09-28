@@ -432,11 +432,7 @@ fn unpredictable_resource_excess_is_committed_degraded() {
     ));
     let calls = Arc::new(AtomicUsize::new(0));
     let mut model = FakeDurableModel::new(calls);
-    let committed = checked(runtime.tick_guarded(
-        &mut model,
-        input(1, Digest32::ZERO),
-        &mut Allow,
-    ));
+    let committed = checked(runtime.tick_guarded(&mut model, input(1, Digest32::ZERO), &mut Allow));
     assert!(matches!(
         committed.disposition,
         NeuronCommitDispositionV1::CommittedDegraded { .. }

@@ -1,7 +1,7 @@
 //! Advisory capacity and process-local latency/I/O diagnostics. No receipt,
 //! checkpoint, semantic identity, authority decision or SLA depends on these.
-use serde::Serialize;
 use crate::NeuronIoMetricsV2;
+use serde::Serialize;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
 pub struct NeuronStorageObservationV2 {

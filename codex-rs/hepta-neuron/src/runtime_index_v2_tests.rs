@@ -83,10 +83,7 @@ fn anchor(sequence: u64) -> JournalAnchor {
 #[test]
 fn prepare_complete_reopen_preserves_exact_order() {
     let fixture = Fixture::new();
-    let mut index = checked(FileNeuronRuntimeIndexV2::create(
-        &fixture.file,
-        context(),
-    ));
+    let mut index = checked(FileNeuronRuntimeIndexV2::create(&fixture.file, context()));
     let first = key("tick-1", "input-1");
     checked(index.prepare(first.clone(), None));
     checked(index.complete(&first, anchor(1), digest("operation-1")));
@@ -110,17 +107,10 @@ fn prepare_complete_reopen_preserves_exact_order() {
 #[test]
 fn exact_retry_is_historical_and_changed_payload_conflicts() {
     let fixture = Fixture::new();
-    let mut index = checked(FileNeuronRuntimeIndexV2::create(
-        &fixture.file,
-        context(),
-    ));
+    let mut index = checked(FileNeuronRuntimeIndexV2::create(&fixture.file, context()));
     let operation = key("tick-1", "input-1");
     checked(index.prepare(operation.clone(), None));
-    let completed = checked(index.complete(
-        &operation,
-        anchor(1),
-        digest("operation-1"),
-    ));
+    let completed = checked(index.complete(&operation, anchor(1), digest("operation-1")));
     assert_eq!(
         checked(index.admit(&operation, Some(anchor(1)))),
         NeuronRuntimeIndexAdmissionV2::Historical(completed)
@@ -135,10 +125,7 @@ fn exact_retry_is_historical_and_changed_payload_conflicts() {
 fn prepared_operation_is_durable_before_result_commit() {
     let fixture = Fixture::new();
     let operation = key("tick-1", "input-1");
-    let mut index = checked(FileNeuronRuntimeIndexV2::create(
-        &fixture.file,
-        context(),
-    ));
+    let mut index = checked(FileNeuronRuntimeIndexV2::create(&fixture.file, context()));
     checked(index.prepare(operation.clone(), None));
     drop(index);
 
@@ -159,10 +146,7 @@ fn prepared_operation_is_durable_before_result_commit() {
 fn partial_tail_is_truncated_without_fabricated_completion() {
     let fixture = Fixture::new();
     let operation = key("tick-1", "input-1");
-    let mut index = checked(FileNeuronRuntimeIndexV2::create(
-        &fixture.file,
-        context(),
-    ));
+    let mut index = checked(FileNeuronRuntimeIndexV2::create(&fixture.file, context()));
     checked(index.prepare(operation.clone(), None));
     drop(index);
     let stable = checked(fs::metadata(&fixture.file)).len();
@@ -187,10 +171,7 @@ fn partial_tail_is_truncated_without_fabricated_completion() {
 fn post_sync_uncertainty_reopens_as_one_prepared_event() {
     let fixture = Fixture::new();
     let operation = key("tick-1", "input-1");
-    let mut index = checked(FileNeuronRuntimeIndexV2::create(
-        &fixture.file,
-        context(),
-    ));
+    let mut index = checked(FileNeuronRuntimeIndexV2::create(&fixture.file, context()));
     index.fail_next_append_after_sync();
     assert_eq!(
         index.prepare(operation.clone(), None),
@@ -223,9 +204,15 @@ fn legacy_prepared_record_is_never_treated_as_proof_of_non_execution() {
     let payload = checked(encode_event(index.event_frontier, &event));
     checked(index.append_payload(&payload));
     drop(index);
-    let index = checked(FileNeuronRuntimeIndexV2::open_existing(&fixture.file, context()));
+    let index = checked(FileNeuronRuntimeIndexV2::open_existing(
+        &fixture.file,
+        context(),
+    ));
     assert!(checked(index.dispatched()));
-    assert_eq!(checked(checked(index.pending()).ok_or("pending legacy operation")).key, operation);
+    assert_eq!(
+        checked(checked(index.pending()).ok_or("pending legacy operation")).key,
+        operation
+    );
 }
 
 #[test]
@@ -239,11 +226,23 @@ fn failure_tombstones_are_idempotent_and_conflict_fenced() {
     let length = checked(fs::metadata(&fixture.file)).len();
     checked(index.fail_operation(&operation, NeuronOperationFailureV2::InvalidModelOutput));
     assert_eq!(checked(fs::metadata(&fixture.file)).len(), length);
-    assert_eq!(index.fail_operation(&operation, NeuronOperationFailureV2::AdmissionDenied), Err(NeuronRuntimeIndexError::Conflict));
-    assert_eq!(index.admit(&key("failed-tick", "changed"), None), Err(NeuronRuntimeIndexError::Conflict));
+    assert_eq!(
+        index.fail_operation(&operation, NeuronOperationFailureV2::AdmissionDenied),
+        Err(NeuronRuntimeIndexError::Conflict)
+    );
+    assert_eq!(
+        index.admit(&key("failed-tick", "changed"), None),
+        Err(NeuronRuntimeIndexError::Conflict)
+    );
     drop(index);
-    let index = checked(FileNeuronRuntimeIndexV2::open_existing(&fixture.file, context()));
-    assert_eq!(checked(index.failure(&operation)), Some(NeuronOperationFailureV2::InvalidModelOutput));
+    let index = checked(FileNeuronRuntimeIndexV2::open_existing(
+        &fixture.file,
+        context(),
+    ));
+    assert_eq!(
+        checked(index.failure(&operation)),
+        Some(NeuronOperationFailureV2::InvalidModelOutput)
+    );
     assert_eq!(checked(index.pending()), None);
     assert_eq!(checked(index.frontier()), None);
 }

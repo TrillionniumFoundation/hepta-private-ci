@@ -26,11 +26,11 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
 use crate::JournalAnchor;
-use crate::runtime_file_v2::MeasuredFileV2;
-use crate::runtime_file_v2::open_regular;
 use crate::JournalScope;
 use crate::NeuronCommitDispositionV1;
 use crate::NeuronOperationKeyV2;
+use crate::runtime_file_v2::MeasuredFileV2;
+use crate::runtime_file_v2::open_regular;
 
 #[path = "generation_store_v2_capacity.rs"]
 mod capacity;
@@ -253,16 +253,15 @@ impl FileNeuronGenerationStoreV2 {
         context: NeuronGenerationStoreContextV2,
     ) -> Result<Self, GenerationStoreError> {
         context.validate()?;
-        let file = open_regular(path)
-            .map_err(|error| {
-                if error.kind() == io::ErrorKind::NotFound {
-                    GenerationStoreError::HistoryMissing
-                } else if error.kind() == io::ErrorKind::InvalidInput {
-                    GenerationStoreError::NotRegular
-                } else {
-                    error.into()
-                }
-            })?;
+        let file = open_regular(path).map_err(|error| {
+            if error.kind() == io::ErrorKind::NotFound {
+                GenerationStoreError::HistoryMissing
+            } else if error.kind() == io::ErrorKind::InvalidInput {
+                GenerationStoreError::NotRegular
+            } else {
+                error.into()
+            }
+        })?;
         let mut file = GenerationLockedFile::acquire(file, path)?;
         let length = file.metadata()?.len();
         if length < HEADER_BYTES as u64 {
@@ -526,13 +525,18 @@ impl FileNeuronGenerationStoreV2 {
         }
     }
 
-    pub(crate) fn capacity_snapshot(&self) -> Result<crate::NeuronStorageCapacityV2, GenerationStoreError> {
+    pub(crate) fn capacity_snapshot(
+        &self,
+    ) -> Result<crate::NeuronStorageCapacityV2, GenerationStoreError> {
         self.ensure_healthy()?;
         Ok(crate::NeuronStorageCapacityV2 {
             records: self.records.len(),
             record_limit: self.context.max_records,
             file_bytes: self.file.metadata()?.len(),
-            byte_limit: self.context.max_file_bytes.min(self.context.max_startup_replay_bytes),
+            byte_limit: self
+                .context
+                .max_file_bytes
+                .min(self.context.max_startup_replay_bytes),
             reserved_bytes: self.pending_ack_bytes,
         })
     }

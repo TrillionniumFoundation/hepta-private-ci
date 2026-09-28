@@ -152,7 +152,8 @@ impl<P: DurableNeuronInferenceControlPort> DurableNeuronModelPort
             DurableNeuronFeatureResolutionV2::NotStarted => Ok(NeuronModelResolutionV2::NotStarted),
             DurableNeuronFeatureResolutionV2::Observed(receipt) => {
                 crate::inference_control::model_output(&request, *receipt)
-                    .map(Box::new).map(NeuronModelResolutionV2::Observed)
+                    .map(Box::new)
+                    .map(NeuronModelResolutionV2::Observed)
             }
             DurableNeuronFeatureResolutionV2::Unknown => Ok(NeuronModelResolutionV2::Unknown),
         }
@@ -345,7 +346,8 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
         runtime.replay_index()?;
         runtime.reconcile_witnesses()?;
         runtime.validate_frontiers()?;
-        runtime.recovery_micros = Some(u64::try_from(recovery_started.elapsed().as_micros()).unwrap_or(u64::MAX));
+        runtime.recovery_micros =
+            Some(u64::try_from(recovery_started.elapsed().as_micros()).unwrap_or(u64::MAX));
         Ok(runtime)
     }
 
@@ -473,8 +475,7 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
         let execution_micros = u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX);
         let checkpoint_bytes = checkpoint.bounded_encoded_bytes() as u64;
         let journal_bytes_written = logical_transition_bytes(self.config.state_width)?;
-        let write_amplification_ppm =
-            write_amplification(journal_bytes_written, checkpoint_bytes)?;
+        let write_amplification_ppm = write_amplification(journal_bytes_written, checkpoint_bytes)?;
         let resource_receipt = NeuronResourceReceiptV1 {
             execution_micros,
             transient_allocation_bytes: model_output.transient_allocation_bytes,
@@ -552,9 +553,7 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
             .iter()
             .enumerate()
             .filter(|(_, value)| **value > 0)
-            .map(|(index, _)| {
-                u32::try_from(index).map_err(|_| NeuronRuntimeV2Error::Arithmetic)
-            })
+            .map(|(index, _)| u32::try_from(index).map_err(|_| NeuronRuntimeV2Error::Arithmetic))
             .collect::<Result<Vec<_>, _>>()?;
         let tick = NeuronTickReceiptV1 {
             tick_id: tick_id.clone(),
@@ -750,10 +749,7 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
             let next_anchor = pending.next_anchor;
             let current = self.witness.current()?;
             if current == expected_anchor {
-                if let Err(error) = self
-                    .witness
-                    .compare_and_swap(expected_anchor, next_anchor)
-                {
+                if let Err(error) = self.witness.compare_and_swap(expected_anchor, next_anchor) {
                     match self.witness.current() {
                         Ok(Some(anchor)) if anchor == next_anchor => {}
                         _ => return Err(NeuronRuntimeV2Error::Witness(error)),
@@ -762,8 +758,7 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
             } else if current != Some(next_anchor) {
                 return Err(NeuronRuntimeV2Error::RecoveryMismatch);
             }
-            self.store
-                .acknowledge_witness(&key, next_anchor)?;
+            self.store.acknowledge_witness(&key, next_anchor)?;
         }
         Err(NeuronRuntimeV2Error::RecoveryMismatch)
     }
@@ -775,7 +770,8 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
         }
         if self.index.pending()?.is_none()
             && self.store.pending_witness_count()? == 0
-            && (self.store.witnessed_anchor()? != checkpoint || self.witness.current()? != checkpoint)
+            && (self.store.witnessed_anchor()? != checkpoint
+                || self.witness.current()? != checkpoint)
         {
             return Err(NeuronRuntimeV2Error::RecoveryMismatch);
         }
@@ -886,9 +882,7 @@ fn validate_disposition(
         {
             Ok(())
         }
-        NeuronCommitDispositionV1::CommittedDegraded { .. }
-            if output.tick.abstain && degraded =>
-        {
+        NeuronCommitDispositionV1::CommittedDegraded { .. } if output.tick.abstain && degraded => {
             Ok(())
         }
         _ => Err(NeuronRuntimeV2Error::RecoveryMismatch),

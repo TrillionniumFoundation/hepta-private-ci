@@ -159,9 +159,7 @@ impl<B: DurableNeuronFeatureBackend> DurableNeuronFeaturePortV1<B> {
     }
 }
 
-impl<B: DurableNeuronFeatureBackend> NeuronInferenceControlPort
-    for DurableNeuronFeaturePortV1<B>
-{
+impl<B: DurableNeuronFeatureBackend> NeuronInferenceControlPort for DurableNeuronFeaturePortV1<B> {
     fn execute_feature(
         &mut self,
         request: &NeuronFeatureRequestV1,
@@ -188,7 +186,8 @@ impl<B: DurableNeuronFeatureBackend> DurableNeuronInferenceControlPort
         }
         // resolve_record can dispatch only Reserved records, excluded above.
         self.resolve_record(record)
-            .map(Box::new).map(DurableNeuronFeatureResolutionV2::Observed)
+            .map(Box::new)
+            .map(DurableNeuronFeatureResolutionV2::Observed)
     }
 }
 

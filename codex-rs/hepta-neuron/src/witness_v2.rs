@@ -21,10 +21,10 @@ use codex_hepta_types::Generation;
 
 use crate::AnchorWitnessStore;
 use crate::JournalAnchor;
-use crate::runtime_file_v2::MeasuredFileV2;
-use crate::runtime_file_v2::open_regular;
 use crate::JournalScope;
 use crate::WitnessStoreError;
+use crate::runtime_file_v2::MeasuredFileV2;
+use crate::runtime_file_v2::open_regular;
 
 const ROOT_MAGIC: &[u8; 8] = b"HPTNWV02";
 const SUCCESSOR_MAGIC: &[u8; 8] = b"HPTNWV03";

@@ -115,10 +115,7 @@ impl DurableNeuronFeatureBackend for Backend {
 fn duplicate_returns_original_receipt_without_second_execution() {
     let root = checked(TempDir::new());
     let path = root.path().join("feature-store.bin");
-    let store = checked(FileNeuronFeatureExecutionStoreV1::create(
-        &path,
-        context(),
-    ));
+    let store = checked(FileNeuronFeatureExecutionStoreV1::create(&path, context()));
     let mut port = DurableNeuronFeaturePortV1::new(store, Backend::default());
     let request = request();
     let first = checked(port.execute_feature(&request));
@@ -134,10 +131,7 @@ fn recovered_dispatched_operation_reconciles_without_execution() {
     let path = root.path().join("feature-store.bin");
     let request = request();
     let expected = receipt(&request);
-    let mut store = checked(FileNeuronFeatureExecutionStoreV1::create(
-        &path,
-        context(),
-    ));
+    let mut store = checked(FileNeuronFeatureExecutionStoreV1::create(&path, context()));
     checked(store.reserve(request.clone()));
     checked(store.mark_dispatched(&request));
     drop(store);
@@ -161,10 +155,7 @@ fn unresolved_dispatched_operation_is_indeterminate_not_reexecuted() {
     let root = checked(TempDir::new());
     let path = root.path().join("feature-store.bin");
     let request = request();
-    let mut store = checked(FileNeuronFeatureExecutionStoreV1::create(
-        &path,
-        context(),
-    ));
+    let mut store = checked(FileNeuronFeatureExecutionStoreV1::create(&path, context()));
     checked(store.reserve(request.clone()));
     checked(store.mark_dispatched(&request));
     drop(store);
@@ -186,17 +177,17 @@ fn unresolved_dispatched_operation_is_indeterminate_not_reexecuted() {
 fn changed_payload_conflicts_before_backend() {
     let root = checked(TempDir::new());
     let path = root.path().join("feature-store.bin");
-    let store = checked(FileNeuronFeatureExecutionStoreV1::create(
-        &path,
-        context(),
-    ));
+    let store = checked(FileNeuronFeatureExecutionStoreV1::create(&path, context()));
     let mut port = DurableNeuronFeaturePortV1::new(store, Backend::default());
     let request = request();
     checked(port.execute_feature(&request));
     let mut changed = request;
     changed.feature_vector_q24[0] = 0;
     changed.input_digest = digest("changed-input");
-    assert_eq!(port.execute_feature(&changed), Err(NeuronModelError::Rejected));
+    assert_eq!(
+        port.execute_feature(&changed),
+        Err(NeuronModelError::Rejected)
+    );
     assert_eq!(port.backend_mut().execute_calls, 1);
 }
 
@@ -208,12 +199,18 @@ fn explicit_reconcile_of_absent_or_reserved_work_never_dispatches() {
     let request = request();
     checked(store.reserve(request.clone()));
     let mut port = DurableNeuronFeaturePortV1::new(store, Backend::default());
-    assert_eq!(checked(port.reconcile_feature(&request)), DurableNeuronFeatureResolutionV2::NotStarted);
+    assert_eq!(
+        checked(port.reconcile_feature(&request)),
+        DurableNeuronFeatureResolutionV2::NotStarted
+    );
     assert_eq!(port.backend_mut().execute_calls, 0);
     assert_eq!(port.backend_mut().reconcile_calls, 0);
     let mut absent = request;
     absent.request_id = id("never-reserved");
-    assert_eq!(checked(port.reconcile_feature(&absent)), DurableNeuronFeatureResolutionV2::NotStarted);
+    assert_eq!(
+        checked(port.reconcile_feature(&absent)),
+        DurableNeuronFeatureResolutionV2::NotStarted
+    );
     assert_eq!(port.backend_mut().execute_calls, 0);
 }
 
@@ -227,9 +224,14 @@ fn explicit_reconcile_of_dispatched_work_queries_and_returns_the_existing_receip
     checked(store.reserve(request.clone()));
     checked(store.mark_dispatched(&request));
     let mut backend = Backend::default();
-    backend.results.insert(request.request_id.clone(), expected.clone());
+    backend
+        .results
+        .insert(request.request_id.clone(), expected.clone());
     let mut port = DurableNeuronFeaturePortV1::new(store, backend);
-    assert_eq!(checked(port.reconcile_feature(&request)), DurableNeuronFeatureResolutionV2::Observed(Box::new(expected)));
+    assert_eq!(
+        checked(port.reconcile_feature(&request)),
+        DurableNeuronFeatureResolutionV2::Observed(Box::new(expected))
+    );
     assert_eq!(port.backend_mut().execute_calls, 0);
     assert_eq!(port.backend_mut().reconcile_calls, 1);
 }

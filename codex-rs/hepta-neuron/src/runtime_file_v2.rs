@@ -53,13 +53,19 @@ impl MeasuredFileV2 {
         let named = std::fs::symlink_metadata(&self.path)?;
         let opened = self.file.metadata()?;
         if !named.is_file() || named.file_type().is_symlink() || !opened.is_file() {
-            return Err(io::Error::new(io::ErrorKind::InvalidInput, "not a regular file"));
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "not a regular file",
+            ));
         }
         #[cfg(unix)]
         {
             use std::os::unix::fs::MetadataExt;
             if named.dev() != opened.dev() || named.ino() != opened.ino() || opened.nlink() != 1 {
-                return Err(io::Error::new(io::ErrorKind::PermissionDenied, "file identity changed"));
+                return Err(io::Error::new(
+                    io::ErrorKind::PermissionDenied,
+                    "file identity changed",
+                ));
             }
         }
         Ok(())
@@ -88,10 +94,12 @@ impl MeasuredFileV2 {
     fn record_sync(&self, started: Instant, result: &io::Result<()>) {
         let mut metrics = self.metrics.get();
         metrics.sync_calls = metrics.sync_calls.saturating_add(1);
-        metrics.sync_errors = metrics.sync_errors.saturating_add(u64::from(result.is_err()));
-        metrics.sync_micros = metrics.sync_micros.saturating_add(
-            u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX),
-        );
+        metrics.sync_errors = metrics
+            .sync_errors
+            .saturating_add(u64::from(result.is_err()));
+        metrics.sync_micros = metrics
+            .sync_micros
+            .saturating_add(u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX));
         self.metrics.set(metrics);
     }
 }
@@ -116,7 +124,10 @@ pub(crate) fn open_regular(path: &Path) -> io::Result<File> {
 fn open_regular_after_metadata(path: &Path, after_metadata: impl FnOnce()) -> io::Result<File> {
     let before = std::fs::symlink_metadata(path)?;
     if before.file_type().is_symlink() || !before.is_file() {
-        return Err(io::Error::new(io::ErrorKind::InvalidInput, "not a regular file"));
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "not a regular file",
+        ));
     }
     after_metadata();
     let mut options = OpenOptions::new();
@@ -136,13 +147,19 @@ fn open_regular_after_metadata(path: &Path, after_metadata: impl FnOnce()) -> io
     let file = options.open(path)?;
     let after = file.metadata()?;
     if !after.is_file() || after.file_type().is_symlink() {
-        return Err(io::Error::new(io::ErrorKind::InvalidInput, "not a regular file"));
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "not a regular file",
+        ));
     }
     #[cfg(unix)]
     {
         use std::os::unix::fs::MetadataExt;
         if before.dev() != after.dev() || before.ino() != after.ino() || after.nlink() != 1 {
-            return Err(io::Error::new(io::ErrorKind::PermissionDenied, "file identity changed"));
+            return Err(io::Error::new(
+                io::ErrorKind::PermissionDenied,
+                "file identity changed",
+            ));
         }
     }
     Ok(file)

@@ -80,7 +80,8 @@ impl FileNeuronRuntimeIndexV2 {
         let payload = encode_event(self.event_frontier, &event)?;
         self.append_payload(&payload)?;
         self.event_frontier = event_digest(&payload)?;
-        self.failures.insert(key.tick_id.clone(), (key.clone(), failure));
+        self.failures
+            .insert(key.tick_id.clone(), (key.clone(), failure));
         self.pending = None;
         self.dispatched = false;
         Ok(())

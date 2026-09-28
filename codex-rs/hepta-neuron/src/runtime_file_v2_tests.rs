@@ -4,20 +4,28 @@ use std::sync::atomic::Ordering;
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
 fn checked<T, E: std::fmt::Debug>(value: Result<T, E>) -> T {
-    match value { Ok(value) => value, Err(error) => panic!("fixture: {error:?}") }
+    match value {
+        Ok(value) => value,
+        Err(error) => panic!("fixture: {error:?}"),
+    }
 }
 struct Fixture(PathBuf);
 impl Fixture {
     fn new() -> Self {
         let serial = NEXT.fetch_add(1, Ordering::Relaxed);
-        let path = std::env::temp_dir().join(format!("neuron-file-v2-{}-{serial}", std::process::id()));
+        let path =
+            std::env::temp_dir().join(format!("neuron-file-v2-{}-{serial}", std::process::id()));
         checked(std::fs::create_dir(&path));
         Self(path)
     }
-    fn file(&self) -> PathBuf { self.0.join("store") }
+    fn file(&self) -> PathBuf {
+        self.0.join("store")
+    }
 }
 impl Drop for Fixture {
-    fn drop(&mut self) { let _ = std::fs::remove_dir_all(&self.0); }
+    fn drop(&mut self) {
+        let _ = std::fs::remove_dir_all(&self.0);
+    }
 }
 
 #[cfg(unix)]
@@ -56,7 +64,14 @@ fn raced_in_fifo_is_rejected_without_a_blocking_open() {
     checked(std::fs::write(fixture.file(), b"source"));
     let result = open_regular_after_metadata(&fixture.file(), || {
         checked(std::fs::remove_file(fixture.file()));
-        assert!(checked(std::process::Command::new("mkfifo").arg(fixture.file()).status()).success());
+        assert!(
+            checked(
+                std::process::Command::new("mkfifo")
+                    .arg(fixture.file())
+                    .status()
+            )
+            .success()
+        );
     });
     assert!(result.is_err());
 }
@@ -65,7 +80,10 @@ fn raced_in_fifo_is_rejected_without_a_blocking_open() {
 fn sync_statistics_count_actual_successful_file_syncs() {
     let fixture = Fixture::new();
     checked(std::fs::write(fixture.file(), b"source"));
-    let file = checked(MeasuredFileV2::new(checked(open_regular(&fixture.file())), &fixture.file()));
+    let file = checked(MeasuredFileV2::new(
+        checked(open_regular(&fixture.file())),
+        &fixture.file(),
+    ));
     checked(file.sync_data());
     checked(file.sync_all());
     assert_eq!(file.metrics().sync_calls, 2);

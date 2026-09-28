@@ -100,7 +100,9 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
             store_after,
             index_before,
             index_after,
-            witness_sync: witness_after.zip(witness_before).map(|(after, before)| after.since(before)),
+            witness_sync: witness_after
+                .zip(witness_before)
+                .map(|(after, before)| after.since(before)),
         });
         result
     }
@@ -113,7 +115,9 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
         self.recovery_micros
     }
 
-    pub fn capacity_snapshot(&self) -> Result<crate::NeuronRuntimeCapacityV2, NeuronRuntimeV2Error> {
+    pub fn capacity_snapshot(
+        &self,
+    ) -> Result<crate::NeuronRuntimeCapacityV2, NeuronRuntimeV2Error> {
         Ok(crate::NeuronRuntimeCapacityV2 {
             generation: self.store.capacity_snapshot()?,
             index: self.index.capacity_snapshot()?,
@@ -127,7 +131,9 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
         input: NeuronTickInputV1,
         guard: &mut dyn NeuronAdmissionGuard,
     ) -> Result<NeuronRuntimeCommitV2, NeuronRuntimeV2Error> {
-        guard.check(&self.config, &input).map_err(NeuronRuntimeV2Error::Admission)?;
+        guard
+            .check(&self.config, &input)
+            .map_err(NeuronRuntimeV2Error::Admission)?;
         self.reconcile()?;
         let input_digest = input.semantic_digest()?;
         let key = NeuronOperationKeyV2 {
@@ -155,7 +161,9 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
                 NeuronGenerationAdmissionV2::Historical(record),
             ) => {
                 validate_index_record(&indexed, &record)?;
-                guard.check(&self.config, &input).map_err(NeuronRuntimeV2Error::Admission)?;
+                guard
+                    .check(&self.config, &input)
+                    .map_err(NeuronRuntimeV2Error::Admission)?;
                 return self.commit_from_record(&record);
             }
             (NeuronRuntimeIndexAdmissionV2::New, NeuronGenerationAdmissionV2::New)
@@ -216,11 +224,20 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
             drive_q24: model_output.drive_q24.clone(),
             prediction_q24: model_output.prediction_q24.clone(),
         };
-        let (checkpoint, sparse_receipt) = match sparse_tick(&self.native, &native_tick, self.checkpoint.as_ref()) {
-            Ok(result) => result,
-            Err(_) => return self.fail_attempt(&key, NeuronOperationFailureV2::InvalidTransition),
-        };
-        let (output, disposition) = match self.build_output(&input.tick_id, &model_output, &checkpoint, &sparse_receipt, started) {
+        let (checkpoint, sparse_receipt) =
+            match sparse_tick(&self.native, &native_tick, self.checkpoint.as_ref()) {
+                Ok(result) => result,
+                Err(_) => {
+                    return self.fail_attempt(&key, NeuronOperationFailureV2::InvalidTransition);
+                }
+            };
+        let (output, disposition) = match self.build_output(
+            &input.tick_id,
+            &model_output,
+            &checkpoint,
+            &sparse_receipt,
+            started,
+        ) {
             Ok(result) => result,
             Err(_) => return self.fail_attempt(&key, NeuronOperationFailureV2::InvalidTransition),
         };
@@ -228,7 +245,14 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
             sequence: input.logical_sequence,
             checkpoint_digest: sparse_receipt.checkpoint_after,
         };
-        let prepared = match PreparedNeuronOperationV1::new(input_digest, input.tick_id.clone(), expected_anchor, next_anchor, native_tick, output) {
+        let prepared = match PreparedNeuronOperationV1::new(
+            input_digest,
+            input.tick_id.clone(),
+            expected_anchor,
+            next_anchor,
+            native_tick,
+            output,
+        ) {
             Ok(prepared) => prepared,
             Err(_) => return self.fail_attempt(&key, NeuronOperationFailureV2::InvalidTransition),
         };
@@ -244,7 +268,9 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
         // Preserve the existing HPTNGS02 checkpoint/receipt payload contract.
         // Removing this copy requires an explicit format migration, not aliasing.
         let checkpoint_bytes = full_receipt_bytes.clone();
-        let (model_semantic_digest, model_observation_digest) = match self.model_identities(&prepared.output, prepared.sparse_tick.monotonic_micros) {
+        let (model_semantic_digest, model_observation_digest) = match self
+            .model_identities(&prepared.output, prepared.sparse_tick.monotonic_micros)
+        {
             Ok(identities) => identities,
             Err(_) => return self.fail_attempt(&key, NeuronOperationFailureV2::InvalidModelOutput),
         };
@@ -269,12 +295,15 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
             | NeuronGenerationCommitResultV2::Duplicate(record) => record,
         };
         let replayed = self.replay_record(self.checkpoint.as_ref(), &record)?;
-        self.index.complete(&key, next_anchor, record.operation_digest)?;
+        self.index
+            .complete(&key, next_anchor, record.operation_digest)?;
         crash_cut("after_index_completion");
         self.checkpoint = Some(replayed);
         self.reconcile_witnesses()?;
         crash_cut("after_witness_acknowledgement");
-        guard.check(&self.config, &input).map_err(NeuronRuntimeV2Error::Admission)?;
+        guard
+            .check(&self.config, &input)
+            .map_err(NeuronRuntimeV2Error::Admission)?;
         self.commit_from_record(&record)
     }
 
