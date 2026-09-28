@@ -1,0 +1,44 @@
+name: Prompt registry exact-source core diagnostics
+on:
+  push:
+    branches: [ops/prompt-registry-author-closeout-20260928]
+    paths: ['.github/workflows/prompt-registry-closeout-core.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  core:
+    runs-on: ubuntu-slim
+    timeout-minutes: 15
+    env:
+      SOURCE_SHA: b6cdf7d069a84592c610d57f2685096bb1cf0859
+      PYTHONDONTWRITEBYTECODE: '1'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_INCREMENTAL: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: b6cdf7d069a84592c610d57f2685096bb1cf0859
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+      - name: Execute committed checks and real measurements without source mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          base=$(git rev-parse refs/remotes/origin/main)
+          python3 scripts/hepta-prompt-registry-qualify.py --profile core --lane exact-head --source-sha "$SOURCE_SHA" --base-sha "$base" --output "$RUNNER_TEMP/prompt-core-diagnostics"
+      - name: Keep raw logs and measurements, not product acceptance
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-registry-core-diagnostics-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/prompt-core-diagnostics/
+          if-no-files-found: error
+          retention-days: 30
