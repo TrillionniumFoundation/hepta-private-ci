@@ -19,7 +19,12 @@ mod process_deadline;
 mod recovery;
 mod release;
 mod release_transaction;
+// The unbound compatibility entrypoints remain available to focused regression
+// fixtures while production paths use the identity-bound restart operations.
+#[allow(dead_code, clippy::collapsible_if, clippy::too_many_arguments)]
 mod restart_budget;
+// Constant-to-u64 conversion is statically bounded by the fixed recovery window.
+#[allow(clippy::expect_used)]
 mod restart_journal;
 mod restart_policy;
 mod restart_state;
