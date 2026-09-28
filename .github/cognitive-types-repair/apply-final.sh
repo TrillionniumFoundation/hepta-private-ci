@@ -2,7 +2,8 @@
 set -euo pipefail
 
 test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-remote_head="$(git ls-remote origin refs/heads/codex/cognitive-types-full-closure-20260927 | cut -f1)"
+branch="${GITHUB_REF_NAME:?missing GITHUB_REF_NAME}"
+remote_head="$(git ls-remote origin "refs/heads/${branch}" | cut -f1)"
 test "$remote_head" = "$GITHUB_SHA"
 
 patch_file="$RUNNER_TEMP/cognitive-types-final.patch"
@@ -50,7 +51,7 @@ cargo check --manifest-path codex-rs/hepta-cognitive-types/fuzz/Cargo.toml --all
 cargo clippy --manifest-path codex-rs/Cargo.toml --locked --all-targets \
   $(printf -- '-p %s ' "${packages[@]}") -- -D warnings
 
-remote_head="$(git ls-remote origin refs/heads/codex/cognitive-types-full-closure-20260927 | cut -f1)"
+remote_head="$(git ls-remote origin "refs/heads/${branch}" | cut -f1)"
 test "$remote_head" = "$GITHUB_SHA"
 rm -rf .github/cognitive-types-repair
 rm -f \
@@ -63,4 +64,4 @@ test -z "$(find . -type d -name target -not -path './target' -print -quit)"
 git config user.name 'Tomasrgbsf'
 git config user.email 'tomasbraynt@gmail.com'
 git commit -m 'fix(cognitive.types): close remaining qualification blockers'
-git push origin HEAD:refs/heads/codex/cognitive-types-full-closure-20260927
+git push origin "HEAD:refs/heads/${branch}"
