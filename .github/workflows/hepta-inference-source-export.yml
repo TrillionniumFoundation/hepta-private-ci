@@ -1,6 +1,12 @@
 name: Hepta inference one-shot source remediation
 
 on:
+  push:
+    branches:
+      - codex/inference-control-v2-closure-20260927
+    paths:
+      - '.github/workflows/hepta-inference-source-export.yml'
+      - '.github/remediation/inference-control-remediation.patch.gz'
   pull_request:
     types: [opened, reopened, synchronize]
     branches:
@@ -10,12 +16,12 @@ on:
       - '.github/remediation/inference-control-remediation.patch.gz'
 
 concurrency:
-  group: hepta-inference-one-shot-remediation-${{ github.event.pull_request.number }}
+  group: hepta-inference-one-shot-remediation-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 env:
-  SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
-  EXPECTED_PARENT: 99a4c491be2932b2248322b00cedf8a8eac3b746
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  EXPECTED_PARENT: 2ea495c2218e6ac625bc6ef805967df8ffee73f7
   RESTORE_COMMIT: a80f50a552d2608f238a9e934bf6fade66876912
   PATCH_SHA256: c2599a124d0e1574aaebaadf3ce0313d4f906a9e9f9f1472c10491fa83100f57
   PATCH_PATH: .github/remediation/inference-control-remediation.patch.gz
@@ -24,7 +30,9 @@ env:
 jobs:
   verify:
     name: Verify bounded inference remediation
-    if: github.event.pull_request.head.ref == 'codex/inference-control-v2-closure-20260927'
+    if: >-
+      (github.event_name == 'push' && github.ref == 'refs/heads/codex/inference-control-v2-closure-20260927') ||
+      (github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'codex/inference-control-v2-closure-20260927')
     permissions:
       contents: read
     runs-on: macos-15
