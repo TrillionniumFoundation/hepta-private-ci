@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "113a53328e378cef6bd7d232a9d1ff13e254866f",
-    "tree": "e967903b501ba62211ae36bd1cb2f153fc3abb05"
+    "commit": "6225bf230159f986ab59e73db2131e0384eaab7e",
+    "tree": "caf8d8bfe2ba63af476f59c4513a14f5db04d489"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.federation",
@@ -87,9 +87,9 @@
   "headAttestation": {
     "candidateBranch": "feat/memory-federation-full-closure-20260927",
     "baseCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
-    "candidateHead": "113a53328e378cef6bd7d232a9d1ff13e254866f",
-    "candidateTree": "e967903b501ba62211ae36bd1cb2f153fc3abb05",
-    "headMeaning": "canonical_v2 bounded_discovery_reserved_read_budget deterministic_peer_selection final_use_revalidation private_verified_frame monotonic_partitioned_replay authenticated_transport_identity durable_replay_attempt_recovery restart_surviving_cancellation owner_cut_witness scoped_canonical_map_verification pre_post_execution_guard canonical_capability_status retained_logical_capacity_metrics terminal_request_credential_currentness issuing_host_token_binding actual_command_execution locked_input_revalidation ordered_merge_parents authenticated_product_body_bridge atomic_product_preflight retry_safe_client_inbound_commit v4_combined_attachment_partial_peer_evidence single_pr_qualification_owner_required_fanin issuer_attested_transport_context_before_packet_replay local_owner_bound_transport_context stale_public_constructor_regression_removed",
+    "candidateHead": "6225bf230159f986ab59e73db2131e0384eaab7e",
+    "candidateTree": "caf8d8bfe2ba63af476f59c4513a14f5db04d489",
+    "headMeaning": "canonical_v2 bounded_discovery_reserved_read_budget deterministic_peer_selection final_use_revalidation private_verified_frame monotonic_partitioned_replay authenticated_transport_identity durable_replay_attempt_recovery restart_surviving_cancellation owner_cut_witness scoped_canonical_map_verification pre_post_execution_guard canonical_capability_status retained_logical_capacity_metrics terminal_request_credential_currentness issuing_host_token_binding actual_command_execution locked_input_revalidation ordered_merge_parents authenticated_product_body_bridge atomic_product_preflight retry_safe_client_inbound_commit v4_combined_attachment_partial_peer_evidence single_pr_qualification_owner_required_fanin issuer_attested_transport_context_before_packet_replay local_owner_bound_transport_context stale_public_constructor_regression_removed context_self_encoded_attestation_payload",
     "status": "pending_exact_current_head_and_merge_candidate_execution",
     "scope": [
       "remote_response_field_binding",
@@ -144,7 +144,8 @@
       "transport_context_hmac_local_owner_peer_profile_channel_lifetime_key_generation_binding",
       "untrusted_transport_context_rejected_before_replay_or_attempt_commit",
       "wrong_local_host_transport_context_rejected_without_consuming_replay",
-      "product_atomicity_tests_use_current_issuer_verifier_contract"
+      "product_atomicity_tests_use_current_issuer_verifier_contract",
+      "transport_context_attestation_payload_self_encoded"
     ],
     "productCallsites": [
       "codex-rs/hepta-agentd/src/runtime.rs",
@@ -194,15 +195,15 @@
       "scripts/verify_memory_federation_implementation.py",
       "scripts/verify_memory_federation_status.py"
     ],
-    "note": "sourceBase and observedAtHead bind the immediately preceding source, test, document and qualification-topology candidate. This implementation-map-only rebind records actual Git objects, not execution success. The normal combined local-plus-federated model-input path admits the current V4 attachment schema, carries partial_peers into compact evidence and retains revoke-before-physical-send fencing. Pull requests have one required qualification owner through blocking-ci while direct branch pushes, workflow_call and workflow_dispatch retain exact-head execution. The authenticated cross-host bridge accepts transport identity only through an issuer/verifier capability bound to the actual local wire owner. HMAC evidence binds local owner, remote peer, profile, channel binding, lifetime, context-key identity and generation; wrong key, wrong profile and wrong-local-host contexts are rejected before replay or attempt state is consumed, and regression tests prove the same request remains admissible through the correct issuer. The stale product atomicity test was migrated off the removed public constructor. The selected network transport, per-host context-key operations, production recovery backend, Agentd serving composition, two-real-host faults/SLOs, independent acceptance and activation/release remain separately gated. The existing V2 product path, authority ownership, no-blind-retry rule and half-budget read reservation are unchanged.",
+    "note": "sourceBase and observedAtHead bind the immediately preceding source, test, document and qualification-topology candidate. This implementation-map-only rebind records actual Git objects, not execution success. The normal combined local-plus-federated model-input path admits the current V4 attachment schema, carries partial_peers into compact evidence and retains revoke-before-physical-send fencing. Pull requests have one required qualification owner through blocking-ci while direct branch pushes, workflow_call and workflow_dispatch retain exact-head execution. The authenticated cross-host bridge accepts transport identity only through an issuer/verifier capability bound to the actual local wire owner. HMAC evidence binds local owner, remote peer, profile, channel binding, lifetime, context-key identity and generation; wrong key, wrong profile and wrong-local-host contexts are rejected before replay or attempt state is consumed, and regression tests prove the same request remains admissible through the correct issuer. The stale product atomicity test was migrated off the removed public constructor. The attestation payload is now encoded by the private context itself, so issuance and verification cannot drift through separate argument lists and strict lint does not require a too-many-arguments waiver. The selected network transport, per-host context-key operations, production recovery backend, Agentd serving composition, two-real-host faults/SLOs, independent acceptance and activation/release remain separately gated. The existing V2 product path, authority ownership, no-blind-retry rule and half-budget read reservation are unchanged.",
     "metadataOnlyPaths": [
       "docs/modules/memory.federation/IMPLEMENTATION_MAP.json"
     ]
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "113a53328e378cef6bd7d232a9d1ff13e254866f",
-    "tree": "e967903b501ba62211ae36bd1cb2f153fc3abb05"
+    "commit": "6225bf230159f986ab59e73db2131e0384eaab7e",
+    "tree": "caf8d8bfe2ba63af476f59c4513a14f5db04d489"
   },
   "observedSourcePaths": [
     ".github/workflows/blocking-ci.yml",
@@ -288,7 +289,7 @@
     },
     {
       "path": "codex-rs/hepta-memory-federation-wire",
-      "object": "578ae83889d5112c762d2dde2638f01218444eee"
+      "object": "bc73bec5b52df86f634de2544775da1b3400414e"
     },
     {
       "path": "codex-rs/hepta-memory-federation-wire/Cargo.toml",
