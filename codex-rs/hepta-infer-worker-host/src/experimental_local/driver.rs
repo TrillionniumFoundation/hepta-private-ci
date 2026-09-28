@@ -87,6 +87,15 @@ pub trait LocalModelDriver: Send + Sync {
         grant: &'a VerifiedResourceGrant,
     ) -> LocalFuture<'a, DriverLoadObservation>;
 
+    /// Clean up a physical load that returned a driver handle but failed before
+    /// an `AttestedModelHandle` could be constructed. Implementations must use
+    /// only the exact opaque handle/device tuple returned by `load` and must not
+    /// start another load as part of cleanup.
+    fn cleanup_failed_load<'a>(
+        &'a self,
+        load: &'a DriverLoadObservation,
+    ) -> LocalFuture<'a, DriverUnloadObservation>;
+
     fn run<'a>(
         &'a self,
         handle: &'a AttestedModelHandle,
@@ -116,6 +125,16 @@ pub trait TrustedResourceObserver: Send + Sync {
         device_uuid: &'a str,
         worker_generation: u64,
     ) -> LocalFuture<'a, TrustedResourceObservation>;
+
+    /// Observe zero residency for a driver handle that could not be promoted to
+    /// an `AttestedModelHandle`. This closes the load/attestation failure window
+    /// without trusting the model driver to attest its own cleanup.
+    fn observe_unattested_release<'a>(
+        &'a self,
+        handle_id: &'a str,
+        device_uuid: &'a str,
+        worker_generation: u64,
+    ) -> LocalFuture<'a, TrustedReleaseObservation>;
 
     fn observe_release<'a>(
         &'a self,
