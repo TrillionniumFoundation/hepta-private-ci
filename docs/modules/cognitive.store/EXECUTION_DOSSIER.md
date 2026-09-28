@@ -12,22 +12,32 @@ and recomputes the merge tree. Every command has an exclusive record and bounded
 | `implementation-map.json` | `.` | `python3 scripts/cognitive_store_map_verify.py --expected-sha $TESTED_SHA --expected-tree $TESTED_TREE` | 0 |
 | `map-regressions.json` | `.` | `python3 scripts/test_cognitive_store_map.py -v` | 12 |
 | `manifest-regressions.json` | `.` | `python3 scripts/test_cognitive_qualification_manifest.py -v` | 11 |
+| `api-probe-regressions.json` | `.` | `python3 scripts/test_cognitive_store_api_probe.py -v` | 12 |
 | `status-drift.json` | `.` | `python3 scripts/cognitive_store_status.py --check` | 0 |
 | `module-inventory.json` | `.` | `python3 scripts/check-rust-module-inventory.py codex-rs/hepta-cognitive-store/src` | 0 |
 | `host-bootstrap.json` | `.` | `python3 tools/cognitive-store-host-bootstrap/test_bootstrap.py` | 1 |
+| `expired-bootstrap-cli.json` | `.` | `python3 tools/cognitive-store-host-bootstrap/test_expired_cli.py` | 1 |
+| `lifecycle-owner-receipts.json` | `.` | `python3 tools/cognitive-store-host-bootstrap/test_lifecycle.py -v` | 32 |
 | `format.json` | `codex-rs` | `cargo fmt --package codex-hepta-cognitive-store --package codex-hepta-memory --package codex-hepta-agentd -- --check` | 0 |
 | `default-feature-check.json` | `codex-rs` | `cargo check --locked -p codex-hepta-cognitive-store --no-default-features --lib` | 0 |
+| `agentd-normal-profile-check.json` | `codex-rs` | `cargo check --locked -p codex-hepta-agentd --lib` | 0 |
+| `api-probes.json` | `.` | `python3 scripts/cognitive_store_api_probe.py --output $RUNNER_TEMP/cognitive-api-probes.json` | 0 |
 | `cognitive-store-tests.json` | `codex-rs` | `cargo test --locked -p codex-hepta-cognitive-store --all-features` | 1 |
 | `memory-tests.json` | `codex-rs` | `cargo test --locked -p codex-hepta-memory` | 1 |
 | `publication-fault-tests.json` | `codex-rs` | `cargo test --locked -p codex-hepta-memory --test cognitive_recovery_publication_fault` | 1 |
+| `recovery-final-use-tests.json` | `codex-rs` | `cargo test --locked -p codex-hepta-memory final_use_tests` | 2 |
 | `agentd-product-tests.json` | `codex-rs` | `cargo test --locked -p codex-hepta-agentd --test cognitive_store_product_writer --features qualification-cognitive-write` | 1 |
 | `bootstrap-tests.json` | `codex-rs` | `cargo test --locked -p codex-hepta-agentd --test cognitive_bootstrap --features qualification-cognitive-write` | 1 |
 | `recovery-boundary-tests.json` | `codex-rs` | `cargo test --locked -p codex-hepta-agentd --test cognitive_recovery_boundary --features qualification-cognitive-write` | 8 |
+| `normal-read-page-tests.json` | `codex-rs` | `cargo test --locked -p codex-hepta-agentd --test cognitive_store_read_pages` | 3 |
+| `normal-host-read-page-tests.json` | `codex-rs` | `cargo test --locked -p codex-hepta-agentd --test cognitive_store_host_read_pages` | 1 |
 | `crash-reopen.json` | `codex-rs` | `cargo test --locked -p codex-hepta-memory local_lease_outbox_tests::qualification_durable_writer_crash_reopen_probe -- --ignored --exact` | 1 |
 | `perf-256.json` | `codex-rs` | `cargo run --locked -p codex-hepta-memory --example cognitive_store_perf` | 0 |
 | `perf-16384.json` | `codex-rs` | `cargo run --locked -p codex-hepta-memory --example cognitive_store_perf` | 0 |
 | `history-64-16.json` | `codex-rs` | `cargo run --locked -p codex-hepta-memory --example cognitive_store_history_perf` | 0 |
 | `history-128-64.json` | `codex-rs` | `cargo run --locked -p codex-hepta-memory --example cognitive_store_history_perf` | 0 |
+| `recovery-release-256.json` | `codex-rs` | `cargo run --locked --release -p codex-hepta-memory --example cognitive_store_recovery_perf` | 0 |
+| `recovery-release-16384.json` | `codex-rs` | `cargo run --locked --release -p codex-hepta-memory --example cognitive_store_recovery_perf` | 0 |
 | `clippy.json` | `codex-rs` | `cargo clippy --locked -p codex-hepta-cognitive-store -p codex-hepta-memory -p codex-hepta-agentd --all-targets --all-features --no-deps -- -D warnings` | 0 |
 | `clean-source.json` | `.` | `git diff --exit-code HEAD --` | 0 |
 

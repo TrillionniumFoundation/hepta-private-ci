@@ -6,15 +6,19 @@ This directory is the canonical entry point for the `cognitive.store` source can
 
 The machine-readable state is [CURRENT_STATE.json](CURRENT_STATE.json). Its generated [CURRENT_STATUS.md](CURRENT_STATUS.md) maps recovery, witness, publication, revocation, rollback, lifecycle and evidence invariants to exact sources and regression tests. [EXECUTION_DOSSIER.md](EXECUTION_DOSSIER.md) is generated from that state and the committed [QUALIFICATION_PLAN.json](QUALIFICATION_PLAN.json); neither generated document is a pass receipt.
 
+The [September 28 implementation note](IMPLEMENTATION_UPDATE_20260928.md) describes the current ordinary-host read capability, three-profile API probes, optimized recovery measurements and externally signed per-storage-owner lifecycle reconciliation. It distinguishes those implementations from still-required destructive pruning, genuine host evidence and actual physical erasure.
+
 | Question | Current answer |
 |---|---|
 | Semantic owner | `codex-hepta-cognitive-store` |
 | Physical durable owner | `codex_hepta_memory::CognitiveStore` over `cognitive_1.sqlite3` |
-| Only production write façade | `codex_hepta_agentd::AgentdProductionWriterHost` |
+| Only production write facade | `codex_hepta_agentd::AgentdProductionWriterHost` |
 | Default runtime write authority | None; read-only unless trusted-host bootstrap is supplied |
-| Raw mutable alias | Hidden from the default façade; enabled only for the named Agentd host or explicit qualification |
-| Writable recovery | Source implemented; exact-candidate and target-host evidence still required |
-| Signed host bootstrap | Source implemented with external current-cut, live authority state, signer trust and token files |
+| Raw mutable facade alias | Qualification-only, absent from default and normal host profiles |
+| Normal host reads | `read_capability()` derives exact-cut paging/revalidation from the same recovered owner |
+| Writable recovery | Source implemented with final live authority check; exact-candidate and target-host evidence still required |
+| Signed host bootstrap | Source implemented with external current-cut, live authority state, signer trust, token files and independently supplied deployed source identity |
+| Lifecycle completion | Authenticated per-owner receipts; not an erasure provider or an independent physical-erasure proof |
 | Product execution proved | No, until the dedicated source-head and deterministic base-merge workflow is terminal-success |
 | Production activated/released | No |
 
@@ -39,6 +43,7 @@ No second database, dual writer or shadow authority is permitted.
 ## Documents
 
 - [TECHNICAL.md](TECHNICAL.md): module architecture and implementation guide.
+- [IMPLEMENTATION_UPDATE_20260928.md](IMPLEMENTATION_UPDATE_20260928.md): normal read API, deployed source binding, release recovery profile, lifecycle receipt schemas and exact execution boundaries.
 - [PRODUCTION_CLOSURE.md](PRODUCTION_CLOSURE.md): canonical product boundary and claim vocabulary.
 - [IMPLEMENTATION_MAP.json](IMPLEMENTATION_MAP.json): machine-readable source mapping and open gates.
 - [BOOTSTRAP_RUNBOOK.md](BOOTSTRAP_RUNBOOK.md): current-cut, authority, rotation, canary, restart and rollback ceremony.
@@ -53,7 +58,7 @@ No second database, dual writer or shadow authority is permitted.
 
 ## Source qualification
 
-The dedicated workflow is `.github/workflows/cognitive-store-qualification.yml`. It freezes source/base once for both `source-head` and deterministic `base-merge` lanes. The committed plan retains the existing package, bootstrap, crash/reopen, 256/16,384-record and strict-Clippy checks, and adds typed product recovery, a real child exit between semantic commit and witness publication, default-feature compilation, map/evidence regressions, generated-state drift checks, and correction/tombstone history profiles.
+The dedicated workflow is `.github/workflows/cognitive-store-qualification.yml`. It freezes source/base once for both `source-head` and deterministic `base-merge` lanes. The committed plan retains package, bootstrap, crash/reopen, 256/16,384-record and strict-Clippy checks. Its 33 commands also cover typed product recovery, real child exit between semantic commit and witness publication, normal Agentd feature compilation, normal-host read pages, external-consumer API probes, map/evidence regressions, generated-state drift, correction/tombstone history, release descriptor recovery and storage-owner signatures.
 
 Each command records its own result rather than inheriting the status of an earlier step. Native preparation failure produces explicit `infrastructure_invalid` non-execution records. A v2 qualification manifest is emitted even when checks fail or are missing; only a complete terminal-success manifest bound to the exact tested commit/tree establishes execution. Artifact upload is not a qualification pass.
 
