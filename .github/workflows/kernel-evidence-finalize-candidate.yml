@@ -15,10 +15,10 @@ jobs:
   finalize:
     if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'fix/kernel-evidence-production-closure'
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 25
     env:
       EVENT_SHA: ${{ github.event.pull_request.head.sha }}
-      EXPECTED_PARENT: fa01f7981d755038798011fd8cfdbb25d5f3a0fc
+      EXPECTED_PARENT: 4116a1119accdd45ef8317d2fb95045e012e43e0
       SOURCE_ANCHOR: 4dd844af8af04372d75001be10fcabbf97f6e679
       SOURCE_TREE: 598697096a10d1015609168ab7064298c0dc8ace
       TARGET_BRANCH: fix/kernel-evidence-production-closure
@@ -41,17 +41,17 @@ jobs:
           test "$(git rev-parse "$SOURCE_ANCHOR^{tree}")" = "$SOURCE_TREE"
           test -z "$(git status --porcelain)"
 
-      - name: Bind canonical status and implementation map to immutable source
+      - name: Bind canonical status to immutable source
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
           import json
-          from pathlib import Path
           import os
+          from pathlib import Path
 
-          status_path = Path('qualification/kernel-evidence/STATUS_SOURCE.json')
-          status = json.loads(status_path.read_text(encoding='utf-8'))
+          path = Path('qualification/kernel-evidence/STATUS_SOURCE.json')
+          status = json.loads(path.read_text(encoding='utf-8'))
           status['asOfCommit'] = os.environ['SOURCE_ANCHOR']
           status['asOfTree'] = os.environ['SOURCE_TREE']
           for key in (
@@ -63,24 +63,30 @@ jobs:
           status['workflowRunId'] = None
           status['artifactDigest'] = None
           status['evidenceReceipts'] = {}
-          status_path.write_text(json.dumps(status, indent=2) + '\n', encoding='utf-8')
-
-          map_path = Path('docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json')
-          implementation = json.loads(map_path.read_text(encoding='utf-8'))
-          implementation['sourceBase'] = {
-              'commit': os.environ['SOURCE_ANCHOR'],
-              'tree': os.environ['SOURCE_TREE'],
-          }
-          boundary = implementation['claimBoundary']
-          boundary['productionImplementation'] = False
-          boundary['productExecutionProved'] = False
-          boundary['independentAcceptance'] = False
-          boundary['activation'] = False
-          boundary['release'] = False
-          map_path.write_text(json.dumps(implementation, indent=2) + '\n', encoding='utf-8')
+          status['sourcePaths'] = sorted(set(status['sourcePaths']) | {
+              '.github/workflows/blocking-ci.yml',
+              '.github/workflows/hepta-kernel-evidence-convergence.yml',
+              '.github/workflows/hepta-kernel-evidence-qualification.yml',
+              '.github/workflows/kernel-evidence-publication-native.yml',
+              'codex-rs/Cargo.lock',
+              'codex-rs/Cargo.toml',
+              'codex-rs/hepta-agent-protocol/Cargo.toml',
+              'codex-rs/hepta-agentd/Cargo.toml',
+              'codex-rs/hepta-authbus/Cargo.toml',
+              'codex-rs/hepta-authbus/src/lib.rs',
+              'codex-rs/hepta-evidence/Cargo.toml',
+              'codex-rs/state/Cargo.toml',
+              'scripts/build_kernel_evidence_status.py',
+              'scripts/kernel_evidence_candidate.py',
+              'scripts/kernel_evidence_record_validation.py',
+              'scripts/tests/test_kernel_evidence_candidate.py',
+              'scripts/tests/test_kernel_evidence_record_validation.py',
+              'scripts/tests/test_kernel_evidence_status_admission.py',
+          })
+          path.write_text(json.dumps(status, indent=2) + '\n', encoding='utf-8')
           PY
 
-      - name: Regenerate and verify all canonical projections
+      - name: Generate canonical status projections
         shell: bash
         run: |
           set -euo pipefail
@@ -89,20 +95,16 @@ jobs:
           python3 scripts/kernel_evidence_status.py verify
           python3 scripts/hepta-module-docs.py verify
           python3 scripts/hepta-docs.py verify
-          python3 scripts/hepta-implementation-maps.py verify
-          python3 scripts/verify_lane_a_foundation.py verify
           git diff --check
 
-      - name: Enforce the metadata-only write set
+      - name: Enforce and commit projection-only write set
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
           import subprocess
           allowed = {
-              '.github/workflows/kernel-evidence-finalize-candidate.yml',
               'qualification/kernel-evidence/STATUS_SOURCE.json',
-              'docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json',
               'docs/modules/MODULE_DOCS.json',
               'docs/modules/kernel.evidence/TECHNICAL.md',
               'docs/lane-a-foundation/kernel.evidence/CURRENT_IMPLEMENTATION.md',
@@ -115,19 +117,50 @@ jobs:
           ).split('\0')))
           unexpected = sorted(changed - allowed)
           if unexpected:
-              raise SystemExit(f'unexpected metadata-finalization changes: {unexpected}')
+              raise SystemExit(f'unexpected status projection changes: {unexpected}')
           PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add \
+            qualification/kernel-evidence/STATUS_SOURCE.json \
+            docs/modules/MODULE_DOCS.json \
+            docs/modules/kernel.evidence/TECHNICAL.md \
+            docs/lane-a-foundation/kernel.evidence/CURRENT_IMPLEMENTATION.md \
+            qualification/kernel-evidence/TRACEABILITY.md \
+            qualification/module-execution-dossiers/detail/kernel.evidence.md \
+            qualification/kernel-evidence/RELEASE_DASHBOARD.md
+          git commit -s -m 'docs(kernel.evidence): regenerate canonical status [kernel-evidence-status-sync]'
+          test -z "$(git status --porcelain)"
 
-      - name: Commit deterministic metadata and retire this workflow
+      - name: Rebind implementation map on the clean projection commit
         shell: bash
         run: |
           set -euo pipefail
-          rm -f .github/workflows/kernel-evidence-finalize-candidate.yml
+          python3 scripts/hepta-implementation-maps.py migrate --module kernel.evidence
+          python3 scripts/hepta-implementation-maps.py verify
+          python3 scripts/kernel_evidence_status.py verify
+          python3 scripts/hepta-module-docs.py verify
+          python3 scripts/hepta-docs.py verify
+          python3 scripts/verify_lane_a_foundation.py verify
           git diff --check
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A
-          git commit -s -m 'docs(kernel.evidence): bind final source and regenerate projections [kernel-evidence-status-sync]'
+
+      - name: Enforce map-only change and retire finalizer
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import subprocess
+          changed = set(filter(None, subprocess.check_output(
+              ['git', 'diff', '--name-only', '-z'], text=True
+          ).split('\0')))
+          expected = {'docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json'}
+          if changed != expected:
+              raise SystemExit(f'implementation-map migration changed {sorted(changed)}, expected {sorted(expected)}')
+          PY
+          rm -f .github/workflows/kernel-evidence-finalize-candidate.yml
+          git add docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json \
+            .github/workflows/kernel-evidence-finalize-candidate.yml
+          git commit -s -m 'docs(kernel.evidence): bind final implementation map [kernel-evidence-status-sync]'
           git fetch origin "refs/heads/$TARGET_BRANCH"
-          test "$(git rev-parse HEAD^)" = "$(git rev-parse FETCH_HEAD)"
+          test "$(git rev-parse "$EVENT_SHA")" = "$(git rev-parse FETCH_HEAD)"
           git push origin "HEAD:refs/heads/$TARGET_BRANCH"
