@@ -175,7 +175,8 @@ fn targeted_mutation_inventory_covers_reviewed_identity_keys() {
         "plasticity-threshold-target-logical-identity",
         "topology-node-logical-identity",
         "schema-bound-digest-domain",
-        "eight-targeted-source-mutants-not-global-mutation-coverage",
+        "consumer-payload-family",
+        "nine-targeted-source-mutants-not-global-mutation-coverage",
     ] {
         assert!(
             MUTATION_RUNNER.contains(token),
