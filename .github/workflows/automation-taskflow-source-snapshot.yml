@@ -1,0 +1,46 @@
+name: Automation TaskFlow source snapshot
+
+on:
+  push:
+    branches:
+      - ops/automation-taskflow-source-snapshot-20260928
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind exact source and package snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git status --porcelain=v1 | tee "$RUNNER_TEMP/clean-before.txt"
+          test ! -s "$RUNNER_TEMP/clean-before.txt"
+          printf '%s\n' "$GITHUB_SHA" > "$RUNNER_TEMP/source-sha.txt"
+          git rev-parse HEAD^{tree} > "$RUNNER_TEMP/source-tree.txt"
+          tar --exclude=.git --exclude=target -czf "$RUNNER_TEMP/hepta-private-ci-source.tar.gz" .
+          sha256sum "$RUNNER_TEMP/hepta-private-ci-source.tar.gz" > "$RUNNER_TEMP/hepta-private-ci-source.tar.gz.sha256"
+          git status --porcelain=v1 | tee "$RUNNER_TEMP/clean-after.txt"
+          test ! -s "$RUNNER_TEMP/clean-after.txt"
+
+      - name: Retain exact source snapshot
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: automation-taskflow-source-snapshot-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/hepta-private-ci-source.tar.gz
+            ${{ runner.temp }}/hepta-private-ci-source.tar.gz.sha256
+            ${{ runner.temp }}/source-sha.txt
+            ${{ runner.temp }}/source-tree.txt
+          if-no-files-found: error
+          retention-days: 1
