@@ -15,6 +15,14 @@ use super::*;
 pub fn canonical_calibrated_request_digest_v1(
     request: &CalibratedDecisionRequestV1,
 ) -> Result<Digest32, CalibratedError> {
+    canonical_request_digest_with_risk(request, request.risk_class)
+}
+
+/// Historical serialized risk is an encoding view, never a mutable request.
+pub(crate) fn canonical_request_digest_with_risk(
+    request: &CalibratedDecisionRequestV1,
+    encoded_risk: RiskClass,
+) -> Result<Digest32, CalibratedError> {
     if !(1..=MAX_CANDIDATES).contains(&request.candidates.len()) {
         return Err(CalibratedError::CandidateCountOutOfRange);
     }
@@ -34,7 +42,7 @@ pub fn canonical_calibrated_request_digest_v1(
     bytes.extend_from_slice(&request.minimum_confidence.raw().to_be_bytes());
     bytes.extend_from_slice(&request.maximum_ece_ppm.to_be_bytes());
     bytes.extend_from_slice(&request.maximum_ood_false_acceptance_ppm.to_be_bytes());
-    bytes.push(risk_code(request.risk_class));
+    bytes.push(risk_code(encoded_risk));
 
     let completeness = &request.completeness;
     for digest in [

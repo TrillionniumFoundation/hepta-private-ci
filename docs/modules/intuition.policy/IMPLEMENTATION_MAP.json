@@ -27,11 +27,15 @@
   "owner": "intelligence-platform",
   "deputy": "learning-platform",
   "technicalGuide": "docs/modules/intuition.policy/TECHNICAL.md",
-  "declaredRoots": ["codex-rs/hepta-intuition"],
-  "resolvedRoots": ["codex-rs/hepta-intuition"],
+  "declaredRoots": [
+    "codex-rs/hepta-intuition"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-intuition"
+  ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "host_and_gate_source_present_canonical_hook_execution_unverified",
+  "productCallerState": "canonical_hook_and_in_process_receipt_bound_execution_unverified",
   "productionWriterState": "sole_host_owned_writer_source_present_execution_unverified",
   "servingProfile": {
     "environmentVariable": "HEPTA_INTUITION_PROFILE",
@@ -40,8 +44,10 @@
     "legacyHostSatisfiesProduction": false,
     "developmentCompatibilityRequiresExplicitOptIn": true,
     "testProfileAllowedInProductBinary": false,
-    "configurationPinnedOnFirstUse": true,
-    "runtimeVerification": "pending_exact_source_artifacts"
+    "configurationPinnedOnFirstUse": false,
+    "runtimeVerification": "pending_exact_source_artifacts",
+    "configurationParsedAtStartup": true,
+    "configurationIncludedInRuntimeIdentity": true
   },
   "productCallers": [
     {
@@ -68,7 +74,9 @@
       "sourcePath": "codex-rs/hepta-intuition/src/calibrated.rs",
       "state": "legacy_surface_present_consumer_retirement_unverified",
       "authority": "none",
-      "tests": ["codex-rs/hepta-intuition/src/calibrated_tests.rs"],
+      "tests": [
+        "codex-rs/hepta-intuition/src/calibrated_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "legacy calibrated selection",
       "mappingClass": "owner_native",
@@ -80,7 +88,9 @@
       "sourcePath": "codex-rs/hepta-intuition/src/calibrated.rs",
       "state": "legacy_advisory_surface_present_consumer_retirement_unverified",
       "authority": "none",
-      "tests": ["codex-rs/hepta-intuition/src/calibrated_tests.rs"],
+      "tests": [
+        "codex-rs/hepta-intuition/src/calibrated_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "legacy bound calibrated selection",
       "mappingClass": "owner_native",
@@ -92,7 +102,9 @@
       "sourcePath": "codex-rs/hepta-intuition/src/qualified.rs",
       "state": "source_implemented_profile_qualified_compatibility_substrate",
       "authority": "none",
-      "tests": ["codex-rs/hepta-intuition/src/qualified_tests.rs"],
+      "tests": [
+        "codex-rs/hepta-intuition/src/qualified_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "canonical profile-qualified selection",
       "mappingClass": "owner_native",
@@ -120,7 +132,10 @@
       "sourcePath": "codex-rs/hepta-intuition/src/production.rs",
       "state": "source_implemented_generator_owned_commitment",
       "authority": "none",
-      "tests": ["codex-rs/hepta-intuition/src/production_tests.rs", "scripts/intuition_golden_vectors.py"],
+      "tests": [
+        "codex-rs/hepta-intuition/src/production_tests.rs",
+        "scripts/intuition_golden_vectors.py"
+      ],
       "sourcePathExists": true,
       "designOperation": "generator-owned candidate identity digest",
       "mappingClass": "owner_native",
@@ -132,7 +147,10 @@
       "sourcePath": "codex-rs/hepta-intuition/src/production.rs",
       "state": "source_implemented_scorer_owned_commitment",
       "authority": "none",
-      "tests": ["codex-rs/hepta-intuition/src/production_tests.rs", "scripts/intuition_golden_vectors.py"],
+      "tests": [
+        "codex-rs/hepta-intuition/src/production_tests.rs",
+        "scripts/intuition_golden_vectors.py"
+      ],
       "sourcePathExists": true,
       "designOperation": "scorer-owned output digest",
       "mappingClass": "owner_native",
@@ -144,7 +162,10 @@
       "sourcePath": "codex-rs/hepta-intuition/src/production.rs",
       "state": "source_implemented_scorer_owned_commitment",
       "authority": "none",
-      "tests": ["codex-rs/hepta-intuition/src/production_tests.rs", "scripts/intuition_golden_vectors.py"],
+      "tests": [
+        "codex-rs/hepta-intuition/src/production_tests.rs",
+        "scripts/intuition_golden_vectors.py"
+      ],
       "sourcePathExists": true,
       "designOperation": "scorer identity and output commitment",
       "mappingClass": "owner_native",
@@ -156,7 +177,10 @@
       "sourcePath": "codex-rs/hepta-intuition/src/production.rs",
       "state": "source_implemented_assignment_owner_commitment",
       "authority": "none",
-      "tests": ["codex-rs/hepta-intuition/src/production_tests.rs", "scripts/intuition_golden_vectors.py"],
+      "tests": [
+        "codex-rs/hepta-intuition/src/production_tests.rs",
+        "scripts/intuition_golden_vectors.py"
+      ],
       "sourcePathExists": true,
       "designOperation": "ordered candidate and abstain mass commitment",
       "mappingClass": "owner_native",
@@ -168,7 +192,10 @@
       "sourcePath": "codex-rs/hepta-intuition/src/production.rs",
       "state": "source_implemented_assignment_owner_commitment",
       "authority": "none",
-      "tests": ["codex-rs/hepta-intuition/src/production_tests.rs", "scripts/intuition_golden_vectors.py"],
+      "tests": [
+        "codex-rs/hepta-intuition/src/production_tests.rs",
+        "scripts/intuition_golden_vectors.py"
+      ],
       "sourcePathExists": true,
       "designOperation": "assignment distribution, stream, counter and draw digest",
       "mappingClass": "owner_native",
@@ -180,7 +207,9 @@
       "sourcePath": "codex-rs/hepta-intuition/src/production.rs",
       "state": "source_implemented_non_overlapping_owner_envelope",
       "authority": "none",
-      "tests": ["codex-rs/hepta-intuition/src/production_tests.rs"],
+      "tests": [
+        "codex-rs/hepta-intuition/src/production_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "per-decision anti-substitution payload",
       "mappingClass": "owner_native",
@@ -192,11 +221,15 @@
       "sourcePath": "codex-rs/hepta-intelligence/src/intuition_qualification_v3.rs",
       "state": "source_implemented_three_party_admission_execution_unverified",
       "authority": "none",
-      "tests": ["codex-rs/hepta-intelligence/src/intuition_qualification_v3.rs"],
+      "tests": [
+        "codex-rs/hepta-intelligence/src/intuition_qualification_v3.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "generator evaluator observer authenticated admission",
       "mappingClass": "delegated_product_admission",
-      "delegatedCallees": ["codex-rs/hepta-intuition/src/production.rs"]
+      "delegatedCallees": [
+        "codex-rs/hepta-intuition/src/production.rs"
+      ]
     },
     {
       "operation": "AgentdIntuitionPolicyHostV1::prepare_v3",
@@ -212,7 +245,9 @@
       "sourcePathExists": true,
       "designOperation": "exact-generation authenticated policy preparation",
       "mappingClass": "product_caller",
-      "delegatedCallees": ["codex-rs/hepta-intelligence/src/intuition_qualification_v3.rs"]
+      "delegatedCallees": [
+        "codex-rs/hepta-intelligence/src/intuition_qualification_v3.rs"
+      ]
     },
     {
       "operation": "AgentdIntuitionPolicyHostV1::commit_v3",
@@ -228,7 +263,9 @@
       "sourcePathExists": true,
       "designOperation": "complete prepared binding, lifetime fence and selected-only append",
       "mappingClass": "product_caller",
-      "delegatedCallees": ["codex-rs/hepta-learning-ledger/src/production.rs"]
+      "delegatedCallees": [
+        "codex-rs/hepta-learning-ledger/src/production.rs"
+      ]
     },
     {
       "operation": "AgentdState::start_canonical_intelligence",
@@ -236,7 +273,9 @@
       "sourcePath": "codex-rs/hepta-agentd/src/state.rs",
       "state": "serving_method_present_authenticated_hook_execution_unverified",
       "authority": "run_admission_after_authenticated_decision",
-      "tests": ["codex-rs/hepta-agentd/src/intuition_policy_serving.rs"],
+      "tests": [
+        "codex-rs/hepta-agentd/src/intuition_policy_serving.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "ObjectiveStart canonical serving composition",
       "mappingClass": "product_caller",
@@ -251,11 +290,15 @@
       "sourcePath": "codex-rs/hepta-agentd/src/intuition_policy_serving.rs",
       "state": "production_profile_fail_closed_source_implemented_execution_unverified",
       "authority": "none",
-      "tests": ["codex-rs/hepta-agentd/src/intuition_policy_serving.rs"],
+      "tests": [
+        "codex-rs/hepta-agentd/src/intuition_policy_serving.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "default production profile and authenticated product-host requirement",
       "mappingClass": "product_caller",
-      "delegatedCallees": ["codex-rs/hepta-agentd/src/intuition_policy.rs"]
+      "delegatedCallees": [
+        "codex-rs/hepta-agentd/src/intuition_policy.rs"
+      ]
     }
   ],
   "repositoryControlledGaps": [
@@ -281,5 +324,133 @@
     "release": false,
     "implementedOperationMappingComplete": false
   },
-  "sourceRoot": ["codex-rs/hepta-intuition"]
+  "sourceRoot": [
+    "codex-rs/hepta-intuition"
+  ],
+  "sourceStateProjection": {
+    "source": "docs/modules/intuition.policy/CURRENT_STATE.json",
+    "contentSha256": "4e17e4e55c4e3666223b0c538c4480849cdfbf8ac8615b279cfe792b23f0aca6",
+    "facts": [
+      {
+        "id": "native_policy",
+        "summary": "Explicit native profile risk routing; read-only historical encoding preserves prior receipt digests.",
+        "state": "source_present",
+        "source": "codex-rs/hepta-intuition/src/production_native.rs",
+        "symbol": "native_profile_decision",
+        "tests": [
+          "codex-rs/hepta-intuition/src/production_tests.rs"
+        ],
+        "evidence": "Fixed-tree kernel tests, risk-rule matrix and golden vectors."
+      },
+      {
+        "id": "authenticated_roles",
+        "summary": "Generator, evaluator and observer signatures; pairwise verified controller separation.",
+        "state": "source_present",
+        "source": "codex-rs/hepta-intelligence/src/intuition_qualification_v3.rs",
+        "symbol": "verify_verified_role_separation",
+        "tests": [
+          "codex-rs/hepta-agentd/tests/intuition_policy_product_v3.rs"
+        ],
+        "evidence": "Signed product tests including distinct principals sharing one evaluator/observer controller."
+      },
+      {
+        "id": "host_commit",
+        "summary": "Complete immutable host pins and selected-only commit through the existing LedgerWriter and witness.",
+        "state": "source_present",
+        "source": "codex-rs/hepta-agentd/src/intuition_policy.rs",
+        "symbol": "commit_v3",
+        "tests": [
+          "codex-rs/hepta-agentd/tests/intuition_policy_product_v3.rs",
+          "codex-rs/hepta-agentd/tests/intuition_policy_commit_boundary.rs"
+        ],
+        "evidence": "Exact-source and merge ledger/product command logs; process interruption remains separately required."
+      },
+      {
+        "id": "admission_receipt",
+        "summary": "Complete policy receipt and typed causes survive in-process run/context admission; V1 transport remains unchanged.",
+        "state": "source_partial",
+        "source": "codex-rs/hepta-agentd/src/intuition_policy_admission.rs",
+        "symbol": "finish_canonical_admission",
+        "tests": [
+          "codex-rs/hepta-agentd/src/intuition_policy_admission_tests.rs"
+        ],
+        "evidence": "Agentd receipt-propagation tests plus separately required real request, durable recovery and delivery evidence."
+      },
+      {
+        "id": "startup_profile",
+        "summary": "Strict typed profile resolved at AgentdState startup, included in configuration identity and enforced before compatibility returns.",
+        "state": "source_present",
+        "source": "codex-rs/hepta-agentd/src/state.rs",
+        "symbol": "new_with_intuition_profile",
+        "tests": [
+          "codex-rs/hepta-agentd/src/intuition_policy_serving.rs"
+        ],
+        "evidence": "Default Production and explicit development tests; real process startup and restart qualification."
+      },
+      {
+        "id": "telemetry",
+        "summary": "Existing Codex metrics and tracing with bounded static reason codes; no deployed audit/exporter acceptance.",
+        "state": "source_partial",
+        "source": "codex-rs/hepta-agentd/src/intuition_policy_serving.rs",
+        "symbol": "agentd_error_reason",
+        "tests": [
+          "codex-rs/hepta-agentd/src/intuition_policy_serving.rs"
+        ],
+        "evidence": "Source tests plus actual target-host exporter, audit delivery and alert observations."
+      },
+      {
+        "id": "source_qualification",
+        "summary": "Read-only exact-source, synthetic-merge, independent and ledger workflows; source authoring cannot issue acceptance.",
+        "state": "source_present",
+        "source": ".github/workflows/hepta-intuition-qualification.yml",
+        "symbol": "Intuition required",
+        "tests": [
+          "scripts/tests/test_intuition_exact.py"
+        ],
+        "evidence": "Current same-run command records, nonzero test execution, retained binaries and agreement artifacts."
+      },
+      {
+        "id": "source_projection",
+        "summary": "Canonical source state generates document blocks, implementation-map projection and contract/requirement traceability.",
+        "state": "source_present",
+        "source": "scripts/intuition_state.py",
+        "symbol": "def project",
+        "tests": [
+          "scripts/tests/test_intuition_state.py"
+        ],
+        "evidence": "Read-only projection check and adversarial generator tests on the exact candidate."
+      }
+    ],
+    "gaps": [
+      {
+        "id": "durable_handoff",
+        "required": "Persist prepare, policy commit, run start, context attachment and delivery progress through the Agentd owner; tracing and an in-process receipt are not a durable transaction journal."
+      },
+      {
+        "id": "transport_receipt",
+        "required": "Introduce and migrate a versioned outward admission/acknowledgement contract that binds the policy receipt; do not silently redefine ObjectiveRunAdmission V1."
+      },
+      {
+        "id": "generation_recovery",
+        "required": "Implement and execute restart reconciliation, current-authority revalidation, monotonic generation fences and process-kill/concurrent/disk/corruption cases."
+      },
+      {
+        "id": "typed_domains",
+        "required": "Complete distinct sequence, wall-clock, assignment-counter and generation types at all owner boundaries without changing historical wire meanings."
+      },
+      {
+        "id": "legacy_consumers",
+        "required": "Migrate and qualify remaining V1/V2 advisory consumers; native V4 routing does not itself retire them."
+      },
+      {
+        "id": "exact_execution",
+        "required": "Obtain complete real source-head, deterministic merge, independent and ledger passes and current artifact agreement; a source-authoring or portability run is insufficient."
+      },
+      {
+        "id": "operator_acceptance",
+        "required": "Exercise real identity/entitlement, audit/exporter delivery, combined request p50/p95/p99/capacity/witness lag and backup/restore/rotation/rollout/rollback; obtain external evaluator and operator approval."
+      }
+    ],
+    "isExecutionProof": false
+  }
 }

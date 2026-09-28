@@ -26,7 +26,7 @@ env:
   CARGO_BUILD_JOBS: '2'
 jobs:
   windows-lock:
-    name: Windows lock and policy portability preflight
+    name: Windows immutable lock, policy and source-state preflight
     runs-on: windows-2025
     timeout-minutes: 30
     steps:
@@ -36,19 +36,34 @@ jobs:
           persist-credentials: false
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
+          toolchain: '1.95.0'
           components: rustfmt,clippy
+      - name: Record immutable source identity and verify documentation projection
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git rev-parse HEAD 'HEAD^{tree}'
+          python scripts/intuition_state.py --check
+          python -m unittest discover -s scripts/tests -p 'test_intuition_state.py' -v
       - name: Verify pinned workspace resolution
         shell: bash
         run: |
           set -euo pipefail
           cd codex-rs
           cargo metadata --locked --format-version 1 > "$RUNNER_TEMP/intuition-locked-metadata.json"
-      - name: Check policy portability even if metadata failed
+      - name: Test and lint native policy without changing candidate source
         if: ${{ always() && !cancelled() }}
         shell: bash
         env:
           CARGO_TARGET_DIR: ${{ runner.temp }}/intuition-preflight-target
-        run: cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-intuition --all-targets
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo check --locked -p codex-hepta-intuition --all-targets
+          cargo test --locked -p codex-hepta-intuition --lib
+          cargo clippy --locked -p codex-hepta-intuition --all-targets -- -D warnings
+          cargo fmt -p codex-hepta-intuition -- --check
       - name: Require unchanged source
         if: ${{ always() && !cancelled() }}
         shell: bash
@@ -65,8 +80,8 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
   posix-source:
-    name: POSIX source regression preflight
-    runs-on: macos-15
+    name: Linux ARM source regression preflight
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -75,6 +90,7 @@ jobs:
           persist-credentials: false
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
+          toolchain: '1.95.0'
           components: rustfmt,clippy
       - name: Run the full POSIX evidence suite without excluding failing tests
         run: python3 -m unittest discover -s scripts/tests -p 'test_intuition*.py' -v
@@ -94,6 +110,6 @@ jobs:
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           git diff --exit-code
           test -z "$(git ls-files --others --exclude-standard)"
-# These platform preflights never replace the required Ubuntu exact-source,
+# These platform preflights never replace the required Ubuntu x86 exact-source,
 # deterministic-merge, independent execution or ledger qualification artifacts.
 # No step edits, commits, pushes, promotes or signs acceptance for its candidate.

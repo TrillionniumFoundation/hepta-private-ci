@@ -1,10 +1,43 @@
 # intuition.policy operational runbook
 
+<!-- intuition-source-state:begin -->
+## Canonical source-state projection
+
+Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `4e17e4e55c4e3666223b0c538c4480849cdfbf8ac8615b279cfe792b23f0aca6`.
+
+These are inspected source facts, not compilation, runtime, independent acceptance or release receipts.
+All four production completion predicates remain false. Current execution identity belongs only to immutable command artifacts.
+
+| Requirement | Source state | Scope |
+| --- | --- | --- |
+| `native_policy` | `source_present` | Explicit native profile risk routing; read-only historical encoding preserves prior receipt digests. |
+| `authenticated_roles` | `source_present` | Generator, evaluator and observer signatures; pairwise verified controller separation. |
+| `host_commit` | `source_present` | Complete immutable host pins and selected-only commit through the existing LedgerWriter and witness. |
+| `admission_receipt` | `source_partial` | Complete policy receipt and typed causes survive in-process run/context admission; V1 transport remains unchanged. |
+| `startup_profile` | `source_present` | Strict typed profile resolved at AgentdState startup, included in configuration identity and enforced before compatibility returns. |
+| `telemetry` | `source_partial` | Existing Codex metrics and tracing with bounded static reason codes; no deployed audit/exporter acceptance. |
+| `source_qualification` | `source_present` | Read-only exact-source, synthetic-merge, independent and ledger workflows; source authoring cannot issue acceptance. |
+| `source_projection` | `source_present` | Canonical source state generates document blocks, implementation-map projection and contract/requirement traceability. |
+
+Remaining closure requirements:
+
+- **durable_handoff**: Persist prepare, policy commit, run start, context attachment and delivery progress through the Agentd owner; tracing and an in-process receipt are not a durable transaction journal.
+- **transport_receipt**: Introduce and migrate a versioned outward admission/acknowledgement contract that binds the policy receipt; do not silently redefine ObjectiveRunAdmission V1.
+- **generation_recovery**: Implement and execute restart reconciliation, current-authority revalidation, monotonic generation fences and process-kill/concurrent/disk/corruption cases.
+- **typed_domains**: Complete distinct sequence, wall-clock, assignment-counter and generation types at all owner boundaries without changing historical wire meanings.
+- **legacy_consumers**: Migrate and qualify remaining V1/V2 advisory consumers; native V4 routing does not itself retire them.
+- **exact_execution**: Obtain complete real source-head, deterministic merge, independent and ledger passes and current artifact agreement; a source-authoring or portability run is insufficient.
+- **operator_acceptance**: Exercise real identity/entitlement, audit/exporter delivery, combined request p50/p95/p99/capacity/witness lag and backup/restore/rotation/rollout/rollback; obtain external evaluator and operator approval.
+
+Version and requirement-to-test/artifact mappings: `docs/modules/intuition.policy/CONTRACTS.md`.
+<!-- intuition-source-state:end -->
+
+
 This runbook accompanies `TECHNICAL.md`, `IMPLEMENTATION_MAP.json` and the module execution dossier. It is an operator procedure and a record of remaining release gates, not an operator acceptance receipt. No deployment, canary or release is authorized merely by its presence.
 
 ## 1. Production configuration and compatibility migration
 
-The canonical Agentd gate reads `HEPTA_INTUITION_PROFILE` once per process. Accepted values are exactly `production`, `development`, and, in a test build only, `test`. Missing configuration defaults to Production. Empty, misspelled, whitespace-padded and non-Unicode values fail closed. The profile cannot be changed through environment mutation after first use; restart into a new configured process generation instead.
+AgentdState resolves `HEPTA_INTUITION_PROFILE` at startup and binds the immutable typed profile into configuration identity. Accepted values are exactly `production`, `development`, and, in a test build only, `test`. Missing configuration defaults to Production. Empty, misspelled, whitespace-padded and non-Unicode values fail closed. Requests do not re-read the environment or a global cache; restart into a new configured process generation to change the profile.
 
 Production requires a registered, product-ready V3 host even when an invocation is absent. A legacy-only host is insufficient. An invocation without a host and a configured host without authenticated invocation material both fail closed. The historical no-host/no-invocation bypass exists only after explicit non-production configuration.
 

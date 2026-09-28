@@ -1,8 +1,41 @@
 # intuition.policy: implementation and execution dossier
 
+<!-- intuition-source-state:begin -->
+## Canonical source-state projection
+
+Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `4e17e4e55c4e3666223b0c538c4480849cdfbf8ac8615b279cfe792b23f0aca6`.
+
+These are inspected source facts, not compilation, runtime, independent acceptance or release receipts.
+All four production completion predicates remain false. Current execution identity belongs only to immutable command artifacts.
+
+| Requirement | Source state | Scope |
+| --- | --- | --- |
+| `native_policy` | `source_present` | Explicit native profile risk routing; read-only historical encoding preserves prior receipt digests. |
+| `authenticated_roles` | `source_present` | Generator, evaluator and observer signatures; pairwise verified controller separation. |
+| `host_commit` | `source_present` | Complete immutable host pins and selected-only commit through the existing LedgerWriter and witness. |
+| `admission_receipt` | `source_partial` | Complete policy receipt and typed causes survive in-process run/context admission; V1 transport remains unchanged. |
+| `startup_profile` | `source_present` | Strict typed profile resolved at AgentdState startup, included in configuration identity and enforced before compatibility returns. |
+| `telemetry` | `source_partial` | Existing Codex metrics and tracing with bounded static reason codes; no deployed audit/exporter acceptance. |
+| `source_qualification` | `source_present` | Read-only exact-source, synthetic-merge, independent and ledger workflows; source authoring cannot issue acceptance. |
+| `source_projection` | `source_present` | Canonical source state generates document blocks, implementation-map projection and contract/requirement traceability. |
+
+Remaining closure requirements:
+
+- **durable_handoff**: Persist prepare, policy commit, run start, context attachment and delivery progress through the Agentd owner; tracing and an in-process receipt are not a durable transaction journal.
+- **transport_receipt**: Introduce and migrate a versioned outward admission/acknowledgement contract that binds the policy receipt; do not silently redefine ObjectiveRunAdmission V1.
+- **generation_recovery**: Implement and execute restart reconciliation, current-authority revalidation, monotonic generation fences and process-kill/concurrent/disk/corruption cases.
+- **typed_domains**: Complete distinct sequence, wall-clock, assignment-counter and generation types at all owner boundaries without changing historical wire meanings.
+- **legacy_consumers**: Migrate and qualify remaining V1/V2 advisory consumers; native V4 routing does not itself retire them.
+- **exact_execution**: Obtain complete real source-head, deterministic merge, independent and ledger passes and current artifact agreement; a source-authoring or portability run is insufficient.
+- **operator_acceptance**: Exercise real identity/entitlement, audit/exporter delivery, combined request p50/p95/p99/capacity/witness lag and backup/restore/rotation/rollout/rollback; obtain external evaluator and operator approval.
+
+Version and requirement-to-test/artifact mappings: `docs/modules/intuition.policy/CONTRACTS.md`.
+<!-- intuition-source-state:end -->
+
+
 Parent: `docs/modules/intuition.policy/TECHNICAL.md`. Lane: `LANE-F-ADAPTIVE-POLICY`. Operator procedures: `docs/modules/intuition.policy/OPERATIONS.md`.
 
-Status: **implemented source under qualification; product closure not yet established**. The calibrated kernel, bounded product contract, split runtime commitments, three-party admission, complete Agentd pins and host-owned learning-ledger path have source implementations. The presence of `intuition_policy_serving.rs` does not prove its invocation from the canonical module tree. The actual hook, exact-head and synthetic-merge execution, real process E2E and independent acceptance are separate facts. Pending composition scripts and workflow definitions cannot establish them.
+Status: **implemented source under qualification; product closure not yet established**. The calibrated kernel, bounded product contract, split runtime commitments, three-party admission, complete Agentd pins and host-owned learning-ledger path have source implementations. The presence of `intuition_policy_serving.rs` does not prove its invocation from the canonical module tree. The actual hook and in-process receipt binding are directly committed source. Exact-head and synthetic-merge execution, real process E2E and independent acceptance remain separate facts. Pending composition scripts and workflow definitions cannot establish them.
 
 Common execution rules: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged. This dossier preserves the target design and labels the remaining evidence rather than reducing module scope.
 
@@ -52,7 +85,7 @@ The selected Decision must be durably committed and witnessed before product suc
 
 Preparation captures its time and the earliest expiration of the three qualification evidence envelopes. Commit rejects clock reversal and an expired qualification even when the separate Decision signature has a later expiration. These bounds are included in the `hepta.agentd.prepared-intuition.v2` digest. Existing durable Decision encodings are unchanged.
 
-The service retains a committed receipt if the final admission check returns either `false` or an error. That result is indeterminate for downstream admission, not evidence that the ledger append never occurred. End-to-end recovery must preserve this typed information through the outer serving error boundary as well.
+The service retains a committed receipt if the final admission check returns either `false` or an error. That result is indeterminate for downstream admission, not evidence that the ledger append never occurred. The canonical run/context boundary now retains the complete policy receipt and typed downstream cause in process. Durable restart reconciliation and outward transport of that receipt remain separate unclosed requirements.
 
 Idempotent replay uses the deterministic record identity, exact signed evidence and original predecessor. The current host implements one bounded exact replay for a ledger-committed/witness-not-advanced error. Ordinary rejection is not retried. A later reconciliation failure must not erase an already-known durable commit; interruption tests must cover both the first append and the retry boundary. Reopen-after-clean-drop is not a substitute for killing a process after append but before witness/acknowledgement.
 
@@ -60,7 +93,7 @@ Idempotent replay uses the deterministic record identity, exact signed evidence 
 
 Hard legality and hard veto are applied before selection. Calibration, OOD, candidate completeness, policy generation, and validity windows are fail-closed. Candidate order is semantic and committed. Product entry validation applies `Ppm` bounds `[0,1_000_000]` and nonzero `PolicyGeneration`; these wrappers do not by themselves enforce monotonic cross-process updates.
 
-The product receipt preserves original request risk and distinguishes request-high-risk, profile-risk-rule, OOD, low-confidence, and unsupported reasons. V4 currently wraps the qualified legacy kernel; preserving the product receipt semantics must not be confused with removing every internal legacy risk transformation.
+The product receipt preserves original request risk and distinguishes request-high-risk, profile-risk-rule, OOD, low-confidence, and unsupported reasons. V4 invokes the shared deterministic kernel with explicit risk routing and the unchanged original request. A read-only historical encoding view preserves existing V1/V2/V3 digest fields without using a rewritten risk value to choose an action. Legacy entry points remain for compatibility callers.
 
 Randomized assignment requires a separately owned RNG identity, stream, exact counter, exact draw, and complete distribution commitment. Deterministic assignment has no ambient draw. Assignment probabilities are excluded from scorer outputs. The scorer and assignment commitments deliberately share a generator identity digest while keeping their owned payload fields separate.
 
@@ -121,7 +154,7 @@ signed ObjectiveStart / durable RunStart
   -> run/context admission under its own authority
 ```
 
-The canonical gate reads `HEPTA_INTUITION_PROFILE` once per process. Missing configuration defaults to `production`; Production requires a product-ready V3 host and authenticated invocation material. A legacy-only host does not satisfy that requirement. The no-host/no-invocation historical advisory bypass now requires explicit `development` or a test-build-only `test` profile. Unknown, empty or malformed values reject. Exactly one of host/invocation being configured still fails closed in every profile. This is a source implementation contract, not proof of real-process execution or operator acceptance.
+AgentdState resolves `HEPTA_INTUITION_PROFILE` at startup and binds its typed value into configuration identity. Missing configuration defaults to `production`; Production requires a product-ready V3 host and authenticated invocation material. A legacy-only host does not satisfy that requirement. The no-host/no-invocation historical advisory bypass now requires explicit `development` or a test-build-only `test` profile. Unknown, empty or malformed values reject. Exactly one of host/invocation being configured still fails closed in every profile. This is a source implementation contract, not proof of real-process execution or operator acceptance.
 
 Rollback must select a separately configured, still-qualified predecessor under a new admitted configuration/generation. A trusted evaluator signature alone cannot switch host-pinned semantics. Revocation, stop and old-generation fences must remain effective across frozen snapshots and prepared values. Their process-level tests and operator rehearsal remain required; immutable pins alone do not establish a live revocation controller.
 
@@ -141,7 +174,7 @@ Separate current states are:
 | Complete prepared profile and evidence-lifetime fences | implemented source; Rust execution unverified |
 | Sole host-held writer and direct durable fixture | implemented source; Rust execution unverified |
 | Default Production profile and no missing-host bypass | implemented source; Rust execution unverified |
-| Canonical ObjectiveStart hook materialized and compile-reachable | requires actual source/build evidence, not a pending script |
+| Canonical ObjectiveStart hook and bound receipt | directly committed source; compile and real-process evidence still required |
 | Actual Agentd process/request E2E | not established |
 | Exact source and synthetic-merge command outcomes | require current execution artifacts |
 | Separate independent execution | workflow and verifier implemented; current completion requires artifacts |

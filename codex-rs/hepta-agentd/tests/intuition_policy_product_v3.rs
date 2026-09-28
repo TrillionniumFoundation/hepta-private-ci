@@ -103,6 +103,17 @@ fn trust_material() -> (
     [SigningKey; 3],
     [AuthenticatedPrincipalV1; 3],
 ) {
+    trust_material_with_observer_controller("controller:observer")
+}
+
+fn trust_material_with_observer_controller(
+    observer_controller: &str,
+) -> (
+    ActivatedLearningTrustV1,
+    Arc<LearningEvidenceVerifierV1>,
+    [SigningKey; 3],
+    [AuthenticatedPrincipalV1; 3],
+) {
     let keys = [
         SigningKey::from_bytes(&[11; 32]),
         SigningKey::from_bytes(&[23; 32]),
@@ -133,7 +144,7 @@ fn trust_material() -> (
             ),
             trusted(
                 principals[2].clone(),
-                "controller:observer",
+                observer_controller,
                 &keys[2],
                 LearningEvidenceRoleV1::Observer,
             ),
@@ -538,4 +549,57 @@ fn v3_product_host_commits_once_replays_idempotently_and_reopens() {
     let records = reopened.records().expect("reopened records");
     assert_eq!(records.len(), 1, "idempotent replay appended a duplicate");
     assert_eq!(reopened.snapshot().expect("snapshot").records().len(), 1);
+}
+
+#[test]
+fn v3_product_rejects_evaluator_observer_controller_collision_despite_distinct_keys() {
+    let (_, verifier, keys, principals) =
+        trust_material_with_observer_controller("controller:evaluator");
+    let (request, profile) = request_and_profile();
+    let (scoring, assignment) = commitments(&request, &profile);
+    let completeness = sign_evidence(
+        &verifier,
+        &principals[0],
+        &keys[0],
+        LearningEvidenceRoleV1::Generator,
+        "completeness:controller-collision",
+        &canonical_completeness_evidence_payload_v1(&request).expect("completeness"),
+    );
+    let qualification = sign_evidence(
+        &verifier,
+        &principals[1],
+        &keys[1],
+        LearningEvidenceRoleV1::Evaluator,
+        "qualification:controller-collision",
+        &canonical_profile_qualification_payload_v1(&profile).expect("profile"),
+    );
+    let runtime = sign_evidence(
+        &verifier,
+        &principals[2],
+        &keys[2],
+        LearningEvidenceRoleV1::Observer,
+        "runtime:controller-collision",
+        &canonical_runtime_commitment_payload_v2(&request, &profile, &scoring, &assignment)
+            .expect("runtime"),
+    );
+    let error = codex_hepta_intelligence::decide_authenticated_intuition_v3(
+        request,
+        profile,
+        scoring,
+        assignment,
+        IntuitionQualificationEvidenceV2 {
+            completeness: &completeness,
+            profile_qualification: &qualification,
+            runtime: &runtime,
+        },
+        &verifier,
+        NOW,
+    )
+    .expect_err("same controller must not self-qualify independent runtime evidence");
+    assert!(matches!(
+        error,
+        codex_hepta_intelligence::IntuitionQualificationErrorV3::Evidence(
+            codex_hepta_learning_ledger::SignedEvidenceError::ControllerCollision
+        )
+    ));
 }

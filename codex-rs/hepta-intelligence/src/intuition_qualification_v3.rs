@@ -25,8 +25,8 @@ use codex_hepta_learning_ledger::CausalV2Error;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_learning_ledger::SignedEvidenceError;
-use codex_hepta_learning_ledger::verify_independent_roles;
 use codex_hepta_learning_ledger::verify_signed_role_separation;
+use codex_hepta_learning_ledger::verify_verified_role_separation;
 use codex_hepta_types::Digest32;
 
 use crate::IntuitionQualificationEvidenceV2;
@@ -140,7 +140,8 @@ pub fn decide_authenticated_intuition_v3(
 
     verify_signed_role_separation(&generator, &evaluator, now)?;
     verify_signed_role_separation(&generator, &observer, now)?;
-    verify_independent_roles(evaluator.principal(), observer.principal(), now)?;
+    // Distinct principal keys do not establish independent controllers.
+    verify_verified_role_separation(&evaluator, &observer, now)?;
 
     let profile_digest =
         canonical_policy_profile_digest_v1(&profile).map_err(ProductionPolicyError::Qualified)?;

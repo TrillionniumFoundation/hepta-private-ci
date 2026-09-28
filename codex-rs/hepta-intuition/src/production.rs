@@ -26,7 +26,9 @@ use crate::qualified::CanonicalPolicyProfileV1;
 use crate::qualified::CanonicalRiskRuleV1;
 use crate::qualified::QualifiedCalibratedError;
 use crate::qualified::canonical_policy_profile_digest_v1;
-use crate::qualified::decide_calibrated_v3;
+#[path = "production_native.rs"]
+mod native;
+use native::native_profile_decision;
 
 pub const PPM_SCALE: u32 = 1_000_000;
 
@@ -240,7 +242,7 @@ impl From<QualifiedCalibratedError> for ProductionPolicyError {
 }
 
 /// Current product decision entrypoint.  It preserves compatibility with the
-/// historical receipt kernel while exposing an unambiguous profile-rule reason.
+/// historical receipt encoding while routing natively with an explicit profile rule.
 pub fn decide_calibrated_v4(
     request: CalibratedDecisionRequestV1,
     profile: &CanonicalPolicyProfileV1,
@@ -253,7 +255,7 @@ pub fn decide_calibrated_v4(
         .map_err(QualifiedCalibratedError::Policy)?;
     let profile_digest = canonical_policy_profile_digest_v1(profile)?;
     let forced_by_profile = risk_requires_slow_path(profile.risk_rule, request.risk_class);
-    let legacy = decide_calibrated_v3(request, profile)?;
+    let legacy = native_profile_decision(request, profile)?;
 
     let disposition = if forced_by_profile && original_risk_class != RiskClass::High {
         ProductionDispositionV1::SlowPath(ProductionSlowPathReasonV1::ProfileRiskRule)

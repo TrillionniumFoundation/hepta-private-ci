@@ -20,6 +20,7 @@ use codex_hepta_types::StableId;
 mod binding;
 
 pub use binding::canonical_calibrated_request_digest_v1;
+pub(crate) use binding::canonical_request_digest_with_risk;
 pub use binding::decide_calibrated_v2;
 
 const MAX_CANDIDATES: usize = 128;
@@ -186,6 +187,20 @@ impl StdError for CalibratedError {}
 pub fn decide_calibrated(
     request: CalibratedDecisionRequestV1,
 ) -> Result<CalibratedIntuitionReceiptV1, CalibratedError> {
+    decide_calibrated_with_routing(request, KernelRiskRouting::RequestRisk)
+}
+
+/// Internal routing input, not a wire risk classification or authority grant.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum KernelRiskRouting {
+    RequestRisk,
+    ProfileSlowPath,
+}
+
+pub(crate) fn decide_calibrated_with_routing(
+    request: CalibratedDecisionRequestV1,
+    routing: KernelRiskRouting,
+) -> Result<CalibratedIntuitionReceiptV1, CalibratedError> {
     validate_request(&request)?;
 
     let mut legal_count = 0usize;
@@ -211,19 +226,20 @@ pub fn decide_calibrated(
 
     validate_assignment(&request, &eligible)?;
 
-    let disposition = if request.risk_class == RiskClass::High {
-        CalibratedDispositionV1::SlowPath(SlowPathReasonV1::HighRisk)
-    } else if legal_count == 0 {
-        CalibratedDispositionV1::Abstained(AbstentionReasonV1::NoLegalCandidate)
-    } else if eligible.is_empty() && ood_count > 0 {
-        CalibratedDispositionV1::SlowPath(SlowPathReasonV1::OutOfDistribution)
-    } else if eligible.is_empty() && low_confidence_count > 0 {
-        CalibratedDispositionV1::SlowPath(SlowPathReasonV1::LowConfidence)
-    } else if eligible.is_empty() {
-        CalibratedDispositionV1::SlowPath(SlowPathReasonV1::Unsupported)
-    } else {
-        select(&request, &eligible)?
-    };
+    let disposition =
+        if request.risk_class == RiskClass::High || routing == KernelRiskRouting::ProfileSlowPath {
+            CalibratedDispositionV1::SlowPath(SlowPathReasonV1::HighRisk)
+        } else if legal_count == 0 {
+            CalibratedDispositionV1::Abstained(AbstentionReasonV1::NoLegalCandidate)
+        } else if eligible.is_empty() && ood_count > 0 {
+            CalibratedDispositionV1::SlowPath(SlowPathReasonV1::OutOfDistribution)
+        } else if eligible.is_empty() && low_confidence_count > 0 {
+            CalibratedDispositionV1::SlowPath(SlowPathReasonV1::LowConfidence)
+        } else if eligible.is_empty() {
+            CalibratedDispositionV1::SlowPath(SlowPathReasonV1::Unsupported)
+        } else {
+            select(&request, &eligible)?
+        };
 
     let (propensities, abstain_probability, slow_path_probability) =
         output_distribution(&request, &disposition)?;
@@ -532,6 +548,25 @@ fn digest_receipt(
     abstain_probability: ProbabilityQ32,
     slow_path_probability: ProbabilityQ32,
 ) -> Result<Digest32, CalibratedError> {
+    digest_receipt_with_risk(
+        request,
+        disposition,
+        propensities,
+        abstain_probability,
+        slow_path_probability,
+        request.risk_class,
+    )
+}
+
+/// Read-only historical digest view; never used to choose an action.
+pub(crate) fn digest_receipt_with_risk(
+    request: &CalibratedDecisionRequestV1,
+    disposition: &CalibratedDispositionV1,
+    propensities: &[CalibratedCandidatePropensityV1],
+    abstain_probability: ProbabilityQ32,
+    slow_path_probability: ProbabilityQ32,
+    encoded_risk: RiskClass,
+) -> Result<Digest32, CalibratedError> {
     let mut bytes = b"hepta.intuition.calibrated-decision.v1".to_vec();
     push_id(&mut bytes, &request.decision_id)?;
     for digest in [
@@ -550,7 +585,7 @@ fn digest_receipt(
     bytes.extend_from_slice(&request.minimum_confidence.raw().to_be_bytes());
     bytes.extend_from_slice(&request.maximum_ece_ppm.to_be_bytes());
     bytes.extend_from_slice(&request.maximum_ood_false_acceptance_ppm.to_be_bytes());
-    bytes.push(risk_code(request.risk_class));
+    bytes.push(risk_code(encoded_risk));
     match disposition {
         CalibratedDispositionV1::Selected(candidate_id) => {
             bytes.push(0);

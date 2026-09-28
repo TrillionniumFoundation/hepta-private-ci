@@ -355,3 +355,69 @@ fn ppm_overflow_is_rejected_before_policy_admission() {
     let error = decide_calibrated_v4(request, &profile).expect_err("overflow must fail");
     assert_eq!(error.code(), "intuition.policy.bound.ppm_out_of_range");
 }
+
+#[test]
+fn native_v4_preserves_historical_receipts_across_risk_mask_and_assignment_matrix() {
+    for risk in [RiskClass::Low, RiskClass::Elevated, RiskClass::High] {
+        for rule in [
+            CanonicalRiskRuleV1::HighOnlySlowPath,
+            CanonicalRiskRuleV1::ElevatedAndHighSlowPath,
+            CanonicalRiskRuleV1::AlwaysSlowPath,
+        ] {
+            for mask in 0..4 {
+                for randomized in [false, true] {
+                    let (mut request, mut profile) = fixture(risk, rule);
+                    if mask == 1 {
+                        request.candidates[0].hard_veto = true;
+                    } else if mask == 2 {
+                        request.minimum_confidence = ProbabilityQ32::ONE;
+                        profile.minimum_confidence = ProbabilityQ32::ONE;
+                        request.candidates[0].calibrated_confidence = ProbabilityQ32::ZERO;
+                    } else if mask == 3 {
+                        request.ood.maximum_in_domain_score = ProbabilityQ32::ZERO;
+                        profile.maximum_in_domain_score = ProbabilityQ32::ZERO;
+                        request.candidates[0].ood_score = ProbabilityQ32::ONE;
+                    }
+                    if randomized {
+                        let eligible = mask == 0;
+                        request.candidates[0].assignment_probability = if eligible {
+                            ProbabilityQ32::ONE
+                        } else {
+                            ProbabilityQ32::ZERO
+                        };
+                        request.assignment = AssignmentModeV1::CounterBased {
+                            random_stream_digest: d("native-matrix-stream"),
+                            draw: ProbabilityQ32::ZERO,
+                            abstain_probability: if eligible {
+                                ProbabilityQ32::ZERO
+                            } else {
+                                ProbabilityQ32::ONE
+                            },
+                        };
+                    }
+                    request.completeness.candidate_set_digest =
+                        canonical_candidate_set_digest_v1(&request.candidates).expect("set");
+                    let before = canonical_calibrated_request_digest_v1(&request).expect("request");
+                    let old = crate::qualified::decide_calibrated_v3(request.clone(), &profile)
+                        .expect("historical oracle");
+                    let native = native::native_profile_decision(request.clone(), &profile)
+                        .expect("native routing");
+                    assert_eq!(
+                        native, old,
+                        "risk={risk:?} rule={rule:?} mask={mask} randomized={randomized}"
+                    );
+                    let product = decide_calibrated_v4(request.clone(), &profile).expect("V4");
+                    assert_eq!(product.legacy_receipt_digest, old.receipt_digest);
+                    assert_eq!(product.original_risk_class, risk);
+                    assert_eq!(product.propensities, old.propensities);
+                    assert_eq!(product.abstain_probability, old.abstain_probability);
+                    assert_eq!(product.slow_path_probability, old.slow_path_probability);
+                    assert_eq!(
+                        canonical_calibrated_request_digest_v1(&request).expect("unchanged"),
+                        before
+                    );
+                }
+            }
+        }
+    }
+}
