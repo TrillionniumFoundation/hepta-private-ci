@@ -122,8 +122,10 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
         Ok(bundle)
     }
 
-    #[allow(clippy::too_many_arguments)]
-    pub fn qualify_outcomes_and_persist<J: DurableProductEvaluationAttemptJournalV1>(
+    // The unarchived multi-outcome qualification boundary is an internal helper.
+    // Cross-crate callers must use the typed-archive or selected-host methods.
+    #[allow(dead_code, clippy::too_many_arguments)]
+    pub(crate) fn qualify_outcomes_and_persist<J: DurableProductEvaluationAttemptJournalV1>(
         &self,
         attempt_id: &StableId,
         temporal: &ProductOutcomeEvaluationReceiptV1,
