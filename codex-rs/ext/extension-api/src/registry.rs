@@ -13,6 +13,7 @@ use crate::ExtensionData;
 use crate::ExtensionEventSink;
 use crate::ExtensionMetrics;
 use crate::McpServerContributor;
+use crate::ModelProviderContextFinalUseContributor;
 use crate::ModelProviderPolicyContributor;
 use crate::NoopExtensionEventSink;
 use crate::SkillInvocationContributor;
@@ -43,6 +44,7 @@ impl<C: Sync> Default for ExtensionRegistryBuilder<C> {
                 approval_review_contributors: Vec::new(),
                 context_contributors: Vec::new(),
                 ephemeral_model_input_contributors: Vec::new(),
+                model_provider_context_final_use_contributors: Vec::new(),
                 mcp_server_contributors: Vec::new(),
                 model_provider_policy_contributors: Vec::new(),
                 turn_input_contributors: Vec::new(),
@@ -128,6 +130,16 @@ impl<C: Sync> ExtensionRegistryBuilder<C> {
             .push(contributor);
     }
 
+    /// Registers one context final-use contributor for an already assembled bundle.
+    pub fn model_provider_context_final_use_contributor(
+        &mut self,
+        contributor: Arc<dyn ModelProviderContextFinalUseContributor>,
+    ) {
+        self.registry
+            .model_provider_context_final_use_contributors
+            .push(contributor);
+    }
+
     /// Registers one runtime MCP server contributor.
     pub fn mcp_server_contributor(&mut self, contributor: Arc<dyn McpServerContributor<C>>) {
         self.registry.mcp_server_contributors.push(contributor);
@@ -184,6 +196,8 @@ pub struct ExtensionRegistry<C: Sync> {
     skill_invocation_contributors: Vec<Arc<dyn SkillInvocationContributor>>,
     context_contributors: Vec<Arc<dyn ContextContributor>>,
     ephemeral_model_input_contributors: Vec<Arc<dyn EphemeralModelInputContributor>>,
+    model_provider_context_final_use_contributors:
+        Vec<Arc<dyn ModelProviderContextFinalUseContributor>>,
     mcp_server_contributors: Vec<Arc<dyn McpServerContributor<C>>>,
     model_provider_policy_contributors: Vec<Arc<dyn ModelProviderPolicyContributor>>,
     turn_input_contributors: Vec<Arc<dyn TurnInputContributor>>,
@@ -272,6 +286,13 @@ impl<C: Sync> ExtensionRegistry<C> {
     /// Returns physical-send ephemeral model-input contributors in registration order.
     pub fn ephemeral_model_input_contributors(&self) -> &[Arc<dyn EphemeralModelInputContributor>] {
         &self.ephemeral_model_input_contributors
+    }
+
+    /// Returns context final-use contributors in registration order.
+    pub fn model_provider_context_final_use_contributors(
+        &self,
+    ) -> &[Arc<dyn ModelProviderContextFinalUseContributor>] {
+        &self.model_provider_context_final_use_contributors
     }
 
     /// Returns the registered runtime MCP server contributors.
