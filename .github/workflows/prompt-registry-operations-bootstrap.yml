@@ -1,6 +1,6 @@
 name: Prompt registry operational closure bootstrap
 
-# Apply the reviewed source patch quickly; exact-head and synthetic-merge
+# Materialize the reviewed source patch; exact-head and synthetic-merge
 # qualification remain separate hard gates and retain all Rust validation.
 on:
   workflow_dispatch:
