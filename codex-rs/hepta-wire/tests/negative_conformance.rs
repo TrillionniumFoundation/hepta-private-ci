@@ -16,12 +16,12 @@ const VECTORS: &str = include_str!(concat!(
 ));
 
 fn decode_hex(value: &str) -> Result<Vec<u8>, Box<dyn Error>> {
-    if !value.len().is_multiple_of(2) {
+    let (pairs, remainder) = value.as_bytes().as_chunks::<2>();
+    if !remainder.is_empty() {
         return Err("hex input has odd length".into());
     }
-    value
-        .as_bytes()
-        .chunks_exact(2)
+    pairs
+        .iter()
         .map(|pair| {
             let pair = std::str::from_utf8(pair)?;
             Ok(u8::from_str_radix(pair, 16)?)
