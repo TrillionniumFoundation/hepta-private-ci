@@ -11,8 +11,8 @@ use std::sync::Mutex;
 
 use codex_hepta_infer_core::FileNeuronFeatureExecutionStoreV1;
 use codex_hepta_neuron::AnchorWitnessStore;
-use codex_hepta_neuron::InferenceControlModelPort;
 use codex_hepta_neuron::DurableNeuronInferenceControlPortV1;
+use codex_hepta_neuron::InferenceControlModelPort;
 use codex_hepta_neuron::NeuronAdmissionError;
 use codex_hepta_neuron::NeuronAdmissionGuard;
 use codex_hepta_neuron::NeuronInferenceControlPort;
