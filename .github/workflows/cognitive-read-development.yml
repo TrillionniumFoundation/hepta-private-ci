@@ -1,0 +1,129 @@
+name: Cognitive read development preparation (not qualification)
+
+on:
+  push:
+    branches: [work/cognitive-read-development-20260928]
+    paths: [.github/workflows/cognitive-read-development.yml]
+  workflow_dispatch:
+
+# This development-only branch never advances a repository ref. Blob uploads
+# allow the reviewed patch to be committed separately through the Git data API.
+# No result of this job is qualification, activation, or deployment evidence.
+permissions:
+  contents: write
+
+concurrency:
+  group: cognitive-read-development-preparation
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: b849048b76911ac1bc09412e589a8f10f7a7d952
+  RUST_MIN_STACK: '8388608'
+
+jobs:
+  prepare:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/work/cognitive-read-development-20260928'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Select the repository toolchain and preserve the input
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          mkdir -p "$RUNNER_TEMP/cognitive-read-development/files"
+          python3 - <<'PY'
+          import os, tomllib
+          from pathlib import Path
+          channel = tomllib.loads(Path('codex-rs/rust-toolchain.toml').read_text())['toolchain']['channel']
+          with open(os.environ['GITHUB_ENV'], 'a') as out:
+              out.write(f'RUSTUP_TOOLCHAIN={channel}\n')
+          PY
+          git archive --format=tar "$SOURCE_SHA" | gzip -n > "$RUNNER_TEMP/cognitive-read-development/source.tar.gz"
+          git cat-file commit "$SOURCE_SHA" > "$RUNNER_TEMP/cognitive-read-development/source-commit.txt"
+          git ls-tree -r "$SOURCE_SHA" > "$RUNNER_TEMP/cognitive-read-development/source-tree.txt"
+      - name: Generate a reviewable lock and formatting patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/cognitive-read-development"
+          rustc --version --verbose > "$out/toolchain.txt"
+          cargo --version >> "$out/toolchain.txt"
+          cargo metadata --manifest-path codex-rs/Cargo.toml --format-version=1 --all-features --filter-platform x86_64-unknown-linux-gnu > "$out/metadata.json"
+          cargo metadata --manifest-path codex-rs/Cargo.toml --locked --format-version=1 --all-features --filter-platform aarch64-unknown-linux-gnu > /dev/null
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-cognitive-read -p codex-hepta-agentd
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-cognitive-read -p codex-hepta-agentd -- --check
+          git diff --check
+          git diff --binary > "$out/proposed.patch"
+          python3 - <<'PY'
+          import hashlib, json, os, shutil, subprocess
+          from pathlib import Path
+          out = Path(os.environ['RUNNER_TEMP']) / 'cognitive-read-development'
+          paths = subprocess.check_output(['git', 'diff', '--name-only', '-z']).decode().split('\0')
+          rows = []
+          for path in filter(None, paths):
+              allowed = path == 'codex-rs/Cargo.lock' or (
+                  path.endswith('.rs') and path.startswith(('codex-rs/hepta-cognitive-read/', 'codex-rs/hepta-agentd/')))
+              if not allowed:
+                  raise SystemExit(f'out-of-scope development change: {path}')
+              source = Path(path)
+              if source.is_symlink() or not source.is_file():
+                  raise SystemExit(f'not an ordinary existing file: {path}')
+              body = source.read_bytes()
+              body.decode('utf-8')
+              target = out / 'files' / path
+              target.parent.mkdir(parents=True, exist_ok=True)
+              shutil.copyfile(source, target)
+              before = subprocess.check_output(['git', 'rev-parse', f"{os.environ['SOURCE_SHA']}:{path}"]).decode().strip()
+              rows.append({'path': path, 'before': before,
+                  'sha': hashlib.sha1(f'blob {len(body)}\0'.encode() + body).hexdigest(),
+                  'sha256': hashlib.sha256(body).hexdigest(), 'bytes': len(body)})
+          result = {'schema': 'hepta.cognitive.read.development-proposal.v1',
+              'source': os.environ['SOURCE_SHA'], 'source_tree': subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}']).decode().strip(),
+              'run_id': os.environ['GITHUB_RUN_ID'], 'files': rows,
+              'qualified': False, 'activation': False, 'ref_updated': False}
+          (out / 'proposal.json').write_text(json.dumps(result, indent=2) + '\n')
+          print(json.dumps(result, indent=2))
+          PY
+      - name: Upload immutable Git blobs only (no commits or ref updates)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, urllib.request
+          from pathlib import Path
+          if os.environ['GITHUB_REPOSITORY'] != 'TrillionniumFoundation/hepta-private-ci':
+              raise SystemExit('wrong repository')
+          out = Path(os.environ['RUNNER_TEMP']) / 'cognitive-read-development'
+          proposal = json.loads((out / 'proposal.json').read_text())
+          for row in proposal['files']:
+              text = (out / 'files' / row['path']).read_text()
+              request = urllib.request.Request(
+                  'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs',
+                  data=json.dumps({'content': text, 'encoding': 'utf-8'}).encode(),
+                  headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'],
+                      'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json',
+                      'X-GitHub-Api-Version': '2022-11-28'}, method='POST')
+              with urllib.request.urlopen(request, timeout=60) as response:
+                  result = json.load(response)
+              if result['sha'] != row['sha']:
+                  raise SystemExit('uploaded Git blob differs from the reviewed bytes')
+          (out / 'blobs-uploaded.json').write_text(json.dumps(proposal, indent=2) + '\n')
+          print('Git blobs uploaded; no commit created and no branch updated.')
+          PY
+      - name: Retain the development proposal for review
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cognitive-read-development-${{ env.SOURCE_SHA }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/cognitive-read-development
+          if-no-files-found: error
+          retention-days: 7
