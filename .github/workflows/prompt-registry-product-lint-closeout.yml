@@ -7,9 +7,12 @@ on:
 permissions:
   contents: write
   actions: write
+concurrency:
+  group: prompt-registry-product-lint-closeout-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
   closeout:
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
       EXPECTED_SOURCE: b6cdf7d069a84592c610d57f2685096bb1cf0859
