@@ -54,6 +54,7 @@ impl AgentdNeuronGenerationControllerV2 {
         let active = {
             let state = self.lock_state()?;
             if state.lifecycle != AgentdNeuronLifecycleStateV2::Serving {
+                state.active.owner.record_entry_rejection();
                 return Err(AgentdNeuronControlErrorV2::NotServing);
             }
             state.active.clone()
