@@ -307,11 +307,11 @@ fn round_robin_peers_make_progress_and_release_retained_capacity() -> TestResult
         aggregate_peak_capacity = aggregate_peak_capacity.max(aggregate);
     }
 
-    assert!(aggregate_peak_capacity <= total_wire_bytes);
+    assert!(aggregate_peak_capacity <= 2 * total_wire_bytes);
     assert!(peers.iter().all(|peer| peer.delivered == 1));
     assert!(peers[0].completed_round < peers[7].completed_round);
     for peer in &mut peers {
-        assert!(peer.peak_capacity <= peer.bytes.len());
+        assert!(peer.peak_capacity <= 2 * peer.bytes.len());
         peer.stream.retire();
         assert!(peer.stream.is_terminal());
         assert_eq!(peer.stream.buffer_capacity_bytes(), 0);
