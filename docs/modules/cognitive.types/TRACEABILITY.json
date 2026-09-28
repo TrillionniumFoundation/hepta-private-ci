@@ -78,6 +78,20 @@
       "requiredEvidence": "current_exact_head_and_synthetic_merge_product_jobs"
     },
     {
+      "id": "CTYPE-RECALL-01",
+      "title": "The normal Agentd entry requires an explicit selected or abstaining canonical recall result and rejects missing input before owner use",
+      "source": [
+        "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
+        "codex-rs/hepta-intelligence/src/canonical_recall_policy.rs"
+      ],
+      "tests": [
+        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
+        "codex-rs/hepta-agentd/src/intelligence_product_canonical_recall_tests.rs",
+        "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs"
+      ],
+      "requiredEvidence": "current_exact_head_and_synthetic_merge_product_jobs"
+    },
+    {
       "id": "CTYPE-DIGEST-01",
       "title": "Frozen historical and schema-bound current digest profiles are explicit and never conflated",
       "source": [

@@ -127,6 +127,25 @@
       "qualificationGroup": "consumers"
     },
     {
+      "id": "CTYPE-RECALL-POLICY",
+      "obligation": "The normal Agentd product entry requires one explicit canonical retrieval result: selected packets use canonical context, abstaining packets bind an explicit absence policy, and missing input never synthesizes absence.",
+      "source": [
+        "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
+        "codex-rs/hepta-intelligence/src/canonical_recall_policy.rs"
+      ],
+      "tests": [
+        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
+        "codex-rs/hepta-agentd/src/intelligence_product_canonical_recall_tests.rs",
+        "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs"
+      ],
+      "checks": [
+        "all-targets",
+        "package-tests",
+        "strict-clippy"
+      ],
+      "qualificationGroup": "consumers-and-owners"
+    },
+    {
       "id": "CTYPE-WIRE",
       "obligation": "All 16 registered production decoders preserve canonical bytes and digest profiles and reject hostile wire forms.",
       "source": [

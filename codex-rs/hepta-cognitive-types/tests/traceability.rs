@@ -55,6 +55,7 @@ fn traceability_manifest_has_closed_unique_invariant_inventory() {
         "CTYPE-ID-01",
         "CTYPE-MUTATION-01",
         "CTYPE-PERF-01",
+        "CTYPE-RECALL-01",
         "CTYPE-VALIDATE-01",
         "CTYPE-WIRE-01",
         "CTYPE-WRITE-01",
@@ -129,6 +130,24 @@ fn all_registered_consumer_and_product_traceability_anchors_exist() {
             "{name} lost traceability entrypoint {entrypoint}"
         );
     }
+}
+
+#[test]
+fn agentd_normal_product_recall_policy_is_fail_closed() {
+    for token in [
+        "normal product entry requires an explicit canonical recall result",
+        "hepta.agentd.canonical-recall-explicit-abstention.v1",
+        "recall.packet.abstain.is_some()",
+    ] {
+        assert!(
+            AGENTD_PRODUCT_RUNNER.contains(token),
+            "Agentd lost fail-closed recall token: {token}"
+        );
+    }
+    assert!(
+        !AGENTD_PRODUCT_RUNNER.contains("canonical-recall-explicit-absence.v1"),
+        "Agentd must not synthesize an absence policy from missing input"
+    );
 }
 
 #[test]

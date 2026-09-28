@@ -639,7 +639,9 @@ fn fixture() -> Fixture {
             },
         },
         inputs: AgentdIntelligenceOwnerInputsV1 {
-            canonical_recall: None,
+            canonical_recall: Some(canonical_recall_tests::explicit_absence_recall(id(
+                "run:agentd-intelligence",
+            ))),
             objective_envelope: envelope,
             objective_profile: profile,
             objective_context,

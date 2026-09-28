@@ -71,16 +71,23 @@ impl AgentdIntelligenceProductRunnerV1 {
 
     /// Run the seven-owner preparation against one frozen Agentd composition
     /// without retaining the run-coordinator mutex across owner execution.
-    /// `canonical_recall == None` is not an unbound legacy fallback: the normal
-    /// product runner binds an explicit no-recall policy digest into the final
-    /// trace and host envelope.
+    /// The normal product entry requires one explicit canonical retrieval result:
+    /// selected evidence is compiled into context, while a canonical abstention
+    /// binds an explicit no-recall policy. Missing input is a configuration error
+    /// and is never synthesized into an absence decision.
     pub async fn prepare_for_composition(
         &self,
         composition: &crate::RuntimeComposition,
         request: CanonicalIntelligenceRunRequestV1,
         mut inputs: AgentdIntelligenceOwnerInputsV1,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
-        let recall = inputs.canonical_recall.take();
+        let recall = inputs.canonical_recall.take().ok_or_else(|| {
+            AgentdIntelligenceProductError::Canonical(
+                CanonicalIntelligenceError::CanonicalRecall(
+                    "normal product entry requires an explicit canonical recall result".into(),
+                ),
+            )
+        })?;
         self.prepare_composition_inner(composition, request, inputs, recall)
             .await
     }
@@ -110,22 +117,29 @@ impl AgentdIntelligenceProductRunnerV1 {
         composition: &crate::RuntimeComposition,
         request: CanonicalIntelligenceRunRequestV1,
         mut inputs: AgentdIntelligenceOwnerInputsV1,
-        recall: Option<CanonicalRecallIntelligenceInputV1>,
+        recall: CanonicalRecallIntelligenceInputV1,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
-        let recall_policy_digest = match recall.as_ref() {
-            Some(recall) => codex_hepta_intelligence::canonical_recall_binding_policy_digest_v1(
-                recall,
-            )
-            .map_err(AgentdIntelligenceProductError::Canonical)?,
-            None => {
-                let reason_digest = Digest32::of_parts(&[
-                    b"hepta.agentd.canonical-recall-explicit-absence.v1\0",
-                    request.run_id.as_str().as_bytes(),
-                    request.snapshot.digest().as_array(),
-                ]);
+        recall
+            .validate()
+            .map_err(AgentdIntelligenceProductError::Canonical)?;
+        let (selected_recall, recall_policy_digest) = if recall.packet.abstain.is_some() {
+            let reason_digest = Digest32::of_parts(&[
+                b"hepta.agentd.canonical-recall-explicit-abstention.v1\0",
+                recall
+                    .consumer_binding
+                    .binding_sha256
+                    .digest()
+                    .as_array(),
+            ]);
+            let policy_digest =
                 codex_hepta_intelligence::canonical_recall_absence_policy_digest_v1(reason_digest)
-                    .map_err(AgentdIntelligenceProductError::Canonical)?
-            }
+                    .map_err(AgentdIntelligenceProductError::Canonical)?;
+            (None, policy_digest)
+        } else {
+            let policy_digest =
+                codex_hepta_intelligence::canonical_recall_binding_policy_digest_v1(&recall)
+                    .map_err(AgentdIntelligenceProductError::Canonical)?;
+            (Some(recall), policy_digest)
         };
         let candidate_ids = request
             .legal_candidates
@@ -188,7 +202,7 @@ impl AgentdIntelligenceProductRunnerV1 {
         let mut worker = self.spawn_owner_work(move || {
             let mut ports = AgentdOwnerPortsV1::new(inputs, evaluation_session);
             let mut oracle = FileBackedFreshnessOracleV1::new(authority_file, authority_verifier);
-            match recall {
+            match selected_recall {
                 Some(recall) => prepare_intelligence_run_with_canonical_recall(
                     request,
                     recall,

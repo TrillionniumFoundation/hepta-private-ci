@@ -215,8 +215,10 @@ impl CanonicalFreshnessOracleV1 for FileBackedFreshnessOracleV1 {
 }
 
 pub struct AgentdIntelligenceOwnerInputsV1 {
-    /// Optional explicit canonical retrieval profile; legacy callers remain compatible.
-    /// When present the normal runner must consume it, never discard or fall back.
+    /// Raw owner-input slot for one canonical retrieval result. The product
+    /// boundary requires `Some` containing either selected evidence or a
+    /// canonical abstention. `None` is retained only to fail closed as a
+    /// configuration omission before any owner is invoked.
     pub canonical_recall: Option<CanonicalRecallIntelligenceInputV1>,
     pub objective_envelope: ObjectiveSourceEnvelopeV1,
     pub objective_profile: ObjectiveAdmissionProfileV1,
