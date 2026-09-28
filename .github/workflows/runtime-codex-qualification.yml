@@ -1,7 +1,13 @@
 name: runtime.codex qualification
 
 on:
-  pull_request:
+  workflow_call:
+    inputs:
+      called_from_blocking_ci:
+        description: Skip duplicate provenance attestation inside the required fan-in.
+        required: false
+        type: boolean
+        default: false
   push:
     branches: [main, runtime-codex/closure-20260927]
   workflow_dispatch:
@@ -113,7 +119,7 @@ jobs:
 
   attest:
     name: runtime.codex provenance (${{ matrix.lane }})
-    if: ${{ always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
+    if: ${{ always() && inputs.called_from_blocking_ci != true && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
     needs: qualification
     runs-on: ubuntu-24.04
     timeout-minutes: 10
