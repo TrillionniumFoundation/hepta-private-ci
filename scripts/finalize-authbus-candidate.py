@@ -133,4 +133,12 @@ replace("scripts/test-authbus-exact-head-evidence.py",
             self.assertFalse(receipt.gates_pass(rows, self.candidate))
 
     def test_zero_test_execution_is_not_qualification(self):''')
+replace("codex-rs/hepta-evidence/src/authbus_outbox_tests.rs",
+        """    let revoked = IssuerRegistration {
+        revoked: true,
+        ..issuer
+    };""",
+        """    let revoked = crate::authbus_test_support::message_registration(
+        issuer.issuer_id.clone(), issuer.key_epoch, issuer.verifying_key, true,
+    );""")
 print("Prepared native metrics, exact-candidate receipt gates and native doctest assertions.")
