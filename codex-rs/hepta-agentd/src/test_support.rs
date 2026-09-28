@@ -77,7 +77,11 @@ impl CognitiveTestHost {
         agent_id: AgentId,
         model: &str,
         provider_base_url: &str,
+        codex_self_exe: PathBuf,
     ) -> TestResult<Self> {
+        if !codex_self_exe.is_absolute() || !std::fs::metadata(&codex_self_exe)?.is_file() {
+            return Err("test host requires a built absolute Codex executable".into());
+        }
         validate_config_scalar(model, "model")?;
         validate_config_scalar(provider_base_url, "provider base URL")?;
         std::fs::create_dir_all(&root)?;
@@ -133,7 +137,10 @@ impl CognitiveTestHost {
         let control_task = tokio::spawn(control.run());
         let app_server_task = tokio::spawn(run_app_server(
             identity.clone(),
-            Arg0DispatchPaths::default(),
+            Arg0DispatchPaths {
+                codex_self_exe: Some(codex_self_exe),
+                ..Arg0DispatchPaths::default()
+            },
             CognitiveRuntime::Available(Arc::clone(&store)),
             Arc::clone(&state),
             /*production_writer_host*/ None,
