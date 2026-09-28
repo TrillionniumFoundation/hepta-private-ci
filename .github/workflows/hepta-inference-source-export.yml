@@ -15,8 +15,7 @@ concurrency:
 
 env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
-  EXPECTED_PARENT: 0966642d84632af31fd43bfc44caba522e0de9bb
-  RESTORE_COMMIT: a80f50a552d2608f238a9e934bf6fade66876912
+  EXPECTED_PARENT: fd9287596e7930cd85d2abe131cbd29ff63003f7
   PATCH_SHA256: c2599a124d0e1574aaebaadf3ce0313d4f906a9e9f9f1472c10491fa83100f57
   PATCH_PATH: .github/remediation/inference-control-remediation.patch.gz
   WORKFLOW_PATH: .github/workflows/hepta-inference-source-export.yml
@@ -55,14 +54,13 @@ jobs:
         run: |
           set -euo pipefail
           gzip -dc "$PATCH_PATH" | git apply --index --whitespace=error-all
-          rm -f "$PATCH_PATH"
+          rm -f "$PATCH_PATH" "$WORKFLOW_PATH"
           rmdir .github/remediation 2>/dev/null || true
-          git show "$RESTORE_COMMIT:$WORKFLOW_PATH" > "$WORKFLOW_PATH"
           cargo fmt --manifest-path codex-rs/Cargo.toml --all
           git add -A
           git diff --cached --check
           test ! -e "$PATCH_PATH"
-          test "$(git hash-object "$WORKFLOW_PATH")" = "$(git rev-parse "$RESTORE_COMMIT:$WORKFLOW_PATH")"
+          test ! -e "$WORKFLOW_PATH"
 
       - name: Execute focused native verification
         shell: bash
@@ -101,13 +99,12 @@ jobs:
           test -z "$(git status --porcelain --untracked-files=normal)"
           test "$(shasum -a 256 "$PATCH_PATH" | awk '{print $1}')" = "$PATCH_SHA256"
           gzip -dc "$PATCH_PATH" | git apply --index --whitespace=error-all
-          rm -f "$PATCH_PATH"
+          rm -f "$PATCH_PATH" "$WORKFLOW_PATH"
           rmdir .github/remediation 2>/dev/null || true
-          git show "$RESTORE_COMMIT:$WORKFLOW_PATH" > "$WORKFLOW_PATH"
           git add -A
           git diff --cached --check
           test ! -e "$PATCH_PATH"
-          test "$(git hash-object "$WORKFLOW_PATH")" = "$(git rev-parse "$RESTORE_COMMIT:$WORKFLOW_PATH")"
+          test ! -e "$WORKFLOW_PATH"
 
       - name: Publish ordinary source commit
         shell: bash
