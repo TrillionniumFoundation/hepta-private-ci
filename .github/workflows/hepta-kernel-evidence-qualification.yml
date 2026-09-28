@@ -85,20 +85,20 @@ jobs:
           git diff --cached --quiet
           test -z "$(git status --porcelain --untracked-files=normal)"
 
-      - name: Test kernel evidence crate
+      - name: Test locked kernel evidence crate
         shell: bash
         run: |
           python3 scripts/hepta_ci_exec.py \
             --minimum-tests 1 --output "$KERNEL_EVIDENCE_RECORDS/evidence-tests.json" -- \
-            bash -lc 'cd codex-rs && cargo test -p codex-hepta-evidence'
+            bash -lc 'cd codex-rs && cargo test --locked -p codex-hepta-evidence'
 
-      - name: Test Agentd kernel evidence product and production profile
+      - name: Test locked Agentd library product profile paging and publication
         if: always()
         shell: bash
         run: |
           python3 scripts/hepta_ci_exec.py \
             --minimum-tests 1 --output "$KERNEL_EVIDENCE_RECORDS/agentd-product-test.json" -- \
-            bash -lc 'cd codex-rs && cargo test -p codex-hepta-agentd --test kernel_evidence_product --test kernel_evidence_profile'
+            bash -lc 'cd codex-rs && cargo test --locked -p codex-hepta-agentd --lib --test kernel_evidence_product --test kernel_evidence_profile --test kernel_evidence_paging_product --test kernel_evidence_publication_cli'
 
       - name: Verify Lane-A truth
         if: always()
@@ -243,20 +243,20 @@ jobs:
           git diff --cached --quiet
           test -z "$(git status --porcelain --untracked-files=normal)"
 
-      - name: Test kernel evidence crate
+      - name: Test locked kernel evidence crate
         shell: bash
         run: |
           python3 scripts/hepta_ci_exec.py \
             --minimum-tests 1 --output "$KERNEL_EVIDENCE_RECORDS/evidence-tests.json" -- \
-            bash -lc 'cd codex-rs && cargo test -p codex-hepta-evidence'
+            bash -lc 'cd codex-rs && cargo test --locked -p codex-hepta-evidence'
 
-      - name: Test Agentd kernel evidence product and production profile
+      - name: Test locked Agentd library product profile paging and publication
         if: always()
         shell: bash
         run: |
           python3 scripts/hepta_ci_exec.py \
             --minimum-tests 1 --output "$KERNEL_EVIDENCE_RECORDS/agentd-product-test.json" -- \
-            bash -lc 'cd codex-rs && cargo test -p codex-hepta-agentd --test kernel_evidence_product --test kernel_evidence_profile'
+            bash -lc 'cd codex-rs && cargo test --locked -p codex-hepta-agentd --lib --test kernel_evidence_product --test kernel_evidence_profile --test kernel_evidence_paging_product --test kernel_evidence_publication_cli'
 
       - name: Verify Lane-A truth
         if: always()
