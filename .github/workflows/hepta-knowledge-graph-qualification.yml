@@ -19,10 +19,12 @@ on:
       - "scripts/hepta-knowledge-graph-target-measure.py"
       - "scripts/hepta_knowledge_graph_map_verify.py"
       - "scripts/hepta_kg_current_candidate_runner.py"
+      - "scripts/hepta_kg_contract_evidence.py"
       - "scripts/hepta_kg_documentation_sync.py"
       - "scripts/hepta_kg_evidence.py"
       - "scripts/hepta_kg_execution_audit.py"
       - "scripts/test_hepta_kg_execution_audit.py"
+      - "scripts/test_hepta_kg_contract_evidence.py"
       - "scripts/test_hepta_kg_measurement.py"
       - "scripts/test_hepta_knowledge_graph_budget.py"
       - ".github/actions/hepta-synthetic-merge/**"
@@ -47,10 +49,12 @@ on:
       - "scripts/hepta-knowledge-graph-target-measure.py"
       - "scripts/hepta_knowledge_graph_map_verify.py"
       - "scripts/hepta_kg_current_candidate_runner.py"
+      - "scripts/hepta_kg_contract_evidence.py"
       - "scripts/hepta_kg_documentation_sync.py"
       - "scripts/hepta_kg_evidence.py"
       - "scripts/hepta_kg_execution_audit.py"
       - "scripts/test_hepta_kg_execution_audit.py"
+      - "scripts/test_hepta_kg_contract_evidence.py"
       - "scripts/test_hepta_kg_measurement.py"
       - "scripts/test_hepta_knowledge_graph_budget.py"
       - ".github/workflows/hepta-kg-abc-execution.yml"
@@ -71,7 +75,7 @@ jobs:
   qualification:
     name: knowledge.graph (${{ matrix.lane }})
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 75
     strategy:
       fail-fast: false
       matrix:
@@ -133,14 +137,16 @@ jobs:
         shell: bash
         run: python3 scripts/hepta-knowledge-graph-target-measure.py --self-test
 
+      - name: Test delivery-evidence validator
+        run: |
+          python3 -m unittest discover -s scripts \
+            -p test_hepta_kg_contract_evidence.py -v
+
       - name: Observe repository-wide detailed-design health
         continue-on-error: true
         shell: bash
         run: |
           set -euo pipefail
-          # Global design health is still visible and remains enforced by its
-          # owning workflows. Unrelated module drift must not suppress the
-          # exact-candidate knowledge.graph executable evidence below.
           python3 scripts/hepta-technical-closure.py verify
 
       - name: Check KG-owned Rust formatting
@@ -157,7 +163,10 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update
-          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo apt-get install -y \
+            build-essential bubblewrap libcap-dev pkg-config protobuf-compiler
+          command -v protoc
+          protoc --version
           sudo sysctl -w kernel.unprivileged_userns_clone=1
           if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
             sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
@@ -172,6 +181,13 @@ jobs:
       - name: Test canonical KG kernel
         working-directory: codex-rs
         run: cargo test --locked -p codex-hepta-kg -- --nocapture
+
+      - name: Measure public KG operation boundaries
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-kg --test operation_measurement \
+            -- --exact public_operation_boundaries_emit_nonzero_regression_metrics --nocapture
 
       - name: Test prompt-factor owner, projection and real consumer
         working-directory: codex-rs

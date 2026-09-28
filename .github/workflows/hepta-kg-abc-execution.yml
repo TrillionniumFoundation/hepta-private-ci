@@ -71,58 +71,14 @@ jobs:
               --package codex-hepta-agentd --package codex-hepta-prompt-registry \
               --package codex-hepta-prompt-optimizer
           )
-          python3 - <<'PY'
-          import subprocess
-          from pathlib import Path
-          roots = (
-              'codex-rs/hepta-kg/', 'codex-rs/hepta-memory/',
-              'codex-rs/hepta-agentd/', 'codex-rs/hepta-prompt-registry/',
-              'codex-rs/hepta-prompt-optimizer/',
-          )
-          changed = subprocess.check_output(
-              ['git', 'diff', '--name-only', '-z'], text=True
-          ).split('\0')
-          for path in filter(None, changed):
-              if not path.startswith(roots) or not path.endswith('.rs'):
-                  raise SystemExit(f'formatter changed an unowned path: {path}')
-          guide = Path('docs/modules/knowledge.graph/TECHNICAL.md')
-          marker = '## Indexed query budget and writer selection (2026-09-28)'
-          section = (
-              '\n\n' + marker + '\n\n'
-              'The current indexed-query support-work ceiling, failure semantics, '
-              'reference-equivalence tests and candidate acceptance boundary are '
-              'specified in [QUERY_BUDGET_20260928.md](QUERY_BUDGET_20260928.md). '
-              'Compact `revision_facts_v1` persistence is not incremental '
-              'recalculation. The runtime writer remains complete and bounded; '
-              'see [writer selection and target-host qualification]'
-              '(../../../qualification/knowledge-graph/WRITER_SELECTION.md). '
-              'These documents describe candidate source and requirements, '
-              'not successful execution or release receipts.\n'
-          )
-          text = guide.read_text()
-          if marker not in text:
-              guide.write_text(text.rstrip() + section)
-          elif section.strip() not in text:
-              raise SystemExit('existing query-budget guide section has drifted')
-          extension = (
-              '\n\n## Query and history acceptance extension (2026-09-28)\n\n'
-              'See [ACCEPTANCE_EXTENSION_20260928.md](ACCEPTANCE_EXTENSION_20260928.md) '
-              'for the public-API query equivalence matrix, exact work-budget '
-              'regressions and concurrent long-history/reopen/deletion checks. '
-              'Execution and production acceptance remain separate gates.\n'
-          )
-          text = guide.read_text()
-          if '## Query and history acceptance extension (2026-09-28)' not in text:
-              guide.write_text(text.rstrip() + extension)
-          PY
           python3 scripts/hepta_kg_documentation_sync.py --check
           git diff --check
           git add -u -- codex-rs/hepta-kg codex-rs/hepta-memory \
             codex-rs/hepta-agentd codex-rs/hepta-prompt-registry \
-            codex-rs/hepta-prompt-optimizer docs/modules/knowledge.graph/TECHNICAL.md
+            codex-rs/hepta-prompt-optimizer
           if ! git diff --cached --quiet; then
             git commit \
-              -m 'fix(knowledge.graph): format scoped candidate and link acceptance extension' \
+              -m 'fix(knowledge.graph): format scoped delivery-closure candidate' \
               -m 'Preparation only; native execution remains required.' \
               -m 'Signed-off-by: ChatGPT <noreply@openai.com>'
           fi
@@ -149,7 +105,12 @@ jobs:
               | set(row['declaredRoots'])
               | set(row['resolvedRoots'])
               | set(row['compositionRoots'])
-              | {row['technicalGuide'], 'docs/modules/knowledge.graph/ACCEPTANCE_EXTENSION_20260928.md'}
+              | {
+                  row['technicalGuide'],
+                  'docs/modules/knowledge.graph/ACCEPTANCE_EXTENSION_20260928.md',
+                  'scripts/hepta_kg_contract_evidence.py',
+                  'scripts/test_hepta_kg_contract_evidence.py',
+              }
           )
           row['sourceObjects'] = maps.current_source_objects(row)
           row['observedSourcePaths'] = sorted(
@@ -171,7 +132,7 @@ jobs:
             test "$(git diff --cached --name-only)" = \
               'docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json'
             git commit \
-              -m 'docs(knowledge.graph): bind complete immutable closure observation' \
+              -m 'docs(knowledge.graph): bind delivery-closure source observation' \
               -m 'Signed-off-by: ChatGPT <noreply@openai.com>'
           fi
           candidate="$(git rev-parse HEAD)"
@@ -258,13 +219,16 @@ jobs:
           test -n "$channel"
           rustup toolchain install "$channel" \
             --profile minimal --component rustfmt --component clippy
-      - name: Prepare real product sandbox prerequisites
+      - name: Prepare real product sandbox and protobuf prerequisites
         if: matrix.profile == 'product'
         shell: bash
         run: |
           set -euo pipefail
           sudo apt-get update
-          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo apt-get install -y \
+            build-essential bubblewrap libcap-dev pkg-config protobuf-compiler
+          command -v protoc
+          protoc --version | tee "$RUNNER_TEMP/kg-evidence/protoc-version.txt"
           sudo sysctl -w kernel.unprivileged_userns_clone=1
           if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
             sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
@@ -285,6 +249,31 @@ jobs:
             --profile '${{ matrix.profile }}' --lane '${{ matrix.lane }}' \
             --evidence "$RUNNER_TEMP/kg-evidence" \
             --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA"
+      - name: Measure public operation boundaries
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-kg --test operation_measurement \
+            -- --exact public_operation_boundaries_emit_nonzero_regression_metrics \
+            --nocapture 2>&1 | tee "$RUNNER_TEMP/kg-evidence/operation-metrics.log"
+      - name: Test delivery-evidence validator
+        run: |
+          python3 -m unittest discover -s scripts \
+            -p test_hepta_kg_contract_evidence.py -v
+      - name: Bind contracts to exact execution evidence
+        env:
+          SOURCE_SHA: ${{ needs.bind.outputs.candidate }}
+          PROFILE: ${{ matrix.profile }}
+          LANE: ${{ matrix.lane }}
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_kg_contract_evidence.py \
+            --evidence "$RUNNER_TEMP/kg-evidence" \
+            --profile "$PROFILE" --lane "$LANE" \
+            --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA" \
+            --tested-sha "$(git rev-parse HEAD)" \
+            --tested-tree "$(git rev-parse HEAD^{tree})"
       - name: Ensure tests did not change tracked source
         if: always()
         shell: bash

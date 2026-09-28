@@ -22,6 +22,28 @@ reference path. The indexed path's default ceiling is 1,000,000 support inspecti
 plus copies; validation/index construction are separate costs. No constant-time
 or allocation-byte bound is implied by the output edge count.
 
+Budget exhaustion is an error, never a truncated successful result. Consequently
+a successful empty result is distinguishable from an exhausted request, and no
+caller receives an inexact omitted count. The explicit lower-budget API cannot
+raise the library ceiling. Trusted code that needs broader work must use a
+different, named operation instead of silently treating the external entry point
+as unbounded.
+
+## Publish, crash, recovery and retry evidence
+
+The durable owner suite names the lost-acknowledgement replay, competing-head
+rollback and publication-failure rollback tests. The ignored destructive test
+`qualification_kg_projection_crash_windows_restore_exact_predecessor` launches a
+child process, waits at both `before_semantic_receipt` and
+`after_semantic_receipt_before_current_pointer`, force-kills the child and reopens
+the same store. Each reopen must contain the exact predecessor and pass SQLite
+integrity checking. Zero-test, skipped or build-only output is rejected.
+
+The exact-candidate runner records these contracts separately from ordinary
+source checks. Missing `protoc`, a failed native build, an unobserved named test,
+or an absent destructive receipt fails the lane. `protoc --version` is therefore
+an explicit prerequisite rather than an ambient runner assumption.
+
 ## Long-history concurrency and deletion
 
 `cognitive_kg_benchmark_tests::history::qualification_kg_history_reopen_no_resurrection`
@@ -37,6 +59,28 @@ Receipts add `concurrentReads`, `concurrentReaderNs`, `concurrentRoundNs` p50/p9
 and an explicit `correctionTimingScope`. `correctionNs` measures the correction
 future itself; reader latency and the complete concurrent round are measured
 separately. None of these is relabeled as isolated SQLite transaction time.
+
+## Operation measurement and evidence contract
+
+`codex-rs/hepta-kg/tests/operation_measurement.rs` records the current public
+operation boundaries: input clone, combined build/validate/seal, verified-view
+construction, repeated hot query and publication-receipt construction. It does
+not pretend that the public combined builder exposes internal timings that it
+does not expose. The native SQLite measurement separately records durable
+mutation, query, reopen, writer, reader and complete contention-round
+distributions.
+
+Every exact candidate lane writes
+`hepta.knowledge-graph-delivery-evidence.v1`. Each contract row binds:
+
+```
+contract → implementation symbol → named test → tested commit/tree
+         → runner environment → evidence file → remaining open reason
+```
+
+The artifact keeps source checks, native compilation, actual scenario execution,
+target-host qualification, independent acceptance, activation and release as
+separate states. Hosted lanes may prove only the first three.
 
 ## Storage, evidence and remaining acceptance
 
