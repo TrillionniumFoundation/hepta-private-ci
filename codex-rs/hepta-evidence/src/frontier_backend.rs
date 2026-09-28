@@ -98,7 +98,11 @@ impl EvidenceFrontierHistoryRangeV1 {
     }
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+/// A backend observation, not an independently verified authority handle.
+/// Serialization is required by Agentd's publication result. Inbound JSON is
+/// deliberately not a constructor for a durable backend acknowledgement.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct EvidenceFrontierDurableAckV1 {
     pub backend_id: String,
     pub backend_identity_sha256: Sha256Digest,
@@ -161,3 +165,35 @@ pub trait EvidenceFrontierBackend {
 #[cfg(test)]
 #[path = "frontier_backend_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+mod acknowledgement_wire_tests {
+    use super::*;
+
+    #[test]
+    fn publication_acknowledgement_serializes_every_identity_without_authority_flags() {
+        let backend_digest = Sha256Digest::for_bytes(b"backend-wire");
+        let frontier_digest = Sha256Digest::for_bytes(b"frontier-wire");
+        let acknowledgement = EvidenceFrontierDurableAckV1 {
+            backend_id: "backend:wire".to_string(),
+            backend_identity_sha256: backend_digest.clone(),
+            store_id: "store:wire".to_string(),
+            frontier_generation: 7,
+            frontier_sha256: frontier_digest.clone(),
+            audit_sequence: 9,
+        };
+        let encoded = serde_json::to_string(&acknowledgement).expect("CLI acknowledgement JSON");
+        let observed: serde_json::Value = serde_json::from_str(&encoded).expect("JSON object");
+        assert_eq!(
+            observed,
+            serde_json::json!({
+                "backendId": "backend:wire",
+                "backendIdentitySha256": backend_digest,
+                "storeId": "store:wire",
+                "frontierGeneration": 7,
+                "frontierSha256": frontier_digest,
+                "auditSequence": 9,
+            })
+        );
+    }
+}
