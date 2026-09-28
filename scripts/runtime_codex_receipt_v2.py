@@ -36,7 +36,7 @@ PLAN = {
     "agent-protocol": (1, ["just", "test", "--locked", "-p", PACKAGES[2]]),
     "agent-run-lifecycle": (1, ["just", "test", "--locked", "-p", PACKAGES[3], "--lib", "lane_b_runtime"]),
     "worker-host": (1, ["just", "test", "--locked", "-p", PACKAGES[4]]),
-    "target-host-evidence": (12, ["python3", "-m", "unittest", "-v", "../scripts/tests/test_runtime_codex_target_host_evidence.py"]),
+    "target-host-evidence": (12, ["python3", "../scripts/tests/test_runtime_codex_target_host_evidence.py", "-v"]),
     "crash-matrix": (12, ["just", "test", "--locked", "-p", PACKAGES[4], "--test", "runtime_codex_crash_matrix"]),
     "quarantine-protocol": (5, ["just", "test", "--locked", "-p", PACKAGES[4], "runtime_codex_quarantine"]),
     "product-e2e": (1, ["just", "test", "--locked", "-p", PACKAGES[3], "--test", "runtime_codex_product_e2e"]),
