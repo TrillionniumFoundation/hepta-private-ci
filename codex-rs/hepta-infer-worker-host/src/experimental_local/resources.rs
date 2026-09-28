@@ -488,13 +488,38 @@ impl Drop for RequestReservation {
         if self.retained {
             return;
         }
-        if let Ok(mut state) = self.manager.inner.lock()
-            && release_request_locked(&mut state, &self.operation_id).is_err()
+        let Ok(mut state) = self.manager.inner.lock() else {
+            return;
+        };
+        match state
+            .requests
+            .get(&self.operation_id)
+            .map(|request| request.lifecycle)
         {
-            fence_state(
-                &mut state,
-                "request reservation accounting failure; repair required".to_string(),
-            );
+            Some(RequestLifecycle::Prepared) => {
+                if release_request_locked(&mut state, &self.operation_id).is_err() {
+                    fence_state(
+                        &mut state,
+                        "prepared request reservation accounting failure; repair required"
+                            .to_string(),
+                    );
+                }
+            }
+            Some(RequestLifecycle::Running) | Some(RequestLifecycle::Quarantined) => {
+                fence_state(
+                    &mut state,
+                    format!(
+                        "local operation {} lost control after effect entry; reconciliation required",
+                        self.operation_id
+                    ),
+                );
+            }
+            None => {
+                fence_state(
+                    &mut state,
+                    "post-reservation request record disappeared; repair required".to_string(),
+                );
+            }
         }
     }
 }
