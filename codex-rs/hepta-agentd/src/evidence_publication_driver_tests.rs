@@ -110,3 +110,40 @@ fn owner_publication_request_rejects_unknown_and_duplicate_fields() {
         assert!(serde_json::from_str::<EvidencePublicationRequestV1>(invalid).is_err());
     }
 }
+
+#[test]
+fn publication_dispatch_rejects_the_exact_lease_expiry() {
+    let lease = codex_hepta_evidence::EvidencePublicationOwnerLeaseV1 {
+        store_id: "store:dispatch-boundary".to_string(),
+        owner_id: "owner:dispatch-boundary".to_string(),
+        owner_generation: 1,
+        lease_expires_at_unix_ms: 100,
+    };
+    assert!(require_publication_dispatch_lease(&lease, 99).is_ok());
+    for now in [0, 100, 101, u64::MAX] {
+        assert!(require_publication_dispatch_lease(&lease, now).is_err());
+    }
+}
+
+#[test]
+fn publication_dispatch_rejects_a_zero_owner_generation() {
+    let lease = codex_hepta_evidence::EvidencePublicationOwnerLeaseV1 {
+        store_id: "store:dispatch-boundary".to_string(),
+        owner_id: "owner:dispatch-boundary".to_string(),
+        owner_generation: 0,
+        lease_expires_at_unix_ms: u64::MAX,
+    };
+    assert!(require_publication_dispatch_lease(&lease, 1).is_err());
+}
+
+#[test]
+fn successful_earlier_lease_check_does_not_authorize_a_delayed_send() {
+    let lease = codex_hepta_evidence::EvidencePublicationOwnerLeaseV1 {
+        store_id: "store:dispatch-boundary".to_string(),
+        owner_id: "owner:dispatch-boundary".to_string(),
+        owner_generation: 7,
+        lease_expires_at_unix_ms: 120_001,
+    };
+    assert!(require_publication_dispatch_lease(&lease, 1).is_ok());
+    assert!(require_publication_dispatch_lease(&lease, 120_001).is_err());
+}
