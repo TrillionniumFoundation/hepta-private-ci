@@ -27,9 +27,12 @@ on:
 permissions:
   contents: read
 
+# Only the latest branch candidate needs an exported source bundle. Every
+# surviving artifact is still bound to its exact SHA and tree below; superseded
+# intermediate pushes are cancelled rather than competing with qualification.
 concurrency:
-  group: cognitive-types-source-export-${{ github.sha }}
-  cancel-in-progress: false
+  group: cognitive-types-source-export-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   export:
