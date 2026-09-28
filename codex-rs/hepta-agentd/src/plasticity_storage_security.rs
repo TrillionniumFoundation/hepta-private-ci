@@ -38,11 +38,9 @@ pub struct PlasticityFileIdentityV1 {
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct PlasticityRollbackDomainV1 {
-    /// Host-observed mount identity. The selected host is responsible for
-    /// deriving this from its mount namespace and retaining the evidence.
+    /// Host-observed mount identity retained outside the proposal store.
     pub mount_identity_digest: Digest32,
-    /// Host-observed snapshot/rollback policy identity. Separate values prove
-    /// that one rollback operation cannot rewind both files together.
+    /// Host-observed snapshot/rollback policy identity.
     pub snapshot_domain_digest: Digest32,
 }
 
@@ -90,7 +88,7 @@ pub struct VerifiedPlasticityFileV1 {
 }
 
 impl VerifiedPlasticityFileV1 {
-    pub fn identity(&self) -> PlasticityFileIdentityV1 {
+    pub const fn identity(&self) -> PlasticityFileIdentityV1 {
         self.identity
     }
 
@@ -107,11 +105,11 @@ pub fn open_existing_plasticity_file_v1(
 ) -> Result<VerifiedPlasticityFileV1, PlasticityStorageSecurityErrorV1> {
     #[cfg(target_os = "linux")]
     {
-        return open_existing_linux(path, writable);
+        open_existing_linux(path, writable)
     }
     #[cfg(all(unix, not(target_os = "linux")))]
     {
-        return open_existing_unix_fallback(path, writable);
+        open_existing_unix_fallback(path, writable)
     }
     #[cfg(not(unix))]
     {
@@ -127,11 +125,11 @@ pub fn create_new_plasticity_file_v1(
 ) -> Result<VerifiedPlasticityFileV1, PlasticityStorageSecurityErrorV1> {
     #[cfg(target_os = "linux")]
     {
-        return create_new_linux(path);
+        create_new_linux(path)
     }
     #[cfg(all(unix, not(target_os = "linux")))]
     {
-        return create_new_unix_fallback(path);
+        create_new_unix_fallback(path)
     }
     #[cfg(not(unix))]
     {
@@ -143,8 +141,7 @@ pub fn create_new_plasticity_file_v1(
 pub fn fsync_parent_directory_v1(
     path: &Path,
 ) -> Result<(), PlasticityStorageSecurityErrorV1> {
-    let parent = verified_parent(path)?;
-    File::open(parent)?.sync_all()?;
+    File::open(verified_parent(path)?)?.sync_all()?;
     Ok(())
 }
 
@@ -161,7 +158,7 @@ pub fn build_plasticity_storage_domain_receipt_v1(
     }
     let registry = open_existing_plasticity_file_v1(registry_path, false)?;
     let anchor = open_existing_plasticity_file_v1(anchor_path, false)?;
-    if same_file(registry.identity(), anchor.identity()) {
+    if same_object(registry.identity(), anchor.identity()) {
         return Err(PlasticityStorageSecurityErrorV1::Alias);
     }
     let mut receipt = PlasticityStorageDomainReceiptV1 {
@@ -186,7 +183,7 @@ pub fn verify_plasticity_storage_domain_receipt_v1(
         || receipt.anchor_path_digest.is_zero()
         || receipt.receipt_digest.is_zero()
         || receipt.observed_at_unix_seconds == 0
-        || same_file(receipt.registry_identity, receipt.anchor_identity)
+        || same_object(receipt.registry_identity, receipt.anchor_identity)
     {
         return Err(PlasticityStorageSecurityErrorV1::InvalidReceipt);
     }
@@ -210,8 +207,8 @@ pub fn revalidate_plasticity_storage_domain_receipt_v1(
     }
     let registry = open_existing_plasticity_file_v1(registry_path, false)?;
     let anchor = open_existing_plasticity_file_v1(anchor_path, false)?;
-    if registry.identity() != receipt.registry_identity
-        || anchor.identity() != receipt.anchor_identity
+    if !same_object(registry.identity(), receipt.registry_identity)
+        || !same_object(anchor.identity(), receipt.anchor_identity)
     {
         return Err(PlasticityStorageSecurityErrorV1::IdentityChanged);
     }
@@ -237,7 +234,7 @@ fn validate_domains(
     Ok(())
 }
 
-fn same_file(left: PlasticityFileIdentityV1, right: PlasticityFileIdentityV1) -> bool {
+const fn same_object(left: PlasticityFileIdentityV1, right: PlasticityFileIdentityV1) -> bool {
     left.device_id == right.device_id && left.inode == right.inode
 }
 
@@ -276,7 +273,7 @@ fn digest_path(path: &Path) -> Result<Digest32, PlasticityStorageSecurityErrorV1
 }
 
 fn verified_parent(path: &Path) -> Result<PathBuf, PlasticityStorageSecurityErrorV1> {
-    if !path.is_absolute() {
+    if !path.is_absolute() || path.file_name().is_none() {
         return Err(PlasticityStorageSecurityErrorV1::InvalidPath);
     }
     let parent = path
@@ -288,9 +285,6 @@ fn verified_parent(path: &Path) -> Result<PathBuf, PlasticityStorageSecurityErro
     }
     let metadata = std::fs::symlink_metadata(parent)?;
     if metadata.file_type().is_symlink() || !metadata.is_dir() {
-        return Err(PlasticityStorageSecurityErrorV1::InvalidPath);
-    }
-    if path.file_name().is_none() {
         return Err(PlasticityStorageSecurityErrorV1::InvalidPath);
     }
     Ok(canonical)
@@ -312,8 +306,7 @@ fn open_existing_linux(
     path: &Path,
     writable: bool,
 ) -> Result<VerifiedPlasticityFileV1, PlasticityStorageSecurityErrorV1> {
-    let parent_path = verified_parent(path)?;
-    let parent = File::open(parent_path)?;
+    let parent = File::open(verified_parent(path)?)?;
     let anchored = directory_fd_path(&parent, path)?;
     let before = std::fs::symlink_metadata(&anchored)?;
     if before.file_type().is_symlink() {
@@ -322,19 +315,18 @@ fn open_existing_linux(
     if !before.is_file() {
         return Err(PlasticityStorageSecurityErrorV1::NotRegular);
     }
-    let mut options = OpenOptions::new();
-    options.read(true).write(writable);
-    options.custom_flags(O_NOFOLLOW | O_CLOEXEC);
-    let file = options.open(&anchored)?;
+    let file = OpenOptions::new()
+        .read(true)
+        .write(writable)
+        .custom_flags(O_NOFOLLOW | O_CLOEXEC)
+        .open(&anchored)?;
     let after = file.metadata()?;
     if !after.is_file() {
         return Err(PlasticityStorageSecurityErrorV1::NotRegular);
     }
     let before_identity = identity_from_metadata(&before);
     let after_identity = identity_from_metadata(&after);
-    if before_identity.device_id != after_identity.device_id
-        || before_identity.inode != after_identity.inode
-    {
+    if !same_object(before_identity, after_identity) {
         return Err(PlasticityStorageSecurityErrorV1::IdentityChanged);
     }
     Ok(VerifiedPlasticityFileV1 {
@@ -347,17 +339,15 @@ fn open_existing_linux(
 fn create_new_linux(
     path: &Path,
 ) -> Result<VerifiedPlasticityFileV1, PlasticityStorageSecurityErrorV1> {
-    let parent_path = verified_parent(path)?;
-    let parent = File::open(&parent_path)?;
+    let parent = File::open(verified_parent(path)?)?;
     let anchored = directory_fd_path(&parent, path)?;
-    let mut options = OpenOptions::new();
-    options
+    let file = OpenOptions::new()
         .read(true)
         .write(true)
         .create_new(true)
         .mode(0o600)
-        .custom_flags(O_NOFOLLOW | O_CLOEXEC);
-    let file = options.open(&anchored)?;
+        .custom_flags(O_NOFOLLOW | O_CLOEXEC)
+        .open(&anchored)?;
     let metadata = file.metadata()?;
     if !metadata.is_file() {
         return Err(PlasticityStorageSecurityErrorV1::NotRegular);
@@ -384,12 +374,8 @@ fn open_existing_unix_fallback(
         return Err(PlasticityStorageSecurityErrorV1::NotRegular);
     }
     let file = OpenOptions::new().read(true).write(writable).open(path)?;
-    let after = file.metadata()?;
-    let before_identity = identity_from_metadata(&before);
-    let after_identity = identity_from_metadata(&after);
-    if before_identity.device_id != after_identity.device_id
-        || before_identity.inode != after_identity.inode
-    {
+    let after_identity = identity_from_metadata(&file.metadata()?);
+    if !same_object(identity_from_metadata(&before), after_identity) {
         return Err(PlasticityStorageSecurityErrorV1::IdentityChanged);
     }
     Ok(VerifiedPlasticityFileV1 {
@@ -454,8 +440,7 @@ mod tests {
         let expected = created.identity();
         drop(created);
         let reopened = open_existing_plasticity_file_v1(&path, true).expect("reopen");
-        assert_eq!(reopened.identity().device_id, expected.device_id);
-        assert_eq!(reopened.identity().inode, expected.inode);
+        assert!(same_object(reopened.identity(), expected));
     }
 
     #[cfg(unix)]
@@ -495,7 +480,7 @@ mod tests {
 
     #[cfg(unix)]
     #[test]
-    fn rollback_domains_must_be independently identified() {
+    fn rollback_domains_must_be_independently_identified() {
         let directory = tempfile::tempdir().expect("tempdir");
         let root = directory.path().canonicalize().expect("canonical root");
         let registry = root.join("registry");
