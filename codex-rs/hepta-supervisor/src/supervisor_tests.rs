@@ -732,15 +732,26 @@ fn flapping_running_agent_stops_after_restart_budget_is_exhausted() -> Result<()
 
     control.set_exit(&fleet.first);
     let exhausted = supervisor.tick(now);
-    assert_eq!(exhausted.faults.len(), 1);
-    assert_eq!(exhausted.faults[0].agent_id, fleet.first);
-    assert!(exhausted.faults[0].message.contains("restart budget"));
+    // A bounded policy stop has its own typed observation. Storage/driver
+    // failures remain TickReport faults; exhaustion must not hide its reason.
+    assert_eq!(exhausted, TickReport::default());
     let stopped = supervisor
         .snapshot(&fleet.first)
         .expect("exhausted snapshot");
     assert!(!stopped.active);
     assert!(!stopped.restart_pending);
     assert_eq!(stopped.restart_attempt, 3);
+    assert_eq!(
+        stopped
+            .events
+            .iter()
+            .filter(|event| matches!(
+                event.kind,
+                SupervisorEventKind::AutomaticRestartBudgetExhausted { attempts: 3 }
+            ))
+            .count(),
+        1
+    );
     assert_eq!(control.spawn_count(&fleet.first), 4);
 
     assert_eq!(
