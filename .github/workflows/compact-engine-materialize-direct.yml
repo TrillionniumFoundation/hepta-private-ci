@@ -2,27 +2,27 @@ name: compact.engine direct source materialization
 
 on:
   pull_request:
-    types: [reopened]
+    types: [edited]
 
 permissions:
   contents: write
 
 concurrency:
   group: compact-engine-direct-materialization
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   materialize:
     name: Verify and commit ordinary compact.engine source
     if: >-
-      github.event.action == 'reopened' &&
+      github.event.action == 'edited' &&
       github.event.pull_request.head.repo.full_name == github.repository &&
       github.event.pull_request.head.ref == 'fix/compact-engine-current-main-convergence-20260925'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 90
     env:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
-      MATERIALIZE_PARENT: 257d1f72500d44072dd9265092601916d9817195
+      MATERIALIZE_PARENT: af0e858a6feb3098d4dd9f7f31d2f18902ea7694
       TRANSPORT_PARENT: 2e2a847a04d7e450b3b627601680984ff48d1ca0
       TARGET_BRANCH: fix/compact-engine-current-main-convergence-20260925
       PATCH_SHA256: 3610e3e56f865c1047d99b0c2a891751571ded7e7d0eeb0ab95387415314107d
