@@ -49,6 +49,12 @@ fn signed_authority_profile(
         .path()
         .canonicalize()
         .expect("canonical test root");
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(&root, std::fs::Permissions::from_mode(0o700))
+            .expect("private rollback test root");
+    }
     let path = root.join("authority.json");
     write_authority_file(
         &path,
