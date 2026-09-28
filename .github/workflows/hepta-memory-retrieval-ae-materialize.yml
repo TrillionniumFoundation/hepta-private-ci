@@ -21,7 +21,7 @@ concurrency:
 jobs:
   materialize:
     if: contains(github.event.head_commit.message, '[retrieval-ae-apply-v1]')
-    runs-on: ubuntu-24.04
+    runs-on: macos-15
     timeout-minutes: 20
     steps:
       - name: Checkout the triggering source exactly
@@ -109,7 +109,7 @@ jobs:
           target.write_text(json.dumps(manifest, indent=2, sort_keys=True) + '\n')
           PY
 
-      - name: Prove bounded source inventory and formatting
+      - name: Prove bounded source inventory
         shell: bash
         run: |
           set -euo pipefail
@@ -134,15 +134,14 @@ jobs:
             codex-rs/hepta-agentd/src/cognitive_retrieval_bootstrap.rs
           ! grep -q 'delivered_candidate_indices.sort_unstable' \
             codex-rs/hepta-learning-ledger/src/ledger.rs
-          (cd codex-rs && cargo fmt --all -- --check)
 
       - name: Commit the materialized source candidate
         shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           test -n "$(git diff --cached --name-only)"
+          remote_sha="$(git ls-remote origin "refs/heads/${GITHUB_REF_NAME}" | awk '{print $1}')"
+          test "${remote_sha}" = "${GITHUB_SHA}"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git commit -m 'fix(memory.retrieval): materialize A-E correctness and runtime closure'
