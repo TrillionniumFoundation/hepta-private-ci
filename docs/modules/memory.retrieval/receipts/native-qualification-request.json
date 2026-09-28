@@ -1,0 +1,22 @@
+{
+  "schema": "hepta.memory-retrieval.native-qualification-request.v1",
+  "materialized_source_commit": "92c3f89516a22c59557a49bc646dc1c3b25cb0f4",
+  "materialized_source_tree": "722f2503837a511eed4bf6fca9d168b4472ba450",
+  "requested_lanes": [
+    "exact-head",
+    "current-main",
+    "ordered-main-source-merge"
+  ],
+  "required_native_checks": [
+    "format",
+    "locked-metadata",
+    "affected-package-tests-all-targets",
+    "affected-package-clippy-all-targets-all-features",
+    "fault-and-recovery-contracts"
+  ],
+  "native_qualification": false,
+  "target_host_qualification": false,
+  "independent_operator_acceptance": false,
+  "production_activation": false,
+  "release": false
+}
