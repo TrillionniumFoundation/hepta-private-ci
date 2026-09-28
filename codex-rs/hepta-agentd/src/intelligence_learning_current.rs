@@ -313,33 +313,72 @@ fn grant_error_digest(error: &AgentdError) -> Digest32 {
 mod tests {
     use super::*;
 
+    fn historical_payload(now: u64) -> PersistedLearningEnvelopeV1 {
+        PersistedLearningEnvelopeV1 {
+            schema_version: LEARNING_PAYLOAD_SCHEMA_VERSION,
+            owner_generation: 1,
+            payload: LearningPayloadV1::Decision(DecisionPayloadV1 {
+                expected_ledger_predecessor: "predecessor".to_string(),
+                record_id: "run.clock".to_string(),
+                episode_id: "episode.clock".to_string(),
+                run_snapshot_digest: "snapshot".to_string(),
+                objective_digest: "objective".to_string(),
+                policy_digest: "policy".to_string(),
+                candidate_ids: vec!["candidate.clock".to_string()],
+                selected_candidate_id: "candidate.clock".to_string(),
+                selected_propensity_raw: 1,
+                completeness: CompletenessPayloadV1 {
+                    set_id: "set.clock".to_string(),
+                    state_digest: "state".to_string(),
+                    generator_id: "generator".to_string(),
+                    generator_code_digest: "code".to_string(),
+                    grammar_digest: "grammar".to_string(),
+                    hard_filter_digest: "filter".to_string(),
+                    truncation_digest: "truncation".to_string(),
+                    candidates_digest: "candidates".to_string(),
+                    candidate_count: 1,
+                    omitted_count_bound: 0,
+                    canonical_order_digest: "order".to_string(),
+                    complete_for_generator: true,
+                },
+                support_digest: "support".to_string(),
+                decision_digest: "decision".to_string(),
+                evidence: EvidencePayloadV1 {
+                    evidence_id: "evidence.clock".to_string(),
+                    principal_id: "principal.clock".to_string(),
+                    role: "generator".to_string(),
+                    trust_digest: "trust".to_string(),
+                    scope_digest: "scope".to_string(),
+                    objective_digest: "objective".to_string(),
+                    authority_epoch: 1,
+                    issued_at: 1,
+                    expires_at: 2,
+                    payload_digest: "payload".to_string(),
+                    signature: vec![0; 64],
+                },
+                evidence_binding: VerifiedEvidenceBindingPayloadV1 {
+                    principal_id: "principal.clock".to_string(),
+                    controller_id: "controller.clock".to_string(),
+                    credential_chain_digest: "credential".to_string(),
+                    signing_key_digest: "key".to_string(),
+                    scope_digest: "scope".to_string(),
+                    authority_epoch: 1,
+                    authentication_digest: "authentication".to_string(),
+                },
+                now,
+            }),
+        }
+    }
+
     #[test]
     fn delayed_first_application_uses_current_validation_time() {
-        let payload = super::super::tests::recovery_test_decision_payload();
-        assert_eq!(payload.now, 150);
-        assert!(validation_time_failure(
-            &PersistedLearningEnvelopeV1 {
-                schema_version: LEARNING_PAYLOAD_SCHEMA_VERSION,
-                owner_generation: 1,
-                payload: LearningPayloadV1::Decision(payload),
-            },
-            201,
-        )
-        .is_none());
+        assert!(validation_time_failure(&historical_payload(150), 201).is_none());
     }
 
     #[test]
     fn clock_rollback_is_indeterminate_not_success() {
-        let payload = super::super::tests::recovery_test_decision_payload();
         assert!(matches!(
-            validation_time_failure(
-                &PersistedLearningEnvelopeV1 {
-                    schema_version: LEARNING_PAYLOAD_SCHEMA_VERSION,
-                    owner_generation: 1,
-                    payload: LearningPayloadV1::Decision(payload),
-                },
-                149,
-            ),
+            validation_time_failure(&historical_payload(150), 149),
             Some(ApplyObservation::Indeterminate(_))
         ));
     }
