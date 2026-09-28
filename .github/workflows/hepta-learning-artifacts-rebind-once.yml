@@ -1,0 +1,138 @@
+name: Materialize learning.artifacts source binding once
+
+on:
+  push:
+    branches:
+      - chatgpt/learning-artifacts-operational-closure-20260928
+    paths:
+      - .github/workflows/hepta-learning-artifacts-rebind-once.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: learning-artifacts-rebind-once
+  cancel-in-progress: false
+
+jobs:
+  rebind:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+      - name: Refresh immutable source bindings and delivery truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_commit="$(git rev-parse HEAD^)"
+          python3 scripts/hepta_artifact_source_binding.py \
+            --tree "$(git rev-parse HEAD^{tree})" \
+            --write
+          SOURCE_COMMIT="$source_commit" python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          source = os.environ["SOURCE_COMMIT"]
+          old = "5a128fc3966218cd65ced02d8c52d9c3a660aa7a"
+
+          map_path = Path("docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json")
+          mapping = json.loads(map_path.read_text(encoding="utf-8"))
+          mapping["currentNativeState"] = (
+              "Immutable registry/storage, authoritative live withdrawal revalidation, "
+              "canonical durable request identity, typed owner transitions, durable "
+              "withdrawal/drain controls, authenticated reference host, actionable metrics "
+              "and bounded stage measurements are source implemented on the converged "
+              "candidate. Capacity rejection remains a non-persistence admission outcome "
+              "and does not poison current reads; withdrawal-block counters record actual "
+              "publish/current-view denials rather than merely entering an uncertain state. "
+              "Exact-head and ordered-parent native qualification, target-host evidence, "
+              "production activation and independently governed selection/release remain separate."
+          )
+          map_path.write_text(
+              json.dumps(mapping, indent=2, ensure_ascii=False) + "\n",
+              encoding="utf-8",
+          )
+
+          delivery = Path("docs/modules/learning.artifacts/DELIVERY_INDEX.md")
+          text = delivery.read_text(encoding="utf-8").replace(old, source)
+          text = text.replace(
+              "Code written; native qualification pending at index creation",
+              "Code written and source-rebound; exact-head native qualification pending",
+          )
+          marker = "No row in this index grants activation, selection, promotion, release or external-effect authority."
+          refinement = (
+              "Operational refinement on this source candidate: capacity rejection is a "
+              "non-persistent admission outcome and does not fence current reads; "
+              "`withdrawalBlockedTotal` counts actual rejected publish/current-view calls, "
+              "while uncertain persistence is reported separately.\n\n"
+          )
+          if refinement not in text:
+              text = text.replace(marker, refinement + marker)
+          delivery.write_text(text, encoding="utf-8")
+
+          closure = Path("docs/modules/learning.artifacts/OPERATIONAL_CLOSURE.md")
+          text = closure.read_text(encoding="utf-8").replace(old, source)
+          anchor = "Resource gauges are host-supplied facts: pinned bytes, pending-erasure bytes,"
+          paragraph = (
+              "Capacity exhaustion is classified before create-only identity persistence and "
+              "therefore clears the transient persistence state rather than poisoning reads. "
+              "Withdrawal-block counters increment only when a publish or current-view gate "
+              "actually denies use; persistence-unknown events remain a separate counter.\n\n"
+          )
+          if paragraph not in text:
+              text = text.replace(anchor, paragraph + anchor)
+          closure.write_text(text, encoding="utf-8")
+
+          index_path = Path("qualification/learning-artifacts/DELIVERY_INDEX.json")
+          index = json.loads(index_path.read_text(encoding="utf-8"))
+          index["sourceCommit"] = source
+          for capability in index["capabilities"]:
+              if capability["capability"] == "canonical_request_identity":
+                  capability["remainingLimit"] = (
+                      "exact-source native evidence pending; capacity rejection is non-persistent"
+                  )
+              if capability["capability"] == "actionable_operational_metrics":
+                  capability["remainingLimit"] = (
+                      "exporter and target-host resource observations remain external; blocked-use "
+                      "and persistence-unknown counters are distinct"
+                  )
+          index_path.write_text(
+              json.dumps(index, indent=2, ensure_ascii=False) + "\n",
+              encoding="utf-8",
+          )
+
+          status_path = Path("qualification/learning-artifacts/STATUS.json")
+          status = json.loads(status_path.read_text(encoding="utf-8"))
+          status["sourceCommit"] = source
+          status["latestEvidence"] = None
+          status["states"].update(
+              executed=False,
+              nativeQualified=False,
+              onMain=False,
+              productionActivated=False,
+              independentAcceptance=False,
+              release=False,
+          )
+          status_path.write_text(
+              json.dumps(status, indent=2, ensure_ascii=False) + "\n",
+              encoding="utf-8",
+          )
+          PY
+          rm .github/workflows/hepta-learning-artifacts-rebind-once.yml
+          python3 -m json.tool docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json >/dev/null
+          python3 -m json.tool qualification/learning-artifacts/DELIVERY_INDEX.json >/dev/null
+          python3 -m json.tool qualification/learning-artifacts/STATUS.json >/dev/null
+          git diff --check
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json \
+            docs/modules/learning.artifacts/DELIVERY_INDEX.md \
+            docs/modules/learning.artifacts/OPERATIONAL_CLOSURE.md \
+            qualification/learning-artifacts/DELIVERY_INDEX.json \
+            qualification/learning-artifacts/STATUS.json \
+            .github/workflows/hepta-learning-artifacts-rebind-once.yml
+          git commit -m "docs(learning.artifacts): bind refined operational source"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
