@@ -1,5 +1,7 @@
 name: Runtime Agentd apply reviewed instance patch
 
+# Administrator retrigger: execute the existing content-addressed patch through
+# its compile, product-E2E and strict-lint gates before publishing source.
 on:
   push:
     branches:
