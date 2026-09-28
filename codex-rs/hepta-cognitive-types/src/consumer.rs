@@ -329,7 +329,12 @@ pub fn bind_forget_receipt_consumer_v1(
 
 fn consumer_accepts(consumer: CanonicalConsumerV1, payload: CanonicalPayloadKindV1) -> bool {
     match payload {
-        CanonicalPayloadKindV1::MemoryEvent => true,
+        CanonicalPayloadKindV1::MemoryEvent => matches!(
+            consumer,
+            CanonicalConsumerV1::CognitiveRead
+                | CanonicalConsumerV1::CognitiveStore
+                | CanonicalConsumerV1::CompactEngine
+        ),
         CanonicalPayloadKindV1::RecallPacket => matches!(
             consumer,
             CanonicalConsumerV1::MemoryRetrieval | CanonicalConsumerV1::IntelligenceControl
