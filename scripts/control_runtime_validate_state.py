@@ -25,6 +25,20 @@ STAGES = [
     "released",
 ]
 
+REQUIRED_OPERATIONS = {
+    "collect_snapshot",
+    "prepare_plan",
+    "bind_ndu_plan_evaluation_v1",
+    "finalize_plan",
+    "request_execution_grants",
+    "plan_authenticated_observed_context",
+    "PlannerJournalV1",
+    "PlannerStoreV1",
+    "execute_planner_request_v1",
+    "reconcile_planner_request_v1",
+    "OrganHostV1::dispatch_once_with_receipt",
+}
+
 
 def load(path: Path) -> dict[str, Any]:
     with path.open(encoding="utf-8") as handle:
@@ -86,13 +100,28 @@ def validate() -> dict[str, Any]:
 
     require(implementation.get("module") == "control.runtime", "implementation map module mismatch")
     require(implementation.get("authorityDelta") == "none", "implementation map authority drift")
+    require(
+        implementation.get("canonicalStatusSource") == "docs/modules/control.runtime/CURRENT_STATE.json",
+        "implementation map must point to the canonical current state",
+    )
     require(implementation.get("productionImplementation") is False, "source map cannot assert production")
     claim = implementation.get("claimBoundary", {})
     for key in ("productExecutionProved", "independentAcceptance", "activation", "release"):
         require(claim.get(key) is False, f"implementation map prematurely asserts {key}")
 
+    operations = implementation.get("operations", [])
+    require(isinstance(operations, list), "implementation operations must be a list")
+    operation_names = {
+        operation.get("operation")
+        for operation in operations
+        if isinstance(operation, dict)
+    }
+    missing_operations = sorted(REQUIRED_OPERATIONS - operation_names)
+    require(not missing_operations, f"missing hardened operations: {missing_operations}")
+
     missing_paths: list[str] = []
-    for operation in implementation.get("operations", []):
+    for operation in operations:
+        require(isinstance(operation, dict), "implementation operation must be an object")
         path = operation.get("sourcePath")
         if not isinstance(path, str) or not (ROOT / path).is_file():
             missing_paths.append(str(path))
@@ -104,7 +133,8 @@ def validate() -> dict[str, Any]:
         "subsystems": sorted(subsystems),
         "stages": STAGES,
         "external_gates_remain_false": True,
-        "implementation_operations": len(implementation.get("operations", [])),
+        "implementation_operations": len(operations),
+        "required_operations_present": sorted(REQUIRED_OPERATIONS),
         "result": "pass",
     }
 
