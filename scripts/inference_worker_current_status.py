@@ -139,12 +139,27 @@ def build_status(
             "LocalModelWorker": "experimental-non-production",
             "LegacyReceiptBoundary": "validation-only",
         },
+        "local_model_source": {
+            "signed_resource_grant": "implemented",
+            "verified_manifest_input_deadline": "implemented",
+            "aggregate_resource_manager": "implemented",
+            "durable_no_replay_recovery": "implemented",
+            "real_weights_device_driver": "not_implemented_external_and_product_gate",
+            "target_hardware_fault_qualification": "not_established",
+        },
         "provider_reconciliation": {
             "exact_app_server_thread_history": "implemented",
-            "missing_history_resolution": "not_implemented",
-            "trusted_token_usage_reconciliation": "not_implemented",
+            "missing_history_resolution": (
+                "repository_quarantine_and_trusted_terminal_receipt_port_implemented; "
+                "deployed_resolver_not_established"
+            ),
+            "trusted_token_usage_reconciliation": (
+                "unknown_is_preserved_and_monotonic_receipt_refinement_is_supported; "
+                "deployed_provider_verifier_not_established"
+            ),
             "real_provider_target_host_qualification": "not_established",
         },
+        "operating_runbook": "docs/modules/inference.worker/RECOVERY_AND_OPERATIONS.md",
         "claim_boundary": {
             "repository_local_qualification_complete": local_checks_passed,
             "production_implementation": False,
