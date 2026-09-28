@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "49df616c21a17591ca5e0cd4af0500fa2bbcb6db",
-    "tree": "3c25307745d9fcb1a216e5ea86b9e586b268d0f2"
+    "commit": "de5b26ff02c1acb07c3dbf539045bf02580a8b07",
+    "tree": "fe5df8a70f933acdbb07cbf4d64329ae49bb4c16"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.federation",
@@ -87,8 +87,8 @@
   "headAttestation": {
     "candidateBranch": "feat/memory-federation-full-closure-20260927",
     "baseCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
-    "candidateHead": "49df616c21a17591ca5e0cd4af0500fa2bbcb6db",
-    "candidateTree": "3c25307745d9fcb1a216e5ea86b9e586b268d0f2",
+    "candidateHead": "de5b26ff02c1acb07c3dbf539045bf02580a8b07",
+    "candidateTree": "fe5df8a70f933acdbb07cbf4d64329ae49bb4c16",
     "headMeaning": "canonical_v2 bounded_discovery_reserved_read_budget deterministic_peer_selection final_use_revalidation private_verified_frame monotonic_partitioned_replay authenticated_transport_identity durable_replay_attempt_recovery restart_surviving_cancellation owner_cut_witness scoped_canonical_map_verification pre_post_execution_guard canonical_capability_status retained_logical_capacity_metrics terminal_request_credential_currentness issuing_host_token_binding actual_command_execution locked_input_revalidation ordered_merge_parents",
     "status": "pending_exact_current_head_and_merge_candidate_execution",
     "scope": [
@@ -188,8 +188,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "49df616c21a17591ca5e0cd4af0500fa2bbcb6db",
-    "tree": "3c25307745d9fcb1a216e5ea86b9e586b268d0f2"
+    "commit": "de5b26ff02c1acb07c3dbf539045bf02580a8b07",
+    "tree": "fe5df8a70f933acdbb07cbf4d64329ae49bb4c16"
   },
   "observedSourcePaths": [
     ".github/workflows/blocking-ci.yml",
@@ -256,7 +256,7 @@
     },
     {
       "path": ".github/workflows/memory-federation-slim-smoke.yml",
-      "object": "dd6a182bdd923cc9145ab42c05f8dea830f078d6"
+      "object": "febf3e60bacfa47ff2e9b647499c696c95c96ce3"
     },
     {
       "path": ".github/workflows/memory-federation-v2-final-verify.yml",
