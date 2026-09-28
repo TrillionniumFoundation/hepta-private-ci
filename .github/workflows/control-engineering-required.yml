@@ -1,0 +1,265 @@
+name: control-engineering-required
+
+on:
+  workflow_call: {}
+
+permissions:
+  actions: read
+  contents: read
+  pull-requests: read
+
+jobs:
+  scope:
+    name: Select control.engineering scope
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      required: ${{ steps.scope.outputs.required }}
+      base_sha: ${{ steps.identity.outputs.base_sha }}
+      head_sha: ${{ steps.identity.outputs.head_sha }}
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind event identity
+        id: identity
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$HEAD_SHA" =~ ^[0-9a-f]{40}$ ]]
+          git cat-file -e "$BASE_SHA^{commit}"
+          test "$(git rev-parse HEAD)" = "$HEAD_SHA"
+          printf 'base_sha=%s\n' "$BASE_SHA" >> "$GITHUB_OUTPUT"
+          printf 'head_sha=%s\n' "$HEAD_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Select affected module
+        id: scope
+        env:
+          PYTHONPATH: tools/hepta-engineering-control
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m control_engineering_v2.merge_policy scope \
+            --repository "$GITHUB_WORKSPACE" \
+            --base-sha '${{ steps.identity.outputs.base_sha }}' \
+            --head-sha '${{ steps.identity.outputs.head_sha }}' \
+            --github-output "$GITHUB_OUTPUT"
+
+  quality:
+    name: control.engineering quality and scale
+    needs: scope
+    if: needs.scope.outputs.required == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONPATH: tools/hepta-engineering-control
+      COVERAGE_FILE: ${{ runner.temp }}/control-engineering.coverage
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ needs.scope.outputs.head_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install bounded qualification prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y bubblewrap
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+          python3 -m pip install --disable-pip-version-check --no-input \
+            coverage==7.10.7 mypy==1.18.2 ruff==0.13.2
+
+      - name: Compile and strictly lint changed owner surfaces
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m compileall -q tools/hepta-engineering-control/control_engineering_v2
+          files=(
+            tools/hepta-engineering-control/control_engineering_v2/audit_checkpoint.py
+            tools/hepta-engineering-control/control_engineering_v2/capacity_policy.py
+            tools/hepta-engineering-control/control_engineering_v2/clock_policy.py
+            tools/hepta-engineering-control/control_engineering_v2/merge_policy.py
+            tools/hepta-engineering-control/control_engineering_v2/product_runtime.py
+            tools/hepta-engineering-control/control_engineering_v2/production_acceptance.py
+            tools/hepta-engineering-control/control_engineering_v2/production_adapters.py
+            tools/hepta-engineering-control/control_engineering_v2/qualification_mutation_campaign.py
+            tools/hepta-engineering-control/control_engineering_v2/review_gate.py
+            tools/hepta-engineering-control/control_engineering_v2/status_projection.py
+            tools/hepta-engineering-control/control_engineering_v2/stress_profile.py
+            tools/hepta-engineering-control/control_engineering_v2/worker_identity.py
+            tools/hepta-engineering-control/control_engineering_v2/workflow_gate.py
+            tools/hepta-engineering-control/test_audit_checkpoint.py
+            tools/hepta-engineering-control/test_capacity_policy.py
+            tools/hepta-engineering-control/test_clock_policy.py
+            tools/hepta-engineering-control/test_merge_policy.py
+            tools/hepta-engineering-control/test_production_adapters.py
+            tools/hepta-engineering-control/test_qualification_mutation_campaign.py
+            tools/hepta-engineering-control/test_review_gate.py
+            tools/hepta-engineering-control/test_status_projection.py
+            tools/hepta-engineering-control/test_stress_profile.py
+            tools/hepta-engineering-control/test_worker_identity.py
+            tools/hepta-engineering-control/test_workflow_gate.py
+          )
+          ruff check --no-cache "${files[@]}"
+          mypy --cache-dir "$RUNNER_TEMP/mypy-cache" \
+            --ignore-missing-imports --check-untyped-defs \
+            tools/hepta-engineering-control/control_engineering_v2/audit_checkpoint.py \
+            tools/hepta-engineering-control/control_engineering_v2/capacity_policy.py \
+            tools/hepta-engineering-control/control_engineering_v2/clock_policy.py \
+            tools/hepta-engineering-control/control_engineering_v2/merge_policy.py \
+            tools/hepta-engineering-control/control_engineering_v2/product_runtime.py \
+            tools/hepta-engineering-control/control_engineering_v2/production_acceptance.py \
+            tools/hepta-engineering-control/control_engineering_v2/production_adapters.py \
+            tools/hepta-engineering-control/control_engineering_v2/review_gate.py \
+            tools/hepta-engineering-control/control_engineering_v2/status_projection.py \
+            tools/hepta-engineering-control/control_engineering_v2/worker_identity.py \
+            tools/hepta-engineering-control/control_engineering_v2/workflow_gate.py
+
+      - name: Run complete owner suite with branch coverage
+        shell: bash
+        run: |
+          set -euo pipefail
+          coverage run --branch --source=control_engineering_v2 \
+            -m unittest discover -v -s tools/hepta-engineering-control -p 'test_*.py'
+          coverage report --show-missing --fail-under=80
+          coverage json -o "$RUNNER_TEMP/control-engineering-coverage.json"
+
+      - name: Verify canonical status and API compatibility
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m control_engineering_v2.status_projection verify \
+            --repository "$GITHUB_WORKSPACE" \
+            --output "$RUNNER_TEMP/control-engineering-status-verification.json"
+
+      - name: Run evaluator-owned mutation campaign
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m control_engineering_v2.qualification_mutation_campaign \
+            --repository "$GITHUB_WORKSPACE" \
+            --output "$RUNNER_TEMP/control-engineering-mutation.json"
+
+      - name: Run bounded crash, contention, WAL and growth profile
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m control_engineering_v2.stress_profile \
+            --crash-reopens 10 \
+            --concurrent-writers 12 \
+            --growth-records 500 \
+            --output "$RUNNER_TEMP/control-engineering-stress.json"
+
+      - name: Retain quality evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: control-engineering-quality-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/control-engineering-coverage.json
+            ${{ runner.temp }}/control-engineering-status-verification.json
+            ${{ runner.temp }}/control-engineering-mutation.json
+            ${{ runner.temp }}/control-engineering-stress.json
+          if-no-files-found: warn
+          retention-days: 30
+
+  canonical-product:
+    name: control.engineering exact product evidence
+    needs: scope
+    if: needs.scope.outputs.required == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONPATH: tools/hepta-engineering-control
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ needs.scope.outputs.head_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify merge-delivery policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          command=verify-pr
+          if [ '${{ github.event_name }}' = push ]; then
+            command=verify-main
+          fi
+          python3 -m control_engineering_v2.merge_policy "$command" \
+            --repository "$GITHUB_WORKSPACE" \
+            --base-sha '${{ needs.scope.outputs.base_sha }}' \
+            --head-sha '${{ needs.scope.outputs.head_sha }}' \
+            --output "$RUNNER_TEMP/control-engineering-merge-policy.json"
+
+      - name: Require canonical strong-sandbox and product jobs for this SHA
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=()
+          if [ '${{ github.event_name }}' = pull_request ]; then
+            args+=(--pull-request)
+          fi
+          python3 -m control_engineering_v2.workflow_gate \
+            --repository "$GITHUB_REPOSITORY" \
+            --head-sha '${{ needs.scope.outputs.head_sha }}' \
+            "${args[@]}" \
+            --output "$RUNNER_TEMP/control-engineering-workflow-observation.json"
+
+      - name: Retain exact release-blocker receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: control-engineering-release-blocker-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/control-engineering-merge-policy.json
+            ${{ runner.temp }}/control-engineering-workflow-observation.json
+          if-no-files-found: warn
+          retention-days: 30
+
+  required:
+    name: control.engineering required
+    if: always()
+    needs:
+      - scope
+      - quality
+      - canonical-product
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require all applicable control.engineering gates
+        env:
+          REQUIRED: ${{ needs.scope.outputs.required }}
+          SCOPE_RESULT: ${{ needs.scope.result }}
+          QUALITY_RESULT: ${{ needs.quality.result }}
+          PRODUCT_RESULT: ${{ needs.canonical-product.result }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$SCOPE_RESULT" = success
+          if [ "$REQUIRED" = true ]; then
+            test "$QUALITY_RESULT" = success
+            test "$PRODUCT_RESULT" = success
+          else
+            test "$QUALITY_RESULT" = skipped
+            test "$PRODUCT_RESULT" = skipped
+          fi
