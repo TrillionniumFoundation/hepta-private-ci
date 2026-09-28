@@ -1,0 +1,89 @@
+{
+  "schema": "hepta.cognitive.read.consumer-execution.v1",
+  "module": "cognitive.read",
+  "activation": false,
+  "productionImplementation": false,
+  "productExecutionProved": false,
+  "consumers": [
+    {
+      "module": "compact.engine",
+      "migration_class": "registered_only_not_composed",
+      "required_gates": [
+        "consumer-compact-tests"
+      ],
+      "normal_product_path_exercised": false,
+      "final_use_owner": "not_applicable_until_composed",
+      "evidence_interpretation": "Package execution proves the registered implementation compiles and tests; it does not prove a cognitive.read product migration."
+    },
+    {
+      "module": "context.compiler",
+      "migration_class": "legacy_v1_source_composed_v2_pending",
+      "required_gates": [
+        "consumer-context-tests",
+        "consumer-intelligence-product-e2e"
+      ],
+      "normal_product_path_exercised": true,
+      "final_use_owner": "provider_or_model_use_owner_after_compiler_admission",
+      "evidence_interpretation": "The authenticated Agentd intelligence product path exercises context compilation and currentness failure; it does not establish verified V2 cognitive.read ingress."
+    },
+    {
+      "module": "memory.federation",
+      "migration_class": "local_owner_and_extension_source_composed_execution_candidate",
+      "required_gates": [
+        "consumer-federation-tests",
+        "consumer-federation-extension-tests"
+      ],
+      "normal_product_path_exercised": true,
+      "final_use_owner": "memory_extension_and_federation_capability_owner",
+      "evidence_interpretation": "Owner and extension tests exercise the existing product source path, bounded coverage, and capability-window behavior; cross-host authentication and a V2 cognitive.read migration remain separate."
+    },
+    {
+      "module": "memory.retrieval",
+      "migration_class": "exact_owner_cut_agentd_native_worker_composed",
+      "required_gates": [
+        "consumer-retrieval-tests",
+        "product-read-replay",
+        "owner-currentness-e2e",
+        "stale-generation-e2e",
+        "native-final-use-e2e"
+      ],
+      "normal_product_path_exercised": true,
+      "final_use_owner": "Agentd plus native worker immediately before physical TurnStart",
+      "evidence_interpretation": "These gates exercise the normal owner cut, replay, expiry/rollback, stale generation, and physical pre-TurnStart correction/tombstone rejection. They remain candidate evidence, not activation."
+    },
+    {
+      "module": "neuron.runtime",
+      "migration_class": "agentd_owner_source_compiled_daemon_lifecycle_pending",
+      "required_gates": [
+        "consumer-neuron-tests",
+        "consumer-intelligence-product-e2e"
+      ],
+      "normal_product_path_exercised": true,
+      "final_use_owner": "Agentd intelligence owner orchestration",
+      "evidence_interpretation": "The intelligence product test exercises the registered neuron owner inside the normal orchestration, while daemon lifecycle composition remains pending."
+    },
+    {
+      "module": "objective.compiler",
+      "migration_class": "authenticated_agentd_source_composed_not_activated",
+      "required_gates": [
+        "consumer-objective-tests",
+        "consumer-intelligence-product-e2e"
+      ],
+      "normal_product_path_exercised": true,
+      "final_use_owner": "authenticated objective host and downstream action authority owner",
+      "evidence_interpretation": "The intelligence product path exercises authenticated objective admission and missing-current-owner failure; activation and V2 cognitive.read migration are not inferred."
+    },
+    {
+      "module": "utility.ndu",
+      "migration_class": "request_local_deny_all_owner_candidate_not_product_composed",
+      "required_gates": [
+        "consumer-ndu-tests",
+        "consumer-intelligence-product-e2e"
+      ],
+      "normal_product_path_exercised": true,
+      "final_use_owner": "independent effect or durable mutation authority owner",
+      "evidence_interpretation": "The intelligence product path exercises request-local utility evaluation and current-owner failure while preserving deny-all semantics; authenticated production owner composition remains pending."
+    }
+  ],
+  "claim_boundary": "A package or product gate proves only the exact command recorded in the same source-head or merge-candidate receipt. No row converts contract registration into V2 migration, independent acceptance, activation, production implementation, promotion, or release."
+}

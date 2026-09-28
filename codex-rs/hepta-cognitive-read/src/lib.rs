@@ -4,6 +4,7 @@
 
 mod authoritative;
 mod ids;
+mod revisioned_shadow;
 mod transient;
 mod v2;
 
@@ -39,6 +40,12 @@ pub use ids::ReadIdsRequestV1;
 pub use ids::ReadIdsResultV1;
 pub use ids::ReadProjectionRecordV1;
 pub use ids::read_ids_v1;
+pub use revisioned_shadow::CanonicalAuthoritativeReadShadowV2;
+pub use revisioned_shadow::CanonicalReadRecordBindingV2;
+pub use revisioned_shadow::CanonicalReadShadowRowV2;
+pub use revisioned_shadow::CanonicalReadShadowV2Error;
+pub use revisioned_shadow::CanonicalSourceRevisionBindingV2;
+pub use revisioned_shadow::adapt_authoritative_read_to_revision_bound_canonical_shadow_v2;
 pub use transient::TransientReadIdsResultV1;
 pub use transient::TransientSnapshotProjectionV1;
 pub use v2::MAX_ENCODED_READ_RESULT_BYTES_V2;
@@ -206,3 +213,7 @@ mod golden_vectors;
 #[cfg(test)]
 #[path = "contract_docs_tests.rs"]
 mod contract_docs_tests;
+
+#[cfg(test)]
+#[path = "revisioned_shadow_tests.rs"]
+mod revisioned_shadow_tests;
