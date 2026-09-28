@@ -62,6 +62,7 @@ impl fmt::Display for CompactEngineRecoveryActionV1 {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum CompactEngineCommitStateV1 {
     NotCommitted,
+    Committed,
     Unknown,
 }
 
@@ -69,6 +70,7 @@ impl fmt::Display for CompactEngineCommitStateV1 {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::NotCommitted => formatter.write_str("not_committed"),
+            Self::Committed => formatter.write_str("committed"),
             Self::Unknown => formatter.write_str("unknown"),
         }
     }
