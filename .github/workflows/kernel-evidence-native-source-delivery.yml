@@ -1,0 +1,138 @@
+name: Kernel evidence native source delivery
+
+on:
+  push:
+    branches: [work/kernel-evidence-ad-integration-20260928]
+
+permissions:
+  contents: write
+
+jobs:
+  reviewed-delivery:
+    if: contains(github.event.head_commit.message, '[kernel-evidence-native-delivery]')
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 25
+    env:
+      RUSTUP_TOOLCHAIN: 1.95.0
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+      - name: Materialize reviewed repairs and synchronize actual source
+        shell: bash
+        env:
+          EXPECTED_HEAD: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/kernel-evidence-delivery"
+          mkdir -p "$out"
+          branch=work/kernel-evidence-ad-integration-20260928
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test -z "$(git status --porcelain)"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python3 scripts/kernel_evidence_compile_repair_20260928.py | tee "$out/source-repair.log"
+          python3 -m venv "$RUNNER_TEMP/kernel-evidence-format-env"
+          "$RUNNER_TEMP/kernel-evidence-format-env/bin/pip" install 'black==23.11.0' > "$out/black-install.log" 2>&1
+          "$RUNNER_TEMP/kernel-evidence-format-env/bin/python" -m black scripts/kernel_evidence_integration_sync.py scripts/kernel_evidence_compile_repair_20260928.py > "$out/python-format.log" 2>&1
+          (cd codex-rs && cargo fmt -p codex-hepta-evidence -p codex-hepta-agentd -p codex-hepta-agent-protocol -p codex-state) > "$out/rust-format.log" 2>&1
+          python3 - <<'PY'
+          import subprocess
+          allowed = ('codex-rs/hepta-evidence/', 'codex-rs/hepta-agentd/', 'codex-rs/hepta-agent-protocol/', 'codex-rs/state/')
+          scripts = {'scripts/kernel_evidence_integration_sync.py', 'scripts/kernel_evidence_compile_repair_20260928.py'}
+          for path in subprocess.check_output(['git','diff','--name-only'], text=True).splitlines():
+              if path not in scripts and not path.startswith(allowed):
+                  raise SystemExit(f'out-of-scope source mutation: {path}')
+          PY
+          git diff --check
+          git diff --binary > "$out/reviewed-source.patch"
+          git add -- codex-rs/hepta-evidence codex-rs/hepta-agentd codex-rs/hepta-agent-protocol codex-rs/state scripts/kernel_evidence_integration_sync.py scripts/kernel_evidence_compile_repair_20260928.py
+          git commit -s -m 'fix(kernel.evidence): apply native SQL, fixture and ownership repairs with rustfmt [kernel-evidence-closure] [kernel-evidence-status-sync]'
+          source="$(git rev-parse HEAD)"
+          printf '%s\n' "$source" "$(git rev-parse HEAD^{tree})" > "$out/source-anchor.txt"
+          python3 scripts/kernel_evidence_integration_sync.py metadata "$source" > "$out/metadata-sync.log" 2>&1
+          python3 - <<'PY'
+          import subprocess
+          allowed = {
+              'qualification/kernel-evidence/STATUS_SOURCE.json',
+              'qualification/kernel-evidence/TRACEABILITY.md',
+              'qualification/kernel-evidence/RELEASE_DASHBOARD.md',
+              'qualification/module-execution-dossiers/detail/kernel.evidence.md',
+              'docs/modules/kernel.evidence/TECHNICAL.md',
+              'docs/modules/MODULE_DOCS.json',
+              'docs/lane-a-foundation/kernel.evidence/CURRENT_IMPLEMENTATION.md',
+              'docs/lane-a-foundation/kernel.evidence/STORE_V1.md',
+          }
+          changed = set(subprocess.check_output(['git','diff','--name-only'], text=True).splitlines())
+          if changed - allowed:
+              raise SystemExit(f'out-of-scope document mutation: {changed - allowed}')
+          PY
+          git diff --check
+          git add -- qualification/kernel-evidence/STATUS_SOURCE.json qualification/kernel-evidence/TRACEABILITY.md qualification/kernel-evidence/RELEASE_DASHBOARD.md qualification/module-execution-dossiers/detail/kernel.evidence.md docs/modules/kernel.evidence/TECHNICAL.md docs/modules/MODULE_DOCS.json docs/lane-a-foundation/kernel.evidence/CURRENT_IMPLEMENTATION.md docs/lane-a-foundation/kernel.evidence/STORE_V1.md
+          git commit -s -m 'docs(kernel.evidence): synchronize guide, store protocol and canonical source inventory [kernel-evidence-closure] [kernel-evidence-status-sync]'
+          documentation="$(git rev-parse HEAD)"
+          printf '%s\n' "$documentation" "$(git rev-parse HEAD^{tree})" > "$out/documentation-anchor.txt"
+          python3 scripts/kernel_evidence_integration_sync.py map "$documentation"
+          git add -- docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json
+          git commit -s -m 'docs(kernel.evidence): bind implementation map to integrated source and guide [kernel-evidence-closure] [kernel-evidence-status-sync]'
+          python3 scripts/kernel_evidence_status.py verify > "$out/status-verify.log" 2>&1
+          test -z "$(git status --porcelain)"
+          test "$(git ls-remote origin "refs/heads/$branch" | cut -f1)" = "$EXPECTED_HEAD"
+          git push origin "HEAD:refs/heads/$branch"
+          test "$(git ls-remote origin "refs/heads/$branch" | cut -f1)" = "$(git rev-parse HEAD)"
+          git rev-parse HEAD HEAD^{tree} > "$out/delivered-identity.txt"
+          git log -3 --format='%H %s' > "$out/delivered-commits.txt"
+          git archive --format=tar.gz HEAD > "$out/delivered-source.tar.gz"
+      - name: Execute native publisher guard tests from delivered source
+        if: success()
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/kernel-evidence-delivery"
+          probe="$RUNNER_TEMP/kernel-evidence-lock-native"
+          mkdir -p "$probe/src"
+          cp codex-rs/hepta-agentd/src/evidence_publication_process_lock*.rs "$probe/src/"
+          cat > "$probe/Cargo.toml" <<'TOML'
+          [package]
+          name = "kernel-evidence-exact-lock-probe"
+          version = "0.0.0"
+          edition = "2024"
+          [workspace]
+          [dependencies]
+          libc = "=0.2.186"
+          [dev-dependencies]
+          tempfile = "=3.27.0"
+          TOML
+          printf '%s\n' '#[path = "evidence_publication_process_lock.rs"]' 'mod publication_process_lock;' > "$probe/src/lib.rs"
+          sha256sum codex-rs/hepta-agentd/src/evidence_publication_process_lock*.rs > "$out/lock-source-sha256.txt"
+          set +e
+          cargo test --manifest-path "$probe/Cargo.toml" -- --nocapture > "$out/native-lock-tests.log" 2>&1
+          rc=$?
+          set -e
+          printf '%s\n' "$rc" > "$out/native-lock-tests.exit"
+          cp "$probe/Cargo.lock" "$out/lock-probe-Cargo.lock"
+          tail -n 60 "$out/native-lock-tests.log"
+          test "$rc" -eq 0
+      - name: Retain delivery and execution identity
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/kernel-evidence-delivery"
+          mkdir -p "$out"
+          git rev-parse HEAD HEAD^{tree} > "$out/final-identity.txt"
+          printf '%s\n' 'Source delivery and scoped tests only. Full repository qualification, independent acceptance and deployment are not implied.' > "$out/CLAIM_BOUNDARY.txt"
+          (cd "$out" && find . -maxdepth 1 -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: kernel-evidence-native-delivery-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/kernel-evidence-delivery
+          if-no-files-found: error
+          retention-days: 14
