@@ -9,6 +9,12 @@ mod memory;
 
 mod ephemeral_input;
 
+// Compiled in ordinary source before the caller-composition slice consumes the
+// digest-only final-use proof. Keeping it in the module tree prevents dormant
+// V3 source from being mistaken for a compiled product path.
+#[allow(dead_code)]
+mod context_input;
+
 // Registered before the HTTP/WS callsites so cancellation ownership can be
 // reviewed and tested independently.
 #[allow(dead_code)]
@@ -46,4 +52,3 @@ pub(crate) use transport::logical_compaction_request;
 pub(crate) use transport::logical_responses_request;
 pub(crate) use transport::provider_websocket_wire_payload;
 pub(crate) use transport::responses_lite_from_http_header;
-pub(crate) use transport::responses_lite_from_ws_metadata;
