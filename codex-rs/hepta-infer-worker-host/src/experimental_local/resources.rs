@@ -132,21 +132,38 @@ impl ResourceManager {
     }
 
     pub fn resolve_quarantine(&self, operation_id: &str) -> Result<(), LocalWorkerError> {
+        if self.resolve_quarantine_if_present(operation_id)? {
+            Ok(())
+        } else {
+            Err(LocalWorkerError::InvalidTransition(
+                "quarantined request not found",
+            ))
+        }
+    }
+
+    /// Release a same-process quarantined request after exact terminal
+    /// reconciliation. A restarted process may have no in-memory request entry;
+    /// that case is a no-op because no local bytes or concurrency are retained.
+    pub(super) fn resolve_quarantine_if_present(
+        &self,
+        operation_id: &str,
+    ) -> Result<bool, LocalWorkerError> {
         validate_identity(operation_id, "local operation")?;
         let mut state = self.lock()?;
-        let request =
-            state
-                .requests
-                .get(operation_id)
-                .ok_or(LocalWorkerError::InvalidTransition(
-                    "quarantined request not found",
-                ))?;
-        if request.lifecycle != RequestLifecycle::Quarantined {
-            return Err(LocalWorkerError::InvalidTransition(
+        match state
+            .requests
+            .get(operation_id)
+            .map(|request| request.lifecycle)
+        {
+            None => Ok(false),
+            Some(RequestLifecycle::Quarantined) => {
+                release_request_locked(&mut state, operation_id)?;
+                Ok(true)
+            }
+            Some(_) => Err(LocalWorkerError::InvalidTransition(
                 "request is not quarantined",
-            ));
+            )),
         }
-        release_request_locked(&mut state, operation_id)
     }
 
     pub fn model_lifecycle(
