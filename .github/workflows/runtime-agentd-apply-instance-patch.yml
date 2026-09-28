@@ -1,42 +1,33 @@
-name: Runtime Agentd apply reviewed instance patch
+name: Runtime Agentd publish reviewed source
 
-# Execute the existing content-addressed patch through compile, product-E2E and
-# strict-lint gates before publishing source. This workflow is intentionally
-# one-shot and removes itself together with the patch carrier after success.
+# One-shot content-addressed publication gate. The carrier commit changes only
+# this workflow and the compressed patch. The tested source commit removes both.
 on:
   push:
     branches:
       - work/runtime-agentd-production-closure-20260928
     paths:
-      - '.github/runtime-agentd-instance.patch.gz'
+      - '.github/runtime-agentd-source.patch.b64.part*'
       - '.github/workflows/runtime-agentd-apply-instance-patch.yml'
 
 permissions:
   contents: write
 
 concurrency:
-  group: runtime-agentd-instance-patch-${{ github.sha }}
+  group: runtime-agentd-publish-${{ github.sha }}
   cancel-in-progress: false
 
 jobs:
   apply-test-push:
     if: github.actor != 'github-actions[bot]'
-    name: Apply, qualify and publish (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-24.04
     timeout-minutes: 180
-    strategy:
-      fail-fast: false
-      max-parallel: 3
-      matrix:
-        os: [ubuntu-24.04, ubuntu-22.04, ubuntu-24.04-arm]
     env:
-      BASE_SHA: 35a87891852355e75a350973c33871d2b0889fd5
-      PATCH_SHA256: fd4fe4668e1029d7b1ed0429b50ef6cd58a75d737c7b75866b3a0ef5a7b54201
-      PATCH_PATH: .github/runtime-agentd-instance.patch.gz
-      EXPECTED_REJECT: codex-rs/hepta-agentd/src/runtime_codex_supervisor.rs.rej
-      EXPECTED_REJECT_SHA256: 55ed4c43209b6bf61961bd47c8256495feea6232bfc8a56b90da87823044552c
-      CARGO_INCREMENTAL: '0'
+      BASE_SHA: 3f6b49355947c3cddaaa89198cbf17b66d46c2fa
+      PATCH_SHA256: 60b54679710d460f3be18a74a7760d034fbf281afa387f9107fbda1212d617eb
+      PATCH_GLOB: .github/runtime-agentd-source.patch.b64.part*
       TARGET_BRANCH: work/runtime-agentd-production-closure-20260928
+      CARGO_INCREMENTAL: '0'
     steps:
       - name: Checkout immutable carrier
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -45,43 +36,22 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Verify carrier scope and apply reviewed patch
+      - name: Verify scope and apply the exact patch
         shell: bash
         run: |
           set -euo pipefail
           git merge-base --is-ancestor "$BASE_SHA" HEAD
-          unexpected=$(git diff --name-only "$BASE_SHA" HEAD | grep -Ev '^(\.github/runtime-agentd-instance\.patch\.gz|\.github/workflows/runtime-agentd-apply-instance-patch\.yml)$' || true)
+          unexpected=$(git diff --name-only "$BASE_SHA" HEAD | grep -Ev '^(\.github/runtime-agentd-source\.patch\.b64\.part[0-9]+|\.github/workflows/runtime-agentd-apply-instance-patch\.yml)$' || true)
           test -z "$unexpected"
-          printf '%s  %s\n' "$PATCH_SHA256" "$PATCH_PATH" | sha256sum -c -
-          gzip -dc "$PATCH_PATH" > "$RUNNER_TEMP/runtime-agentd-instance.patch"
-
-          # The exact source already contains one formatting-only `_error`
-          # overlap. Apply every other hunk and require that the sole rejected
-          # hunk is the pre-reviewed, content-addressed overlap below.
-          set +e
-          git apply --reject --whitespace=nowarn "$RUNNER_TEMP/runtime-agentd-instance.patch"
-          apply_status=$?
-          set -e
-          test "$apply_status" -eq 1
-          mapfile -t rejects < <(find codex-rs/hepta-agentd -name '*.rej' -print | sort)
-          test "${#rejects[@]}" -eq 1
-          test "${rejects[0]}" = "$EXPECTED_REJECT"
-          printf '%s  %s\n' "$EXPECTED_REJECT_SHA256" "$EXPECTED_REJECT" | sha256sum -c -
-          grep -F 'fn remember_terminal_failure(installed: &Installation, _error: &AgentdError)' \
-            codex-rs/hepta-agentd/src/runtime_codex_supervisor.rs
-          rm "$EXPECTED_REJECT"
-          test -z "$(find codex-rs/hepta-agentd -name '*.rej' -print -quit)"
+          cat $PATCH_GLOB | tr -d '\n' | base64 -d > "$RUNNER_TEMP/runtime-agentd-source.patch.gz"
+          printf '%s  %s\n' "$PATCH_SHA256" "$RUNNER_TEMP/runtime-agentd-source.patch.gz" | sha256sum -c -
+          gzip -dc "$RUNNER_TEMP/runtime-agentd-source.patch.gz" > "$RUNNER_TEMP/runtime-agentd-source.patch"
+          git apply --check "$RUNNER_TEMP/runtime-agentd-source.patch"
+          git apply "$RUNNER_TEMP/runtime-agentd-source.patch"
+          rm .github/runtime-agentd-instance.patch.gz .github/runtime-agentd-source.patch.b64.part* .github/workflows/runtime-agentd-apply-instance-patch.yml
           git diff --check
 
-      - name: Remove one-shot carrier
-        shell: bash
-        run: |
-          set -euo pipefail
-          rm "$PATCH_PATH"
-          rm .github/workflows/runtime-agentd-apply-instance-patch.yml
-          git diff --check
-
-      - name: Install exact Rust formatter and linter
+      - name: Install the repository Rust toolchain
         shell: bash
         run: |
           set -euo pipefail
@@ -89,48 +59,52 @@ jobs:
           rustup toolchain install "$toolchain" --profile minimal --component rustfmt --component clippy
           rustup override set "$toolchain"
 
-      - name: Format the Agentd package
+      - name: Format changed Rust packages
         working-directory: codex-rs
-        run: cargo fmt --manifest-path Cargo.toml --package codex-hepta-agentd
+        run: cargo fmt --manifest-path Cargo.toml --package codex-hepta-agentd --package codex-hepta-infer-worker-host
 
-      - name: Verify patch structure and status generator
+      - name: Verify source contracts
         shell: bash
         run: |
           set -euo pipefail
           git diff --check
+          python3 -B -m unittest discover -s scripts/qualification -p 'test_agentd_exact_head.py' -v
           python3 -B -m unittest scripts.qualification.test_runtime_agentd_current_status -v
+          python3 -B -m unittest scripts.qualification.test_runtime_agentd_dependency_boundary -v
+          python3 -B -m unittest scripts.test_hepta_agentd_trust_boundary -v
+          python3 -B scripts/qualification/runtime_agentd_dependency_boundary.py --repository .
+          python3 -B scripts/hepta_agentd_trust_boundary.py
 
       - name: Compile and execute Agentd owner tests
         working-directory: codex-rs
         run: cargo test --locked -p codex-hepta-agentd --lib
 
-      - name: Compile the read-only core profile
+      - name: Compile the read-only Agentd profile
         working-directory: codex-rs
         run: cargo check --locked -p codex-hepta-agentd --no-default-features --lib
 
-      - name: Execute the runtime.codex product process test
+      - name: Execute product and native process tests
         working-directory: codex-rs
-        run: cargo test --locked -p codex-hepta-agentd --test runtime_codex_product_e2e
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-agentd --test runtime_codex_product_e2e
+          cargo test --locked -p codex-hepta-agentd --test supervisord_product_e2e
+          cargo test --locked -p codex-hepta-infer-worker-host --test native_host_process_e2e
 
-      - name: Run strict Agentd lint
+      - name: Run strict lint on changed runtime packages
         working-directory: codex-rs
-        run: cargo clippy --locked -p codex-hepta-agentd --all-targets -- -D warnings
+        run: cargo clippy --locked -p codex-hepta-agentd -p codex-hepta-infer-worker-host --all-targets -- -D warnings
 
-      - name: Commit only the tested final tree
+      - name: Publish only the tested final tree
         shell: bash
         run: |
           set -euo pipefail
           git diff --check
-          test ! -e "$PATCH_PATH"
+          test -z "$(find .github -maxdepth 1 -name 'runtime-agentd-source.patch.b64.part*' -print -quit)"
+          test ! -e .github/runtime-agentd-instance.patch.gz
           test ! -e .github/workflows/runtime-agentd-apply-instance-patch.yml
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
-          git commit -m 'runtime.agentd: own supervisor instances and bound maintenance'
-          local_tree=$(git rev-parse HEAD^{tree})
-          if git push origin HEAD:"$TARGET_BRANCH"; then
-            exit 0
-          fi
-          git fetch --no-tags origin "$TARGET_BRANCH"
-          remote_tree=$(git rev-parse FETCH_HEAD^{tree})
-          test "$local_tree" = "$remote_tree"
+          git commit -m 'runtime.agentd: own instances and bound maintenance'
+          git push origin HEAD:"$TARGET_BRANCH"
