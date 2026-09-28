@@ -22,6 +22,9 @@ use crate::model::client_message_id;
 use crate::taskflow::TaskFlowError;
 use crate::taskflow::verify_taskflow_store;
 
+#[path = "store_listing.rs"]
+mod listing;
+
 const AUTOMATION_DB_FILENAME: &str = "automation_1.sqlite3";
 const MAX_TASK_PAGE: usize = 1_024;
 static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
@@ -1106,6 +1109,32 @@ async fn verify_store(pool: &SqlitePool, owner_agent_id: &AgentId) -> Result<(),
     }
     if owner != owner_agent_id.as_str() {
         return Err(AutomationError::AccessDenied);
+    }
+    // Validate the actual index, not just its name or column names. A partial,
+    // foreign-table or differently collated index is not this paging contract.
+    let listing_indexes: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM pragma_index_list('automation_tasks')
+         WHERE name = 'automation_tasks_listing_idx'
+           AND [unique] = 0 AND origin = 'c' AND partial = 0",
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(unavailable)?;
+    let listing_columns: Vec<(Option<String>, i64, String)> = sqlx::query_as(
+        "SELECT name, [desc], coll FROM pragma_index_xinfo('automation_tasks_listing_idx')
+         WHERE [key] = 1 ORDER BY seqno",
+    )
+    .fetch_all(pool)
+    .await
+    .map_err(unavailable)?;
+    if listing_indexes != 1
+        || listing_columns
+            != [
+                (Some("created_at_ms".into()), 0, "BINARY".into()),
+                (Some("task_id".into()), 0, "BINARY".into()),
+            ]
+    {
+        return Err(AutomationError::Corrupt);
     }
     let foreign: i64 =
         sqlx::query_scalar("SELECT COUNT(*) FROM automation_tasks WHERE owner_agent_id != ?")

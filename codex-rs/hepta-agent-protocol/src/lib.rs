@@ -15,6 +15,7 @@ pub use authbus::ObjectiveRunAdmission;
 pub use authbus::ObjectiveStartOutcome;
 pub use capabilities::AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2;
 pub use capabilities::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT;
+pub use capabilities::AGENTD_CAPABILITY_AUTOMATION_LIST_PAGE_V1;
 pub use capabilities::AGENTD_CAPABILITY_CANONICAL_INTELLIGENCE_V1;
 pub use capabilities::AGENTD_CAPABILITY_SCHEMA_VERSION;
 pub use capabilities::AgentdCapability;
@@ -36,8 +37,10 @@ use codex_hepta_automation::AutomationCalendarScheduleV2;
 use codex_hepta_automation::AutomationMissedRunPolicy;
 use codex_hepta_automation::AutomationOverlapPolicy;
 use codex_hepta_automation::AutomationTask;
+use codex_hepta_automation::AutomationTaskCursorV1;
 use codex_hepta_automation::AutomationTaskDraft;
 use codex_hepta_automation::AutomationTaskId;
+use codex_hepta_automation::AutomationTaskPageV1;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_contracts::SignedFinalUseGrant;
@@ -51,6 +54,8 @@ pub const AGENTD_CONTROL_SCHEMA_VERSION: u32 = 2;
 /// runtime yet; it gives a future host/supervisor seam one strict wire shape.
 pub const HOST_TURN_AUTHORITY_BINDING_SCHEMA_VERSION: u32 = 1;
 pub const MAX_CONTROL_FRAME_BYTES: u64 = 65_536;
+/// Keep a bounded page plus cursor below the unchanged control-frame envelope.
+pub const MAX_AUTOMATION_LIST_PAGE_BYTES: usize = 60 * 1024;
 pub const MAX_AUTOMATION_EFFECT_WIRE_BYTES: usize = 24 * 1024;
 /// Maximum serialized cognitive context accepted by both Agentd and the final model consumer.
 pub const MAX_COGNITIVE_CONTEXT_BYTES: usize = 8 * 1024;
@@ -363,6 +368,20 @@ impl AgentdRequest {
         }
     }
 
+    pub fn automation_list_page_v1(
+        request_id: u64,
+        spawn_generation: u64,
+        limit: u16,
+        after: Option<AutomationTaskCursorV1>,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::AutomationListPageV1 { limit, after },
+        }
+    }
+
     pub fn automation_list(request_id: u64, spawn_generation: u64, limit: u16) -> Self {
         Self {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
@@ -662,6 +681,10 @@ pub enum AgentdMethod {
     AutomationList {
         limit: u16,
     },
+    AutomationListPageV1 {
+        limit: u16,
+        after: Option<AutomationTaskCursorV1>,
+    },
     AutomationCancel {
         task_id: AutomationTaskId,
     },
@@ -761,6 +784,7 @@ pub enum AgentdPayload {
     AutomationTasks {
         tasks: Vec<AutomationTask>,
     },
+    AutomationTasksPageV1(AutomationTaskPageV1),
     MemoryFederationCapability(MemoryFederationCapabilitySnapshot),
     MemoryFederationCapabilities {
         capabilities: Vec<MemoryFederationCapabilitySnapshot>,

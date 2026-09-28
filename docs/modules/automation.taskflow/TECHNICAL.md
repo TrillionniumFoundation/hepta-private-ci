@@ -316,7 +316,7 @@ Schema v16 retains the original `automation_tasks`, `automation_runs` and dispat
 
 `taskflow_definitions`, `taskflow_runs` and `taskflow_events` remain the durable TaskFlow ledger. A materialized occurrence freezes its schedule revision until it becomes terminal. Safe generation reclaim preserves occurrence/client identity and allocates a new step attempt; an indeterminate provider outcome does not.
 
-Migrations are additive from v3 through v19. Migration v12 adds Calendar V2 history; v13 adds terminal reconciliation after an initial indeterminate external-effect observation; v14 freezes the schedule revision on claimed legacy runs so an in-flight claim cannot float to a later schedule revision; v15 adds append-only reconciliation evidence for legacy dispatch-unknown rows whose historical schedule revision was never frozen; v16 persists the opaque App Server `next_cursor` used by terminal observation so each recovery pass remains bounded while older known turns remain eventually reachable. Such legacy ambiguity can open a new claim only after an exact provider-side proven-absent receipt, and the retired occurrence/client identity is never reused. Migration v17 adds kernel-operation deduplication; v18 adds the timer writer epoch and lifecycle; v19 reconciles the converged schema identity. A binary that does not understand schema v19 must not replace the current owner against an upgraded store.
+Migrations are additive from v3 through v20. Migration v12 adds Calendar V2 history; v13 adds terminal reconciliation after an initial indeterminate external-effect observation; v14 freezes the schedule revision on claimed legacy runs so an in-flight claim cannot float to a later schedule revision; v15 adds append-only reconciliation evidence for legacy dispatch-unknown rows whose historical schedule revision was never frozen; v16 persists the opaque App Server `next_cursor` used by terminal observation so each recovery pass remains bounded while older known turns remain eventually reachable. Such legacy ambiguity can open a new claim only after an exact provider-side proven-absent receipt, and the retired occurrence/client identity is never reused. Migration v17 adds kernel-operation deduplication; v18 adds the timer writer epoch and lifecycle; v19 reconciles the converged schema identity. Migration v20 adds the immutable creation-order task-listing index. A binary that does not understand schema v20 must not replace the current owner against an upgraded store.
 
 ## 7. Runtime, concurrency and transaction model
 
@@ -539,3 +539,24 @@ This overlay changes no acceptance, activation, promotion or release authority.
 | `occurrence_terminal` | `src/lifecycle.rs` | occurs after TaskFlow reconciliation; advances forbidden-overlap recurrence |
 
 Current repository source implements bounded Calendar V2 semantics from an explicitly supplied timezone/tzdb transition profile; it does **not** prove that a selected host supplied a current authentic IANA tzdb profile, nor does it prove multi-scheduler/DST target behavior. The Agentd/App Server Codex automation activity has a real source composition path. A concrete arbitrary downstream effect provider/terminal observer, deployment, independent acceptance, activation, promotion and release remain separate evidence gates and stay false.
+
+
+### Bounded ordinary task listing
+
+The additive `automation.list_page_v1` capability keeps the existing 64-KiB
+control-frame limit. `AutomationListPageV1` reads at most 32 tasks plus one
+lookahead from the same owner, using the `(created_at_ms, task_id)` index; it
+packs at most 60 KiB of encoded JSON, including the continuation key. Escaped
+strings count by their wire bytes. An individually oversized task produces an
+explicit rejection, never a truncated prompt or a non-advancing empty page.
+
+The existing client `automation_list(limit)` negotiates this capability and
+collects at most the original 256-task bound within one overall client deadline.
+Every page retains the existing Agent/process-generation fence. Older servers
+retain their small-list path; oversized legacy responses now return a bounded
+`response_too_large` error rather than silently closing the connection.
+
+Pages are live owner reads, not a frozen multi-request snapshot, approval or
+execution receipt. Existing creation keys do not move when task state changes.
+An insertion before an already-consumed key requires a new scan to be observed.
+Retirement, operation identity, authority and outbox recovery are unchanged.

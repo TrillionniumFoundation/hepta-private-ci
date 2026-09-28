@@ -65,8 +65,10 @@ pub use model::AutomationLease;
 pub use model::AutomationQueueReceipt;
 pub use model::AutomationSchedule;
 pub use model::AutomationTask;
+pub use model::AutomationTaskCursorV1;
 pub use model::AutomationTaskDraft;
 pub use model::AutomationTaskId;
+pub use model::AutomationTaskPageV1;
 pub use model::AutomationTaskState;
 pub use model::AutomationTick;
 pub use neural_circuit::CircuitCompilationReceiptV1;
@@ -151,4 +153,4 @@ pub use taskflow_step::TaskFlowStepState;
 pub use timer_lifecycle::TimerDrainStatus;
 pub use timer_lifecycle::TimerPhase;
 
-pub const AUTOMATION_SCHEMA_VERSION: u32 = 19;
+pub const AUTOMATION_SCHEMA_VERSION: u32 = 20;

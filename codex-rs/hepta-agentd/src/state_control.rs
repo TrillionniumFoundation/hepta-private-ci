@@ -93,6 +93,14 @@ impl AgentdState {
                     )
                     .map_err(AgentdError::Protocol)?,
                 ];
+                capabilities.push(
+                    crate::AgentdCapability::new(
+                        crate::AGENTD_CAPABILITY_AUTOMATION_LIST_PAGE_V1,
+                        1,
+                        0,
+                    )
+                    .map_err(AgentdError::Protocol)?,
+                );
                 if self.automation_effect_host().is_some() {
                     capabilities.push(
                         crate::AgentdCapability::new(
@@ -703,6 +711,35 @@ impl AgentdState {
                         .automation_result(store.list_tasks(usize::from(limit)).await, |tasks| {
                             AgentdPayload::AutomationTasks { tasks }
                         })?,
+                    None => automation_unavailable(),
+                }
+            }
+            crate::AgentdMethod::AutomationListPageV1 { limit, after } => {
+                require_automation_ready(
+                    lifecycle,
+                    app_server_ready,
+                    critical_stores_ready,
+                    revocation_ready,
+                    required_ports_ready,
+                    admission_open,
+                    fenced,
+                )?;
+                if !(1..=256).contains(&limit) {
+                    return Err(AgentdError::Invalid(
+                        "automation list limit must be between 1 and 256".to_string(),
+                    ));
+                }
+                match automation {
+                    Some(store) => self.automation_result(
+                        store
+                            .list_task_page_v1(
+                                usize::from(limit),
+                                after,
+                                crate::MAX_AUTOMATION_LIST_PAGE_BYTES,
+                            )
+                            .await,
+                        AgentdPayload::AutomationTasksPageV1,
+                    )?,
                     None => automation_unavailable(),
                 }
             }

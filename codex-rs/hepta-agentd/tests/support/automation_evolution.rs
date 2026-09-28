@@ -513,3 +513,52 @@ async fn normal_pending_task_survives_kill_without_old_client_or_provider_replay
     );
     Ok(())
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn ordinary_product_lists_256_retained_tasks_without_oversized_frames() -> Result<()> {
+    let mut fleet = FleetHarness::new()?;
+    let agent = fleet.register(AGENT_A, "bounded-task-listing-product")?;
+    let model = responses::start_mock_server().await;
+    MockResponsesConfig::new(&model.uri()).write(agent.layout.home_root())?;
+    // Seed through the same durable owner before handing it to the daemon.
+    // Future tasks do not dispatch; the listing is exercised over the actual
+    // control socket, not by substituting an in-memory response builder.
+    let store = AutomationStore::open(&agent.layout).await?;
+    for index in 0..256 {
+        store
+            .create_task(&AutomationTaskDraft::new(
+                "019153a4-3088-7e03-a56a-9b1964f75ddd",
+                format!("retained task {index}: {}", "x".repeat(300)),
+                AutomationSchedule::Once,
+                4_000_000_000_000,
+                index / 8 + 1,
+            ))
+            .await?;
+    }
+    let expected = store.list_tasks(256).await?;
+    ensure!(serde_json::to_vec(&expected)?.len() > 65_536);
+    store.close().await;
+    fleet.start(&agent)?;
+    let (control, _) = fleet.wait_ready(&agent, 1).await?;
+    let started = Instant::now();
+    let actual = control.automation_list(256).await?;
+    let listing_us = started.elapsed().as_micros();
+    ensure!(
+        actual == expected,
+        "paged control listing lost or reordered owner rows"
+    );
+    let page = control.automation_list_page_v1(256, None).await?;
+    ensure!(page.tasks.len() <= 32 && page.next_cursor.is_some());
+    ensure!(serde_json::to_vec(&page)?.len() <= 60 * 1024);
+    let (_, retained, _) = owner_observation(&agent).await?;
+    ensure!(retained == 256);
+    println!(
+        "{}",
+        json!({"fixture": "ordinary_control_paged_task_history",
+        "retained_tasks": actual.len(), "listing_us": listing_us,
+        "legacy_result_bytes": serde_json::to_vec(&expected)?.len(),
+        "first_page_bytes": serde_json::to_vec(&page)?.len(),
+        "control_frame_limit_bytes": 65_536, "provider": "local_unused_fixture"})
+    );
+    Ok(())
+}

@@ -127,13 +127,7 @@ async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result
             ),
         }
     };
-    let mut bytes = serde_json::to_vec(&response)?;
-    bytes.push(b'\n');
-    if bytes.len() as u64 > MAX_CONTROL_FRAME_BYTES {
-        return Err(AgentdError::Protocol(
-            "agentd control response exceeded frame bound".to_string(),
-        ));
-    }
+    let bytes = encode_response(response)?;
     writer.write_all(&bytes).await?;
     writer.shutdown().await?;
     Ok(())
@@ -230,3 +224,51 @@ async fn set_owner_only(path: &Path) -> Result<(), AgentdError> {
 async fn set_owner_only(_path: &Path) -> Result<(), AgentdError> {
     Ok(())
 }
+
+/// Retain the unchanged frame budget even when a legacy endpoint materializes
+/// a large result. A bounded error preserves request identity instead of EOF.
+fn encode_response(mut response: AgentdResponse) -> Result<Vec<u8>, AgentdError> {
+    let mut buffer = ControlFrameBuffer {
+        bytes: Vec::with_capacity(MAX_CONTROL_FRAME_BYTES as usize),
+        overflowed: false,
+    };
+    if let Err(error) = serde_json::to_writer(&mut buffer, &response) {
+        if !buffer.overflowed {
+            return Err(error.into());
+        }
+        buffer.bytes.clear();
+        buffer.overflowed = false;
+        response.payload = AgentdPayload::Error {
+            code: "response_too_large".into(),
+            message: "response exceeds control frame; use the negotiated paginated endpoint".into(),
+        };
+        serde_json::to_writer(&mut buffer, &response)?;
+    }
+    buffer.bytes.push(b'\n');
+    Ok(buffer.bytes)
+}
+
+struct ControlFrameBuffer {
+    bytes: Vec<u8>,
+    overflowed: bool,
+}
+
+impl std::io::Write for ControlFrameBuffer {
+    fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
+        let remaining = (MAX_CONTROL_FRAME_BYTES as usize - 1).saturating_sub(self.bytes.len());
+        if bytes.len() > remaining {
+            self.overflowed = true;
+            return Err(std::io::Error::other("control frame byte budget exceeded"));
+        }
+        self.bytes.extend_from_slice(bytes);
+        Ok(bytes.len())
+    }
+
+    fn flush(&mut self) -> std::io::Result<()> {
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+#[path = "control_frame_tests.rs"]
+mod frame_tests;
