@@ -3,7 +3,15 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from cognitive_read_evidence import BENCHMARK_SCHEMAS, TEST_GATES, commands, validate_evidence, validate_candidate_claims
+from cognitive_read_evidence import (
+    BENCHMARK_SCHEMAS,
+    NATIVE_FINAL_USE_TEST,
+    NEXTEST_VERSION,
+    TEST_GATES,
+    commands,
+    validate_evidence,
+    validate_candidate_claims,
+)
 
 
 class EvidenceGateTests(unittest.TestCase):
@@ -15,6 +23,16 @@ class EvidenceGateTests(unittest.TestCase):
         for label, argv in self.required.items():
             (self.evidence / f"{label}.command.json").write_text(json.dumps(argv))
             (self.evidence / f"{label}.log").write_text("Summary [0.1s] 1 test run: 1 passed, 0 skipped\n")
+            if label == "test-runner":
+                (self.evidence / f"{label}.log").write_text(
+                    f"cargo-nextest {NEXTEST_VERSION}\n"
+                )
+            elif label == "native-final-use-e2e":
+                (self.evidence / f"{label}.log").write_text(
+                    "PASS [0.1s] codex_hepta_infer_worker_host "
+                    f"{NATIVE_FINAL_USE_TEST}\n"
+                    "Summary [0.1s] 1 test run: 1 passed, 99 skipped\n"
+                )
             (self.evidence / f"{label}.exit-code").write_text("0\n")
             if label in BENCHMARK_SCHEMAS:
                 value = {"schema": BENCHMARK_SCHEMAS[label], "iterations": 32}

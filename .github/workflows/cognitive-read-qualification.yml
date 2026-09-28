@@ -74,6 +74,16 @@ jobs:
           fetch-depth: 0
       - name: Prepare CI tools
         uses: ./.github/actions/setup-ci
+      - name: Install pinned repository test runner
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-nextest@0.9.103
+      - name: Verify repository test entry points
+        shell: bash
+        run: |
+          set -euo pipefail
+          just --version
+          cargo nextest --version
       - name: Run exact-head suite and seal evidence
         id: qualification
         env:
@@ -136,6 +146,16 @@ jobs:
           message: Cognitive read synthetic merge
       - name: Prepare CI tools
         uses: ./.github/actions/setup-ci
+      - name: Install pinned repository test runner
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-nextest@0.9.103
+      - name: Verify repository test entry points
+        shell: bash
+        run: |
+          set -euo pipefail
+          just --version
+          cargo nextest --version
       - name: Run merge-candidate suite and seal evidence
         id: qualification
         env:

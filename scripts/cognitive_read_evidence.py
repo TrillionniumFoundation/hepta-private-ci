@@ -20,7 +20,13 @@ PACKAGES = (
 TEST_GATES = {
     "core-tests", "owner-tests", "agentd-tests", "native-core-tests",
     "native-worker-tests", "product-read-replay", "product-write-smoke",
+    "native-final-use-e2e",
 }
+NEXTEST_VERSION = "0.9.103"
+NATIVE_FINAL_USE_TEST = (
+    "native_app_server::tests::"
+    "real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone"
+)
 BENCHMARK_SCHEMAS = {
     "benchmark": "hepta.cognitive.read.benchmark.v1",
     "prepared-benchmark": "hepta.cognitive.read.prepared-benchmark.v1",
@@ -31,6 +37,7 @@ def commands(candidate: str, evidence: Path) -> dict[str, list[str]]:
     packages = [arg for package in PACKAGES for arg in ("-p", package)]
     cargo = ["cargo", "--manifest-path", "codex-rs/Cargo.toml"]
     result = {
+        "test-runner": ["cargo", "nextest", "--version"],
         "workspace-manifest": ["python3", ".github/scripts/verify_cargo_workspace_manifests.py"],
         "contract-limits": ["python3", "scripts/verify-cognitive-read-constants.py"],
         "implementation-map": ["python3", "scripts/verify-cognitive-read-map.py", "--expected-sha", candidate],
@@ -54,6 +61,13 @@ def commands(candidate: str, evidence: Path) -> dict[str, list[str]]:
     result["product-read-replay"] = [*product, "-E", "test(=real_agentd_local_memory_review_is_read_only_and_replayable)"]
     result["product-write-smoke"] = [*product, "--features", "qualification-cognitive-write", "-E",
                                       "test(=real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends)"]
+    # A positive package count cannot prove that the physical worker case ran.
+    # The exact lib selector is mandatory and has its own command/log receipt.
+    result["native-final-use-e2e"] = [
+        "just", "test", "--locked", "-p", "codex-hepta-infer-worker-host", "--lib",
+        "--no-tests=fail", "--status-level", "pass", "-E",
+        f"test(={NATIVE_FINAL_USE_TEST})",
+    ]
     for label, example in (("benchmark", "cognitive_read_bench"), ("prepared-benchmark", "cognitive_read_prepared_bench")):
         result[label] = [cargo[0], "run", *cargo[1:], "--locked", "--release", "-p", "codex-hepta-cognitive-read", "--example", example, "--quiet"]
     result["fuzz-harness"] = ["cargo", "check", "--manifest-path", "codex-rs/hepta-cognitive-read/fuzz/Cargo.toml", "--all-targets"]
@@ -123,11 +137,27 @@ def validate_evidence(evidence: Path, expected: dict[str, list[str]]) -> list[st
                 problems.append(f"{label}: unsuccessful command")
         except (ValueError, OSError) as error:
             problems.append(f"{label}: invalid command record: {error}")
+        if label == "test-runner":
+            runner = log.read_text(errors="replace").strip()
+            version = re.escape(NEXTEST_VERSION)
+            if re.fullmatch(rf"cargo-nextest {version}(?:[ \t][^\r\n]*)?", runner) is None:
+                problems.append("test-runner: missing or unexpected pinned nextest version")
         if label in TEST_GATES:
             body = re.sub(r"\x1b\[[0-9;]*m", "", log.read_text(errors="replace"))
             counts = re.findall(r"\b(\d+) tests? run\b", body)
             if not counts or int(counts[-1]) == 0:
                 problems.append(f"{label}: no positive nextest execution summary")
+            if label == "native-final-use-e2e":
+                # Ignore summaries or test-name strings printed by other tests.
+                # Require the actual nextest PASS row for the one exact case.
+                passed_case = re.search(
+                    rf"(?m)^\s*PASS\s+\[[^]\r\n]+\]\s+"
+                    rf"codex[-_]hepta[-_]infer[-_]worker[-_]host\s+"
+                    rf"{re.escape(NATIVE_FINAL_USE_TEST)}\s*$",
+                    body,
+                )
+                if not counts or int(counts[-1]) != 1 or passed_case is None:
+                    problems.append("native-final-use-e2e: exact physical worker case not proved")
         if label in BENCHMARK_SCHEMAS:
             path = evidence / f"{label}.json"
             try:
@@ -245,7 +275,8 @@ def run(root: Path, kind: str, candidate: str, relative_evidence: str, profile: 
         (evidence / f"{label}.elapsed-ns").write_text(f"{time.monotonic_ns() - start}\n")
         print(f"[{label}] exit={code}", flush=True)
     passed = emit(root, evidence, candidate, kind, evidence / "qualification-receipt.json")
-    files = sorted(path for path in evidence.rglob("*") if path.is_file())
+    files = sorted(path for path in evidence.rglob("*"))
+    files = [path for path in files if path.is_file()]
     (evidence / "SHA256SUMS").write_text("".join(f"{digest(path)}  {path.relative_to(evidence).as_posix()}\n" for path in files))
     bundle = Path(os.environ.get("RUNNER_TEMP", str(evidence.parent))) / f"cognitive-read-{kind}-{candidate}.tar"
     with tarfile.open(bundle, "w") as archive:
