@@ -19,15 +19,30 @@ def git(*args: str) -> str:
     ).strip()
 
 
-def candidate_plan(*, source: str, tested: str, lane: str, base: str | None = None) -> dict:
+def candidate_plan(
+    *, source: str, tested: str, lane: str, base: str | None = None
+) -> dict:
     merge_lane = lane in {"base-merge", "synthetic-merge"}
     if lane != "source-head" and not merge_lane:
         raise ValueError("unknown qualification lane")
-    for identity in (source, tested, *([base] if merge_lane else [])):
-        if not isinstance(identity, str) or re.fullmatch(r"[0-9a-f]{40}", identity) is None:
+    identities = (source, tested, *([base] if merge_lane else []))
+    for identity in identities:
+        if (
+            not isinstance(identity, str)
+            or re.fullmatch(r"[0-9a-f]{40}", identity) is None
+        ):
             raise ValueError("candidate identities must be exact SHA-1 commits")
+    for identity in dict.fromkeys(identities):
+        if git("cat-file", "-t", identity) != "commit":
+            raise ValueError(
+                "candidate identities must name commit objects, not tags or trees"
+            )
     if git("rev-parse", "HEAD") != tested:
         raise ValueError("checked-out commit differs from tested identity")
+    if git("status", "--porcelain", "--untracked-files=normal"):
+        raise ValueError(
+            "candidate reuse requires a clean checkout, including untracked inputs"
+        )
     if lane == "source-head" and source != tested:
         raise ValueError("source lane is not the exact source head")
     if merge_lane:
@@ -36,6 +51,20 @@ def candidate_plan(*, source: str, tested: str, lane: str, base: str | None = No
             raise ValueError("prospective merge parents differ from base and source")
     source_tree = git("rev-parse", f"{source}^{{tree}}")
     tested_tree = git("rev-parse", f"{tested}^{{tree}}")
+    if merge_lane:
+        # Matching parents and a source-equal tree do not prove a merge: a
+        # manufactured commit could omit changes from the base. Recompute the
+        # same merge used by execution records before deciding to skip work.
+        try:
+            expected_tree = git("merge-tree", "--write-tree", base, source)
+        except subprocess.CalledProcessError as error:
+            raise ValueError(
+                "prospective merge is conflicting or unavailable"
+            ) from error
+        if tested_tree != expected_tree:
+            raise ValueError(
+                "tested merge tree differs from the recomputed base/source merge tree"
+            )
     identical = source_tree == tested_tree
     return {
         "schema_version": 1,
@@ -58,11 +87,15 @@ def main() -> None:
     parser.add_argument("--lane", required=True)
     parser.add_argument("--github-output", type=Path)
     args = parser.parse_args()
-    plan = candidate_plan(source=args.source, tested=args.tested, lane=args.lane, base=args.base)
+    plan = candidate_plan(
+        source=args.source, tested=args.tested, lane=args.lane, base=args.base
+    )
     print(json.dumps(plan, sort_keys=True))
     if args.github_output:
         with args.github_output.open("a", encoding="utf-8") as stream:
-            stream.write(f"run_native={str(plan['native_execution_required']).lower()}\n")
+            stream.write(
+                f"run_native={str(plan['native_execution_required']).lower()}\n"
+            )
 
 
 if __name__ == "__main__":
