@@ -7,12 +7,6 @@
 
 use super::*;
 
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct AgentdIntelligenceProductStartV1 {
-    pub admitted: crate::AgentdIntelligenceAdmittedOutcomeV1,
-    pub product_loop: Option<crate::AgentdIntelligenceProductLoopReceiptV1>,
-}
-
 impl AgentdState {
     /// Execute the configured canonical product continuation after the exact
     /// prepared run is already admitted. Absence of a continuation is explicit
@@ -20,7 +14,13 @@ impl AgentdState {
     pub(crate) async fn start_canonical_intelligence_product_loop(
         &self,
         record: &RunStartRecordV1,
-    ) -> Result<Option<AgentdIntelligenceProductStartV1>, AgentdError> {
+    ) -> Result<
+        Option<(
+            crate::AgentdIntelligenceAdmittedOutcomeV1,
+            Option<crate::AgentdIntelligenceProductLoopReceiptV1>,
+        )>,
+        AgentdError,
+    > {
         let Some(admitted) = self.start_canonical_intelligence(record).await? else {
             return Ok(None);
         };
@@ -48,9 +48,6 @@ impl AgentdState {
             | crate::AgentdIntelligenceAdmittedOutcomeV1::SlowPath => None,
         };
 
-        Ok(Some(AgentdIntelligenceProductStartV1 {
-            admitted,
-            product_loop,
-        }))
+        Ok(Some((admitted, product_loop)))
     }
 }
