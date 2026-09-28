@@ -1,4 +1,4 @@
-name: runtime.codex rejection settlement bootstrap
+name: runtime.codex closure transform
 
 on:
   push:
@@ -8,12 +8,12 @@ permissions:
   contents: write
 
 concurrency:
-  group: runtime-codex-rejection-settlement-${{ github.ref }}
+  group: runtime-codex-closure-transform-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   apply-reviewed-transform:
-    if: ${{ !contains(github.event.head_commit.message, '[runtime-codex-rejection-settlement]') }}
+    if: ${{ !contains(github.event.head_commit.message, '[runtime-codex-closure-transform]') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -30,7 +30,7 @@ jobs:
           toolchain: 1.95.0
           components: rustfmt
 
-      - name: Apply exact two-owner rejection settlement transform
+      - name: Apply exact correctness and process-identity transforms
         shell: bash
         run: |
           set -euo pipefail
@@ -41,10 +41,11 @@ jobs:
           old = 'return text[:first] + replacement + text[stop:]'
           new = 'return text[:first] + replacement + text[stop + len(end):]'
           if source.count(old) != 1:
-              raise SystemExit('unexpected transformer helper')
+              raise SystemExit('unexpected rejection transformer helper')
           path.write_text(source.replace(old, new, 1))
           PY
           python3 scripts/runtime_codex_rejection_settlement_bootstrap.py
+          python3 scripts/runtime_codex_issuer_process_pin_bootstrap.py
           python3 - <<'PY'
           from pathlib import Path
           path = Path('codex-rs/hepta-infer-worker-host/src/native_execution.rs')
@@ -66,6 +67,7 @@ jobs:
             --package codex-hepta-infer-worker-host
           git diff --check
           test ! -e scripts/runtime_codex_rejection_settlement_bootstrap.py
+          test ! -e scripts/runtime_codex_issuer_process_pin_bootstrap.py
 
       - name: Publish one immutable reviewed candidate
         shell: bash
@@ -80,6 +82,6 @@ jobs:
           git config user.name 'OpenAI Codex'
           git config user.email 'noreply@openai.com'
           git commit \
-            -m 'runtime.codex: settle typed rejection across both owners [runtime-codex-rejection-settlement]' \
-            -m 'Prepare exact non-admission evidence locally, terminally acknowledge the exact Agentd dispatch, and only then release local capacity. Reopen pending settlement after a crash and keep unknown acknowledgement reconcile-only.'
+            -m 'runtime.codex: close rejection settlement and issuer identity [runtime-codex-closure-transform]' \
+            -m 'Prepare typed non-admission evidence locally, terminally acknowledge the exact Agentd dispatch before releasing capacity, and pin the Linux authority peer to one protected executable/start-time/boot instance.'
           git push origin "HEAD:refs/heads/${HEAD_REF}"
