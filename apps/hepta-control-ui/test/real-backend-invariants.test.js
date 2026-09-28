@@ -37,8 +37,14 @@ test("real-backend snapshot refresh rejects generation and revision regression",
   );
 });
 
-test("real-backend lookup remains bound to operation identity and terminal state", () => {
-  assert.equal(assertOperationObservation(observation(), request, { requireTerminal: true }).status, "succeeded");
+test("real-backend lookup remains bound to operation identity, audit trace, and terminal state", () => {
+  assert.equal(
+    assertOperationObservation(observation(), request, {
+      requireTerminal: true,
+      expectedAuditTraceId: "audit-operation-1",
+    }).status,
+    "succeeded",
+  );
   assert.equal(assertOperationObservation(observation({ status: "pending" }), request).status, "pending");
   assert.throws(
     () => assertOperationObservation(observation({ operationId: "operation-2" }), request),
@@ -47,6 +53,14 @@ test("real-backend lookup remains bound to operation identity and terminal state
   assert.throws(
     () => assertOperationObservation(observation({ semanticDigest: "b".repeat(64) }), request),
     error => error.code === "UI_CONTROL_SEMANTIC_DIGEST_MISMATCH",
+  );
+  assert.throws(
+    () => assertOperationObservation(
+      observation({ auditTraceId: "audit-operation-2" }),
+      request,
+      { expectedAuditTraceId: "audit-operation-1" },
+    ),
+    error => error.code === "UI_CONTROL_AUDIT_TRACE_MISMATCH",
   );
   assert.throws(
     () => assertOperationObservation(observation({ status: "pending" }), request, { requireTerminal: true }),

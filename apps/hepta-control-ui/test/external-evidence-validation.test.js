@@ -102,6 +102,18 @@ function backendReceipt() {
       duplicateOperation: "succeeded",
       responseLossOperation: "succeeded",
     },
+    operationBindings: {
+      duplicateOperation: {
+        operationIdSha256: "6".repeat(64),
+        semanticDigest: "7".repeat(64),
+        auditTraceIdSha256: "8".repeat(64),
+      },
+      responseLossOperation: {
+        operationIdSha256: "9".repeat(64),
+        semanticDigest: "a".repeat(64),
+        auditTraceIdSha256: "b".repeat(64),
+      },
+    },
     evidence: {
       chaosEvidenceSha256: "3".repeat(64),
       chaosRawEvidenceDigest: "4".repeat(64),
@@ -307,6 +319,16 @@ test("repository, deployment, and real-backend receipts remain exact-subject gat
 
   const backend = backendReceipt();
   assert.doesNotThrow(() => validateRealBackendReceipt(backend, expected, { now }));
+
+  const missingBinding = backendReceipt();
+  delete missingBinding.operationBindings.duplicateOperation;
+  assert.throws(() => validateRealBackendReceipt(missingBinding, expected, { now }), /operation binding is missing/u);
+
+  const reusedAudit = backendReceipt();
+  reusedAudit.operationBindings.responseLossOperation.auditTraceIdSha256 =
+    reusedAudit.operationBindings.duplicateOperation.auditTraceIdSha256;
+  assert.throws(() => validateRealBackendReceipt(reusedAudit, expected, { now }), /reused one audit trace identity/u);
+
   backend.cases = backend.cases.slice(1);
   assert.throws(() => validateRealBackendReceipt(backend, expected, { now }), /real-backend cases/u);
 });

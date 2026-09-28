@@ -136,6 +136,18 @@ test("bundle validation accepts one exact, mutually bound evidence set on main",
         duplicateOperation: "succeeded",
         responseLossOperation: "succeeded",
       },
+      operationBindings: {
+        duplicateOperation: {
+          operationIdSha256: "6".repeat(64),
+          semanticDigest: "7".repeat(64),
+          auditTraceIdSha256: "8".repeat(64),
+        },
+        responseLossOperation: {
+          operationIdSha256: "9".repeat(64),
+          semanticDigest: "a".repeat(64),
+          auditTraceIdSha256: "b".repeat(64),
+        },
+      },
       evidence: {
         chaosEvidenceSha256: "3".repeat(64),
         chaosRawEvidenceDigest: "4".repeat(64),

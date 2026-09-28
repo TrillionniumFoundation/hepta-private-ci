@@ -32,7 +32,11 @@ export function assertSnapshotNotRegressed(previous, next) {
   return next;
 }
 
-export function assertOperationObservation(payload, request, { requireTerminal = false } = {}) {
+export function assertOperationObservation(
+  payload,
+  request,
+  { requireTerminal = false, expectedAuditTraceId = null } = {},
+) {
   assertEvidence(payload?.found === true, "UI_CONTROL_OPERATION_NOT_FOUND", `operation ${request.operationId} was not found`);
   assertEvidence(
     payload.operationId === request.operationId,
@@ -49,6 +53,18 @@ export function assertOperationObservation(payload, request, { requireTerminal =
     "UI_CONTROL_AUDIT_TRACE_MISSING",
     "operation lookup did not retain an audit trace identity",
   );
+  if (expectedAuditTraceId !== null) {
+    assertEvidence(
+      typeof expectedAuditTraceId === "string" && expectedAuditTraceId.length > 0,
+      "UI_CONTROL_AUDIT_TRACE_EXPECTATION",
+      "expected audit trace identity is invalid",
+    );
+    assertEvidence(
+      payload.auditTraceId === expectedAuditTraceId,
+      "UI_CONTROL_AUDIT_TRACE_MISMATCH",
+      "operation lookup changed the durable audit trace identity",
+    );
+  }
   if (requireTerminal) {
     assertEvidence(
       TERMINAL.has(payload.status),

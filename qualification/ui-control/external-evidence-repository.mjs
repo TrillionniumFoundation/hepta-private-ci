@@ -64,6 +64,22 @@ function assertExactStringSet(values, required, code, label) {
   return observed;
 }
 
+function validateOperationBinding(binding, label) {
+  assertEvidence(
+    binding && typeof binding === "object" && !Array.isArray(binding),
+    "UI_CONTROL_BACKEND_OPERATION_BINDING",
+    `${label} operation binding is missing`,
+  );
+  exactSha(binding.operationIdSha256, `${label}.operationIdSha256`, SHA256);
+  exactSha(binding.semanticDigest, `${label}.semanticDigest`, SHA256);
+  exactSha(binding.auditTraceIdSha256, `${label}.auditTraceIdSha256`, SHA256);
+  return Object.freeze({
+    operationIdSha256: binding.operationIdSha256,
+    semanticDigest: binding.semanticDigest,
+    auditTraceIdSha256: binding.auditTraceIdSha256,
+  });
+}
+
 export function validateRepositoryQualificationReceipt(receipt, kind, expected) {
   assertEvidence(receipt && typeof receipt === "object" && !Array.isArray(receipt), "UI_CONTROL_QUALIFICATION_RECEIPT", "repository qualification receipt must be an object");
   assertEvidence(receipt.schema === "hepta.ui-control.qualification-receipt.v2", "UI_CONTROL_QUALIFICATION_SCHEMA", "unsupported repository qualification receipt schema");
@@ -177,6 +193,31 @@ export function validateRealBackendReceipt(receipt, expected, options = {}) {
   assertExactStringSet(receipt.cases, REQUIRED_REAL_BACKEND_CASES, "UI_CONTROL_BACKEND_CASES", "real-backend cases");
   assertEvidence(TERMINAL.has(receipt.terminalObservations?.duplicateOperation), "UI_CONTROL_BACKEND_TERMINAL", "duplicate operation lacks a terminal observation");
   assertEvidence(TERMINAL.has(receipt.terminalObservations?.responseLossOperation), "UI_CONTROL_BACKEND_TERMINAL", "response-loss operation lacks a terminal observation");
+
+  const duplicateOperation = validateOperationBinding(
+    receipt.operationBindings?.duplicateOperation,
+    "operationBindings.duplicateOperation",
+  );
+  const responseLossOperation = validateOperationBinding(
+    receipt.operationBindings?.responseLossOperation,
+    "operationBindings.responseLossOperation",
+  );
+  assertEvidence(
+    duplicateOperation.operationIdSha256 !== responseLossOperation.operationIdSha256,
+    "UI_CONTROL_BACKEND_OPERATION_REUSE",
+    "real-backend receipt reused one operation identity for both mutation scenarios",
+  );
+  assertEvidence(
+    duplicateOperation.semanticDigest !== responseLossOperation.semanticDigest,
+    "UI_CONTROL_BACKEND_SEMANTIC_REUSE",
+    "real-backend receipt reused one semantic intent for both mutation scenarios",
+  );
+  assertEvidence(
+    duplicateOperation.auditTraceIdSha256 !== responseLossOperation.auditTraceIdSha256,
+    "UI_CONTROL_BACKEND_AUDIT_REUSE",
+    "real-backend receipt reused one audit trace identity for both mutation scenarios",
+  );
+
   exactSha(receipt.evidence?.chaosEvidenceSha256, "evidence.chaosEvidenceSha256", SHA256);
   exactSha(receipt.evidence?.chaosRawEvidenceDigest, "evidence.chaosRawEvidenceDigest", SHA256);
   exactSha(receipt.evidence?.authorityEvidenceSha256, "evidence.authorityEvidenceSha256", SHA256);
@@ -189,5 +230,8 @@ export function validateRealBackendReceipt(receipt, expected, options = {}) {
   ]) {
     assertEvidence(receipt.claims?.[claim] === true, "UI_CONTROL_BACKEND_CLAIM", `real-backend claim is not accepted: ${claim}`);
   }
-  return Object.freeze({ cases: Object.freeze([...receipt.cases]) });
+  return Object.freeze({
+    cases: Object.freeze([...receipt.cases]),
+    operationBindings: Object.freeze({ duplicateOperation, responseLossOperation }),
+  });
 }

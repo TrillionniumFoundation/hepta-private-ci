@@ -224,15 +224,18 @@ try {
     });
   }
 
-  async function waitForTerminal(session, body, cookie) {
+  async function waitForTerminal(session, body, cookie, expectedAuditTraceId) {
     const deadline = Date.now() + timeoutMs;
     while (Date.now() < deadline) {
       const { response, payload } = await lookup(session, body, cookie);
       assertEvidence(response.ok, "UI_CONTROL_BACKEND_LOOKUP", `lookup failed with ${response.status}`);
       if (payload?.found === true) {
-        assertOperationObservation(payload, body);
+        assertOperationObservation(payload, body, { expectedAuditTraceId });
         if (["succeeded", "failed", "rejected", "cancelled"].includes(payload.status)) {
-          return assertOperationObservation(payload, body, { requireTerminal: true });
+          return assertOperationObservation(payload, body, {
+            requireTerminal: true,
+            expectedAuditTraceId,
+          });
         }
       }
       await sleep(500);
@@ -257,8 +260,14 @@ try {
     assertEvidence(result.response.ok, "UI_CONTROL_IDENTICAL_SUBMISSION", `identical submission failed with ${result.response.status}`);
     assertEvidence(result.payload?.operationId === duplicateId, "UI_CONTROL_OPERATION_ID_MISMATCH", "identical submission returned a different operation ID");
     assertEvidence(result.payload?.semanticDigest === duplicateBody.semanticDigest, "UI_CONTROL_SEMANTIC_DIGEST_MISMATCH", "identical submission returned a different semantic digest");
+    assertEvidence(
+      typeof result.payload?.auditTraceId === "string" && result.payload.auditTraceId.length > 0,
+      "UI_CONTROL_AUDIT_TRACE_MISSING",
+      "identical submission did not return a durable audit trace identity",
+    );
   }
   assertEvidence(first.payload.auditTraceId === second.payload.auditTraceId, "UI_CONTROL_DUPLICATE_DURABILITY", "identical submissions did not resolve to one durable record");
+  const duplicateAuditTraceId = first.payload.auditTraceId;
   completedCases.push("concurrent-identical-operation");
 
   stage = "semantic-conflict";
@@ -287,7 +296,12 @@ try {
   completedCases.push("cross-identity-lookup-denied");
 
   stage = "first-operation-terminal-observation";
-  const duplicateTerminal = await waitForTerminal(primary, duplicateBody, primaryCookie);
+  const duplicateTerminal = await waitForTerminal(
+    primary,
+    duplicateBody,
+    primaryCookie,
+    duplicateAuditTraceId,
+  );
   completedCases.push("first-operation-terminal-lookup");
 
   stage = "post-terminal-snapshot-refresh";
@@ -303,11 +317,17 @@ try {
   await discardAcknowledgement(lossBody);
   const lossLookup = await lookup(primary, lossBody, primaryCookie);
   assertEvidence(lossLookup.response.ok, "UI_CONTROL_RESPONSE_LOSS_LOOKUP", `accepted response loss lookup failed with ${lossLookup.response.status}`);
-  assertOperationObservation(lossLookup.payload, lossBody);
+  const lossObservation = assertOperationObservation(lossLookup.payload, lossBody);
+  const lossAuditTraceId = lossObservation.auditTraceId;
   completedCases.push("accepted-response-loss-lookup");
 
   stage = "response-loss-terminal-observation";
-  const lossTerminal = await waitForTerminal(primary, lossBody, primaryCookie);
+  const lossTerminal = await waitForTerminal(
+    primary,
+    lossBody,
+    primaryCookie,
+    lossAuditTraceId,
+  );
   completedCases.push("response-loss-terminal-lookup");
 
   stage = "final-snapshot-refresh";
@@ -341,10 +361,16 @@ try {
   await readSnapshot(reconnectedPrimary, primaryCookie);
   const lookupAfterSessionSwitch = await lookup(reconnectedPrimary, duplicateBody, primaryCookie);
   assertEvidence(lookupAfterSessionSwitch.response.ok, "UI_CONTROL_SESSION_SWITCH_LOOKUP", `same-principal lookup failed with ${lookupAfterSessionSwitch.response.status}`);
-  assertOperationObservation(lookupAfterSessionSwitch.payload, duplicateBody, { requireTerminal: true });
+  assertOperationObservation(lookupAfterSessionSwitch.payload, duplicateBody, {
+    requireTerminal: true,
+    expectedAuditTraceId: duplicateAuditTraceId,
+  });
   const lossLookupAfterSessionSwitch = await lookup(reconnectedPrimary, lossBody, primaryCookie);
   assertEvidence(lossLookupAfterSessionSwitch.response.ok, "UI_CONTROL_SESSION_SWITCH_LOOKUP", `response-loss lookup after session switch failed with ${lossLookupAfterSessionSwitch.response.status}`);
-  assertOperationObservation(lossLookupAfterSessionSwitch.payload, lossBody, { requireTerminal: true });
+  assertOperationObservation(lossLookupAfterSessionSwitch.payload, lossBody, {
+    requireTerminal: true,
+    expectedAuditTraceId: lossAuditTraceId,
+  });
   const closeReconnected = await requestJson(new URL("session/close", apiBase), {
     cookie: primaryCookie,
     csrf: primaryCsrf,
@@ -383,6 +409,18 @@ try {
     terminalObservations: {
       duplicateOperation: duplicateTerminal.status,
       responseLossOperation: lossTerminal.status,
+    },
+    operationBindings: {
+      duplicateOperation: {
+        operationIdSha256: sha256(duplicateBody.operationId),
+        semanticDigest: duplicateBody.semanticDigest,
+        auditTraceIdSha256: sha256(duplicateAuditTraceId),
+      },
+      responseLossOperation: {
+        operationIdSha256: sha256(lossBody.operationId),
+        semanticDigest: lossBody.semanticDigest,
+        auditTraceIdSha256: sha256(lossAuditTraceId),
+      },
     },
     evidence: {
       chaosEvidenceSha256: sha256(chaosEvidenceText),
