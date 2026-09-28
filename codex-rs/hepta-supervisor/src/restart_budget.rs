@@ -37,6 +37,9 @@ pub enum RestartBudgetError {
 pub struct RestartClaim {
     pub attempt: u32,
     pub backoff: Duration,
+    /// Stable operation identity. Attempt numbers may repeat after the window
+    /// rolls over, so crash recovery must bind both values.
+    pub window_started_unix_ms: u64,
 }
 
 pub fn claim_restart(
@@ -100,6 +103,7 @@ fn claim_restart_at(
         return Ok(RestartClaim {
             attempt: state.attempts,
             backoff: Duration::from_millis(state.next_eligible_unix_ms.saturating_sub(now_ms)),
+            window_started_unix_ms: state.window_started_unix_ms,
         });
     }
     if now_ms.saturating_sub(state.window_started_unix_ms) >= window_ms {
@@ -125,6 +129,7 @@ fn claim_restart_at(
     Ok(RestartClaim {
         attempt: state.attempts,
         backoff,
+        window_started_unix_ms: state.window_started_unix_ms,
     })
 }
 
@@ -203,6 +208,7 @@ fn pending_restart_at(
     Ok(Some(RestartClaim {
         attempt: state.attempts,
         backoff: Duration::from_millis(state.next_eligible_unix_ms.saturating_sub(now_ms)),
+        window_started_unix_ms: state.window_started_unix_ms,
     }))
 }
 
@@ -267,6 +273,7 @@ mod tests {
         )
         .expect("replay");
         assert_eq!(replay.attempt, 1);
+        assert_eq!(replay.window_started_unix_ms, first.window_started_unix_ms);
         complete_restart(dir.path()).expect("complete");
         assert_eq!(
             claim_restart(
