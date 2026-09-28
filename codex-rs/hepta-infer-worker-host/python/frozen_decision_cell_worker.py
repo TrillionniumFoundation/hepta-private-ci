@@ -18,6 +18,7 @@ import time
 
 from decision_cell_encoder import FrozenMdebertaDecisionCellV2, _canonical
 from decision_cell_tensors import checked_bytes, strict_json
+from decision_cell_process import validate_request
 
 SCHEMA = "hepta.frozen-encoder-request.v1"
 MAX_FRAME = 96 * 1024
@@ -30,27 +31,7 @@ REPLY_SCHEMA = "hepta.frozen-encoder-reply.v1"
 def request(raw: bytes, *, check_deadline: bool = True) -> dict:
     if not 0 < len(raw) <= MAX_FRAME or not raw.endswith(b"\n"):
         raise ValueError("invalid request frame length")
-    value = strict_json(raw)
-    if set(value) != {"schema", "request_id", "projection_sha256", "deadline_monotonic_ns", "text", "candidates"}:
-        raise ValueError("unknown or missing request field")
-    if value["schema"] != SCHEMA or not isinstance(value["request_id"], str) or not re.fullmatch(
-            r"[A-Za-z0-9._:-]{1,128}", value["request_id"]):
-        raise ValueError("invalid request identity")
-    deadline = value["deadline_monotonic_ns"]
-    if type(deadline) is not int or deadline <= 0 or (check_deadline and not
-            time.monotonic_ns() < deadline <= time.monotonic_ns() + 120 * 10**9):
-        raise ValueError("invalid process-local request deadline")
-    if not isinstance(value["text"], str) or not 0 < len(value["text"].encode()) <= 16384:
-        raise ValueError("invalid observation text")
-    targets = value["candidates"]
-    if not isinstance(targets, list) or len(targets) != 4 or any(
-            not isinstance(item, str) or not 0 < len(item.encode()) <= 4096 for item in targets):
-        raise ValueError("invalid candidate texts")
-    projected = _canonical({"projection_schema": "hepta.decision-cell-text-projection.v1",
-                            "texts": (value["text"],), "candidates": (tuple(targets),)})
-    if hashlib.sha256(projected).hexdigest() != value["projection_sha256"]:
-        raise ValueError("projection content substitution")
-    return value
+    return validate_request(strict_json(raw), check_deadline=check_deadline)
 
 
 def _identity(value: object) -> bool:

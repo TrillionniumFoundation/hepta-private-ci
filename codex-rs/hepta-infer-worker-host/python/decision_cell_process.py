@@ -20,6 +20,7 @@ import threading
 import tempfile
 import time
 from typing import Any, Mapping, Sequence
+from types import MappingProxyType
 
 MAX_FRAME = 96 * 1024
 MAX_SECONDS = 120
@@ -60,6 +61,32 @@ def _json(raw: bytes) -> dict:
 
 def _digest(value: object) -> bool:
     return isinstance(value, str) and re.fullmatch(r"[0-9a-f]{64}", value) is not None and value != "0" * 64
+
+
+
+def validate_request(value: dict, *, check_deadline: bool) -> dict:
+    """Validate a snapshotted command before dispatch; lookup may use old time."""
+    fields = {"schema", "request_id", "projection_sha256", "deadline_monotonic_ns", "text", "candidates"}
+    if not isinstance(value, dict) or set(value) != fields:
+        raise ValueError("unknown or missing request field")
+    if value["schema"] != "hepta.frozen-encoder-request.v1" or not isinstance(value["request_id"], str) or re.fullmatch(
+            r"[A-Za-z0-9._:-]{1,128}", value["request_id"]) is None:
+        raise ValueError("invalid request identity")
+    deadline = value["deadline_monotonic_ns"]
+    now = time.monotonic_ns()
+    if type(deadline) is not int or deadline <= 0 or (check_deadline and not now < deadline <= now + MAX_SECONDS * 10**9):
+        raise ValueError("invalid process-local request deadline")
+    if not isinstance(value["text"], str) or not 0 < len(value["text"].encode()) <= 16384:
+        raise ValueError("invalid observation text")
+    targets = value["candidates"]
+    if not isinstance(targets, list) or len(targets) != 4 or any(
+            not isinstance(item, str) or not 0 < len(item.encode()) <= 4096 for item in targets):
+        raise ValueError("invalid candidate texts")
+    projection = {"projection_schema": "hepta.decision-cell-text-projection.v1",
+                  "texts": [value["text"]], "candidates": [targets]}
+    if not _digest(value["projection_sha256"]) or hashlib.sha256(canonical(projection)).hexdigest() != value["projection_sha256"]:
+        raise ValueError("projection content substitution")
+    return value
 
 
 def build_request(request_id: str, text: str, candidates: Sequence[str], *, deadline_ns: int) -> dict:
@@ -105,7 +132,7 @@ class FrozenEncoderProcess:
             raise ValueError("invalid session")
         if any(not _digest(expected[k]) for k in ("head_manifest_sha256", "base_snapshot_digest", "runtime_profile_sha256")):
             raise ValueError("invalid artifact identity")
-        self.expected = expected
+        self._expected = MappingProxyType(expected)
         self._lock = threading.Lock()
         self._closed = False
         self._buffer = bytearray()
@@ -123,11 +150,17 @@ class FrozenEncoderProcess:
             os.set_blocking(self._process.stdout.fileno(), False)
             deadline = time.monotonic_ns() + int(startup_seconds * 10**9)
             ready = _json(self._read(deadline, None))
-            if ready != self.expected:
+            if set(ready) != set(self.expected) or any(
+                    ready[key] != val or type(ready[key]) is not type(val) for key, val in self.expected.items()):
                 raise WorkerTransportError("worker ready artifact/session mismatch")
         except BaseException:
             self.close()
             raise
+
+    @property
+    def expected(self) -> Mapping[str, Any]:
+        """Immutable artifact/session binding captured at launch."""
+        return self._expected
 
     def __enter__(self):
         return self
@@ -201,6 +234,7 @@ class FrozenEncoderProcess:
             "kind": kind, "invocation_sha256": invocation_sha256, "request": request})
         if len(raw) > MAX_FRAME:
             raise ValueError("request exceeds frame bound")
+        validate_request(request, check_deadline=False)
         deadline = time.monotonic_ns() + int(timeout_seconds * 10**9)
         if kind == "infer":
             request_deadline = request.get("deadline_monotonic_ns")

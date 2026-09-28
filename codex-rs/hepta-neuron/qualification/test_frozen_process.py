@@ -29,6 +29,8 @@ if mode=="startup_hang":
     time.sleep(10)
 if mode=="wrong_ready":
     ready["session_id"]="other"
+if mode=="numeric_ready":
+    ready["advisory_only"]=1;ready["external_effect"]=0
 emit(ready)
 if mode=="blocked_write":
     time.sleep(10)
@@ -187,6 +189,35 @@ class FrozenProcessTests(unittest.TestCase):
             child.exchange(self.request(), "a" * 64)
         child.close()
         self.assert_reaped(child)
+
+
+    def test_numeric_ready_cannot_impersonate_boolean_authority(self):
+        with self.assertRaisesRegex(WorkerTransportError, "ready"):
+            self.launch("numeric_ready")
+
+    def test_launch_binding_is_immutable_and_isolated_from_caller(self):
+        child = self.launch()
+        original = dict(child.expected)
+        self.ready["session_id"] = "caller.changed"
+        with self.assertRaises(TypeError):
+            child.expected["session_id"] = "attacker.changed"
+        with self.assertRaises(AttributeError):
+            child.expected = dict(self.ready)
+        self.assertEqual(dict(child.expected), original)
+        self.assertEqual(child.exchange(self.request(), "a" * 64, kind="lookup")["status"], "unknown")
+
+    def test_malformed_request_rejects_before_any_pipe_write(self):
+        child = self.launch()
+        for field, replacement in (("schema", "other"), ("request_id", "bad id"),
+                ("projection_sha256", "b" * 64), ("candidates", ["one"]),
+                ("deadline_monotonic_ns", True), ("unexpected", "field")):
+            value = self.request(); value[field] = replacement
+            with self.subTest(field=field), mock.patch.object(child, "_write") as send:
+                with self.assertRaises(ValueError):
+                    child.exchange(value, "a" * 64)
+                send.assert_not_called()
+            self.assertFalse(child._closed)
+        self.assertEqual(child.exchange(self.request(), "a" * 64, kind="lookup")["status"], "unknown")
 
 
 if __name__ == "__main__":
