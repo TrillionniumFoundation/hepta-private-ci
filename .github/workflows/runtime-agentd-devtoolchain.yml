@@ -1,40 +1,156 @@
-name: Agentd pinned development toolchain
+name: Agentd integration applicator
 
 on:
   pull_request:
     paths: ['.github/workflows/runtime-agentd-devtoolchain.yml']
-  workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
+
+concurrency:
+  group: runtime-agentd-integrate-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
 
 jobs:
-  toolchain:
+  integrate:
+    if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 90
+    env:
+      HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      HEAD_REF: ${{ github.event.pull_request.head.ref }}
+      SOURCE_BASE: c0c6e97f687bda7bfdbd1acdfd21e335e54ce36e
+      EVIDENCE_HEAD: 397c37a39faa4b8c2e3f88dd794bfbe0453cb76f
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - name: Checkout exact integration head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          persist-credentials: false
-      - name: Retain official repository-pinned tools without credentials
+          ref: ${{ env.HEAD_SHA }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Compose reviewed source and qualification closure
         shell: bash
         run: |
           set -euo pipefail
-          version=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
-          rustup toolchain install "$version" --profile minimal --component rustfmt --component clippy
-          tool=$(rustup which --toolchain "$version" rustc)
-          root=$(dirname "$(dirname "$tool")")
-          out="$RUNNER_TEMP/agentd-devtoolchain"
-          mkdir -p "$out"
-          tar -C "$root" -czf "$out/toolchain.tar.gz" bin lib
-          "$root/bin/rustc" -vV > "$out/compiler.txt"
-          "$root/bin/rustfmt" --version > "$out/formatter.txt"
-          git rev-parse HEAD > "$out/source-sha.txt"
-          (cd "$out" && sha256sum toolchain.tar.gz compiler.txt formatter.txt source-sha.txt > SHA256SUMS)
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+          test "$(git rev-parse HEAD)" = "$HEAD_SHA"
+          git merge-base --is-ancestor "$SOURCE_BASE" "$HEAD_SHA"
+          git fetch --no-tags origin "$EVIDENCE_HEAD"
+          git cat-file -e "$EVIDENCE_HEAD^{commit}"
+
+          git checkout "$EVIDENCE_HEAD" -- \
+            .github/workflows/runtime-agentd-main-baseline.yml \
+            .github/workflows/runtime-agentd-release-candidate.yml \
+            .github/workflows/runtime-agentd-required.yml \
+            .github/workflows/runtime-agentd-target-host.yml \
+            docs/modules/runtime.agentd/INDEPENDENT_SECURITY_REVIEW.md \
+            docs/modules/runtime.agentd/OPERATIONS_AND_QUALIFICATION.md \
+            docs/modules/runtime.agentd/QUALIFICATION_CONTRACT.json \
+            scripts/hepta_runtime_agentd_closure.py \
+            scripts/qualification/runtime_agentd_main_baseline.py \
+            scripts/qualification/runtime_agentd_target_host.py \
+            scripts/qualification/test_runtime_agentd_main_baseline.py \
+            scripts/qualification/test_runtime_agentd_target_host.py \
+            scripts/tests/test_hepta_runtime_agentd_closure.py
+
+          sha256sum .github/runtime-agentd-integration.patch
+          test "$(sha256sum .github/runtime-agentd-integration.patch | cut -d' ' -f1)" = \
+            3e207624ecaa426ce0908649a420f9755cb880e643d96f6d57ac2a90647c8c6c
+          git apply --index --whitespace=error-all .github/runtime-agentd-integration.patch
+
+          # Neither temporary applicator source survives in the resulting tree.
+          git checkout "$SOURCE_BASE" -- .github/workflows/runtime-agentd-devtoolchain.yml
+          git rm .github/runtime-agentd-integration.patch
+          git diff --check --cached
+
+      - name: Validate deterministic scripts and Cargo target plan
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B -m unittest discover -s scripts/qualification -p 'test_agentd_exact_head.py' -v
+          python3 -B -m unittest -v \
+            scripts.qualification.test_runtime_agentd_main_baseline \
+            scripts.qualification.test_runtime_agentd_target_host \
+            scripts.tests.test_hepta_runtime_agentd_closure
+          python3 -B -m py_compile \
+            scripts/hepta_runtime_agentd_closure.py \
+            scripts/qualification/agentd_exact_head.py \
+            scripts/qualification/runtime_agentd_main_baseline.py \
+            scripts/qualification/runtime_agentd_target_host.py
+          python3 - <<'PY'
+          import importlib.util, json, pathlib, subprocess
+          root = pathlib.Path.cwd()
+          spec = importlib.util.spec_from_file_location(
+              'agentd_exact_head', root / 'scripts/qualification/agentd_exact_head.py')
+          module = importlib.util.module_from_spec(spec)
+          assert spec.loader is not None
+          spec.loader.exec_module(module)
+          metadata = json.loads(subprocess.check_output([
+              'cargo', 'metadata', '--manifest-path', str(root / 'codex-rs/Cargo.toml'),
+              '--no-deps', '--format-version=1', '--offline'
+          ]))
+          packages = {package['name']: package for package in metadata['packages']}
+          for package in module.PACKAGES:
+              assert package in packages, package
+          for suite, commands in module.COMMANDS.items():
+              for command in commands:
+                  package = command[command.index('-p') + 1]
+                  assert package in packages, (suite, package)
+                  if '--test' in command:
+                      target = command[command.index('--test') + 1]
+                      targets = {
+                          item['name'] for item in packages[package]['targets']
+                          if 'test' in item['kind']
+                      }
+                      assert target in targets, (suite, package, target)
+          PY
+
+      - name: Compile and lint the exact Agentd candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          toolchain=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
+          rustup toolchain install "$toolchain" --profile minimal --component rustfmt --component clippy
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-agentd --package codex-hepta-infer-worker-host \
+            --package codex-hepta-fleet --package codex-hepta-supervisor -- --check
+          cargo check --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-agentd --all-targets --no-default-features
+          cargo clippy --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-agentd -p codex-hepta-infer-worker-host \
+            -p codex-hepta-fleet -p codex-hepta-supervisor \
+            --all-targets --no-deps -- -D warnings
+
+      - name: Create reviewed two-parent integration commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'runtime-agentd-integration-bot'
+          git config user.email 'runtime-agentd-integration-bot@users.noreply.github.com'
+          tree=$(git write-tree)
+          message=$RUNNER_TEMP/integration-message.txt
+          cat > "$message" <<'MSG'
+          runtime.agentd: integrate product closure and qualification gates
+
+          Preserve the newer typed bootstrap, durable Neuron handoff and nonblocking
+          runtime.codex supervisor while forward-porting exact source/merge gates,
+          target-host contracts, operations guidance and release provenance.
+
+          Repair the exact-head command plan, compile blockers and strict lint
+          failures without weakening no-redispatch, current-trust or terminal
+          observation invariants. Production activation and external acceptance
+          remain false.
+          MSG
+          commit=$(git commit-tree "$tree" -p "$HEAD_SHA" -p "$EVIDENCE_HEAD" < "$message")
+          git push origin "$commit:refs/heads/$HEAD_REF"
+          printf '%s\n' "$commit" | tee "$RUNNER_TEMP/runtime-agentd-integration-commit.txt"
+          echo "### Integrated runtime.agentd source" >> "$GITHUB_STEP_SUMMARY"
+          echo "\`$commit\`" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Retain integration commit identity
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: agentd-devtoolchain-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/agentd-devtoolchain
+          name: runtime-agentd-integration-commit-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/runtime-agentd-integration-commit.txt
           if-no-files-found: error
-          retention-days: 3
+          retention-days: 7
