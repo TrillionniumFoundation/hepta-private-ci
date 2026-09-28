@@ -304,7 +304,9 @@ fn semantic_reservation_identity_survives_all_terminal_states_and_reopen() {
         let path = JournalPath::new();
         let mut owner = DurableInferenceControl::open(&path.0, 32).expect("owner");
         let first = admission("identity.original");
-        let reserved = owner.reserve_semantic(100, first.clone(), 2).expect("reserve");
+        let reserved = owner
+            .reserve_semantic(100, first.clone(), 2)
+            .expect("reserve");
         match terminal {
             "cancel" => {
                 owner.cancel_semantic("identity.original").expect("cancel");
@@ -340,7 +342,10 @@ fn semantic_reservation_identity_survives_all_terminal_states_and_reopen() {
             owner.reserve_semantic(100, collision, 2),
             Err(Error::Conflict)
         ));
-        assert_eq!(fs::metadata(&path.0).expect("unchanged replay").len(), bytes);
+        assert_eq!(
+            fs::metadata(&path.0).expect("unchanged replay").len(),
+            bytes
+        );
         assert!(owner.reserve_semantic(10_000, first, 2).is_ok());
     }
 }
@@ -373,7 +378,9 @@ fn duplicate_reservation_in_a_replayed_event_rejects_owner_recovery() {
     let path = JournalPath::new();
     let mut owner = DurableInferenceControl::open(&path.0, 32).expect("owner");
     let first = admission("reserved.original");
-    owner.reserve_semantic(100, first.clone(), 1).expect("reserve");
+    owner
+        .reserve_semantic(100, first.clone(), 1)
+        .expect("reserve");
     owner.cancel_semantic("reserved.original").expect("cancel");
     drop(owner);
     let mut collision = admission("reserved.substitution");
