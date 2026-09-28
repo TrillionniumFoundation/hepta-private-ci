@@ -107,12 +107,13 @@
     },
     {
       "id": "CTYPE-CONSUMERS",
-      "obligation": "All five registered existing consumers compile and execute their package tests; this alone does not retire legacy paths.",
+      "obligation": "All five registered existing consumers accept only their exact canonical payload families, compile and execute their package tests; this alone does not retire legacy paths.",
       "source": [
         "codex-rs/hepta-cognitive-types/src/consumer.rs",
         "codex-rs/hepta-cognitive-types/src/consumer_adapters.rs"
       ],
       "tests": [
+        "codex-rs/hepta-cognitive-types/src/consumer_tests.rs",
         "codex-rs/hepta-cognitive-read/src/authoritative_tests.rs",
         "codex-rs/hepta-cognitive-store/src/v2_tests.rs",
         "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs",
