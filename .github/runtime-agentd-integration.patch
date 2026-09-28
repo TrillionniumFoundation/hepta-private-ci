@@ -1,0 +1,339 @@
+diff --git a/.github/workflows/blocking-ci.yml b/.github/workflows/blocking-ci.yml
+index d98b9bd..b713640 100644
+--- a/.github/workflows/blocking-ci.yml
++++ b/.github/workflows/blocking-ci.yml
+@@ -80,6 +80,28 @@ jobs:
+     uses: ./.github/workflows/hepta-agentd-exact-head.yml
+     secrets: inherit
+ 
++  runtime-agentd-source:
++    name: runtime.agentd exact source candidate
++    needs: scope
++    if: needs.scope.outputs.lifecycle == 'true' || needs.scope.outputs.inference == 'true'
++    uses: ./.github/workflows/runtime-agentd-required.yml
++    with:
++      lane: source-head
++      candidate_sha: ${{ github.event.pull_request.head.sha || github.sha }}
++      source_sha: ${{ github.event.pull_request.head.sha || github.sha }}
++      base_sha: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
++
++  runtime-agentd-merge:
++    name: runtime.agentd exact merge candidate
++    needs: scope
++    if: github.event_name == 'pull_request' && (needs.scope.outputs.lifecycle == 'true' || needs.scope.outputs.inference == 'true')
++    uses: ./.github/workflows/runtime-agentd-required.yml
++    with:
++      lane: base-merge
++      candidate_sha: ${{ github.sha }}
++      source_sha: ${{ github.event.pull_request.head.sha }}
++      base_sha: ${{ github.event.pull_request.base.sha }}
++
+   bazel:
+     name: Bazel
+     needs: scope
+@@ -225,6 +247,8 @@ jobs:
+       - scope
+       - hepta-contract-gate
+       - agentd-exact
++      - runtime-agentd-source
++      - runtime-agentd-merge
+       - bazel
+       - blob-size-policy
+       - cargo-deny
+@@ -244,6 +268,8 @@ jobs:
+         env:
+           NEEDS: ${{ toJSON(needs) }}
+           LIFECYCLE: ${{ needs.scope.outputs.lifecycle }}
++          INFERENCE: ${{ needs.scope.outputs.inference }}
++          EVENT_NAME: ${{ github.event_name }}
+           NATIVE: ${{ needs.scope.outputs.native }}
+           FULL_REPO: ${{ needs.scope.outputs.full_repo }}
+         shell: bash
+@@ -254,13 +280,20 @@ jobs:
+           import json
+           import os
+           lifecycle = os.environ["LIFECYCLE"] == "true"
++          inference = os.environ["INFERENCE"] == "true"
++          pull_request = os.environ["EVENT_NAME"] == "pull_request"
+           native = os.environ["NATIVE"] == "true"
+           full = os.environ["FULL_REPO"] == "true"
++          agentd = lifecycle or inference
+           allowed = []
+           if not (native or full):
+               allowed.append("hepta-contract-gate")
+           if not (lifecycle or full):
+               allowed.append("agentd-exact")
++          if not agentd:
++              allowed += ["runtime-agentd-source", "runtime-agentd-merge"]
++          elif not pull_request:
++              allowed.append("runtime-agentd-merge")
+           if not full:
+               allowed += ["bazel", "cargo-deny", "repo-checks", "rust-ci", "sdk"]
+           if not (native and not full):
+diff --git a/codex-rs/hepta-agentd/src/config.rs b/codex-rs/hepta-agentd/src/config.rs
+index f546ae1..67baa87 100644
+--- a/codex-rs/hepta-agentd/src/config.rs
++++ b/codex-rs/hepta-agentd/src/config.rs
+@@ -564,9 +564,10 @@ impl AgentdConfig {
+     }
+ 
+     /// Attach the host-owned provider that derives seven-owner inputs for the
+-    /// existing ObjectiveStart product ingress.  The provider is never
+-    /// constructed from request bytes.
+-    pub fn with_intelligence_invocation_provider(
++    /// existing ObjectiveStart product ingress. Request bytes cannot construct
++    /// this provider, and external callers cannot partially install it: the
++    /// public composition boundary is `AgentdCanonicalRuntimeBootstrapV1`.
++    pub(crate) fn with_intelligence_invocation_provider(
+         mut self,
+         provider: std::sync::Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>,
+     ) -> Result<Self, AgentdError> {
+diff --git a/codex-rs/hepta-agentd/src/intelligence_product_runner.rs b/codex-rs/hepta-agentd/src/intelligence_product_runner.rs
+index 65fc1e1..a177c3d 100644
+--- a/codex-rs/hepta-agentd/src/intelligence_product_runner.rs
++++ b/codex-rs/hepta-agentd/src/intelligence_product_runner.rs
+@@ -1,6 +1,7 @@
+ //! Bounded execution of the existing canonical owner composition.
+ 
+ use super::*;
++use crate::AgentdError;
+ 
+ impl AgentdIntelligenceProductRunnerV1 {
+     pub fn new(
+diff --git a/codex-rs/hepta-agentd/src/runtime_codex_executor.rs b/codex-rs/hepta-agentd/src/runtime_codex_executor.rs
+index bf64390..65b2d97 100644
+--- a/codex-rs/hepta-agentd/src/runtime_codex_executor.rs
++++ b/codex-rs/hepta-agentd/src/runtime_codex_executor.rs
+@@ -40,8 +40,6 @@ mod persistence;
+ mod process;
+ 
+ pub(crate) use process::RuntimeCodexInputProviderV1;
+-pub(crate) use process::RuntimeCodexScheduleReservationV1;
+-pub(crate) use process::RuntimeCodexSupervisorSnapshotV1;
+ 
+ const JOB_SCHEMA_VERSION: u32 = 1;
+ const MAX_EXECUTABLE_BYTES: u64 = 2 * 1024 * 1024 * 1024;
+@@ -517,7 +515,7 @@ impl ProcessRuntimeCodexExecutorV1 {
+             let run_id = manifest.run_id.clone();
+             let operation_lock = self.operation_lock_for(&run_id)?;
+             let guard = operation_lock.lock().await;
+-            let result = async {
++            let result: Result<(), AgentdError> = async {
+                 if persistence::read_receipt_if_present(&paths.receipt, &manifest)?.is_some() {
+                     report.already_terminal = report
+                         .already_terminal
+@@ -603,4 +601,4 @@ impl RuntimeCodexExecutorV1 for ProcessRuntimeCodexExecutorV1 {
+ 
+ #[cfg(test)]
+ #[path = "runtime_codex_executor_tests.rs"]
+-mod tests;
+\ No newline at end of file
++mod tests;
+diff --git a/codex-rs/hepta-agentd/src/runtime_codex_executor_persistence.rs b/codex-rs/hepta-agentd/src/runtime_codex_executor_persistence.rs
+index 1197a8d..ada8867 100644
+--- a/codex-rs/hepta-agentd/src/runtime_codex_executor_persistence.rs
++++ b/codex-rs/hepta-agentd/src/runtime_codex_executor_persistence.rs
+@@ -673,7 +673,7 @@ where
+     T: for<'de> Deserialize<'de>,
+ {
+     validate_read_path(path)?;
+-    let mut file = File::open(path)?;
++    let file = File::open(path)?;
+     let metadata = file.metadata()?;
+     let maximum_u64 = u64::try_from(maximum)
+         .map_err(|_| AgentdError::Protocol("JSON read bound overflow".to_string()))?;
+@@ -827,4 +827,4 @@ where
+ fn sync_directory(path: &Path) -> Result<(), AgentdError> {
+     File::open(path)?.sync_all()?;
+     Ok(())
+-}
+\ No newline at end of file
++}
+diff --git a/codex-rs/hepta-agentd/src/runtime_codex_executor_process_base.rs b/codex-rs/hepta-agentd/src/runtime_codex_executor_process_base.rs
+index dc65def..f67dde2 100644
+--- a/codex-rs/hepta-agentd/src/runtime_codex_executor_process_base.rs
++++ b/codex-rs/hepta-agentd/src/runtime_codex_executor_process_base.rs
+@@ -257,7 +257,7 @@ fn signal_interrupt(child: &mut Child) -> Result<(), AgentdError> {
+     child.start_kill().map_err(Into::into)
+ }
+ 
+-async fn read_bounded<R>(mut reader: R, maximum: usize) -> Result<Vec<u8>, AgentdError>
++async fn read_bounded<R>(reader: R, maximum: usize) -> Result<Vec<u8>, AgentdError>
+ where
+     R: AsyncRead + Unpin,
+ {
+@@ -285,4 +285,4 @@ fn parse_worker_output(bytes: &[u8]) -> Result<NativeRunOutput, AgentdError> {
+ 
+ fn bounded_text(value: &str, maximum_chars: usize) -> String {
+     value.chars().take(maximum_chars).collect()
+-}
+\ No newline at end of file
++}
+diff --git a/codex-rs/hepta-agentd/src/runtime_codex_supervisor.rs b/codex-rs/hepta-agentd/src/runtime_codex_supervisor.rs
+index f5a3d64..2f59b7c 100644
+--- a/codex-rs/hepta-agentd/src/runtime_codex_supervisor.rs
++++ b/codex-rs/hepta-agentd/src/runtime_codex_supervisor.rs
+@@ -201,10 +201,13 @@ impl RuntimeCodexScheduleReservationV1 {
+ }
+ 
+ impl ProcessRuntimeCodexExecutorV1 {
+-    /// Compatibility constructor for embeddings that exercise the executor
+-    /// outside Agentd product composition. This installation is intentionally
+-    /// invisible to daemon canonical readiness.
+-    pub fn install_agentd_supervisor<F>(
++    /// Crate-local compatibility constructor retained for existing Agentd
++    /// internals. External products cannot partially install a runtime.codex
++    /// owner; they must use `AgentdCanonicalRuntimeBootstrapV1`, which binds
++    /// runner, provider, Neuron owner, executor and final-use authority as one
++    /// validated composition. This installation remains invisible to daemon
++    /// canonical readiness.
++    pub(crate) fn install_agentd_supervisor<F>(
+         self: Arc<Self>,
+         queue_capacity: usize,
+         provider: F,
+@@ -229,9 +232,10 @@ impl ProcessRuntimeCodexExecutorV1 {
+         )
+     }
+ 
+-    /// Compatibility-only bounded installation. The ordinary daemon refuses to
+-    /// treat this surface as its canonical physical execution owner.
+-    pub fn install_agentd_supervisor_with_limits(
++    /// Compatibility-only bounded installation. Only Agentd internals may use
++    /// this seam; the ordinary daemon refuses to treat it as its canonical
++    /// physical execution owner.
++    pub(crate) fn install_agentd_supervisor_with_limits(
+         self: Arc<Self>,
+         queue_capacity: usize,
+         maximum_concurrent_jobs: usize,
+@@ -438,7 +442,8 @@ impl ProcessRuntimeCodexExecutorV1 {
+         publish_recovery_status(&installed, &initial);
+ 
+         let concurrency = Arc::new(Semaphore::new(installed.maximum_concurrent_jobs));
+-        let mut jobs = JoinSet::new();
++        let mut jobs: JoinSet<(String, Digest32, Result<(), AgentdError>)> =
++            JoinSet::new();
+         let maintenance_lifetime = lifetime.child_token();
+         let (recovery_reports, mut recovery_receiver) = mpsc::channel(1);
+         let mut maintenance = JoinSet::new();
+diff --git a/codex-rs/hepta-agentd/src/state.rs b/codex-rs/hepta-agentd/src/state.rs
+index a9b2e59..9b8a89a 100644
+--- a/codex-rs/hepta-agentd/src/state.rs
++++ b/codex-rs/hepta-agentd/src/state.rs
+@@ -661,10 +661,8 @@ impl AgentdState {
+             .build_invocation(Arc::clone(provider), self.identity.clone(), record.clone())
+             .await?;
+         let now_ms = self.require_current_run_start(record)?;
+-        let durable_snapshot =
+-            crate::RunSnapshot::from_revalidated_run_start(record).map_err(run_error)?;
+-        let remaining_ms = durable_snapshot
+-            .deadline_ms
++        let durable_deadline_ms = record.admission.deadline_unix_micros.div_ceil(1_000);
++        let remaining_ms = durable_deadline_ms
+             .min(record.authentication.expires_at_ms)
+             .checked_sub(now_ms)
+             .filter(|value| *value > 0)
+@@ -859,4 +857,4 @@ fn poisoned_state<T>(_error: std::sync::PoisonError<T>) -> AgentdError {
+ 
+ #[cfg(test)]
+ #[path = "state_isolation_tests.rs"]
+-mod isolation_tests;
+\ No newline at end of file
++mod isolation_tests;
+diff --git a/codex-rs/hepta-agentd/src/state_isolation_tests.rs b/codex-rs/hepta-agentd/src/state_isolation_tests.rs
+index bac0aed..c3c7c50 100644
+--- a/codex-rs/hepta-agentd/src/state_isolation_tests.rs
++++ b/codex-rs/hepta-agentd/src/state_isolation_tests.rs
+@@ -157,7 +157,7 @@ async fn configured_intelligence_runner_is_not_advertised_without_daemon_ingress
+ }
+ 
+ #[tokio::test]
+-async fn canonical_intelligence_is_advertised_only_with_runner_and_host_provider() {
++async fn configured_canonical_intelligence_is_hidden_until_physical_supervisor_is_ready() {
+     let (temp, _registry, state) = fixture().expect("runtime fixture");
+     let signer = ed25519_dalek::SigningKey::from_bytes(&[42; 32]);
+     let runner = crate::AgentdIntelligenceProductRunnerV1::new(
+@@ -175,6 +175,8 @@ async fn canonical_intelligence_is_advertised_only_with_runner_and_host_provider
+             .set(Arc::new(RejectingIntelligenceInvocationProvider))
+             .is_ok()
+     );
++    assert!(state.canonical_intelligence_configured());
++    assert!(!state.canonical_intelligence_enabled());
+     let response = state
+         .response(3, 1, crate::AgentdMethod::Capabilities)
+         .await
+@@ -182,10 +184,8 @@ async fn canonical_intelligence_is_advertised_only_with_runner_and_host_provider
+     let AgentdPayload::Capabilities(capabilities) = response.payload else {
+         panic!("capabilities payload");
+     };
+-    assert!(capabilities.capabilities.iter().any(|capability| {
++    assert!(!capabilities.capabilities.iter().any(|capability| {
+         capability.id == crate::AGENTD_CAPABILITY_CANONICAL_INTELLIGENCE_V1
+-            && capability.major == 1
+-            && capability.minor == 0
+     }));
+ }
+ 
+diff --git a/scripts/qualification/agentd_exact_head.py b/scripts/qualification/agentd_exact_head.py
+index 2127c43..1d072e5 100755
+--- a/scripts/qualification/agentd_exact_head.py
++++ b/scripts/qualification/agentd_exact_head.py
+@@ -24,24 +24,37 @@ SCHEMA = 1
+ OSES = ("ubuntu-latest", "macos-latest")
+ SUITES = ("owner-libraries", "native-library", "native-process", "daemon-process",
+           "product-process", "strict-clippy", "read-only-profile")
+-PACKAGES = ("codex-cli", "codex-hepta-heptad", "codex-hepta-agentd",
+-            "codex-hepta-fleet-supervisor", "codex-hepta-infer-worker-host")
++PACKAGES = ("codex-app-server", "codex-hepta-agentd", "codex-hepta-fleet",
++            "codex-hepta-supervisor", "codex-hepta-infer-worker-host")
+ COMMANDS = {
+     "owner-libraries": [["test", "-p", "codex-hepta-agentd", "--lib"],
+-                        ["test", "-p", "codex-hepta-fleet-supervisor", "--lib"]],
++                        ["test", "-p", "codex-hepta-fleet", "--lib"],
++                        ["test", "-p", "codex-hepta-supervisor", "--lib"]],
+     "native-library": [["test", "-p", "codex-hepta-infer-worker-host", "--lib"]],
+-    "native-process": [["test", "-p", "codex-hepta-infer-worker-host", "--test", "native_host_process_e2e"]],
+-    "daemon-process": [["test", "-p", "codex-hepta-agentd", "--test", "daemon_process_e2e"]],
+-    "product-process": [["test", "-p", "codex-hepta-agentd", "--test", "runtime_codex_product_e2e"]],
+-    "strict-clippy": [["clippy", "-p", "codex-hepta-agentd", "-p", "codex-hepta-fleet-supervisor",
+-                       "-p", "codex-hepta-infer-worker-host", "--all-targets", "--", "-D", "warnings"]],
++    "native-process": [["test", "-p", "codex-hepta-agentd",
++                        "--test", "runtime_codex_product_e2e"]],
++    "daemon-process": [["test", "-p", "codex-hepta-agentd",
++                        "--test", "optional_module_restart",
++                        "--test", "runtime_shutdown_outcomes",
++                        "--test", "supervised_two_agents"]],
++    "product-process": [["test", "-p", "codex-hepta-agentd",
++                         "--test", "queue_capacity_product",
++                         "--test", "two_agent_turn_recovery",
++                         "--test", "supervisord_product_e2e"]],
++    "strict-clippy": [["clippy", "-p", "codex-hepta-agentd",
++                       "-p", "codex-hepta-fleet",
++                       "-p", "codex-hepta-supervisor",
++                       "-p", "codex-hepta-infer-worker-host",
++                       "--all-targets", "--", "-D", "warnings"]],
+     "read-only-profile": [["test", "-p", "codex-hepta-agentd", "--no-default-features", "--lib"]],
+ }
+ ALIASES = {
+-    "CODEX": ("codex",),
+-    "HEPTAD": ("hepta-heptad", "codex-hepta-heptad"),
++    "CODEX": ("codex-app-server",),
++    # Preserve the established receipt role while binding it to the real
++    # supervisor executable instead of the removed heptad package.
++    "HEPTAD": ("hepta-supervisord",),
+     "AGENTD": ("hepta-agentd", "codex-hepta-agentd"),
+-    "FLEET": ("hepta-fleet", "codex-hepta-fleet"),
++    "FLEET": ("hepta-fleet", "codex-hepta-fleet", "hepta-fleet-leased"),
+     "INFER_WORKER": ("hepta-infer-worker",),
+ }
+ 
+@@ -137,6 +150,10 @@ def fixture_environment(log: Path, env: dict[str, str]) -> dict[str, dict[str, A
+         env[f"{role}_EXE_PATH"] = str(path)
+         for name in names:
+             env[f"CARGO_BIN_EXE_{name}"] = str(path)
++        if role == "CODEX":
++            # Native App Server tests consume the exact built server through
++            # this established fixture name. Never substitute the CLI binary.
++            env["HEPTA_TEST_CODEX_EXE"] = str(path)
+         result[role] = {"path": str(path), "sha256": sha256(path), "size": path.stat().st_size}
+     return result
+ 
