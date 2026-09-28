@@ -40,19 +40,19 @@ jobs:
           printf '%s\n' 'Runtime repairs are already committed. This lane does not execute a source-repair generator.' > "$out/source-boundary.txt"
           python3 -m venv "$RUNNER_TEMP/kernel-evidence-format-env"
           "$RUNNER_TEMP/kernel-evidence-format-env/bin/pip" install 'black==23.11.0' > "$out/black-install.log" 2>&1
-          "$RUNNER_TEMP/kernel-evidence-format-env/bin/python" -m black scripts/kernel_evidence_integration_sync.py scripts/kernel_evidence_compile_repair_20260928.py scripts/tests/test_kernel_evidence_publication_epoch_sql.py > "$out/python-format.log" 2>&1
+          "$RUNNER_TEMP/kernel-evidence-format-env/bin/python" -m black scripts/kernel_evidence_integration_sync.py scripts/kernel_evidence_compile_repair_20260928.py scripts/tests/test_kernel_evidence_publication_epoch_sql.py scripts/tests/test_kernel_evidence_integration_sync.py > "$out/python-format.log" 2>&1
           (cd codex-rs && cargo fmt -p codex-hepta-evidence -p codex-hepta-agentd -p codex-hepta-agent-protocol -p codex-state) > "$out/rust-format.log" 2>&1
           python3 - <<'PY'
           import subprocess
           allowed = ('codex-rs/hepta-evidence/', 'codex-rs/hepta-agentd/', 'codex-rs/hepta-agent-protocol/', 'codex-rs/state/')
-          scripts = {'scripts/kernel_evidence_integration_sync.py', 'scripts/kernel_evidence_compile_repair_20260928.py', 'scripts/tests/test_kernel_evidence_publication_epoch_sql.py'}
+          scripts = {'scripts/kernel_evidence_integration_sync.py', 'scripts/kernel_evidence_compile_repair_20260928.py', 'scripts/tests/test_kernel_evidence_publication_epoch_sql.py', 'scripts/tests/test_kernel_evidence_integration_sync.py'}
           for path in subprocess.check_output(['git','diff','--name-only'], text=True).splitlines():
               if path not in scripts and not path.startswith(allowed):
                   raise SystemExit(f'out-of-scope source mutation: {path}')
           PY
           git diff --check
           git diff --binary > "$out/reviewed-source.patch"
-          git add -- codex-rs/hepta-evidence codex-rs/hepta-agentd codex-rs/hepta-agent-protocol codex-rs/state scripts/kernel_evidence_integration_sync.py scripts/kernel_evidence_compile_repair_20260928.py scripts/tests/test_kernel_evidence_publication_epoch_sql.py
+          git add -- codex-rs/hepta-evidence codex-rs/hepta-agentd codex-rs/hepta-agent-protocol codex-rs/state scripts/kernel_evidence_integration_sync.py scripts/kernel_evidence_compile_repair_20260928.py scripts/tests/test_kernel_evidence_publication_epoch_sql.py scripts/tests/test_kernel_evidence_integration_sync.py
           if ! git diff --cached --quiet; then
             git commit -s -m 'style(kernel.evidence): format directly delivered publication sources [kernel-evidence-closure] [kernel-evidence-status-sync]'
           fi
@@ -116,7 +116,7 @@ jobs:
           tempfile = "=3.27.0"
           TOML
           printf '%s\n' '#[path = "evidence_publication_process_lock.rs"]' 'mod publication_process_lock;' > "$probe/src/lib.rs"
-          sha256sum codex-rs/hepta-agentd/src/evidence_publication_process_lock*.rs codex-rs/hepta-evidence/src/identity_assignment.rs scripts/tests/test_kernel_evidence_publication_epoch_sql.py > "$out/probe-source-sha256.txt"
+          sha256sum codex-rs/hepta-agentd/src/evidence_publication_process_lock*.rs codex-rs/hepta-evidence/src/identity_assignment.rs scripts/tests/test_kernel_evidence_publication_epoch_sql.py scripts/kernel_evidence_integration_sync.py scripts/tests/test_kernel_evidence_integration_sync.py > "$out/probe-source-sha256.txt"
           failures=0
           run_check() {
             local name="$1"; shift
@@ -136,6 +136,7 @@ jobs:
             run_check identity-tests "$out/identity-tests" --nocapture
           fi
           run_check publication-epoch-sql python3 -m unittest discover -s scripts/tests -p test_kernel_evidence_publication_epoch_sql.py -v
+          run_check inventory-map-tests python3 -m unittest discover -s scripts/tests -p test_kernel_evidence_integration_sync.py -v
           run_check native-lock-tests cargo test --manifest-path "$probe/Cargo.toml" -- --nocapture
           if [ -f "$probe/Cargo.lock" ]; then cp "$probe/Cargo.lock" "$out/lock-probe-Cargo.lock"; fi
           test -z "$(git status --porcelain)"

@@ -159,7 +159,21 @@ def replace_block(path: Path, body: str) -> None:
 
 def source_inventory(anchor: str) -> list[str]:
     paths = git("ls-tree", "-r", "--name-only", anchor).splitlines()
-    exact = {
+    # These files select the live mode and dispatch the product requests. A
+    # complete evidence leaf implementation cannot compensate for omitting them.
+    required_product_paths = {
+        "codex-rs/hepta-agentd/src/client.rs",
+        "codex-rs/hepta-agentd/src/config.rs",
+        "codex-rs/hepta-agentd/src/runtime.rs",
+        "codex-rs/hepta-agentd/src/evidence_host.rs",
+        "codex-rs/hepta-agentd/src/evidence_production.rs",
+        "codex-rs/hepta-agentd/src/evidence_production_checks.rs",
+        "codex-rs/hepta-agent-protocol/src/evidence.rs",
+    }
+    missing = required_product_paths - set(paths)
+    if missing:
+        raise ValueError(f"source anchor lacks product admission paths: {sorted(missing)}")
+    exact = required_product_paths | {
         ".github/workflows/blocking-ci.yml",
         "codex-rs/Cargo.toml",
         "codex-rs/Cargo.lock",
@@ -168,7 +182,7 @@ def source_inventory(anchor: str) -> list[str]:
         "codex-rs/hepta-agentd/src/main.rs",
         "codex-rs/hepta-agentd/build.rs",
         "codex-rs/hepta-agent-protocol/Cargo.toml",
-        "codex-rs/hepta-agent-protocol/src/evidence.rs",
+        "codex-rs/state/Cargo.toml",
         "codex-rs/state/src/lib.rs",
         "codex-rs/state/src/sqlite.rs",
         "codex-rs/state/src/sqlite_evidence_runtime.rs",
@@ -178,11 +192,13 @@ def source_inventory(anchor: str) -> list[str]:
         if (
             path in exact
             or path.startswith("codex-rs/hepta-evidence/")
+            or path.startswith("codex-rs/hepta-agent-protocol/src/")
             or path.startswith("codex-rs/hepta-agentd/src/evidence_")
             or path.startswith("codex-rs/hepta-agentd/tests/kernel_evidence_")
             or path.startswith("scripts/kernel_evidence_")
             or path.startswith("scripts/build_kernel_evidence_")
             or path.startswith("scripts/tests/test_kernel_evidence_")
+            or path.startswith(".github/actions/setup-ci/")
             or path.startswith(".github/workflows/hepta-kernel-evidence-")
             or path.startswith(".github/workflows/kernel-evidence-")
         ):
@@ -230,6 +246,22 @@ def sync_metadata(anchor: str) -> None:
 def bind_map(anchor: str) -> None:
     identity = anchored_commit(anchor)
     mapping = json.loads(MAP.read_text(encoding="utf-8"))
+    parent_path = "codex-rs/hepta-agentd/src/evidence_production.rs"
+    checks_path = "codex-rs/hepta-agentd/src/evidence_production_checks.rs"
+    marker = "kernel.evidence recovery_required"
+    if 'include!("evidence_production_checks.rs");' not in git("show", f"{anchor}:{parent_path}"):
+        raise ValueError("production verifier no longer includes its recovery checks")
+    if marker not in git("show", f"{anchor}:{checks_path}"):
+        raise ValueError("production recovery checks lost their fail-closed error boundary")
+    bindings = [
+        entry for entry in mapping["productionWriterBindings"]
+        if entry.get("mustContain") == marker
+    ]
+    if len(bindings) != 1 or bindings[0]["sourcePath"] not in (parent_path, checks_path):
+        raise ValueError("ambiguous production recovery writer binding")
+    # Keep the verifier itself as a product caller, but bind the error oracle
+    # to its actual included source. Do not invent a marker in the caller.
+    bindings[0]["sourcePath"] = checks_path
     mapping["sourceBase"] = identity
     mapping["productionImplementation"] = False
     for key in (
