@@ -7,6 +7,7 @@ Run one `AuthBusAuthorityHost` per authority database on a qualified Unix host. 
 The production topology has four named roles:
 
 - **authority owner:** owns `AuthBusAuthorityHost`, its crate-private store, owner fence, serialization gate and checkpoint publication;
+- **Evidence owner:** owns durable signed ingress, replay state, outbox leases and delivery diagnostics;
 - **trusted-time verifier:** verifies signed monotonic time attestations before maintenance or time-dependent mutation;
 - **settlement signer:** HSM/KMS-backed signer enrolled only for `Settlement` purpose;
 - **observer/exporter:** exports bounded snapshots and cumulative runtime counters without write capability.
@@ -21,9 +22,9 @@ The production topology has four named roles:
 6. Verify SQLite integrity, migrations, live schema and checkpoint generation/digest.
 7. Run one bounded restart-reconciliation and expiration-maintenance batch.
 8. Keep authority use fail-closed while checkpoint reconciliation or durable `recovery_required` remains outstanding.
-9. Export the operational snapshot and evaluate blocking reasons before declaring ready.
+9. Export the authority and Evidence outbox snapshots before declaring ready.
 
-Readiness requires: owner fence held, checkpoint clean, `recovery_required=false`, zero expired active holds, current trusted-time source, and no critical AuthBus alert.
+Readiness requires: owner fence held, checkpoint clean, `recovery_required=false`, zero expired active holds, current trusted-time source, no critical AuthBus alert and no exhausted active Evidence delivery.
 
 ## Mutation outcome handling
 
@@ -41,11 +42,13 @@ Issuer enrollment, rotation, revocation and retirement use the same contract. Ho
 
 ## Authority worker
 
-The named authority worker is the only periodic maintenance path. Every tick receives a freshly verified `TrustedTimeSample`, performs bounded restart reconciliation, bounded expired-reservation sweep, checkpoint publication, operational snapshot generation and SLO evaluation. Batch size is `1..=1024`; missed ticks are skipped rather than accumulated. A worker or observer error is a readiness failure and pages the authority owner.
+The named authority worker is the only periodic authority-maintenance path. Every tick receives a freshly verified `TrustedTimeSample`, performs bounded restart reconciliation, bounded expired-reservation sweep, checkpoint publication, operational snapshot generation and SLO evaluation. Batch size is `1..=1024`; missed ticks are skipped rather than accumulated. A worker or observer error is a readiness failure and pages the authority owner.
 
 The worker holds `Arc<AuthBusAuthorityHost>`. Stopping the service must drop all workers before expecting the owner fence to release.
 
 ## Actionable diagnostics
+
+### Authority owner
 
 Export every `AuthBusOperationalSnapshot`. Use `blocking_reasons()` as the operator-facing explanation of why work is stopped:
 
@@ -68,9 +71,21 @@ Export cumulative runtime counters as rates/deltas:
 
 Export complete-operation mutation and maintenance latency (`count`, `p50`, `p95`, `p99`, `max`). Mutation timing begins at public host request entry and includes gate wait, checkpoint preflight, SQLite work and checkpoint publication. Do not compare these numbers with older measurements that timed only a local transaction.
 
-Use only bounded, non-secret labels such as result class, issuer purpose, reservation state and operation class. Never label metrics with principal, policy, message, reservation, operation or secret identifiers.
+### Evidence outbox owner
 
-Evidence outbox claim retry and Agentd/Bao acknowledgement latency are emitted by those owning components. Correlate their bounded operation classes in the service dashboard; do not synthesize downstream observations inside AuthBus.
+Scrape `HeptaEvidenceStore::authbus_outbox_operational_snapshot()` from the Evidence owner. The read-only query is bounded by the hard outbox row cap and reports:
+
+- queued, leased, acknowledged, expired and quarantined rows;
+- total active depth and the oldest unsettled delivery age;
+- retained claim attempts and retained retries;
+- active rows at the maximum attempt count;
+- retained enqueue-to-ack latency (`count`, `p50`, `p95`, `p99`, `max`).
+
+The claim and acknowledgement values describe the currently retained outbox window. Terminal pruning can decrease them, so exporters must not treat them as monotonic lifetime counters. The snapshot does not claim, renew, acknowledge or mutate replay state. A snapshot error is an Evidence health failure; do not replace it with zeros.
+
+Use the combined authority/outbox dashboard to answer distinct questions: checkpoint and recovery fields explain why authority is blocked; active depth and oldest unsettled age explain delivery backlog; retained retries identify repeated ownership attempts; acknowledgement latency measures enqueue-to-terminal-ack time. Bao/provider request duration remains owned by the Bao adapter and HTTP client and must be joined by bounded operation class rather than fabricated in AuthBus.
+
+Use only bounded, non-secret labels such as result class, issuer purpose, reservation state and operation class. Never label metrics with principal, policy, message, reservation, operation or secret identifiers.
 
 ## Routine procedures
 
@@ -87,13 +102,22 @@ Follow `KEY_ROTATION.md`. Enroll one explicit purpose. Do not enable the signer 
 5. Require a clean snapshot and query the stable identity of the operation that returned an ambiguous result.
 6. Resume only after blocking reasons are empty and the observer has exported the recovered state.
 
+### Drain an outbox backlog
+
+1. Capture the Evidence snapshot before changing worker concurrency or lease duration.
+2. Separate queued backlog from long-held leases and exhausted-attempt rows.
+3. Verify issuer validity and downstream health before increasing claim concurrency.
+4. Reconcile prior delivery attempts before retrying rows whose retained attempt count exceeds one.
+5. Increase bounded worker throughput gradually; never bypass lease fencing or acknowledgement identity.
+6. Confirm active depth, oldest unsettled age and acknowledgement latency return below objectives.
+
 ### Compact terminal reservations
 
 Compact only `Settled`, `Released`, `Expired` or `Cancelled` rows older than the approved retention window. Keep operation identity and terminal evidence digest in the archive. Run bounded batches and require successful checkpoint publication after each batch.
 
 ### Backup
 
-Take a consistent SQLite backup and capture the current external checkpoint separately. Label both with authority store identity, source SHA, schema digest, checkpoint generation and timestamp. A backup without its matching witness is not restorable.
+Take a consistent SQLite backup and capture the current external checkpoint separately. Label both with authority store identity, source SHA, schema digest, checkpoint generation and timestamp. A backup without its matching witness is not restorable. Back up Evidence replay/outbox state with its independent replay witness as a separate recovery set.
 
 ## Incident classes
 
@@ -102,13 +126,16 @@ Take a consistent SQLite backup and capture the current external checkpoint sepa
 - **Checkpoint reconciliation required:** preserve both state domains and follow the reconciliation procedure above.
 - **Mutation outcome unknown:** freeze blind retry and resolve by stable identity before any compensating action.
 - **Expired-active growth:** verify worker health and trusted time; increase tick frequency, not unbounded batch size.
+- **Outbox oldest-age growth:** determine whether rows are queued, leased or repeatedly retried; repair the owning delivery worker or downstream service without weakening lease fences.
+- **Exhausted active delivery:** stop automatic retry for the affected operation class and reconcile prior attempts before any new claim.
+- **Acknowledgement latency spike:** correlate Evidence enqueue-to-ack time with Agentd worker and Bao/provider latency; do not attribute the entire interval to AuthBus.
 - **Indeterminate reservation:** do not refund automatically. Reconcile with authenticated terminal provider evidence.
 - **Issuer verification spike:** revoke the affected epoch if compromise is suspected and preserve rejected digest evidence.
 - **Schema/integrity failure:** isolate the store; never auto-recreate or migrate around a failed check.
 
 ## Shutdown
 
-Stop new admission, fence in-flight owner calls, stop and drop all authority workers, run one final bounded maintenance tick when safe, require a clean checkpoint, close the SQLite pool and then release the owner fence. Forced termination releases the OS lock; restart reconciliation preserves ambiguous external effects as indeterminate.
+Stop new admission, fence in-flight owner calls, stop and drop all authority workers, drain or explicitly preserve Evidence leases, run one final bounded maintenance tick when safe, require a clean checkpoint, close the SQLite pools and then release the owner fence. Forced termination releases the OS lock; restart reconciliation preserves ambiguous external effects as indeterminate.
 
 ## Evidence binding
 
