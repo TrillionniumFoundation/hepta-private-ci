@@ -230,7 +230,7 @@ impl OrganHostV1 {
                         mark_delivered_prefix(&mut targets, *delivered);
                         if let Some(target) = targets
                             .iter_mut()
-                            .find(|target| target.target == *organ)
+                            .find(|target| &target.target == organ)
                         {
                             target.disposition = OrganTargetDeliveryDispositionV1::Failed;
                         }
@@ -268,12 +268,18 @@ fn route_map(
 ) -> BTreeMap<(StableId, usize), Vec<(StableId, usize)>> {
     let mut routes: BTreeMap<_, Vec<_>> = BTreeMap::new();
     for link in &graph.runtime {
-        let source = graph.organs[link.output.organ].id.clone();
-        let target = graph.organs[link.input.organ].id.clone();
+        let (Some(source), Some(target)) = (
+            graph.organs.get(link.output.organ),
+            graph.organs.get(link.input.organ),
+        ) else {
+            // The canonical core returns the typed graph-validation error. This
+            // projection must not panic before that validator runs.
+            continue;
+        };
         routes
-            .entry((source, link.output.port))
+            .entry((source.id.clone(), link.output.port))
             .or_default()
-            .push((target, link.input.port));
+            .push((target.id.clone(), link.input.port));
     }
     routes
 }
