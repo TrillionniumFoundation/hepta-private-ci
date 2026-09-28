@@ -76,3 +76,10 @@ exports_files(
     ],
     visibility = ["//codex-rs/hepta-contracts:__pkg__"],
 )
+
+# Exact historical migrations used by normal Agentd product-entry upgrade tests.
+filegroup(
+    name = "migration_test_inputs",
+    srcs = glob(["migrations/**"]),
+    visibility = ["//codex-rs/hepta-agentd:__pkg__"],
+)

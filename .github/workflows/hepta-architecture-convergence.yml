@@ -286,6 +286,8 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-image.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd runtime_executable
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/operation-timer-fence.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-automation --test operation_timer_fence
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/optional-process-restart.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --test optional_module_restart forty_first_service -- --nocapture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/automation-factory.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E 'test(automation::service_tests)' --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/automation-product-evolution.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --test cognitive_product_e2e -E 'test(normal_product_migrates_restarts_hands_off_and_keeps_retired_automation_absent)' --test-threads=1 --success-output immediate
       - name: Derived-view drift
         if: steps.scope.outputs.derived == 'true'
         run: |

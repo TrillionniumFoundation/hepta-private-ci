@@ -66,6 +66,9 @@ use wiremock::matchers::path;
 
 mod support;
 
+#[path = "support/automation_evolution.rs"]
+mod automation_evolution;
+
 use support::fleet::AgentFixture;
 use support::fleet::FleetHarness;
 use support::fleet::connect_app_server;
