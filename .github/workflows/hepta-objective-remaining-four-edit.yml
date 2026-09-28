@@ -36,6 +36,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          out="$RUNNER_TEMP/objective-remaining-four-development"
+          mkdir -p "$out"
+          exec > >(tee "$out/edit.log") 2>&1
+          set -x
           python3 .github/maintenance/objective_profile_reuse_edit.py
           python3 .github/maintenance/objective_measurement_edit.py
           python3 .github/maintenance/objective_evidence_edit.py
