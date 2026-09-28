@@ -1,0 +1,130 @@
+use std::fmt::Debug;
+
+use codex_hepta_types::Digest32;
+use codex_hepta_types::FixedQ32;
+use codex_hepta_types::Generation;
+use codex_hepta_types::Revision;
+use codex_hepta_types::StableId;
+
+use super::collect_snapshot;
+use super::prepare_plan;
+use crate::planner::OwnerReadinessV1;
+use crate::planner::OwnerSummaryV1;
+use crate::planner::PlanCandidateV1;
+use crate::planner::PlannerAxisValueV1;
+use crate::planner::PlannerError;
+use crate::planner::PlanningRequestV1;
+use crate::planner::ResourceReservationV1;
+use crate::planner::SnapshotRequestV1;
+
+fn must<T, E: Debug>(result: Result<T, E>) -> T {
+    match result {
+        Ok(value) => value,
+        Err(error) => panic!("unexpected error: {error:?}"),
+    }
+}
+
+fn must_err<T: Debug, E>(result: Result<T, E>) -> E {
+    match result {
+        Err(error) => error,
+        Ok(value) => panic!("expected error, received value: {value:?}"),
+    }
+}
+
+fn id(value: &str) -> StableId {
+    must(StableId::new(value))
+}
+
+fn digest(value: &str) -> Digest32 {
+    Digest32::of_bytes(value.as_bytes())
+}
+
+fn q32(value: i64) -> FixedQ32 {
+    FixedQ32::from_raw(value << 32)
+}
+
+fn snapshot_request() -> SnapshotRequestV1 {
+    SnapshotRequestV1 {
+        objective_digest: digest("objective"),
+        body_generation: must(Generation::new(7)),
+        configuration_digest: digest("configuration"),
+        revocation_frontier_digest: digest("revocations"),
+        snapshot_policy_digest: digest("snapshot-policy"),
+        collected_at_micros: 1_000,
+        maximum_owner_age_micros: 100,
+        expires_at_micros: 2_000,
+        required_owner_ids: vec![id("planner")],
+    }
+}
+
+fn summary(owner: &str) -> OwnerSummaryV1 {
+    OwnerSummaryV1 {
+        owner_id: id(owner),
+        revision: must(Revision::new(3)),
+        objective_digest: digest("objective"),
+        body_generation: must(Generation::new(7)),
+        configuration_digest: digest("configuration"),
+        observed_at_micros: 950,
+        expires_at_micros: 1_800,
+        readiness: OwnerReadinessV1::Ready,
+        source_frontier_digest: digest("frontier"),
+        support_digest: digest("support"),
+    }
+}
+
+fn candidate(name: &str, payloads: Vec<Digest32>) -> PlanCandidateV1 {
+    PlanCandidateV1 {
+        candidate_id: id(name),
+        operation_id: id(&format!("operation-{name}")),
+        plan_digest: digest(&format!("plan:{name}")),
+        required_owner_ids: vec![id("planner")],
+        final_payload_digests: payloads,
+        resource_costs: vec![PlannerAxisValueV1 {
+            axis: id("compute"),
+            value: q32(i64::from(name != "abstain")),
+        }],
+    }
+}
+
+#[test]
+fn supplied_owner_must_belong_to_the_exact_required_set() {
+    let error = must_err(collect_snapshot(
+        snapshot_request(),
+        vec![summary("planner"), summary("injected-owner")],
+    ));
+    assert!(matches!(
+        error,
+        PlannerError::DuplicateOwner(message) if message.contains("unexpected owner")
+    ));
+}
+
+#[test]
+fn duplicate_final_payload_is_rejected_instead_of_repaired() {
+    let snapshot = must(collect_snapshot(
+        snapshot_request(),
+        vec![summary("planner")],
+    ));
+    let repeated = digest("payload:work");
+    let request = PlanningRequestV1 {
+        plan_id: id("plan-run-1"),
+        now_micros: 1_000,
+        deadline_micros: 1_900,
+        evaluation_policy_digest: digest("policy"),
+        resource_profile_digest: digest("resource-profile"),
+        candidates: vec![
+            candidate("abstain", Vec::new()),
+            candidate("work", vec![repeated, repeated]),
+        ],
+        resource_reservations: vec![ResourceReservationV1 {
+            axis: id("compute"),
+            endowment: q32(10),
+            essential_floor: FixedQ32::ZERO,
+        }],
+    };
+
+    let error = must_err(prepare_plan(&snapshot, request));
+    assert!(matches!(
+        error,
+        PlannerError::DuplicateCandidate(message) if message.contains("repeats a final payload")
+    ));
+}
