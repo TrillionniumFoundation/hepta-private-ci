@@ -44,7 +44,9 @@ mod tests {
     }
 
     async fn assert_rejected(store: &HeptaEvidenceStore, statement: &str) {
-        let result = sqlx::query(statement).execute(&store.pool).await;
+        let result = sqlx::query(sqlx::AssertSqlSafe(statement))
+            .execute(&store.pool)
+            .await;
         assert!(
             result.is_err(),
             "restricted evidence runtime unexpectedly accepted: {statement}"
@@ -123,11 +125,12 @@ mod tests {
             .await
             .expect("read current page count");
         let requested_limit = page_count.checked_add(1).expect("page-count headroom");
-        let configured_limit: i64 =
-            sqlx::query_scalar(&format!("PRAGMA max_page_count = {requested_limit}"))
-                .fetch_one(&store.pool)
-                .await
-                .expect("install disk-full injection ceiling");
+        let configured_limit: i64 = sqlx::query_scalar(sqlx::AssertSqlSafe(format!(
+            "PRAGMA max_page_count = {requested_limit}"
+        )))
+        .fetch_one(&store.pool)
+        .await
+        .expect("install disk-full injection ceiling");
         assert_eq!(configured_limit, requested_limit);
 
         let mut transaction = store.pool.begin().await.expect("begin injected write");
