@@ -26,6 +26,9 @@ use super::owner_observation;
 use super::resource_sample;
 use super::responses;
 use super::stop_process;
+use codex_app_server_protocol::ClientRequest;
+use codex_app_server_protocol::ThreadReadParams;
+use codex_app_server_protocol::ThreadReadResponse;
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn normal_product_bounded_evolution_under_concurrent_load() -> Result<()> {
@@ -75,7 +78,9 @@ async fn normal_product_bounded_evolution_under_concurrent_load() -> Result<()> 
     let mut restart_latencies = Vec::new();
     let mut samples = Vec::new();
     let mut terminal_identities = Vec::new();
+    let mut verified_history_reads = 0_usize;
     for round in 0..rounds {
+        let round_started = Instant::now();
         stage = format!("round {round}: thread creation");
         eprintln!("product evolution stage: {stage}");
         let mut product = ProductClient::connect(&agent, &control).await?;
@@ -167,24 +172,60 @@ async fn normal_product_bounded_evolution_under_concurrent_load() -> Result<()> 
         health = fresh_health;
         stage = format!("round {round}: recovered terminal history");
         eprintln!("product evolution stage: {stage}");
+        let history_started = Instant::now();
         let mut recovered = ProductClient::connect(&agent, &control).await?;
-        for (thread, terminal_id) in &terminal_identities {
-            let snapshot = recovered.read_thread(thread).await?;
-            ensure!(snapshot.thread.turns.len() == 1
-                && snapshot.thread.turns[0].id == *terminal_id
-                && snapshot.thread.turns[0].status == codex_app_server_protocol::TurnStatus::Completed,
-                "restart changed committed terminal history");
+        // Check EVERY prior terminal after EVERY restart. Bound observation
+        // concurrency to the existing four-request workload instead of making
+        // the harness impose an unbounded fan-out or a serial RPC bottleneck.
+        let history = terminal_identities.chunks_exact(WIDTH);
+        ensure!(history.remainder().is_empty(), "partial terminal wave");
+        for group in history {
+            let requests: [ClientRequest; WIDTH] = std::array::from_fn(|slot| {
+                ClientRequest::ThreadRead {
+                    request_id: recovered.request_id(),
+                    params: ThreadReadParams {
+                        thread_id: group[slot].0.clone(),
+                        include_turns: true,
+                    },
+                }
+            });
+            let [a, b, c, d] = requests;
+            let reader = recovered.inner.request_handle();
+            let (a, b, c, d) = tokio::try_join!(
+                reader.request_typed::<ThreadReadResponse>(a),
+                reader.request_typed::<ThreadReadResponse>(b),
+                reader.request_typed::<ThreadReadResponse>(c),
+                reader.request_typed::<ThreadReadResponse>(d),
+            )?;
+            for ((thread, terminal_id), snapshot) in group.iter().zip([a, b, c, d]) {
+                ensure!(snapshot.thread.id == *thread
+                    && snapshot.thread.turns.len() == 1
+                    && snapshot.thread.turns[0].id == *terminal_id
+                    && snapshot.thread.turns[0].status == codex_app_server_protocol::TurnStatus::Completed,
+                    "restart changed committed terminal history");
+                verified_history_reads += 1;
+            }
         }
         recovered.shutdown().await?;
+        let history_verify_us = history_started.elapsed().as_micros();
         let (_, count, _) = owner_observation(&agent).await?;
         ensure!(count == i64::try_from((round + 1) * WIDTH * 2)?,
             "lost or duplicated durable business tasks");
         ensure!(model_calls.requests().len() == (round + 1) * WIDTH,
             "restart replayed settled work");
-        samples.push(json!({"round": round, "before_restart": loaded,
+        let sample = json!({"round": round, "before_restart": loaded,
             "after_restart": resource_sample(&agent, health.process_id)?,
-            "business_tasks": count, "terminal_turns": terminal_identities.len()}));
+            "business_tasks": count, "terminal_turns": terminal_identities.len(),
+            "verified_history_reads": verified_history_reads,
+            "history_verify_us": history_verify_us,
+            "round_wall_us": round_started.elapsed().as_micros(),
+            "elapsed_wall_us": started.elapsed().as_micros()});
+        // Retain bounded progress even if the unchanged watchdog terminates us.
+        eprintln!("product evolution sample: {sample}");
+        samples.push(sample);
     }
+    ensure!(verified_history_reads == WIDTH * rounds * (rounds + 1) / 2,
+        "history verification omitted a terminal or a restart");
     stage = "retirement and old database restore".to_string();
         eprintln!("product evolution stage: {stage}");
     let generation = agent_generation(&fleet, &agent.agent_id)?;
@@ -223,6 +264,7 @@ async fn normal_product_bounded_evolution_under_concurrent_load() -> Result<()> 
         "restart_backoff_base_us": restart_backoff_base_us,
         "terminal_turns": terminal_identities.len(), "cancelled_tasks": rounds * WIDTH,
         "process_restarts": restart_latencies.len(), "wall_us": started.elapsed().as_micros(),
+        "history_observation_concurrency": WIDTH, "verified_history_reads": verified_history_reads,
         "wave_terminal_observation_latency": latency_summary(&wave_latencies),
         "restart_ready_latency": latency_summary(&restart_latencies),
         "baseline_resources": baseline, "samples": samples,
