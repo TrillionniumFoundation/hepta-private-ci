@@ -8,6 +8,7 @@
 use std::error::Error as StdError;
 use std::fmt;
 use std::path::PathBuf;
+use std::time::Instant;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -25,6 +26,17 @@ use crate::SignedArtifactWriterLeaseV1;
 use crate::SignedCurrentArtifactHeadV1;
 use crate::VerifiedCurrentRegistryViewV1;
 use crate::WithdrawalBoundArtifactAdmissionV3;
+
+#[path = "owner/diagnostics.rs"]
+mod diagnostics;
+#[path = "owner/service_observation.rs"]
+mod service_observation;
+
+pub use diagnostics::ArtifactOwnerDiagnosticsV1;
+pub use diagnostics::ArtifactPhaseTimingV1;
+
+use diagnostics::Observations;
+use diagnostics::Phase;
 
 #[path = "owner/durable_control.rs"]
 mod durable_control;
@@ -76,6 +88,7 @@ pub struct LearningArtifactOwnerService {
     registry: ArtifactRegistry,
     storage_binding: Digest32,
     request_identity: RequestIdentityVerifier,
+    observations: Observations,
     recovery_required: Option<StableId>,
     draining: bool,
     drain_durable: bool,
@@ -109,6 +122,7 @@ impl LearningArtifactOwnerService {
     pub fn open(
         config: LearningArtifactOwnerServiceConfigV1,
     ) -> Result<Self, LearningArtifactOwnerServiceError> {
+        let opened_at = Instant::now();
         if config.storage_binding.is_zero()
             || config.withdrawal_registry.scope_digest() != Some(config.trust.withdrawal_scope_digest)
         {
@@ -165,6 +179,9 @@ impl LearningArtifactOwnerService {
         durable_withdrawals
             .persist(&config.withdrawal_registry)
             .map_err(LearningArtifactOwnerServiceError::ControlIo)?;
+        let mut observations = Observations::default();
+        observations.restore(recovery_required.is_some(), draining);
+        observations.record(Phase::Open, opened_at, &Ok::<(), ()>(()));
         Ok(Self {
             host,
             root,
@@ -175,6 +192,7 @@ impl LearningArtifactOwnerService {
             registry,
             storage_binding: config.storage_binding,
             request_identity,
+            observations,
             recovery_required,
             draining,
             drain_durable: draining,
@@ -220,6 +238,11 @@ impl LearningArtifactOwnerService {
     /// that must survive restart. Neither method releases the writer fence.
     pub fn begin_drain(&mut self) {
         self.draining = true;
+        self.observations.observe_state(
+            self.recovery_required.is_some(),
+            self.draining,
+            self.withdrawal_persistence_uncertain,
+        );
     }
 
     /// Durably stop new admission, including after reopening this store.
@@ -229,7 +252,7 @@ impl LearningArtifactOwnerService {
     /// I/O error keeps admission closed and cannot become successful drain.
     /// No online clear/resume API exists. Restoring a pre-stop backup still
     /// requires an independently retained operator stop floor.
-    pub fn begin_drain_durable(&mut self) -> Result<(), LearningArtifactOwnerServiceError> {
+    fn begin_drain_recorded(&mut self) -> Result<(), LearningArtifactOwnerServiceError> {
         self.draining = true;
         self.drain_persistence_uncertain = true;
         self.durable_drain
@@ -260,7 +283,7 @@ impl LearningArtifactOwnerService {
     /// floor is durable before success. A failed write keeps the newer in-memory
     /// frontier, fences use, and requires exact reconciliation or a newer prefix.
     /// The caller still authenticates withdrawal actors and external freshness.
-    pub fn install_withdrawal_frontier(
+    fn install_withdrawal_frontier_recorded(
         &mut self,
         next: DatasetWithdrawalRegistry,
     ) -> Result<(), LearningArtifactOwnerServiceError> {
@@ -301,7 +324,7 @@ impl LearningArtifactOwnerService {
     /// Exact retries of an acknowledged operation return the same historical
     /// receipt. A non-terminal retry verifies actual durable objects before
     /// reconstructing the transaction and continuing. Callers supply trusted time.
-    pub fn publish(
+    fn publish_recorded(
         &mut self,
         request: LearningArtifactPublishRequestV1,
     ) -> Result<ArtifactPublicationReceiptV1, LearningArtifactOwnerServiceError> {
@@ -321,7 +344,10 @@ impl LearningArtifactOwnerService {
                 Ok(receipt)
             }
             Err(error) => {
-                match self.host.recover_publication(&operation_id) {
+                let started = Instant::now();
+                let recovery = self.host.recover_publication(&operation_id);
+                self.observations.record(Phase::Reconcile, started, &recovery);
+                match recovery {
                     Ok(Some(recovery))
                         if recovery.checkpoint.phase != ArtifactPublicationPhaseV1::Acknowledged =>
                     {
@@ -352,8 +378,14 @@ impl LearningArtifactOwnerService {
         {
             return Err(LearningArtifactOwnerServiceError::RequestMismatch);
         }
-        self.request_identity.verify(request)?;
-        let checkpoint = self.host.recover_publication(&request.operation_id)?;
+        let started = Instant::now();
+        let identity = self.request_identity.verify(request);
+        self.observations.record(Phase::Identity, started, &identity);
+        self.observations.last_verified_request_digest = Some(identity?);
+        let started = Instant::now();
+        let checkpoint = self.host.recover_publication(&request.operation_id);
+        self.observations.record(Phase::Reconcile, started, &checkpoint);
+        let checkpoint = checkpoint?;
         if let Some(recovery) = checkpoint.as_ref() {
             validate_request_against_checkpoint(request, &recovery.checkpoint)?;
             if recovery.checkpoint.phase == ArtifactPublicationPhaseV1::Acknowledged {
@@ -416,33 +448,45 @@ impl LearningArtifactOwnerService {
                 .resume_publication(transaction.snapshot(), request.now)?;
         }
         if transaction.phase() == ArtifactPublicationPhaseV1::Prepared {
-            self.host.ensure_payload_durable(
+            let started = Instant::now();
+            let outcome = self.host.ensure_payload_durable(
                 &mut transaction,
                 &staged,
                 &request.payload,
                 request.now,
-            )?;
+            );
+            self.observations.record(Phase::Payload, started, &outcome);
+            outcome?;
         }
         if transaction.phase() == ArtifactPublicationPhaseV1::PayloadDurable {
-            self.host.ensure_registry_durable(
+            let started = Instant::now();
+            let outcome = self.host.ensure_registry_durable(
                 &mut transaction,
                 &staged,
                 &self.withdrawal_registry,
                 self.storage_binding,
                 request.now,
-            )?;
+            );
+            self.observations.record(Phase::Registry, started, &outcome);
+            outcome?;
         }
         if transaction.phase() == ArtifactPublicationPhaseV1::RegistryDurable {
-            self.host.ensure_witness_durable(
+            let started = Instant::now();
+            let outcome = self.host.ensure_witness_durable(
                 &mut transaction,
                 &request.signed_current_head,
                 &self.withdrawal_registry,
                 request.now,
-            )?;
+            );
+            self.observations.record(Phase::Witness, started, &outcome);
+            outcome?;
         }
         let receipt = if transaction.phase() == ArtifactPublicationPhaseV1::WitnessDurable {
-            self.host
-                .acknowledge(&mut transaction, &self.withdrawal_registry, request.now)?
+            let started = Instant::now();
+            let outcome = self.host
+                .acknowledge(&mut transaction, &self.withdrawal_registry, request.now);
+            self.observations.record(Phase::Acknowledge, started, &outcome);
+            outcome?
         } else {
             return Err(LearningArtifactOwnerServiceError::UnexpectedPhase);
         };

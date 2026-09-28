@@ -34,10 +34,13 @@ impl RequestIdentityVerifier {
         }
     }
 
+    /// Return one canonical diagnostic identity after integrity verification.
+    /// Retry observation time is deliberately excluded. This does not replace
+    /// checkpoint intent/state validation or persist a new deduplication format.
     pub(super) fn verify(
         &self,
         request: &LearningArtifactPublishRequestV1,
-    ) -> Result<(), LearningArtifactOwnerServiceError> {
+    ) -> Result<Digest32, LearningArtifactOwnerServiceError> {
         let admission = &request.admission;
         // Historical reconstruction is intentionally separate from the live
         // withdrawal check. Returning an old DENY_ALL receipt renews nothing.
@@ -66,10 +69,20 @@ impl RequestIdentityVerifier {
         }
         let key = VerifyingKey::from_bytes(key_bytes)
             .map_err(|_| LearningArtifactOwnerServiceError::RequestMismatch)?;
-        key.verify_strict(
-            &signed.signing_bytes(),
-            &Signature::from_bytes(&signed.signature),
-        )
-        .map_err(|_| LearningArtifactOwnerServiceError::RequestMismatch)
+        let signing_bytes = signed.signing_bytes();
+        key.verify_strict(&signing_bytes, &Signature::from_bytes(&signed.signature))
+            .map_err(|_| LearningArtifactOwnerServiceError::RequestMismatch)?;
+        let mut bytes = b"hepta.learning-artifacts.request-identity.v1".to_vec();
+        let operation = request.operation_id.as_str().as_bytes();
+        bytes.extend_from_slice(&(operation.len() as u64).to_be_bytes());
+        bytes.extend_from_slice(operation);
+        bytes.extend_from_slice(admission.admission_digest.as_array());
+        bytes.extend_from_slice(request.expected_registry_predecessor_head.as_array());
+        bytes.extend_from_slice(manifest.bytes_digest.as_array());
+        bytes.extend_from_slice(&manifest.encoded_size_bytes.to_be_bytes());
+        bytes.extend_from_slice(&(signing_bytes.len() as u64).to_be_bytes());
+        bytes.extend_from_slice(&signing_bytes);
+        bytes.extend_from_slice(&signed.signature);
+        Ok(Digest32::of_bytes(&bytes))
     }
 }
