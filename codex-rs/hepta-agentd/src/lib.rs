@@ -177,7 +177,6 @@ pub use context_security_runtime::ProviderTerminalAttestationFuture;
 pub use context_security_runtime::ProviderTerminalAttestationSourceV3;
 pub use context_terminal_attestation::IndependentProviderTerminalAttestationV3;
 pub use context_terminal_attestation::ProviderTerminalAttestationErrorV3;
-pub use context_terminal_attestation::ProviderTerminalAttestationSignatureVerifierV3;
 pub use context_terminal_attestation::ProviderTerminalAttestationVerifierV3;
 pub use context_terminal_attestation::VerifiedProviderTerminalAttestationV3;
 pub use context_terminal_attestation::verify_provider_terminal_attestation_v3;
