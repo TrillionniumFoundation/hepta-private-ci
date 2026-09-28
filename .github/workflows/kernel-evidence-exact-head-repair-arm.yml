@@ -1,0 +1,108 @@
+name: Kernel evidence exact-head ARM repair
+
+on:
+  push:
+    branches: [fix/kernel-evidence-production-closure]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kernel-evidence-exact-head-arm-repair
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    if: ${{ !contains(github.event.head_commit.message || '', '[kernel-evidence-native-repair]') }}
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 150
+    env:
+      SOURCE_SHA: ${{ github.sha }}
+      RUSTUP_TOOLCHAIN: 1.95.0
+    steps:
+      - name: Check out immutable repair source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Set up repository CI prerequisites
+        uses: ./.github/actions/setup-ci
+      - name: Install pinned Python tooling
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+      - name: Install pinned nextest
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-nextest@0.9.103
+      - name: Extract and apply the audited repair payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          python3 - <<'PY'
+          import base64
+          import gzip
+          from pathlib import Path
+
+          workflow = Path('.github/workflows/kernel-evidence-exact-head-repair.yml').read_text(encoding='utf-8')
+          marker = "base64 --decode <<'REPAIR' | gzip --decompress > \"$RUNNER_TEMP/kernel-evidence-repair.py\""
+          tail = workflow.split(marker, 1)[1].splitlines()[1:]
+          encoded_lines = []
+          for line in tail:
+              if line.strip() == 'REPAIR':
+                  break
+              encoded_lines.append(line.strip())
+          payload = gzip.decompress(base64.b64decode(''.join(encoded_lines)))
+          Path('/tmp/kernel-evidence-repair.py').write_bytes(payload)
+          PY
+          (cd codex-rs && cargo fmt -- --config imports_granularity=Item)
+          python3 /tmp/kernel-evidence-repair.py
+          (cd codex-rs && cargo fmt -- --config imports_granularity=Item)
+          uv run --frozen --project scripts ruff format scripts
+          git diff --check
+      - name: Verify repaired exact source before publication
+        shell: bash
+        run: |
+          set -euo pipefail
+          just fmt-check
+          just test --locked -p codex-hepta-evidence
+          just test --locked -p codex-hepta-agentd --lib \
+            --test kernel_evidence_product \
+            --test kernel_evidence_profile \
+            --test kernel_evidence_paging_product \
+            --test kernel_evidence_publication_cli
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-evidence --doc
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-evidence -p codex-hepta-agentd \
+            --all-targets --no-deps -- -D warnings
+          cargo build --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-agentd --bin codex-hepta-agentd
+          python3 scripts/verify_lane_a_foundation.py verify
+          python3 scripts/hepta-docs.py verify
+          python3 scripts/hepta-implementation-maps.py verify
+          git diff --check
+      - name: Commit verified source and remove temporary machinery
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          rm -f \
+            .github/workflows/kernel-evidence-exact-head-repair.yml \
+            .github/workflows/kernel-evidence-exact-head-repair-arm.yml \
+            .github/kernel-evidence-exact-head-repair-trigger
+          git add -A
+          test -n "$(git diff --cached --name-only)"
+          git config user.name "kernel-evidence repair bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "fix(kernel.evidence): close exact-head native regressions [kernel-evidence-native-repair]"
+          git push origin HEAD:fix/kernel-evidence-production-closure
