@@ -1,90 +1,91 @@
-name: control.engineering one-shot convergence bootstrap
+name: control.engineering read-only candidate evidence
 
 on:
   push:
     branches:
       - codex/control-engineering-post-merge-closure-20260928
     paths:
-      - scripts/patch_existing_control_engineering.py
-      - scripts/patch_control_engineering_stage2_v2.py
+      - tools/hepta-engineering-control/**
+      - docs/modules/control.engineering/**
+      - scripts/control_engineering_*.py
       - .github/workflows/control-engineering-bootstrap.yml
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: control-engineering-bootstrap-20260928
-  cancel-in-progress: true
+  group: control-engineering-readonly-${{ github.sha }}
+  cancel-in-progress: false
 
 jobs:
-  patch-and-qualify:
+  source-evidence:
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: codex/control-engineering-post-merge-closure-20260928
+          ref: ${{ github.sha }}
           fetch-depth: 0
-          persist-credentials: true
-      - name: Apply fail-closed source patch
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Capture immutable tracked source and base identity
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m py_compile \
-            scripts/patch_existing_control_engineering.py \
-            scripts/patch_control_engineering_stage2_v2.py
-          python3 scripts/patch_existing_control_engineering.py
-          python3 scripts/patch_control_engineering_stage2_v2.py
-          git diff --check
-          git config user.name "Hepta Control Engineering Bot"
-          git config user.email "hepta-control-engineering@users.noreply.github.com"
-          git add -A
-          git commit -m "control.engineering: close identity renewal and external ports"
-      - name: Rebind exact source manifest and generated status
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 scripts/hepta-implementation-maps.py migrate --module control.engineering
-          python3 scripts/control_engineering_status.py --write
-          python3 scripts/control_engineering_api.py --write
-          git diff --check
-          git add docs/modules/control.engineering/IMPLEMENTATION_MAP.json \
-            docs/modules/control.engineering/STATUS.json \
-            qualification/control-engineering/PUBLIC_API.json
-          git commit -m "docs(control.engineering): bind exact manifest and status"
-      - name: Synchronize canonical document metadata
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 scripts/hepta-gap-closure.py normalize
-          if ! git diff --quiet; then
-            git diff --check
-            git add -A
-            git commit -m "docs: synchronize control.engineering metadata"
-          fi
-      - name: Run focused and global source qualification
+          mkdir -p "$RUNNER_TEMP/control-engineering-source"
+          git archive --format=tar HEAD | gzip -n > "$RUNNER_TEMP/control-engineering-source/source.tar.gz"
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, platform, subprocess
+          def git(*args):
+              return subprocess.check_output(['git', *args], text=True).strip()
+          root = pathlib.Path(os.environ['RUNNER_TEMP']) / 'control-engineering-source'
+          record = {
+              'schemaVersion': 1,
+              'sourceCommit': git('rev-parse', 'HEAD'),
+              'sourceTree': git('rev-parse', 'HEAD^{tree}'),
+              'baseCommit': git('rev-parse', 'origin/main'),
+              'baseTree': git('rev-parse', 'origin/main^{tree}'),
+              'workflowSha': os.environ.get('GITHUB_WORKFLOW_SHA'),
+              'runId': os.environ['GITHUB_RUN_ID'],
+              'runAttempt': os.environ['GITHUB_RUN_ATTEMPT'],
+              'runnerImage': os.environ.get('ImageOS'),
+              'runnerImageVersion': os.environ.get('ImageVersion'),
+              'python': platform.python_version(),
+              'archiveSha256': hashlib.file_digest((root / 'source.tar.gz').open('rb'), 'sha256').hexdigest(),
+              'qualification': 'not_claimed',
+              'productionAcceptance': False,
+          }
+          (root / 'identity.json').write_text(json.dumps(record, indent=2) + '\n')
+          PY
+      - name: Retain immutable tracked source
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: control-engineering-source-${{ github.sha }}
+          path: ${{ runner.temp }}/control-engineering-source
+          if-no-files-found: error
+          retention-days: 14
+      - name: Run unmodified source tests
         env:
-          PYTHONDONTWRITEBYTECODE: "1"
+          PYTHONDONTWRITEBYTECODE: '1'
           PYTHONPATH: tools/hepta-engineering-control
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m compileall -q \
-            tools/hepta-engineering-control/control_engineering_v2 \
-            scripts/control_engineering_status.py \
-            scripts/control_engineering_api.py
-          python3 -m unittest -v scripts/test_hepta_exact_blob_squash.py
-          python3 -m unittest -v \
-            tools/hepta-engineering-control/test_control_engineering_extensions.py
-          python3 -m unittest discover -v \
-            -s tools/hepta-engineering-control -p 'test_*.py'
-          python3 scripts/control_engineering_status.py --check
-          python3 scripts/control_engineering_api.py --check
-          python3 scripts/hepta-gap-closure.py verify
-          git diff --exit-code
-          test -z "$(git status --porcelain --untracked-files=no)"
-      - name: Push qualified branch
+          python3 -m unittest discover -v -s tools/hepta-engineering-control -p 'test_*.py' 2>&1 | tee "$RUNNER_TEMP/control-engineering-unittest.log"
+      - name: Verify qualification did not modify tracked source
+        if: always()
         shell: bash
         run: |
           set -euo pipefail
-          git push origin HEAD:codex/control-engineering-post-merge-closure-20260928
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+      - name: Retain test log including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: control-engineering-unittest-${{ github.sha }}
+          path: ${{ runner.temp }}/control-engineering-unittest.log
+          if-no-files-found: warn
+          retention-days: 14
