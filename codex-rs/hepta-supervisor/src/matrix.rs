@@ -247,10 +247,21 @@ impl<D: ProcessDriver> Supervisor<D> {
         lease: &MatrixProcessLease,
         now: Instant,
     ) -> Result<(), SupervisorError> {
-        if let Err(error) = write_matrix_lease(path, lease) {
-            slot.matrix.exit_lease_removal = Some(
-                MatrixProcessLeaseRemoval::for_failed_publication(path, lease),
-            );
+        let publication = write_matrix_lease(path, lease);
+        let publication_failed = publication.is_err();
+        let initialized = slot.matrix.runtime.as_ref().and_then(|runtime| {
+            runtime.process.initialization_failure().map(str::to_owned)
+        });
+        let launch = publication.and_then(|()| match initialized {
+            Some(error) => Err(driver_error(agent_id, crate::ProcessDriverError::new(error))),
+            None => Ok(()),
+        });
+        if let Err(error) = launch {
+            slot.matrix.exit_lease_removal = Some(if publication_failed {
+                MatrixProcessLeaseRemoval::for_failed_publication(path, lease)
+            } else {
+                MatrixProcessLeaseRemoval::new(path, lease)
+            });
             if let Some(runtime) = slot.matrix.runtime.as_mut() {
                 runtime.healthy = false;
                 runtime.fenced = true;
@@ -321,7 +332,12 @@ impl<D: ProcessDriver> Supervisor<D> {
                     healthy: false,
                     fenced: false,
                 });
-                let admission = self.validate_adopted_matrix(slot, record, agent_id, &lease, now);
+                let admission = match slot.matrix.runtime.as_ref().and_then(|runtime| {
+                    runtime.process.initialization_failure().map(str::to_owned)
+                }) {
+                    Some(error) => Err(driver_error(agent_id, crate::ProcessDriverError::new(error))),
+                    None => self.validate_adopted_matrix(slot, record, agent_id, &lease, now),
+                };
                 match admission {
                     Ok(Some(health_deadline)) => {
                         let runtime = slot.matrix.runtime.as_mut().ok_or_else(|| {

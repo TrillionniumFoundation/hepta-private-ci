@@ -219,11 +219,21 @@ impl<D: ProcessDriver> Supervisor<D> {
             fenced: false,
         });
         slot.event(starting.generation, SupervisorEventKind::Spawned);
-        if let Err(error) = write_lease(record.layout.run_root(), &lease) {
-            slot.exit_lease_removal = Some(ProcessLeaseRemoval::for_failed_publication(
-                record.layout.run_root(),
-                &lease,
-            ));
+        let publication = write_lease(record.layout.run_root(), &lease);
+        let publication_failed = publication.is_err();
+        let initialized = slot.runtime.as_ref().and_then(|runtime| {
+            runtime.process.initialization_failure().map(str::to_owned)
+        });
+        let launch = publication.and_then(|()| match initialized {
+            Some(error) => Err(driver_error(agent_id, crate::ProcessDriverError::new(error))),
+            None => Ok(()),
+        });
+        if let Err(error) = launch {
+            slot.exit_lease_removal = Some(if publication_failed {
+                ProcessLeaseRemoval::for_failed_publication(record.layout.run_root(), &lease)
+            } else {
+                ProcessLeaseRemoval::new(record.layout.run_root(), &lease)
+            });
             slot.pending_control = None;
             slot.restart_pending = false;
             slot.restart_not_before = None;
@@ -398,6 +408,20 @@ impl<D: ProcessDriver> Supervisor<D> {
                     healthy: false,
                     fenced: false,
                 });
+                if let Some(error) = slot.runtime.as_ref().and_then(|runtime| {
+                    runtime.process.initialization_failure().map(str::to_owned)
+                }) {
+                    if let Some(runtime) = slot.runtime.as_mut() {
+                        runtime.fenced = true;
+                        runtime.healthy = false;
+                        runtime.phase = RuntimePhase::Stopping { deadline: now };
+                        if runtime.process.kill().is_ok() {
+                            runtime.phase = RuntimePhase::Killing;
+                            slot.event(record.lifecycle.generation, SupervisorEventKind::KillRequested);
+                        }
+                    }
+                    return Err(driver_error(agent_id, crate::ProcessDriverError::new(error)));
+                }
                 if lease.release_id.as_str() != "unversioned" {
                     let needs_resolution = slot
                         .active_release

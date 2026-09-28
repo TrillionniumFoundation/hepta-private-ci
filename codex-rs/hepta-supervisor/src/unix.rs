@@ -40,7 +40,6 @@ use crate::MatrixSpawnSpec;
 use crate::ProcessDriver;
 use crate::ProcessDriverError;
 use crate::ProcessExit;
-use crate::ProcessIdentity;
 use crate::ProcessLog;
 use crate::ProcessObservation;
 use crate::ProcessState;
@@ -51,6 +50,9 @@ use crate::driver::SpawnedProcess;
 #[path = "unix_process_ref.rs"]
 mod process_ref;
 use process_ref::ProcessRef;
+
+#[path = "unix_initialization.rs"]
+mod initialization;
 
 const LOG_CHUNK_BYTES: usize = 4_096;
 const HEALTH_PROBE_INTERVAL: Duration = Duration::from_millis(50);
@@ -82,6 +84,7 @@ pub struct UnixManagedProcess {
     agent_control: Option<AgentHealthProbeIdentity>,
     drain_requested: bool,
     next_drain_request_id: u64,
+    initialization_failure: Option<String>,
 }
 
 enum UnixProcessHandle {
@@ -106,6 +109,10 @@ impl UnixProcessHandle {
 }
 
 impl ManagedProcess for UnixManagedProcess {
+    fn initialization_failure(&self) -> Option<&str> {
+        self.initialization_failure.as_deref()
+    }
+
     fn poll(&mut self, max_logs: usize) -> Result<ProcessObservation, ProcessDriverError> {
         let mut logs = Vec::with_capacity(max_logs);
         for _ in 0..max_logs {
@@ -154,7 +161,7 @@ impl ManagedProcess for UnixManagedProcess {
         };
         Ok(ProcessObservation {
             state: ProcessState::Running {
-                healthy: self.health_probe.ready(),
+                healthy: self.initialization_failure.is_none() && self.health_probe.ready(),
                 drained,
             },
             logs,
@@ -162,6 +169,9 @@ impl ManagedProcess for UnixManagedProcess {
     }
 
     fn request_drain(&mut self) -> Result<(), ProcessDriverError> {
+        if let Some(error) = &self.initialization_failure {
+            return Err(ProcessDriverError::new(error.clone()));
+        }
         let Some(identity) = self.agent_control.as_ref() else {
             return Err(ProcessDriverError::new(
                 "managed process does not expose the Agentd drain protocol",
@@ -204,43 +214,18 @@ impl ProcessDriver for UnixProcessDriver {
             .stdin(Stdio::null())
             .stdout(Stdio::piped())
             .stderr(Stdio::piped());
-        let mut child = command.spawn()?;
+        let child = command.spawn()?;
         let agent_control = AgentHealthProbeIdentity::from_spawn(spec, child.id());
-        let health_probe =
-            match HealthProbe::spawn(HealthProbeIdentity::Agentd(agent_control.clone())) {
-                Ok(probe) => probe,
-                Err(error) => {
-                    let _ = child.kill();
-                    return Err(error);
-                }
-            };
-        let Some(stdout) = child.stdout.take() else {
-            let _ = child.kill();
-            return Err(ProcessDriverError::new("child stdout pipe is missing"));
-        };
-        let Some(stderr) = child.stderr.take() else {
-            let _ = child.kill();
-            return Err(ProcessDriverError::new("child stderr pipe is missing"));
-        };
-        let (sender, logs) = std::sync::mpsc::sync_channel(self.log_channel_capacity);
-        spawn_log_reader(stdout, ProcessStream::Stdout, sender.clone());
-        spawn_log_reader(stderr, ProcessStream::Stderr, sender);
-        let identity = ProcessIdentity::new(
-            u64::from(child.id()),
-            format!("unix-pid-{}-generation-{}", child.id(), spec.generation),
-        )
-        .map_err(|error| ProcessDriverError::new(error.to_string()))?;
-        Ok(SpawnedProcess {
-            identity,
-            process: UnixManagedProcess {
-                handle: UnixProcessHandle::Child(child),
-                logs,
-                health_probe,
-                agent_control: Some(agent_control),
-                drain_requested: false,
-                next_drain_request_id: 1,
-            },
-        })
+        let probe = HealthProbe::spawn(HealthProbeIdentity::Agentd(agent_control.clone()));
+        // From successful spawn onward, all setup faults travel with ownership.
+        Ok(initialization::finish_child(
+            child,
+            spec.generation,
+            false,
+            probe,
+            Some(agent_control),
+            self.log_channel_capacity,
+        ))
     }
 
     fn adopt(&mut self, spec: &AdoptSpec) -> Result<Adoption<Self::Process>, ProcessDriverError> {
@@ -260,16 +245,10 @@ impl ProcessDriver for UnixProcessDriver {
             if reference.exited()? {
                 return Ok(Adoption::Missing);
             }
-            let health_probe = HealthProbe::spawn(health_identity)?;
-            let (_sender, logs) = std::sync::mpsc::sync_channel(1);
-            return Ok(Adoption::Adopted(UnixManagedProcess {
-                handle: UnixProcessHandle::Adopted(reference),
-                logs,
-                health_probe,
-                agent_control: Some(agent_control),
-                drain_requested: false,
-                next_drain_request_id: 1,
-            }));
+            let probe = HealthProbe::spawn(health_identity);
+            return Ok(Adoption::Adopted(initialization::finish_adoption(
+                reference, probe, Some(agent_control),
+            )));
         }
 
         // A stale lease PID may already belong to an unrelated process. Failed
@@ -306,51 +285,18 @@ impl ProcessDriver for UnixProcessDriver {
             .stdin(Stdio::null())
             .stdout(Stdio::piped())
             .stderr(Stdio::piped());
-        let mut child = command.spawn()?;
-        let health_probe = match HealthProbe::spawn(HealthProbeIdentity::Matrixd(
+        let child = command.spawn()?;
+        let probe = HealthProbe::spawn(HealthProbeIdentity::Matrixd(
             MatrixHealthProbeIdentity::from_spawn(spec, child.id()),
-        )) {
-            Ok(probe) => probe,
-            Err(error) => {
-                let _ = child.kill();
-                return Err(error);
-            }
-        };
-        let Some(stdout) = child.stdout.take() else {
-            let _ = child.kill();
-            return Err(ProcessDriverError::new(
-                "matrixd child stdout pipe is missing",
-            ));
-        };
-        let Some(stderr) = child.stderr.take() else {
-            let _ = child.kill();
-            return Err(ProcessDriverError::new(
-                "matrixd child stderr pipe is missing",
-            ));
-        };
-        let (sender, logs) = std::sync::mpsc::sync_channel(self.log_channel_capacity);
-        spawn_log_reader(stdout, ProcessStream::Stdout, sender.clone());
-        spawn_log_reader(stderr, ProcessStream::Stderr, sender);
-        let identity = ProcessIdentity::new(
-            u64::from(child.id()),
-            format!(
-                "unix-matrix-pid-{}-agent-generation-{}",
-                child.id(),
-                spec.agent_generation
-            ),
-        )
-        .map_err(|error| ProcessDriverError::new(error.to_string()))?;
-        Ok(SpawnedProcess {
-            identity,
-            process: UnixManagedProcess {
-                handle: UnixProcessHandle::Child(child),
-                logs,
-                health_probe,
-                agent_control: None,
-                drain_requested: false,
-                next_drain_request_id: 1,
-            },
-        })
+        ));
+        Ok(initialization::finish_child(
+            child,
+            spec.agent_generation,
+            true,
+            probe,
+            None,
+            self.log_channel_capacity,
+        ))
     }
 
     fn adopt_matrixd(
@@ -371,16 +317,10 @@ impl ProcessDriver for UnixProcessDriver {
             if reference.exited()? {
                 return Ok(Adoption::Missing);
             }
-            let health_probe = HealthProbe::spawn(health_identity)?;
-            let (_sender, logs) = std::sync::mpsc::sync_channel(1);
-            return Ok(Adoption::Adopted(UnixManagedProcess {
-                handle: UnixProcessHandle::Adopted(reference),
-                logs,
-                health_probe,
-                agent_control: None,
-                drain_requested: false,
-                next_drain_request_id: 1,
-            }));
+            let probe = HealthProbe::spawn(health_identity);
+            return Ok(Adoption::Adopted(initialization::finish_adoption(
+                reference, probe, None,
+            )));
         }
 
         // See agentd adoption above: no exact handshake means no authority to
@@ -806,8 +746,8 @@ fn spawn_log_reader(
     mut reader: impl Read + Send + 'static,
     stream: ProcessStream,
     sender: SyncSender<ProcessLog>,
-) {
-    std::thread::spawn(move || {
+) -> Result<(), ProcessDriverError> {
+    std::thread::Builder::new().spawn(move || {
         let mut buffer = [0_u8; LOG_CHUNK_BYTES];
         loop {
             let count = match reader.read(&mut buffer) {
@@ -819,7 +759,8 @@ fn spawn_log_reader(
                 bytes: buffer[..count].to_vec(),
             });
         }
-    });
+    })?;
+    Ok(())
 }
 
 fn send_signal(pid: u32, signal: i32) -> Result<(), ProcessDriverError> {
