@@ -28,6 +28,8 @@ jobs:
   smoke:
     runs-on: ubuntu-slim
     timeout-minutes: 35
+    env:
+      CARGO_TARGET_DIR: ${{ runner.temp }}/memory-federation-native-build
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -71,7 +73,7 @@ jobs:
           git rev-parse HEAD HEAD^{tree} > "$OUT/identity.txt"
           # Only public toolchain and crate sources, never Cargo credentials,
           # configuration, caches containing tokens, or runner environment.
-          cargo vendor --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml "$OUT/vendor" > "$OUT/vendor-config.toml"
+          cargo vendor --locked --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml "$OUT/vendor" > "$OUT/vendor-config.toml"
           cp codex-rs/hepta-memory-federation-wire/Cargo.lock "$OUT/Cargo.lock"
           SYSROOT="$(rustc --print sysroot)"
           tar --exclude='lib/rustlib/src' -czf "$OUT/toolchain.tar.gz" -C "$SYSROOT" bin lib
@@ -101,9 +103,9 @@ jobs:
           cargo fmt --manifest-path "$COPY/codex-rs/hepta-memory-federation-wire/Cargo.toml"
           tar -czf "$RUNNER_TEMP/memory-federation-native/formatted-source.tar.gz" -C "$COPY" codex-rs/hepta-memory-federation codex-rs/hepta-memory-federation-wire codex-rs/hepta-memory codex-rs/ext/hepta-memory codex-rs/hepta-agentd codex-rs/app-server
           rm -rf "$COPY"
-          cargo test --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml --lib 2>&1 | tee "$RUNNER_TEMP/memory-federation-native/wire-tests.log"
-          cargo test --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml --doc 2>&1 | tee "$RUNNER_TEMP/memory-federation-native/wire-doctests.log"
-          cargo clippy --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml --all-targets -- -D warnings 2>&1 | tee "$RUNNER_TEMP/memory-federation-native/wire-clippy.log"
+          cargo test --locked --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml --lib 2>&1 | tee "$RUNNER_TEMP/memory-federation-native/wire-tests.log"
+          cargo test --locked --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml --doc 2>&1 | tee "$RUNNER_TEMP/memory-federation-native/wire-doctests.log"
+          cargo clippy --locked --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml --all-targets -- -D warnings 2>&1 | tee "$RUNNER_TEMP/memory-federation-native/wire-clippy.log"
       - name: Run exact qualification matrix
         if: ${{ !cancelled() }}
         shell: bash
