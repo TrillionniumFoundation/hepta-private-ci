@@ -37,9 +37,12 @@ pub use issuer_registry::IssuerRegistryError;
 pub use issuer_registry::PrivateIssuerRegistryDocument;
 pub use operations::AuthBusAlertKind;
 pub use operations::AuthBusAlertSeverity;
+pub use operations::AuthBusBlockingReason;
+pub use operations::AuthBusLatencySummary;
 pub use operations::AuthBusMaintenanceReport;
 pub use operations::AuthBusOperationalAlert;
 pub use operations::AuthBusOperationalSnapshot;
+pub use operations::AuthBusRuntimeSnapshot;
 pub use operations::AuthBusSloPolicy;
 pub use quota::ExpiredReservationSweep;
 pub use quota::QuotaReservation;
@@ -208,6 +211,7 @@ impl ReplayWindow {
             .get(&replay_key)
             .is_some_and(|sequence| *sequence >= envelope.sequence)
         {
+            crate::operations::record_replay_rejection();
             return Err(Error::Replay);
         }
         if !self.highest_sequence.contains_key(&replay_key)
