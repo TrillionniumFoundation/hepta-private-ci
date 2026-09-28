@@ -13,6 +13,10 @@ ROOT = Path(__file__).resolve().parents[1]
 def replace(path, old, new):
     file = ROOT / path
     text = file.read_text()
+    # Re-running preparation after a failed gate must be byte-stable. Accept
+    # only the exact reviewed replacement, never an arbitrary missing anchor.
+    if text.count(new) == 1:
+        return
     count = text.count(old)
     if count != 1:
         raise SystemExit(f"{path}: expected one patch anchor, got {count}: {old!r}")
@@ -45,6 +49,11 @@ for expected in ("inventory", "inventory_tests", "receipt_tests", "authbus", "do
     if values.count(expected) != 1:
         raise SystemExit(f"prepared command plan missing or duplicating {expected}: {values!r}")
 position = values.index("inventory_tests") + 1
+for name in ("implementation_map", "operations_contract"):
+    if values.count(name) > 1:
+        raise SystemExit(f"duplicate required gate: {name}")
+values = [name for name in values if name not in ("implementation_map", "operations_contract")]
+position = values.index("inventory_tests") + 1
 values[position:position] = ["implementation_map", "operations_contract"]
 edit(required[0].value, "(\n    " + ",\n    ".join(repr(value) for value in values) + ",\n)")
 functions = {node.name: node for node in module.body if isinstance(node, ast.FunctionDef)}
@@ -61,10 +70,16 @@ for key, expression in [
     ("implementation_map", '[sys.executable, "scripts/generate-authbus-implementation-map.py", "--check"]'),
     ("operations_contract", '[sys.executable, "scripts/test-authbus-operations.py"]'),
 ]:
+    expected = ast.parse(expression, mode="eval").body
+    if keys.count(key) > 1:
+        raise SystemExit(f"duplicate command {key}")
     if key in keys:
-        raise SystemExit(f"unexpected duplicate command {key}")
-    result.keys.append(ast.Constant(key))
-    result.values.append(ast.parse(expression, mode="eval").body)
+        actual = result.values[keys.index(key)]
+        if ast.dump(actual) != ast.dump(expected):
+            raise SystemExit(f"command changed and requires review: {key}")
+    else:
+        result.keys.append(ast.Constant(key))
+        result.values.append(expected)
 edit(results[0].value, ast.unparse(result))
 strict_gate = '''def gates_pass(rows: list[dict[str, Any]], candidate: str) -> bool:
     if not isinstance(candidate, str) or SHA.fullmatch(candidate) is None:
