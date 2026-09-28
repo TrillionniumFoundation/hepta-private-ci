@@ -143,6 +143,22 @@ def _load_owner_state(
     return envelope, lease
 
 
+def _custody_receipt(value: object) -> KeyCustodyReceipt:
+    if not isinstance(value, dict):
+        raise ValueError("typed key custody bundle")
+    row = dict(value)
+    roles = row.get("roles")
+    if not isinstance(roles, list) or any(
+        not isinstance(role, str) for role in roles
+    ):
+        raise ValueError("typed key custody roles")
+    row["roles"] = tuple(roles)
+    try:
+        return KeyCustodyReceipt(**row)
+    except TypeError:
+        raise ValueError("typed key custody bundle") from None
+
+
 def _load_typed_controls(
     path: Path,
 ) -> tuple[
@@ -162,14 +178,19 @@ def _load_typed_controls(
     custody = value["keyCustody"]
     if not isinstance(custody, list) or not custody:
         raise ValueError("typed key custody bundle")
+    distributed = value["distributedFence"]
+    frontier = value["revocationFrontier"]
+    audit = value["auditAnchor"]
+    if not all(isinstance(row, dict) for row in (distributed, frontier, audit)):
+        raise ValueError("typed production control bundle shape")
     try:
         return (
-            DistributedFenceReceipt(**value["distributedFence"]),
-            DistributedRevocationFrontierReceipt(**value["revocationFrontier"]),
-            AuditAnchorAttestation(**value["auditAnchor"]),
-            tuple(KeyCustodyReceipt(**row) for row in custody),
+            DistributedFenceReceipt(**distributed),
+            DistributedRevocationFrontierReceipt(**frontier),
+            AuditAnchorAttestation(**audit),
+            tuple(_custody_receipt(row) for row in custody),
         )
-    except (TypeError, AttributeError):
+    except TypeError:
         raise ValueError("typed production control bundle shape") from None
 
 
