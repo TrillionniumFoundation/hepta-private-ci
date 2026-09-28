@@ -19,22 +19,30 @@ racing, result semantics, and the no-blind-retry rule. The bridge does not add a
 second peer registry, scheduler, authority store, or retry queue.
 
 `FederationProductExchangeV1` is the only selected-network seam. A concrete
-implementation must obtain the peer identity and channel-binding digest from the
-same mutually authenticated channel that carries the product packet. The
-selected transport receives a `FederationTransportContextIssuerV1`; the product
-host and client receive the corresponding
-`FederationTransportContextVerifierV1`. The issuer HMAC-attests peer, transport
-profile, channel binding, channel lifetime, context-key identity and generation.
-The bridge verifies that attestation before packet parsing, replay admission or
+implementation must obtain the local endpoint identity, remote peer identity and
+channel-binding digest from the same mutually authenticated channel that carries
+the product packet. Each selected transport endpoint receives a
+`FederationTransportContextIssuerV1` bound to its exact local wire owner; the
+matching product host or client receives the corresponding
+`FederationTransportContextVerifierV1`. Product host/client construction rejects
+a verifier whose local owner or transport profile differs from the actual wire
+owner/profile.
+
+The issuer HMAC-attests local peer, remote peer, transport profile, channel
+binding, channel lifetime, context-key identity and generation. The bridge
+verifies that attestation before packet parsing, replay admission or
 attempt-state mutation. A caller cannot make a trusted context by supplying a
-bare peer string, arbitrary nonzero digest or independently chosen issuer key.
+bare peer string, arbitrary nonzero digest, independently chosen issuer key, or
+a context minted for another local host.
 
 The transport-context attestation secret is deployment-owned secret material. It
 is separate from the directional frame credential, absent from the
 source-controlled product profile, never serialized into a packet or recovery
-snapshot, and redacted from debug output. Key selection, rotation, revocation,
-storage and process placement remain part of the selected transport and host
-credential design.
+snapshot, and redacted from debug output. Key selection, per-host placement,
+rotation, revocation, storage and process isolation remain part of the selected
+transport and host credential design. Reusing one issuer key across unrelated
+local hosts is outside the deployment contract even though local-owner binding
+also makes such a context fail closed.
 
 ## Packet and body binding
 
@@ -45,21 +53,23 @@ A product packet contains:
 
 For queries, the authenticated frame carries the canonical query binding digest
 and all duplicated routing fields. The host first verifies the selected
-transport's context attestation, then decodes and validates the bounded body,
-checks the exact canonical binding, recipient, deadline, and transport horizon,
-and only then calls the durable wire admission boundary.
+transport's local/remote context attestation, then decodes and validates the
+bounded body, checks the exact canonical binding, recipient, deadline, and
+transport horizon, and only then calls the durable wire admission boundary.
 
 For responses, the authenticated frame carries both the canonical response
 digest and a digest of the exact encoded body. The client verifies the transport
-context attestation, packet bounds, transport identity/profile/currentness, body
-digest, canonical response digest, query binding, peer, expiry horizon, and
-frontier number before calling the durable client admission boundary.
+context attestation, packet bounds, local endpoint, remote identity, profile,
+currentness, body digest, canonical response digest, query binding, peer, expiry
+horizon, and frontier number before calling the durable client admission
+boundary.
 
-This order is deliberate. A forged transport context, malformed outer packet or
-tampered body must not consume a replay nonce, create a durable query attempt, or
-terminally close a valid client attempt. Regression tests submit an untrusted
-transport context and tampered packet first, then prove that the original
-trusted packet remains admissible.
+This order is deliberate. A forged or wrong-local-host transport context,
+malformed outer packet, or tampered body must not consume a replay nonce, create
+a durable query attempt, or terminally close a valid client attempt. Regression
+tests submit untrusted-key and wrong-local-host contexts, plus tampered packets,
+then prove that the original packet remains admissible through the correct local
+issuer.
 
 ## Time and cancellation
 
@@ -85,24 +95,26 @@ source-controlled profile or architecture ceiling.
 
 The checked-in deployment profile is
 `docs/modules/memory.federation/DEPLOYMENT_PROFILE.json`. It contains no secret
-material and deliberately leaves concrete transport, transport-context key and
-production recovery selection unset.
+material and deliberately leaves concrete transport, per-host transport-context
+key, and production recovery selection unset.
 
 ## Qualification
 
 The existing exact-head and deterministic-current-base qualification command
 runs the standalone wire crate's full library tests, doctests, capacity probe,
 strict Clippy, and tracked-lock verification. Compile-fail documentation rejects
-direct construction of authenticated transport context, and product tests reject
-a correctly shaped context minted under an untrusted key before replay state is
-consumed. Because the attestation selects the whole wire source root and module
+direct construction of authenticated transport context. Product tests reject a
+correctly shaped context minted under an untrusted key and a validly attested
+context minted for another local wire owner before replay state is consumed;
+they then prove the same query remains admissible through the correct issuer.
+Because the attestation selects the whole wire source root and module
 documentation directory, the product bridge, tests, deployment profile,
 implementation map, and canonical capability state are bound into the same
 source identity and artifact receipt.
 
 Repository-controlled source qualification is necessary but not sufficient for
 production claims. Remaining external gates are a selected mutually
-authenticated transport, secure frame and transport-context credential
+authenticated transport, secure frame and per-host transport-context credential
 operations, deployment-specific persistent recovery policy, two independently
 provisioned real-host fault qualification, target-host
 latency/capacity/backpressure/cancellation evidence, independent security and

@@ -34,11 +34,14 @@ fn profile() -> FederationProductProfileV1 {
     .expect("product profile")
 }
 
-fn transport_issuer_with_secret(
+fn transport_issuer_with(
+    local_peer_id: &str,
+    transport_profile_id: &str,
     secret: [u8; FEDERATION_TRANSPORT_CONTEXT_KEY_BYTES],
 ) -> FederationTransportContextIssuerV1 {
     FederationTransportContextIssuerV1::new(
-        id("authenticated-channel-v1"),
+        id(local_peer_id),
+        id(transport_profile_id),
         id("transport-context-key-v1"),
         1,
         secret,
@@ -46,24 +49,54 @@ fn transport_issuer_with_secret(
     .expect("transport context issuer")
 }
 
-fn transport_issuer() -> FederationTransportContextIssuerV1 {
-    transport_issuer_with_secret(TRANSPORT_CONTEXT_SECRET)
+fn transport_issuer(local_peer_id: &str) -> FederationTransportContextIssuerV1 {
+    transport_issuer_with(
+        local_peer_id,
+        "authenticated-channel-v1",
+        TRANSPORT_CONTEXT_SECRET,
+    )
 }
 
-fn transport_verifier() -> FederationTransportContextVerifierV1 {
-    transport_issuer().verifier()
+fn transport_verifier(local_peer_id: &str) -> FederationTransportContextVerifierV1 {
+    transport_issuer(local_peer_id).verifier()
 }
 
-fn transport(peer: &str, label: &[u8]) -> FederationAuthenticatedTransportV1 {
-    transport_issuer()
-        .issue_verified_channel(id(peer), digest(label), NOW, NOW + 100_000)
+fn transport(
+    local_peer_id: &str,
+    peer_id: &str,
+    label: &[u8],
+) -> FederationAuthenticatedTransportV1 {
+    transport_issuer(local_peer_id)
+        .issue_verified_channel(id(peer_id), digest(label), NOW, NOW + 100_000)
         .expect("transport context")
 }
 
-fn untrusted_transport(peer: &str, label: &[u8]) -> FederationAuthenticatedTransportV1 {
-    transport_issuer_with_secret(UNTRUSTED_TRANSPORT_CONTEXT_SECRET)
-        .issue_verified_channel(id(peer), digest(label), NOW, NOW + 100_000)
-        .expect("untrusted transport context")
+fn untrusted_transport(
+    local_peer_id: &str,
+    peer_id: &str,
+    label: &[u8],
+) -> FederationAuthenticatedTransportV1 {
+    transport_issuer_with(
+        local_peer_id,
+        "authenticated-channel-v1",
+        UNTRUSTED_TRANSPORT_CONTEXT_SECRET,
+    )
+    .issue_verified_channel(id(peer_id), digest(label), NOW, NOW + 100_000)
+    .expect("untrusted transport context")
+}
+
+fn wrong_profile_transport(
+    local_peer_id: &str,
+    peer_id: &str,
+    label: &[u8],
+) -> FederationAuthenticatedTransportV1 {
+    transport_issuer_with(
+        local_peer_id,
+        "different-channel-profile",
+        TRANSPORT_CONTEXT_SECRET,
+    )
+    .issue_verified_channel(id(peer_id), digest(label), NOW, NOW + 100_000)
+    .expect("wrong-profile transport context")
 }
 
 fn credential(
@@ -121,7 +154,7 @@ fn client() -> FederationProductClientV1<InMemoryFederationRecoveryStoreV1> {
         FederationOutboundCredentialV1::new(id("key-a-b"), 1).expect("selector"),
     )
     .expect("bind client credential");
-    FederationProductClientV1::new(wire, profile(), transport_verifier())
+    FederationProductClientV1::new(wire, profile(), transport_verifier("peer-a"))
         .expect("product client")
 }
 
@@ -141,7 +174,7 @@ fn server() -> FederationProductHostV1<InMemoryFederationRecoveryStoreV1> {
         FederationOutboundCredentialV1::new(id("key-b-a"), 1).expect("selector"),
     )
     .expect("bind server credential");
-    FederationProductHostV1::new(wire, profile(), transport_verifier())
+    FederationProductHostV1::new(wire, profile(), transport_verifier("peer-b"))
         .expect("product host")
 }
 
@@ -204,7 +237,11 @@ fn complete_round_trip(
     let query = query();
     let request = client.begin_query(&query, NOW + 1).expect("request");
     let FederationProductHostAdmissionV1::Query(admitted) = server
-        .admit(&transport("peer-a", b"server-channel"), &request, NOW + 2)
+        .admit(
+            &transport("peer-b", "peer-a", b"server-channel"),
+            &request,
+            NOW + 2,
+        )
         .expect("admit request")
     else {
         panic!("query admission");
@@ -246,7 +283,7 @@ fn transport_context_from_untrusted_issuer_is_rejected_before_replay_commit() {
     let request = client.begin_query(&query, NOW + 1).expect("request");
 
     let error = match server.admit(
-        &untrusted_transport("peer-a", b"forged-server-channel"),
+        &untrusted_transport("peer-b", "peer-a", b"forged-server-channel"),
         &request,
         NOW + 2,
     ) {
@@ -259,7 +296,11 @@ fn transport_context_from_untrusted_issuer_is_rejected_before_replay_commit() {
     ));
 
     let FederationProductHostAdmissionV1::Query(admitted) = server
-        .admit(&transport("peer-a", b"server-channel"), &request, NOW + 2)
+        .admit(
+            &transport("peer-b", "peer-a", b"server-channel"),
+            &request,
+            NOW + 2,
+        )
         .expect("trusted context remains admissible")
     else {
         panic!("query admission");
@@ -268,12 +309,48 @@ fn transport_context_from_untrusted_issuer_is_rejected_before_replay_commit() {
 }
 
 #[test]
+fn transport_context_for_another_local_host_is_rejected_before_replay_commit() {
+    let mut client = client();
+    let mut server = server();
+    let query = query();
+    let request = client.begin_query(&query, NOW + 1).expect("request");
+
+    let error = match server.admit(
+        &transport("peer-c", "peer-a", b"other-host-channel"),
+        &request,
+        NOW + 2,
+    ) {
+        Ok(_) => panic!("other-host context must fail"),
+        Err(error) => error,
+    };
+    assert!(matches!(
+        error,
+        FederationProductErrorV1::InvalidTransportContext
+    ));
+
+    assert!(matches!(
+        server
+            .admit(
+                &transport("peer-b", "peer-a", b"server-channel"),
+                &request,
+                NOW + 3,
+            )
+            .expect("correct local host remains admissible"),
+        FederationProductHostAdmissionV1::Query(_)
+    ));
+}
+
+#[test]
 fn canonical_v2_query_and_response_cross_the_authenticated_product_bridge() {
     let mut client = client();
     let mut server = server();
     let (packet, expected) = complete_round_trip(&mut client, &mut server);
     let observed = client
-        .admit_response(&transport("peer-b", b"client-channel"), &packet, NOW + 5)
+        .admit_response(
+            &transport("peer-a", "peer-b", b"client-channel"),
+            &packet,
+            NOW + 5,
+        )
         .expect("admit response");
     assert_eq!(observed, expected);
 }

@@ -67,9 +67,14 @@
       "state": "source_candidate_pending_exact_head_product_qualification"
     },
     {
-      "name": "attest_selected_transport_context_before_packet_or_replay_admission",
+      "name": "attest_local_owner_remote_peer_and_selected_transport_context_before_packet_or_replay_admission",
       "source": "codex-rs/hepta-memory-federation-wire/src/product/context.rs",
       "tests": "codex-rs/hepta-memory-federation-wire/src/product_tests/mod.rs",
+      "state": "source_candidate_pending_exact_head_product_qualification"
+    },
+    {
+      "name": "reject_untrusted_key_wrong_local_owner_and_wrong_profile_without_consuming_replay",
+      "source": "codex-rs/hepta-memory-federation-wire/src/product_tests/mod.rs",
       "state": "source_candidate_pending_exact_head_product_qualification"
     },
     {
@@ -115,6 +120,7 @@
     "wireLibraryTestsRequired": true,
     "wireCompileFailDoctestsRequired": true,
     "transportContextConstructionCompileFailRequired": true,
+    "wrongLocalHostTransportContextRegressionRequired": true,
     "productBridgeTestsRequired": true,
     "capacityMetricsRequiredForSuccess": true,
     "actualCommandExecutionRequiredForSuccess": true,
@@ -134,8 +140,8 @@
     "release": false
   },
   "externalGates": [
-    "selected mutually authenticated transport and transport-peer identity binding",
-    "secure frame and transport-context credential enrollment, storage, rotation, revocation and recovery",
+    "selected mutually authenticated transport and local/remote channel identity binding",
+    "secure frame and per-host transport-context credential enrollment, storage, rotation, revocation and recovery",
     "deployment-specific durable attempt and replay recovery policy",
     "two independently provisioned real-host fault qualification",
     "target-host latency, capacity, backpressure and cancellation-tail evidence",

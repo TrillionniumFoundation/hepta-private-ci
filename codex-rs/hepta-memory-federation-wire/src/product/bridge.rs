@@ -72,6 +72,9 @@ where
         if transport_context_verifier.transport_profile_id() != profile.transport_profile_id() {
             return Err(FederationProductErrorV1::TransportProfileMismatch);
         }
+        if transport_context_verifier.local_peer_id() != wire.local_peer_id() {
+            return Err(FederationProductErrorV1::InvalidTransportContext);
+        }
         Ok(Self {
             wire,
             profile,
@@ -209,6 +212,9 @@ where
     ) -> Result<Self, FederationProductErrorV1> {
         if transport_context_verifier.transport_profile_id() != profile.transport_profile_id() {
             return Err(FederationProductErrorV1::TransportProfileMismatch);
+        }
+        if transport_context_verifier.local_peer_id() != wire.local_peer_id() {
+            return Err(FederationProductErrorV1::InvalidTransportContext);
         }
         Ok(Self {
             wire,

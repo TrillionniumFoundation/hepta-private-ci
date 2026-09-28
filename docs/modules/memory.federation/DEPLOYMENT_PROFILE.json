@@ -15,23 +15,25 @@
     "implementation": null,
     "selectionState": "not_selected",
     "requirements": [
-      "peer identity is authenticated by the same channel that carries the packet",
+      "local endpoint and remote peer identities are authenticated by the same channel that carries the packet",
       "channel binding digest is nonzero and derived from the verified channel",
       "transport lifetime covers query and response admission",
       "dropping an attempt future stops subsequent network I/O"
     ],
     "contextAttestation": {
       "algorithm": "HMAC-SHA-256",
-      "issuerOwner": "selected_authenticated_transport",
-      "verifierOwner": "memory_federation_product_bridge",
+      "issuerOwner": "selected_authenticated_transport_endpoint",
+      "verifierOwner": "matching_memory_federation_product_bridge",
       "binds": [
-        "peer identity",
+        "local wire owner identity",
+        "remote peer identity",
         "transport profile identity",
         "channel binding digest",
         "channel establishment and expiry",
         "context key identity and generation"
       ],
       "secretMaterialInProfile": false,
+      "perHostKeyRequired": true,
       "keySelection": null,
       "generationSelection": null,
       "rotationRevocationAndRecoveryRequired": true
@@ -57,6 +59,7 @@
   },
   "atomicity": {
     "transportContextVerifiedBeforePacketDecode": true,
+    "transportContextBindsLocalWireOwner": true,
     "queryBodyPreflightBeforeReplayCommit": true,
     "responseBodyDigestPreflightBeforeTerminalCommit": true,
     "invalidTransportContextOrBodyMayNotConsumeReplayOrAttemptState": true
@@ -65,6 +68,7 @@
     "exactHeadAndDeterministicMergeRequired": true,
     "tests": "codex-rs/hepta-memory-federation-wire/src/product_tests/mod.rs",
     "transportContextCompileFailRequired": true,
+    "wrongLocalHostContextRegressionRequired": true,
     "twoRealHostFaultQualification": "not_executed",
     "targetHostSloQualification": "not_executed"
   },

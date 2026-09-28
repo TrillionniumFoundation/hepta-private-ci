@@ -16,14 +16,22 @@ fn query_body_tamper_is_rejected_before_server_replay_is_committed() {
         .encode()
         .expect("encode tampered packet");
     assert!(matches!(
-        server.admit(&transport("peer-a", b"server-channel"), &tampered, NOW + 2),
+        server.admit(
+            &transport("peer-b", "peer-a", b"server-channel"),
+            &tampered,
+            NOW + 2,
+        ),
         Err(FederationProductErrorV1::BodyCodec)
             | Err(FederationProductErrorV1::QueryBindingMismatch)
             | Err(FederationProductErrorV1::V2(_))
     ));
     assert!(matches!(
         server
-            .admit(&transport("peer-a", b"server-channel"), &request, NOW + 3)
+            .admit(
+                &transport("peer-b", "peer-a", b"server-channel"),
+                &request,
+                NOW + 3,
+            )
             .expect("original frame remains admissible"),
         FederationProductHostAdmissionV1::Query(_)
     ));
@@ -45,16 +53,16 @@ fn response_body_tamper_is_rejected_before_client_terminal_state_is_committed() 
         .expect("encode tampered response");
     assert!(matches!(
         client.admit_response(
-            &transport("peer-b", b"client-channel"),
+            &transport("peer-a", "peer-b", b"client-channel"),
             &tampered,
-            NOW + 5
+            NOW + 5,
         ),
         Err(FederationProductErrorV1::BodyDigestMismatch)
     ));
     assert_eq!(
         client
             .admit_response(
-                &transport("peer-b", b"client-channel"),
+                &transport("peer-a", "peer-b", b"client-channel"),
                 &response_packet,
                 NOW + 6,
             )
@@ -68,21 +76,18 @@ fn transport_profile_mismatch_fails_before_wire_admission() {
     let mut client = client();
     let mut server = server();
     let request = client.begin_query(&query(), NOW + 1).expect("request");
-    let wrong = FederationAuthenticatedTransportV1::from_verified_channel(
-        id("peer-a"),
-        id("different-channel-profile"),
-        digest(b"wrong-profile"),
-        NOW,
-        NOW + 100_000,
-    )
-    .expect("context");
+    let wrong = wrong_profile_transport("peer-b", "peer-a", b"wrong-profile");
     assert!(matches!(
         server.admit(&wrong, &request, NOW + 2),
         Err(FederationProductErrorV1::TransportProfileMismatch)
     ));
     assert!(matches!(
         server
-            .admit(&transport("peer-a", b"server-channel"), &request, NOW + 3)
+            .admit(
+                &transport("peer-b", "peer-a", b"server-channel"),
+                &request,
+                NOW + 3,
+            )
             .expect("valid profile remains admissible"),
         FederationProductHostAdmissionV1::Query(_)
     ));

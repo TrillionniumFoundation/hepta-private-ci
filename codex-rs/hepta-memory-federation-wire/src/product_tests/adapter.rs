@@ -57,7 +57,7 @@ impl FederationProductExchangeV1 for LoopbackExchange {
                 .map_err(|_| FederationProductExchangeErrorV1::Unavailable)?;
             let FederationProductHostAdmissionV1::Query(admitted) = server
                 .admit(
-                    &transport("peer-a", b"loopback-server-channel"),
+                    &transport("peer-b", "peer-a", b"loopback-server-channel"),
                     &request_packet,
                     NOW + 2,
                 )
@@ -71,7 +71,7 @@ impl FederationProductExchangeV1 for LoopbackExchange {
                 .map_err(|_| FederationProductExchangeErrorV1::Rejected)?;
             Ok(FederationProductExchangeResponseV1 {
                 packet,
-                transport: transport("peer-b", b"loopback-client-channel"),
+                transport: transport("peer-a", "peer-b", b"loopback-client-channel"),
             })
         })();
         Box::pin(std::future::ready(result))
