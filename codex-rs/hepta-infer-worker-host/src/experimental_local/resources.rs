@@ -121,7 +121,9 @@ impl ResourceManager {
         let mut state = self.lock()?;
         state.fenced_reason = Some(reason);
         for model in state.models.values_mut() {
-            model.lifecycle = ModelLifecycle::RepairRequired;
+            if model.lifecycle != ModelLifecycle::Zombie {
+                model.lifecycle = ModelLifecycle::RepairRequired;
+            }
         }
         for request in state.requests.values_mut() {
             request.lifecycle = RequestLifecycle::Quarantined;
@@ -132,12 +134,13 @@ impl ResourceManager {
     pub fn resolve_quarantine(&self, operation_id: &str) -> Result<(), LocalWorkerError> {
         validate_identity(operation_id, "local operation")?;
         let mut state = self.lock()?;
-        let request = state
-            .requests
-            .get(operation_id)
-            .ok_or(LocalWorkerError::InvalidTransition(
-                "quarantined request not found",
-            ))?;
+        let request =
+            state
+                .requests
+                .get(operation_id)
+                .ok_or(LocalWorkerError::InvalidTransition(
+                    "quarantined request not found",
+                ))?;
         if request.lifecycle != RequestLifecycle::Quarantined {
             return Err(LocalWorkerError::InvalidTransition(
                 "request is not quarantined",
@@ -165,9 +168,9 @@ impl ResourceManager {
                 "worker or device generation changed".to_string(),
             ));
         }
-        if let Some(reason) = &state.fenced_reason {
-            return Err(LocalWorkerError::GenerationFenced(reason.clone()));
-        }
+        // Fencing blocks new admission in `ensure_available`, but exact
+        // recovery and physical cleanup must remain possible for the same
+        // generation and device epoch.
         Ok(())
     }
 
@@ -207,10 +210,13 @@ impl ResourceManager {
         {
             return Err(LocalWorkerError::CapacityExceeded);
         }
-        let model = state
-            .models
-            .get_mut(handle.handle_id())
-            .ok_or(LocalWorkerError::InvalidTransition("model is not registered"))?;
+        let model =
+            state
+                .models
+                .get_mut(handle.handle_id())
+                .ok_or(LocalWorkerError::InvalidTransition(
+                    "model is not registered",
+                ))?;
         if model.lifecycle != ModelLifecycle::Ready {
             return Err(LocalWorkerError::InvalidTransition("model is not ready"));
         }
@@ -242,11 +248,18 @@ impl ResourceManager {
         handle: &AttestedModelHandle,
     ) -> Result<(), LocalWorkerError> {
         let mut state = self.lock()?;
-        let model = state
-            .models
-            .get_mut(handle.handle_id())
-            .ok_or(LocalWorkerError::InvalidTransition("model is not registered"))?;
-        if model.lifecycle != ModelLifecycle::Ready || model.active_requests != 0 {
+        let model =
+            state
+                .models
+                .get_mut(handle.handle_id())
+                .ok_or(LocalWorkerError::InvalidTransition(
+                    "model is not registered",
+                ))?;
+        if !matches!(
+            model.lifecycle,
+            ModelLifecycle::Ready | ModelLifecycle::RepairRequired | ModelLifecycle::Zombie
+        ) || model.active_requests != 0
+        {
             return Err(LocalWorkerError::InvalidTransition(
                 "model cannot enter unload",
             ));
@@ -261,10 +274,13 @@ impl ResourceManager {
         handle: &AttestedModelHandle,
     ) -> Result<(), LocalWorkerError> {
         let mut state = self.lock()?;
-        let record = state
-            .models
-            .get(handle.handle_id())
-            .ok_or(LocalWorkerError::InvalidTransition("model is not registered"))?;
+        let record =
+            state
+                .models
+                .get(handle.handle_id())
+                .ok_or(LocalWorkerError::InvalidTransition(
+                    "model is not registered",
+                ))?;
         if record.lifecycle != ModelLifecycle::Unloading || record.active_requests != 0 {
             return Err(LocalWorkerError::InvalidTransition(
                 "model unload is not terminal",
@@ -279,15 +295,15 @@ impl ResourceManager {
         Ok(())
     }
 
-    pub(super) fn fail_unload(
-        &self,
-        handle: &AttestedModelHandle,
-    ) -> Result<(), LocalWorkerError> {
+    pub(super) fn fail_unload(&self, handle: &AttestedModelHandle) -> Result<(), LocalWorkerError> {
         let mut state = self.lock()?;
-        let record = state
-            .models
-            .get_mut(handle.handle_id())
-            .ok_or(LocalWorkerError::InvalidTransition("model is not registered"))?;
+        let record =
+            state
+                .models
+                .get_mut(handle.handle_id())
+                .ok_or(LocalWorkerError::InvalidTransition(
+                    "model is not registered",
+                ))?;
         record.lifecycle = ModelLifecycle::Zombie;
         Ok(())
     }
@@ -319,10 +335,7 @@ pub(super) struct ModelReservation {
 }
 
 impl ModelReservation {
-    pub(super) fn commit(
-        mut self,
-        handle: &AttestedModelHandle,
-    ) -> Result<(), LocalWorkerError> {
+    pub(super) fn commit(mut self, handle: &AttestedModelHandle) -> Result<(), LocalWorkerError> {
         let mut state = self.manager.lock()?;
         if state.models.contains_key(handle.handle_id()) {
             return Err(LocalWorkerError::InvalidTransition(
@@ -369,9 +382,8 @@ impl Drop for ModelReservation {
             match state.pending_model_bytes.checked_sub(self.expected_bytes) {
                 Some(value) => state.pending_model_bytes = value,
                 None => {
-                    state.fenced_reason = Some(
-                        "model reservation accounting underflow; repair required".to_string(),
-                    );
+                    state.fenced_reason =
+                        Some("model reservation accounting underflow; repair required".to_string());
                 }
             }
         }
@@ -427,9 +439,8 @@ impl Drop for RequestReservation {
         if let Ok(mut state) = self.manager.inner.lock()
             && release_request_locked(&mut state, &self.operation_id).is_err()
         {
-            state.fenced_reason = Some(
-                "request reservation accounting failure; repair required".to_string(),
-            );
+            state.fenced_reason =
+                Some("request reservation accounting failure; repair required".to_string());
         }
     }
 }
@@ -446,12 +457,13 @@ fn release_request_locked(
         .request_bytes
         .checked_sub(request.bytes)
         .ok_or(LocalWorkerError::ArithmeticOverflow)?;
-    let model = state
-        .models
-        .get_mut(&request.handle_id)
-        .ok_or(LocalWorkerError::InvalidTransition(
-            "request model disappeared",
-        ))?;
+    let model =
+        state
+            .models
+            .get_mut(&request.handle_id)
+            .ok_or(LocalWorkerError::InvalidTransition(
+                "request model disappeared",
+            ))?;
     model.active_requests = model
         .active_requests
         .checked_sub(1)

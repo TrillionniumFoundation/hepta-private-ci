@@ -80,11 +80,13 @@ use tokio::time::timeout;
 use tokio::time::timeout_at;
 use tokio_util::sync::CancellationToken;
 
+use crate::native_recovery::NativeRecoveryCounters;
+use crate::native_recovery::NativeRecoveryPolicy;
+
 const MAX_PROMPT_BYTES: usize = 32 * 1024;
 const MAX_OUTPUT_BYTES: usize = 1024 * 1024;
 const RPC_TIMEOUT: Duration = Duration::from_secs(5);
 const INTERRUPT_GRACE: Duration = Duration::from_secs(3);
-const TURN_START_RECONCILE_GRACE: Duration = Duration::from_secs(2);
 const LOCAL_CANCELLED: &str = "cancelled";
 const LOCAL_DEADLINE_ELAPSED: &str = "deadline elapsed";
 
@@ -146,6 +148,8 @@ pub struct NativeWorkerConfig {
 pub struct AppServerModelDriver {
     config: NativeWorkerConfig,
     turn_start_authorizer: Option<Arc<dyn TurnStartAuthorizer>>,
+    recovery_policy: NativeRecoveryPolicy,
+    recovery_counters: Arc<NativeRecoveryCounters>,
 }
 
 #[derive(Clone)]
@@ -168,6 +172,8 @@ impl AppServerModelDriver {
         Ok(Self {
             config,
             turn_start_authorizer: None,
+            recovery_policy: NativeRecoveryPolicy::default(),
+            recovery_counters: Arc::new(NativeRecoveryCounters::default()),
         })
     }
 
@@ -176,6 +182,20 @@ impl AppServerModelDriver {
     pub fn with_turn_start_authorizer(mut self, authorizer: Arc<dyn TurnStartAuthorizer>) -> Self {
         self.turn_start_authorizer = Some(authorizer);
         self
+    }
+
+    pub fn with_recovery_policy(mut self, policy: NativeRecoveryPolicy) -> Self {
+        self.recovery_policy = policy;
+        self
+    }
+
+    pub fn with_recovery_counters(mut self, counters: Arc<NativeRecoveryCounters>) -> Self {
+        self.recovery_counters = counters;
+        self
+    }
+
+    pub fn recovery_counters(&self) -> Arc<NativeRecoveryCounters> {
+        Arc::clone(&self.recovery_counters)
     }
 
     /// Reconcile a previously prepared/dispatched operation without issuing a
@@ -823,8 +843,13 @@ impl AppServerModelDriver {
                         return Err(format!("turn/start rejected by App Server: {reason}").into());
                     }
                     AdapterStatus::Indeterminate => {
-                        if let Some(turn) =
-                            reconcile_turn_start(&mut client, &started.thread.id).await?
+                        if let Some(turn) = reconcile_turn_start(
+                            &mut client,
+                            &started.thread.id,
+                            self.recovery_policy.turn_start_reconcile_grace(),
+                            &self.recovery_counters,
+                        )
+                        .await?
                         {
                             turn
                         } else {
@@ -841,7 +866,14 @@ impl AppServerModelDriver {
                 }
             }
             Ok(Err(error)) => {
-                if let Some(turn) = reconcile_turn_start(&mut client, &started.thread.id).await? {
+                if let Some(turn) = reconcile_turn_start(
+                    &mut client,
+                    &started.thread.id,
+                    self.recovery_policy.turn_start_reconcile_grace(),
+                    &self.recovery_counters,
+                )
+                .await?
+                {
                     turn
                 } else {
                     let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
@@ -854,7 +886,14 @@ impl AppServerModelDriver {
                 }
             }
             Err(_) => {
-                if let Some(turn) = reconcile_turn_start(&mut client, &started.thread.id).await? {
+                if let Some(turn) = reconcile_turn_start(
+                    &mut client,
+                    &started.thread.id,
+                    self.recovery_policy.turn_start_reconcile_grace(),
+                    &self.recovery_counters,
+                )
+                .await?
+                {
                     turn
                 } else {
                     let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
@@ -1220,17 +1259,31 @@ fn indeterminate_start_output(started: ThreadStartResponse, reason: String) -> N
 async fn reconcile_turn_start(
     client: &mut RemoteAppServerClient,
     thread_id: &str,
+    grace: Duration,
+    counters: &NativeRecoveryCounters,
 ) -> Result<Option<codex_app_server_protocol::Turn>> {
-    let deadline = Instant::now() + TURN_START_RECONCILE_GRACE;
+    counters.record_reconcile_attempt();
+    let deadline = Instant::now() + grace;
     loop {
         let event = match timeout_at(deadline, client.next_observed_event()).await {
             Ok(Some(event)) => event,
-            Ok(None) | Err(_) => return Ok(None),
+            Ok(None) | Err(_) => {
+                counters.record_reconcile_miss();
+                return Ok(None);
+            }
         };
         match event.event() {
             AppServerEvent::ServerNotification(_) => {
-                if let Some(turn) = exact_reconciled_turn(thread_id, &event)? {
-                    return Ok(Some(turn));
+                match exact_reconciled_turn(thread_id, &event) {
+                    Ok(Some(turn)) => {
+                        counters.record_reconcile_success();
+                        return Ok(Some(turn));
+                    }
+                    Ok(None) => {}
+                    Err(error) => {
+                        counters.record_reconcile_failure();
+                        return Err(error.into());
+                    }
                 }
             }
             AppServerEvent::ServerRequest(request) => {
@@ -1249,6 +1302,7 @@ async fn reconcile_turn_start(
                 .map_err(|_| "approval rejection timed out during turn/start reconciliation")??;
             }
             AppServerEvent::Lagged { .. } | AppServerEvent::Disconnected { .. } => {
+                counters.record_reconcile_miss();
                 return Ok(None);
             }
         }

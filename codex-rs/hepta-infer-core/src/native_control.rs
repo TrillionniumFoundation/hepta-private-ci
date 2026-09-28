@@ -471,6 +471,24 @@ impl DurableInferenceControl {
         self.native.records.get(request_id)
     }
 
+    /// Read-only operational projection. Callers cannot mutate or manufacture
+    /// native journal facts through this iterator.
+    pub fn native_records(&self) -> impl Iterator<Item = &NativeRunRecord> {
+        self.native.records.values()
+    }
+
+    pub fn native_maximum_in_flight(&self) -> Option<usize> {
+        self.native.maximum_in_flight
+    }
+
+    pub fn native_journal_bytes(&self) -> u64 {
+        self.journal_bytes
+    }
+
+    pub fn journal_record_capacity(&self) -> usize {
+        self.capacity
+    }
+
     fn ensure_native_dispatch_space(&self) -> Result<(), Error> {
         // This exclusive owner serializes active calls. Leave room for bounded
         // dispatch/cancel metadata and the next maximal observed output before

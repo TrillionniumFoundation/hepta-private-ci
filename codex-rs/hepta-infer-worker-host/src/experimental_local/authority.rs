@@ -2,9 +2,9 @@ use std::collections::BTreeSet;
 use std::fs::OpenOptions;
 use std::io::Read;
 use std::path::Path;
+use std::sync::Arc;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
-use std::sync::Arc;
 
 use ed25519_dalek::Signature;
 use ed25519_dalek::VerifyingKey;
@@ -33,8 +33,7 @@ impl TrustedClock for SystemTrustedClock {
         let duration = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .map_err(|_| LocalWorkerError::InvalidGrant("trusted clock before Unix epoch"))?;
-        u64::try_from(duration.as_millis())
-            .map_err(|_| LocalWorkerError::ArithmeticOverflow)
+        u64::try_from(duration.as_millis()).map_err(|_| LocalWorkerError::ArithmeticOverflow)
     }
 }
 
@@ -135,8 +134,9 @@ impl ResourceGrantVerifier {
     /// Open a verifier only from a protected owner/root configuration. There is
     /// intentionally no public constructor from arbitrary in-memory key bytes.
     pub fn open(path: &Path) -> Result<Self, LocalWorkerError> {
-        let config: ResourceGrantVerifierConfig = serde_json::from_slice(&read_private_config(path)?)
-            .map_err(|_| LocalWorkerError::InvalidGrant("verifier configuration"))?;
+        let config: ResourceGrantVerifierConfig =
+            serde_json::from_slice(&read_private_config(path)?)
+                .map_err(|_| LocalWorkerError::InvalidGrant("verifier configuration"))?;
         Self::from_trusted_parts(
             config.expected_issuer,
             config.verifying_key,
@@ -241,11 +241,23 @@ fn validate_claims(claims: &ResourceGrantClaims) -> Result<(), LocalWorkerError>
         (&claims.model_digest, "resource grant model digest"),
         (&claims.weights_digest, "resource grant weights digest"),
         (&claims.tokenizer_digest, "resource grant tokenizer digest"),
-        (&claims.preprocessor_digest, "resource grant preprocessor digest"),
-        (&claims.quantization_digest, "resource grant quantization digest"),
+        (
+            &claims.preprocessor_digest,
+            "resource grant preprocessor digest",
+        ),
+        (
+            &claims.quantization_digest,
+            "resource grant quantization digest",
+        ),
         (&claims.runtime_digest, "resource grant runtime digest"),
-        (&claims.device_lease_digest, "resource grant device lease digest"),
-        (&claims.revocation_head_digest, "resource grant revocation head"),
+        (
+            &claims.device_lease_digest,
+            "resource grant device lease digest",
+        ),
+        (
+            &claims.revocation_head_digest,
+            "resource grant revocation head",
+        ),
         (&claims.semantic_digest, "resource grant semantic digest"),
     ] {
         validate_digest(value, field)?;
@@ -406,8 +418,7 @@ impl VerifiedModelManifest {
             validate_digest(value, field)?;
         }
         if manifest.expected_resident_memory_bytes == 0
-            || manifest.expected_resident_memory_bytes
-                > grant.claims.maximum_aggregate_memory_bytes
+            || manifest.expected_resident_memory_bytes > grant.claims.maximum_aggregate_memory_bytes
         {
             return Err(LocalWorkerError::InvalidManifest("memory bound"));
         }
@@ -517,7 +528,11 @@ fn read_private_config(path: &Path) -> Result<Vec<u8>, LocalWorkerError> {
         ));
     }
     let mut bytes = Vec::new();
-    file.take(u64::try_from(MAX_CONFIG_BYTES + 1).map_err(|_| LocalWorkerError::ArithmeticOverflow)?)
+    file.by_ref()
+        .take(
+            u64::try_from(MAX_CONFIG_BYTES + 1)
+                .map_err(|_| LocalWorkerError::ArithmeticOverflow)?,
+        )
         .read_to_end(&mut bytes)
         .map_err(|error| LocalWorkerError::Driver(error.to_string()))?;
     if bytes.len() > MAX_CONFIG_BYTES {

@@ -33,6 +33,8 @@ pub mod model_worker;
 pub mod final_use_authorizer;
 /// Hosted App Server worker profile.
 pub mod native_app_server;
+/// Explicit hosted recovery, terminal-receipt reconciliation and metrics.
+pub mod native_recovery;
 
 use std::error::Error as StdError;
 use std::fmt;

@@ -282,10 +282,9 @@ where
                 LocalWorkerError::DeadlineExpired
             });
         }
-        if let Err(error) = control.native_started(
-            &admission.request_id,
-            admission.request_id.clone(),
-        ) {
+        if let Err(error) =
+            control.native_started(&admission.request_id, admission.request_id.clone())
+        {
             control
                 .abort_native_before_effect(
                     abort_token,
@@ -296,13 +295,29 @@ where
             return Err(control_error(error));
         }
         drop(abort_token);
-        request_resources.mark_running()?;
+        if let Err(error) = request_resources.mark_running() {
+            let output = indeterminate_output(
+                &admission.request_id,
+                manifest.model_id(),
+                handle.handle_id(),
+                None,
+                "local resource ledger failed after durable effect entry; no replay permitted",
+            );
+            let settled = control
+                .settle_native(&admission.request_id, output)
+                .map_err(control_error)?;
+            request_resources.quarantine()?;
+            self.resources
+                .fence_generation("local resource ledger failed after effect entry")?;
+            let mut result = result_from_record(&settled)?;
+            result.stop_reason = Some(format!(
+                "{}; {error}",
+                result.stop_reason.unwrap_or_default()
+            ));
+            return Ok(result);
+        }
 
-        let observed = match self
-            .driver
-            .run(handle, input, cancellation, deadline)
-            .await
-        {
+        let observed = match self.driver.run(handle, input, cancellation, deadline).await {
             Ok(observed) => observed,
             Err(error) => {
                 let output = indeterminate_output(
@@ -319,7 +334,10 @@ where
                 self.resources
                     .fence_generation("local driver result unknown after effect entry")?;
                 let mut result = result_from_record(&settled)?;
-                result.stop_reason = Some(format!("{}; {error}", result.stop_reason.unwrap_or_default()));
+                result.stop_reason = Some(format!(
+                    "{}; {error}",
+                    result.stop_reason.unwrap_or_default()
+                ));
                 return Ok(result);
             }
         };
@@ -344,9 +362,7 @@ where
             return result_from_record(&settled);
         }
 
-        let boundary = self
-            .terminal_boundary(grant, handle, &observed)
-            .await;
+        let boundary = self.terminal_boundary(grant, handle, &observed).await;
         let output = terminal_output(
             &admission.request_id,
             manifest.model_id(),
@@ -390,9 +406,7 @@ where
                         "terminal reconciliation was nonterminal",
                     ));
                 }
-                let boundary = self
-                    .terminal_boundary(grant, handle, &observed)
-                    .await;
+                let boundary = self.terminal_boundary(grant, handle, &observed).await;
                 let output = terminal_output(
                     &record.request.request_id,
                     manifest.model_id(),
@@ -464,14 +478,11 @@ where
         handle: &AttestedModelHandle,
         observed: &DriverRunObservation,
     ) -> TerminalBoundary {
-        if let Err(error) = grant.ensure_current(
-            &self.clock,
-            &self.worker_subject,
-            self.generation,
-        ) {
-            let _ = self.resources.fence_generation(
-                "resource grant was no longer current at terminal observation",
-            );
+        if let Err(error) = grant.ensure_current(&self.clock, &self.worker_subject, self.generation)
+        {
+            let _ = self
+                .resources
+                .fence_generation("resource grant was no longer current at terminal observation");
             return TerminalBoundary::Quarantined(error.to_string());
         }
         match self
@@ -503,10 +514,7 @@ where
         }
     }
 
-    fn validate_generation(
-        &self,
-        grant: &VerifiedResourceGrant,
-    ) -> Result<(), LocalWorkerError> {
+    fn validate_generation(&self, grant: &VerifiedResourceGrant) -> Result<(), LocalWorkerError> {
         if grant.witness_digest() != self.grant_witness_digest {
             return Err(LocalWorkerError::InvalidGrant(
                 "process grant changed without a new generation",
@@ -538,8 +546,7 @@ fn validate_admission(
         || admission.maximum_tokens > grant.maximum_tokens()
         || admission.maximum_usage_units == 0
         || admission.maximum_usage_units > grant.claims().maximum_usage_units
-        || admission.expected_transient_memory_bytes
-            > grant.maximum_aggregate_memory_bytes()
+        || admission.expected_transient_memory_bytes > grant.maximum_aggregate_memory_bytes()
     {
         return Err(LocalWorkerError::CapacityExceeded);
     }
@@ -556,8 +563,7 @@ fn validate_run_observation(
             .stop_reason
             .as_ref()
             .is_some_and(|reason| reason.is_empty() || reason.len() > 4096)
-        || observed.terminal_observed
-            == (observed.status == DriverTerminalStatus::Indeterminate)
+        || observed.terminal_observed == (observed.status == DriverTerminalStatus::Indeterminate)
         || observed
             .observed_tokens
             .is_some_and(|tokens| tokens > u64::from(admission.maximum_tokens))
@@ -697,7 +703,11 @@ fn terminal_output(
                     NativeBoundaryStatus::Quarantined
                 }
             };
-            (boundary, NativeOwnerAuthority::ObservedReady, observed.stop_reason)
+            (
+                boundary,
+                NativeOwnerAuthority::ObservedReady,
+                observed.stop_reason,
+            )
         }
         TerminalBoundary::Quarantined(reason) => (
             NativeBoundaryStatus::Quarantined,
