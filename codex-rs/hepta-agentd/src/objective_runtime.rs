@@ -308,6 +308,9 @@ impl ObjectiveRuntimeHost {
                             Some(crate::AgentdIntelligenceProductLoopDispositionV1::Indeterminate) => {
                                 "canonical_indeterminate"
                             }
+                            Some(
+                                crate::AgentdIntelligenceProductLoopDispositionV1::ReconciliationRequired,
+                            ) => "canonical_reconciliation_required",
                             None => "canonical_ready",
                         }
                     }
