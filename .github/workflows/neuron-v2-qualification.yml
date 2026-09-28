@@ -1,0 +1,64 @@
+name: Neuron V2 committed-source qualification
+on:
+  push:
+    branches: [codex/neuron-runtime-durable-closure-v1]
+    paths:
+      - 'codex-rs/hepta-neuron/**'
+      - 'codex-rs/hepta-infer-worker-host/**'
+      - 'codex-rs/Cargo.lock'
+      - 'scripts/neuron/**'
+      - '.github/workflows/neuron-v2-qualification.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  identity:
+    runs-on: ubuntu-latest
+    outputs:
+      source: ${{ steps.identity.outputs.source }}
+      base: ${{ steps.identity.outputs.base }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - id: identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "source=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "base=$(git rev-parse origin/main)" >> "$GITHUB_OUTPUT"
+  native:
+    needs: identity
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        candidate: [source-head, synthetic-merge]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.identity.outputs.source }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: just@1.40.0,cargo-nextest@0.9.102
+          fallback: none
+      - name: Execute committed candidate without repair or source rewriting
+        env:
+          NEURON_SOURCE_SHA: ${{ needs.identity.outputs.source }}
+          NEURON_BASE_SHA: ${{ needs.identity.outputs.base }}
+          NEURON_CANDIDATE: ${{ matrix.candidate }}
+          NEURON_EVIDENCE_DIR: ${{ runner.temp }}/neuron-v2-evidence
+        run: bash scripts/neuron/qualify.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: neuron-v2-${{ matrix.os }}-${{ matrix.candidate }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/neuron-v2-evidence/
+          retention-days: 90
+          if-no-files-found: error

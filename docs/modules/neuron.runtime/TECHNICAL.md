@@ -477,3 +477,12 @@ The bootstrap source-location obligation for `neuron.runtime` is implemented by 
 - `codex-rs/hepta-neuron`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+## Current V2 product developer entry
+
+See [V2_DEVELOPMENT.md](V2_DEVELOPMENT.md) for the current operation state machine,
+query-only recovery contract, failure tombstones, file identity checks, measured
+I/O, capacity warning API and exact-source verification procedure. The mechanisms
+above remain applicable, but are not a substitute for that end-to-end V2 guide.
+V2 segment compaction, complete generation reload and target-host acceptance are
+not implied by the new lifecycle or diagnostic implementation.

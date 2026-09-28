@@ -177,6 +177,10 @@ impl SparseCheckpoint {
         self.sequence
     }
 
+    pub(crate) fn monotonic_micros(&self) -> u64 {
+        self.monotonic_micros
+    }
+
     pub(crate) fn matches_tick(&self, tick: &SparseTick) -> bool {
         self.scope == tick.scope_digest
             && self.objective == tick.objective_digest

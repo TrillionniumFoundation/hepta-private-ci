@@ -30,11 +30,16 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use crate::JournalAnchor;
+use crate::runtime_file_v2::MeasuredFileV2;
+use crate::runtime_file_v2::open_regular;
 use crate::JournalScope;
 use crate::NeuronOperationKeyV2;
 
 #[path = "runtime_index_v2_capacity.rs"]
 mod capacity;
+#[path = "runtime_index_v2_lifecycle.rs"]
+mod lifecycle;
+pub use lifecycle::NeuronOperationFailureV2;
 
 const MAGIC: &[u8; 8] = b"HPTNGI02";
 const SCHEMA_VERSION: u32 = 2;
@@ -111,6 +116,7 @@ pub enum NeuronRuntimeIndexError {
     Indeterminate,
     Poisoned,
     Io(io::ErrorKind),
+    TerminalFailure(NeuronOperationFailureV2),
 }
 
 impl fmt::Display for NeuronRuntimeIndexError {
@@ -127,15 +133,15 @@ impl From<io::Error> for NeuronRuntimeIndexError {
     }
 }
 
-struct IndexLockedFile(File);
+struct IndexLockedFile(MeasuredFileV2);
 
 impl IndexLockedFile {
-    fn acquire(file: File) -> Result<Self, NeuronRuntimeIndexError> {
+    fn acquire(file: File, path: &Path) -> Result<Self, NeuronRuntimeIndexError> {
         if !file.metadata()?.is_file() {
             return Err(NeuronRuntimeIndexError::NotRegular);
         }
         match file.try_lock() {
-            Ok(()) => Ok(Self(file)),
+            Ok(()) => Ok(Self(MeasuredFileV2::new(file, path)?)),
             Err(TryLockError::WouldBlock) => Err(NeuronRuntimeIndexError::Busy),
             Err(TryLockError::Error(error)) => Err(error.into()),
         }
@@ -143,7 +149,7 @@ impl IndexLockedFile {
 }
 
 impl Deref for IndexLockedFile {
-    type Target = File;
+    type Target = MeasuredFileV2;
 
     fn deref(&self) -> &Self::Target {
         &self.0
@@ -168,12 +174,16 @@ pub struct FileNeuronRuntimeIndexV2 {
     records: Vec<NeuronRuntimeIndexRecordV2>,
     tick_index: BTreeMap<StableId, usize>,
     pending: Option<NeuronRuntimeIndexPendingV2>,
+    dispatched: bool,
+    failures: BTreeMap<StableId, (NeuronOperationKeyV2, NeuronOperationFailureV2)>,
     frontier: Option<JournalAnchor>,
     event_frontier: Digest32,
     end_offset: u64,
     poisoned: bool,
     #[cfg(test)]
     fail_after_sync_once: bool,
+    #[cfg(test)]
+    fail_completion_once: bool,
 }
 
 impl FileNeuronRuntimeIndexV2 {
@@ -188,7 +198,7 @@ impl FileNeuronRuntimeIndexV2 {
             .write(true)
             .create_new(true)
             .open(path)?;
-        let mut file = IndexLockedFile::acquire(file)?;
+        let mut file = IndexLockedFile::acquire(file, path)?;
         let header = encode_header(&context)?;
         file.write_all(&header)
             .map_err(|_| NeuronRuntimeIndexError::Indeterminate)?;
@@ -201,12 +211,16 @@ impl FileNeuronRuntimeIndexV2 {
             records: Vec::new(),
             tick_index: BTreeMap::new(),
             pending: None,
+            dispatched: false,
+            failures: BTreeMap::new(),
             frontier: None,
             event_frontier: Digest32::ZERO,
             end_offset: HEADER_BYTES as u64,
             poisoned: false,
             #[cfg(test)]
             fail_after_sync_once: false,
+            #[cfg(test)]
+            fail_completion_once: false,
         })
     }
 
@@ -232,8 +246,15 @@ impl FileNeuronRuntimeIndexV2 {
         if metadata.len() > context.max_startup_replay_bytes {
             return Err(NeuronRuntimeIndexError::ReplayBound);
         }
-        let file = OpenOptions::new().read(true).write(true).open(path)?;
-        let mut file = IndexLockedFile::acquire(file)?;
+        let file = open_regular(path)?;
+        let mut file = IndexLockedFile::acquire(file, path)?;
+        let opened_length = file.metadata()?.len();
+        if opened_length < HEADER_BYTES as u64 {
+            return Err(NeuronRuntimeIndexError::HistoryMissing);
+        }
+        if opened_length > context.max_startup_replay_bytes {
+            return Err(NeuronRuntimeIndexError::ReplayBound);
+        }
         let expected_header = encode_header(&context)?;
         let mut actual_header = [0_u8; HEADER_BYTES];
         file.read_exact(&mut actual_header)?;
@@ -244,6 +265,8 @@ impl FileNeuronRuntimeIndexV2 {
         let mut records = Vec::new();
         let mut tick_index = BTreeMap::new();
         let mut pending = None;
+        let mut dispatched = false;
+        let mut failures = BTreeMap::new();
         let mut frontier = None;
         let mut event_frontier = Digest32::ZERO;
         let length = file.metadata()?.len();
@@ -281,6 +304,8 @@ impl FileNeuronRuntimeIndexV2 {
                 &mut records,
                 &mut tick_index,
                 &mut pending,
+                &mut dispatched,
+                &mut failures,
                 &mut frontier,
                 &mut event_frontier,
             )?;
@@ -297,11 +322,15 @@ impl FileNeuronRuntimeIndexV2 {
             records,
             tick_index,
             pending,
+            dispatched,
+            failures,
             frontier,
             event_frontier,
             poisoned: false,
             #[cfg(test)]
             fail_after_sync_once: false,
+            #[cfg(test)]
+            fail_completion_once: false,
         })
     }
 
@@ -312,6 +341,9 @@ impl FileNeuronRuntimeIndexV2 {
     ) -> Result<NeuronRuntimeIndexAdmissionV2, NeuronRuntimeIndexError> {
         self.ensure_healthy()?;
         validate_key(key)?;
+        if let Some(failure) = self.failure(key)? {
+            return Err(NeuronRuntimeIndexError::TerminalFailure(failure));
+        }
         if let Some(index) = self.tick_index.get(&key.tick_id).copied() {
             let record = self
                 .records
@@ -335,10 +367,10 @@ impl FileNeuronRuntimeIndexV2 {
         if expected_anchor != self.frontier {
             return Err(NeuronRuntimeIndexError::Conflict);
         }
-        if self.records.len() >= self.context.max_records {
+        if self.records.len() + self.failures.len() >= self.context.max_records {
             return Err(NeuronRuntimeIndexError::Capacity);
         }
-        let event = IndexEventV2::Prepared {
+        let event = IndexEventV2::Reserved {
             key: OperationKeyDto::from_key(key),
             expected_anchor: expected_anchor.map(AnchorDto::from_anchor),
         };
@@ -359,7 +391,7 @@ impl FileNeuronRuntimeIndexV2 {
             }
             NeuronRuntimeIndexAdmissionV2::New => {}
         }
-        let event = IndexEventV2::Prepared {
+        let event = IndexEventV2::Reserved {
             key: OperationKeyDto::from_key(&key),
             expected_anchor: expected_anchor.map(AnchorDto::from_anchor),
         };
@@ -371,6 +403,7 @@ impl FileNeuronRuntimeIndexV2 {
             expected_anchor,
         };
         self.pending = Some(value.clone());
+        self.dispatched = false;
         Ok(value)
     }
 
@@ -416,6 +449,11 @@ impl FileNeuronRuntimeIndexV2 {
             generation_operation_digest: generation_operation_digest.to_string(),
         };
         let payload = encode_event(self.event_frontier, &event)?;
+        #[cfg(test)]
+        if self.fail_completion_once {
+            self.fail_completion_once = false;
+            self.fail_after_sync_once = true;
+        }
         self.append_payload(&payload)?;
         self.event_frontier = event_digest(&payload)?;
         let record = NeuronRuntimeIndexRecordV2 {
@@ -428,8 +466,29 @@ impl FileNeuronRuntimeIndexV2 {
         self.tick_index.insert(key.tick_id.clone(), index);
         self.records.push(record.clone());
         self.pending = None;
+        self.dispatched = false;
         self.frontier = Some(next_anchor);
         Ok(record)
+    }
+
+    pub(crate) fn storage_observation(&self) -> crate::NeuronStorageObservationV2 {
+        crate::NeuronStorageObservationV2 {
+            file_bytes: self.file.metadata().ok().map(|value| value.len()),
+            io: self.file.metrics(),
+        }
+    }
+
+    pub(crate) fn capacity_snapshot(&self) -> Result<crate::NeuronStorageCapacityV2, NeuronRuntimeIndexError> {
+        self.ensure_healthy()?;
+        Ok(crate::NeuronStorageCapacityV2 {
+            records: self.records.len() + self.failures.len() + usize::from(self.pending.is_some()),
+            record_limit: self.context.max_records,
+            file_bytes: self.file.metadata()?.len(),
+            byte_limit: self.context.max_file_bytes.min(self.context.max_startup_replay_bytes),
+            reserved_bytes: self.pending.as_ref().map(|pending| {
+                self.remaining_reservation(&pending.key, pending.expected_anchor, !self.dispatched)
+            }).transpose()?.unwrap_or(0),
+        })
     }
 
     pub fn records(
@@ -501,11 +560,17 @@ impl FileNeuronRuntimeIndexV2 {
     }
 
     fn ensure_healthy(&self) -> Result<(), NeuronRuntimeIndexError> {
+        self.file.verify_identity()?;
         if self.poisoned {
             Err(NeuronRuntimeIndexError::Poisoned)
         } else {
             Ok(())
         }
+    }
+
+    #[cfg(test)]
+    pub(crate) fn fail_next_completion_after_sync(&mut self) {
+        self.fail_completion_once = true;
     }
 
     #[cfg(test)]
@@ -517,6 +582,17 @@ impl FileNeuronRuntimeIndexV2 {
 #[derive(Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 enum IndexEventV2 {
+    Reserved {
+        key: OperationKeyDto,
+        expected_anchor: Option<AnchorDto>,
+    },
+    DispatchStarted {
+        key: OperationKeyDto,
+    },
+    Failed {
+        key: OperationKeyDto,
+        failure: NeuronOperationFailureV2,
+    },
     Prepared {
         key: OperationKeyDto,
         expected_anchor: Option<AnchorDto>,
@@ -647,30 +723,57 @@ fn apply_event(
     records: &mut Vec<NeuronRuntimeIndexRecordV2>,
     tick_index: &mut BTreeMap<StableId, usize>,
     pending: &mut Option<NeuronRuntimeIndexPendingV2>,
+    dispatched: &mut bool,
+    failures: &mut BTreeMap<StableId, (NeuronOperationKeyV2, NeuronOperationFailureV2)>,
     frontier: &mut Option<JournalAnchor>,
     event_frontier: &mut Digest32,
 ) -> Result<(), NeuronRuntimeIndexError> {
     if decoded.previous_event_digest != *event_frontier {
         return Err(NeuronRuntimeIndexError::Corrupt);
     }
+    let legacy_prepared = matches!(&decoded.event, IndexEventV2::Prepared { .. });
     match decoded.event {
-        IndexEventV2::Prepared {
+        IndexEventV2::Reserved { key, expected_anchor }
+        | IndexEventV2::Prepared {
             key,
             expected_anchor,
         } => {
             let key = key.into_key()?;
             let expected_anchor = expected_anchor.map(AnchorDto::into_anchor).transpose()?;
             if pending.is_some()
-                || records.len() >= context.max_records
+                || records.len() + failures.len() >= context.max_records
                 || tick_index.contains_key(&key.tick_id)
+                || failures.contains_key(&key.tick_id)
                 || expected_anchor != *frontier
             {
                 return Err(NeuronRuntimeIndexError::Corrupt);
             }
+            // Legacy Prepared predates the dispatch fence and must be treated
+            // as potentially dispatched, never as proof that execution is safe.
+            *dispatched = legacy_prepared;
             *pending = Some(NeuronRuntimeIndexPendingV2 {
                 key,
                 expected_anchor,
             });
+        }
+        IndexEventV2::DispatchStarted { key } => {
+            let key = key.into_key()?;
+            if *dispatched || pending.as_ref().is_none_or(|value| value.key != key) {
+                return Err(NeuronRuntimeIndexError::Corrupt);
+            }
+            *dispatched = true;
+        }
+        IndexEventV2::Failed { key, failure } => {
+            let key = key.into_key()?;
+            if pending.as_ref().is_none_or(|value| value.key != key)
+                || tick_index.contains_key(&key.tick_id)
+                || failures.contains_key(&key.tick_id)
+            {
+                return Err(NeuronRuntimeIndexError::Corrupt);
+            }
+            failures.insert(key.tick_id.clone(), (key, failure));
+            *pending = None;
+            *dispatched = false;
         }
         IndexEventV2::Completed {
             key,
@@ -700,6 +803,7 @@ fn apply_event(
             tick_index.insert(key.tick_id, index);
             records.push(record);
             *pending = None;
+            *dispatched = false;
             *frontier = Some(next_anchor);
         }
     }

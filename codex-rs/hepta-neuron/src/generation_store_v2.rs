@@ -26,6 +26,8 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
 use crate::JournalAnchor;
+use crate::runtime_file_v2::MeasuredFileV2;
+use crate::runtime_file_v2::open_regular;
 use crate::JournalScope;
 use crate::NeuronCommitDispositionV1;
 use crate::NeuronOperationKeyV2;
@@ -160,15 +162,15 @@ impl From<io::Error> for GenerationStoreError {
     }
 }
 
-struct GenerationLockedFile(File);
+struct GenerationLockedFile(MeasuredFileV2);
 
 impl GenerationLockedFile {
-    fn acquire(file: File) -> Result<Self, GenerationStoreError> {
+    fn acquire(file: File, path: &Path) -> Result<Self, GenerationStoreError> {
         if !file.metadata()?.is_file() {
             return Err(GenerationStoreError::NotRegular);
         }
         match file.try_lock() {
-            Ok(()) => Ok(Self(file)),
+            Ok(()) => Ok(Self(MeasuredFileV2::new(file, path)?)),
             Err(TryLockError::WouldBlock) => Err(GenerationStoreError::Busy),
             Err(TryLockError::Error(error)) => Err(error.into()),
         }
@@ -176,7 +178,7 @@ impl GenerationLockedFile {
 }
 
 impl Deref for GenerationLockedFile {
-    type Target = File;
+    type Target = MeasuredFileV2;
 
     fn deref(&self) -> &Self::Target {
         &self.0
@@ -222,7 +224,7 @@ impl FileNeuronGenerationStoreV2 {
             .write(true)
             .create_new(true)
             .open(path)?;
-        let mut file = GenerationLockedFile::acquire(file)?;
+        let mut file = GenerationLockedFile::acquire(file, path)?;
         let header = encode_header(&context)?;
         file.write_all(&header)
             .map_err(|_| GenerationStoreError::Indeterminate)?;
@@ -251,18 +253,17 @@ impl FileNeuronGenerationStoreV2 {
         context: NeuronGenerationStoreContextV2,
     ) -> Result<Self, GenerationStoreError> {
         context.validate()?;
-        let file = OpenOptions::new()
-            .read(true)
-            .write(true)
-            .open(path)
+        let file = open_regular(path)
             .map_err(|error| {
                 if error.kind() == io::ErrorKind::NotFound {
                     GenerationStoreError::HistoryMissing
+                } else if error.kind() == io::ErrorKind::InvalidInput {
+                    GenerationStoreError::NotRegular
                 } else {
                     error.into()
                 }
             })?;
-        let mut file = GenerationLockedFile::acquire(file)?;
+        let mut file = GenerationLockedFile::acquire(file, path)?;
         let length = file.metadata()?.len();
         if length < HEADER_BYTES as u64 {
             return Err(GenerationStoreError::HistoryMissing);
@@ -511,6 +512,31 @@ impl FileNeuronGenerationStoreV2 {
         capacity::pending_count(self.records.len(), self.witness_frontier)
     }
 
+    pub(crate) fn pending_witness_record(
+        &self,
+    ) -> Result<Option<&NeuronGenerationRecordV2>, GenerationStoreError> {
+        let pending = self.pending_witness_count()?;
+        Ok(self.records.get(self.records.len() - pending))
+    }
+
+    pub(crate) fn storage_observation(&self) -> crate::NeuronStorageObservationV2 {
+        crate::NeuronStorageObservationV2 {
+            file_bytes: self.file.metadata().ok().map(|value| value.len()),
+            io: self.file.metrics(),
+        }
+    }
+
+    pub(crate) fn capacity_snapshot(&self) -> Result<crate::NeuronStorageCapacityV2, GenerationStoreError> {
+        self.ensure_healthy()?;
+        Ok(crate::NeuronStorageCapacityV2 {
+            records: self.records.len(),
+            record_limit: self.context.max_records,
+            file_bytes: self.file.metadata()?.len(),
+            byte_limit: self.context.max_file_bytes.min(self.context.max_startup_replay_bytes),
+            reserved_bytes: self.pending_ack_bytes,
+        })
+    }
+
     pub fn current_anchor(&self) -> Result<Option<JournalAnchor>, GenerationStoreError> {
         self.ensure_healthy()?;
         Ok(self.local_frontier)
@@ -663,6 +689,7 @@ impl FileNeuronGenerationStoreV2 {
     }
 
     fn ensure_healthy(&self) -> Result<(), GenerationStoreError> {
+        self.file.verify_identity()?;
         if self.poisoned {
             Err(GenerationStoreError::Poisoned)
         } else {

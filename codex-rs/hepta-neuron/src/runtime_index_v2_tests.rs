@@ -210,3 +210,40 @@ fn post_sync_uncertainty_reopens_as_one_prepared_event() {
         })
     );
 }
+
+#[test]
+fn legacy_prepared_record_is_never_treated_as_proof_of_non_execution() {
+    let fixture = Fixture::new();
+    let operation = key("legacy-tick", "input");
+    let mut index = checked(FileNeuronRuntimeIndexV2::create(&fixture.file, context()));
+    let event = IndexEventV2::Prepared {
+        key: OperationKeyDto::from_key(&operation),
+        expected_anchor: None,
+    };
+    let payload = checked(encode_event(index.event_frontier, &event));
+    checked(index.append_payload(&payload));
+    drop(index);
+    let index = checked(FileNeuronRuntimeIndexV2::open_existing(&fixture.file, context()));
+    assert!(checked(index.dispatched()));
+    assert_eq!(checked(checked(index.pending()).ok_or("pending legacy operation")).key, operation);
+}
+
+#[test]
+fn failure_tombstones_are_idempotent_and_conflict_fenced() {
+    let fixture = Fixture::new();
+    let operation = key("failed-tick", "input");
+    let mut index = checked(FileNeuronRuntimeIndexV2::create(&fixture.file, context()));
+    checked(index.prepare(operation.clone(), None));
+    checked(index.mark_dispatched(&operation));
+    checked(index.fail_operation(&operation, NeuronOperationFailureV2::InvalidModelOutput));
+    let length = checked(fs::metadata(&fixture.file)).len();
+    checked(index.fail_operation(&operation, NeuronOperationFailureV2::InvalidModelOutput));
+    assert_eq!(checked(fs::metadata(&fixture.file)).len(), length);
+    assert_eq!(index.fail_operation(&operation, NeuronOperationFailureV2::AdmissionDenied), Err(NeuronRuntimeIndexError::Conflict));
+    assert_eq!(index.admit(&key("failed-tick", "changed"), None), Err(NeuronRuntimeIndexError::Conflict));
+    drop(index);
+    let index = checked(FileNeuronRuntimeIndexV2::open_existing(&fixture.file, context()));
+    assert_eq!(checked(index.failure(&operation)), Some(NeuronOperationFailureV2::InvalidModelOutput));
+    assert_eq!(checked(index.pending()), None);
+    assert_eq!(checked(index.frontier()), None);
+}

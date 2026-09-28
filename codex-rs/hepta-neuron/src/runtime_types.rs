@@ -421,6 +421,16 @@ impl From<io::Error> for WitnessStoreError {
 /// must authenticate scope/generation and make compare-and-swap durable before
 /// returning success.
 pub trait AnchorWitnessStore {
+    /// Optional local diagnostics. None means unmeasured, not zero I/O.
+    fn io_metrics(&self) -> Option<crate::NeuronIoMetricsV2> {
+        None
+    }
+
+    /// Optional advisory capacity; authoritative admission remains mandatory.
+    fn capacity_remaining(&self) -> Result<Option<usize>, WitnessStoreError> {
+        Ok(None)
+    }
+
     fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError>;
 
     /// Check the current predecessor and reserve availability under this owner's

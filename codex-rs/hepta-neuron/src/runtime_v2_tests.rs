@@ -501,7 +501,7 @@ fn committed_store_with_lost_index_ack_recovers_without_second_model_call() {
         input_semantic_digest: checked(request.semantic_digest()),
     };
     checked(runtime.index.prepare(key, None));
-    runtime.index.fail_next_append_after_sync();
+    runtime.index.fail_next_completion_after_sync();
     let calls = Arc::new(AtomicUsize::new(0));
     let mut model = FakeDurableModel::new(Arc::clone(&calls));
     assert!(matches!(
@@ -559,3 +559,9 @@ fn lost_witness_ack_is_read_back_and_does_not_repeat_model() {
     );
     assert_eq!(calls.load(Ordering::SeqCst), 1);
 }
+
+#[path = "runtime_v2_closure_tests.rs"]
+mod closure;
+
+#[path = "runtime_v2_process_closure_tests.rs"]
+mod process_closure;

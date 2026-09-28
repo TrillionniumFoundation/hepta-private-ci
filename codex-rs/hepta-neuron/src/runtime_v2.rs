@@ -71,15 +71,53 @@ use crate::runtime_types::subject_scope_digest;
 use crate::runtime_types::validate_model_output;
 use crate::sparse_tick;
 
+#[path = "runtime_v2_lifecycle.rs"]
+mod lifecycle;
+pub use lifecycle::NeuronOperationStatusV2;
+
 /// Marker for an inference-control owner that durably reserves an operation
 /// before physical dispatch and reconciles dispatched operations without blind
 /// re-execution. There is intentionally no blanket implementation.
-pub trait DurableNeuronInferenceControlPort: NeuronInferenceControlPort {}
+pub trait DurableNeuronInferenceControlPort: NeuronInferenceControlPort {
+    /// Query the exact operation without starting physical work. `NotStarted`
+    /// requires an authoritative, current no-dispatch observation under the
+    /// same durable owner. Missing history is not proof of non-execution.
+    fn reconcile_feature(
+        &mut self,
+        _request: &codex_hepta_infer_core::NeuronFeatureRequestV1,
+    ) -> Result<DurableNeuronFeatureResolutionV2, NeuronModelError> {
+        Ok(DurableNeuronFeatureResolutionV2::Unknown)
+    }
+}
 
 /// Marker for the model port accepted by the V2 product runtime. Qualification
 /// stubs may implement it in tests, but ordinary `NeuronModelPort` values cannot
 /// accidentally enter the product path.
-pub trait DurableNeuronModelPort: NeuronModelPort {}
+pub trait DurableNeuronModelPort: NeuronModelPort {
+    /// Query, never blindly redispatch, an operation whose local dispatch fence
+    /// is durable. `NotStarted` permits resuming the *same* operation only while
+    /// its exclusive durable owner still fences competing dispatch.
+    fn reconcile(
+        &mut self,
+        _request: &NeuronModelRequestV1,
+    ) -> Result<NeuronModelResolutionV2, NeuronModelError> {
+        Ok(NeuronModelResolutionV2::Unknown)
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum DurableNeuronFeatureResolutionV2 {
+    NotStarted,
+    Observed(Box<codex_hepta_infer_core::NeuronFeatureReceiptV1>),
+    Unknown,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum NeuronModelResolutionV2 {
+    NotStarted,
+    Observed(Box<NeuronModelOutputV1>),
+    Unknown,
+}
 
 pub struct DurableInferenceControlModelPort<'a, P: DurableNeuronInferenceControlPort> {
     control: &'a mut P,
@@ -105,6 +143,20 @@ impl<P: DurableNeuronInferenceControlPort> NeuronModelPort
 impl<P: DurableNeuronInferenceControlPort> DurableNeuronModelPort
     for DurableInferenceControlModelPort<'_, P>
 {
+    fn reconcile(
+        &mut self,
+        request: &NeuronModelRequestV1,
+    ) -> Result<NeuronModelResolutionV2, NeuronModelError> {
+        let request = crate::inference_control::feature_request(request);
+        match self.control.reconcile_feature(&request)? {
+            DurableNeuronFeatureResolutionV2::NotStarted => Ok(NeuronModelResolutionV2::NotStarted),
+            DurableNeuronFeatureResolutionV2::Observed(receipt) => {
+                crate::inference_control::model_output(&request, *receipt)
+                    .map(Box::new).map(NeuronModelResolutionV2::Observed)
+            }
+            DurableNeuronFeatureResolutionV2::Unknown => Ok(NeuronModelResolutionV2::Unknown),
+        }
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -136,6 +188,7 @@ pub enum NeuronRuntimeV2Error {
     RecoveryMismatch,
     PendingOperation,
     Arithmetic,
+    TerminalFailure(crate::NeuronOperationFailureV2),
 }
 
 impl fmt::Display for NeuronRuntimeV2Error {
@@ -204,6 +257,8 @@ pub struct NeuronRuntimeV2<W: AnchorWitnessStore> {
     index: FileNeuronRuntimeIndexV2,
     witness: W,
     checkpoint: Option<SparseCheckpoint>,
+    last_measurement: Option<crate::NeuronRuntimeMeasurementV2>,
+    recovery_micros: Option<u64>,
 }
 
 impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
@@ -243,6 +298,8 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
             index,
             witness,
             checkpoint: None,
+            last_measurement: None,
+            recovery_micros: None,
         })
     }
 
@@ -258,6 +315,7 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
         index_context: NeuronRuntimeIndexContextV2,
         witness: W,
     ) -> Result<Self, NeuronRuntimeV2Error> {
+        let recovery_started = Instant::now();
         let body_bundle_digest = validate_contexts(
             &native,
             scope,
@@ -281,10 +339,13 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
             index,
             witness,
             checkpoint: None,
+            last_measurement: None,
+            recovery_micros: None,
         };
         runtime.replay_index()?;
         runtime.reconcile_witnesses()?;
         runtime.validate_frontiers()?;
+        runtime.recovery_micros = Some(u64::try_from(recovery_started.elapsed().as_micros()).unwrap_or(u64::MAX));
         Ok(runtime)
     }
 
@@ -316,167 +377,6 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
         self.finish_pending_index_commit()?;
         self.reconcile_witnesses()?;
         self.validate_frontiers()
-    }
-
-    pub fn query_result(
-        &mut self,
-        tick_id: &StableId,
-        input_digest: Digest32,
-    ) -> Result<Option<NeuronRuntimeCommitV2>, NeuronRuntimeV2Error> {
-        let key = NeuronOperationKeyV2 {
-            tick_id: tick_id.clone(),
-            input_semantic_digest: input_digest,
-        };
-        key.semantic_digest()?;
-        self.reconcile()?;
-        let Some(record) = self.store.find_operation(&key)? else {
-            return Ok(None);
-        };
-        Ok(Some(self.commit_from_record(&record)?))
-    }
-
-    pub fn tick_guarded(
-        &mut self,
-        model: &mut impl DurableNeuronModelPort,
-        input: NeuronTickInputV1,
-        guard: &mut dyn NeuronAdmissionGuard,
-    ) -> Result<NeuronRuntimeCommitV2, NeuronRuntimeV2Error> {
-        guard
-            .check(&self.config, &input)
-            .map_err(NeuronRuntimeV2Error::Admission)?;
-        self.reconcile()?;
-        let input_digest = input.semantic_digest()?;
-        let key = NeuronOperationKeyV2 {
-            tick_id: input.tick_id.clone(),
-            input_semantic_digest: input_digest,
-        };
-        key.semantic_digest()?;
-        let expected_anchor = self.current_checkpoint_anchor();
-        if input.body_generation != Some(self.body_bundle.body_generation.get()) {
-            return Err(NeuronRuntimeV2Error::ContextMismatch);
-        }
-
-        let index_admission = self.index.admit(&key, expected_anchor)?;
-        let store_admission = self.store.admit_operation(
-            &key,
-            expected_anchor,
-            self.store_context.max_checkpoint_bytes,
-            self.store_context.max_full_receipt_bytes,
-        )?;
-        match (index_admission, store_admission) {
-            (
-                NeuronRuntimeIndexAdmissionV2::Historical(indexed),
-                NeuronGenerationAdmissionV2::Historical(record),
-            ) => {
-                validate_index_record(&indexed, &record)?;
-                self.reconcile_witnesses()?;
-                guard
-                    .check(&self.config, &input)
-                    .map_err(NeuronRuntimeV2Error::Admission)?;
-                return self.commit_from_record(&record);
-            }
-            (
-                NeuronRuntimeIndexAdmissionV2::Pending(pending),
-                NeuronGenerationAdmissionV2::Historical(record),
-            ) => {
-                if pending.key != key || pending.expected_anchor != record.expected_anchor {
-                    return Err(NeuronRuntimeV2Error::RecoveryMismatch);
-                }
-                let checkpoint = self.replay_record(self.checkpoint.as_ref(), &record)?;
-                self.index
-                    .complete(&key, record.next_anchor, record.operation_digest)?;
-                self.checkpoint = Some(checkpoint);
-                self.reconcile_witnesses()?;
-                guard
-                    .check(&self.config, &input)
-                    .map_err(NeuronRuntimeV2Error::Admission)?;
-                return self.commit_from_record(&record);
-            }
-            (NeuronRuntimeIndexAdmissionV2::New, NeuronGenerationAdmissionV2::New) => {
-                self.require_expected_checkpoint(&input, expected_anchor)?;
-                self.preflight_new_tick(&input)?;
-                self.witness.admit_new_anchor(expected_anchor)?;
-                self.index.prepare(key.clone(), expected_anchor)?;
-            }
-            (
-                NeuronRuntimeIndexAdmissionV2::Pending(pending),
-                NeuronGenerationAdmissionV2::New,
-            ) if pending.key == key && pending.expected_anchor == expected_anchor => {
-                self.require_expected_checkpoint(&input, expected_anchor)?;
-                self.preflight_new_tick(&input)?;
-                self.witness.admit_new_anchor(expected_anchor)?;
-            }
-            _ => return Err(NeuronRuntimeV2Error::RecoveryMismatch),
-        }
-
-        let request = self.model_request(&input)?;
-        let started = Instant::now();
-        let model_output = model.execute(&request)?;
-        validate_model_output(&self.config, &model_output)?;
-        let native_tick = SparseTick {
-            scope_digest: subject_scope_digest(&input.subject_id)?,
-            objective_digest: input.objective_digest,
-            ndu_digest: input.ndu_snapshot_digest,
-            body_digest: self.body_bundle_digest,
-            input_digest,
-            sequence: input.logical_sequence,
-            monotonic_micros: input.monotonic_time_micros,
-            drive_q24: model_output.drive_q24.clone(),
-            prediction_q24: model_output.prediction_q24.clone(),
-        };
-        let (checkpoint, sparse_receipt) =
-            sparse_tick(&self.native, &native_tick, self.checkpoint.as_ref())?;
-        let (output, disposition) = self.build_output(
-            &input.tick_id,
-            &model_output,
-            &checkpoint,
-            &sparse_receipt,
-            started,
-        )?;
-        let next_anchor = JournalAnchor {
-            sequence: input.logical_sequence,
-            checkpoint_digest: sparse_receipt.checkpoint_after,
-        };
-        let prepared = PreparedNeuronOperationV1::new(
-            input_digest,
-            input.tick_id.clone(),
-            expected_anchor,
-            next_anchor,
-            native_tick,
-            output,
-        )?;
-        let full_receipt_bytes = encode_prepared(&prepared)?;
-        let checkpoint_bytes = full_receipt_bytes.clone();
-        let (model_semantic_digest, model_observation_digest) =
-            self.model_identities(&prepared.output, prepared.sparse_tick.monotonic_micros)?;
-        guard
-            .check(&self.config, &input)
-            .map_err(NeuronRuntimeV2Error::Admission)?;
-        let committed = self.store.commit_result(NeuronGenerationCommitV2 {
-            key: key.clone(),
-            config_semantic_digest: self.config.semantic_digest()?,
-            body_bundle_digest: self.body_bundle_digest,
-            model_semantic_digest,
-            model_observation_digest,
-            expected_anchor,
-            next_anchor,
-            checkpoint_bytes,
-            full_receipt_bytes,
-            disposition,
-        })?;
-        let record = match committed {
-            NeuronGenerationCommitResultV2::Committed(record)
-            | NeuronGenerationCommitResultV2::Duplicate(record) => record,
-        };
-        let replayed = self.replay_record(self.checkpoint.as_ref(), &record)?;
-        self.index
-            .complete(&key, next_anchor, record.operation_digest)?;
-        self.checkpoint = Some(replayed);
-        self.reconcile_witnesses()?;
-        guard
-            .check(&self.config, &input)
-            .map_err(NeuronRuntimeV2Error::Admission)?;
-        self.commit_from_record(&record)
     }
 
     fn require_expected_checkpoint(
@@ -517,6 +417,16 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
     }
 
     fn preflight_new_tick(&self, input: &NeuronTickInputV1) -> Result<(), NeuronRuntimeV2Error> {
+        if subject_scope_digest(&input.subject_id)? != self.store_context.scope.scope_digest
+            || input.objective_digest != self.store_context.scope.objective_digest
+        {
+            return Err(NeuronRuntimeV2Error::ContextMismatch);
+        }
+        if let Some(checkpoint) = &self.checkpoint
+            && input.monotonic_time_micros <= checkpoint.monotonic_micros()
+        {
+            return Err(NeuronRuntimeV2Error::Mechanism(SparseError::Clock));
+        }
         let expected_sequence = self
             .checkpoint
             .as_ref()
@@ -828,29 +738,32 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
     fn reconcile_witnesses(&mut self) -> Result<(), NeuronRuntimeV2Error> {
         let maximum = self.store_context.max_pending_witness.saturating_add(1);
         for _ in 0..maximum {
-            let Some(pending) = self.store.pending_witness()? else {
+            let Some(pending) = self.store.pending_witness_record()? else {
                 let current = self.witness.current()?;
                 if current != self.store.witnessed_anchor()? {
                     return Err(NeuronRuntimeV2Error::RecoveryMismatch);
                 }
                 return Ok(());
             };
+            let key = pending.key.clone();
+            let expected_anchor = pending.expected_anchor;
+            let next_anchor = pending.next_anchor;
             let current = self.witness.current()?;
-            if current == pending.expected_anchor {
+            if current == expected_anchor {
                 if let Err(error) = self
                     .witness
-                    .compare_and_swap(pending.expected_anchor, pending.next_anchor)
+                    .compare_and_swap(expected_anchor, next_anchor)
                 {
                     match self.witness.current() {
-                        Ok(Some(anchor)) if anchor == pending.next_anchor => {}
+                        Ok(Some(anchor)) if anchor == next_anchor => {}
                         _ => return Err(NeuronRuntimeV2Error::Witness(error)),
                     }
                 }
-            } else if current != Some(pending.next_anchor) {
+            } else if current != Some(next_anchor) {
                 return Err(NeuronRuntimeV2Error::RecoveryMismatch);
             }
             self.store
-                .acknowledge_witness(&pending.key, pending.next_anchor)?;
+                .acknowledge_witness(&key, next_anchor)?;
         }
         Err(NeuronRuntimeV2Error::RecoveryMismatch)
     }

@@ -21,6 +21,8 @@ use codex_hepta_types::Generation;
 
 use crate::AnchorWitnessStore;
 use crate::JournalAnchor;
+use crate::runtime_file_v2::MeasuredFileV2;
+use crate::runtime_file_v2::open_regular;
 use crate::JournalScope;
 use crate::WitnessStoreError;
 
@@ -56,15 +58,15 @@ impl NeuronWitnessContextV2 {
     }
 }
 
-struct WitnessV2LockedFile(File);
+struct WitnessV2LockedFile(MeasuredFileV2);
 
 impl WitnessV2LockedFile {
-    fn acquire(file: File) -> Result<Self, WitnessStoreError> {
+    fn acquire(file: File, path: &Path) -> Result<Self, WitnessStoreError> {
         if !file.metadata()?.is_file() {
             return Err(WitnessStoreError::NotRegular);
         }
         match file.try_lock() {
-            Ok(()) => Ok(Self(file)),
+            Ok(()) => Ok(Self(MeasuredFileV2::new(file, path)?)),
             Err(TryLockError::WouldBlock) => Err(WitnessStoreError::Busy),
             Err(TryLockError::Error(error)) => Err(error.into()),
         }
@@ -72,7 +74,7 @@ impl WitnessV2LockedFile {
 }
 
 impl Deref for WitnessV2LockedFile {
-    type Target = File;
+    type Target = MeasuredFileV2;
 
     fn deref(&self) -> &Self::Target {
         &self.0
@@ -178,7 +180,7 @@ impl FileNeuronWitnessStoreV2 {
             .write(true)
             .create_new(true)
             .open(path)?;
-        let mut file = WitnessV2LockedFile::acquire(file)?;
+        let mut file = WitnessV2LockedFile::acquire(file, path)?;
         let header = encode_header(&context, seed);
         file.write_all(&header)
             .map_err(|_| WitnessStoreError::Indeterminate)?;
@@ -202,8 +204,14 @@ impl FileNeuronWitnessStoreV2 {
     ) -> Result<Self, WitnessStoreError> {
         context.validate()?;
         validate_seed(seed)?;
-        let file = OpenOptions::new().read(true).write(true).open(path)?;
-        let mut file = WitnessV2LockedFile::acquire(file)?;
+        let file = open_regular(path).map_err(|error| {
+            if error.kind() == io::ErrorKind::InvalidInput {
+                WitnessStoreError::NotRegular
+            } else {
+                error.into()
+            }
+        })?;
+        let mut file = WitnessV2LockedFile::acquire(file, path)?;
         let expected_header = encode_header(&context, seed);
         let length = file.metadata()?.len();
         if length < HEADER_BYTES as u64 {
@@ -256,6 +264,7 @@ impl FileNeuronWitnessStoreV2 {
     }
 
     fn ensure_healthy(&self) -> Result<(), WitnessStoreError> {
+        self.file.verify_identity()?;
         if self.poisoned {
             Err(WitnessStoreError::Poisoned)
         } else {
@@ -265,6 +274,14 @@ impl FileNeuronWitnessStoreV2 {
 }
 
 impl AnchorWitnessStore for FileNeuronWitnessStoreV2 {
+    fn io_metrics(&self) -> Option<crate::NeuronIoMetricsV2> {
+        Some(self.file.metrics())
+    }
+
+    fn capacity_remaining(&self) -> Result<Option<usize>, WitnessStoreError> {
+        self.remaining_capacity().map(Some)
+    }
+
     fn admit_new_anchor(&self, expected: Option<JournalAnchor>) -> Result<(), WitnessStoreError> {
         self.ensure_healthy()?;
         if self.current != expected {

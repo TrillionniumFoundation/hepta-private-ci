@@ -12,6 +12,7 @@ use codex_hepta_infer_core::NeuronFeatureReceiptV1;
 use codex_hepta_infer_core::NeuronFeatureRequestV1;
 use codex_hepta_infer_core::NeuronFeatureStoreError;
 use codex_hepta_infer_core::verify_neuron_feature_receipt_v1;
+use codex_hepta_neuron::DurableNeuronFeatureResolutionV2;
 use codex_hepta_neuron::DurableNeuronInferenceControlPort;
 use codex_hepta_neuron::NeuronInferenceControlPort;
 use codex_hepta_neuron::NeuronModelError;
@@ -78,7 +79,7 @@ impl<B: DurableNeuronFeatureBackend> DurableNeuronFeaturePortV1<B> {
                 continue;
             };
             verify_neuron_feature_receipt_v1(&record.request, &receipt)
-                .map_err(|_| NeuronModelError::Rejected)?;
+                .map_err(|_| NeuronModelError::Indeterminate)?;
             self.store
                 .observe(&record.request, receipt)
                 .map_err(map_store_error)?;
@@ -127,7 +128,7 @@ impl<B: DurableNeuronFeatureBackend> DurableNeuronFeaturePortV1<B> {
                     .execute_new(&operation_id, &record.request)
                     .map_err(map_backend_error)?;
                 verify_neuron_feature_receipt_v1(&record.request, &receipt)
-                    .map_err(|_| NeuronModelError::Rejected)?;
+                    .map_err(|_| NeuronModelError::Indeterminate)?;
                 let committed = self
                     .store
                     .observe(&record.request, receipt)
@@ -141,7 +142,7 @@ impl<B: DurableNeuronFeatureBackend> DurableNeuronFeaturePortV1<B> {
                     .map_err(map_backend_error)?
                     .ok_or(NeuronModelError::Indeterminate)?;
                 verify_neuron_feature_receipt_v1(&record.request, &receipt)
-                    .map_err(|_| NeuronModelError::Rejected)?;
+                    .map_err(|_| NeuronModelError::Indeterminate)?;
                 let committed = self
                     .store
                     .observe(&record.request, receipt)
@@ -172,6 +173,23 @@ impl<B: DurableNeuronFeatureBackend> NeuronInferenceControlPort
 impl<B: DurableNeuronFeatureBackend> DurableNeuronInferenceControlPort
     for DurableNeuronFeaturePortV1<B>
 {
+    fn reconcile_feature(
+        &mut self,
+        request: &NeuronFeatureRequestV1,
+    ) -> Result<DurableNeuronFeatureResolutionV2, NeuronModelError> {
+        let record = match self.store.admit(request).map_err(map_store_error)? {
+            NeuronFeatureAdmissionV1::New => {
+                return Ok(DurableNeuronFeatureResolutionV2::NotStarted);
+            }
+            NeuronFeatureAdmissionV1::Historical(record) => record,
+        };
+        if record.state == NeuronFeatureExecutionStateV1::Reserved {
+            return Ok(DurableNeuronFeatureResolutionV2::NotStarted);
+        }
+        // resolve_record can dispatch only Reserved records, excluded above.
+        self.resolve_record(record)
+            .map(Box::new).map(DurableNeuronFeatureResolutionV2::Observed)
+    }
 }
 
 fn operation_id(record: &NeuronFeatureExecutionRecordV1) -> StableId {
@@ -182,11 +200,11 @@ fn operation_id(record: &NeuronFeatureExecutionRecordV1) -> StableId {
 
 fn map_store_error(error: NeuronFeatureStoreError) -> NeuronModelError {
     match error {
-        NeuronFeatureStoreError::Conflict
-        | NeuronFeatureStoreError::InvalidRecord
+        NeuronFeatureStoreError::Conflict => NeuronModelError::Rejected,
+        NeuronFeatureStoreError::InvalidRecord
         | NeuronFeatureStoreError::ContextMismatch
         | NeuronFeatureStoreError::InvalidTransition
-        | NeuronFeatureStoreError::Corrupt => NeuronModelError::Rejected,
+        | NeuronFeatureStoreError::Corrupt => NeuronModelError::Indeterminate,
         NeuronFeatureStoreError::Indeterminate | NeuronFeatureStoreError::Poisoned => {
             NeuronModelError::Indeterminate
         }
