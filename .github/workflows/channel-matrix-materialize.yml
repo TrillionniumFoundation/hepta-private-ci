@@ -42,7 +42,8 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/matrix-authoring-evidence"
-          test "$(git rev-parse HEAD^)" = 516fe78a0e123ef5d981f62947a5c9ca27898f28
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git merge-base --is-ancestor 516fe78a0e123ef5d981f62947a5c9ca27898f28 HEAD
           python3 - <<'PY'
           import base64, hashlib, lzma, os, pathlib, re, subprocess
           root = pathlib.Path.cwd()
@@ -52,6 +53,11 @@ jobs:
               raise SystemExit('optimization payload inventory mismatch')
           if any(not p.is_file() or p.is_symlink() for p in pieces):
               raise SystemExit('optimization payload must use regular files')
+          metadata = {p.relative_to(root).as_posix() for p in pieces}
+          metadata.add('.github/workflows/channel-matrix-materialize.yml')
+          changed = set(subprocess.check_output(['git','diff','--name-only','516fe78a0e123ef5d981f62947a5c9ca27898f28','HEAD'], text=True).splitlines())
+          if changed != metadata:
+              raise SystemExit('source changed since reviewed publication baseline')
           encoded = ''.join(p.read_text().strip() for p in pieces)
           packed = base64.b64decode(encoded, validate=True)
           if hashlib.sha256(packed).hexdigest() != 'db8756ec846404f24fc98459a9e7403fda999b1042aba83cb747595ae70d65fe':
@@ -109,13 +115,11 @@ jobs:
       - name: Format authored Matrix Rust sources with the pinned toolchain
         shell: bash
         run: |
-          set -uo pipefail
-          cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-matrix-sdk > "$RUNNER_TEMP/matrix-authoring-evidence/authoring-format.log" 2>&1
-          result=$?
-          printf '%s\n' "$result" > "$RUNNER_TEMP/matrix-authoring-evidence/authoring-format-status.txt"
+          set -euo pipefail
+          rustup component add rustfmt --toolchain 1.95.0 > "$RUNNER_TEMP/matrix-authoring-evidence/authoring-format.log" 2>&1
+          cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-matrix-sdk >> "$RUNNER_TEMP/matrix-authoring-evidence/authoring-format.log" 2>&1
+          printf '0\n' > "$RUNNER_TEMP/matrix-authoring-evidence/authoring-format-status.txt"
           git add codex-rs/hepta-matrix-sdk
-          # Formatting availability does not invent a native qualification pass.
-          exit 0
       - name: Execute Python and SQLite source regressions
         shell: bash
         run: |
