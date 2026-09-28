@@ -9,8 +9,10 @@
 
 mod archive_codec;
 mod coordinator;
+#[allow(unused_imports)]
 #[path = "durable_facade.rs"]
 mod durable;
+#[allow(unused_imports)]
 #[path = "fenced_coordinator_final.rs"]
 mod fenced_coordinator;
 mod publication;

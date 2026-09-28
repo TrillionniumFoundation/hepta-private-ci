@@ -6,9 +6,8 @@
 //! Artifact publication is additionally rechecked by the durable facade inside
 //! the same `BEGIN IMMEDIATE` transaction that writes the checkpoint and outbox.
 
-mod original {
-    include!("fenced_coordinator.rs");
-}
+#[path = "fenced_coordinator.rs"]
+mod original;
 
 use std::str::FromStr;
 

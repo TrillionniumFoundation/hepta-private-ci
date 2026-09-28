@@ -6,9 +6,8 @@
 //! acquire or replace an owner lease. A stale chain therefore cannot cause a
 //! durable fencing denial of service as a side effect of a rejected open.
 
-mod guarded {
-    include!("fenced_coordinator_guarded.rs");
-}
+#[path = "fenced_coordinator_guarded.rs"]
+mod guarded;
 
 use std::str::FromStr;
 
