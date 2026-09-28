@@ -11,15 +11,15 @@ permissions:
   contents: write
 
 concurrency:
-  group: matrix-reviewed-recovery-authoring
-  cancel-in-progress: false
+  group: matrix-reviewed-recovery-authoring-${{ github.workflow_ref }}
+  cancel-in-progress: true
 
 jobs:
   reviewed-tree:
     if: >-
       github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
       github.actor != 'github-actions[bot]'
-    runs-on: ubuntu-24.04
+    runs-on: macos-latest
     timeout-minutes: 15
     env:
       EXPECTED_SHA: ${{ github.sha }}

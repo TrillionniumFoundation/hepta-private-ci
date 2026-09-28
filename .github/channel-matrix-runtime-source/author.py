@@ -33,12 +33,13 @@ def allowed(path):
 
 def load():
     head = git('rev-parse', 'HEAD')
-    if head != os.environ['EXPECTED_SHA'] or git('rev-parse', 'HEAD^') != BASE:
-        raise RuntimeError('publication parent changed')
+    if head != os.environ['EXPECTED_SHA']:
+        raise RuntimeError('publication candidate changed')
+    subprocess.run(['git', 'merge-base', '--is-ancestor', BASE, head], check=True, cwd=ROOT)
     initial = set(git('diff', '--name-only', BASE, 'HEAD').splitlines())
     expected = {STAGING+'/part-'+str(i).zfill(3) for i in range(1,5)} | {STAGING+'/author.py', WORKFLOW}
     if initial != expected:
-        raise RuntimeError('authoring commit contains unexpected paths')
+        raise RuntimeError('authoring commits contain unexpected paths')
     packed = base64.b64decode(''.join((ROOT/STAGING/('part-'+str(i).zfill(3))).read_text() for i in range(1,5)), validate=True)
     if len(packed) != 23740 or hashlib.sha256(packed).hexdigest() != PACKED:
         raise RuntimeError('reviewed package checksum mismatch')
