@@ -48,6 +48,7 @@ async fn qualification_kg_history_reopen_no_resurrection() {
         .expect("initial history write");
     let mut correction_ns = Vec::new();
     let mut concurrent_reader_ns = Vec::new();
+    let mut concurrent_round_ns = Vec::new();
     let mut query_ns = Vec::new();
     let mut reopen_ns = Vec::new();
     for index in 1..=corrections {
@@ -60,23 +61,30 @@ async fn qualification_kg_history_reopen_no_resurrection() {
         let started = Instant::now();
         // A reader may see the complete predecessor or successor. Do not
         // presume which SQLite snapshot wins this scheduling race.
-        let (written, (read_elapsed, observed)) = tokio::join!(
-            store.correct_with_kg(
-                &access,
-                &receipt.memory.id.memory_id,
-                previous_revision,
-                &source,
-                &revision,
-                &graph_facts,
-            ),
+        let ((write_elapsed, written), (read_elapsed, observed)) = tokio::join!(
+            async {
+                let write_started = Instant::now();
+                let result = store
+                    .correct_with_kg(
+                        &access,
+                        &receipt.memory.id.memory_id,
+                        previous_revision,
+                        &source,
+                        &revision,
+                        &graph_facts,
+                    )
+                    .await;
+                (elapsed_ns(write_started), result)
+            },
             async {
                 let read_started = Instant::now();
                 let batch = store.retrieve_memory_candidates(&access, &query).await;
                 (elapsed_ns(read_started), batch)
             },
         );
-        correction_ns.push(elapsed_ns(started));
+        correction_ns.push(write_elapsed);
         concurrent_reader_ns.push(read_elapsed);
+        concurrent_round_ns.push(elapsed_ns(started));
         let observed = observed.expect("concurrent history retrieval");
         assert_eq!(observed.candidates.len(), 1);
         let observed_id = &observed.candidates[0].memory.id;
@@ -85,6 +93,15 @@ async fn qualification_kg_history_reopen_no_resurrection() {
             observed_id.revision == previous_revision
                 || observed_id.revision == previous_revision + 1,
             "reader must observe one complete source cut"
+        );
+        assert_eq!(
+            observed.candidates[0]
+                .revalidation
+                .kg_projection_generation
+                .as_ref()
+                .map(|generation| generation.get()),
+            Some(observed_id.revision),
+            "memory and KG bindings must belong to the same snapshot"
         );
         receipt = written.expect("history correction");
         if index.is_power_of_two() || index == corrections {
@@ -187,6 +204,11 @@ async fn qualification_kg_history_reopen_no_resurrection() {
                 "p95": percentile_ns(&concurrent_reader_ns, 95),
                 "p99": percentile_ns(&concurrent_reader_ns, 99)
             },
+            "concurrentRoundNs": {
+                "p50": percentile_ns(&concurrent_round_ns, 50),
+                "p95": percentile_ns(&concurrent_round_ns, 95),
+                "p99": percentile_ns(&concurrent_round_ns, 99)
+            },
             "queryNs": {
                 "p50": percentile_ns(&query_ns, 50),
                 "p95": percentile_ns(&query_ns, 95),
@@ -201,7 +223,7 @@ async fn qualification_kg_history_reopen_no_resurrection() {
             "postDeletionReopens": 3,
             "deletedFactsResurrected": false,
             "activationGranted": false,
-            "correctionTimingScope": "concurrent_correction_and_reader_join"
+            "correctionTimingScope": "product_correction_future_with_concurrent_reader"
         })
     );
     store.pool.close().await;
