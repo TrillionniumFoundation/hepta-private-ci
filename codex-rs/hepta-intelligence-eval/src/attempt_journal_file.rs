@@ -10,6 +10,10 @@ use std::io::Write;
 
 use super::*;
 
+#[path = "attempt_capacity.rs"]
+mod capacity;
+use capacity::AttemptCapacity;
+
 const MAGIC: &[u8; 8] = b"HEPTAT01";
 const HEADER: u64 = 72;
 const MAX_BYTES: u64 = 64 * 1024 * 1024;
@@ -20,6 +24,7 @@ pub struct LockedFileProductEvaluationAttemptJournalV1 {
     binding: Digest32,
     attempts: AttemptEvents,
     plan_owners: BTreeMap<[u8; 32], StableId>,
+    capacity: AttemptCapacity,
     length: u64,
     event_count: usize,
     state_digest: Digest32,
@@ -40,7 +45,7 @@ impl LockedFileProductEvaluationAttemptJournalV1 {
             .map_err(|_| ProductEvaluationAttemptJournalErrorV1::Indeterminate)?;
         Ok(Self {
             file, binding, attempts: BTreeMap::new(), plan_owners: BTreeMap::new(),
-            length: HEADER, event_count: 0,
+            capacity: AttemptCapacity::default(), length: HEADER, event_count: 0,
             state_digest: Digest32::of_bytes(&header), poisoned: false,
         })
     }
@@ -83,6 +88,7 @@ impl LockedFileProductEvaluationAttemptJournalV1 {
         };
         let mut attempts = BTreeMap::new();
         let mut plan_owners = BTreeMap::new();
+        let mut capacity = AttemptCapacity::default();
         let mut cursor = HEADER;
         let mut event_count = 0usize;
         while cursor < length {
@@ -106,7 +112,12 @@ impl LockedFileProductEvaluationAttemptJournalV1 {
             if !appended {
                 return Err(ProductEvaluationAttemptJournalErrorV1::Corrupt);
             }
+            let previous = attempts.get(&receipt.transition.attempt_id)
+                .and_then(|events: &Vec<ProductEvaluationAttemptReceiptV1>| events.last())
+                .map(|event| event.transition.phase);
+            let reservation = capacity.project(previous, &receipt.transition)?;
             install_transition(&mut attempts, &mut plan_owners, &receipt);
+            capacity.install(reservation, &receipt.transition);
             event_count += 1;
             state_digest = advance_digest(state_digest, event_count, &payload);
             if let Some(anchor) = minimum
@@ -119,7 +130,10 @@ impl LockedFileProductEvaluationAttemptJournalV1 {
         if !anchor_seen || file.metadata().map_err(io_error)?.len() != length {
             return Err(ProductEvaluationAttemptJournalErrorV1::Corrupt);
         }
-        Ok(Self { file, binding, attempts, plan_owners, length, event_count, state_digest, poisoned: false })
+        // Legacy prefixes remain readable, including a prefix that did not
+        // reserve enough space. New admission is refused while existing work
+        // may spend the remaining bytes; migration never rewrites consumption.
+        Ok(Self { file, binding, attempts, plan_owners, capacity, length, event_count, state_digest, poisoned: false })
     }
 
     #[must_use]
@@ -149,7 +163,6 @@ impl ProductEvaluationAttemptJournalV1 for LockedFileProductEvaluationAttemptJou
                 return Err(ProductEvaluationAttemptJournalErrorV1::Indeterminate);
             }
         }
-        // Validate only the addressed attempt. Never clone the global history.
         let (receipt, appended) = preview_transition(&self.attempts, &self.plan_owners, transition.clone())?;
         if !appended { return Ok(receipt); }
         if self.event_count >= MAX_EVENTS {
@@ -158,6 +171,16 @@ impl ProductEvaluationAttemptJournalV1 for LockedFileProductEvaluationAttemptJou
         let payload = encode_transition(&transition)?;
         let next_length = self.length.checked_add(4 + payload.len() as u64 + 32)
             .filter(|value| *value <= MAX_BYTES).ok_or(ProductEvaluationAttemptJournalErrorV1::Capacity)?;
+        let previous = self.attempts.get(&transition.attempt_id)
+            .and_then(|events| events.last()).map(|event| event.transition.phase);
+        let reservation = self.capacity.project(previous, &transition)?;
+        if previous.is_none() {
+            // The intent is the admission boundary: reserve every future phase
+            // before the runner can touch its holdout owner or provider.
+            reservation.check(next_length, self.event_count + 1, MAX_BYTES, MAX_EVENTS)?;
+        } else if self.capacity.reserved().check(self.length, self.event_count, MAX_BYTES, MAX_EVENTS).is_ok() {
+            reservation.check(next_length, self.event_count + 1, MAX_BYTES, MAX_EVENTS)?;
+        }
         let mut frame = (payload.len() as u32).to_be_bytes().to_vec();
         frame.extend_from_slice(&payload);
         frame.extend_from_slice(Digest32::of_bytes(&payload).as_array());
@@ -168,6 +191,7 @@ impl ProductEvaluationAttemptJournalV1 for LockedFileProductEvaluationAttemptJou
             return Err(ProductEvaluationAttemptJournalErrorV1::Indeterminate);
         }
         install_transition(&mut self.attempts, &mut self.plan_owners, &receipt);
+        self.capacity.install(reservation, &transition);
         self.length = next_length;
         self.event_count += 1;
         self.state_digest = advance_digest(self.state_digest, self.event_count, &payload);
@@ -186,7 +210,7 @@ impl ProductEvaluationAttemptJournalV1 for LockedFileProductEvaluationAttemptJou
 
     fn pending(&mut self, after: Option<&StableId>, limit: usize) -> Result<Vec<ProductEvaluationAttemptReceiptV1>, ProductEvaluationAttemptJournalErrorV1> {
         self.anchor()?;
-        pending_page(&self.attempts, after, limit)
+        self.capacity.pending_page(&self.attempts, after, limit)
     }
 }
 
