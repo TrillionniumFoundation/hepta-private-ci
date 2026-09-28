@@ -120,6 +120,12 @@ impl ManagedRecordStream {
         self.pending.len()
     }
 
+    /// Retained record-buffer capacity, not allocator overhead or process RSS.
+    /// Completed frames and transport-owned buffers must be accounted separately.
+    pub fn buffer_capacity_bytes(&self) -> usize {
+        self.pending.capacity()
+    }
+
     pub fn is_terminal(&self) -> bool {
         self.terminal || self.owner.state() != SessionLifecycleState::Active
     }
@@ -151,6 +157,31 @@ impl ManagedRecordStream {
         }
     }
 
+    // A declared length is only a ceiling, not permission to allocate its body.
+    // Grow geometrically with admitted bytes, avoiding both speculative body
+    // allocation and quadratic reallocations for one-byte transport fragments.
+    fn reserve_admitted(&mut self, additional: usize) -> Result<(), RecordStreamError> {
+        let needed = self
+            .pending
+            .len()
+            .checked_add(additional)
+            .ok_or(RecordStreamError::RecordLimit)?;
+        if needed > self.limits.max_record_bytes {
+            return Err(RecordStreamError::RecordLimit);
+        }
+        if needed <= self.pending.capacity() {
+            return Ok(());
+        }
+        let ceiling = self.expected.unwrap_or(PREFIX_BYTES);
+        let capacity = needed
+            .max(PREFIX_BYTES)
+            .max(self.pending.capacity().saturating_mul(2))
+            .min(ceiling);
+        self.pending
+            .try_reserve_exact(capacity - self.pending.len())
+            .map_err(|_| RecordStreamError::Allocation)
+    }
+
     pub fn feed(&mut self, input: &[u8]) -> DecodeFeed<RecordStreamBatch> {
         let mut batch = RecordStreamBatch {
             frames: Vec::new(),
@@ -166,8 +197,8 @@ impl ManagedRecordStream {
         while consumed < budget && batch.frames.len() < self.limits.max_records_per_feed {
             let target = self.expected.unwrap_or(PREFIX_BYTES);
             let count = (target - self.pending.len()).min(budget - consumed);
-            if self.pending.try_reserve_exact(target - self.pending.len()).is_err() {
-                batch.terminal_error = Some(RecordStreamError::Allocation);
+            if let Err(error) = self.reserve_admitted(count) {
+                batch.terminal_error = Some(error);
                 break;
             }
             self.pending.extend_from_slice(&input[consumed..consumed + count]);
@@ -180,8 +211,18 @@ impl ManagedRecordStream {
                     batch.terminal_error = Some(RecordStreamError::InvalidPrefix);
                     break;
                 }
+                // Reject a known-wrong session before accepting its body. This
+                // is admission only: the owner still verifies the entire MAC,
+                // sequence and schema policy before publishing any frame.
+                if &self.pending[6..38] != self.owner.session_id().as_array() {
+                    batch.terminal_error = Some(RecordStreamError::SessionIdentityMismatch);
+                    break;
+                }
                 let length = u32::from_be_bytes([
-                    self.pending[46], self.pending[47], self.pending[48], self.pending[49],
+                    self.pending[46],
+                    self.pending[47],
+                    self.pending[48],
+                    self.pending[49],
                 ]);
                 let Ok(length) = usize::try_from(length) else {
                     batch.terminal_error = Some(RecordStreamError::RecordLimit);
@@ -238,6 +279,7 @@ impl fmt::Debug for ManagedRecordStream {
             .field("session_id", &self.owner.session_id())
             .field("limits", &self.limits)
             .field("buffered_bytes", &self.pending.len())
+            .field("buffer_capacity_bytes", &self.pending.capacity())
             .field("terminal", &self.is_terminal())
             .finish()
     }
@@ -247,6 +289,7 @@ impl fmt::Debug for ManagedRecordStream {
 pub enum RecordStreamError {
     InvalidLimits,
     InvalidPrefix,
+    SessionIdentityMismatch,
     RecordLimit,
     Allocation,
     Terminated,
@@ -259,11 +302,17 @@ impl fmt::Display for RecordStreamError {
         match self {
             Self::InvalidLimits => formatter.write_str("invalid authenticated stream limits"),
             Self::InvalidPrefix => formatter.write_str("invalid HPTM V1 prefix"),
+            Self::SessionIdentityMismatch => {
+                formatter.write_str("HPTM record belongs to a different session")
+            }
             Self::RecordLimit => formatter.write_str("authenticated record exceeds admission bounds"),
             Self::Allocation => formatter.write_str("authenticated stream allocation failed"),
             Self::Terminated => formatter.write_str("authenticated stream is terminal"),
             Self::UnexpectedEof { buffered, expected } => {
-                write!(formatter, "authenticated stream ended after {buffered} of {expected} bytes")
+                write!(
+                    formatter,
+                    "authenticated stream ended after {buffered} of {expected} bytes"
+                )
             }
             Self::Session(error) => error.fmt(formatter),
         }
@@ -274,8 +323,13 @@ impl Error for RecordStreamError {
     fn source(&self) -> Option<&(dyn Error + 'static)> {
         match self {
             Self::Session(error) => Some(error),
-            Self::InvalidLimits | Self::InvalidPrefix | Self::RecordLimit | Self::Allocation
-            | Self::Terminated | Self::UnexpectedEof { .. } => None,
+            Self::InvalidLimits
+            | Self::InvalidPrefix
+            | Self::SessionIdentityMismatch
+            | Self::RecordLimit
+            | Self::Allocation
+            | Self::Terminated
+            | Self::UnexpectedEof { .. } => None,
         }
     }
 }
