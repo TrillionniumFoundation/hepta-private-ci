@@ -19,7 +19,9 @@ impl LearningArtifactOwnerService {
         }
         self.metrics
             .measure(ArtifactOwnerStageV1::CurrentView, || {
-                self.host.current_registry_view(now).map_err(LearningArtifactOwnerServiceError::from)
+                self.host
+                    .current_registry_view(now)
+                    .map_err(LearningArtifactOwnerServiceError::from)
             })
     }
 
@@ -44,5 +46,4 @@ impl LearningArtifactOwnerService {
     pub fn report_resource_usage(&self, usage: ArtifactOwnerResourceUsageV1) {
         self.metrics.report_resource_usage(usage);
     }
-
 }
