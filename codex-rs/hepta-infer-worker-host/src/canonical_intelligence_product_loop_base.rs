@@ -50,7 +50,11 @@ const MAX_OWNER_INPUT_BUDGET: Duration = Duration::from_secs(30);
 pub struct CanonicalIntelligencePhysicalRequestV1 {
     pub decision: AgentdIntelligenceDecisionAppendV1,
     pub admission: NativeAdmission,
+    /// Compatibility witness supplied by the owner. The bytes must equal the
+    /// Prompt Registry/Context owner payload already frozen in `prepared`.
     pub prompt: String,
+    /// Canonical Prompt delivery already contains its complete compiled context;
+    /// adding a second query would create an unbound physical payload.
     pub context_query: Option<String>,
     pub cancellation: CancellationToken,
 }
@@ -72,8 +76,9 @@ pub type CanonicalIntelligenceOutcomeFuture<'a> = Pin<
 >;
 
 /// Host-owned inputs for the already-selected run. The owner creates signed
-/// learning evidence and the physical prompt/context; the continuation owns no
-/// signing key, policy, candidate generator, or outcome interpretation.
+/// learning evidence and confirms the exact frozen physical payload; it cannot
+/// replace Prompt/Context bytes, signing keys, policy, candidates, or outcome
+/// interpretation at the continuation boundary.
 pub trait CanonicalIntelligenceProductLoopOwnerV1: Send + Sync {
     fn prepare_physical_request<'a>(
         &'a self,
@@ -167,7 +172,7 @@ impl CanonicalIntelligenceProductLoopV1 {
             })?;
         let _permit = permit;
 
-        let mut request = timeout(
+        let request = timeout(
             self.owner_input_budget,
             self.owner.prepare_physical_request(&prepared, &attached),
         )
@@ -175,6 +180,21 @@ impl CanonicalIntelligenceProductLoopV1 {
         .map_err(|_| AgentdError::Overloaded {
             retry_after_ms: duration_millis(self.owner_input_budget),
         })??;
+
+        // The actual Prompt Registry realization, Context compilation,
+        // serialization and attachment are frozen before Decision publication.
+        // Owner input remains useful for signed learning evidence and admission,
+        // but it cannot replace the bytes or append an unbound context query.
+        let frozen = prepared.physical_prompt().map_err(|error| {
+            AgentdError::Protocol(format!(
+                "canonical product continuation omitted owner-backed Prompt delivery: {error}"
+            ))
+        })?;
+        let physical_prompt = require_exact_frozen_prompt(
+            &frozen.payload,
+            &request.prompt,
+            request.context_query.as_ref(),
+        )?;
 
         let scope_id = self
             .learning
@@ -232,8 +252,8 @@ impl CanonicalIntelligenceProductLoopV1 {
                 .run_intelligence(
                     &mut control,
                     request.admission,
-                    request.prompt,
-                    request.context_query,
+                    physical_prompt,
+                    None,
                     binding,
                     &request.cancellation,
                 )
@@ -395,6 +415,29 @@ fn validate_attached(
     Ok(())
 }
 
+fn require_exact_frozen_prompt(
+    frozen: &[u8],
+    owner_witness: &str,
+    context_query: Option<&String>,
+) -> Result<String, AgentdError> {
+    if context_query.is_some() {
+        return Err(AgentdError::Protocol(
+            "canonical Prompt delivery already contains compiled context; a second context query is forbidden"
+                .to_string(),
+        ));
+    }
+    if frozen != owner_witness.as_bytes() {
+        return Err(AgentdError::Protocol(
+            "physical Prompt bytes differ from the owner-backed prepared delivery".to_string(),
+        ));
+    }
+    String::from_utf8(frozen.to_vec()).map_err(|_| {
+        AgentdError::Protocol(
+            "owner-backed physical Prompt payload is not valid UTF-8 for App Server".to_string(),
+        )
+    })
+}
+
 fn protocol_receipt(value: AgentRunReceipt) -> Result<RunReceipt, AgentdError> {
     Ok(RunReceipt {
         run_id: value.run_id,
@@ -543,5 +586,20 @@ mod tests {
                 Some(&Digest32::of_bytes(b"terminal").to_string())
             )
         ));
+    }
+
+    #[test]
+    fn physical_prompt_must_equal_frozen_payload_and_cannot_add_context() {
+        assert_eq!(
+            require_exact_frozen_prompt(b"exact prompt", "exact prompt", None)
+                .expect("exact frozen prompt"),
+            "exact prompt"
+        );
+        assert!(require_exact_frozen_prompt(b"exact prompt", "substituted", None).is_err());
+        let query = "extra context".to_string();
+        assert!(
+            require_exact_frozen_prompt(b"exact prompt", "exact prompt", Some(&query)).is_err()
+        );
+        assert!(require_exact_frozen_prompt(&[0xff], "", None).is_err());
     }
 }
