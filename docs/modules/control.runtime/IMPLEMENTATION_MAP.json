@@ -7,6 +7,7 @@
   "canonicalStatusSource": "docs/modules/control.runtime/CURRENT_STATE.json",
   "technicalGuide": "docs/modules/control.runtime/TECHNICAL.md",
   "executionSpecification": "docs/readiness/CONTROL_RUNTIME_EXECUTION.md",
+  "convergenceGuide": "docs/readiness/CONTROL_RUNTIME_CONVERGENCE.md",
   "sourceRoot": [
     "codex-rs/hepta-control-plane",
     "codex-rs/hepta-agentd"
@@ -262,7 +263,8 @@
       "outputs": [
         "durable framed record",
         "checkpoint and backup verification",
-        "RecoveryRequired handle state after uncertain mutation"
+        "RecoveryRequired handle state after uncertain mutation",
+        "closed recovery projection for typed execution records"
       ],
       "state": "source_candidate_not_product_activated",
       "authority": "none",
@@ -271,6 +273,22 @@
         {
           "path": "codex-rs/hepta-control-plane/src/planner_store.rs",
           "symbol": "uncertain_append_poison_is_enforced_by_the_handle"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store.rs",
+          "symbol": "poisoned_handle_cannot_verify_a_stale_checkpoint_projection"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store.rs",
+          "symbol": "generic_append_rejects_reserved_execution_records_without_poisoning"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store.rs",
+          "symbol": "complete_frame_prefix_with_missing_body_fails_closed"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store.rs",
+          "symbol": "semantic_compaction_preserves_non_snapshot_identity_history"
         },
         {
           "path": "codex-rs/hepta-control-plane/src/planner_store_tests.rs",
@@ -299,19 +317,43 @@
       ],
       "state": "source_candidate_boundary_uncomposed",
       "authority": "external_consumer_only",
-      "ownerBoundary": "control.runtime persists the claim; the named authority owns authorization and revalidation; the effect owner owns execution and reconciliation",
+      "ownerBoundary": "control.runtime persists and validates the claim/receipt state; the named authority owns authorization and revalidation; the effect owner owns execution and reconciliation",
       "tests": [
         {
-          "path": "codex-rs/hepta-control-plane/src/planner_execution_tests.rs",
+          "path": "codex-rs/hepta-control-plane/src/planner_execution_recovery_tests.rs",
           "symbol": "current_authority_claims_before_execution_and_records_terminal_receipt"
         },
         {
-          "path": "codex-rs/hepta-control-plane/src/planner_execution_tests.rs",
+          "path": "codex-rs/hepta-control-plane/src/planner_execution_recovery_tests.rs",
           "symbol": "repeated_request_never_replays_after_a_durable_claim"
         },
         {
-          "path": "codex-rs/hepta-control-plane/src/planner_execution_tests.rs",
+          "path": "codex-rs/hepta-control-plane/src/planner_execution_recovery_tests.rs",
           "symbol": "revocation_after_claim_stops_before_executor"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_execution_recovery_tests.rs",
+          "symbol": "reopened_terminal_without_claim_is_rejected_before_authority_or_effect"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_execution_recovery_tests.rs",
+          "symbol": "reopened_terminal_must_match_the_original_claim_grant"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/tests/planner_durable_hardening.rs",
+          "symbol": "valid_terminal_receipt_without_a_durable_claim_is_rejected"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/tests/planner_durable_hardening.rs",
+          "symbol": "forged_terminal_receipt_digest_is_rejected_before_store_mutation"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/tests/planner_durable_hardening.rs",
+          "symbol": "conclusive_terminal_receipt_cannot_be_replaced"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/tests/planner_durable_hardening.rs",
+          "symbol": "poisoned_store_cannot_return_a_stale_conclusive_dispatch"
         }
       ],
       "designOperation": "execute_planner_request_v1",
@@ -338,8 +380,12 @@
       "authority": "external_consumer_only",
       "tests": [
         {
-          "path": "codex-rs/hepta-control-plane/src/planner_execution_tests.rs",
+          "path": "codex-rs/hepta-control-plane/src/planner_execution_recovery_tests.rs",
           "symbol": "indeterminate_effect_is_reconciled_without_replaying_dispatch"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_execution_recovery_tests.rs",
+          "symbol": "reconciliation_without_a_durable_claim_is_rejected"
         }
       ],
       "designOperation": "reconcile_planner_request_v1",
@@ -359,12 +405,18 @@
         "bounded payload"
       ],
       "outputs": [
-        "complete admitted-target identity and disposition set"
+        "complete admitted-target identity and disposition set",
+        "exact successful-prefix output digests"
       ],
       "state": "source_candidate_read_only_reference",
       "authority": "deny_all",
       "nonClaim": "trusted in-process handlers are not a sandbox and blocking/model/plugin work is not admitted",
-      "tests": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/tests/organ_fanout_receipts.rs",
+          "symbol": "failed_fanout_preserves_the_exact_successful_prefix_digest"
+        }
+      ],
       "designOperation": "organ_fanout_receipt",
       "mappingClass": "owner_native",
       "delegatedCallees": [

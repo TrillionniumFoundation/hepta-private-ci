@@ -31,9 +31,9 @@ final use. This local read decision is not a global-effect product caller.
 The public facade rejects owner summaries outside the exact requested set,
 cardinality excess before normalization, duplicate final-payload identity,
 planning time before collection, expired owner observations, and an `abstain`
-candidate carrying an effect payload. Finalization and grant-request construction
-recheck the original snapshot and owner freshness. All planner outputs remain
-`DENY_ALL`.
+candidate carrying an effect payload. Finalization and grant-request
+construction recheck the original snapshot and owner freshness. All planner
+outputs remain `DENY_ALL`.
 
 ## 3. Closed planner journal
 
@@ -56,7 +56,11 @@ versioned frame codec:
   complete prefix that declares a missing body fails closed instead of being
   silently treated as a crash tail;
 - any mutation error whose durable outcome may be uncertain permanently poisons
-  the current handle; further mutation requires drop and verified reopen;
+  the current handle; authoritative checkpoint and dispatch-state reads also
+  fail until drop and verified reopen;
+- the generic `append` entry rejects canonical dispatch-claim, terminal, and
+  reconciliation records; only the crate-local typed execution state machine
+  can write those reserved envelope domains;
 - compaction treats `retain_last` as a lower bound and preserves every
   non-snapshot identity/decision/revocation/dispatch/terminal record plus the
   latest snapshot needed to interpret the preserved semantic history;
@@ -64,17 +68,17 @@ versioned frame codec:
   replacement; restore holds shared backup ownership and exclusive destination
   ownership before changing the destination.
 
-The existing core PID lock remains a compatibility layer for the current schema.
-All selected product callers must use the public wrapper. A named independent
-anchor owner, target-filesystem profile, and two-process crash qualification are
-still external gates.
+The existing core PID lock remains a compatibility layer for the current
+schema. All selected product callers must use the public wrapper. A named
+independent anchor owner, target-filesystem profile, and two-process crash
+qualification are still external gates.
 
 ## 5. Durable dispatch and recovery state machine
 
 Dispatch uses one exact operation identity and a stable v2 claim binding. The v2
 claim digest excludes attempt time, so a retry at a later time cannot conflict
-with the same request merely because its local clock advanced. Existing v1 claim
-envelopes remain readable.
+with the same request merely because its local clock advanced. Existing v1
+claim envelopes remain readable through the crate-local migration path.
 
 The public sequence is:
 
@@ -93,6 +97,22 @@ a refreshed authorization cannot be reported as the grant used by the first
 attempt. A conclusive receipt can be returned after the original execution
 request expires because this path authorizes no new effect.
 
+Terminal writes validate the canonical receipt digest, deny-all authority
+posture, request identity, final payload, durable claim, and original grant.
+The exact same conclusive receipt is an idempotent retry; a different terminal
+receipt cannot replace it.
+
+Reopen reconstructs the same closed transition system instead of accepting
+execution records merely because their frames and digests are structurally
+valid. It rejects:
+
+- an execution observation without an earlier exact durable claim;
+- an observation whose sequence precedes its claim;
+- a receipt whose grant differs from the original claim;
+- duplicate initial terminal observations;
+- reconciliation without an initial observation; and
+- reconciliation after a conclusive success or failure.
+
 If final authority revalidation is revoked or indeterminate after the claim is
 durable, the wrapper persists a deterministic failed receipt stating that the
 executor was not invoked, then returns the authority error. This prevents a
@@ -108,21 +128,49 @@ terminal receipt without appending a later contradictory observation.
 `OrganHostV1` remains a trusted compiled-in, synchronous, read-only host—not a
 sandbox and not a model/plugin/I/O executor. The receipt-preserving fanout path
 returns one stable target slot for every admitted route and distinguishes
-`Delivered`, `DeliveredOutputUnavailable`, `Failed`, and `NotAttempted`. The
-host retains generation fencing, input/output limits, quarantine, startup
-cleanup, and migration rollback semantics.
+`Delivered`, `DeliveredOutputUnavailable`, `Failed`, and `NotAttempted`.
 
-Blocking handlers, external plugins, model calls, and effectful work require a
-separate bounded owner and cannot be admitted by implementing the read-only
-trait alone. Product-level fanout retry and downstream target idempotency remain
-composition work.
+A transparent recording adapter observes only the exact synchronous handler
+result. When an earlier target succeeds and a later target fails, the receipt
+retains the successful target identity, input port, and exact output digest;
+the failed target retains its fault identity and the unattempted suffix remains
+explicit. Existing `dispatch_once` behavior and dispatch order are unchanged.
 
-## 7. Qualification matrix
+The host retains generation fencing, input/output limits, quarantine, startup
+cleanup, and migration rollback semantics. Blocking handlers, external plugins,
+model calls, and effectful work require a separate bounded owner and cannot be
+admitted by implementing the read-only trait alone. Product-level fanout retry
+and downstream target idempotency remain composition work.
+
+## 7. Canonical state and implementation mapping
+
+`CURRENT_STATE.json` is the sole staged maturity source. It separately records
+source presence, guarded entry, product composition, exact-source tests,
+fixed-merge tests, target-host recovery, independent acceptance, activation,
+and release. External evidence gates remain false unless the corresponding
+owner supplies its own receipt.
+
+`IMPLEMENTATION_MAP.json` maps every registered operation to its native source
+and at least one exact test binding. The non-mutating state validator verifies:
+
+- the canonical state, technical guide, execution specification, and this
+  convergence guide exist;
+- every mapped source root and source file exists;
+- every required operation remains mapped;
+- every mapped test file exists and contains the named test symbol; and
+- no source artifact self-certifies product execution, target-host recovery,
+  independent acceptance, activation, or release.
+
+This prevents documentation from citing a moved, renamed, or nonexistent
+regression while still avoiding any claim that source presence means a test
+passed.
+
+## 8. Qualification matrix
 
 The branch workflow runs the same non-mutating checks against the exact source
 head and a deterministic synthetic merge:
 
-- canonical state validation;
+- canonical state and mapping validation;
 - `cargo fmt --check`;
 - package regression tests for control plane, Agentd, and NDU;
 - all-target compilation;
@@ -131,19 +179,22 @@ head and a deterministic synthetic merge:
 
 Source tests include request-time and owner-age rejection, effect-free abstain,
 closed journal replay, uncertain-handle poisoning, public writer exclusion,
-missing-body corruption rejection, semantic compaction, v1/v2 claim recovery,
-terminal replay after expiry, no-claim reconciliation rejection, authority
-revocation before executor invocation, process reopen, and reconciliation
-without redispatch.
+reserved execution-envelope rejection, missing-body corruption rejection,
+semantic compaction, v1/v2 claim recovery, terminal replay after expiry,
+orphan-terminal and grant-drift recovery rejection, no-claim reconciliation
+rejection, immutable conclusive receipts, authority revocation before executor
+invocation, process reopen, reconciliation without redispatch, and exact
+successful-prefix organ output evidence.
 
-A queued, skipped, or historical run is not a pass. Stage booleans remain false
-until current exact-head and fixed-merge receipts exist.
+A queued, skipped, cancelled, or historical run is not a pass. Stage booleans
+remain false until current exact-head and fixed-merge receipts exist.
 
-## 8. Remaining external work
+## 9. Remaining external work
 
 The candidate deliberately does not assert completion of:
 
-- a named production planner writer and independently retained checkpoint anchor;
+- a named production planner writer and independently retained checkpoint
+  anchor;
 - a named effectful product caller, authority adapter, and effect owner using
   the durable protocol end to end;
 - two-process kill/restart, disk-full, filesystem-loss, stale-owner, and restore
