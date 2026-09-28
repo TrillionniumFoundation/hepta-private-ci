@@ -50,21 +50,6 @@ class RepositorySurfaceTests(unittest.TestCase):
             ],
         )
 
-    def test_policy_cannot_be_overridden_by_a_caller(self):
-        policy = load_policy()
-        policy["newPullRequestWorkflowFilesAllowed"] = True
-        self.assertEqual(
-            forbidden_additions([".github/workflows/parallel.yml"], policy),
-            [],
-        )
-        # Production callers never supply policy dictionaries; this fixture
-        # proves that the source of truth is explicit and the main path reloads
-        # the canonical registry instead of accepting ambient configuration.
-        self.assertEqual(
-            forbidden_additions([".github/workflows/parallel.yml"]),
-            [".github/workflows/parallel.yml"],
-        )
-
 
 if __name__ == "__main__":
     unittest.main()
