@@ -1,0 +1,127 @@
+impl AgentdNeuronInvocationV2 {
+    pub fn runtime_body_digest(&self) -> Digest32 {
+        self.runtime_body_digest
+    }
+
+    pub(crate) fn matches_run(&self, run_id: &StableId, body_generation: u64) -> bool {
+        &self.run_id == run_id && self.input.body_generation == Some(body_generation)
+    }
+
+    pub(crate) fn execute(
+        &self,
+        input: &codex_hepta_intelligence::CanonicalPortInputV1,
+        guard: &mut dyn NeuronAdmissionGuard,
+    ) -> Result<NeuronRuntimeCommitV2, NeuronRuntimeV2Error> {
+        if input.run_id != self.run_id
+            || input.objective_digest != self.input.objective_digest
+            || input.predecessor_digest != self.input.ndu_snapshot_digest
+        {
+            self.handle.owner.record_entry_rejection();
+            return Err(NeuronRuntimeV2Error::Admission(
+                NeuronAdmissionError::BindingMismatch,
+            ));
+        }
+        let mut bound = BoundConfiguration {
+            expected_config: self.handle.config_digest,
+            inner: guard,
+        };
+        self.handle.owner.execute(self.input.clone(), &mut bound)
+    }
+}
+
+struct BoundConfiguration<'a> {
+    expected_config: Digest32,
+    inner: &'a mut dyn NeuronAdmissionGuard,
+}
+
+impl NeuronAdmissionGuard for BoundConfiguration<'_> {
+    fn check(
+        &mut self,
+        config: &NeuronRuntimeConfigV1,
+        input: &NeuronTickInputV1,
+    ) -> Result<(), NeuronAdmissionError> {
+        if config.semantic_digest().ok() != Some(self.expected_config) {
+            return Err(NeuronAdmissionError::BindingMismatch);
+        }
+        self.inner.check(config, input)
+    }
+}
+
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq, Serialize)]
+pub struct AgentdNeuronOperationalCountersV2 {
+    pub owner_busy_rejections: u64,
+    pub owner_poisoned_failures: u64,
+    pub entry_rejections_before_runtime: u64,
+    pub runtime_admission_denials: u64,
+    pub recovery_attempts: u64,
+    pub recovery_converged: u64,
+    pub recovery_pending: u64,
+    pub recovery_errors: u64,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
+pub struct AgentdNeuronCapacityTrendV2 {
+    pub elapsed_micros: u64,
+    pub generation_records_delta: i64,
+    pub generation_effective_bytes_delta: i64,
+    pub index_records_delta: i64,
+    pub index_effective_bytes_delta: i64,
+    pub witness_records_remaining_delta: Option<i64>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+pub struct AgentdNeuronOperationalSnapshotV2 {
+    pub generation: Option<u64>,
+    pub body_bundle_digest: Option<String>,
+    pub pending_tick_id: Option<String>,
+    pub pending_input_digest: Option<String>,
+    pub pending_operation_code: Option<String>,
+    /// Process-local lower bound. It resets when the daemon owner is rebuilt.
+    pub oldest_outcome_unknown_age_micros: Option<u64>,
+    pub pending_witness_count: usize,
+    /// Process-local lower bound. Durable truth is the pending witness count.
+    pub pending_witness_age_micros: Option<u64>,
+    pub capacity: NeuronRuntimeCapacityV2,
+    pub capacity_trend: Option<AgentdNeuronCapacityTrendV2>,
+    pub counters: AgentdNeuronOperationalCountersV2,
+    pub last_measurement: Option<NeuronRuntimeMeasurementV2>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+pub struct AgentdNeuronRecoveryReportV2 {
+    pub status_code: String,
+    pub terminal: bool,
+    pub requires_reconciliation: bool,
+    pub failure_code: Option<String>,
+    pub operation_digest: Option<String>,
+    pub witness_acknowledged: Option<bool>,
+}
+
+impl AgentdNeuronRecoveryReportV2 {
+    fn from_status(status: NeuronOperationStatusV2) -> Self {
+        let failure_code = match &status {
+            NeuronOperationStatusV2::Failed(failure) => {
+                Some(failure.stable_code().to_owned())
+            }
+            _ => None,
+        };
+        let (operation_digest, witness_acknowledged) = match &status {
+            NeuronOperationStatusV2::Committed {
+                commit,
+                witness_acknowledged,
+            } => (
+                Some(commit.operation_digest.to_string()),
+                Some(*witness_acknowledged),
+            ),
+            _ => (None, None),
+        };
+        Self {
+            status_code: status.stable_code().to_owned(),
+            terminal: status.is_terminal(),
+            requires_reconciliation: status.requires_reconciliation(),
+            failure_code,
+            operation_digest,
+            witness_acknowledged,
+        }
+    }
+}

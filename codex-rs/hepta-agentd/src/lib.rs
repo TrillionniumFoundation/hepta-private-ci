@@ -31,7 +31,7 @@ mod intuition_policy;
 mod lane_b_runtime;
 mod neuron_artifact_admission;
 mod neuron_runtime;
-mod neuron_runtime_v2;
+pub mod neuron_runtime_v2;
 mod objective_runtime;
 mod plasticity_anchor_journal;
 mod plasticity_host;

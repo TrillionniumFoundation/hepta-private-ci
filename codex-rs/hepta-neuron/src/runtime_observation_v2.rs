@@ -12,15 +12,80 @@ pub struct NeuronStorageObservationV2 {
     pub io: NeuronIoMetricsV2,
 }
 
+/// Process-local phase measurements for one guarded execution or one
+/// reconciliation-only call. These values are diagnostics, never durable
+/// identity or authorization evidence.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct NeuronRuntimeMeasurementV2 {
     pub total_micros: u64,
     pub returned_success: bool,
+    pub recovery_only: bool,
+    pub admission_micros: u64,
+    pub local_reconciliation_micros: u64,
+    pub provider_micros: u64,
+    pub transition_micros: u64,
+    pub receipt_encode_micros: u64,
+    pub store_commit_micros: u64,
+    pub index_commit_micros: u64,
+    pub witness_micros: u64,
+    pub final_use_check_micros: u64,
+    pub checkpoint_payload_bytes: u64,
+    pub full_receipt_bytes: u64,
     pub store_before: NeuronStorageObservationV2,
     pub store_after: NeuronStorageObservationV2,
     pub index_before: NeuronStorageObservationV2,
     pub index_after: NeuronStorageObservationV2,
     pub witness_sync: Option<NeuronIoMetricsV2>,
+}
+
+impl NeuronRuntimeMeasurementV2 {
+    #[must_use]
+    pub fn store_io(&self) -> NeuronIoMetricsV2 {
+        self.store_after.io.since(self.store_before.io)
+    }
+
+    #[must_use]
+    pub fn index_io(&self) -> NeuronIoMetricsV2 {
+        self.index_after.io.since(self.index_before.io)
+    }
+
+    /// Store work excluding measured file-sync time. This includes framing,
+    /// checksums, immutable payload copies and in-memory index maintenance.
+    #[must_use]
+    pub fn store_non_sync_micros(&self) -> u64 {
+        self.store_commit_micros
+            .saturating_sub(self.store_io().sync_micros)
+    }
+
+    /// Index work excluding measured file-sync time.
+    #[must_use]
+    pub fn index_non_sync_micros(&self) -> u64 {
+        self.index_commit_micros
+            .saturating_sub(self.index_io().sync_micros)
+    }
+
+    #[must_use]
+    pub fn measured_sync_micros(&self) -> u64 {
+        self.store_io()
+            .sync_micros
+            .saturating_add(self.index_io().sync_micros)
+            .saturating_add(self.witness_sync.map_or(0, |value| value.sync_micros))
+    }
+
+    #[must_use]
+    pub fn unclassified_micros(&self) -> u64 {
+        let classified = self
+            .admission_micros
+            .saturating_add(self.local_reconciliation_micros)
+            .saturating_add(self.provider_micros)
+            .saturating_add(self.transition_micros)
+            .saturating_add(self.receipt_encode_micros)
+            .saturating_add(self.store_commit_micros)
+            .saturating_add(self.index_commit_micros)
+            .saturating_add(self.witness_micros)
+            .saturating_add(self.final_use_check_micros);
+        self.total_micros.saturating_sub(classified)
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
