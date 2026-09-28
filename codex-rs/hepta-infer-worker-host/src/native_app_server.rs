@@ -622,14 +622,26 @@ impl AppServerModelDriver {
             &started.model,
             &started.model_provider,
         )?;
-        let authorizer = self
-            .turn_start_authorizer
-            .as_ref()
-            .ok_or("runtime.codex turn/start final-use authorizer is required")?;
+        let authorizer = match self.turn_start_authorizer.as_ref() {
+            Some(authorizer) => authorizer,
+            None => {
+                self.recovery_counters.record_authority_denial();
+                return Err("runtime.codex turn/start final-use authorizer is required".into());
+            }
+        };
         let claim_budget = remaining_before(adapter_intent.deadline_ms)?;
-        let verified_use = timeout(claim_budget, authorizer.claim(authority_binding.clone()))
-            .await
-            .map_err(|_| "final-use authority request exceeded runtime.codex deadline")??;
+        let verified_use = match timeout(claim_budget, authorizer.claim(authority_binding.clone())).await
+        {
+            Ok(Ok(verified_use)) => verified_use,
+            Ok(Err(error)) => {
+                self.recovery_counters.record_authority_denial();
+                return Err(error);
+            }
+            Err(_) => {
+                self.recovery_counters.record_authority_denial();
+                return Err("final-use authority request exceeded runtime.codex deadline".into());
+            }
+        };
         let authority_epoch = verified_use.claimed_authority_epoch();
         let revocation_revision = verified_use.claimed_revocation_revision();
         let revocation_head_digest =
@@ -793,12 +805,14 @@ impl AppServerModelDriver {
         let entered_use = match verified_use.enter(&authority_binding) {
             Ok(entered) if entered.matches(&authority_binding) => entered,
             Ok(_) => {
+                self.recovery_counters.record_authority_denial();
                 let reason = "kernel.authority final-use binding mismatch at entry".to_string();
                 control.abort_native_before_effect(pre_effect_abort, reason.clone())?;
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                 return Err(reason.into());
             }
             Err(error) => {
+                self.recovery_counters.record_authority_denial();
                 let reason = format!("kernel.authority final-use entry denied: {error}");
                 control.abort_native_before_effect(pre_effect_abort, reason.clone())?;
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
@@ -950,6 +964,7 @@ impl AppServerModelDriver {
             )
             .await;
         if let Err(reason) = result {
+            let cancellation_observed_at = (reason == LOCAL_CANCELLED).then(Instant::now);
             output.boundary_status = classify_observation_failure(&reason);
             output.stop_reason = Some(reason.clone());
             if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
@@ -978,6 +993,10 @@ impl AppServerModelDriver {
                 };
             let cancel_recorded = control.cancel_native(request_id);
             interrupt(&mut client, &output).await;
+            if let Some(observed_at) = cancellation_observed_at {
+                self.recovery_counters
+                    .record_cancellation_to_interrupt_latency(observed_at.elapsed());
+            }
             let grace = CancellationToken::new();
             let _ = self
                 .observe(
