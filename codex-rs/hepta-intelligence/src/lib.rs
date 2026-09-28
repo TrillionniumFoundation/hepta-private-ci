@@ -6,6 +6,11 @@
 
 #![forbid(unsafe_code)]
 
+// `CanonicalRunOutcomeV1` intentionally keeps its bounded ready envelope inline.
+// Boxing that public product boundary would add heap allocation and break the
+// stable API solely to satisfy a size heuristic; the enum is constructed once
+// and consumed immediately at the Agentd handoff.
+#[allow(clippy::large_enum_variant)]
 mod canonical;
 
 pub use canonical::AdvisoryDecisionReceiptV1;
