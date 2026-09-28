@@ -13,6 +13,7 @@ pub mod hnmf_learning;
 pub mod lane_c;
 pub mod shared_experience;
 mod shared_wire;
+pub mod transitions;
 pub mod wire;
 
 use std::collections::BTreeSet;

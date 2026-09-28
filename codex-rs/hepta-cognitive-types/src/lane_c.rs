@@ -442,6 +442,7 @@ pub enum MemoryWriteOutcomeV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct MemoryWriteReceiptV1 {
     intent: MemoryWriteIntentBindingV1,
+    expected_snapshot: CognitiveSnapshotKeyV1,
     snapshot_key: CognitiveSnapshotKeyV1,
     outcome: MemoryWriteOutcomeV1,
     receipt_digest: Digest32,
@@ -460,6 +461,7 @@ impl MemoryWriteReceiptV1 {
         intent.validate()?;
         let mut value = Self {
             intent: intent.binding(),
+            expected_snapshot: intent.expected_snapshot().clone(),
             snapshot_key,
             outcome: MemoryWriteOutcomeV1::Committed {
                 record_id,
@@ -484,6 +486,7 @@ impl MemoryWriteReceiptV1 {
         intent.validate()?;
         let mut value = Self {
             intent: intent.binding(),
+            expected_snapshot: intent.expected_snapshot().clone(),
             snapshot_key,
             outcome: MemoryWriteOutcomeV1::Rejected {
                 code,
@@ -499,7 +502,17 @@ impl MemoryWriteReceiptV1 {
 
     pub fn validate(&self) -> Result<(), LaneCContractError> {
         self.intent.validate()?;
+        self.expected_snapshot.validate()?;
         self.snapshot_key.validate()?;
+        if self.expected_snapshot.vector_digest != self.intent.expected_snapshot_digest() {
+            return Err(LaneCContractError::DigestMismatch("receipt_expected_snapshot"));
+        }
+        crate::transitions::validate_receipt_transition_v1(
+            &self.expected_snapshot,
+            &self.snapshot_key,
+            &self.outcome,
+        )
+        .map_err(LaneCContractError::Transition)?;
         match &self.outcome {
             MemoryWriteOutcomeV1::Committed {
                 record_digest,
@@ -1229,6 +1242,7 @@ pub enum LaneCContractError {
     DuplicateIdentity(&'static str),
     DigestMismatch(&'static str),
     InvalidState(&'static str),
+    Transition(ContractViolationV1),
     AuthorityGranted,
     LimitExceeded {
         field: &'static str,
@@ -1279,6 +1293,7 @@ impl LaneCContractError {
                 *field,
                 "field combination is not a valid contract state",
             ),
+            Self::Transition(violation) => violation.clone(),
             Self::AuthorityGranted => ContractViolationV1::new(
                 ContractErrorCodeV1::AuthorityGranted,
                 "authority",
