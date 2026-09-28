@@ -12,56 +12,65 @@ mod profile {
 
     include!("../src/product_e2e_tests.rs");
 
-    const PROFILE_SAMPLES: usize = 32;
+    const PROFILE_SAMPLES: usize = 16;
 
     #[tokio::test]
     #[ignore = "full durable profile; run in compact.engine capacity workflow"]
     async fn full_publication_reopen_profile() {
-        let owner = id("agent:full-profile:owner");
-        let fixture = ProductTrustFixture::new(&owner);
-        let temp = TempDir::new().expect("profile temp dir");
-        let url = database_url(&temp);
-        let publication = sealed_publication(
-            &fixture,
-            &["memory:full-profile:a", "memory:full-profile:b"],
-            1,
-            2,
-            None,
-            "full-profile",
-        );
-        let coordinator = MemoryCheckpointCoordinatorV2::open(
-            &url,
-            owner.as_str(),
-            fixture.root.verifying_key().to_bytes(),
-            &fixture.manifest_bytes,
-            "lease:full-profile:one",
-            1,
-            NOW + 10_000,
-            NOW,
-        )
-        .await
-        .expect("open full profile owner");
-
-        let database_path = temp.path().join("product-e2e.db");
-        let wal_path = temp.path().join("product-e2e.db-wal");
-        let database_before = file_bytes(&database_path);
-        let wal_before = file_bytes(&wal_path);
         let peak_rss_before = peak_rss_kib();
         let mut publish_micros = Vec::with_capacity(PROFILE_SAMPLES);
         let mut reopen_micros = Vec::with_capacity(PROFILE_SAMPLES);
+        let mut database_growth_bytes = 0_u64;
+        let mut wal_growth_bytes = 0_u64;
+        let mut payload_bytes = 0_usize;
+        let mut archive_bytes = 0_usize;
 
         for offset in 0..PROFILE_SAMPLES {
+            let owner = id(&format!("agent:full-profile:owner:{offset}"));
+            let fixture = ProductTrustFixture::new(&owner);
+            let temp = TempDir::new().expect("profile temp dir");
+            let url = database_url(&temp);
+            let label = format!("full-profile-{offset}");
+            let publication = sealed_publication(
+                &fixture,
+                &["memory:full-profile:a", "memory:full-profile:b"],
+                1,
+                2,
+                None,
+                &label,
+            );
+            payload_bytes = publication.candidate().semantic_payload().payload.len();
+            archive_bytes = publication.archive().len();
             let now = NOW + u64::try_from(offset).expect("bounded offset");
+            let coordinator = MemoryCheckpointCoordinatorV2::open(
+                &url,
+                owner.as_str(),
+                fixture.root.verifying_key().to_bytes(),
+                &fixture.manifest_bytes,
+                &format!("lease:full-profile:{offset}"),
+                1,
+                NOW + 10_000,
+                now,
+            )
+            .await
+            .expect("open full profile owner");
+
+            let database_path = temp.path().join("product-e2e.db");
+            let wal_path = temp.path().join("product-e2e.db-wal");
+            let database_before = file_bytes(&database_path);
+            let wal_before = file_bytes(&wal_path);
+
             let started = Instant::now();
-            coordinator
+            let receipt = coordinator
                 .publish_verified_checkpoint(
-                    "operation:full-profile",
+                    &format!("operation:full-profile:{offset}"),
                     &publication,
                     NOW + 9_000,
                     now,
                 )
                 .await
                 .expect("full profile publication");
+            assert_eq!(receipt.disposition, DurableCompactionDisposition::Inserted);
             publish_micros.push(elapsed_micros(started));
 
             let started = Instant::now();
@@ -75,28 +84,30 @@ mod profile {
                 publication.candidate().checkpoint().checkpoint_digest
             );
             reopen_micros.push(elapsed_micros(started));
+
+            database_growth_bytes = database_growth_bytes.saturating_add(
+                file_bytes(&database_path).saturating_sub(database_before),
+            );
+            wal_growth_bytes = wal_growth_bytes
+                .saturating_add(file_bytes(&wal_path).saturating_sub(wal_before));
         }
 
         publish_micros.sort_unstable();
         reopen_micros.sort_unstable();
-        let database_after = file_bytes(&database_path);
-        let wal_after = file_bytes(&wal_path);
         let peak_rss_after = peak_rss_kib();
         println!(
-            "COMPACT_ENGINE_FULL_OPERATION_PROFILE={{\"samples\":{},\"payload_bytes\":{},\"archive_bytes\":{},\"publish_p50_micros\":{},\"publish_p95_micros\":{},\"publish_p99_micros\":{},\"reopen_p50_micros\":{},\"reopen_p95_micros\":{},\"reopen_p99_micros\":{},\"database_bytes_before\":{},\"database_bytes_after\":{},\"wal_bytes_before\":{},\"wal_bytes_after\":{},\"peak_rss_kib_before\":{},\"peak_rss_kib_after\":{}}}",
+            "COMPACT_ENGINE_FULL_OPERATION_PROFILE={{\"samples\":{},\"payload_bytes\":{},\"archive_bytes\":{},\"publish_p50_micros\":{},\"publish_p95_micros\":{},\"publish_p99_micros\":{},\"reopen_p50_micros\":{},\"reopen_p95_micros\":{},\"reopen_p99_micros\":{},\"database_growth_bytes\":{},\"wal_growth_bytes\":{},\"peak_rss_kib_before\":{},\"peak_rss_kib_after\":{}}}",
             PROFILE_SAMPLES,
-            publication.candidate().semantic_payload().payload.len(),
-            publication.archive().len(),
+            payload_bytes,
+            archive_bytes,
             percentile(&publish_micros, 50),
             percentile(&publish_micros, 95),
             percentile(&publish_micros, 99),
             percentile(&reopen_micros, 50),
             percentile(&reopen_micros, 95),
             percentile(&reopen_micros, 99),
-            database_before,
-            database_after,
-            wal_before,
-            wal_after,
+            database_growth_bytes,
+            wal_growth_bytes,
             peak_rss_before,
             peak_rss_after,
         );
