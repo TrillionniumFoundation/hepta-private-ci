@@ -45,17 +45,17 @@ fn benchmark_case(
     entry_count: usize,
     iterations: u64,
 ) -> Result<BenchmarkResult, Box<dyn Error>> {
-    let entries = (0..entry_count)
-        .map(|index| {
-            let id = StableId::new(&format!("schema:benchmark-{index}"))?;
-            RegistryDefinitionV1::new(
-                RegistryKindV1::Schema,
-                id,
-                1,
-                &format!("field=value-{index}:u64"),
-            )
-        })
-        .collect::<Result<Vec<_>, _>>()?;
+    let mut entries = Vec::with_capacity(entry_count);
+    for index in 0..entry_count {
+        let id = StableId::new(&format!("schema:benchmark-{index}"))?;
+        entries.push(RegistryDefinitionV1::new(
+            RegistryKindV1::Schema,
+            id,
+            1,
+            &format!("field=value-{index}:u64"),
+        )?);
+    }
+
     let target = entries[entry_count / 2].clone();
     let target_id = target.id().clone();
     let target_digest = target.digest();
