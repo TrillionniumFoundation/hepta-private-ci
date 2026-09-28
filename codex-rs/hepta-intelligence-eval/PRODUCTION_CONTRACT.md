@@ -21,7 +21,8 @@ independent acceptance, activation or release authority.
 | Surface | Classification | Required use |
 |---|---|---|
 | `RecordedProductEvaluationRunnerV1::evaluate_temporal_comparison` | default product evaluation ingress | persists intent before provider/holdout access and records consumption before observations are released |
-| `RecordedProductEvaluationRunnerV1::qualify_and_persist` | default product qualification ingress | builds the exact bundle internally, verifies signed V2/V3 evidence and requires durable publication |
+| `RecordedProductEvaluationRunnerV1::qualify_and_persist_with_artifacts` and selected-host qualification methods | default product qualification ingress | derive and persist the canonical typed recovery archive before current V2/V3 verification, decision and durable publication |
+| `RecordedProductEvaluationRunnerV1::qualify_and_persist` | crate-internal unarchived composition helper | never cross-crate product ingress; retained only for owner-local tests and composition beneath the archived entrypoint |
 | `freeze_product_evaluation_plan_v1` | production plan freeze | freezes metric roles, estimator mapping and candidate/baseline temporal identities before holdout use |
 | `CrossFoldPlanV1::execute_temporal_cross_fit_v1` | bounded statistical source executor | executes every preregistered temporal fold and requires exact lineage and recomputed output-digest equality |
 | `SequentialPlan::estimate_cluster_intervals_v1` | fixed-analysis sequential confidence source | adds conservative clustered intervals under a preregistered absolute return envelope; it is not anytime-valid |
@@ -36,7 +37,8 @@ independent acceptance, activation or release authority.
 The `trusted_inprocess` compatibility module is absent from default builds.
 Production manifests must exclude `trusted-inprocess-eval`, including transitive
 feature unification. Compiler-negative fixtures, not comments or lexical scans,
-are required to prove the default public boundary.
+are required to prove the default public boundary. Those fixtures also require
+that another crate cannot call the unarchived recorded qualification helper.
 
 ## Statistical source contracts
 
@@ -216,6 +218,9 @@ Candidate and baseline intervals are derived from sealed estimator receipts over
 the same authenticated cohort; callers cannot replace final `MetricGateV1`
 values after observing the holdout.
 
+All cross-crate recorded qualification entrypoints persist and journal-bind the
+canonical typed archive before decision. The lower unarchived method remains
+crate-internal and cannot be used to skip `QualificationArtifactsPersisted`.
 Single- and multi-outcome paths share the typed archive, publication lifecycle,
 selected-host store and recovery controller. The internal single-stream carrier
 cannot be extracted to masquerade as multiple independently measured outcomes.
@@ -230,7 +235,8 @@ Final source qualification requires one immutable candidate and its ordered-
 parent synthetic merge to retain passing artifacts for:
 
 - source identity and clean-tree checks;
-- default and compatibility API tests;
+- default and compatibility API tests, including rejection of the unarchived
+  recorded qualification helper from another crate;
 - all-target compilation;
 - owner and consumer tests;
 - typed archive and two-process cold recovery;
