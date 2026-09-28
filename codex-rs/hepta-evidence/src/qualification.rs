@@ -369,7 +369,9 @@ impl EvidenceIssuerTrustBindingV1 {
         Self {
             issuer_principal_id: issuer.issuer_id.to_string(),
             issuer_key_epoch: issuer.key_epoch.get(),
-            issuer_signing_identity_sha256: Sha256Digest::for_bytes(issuer.verifying_key.as_bytes()),
+            issuer_signing_identity_sha256: Sha256Digest::for_bytes(
+                issuer.verifying_key.as_bytes(),
+            ),
             role,
         }
     }
@@ -488,9 +490,8 @@ impl HeptaEvidenceStore {
         }
         for row in rows {
             let evidence_id: String = row.try_get("evidence_id").map_err(classify_sqlx_error)?;
-            let signature: Option<Vec<u8>> = row
-                .try_get("auth_signature")
-                .map_err(classify_sqlx_error)?;
+            let signature: Option<Vec<u8>> =
+                row.try_get("auth_signature").map_err(classify_sqlx_error)?;
             let generation = read_optional_u64_blob(&row, "trust_registry_generation")?;
             let digest = row
                 .try_get::<Option<String>, _>("trust_registry_sha256")
@@ -564,6 +565,12 @@ impl QualificationEvidenceStore<'_> {
             .await
             .map_err(classify_sqlx_error)?;
         authority.validate_for(self.store, envelope.issuer_role)?;
+        trust_guard::require_admitted_trust(
+            &mut transaction,
+            trust_registry_generation,
+            trust_registry_sha256.as_ref(),
+        )
+        .await?;
         let now = u64::try_from(now_millis()?)
             .map_err(|_| EvidenceError::Unavailable("clock predates Unix epoch".into()))?;
         let authenticated = message
@@ -621,11 +628,9 @@ impl QualificationEvidenceStore<'_> {
             });
         }
         if envelope.claim_class == EvidenceClaimClassV1::IndependentDecision {
-            let digest = candidate_evidence_set_digest_in_transaction(
-                &mut transaction,
-                &envelope.candidate,
-            )
-            .await?;
+            let digest =
+                candidate_evidence_set_digest_in_transaction(&mut transaction, &envelope.candidate)
+                    .await?;
             validate_independent_decision(
                 envelope,
                 issuer,
@@ -759,30 +764,25 @@ impl QualificationEvidenceStore<'_> {
                 "qualification verification trust snapshot exceeds 512 bindings".to_string(),
             ));
         }
-        let mut transaction = self
-            .store
-            .pool
-            .begin()
-            .await
-            .map_err(classify_sqlx_error)?;
-        let rows = load_claim_rows(
+        let mut transaction = self.store.pool.begin().await.map_err(classify_sqlx_error)?;
+        trust_guard::require_admitted_trust(
             &mut transaction,
-            &request.candidate,
-            request.claim_class,
+            current_trust.trust_registry_generation(),
+            current_trust.trust_registry_sha256(),
         )
         .await?;
-        let expected_decision_evidence_set =
-            if request.claim_class == EvidenceClaimClassV1::IndependentDecision {
-                Some(
-                    candidate_evidence_set_digest_in_transaction(
-                        &mut transaction,
-                        &request.candidate,
-                    )
+        let rows =
+            load_claim_rows(&mut transaction, &request.candidate, request.claim_class).await?;
+        let expected_decision_evidence_set = if request.claim_class
+            == EvidenceClaimClassV1::IndependentDecision
+        {
+            Some(
+                candidate_evidence_set_digest_in_transaction(&mut transaction, &request.candidate)
                     .await?,
-                )
-            } else {
-                None
-            };
+            )
+        } else {
+            None
+        };
         transaction.commit().await.map_err(classify_sqlx_error)?;
         current_trust.validate_store(self.store)?;
         if rows.is_empty() {
@@ -1129,6 +1129,23 @@ async fn load_evidence_by_id(
     row.as_ref().map(decode_row).transpose()
 }
 
+pub(crate) fn checked_qualification_reference(
+    row: &SqliteRow,
+    candidate: &EvidenceCandidateV1,
+    claim_class: EvidenceClaimClassV1,
+) -> Result<(i64, EvidenceReferenceV1), EvidenceError> {
+    let decoded = decode_row(row)?;
+    if decoded.seq <= 0
+        || decoded.envelope.candidate != *candidate
+        || decoded.envelope.claim_class != claim_class
+    {
+        return Err(EvidenceError::Corrupt(
+            "qualification page row does not match its sequence or selector".to_string(),
+        ));
+    }
+    Ok((decoded.seq, decoded.reference()))
+}
+
 fn decode_row(row: &SqliteRow) -> Result<StoredQualificationEvidence, EvidenceError> {
     let envelope_json: String = row.try_get("envelope_json").map_err(classify_sqlx_error)?;
     if envelope_json.len() > QUALIFICATION_EVIDENCE_MAX_RECEIPT_BYTES {
@@ -1210,9 +1227,8 @@ fn decode_row(row: &SqliteRow) -> Result<StoredQualificationEvidence, EvidenceEr
             "qualification evidence projection differs from canonical envelope".to_string(),
         ));
     }
-    let auth_signature: Option<Vec<u8>> = row
-        .try_get("auth_signature")
-        .map_err(classify_sqlx_error)?;
+    let auth_signature: Option<Vec<u8>> =
+        row.try_get("auth_signature").map_err(classify_sqlx_error)?;
     if auth_signature
         .as_ref()
         .is_some_and(|signature| signature.len() != 64)
@@ -1221,8 +1237,7 @@ fn decode_row(row: &SqliteRow) -> Result<StoredQualificationEvidence, EvidenceEr
             "qualification AuthBus signature has invalid width".to_string(),
         ));
     }
-    let trust_registry_generation =
-        read_optional_u64_blob(row, "trust_registry_generation")?;
+    let trust_registry_generation = read_optional_u64_blob(row, "trust_registry_generation")?;
     let trust_registry_sha256 = row
         .try_get::<Option<String>, _>("trust_registry_sha256")
         .map_err(classify_sqlx_error)?
@@ -1260,9 +1275,7 @@ fn decode_row(row: &SqliteRow) -> Result<StoredQualificationEvidence, EvidenceEr
 }
 
 /// Commitment to the complete retained authenticated admission semantics.
-pub(crate) fn authenticated_row_sha256(
-    row: &SqliteRow,
-) -> Result<Sha256Digest, EvidenceError> {
+pub(crate) fn authenticated_row_sha256(row: &SqliteRow) -> Result<Sha256Digest, EvidenceError> {
     let decoded = decode_row(row)?;
     let recorded_at_ms: i64 = row.try_get("recorded_at_ms").map_err(classify_sqlx_error)?;
     let payload = canonical_json(&(
@@ -1381,10 +1394,7 @@ fn read_u64_blob(row: &SqliteRow, column: &str) -> Result<u64, EvidenceError> {
     Ok(u64::from_be_bytes(bytes))
 }
 
-fn read_optional_u64_blob(
-    row: &SqliteRow,
-    column: &str,
-) -> Result<Option<u64>, EvidenceError> {
+fn read_optional_u64_blob(row: &SqliteRow, column: &str) -> Result<Option<u64>, EvidenceError> {
     let bytes: Option<Vec<u8>> = row.try_get(column).map_err(classify_sqlx_error)?;
     bytes
         .map(|bytes| {
@@ -1413,3 +1423,6 @@ fn push_part(bytes: &mut Vec<u8>, part: &[u8]) {
     bytes.extend_from_slice(&u64::try_from(part.len()).unwrap_or(u64::MAX).to_be_bytes());
     bytes.extend_from_slice(part);
 }
+
+#[path = "qualification_trust_guard.rs"]
+mod trust_guard;

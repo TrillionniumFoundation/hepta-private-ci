@@ -62,10 +62,7 @@ const REQUIRED_OPERATIONAL_OBJECTS: &[RequiredObject] = &[
         name: "evidence_publication_batches_store_state_seq",
         kind: "index",
         table_name: "evidence_publication_batches",
-        fragments: &[
-            "create index",
-            "store_id, state, first_intent_seq",
-        ],
+        fragments: &["create index", "store_id, state, first_intent_seq"],
     },
     RequiredObject {
         name: "evidence_publication_batches_transition",
@@ -104,10 +101,7 @@ const REQUIRED_OPERATIONAL_OBJECTS: &[RequiredObject] = &[
         name: "evidence_publication_intents_store_state_seq",
         kind: "index",
         table_name: "evidence_publication_intents",
-        fragments: &[
-            "create index",
-            "store_id, state, qualification_seq",
-        ],
+        fragments: &["create index", "store_id, state, qualification_seq"],
     },
     RequiredObject {
         name: "evidence_publication_intents_transition",
@@ -195,13 +189,11 @@ pub(crate) async fn verify_operational_schema(pool: &SqlitePool) -> Result<(), E
 
 async fn verify_required_objects(pool: &SqlitePool) -> Result<(), EvidenceError> {
     for required in REQUIRED_OPERATIONAL_OBJECTS {
-        let rows = sqlx::query(
-            "SELECT type, tbl_name, sql FROM sqlite_schema WHERE name = ?",
-        )
-        .bind(required.name)
-        .fetch_all(pool)
-        .await
-        .map_err(classify_sqlx_error)?;
+        let rows = sqlx::query("SELECT type, tbl_name, sql FROM sqlite_schema WHERE name = ?")
+            .bind(required.name)
+            .fetch_all(pool)
+            .await
+            .map_err(classify_sqlx_error)?;
         if rows.len() != 1 {
             return Err(corrupt(&format!(
                 "required operational schema object {} is missing or duplicated",
@@ -395,9 +387,9 @@ async fn verify_trust_rows(pool: &SqlitePool) -> Result<(), EvidenceError> {
 
 fn read_u64(row: &sqlx::sqlite::SqliteRow, column: &str) -> Result<u64, EvidenceError> {
     let bytes: Vec<u8> = row.try_get(column).map_err(classify_sqlx_error)?;
-    let bytes: [u8; 8] = bytes.try_into().map_err(|_| {
-        corrupt(&format!("{column} is not an eight-byte unsigned integer"))
-    })?;
+    let bytes: [u8; 8] = bytes
+        .try_into()
+        .map_err(|_| corrupt(&format!("{column} is not an eight-byte unsigned integer")))?;
     Ok(u64::from_be_bytes(bytes))
 }
 

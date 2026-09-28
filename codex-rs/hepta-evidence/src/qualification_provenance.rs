@@ -31,11 +31,7 @@ impl HeptaEvidenceStore {
             ));
         }
 
-        let mut transaction = self
-            .pool
-            .begin()
-            .await
-            .map_err(classify_sqlx_error)?;
+        let mut transaction = self.pool.begin().await.map_err(classify_sqlx_error)?;
         let store_id: Option<String> = sqlx::query_scalar(
             "SELECT store_id FROM evidence_recovery_identity WHERE singleton = 1",
         )
@@ -89,8 +85,7 @@ impl HeptaEvidenceStore {
                 let seq: i64 = row.try_get("seq").map_err(classify_sqlx_error)?;
                 if seq <= last_seq {
                     return Err(EvidenceError::Corrupt(
-                        "qualification provenance sequence is not strictly increasing"
-                            .to_string(),
+                        "qualification provenance sequence is not strictly increasing".to_string(),
                     ));
                 }
                 let evidence_id: String =
@@ -111,7 +106,7 @@ impl HeptaEvidenceStore {
                     .map_err(classify_sqlx_error)?;
 
                 let generation = generation_bytes
-                    .map(|bytes| {
+                    .map(|bytes| -> Result<u64, EvidenceError> {
                         let bytes: [u8; 8] = bytes.try_into().map_err(|_| {
                             EvidenceError::Corrupt(
                                 "qualification trust generation has invalid width".to_string(),
@@ -132,8 +127,8 @@ impl HeptaEvidenceStore {
                         )));
                     }
                 };
-                let current = generation == current_registry_generation
-                    && digest == *current_registry_sha256;
+                let current =
+                    generation == current_registry_generation && digest == *current_registry_sha256;
                 if !current && accepted_trust_seq.is_none() {
                     return Err(EvidenceError::InvalidRecord(format!(
                         "qualification evidence {evidence_id} references an unaccepted trust generation for store {store_id}"

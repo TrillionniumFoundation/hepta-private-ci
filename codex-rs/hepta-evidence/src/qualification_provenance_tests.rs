@@ -19,8 +19,8 @@ async fn insert_qualification(
     trust_generation: Option<u64>,
     trust_digest: Option<&Sha256Digest>,
 ) {
-    let evidence_id = EvidenceId::parse(format!("evidence:provenance:{ordinal}"))
-        .expect("evidence id");
+    let evidence_id =
+        EvidenceId::parse(format!("evidence:provenance:{ordinal}")).expect("evidence id");
     let envelope = QualificationEvidenceEnvelopeV1 {
         schema_version: QUALIFICATION_EVIDENCE_SCHEMA_VERSION,
         evidence_id: evidence_id.clone(),
@@ -130,7 +130,9 @@ async fn accept_trust_generation(
 #[tokio::test]
 async fn production_provenance_rejects_missing_signature_or_trust_identity() {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&config(&temp)).await.expect("open store");
+    let store = HeptaEvidenceStore::open(&config(&temp))
+        .await
+        .expect("open store");
     store
         .bind_recovery_store_id("store:provenance")
         .await
@@ -142,14 +144,20 @@ async fn production_provenance_rejects_missing_signature_or_trust_identity() {
         .verify_production_qualification_provenance_bounded(2, &current)
         .await
         .expect_err("missing signature must fail closed");
-    assert!(error.to_string().contains("lacks complete authentication provenance"));
+    assert!(
+        error
+            .to_string()
+            .contains("lacks complete authentication provenance")
+    );
     store.close().await;
 }
 
 #[tokio::test]
 async fn production_provenance_pages_and_accepts_current_or_prior_accepted_trust() {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&config(&temp)).await.expect("open store");
+    let store = HeptaEvidenceStore::open(&config(&temp))
+        .await
+        .expect("open store");
     store
         .bind_recovery_store_id("store:provenance")
         .await
@@ -180,21 +188,16 @@ async fn production_provenance_pages_and_accepts_current_or_prior_accepted_trust
 #[tokio::test]
 async fn production_provenance_rejects_unaccepted_noncurrent_trust() {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&config(&temp)).await.expect("open store");
+    let store = HeptaEvidenceStore::open(&config(&temp))
+        .await
+        .expect("open store");
     store
         .bind_recovery_store_id("store:provenance")
         .await
         .expect("enroll store");
     let prior = Sha256Digest::for_bytes(b"trust:unaccepted");
     let current = Sha256Digest::for_bytes(b"trust:current");
-    insert_qualification(
-        &store,
-        1,
-        Some(vec![9_u8; 64]),
-        Some(1),
-        Some(&prior),
-    )
-    .await;
+    insert_qualification(&store, 1, Some(vec![9_u8; 64]), Some(1), Some(&prior)).await;
 
     let error = store
         .verify_production_qualification_provenance_bounded(2, &current)

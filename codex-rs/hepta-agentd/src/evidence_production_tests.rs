@@ -188,8 +188,8 @@ fn backup_manifest(
             workflow_run_attempt: 1,
             workflow_job: "governed-build".to_string(),
             workflow_artifact_id: 19,
-            workflow_artifact_url:
-                "https://github.com/example/repo/actions/runs/77/artifacts/19".to_string(),
+            workflow_artifact_url: "https://github.com/example/repo/actions/runs/77/artifacts/19"
+                .to_string(),
             workflow_artifact_sha256: Sha256Digest::for_bytes(b"build-artifact-archive"),
             builder_principal_id: "builder:release".to_string(),
             toolchain_sha256: Sha256Digest::for_bytes(b"toolchain"),
@@ -219,16 +219,12 @@ fn exact_and_merge_receipts_must_bind_the_same_source_candidate() {
     let tree = "b".repeat(40);
     let exact = receipt("kernel_evidence_exact_source", &commit, &tree);
     let merge = receipt("kernel_evidence_synthetic_merge", &commit, &tree);
-    let identity = validate_qualification_receipts(&exact, &merge)
-        .expect("valid source and merge receipts");
+    let identity =
+        validate_qualification_receipts(&exact, &merge).expect("valid source and merge receipts");
     assert_eq!(identity.source_commit, commit);
     assert_eq!(identity.source_tree, tree);
 
-    let wrong_merge = receipt(
-        "kernel_evidence_synthetic_merge",
-        &"c".repeat(40),
-        &tree,
-    );
+    let wrong_merge = receipt("kernel_evidence_synthetic_merge", &"c".repeat(40), &tree);
     assert!(validate_qualification_receipts(&exact, &wrong_merge).is_err());
 }
 
@@ -247,9 +243,7 @@ fn failed_dirty_or_unretained_qualification_receipts_are_rejected() {
 
     let mut dirty: Value = serde_json::from_slice(&exact).unwrap();
     dirty["candidate"]["dirty"] = json!(true);
-    assert!(
-        validate_qualification_receipts(&serde_json::to_vec(&dirty).unwrap(), &merge).is_err()
-    );
+    assert!(validate_qualification_receipts(&serde_json::to_vec(&dirty).unwrap(), &merge).is_err());
 
     let mut no_artifact: Value = serde_json::from_slice(&exact).unwrap();
     no_artifact["artifact"] = Value::Null;
@@ -281,9 +275,7 @@ fn qualification_receipts_require_the_closed_world_check_inventory() {
 
     let mut extra: Value = serde_json::from_slice(&exact).unwrap();
     extra["checks"]["unreviewed-extra"] = check_record("unreviewed-extra");
-    assert!(
-        validate_qualification_receipts(&serde_json::to_vec(&extra).unwrap(), &merge).is_err()
-    );
+    assert!(validate_qualification_receipts(&serde_json::to_vec(&extra).unwrap(), &merge).is_err());
 
     let mut forged_shape: Value = serde_json::from_slice(&exact).unwrap();
     forged_shape["checks"]["docs"]["commandExitCode"] = json!(1);
@@ -333,8 +325,7 @@ fn qualification_artifact_and_merge_parent_identity_are_exact() {
     wrong_url["artifact"]["url"] =
         json!("https://github.com/example/repo/actions/runs/12345/artifacts/10");
     assert!(
-        validate_qualification_receipts(&serde_json::to_vec(&wrong_url).unwrap(), &merge)
-            .is_err()
+        validate_qualification_receipts(&serde_json::to_vec(&wrong_url).unwrap(), &merge).is_err()
     );
 
     let mut reversed: Value = serde_json::from_slice(&merge).unwrap();
@@ -408,8 +399,7 @@ fn backup_publication_binds_real_object_build_and_restore_witness() {
     );
 
     invalid = valid.clone();
-    invalid.restore_witness.restored_object_sha256 =
-        Sha256Digest::for_bytes(b"another-backup");
+    invalid.restore_witness.restored_object_sha256 = Sha256Digest::for_bytes(b"another-backup");
     assert!(
         validate_backup_publication(
             &invalid,

@@ -225,10 +225,7 @@ fn main() -> anyhow::Result<()> {
                         && evidence_recovery_frontier_trust.is_none(),
                     "legacy recovery-frontier flags are forbidden in production evidence mode"
                 );
-                match (
-                    evidence_production_config,
-                    evidence_frontier_signer_trust,
-                ) {
+                match (evidence_production_config, evidence_frontier_signer_trust) {
                     (Some(descriptor), Some(signer_trust)) => {
                         let descriptor = PathBuf::from(descriptor);
                         evidence_cli_profile::require_production_descriptor(

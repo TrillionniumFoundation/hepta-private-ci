@@ -20,7 +20,9 @@ impl SegmentedFileEvidenceFrontierBackend {
         if bytes.len() as u64 != metadata.segment_bytes
             || Sha256Digest::for_bytes(&bytes) != metadata.segment_file_sha256
         {
-            return Err(corrupt("frontier segment bytes differ from immutable metadata"));
+            return Err(corrupt(
+                "frontier segment bytes differ from immutable metadata",
+            ));
         }
         let cursor = ChainCursor {
             next_audit_sequence: metadata.first_audit_sequence,
@@ -73,8 +75,7 @@ impl SegmentedFileEvidenceFrontierBackend {
         let alert = if state.segment_count() >= MAX_SEGMENT_COUNT_ALERT {
             EvidenceFrontierCapacityAlertV1::SegmentCountElevated
         } else if active_records.saturating_mul(5) >= record_limit.saturating_mul(4)
-            || state.active_bytes.saturating_mul(5)
-                >= ACTIVE_SEGMENT_MAX_BYTES.saturating_mul(4)
+            || state.active_bytes.saturating_mul(5) >= ACTIVE_SEGMENT_MAX_BYTES.saturating_mul(4)
         {
             EvidenceFrontierCapacityAlertV1::ActiveNearRollover
         } else {

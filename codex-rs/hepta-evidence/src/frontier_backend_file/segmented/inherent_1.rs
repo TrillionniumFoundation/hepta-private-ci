@@ -38,9 +38,8 @@ impl SegmentedFileEvidenceFrontierBackend {
     }
 
     fn paths(&self, store_id: &str) -> Result<StorePaths, EvidenceFrontierBackendError> {
-        StableId::new(store_id.to_string()).map_err(|error| {
-            invalid(&format!("invalid recovery store id: {error}"))
-        })?;
+        StableId::new(store_id.to_string())
+            .map_err(|error| invalid(&format!("invalid recovery store id: {error}")))?;
         let token = Sha256Digest::for_bytes(store_id.as_bytes())
             .as_str()
             .to_string();
@@ -59,15 +58,24 @@ impl SegmentedFileEvidenceFrontierBackend {
         open_writable_journal(&paths.lock, &self.legacy.journals, self.legacy.owner_uid)
     }
 
-    fn open_active_writable(&self, paths: &StorePaths) -> Result<File, EvidenceFrontierBackendError> {
+    fn open_active_writable(
+        &self,
+        paths: &StorePaths,
+    ) -> Result<File, EvidenceFrontierBackendError> {
         open_writable_journal(&paths.active, &self.legacy.journals, self.legacy.owner_uid)
     }
 
-    fn open_active_existing(&self, paths: &StorePaths) -> Result<Option<File>, EvidenceFrontierBackendError> {
+    fn open_active_existing(
+        &self,
+        paths: &StorePaths,
+    ) -> Result<Option<File>, EvidenceFrontierBackendError> {
         open_existing_journal(&paths.active, &self.legacy.journals, self.legacy.owner_uid)
     }
 
-    fn current_active_length(&self, paths: &StorePaths) -> Result<u64, EvidenceFrontierBackendError> {
+    fn current_active_length(
+        &self,
+        paths: &StorePaths,
+    ) -> Result<u64, EvidenceFrontierBackendError> {
         match std::fs::symlink_metadata(&paths.active) {
             Ok(metadata) => {
                 if !metadata.is_file() || metadata.file_type().is_symlink() {
@@ -90,12 +98,12 @@ impl SegmentedFileEvidenceFrontierBackend {
             &self.legacy.journals,
             self.legacy.owner_uid,
             MAX_INDEX_BYTES,
-        )? else {
+        )?
+        else {
             return Ok(None);
         };
-        let index: EvidenceFrontierLatestIndexV1 = serde_json::from_slice(&bytes).map_err(|error| {
-            corrupt(&format!("cannot decode frontier latest index: {error}"))
-        })?;
+        let index: EvidenceFrontierLatestIndexV1 = serde_json::from_slice(&bytes)
+            .map_err(|error| corrupt(&format!("cannot decode frontier latest index: {error}")))?;
         validate_index(
             &index,
             store_id,
@@ -119,7 +127,9 @@ impl SegmentedFileEvidenceFrontierBackend {
             MAX_SEGMENT_METADATA_BYTES,
         )?;
         if Sha256Digest::for_bytes(&bytes) != pointer.metadata_file_sha256 {
-            return Err(corrupt("frontier segment metadata file digest differs from its pointer"));
+            return Err(corrupt(
+                "frontier segment metadata file digest differs from its pointer",
+            ));
         }
         let metadata: EvidenceFrontierSegmentMetadataV1 =
             serde_json::from_slice(&bytes).map_err(|error| {
@@ -131,10 +141,15 @@ impl SegmentedFileEvidenceFrontierBackend {
             &self.legacy.identity,
             &self.legacy.identity_sha256,
         )?;
-        if segment_pointer(&metadata, pointer.metadata_file_name.clone(), pointer.metadata_file_sha256.clone())
-            != pointer.clone()
+        if segment_pointer(
+            &metadata,
+            pointer.metadata_file_name.clone(),
+            pointer.metadata_file_sha256.clone(),
+        ) != pointer.clone()
         {
-            return Err(corrupt("frontier segment pointer does not match its metadata"));
+            return Err(corrupt(
+                "frontier segment pointer does not match its metadata",
+            ));
         }
         Ok(metadata)
     }
@@ -180,10 +195,14 @@ impl SegmentedFileEvidenceFrontierBackend {
                 .map(|record| record.audit_sequence)
                 .unwrap_or(index.archived_records);
             if derived_sequence < index.audit_sequence {
-                return Err(corrupt("frontier latest index is ahead of durable active history"));
+                return Err(corrupt(
+                    "frontier latest index is ahead of durable active history",
+                ));
             }
             if index.audit_sequence < index.archived_records {
-                return Err(corrupt("frontier latest index sequence precedes archived history"));
+                return Err(corrupt(
+                    "frontier latest index sequence precedes archived history",
+                ));
             }
         }
         Ok(SegmentedState {
@@ -194,5 +213,4 @@ impl SegmentedFileEvidenceFrontierBackend {
             active_sha256,
         })
     }
-
 }

@@ -124,12 +124,10 @@ async fn accepted_frontier_history_is_database_immutable() {
     .await;
     assert!(update.is_err());
 
-    let delete = sqlx::query(
-        "DELETE FROM evidence_frontier_acceptance WHERE store_id = ?",
-    )
-    .bind("store:kernel-evidence")
-    .execute(&store.pool)
-    .await;
+    let delete = sqlx::query("DELETE FROM evidence_frontier_acceptance WHERE store_id = ?")
+        .bind("store:kernel-evidence")
+        .execute(&store.pool)
+        .await;
     assert!(delete.is_err());
     assert!(
         store

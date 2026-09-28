@@ -27,9 +27,14 @@ pub async fn run_if_requested(
     };
     #[cfg(unix)]
     {
-        let result = identity.run_evidence_publication_request(
-            &files.request, &files.descriptor, &files.issuer, &files.signers,
-        ).await?;
+        let result = identity
+            .run_evidence_publication_request(
+                &files.request,
+                &files.descriptor,
+                &files.issuer,
+                &files.signers,
+            )
+            .await?;
         println!("{result}");
         Ok(PublicationCliDisposition::Completed)
     }
@@ -41,10 +46,16 @@ pub async fn run_if_requested(
 }
 
 fn parse_publication_files(args: &[OsString]) -> anyhow::Result<Option<PublicationFiles>> {
-    if !args.iter().any(|arg| arg == "--evidence-publication-request-file") {
+    if !args
+        .iter()
+        .any(|arg| arg == "--evidence-publication-request-file")
+    {
         return Ok(None);
     }
-    anyhow::ensure!(args.len() == 9, "publication mode requires exactly four file pairs and --evidence-mode=production");
+    anyhow::ensure!(
+        args.len() == 9,
+        "publication mode requires exactly four file pairs and --evidence-mode=production"
+    );
     let mut request = None;
     let mut descriptor = None;
     let mut issuer = None;
@@ -69,7 +80,10 @@ fn parse_publication_files(args: &[OsString]) -> anyhow::Result<Option<Publicati
             anyhow::bail!("unsupported publication-mode flag {flag:?}");
         };
         anyhow::ensure!(slot.is_none(), "duplicate publication file flag {flag:?}");
-        let path = PathBuf::from(args.next().ok_or_else(|| anyhow::anyhow!("missing path for {flag:?}"))?);
+        let path = PathBuf::from(
+            args.next()
+                .ok_or_else(|| anyhow::anyhow!("missing path for {flag:?}"))?,
+        );
         anyhow::ensure!(path.is_absolute(), "publication paths must be absolute");
         *slot = Some(path);
     }
@@ -80,8 +94,14 @@ fn parse_publication_files(args: &[OsString]) -> anyhow::Result<Option<Publicati
         issuer: issuer.ok_or_else(|| anyhow::anyhow!("missing issuer trust"))?,
         signers: signers.ok_or_else(|| anyhow::anyhow!("missing frontier signer trust"))?,
     };
-    let unique = [&files.request, &files.descriptor, &files.issuer, &files.signers]
-        .into_iter().collect::<std::collections::BTreeSet<_>>();
+    let unique = [
+        &files.request,
+        &files.descriptor,
+        &files.issuer,
+        &files.signers,
+    ]
+    .into_iter()
+    .collect::<std::collections::BTreeSet<_>>();
     anyhow::ensure!(unique.len() == 4, "publication file roles must be distinct");
     Ok(Some(files))
 }

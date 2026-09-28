@@ -77,13 +77,9 @@ async fn real_agentd_pages_evidence_and_returns_compact_profile_summary() -> Res
             .await?;
     }
 
-    let first_request = KernelEvidenceQueryV1::paged(
-        wire_candidate(&candidate),
-        "exact_source",
-        None,
-        2,
-    )
-    .map_err(anyhow::Error::msg)?;
+    let first_request =
+        KernelEvidenceQueryV1::paged(wire_candidate(&candidate), "exact_source", None, 2)
+            .map_err(anyhow::Error::msg)?;
     ensure!(
         matches!(
             control.query_kernel_evidence(first_request.clone()).await,
@@ -95,7 +91,10 @@ async fn real_agentd_pages_evidence_and_returns_compact_profile_summary() -> Res
         .query_kernel_evidence_page(first_request)
         .await
         .context("first evidence page")?;
-    ensure!(first.evidence.len() == 2, "first page did not contain two rows");
+    ensure!(
+        first.evidence.len() == 2,
+        "first page did not contain two rows"
+    );
     let cursor = first.next_after_seq.context("first page had no cursor")?;
     let second = control
         .query_kernel_evidence_page(
@@ -109,8 +108,14 @@ async fn real_agentd_pages_evidence_and_returns_compact_profile_summary() -> Res
         )
         .await
         .context("second evidence page")?;
-    ensure!(second.evidence.len() == 1, "second page did not contain one row");
-    ensure!(second.next_after_seq.is_none(), "last page returned another cursor");
+    ensure!(
+        second.evidence.len() == 1,
+        "second page did not contain one row"
+    );
+    ensure!(
+        second.next_after_seq.is_none(),
+        "last page returned another cursor"
+    );
     ensure!(
         first.evidence[0].evidence_id.as_str() == "evidence:paging:1"
             && first.evidence[1].evidence_id.as_str() == "evidence:paging:2"
@@ -118,14 +123,14 @@ async fn real_agentd_pages_evidence_and_returns_compact_profile_summary() -> Res
         "paged evidence order was not stable append-sequence order"
     );
 
-    let profile_request = KernelEvidenceVerifyV1::profiled(
-        wire_candidate(&candidate),
-        "exact_source_architecture",
-    )
-    .map_err(anyhow::Error::msg)?;
+    let profile_request =
+        KernelEvidenceVerifyV1::profiled(wire_candidate(&candidate), "exact_source_architecture")
+            .map_err(anyhow::Error::msg)?;
     ensure!(
         matches!(
-            control.verify_kernel_evidence(profile_request.clone()).await,
+            control
+                .verify_kernel_evidence(profile_request.clone())
+                .await,
             Err(AgentdError::Invalid(_))
         ),
         "legacy full verification client accepted the reserved profile selector"
@@ -138,7 +143,10 @@ async fn real_agentd_pages_evidence_and_returns_compact_profile_summary() -> Res
         summary.state == EvidenceVerificationStateV1::Supported,
         "owner profile did not support the authenticated exact-source evidence"
     );
-    ensure!(summary.evidence_count == 3, "summary evidence count drifted");
+    ensure!(
+        summary.evidence_count == 3,
+        "summary evidence count drifted"
+    );
     ensure!(
         summary.evidence_set_sha256.is_some(),
         "supported summary omitted its canonical evidence-set digest"

@@ -206,8 +206,7 @@ pub fn kernel_evidence_claims(
     Ok(SignedMessageClaims {
         issuer_id: StableId::new(issuer_id.to_string())
             .map_err(|error| invalid(&error.to_string()))?,
-        key_epoch: Generation::new(key_epoch)
-            .map_err(|error| invalid(&error.to_string()))?,
+        key_epoch: Generation::new(key_epoch).map_err(|error| invalid(&error.to_string()))?,
         message_id: StableId::new(message_id.to_string())
             .map_err(|error| invalid(&error.to_string()))?,
         subject_id: qualification_subject(&envelope.candidate, envelope.issuer_role)
@@ -244,11 +243,7 @@ pub(crate) async fn append(
     )?;
     let trust = host.trust(state)?;
     let issuer = trust
-        .issuer_for(
-            &request.issuer_id,
-            request.key_epoch,
-            envelope.issuer_role,
-        )
+        .issuer_for(&request.issuer_id, request.key_epoch, envelope.issuer_role)
         .map_err(evidence_error)?;
     let message = SignedMessage {
         claims,
@@ -279,12 +274,7 @@ pub(crate) async fn query(
         let claim_class = EvidenceClaimClassV1::parse(&claim).map_err(|error| invalid(&error))?;
         let page = host
             .store
-            .query_qualification_claim_page(
-                &candidate,
-                claim_class,
-                after_seq,
-                usize::from(limit),
-            )
+            .query_qualification_claim_page(&candidate, claim_class, after_seq, usize::from(limit))
             .await
             .map_err(evidence_error)?;
         require_ready(state)?;
@@ -331,12 +321,9 @@ pub(crate) async fn verify(
         EvidenceVerificationProfileV1::from_legacy_roles(claim_class, &roles)
             .map_err(evidence_error)?
     };
-    let profiled_request = ProfiledVerifyChainRequestV1::new(
-        candidate,
-        profile,
-        current_time_millis()?,
-    )
-    .map_err(evidence_error)?;
+    let profiled_request =
+        ProfiledVerifyChainRequestV1::new(candidate, profile, current_time_millis()?)
+            .map_err(evidence_error)?;
     let current_trust = host.trust(state)?;
     let disposition = host
         .store
@@ -396,8 +383,7 @@ fn current_time_millis() -> Result<u64, AgentdError> {
         .duration_since(UNIX_EPOCH)
         .map_err(|error| invalid(&format!("system clock is before Unix epoch: {error}")))?
         .as_millis();
-    u64::try_from(millis)
-        .map_err(|error| invalid(&format!("system clock overflow: {error}")))
+    u64::try_from(millis).map_err(|error| invalid(&format!("system clock overflow: {error}")))
 }
 
 fn evidence_error(error: codex_hepta_evidence::EvidenceError) -> AgentdError {
@@ -406,4 +392,42 @@ fn evidence_error(error: codex_hepta_evidence::EvidenceError) -> AgentdError {
 
 fn invalid(message: &str) -> AgentdError {
     AgentdError::Invalid(format!("kernel.evidence: {message}"))
+}
+
+#[cfg(test)]
+mod response_budget_tests {
+    use super::*;
+    use codex_hepta_evidence::EvidenceId;
+    use codex_hepta_evidence::EvidenceReceiptKindV1;
+    use codex_hepta_evidence::EvidenceReferenceV1;
+    use codex_hepta_evidence::QualificationEvidencePageV1;
+
+    #[test]
+    fn maximum_product_page_fits_after_json_string_escaping() {
+        let reference = EvidenceReferenceV1 {
+            evidence_id: EvidenceId::parse("e".repeat(128)).expect("maximum id"),
+            claim_class: EvidenceClaimClassV1::OperatorAcceptance,
+            receipt_kind: EvidenceReceiptKindV1::Correction,
+            issuer_role: EvidenceIssuerRoleV1::TerminalObserver,
+            issuer_principal_id: "p".repeat(128),
+            payload_sha256: Sha256Digest::for_bytes(b"payload"),
+            envelope_sha256: Sha256Digest::for_bytes(b"envelope"),
+            predecessor_evidence_id: Some(
+                EvidenceId::parse("r".repeat(128)).expect("maximum predecessor"),
+            ),
+            target_evidence_id: Some(
+                EvidenceId::parse("t".repeat(128)).expect("maximum target"),
+            ),
+            observed_unix_ms: u64::MAX,
+            expires_unix_ms: Some(u64::MAX),
+        };
+        let page = QualificationEvidencePageV1 {
+            evidence: vec![reference; usize::from(KernelEvidenceQueryV1::MAX_PAGE_LIMIT)],
+            next_after_seq: Some(i64::MAX as u64),
+        };
+        let response = result(&page).expect("bounded product response");
+        let escaped = serde_json::to_vec(&response).expect("escaped response");
+        // Leave room for the enclosing control response identity and tags.
+        assert!(escaped.len() + 1024 < MAX_KERNEL_EVIDENCE_ENVELOPE_BYTES);
+    }
 }

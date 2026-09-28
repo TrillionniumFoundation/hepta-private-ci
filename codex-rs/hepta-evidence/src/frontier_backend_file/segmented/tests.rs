@@ -33,10 +33,8 @@ mod tests {
             std::fs::create_dir(&journals).unwrap();
             std::fs::set_permissions(&backend_root, std::fs::Permissions::from_mode(0o700))
                 .unwrap();
-            std::fs::set_permissions(&journals, std::fs::Permissions::from_mode(0o700))
-                .unwrap();
-            std::fs::set_permissions(local.path(), std::fs::Permissions::from_mode(0o700))
-                .unwrap();
+            std::fs::set_permissions(&journals, std::fs::Permissions::from_mode(0o700)).unwrap();
+            std::fs::set_permissions(local.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
             let identity = EvidenceFrontierBackendIdentityV1 {
                 schema_version: EVIDENCE_FRONTIER_BACKEND_IDENTITY_SCHEMA_VERSION,
                 backend_id: "backend:segmented-test".to_string(),
@@ -146,11 +144,9 @@ mod tests {
     #[test]
     fn archived_acknowledgement_is_recoverable_after_reopen() {
         let fixture = Fixture::new();
-        let expected = evidence_recovery_frontier_v2_sha256(&frontier(
-            2,
-            fixture.identity_sha256.clone(),
-        ))
-        .unwrap();
+        let expected =
+            evidence_recovery_frontier_v2_sha256(&frontier(2, fixture.identity_sha256.clone()))
+                .unwrap();
         {
             let mut backend = fixture.open();
             for generation in 1..=5 {
@@ -191,18 +187,18 @@ mod tests {
             .unwrap()
             .unwrap();
         let metadata = backend
-            .read_segment_metadata(index.latest_segment.as_ref().unwrap(), "store:segmented-test")
+            .read_segment_metadata(
+                index.latest_segment.as_ref().unwrap(),
+                "store:segmented-test",
+            )
             .unwrap();
-        let segment = std::fs::read(
-            backend.legacy.journals.join(metadata.segment_file_name),
-        )
-        .unwrap();
+        let segment =
+            std::fs::read(backend.legacy.journals.join(metadata.segment_file_name)).unwrap();
         let active = std::fs::read(&paths.active).unwrap();
         let mut duplicate = segment;
         duplicate.extend_from_slice(&active);
         std::fs::write(&paths.active, duplicate).unwrap();
-        std::fs::set_permissions(&paths.active, std::fs::Permissions::from_mode(0o600))
-            .unwrap();
+        std::fs::set_permissions(&paths.active, std::fs::Permissions::from_mode(0o600)).unwrap();
 
         let history = backend
             .get_history(

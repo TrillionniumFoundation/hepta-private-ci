@@ -155,10 +155,7 @@ fn v2_frontier_deterministic_mutation_corpus_never_silently_preserves_identity()
 
     for seed in 0_u64..2048 {
         let mut mutated = encoded.clone();
-        let index = seed
-            .wrapping_mul(1_103_515_245)
-            .wrapping_add(12_345) as usize
-            % mutated.len();
+        let index = seed.wrapping_mul(1_103_515_245).wrapping_add(12_345) as usize % mutated.len();
         mutated[index] ^= u8::try_from(seed % 251 + 1).expect("bounded mutation byte");
         let Ok(candidate) = serde_json::from_slice::<EvidenceRecoveryFrontierV2>(&mutated) else {
             continue;

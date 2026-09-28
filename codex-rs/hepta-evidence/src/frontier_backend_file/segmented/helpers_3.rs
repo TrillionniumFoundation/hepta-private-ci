@@ -48,7 +48,9 @@ fn write_immutable_private_file(
     bytes: &[u8],
 ) -> Result<(), EvidenceFrontierBackendError> {
     if bytes.is_empty() || bytes.len() as u64 > EVIDENCE_FRONTIER_MAX_JOURNAL_BYTES {
-        return Err(invalid("immutable frontier file is empty or exceeds its bound"));
+        return Err(invalid(
+            "immutable frontier file is empty or exceeds its bound",
+        ));
     }
     validate_direct_path(path, parent)?;
     #[cfg(unix)]
@@ -100,11 +102,13 @@ fn validate_direct_file_name(value: &str) -> Result<(), EvidenceFrontierBackendE
         || value == ".."
         || path.components().count() != 1
         || path.file_name() != Some(path.as_os_str())
-        || !value.bytes().all(|byte| {
-            byte.is_ascii_alphanumeric() || matches!(byte, b'.' | b'_' | b'-')
-        })
+        || !value
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'.' | b'_' | b'-'))
     {
-        return Err(invalid("frontier storage filename is not one bounded token"));
+        return Err(invalid(
+            "frontier storage filename is not one bounded token",
+        ));
     }
     Ok(())
 }

@@ -51,8 +51,11 @@ impl HeptaEvidenceStore {
         accepted: &EvidenceAcceptedFrontierV1,
     ) -> Result<EvidenceFrontierAcceptanceDisposition, EvidenceError> {
         validate_accepted(accepted)?;
-        let mut transaction = self.pool.begin_with("BEGIN IMMEDIATE")
-            .await.map_err(classify_sqlx_error)?;
+        let mut transaction = self
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(classify_sqlx_error)?;
         let disposition = accept_in_transaction(&mut transaction, accepted, true).await?;
         transaction.commit().await.map_err(classify_sqlx_error)?;
         Ok(disposition)
@@ -76,11 +79,14 @@ impl HeptaEvidenceStore {
                 "production acceptance requires an authenticated snapshot v2".to_string(),
             ));
         }
-        let mut transaction = self.pool.begin_with("BEGIN IMMEDIATE")
-            .await.map_err(classify_sqlx_error)?;
-        let actual = crate::recovery_frontier::authenticated_snapshot_in_transaction(
-            &mut transaction,
-        ).await?;
+        let mut transaction = self
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(classify_sqlx_error)?;
+        let actual =
+            crate::recovery_frontier::authenticated_snapshot_in_transaction(&mut transaction)
+                .await?;
         if actual != *expected {
             return Err(EvidenceError::InvalidRecord(
                 "evidence changed before atomic frontier acceptance".to_string(),
@@ -100,9 +106,11 @@ pub(crate) async fn accept_in_transaction(
     allow_enrollment: bool,
 ) -> Result<EvidenceFrontierAcceptanceDisposition, EvidenceError> {
     validate_accepted(accepted)?;
-    let bound: Option<String> = sqlx::query_scalar(
-        "SELECT store_id FROM evidence_recovery_identity WHERE singleton = 1",
-    ).fetch_optional(&mut **transaction).await.map_err(classify_sqlx_error)?;
+    let bound: Option<String> =
+        sqlx::query_scalar("SELECT store_id FROM evidence_recovery_identity WHERE singleton = 1")
+            .fetch_optional(&mut **transaction)
+            .await
+            .map_err(classify_sqlx_error)?;
     match bound {
         Some(existing) if existing != accepted.store_id => {
             return Err(EvidenceError::IdempotencyConflict {
@@ -111,24 +119,36 @@ pub(crate) async fn accept_in_transaction(
         }
         Some(_) => {}
         None if allow_enrollment => {
-            sqlx::query("INSERT INTO evidence_recovery_identity (singleton, store_id) VALUES (1, ?)")
-                .bind(&accepted.store_id).execute(&mut **transaction)
-                .await.map_err(classify_sqlx_error)?;
+            sqlx::query(
+                "INSERT INTO evidence_recovery_identity (singleton, store_id) VALUES (1, ?)",
+            )
+            .bind(&accepted.store_id)
+            .execute(&mut **transaction)
+            .await
+            .map_err(classify_sqlx_error)?;
         }
-        None => return Err(EvidenceError::InvalidRecord(
-            "production acceptance cannot implicitly enroll a store".to_string(),
-        )),
+        None => {
+            return Err(EvidenceError::InvalidRecord(
+                "production acceptance cannot implicitly enroll a store".to_string(),
+            ));
+        }
     }
     let existing = sqlx::query(
         "SELECT store_id, frontier_generation, frontier_sha256,
                 backend_identity_sha256, accepted_at_ms
          FROM evidence_frontier_acceptance WHERE store_id = ? ORDER BY seq DESC LIMIT 1",
-    ).bind(&accepted.store_id).fetch_optional(&mut **transaction)
-        .await.map_err(classify_sqlx_error)?.map(decode_row).transpose()?;
+    )
+    .bind(&accepted.store_id)
+    .fetch_optional(&mut **transaction)
+    .await
+    .map_err(classify_sqlx_error)?
+    .map(decode_row)
+    .transpose()?;
     if let Some(existing) = existing {
         if existing.backend_identity_sha256 != accepted.backend_identity_sha256 {
             return Err(EvidenceError::InvalidRecord(
-                "accepted backend identity cannot be replaced without an explicit migration".to_string(),
+                "accepted backend identity cannot be replaced without an explicit migration"
+                    .to_string(),
             ));
         }
         if existing.frontier_generation > accepted.frontier_generation {
@@ -142,8 +162,10 @@ pub(crate) async fn accept_in_transaction(
                 return Ok(EvidenceFrontierAcceptanceDisposition::AlreadyPresent);
             }
             return Err(EvidenceError::IdempotencyConflict {
-                record_id: format!("evidence_frontier_acceptance:{}:{}",
-                    accepted.store_id, accepted.frontier_generation),
+                record_id: format!(
+                    "evidence_frontier_acceptance:{}:{}",
+                    accepted.store_id, accepted.frontier_generation
+                ),
             });
         }
     }
@@ -151,12 +173,15 @@ pub(crate) async fn accept_in_transaction(
         "INSERT INTO evidence_frontier_acceptance
          (store_id, frontier_generation, frontier_sha256, backend_identity_sha256, accepted_at_ms)
          VALUES (?, ?, ?, ?, ?)",
-    ).bind(&accepted.store_id)
-        .bind(accepted.frontier_generation.to_be_bytes().to_vec())
-        .bind(accepted.frontier_sha256.as_str())
-        .bind(accepted.backend_identity_sha256.as_str())
-        .bind(accepted.accepted_at_unix_ms.to_be_bytes().to_vec())
-        .execute(&mut **transaction).await.map_err(classify_sqlx_error)?;
+    )
+    .bind(&accepted.store_id)
+    .bind(accepted.frontier_generation.to_be_bytes().to_vec())
+    .bind(accepted.frontier_sha256.as_str())
+    .bind(accepted.backend_identity_sha256.as_str())
+    .bind(accepted.accepted_at_unix_ms.to_be_bytes().to_vec())
+    .execute(&mut **transaction)
+    .await
+    .map_err(classify_sqlx_error)?;
     Ok(EvidenceFrontierAcceptanceDisposition::Inserted)
 }
 
@@ -178,17 +203,23 @@ fn validate_accepted(accepted: &EvidenceAcceptedFrontierV1) -> Result<(), Eviden
 }
 
 fn decode_row(row: sqlx::sqlite::SqliteRow) -> Result<EvidenceAcceptedFrontierV1, EvidenceError> {
-    let generation: Vec<u8> = row.try_get("frontier_generation").map_err(classify_sqlx_error)?;
+    let generation: Vec<u8> = row
+        .try_get("frontier_generation")
+        .map_err(classify_sqlx_error)?;
     let accepted_at: Vec<u8> = row.try_get("accepted_at_ms").map_err(classify_sqlx_error)?;
     Ok(EvidenceAcceptedFrontierV1 {
         store_id: row.try_get("store_id").map_err(classify_sqlx_error)?,
         frontier_generation: decode_u64(&generation, "frontier generation")?,
         frontier_sha256: Sha256Digest::parse(
-            row.try_get::<String, _>("frontier_sha256").map_err(classify_sqlx_error)?,
-        ).map_err(EvidenceError::Corrupt)?,
+            row.try_get::<String, _>("frontier_sha256")
+                .map_err(classify_sqlx_error)?,
+        )
+        .map_err(EvidenceError::Corrupt)?,
         backend_identity_sha256: Sha256Digest::parse(
-            row.try_get::<String, _>("backend_identity_sha256").map_err(classify_sqlx_error)?,
-        ).map_err(EvidenceError::Corrupt)?,
+            row.try_get::<String, _>("backend_identity_sha256")
+                .map_err(classify_sqlx_error)?,
+        )
+        .map_err(EvidenceError::Corrupt)?,
         accepted_at_unix_ms: decode_u64(&accepted_at, "accepted-at timestamp")?,
     })
 }
@@ -201,8 +232,8 @@ fn decode_u64(bytes: &[u8], label: &str) -> Result<u64, EvidenceError> {
 }
 
 #[cfg(test)]
-#[path = "frontier_acceptance_tests.rs"]
-mod tests;
-#[cfg(test)]
 #[path = "frontier_atomic_acceptance_tests.rs"]
 mod atomic_tests;
+#[cfg(test)]
+#[path = "frontier_acceptance_tests.rs"]
+mod tests;

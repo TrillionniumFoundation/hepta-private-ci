@@ -48,7 +48,9 @@ fn trust(
 #[tokio::test]
 async fn trust_rotation_is_monotonic_and_atomic_with_frontier_acceptance() {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&config(&temp)).await.expect("open store");
+    let store = HeptaEvidenceStore::open(&config(&temp))
+        .await
+        .expect("open store");
     store
         .bind_recovery_store_id("store:trust")
         .await
@@ -158,7 +160,9 @@ async fn trust_rotation_is_monotonic_and_atomic_with_frontier_acceptance() {
 #[tokio::test]
 async fn trust_and_frontier_must_share_exact_backend_and_identity() {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&config(&temp)).await.expect("open store");
+    let store = HeptaEvidenceStore::open(&config(&temp))
+        .await
+        .expect("open store");
     store
         .bind_recovery_store_id("store:trust")
         .await
@@ -173,12 +177,7 @@ async fn trust_and_frontier_must_share_exact_backend_and_identity() {
         Sha256Digest::for_bytes(b"backend:a"),
         100,
     );
-    let mut trust = trust(
-        1,
-        Sha256Digest::for_bytes(b"trust"),
-        None,
-        &accepted,
-    );
+    let mut trust = trust(1, Sha256Digest::for_bytes(b"trust"), None, &accepted);
     trust.backend_identity_sha256 = Sha256Digest::for_bytes(b"backend:b");
     assert!(
         store

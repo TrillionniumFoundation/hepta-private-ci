@@ -78,7 +78,9 @@ async fn insert_evidence(store: &HeptaEvidenceStore, suffix: &str, recorded_at_m
 #[tokio::test]
 async fn owner_fencing_and_indeterminate_cas_reuse_one_durable_batch() {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&config(&temp)).await.expect("open store");
+    let store = HeptaEvidenceStore::open(&config(&temp))
+        .await
+        .expect("open store");
     store
         .bind_recovery_store_id("store:publication")
         .await
@@ -126,7 +128,10 @@ async fn owner_fencing_and_indeterminate_cas_reuse_one_durable_batch() {
         )
         .await
         .expect("dispatch fence");
-    assert_eq!(dispatched.state, EvidencePublicationBatchStateV1::Dispatching);
+    assert_eq!(
+        dispatched.state,
+        EvidencePublicationBatchStateV1::Dispatching
+    );
     assert_eq!(
         store
             .classify_publication_latest(&prepared.batch_id, None)
@@ -197,19 +202,50 @@ async fn owner_fencing_and_indeterminate_cas_reuse_one_durable_batch() {
             .expect("classify acknowledged"),
         EvidencePublicationLatestDisposition::AlreadyAcknowledged
     );
+    assert_eq!(
+        store.classify_publication_latest(&prepared.batch_id, None).await
+            .expect("classify missing latest"),
+        EvidencePublicationLatestDisposition::Conflict
+    );
+    for replacement in [
+        EvidencePublicationLatestV1 {
+            frontier_sha256: Sha256Digest::for_bytes(b"conflicting latest"),
+            ..latest.clone()
+        },
+        EvidencePublicationLatestV1 {
+            backend_identity_sha256: Sha256Digest::for_bytes(b"other backend"),
+            ..latest.clone()
+        },
+        EvidencePublicationLatestV1 {
+            frontier_generation: 2,
+            ..latest.clone()
+        },
+    ] {
+        assert_eq!(
+            store.classify_publication_latest(&prepared.batch_id, Some(&replacement))
+                .await.expect("classify changed latest"),
+            EvidencePublicationLatestDisposition::Conflict
+        );
+    }
+
 }
 
 #[tokio::test]
 async fn enrolled_store_backfills_and_new_appends_enqueue_once() {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&config(&temp)).await.expect("open store");
+    let store = HeptaEvidenceStore::open(&config(&temp))
+        .await
+        .expect("open store");
     insert_evidence(&store, "before-enrollment", 10).await;
     assert_eq!(store.pending_publication_count().await.expect("pending"), 0);
     store
         .bind_recovery_store_id("store:backfill")
         .await
         .expect("enroll store");
-    assert_eq!(store.pending_publication_count().await.expect("backfill"), 1);
+    assert_eq!(
+        store.pending_publication_count().await.expect("backfill"),
+        1
+    );
     insert_evidence(&store, "after-enrollment", 20).await;
     assert_eq!(store.pending_publication_count().await.expect("trigger"), 2);
     store
@@ -217,7 +253,47 @@ async fn enrolled_store_backfills_and_new_appends_enqueue_once() {
         .await
         .expect("idempotent enrollment");
     assert_eq!(
-        store.pending_publication_count().await.expect("no duplicate"),
+        store
+            .pending_publication_count()
+            .await
+            .expect("no duplicate"),
         2
     );
+}
+
+#[tokio::test]
+async fn acknowledgement_member_mismatch_rolls_back_frontier_and_batch() {
+    let temp = TempDir::new().expect("temp");
+    let store = HeptaEvidenceStore::open(&config(&temp)).await.expect("store");
+    store.bind_recovery_store_id("store:publication").await.expect("enroll");
+    insert_evidence(&store, "one", 10).await;
+    insert_evidence(&store, "two", 20).await;
+    let lease = store.claim_publication_owner("publisher:a", 100, 1000).await.expect("owner");
+    let batch = store.prepare_publication_batch(&lease, 110, 32).await
+        .expect("prepare").expect("batch");
+    let digest = Sha256Digest::for_bytes(b"frontier:ack-members");
+    let backend = Sha256Digest::for_bytes(b"backend:ack-members");
+    store.mark_publication_dispatched(&lease, &batch.batch_id, &digest, &backend, 120)
+        .await.expect("dispatch");
+    // Test-only corruption of the membership, without changing the batch count.
+    sqlx::query("DROP TRIGGER evidence_publication_intents_transition")
+        .execute(&store.pool).await.expect("test-only corruption seam");
+    sqlx::query("UPDATE evidence_publication_intents SET state = 'acknowledged' WHERE seq = ?")
+        .bind(i64::try_from(batch.first_intent_seq).expect("sequence"))
+        .execute(&store.pool).await.expect("corrupt membership");
+    let ack = EvidenceFrontierDurableAckV1 {
+        backend_id: "backend:ack-members".to_string(),
+        backend_identity_sha256: backend,
+        store_id: "store:publication".to_string(),
+        frontier_generation: batch.proposed_frontier_generation,
+        frontier_sha256: digest,
+        audit_sequence: 1,
+    };
+    assert!(store.acknowledge_publication(&lease, &batch.batch_id, &ack, 130).await.is_err());
+    assert!(store.latest_accepted_frontier("store:publication").await.expect("frontier").is_none());
+    assert_eq!(
+        store.publication_batch(&batch.batch_id).await.expect("batch lookup").expect("batch").state,
+        EvidencePublicationBatchStateV1::Dispatching
+    );
+    store.close().await;
 }

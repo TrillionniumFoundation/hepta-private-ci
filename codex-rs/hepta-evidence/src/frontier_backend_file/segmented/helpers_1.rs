@@ -52,15 +52,16 @@ fn validate_index(
         || index.frontier.store_id != store_id
         || &index.frontier.backend_identity_sha256 != identity_sha256
         || index.frontier_sha256
-            != evidence_recovery_frontier_v2_sha256(&index.frontier).map_err(|error| {
-                corrupt(&format!("cannot hash indexed frontier: {error}"))
-            })?
+            != evidence_recovery_frontier_v2_sha256(&index.frontier)
+                .map_err(|error| corrupt(&format!("cannot hash indexed frontier: {error}")))?
         || index.index_sha256 != latest_index_sha256(index)?
         || index.archived_records > index.audit_sequence
         || index.segment_count == 0 && index.latest_segment.is_some()
         || index.segment_count > 0 && index.latest_segment.is_none()
     {
-        return Err(corrupt("frontier latest index identity or digest is inconsistent"));
+        return Err(corrupt(
+            "frontier latest index identity or digest is inconsistent",
+        ));
     }
     if let Some(pointer) = &index.latest_segment {
         validate_pointer(pointer)?;
@@ -68,10 +69,14 @@ fn validate_index(
             || pointer.last_generation != index.archived_records
             || pointer.last_audit_sequence > index.audit_sequence
         {
-            return Err(corrupt("frontier latest segment pointer conflicts with index bounds"));
+            return Err(corrupt(
+                "frontier latest segment pointer conflicts with index bounds",
+            ));
         }
     } else if index.archived_records != 0 || index.archived_bytes != 0 {
-        return Err(corrupt("frontier index has archive counters without a segment"));
+        return Err(corrupt(
+            "frontier index has archive counters without a segment",
+        ));
     }
     Ok(())
 }
@@ -96,9 +101,8 @@ fn latest_index_sha256(
         record_sha256: &index.record_sha256,
         frontier: &index.frontier,
     };
-    let bytes = serde_json::to_vec(&payload).map_err(|error| {
-        invalid(&format!("cannot hash frontier latest index: {error}"))
-    })?;
+    let bytes = serde_json::to_vec(&payload)
+        .map_err(|error| invalid(&format!("cannot hash frontier latest index: {error}")))?;
     Ok(Sha256Digest::for_bytes(&bytes))
 }
 
@@ -122,9 +126,8 @@ fn segment_metadata_sha256(
         previous_segment: metadata.previous_segment.as_ref(),
         ancestors: &metadata.ancestors,
     };
-    let bytes = serde_json::to_vec(&payload).map_err(|error| {
-        invalid(&format!("cannot hash frontier segment metadata: {error}"))
-    })?;
+    let bytes = serde_json::to_vec(&payload)
+        .map_err(|error| invalid(&format!("cannot hash frontier segment metadata: {error}")))?;
     Ok(Sha256Digest::for_bytes(&bytes))
 }
 
@@ -150,16 +153,16 @@ fn validate_segment_metadata(
         || metadata.metadata_sha256 != segment_metadata_sha256(metadata)?
         || metadata.ancestors.len() > MAX_SEGMENT_ANCESTORS
     {
-        return Err(corrupt("frontier segment metadata identity or bounds are invalid"));
+        return Err(corrupt(
+            "frontier segment metadata identity or bounds are invalid",
+        ));
     }
     match (&metadata.previous_segment, metadata.ancestors.first()) {
         (Some(previous), Some(first)) if previous == first => {
             validate_pointer(previous)?;
-            if previous.last_audit_sequence.checked_add(1)
-                != Some(metadata.first_audit_sequence)
+            if previous.last_audit_sequence.checked_add(1) != Some(metadata.first_audit_sequence)
                 || previous.last_generation.checked_add(1) != Some(metadata.first_generation)
-                || metadata.previous_record_sha256.as_ref()
-                    != Some(&previous.last_record_sha256)
+                || metadata.previous_record_sha256.as_ref() != Some(&previous.last_record_sha256)
             {
                 return Err(corrupt("frontier segment predecessor is not contiguous"));
             }
@@ -174,7 +177,9 @@ fn validate_segment_metadata(
     for ancestor in &metadata.ancestors {
         validate_pointer(ancestor)?;
         if !seen.insert(ancestor.metadata_file_name.clone()) {
-            return Err(corrupt("frontier segment ancestor chain contains a duplicate"));
+            return Err(corrupt(
+                "frontier segment ancestor chain contains a duplicate",
+            ));
         }
     }
     Ok(())

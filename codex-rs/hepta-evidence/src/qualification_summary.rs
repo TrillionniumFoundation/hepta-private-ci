@@ -49,9 +49,10 @@ impl EvidenceVerificationSummaryV1 {
             EvidenceDispositionV1::Expired { evidence } => {
                 (EvidenceVerificationStateV1::Expired, evidence.as_slice())
             }
-            EvidenceDispositionV1::Conflicting { evidence, .. } => {
-                (EvidenceVerificationStateV1::Conflicting, evidence.as_slice())
-            }
+            EvidenceDispositionV1::Conflicting { evidence, .. } => (
+                EvidenceVerificationStateV1::Conflicting,
+                evidence.as_slice(),
+            ),
         };
         let evidence_count = u16::try_from(evidence.len()).map_err(|_| {
             EvidenceError::InvalidRecord(
