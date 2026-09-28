@@ -172,7 +172,9 @@ fn foreign_binding_and_unscoped_frontier_fail_before_creation() {
     let floor = floor(&directory.0);
     assert!(floor.persist(&DatasetWithdrawalRegistry::new()).is_err());
     assert!(!floor.directory.exists());
-    floor.persist(&frontier(1, "a")).fixture("initial scoped floor");
+    floor
+        .persist(&frontier(1, "a"))
+        .fixture("initial scoped floor");
     let foreign = DurableWithdrawalFloor::new(
         &directory.0,
         &id("artifacts"),

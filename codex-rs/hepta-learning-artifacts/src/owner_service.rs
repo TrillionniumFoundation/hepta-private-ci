@@ -124,7 +124,8 @@ impl LearningArtifactOwnerService {
     ) -> Result<Self, LearningArtifactOwnerServiceError> {
         let opened_at = Instant::now();
         if config.storage_binding.is_zero()
-            || config.withdrawal_registry.scope_digest() != Some(config.trust.withdrawal_scope_digest)
+            || config.withdrawal_registry.scope_digest()
+                != Some(config.trust.withdrawal_scope_digest)
         {
             return Err(LearningArtifactOwnerServiceError::InvalidConfiguration);
         }
@@ -346,10 +347,12 @@ impl LearningArtifactOwnerService {
             Err(error) => {
                 let started = Instant::now();
                 let recovery = self.host.recover_publication(&operation_id);
-                self.observations.record(Phase::Reconcile, started, &recovery);
+                self.observations
+                    .record(Phase::Reconcile, started, &recovery);
                 match recovery {
                     Ok(Some(recovery))
-                        if recovery.checkpoint.phase != ArtifactPublicationPhaseV1::Acknowledged =>
+                        if recovery.checkpoint.phase
+                            != ArtifactPublicationPhaseV1::Acknowledged =>
                     {
                         self.recovery_required = Some(operation_id);
                     }
@@ -380,11 +383,13 @@ impl LearningArtifactOwnerService {
         }
         let started = Instant::now();
         let identity = self.request_identity.verify(request);
-        self.observations.record(Phase::Identity, started, &identity);
+        self.observations
+            .record(Phase::Identity, started, &identity);
         self.observations.last_verified_request_digest = Some(identity?);
         let started = Instant::now();
         let checkpoint = self.host.recover_publication(&request.operation_id);
-        self.observations.record(Phase::Reconcile, started, &checkpoint);
+        self.observations
+            .record(Phase::Reconcile, started, &checkpoint);
         let checkpoint = checkpoint?;
         if let Some(recovery) = checkpoint.as_ref() {
             validate_request_against_checkpoint(request, &recovery.checkpoint)?;
@@ -394,7 +399,14 @@ impl LearningArtifactOwnerService {
         }
         // Historical terminal receipts remain readable, but a new or pending
         // DAG must not lose ancestry in the single-parent compatibility store.
-        if request.admission.validated_manifest.manifest.predecessor_ids.len() > 1 {
+        if request
+            .admission
+            .validated_manifest
+            .manifest
+            .predecessor_ids
+            .len()
+            > 1
+        {
             return Err(LearningArtifactOwnerServiceError::RequestMismatch);
         }
         if self.draining && checkpoint.is_none() {
@@ -483,9 +495,11 @@ impl LearningArtifactOwnerService {
         }
         let receipt = if transaction.phase() == ArtifactPublicationPhaseV1::WitnessDurable {
             let started = Instant::now();
-            let outcome = self.host
-                .acknowledge(&mut transaction, &self.withdrawal_registry, request.now);
-            self.observations.record(Phase::Acknowledge, started, &outcome);
+            let outcome =
+                self.host
+                    .acknowledge(&mut transaction, &self.withdrawal_registry, request.now);
+            self.observations
+                .record(Phase::Acknowledge, started, &outcome);
             outcome?
         } else {
             return Err(LearningArtifactOwnerServiceError::UnexpectedPhase);

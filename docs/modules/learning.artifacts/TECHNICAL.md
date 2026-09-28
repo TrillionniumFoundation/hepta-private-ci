@@ -535,3 +535,8 @@ The bootstrap source-location obligation for `learning.artifacts` is implemented
 - `codex-rs/hepta-learning-artifacts`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+
+## Runtime convergence and exact-source observations (2026-09-28)
+
+See [runtime convergence](../../../codex-rs/hepta-learning-artifacts/RUNTIME_CONVERGENCE.md) for the candidate identity, implemented observation boundaries, test-to-source index, measurement producer and remaining A-C acceptance gates. These additions do not imply native qualification or production activation.

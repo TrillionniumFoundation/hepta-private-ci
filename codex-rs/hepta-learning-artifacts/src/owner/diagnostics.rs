@@ -115,12 +115,7 @@ pub(super) struct Observations {
 }
 
 impl Observations {
-    pub(super) fn record<T, E>(
-        &mut self,
-        phase: Phase,
-        started: Instant,
-        outcome: &Result<T, E>,
-    ) {
+    pub(super) fn record<T, E>(&mut self, phase: Phase, started: Instant, outcome: &Result<T, E>) {
         self.timings[phase.index()].record(started.elapsed(), outcome.is_err());
         if phase == Phase::Reconcile && outcome.is_err() {
             self.recovery_reconciliation_failures =
@@ -209,9 +204,15 @@ mod tests {
         let mut timing = ArtifactPhaseTimingV1::default();
         timing.record(Duration::from_micros(7), /*failed*/ false);
         timing.record(Duration::from_micros(11), /*failed*/ true);
-        assert_eq!(timing, ArtifactPhaseTimingV1 {
-            calls: 2, failures: 1, total_microseconds: 18, maximum_microseconds: 11,
-        });
+        assert_eq!(
+            timing,
+            ArtifactPhaseTimingV1 {
+                calls: 2,
+                failures: 1,
+                total_microseconds: 18,
+                maximum_microseconds: 11,
+            }
+        );
         timing.calls = u64::MAX;
         timing.total_microseconds = u64::MAX;
         timing.record(Duration::from_micros(1), /*failed*/ false);
@@ -223,18 +224,22 @@ mod tests {
     fn artifact_observation_distinguishes_restart_age_from_process_observation() {
         let mut observations = Observations::default();
         observations.restore(/*pending*/ true, /*draining*/ true);
-        let first = observations.snapshot(/*recovery_required*/ true,
-            /*withdrawal_durability_unknown*/ false, /*drain_durability_unknown*/ false,
-            /*draining*/ true);
+        let first = observations.snapshot(
+            /*recovery_required*/ true, /*withdrawal_durability_unknown*/ false,
+            /*drain_durability_unknown*/ false, /*draining*/ true,
+        );
         assert!(first.pending_predates_process);
         assert!(first.drain_predates_process);
         assert!(first.observed_pending_microseconds.is_some());
         assert_eq!(first.pinned_bytes, None);
         assert_eq!(first.pending_physical_erasure_bytes, None);
-        observations.observe_state(/*pending*/ false, /*draining*/ true, /*withdrawal_block*/ false);
-        let recovered = observations.snapshot(/*recovery_required*/ false,
-            /*withdrawal_durability_unknown*/ false, /*drain_durability_unknown*/ false,
-            /*draining*/ true);
+        observations.observe_state(
+            /*pending*/ false, /*draining*/ true, /*withdrawal_block*/ false,
+        );
+        let recovered = observations.snapshot(
+            /*recovery_required*/ false, /*withdrawal_durability_unknown*/ false,
+            /*drain_durability_unknown*/ false, /*draining*/ true,
+        );
         assert!(!recovered.pending_predates_process);
         assert_eq!(recovered.observed_pending_microseconds, None);
     }

@@ -58,8 +58,10 @@ impl LearningArtifactOwnerService {
                 _ => {}
             }
             if error.is_withdrawal_block() {
-                self.observations.withdrawal_blocked_publications =
-                    self.observations.withdrawal_blocked_publications.saturating_add(1);
+                self.observations.withdrawal_blocked_publications = self
+                    .observations
+                    .withdrawal_blocked_publications
+                    .saturating_add(1);
             }
         }
         self.observations.observe_state(
@@ -92,8 +94,12 @@ impl LearningArtifactOwnerService {
     ) -> Result<(), LearningArtifactOwnerServiceError> {
         let started = Instant::now();
         let outcome = self.install_withdrawal_frontier_recorded(next);
-        self.observations.record(Phase::Withdrawal, started, &outcome);
-        if matches!(&outcome, Err(LearningArtifactOwnerServiceError::WithdrawalFrontierConflict)) {
+        self.observations
+            .record(Phase::Withdrawal, started, &outcome);
+        if matches!(
+            &outcome,
+            Err(LearningArtifactOwnerServiceError::WithdrawalFrontierConflict)
+        ) {
             self.observations.withdrawal_conflicts =
                 self.observations.withdrawal_conflicts.saturating_add(1);
         }
@@ -118,7 +124,9 @@ impl LearningArtifactOwnerServiceError {
                 ArtifactOwnerHostError::Registry(error) => match error {
                     ArtifactRegistryError::RecordLimitExceeded => "artifact.capacity",
                     ArtifactRegistryError::IdentityConflict(_)
-                    | ArtifactRegistryError::ArtifactAlreadyExists(_) => "artifact.identity_conflict",
+                    | ArtifactRegistryError::ArtifactAlreadyExists(_) => {
+                        "artifact.identity_conflict"
+                    }
                     _ => error.code(),
                 },
                 ArtifactOwnerHostError::Io(_) | ArtifactOwnerHostError::Indeterminate => {
@@ -138,7 +146,9 @@ impl LearningArtifactOwnerServiceError {
                 ArtifactOwnerHostError::CurrentHeadContext
                 | ArtifactOwnerHostError::CurrentHeadConflict
                 | ArtifactOwnerHostError::CurrentHeadFork
-                | ArtifactOwnerHostError::CurrentHeadRollback => "artifact.current_frontier_conflict",
+                | ArtifactOwnerHostError::CurrentHeadRollback => {
+                    "artifact.current_frontier_conflict"
+                }
                 ArtifactOwnerHostError::CheckpointMissing
                 | ArtifactOwnerHostError::CheckpointGap
                 | ArtifactOwnerHostError::CheckpointMismatch => "artifact.checkpoint_mismatch",
@@ -162,11 +172,12 @@ impl LearningArtifactOwnerServiceError {
     }
 
     fn is_withdrawal_block(&self) -> bool {
-        matches!(self.code(),
+        matches!(
+            self.code(),
             "artifact.withdrawal_durability_unknown"
-            | "artifact.withdrawal_frontier"
-            | "artifact.withdrawal_scope"
-            | "artifact.dataset_withdrawn"
+                | "artifact.withdrawal_frontier"
+                | "artifact.withdrawal_scope"
+                | "artifact.dataset_withdrawn"
         )
     }
 }

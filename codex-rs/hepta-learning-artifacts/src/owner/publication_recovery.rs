@@ -65,8 +65,8 @@ pub(super) fn validate_request_against_checkpoint(
         };
         let validated = validate_registry_head_witness(witness, &requirement)
             .map_err(|_| LearningArtifactOwnerServiceError::RequestMismatch)?;
-        let encoded = encode_head_witness(witness, signed.binding)
-            .map_err(ArtifactOwnerHostError::from)?;
+        let encoded =
+            encode_head_witness(witness, signed.binding).map_err(ArtifactOwnerHostError::from)?;
         let expected = RegistryHeadWitnessReceipt {
             binding: signed.binding,
             witness_digest: validated.witness_digest,
@@ -91,7 +91,10 @@ pub(super) fn rebuild_transaction(
         let manifest = &request.admission.validated_manifest.manifest;
         transaction.record_payload_durable(manifest.bytes_digest, manifest.encoded_size_bytes)?;
     }
-    if phase_at_least(checkpoint.phase, ArtifactPublicationPhaseV1::RegistryDurable) {
+    if phase_at_least(
+        checkpoint.phase,
+        ArtifactPublicationPhaseV1::RegistryDurable,
+    ) {
         transaction.record_registry_durable(
             staged,
             checkpoint

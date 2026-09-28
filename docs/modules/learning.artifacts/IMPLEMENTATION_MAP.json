@@ -123,7 +123,7 @@
       "designOperation": "admit_manifest_at_withdrawal_head_v3",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "8e4f8830dbda3f387b54992f297c8d1f8baa329f"
+      "sourceBlob": "0fff5c7776b874d3587cde8cb7d117954ef6dd8b"
     },
     {
       "operation": "publication_begin",
@@ -179,7 +179,7 @@
       "designOperation": "authenticated_current_registry_view",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "79fcf6381533a9857d2779ba6904f285968fcb29"
+      "sourceBlob": "618f1b17b61103ebef945ff15e640b3478852c12"
     },
     {
       "operation": "owner_writer_fence",
@@ -260,12 +260,12 @@
       "designOperation": "owner_service_open",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "79fcf6381533a9857d2779ba6904f285968fcb29"
+      "sourceBlob": "618f1b17b61103ebef945ff15e640b3478852c12"
     },
     {
       "operation": "owner_service_publish",
       "nativeSymbol": "LearningArtifactOwnerService::publish",
-      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner/service_observation.rs",
       "state": "product_writer_service_composed",
       "authority": "none",
       "tests": [
@@ -278,7 +278,7 @@
       "designOperation": "owner_service_publish",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "79fcf6381533a9857d2779ba6904f285968fcb29"
+      "sourceBlob": "49453dfa0011b5fc446a203b67f2714aef19ec5a"
     },
     {
       "operation": "recover_current_registry",
@@ -381,7 +381,7 @@
       "designOperation": "owner_service_drain",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "79fcf6381533a9857d2779ba6904f285968fcb29"
+      "sourceBlob": "618f1b17b61103ebef945ff15e640b3478852c12"
     },
     {
       "operation": "owner_service_drain_status",
@@ -399,12 +399,12 @@
       "designOperation": "owner_service_drain_status",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "79fcf6381533a9857d2779ba6904f285968fcb29"
+      "sourceBlob": "618f1b17b61103ebef945ff15e640b3478852c12"
     },
     {
       "operation": "owner_service_withdrawal_frontier_install",
       "nativeSymbol": "LearningArtifactOwnerService::install_withdrawal_frontier",
-      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner/service_observation.rs",
       "state": "source_implemented",
       "authority": "none",
       "tests": [
@@ -416,7 +416,7 @@
       "designOperation": "owner_service_withdrawal_frontier_install",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "79fcf6381533a9857d2779ba6904f285968fcb29"
+      "sourceBlob": "49453dfa0011b5fc446a203b67f2714aef19ec5a"
     },
     {
       "operation": "owner_service_withdrawal_durability_status",
@@ -433,7 +433,55 @@
       "designOperation": "owner_service_withdrawal_durability_status",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "79fcf6381533a9857d2779ba6904f285968fcb29"
+      "sourceBlob": "618f1b17b61103ebef945ff15e640b3478852c12"
+    },
+    {
+      "operation": "owner_service_diagnostics",
+      "nativeSymbol": "LearningArtifactOwnerService::diagnostics",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner/service_observation.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner/observation_tests.rs::artifact_diagnostics_count_preflight_failure_without_publication",
+        "codex-rs/hepta-learning-artifacts/src/owner/observation_tests.rs::artifact_diagnostics_keep_drain_and_withdrawal_conflict_distinct",
+        "codex-rs/hepta-learning-artifacts/src/owner/observation_tests.rs::artifact_diagnostics_observe_real_publication_and_historical_retry"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "owner_service_diagnostics",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "49453dfa0011b5fc446a203b67f2714aef19ec5a"
+    },
+    {
+      "operation": "owner_service_error_code",
+      "nativeSymbol": "LearningArtifactOwnerServiceError::code",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner/service_observation.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner/observation_tests.rs::artifact_diagnostics_count_preflight_failure_without_publication",
+        "codex-rs/hepta-learning-artifacts/src/owner/observation_tests.rs::artifact_diagnostics_keep_drain_and_withdrawal_conflict_distinct"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "owner_service_error_code",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "49453dfa0011b5fc446a203b67f2714aef19ec5a"
+    },
+    {
+      "operation": "owner_request_diagnostic_identity",
+      "nativeSymbol": "RequestIdentityVerifier::verify",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner/request_identity.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner/observation_tests.rs::artifact_request_diagnostic_identity_binds_semantics_not_retry_time"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "owner_request_diagnostic_identity",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "5091147342475f3d299ce6ab0abd4e3d8a9a122f"
     }
   ],
   "currentNativeState": "immutable registry/storage, scoped withdrawal, V3 admission, durable lifecycle/withdrawal snapshots, ordered host-visible publication, one physical sensor-core writer, bounded iteration, explicit Agentd read consumption, and one CALLERS.toml-closed LearningArtifactOwnerService over the fenced Ed25519-authenticated owner host are source implemented; activation, target-host durability and independently governed selection/release remain separate; one-way service drain is a source candidate with native execution pending; R4 local withdrawal high-water persistence and receipt consistency guards are source candidates; Rust execution and product revocation propagation remain pending",
@@ -516,7 +564,7 @@
   "productionWriterBindingPolicy": "closed_world",
   "productCallers": [
     {
-      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner/service_observation.rs",
       "nativeSymbol": "LearningArtifactOwnerService::publish"
     },
     {
@@ -526,8 +574,12 @@
   ],
   "sourceObjects": [
     {
+      "path": ".github/workflows/hepta-artifacts-source-preparation.yml",
+      "object": "1f2b193276e29c5a7b5442c952796a8e43ac1443"
+    },
+    {
       "path": ".github/workflows/hepta-learning-artifacts-qualification.yml",
-      "object": "d07b08a1dedc84ea0cbca9b62960893a84ecfeed"
+      "object": "70f349479d35ffebafc48b4f1de9db908bcc0cc8"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
@@ -535,11 +587,19 @@
     },
     {
       "path": "codex-rs/hepta-learning-artifacts",
-      "object": "b1aaed5a37ccfd6dbaade2dbbe3a6e695a1e587b"
+      "object": "e207689a2389a252f9ef7b3b0215cd9cfffba1b5"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/RUNTIME_CONVERGENCE.md",
+      "object": "d636e15e54cb64849a6b96c264f8d92eb428f7e9"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/admission_v3.rs",
-      "object": "8e4f8830dbda3f387b54992f297c8d1f8baa329f"
+      "object": "0fff5c7776b874d3587cde8cb7d117954ef6dd8b"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/admission_v3/tests/admission_membership_tests.rs",
+      "object": "2b34703915d3f26c6ea1003d71f3a6f7f2f976dd"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/closure_v2.rs",
@@ -558,8 +618,12 @@
       "object": "afa6ee9f052def7d17e291bf0fcd4e483bf4e08f"
     },
     {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner/diagnostics.rs",
+      "object": "f8a7ea65404fb5a701d1c22df421f1580dd03f84"
+    },
+    {
       "path": "codex-rs/hepta-learning-artifacts/src/owner/drain_tests.rs",
-      "object": "534492a4e51505c7c55604c21ba3d9806954639c"
+      "object": "fb0b0ec22304df89d217e4f90aa547c3c9178e9b"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner/durable_control.rs",
@@ -574,20 +638,28 @@
       "object": "34fa46634412e028f2f4860ddb230a1f918039b6"
     },
     {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner/observation_tests.rs",
+      "object": "b62164755cae6095ad26019835fbc4f5b0c38aa1"
+    },
+    {
       "path": "codex-rs/hepta-learning-artifacts/src/owner/publication_recovery.rs",
-      "object": "e0f4cc08e39fcdd311eb8c581481a0e547b6f73c"
+      "object": "fdcbec429e04c5c823a8f351af739ef12475d55e"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner/request_identity.rs",
-      "object": "22c14dd890ad9c927679017690d13b0eb75fdc67"
+      "object": "5091147342475f3d299ce6ab0abd4e3d8a9a122f"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner/service_crash_tests.rs",
-      "object": "576164157846dcf416c701aa534dca412bd489ae"
+      "object": "a83056807570f17ec4d00c79c8ac7f84d424cd59"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner/service_observation.rs",
+      "object": "49453dfa0011b5fc446a203b67f2714aef19ec5a"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner/withdrawal_floor_tests.rs",
-      "object": "457f24b9f8e779713a30bf91d01adbec6f492b18"
+      "object": "673a8834d877bceebb9f61fe842db49f1079ad91"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner/withdrawal_service_tests.rs",
@@ -599,11 +671,11 @@
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
-      "object": "79fcf6381533a9857d2779ba6904f285968fcb29"
+      "object": "618f1b17b61103ebef945ff15e640b3478852c12"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner_service_tests.rs",
-      "object": "327420eca72030449329534e0b13123703c54a14"
+      "object": "f300579e5ab2c09d5bddf2daff4c34f1ef513c2e"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/pinned.rs",
@@ -643,7 +715,11 @@
     },
     {
       "path": "docs/modules/learning.artifacts/TECHNICAL.md",
-      "object": "c693b6e0a78375b78e70d1243661819446c74fb7"
+      "object": "628df41230a8945d4bc377e9d44d0076ff232a23"
+    },
+    {
+      "path": "scripts/hepta_artifact_convergence.py",
+      "object": "445dd71fa07dab2986f5d898bbfc97918f48bb46"
     },
     {
       "path": "scripts/hepta_artifact_qualification.py",
@@ -656,6 +732,10 @@
     {
       "path": "scripts/hepta_artifact_source_binding.py",
       "object": "1e7c25a96a4ef46d90164d0bdd08ac7ee0788541"
+    },
+    {
+      "path": "scripts/test_hepta_artifact_convergence.py",
+      "object": "7642117c870ae7d2ef4321ebe90207e78028a7cc"
     },
     {
       "path": "scripts/test_hepta_artifact_qualification.py",

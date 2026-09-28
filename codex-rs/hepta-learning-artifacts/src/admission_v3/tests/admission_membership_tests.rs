@@ -24,8 +24,8 @@ fn art_05_resealed_current_head_cannot_hide_withdrawn_dataset() {
     let registry = withdrawn_registry(dataset);
     // A caller can reconstruct every public field and its digest. Integrity
     // alone must not turn this DTO into proof of authoritative admission.
-    let validated_manifest = validate_artifact_manifest_v2(manifest(dataset), 22)
-        .fixture("manifest syntax is valid");
+    let validated_manifest =
+        validate_artifact_manifest_v2(manifest(dataset), 22).fixture("manifest syntax is valid");
     let withdrawal_scope_digest = registry.scope_digest().fixture("scoped registry");
     let withdrawal_head_digest = registry.head_digest();
     let admission_digest = digest_admission(
@@ -76,7 +76,10 @@ fn art_05_unrelated_withdrawal_allows_new_admission() {
         22,
     )
     .fixture("unrelated withdrawal does not exclude this dataset");
-    assert_eq!(validate_artifact_publication_v3(&admission, &registry, 22), Ok(()));
+    assert_eq!(
+        validate_artifact_publication_v3(&admission, &registry, 22),
+        Ok(())
+    );
 }
 
 #[test]
