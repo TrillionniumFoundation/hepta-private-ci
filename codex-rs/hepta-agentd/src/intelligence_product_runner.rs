@@ -1,7 +1,7 @@
 // Keep the reviewed runner at its original module depth so its pub(super)
 // worker/testing seams retain the same visibility. Item order is irrelevant to
-// name resolution; the explicit port alias below shadows the parent's glob
-// import used by the retained implementation body.
+// name resolution; the explicit aliases below shadow the parent's glob imports
+// used by the retained implementation body.
 //
 // Generated-source anchors for the implementation body retained below:
 // - request_digest: run_identity.request_digest.to_string()
@@ -13,6 +13,7 @@ include!("intelligence_product_runner_base.rs");
 #[path = "intelligence_stage_bound_ports.rs"]
 mod stage_bound_ports;
 
+use super::secure_authority::SecureFileBackedFreshnessOracleV1 as FileBackedFreshnessOracleV1;
 use stage_bound_ports::StageBoundAgentdOwnerPortsV1 as AgentdOwnerPortsV1;
 
 pub(super) fn bind_prompt_request_v1(
