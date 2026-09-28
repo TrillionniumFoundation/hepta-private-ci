@@ -58,10 +58,11 @@ accepted.
 
 ## Evidence and claim boundary
 
-The fresh-trust process regression, near-capacity file regression, two-process
-cold recovery, unresolved-page cursor test, checkpoint-tail soak and exact-tree
-qualification are repository source evidence only. The following remain false
-until independently supplied and verified:
+External gates remain false unless their separately governed evidence and
+authority are supplied. The fresh-trust process regression, near-capacity file
+regression, two-process cold recovery, unresolved-page cursor test,
+checkpoint-tail soak and exact-tree qualification are repository source evidence
+only. The following remain false until independently supplied and verified:
 
 - `targetHostQualified`;
 - `independentAcceptance`;
