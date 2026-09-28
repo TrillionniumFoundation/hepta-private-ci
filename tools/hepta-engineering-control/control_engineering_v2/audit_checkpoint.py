@@ -9,6 +9,7 @@ from .control_plane import (
     EngineeringError,
     EngineeringStore,
     ZERO_DIGEST,
+    checked_sha256,
     semantic_digest,
 )
 from .external_controls import store_snapshot_digest
@@ -54,13 +55,21 @@ def verify_audit_suffix(
         checkpoint, AuditCheckpoint
     ):
         raise EngineeringError("audit_checkpoint_required")
-    if checkpoint.sequence < 0 or checkpoint.schema_version != 1:
+    if (
+        type(checkpoint.sequence) is not int
+        or checkpoint.sequence < 0
+        or type(checkpoint.created_unix_ns) is not int
+        or checkpoint.created_unix_ns < 0
+        or checkpoint.schema_version != 1
+    ):
         raise EngineeringError("audit_checkpoint_invalid")
+    checked_sha256(checkpoint.owner_snapshot_digest, "owner_snapshot_digest")
     previous = checkpoint.event_digest
     if checkpoint.sequence == 0:
         if previous != ZERO_DIGEST:
             raise EngineeringError("audit_checkpoint_invalid")
     else:
+        checked_sha256(previous, "audit_checkpoint_event_digest")
         row = store.connection.execute(
             "SELECT event_digest FROM audit_events WHERE sequence=?",
             (checkpoint.sequence,),
@@ -71,7 +80,10 @@ def verify_audit_suffix(
         "SELECT * FROM audit_events WHERE sequence>? ORDER BY sequence",
         (checkpoint.sequence,),
     ).fetchall()
+    expected_sequence = checkpoint.sequence + 1
     for row in rows:
+        if int(row["sequence"]) != expected_sequence:
+            raise EngineeringError("audit_chain_sequence_gap")
         try:
             payload = json.loads(bytes(row["payload_json"]).decode("utf-8"))
         except (TypeError, UnicodeDecodeError, json.JSONDecodeError):
@@ -86,9 +98,11 @@ def verify_audit_suffix(
         if (
             str(row["previous_digest"]) != previous
             or str(row["event_digest"]) != digest
+            or str(row["event_id"]) != digest[:32]
         ):
             raise EngineeringError("audit_chain_invalid")
         previous = digest
+        expected_sequence += 1
     latest = checkpoint.sequence if not rows else int(rows[-1]["sequence"])
     return {
         "checkpointDigest": semantic_digest(asdict(checkpoint)),
