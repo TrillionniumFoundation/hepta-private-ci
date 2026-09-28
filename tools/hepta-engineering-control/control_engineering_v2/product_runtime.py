@@ -109,13 +109,14 @@ class EngineeringControlProduct:
     def close(self) -> None:
         self.store.close()
 
-    def _capacity_guarded_write(self, operation: Callable[[], _T]) -> _T:
-        """Run one product mutation inside a capacity-checked owner transaction.
+    def _capacity_guarded_admission(self, operation: Callable[[], _T]) -> _T:
+        """Commit an admission only when both capacity snapshots are valid.
 
-        Lower-level operations already use the store transaction helper.  The helper
-        is deliberately re-entrant, so this outer boundary makes the post-mutation
-        capacity check part of the same commit.  A write that crosses a hard ceiling
-        is rolled back rather than retained with a later warning.
+        The store transaction helper is deliberately re-entrant. The post-write
+        measurement therefore remains in the same transaction and rolls back an
+        admission that crosses a hard ceiling. Recovery, result submission and
+        terminal reconciliation are intentionally not pre-blocked: those paths
+        drain or resolve existing work and must remain available during pressure.
         """
         with self.store._transaction():
             enforce_database_capacity(self.store, self.capacity_policy)
@@ -129,7 +130,7 @@ class EngineeringControlProduct:
         *,
         now_ns: int | None = None,
     ) -> WorkEnvelope:
-        return self._capacity_guarded_write(
+        return self._capacity_guarded_admission(
             lambda: issue_repository_work_envelope(
                 self.repository,
                 self.store,
@@ -151,7 +152,7 @@ class EngineeringControlProduct:
         now_ns: int | None = None,
     ):
         paths_value = tuple(paths)
-        return self._capacity_guarded_write(
+        return self._capacity_guarded_admission(
             lambda: self.store.acquire_path_lease(
                 lease_id,
                 envelope_id,
@@ -177,7 +178,7 @@ class EngineeringControlProduct:
         packages_value = tuple(packages)
         workers_value = tuple(workers)
         completions_value = tuple(completion_receipts)
-        return self._capacity_guarded_write(
+        return self._capacity_guarded_admission(
             lambda: plan_engineering_work(
                 self.store,
                 envelope,
@@ -196,9 +197,10 @@ class EngineeringControlProduct:
         *,
         now_ns: int | None = None,
     ) -> WorkerRecoveryReport:
-        report = self._capacity_guarded_write(
-            lambda: recover_worker_lifecycle(self.store, now_ns=now_ns)
-        )
+        # Recovery is allowed to drain over-capacity stale claims. Its mutation is
+        # retained even if the subsequent capacity check keeps admission closed.
+        report = recover_worker_lifecycle(self.store, now_ns=now_ns)
+        enforce_database_capacity(self.store, self.capacity_policy)
         self._startup_reconciled = True
         return report
 
@@ -252,7 +254,7 @@ class EngineeringControlProduct:
         *,
         now_ns: int | None = None,
     ) -> str:
-        return self._capacity_guarded_write(
+        return self._capacity_guarded_admission(
             lambda: register_worker(
                 self.store,
                 receipt,
@@ -267,7 +269,7 @@ class EngineeringControlProduct:
         *,
         now_ns: int,
     ) -> WorkerRegistrationRenewalDecision:
-        return self._capacity_guarded_write(
+        return self._capacity_guarded_admission(
             lambda: renew_worker_registration(
                 self.store,
                 receipt,
@@ -289,7 +291,7 @@ class EngineeringControlProduct:
     ) -> WorkerClaim:
         if not self._startup_reconciled:
             raise EngineeringError("product_startup_reconciliation_required")
-        return self._capacity_guarded_write(
+        return self._capacity_guarded_admission(
             lambda: claim_assignment(
                 self.store,
                 generation_id,
@@ -308,14 +310,12 @@ class EngineeringControlProduct:
         heartbeat_ttl_ns: int,
         now_ns: int | None = None,
     ) -> WorkerClaim:
-        return self._capacity_guarded_write(
-            lambda: heartbeat_claim(
-                self.store,
-                receipt,
-                self.trust_store,
-                heartbeat_ttl_ns=heartbeat_ttl_ns,
-                now_ns=now_ns,
-            )
+        return heartbeat_claim(
+            self.store,
+            receipt,
+            self.trust_store,
+            heartbeat_ttl_ns=heartbeat_ttl_ns,
+            now_ns=now_ns,
         )
 
     def submit_result(
@@ -324,13 +324,11 @@ class EngineeringControlProduct:
         *,
         now_ns: int | None = None,
     ) -> WorkerClaim:
-        return self._capacity_guarded_write(
-            lambda: submit_worker_result(
-                self.store,
-                receipt,
-                self.trust_store,
-                now_ns=now_ns,
-            )
+        return submit_worker_result(
+            self.store,
+            receipt,
+            self.trust_store,
+            now_ns=now_ns,
         )
 
     def observe_completion(
@@ -341,15 +339,13 @@ class EngineeringControlProduct:
         *,
         now_ns: int | None = None,
     ) -> WorkerClaim:
-        return self._capacity_guarded_write(
-            lambda: observe_claim_completion(
-                self.store,
-                claim_id,
-                envelope,
-                completion,
-                self.trust_store,
-                now_ns=now_ns,
-            )
+        return observe_claim_completion(
+            self.store,
+            claim_id,
+            envelope,
+            completion,
+            self.trust_store,
+            now_ns=now_ns,
         )
 
     def claim_state(self, claim_id: str) -> WorkerClaim:
@@ -367,7 +363,7 @@ class EngineeringControlProduct:
         base_tree: str,
         now_ns: int | None = None,
     ) -> IntegrationQueueGeneration:
-        return self._capacity_guarded_write(
+        return self._capacity_guarded_admission(
             lambda: publish_integration_queue(
                 self.store,
                 plan,
@@ -393,30 +389,26 @@ class EngineeringControlProduct:
         if stage_receipt is not None:
             if terminal_outcome is not None or terminal_receipt is not None:
                 raise ValueError("integration_stage_terminal_mix")
-            return self._capacity_guarded_write(
-                lambda: observe_integration_stage(
-                    self.store,
-                    queue_generation_id,
-                    package_id,
-                    current_base_commit=current_base_commit,
-                    current_base_tree=current_base_tree,
-                    receipt=stage_receipt,
-                    trust_store=self.trust_store,
-                    now_ns=now_ns,
-                )
-            )
-        return self._capacity_guarded_write(
-            lambda: reconcile_integration_item(
+            return observe_integration_stage(
                 self.store,
                 queue_generation_id,
                 package_id,
                 current_base_commit=current_base_commit,
                 current_base_tree=current_base_tree,
-                terminal_outcome=terminal_outcome,
-                terminal_receipt=terminal_receipt,
+                receipt=stage_receipt,
                 trust_store=self.trust_store,
                 now_ns=now_ns,
             )
+        return reconcile_integration_item(
+            self.store,
+            queue_generation_id,
+            package_id,
+            current_base_commit=current_base_commit,
+            current_base_tree=current_base_tree,
+            terminal_outcome=terminal_outcome,
+            terminal_receipt=terminal_receipt,
+            trust_store=self.trust_store,
+            now_ns=now_ns,
         )
 
     def integration_item(
