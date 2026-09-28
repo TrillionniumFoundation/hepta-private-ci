@@ -1,0 +1,82 @@
+name: runtime.codex native application on ARM
+on:
+  push:
+    branches: [fix/runtime-codex-owner-recovery-20260928]
+    paths: [.github/workflows/runtime-codex-apply-arm.yml]
+permissions:
+  contents: read
+jobs:
+  apply:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 25
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - name: Apply the reviewed content once and publish only the scoped branch
+        env:
+          EXPECTED_HEAD: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch=fix/runtime-codex-owner-recovery-20260928
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test "$(git ls-remote origin refs/heads/$branch | cut -f1)" = "$EXPECTED_HEAD"
+          git merge-base --is-ancestor 40edf6b03b29aa085a5efef9ce7b9a3b02c07b80 HEAD
+          git diff --exit-code
+          python3 - <<'PY'
+          import pathlib,base64,gzip,hashlib,subprocess
+          root=pathlib.Path('qualification/runtime-codex-remediation')
+          encoded=b''.join((root/f'input.patch.{n}.b64').read_bytes() for n in (1,2,3))
+          assert len(encoded)==39560
+          data=gzip.decompress(base64.b64decode(encoded,validate=True))
+          assert len(data)==139343
+          assert hashlib.sha256(data).hexdigest()=='e25ef4eab900953fa647aff0d735cf7b8ec4f3466a431207d1575dc9626572e1'
+          p=pathlib.Path('/tmp/runtime-codex.patch');p.write_bytes(data)
+          subprocess.run(['git','apply','--check',str(p)],check=True)
+          subprocess.run(['git','apply',str(p)],check=True)
+          PY
+          git add -N codex-rs/hepta-agent-protocol codex-rs/hepta-agentd codex-rs/hepta-infer-core codex-rs/hepta-infer-worker-host
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
+          python3 - <<'PY'
+          import subprocess
+          paths=subprocess.check_output(['git','diff','--name-only'],text=True).splitlines()
+          allowed=('codex-rs/hepta-agent-protocol/','codex-rs/hepta-agentd/','codex-rs/hepta-infer-core/','codex-rs/hepta-infer-worker-host/')
+          assert paths and all(p.startswith(allowed) for p in paths)
+          for path in paths:
+              if path.endswith('.rs'):
+                  subprocess.run(['rustup','run','1.95.0','rustfmt','--edition','2024','--config-path','codex-rs/rustfmt.toml',path],check=True)
+          assert all(p.startswith(allowed) for p in subprocess.check_output(['git','diff','--name-only'],text=True).splitlines())
+          PY
+          git diff --check
+          test "$(git ls-remote origin refs/heads/$branch | cut -f1)" = "$EXPECTED_HEAD"
+          git add codex-rs/hepta-agent-protocol codex-rs/hepta-agentd codex-rs/hepta-infer-core codex-rs/hepta-infer-worker-host
+          git -c user.name='runtime.codex remediation' -c user.email='runtime-codex@users.noreply.github.com' commit -m 'runtime.codex: persist owner effect arbitration and abort outbox'
+          git push origin HEAD:refs/heads/$branch
+          mkdir -p "$RUNNER_TEMP/runtime-codex-applied"
+          git archive --format=tar.gz HEAD > "$RUNNER_TEMP/runtime-codex-applied/source.tar.gz"
+          git rev-parse HEAD > "$RUNNER_TEMP/runtime-codex-applied/head.txt"
+          git rev-parse 'HEAD^{tree}' > "$RUNNER_TEMP/runtime-codex-applied/tree.txt"
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Run actual native control tests
+        working-directory: codex-rs
+        env:
+          CARGO_INCREMENTAL: '0'
+          CARGO_PROFILE_TEST_DEBUG: '0'
+        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/runtime-codex-applied/tests.json" -- just test --locked -p codex-hepta-infer-core --no-tests=fail
+      - name: Strict native control lint
+        if: always()
+        working-directory: codex-rs
+        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/runtime-codex-applied/clippy.json" -- cargo clippy --locked -p codex-hepta-infer-core --all-targets -- -D warnings
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: runtime-codex-arm-source-and-native-records
+          path: ${{ runner.temp }}/runtime-codex-applied/*
+          if-no-files-found: error
+          retention-days: 14
