@@ -45,10 +45,11 @@ def render(state: dict, plan: dict) -> dict[str, str]:
                 "and artifact digests. Missing/skipped/running evidence cannot become terminal-success.", "",
                 "## Host and data-lifecycle boundary", "",
                 "The process-exit regression uses the real writer and SQLite, but fixture authority.",
-                "The post-rename regression establishes candidate retention in source; it does not prove",
-                "a real target filesystem's directory-fsync failure behavior. A trusted target-host run",
-                "must separately establish signer governance, witness reconciliation, actual filesystem",
-                "fault injection, canary, restart, and strictly newer rollback generations.", "",
+                "The post-rename regression injects a real Linux directory-fsync failure through",
+                "the public recovery entry, but it is not selected-host filesystem evidence. A",
+                "trusted target-host run must separately establish signer governance, witness",
+                "reconciliation, filesystem fault injection, canary, restart, and strictly newer",
+                "rollback generations.", "",
                 "History profiles measure corrections, tombstones, growth, snapshots, and reopen cuts.",
                 "They neither implement history pruning nor prove payload erasure in backups or derived artifacts.", ""]
     return {"CURRENT_STATUS.md": "\n".join(lines), "EXECUTION_DOSSIER.md": "\n".join(dossier)}
