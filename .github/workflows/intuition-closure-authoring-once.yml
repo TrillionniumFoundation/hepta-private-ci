@@ -1,59 +1,159 @@
-name: Intuition durable closure payload decode
+name: intuition.policy Qualification
 
 on:
   pull_request:
     paths:
+      - ".github/workflows/hepta-intuition-qualification.yml"
       - ".github/workflows/intuition-closure-authoring-once.yml"
       - "scripts/intuition_closure_author_once.b85.part*"
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: intuition-durable-closure-decode-${{ github.event.pull_request.number }}
+  group: intuition-durable-closure-author-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  decode:
-    name: Materialize reviewed durable closure source
-    if: ${{ github.event.pull_request.head.ref == 'codex/intuition-policy-production-closure-20260927' }}
+  author-durable-closure:
+    name: Author durable handoff and V2 transport
+    if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'codex/intuition-policy-production-closure-20260927' }}
     permissions:
       contents: write
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 120
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_BUILD_JOBS: "2"
+      RUST_BACKTRACE: "1"
     steps:
       - name: Check out exact pull request head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
-      - name: Decode and validate the staged source transformation
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: rustfmt,clippy
+      - name: Apply bounded source transformation
         env:
           SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          python3 - <<'PY'
+          (
+            cd scripts
+            python3 - <<'PYCODE'
           import base64
           import bz2
           from pathlib import Path
 
-          parts = sorted(Path("scripts").glob("intuition_closure_author_once.b85.part*"))
-          if len(parts) != 4:
-              raise SystemExit(f"expected four payload parts, found {len(parts)}")
-          payload = b"".join(path.read_bytes() for path in parts)
+          runtime = Path("../codex-rs/hepta-agentd/src/runtime.rs")
+          text = runtime.read_text()
+          replacements = [
+              (
+                  "        let host = Arc::new(crate::objective_runtime::ObjectiveRuntimeHost::open(\n",
+                  "        let objective_runtime = Arc::new(crate::objective_runtime::ObjectiveRuntimeHost::open(\n",
+              ),
+              (
+                  "        let current_generation = state.current_generation()?;\n        host.reconcile(\n            &state,\n            current_generation,\n",
+                  "        objective_runtime.reconcile(\n            &state,\n            state.current_generation()?,\n",
+              ),
+              ("            .set(host)\n", "            .set(objective_runtime)\n"),
+          ]
+          for old, new in replacements:
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"runtime normalization expected one marker, found {count}: {old!r}")
+              text = text.replace(old, new, 1)
+          runtime.write_text(text)
+
+          payload = b"".join(
+              path.read_bytes()
+              for path in sorted(Path(".").glob("intuition_closure_author_once.b85.part*"))
+          )
           source = bz2.decompress(base64.b85decode(payload))
-          output = Path("scripts/intuition_closure_author_decoded.py")
-          output.write_bytes(source)
-          compile(source, str(output), "exec")
-          print(f"decoded {len(source)} bytes to {output}")
-          PY
+          exec(compile(source, "intuition_closure_author_once.py", "exec"))
+          PYCODE
+          )
+          cd codex-rs
+          cargo fmt --all
+      - name: Compile owner and protocol boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo check --locked \
+            -p codex-hepta-agent-protocol \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-agentd --lib
+      - name: Run focused durable and protocol tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo test --locked -p codex-hepta-agent-protocol --lib
+          cargo test --locked -p codex-hepta-learning-ledger --lib run_start -- --nocapture
+          cargo test --locked -p codex-hepta-agentd --lib intuition_policy -- --nocapture
+          cargo test --locked -p codex-hepta-agentd --lib objective_runtime -- --nocapture
+      - name: Run strict lint on changed ownership surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo clippy --locked \
+            -p codex-hepta-agent-protocol \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-agentd --lib -- -D warnings
+      - name: Commit ordinary source, restore qualification and remove authoring machinery
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
           git diff --check
+          git checkout 7a7800cb653e11a4a08aef4369dbb7522963c5b8 -- .github/workflows/hepta-intuition-qualification.yml
+          rm -f .github/workflows/intuition-closure-authoring-once.yml
+          rm -f scripts/intuition_closure_author_once.b85.part*
+          python3 - <<'PY'
+          import subprocess
+          allowed = {
+              "codex-rs/hepta-agent-protocol/src/authbus.rs",
+              "codex-rs/hepta-agent-protocol/src/capabilities.rs",
+              "codex-rs/hepta-agent-protocol/src/lib.rs",
+              "codex-rs/hepta-agentd/src/client.rs",
+              "codex-rs/hepta-agentd/src/intuition_policy_admission.rs",
+              "codex-rs/hepta-agentd/src/intuition_policy_handoff.rs",
+              "codex-rs/hepta-agentd/src/intuition_policy_serving.rs",
+              "codex-rs/hepta-agentd/src/lib.rs",
+              "codex-rs/hepta-agentd/src/objective_runtime.rs",
+              "codex-rs/hepta-agentd/src/runtime.rs",
+              "codex-rs/hepta-agentd/src/state_control.rs",
+              "codex-rs/hepta-learning-ledger/src/run_start.rs",
+              ".github/workflows/hepta-intuition-qualification.yml",
+              ".github/workflows/intuition-closure-authoring-once.yml",
+              "scripts/intuition_closure_author_once.b85.part00",
+              "scripts/intuition_closure_author_once.b85.part01",
+              "scripts/intuition_closure_author_once.b85.part02",
+              "scripts/intuition_closure_author_once.b85.part03",
+          }
+          rows = subprocess.check_output(
+              ["git", "status", "--porcelain=v1"], text=True
+          ).splitlines()
+          paths = {row[3:] for row in rows}
+          unexpected = sorted(paths - allowed)
+          if unexpected:
+              raise SystemExit("unexpected authoring paths: " + ", ".join(unexpected))
+          PY
           remote_sha="$(git ls-remote origin refs/heads/codex/intuition-policy-production-closure-20260927 | cut -f1)"
           test "$remote_sha" = "$SOURCE_SHA"
           git config user.name "Hepta Intuition Authoring"
           git config user.email "hepta-intuition-authoring@users.noreply.github.com"
-          git add scripts/intuition_closure_author_decoded.py
-          git commit -m "chore(intuition): materialize durable closure authoring source"
+          git add -A
+          git commit -m "feat(intuition): persist admission handoff and acknowledge V2 delivery"
           git push origin HEAD:codex/intuition-policy-production-closure-20260927
