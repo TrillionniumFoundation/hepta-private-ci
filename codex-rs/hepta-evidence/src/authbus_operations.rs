@@ -199,11 +199,7 @@ fn latency_summary(samples: &mut [u64]) -> AuthBusOutboxLatencySummary {
 }
 
 fn nearest_rank(samples: &[u64], percentile: usize) -> u64 {
-    let rank = samples
-        .len()
-        .saturating_mul(percentile)
-        .saturating_add(99)
-        / 100;
+    let rank = samples.len().saturating_mul(percentile).div_ceil(100);
     samples
         .get(rank.saturating_sub(1).min(samples.len().saturating_sub(1)))
         .copied()
