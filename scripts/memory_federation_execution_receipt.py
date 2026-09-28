@@ -177,6 +177,9 @@ def run() -> int:
     output = pathlib.Path(os.environ.get("RUNNER_TEMP", "/tmp")) / DIRECTORY
     output.mkdir(mode=0o700, parents=True, exist_ok=False)
     candidate = guard._candidate()
+    # Build outputs are not source evidence and must never enter the checked
+    # source roots or the uploaded command-log directory.
+    os.environ["CARGO_TARGET_DIR"] = str(output.parent / ("memory-federation-build-" + candidate["sha"]))
     inputs = guard._snapshot(candidate["sha"], candidate["tree"])
     commands = list(full.base.COMMANDS)
     record = {"schema": SCHEMA, "candidate": candidate, "inputs": inputs,
