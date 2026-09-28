@@ -10,6 +10,7 @@
     "productLoopSourceImplemented": true,
     "currentTimeEvidenceSemanticsImplemented": true,
     "supervisedOwnerBoundariesImplemented": true,
+    "exactOperationSettlementImplemented": true,
     "realProcessE2EProved": false,
     "targetHostQualified": false,
     "activation": false,
@@ -106,7 +107,7 @@
     {
       "id": "INT-B-REAL-PRODUCT-LOOP",
       "phase": "B",
-      "statement": "Authenticated ObjectiveStart continues through the sole Agentd lifecycle, authenticated Decision, existing runtime.codex App Server turn, exact terminal observation and authenticated Outcome.",
+      "statement": "Authenticated ObjectiveStart continues through the sole Agentd lifecycle, authenticated Decision, existing runtime.codex App Server turn, exact terminal observation and authenticated Outcome, while a profile without continuation falls back before canonical admission.",
       "source": [
         {
           "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
@@ -114,7 +115,7 @@
         },
         {
           "path": "codex-rs/hepta-agentd/src/state_intelligence_product_loop.rs",
-          "symbol": "continue_ready"
+          "symbol": "product_continuation()"
         },
         {
           "path": "codex-rs/hepta-infer-worker-host/src/canonical_intelligence_product_loop_base.rs",
@@ -129,6 +130,39 @@
         {
           "path": "codex-rs/hepta-infer-worker-host/src/canonical_intelligence_product_loop_base.rs",
           "name": "protocol_and_physical_terminal_must_agree"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_control_internal/intelligence_acceptance_tests.rs",
+          "name": "canonical_product_route_requires_continuation_before_admission"
+        }
+      ]
+    },
+    {
+      "id": "INT-B-EXACT-LEARNING-SETTLEMENT",
+      "phase": "B",
+      "statement": "Interactive Decision and Outcome settlement claims, dispatches and reconciles the exact requested scope and operation rather than spending authority or work on an older unrelated queue head.",
+      "source": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_learning_product_api.rs",
+          "symbol": "dispatch_operation_current"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_learning_product_api.rs",
+          "symbol": "reconcile_operation_current"
+        },
+        {
+          "path": "codex-rs/hepta-operations/src/exact_claim.rs",
+          "symbol": "claim_operation"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_control_internal/intelligence_acceptance_tests.rs",
+          "name": "exact_operation_settlement_never_dispatches_an_arbitrary_queue_head"
+        },
+        {
+          "path": "codex-rs/hepta-operations/src/exact_claim_tests.rs",
+          "name": "exact_claim_never_consumes_an_older_queued_operation"
         }
       ]
     },

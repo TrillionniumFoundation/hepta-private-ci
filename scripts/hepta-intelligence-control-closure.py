@@ -11,7 +11,6 @@ from __future__ import annotations
 
 import json
 import re
-import sys
 from pathlib import Path
 from typing import Any
 
@@ -21,6 +20,7 @@ ALLOWED_SOURCE_ROOTS = (
     "codex-rs/hepta-intelligence/",
     "codex-rs/hepta-agentd/",
     "codex-rs/hepta-infer-worker-host/",
+    "codex-rs/hepta-operations/",
     "docs/modules/intelligence.control/",
     "scripts/",
 )
@@ -105,6 +105,7 @@ def main() -> None:
     mapped_tests: set[tuple[str, str]] = set()
     source_count = 0
     test_count = 0
+    phases: set[str] = set()
     for requirement in requirements:
         if not isinstance(requirement, dict):
             fail("every requirement must be an object")
@@ -114,8 +115,10 @@ def main() -> None:
         if requirement_id in ids:
             fail(f"duplicate requirement id: {requirement_id}")
         ids.add(requirement_id)
-        if requirement.get("phase") not in {"A", "B", "C", "D"}:
+        phase = requirement.get("phase")
+        if phase not in {"A", "B", "C", "D"}:
             fail(f"invalid phase for {requirement_id}")
+        phases.add(phase)
         statement = requirement.get("statement")
         if not isinstance(statement, str) or len(statement.strip()) < 20:
             fail(f"requirement {requirement_id} needs a substantive statement")
@@ -158,6 +161,9 @@ def main() -> None:
                 fail(f"mapped test is ignored: {relative}::{name}")
             test_count += 1
 
+    if phases != {"A", "B", "C", "D"}:
+        fail(f"mapping must cover phases A-D exactly; found {sorted(phases)}")
+
     print(
         json.dumps(
             {
@@ -165,6 +171,7 @@ def main() -> None:
                 "requirements": len(ids),
                 "sourceAnchors": source_count,
                 "mappedTests": test_count,
+                "phases": sorted(phases),
                 "executionEvidence": False,
             },
             sort_keys=True,
