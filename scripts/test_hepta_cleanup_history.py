@@ -63,6 +63,29 @@ class HistoricalRetirementTests(unittest.TestCase):
         self.git("add", "-A")
         self.git("commit", "-qm", message)
 
+    def test_current_fence_does_not_need_historical_git_objects(self) -> None:
+        paths = self.git("ls-files").splitlines()
+        with mock.patch.object(
+            DOCS, "git", side_effect=AssertionError("history replay")
+        ):
+            DOCS.verify_retirement_fence(self.system, paths)
+
+    def test_current_fence_rejects_uncommitted_retired_path(self) -> None:
+        path = self.root / "legacy/plan.md"
+        path.parent.mkdir(parents=True)
+        path.write_text("revived")
+        with self.assertRaisesRegex(SystemExit, "retired legacy paths reintroduced"):
+            DOCS.verify_retirement_fence(self.system, self.git("ls-files").splitlines())
+
+    def test_current_fence_rejects_deleted_snapshot_json_consumer(self) -> None:
+        (self.root / "kept.py").write_text('open("legacy/snapshot/data.json")')
+        with self.assertRaisesRegex(SystemExit, "deleted JSON consumer"):
+            DOCS.verify_retirement_fence(self.system, self.git("ls-files").splitlines())
+
+    def test_current_fence_allows_unrelated_runtime_json(self) -> None:
+        (self.root / "kept.py").write_text('open("runtime/data.json")')
+        DOCS.verify_retirement_fence(self.system, self.git("ls-files").splitlines())
+
     def test_later_cleanup_is_allowed_without_changing_original_inventory(self) -> None:
         before = DOCS.verify_cleanup_base(self.system)
         self.git("rm", "later.txt")

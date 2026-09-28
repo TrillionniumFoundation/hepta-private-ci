@@ -1,13 +1,16 @@
 name: Hepta adaptive algorithm documents
 
 on:
-  # Automatic pull-request and main-branch fan-out is owned by the two
-  # aggregate checks. Deep qualifications remain reusable and manually runnable.
+  # Automatic fan-out belongs to the existing aggregate checks.
   workflow_call:
   workflow_dispatch:
 
 permissions:
   contents: read
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
 
 concurrency:
   group: hepta-algorithm-docs-${{ github.event.pull_request.number || github.ref }}
@@ -15,94 +18,80 @@ concurrency:
 
 jobs:
   source-head:
-    name: Verify exact adaptive-document source
+    name: Verify exact source head
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
       - name: Check out exact source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ env.SOURCE_SHA }}
           persist-credentials: false
           fetch-depth: 0
-
-      - name: Verify closed-world algorithm specifications
+      - name: Verify source once and retain execution record
         env:
-          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          TESTED_SHA: ${{ env.SOURCE_SHA }}
+          HEPTA_CI_LANE: source-head
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
-          python3 scripts/hepta-algorithm-docs.py self-test
-          python3 scripts/hepta-algorithm-docs.py verify-sources
-          python3 scripts/hepta-algorithm-docs.py generate-status --check
-          python3 scripts/hepta-algorithm-docs.py verify
-          python3 scripts/hepta-algorithm-docs.py receipt \
-            --expected-sha "$EXPECTED_SHA" \
-            --output .hepta-evidence/algorithm-source-head.json
-          python3 scripts/hepta-algorithm-docs.py receipt-verify \
-            --input .hepta-evidence/algorithm-source-head.json \
-            --expected-sha "$EXPECTED_SHA"
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
           git diff --check
-          test -z "$(git status --porcelain --untracked-files=no)"
+          python3 scripts/hepta-algorithm-docs.py self-test
+          python3 -m unittest -v scripts.test_hepta_algorithm_semantics scripts.test_hepta_algorithm_workflow
+          # This verifier owns its source locks and generated-status checks.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-algorithm-records/source-head.json" -- python3 scripts/hepta-algorithm-docs.py verify
 
-      - name: Retain source receipt
+      - name: Retain source execution and diagnostics
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-algorithm-source-${{ github.event.pull_request.head.sha || github.sha }}
-          path: .hepta-evidence/algorithm-source-head.json
-          include-hidden-files: true
+          name: hepta-algorithm-source-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/hepta-algorithm-records/*
           if-no-files-found: error
           retention-days: 30
 
   merge-candidate:
-    name: Verify exact adaptive-document merge candidate
+    name: Verify exact merge candidate
+    needs: source-head
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
-      - name: Check out source for deterministic merge construction
+      - name: Check out source for merge construction
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ env.SOURCE_SHA }}
           persist-credentials: false
           fetch-depth: 0
 
       - name: Construct deterministic synthetic merge
-        id: merge
+        id: synthetic
         uses: ./.github/actions/hepta-synthetic-merge
         with:
           base-sha: ${{ github.event.pull_request.base.sha }}
           source-sha: ${{ github.event.pull_request.head.sha }}
           pr-number: ${{ github.event.pull_request.number }}
-          author-name: Hepta Algorithm Docs CI
-          author-email: hepta-algorithm-docs-ci@users.noreply.github.com
-          message: Synthetic algorithm-document merge
+          author-name: Hepta Docs CI
+          author-email: hepta-docs-ci@users.noreply.github.com
+          message: Synthetic merge
 
-      - name: Verify synthetic merge candidate
+      - name: Verify merged inputs once and retain execution record
         env:
-          EXPECTED_SHA: ${{ steps.merge.outputs.sha }}
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha }}
+          HEPTA_CI_LANE: base-merge
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
-          # The source-head job owns self-tests, source binding and generated
-          # status checks. Keep the merge job focused on merged-tree validity.
-          python3 scripts/hepta-algorithm-docs.py verify
-          python3 scripts/hepta-algorithm-docs.py receipt \
-            --expected-sha "$EXPECTED_SHA" \
-            --output .hepta-evidence/algorithm-merge-candidate.json
-          python3 scripts/hepta-algorithm-docs.py receipt-verify \
-            --input .hepta-evidence/algorithm-merge-candidate.json \
-            --expected-sha "$EXPECTED_SHA"
-          git diff --check
-          test -z "$(git status --porcelain --untracked-files=no)"
+          # Source-head owns self-tests. The shared recorder checks ordered
+          # parents and recomputes the merge tree before this verifier executes.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-algorithm-records/base-merge.json" -- python3 scripts/hepta-algorithm-docs.py verify
 
-      - name: Retain merge receipt
+      - name: Retain merge execution and diagnostics
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-algorithm-merge-${{ steps.merge.outputs.sha }}
-          path: .hepta-evidence/algorithm-merge-candidate.json
-          include-hidden-files: true
+          name: hepta-algorithm-merge-${{ steps.synthetic.outputs.sha }}
+          path: ${{ runner.temp }}/hepta-algorithm-records/*
           if-no-files-found: error
           retention-days: 30

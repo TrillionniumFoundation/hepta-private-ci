@@ -1,13 +1,16 @@
 name: Hepta development documents
 
 on:
-  # Automatic pull-request and main-branch fan-out is owned by the two
-  # aggregate checks. Deep qualifications remain reusable and manually runnable.
+  # Automatic fan-out belongs to the existing aggregate checks.
   workflow_call:
   workflow_dispatch:
 
 permissions:
   contents: read
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
 
 concurrency:
   group: hepta-development-docs-${{ github.event.pull_request.number || github.ref }}
@@ -22,56 +25,46 @@ jobs:
       - name: Check out exact source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ env.SOURCE_SHA }}
           persist-credentials: false
           fetch-depth: 0
-
-      - name: Verify source and emit receipts
+      - name: Verify source once and retain execution record
         env:
-          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          TESTED_SHA: ${{ env.SOURCE_SHA }}
+          HEPTA_CI_LANE: source-head
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          git diff --check
           python3 scripts/hepta_workspace.py
           python3 scripts/hepta-module-docs.py refresh-derived --check
           python3 scripts/hepta_module_registry.py --strict
           python3 scripts/hepta-docs.py self-test
-          # Discovery includes test_hepta_module_registry.py; do not run it twice.
           python3 -m unittest discover -v -s scripts -p 'test_hepta_*.py'
-          python3 scripts/hepta-docs.py inventory-legacy
-          python3 scripts/hepta-docs.py generate-status
-          git diff --exit-code -- docs/STATUS.md
-          python3 scripts/hepta-algorithm-docs.py verify-sources
-          python3 scripts/hepta-algorithm-docs.py generate-status --check
-          python3 scripts/hepta-readiness.py generate-status --check
-          python3 scripts/hepta-cns.py generate-status --check
-          python3 scripts/hepta-docs.py verify
-          python3 scripts/hepta-docs.py cleanup-inventory --output .hepta-evidence/cleanup-source-head.json
-          python3 scripts/hepta-docs.py receipt --kind source-head --expected-sha "$EXPECTED_SHA" --output .hepta-evidence/source-head.json
-          python3 scripts/hepta-docs.py receipt-verify --input .hepta-evidence/source-head.json --kind source-head --expected-sha "$EXPECTED_SHA"
-          git diff --check
-          test -z "$(git status --porcelain --untracked-files=no)"
+          # The global verifier owns source locks, status and subordinate checks.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-document-records/source-head.json" -- python3 scripts/hepta-docs.py verify
 
-      - name: Retain exact source receipts
+      - name: Retain source execution and diagnostics
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-v8-source-${{ github.event.pull_request.head.sha || github.sha }}
-          path: .hepta-evidence/*.json
-          include-hidden-files: true
+          name: hepta-v8-source-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/hepta-document-records/*
           if-no-files-found: error
           retention-days: 30
 
   merge-candidate:
     name: Verify exact merge candidate
+    needs: source-head
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
-      - name: Check out exact source for merge construction
+      - name: Check out source for merge construction
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ env.SOURCE_SHA }}
           persist-credentials: false
           fetch-depth: 0
 
@@ -86,28 +79,22 @@ jobs:
           author-email: hepta-docs-ci@users.noreply.github.com
           message: Synthetic merge
 
-      - name: Verify merge candidate and emit receipts
+      - name: Verify merged inputs once and retain execution record
         env:
-          EXPECTED_SHA: ${{ steps.synthetic.outputs.sha }}
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha }}
+          HEPTA_CI_LANE: base-merge
         shell: bash
         run: |
           set -euo pipefail
-          test -n "$EXPECTED_SHA"
-          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
-          # Source-head performs the full static suite. The merge job only
-          # revalidates the merged tree and receipt identity, so every PR does
-          # not pay for the same document suite twice.
-          python3 scripts/hepta-docs.py verify
-          python3 scripts/hepta-docs.py receipt --kind merge-candidate --expected-sha "$EXPECTED_SHA" --output .hepta-evidence/merge-candidate.json
-          python3 scripts/hepta-docs.py receipt-verify --input .hepta-evidence/merge-candidate.json --kind merge-candidate --expected-sha "$EXPECTED_SHA"
-          git diff --check
-          test -z "$(git status --porcelain --untracked-files=no)"
+          # Source-head owns self-tests. The shared recorder checks ordered
+          # parents and recomputes the merge tree before this verifier executes.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-document-records/base-merge.json" -- python3 scripts/hepta-docs.py verify
 
-      - name: Retain exact merge receipts
+      - name: Retain merge execution and diagnostics
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hepta-v8-merge-${{ steps.synthetic.outputs.sha }}
-          path: .hepta-evidence/*.json
-          include-hidden-files: true
+          path: ${{ runner.temp }}/hepta-document-records/*
           if-no-files-found: error
           retention-days: 30

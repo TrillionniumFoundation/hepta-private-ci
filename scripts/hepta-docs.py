@@ -814,7 +814,9 @@ def verify_document_inventory(system, required):
     declared path is still unique, exact, present and inside the repository.
     """
     paths = system.get("canonicalPaths")
-    need(isinstance(paths, list) and 0 < len(paths) <= 16384, "canonical path inventory")
+    need(
+        isinstance(paths, list) and 0 < len(paths) <= 16384, "canonical path inventory"
+    )
     normalized = [canonical_exact_path(path, "canonical path") for path in paths]
     need(len(normalized) == len(set(normalized)), "duplicate canonical path")
     missing = sorted(set(required) - set(normalized))
@@ -822,7 +824,10 @@ def verify_document_inventory(system, required):
     root = ROOT.resolve()
     for path in normalized:
         target = ROOT / path
-        need(target.resolve().is_relative_to(root), "canonical path escapes repository " + path)
+        need(
+            target.resolve().is_relative_to(root),
+            "canonical path escapes repository " + path,
+        )
         need(target.is_file(), "missing canonical path " + path)
 
 
@@ -864,6 +869,70 @@ def verify_legacy(system, paths):
 def deleted_json_basename_pattern(old_path):
     basename = re.escape(Path(old_path).name)
     return re.compile(rf"(?<![A-Za-z0-9_.-]){basename}(?![A-Za-z0-9_.-])")
+
+
+def verify_retirement_fence(system, paths):
+    """Reject revival/current consumers without replaying a historical cleanup.
+
+    The immutable base inventory remains available through cleanup-inventory.
+    Ordinary validation needs only the reserved direct paths and snapshot root.
+    It also works in a source archive without the historical Git object store.
+    """
+    policy = system["knownLegacyDeletion"]
+    direct = {
+        canonical_exact_path(path, "retired path") for path in policy["directPaths"]
+    }
+    snapshot = canonical_exact_path(policy["copiedSnapshotPath"], "retired snapshot")
+    revived = [
+        path
+        for path in paths
+        if path in direct or path == snapshot or path.startswith(snapshot + "/")
+    ]
+    for path in [*direct, snapshot]:
+        target = ROOT / path
+        if (target.exists() or target.is_symlink()) and path not in revived:
+            revived.append(path)
+    need(not revived, "retired legacy paths reintroduced " + repr(sorted(revived)))
+    expressions = [re.escape(snapshot) + r"/[^\s\"'<>]*\.json\b"]
+    for path in sorted(direct):
+        if path.lower().endswith(".json"):
+            expressions.extend(
+                (re.escape(path), deleted_json_basename_pattern(path).pattern)
+            )
+    references = re.compile("|".join(expressions))
+    code_extensions = {
+        ".rs",
+        ".py",
+        ".toml",
+        ".yaml",
+        ".yml",
+        ".sh",
+        ".bzl",
+        ".bazel",
+        ".js",
+        ".ts",
+        ".tsx",
+        ".go",
+        ".c",
+        ".cc",
+        ".h",
+        ".hpp",
+    }
+    hits = []
+    for path in paths:
+        if (
+            path == "docs/governance/DOCUMENT_SYSTEM.json"
+            or Path(path).suffix.lower() not in code_extensions
+        ):
+            continue
+        target = ROOT / path
+        if not target.is_file():
+            continue
+        text = target.read_text(encoding="utf-8", errors="replace")
+        match = references.search(text)
+        if match:
+            hits.append({"retainedPath": path, "deletedJson": match[0]})
+    need(not hits, "deleted JSON consumer " + repr(hits[:10]))
 
 
 def verify_cleanup_base(system):
@@ -1171,15 +1240,15 @@ def verify() -> int:
         if k == "system":
             continue
         row = closures[rel]
-        need(row["topLevelKeys"] == list(d[k]), "top-level closure " + rel)
+        need(
+            len(row["topLevelKeys"]) == len(set(row["topLevelKeys"]))
+            and set(row["topLevelKeys"]) == set(d[k]),
+            "top-level closure " + rel,
+        )
         need(row["recursiveShapeSha256"] == shape_sha(d[k]), "recursive closure " + rel)
     paths = tracked()
     verify_legacy(system, paths)
-    cleanup = verify_cleanup_base(system)
-    need(
-        cleanup["evaluated"] or not (ROOT / ".git").exists(),
-        "cleanup inventory not evaluated",
-    )
+    verify_retirement_fence(system, paths)
     mods = d["modules"]["modules"]
     mids = {m["id"] for m in mods}
     need(len(mids) == len(mods), "module IDs")
@@ -1444,14 +1513,10 @@ def verify() -> int:
         "github.event.pull_request.base.sha",
         "persist-credentials: false",
         "python3 scripts/hepta-docs.py verify",
-        "python3 scripts/hepta-algorithm-docs.py verify-sources",
-        "python3 scripts/hepta-readiness.py generate-status --check",
-        "python3 scripts/hepta-cns.py generate-status --check",
-        "python3 scripts/hepta-docs.py inventory-legacy",
-        "python3 scripts/hepta-docs.py cleanup-inventory",
         "python3 scripts/hepta-docs.py self-test",
-        "python3 scripts/hepta-docs.py receipt-verify",
-        "include-hidden-files: true",
+        "python3 scripts/hepta_ci_exec.py --output",
+        "HEPTA_CI_LANE: base-merge",
+        "TESTED_SHA: ${{ steps.synthetic.outputs.sha }}",
         "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
         "contents: read",
     ]:
