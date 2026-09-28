@@ -1,5 +1,18 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -Eeuo pipefail
+
+report_failure() {
+  local status="$?"
+  local command="${BASH_COMMAND}"
+  trap - ERR
+  command="${command//'%'/'%25'}"
+  command="${command//$'\r'/'%0D'}"
+  command="${command//$'\n'/'%0A'}"
+  printf '::error title=learning.eval API surface::exit=%s command=%s\n' \
+    "${status}" "${command}" >&2
+  exit "${status}"
+}
+trap report_failure ERR
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "${ROOT}/codex-rs"
