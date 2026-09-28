@@ -1,0 +1,62 @@
+name: intelligence.control source snapshot
+
+on:
+  push:
+    branches:
+      - codex/intelligence-control-full-convergence-20260928
+    paths:
+      - .github/workflows/intelligence-control-source-snapshot.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: intelligence-control-source-snapshot-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Retain exact reviewed source files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          root="$RUNNER_TEMP/intelligence-source-snapshot"
+          mkdir -p "$root"
+          while IFS= read -r path; do
+            test -f "$path"
+            mkdir -p "$root/$(dirname "$path")"
+            cp -- "$path" "$root/$path"
+          done <<'PATHS'
+          codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs
+          codex-rs/hepta-ndu/src/lib.rs
+          codex-rs/hepta-ndu/src/evaluator.rs
+          codex-rs/hepta-agentd/src/intelligence_product_ports.rs
+          docs/modules/intelligence.control/TECHNICAL.md
+          scripts/hepta-intelligence-control-status.py
+          docs/modules/intelligence.control/TEST_TRACEABILITY.json
+          .github/workflows/hepta-intelligence-control.yml
+          PATHS
+          {
+            printf 'commit=%s\n' "$(git rev-parse HEAD)"
+            printf 'tree=%s\n' "$(git rev-parse HEAD^{tree})"
+            find "$root" -type f -print0 | sort -z | xargs -0 sha256sum
+          } > "$root/SNAPSHOT_MANIFEST.txt"
+
+      - name: Upload exact source snapshot
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intelligence-control-source-snapshot-${{ github.sha }}
+          path: ${{ runner.temp }}/intelligence-source-snapshot
+          if-no-files-found: error
+          retention-days: 7
