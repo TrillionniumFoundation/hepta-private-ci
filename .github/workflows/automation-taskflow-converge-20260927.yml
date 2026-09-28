@@ -60,9 +60,7 @@ jobs:
           cat scripts/automation_taskflow_patch_parts/part-*.b64 \
             | tr -d '\r\n\t ' > "$patch_b64"
           base64 --decode "$patch_b64" > "$patch_gz"
-          printf '%s  %s\n' \
-            'a3d15ffcff878254ddc7a01fdef4e28a26ef3ae6e1cbfba9d91fda031e68e510' \
-            "$patch_gz" | sha256sum --check --strict
+          gzip --test "$patch_gz"
           gzip --decompress --stdout "$patch_gz" > "$patch_file"
           printf '%s  %s\n' \
             'f9b9d8d95f745571ea891a3c8ca91387187fd929d62037d92eddc59a204fab73' \
