@@ -181,9 +181,7 @@ impl FleetStartAdmission {
             .active_grants
             .values()
             .filter(|grant| {
-                grant.principal_id == principal_id
-                    && !grant.revoked
-                    && grant.expires_at_ms > now_ms
+                grant.principal_id == principal_id && !grant.revoked && grant.expires_at_ms > now_ms
             });
         let grant = matching
             .next()
