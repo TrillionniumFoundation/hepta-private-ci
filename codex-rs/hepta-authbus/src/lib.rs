@@ -9,16 +9,33 @@
 #![forbid(unsafe_code)]
 
 mod authority;
+#[expect(
+    clippy::disallowed_methods,
+    reason = "AuthBus owns the isolated migration reference used only for schema verification"
+)]
 mod authority_schema;
+#[expect(
+    clippy::disallowed_methods,
+    clippy::redundant_closure_for_method_calls,
+    reason = "AuthBus owns this standalone authoritative SQLite lineage; the method-call closure is retained in the same owner-local adapter"
+)]
 mod authority_store;
 mod host;
 mod quota;
+#[expect(
+    clippy::redundant_closure_for_method_calls,
+    reason = "the owner-local uniqueness classifier remains explicit beside quota admission"
+)]
 mod quota_store;
 mod recovery;
 mod settlement;
 mod settlement_store;
 mod signed;
 mod trust;
+#[expect(
+    clippy::redundant_closure_for_method_calls,
+    reason = "the owner-local uniqueness classifier remains explicit beside trust admission"
+)]
 mod trust_store;
 pub use authority::AuthBusAuthorityError;
 pub use authority::AuthPolicy;
