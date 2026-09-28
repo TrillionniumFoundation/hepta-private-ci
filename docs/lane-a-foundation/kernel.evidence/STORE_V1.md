@@ -169,18 +169,25 @@ independent acceptance, canary and release remain separate receipt-bearing
 gates.
 
 <!-- BEGIN KERNEL EVIDENCE INTEGRATION 20260928 -->
-## Publication process ownership
+## Publication process ownership and durable epochs
 
-The owner-bound publication CLI also holds a nonblocking OS lock on the private
-canonical Agent home for its entire request. The durable lease is still required;
-the physical lock prevents two processes sharing the same logical owner from
-simultaneously entering external CAS. The lock descriptor is not inherited across
-exec and is released by close or process exit, never by unlinking a lock file.
-Directory replacement or mode drift before dispatch/acknowledgement fails closed.
+The owner publication CLI holds a nonblocking OS lock on the canonical private
+Agent home for its entire request. The lease remains required. A second process
+with the same logical owner cannot enter. The descriptor is not inherited by
+exec and is released by close/exit, never by unlinking a lock file.
 
-If another publisher is active, retry the same request after it completes; do not
-remove files, clear a batch, change the owner registry or force a new generation.
-After an uncertain external write, use the same batch reconciliation path, which
-re-synchronizes the exact matching record before recovering an acknowledgement.
-A latest-frontier read alone is not evidence of durable acknowledgement.
+After durable Dispatching, the production path reserves one SQLite write epoch
+across current trust/owner/predecessor/batch checks and external recovery/CAS.
+Backend lock contention fails immediately. The callback cannot re-enter SQLite.
+The transaction writes no rows and cannot erase the earlier dispatch record on
+rollback, crash or uncertain I/O. The separate production acknowledgement
+transaction checks current trust again and commits frontier acceptance plus
+all exact batch intents atomically. Unknown commit results remain unresolved.
+
+Already-acknowledged batches are recovery-only: missing external history cannot
+be recreated by another CAS. Reconciliation re-synchronizes the exact matching
+record before recovering an ACK. A latest-frontier read alone is insufficient.
+Do not clear a batch, restore old trust, remove lock paths or force a new owner
+to hide an uncertain result. File/fsync delay and crash behavior still require
+physical platform qualification; the source does not claim a latency bound.
 <!-- END KERNEL EVIDENCE INTEGRATION 20260928 -->

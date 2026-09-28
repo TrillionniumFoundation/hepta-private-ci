@@ -506,49 +506,75 @@ The integration candidate is `work/kernel-evidence-ad-integration-20260928`
 2026-09-28 follow-up. Do not add the capabilities of unmerged branches together
 or count a source-rewriting script as compiled implementation.
 
-Production publication uses two complementary fences. The durable SQLite lease
-binds owner and generation across restart; a nonblocking OS lock on the canonical
-private Agent home serializes publication/reconciliation processes for the
-entire prepare or publish request. A reused logical owner ID does not permit a
-second process to enter. The directory descriptor remains alive through external
-CAS/recovery, policy rechecks, SQLite acknowledgement and store close. Identity
-and private mode are rechecked before external dispatch and acknowledgement.
-The descriptor lifetime releases ownership; no process unlinks a lock file.
+Production publication uses complementary physical and durable fences. A
+nonblocking OS lock on the canonical private Agent home serializes publication
+processes for the entire request. The SQLite owner lease binds identity and
+generation across restart. After the exact Dispatching record has committed,
+`with_publication_dispatch_guard` takes a `BEGIN IMMEDIATE` writer reservation.
+It checks the enrolled store, exact prepared snapshot/proposal, currently
+accepted predecessor, owner identity/expiry and accepted issuer trust generation
+in that one transaction. The reservation remains held across the synchronous
+external recovery/CAS call, so another database connection cannot commit owner
+or trust replacement halfway through dispatch. The callback must not re-enter
+this SQLite store. Agentd uses `try_compare_and_swap`, whose active/store lock
+admission fails immediately on contention; the ordinary CAS interface retains
+its previous blocking contention contract. Neither path invents a conflict or
+a durable acknowledgement when the backend is merely unavailable.
 
-`evidence_publication_process_lock_tests.rs` includes separate-open, real
-subprocess contention, successor acquisition, directory replacement and mode
-mutation tests. The subprocess must produce an observed-disposition record;
-a child that executes zero tests cannot satisfy the test. These source tests
-require execution on the exact candidate. File-lock semantics on a different
-storage platform still require independent operational qualification.
+The process directory descriptor stays alive through external I/O, policy
+rechecks, acknowledgement and store close. It is never unlinked as a lock-file
+recovery technique. Identity/private mode, current issuer file and lease are
+rechecked at the effect boundary. A lease or policy change after an external
+write leaves the SAME batch unresolved. Filesystem read/fsync latency still
+requires target-platform measurement and fault qualification; a nonblocking
+lock alone is not a wall-clock I/O SLA.
 
-Local receipt commit and external anchoring are separate states. Publication
-preparation, immutable batch identity, dispatch, uncertain result and accepted
-frontier are durable. A matching latest record is not by itself a durable ACK:
-reconciliation must recover and synchronize the matching external record before
-acknowledging the batch. Changed policy, expired ownership or uncertain I/O
-leave the same batch unresolved; they never allocate a replacement successful
-history. Normal writes do not silently promise zero-loss external anchoring.
+`acknowledge_publication_with_trust` checks current trust, owner and the exact
+backend observation in the same transaction that accepts the frontier and
+acknowledges every batch intent. A commit whose result is unknown is explicitly
+indeterminate. The raw compatibility acknowledgement API is not Agentd's
+production path. An already acknowledged batch enters `RecoverOnly`: the
+external record must be found and re-synchronized. Missing historical data is
+corruption requiring reconciliation, never permission to issue a new CAS.
+
+Durable acknowledgement JSON uses exactly `backendId`,
+`backendIdentitySha256`, `storeId`, `frontierGeneration`, `frontierSha256` and
+`auditSequence`. Serialization does not make arbitrary inbound JSON a verified
+backend handle, and it carries no activation, acceptance or release flag.
+
+`publication_dispatch_tests.rs` uses real migrated stores and authenticated
+append to cover stale owner, replaced proposal, unknown external result,
+policy replacement, acknowledged-only recovery, durable trust rollback and a
+second SQLite connection attempting to enter the held write epoch. The Agentd
+lease-boundary and backend acknowledgement-wire/lock regressions remain
+separate. These are source tests until executed on the exact candidate.
+
+Local receipt commit and external anchoring are separate states. Preparation,
+immutable batch identity, dispatch, uncertain result and accepted frontier are
+durable. A matching latest record is not itself an ACK: reconciliation must
+synchronize the exact external record before acknowledging the batch. Normal
+writes do not silently promise zero-loss external anchoring.
 
 Cursor paging is a bounded live query, not a frozen historical snapshot unless
-the caller binds a separately retained frontier. A verification summary proves
-only its registered profile; consumers must require the profile appropriate to
-the decision they are making, rather than accepting any `supported` value.
+the caller binds a retained frontier. A verification summary proves only its
+registered profile; consumers must require the profile appropriate to their
+decision rather than accepting any `supported` value.
 
 The A-D diagnostic workflow tests exact source and a deterministic merge against
 fixed main `a126987b84737dbc2ee2592442a314117bddb4a2`. It never repairs the
-working tree under test. Formatter suggestions are created in a separate
-worktree and become new source only after review/commit. Standalone solver,
-Python, evidence package, Agentd library/product, doctest, strict lint, build,
-Lane-A, documents and implementation-map records remain distinct. A failed,
-missing or skipped command does not qualify either candidate.
+working tree under test. Formatter output becomes a new source only through a
+separate bounded delivery commit. Standalone solver, Python/SQLite probes,
+evidence package, Agentd product, doctest, strict lint, build, Lane-A, documents
+and implementation-map records remain distinct. Failed, missing, skipped or
+queued commands cannot qualify either candidate. SQLite probes do not replace
+Rust execution or external crash/power-loss drills.
 
-Canonical status anchors source and workflow files to an immutable code commit;
-generated projections and the guide may be metadata-only descendants. The
-implementation map is then bound to the actual documentation commit. This
-avoids self-referential Git identities without transferring old test results.
-Independent acceptance, external storage, real backup/restore and power-loss
-drills, canary, promotion and release remain separate external receipts.
+Canonical status binds source/workflow files to an immutable code commit;
+generated projections and the guide may be metadata-only descendants. The map
+then binds the actual documentation commit. This avoids self-referential Git
+identities without transferring old test results. Independent acceptance,
+external storage, witnessed backup/restore and power-loss drills, capacity,
+canary, promotion and release require their own exact authority receipts.
 <!-- END KERNEL EVIDENCE INTEGRATION 20260928 -->
 
 <!-- BEGIN GENERATED KERNEL EVIDENCE STATUS -->
@@ -560,9 +586,9 @@ This block is generated from
 override these facts. Workflow receipts may prove the current candidate, but
 cannot self-issue independent acceptance, deployment, canary or release.
 
-- Source anchor commit: `d5a47aa20275682134d3dda799baae8f81424976`
-- Source anchor tree: `c6d583985bea8b789338a2f34627fee200875da3`
-- Canonical status SHA-256: `662b476d893be8914470a1e2c46cbd189b9f0f6ee904c0dc0933c9bf8e1acb6e`
+- Source anchor commit: `d01b9571d74a2b25b0517f7aa2584ada7b9887ea`
+- Source anchor tree: `3863e415078027f8c6a85deed2aa8f0b0d57c8cd`
+- Canonical status SHA-256: `453a82332547fdffaedec0e593ddfdc974164b8f8e5aa771928f3323fc74dc19`
 - Workflow run ID: `none`
 - Retained artifact digest: `none`
 
