@@ -1,4 +1,3 @@
-
 # `learning.operator` evidence status
 
 The repository distinguishes three facts:
@@ -16,6 +15,13 @@ The `Learning operator exact-source diagnostics` workflow emits
 exact candidate SHA/tree, environment, command, duration, terminal
 state, and log filenames. Commands are executed independently, so an
 earlier lint failure cannot turn later tests into silent skips.
+
+A source-producing automation commit is not itself an execution
+receipt. GitHub suppresses recursive workflow execution for pushes made
+with the workflow installation token; qualification therefore requires
+a directly authorized push or explicit dispatch bound to the resulting
+candidate SHA. An `action_required` run with no jobs is also missing
+evidence, not a failed or passing gate.
 
 Artifact families:
 
