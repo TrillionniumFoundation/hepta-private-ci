@@ -26,6 +26,7 @@ use crate::lease::remove_lease;
 use crate::lease::write_lease;
 use crate::runtime::AgentRuntime;
 use crate::runtime::AgentSlot;
+use crate::runtime::MatrixRuntimePhase;
 use crate::runtime::RuntimePhase;
 use crate::runtime::bounded_message;
 use crate::runtime::deadline;
@@ -62,6 +63,27 @@ impl<D: ProcessDriver> Supervisor<D> {
         record: &AgentRecord,
     ) -> Result<(), SupervisorError> {
         slot.release_state_generation = record.release_state.generation;
+
+        // Process ownership has priority over semantic hydration. A live main
+        // or Matrix lease may represent a process that must be adopted and
+        // contained even when catalog, restart-journal, or release-state reads
+        // fail. Defer all fallible release/companion hydration until recover_slot
+        // has attempted both independent owner acquisitions.
+        if read_lease(record.layout.run_root())?.is_some()
+            || read_matrix_lease(record.layout.matrixd_process_lease())?.is_some()
+        {
+            return Ok(());
+        }
+        self.hydrate_release_state(agent_id, slot, record)
+    }
+
+    fn hydrate_release_state(
+        &self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+        record: &AgentRecord,
+    ) -> Result<(), SupervisorError> {
+        slot.release_state_generation = record.release_state.generation;
         slot.active_release = match record.release_state.current.as_ref() {
             Some(release_id) => self.resolve_persisted_release(agent_id, release_id)?,
             None => None,
@@ -74,8 +96,6 @@ impl<D: ProcessDriver> Supervisor<D> {
             .active_release
             .as_ref()
             .map(|release| release.command().clone());
-        // Storage/identity/clock faults here are fatal startup faults, not
-        // recoverable process faults. Stage Matrix state before adoption.
         self.prepare_matrix_restart_recovery(agent_id, slot, record)
     }
 
@@ -116,9 +136,11 @@ impl<D: ProcessDriver> Supervisor<D> {
         if let Some(claim) = pending {
             slot.restart_attempt = claim.attempt;
             slot.restart_not_before = Some(deadline(now, claim.backoff)?);
-            // An adopted replacement is already satisfying this durable
-            // restart. Only a missing runtime needs the replacement queued.
-            slot.restart_pending = slot.runtime.is_none();
+            // Until the durable restart owner distinguishes predecessor from
+            // replacement, an adopted runtime must not make the claim vanish.
+            // Keep the replacement intent pending; tick starts it only after
+            // exact predecessor exit and lease cleanup leave runtime absent.
+            slot.restart_pending = true;
         }
         Ok(())
     }
@@ -303,9 +325,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         record: &AgentRecord,
         now: Instant,
     ) -> Result<(), SupervisorError> {
-        slot.matrix.apply_restart_recovery(now);
-        // Evaluate both owners before returning either error. A main release,
-        // control-journal, driver or lifecycle fault cannot skip the companion.
+        // Evaluate both owners before semantic release, restart-journal, or
+        // rollback hydration. A main failure cannot skip companion ownership,
+        // and a companion failure cannot discard an already adopted main.
         let main = self.recover_main_slot(agent_id, slot, record, now);
         let companion = self.recover_matrix_companion(agent_id, slot, record, now);
         if let Err(error) = &companion {
@@ -314,7 +336,47 @@ impl<D: ProcessDriver> Supervisor<D> {
                 SupervisorEventKind::DriverFault(bounded_message(error.to_string())),
             );
         }
-        main.and(companion)
+
+        // Main recovery may have closed a Running -> release-state crash cut.
+        // Hydrate from a fresh record after both acquisition attempts so stale
+        // startup bytes cannot overwrite a newly published exact release state.
+        let hydration = self
+            .record(agent_id)
+            .and_then(|fresh| self.hydrate_release_state(agent_id, slot, &fresh));
+        if let Err(error) = &hydration {
+            self.reject_hydration_after_ownership(agent_id, slot, now, error);
+        } else {
+            slot.matrix.apply_restart_recovery(now);
+        }
+
+        main.and(companion).and(hydration)
+    }
+
+    fn reject_hydration_after_ownership(
+        &mut self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+        now: Instant,
+        error: &SupervisorError,
+    ) {
+        admission::reject_owned(agent_id, slot, now);
+        if let Some(runtime) = slot.matrix.runtime.as_mut() {
+            runtime.healthy = false;
+            runtime.fenced = true;
+            if !matches!(runtime.phase, MatrixRuntimePhase::Killing) {
+                runtime.phase = MatrixRuntimePhase::Stopping { deadline: now };
+            }
+        }
+        if let Err(signal) = self.kill_matrix_now(agent_id, slot) {
+            slot.event(
+                0,
+                SupervisorEventKind::DriverFault(bounded_message(signal.to_string())),
+            );
+        }
+        slot.event(
+            0,
+            SupervisorEventKind::DriverFault(bounded_message(error.to_string())),
+        );
     }
 
     fn recover_main_slot(
