@@ -1,0 +1,103 @@
+name: Hepta implementation map migration proposal
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hepta-implementation-map-migration-proposal.yml"
+      - "codex-rs/**"
+      - "docs/modules/**"
+      - "scripts/hepta-implementation-maps.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-implementation-map-migration-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  propose-exact-map-migration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - name: Check out exact candidate with immutable history
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Generate and verify nonmutating migration proposal
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          out="$RUNNER_TEMP/implementation-map-migration"
+          mkdir -p "$out/maps"
+
+          python3 scripts/hepta-implementation-maps.py migrate \
+            > "$out/migrate.stdout" \
+            2> "$out/migrate.stderr"
+          git diff --check
+
+          mapfile -t changed < <(git diff --name-only --diff-filter=ACMRTUXB)
+          for path in "${changed[@]}"; do
+            case "$path" in
+              docs/modules/*/IMPLEMENTATION_MAP.json) ;;
+              *)
+                printf 'migration changed non-map path: %s\n' "$path" >&2
+                exit 1
+                ;;
+            esac
+          done
+
+          if ((${#changed[@]} == 0)); then
+            python3 scripts/hepta-implementation-maps.py verify \
+              --expected-sha "$SOURCE_SHA" \
+              --expected-tree "$(git rev-parse HEAD^{tree})" \
+              > "$out/verify.stdout" \
+              2> "$out/verify.stderr"
+            printf 'no migration changes\n' > "$out/status.txt"
+            : > "$out/migration.patch"
+          else
+            git diff --binary -- "${changed[@]}" > "$out/migration.patch"
+            for path in "${changed[@]}"; do
+              install -D -m 0644 "$path" "$out/maps/$path"
+            done
+            tar -C "$out/maps" -czf "$out/migrated-maps.tar.gz" docs
+
+            git add -- "${changed[@]}"
+            git -c user.name='Hepta CI' \
+              -c user.email='hepta-ci@users.noreply.github.com' \
+              commit -m 'ci: verify generated implementation map migration' \
+              > "$out/synthetic-commit.stdout" \
+              2> "$out/synthetic-commit.stderr"
+            synthetic_sha="$(git rev-parse HEAD)"
+            synthetic_tree="$(git rev-parse HEAD^{tree})"
+            python3 scripts/hepta-implementation-maps.py verify \
+              --expected-sha "$synthetic_sha" \
+              --expected-tree "$synthetic_tree" \
+              > "$out/verify.stdout" \
+              2> "$out/verify.stderr"
+            printf 'migration changes: %s\n' "${#changed[@]}" > "$out/status.txt"
+            printf '%s\n' "$synthetic_sha" > "$out/synthetic-commit.sha"
+            printf '%s\n' "$synthetic_tree" > "$out/synthetic-tree.sha"
+          fi
+
+          printf '%s\n' "$SOURCE_SHA" > "$out/source.sha"
+          printf '%s\n' "$(git rev-parse "$SOURCE_SHA^{tree}")" > "$out/source-tree.sha"
+          (cd "$out" && sha256sum migration.patch migrate.stdout migrate.stderr \
+            verify.stdout verify.stderr > SHA256SUMS)
+
+      - name: Retain exact migration proposal
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: implementation-map-migration-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/implementation-map-migration
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 3
