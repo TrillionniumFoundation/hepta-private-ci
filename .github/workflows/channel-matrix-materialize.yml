@@ -1,14 +1,10 @@
 name: channel.matrix bounded source publication
 
 on:
-  # BEGIN_ONETIME_OPTIMIZATION_PUSH
+  workflow_dispatch:
   push:
     branches: [codex/channel-matrix-full-closure-20260927]
-    paths:
-      - '.github/channel-matrix-optimization/**'
-      - '.github/workflows/channel-matrix-materialize.yml'
-  # END_ONETIME_OPTIMIZATION_PUSH
-  workflow_dispatch:
+    paths: [.github/workflows/channel-matrix-materialize.yml]
 
 permissions:
   contents: write
@@ -19,11 +15,8 @@ concurrency:
 
 jobs:
   publish-reviewed-source:
-    if: >-
-      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
-      github.ref == 'refs/heads/codex/channel-matrix-full-closure-20260927' &&
-      github.actor != 'github-actions[bot]'
-    runs-on: macos-latest
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/codex/channel-matrix-full-closure-20260927'
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
       EXPECTED_SHA: ${{ github.sha }}
@@ -37,29 +30,28 @@ jobs:
           ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Bind and apply the exact reviewed source patch
+      - name: Apply exact reviewed Matrix source without changing other owners
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/matrix-authoring-evidence"
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
-          git merge-base --is-ancestor 516fe78a0e123ef5d981f62947a5c9ca27898f28 HEAD
+          git merge-base --is-ancestor 40ce2dd0443f6e49c3b6d9e8ee738f8ebde1b8f8 HEAD
           python3 - <<'PY'
           import base64, hashlib, lzma, os, pathlib, re, subprocess
           root = pathlib.Path.cwd()
+          baseline = '40ce2dd0443f6e49c3b6d9e8ee738f8ebde1b8f8'
+          workflow = '.github/workflows/channel-matrix-materialize.yml'
+          changed = set(subprocess.check_output(['git','diff','--name-only',baseline,'HEAD'], text=True).splitlines())
+          if not changed.issubset({workflow}):
+              raise SystemExit('source changed since reviewed publication baseline; reconcile instead of overwriting')
           directory = root / '.github/channel-matrix-optimization'
           pieces = sorted(directory.iterdir())
           if [p.name for p in pieces] != [f'part-{i:03}' for i in range(1, 7)]:
               raise SystemExit('optimization payload inventory mismatch')
           if any(not p.is_file() or p.is_symlink() for p in pieces):
               raise SystemExit('optimization payload must use regular files')
-          metadata = {p.relative_to(root).as_posix() for p in pieces}
-          metadata.add('.github/workflows/channel-matrix-materialize.yml')
-          changed = set(subprocess.check_output(['git','diff','--name-only','516fe78a0e123ef5d981f62947a5c9ca27898f28','HEAD'], text=True).splitlines())
-          if changed != metadata:
-              raise SystemExit('source changed since reviewed publication baseline')
-          encoded = ''.join(p.read_text().strip() for p in pieces)
-          packed = base64.b64decode(encoded, validate=True)
+          packed = base64.b64decode(''.join(p.read_text().strip() for p in pieces), validate=True)
           if hashlib.sha256(packed).hexdigest() != 'db8756ec846404f24fc98459a9e7403fda999b1042aba83cb747595ae70d65fe':
               raise SystemExit('optimization transport hash mismatch')
           payload = lzma.decompress(packed, memlimit=256*1024*1024)
@@ -101,33 +93,18 @@ jobs:
           if actual != allowed:
               raise SystemExit('applied source inventory mismatch')
           subprocess.run(['git','rm','-r','.github/channel-matrix-optimization'], check=True)
-          workflow = root / '.github/workflows/channel-matrix-materialize.yml'
-          original = workflow.read_text()
-          updated, count = re.subn(r'(?ms)^  # BEGIN_ONETIME_OPTIMIZATION_PUSH\n.*?^  # END_ONETIME_OPTIMIZATION_PUSH\n', '', original)
-          if count != 1:
-              raise SystemExit('one-time trigger retirement mismatch')
-          workflow.write_text(updated)
-          subprocess.run(['git','add',str(workflow)], check=True)
           evidence = pathlib.Path(os.environ['RUNNER_TEMP']) / 'matrix-authoring-evidence'
           (evidence/'reviewed-patch.sha256').write_text(hashlib.sha256(payload).hexdigest()+'\n')
           (evidence/'parent.txt').write_text(os.environ['EXPECTED_SHA']+'\n')
           PY
-      - name: Format authored Matrix Rust sources with the pinned toolchain
-        shell: bash
-        run: |
-          set -euo pipefail
-          rustup component add rustfmt --toolchain 1.95.0 > "$RUNNER_TEMP/matrix-authoring-evidence/authoring-format.log" 2>&1
-          cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-matrix-sdk >> "$RUNNER_TEMP/matrix-authoring-evidence/authoring-format.log" 2>&1
-          printf '0\n' > "$RUNNER_TEMP/matrix-authoring-evidence/authoring-format-status.txt"
-          git add codex-rs/hepta-matrix-sdk
-      - name: Execute Python and SQLite source regressions
+      - name: Execute Python and SQLite regressions on the source tree
         shell: bash
         run: |
           set -euo pipefail
           git diff --cached --check
           git write-tree > "$RUNNER_TEMP/matrix-authoring-evidence/tested-tree.txt"
           python3 -m unittest discover -s scripts/tests -p 'test_channel_matrix*.py' -v 2>&1 | tee "$RUNNER_TEMP/matrix-authoring-evidence/python-tests.log"
-      - name: Commit and publish only the validated Matrix source tree
+      - name: Commit and fast-forward the Matrix branch only
         id: publish
         shell: bash
         env:
@@ -136,10 +113,8 @@ jobs:
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'channel.matrix: materialize reviewed diagnostics, exact evidence, and JIT regressions' -m 'Carry forward pending entropy/parser fixes, retire recovery staging, and retain migration-12 compatibility. Python/SQLite execution is not Rust, homeserver, encryption or independent acceptance.'
+          git commit -m 'channel.matrix: materialize diagnostics, exact evidence and typed-entry regressions' -m 'Python/SQLite source execution is not native, homeserver, encryption, restore or independent acceptance. Qualification remains read-only and separately gated.'
           test "$(git rev-parse HEAD^{tree})" = "$(cat "$RUNNER_TEMP/matrix-authoring-evidence/tested-tree.txt")"
-          head=$(git rev-parse HEAD)
-          python3 scripts/verify_channel_matrix_candidate.py --expected-sha "$head" --output "$RUNNER_TEMP/matrix-authoring-evidence/candidate.json"
           git diff --exit-code
           git diff --cached --exit-code
           auth=$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 | tr -d '\n')
@@ -147,17 +122,24 @@ jobs:
           remote=$(git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" ls-remote origin refs/heads/codex/channel-matrix-full-closure-20260927 | cut -f1)
           test "$remote" = "$EXPECTED_SHA"
           git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" push origin HEAD:refs/heads/codex/channel-matrix-full-closure-20260927
+          head=$(git rev-parse HEAD)
           printf '%s\n' "$head" > "$RUNNER_TEMP/matrix-authoring-evidence/source-head.txt"
           echo "sha=$head" >> "$GITHUB_OUTPUT"
-          echo "Published source $head. See retained Python logs; native and target qualification remain independent." >> "$GITHUB_STEP_SUMMARY"
-      - name: Read-only locked native probe on the published source
+          echo "Published source $head. Native and target qualification remain independent." >> "$GITHUB_STEP_SUMMARY"
+      - name: Verify exact published candidate without mutation
+        if: steps.publish.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/verify_channel_matrix_candidate.py --expected-sha "$(git rev-parse HEAD)" --output "$RUNNER_TEMP/matrix-authoring-evidence/candidate.json" 2>&1 | tee "$RUNNER_TEMP/matrix-authoring-evidence/candidate.log"
+      - name: Read-only locked native probe
         if: steps.publish.outcome == 'success'
         shell: bash
         run: |
           set -euo pipefail
           cd codex-rs
           cargo check --locked -p codex-hepta-matrix-protocol -p codex-hepta-matrix-store -p codex-hepta-matrix-sdk -p codex-hepta-matrixd --all-targets > "$RUNNER_TEMP/matrix-authoring-evidence/locked-check.log" 2>&1
-      - name: Retain source publication and failed native evidence
+      - name: Retain source publication and failed qualification evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
