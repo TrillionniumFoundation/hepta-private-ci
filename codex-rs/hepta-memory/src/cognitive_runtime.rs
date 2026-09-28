@@ -719,7 +719,7 @@ async fn retrieve_federated_product(
     };
     let mut candidates = Vec::new();
 
-    let attempts = stream::iter(readers.iter())
+    let attempts = stream::iter(readers.into_iter())
         .map(|(owner_layout, reader)| async move {
             if elapsed_logical_ms(logical_start_ms, started_at) >= global_deadline_ms {
                 return Ok((
@@ -728,7 +728,7 @@ async fn retrieve_federated_product(
                 ));
             }
             let (query, lease) = build_product_query_and_lease(
-                reader,
+                &reader,
                 access,
                 request,
                 logical_start_ms,
@@ -736,13 +736,13 @@ async fn retrieve_federated_product(
             )?;
             let captured = Arc::new(Mutex::new(None));
             let transport = ProductReaderTransport {
-                reader,
+                reader: &reader,
                 access,
                 request,
                 captured: Arc::clone(&captured),
             };
             let authority = ProductReaderAuthority {
-                owner_layout,
+                owner_layout: &owner_layout,
                 consumer_agent_id,
                 expected_capability: reader.capability(),
                 logical_start_ms,
