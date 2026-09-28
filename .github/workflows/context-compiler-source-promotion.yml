@@ -16,7 +16,7 @@ concurrency:
 jobs:
   promote-ordinary-source:
     if: ${{ contains(github.event.head_commit.message, '[promote-context-source]') }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 240
     env:
       ARTIFACT_ID: '10943028187'
