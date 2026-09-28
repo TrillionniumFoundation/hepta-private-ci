@@ -269,3 +269,25 @@ The bootstrap source-location obligation for `ui.native` is implemented by work 
 - `apps/hepta-native`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+### Native shell request identity and concurrent lifecycle
+
+`NativeShellRuntime.requestPlatformCapability` snapshots exactly six own scalar
+data fields before asynchronous permission: operation ID, action, resource reference,
+displayed revision, final-payload digest and grant-payload digest. An operation is
+reserved before awaiting permission. Equal concurrent requests share one result;
+changed action/resource/session/view semantics conflict even when the caller repeats
+the same digest. The retained operation ceiling is 1024, with explicit backpressure
+and no eviction of unknown outcomes to reclaim capacity.
+
+Close, reconnect or view replacement during permission prevents predecessor dispatch.
+A superseded authentication response cannot install a stale session. Exceptions or
+malformed observations after platform invocation preserve `indeterminate` and cannot
+license another invocation; only proven pre-invoke errors release local reservations.
+The focused regressions are in `apps/hepta-native/test/shell-runtime.test.js`.
+
+This is bounded process-local shell behavior, not durable exactly-once OS execution.
+The platform owner must still implement authenticated final-use authority, persistent
+operation reconciliation, resource resolution and trusted terminal observation.
+Native binary consumer installation, packaged OS integration and deployment acceptance
+are not implied by these local request/lifecycle checks.

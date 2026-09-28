@@ -186,3 +186,17 @@ A deterministically rejected or malformed typed receipt becomes a durable
 `InvalidModelOutput` terminal failure. Unknown provider or I/O outcomes remain
 unknown. Receipt construction never obtains permission to rerun a consumed model
 invocation or dispatch a computer action.
+
+## Backend qualification and immutable upstream snapshots
+
+The [package-local DecisionCell panel](../../../codex-rs/hepta-neuron/qualification/README.md)
+trains real organ/cell adapters and typed heads over frozen encoder features. It
+keeps tuning, calibration and evaluation separate and labels its generated data as
+synthetic. Its output is not a selected artifact or prospective efficacy evidence.
+
+Every consumed model/tokenizer/custom-code file must match the pinned upstream
+Git/LFS manifest before an online qualification run. A locally modified tokenizer
+under the same revision directory is rejected. Diagnostic offline receipts do not
+forge upstream verification; later audits remain separate records. Source identity
+does not imply code review, licensing, independent calibration or product authority.
+The guarded V2 owner and its existing state/operation/witness stores remain unchanged.

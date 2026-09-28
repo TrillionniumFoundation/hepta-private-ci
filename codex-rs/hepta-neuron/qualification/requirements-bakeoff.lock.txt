@@ -1,0 +1,13 @@
+# Direct dependency pins only; not a transitive hash-locked production environment.
+# Exact Python package set observed for the DecisionCell backend bakeoff and
+# selected Laya typed-head runtime. Selected artifacts additionally bind the
+# package/runtime/device/source digests emitted by the runtime itself.
+torch==2.14.0
+transformers==5.17.0
+huggingface-hub==1.33.0
+tokenizers==0.23.2
+safetensors==0.8.0
+numpy==2.5.3
+sentencepiece==0.2.2
+protobuf==7.36.2
+laya @ git+https://github.com/NandhaKishorM/laya.git@c7527708f9f5220c669d8aa385077cd28d04708a
