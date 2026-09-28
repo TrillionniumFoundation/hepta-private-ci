@@ -1,15 +1,9 @@
 name: Cognitive read qualification
 
 on:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - ".github/scripts/cognitive_read_converge.py.xz.b64.*"
-      - ".github/workflows/cognitive-read-qualification.yml"
   push:
     branches:
-      - work/cognitive-read-production-convergence-20260927
+      - work/cognitive-read-bootstrap-executor-20260928
     paths:
       - ".github/workflows/cognitive-read-qualification.yml"
   workflow_dispatch:
@@ -18,18 +12,17 @@ permissions:
   contents: write
 
 concurrency:
-  group: cognitive-read-bootstrap-${{ github.event.pull_request.head.ref || github.ref_name }}
+  group: cognitive-read-bootstrap-executor
   cancel-in-progress: true
 
 env:
   RUST_MIN_STACK: "8388608"
   TARGET_BRANCH: work/cognitive-read-production-convergence-20260927
-  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  SOURCE_SHA: ${{ github.sha }}
 
 jobs:
   converge:
     name: Apply and seal cognitive.read convergence
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.ref == 'work/cognitive-read-production-convergence-20260927'
     runs-on: ubuntu-24.04
     timeout-minutes: 180
     steps:
