@@ -100,13 +100,13 @@ jobs:
     name: Closure (${{ matrix.mode }}, ${{ matrix.lane }})
     needs: identity
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    timeout-minutes: 120
     strategy:
       fail-fast: false
-      max-parallel: 3
+      max-parallel: 4
       matrix:
         mode: ${{ fromJSON(needs.identity.outputs.modes) }}
-        lane: [trust-bundle, product-pilot, performance]
+        lane: [trust-bundle, product-pilot, product-process, performance]
     env:
       CARGO_BUILD_JOBS: 2
       CARGO_PROFILE_DEV_DEBUG: 0
@@ -183,6 +183,16 @@ jobs:
                 --identity "$identity" --output-dir "$output/product-paths" pilot
               python3 -B qualification/kernel-authority/owner_runtime_qualification.py \
                 --identity "$identity" --output-dir "$output/owned-effect-runtime"
+              ;;
+            product-process)
+              python3 -B qualification/kernel-authority/test_product_process_recovery.py
+              cd codex-rs
+              cargo fmt --check -p codex-hepta-agentd
+              cargo clippy --locked -p codex-hepta-agentd \
+                --test authority_effect_process_restart -- -D warnings
+              cd ..
+              python3 -B qualification/kernel-authority/product_process_recovery.py \
+                --identity "$identity" --output-dir "$output"
               ;;
             performance)
               python3 -B qualification/kernel-authority/runtime_qualification.py \
