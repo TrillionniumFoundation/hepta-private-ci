@@ -18,7 +18,7 @@ concurrency:
 jobs:
   repair:
     if: github.actor != 'github-actions[bot]'
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
@@ -32,9 +32,22 @@ jobs:
         run: |
           set -euo pipefail
           payload=.github/neuron-runtime-closure.patch.gz.b64
-          test "$(wc -c < "$payload")" -eq 10460
-          base64 -d "$payload" | gzip -d > "$RUNNER_TEMP/neuron-runtime-closure.patch"
-          echo 'cdb08028134c553c07abd8404e0d05046657c2233c847f23235abcab23fb2d55  '"$RUNNER_TEMP/neuron-runtime-closure.patch" | sha256sum -c -
+          test "$(wc -c < "$payload" | tr -d ' ')" -eq 10460
+          PAYLOAD="$payload" OUTPUT="$RUNNER_TEMP/neuron-runtime-closure.patch" python3 - <<'PY'
+          import base64
+          import gzip
+          import hashlib
+          import os
+          from pathlib import Path
+
+          payload = Path(os.environ['PAYLOAD']).read_bytes()
+          decoded = gzip.decompress(base64.b64decode(payload, validate=True))
+          digest = hashlib.sha256(decoded).hexdigest()
+          expected = 'cdb08028134c553c07abd8404e0d05046657c2233c847f23235abcab23fb2d55'
+          if digest != expected:
+              raise SystemExit(f'patch digest mismatch: {digest}')
+          Path(os.environ['OUTPUT']).write_bytes(decoded)
+          PY
           git apply --check "$RUNNER_TEMP/neuron-runtime-closure.patch"
           git apply "$RUNNER_TEMP/neuron-runtime-closure.patch"
           grep -F 'codex-hepta-neuron = { path = "../hepta-neuron" }' \
