@@ -2,7 +2,9 @@ name: Prompt registry strict product lint closeout
 on:
   push:
     branches: [ops/prompt-registry-author-closeout-20260928]
-    paths: ['.github/workflows/prompt-registry-product-lint-closeout.yml']
+    paths:
+      - '.github/workflows/prompt-registry-product-lint-closeout.yml'
+      - '.github/scripts/apply_prompt_registry_product_lint_closeout.py'
   workflow_dispatch:
 permissions:
   contents: write
@@ -61,44 +63,10 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
           test -z "$(git status --porcelain)"
-          python3 - <<'PY'
-          from pathlib import Path
-
-          canonical = Path('codex-rs/hepta-intelligence/src/canonical.rs')
-          text = canonical.read_text(encoding='utf-8')
-          old = "#[derive(Clone, Debug, Eq, PartialEq)]\npub enum CanonicalRunOutcomeV1 {\n"
-          new = (
-              "#[derive(Clone, Debug, Eq, PartialEq)]\n"
-              "#[expect(\n"
-              "    clippy::large_enum_variant,\n"
-              "    reason = \"V1 is a public compatibility contract; boxing Ready would break existing Rust callers. Revisit indirection in a separately versioned outcome after measurement.\"\n"
-              ")]\n"
-              "pub enum CanonicalRunOutcomeV1 {\n"
-          )
-          if text.count(old) != 1:
-              raise SystemExit('expected exactly one CanonicalRunOutcomeV1 declaration anchor')
-          canonical.write_text(text.replace(old, new), encoding='utf-8')
-
-          scoped_allows = {
-              Path('codex-rs/hepta-intelligence/examples/intuition_authenticated_fast_gate.rs'): (
-                  "#![allow(\n"
-                  "    clippy::expect_used,\n"
-                  "    reason = \"This qualification example uses fixed repository-owned fixtures; invalid fixtures must abort instead of emitting partial benchmark evidence.\"\n"
-                  ")]\n\n"
-              ),
-              Path('codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs'): (
-                  "#![allow(\n"
-                  "    clippy::expect_used,\n"
-                  "    reason = \"These tests intentionally fail immediately when fixed repository-owned fixtures violate their declared invariants.\"\n"
-                  ")]\n\n"
-              ),
-          }
-          for path, attribute in scoped_allows.items():
-              source = path.read_text(encoding='utf-8')
-              if source.startswith('#!['):
-                  raise SystemExit(f'unexpected existing inner attribute in {path}')
-              path.write_text(attribute + source, encoding='utf-8')
-          PY
+          curl --proto '=https' --tlsv1.2 --fail --silent --show-error --location \
+            "https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${GITHUB_SHA}/.github/scripts/apply_prompt_registry_product_lint_closeout.py" \
+            -o "$RUNNER_TEMP/apply-prompt-registry-closeout.py"
+          python3 "$RUNNER_TEMP/apply-prompt-registry-closeout.py"
           git diff --check
           cargo fmt --manifest-path codex-rs/Cargo.toml \
             -p codex-hepta-prompt-optimizer \
@@ -129,44 +97,10 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
           test -z "$(git status --porcelain)"
-          python3 - <<'PY'
-          from pathlib import Path
-
-          canonical = Path('codex-rs/hepta-intelligence/src/canonical.rs')
-          text = canonical.read_text(encoding='utf-8')
-          old = "#[derive(Clone, Debug, Eq, PartialEq)]\npub enum CanonicalRunOutcomeV1 {\n"
-          new = (
-              "#[derive(Clone, Debug, Eq, PartialEq)]\n"
-              "#[expect(\n"
-              "    clippy::large_enum_variant,\n"
-              "    reason = \"V1 is a public compatibility contract; boxing Ready would break existing Rust callers. Revisit indirection in a separately versioned outcome after measurement.\"\n"
-              ")]\n"
-              "pub enum CanonicalRunOutcomeV1 {\n"
-          )
-          if text.count(old) != 1:
-              raise SystemExit('expected exactly one CanonicalRunOutcomeV1 declaration anchor')
-          canonical.write_text(text.replace(old, new), encoding='utf-8')
-
-          scoped_allows = {
-              Path('codex-rs/hepta-intelligence/examples/intuition_authenticated_fast_gate.rs'): (
-                  "#![allow(\n"
-                  "    clippy::expect_used,\n"
-                  "    reason = \"This qualification example uses fixed repository-owned fixtures; invalid fixtures must abort instead of emitting partial benchmark evidence.\"\n"
-                  ")]\n\n"
-              ),
-              Path('codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs'): (
-                  "#![allow(\n"
-                  "    clippy::expect_used,\n"
-                  "    reason = \"These tests intentionally fail immediately when fixed repository-owned fixtures violate their declared invariants.\"\n"
-                  ")]\n\n"
-              ),
-          }
-          for path, attribute in scoped_allows.items():
-              source = path.read_text(encoding='utf-8')
-              if source.startswith('#!['):
-                  raise SystemExit(f'unexpected existing inner attribute in {path}')
-              path.write_text(attribute + source, encoding='utf-8')
-          PY
+          curl --proto '=https' --tlsv1.2 --fail --silent --show-error --location \
+            "https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${GITHUB_SHA}/.github/scripts/apply_prompt_registry_product_lint_closeout.py" \
+            -o "$RUNNER_TEMP/apply-prompt-registry-closeout.py"
+          python3 "$RUNNER_TEMP/apply-prompt-registry-closeout.py"
           git diff --check
       - name: Commit source, regenerate map and fast-forward target
         shell: bash
@@ -177,7 +111,8 @@ jobs:
           git add \
             codex-rs/hepta-intelligence/src/canonical.rs \
             codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs \
-            codex-rs/hepta-intelligence/examples/intuition_authenticated_fast_gate.rs
+            codex-rs/hepta-intelligence/examples/intuition_authenticated_fast_gate.rs \
+            codex-rs/hepta-intelligence/tests/intuition_frozen_qualification.rs
           git diff --cached --check
           git commit -m 'fix(prompt.registry): close strict product lint without changing public APIs'
           python3 scripts/hepta-prompt-registry-map.py --write
