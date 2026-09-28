@@ -25,35 +25,36 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
-      - name: Decode retained patch without modifying source
+      - name: Decode retained patch and archive exact source
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/automation-taskflow-patch"
+          output="$RUNNER_TEMP/automation-taskflow-diagnostic"
+          mkdir -p "$output"
           cat scripts/automation_taskflow_patch_parts/part-*.b64 \
             | tr -d '\r\n\t ' \
-            > "$RUNNER_TEMP/automation-taskflow-patch/final.patch.gz.b64"
-          base64 --decode \
-            "$RUNNER_TEMP/automation-taskflow-patch/final.patch.gz.b64" \
-            > "$RUNNER_TEMP/automation-taskflow-patch/final.patch.gz"
-          gzip --decompress --stdout \
-            "$RUNNER_TEMP/automation-taskflow-patch/final.patch.gz" \
-            > "$RUNNER_TEMP/automation-taskflow-patch/final.patch"
+            > "$output/final.patch.gz.b64"
+          base64 --decode "$output/final.patch.gz.b64" \
+            > "$output/final.patch.gz"
+          gzip --decompress --stdout "$output/final.patch.gz" \
+            > "$output/final.patch"
+          git apply --stat "$output/final.patch" > "$output/STAT.txt"
+          git apply --numstat "$output/final.patch" > "$output/NUMSTAT.txt"
+          git archive --format=tar.gz --output="$output/source.tar.gz" HEAD
+          git rev-parse HEAD > "$output/COMMIT"
+          git rev-parse HEAD^{tree} > "$output/TREE"
           sha256sum \
-            "$RUNNER_TEMP/automation-taskflow-patch/final.patch.gz.b64" \
-            "$RUNNER_TEMP/automation-taskflow-patch/final.patch.gz" \
-            "$RUNNER_TEMP/automation-taskflow-patch/final.patch" \
-            > "$RUNNER_TEMP/automation-taskflow-patch/SHA256SUMS"
-          git apply --stat "$RUNNER_TEMP/automation-taskflow-patch/final.patch" \
-            > "$RUNNER_TEMP/automation-taskflow-patch/STAT.txt"
-          git apply --numstat "$RUNNER_TEMP/automation-taskflow-patch/final.patch" \
-            > "$RUNNER_TEMP/automation-taskflow-patch/NUMSTAT.txt"
-          git status --porcelain=v1 | test ! -s /dev/stdin
+            "$output/final.patch.gz.b64" \
+            "$output/final.patch.gz" \
+            "$output/final.patch" \
+            "$output/source.tar.gz" \
+            > "$output/SHA256SUMS"
+          test -z "$(git status --porcelain=v1)"
 
       - name: Retain decoded diagnostic
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: automation-taskflow-final-patch
-          path: ${{ runner.temp }}/automation-taskflow-patch
+          name: automation-taskflow-final-diagnostic
+          path: ${{ runner.temp }}/automation-taskflow-diagnostic
           if-no-files-found: error
           retention-days: 1
