@@ -11,3 +11,7 @@ pub use intelligence_ingress::AgentdIntelligenceProductLoopDispositionV1;
 pub use intelligence_ingress::AgentdIntelligenceProductLoopReceiptV1;
 pub use intelligence_ingress::SupervisedHostOwnedAgentdIntelligenceInvocationProviderV1;
 pub use intelligence_product_profile::compose_canonical_intelligence_product_profile;
+
+#[cfg(test)]
+#[path = "intelligence_control_internal/intelligence_acceptance_tests.rs"]
+mod intelligence_acceptance_tests;
