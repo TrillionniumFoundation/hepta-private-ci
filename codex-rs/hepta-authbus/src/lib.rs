@@ -25,6 +25,7 @@ mod trust;
 mod trust_store;
 mod worker;
 pub use authority::AuthBusAuthorityError;
+pub use authority::AuthBusMutationDisposition;
 pub use authority::AuthPolicy;
 pub use authority::PolicyDecision;
 pub use authority::PolicyEffect;
