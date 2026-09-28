@@ -18,8 +18,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: platform-wire-exact-${{ github.event.pull_request.head.sha || github.sha }}
-  cancel-in-progress: false
+  group: platform-wire-exact-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 env:
   PYTHONDONTWRITEBYTECODE: '1'
