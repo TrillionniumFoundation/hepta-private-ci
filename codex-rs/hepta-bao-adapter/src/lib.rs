@@ -15,6 +15,11 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 mod final_use_host;
+#[expect(
+    clippy::too_many_arguments,
+    clippy::trivially_copy_pass_by_ref,
+    reason = "the product boundary keeps admission, authority, grant, evidence and final consumer explicit instead of hiding capabilities in an opaque context; the borrowed classifier preserves the original provider error for terminal handling"
+)]
 mod https_consumer;
 mod lease_lifecycle;
 mod secret_boundary_v1;

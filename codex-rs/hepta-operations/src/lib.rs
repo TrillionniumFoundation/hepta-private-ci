@@ -10,9 +10,18 @@
 
 #![forbid(unsafe_code)]
 
+#[expect(
+    clippy::disallowed_methods,
+    reason = "the standalone destination qualification store owns its full-synchronous SQLite contract; routing it through the higher-level codex-state runtime would invert the Lane A ownership boundary"
+)]
 mod destination_dedupe;
 mod dispatcher;
 mod durable_model;
+#[expect(
+    clippy::collapsible_if,
+    clippy::disallowed_methods,
+    reason = "the durable operations owner keeps missing and non-acknowledged outbox states visibly distinct and owns its full-synchronous SQLite contract without depending on the higher-level codex-state runtime"
+)]
 mod durable_store;
 mod error;
 mod exact_claim;
