@@ -91,9 +91,7 @@ fn historical_result(
     match state {
         NeuronFeatureExecutionStateV1::Succeeded
         | NeuronFeatureExecutionStateV1::Failed
-        | NeuronFeatureExecutionStateV1::Cancelled => {
-            receipt.ok_or(NeuronModelError::Rejected)
-        }
+        | NeuronFeatureExecutionStateV1::Cancelled => receipt.ok_or(NeuronModelError::Rejected),
         NeuronFeatureExecutionStateV1::Reserved
         | NeuronFeatureExecutionStateV1::Dispatched
         | NeuronFeatureExecutionStateV1::Indeterminate => Err(NeuronModelError::Indeterminate),
@@ -289,8 +287,7 @@ mod tests {
             calls: 0,
             result: Ok(NeuronFeatureTerminalStatusV1::Succeeded),
         };
-        let mut control =
-            DurableNeuronInferenceControlPortV1::new(create_store(&journal), inner);
+        let mut control = DurableNeuronInferenceControlPortV1::new(create_store(&journal), inner);
 
         let first = checked(control.execute_feature(&request));
         let second = checked(control.execute_feature(&request));
@@ -306,8 +303,7 @@ mod tests {
             calls: 0,
             result: Ok(NeuronFeatureTerminalStatusV1::Succeeded),
         };
-        let mut control =
-            DurableNeuronInferenceControlPortV1::new(create_store(&journal), inner);
+        let mut control = DurableNeuronInferenceControlPortV1::new(create_store(&journal), inner);
         checked(control.execute_feature(&request));
 
         let mut changed = request.clone();
@@ -385,8 +381,7 @@ mod tests {
             calls: 0,
             result: Err(NeuronModelError::Unavailable),
         };
-        let mut reopened =
-            DurableNeuronInferenceControlPortV1::new(reopen_store(&journal), inner);
+        let mut reopened = DurableNeuronInferenceControlPortV1::new(reopen_store(&journal), inner);
         assert_eq!(checked(reopened.execute_feature(&request)), expected);
         assert_eq!(reopened.inner().calls, 0);
     }
@@ -405,8 +400,7 @@ mod tests {
             calls: 0,
             result: Ok(NeuronFeatureTerminalStatusV1::Succeeded),
         };
-        let mut reopened =
-            DurableNeuronInferenceControlPortV1::new(reopen_store(&journal), inner);
+        let mut reopened = DurableNeuronInferenceControlPortV1::new(reopen_store(&journal), inner);
         assert_eq!(
             reopened.execute_feature(&request),
             Err(NeuronModelError::Indeterminate)
