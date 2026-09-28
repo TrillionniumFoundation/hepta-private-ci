@@ -19,22 +19,22 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: work/utility-ndu-abcd-convergence-20260928
           fetch-depth: 0
-      - name: Merge current main and restore exact-source hardening workflow
+      - name: Restore exact-source hardening workflow on current remote head
         shell: bash
-        env:
-          REQUEST_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$REQUEST_SHA"
-          git fetch --no-tags origin main
+          BRANCH=work/utility-ndu-abcd-convergence-20260928
+          ORIGINAL=3d34d1d62bd5cf0861c376d71882957dcf42cf8b
+          git fetch --no-tags origin main "$BRANCH"
+          git reset --hard "refs/remotes/origin/$BRANCH"
           BASE=$(git rev-parse refs/remotes/origin/main)
+          git merge-base --is-ancestor "$BASE" HEAD
+          git cat-file -e "$ORIGINAL^{commit}"
           git config user.name hepta-ndu-remediation
           git config user.email qualification@invalid
-          git merge --no-edit "$BASE"
-          git merge-base --is-ancestor "$BASE" HEAD
-          git show "$REQUEST_SHA^:.github/workflows/hepta-ndu-codeql-fixture-hardening.yml" \
+          git show "$ORIGINAL:.github/workflows/hepta-ndu-codeql-fixture-hardening.yml" \
             > .github/workflows/hepta-ndu-codeql-fixture-hardening.yml
           sed -i '/^# baseline-sync-main: /d' \
             .github/workflows/hepta-ndu-codeql-fixture-hardening.yml
@@ -47,6 +47,6 @@ jobs:
           rm -f .github/workflows/ndu-sync-main-and-retrigger-once.yml
           git add -A
           git diff --cached --check
-          git commit -s -m 'ci(ndu): merge current main before fixture hardening'
+          git commit -s -m 'ci(ndu): restore final fixture hardening on current head'
           test -z "$(git status --porcelain --untracked-files=all)"
-          git push origin "HEAD:$GITHUB_REF_NAME"
+          git push origin "HEAD:$BRANCH"
