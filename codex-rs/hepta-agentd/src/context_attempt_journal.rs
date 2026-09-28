@@ -324,7 +324,10 @@ mod tests {
             Some(second.record_digest()),
             ContextAttemptJournalEventV3::DurableIntentCommitted,
         );
-        assert_eq!(validate_context_attempt_journal_v3(&[first, second, third]), Ok(()));
+        assert_eq!(
+            validate_context_attempt_journal_v3(&[first, second, third]),
+            Ok(())
+        );
     }
 
     #[test]

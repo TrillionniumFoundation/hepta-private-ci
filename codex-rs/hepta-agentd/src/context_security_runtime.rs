@@ -24,10 +24,7 @@ use crate::ProviderTerminalAttestationVerifierV3;
 pub type ExternalContextAuthorityFuture<'a> = Pin<
     Box<
         dyn Future<
-                Output = Result<
-                    PromptContextAuthoritySnapshotV3,
-                    ExternalContextSecurityErrorV3,
-                >,
+                Output = Result<PromptContextAuthoritySnapshotV3, ExternalContextSecurityErrorV3>,
             > + Send
             + 'a,
     >,
@@ -114,8 +111,14 @@ impl fmt::Debug for ContextSecurityCapabilitiesV3 {
                 "attempt_lease_authority_digest",
                 &self.attempt_lease_authority.authority_digest(),
             )
-            .field("attempt_journal_digest", &self.attempt_journal.journal_digest())
-            .field("generation_anchor_digest", &self.generation_anchor.anchor_digest())
+            .field(
+                "attempt_journal_digest",
+                &self.attempt_journal.journal_digest(),
+            )
+            .field(
+                "generation_anchor_digest",
+                &self.generation_anchor.anchor_digest(),
+            )
             .field(
                 "terminal_attestation_source_digest",
                 &self.terminal_attestation_source.source_digest(),
@@ -200,9 +203,7 @@ impl ExternalContextSecurityErrorV3 {
             Self::LeaseRejected => "context_security_lease_rejected",
             Self::JournalRejected => "context_security_journal_rejected",
             Self::GenerationRejected => "context_security_generation_rejected",
-            Self::TerminalAttestationRejected => {
-                "context_security_terminal_attestation_rejected"
-            }
+            Self::TerminalAttestationRejected => "context_security_terminal_attestation_rejected",
         }
     }
 }
