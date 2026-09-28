@@ -62,8 +62,8 @@ fn signed_frontier(bindings: &[(&str, u64, &SigningKey)]) -> EvidenceRecoveryFro
         .map(|(principal, epoch, _)| (*principal, *epoch))
         .collect::<Vec<_>>();
     let mut frontier = unsigned_frontier(&binding_ids);
-    let bytes = evidence_recovery_frontier_v2_signing_bytes(&frontier)
-        .expect("frontier signing bytes");
+    let bytes =
+        evidence_recovery_frontier_v2_signing_bytes(&frontier).expect("frontier signing bytes");
     for (signature, (_, _, key)) in frontier.signatures.iter_mut().zip(bindings) {
         signature.signature_hex = hex(&key.sign(&bytes).to_bytes());
     }
@@ -100,10 +100,7 @@ fn threshold_requires_distinct_verified_principals() {
             ("issuer:beta", 1, &beta, false),
         ],
     );
-    let frontier = signed_frontier(&[
-        ("issuer:alpha", 1, &alpha),
-        ("issuer:beta", 1, &beta),
-    ]);
+    let frontier = signed_frontier(&[("issuer:alpha", 1, &alpha), ("issuer:beta", 1, &beta)]);
     trust.verify(&frontier).expect("two-principal threshold");
 }
 
@@ -118,10 +115,7 @@ fn key_rotation_overlap_does_not_double_count_one_principal() {
             ("issuer:alpha", 2, &current, false),
         ],
     );
-    let frontier = signed_frontier(&[
-        ("issuer:alpha", 1, &old),
-        ("issuer:alpha", 2, &current),
-    ]);
+    let frontier = signed_frontier(&[("issuer:alpha", 1, &old), ("issuer:alpha", 2, &current)]);
     trust.verify(&frontier).expect("rotation overlap");
 
     let bytes = serde_json::to_vec(&json!({
@@ -151,7 +145,13 @@ fn key_rotation_overlap_does_not_double_count_one_principal() {
 fn revoked_unknown_and_tampered_signatures_fail_closed() {
     let alpha = SigningKey::from_bytes(&[5; 32]);
     let beta = SigningKey::from_bytes(&[6; 32]);
-    let revoked = trust(1, &[("issuer:alpha", 1, &alpha, true), ("issuer:beta", 1, &beta, false)]);
+    let revoked = trust(
+        1,
+        &[
+            ("issuer:alpha", 1, &alpha, true),
+            ("issuer:beta", 1, &beta, false),
+        ],
+    );
     let alpha_frontier = signed_frontier(&[("issuer:alpha", 1, &alpha)]);
     assert!(revoked.verify(&alpha_frontier).is_err());
 

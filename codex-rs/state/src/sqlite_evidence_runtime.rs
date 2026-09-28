@@ -149,14 +149,13 @@ unsafe extern "C" fn evidence_runtime_authorizer(
         | SQLITE_ANALYZE
         | SQLITE_ATTACH
         | SQLITE_DETACH => SQLITE_DENY,
-        SQLITE_INSERT | SQLITE_UPDATE | SQLITE_DELETE
-            if is_control_plane_table(first) =>
-        {
+        SQLITE_INSERT | SQLITE_UPDATE | SQLITE_DELETE if is_control_plane_table(first) => {
             SQLITE_DENY
         }
         SQLITE_PRAGMA => authorize_runtime_pragma(first, second),
-        SQLITE_FUNCTION if c_argument_eq(first, "load_extension")
-            || c_argument_eq(second, "load_extension") =>
+        SQLITE_FUNCTION
+            if c_argument_eq(first, "load_extension")
+                || c_argument_eq(second, "load_extension") =>
         {
             SQLITE_DENY
         }
@@ -246,8 +245,7 @@ fn c_argument_is_positive_decimal(argument: *const c_char) -> bool {
 }
 
 fn c_argument_eq(argument: *const c_char, expected: &str) -> bool {
-    c_argument_bytes(argument)
-        .is_some_and(|bytes| bytes.eq_ignore_ascii_case(expected.as_bytes()))
+    c_argument_bytes(argument).is_some_and(|bytes| bytes.eq_ignore_ascii_case(expected.as_bytes()))
 }
 
 fn c_argument_bytes<'a>(argument: *const c_char) -> Option<&'a [u8]> {

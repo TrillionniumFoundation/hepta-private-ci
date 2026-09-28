@@ -276,8 +276,7 @@ impl AgentdClient {
             .is_some()
         {
             return Err(AgentdError::Invalid(
-                "paged kernel evidence requests must use query_kernel_evidence_page"
-                    .to_string(),
+                "paged kernel evidence requests must use query_kernel_evidence_page".to_string(),
             ));
         }
         let result = match self
@@ -306,8 +305,7 @@ impl AgentdClient {
             .is_none()
         {
             return Err(AgentdError::Invalid(
-                "kernel evidence page client requires KernelEvidenceQueryV1::paged"
-                    .to_string(),
+                "kernel evidence page client requires KernelEvidenceQueryV1::paged".to_string(),
             ));
         }
         let result = match self

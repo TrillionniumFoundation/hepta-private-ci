@@ -205,12 +205,7 @@ async fn cursor_page_rejects_well_formed_but_substituted_payload_digest() {
     insert_rows(&store, 1).await;
 
     let original = store
-        .query_qualification_claim_page(
-            &candidate(),
-            EvidenceClaimClassV1::MandatoryTests,
-            None,
-            1,
-        )
+        .query_qualification_claim_page(&candidate(), EvidenceClaimClassV1::MandatoryTests, None, 1)
         .await
         .expect("untampered page must be readable");
     assert_eq!(original.evidence.len(), 1);

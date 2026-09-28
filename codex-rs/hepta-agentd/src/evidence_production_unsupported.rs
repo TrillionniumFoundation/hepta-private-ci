@@ -6,7 +6,10 @@ use codex_hepta_evidence::HeptaEvidenceStore;
 use crate::AgentdError;
 use crate::AgentdIdentity;
 
-pub(crate) fn is_production_evidence_profile(identity: &AgentdIdentity, descriptor_or_frontier: &Path) -> bool {
+pub(crate) fn is_production_evidence_profile(
+    identity: &AgentdIdentity,
+    descriptor_or_frontier: &Path,
+) -> bool {
     descriptor_or_frontier.parent() == Some(identity.home_root.as_path())
 }
 

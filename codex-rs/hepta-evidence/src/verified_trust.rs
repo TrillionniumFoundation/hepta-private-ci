@@ -132,60 +132,67 @@ impl VerifiedEvidenceTrustSnapshot {
             .get("schema_version")
             .and_then(serde_json::Value::as_u64)
             .ok_or_else(|| invalid("evidence registry has no schema_version"))?;
-        let (agent_id, generation, predecessor_sha256, issuers, monotonic) =
-            match u32::try_from(schema_version).ok() {
-                Some(LEGACY_REGISTRY_SCHEMA_VERSION) => {
-                    if independently_admitted_digest.is_some() {
-                        return Err(invalid(
-                            "production evidence trust requires monotonic owner registry schema V2",
-                        ));
-                    }
-                    let registry: OwnerRegistryV1 = serde_json::from_slice(&bytes).map_err(|error| {
+        let (agent_id, generation, predecessor_sha256, issuers, monotonic) = match u32::try_from(
+            schema_version,
+        )
+        .ok()
+        {
+            Some(LEGACY_REGISTRY_SCHEMA_VERSION) => {
+                if independently_admitted_digest.is_some() {
+                    return Err(invalid(
+                        "production evidence trust requires monotonic owner registry schema V2",
+                    ));
+                }
+                let registry: OwnerRegistryV1 =
+                    serde_json::from_slice(&bytes).map_err(|error| {
                         invalid(&format!("invalid legacy evidence owner registry: {error}"))
                     })?;
-                    if registry.schema_version != LEGACY_REGISTRY_SCHEMA_VERSION {
-                        return Err(invalid("legacy evidence registry schema is invalid"));
-                    }
-                    (registry.agent_id, 0, None, registry.issuers, false)
+                if registry.schema_version != LEGACY_REGISTRY_SCHEMA_VERSION {
+                    return Err(invalid("legacy evidence registry schema is invalid"));
                 }
-                Some(MONOTONIC_REGISTRY_SCHEMA_VERSION) => {
-                    let registry: OwnerRegistryV2 = serde_json::from_slice(&bytes).map_err(|error| {
-                        invalid(&format!("invalid monotonic evidence owner registry: {error}"))
+                (registry.agent_id, 0, None, registry.issuers, false)
+            }
+            Some(MONOTONIC_REGISTRY_SCHEMA_VERSION) => {
+                let registry: OwnerRegistryV2 =
+                    serde_json::from_slice(&bytes).map_err(|error| {
+                        invalid(&format!(
+                            "invalid monotonic evidence owner registry: {error}"
+                        ))
                     })?;
-                    if canonical_json(&registry)? != bytes {
-                        return Err(invalid(
-                            "monotonic evidence registry must use canonical JSON without duplicate keys",
-                        ));
-                    }
-                    if registry.schema_version != MONOTONIC_REGISTRY_SCHEMA_VERSION
-                        || registry.generation == 0
-                    {
-                        return Err(invalid(
-                            "monotonic evidence registry schema or generation is invalid",
-                        ));
-                    }
-                    match (registry.generation, registry.predecessor_sha256.as_ref()) {
-                        (1, None) => {}
-                        (1, Some(_)) | (_, None) => {
-                            return Err(invalid(
-                                "evidence trust predecessor is inconsistent with its generation",
-                            ));
-                        }
-                        (_, Some(predecessor)) => {
-                            Sha256Digest::parse(predecessor.as_str().to_string())
-                                .map_err(EvidenceError::InvalidRecord)?;
-                        }
-                    }
-                    (
-                        registry.agent_id,
-                        registry.generation,
-                        registry.predecessor_sha256,
-                        registry.issuers,
-                        true,
-                    )
+                if canonical_json(&registry)? != bytes {
+                    return Err(invalid(
+                        "monotonic evidence registry must use canonical JSON without duplicate keys",
+                    ));
                 }
-                _ => return Err(invalid("unsupported evidence owner registry schema")),
-            };
+                if registry.schema_version != MONOTONIC_REGISTRY_SCHEMA_VERSION
+                    || registry.generation == 0
+                {
+                    return Err(invalid(
+                        "monotonic evidence registry schema or generation is invalid",
+                    ));
+                }
+                match (registry.generation, registry.predecessor_sha256.as_ref()) {
+                    (1, None) => {}
+                    (1, Some(_)) | (_, None) => {
+                        return Err(invalid(
+                            "evidence trust predecessor is inconsistent with its generation",
+                        ));
+                    }
+                    (_, Some(predecessor)) => {
+                        Sha256Digest::parse(predecessor.as_str().to_string())
+                            .map_err(EvidenceError::InvalidRecord)?;
+                    }
+                }
+                (
+                    registry.agent_id,
+                    registry.generation,
+                    registry.predecessor_sha256,
+                    registry.issuers,
+                    true,
+                )
+            }
+            _ => return Err(invalid("unsupported evidence owner registry schema")),
+        };
         if agent_id != expected_agent_id || issuers.is_empty() || issuers.len() > 32 {
             return Err(invalid(
                 "evidence registry owner or issuer bound is invalid",
@@ -210,8 +217,8 @@ impl VerifiedEvidenceTrustSnapshot {
             let mut roles = BTreeSet::new();
             let mut previous_role: Option<&str> = None;
             for role in &issuer.roles {
-                let parsed = EvidenceIssuerRoleV1::parse(role)
-                    .map_err(EvidenceError::InvalidRecord)?;
+                let parsed =
+                    EvidenceIssuerRoleV1::parse(role).map_err(EvidenceError::InvalidRecord)?;
                 if !roles.insert(parsed)
                     || (monotonic
                         && previous_role.is_some_and(|previous| previous >= role.as_str()))
@@ -456,13 +463,17 @@ fn read_owner_registry(store_path: &Path, path: &Path) -> Result<Vec<u8>, Eviden
     if bytes.len() as u64 != before.len()
         || identity(&after) != identity(&before)
         || identity(&file.metadata().map_err(io_error)?) != identity(&before)
-        || (home_after.dev(), home_after.ino(), home_after.uid(), home_after.mode())
-            != (
-                home_before.dev(),
-                home_before.ino(),
-                home_before.uid(),
-                home_before.mode(),
-            )
+        || (
+            home_after.dev(),
+            home_after.ino(),
+            home_after.uid(),
+            home_after.mode(),
+        ) != (
+            home_before.dev(),
+            home_before.ino(),
+            home_before.uid(),
+            home_before.mode(),
+        )
     {
         return Err(invalid(
             "evidence registry or store home changed during read",

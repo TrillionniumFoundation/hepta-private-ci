@@ -1,26 +1,41 @@
 use super::*;
 
 fn args() -> Vec<OsString> {
-    ["--evidence-mode=production", "--evidence-publication-request-file", "/owner/request.json",
-        "--evidence-production-config-file", "/owner/production.json",
-        "--evidence-trust-file", "/owner/issuer.json",
-        "--evidence-frontier-signer-trust-file", "/external/signers.json"]
-        .into_iter().map(OsString::from).collect()
+    [
+        "--evidence-mode=production",
+        "--evidence-publication-request-file",
+        "/owner/request.json",
+        "--evidence-production-config-file",
+        "/owner/production.json",
+        "--evidence-trust-file",
+        "/owner/issuer.json",
+        "--evidence-frontier-signer-trust-file",
+        "/external/signers.json",
+    ]
+    .into_iter()
+    .map(OsString::from)
+    .collect()
 }
 
 #[test]
 fn publication_cli_parses_all_four_distinct_production_roles() {
-    assert_eq!(parse_publication_files(&args()).unwrap(), Some(PublicationFiles {
-        request: PathBuf::from("/owner/request.json"),
-        descriptor: PathBuf::from("/owner/production.json"),
-        issuer: PathBuf::from("/owner/issuer.json"),
-        signers: PathBuf::from("/external/signers.json"),
-    }));
+    assert_eq!(
+        parse_publication_files(&args()).unwrap(),
+        Some(PublicationFiles {
+            request: PathBuf::from("/owner/request.json"),
+            descriptor: PathBuf::from("/owner/production.json"),
+            issuer: PathBuf::from("/owner/issuer.json"),
+            signers: PathBuf::from("/external/signers.json"),
+        })
+    );
 }
 
 #[test]
 fn ordinary_daemon_arguments_are_not_intercepted() {
-    assert_eq!(parse_publication_files(&[OsString::from("--evidence-mode=development")]).unwrap(), None);
+    assert_eq!(
+        parse_publication_files(&[OsString::from("--evidence-mode=development")]).unwrap(),
+        None
+    );
 }
 
 #[test]

@@ -81,16 +81,27 @@ impl EvidenceVerificationProfileV1 {
         roles: &[EvidenceIssuerRoleV1],
     ) -> Result<Self, EvidenceError> {
         if roles.is_empty() || roles.len() > 32 {
-            return Err(invalid("verification requires a non-empty registered role policy"));
+            return Err(invalid(
+                "verification requires a non-empty registered role policy",
+            ));
         }
         let requested: BTreeSet<_> = roles.iter().copied().collect();
         if requested.len() != roles.len() {
             return Err(invalid("verification role policy contains duplicate roles"));
         }
-        Self::ALL.iter().copied().find(|profile| {
-            profile.claim_class() == claim
-                && profile.required_roles().iter().copied().collect::<BTreeSet<_>>() == requested
-        }).ok_or_else(|| invalid("claim and roles do not name a registered verification profile"))
+        Self::ALL
+            .iter()
+            .copied()
+            .find(|profile| {
+                profile.claim_class() == claim
+                    && profile
+                        .required_roles()
+                        .iter()
+                        .copied()
+                        .collect::<BTreeSet<_>>()
+                        == requested
+            })
+            .ok_or_else(|| invalid("claim and roles do not name a registered verification profile"))
     }
 }
 
@@ -109,12 +120,22 @@ impl ProfiledVerifyChainRequestV1 {
         now_unix_ms: u64,
     ) -> Result<Self, EvidenceError> {
         candidate.validate().map_err(EvidenceError::InvalidRecord)?;
-        Ok(Self { candidate, profile, now_unix_ms })
+        Ok(Self {
+            candidate,
+            profile,
+            now_unix_ms,
+        })
     }
 
-    pub fn candidate(&self) -> &EvidenceCandidateV1 { &self.candidate }
-    pub fn profile(&self) -> EvidenceVerificationProfileV1 { self.profile }
-    pub fn now_unix_ms(&self) -> u64 { self.now_unix_ms }
+    pub fn candidate(&self) -> &EvidenceCandidateV1 {
+        &self.candidate
+    }
+    pub fn profile(&self) -> EvidenceVerificationProfileV1 {
+        self.profile
+    }
+    pub fn now_unix_ms(&self) -> u64 {
+        self.now_unix_ms
+    }
 }
 
 mod sealed {
@@ -150,7 +171,9 @@ impl EvidenceVerificationRequest for ProfiledVerifyChainRequestV1 {
 impl sealed::Sealed for VerifyChainRequestV1 {}
 #[cfg(test)]
 impl EvidenceVerificationRequest for VerifyChainRequestV1 {
-    fn as_verification_request(&self) -> VerifyChainRequestV1 { self.clone() }
+    fn as_verification_request(&self) -> VerifyChainRequestV1 {
+        self.clone()
+    }
 }
 
 fn invalid(message: &str) -> EvidenceError {
@@ -168,14 +191,23 @@ mod tests {
             assert!(names.insert(profile.as_str()));
             assert!(!profile.required_roles().is_empty());
             assert_eq!(
-                profile.required_roles().iter().collect::<BTreeSet<_>>().len(),
+                profile
+                    .required_roles()
+                    .iter()
+                    .collect::<BTreeSet<_>>()
+                    .len(),
                 profile.required_roles().len()
             );
-            assert_eq!(EvidenceVerificationProfileV1::parse(profile.as_str()), Ok(*profile));
+            assert_eq!(
+                EvidenceVerificationProfileV1::parse(profile.as_str()),
+                Ok(*profile)
+            );
             assert_eq!(
                 EvidenceVerificationProfileV1::from_legacy_roles(
-                    profile.claim_class(), profile.required_roles()
-                ).expect("registered policy"),
+                    profile.claim_class(),
+                    profile.required_roles()
+                )
+                .expect("registered policy"),
                 *profile
             );
         }
@@ -186,8 +218,15 @@ mod tests {
         use EvidenceClaimClassV1::MandatoryTests;
         use EvidenceIssuerRoleV1::Evaluator;
         use EvidenceIssuerRoleV1::Generator;
-        for roles in [vec![], vec![Generator], vec![Evaluator], vec![Generator, Generator]] {
-            assert!(EvidenceVerificationProfileV1::from_legacy_roles(MandatoryTests, &roles).is_err());
+        for roles in [
+            vec![],
+            vec![Generator],
+            vec![Evaluator],
+            vec![Generator, Generator],
+        ] {
+            assert!(
+                EvidenceVerificationProfileV1::from_legacy_roles(MandatoryTests, &roles).is_err()
+            );
         }
         assert!(EvidenceVerificationProfileV1::parse("").is_err());
         assert!(EvidenceVerificationProfileV1::parse("all_checks_passed").is_err());

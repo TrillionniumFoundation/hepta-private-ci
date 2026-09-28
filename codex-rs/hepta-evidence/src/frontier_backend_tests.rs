@@ -43,7 +43,10 @@ fn history_range_accepts_the_inclusive_limit_and_preserves_endpoints() {
         let last = first + 4095;
         let range = EvidenceFrontierHistoryRangeV1::new(first, last)
             .expect("exactly 4096 generations fit the policy");
-        assert_eq!((range.first_generation(), range.last_generation()), (first, last));
+        assert_eq!(
+            (range.first_generation(), range.last_generation()),
+            (first, last)
+        );
     }
     let singleton = EvidenceFrontierHistoryRangeV1::new(u64::MAX, u64::MAX)
         .expect("last generation is a valid singleton");

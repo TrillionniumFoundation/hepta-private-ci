@@ -161,9 +161,7 @@ impl HeptaEvidenceStore {
                 1
             }
             Some(row) => {
-                let current_owner: String = row
-                    .try_get("owner_id")
-                    .map_err(classify_sqlx_error)?;
+                let current_owner: String = row.try_get("owner_id").map_err(classify_sqlx_error)?;
                 let current_generation = positive_u64_from_i64(
                     row.try_get("owner_generation")
                         .map_err(classify_sqlx_error)?,
@@ -428,9 +426,11 @@ impl HeptaEvidenceStore {
         if batch.store_id != lease.store_id {
             return Err(invalid("publication batch belongs to another store"));
         }
-        if batch.expected_backend_identity_sha256.as_ref().is_some_and(|expected| {
-            expected != backend_identity_sha256
-        }) {
+        if batch
+            .expected_backend_identity_sha256
+            .as_ref()
+            .is_some_and(|expected| expected != backend_identity_sha256)
+        {
             return Err(invalid(
                 "publication backend identity differs from the previously accepted backend",
             ));
@@ -453,15 +453,11 @@ impl HeptaEvidenceStore {
             }
             EvidencePublicationBatchStateV1::Dispatching
             | EvidencePublicationBatchStateV1::Indeterminate
-                if batch.proposed_frontier_sha256.as_ref()
-                    == Some(proposed_frontier_sha256)
-                    && batch.backend_identity_sha256.as_ref()
-                        == Some(backend_identity_sha256) => {}
+                if batch.proposed_frontier_sha256.as_ref() == Some(proposed_frontier_sha256)
+                    && batch.backend_identity_sha256.as_ref() == Some(backend_identity_sha256) => {}
             EvidencePublicationBatchStateV1::Acknowledged
-                if batch.proposed_frontier_sha256.as_ref()
-                    == Some(proposed_frontier_sha256)
-                    && batch.backend_identity_sha256.as_ref()
-                        == Some(backend_identity_sha256) => {}
+                if batch.proposed_frontier_sha256.as_ref() == Some(proposed_frontier_sha256)
+                    && batch.backend_identity_sha256.as_ref() == Some(backend_identity_sha256) => {}
             _ => {
                 return Err(EvidenceError::IdempotencyConflict {
                     record_id: batch_id.to_string(),
@@ -584,8 +580,7 @@ impl HeptaEvidenceStore {
         let batch = decode_batch(&load_batch(&mut transaction, batch_id).await?)?;
         if acknowledgement.store_id != batch.store_id
             || acknowledgement.frontier_generation != batch.proposed_frontier_generation
-            || batch.proposed_frontier_sha256.as_ref()
-                != Some(&acknowledgement.frontier_sha256)
+            || batch.proposed_frontier_sha256.as_ref() != Some(&acknowledgement.frontier_sha256)
             || batch.backend_identity_sha256.as_ref()
                 != Some(&acknowledgement.backend_identity_sha256)
             || acknowledgement.audit_sequence == 0
@@ -702,13 +697,11 @@ fn publication_batch_id(
 async fn enrolled_store_id(
     transaction: &mut Transaction<'_, Sqlite>,
 ) -> Result<String, EvidenceError> {
-    sqlx::query_scalar(
-        "SELECT store_id FROM evidence_recovery_identity WHERE singleton = 1",
-    )
-    .fetch_optional(&mut **transaction)
-    .await
-    .map_err(classify_sqlx_error)?
-    .ok_or_else(|| invalid("evidence publication requires an enrolled recovery store"))
+    sqlx::query_scalar("SELECT store_id FROM evidence_recovery_identity WHERE singleton = 1")
+        .fetch_optional(&mut **transaction)
+        .await
+        .map_err(classify_sqlx_error)?
+        .ok_or_else(|| invalid("evidence publication requires an enrolled recovery store"))
 }
 
 async fn require_publication_owner(
@@ -749,8 +742,7 @@ async fn require_publication_owner(
         || expiry <= now_unix_ms
     {
         return Err(EvidenceError::Unavailable(
-            "evidence publication owner was fenced by a newer generation"
-                .to_string(),
+            "evidence publication owner was fenced by a newer generation".to_string(),
         ));
     }
     Ok(())
@@ -773,9 +765,7 @@ async fn latest_accepted_in_transaction(
     row.as_ref().map(decode_accepted_frontier).transpose()
 }
 
-fn decode_accepted_frontier(
-    row: &SqliteRow,
-) -> Result<EvidenceAcceptedFrontierV1, EvidenceError> {
+fn decode_accepted_frontier(row: &SqliteRow) -> Result<EvidenceAcceptedFrontierV1, EvidenceError> {
     Ok(EvidenceAcceptedFrontierV1 {
         store_id: row.try_get("store_id").map_err(classify_sqlx_error)?,
         frontier_generation: read_u64_blob(row, "frontier_generation")?,
@@ -799,14 +789,10 @@ async fn load_batch(
 }
 
 fn decode_batch(row: &SqliteRow) -> Result<EvidencePublicationBatchV1, EvidenceError> {
-    let snapshot_json: String = row
-        .try_get("snapshot_json")
-        .map_err(classify_sqlx_error)?;
-    let snapshot: EvidenceRecoverySnapshotV1 = serde_json::from_str(&snapshot_json)
-        .map_err(|error| {
-            EvidenceError::Corrupt(format!(
-                "publication snapshot cannot be decoded: {error}"
-            ))
+    let snapshot_json: String = row.try_get("snapshot_json").map_err(classify_sqlx_error)?;
+    let snapshot: EvidenceRecoverySnapshotV1 =
+        serde_json::from_str(&snapshot_json).map_err(|error| {
+            EvidenceError::Corrupt(format!("publication snapshot cannot be decoded: {error}"))
         })?;
     let canonical = canonical_json(&snapshot)?;
     if canonical.as_slice() != snapshot_json.as_bytes() {
@@ -817,8 +803,7 @@ fn decode_batch(row: &SqliteRow) -> Result<EvidencePublicationBatchV1, EvidenceE
     let snapshot_sha256 = parse_digest(row, "snapshot_sha256")?;
     if snapshot_sha256 != Sha256Digest::for_bytes(&canonical) {
         return Err(EvidenceError::Corrupt(
-            "publication snapshot digest does not match the stored snapshot"
-                .to_string(),
+            "publication snapshot digest does not match the stored snapshot".to_string(),
         ));
     }
     let count = positive_u64_from_i64(
@@ -860,10 +845,7 @@ fn decode_batch(row: &SqliteRow) -> Result<EvidencePublicationBatchV1, EvidenceE
             "expected frontier generation",
         )?,
         expected_frontier_sha256: optional_digest(row, "expected_frontier_sha256")?,
-        expected_backend_identity_sha256: optional_digest(
-            row,
-            "expected_backend_identity_sha256",
-        )?,
+        expected_backend_identity_sha256: optional_digest(row, "expected_backend_identity_sha256")?,
         proposed_frontier_generation: positive_u64_from_i64(
             row.try_get("proposed_frontier_generation")
                 .map_err(classify_sqlx_error)?,
@@ -895,10 +877,7 @@ fn parse_digest(row: &SqliteRow, column: &str) -> Result<Sha256Digest, EvidenceE
     .map_err(EvidenceError::Corrupt)
 }
 
-fn optional_digest(
-    row: &SqliteRow,
-    column: &str,
-) -> Result<Option<Sha256Digest>, EvidenceError> {
+fn optional_digest(row: &SqliteRow, column: &str) -> Result<Option<Sha256Digest>, EvidenceError> {
     row.try_get::<Option<String>, _>(column)
         .map_err(classify_sqlx_error)?
         .map(Sha256Digest::parse)
@@ -924,8 +903,8 @@ fn optional_positive_u64_i64(
 }
 
 fn positive_u64_from_i64(value: i64, label: &str) -> Result<u64, EvidenceError> {
-    let value = u64::try_from(value)
-        .map_err(|_| EvidenceError::Corrupt(format!("{label} is negative")))?;
+    let value =
+        u64::try_from(value).map_err(|_| EvidenceError::Corrupt(format!("{label} is negative")))?;
     if value == 0 {
         return Err(EvidenceError::Corrupt(format!("{label} is zero")));
     }
@@ -933,8 +912,7 @@ fn positive_u64_from_i64(value: i64, label: &str) -> Result<u64, EvidenceError> 
 }
 
 fn to_i64(value: u64, label: &str) -> Result<i64, EvidenceError> {
-    i64::try_from(value)
-        .map_err(|_| invalid(&format!("{label} exceeds the SQLite integer domain")))
+    i64::try_from(value).map_err(|_| invalid(&format!("{label} exceeds the SQLite integer domain")))
 }
 
 fn validate_stable_id(value: &str, label: &str) -> Result<(), EvidenceError> {

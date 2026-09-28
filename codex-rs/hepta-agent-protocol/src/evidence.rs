@@ -112,10 +112,7 @@ pub struct KernelEvidenceVerifyV1 {
 impl KernelEvidenceVerifyV1 {
     /// A profiled request names one registered owner policy; it cannot carry a
     /// caller-provided role subset in parallel.
-    pub fn profiled(
-        candidate: KernelEvidenceCandidateV1,
-        profile: &str,
-    ) -> Result<Self, String> {
+    pub fn profiled(candidate: KernelEvidenceCandidateV1, profile: &str) -> Result<Self, String> {
         validate_selector_token(profile, "verification profile")?;
         Ok(Self {
             candidate,
@@ -180,19 +177,14 @@ mod tests {
 
     #[test]
     fn page_selector_round_trips_and_rejects_malformed_reserved_forms() {
-        let request = KernelEvidenceQueryV1::paged(
-            candidate(),
-            "exact_source",
-            Some(42),
-            64,
-        )
-        .expect("page request");
+        let request = KernelEvidenceQueryV1::paged(candidate(), "exact_source", Some(42), 64)
+            .expect("page request");
         assert_eq!(
             request.page_selector().expect("parse page"),
             Some(("exact_source", Some(42), 64))
         );
-        let first = KernelEvidenceQueryV1::paged(candidate(), "exact_source", None, 1)
-            .expect("first page");
+        let first =
+            KernelEvidenceQueryV1::paged(candidate(), "exact_source", None, 1).expect("first page");
         assert_eq!(
             first.page_selector().expect("parse first page"),
             Some(("exact_source", None, 1))
@@ -214,11 +206,8 @@ mod tests {
 
     #[test]
     fn profile_selector_cannot_smuggle_roles_or_unknown_grammar() {
-        let request = KernelEvidenceVerifyV1::profiled(
-            candidate(),
-            "mandatory_tests_reviewed",
-        )
-        .expect("profile request");
+        let request = KernelEvidenceVerifyV1::profiled(candidate(), "mandatory_tests_reviewed")
+            .expect("profile request");
         assert_eq!(
             request.profile_name().expect("profile parse"),
             Some("mandatory_tests_reviewed")

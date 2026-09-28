@@ -206,8 +206,7 @@ pub fn kernel_evidence_claims(
     Ok(SignedMessageClaims {
         issuer_id: StableId::new(issuer_id.to_string())
             .map_err(|error| invalid(&error.to_string()))?,
-        key_epoch: Generation::new(key_epoch)
-            .map_err(|error| invalid(&error.to_string()))?,
+        key_epoch: Generation::new(key_epoch).map_err(|error| invalid(&error.to_string()))?,
         message_id: StableId::new(message_id.to_string())
             .map_err(|error| invalid(&error.to_string()))?,
         subject_id: qualification_subject(&envelope.candidate, envelope.issuer_role)
@@ -244,11 +243,7 @@ pub(crate) async fn append(
     )?;
     let trust = host.trust(state)?;
     let issuer = trust
-        .issuer_for(
-            &request.issuer_id,
-            request.key_epoch,
-            envelope.issuer_role,
-        )
+        .issuer_for(&request.issuer_id, request.key_epoch, envelope.issuer_role)
         .map_err(evidence_error)?;
     let message = SignedMessage {
         claims,
@@ -279,12 +274,7 @@ pub(crate) async fn query(
         let claim_class = EvidenceClaimClassV1::parse(&claim).map_err(|error| invalid(&error))?;
         let page = host
             .store
-            .query_qualification_claim_page(
-                &candidate,
-                claim_class,
-                after_seq,
-                usize::from(limit),
-            )
+            .query_qualification_claim_page(&candidate, claim_class, after_seq, usize::from(limit))
             .await
             .map_err(evidence_error)?;
         require_ready(state)?;
@@ -331,12 +321,9 @@ pub(crate) async fn verify(
         EvidenceVerificationProfileV1::from_legacy_roles(claim_class, &roles)
             .map_err(evidence_error)?
     };
-    let profiled_request = ProfiledVerifyChainRequestV1::new(
-        candidate,
-        profile,
-        current_time_millis()?,
-    )
-    .map_err(evidence_error)?;
+    let profiled_request =
+        ProfiledVerifyChainRequestV1::new(candidate, profile, current_time_millis()?)
+            .map_err(evidence_error)?;
     let current_trust = host.trust(state)?;
     let disposition = host
         .store
@@ -396,8 +383,7 @@ fn current_time_millis() -> Result<u64, AgentdError> {
         .duration_since(UNIX_EPOCH)
         .map_err(|error| invalid(&format!("system clock is before Unix epoch: {error}")))?
         .as_millis();
-    u64::try_from(millis)
-        .map_err(|error| invalid(&format!("system clock overflow: {error}")))
+    u64::try_from(millis).map_err(|error| invalid(&format!("system clock overflow: {error}")))
 }
 
 fn evidence_error(error: codex_hepta_evidence::EvidenceError) -> AgentdError {

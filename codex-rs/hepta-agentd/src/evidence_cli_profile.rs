@@ -24,7 +24,9 @@ pub(crate) fn require_production_descriptor(
         return Err("production evidence descriptor must be lexically canonical");
     }
     if descriptor.parent() != Some(home) || descriptor.file_name().is_none() {
-        return Err("production evidence descriptor must be a direct child of the registered Agent home; legacy recovery paths are forbidden");
+        return Err(
+            "production evidence descriptor must be a direct child of the registered Agent home; legacy recovery paths are forbidden",
+        );
     }
     Ok(())
 }
@@ -46,7 +48,9 @@ mod tests {
     #[test]
     fn admits_only_the_structural_v2_route() {
         let home = home();
-        assert!(require_production_descriptor(&home, &home.join("evidence-production.json")).is_ok());
+        assert!(
+            require_production_descriptor(&home, &home.join("evidence-production.json")).is_ok()
+        );
     }
 
     #[test]
@@ -58,19 +62,25 @@ mod tests {
 
     #[test]
     fn rejects_relative_descriptor() {
-        assert!(require_production_descriptor(&home(), Path::new("evidence-production.json")).is_err());
+        assert!(
+            require_production_descriptor(&home(), Path::new("evidence-production.json")).is_err()
+        );
     }
 
     #[test]
     fn rejects_nested_descriptor_that_runtime_would_route_as_legacy() {
         let home = home();
-        assert!(require_production_descriptor(&home, &home.join("nested/descriptor.json")).is_err());
+        assert!(
+            require_production_descriptor(&home, &home.join("nested/descriptor.json")).is_err()
+        );
     }
 
     #[test]
     fn rejects_parent_alias() {
         let home = home();
-        assert!(require_production_descriptor(&home, &home.join("../home/descriptor.json")).is_err());
+        assert!(
+            require_production_descriptor(&home, &home.join("../home/descriptor.json")).is_err()
+        );
     }
 
     #[test]
@@ -87,6 +97,9 @@ mod tests {
 
     #[test]
     fn rejects_unregistered_relative_home() {
-        assert!(require_production_descriptor(Path::new("home"), &home().join("descriptor.json")).is_err());
+        assert!(
+            require_production_descriptor(Path::new("home"), &home().join("descriptor.json"))
+                .is_err()
+        );
     }
 }

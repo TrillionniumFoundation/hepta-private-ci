@@ -111,8 +111,8 @@ fn decode_reference(
         ));
     }
     let envelope_json: String = row.try_get("envelope_json").map_err(classify_sqlx_error)?;
-    let envelope: crate::QualificationEvidenceEnvelopeV1 =
-        serde_json::from_str(&envelope_json).map_err(|error| {
+    let envelope: crate::QualificationEvidenceEnvelopeV1 = serde_json::from_str(&envelope_json)
+        .map_err(|error| {
             EvidenceError::Corrupt(format!(
                 "qualification evidence envelope cannot be decoded: {error}"
             ))
@@ -157,8 +157,7 @@ fn decode_reference(
                 .predecessor_evidence_id
                 .as_ref()
                 .map(EvidenceId::as_str)
-        || target.as_deref()
-            != envelope.target_evidence_id.as_ref().map(EvidenceId::as_str)
+        || target.as_deref() != envelope.target_evidence_id.as_ref().map(EvidenceId::as_str)
         || observed_unix_ms != envelope.observed_unix_ms
         || expires_unix_ms != envelope.expires_unix_ms
         || envelope_sha256 != stored_envelope

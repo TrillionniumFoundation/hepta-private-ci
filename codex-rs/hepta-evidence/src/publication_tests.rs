@@ -78,7 +78,9 @@ async fn insert_evidence(store: &HeptaEvidenceStore, suffix: &str, recorded_at_m
 #[tokio::test]
 async fn owner_fencing_and_indeterminate_cas_reuse_one_durable_batch() {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&config(&temp)).await.expect("open store");
+    let store = HeptaEvidenceStore::open(&config(&temp))
+        .await
+        .expect("open store");
     store
         .bind_recovery_store_id("store:publication")
         .await
@@ -126,7 +128,10 @@ async fn owner_fencing_and_indeterminate_cas_reuse_one_durable_batch() {
         )
         .await
         .expect("dispatch fence");
-    assert_eq!(dispatched.state, EvidencePublicationBatchStateV1::Dispatching);
+    assert_eq!(
+        dispatched.state,
+        EvidencePublicationBatchStateV1::Dispatching
+    );
     assert_eq!(
         store
             .classify_publication_latest(&prepared.batch_id, None)
@@ -202,14 +207,19 @@ async fn owner_fencing_and_indeterminate_cas_reuse_one_durable_batch() {
 #[tokio::test]
 async fn enrolled_store_backfills_and_new_appends_enqueue_once() {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&config(&temp)).await.expect("open store");
+    let store = HeptaEvidenceStore::open(&config(&temp))
+        .await
+        .expect("open store");
     insert_evidence(&store, "before-enrollment", 10).await;
     assert_eq!(store.pending_publication_count().await.expect("pending"), 0);
     store
         .bind_recovery_store_id("store:backfill")
         .await
         .expect("enroll store");
-    assert_eq!(store.pending_publication_count().await.expect("backfill"), 1);
+    assert_eq!(
+        store.pending_publication_count().await.expect("backfill"),
+        1
+    );
     insert_evidence(&store, "after-enrollment", 20).await;
     assert_eq!(store.pending_publication_count().await.expect("trigger"), 2);
     store
@@ -217,7 +227,10 @@ async fn enrolled_store_backfills_and_new_appends_enqueue_once() {
         .await
         .expect("idempotent enrollment");
     assert_eq!(
-        store.pending_publication_count().await.expect("no duplicate"),
+        store
+            .pending_publication_count()
+            .await
+            .expect("no duplicate"),
         2
     );
 }
