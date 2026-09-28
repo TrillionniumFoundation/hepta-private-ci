@@ -10,7 +10,7 @@ permissions:
 
 concurrency:
   group: context-compiler-source-promotion
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   promote-ordinary-source:
@@ -212,6 +212,7 @@ jobs:
             scripts/remediate_context_compiler_closure.py \
             .github/context-compiler-materialize-v3.trigger \
             .github/workflows/context-compiler-v3-source-bundle.yml
+          rm -f .github/workflows/context-compiler-source-promotion.yml
           git add --all
           git diff --cached --check
           test -n "$(git diff --cached --name-only)"
