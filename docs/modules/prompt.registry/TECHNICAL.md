@@ -403,3 +403,23 @@ The candidate builds checked-in Rust directly. Historical apply-prompt scripts
 and source-mutating qualification workflows were retired. The implementation
 map is explicitly authored using --write after a source commit; CI uses --check
 only and records each check result, including missing tests and timeouts.
+
+
+## Owner-local GC and failure contract update (2026-09-28)
+
+The checked-in owner now supports a V5 outer payload-generation manifest while
+retaining the strict V4 semantic schema and legacy migration paths. Existing
+V4 stores remain V4 until the first nonempty owner-local garbage collection.
+`durable_gc.rs` implements bounded two-slot publication/cleanup;
+`durable_io.rs` records actual owner I/O observations; `failure.rs` centralizes
+redacted errors and non-blind retry guidance. `durable_gc_tests.rs` exercises
+revocation/audit preservation, idempotence, alternating generations, pre-rename
+failure, unknown post-rename durability, corrupt selected extents, strict V5
+restore and unsafe unselected-slot refusal. This is namespace reclamation of
+inactive raw payload files, not secure erasure of devices or backups.
+
+The API contract, operational runbook and performance guide define these new
+interfaces. Qualification never applies source patches or writes a generated
+map. Source authoring and formatting precede a separate map-only commit; both
+exact-head and bound-base synthetic merge compile the committed source.
+Native execution results live in exact-run artifacts, not this narrative.

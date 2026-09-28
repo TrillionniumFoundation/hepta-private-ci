@@ -56,10 +56,17 @@ use crate::protocol::LEGACY_UNRESOLVED_FACTOR_PURPOSE;
 use crate::protocol::LEGACY_UNRESOLVED_MODEL_ID;
 use crate::protocol::LEGACY_UNRESOLVED_MODEL_VERSION;
 
-#[path = "durable_payloads.rs"]
-mod payloads;
+#[path = "durable_gc.rs"]
+mod gc;
+#[path = "durable_io.rs"]
+mod io_metrics;
 #[path = "durable_maintenance.rs"]
 mod maintenance;
+#[path = "durable_payloads.rs"]
+mod payloads;
+
+pub use gc::PromptRegistryGcReceipt;
+pub use io_metrics::PromptRegistryIoMetrics;
 
 pub use maintenance::PromptRegistryCheckpointKind;
 pub use maintenance::PromptRegistryCheckpointReceipt;
@@ -1469,6 +1476,7 @@ struct Store {
     root: File,
     _lock: File,
     payloads: payloads::PayloadState,
+    io: PromptRegistryIoMetrics,
     #[cfg(test)]
     fail_directory_sync_after_rename_once: Cell<bool>,
     #[cfg(test)]
@@ -1486,6 +1494,7 @@ impl Store {
             root,
             _lock: lock,
             payloads: payloads::PayloadState::default(),
+            io: PromptRegistryIoMetrics::default(),
             #[cfg(test)]
             fail_directory_sync_after_rename_once: Cell::new(false),
             #[cfg(test)]
@@ -1550,18 +1559,42 @@ impl Store {
                     return Err(DurableRegistryError::Corrupt);
                 }
             }
+            5 => {
+                let manifest: payloads::StoredV5 =
+                    serde_json::from_value(value).map_err(|_| DurableRegistryError::Corrupt)?;
+                let (payloads, state) = payloads::PayloadState::hydrate_v5(&store.root, manifest)?;
+                store.payloads = payloads;
+                StoredAny::V4(state)
+            }
             _ => return Err(DurableRegistryError::Corrupt),
         };
         Ok((store, Some(stored)))
     }
 
     fn persist(&mut self, registry: &PromptRegistry) -> Result<(), DurableRegistryError> {
+        let started = std::time::Instant::now();
+        let result = self.persist_inner(registry);
+        self.io
+            .observe_publish(started.elapsed().as_nanos(), &result);
+        result
+    }
+
+    fn persist_inner(&mut self, registry: &PromptRegistry) -> Result<(), DurableRegistryError> {
         let successor = self.payloads.successor(registry)?;
-        let bytes = serde_json::to_vec(&payloads::StoredV4 {
-            schema: 4,
-            state: stored_metadata(registry),
-            payload_references: successor.references(),
-        })
+        let bytes = if successor.uses_generation_manifest() {
+            serde_json::to_vec(&payloads::StoredV5 {
+                schema: 5,
+                state: stored_metadata(registry),
+                payload_slot: successor.slot(),
+                payload_references: successor.references(),
+            })
+        } else {
+            serde_json::to_vec(&payloads::StoredV4 {
+                schema: 4,
+                state: stored_metadata(registry),
+                payload_references: successor.references(),
+            })
+        }
         .map_err(|_| DurableRegistryError::Unavailable)?;
         if u64::try_from(bytes.len()).unwrap_or(u64::MAX) > MAX_STATE_BYTES {
             return Err(DurableRegistryError::CapacityExceeded);
@@ -1570,12 +1603,28 @@ impl Store {
         if self.fail_storage_full_before_rename_once.replace(false) {
             return Err(DurableRegistryError::StorageFull);
         }
-        self.payloads.stage(&successor, registry, &self.root)?;
+        let stage_started = std::time::Instant::now();
+        let stage_result = self.payloads.stage(&successor, registry, &self.root);
+        self.io.payload_stage_nanos = self
+            .io
+            .payload_stage_nanos
+            .saturating_add(stage_started.elapsed().as_nanos());
+        stage_result?;
         let mut file = open_private(&self.root, "registry.next", Access::Create)?;
         file.set_len(0).map_err(map_precommit_io)?;
-        file.write_all(&bytes)
-            .and_then(|()| file.sync_all())
-            .map_err(map_precommit_io)?;
+        file.write_all(&bytes).map_err(map_precommit_io)?;
+        self.io.metadata_bytes_written = self
+            .io
+            .metadata_bytes_written
+            .saturating_add(u64::try_from(bytes.len()).unwrap_or(u64::MAX));
+        let sync_started = std::time::Instant::now();
+        let synced = file.sync_all();
+        self.io.metadata_sync_nanos = self
+            .io
+            .metadata_sync_nanos
+            .saturating_add(sync_started.elapsed().as_nanos());
+        self.io.metadata_sync_attempts = self.io.metadata_sync_attempts.saturating_add(1);
+        synced.map_err(map_precommit_io)?;
         replace_state(&self.root)?;
         // After rename succeeds the durable outcome is unknown if directory
         // fsync fails. The caller must poison this writer and reopen/reconcile;
@@ -1585,9 +1634,17 @@ impl Store {
         if self.fail_directory_sync_after_rename_once.replace(false) {
             return Err(DurableRegistryError::IndeterminateDurability);
         }
-        self.root
-            .sync_all()
-            .map_err(|_| DurableRegistryError::IndeterminateDurability)?;
+        let sync_started = std::time::Instant::now();
+        let synced = self.root.sync_all();
+        self.io.publication_directory_sync_nanos = self
+            .io
+            .publication_directory_sync_nanos
+            .saturating_add(sync_started.elapsed().as_nanos());
+        self.io.publication_directory_sync_attempts = self
+            .io
+            .publication_directory_sync_attempts
+            .saturating_add(1);
+        synced.map_err(|_| DurableRegistryError::IndeterminateDurability)?;
         self.payloads = successor;
         Ok(())
     }
@@ -1649,7 +1706,7 @@ fn open_private(
         flags,
         rustix::fs::Mode::RUSR | rustix::fs::Mode::WUSR,
     )
-    .map_err(|_| DurableRegistryError::Unavailable)?
+    .map_err(|error| map_precommit_io(error.into()))?
     .into();
     let metadata = file
         .metadata()

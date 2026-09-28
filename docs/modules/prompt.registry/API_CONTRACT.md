@@ -142,3 +142,37 @@ history digests must match. Checkpoint receipts explicitly report
 checkpoint, not bytes physically erased from the live source or old backups.
 The destination is not automatically activated and it does not grant effect
 authority. See `OPERATIONS.md` for owner handoff, retention, and recovery.
+
+## Shared stable failure/recovery contract and collection
+
+Publishers retain `DurableRegistryError` rather than flattening it into strings.
+`DurableRegistryError::failure()` maps it to `PromptRegistryFailureV1`, with
+stable redacted `code()` and `PromptRegistryRecoveryV1`. Agentd's final-use
+adapter consumes this same classification. Recovery is advice, not authority.
+
+| Class | Recovery |
+| --- | --- |
+| Identity reuse with different semantics | Reject; never overwrite or retry under the reused ID |
+| Withdrawn, authorization rejected, invalid input | Reject the attempted use |
+| Payload/snapshot integrity or frontier corruption | Reject/quarantine; do not reinterpret as a stale cache |
+| Stale snapshot or unavailable selection | Re-enumerate/recompile and validate current authority |
+| Expired admission | Reauthorize; not a blind write retry |
+| Owner busy or temporary storage/authority unavailability | Back off and retry only after availability and identity checks |
+| Capacity exhaustion / ENOSPC | Relieve capacity under policy before retry |
+| Reopen required or unknown durability | Reopen and reconcile the selected durable outcome before further authority use |
+
+`PromptFinalUseLeaseV1` rejects repeated factor IDs even when realization IDs
+are distinct. A poisoned registry is diagnosed before lease expiry so a caller
+cannot mistake an unknown durable result for a simple recompilation request.
+An actual completed provider send remains an observed fact after revocation;
+this change does not relabel it as never dispatched, or promise to retract bytes
+already sent. The existing final-use gate remains the authority for any new
+use, including cached attachment preparation and dispatch recording.
+
+`collect_payload_garbage(&mut self)` returns `PromptRegistryGcReceipt`: source
+and selected revision/digest, removed raw payload count/bytes, predecessor file
+bytes unlinked, cleanup-pending status, selected extent bytes and total elapsed
+time. A nonempty collection invalidates prior snapshots with a new revision;
+otherwise it is an idempotent cleanup. A committed publication with pending
+unlink is a receipt, not an indeterminate publication error. See OPERATIONS.md
+for storage V5 compatibility, staging limits and crash-recovery rules.

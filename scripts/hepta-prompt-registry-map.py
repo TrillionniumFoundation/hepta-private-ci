@@ -49,6 +49,8 @@ INPUTS = [
     "scripts/hepta_module_source_roots.py",
     "scripts/hepta-prompt-registry-map.py",
     "scripts/hepta-prompt-registry-qualify.py",
+    "scripts/hepta-prompt-registry-harness-tests.py",
+    "scripts/hepta-prompt-registry-aggregate.py",
     "docs/modules/prompt.registry/TECHNICAL.md",
     "docs/modules/prompt.registry/API_CONTRACT.md",
     "docs/modules/prompt.registry/OPERATIONS.md",
@@ -125,6 +127,10 @@ def build(observation: dict[str, str]) -> dict:
     ]:
         operations.append(operation(name, "DurablePromptRegistry::" + name, MAINTENANCE,
             MAINTENANCE_TESTS + "::" + test, "local_diagnostic_or_checkpoint_no_activation"))
+    operations.append(operation("collect_payload_garbage", "DurablePromptRegistry::collect_payload_garbage", CORE + "/src/durable_gc.rs",
+        CORE + "/src/durable_gc_tests.rs::gc_reclaims_inactive_raw_bytes_but_preserves_audit_and_revocation_after_restart", "exclusive_owner_inactive_payloads_only_audit_retained"))
+    operations.append(operation("failure_recovery", "DurableRegistryError::failure", CORE + "/src/failure.rs",
+        CORE + "/src/failure.rs::read_integrity_failures_never_become_recompile_or_availability_retries", "redacted_diagnostics_no_retry_authority"))
     operations.extend([
         operation("current_use_gate", "PromptFinalUseLeaseV1::validate_at_boundary", FINAL_USE,
             FINAL_USE_TESTS + "::final_use_revocation_precedes_snapshot_error_and_survives_restart", "deny_without_current_owner_validation"),
@@ -156,7 +162,7 @@ def build(observation: dict[str, str]) -> dict:
         "sourceObjects": [{"path": path, "object": git("rev-parse", f"HEAD:{path}")} for path in sorted(set(paths + [CORE]))],
         "closedWorldPublicFunctions": False,
         "mappingCoverage": "curated_owner_and_boundary_operations_not_all_public_functions",
-        "activePersistentSchema": 4, "operations": operations, "productCallers": callers,
+        "activePersistentSchemas": [4, 5], "semanticSchema": 4, "payloadGenerationSchema": 5, "operations": operations, "productCallers": callers,
         "status": {"implemented": True, "composed": True, "qualified": False},
         "lifecycleStates": {"sourceImplemented": True, "sourceComposed": True, "productActivated": False, "accepted": False, "released": False},
         "claimBoundary": {"nativeSourceMappingComplete": False, "sourceRootPresent": True,
@@ -166,7 +172,7 @@ def build(observation: dict[str, str]) -> dict:
         "repositoryControlledGaps": [
             "Require passing exact-head and bound-base synthetic-merge execution receipts for this candidate.",
             "Prove actual transport/stream/final-output revocation behavior beyond the durable dispatch-claim boundary.",
-            "Checkpoint handoff and old-source/backup disposal require externally fenced retention decisions.",
+            "In-place inactive payload collection is implemented; external checkpoint handoff and backup disposal still require fenced retention decisions.",
             "Oldest-reclaimable age requires a durable timestamp/schema policy; current value is unknown, not zero.",
         ],
         "externalEvidenceGates": ["independent security/semantic review", "target-host and deployed provider qualification", "operator activation, acceptance and release"],

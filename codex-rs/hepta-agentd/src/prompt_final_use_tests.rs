@@ -353,3 +353,27 @@ fn final_use_errors_have_distinct_non_blind_retry_policies_and_redacted_messages
     let error = PromptFinalUseLeaseError::Compiled("SECRET_RAW_PROMPT".to_owned());
     assert!(!error.to_string().contains("SECRET_RAW_PROMPT"));
 }
+
+#[test]
+fn final_use_integrity_error_is_not_a_recompilation_hint() {
+    let error = PromptFinalUseLeaseError::from_registry(DurableRegistryError::Read(
+        codex_hepta_prompt_registry::PromptRegistryV2Error::PayloadDigestMismatch,
+    ));
+    assert_eq!(error, PromptFinalUseLeaseError::IntegrityRejected);
+    assert_eq!(error.recovery(), PromptFinalUseRecovery::Reject);
+}
+
+#[test]
+fn final_use_rejects_duplicate_factor_with_distinct_realization_ids() {
+    let temporary = tempfile::tempdir().unwrap_or_else(|error| panic!("tempdir: {error}"));
+    let (_registry, mut lease) = fixture(&temporary.path().join("registry"));
+    let mut other = lease.selections[0].clone();
+    other.realization_id = id("realization:other");
+    lease.selections.push(other);
+    lease.selections.sort();
+    lease.lease_digest = lease.compute_digest();
+    assert_eq!(
+        lease.validate_shape(),
+        Err(PromptFinalUseLeaseError::InvalidShape)
+    );
+}

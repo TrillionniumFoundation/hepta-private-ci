@@ -74,6 +74,10 @@ impl PromptRegistryQuota {
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PromptRegistryOperationalMetrics {
+    /// Process-generation I/O observations, not persistent authority.
+    pub io: super::PromptRegistryIoMetrics,
+    pub active_storage_schema: u32,
+    pub unselected_payload_file_bytes: u64,
     pub revision: u64,
     pub registry_digest: [u8; 32],
     pub authoritative: bool,
@@ -287,7 +291,7 @@ fn metrics_for(
             reclaimable_payload_bytes = reclaimable_payload_bytes.saturating_add(bytes);
         }
     }
-    let physical_payload_file_bytes = file_bytes(&owner.store, payloads::FILE_NAME)?;
+    let physical_payload_file_bytes = file_bytes(&owner.store, owner.store.payloads.file_name())?;
     let metadata_file_bytes = file_bytes(&owner.store, "registry.json")?;
     let logical_records = registry
         .factors
@@ -312,7 +316,20 @@ fn metrics_for(
     .into_iter()
     .max()
     .unwrap_or(0);
+    let unselected = owner.store.payloads.slot().other().file_name();
+    let unselected_payload_file_bytes = if entry_exists(&owner.store.root, unselected)? {
+        file_bytes(&owner.store, unselected)?
+    } else {
+        0
+    };
     Ok(PromptRegistryOperationalMetrics {
+        io: owner.store.io.clone(),
+        active_storage_schema: if owner.store.payloads.uses_generation_manifest() {
+            5
+        } else {
+            4
+        },
+        unselected_payload_file_bytes,
         revision: registry.revision.get(),
         registry_digest: registry.snapshot_digest().into_array(),
         authoritative: !owner.requires_reopen(),
@@ -397,9 +414,13 @@ fn write_checkpoint(
     }
     // Stabilize an identical retry after an unknown post-rename outcome. This
     // writes no data and makes no lifecycle transition or source-owner swap.
-    open_private(&reopened.store.root, payloads::FILE_NAME, Access::Read)?
-        .sync_all()
-        .map_err(|_| PromptRegistryMaintenanceError::CleanupUncertain)?;
+    open_private(
+        &reopened.store.root,
+        reopened.store.payloads.file_name(),
+        Access::Read,
+    )?
+    .sync_all()
+    .map_err(|_| PromptRegistryMaintenanceError::CleanupUncertain)?;
     open_private(&reopened.store.root, "registry.json", Access::Read)?
         .sync_all()
         .map_err(|_| PromptRegistryMaintenanceError::CleanupUncertain)?;
@@ -447,10 +468,20 @@ fn load_strict_checkpoint(
     if u64::try_from(bytes.len()).unwrap_or(u64::MAX) > MAX_STATE_BYTES {
         return Err(DurableRegistryError::Corrupt.into());
     }
-    let manifest: payloads::StoredV4 =
+    let value: serde_json::Value =
         serde_json::from_slice(&bytes).map_err(|_| DurableRegistryError::Corrupt)?;
-    let (payloads, stored) = payloads::PayloadState::hydrate_v4(&root, manifest)?;
-    let actual_payload_bytes = open_private(&root, payloads::FILE_NAME, Access::Read)?
+    let (payloads, stored) = match value.get("schema").and_then(serde_json::Value::as_u64) {
+        Some(4) => payloads::PayloadState::hydrate_v4(
+            &root,
+            serde_json::from_value(value).map_err(|_| DurableRegistryError::Corrupt)?,
+        )?,
+        Some(5) => payloads::PayloadState::hydrate_v5(
+            &root,
+            serde_json::from_value(value).map_err(|_| DurableRegistryError::Corrupt)?,
+        )?,
+        _ => return Err(DurableRegistryError::Corrupt.into()),
+    };
+    let actual_payload_bytes = open_private(&root, payloads.file_name(), Access::Read)?
         .metadata()
         .map_err(|_| DurableRegistryError::Unavailable)?
         .len();
@@ -464,6 +495,7 @@ fn load_strict_checkpoint(
             root,
             _lock: lock,
             payloads,
+            io: super::PromptRegistryIoMetrics::default(),
             #[cfg(test)]
             fail_directory_sync_after_rename_once: std::cell::Cell::new(false),
             #[cfg(test)]
@@ -652,4 +684,4 @@ fn basis_points(current: u64, maximum: u64) -> u16 {
 
 #[cfg(all(test, unix))]
 #[path = "durable_maintenance_tests.rs"]
-mod tests;
+pub(super) mod tests;

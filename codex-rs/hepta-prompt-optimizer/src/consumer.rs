@@ -34,14 +34,14 @@ pub struct PromptConsumerCapabilitiesV1 {
 }
 
 impl PromptConsumerCapabilitiesV1 {
-    pub fn developer_instruction_runtime() -> Self {
-        Self {
+    pub fn developer_instruction_runtime() -> Result<Self, ConsumerEnumerationError> {
+        Ok(Self {
             capability_id: StableId::new("consumer:runtime-codex-developer-v1")
-                .expect("static capability id"),
+                .map_err(|_| ConsumerEnumerationError::InvalidCapabilities)?,
             supported_roles: vec![PromptRoleV2::DeveloperInstruction],
             maximum_token_cost: u32::MAX,
             maximum_payload_bytes: MAX_REALIZATION_PAYLOAD_BYTES as u64,
-        }
+        })
     }
 
     pub fn validate(&self) -> Result<(), ConsumerEnumerationError> {
@@ -318,8 +318,14 @@ mod tests {
 
     #[test]
     fn capability_digest_is_ordered_and_nonzero() {
-        let capabilities = PromptConsumerCapabilitiesV1::developer_instruction_runtime();
-        assert!(!capabilities.digest().expect("capability digest").is_zero());
+        let capabilities = PromptConsumerCapabilitiesV1::developer_instruction_runtime()
+            .unwrap_or_else(|error| panic!("capability: {error}"));
+        assert!(
+            !capabilities
+                .digest()
+                .unwrap_or_else(|error| panic!("digest: {error}"))
+                .is_zero()
+        );
     }
 
     #[test]

@@ -56,13 +56,12 @@ pub fn select_portfolio_audited(
             }
             let evaluation = evaluate_package(
                 root,
-                &selected,
                 &price_map,
                 &constraint_index,
                 &interaction_index,
                 interactions.missing_interaction_policy,
                 budget,
-                used_tokens,
+                PortfolioSelectionState { selected: &selected, used_tokens },
             )?;
             let Some(evaluation) = evaluation else {
                 continue;

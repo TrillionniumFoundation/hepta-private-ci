@@ -14,6 +14,7 @@ use codex_hepta_prompt_registry::DurablePromptRegistry;
 use codex_hepta_prompt_registry::DurableRegistryError;
 use codex_hepta_prompt_registry::Lifecycle;
 use codex_hepta_prompt_registry::PromptModelTupleV2;
+use codex_hepta_prompt_registry::PromptRegistryFailureV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
@@ -126,11 +127,11 @@ impl PromptFinalUseLeaseV1 {
             .validate()
             .map_err(|_| PromptFinalUseLeaseError::InvalidShape)?;
         let mut realization_ids = BTreeSet::new();
-        if self
-            .selections
-            .iter()
-            .any(|selection| !realization_ids.insert(&selection.realization_id))
-        {
+        let mut factor_ids = BTreeSet::new();
+        if self.selections.iter().any(|selection| {
+            !realization_ids.insert(&selection.realization_id)
+                || !factor_ids.insert(&selection.factor_id)
+        }) {
             return Err(PromptFinalUseLeaseError::InvalidShape);
         }
         if self.selections.iter().any(|selection| {
@@ -163,12 +164,12 @@ impl PromptFinalUseLeaseV1 {
         now_unix_ms: u64,
     ) -> Result<(), PromptFinalUseLeaseError> {
         self.validate_shape()?;
-        if now_unix_ms < self.issued_unix_ms || now_unix_ms >= self.valid_until_unix_ms {
-            return Err(PromptFinalUseLeaseError::Expired);
-        }
         let current = registry
             .registry()
             .map_err(PromptFinalUseLeaseError::from_registry)?;
+        if now_unix_ms < self.issued_unix_ms || now_unix_ms >= self.valid_until_unix_ms {
+            return Err(PromptFinalUseLeaseError::Expired);
+        }
         // Diagnose terminal withdrawal before a generic snapshot mismatch. No
         // string parsing and no blind retry of a withdrawn selection.
         for selection in &self.selections {
@@ -270,25 +271,32 @@ pub enum PromptFinalUseLeaseError {
     ReopenRequired,
     IndeterminateDurability,
     CapacityExceeded,
+    IntegrityRejected,
     Registry(String),
     Compiled(String),
 }
 
 impl PromptFinalUseLeaseError {
     fn from_registry(error: DurableRegistryError) -> Self {
-        match error {
-            DurableRegistryError::ReopenRequired => Self::ReopenRequired,
-            DurableRegistryError::IndeterminateDurability => Self::IndeterminateDurability,
-            DurableRegistryError::CapacityExceeded
-            | DurableRegistryError::StorageFull
-            | DurableRegistryError::Core(codex_hepta_prompt_registry::Error::CapacityExceeded) => {
-                Self::CapacityExceeded
-            }
-            DurableRegistryError::Unavailable | DurableRegistryError::StateLocked => {
+        match error.failure() {
+            PromptRegistryFailureV1::ReopenRequired => Self::ReopenRequired,
+            PromptRegistryFailureV1::IndeterminateDurability => Self::IndeterminateDurability,
+            PromptRegistryFailureV1::CapacityExceeded => Self::CapacityExceeded,
+            PromptRegistryFailureV1::StoreUnavailable | PromptRegistryFailureV1::OwnerBusy => {
                 Self::StoreUnavailable
             }
-            DurableRegistryError::Read(_) => Self::SelectionChanged,
-            _ => Self::Registry("registry integrity or configuration rejected".to_owned()),
+            PromptRegistryFailureV1::SnapshotChanged => Self::RegistrySnapshotChanged,
+            PromptRegistryFailureV1::SelectionUnavailable => Self::SelectionChanged,
+            PromptRegistryFailureV1::IntegrityRejected => Self::IntegrityRejected,
+            PromptRegistryFailureV1::Withdrawn => Self::Revoked,
+            PromptRegistryFailureV1::AuthorizationExpired => Self::Expired,
+            PromptRegistryFailureV1::IdentityConflict
+            | PromptRegistryFailureV1::AuthorizationRejected
+            | PromptRegistryFailureV1::InvalidInput
+            | PromptRegistryFailureV1::ConfigurationRejected
+            | PromptRegistryFailureV1::UnsafeStorage => {
+                Self::Registry("registry integrity or configuration rejected".to_owned())
+            }
         }
     }
 
@@ -308,6 +316,7 @@ impl PromptFinalUseLeaseError {
             Self::ReopenRequired => "prompt_final_use_reopen_required",
             Self::IndeterminateDurability => "prompt_final_use_indeterminate_durability",
             Self::CapacityExceeded => "prompt_final_use_capacity_exceeded",
+            Self::IntegrityRejected => "prompt_final_use_integrity_rejected",
             Self::Registry(_) => "prompt_final_use_registry_rejected",
             Self::Compiled(_) => "prompt_final_use_compilation_rejected",
         }

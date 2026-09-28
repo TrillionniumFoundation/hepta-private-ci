@@ -51,7 +51,10 @@ fn model_tuple() -> PromptModelTupleV2 {
     }
 }
 
-fn add_payload(core: &mut PromptRegistry, index: usize) -> Result<RegistryReceipt, crate::Error> {
+pub(in crate::durable) fn add_payload(
+    core: &mut PromptRegistry,
+    index: usize,
+) -> Result<RegistryReceipt, crate::Error> {
     let factor = factor(index);
     let factor_id = factor.factor_id.clone();
     core.register_factor(factor)?;
@@ -79,7 +82,7 @@ fn add_payload(core: &mut PromptRegistry, index: usize) -> Result<RegistryReceip
     )
 }
 
-fn seeded(path: &Path) -> DurablePromptRegistry {
+pub(in crate::durable) fn seeded(path: &Path) -> DurablePromptRegistry {
     let mut owner = DurablePromptRegistry::open_state_dir(path, 64).must("owner");
     owner.commit(|core| add_payload(core, 0)).must("payload");
     owner
@@ -452,6 +455,10 @@ fn operational_scale_profile_1k_8k_16k() {
             .checkpoint_compacted(&temporary.path().join("checkpoint"))
             .must("checkpoint");
         let compaction_nanos = compact_started.elapsed().as_nanos();
+        let gc = owner.collect_payload_garbage().must("in-place collection");
+        let after_gc = owner.operational_metrics().must("post-collection metrics");
+        assert_eq!(gc.collected_payload_records, 1);
+        assert!(!gc.cleanup_pending);
         let vm_hwm = std::fs::read_to_string("/proc/self/status")
             .ok()
             .and_then(|text| {
@@ -468,6 +475,7 @@ fn operational_scale_profile_1k_8k_16k() {
                 "durableRegisterNanos": register_nanos, "lifecycleUpdateNanos": lifecycle_update_nanos,
                 "snapshot": distribution(snapshots), "dereference": distribution(dereferences),
                 "compactionNanos": compaction_nanos, "metadataBytes": metrics.metadata_file_bytes,
+                "inPlaceGc": gc, "afterGc": after_gc, "ioBeforeGc": metrics.io,
                 "payloadFileBytes": metrics.physical_payload_file_bytes,
                 "checkpointPayloadBytes": receipt.checkpoint_physical_payload_file_bytes,
                 "processHighWaterMark": vm_hwm,
@@ -529,4 +537,51 @@ fn operational_restore_rejects_tail_without_repair_or_mutation() {
         std::fs::read(checkpoint.join(payloads::FILE_NAME)).must("after"),
         before
     );
+}
+
+#[test]
+#[ignore = "qualification actual registration/update latency samples; not a production SLA"]
+fn operational_writer_latency_profile() {
+    for ceiling in [1000_usize, 8000, 16_384] {
+        let temporary = tempfile::tempdir().must("tempdir");
+        let path = temporary.path().join("source");
+        let registry = large_registry(ceiling - 31);
+        let (mut store, _) = Store::open(&path).must("store");
+        store.persist(&registry).must("seed");
+        drop(store);
+        let mut owner = DurablePromptRegistry::open_state_dir(&path, 16_384).must("owner");
+        let mut registrations = Vec::new();
+        let mut retirements = Vec::new();
+        for index in 0..31 {
+            let candidate = factor(ceiling + index);
+            let factor_id = candidate.factor_id.clone();
+            let started = Instant::now();
+            owner
+                .register_factor(candidate)
+                .must("durable registration");
+            registrations.push(started.elapsed().as_nanos());
+            owner
+                .commit(|core| {
+                    core.admit_factor(&factor_id, &id("reviewer:test"), digest("review"))
+                })
+                .must("admit outside measured update interval");
+            let started = Instant::now();
+            owner
+                .retire_factor(&factor_id, &id("operator:test"), digest("retire"))
+                .must("durable retirement");
+            retirements.push(started.elapsed().as_nanos());
+        }
+        let metrics = owner.operational_metrics().must("writer metrics");
+        assert_eq!(metrics.io.successful_publications, 93);
+        println!(
+            "{}",
+            serde_json::json!({
+                "schema": "hepta.prompt-registry.writer-profile.v1",
+                "finalLogicalRecords": ceiling, "initialLogicalRecords": ceiling - 31,
+                "registration": distribution(registrations), "retirement": distribution(retirements),
+                "io": metrics.io, "metadataBytes": metrics.metadata_file_bytes,
+                "productionSla": false, "includesAdmissionGrantVerification": false,
+            })
+        );
+    }
 }

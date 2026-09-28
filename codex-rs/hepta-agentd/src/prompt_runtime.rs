@@ -505,7 +505,7 @@ impl AgentdPromptRuntimeOwner {
 
 #[derive(Debug)]
 pub enum AgentdPromptPipelineError {
-    RegistryOpen(String),
+    RegistryOpen(codex_hepta_prompt_registry::DurableRegistryError),
     RuntimeOpen(AgentdPromptRuntimeError),
     StatePoisoned,
     CandidateSource(String),
@@ -513,12 +513,23 @@ pub enum AgentdPromptPipelineError {
     Stage(AgentdPromptRuntimeError),
     FinalUseLease(PromptFinalUseLeaseError),
     FinalUseStore(PromptFinalUseStoreError),
-    Publisher(String),
+    Publisher(codex_hepta_prompt_registry::DurableRegistryError),
 }
 
 impl fmt::Display for AgentdPromptPipelineError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(formatter, "{self:?}")
+        match self {
+            Self::RegistryOpen(error) | Self::Publisher(error) => {
+                let failure = error.failure();
+                write!(
+                    formatter,
+                    "{}; recovery={:?}",
+                    failure.code(),
+                    failure.recovery()
+                )
+            }
+            _ => write!(formatter, "{self:?}"),
+        }
     }
 }
 
@@ -556,7 +567,7 @@ impl AgentdPromptPipelineOwner {
     ) -> Result<Self, AgentdPromptPipelineError> {
         let registry =
             DurablePromptRegistry::open_state_dir(registry_directory, maximum_registry_records)
-                .map_err(|error| AgentdPromptPipelineError::RegistryOpen(error.to_string()))?;
+                .map_err(AgentdPromptPipelineError::RegistryOpen)?;
         let runtime = AgentdPromptRuntimeOwner::open_state_dir(runtime_directory)
             .map_err(AgentdPromptPipelineError::RuntimeOpen)?;
         let final_use = PromptFinalUseLeaseStore::open(runtime_directory)
@@ -618,7 +629,7 @@ impl AgentdPromptPipelineOwner {
             .lock()
             .map_err(|_| AgentdPromptPipelineError::StatePoisoned)?
             .register_factor_final_use(authority, signed, actor_id, scope_digest, factor)
-            .map_err(|error| AgentdPromptPipelineError::Publisher(error.to_string()))
+            .map_err(AgentdPromptPipelineError::Publisher)
     }
 
     pub fn admit_factor(
@@ -639,7 +650,7 @@ impl AgentdPromptPipelineOwner {
                 reviewed_scope_digest,
                 evidence_digest,
             )
-            .map_err(|error| AgentdPromptPipelineError::Publisher(error.to_string()))
+            .map_err(AgentdPromptPipelineError::Publisher)
     }
 
     #[expect(
@@ -668,7 +679,7 @@ impl AgentdPromptPipelineOwner {
                 payload,
                 supersedes_realization_id,
             )
-            .map_err(|error| AgentdPromptPipelineError::Publisher(error.to_string()))
+            .map_err(AgentdPromptPipelineError::Publisher)
     }
 
     pub fn publish_relation(
@@ -683,7 +694,7 @@ impl AgentdPromptPipelineOwner {
             .lock()
             .map_err(|_| AgentdPromptPipelineError::StatePoisoned)?
             .register_factor_relation_final_use(authority, signed, actor_id, scope_digest, relation)
-            .map_err(|error| AgentdPromptPipelineError::Publisher(error.to_string()))
+            .map_err(AgentdPromptPipelineError::Publisher)
     }
 
     pub fn retire_factor(
@@ -706,7 +717,7 @@ impl AgentdPromptPipelineOwner {
                 scope_digest,
                 reason_digest,
             )
-            .map_err(|error| AgentdPromptPipelineError::Publisher(error.to_string()))
+            .map_err(AgentdPromptPipelineError::Publisher)
     }
 
     #[expect(
@@ -735,7 +746,7 @@ impl AgentdPromptPipelineOwner {
                 reason_digest,
                 cutoff_unix_ms,
             )
-            .map_err(|error| AgentdPromptPipelineError::Publisher(error.to_string()))
+            .map_err(AgentdPromptPipelineError::Publisher)
     }
 
     /// Enumerate candidates from this owner's exact current durable registry.
@@ -750,12 +761,10 @@ impl AgentdPromptPipelineOwner {
         let current = registry
             .registry()
             .map_err(|error| AgentdPromptPipelineError::CandidateSource(error.to_string()))?;
-        enumerate_factors_for_consumer_v1(
-            current,
-            request,
-            &PromptConsumerCapabilitiesV1::developer_instruction_runtime(),
-        )
-        .map_err(|error| AgentdPromptPipelineError::CandidateSource(error.to_string()))
+        let capabilities = PromptConsumerCapabilitiesV1::developer_instruction_runtime()
+            .map_err(|error| AgentdPromptPipelineError::CandidateSource(error.to_string()))?;
+        enumerate_factors_for_consumer_v1(current, request, &capabilities)
+            .map_err(|error| AgentdPromptPipelineError::CandidateSource(error.to_string()))
     }
 
     #[expect(

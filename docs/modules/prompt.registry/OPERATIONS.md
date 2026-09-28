@@ -1,6 +1,6 @@
 # prompt.registry operations and recovery
 
-Applies to the committed strict-V4 owner implementation. This is a developer
+Applies to the committed strict-V4 semantic owner with V4/V5 payload storage. This is a developer
 and operator runbook, not permission to deploy, release, switch owners, delete
 backups, or emit external effects. The actual API contract is
 [API_CONTRACT.md](API_CONTRACT.md); measurements are described in
@@ -10,8 +10,8 @@ backups, or emit external effects. The actual API contract is
 
 Use a private, same-user state directory and exactly one `DurablePromptRegistry`
 writer. Never remove `registry.lock` to bypass a live owner. The selected image
-consists of `registry.json` and its referenced immutable `registry.payloads`
-extents; `registry.next` is an unselected temporary metadata image. Missing or
+consists of `registry.json` and the exact immutable payload slot it selects
+(`registry.payloads` or V5 `registry.payloads.alternate`); `registry.next` is an unselected temporary metadata image. Missing or
 modified committed data is corruption, not an invitation to start a new store.
 Normal owner open can migrate legacy V1/V2/V3/transitional-V4 data and trim an
 unselected payload tail after validating the complete semantic image.
@@ -92,7 +92,7 @@ DurablePromptRegistry::verify_restore_checkpoint(
 
 The verifier does not initialize missing directories or locks, migrate legacy
 schemas, republish metadata, or truncate orphan tails. It validates existing
-strict-V4 bytes under the existing lock and rejects any identity mismatch.
+strict-V4 semantic bytes in a V4 or V5 storage envelope under the existing lock and rejects any identity mismatch.
 It must not extract the expected digest from the very candidate it is deciding
 to trust. A pre-revocation backup pinned against a current post-revocation
 identity is rejected. A valid old receipt alone does not prove that an old
@@ -113,7 +113,7 @@ rollback shortcut.
 | Class | Retention and use rule |
 | --- | --- |
 | Active payload | Keep exact digest-bound bytes while eligible and referenced |
-| Retired/revoked or superseded payload | No new use; eligible for copy-compaction when realization is inactive |
+| Retired/revoked or superseded payload | No new use; eligible for owner-local GC or copy-compaction when realization is inactive |
 | Factor/binding/relation/supersession identity | Retain interpretation and provenance; not raw-payload use permission |
 | Lifecycle/audit history | Retain under the current strict V4 contract; do not prune events to manufacture capacity |
 | Original store after checkpoint creation | Still contains bytes; delete only after externally fenced handoff and approved retention decision |
@@ -156,3 +156,62 @@ and documentation, then commit the map. Qualification uses `--check` only.
 Every required check writes an exit status, log digest, source/base/tested SHA,
 tree and runner attempt. Failure, timeout, missing dependency and zero matched
 tests are not success. Source archives and bootstrap edits are not test passes.
+
+## 8. Owner-local raw payload GC (storage envelope V5)
+
+`collect_payload_garbage(&mut self)` is a synchronous operation of the existing
+exclusive owner. It does not introduce a second runtime, authority, or writer.
+It removes only raw payloads of inactive realizations; factors, realization
+bindings, relations, supersession, lifecycle events and terminal revocation are
+retained. Each nonempty collection allocates one revision/lifecycle frontier,
+invalidating old snapshot-bound uses. A no-change cleanup retry does not
+allocate another revision. The host must hold the same registry guard used by
+publication and final-use dispatch. Run collection outside a provider send
+critical section, with admission backpressure while the owner is busy.
+
+The first nonempty collection publishes a V5 outer storage envelope containing
+unchanged strict V4 semantic metadata and a closed enum `payload_slot` (primary
+or alternate). No on-disk string is interpreted as an arbitrary path. The two
+fixed private payload slots alternate. The new slot is written and synced while
+the selected predecessor remains intact. Only after metadata fsync, atomic
+rename and directory fsync may the unselected predecessor be unlinked. A further
+directory sync acknowledges namespace removal. At most two payload generations
+are needed: budget up to two times the 32 MiB selected payload limit plus headers,
+metadata and temporary metadata. Do not reduce reserved GC staging space to zero
+when the selected live set is full.
+
+| Failure point | Selected image / action |
+| --- | --- |
+| Before metadata rename | Predecessor remains authoritative; no predecessor unlink |
+| After rename, before acknowledged directory sync | `IndeterminateDurability`; stop authoritative access, keep both slots, reopen and reconcile |
+| Reopen after unknown publication | Validate the selected manifest and selected slot only; never fall back to a different slot to hide corruption |
+| After durable publication, unlink or cleanup sync fails | Return a committed receipt with `cleanup_pending=true`; retry cleanup without replaying publication |
+| Retry with no newly inactive payload | Stabilize selected metadata, unlink only the other safe slot; no extra revision |
+| Unexpected symlink/hardlink/unsafe other slot | Leave it untouched and report cleanup pending; investigate permissions and ownership |
+
+`collected_payload_bytes` is the raw content omitted from the selected new
+image. `unlinked_file_bytes` is the predecessor file size removed from the
+namespace, including retained bytes that were copied and its header. They are
+not interchangeable measures. Neither means secure device erasure, removal of
+already-cloned in-memory buffers, or erasure of separately retained backups.
+Before using an exported checkpoint as a new live owner, follow the externally
+fenced handoff in section 4. Old binaries reject V5; rollback must restore a
+compatible binary without resurrecting an older revocation frontier.
+
+Current I/O counters report publication attempts, successes, failures, capacity
+failures and unknown outcomes, metadata bytes written, actual file/directory
+sync calls and elapsed nanoseconds. They reset on owner reopen and include
+initial/migration publication when it occurs. Partial failed writes are not
+counted as fully written metadata. `payload_stage_nanos` includes the complete
+payload-stage operation, not an invented count of individual disk writes.
+Selected and unselected file sizes remain separately visible for cleanup
+incidents. Missing or unsafe storage produces a diagnostic error, never zero
+capacity usage.
+
+
+The additional `gc_process_exit_after_unknown_commit_reconciles` test launches a
+separate test process that exits without running owner destructors after the
+post-rename fault. The parent opens the same directory, verifies retirement is
+still effective and completes only unselected-slot cleanup. This is an actual
+process-exit/restart test, not a claim to simulate a device losing persisted
+sectors or a complete target-filesystem power-cut campaign.

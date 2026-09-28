@@ -9,6 +9,7 @@
 mod admission;
 mod delivery;
 mod durable;
+mod failure;
 mod protocol;
 mod v2;
 
@@ -42,10 +43,14 @@ pub use durable::DurableRegistryError;
 pub use durable::PromptRegistryCheckpointKind;
 pub use durable::PromptRegistryCheckpointReceipt;
 pub use durable::PromptRegistryFsyncProbe;
+pub use durable::PromptRegistryGcReceipt;
+pub use durable::PromptRegistryIoMetrics;
 pub use durable::PromptRegistryMaintenanceError;
 pub use durable::PromptRegistryOperationalMetrics;
 pub use durable::PromptRegistryQuota;
 pub use durable::PromptRegistryRestoreReceipt;
+pub use failure::PromptRegistryFailureV1;
+pub use failure::PromptRegistryRecoveryV1;
 pub use protocol::PromptFactorV1;
 pub use protocol::PromptRealizationV1;
 pub use protocol::ProtocolCodecError;

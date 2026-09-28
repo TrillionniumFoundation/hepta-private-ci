@@ -19,7 +19,7 @@ cargo test --locked -p codex-hepta-agentd \
 
 | Profile | Actual measured operations | Samples and limitations |
 | --- | --- | --- |
-| `operational_scale_profile_1k_8k_16k` | Initial persist, fresh-owner reopen, durable factor registration, lifecycle update, snapshot/dereference, copy-compaction and file sizes | 1,000 / 8,000 / 16,384 logical records; 31 snapshot and dereference samples per size; writes are one sample per size, not write-tail percentiles |
+| `operational_scale_profile_1k_8k_16k` | Initial persist, fresh-owner reopen, durable factor registration, lifecycle update, snapshot/dereference, copy-compaction, owner-local GC and file sizes | 1,000 / 8,000 / 16,384 logical records; 31 snapshot and dereference samples per size; writes are one sample per size, not write-tail percentiles |
 | `operational_fsync_profile` | Anchored temporary-file write, file fsync, directory fsync, synchronized cleanup | 31 samples each at 4 KiB / 64 KiB / 1 MiB; isolated filesystem diagnostic, not full request latency |
 | `operational_pipeline_compile_stage_final_use_profile` | Authenticated fixture's real compile-and-stage, preparation current-use gate and owner-local validation timings | 31 one-realization runs; no actual provider network; setup/admission excluded from the marked intervals |
 
@@ -71,7 +71,7 @@ an owner that could not be constructed.
 ## Optimization decision
 
 The implemented changes prioritize source consistency, immutable payload
-sharing, current-use correctness, diagnostic separation and safe copy-compaction.
+sharing, current-use correctness, diagnostic separation and safe copy-compaction and two-slot owner-local GC.
 They do not introduce a WAL, Merkle tree, mutable cache, parallel writer or
 weakened fsync boundary. Full-image cloning/serialization/hashing and retained
 lifecycle metadata still have size-dependent cost. Use measured scale growth,
@@ -81,3 +81,31 @@ Before a performance claim, repeat against the deployment's filesystem and
 hardware, with realistic payload/retirement distributions, concurrent readers,
 provider latency, restart and long-running metadata growth. Record sample
 counts and noise; do not promote diagnostic runner numbers into an SLA.
+
+
+## Additional measured collection and publication diagnostics
+
+Each existing 1k/8k/16k scale row now includes an actual `inPlaceGc` receipt,
+`afterGc` operational gauges and `ioBeforeGc` publication/sync counters. The
+collector requires exactly one inactive payload to be removed and cleanup to
+finish, rather than accepting a GC function name or a copied checkpoint as
+physical reclamation evidence. The fixture still contains one payload at each
+scale; it does not establish GC latency for 16k full-sized payloads. Writer and
+GC numbers are single observations, not invented p95 or p99 estimates.
+
+The four-lane aggregator checks exact source/base/run/attempt identities,
+complete required checks, raw log SHA-256 digests and matching core/product
+source trees. A pass is a source qualification result, not deployed-provider
+activation or acceptance. Local Python harness tests validate evidence parsing
+only; Rust and product tests still have to execute on the exact candidate.
+
+
+`operational_writer_latency_profile` additionally performs 31 **changed** durable
+registrations and 31 durable retirements at each final size 1k/8k/16k, reporting
+nearest-rank p50/p95/p99 and max separately. The starting record count is final
+size minus 31, not a constant size. Each factor is admitted between the measured
+registration and retirement intervals by a test-only governed fixture path;
+admission itself is outside those timings and no publisher-grant verification
+latency is inferred. The I/O counters include all 93 actual publications. The
+JSON schema is `hepta.prompt-registry.writer-profile.v1`. Full request-network
+latency, authorization-service latency and deployment SLA remain separate.

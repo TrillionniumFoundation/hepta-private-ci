@@ -62,3 +62,17 @@ old source/backup bytes. Operational metrics remain diagnostic when poisoned.
 The mainline integration anchor is
 `a126987b84737dbc2ee2592442a314117bddb4a2`. Actual current execution identity is
 bound by each receipt, not inferred from this human-readable status document.
+
+
+## Verified-closeout candidate scope
+
+Branch `codex/prompt-registry-verified-closeout-20260928` adds owner-local V5
+payload GC with retained V4 semantic/audit history, shared typed recovery
+classification, integrity-safe final-use mapping, actual I/O counters, measured
+collection profiles and fail-closed four-lane receipt aggregation. These are
+source changes until the same candidate's native and product checks execute.
+The earlier delivery-consistency branch's results are predecessor diagnostics,
+not receipts for this branch. Do not infer activation, acceptance, release,
+streaming-output cancellation, secure device erasure or historical GC age from
+these changes. Oldest-reclaimable age remains unknown without a durable clock
+policy. Use current workflow artifacts for pass/fail/not-run status.
