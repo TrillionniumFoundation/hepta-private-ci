@@ -12,13 +12,13 @@ permissions:
   contents: write
 
 concurrency:
-  group: automation-taskflow-schema22-final-convergence-v5
+  group: automation-taskflow-schema22-final-convergence-v6
   cancel-in-progress: true
 
 jobs:
   converge:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    runs-on: ubuntu-slim
+    timeout-minutes: 30
     steps:
       - name: Check out exact branch head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -27,6 +27,16 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
+      - name: Verify materialization tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v git
+          command -v python3
+          command -v sha256sum
+          command -v base64
+          command -v gzip
+
       - name: Refuse concurrent-head overwrite
         shell: bash
         run: |
@@ -34,14 +44,6 @@ jobs:
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           remote="$(git ls-remote origin refs/heads/work/automation-taskflow-full-closure-2026-09-27 | awk '{print $1}')"
           test "$remote" = "$GITHUB_SHA"
-
-      - name: Prepare CI environment
-        uses: ./.github/actions/setup-ci
-
-      - name: Install pinned Rust toolchain
-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
-        with:
-          components: clippy,rustfmt
 
       - name: Configure ordinary commits
         run: |
@@ -88,10 +90,6 @@ jobs:
           python3 scripts/automation_taskflow_contract.py render
           python3 scripts/hepta_transition_lineage.py
           python3 scripts/hepta-document-index.py
-          (
-            cd codex-rs
-            cargo fmt -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd
-          )
           git rm -r \
             .github/workflows/automation-taskflow-converge-20260927.yml \
             scripts/automation_taskflow_converge_20260927.py \
@@ -128,7 +126,7 @@ jobs:
             git commit -m "docs(automation): bind exact schema-22 source objects"
           fi
 
-      - name: Verify final self-contained read-only candidate
+      - name: Verify final self-contained source candidate
         shell: bash
         env:
           SOURCE_SHA: ${{ steps.source.outputs.sha }}
