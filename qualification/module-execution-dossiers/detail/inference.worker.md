@@ -1,52 +1,67 @@
 # inference.worker: implementation design
 
 Parent: `docs/modules/inference.worker/TECHNICAL.md`. Lane: `LANE-B-RUNTIME`.
-Status: actual App Server driver with durable admission and a separate local-model driver interface implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: the hosted App Server profile is a repository production candidate with durable admission, final-use authority and no-replay recovery. The local-model profile is explicitly feature-gated and experimental. Repository source does not establish real hardware, real-provider, deployed-issuer, independent-acceptance, activation or release evidence. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
 Roots: `codex-rs/hepta-infer-worker-host`.
 Packages: `INFER-V4-T4`, `INFER-V4-T5`, `NEU-1-LOCAL-MODEL-BAKEOFF`.
 
-Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
+Operation signatures below describe the target contract. Section 8 identifies the implemented profiles and remaining integration. Preserve the existing `inference.control` durable owner and runtime.codex effect spine; do not create a second authority or execution ledger.
 
-## 2. Public operations and contract details
+## 2. Public profiles and contract details
 
-`load_model(verified_manifest, resource_grant) -> LoadedModelHandle`; `run(request, lease, reservation, cancellation) -> ExecutionObservation`; `unload(handle, drain_deadline) -> UnloadObservation`. Existing pure validation/receipt APIs remain boundary primitives; they cannot be labelled provider execution unless a real runtime consumes the exact verified model bytes.
+- `HostedAppServerWorker`: production candidate, externally gated. `run` accepts a durable admission and invokes exactly one exact-generation Agent/App Server turn after final-use authority.
+- `LocalModelWorker`: experimental/non-production behind `experimental-local-model`. `load_model`, `run`, `inspect` and `unload` use verified local types and an injected asynchronous driver plus independent resource observer.
+- `LegacyReceiptBoundary`: validation-only. Existing pure request/lease/reservation receipt APIs are boundary primitives and cannot be labelled provider execution.
+
+Target local signatures are `load_model(verified_manifest, verified_resource_grant) -> AttestedModelHandle`; `run(attested_handle, verified_input, cancellation, trusted_deadline) -> ExecutionObservation`; `inspect(operation_id, attested_handle) -> DriverReconciliation`; and `unload(attested_handle) -> UnloadObservation`.
 
 ## 3. State records and transaction design
 
-No authoritative fleet or grant state. Worker-local ephemeral state contains process/model generation, loaded artifact digests, bounded KV/cache handles, request handles and usage counters. Persistent model files belong to the artifact/cache owner; the worker receives read-only descriptors and verifies weights, tokenizer, preprocessing, quantization, license/SBOM and device/runtime identity.
+Persistent request, slot, dispatch and observation facts remain in `DurableInferenceControl`. Hosted execution owns only live App Server client state. Experimental local execution owns generation-scoped aggregate accounting, attested handles, model lifecycle and request resource guards in process; persistent model files remain with the artifact/cache owner.
+
+A signed local resource grant binds issuer, authority epoch, nonce, worker subject and generation, the complete model tuple, device identity and lease, aggregate memory, concurrency, token and usage ceilings, validity and a monotonic revocation frontier. Verified grant, manifest, input, handle and deadline constructors are boundary controlled rather than public field assembly.
 
 ## 4. Deterministic algorithm and scheduling
 
-Verify request/lease/reservation compatibility before loading or generation; load once per admitted model generation; reserve accelerator/CPU memory; perform bounded inference; observe cancellation; emit output/usage and terminality through the control port. Model-load failures release only acquired resources. A lost channel is indeterminate, not a fabricated successful response.
+Hosted execution durably reserves before provider work, persists exact dispatch and authority correlation before `turn/start`, enters the non-constructible final-use token immediately before the effect, observes terminal events, and commits normalized output/optional usage before returning. A lost acknowledgement is reconcile-only and is never replayed.
+
+Experimental local execution verifies grant/manifest/input compatibility, reserves aggregate model or request resources before driver entry, verifies independent resource observations, persists the same durable dispatch state before `run`, and uses `inspect` only after possible effect entry. Missing, pending or ambiguous recovery stays indeterminate and fences the generation. Failed unload retains the handle as `Zombie`/repair-required rather than forgetting physical state.
 
 ## 5. Capacity and performance profile
 
-Pilot maximum tokens uses the existing request bound with a stricter selected-model profile; concurrent loaded models and accelerator memory are explicit grants. Measure load/unload, peak/KV memory, token rate, p99 inference and cancellation under maximum input and repeated restarts.
+Hosted capacity is a durable local in-flight slot limit, not economic quota or provider billing. Local capacity is the checked aggregate of resident model bytes, transient request bytes, loaded models and active/quarantined requests under the verified grant.
 
-Pilot ceilings are design targets, not measurements. Stricter canonical limits prevail. Bind actual schema/migration, host and measurements before composition; stateless modules prove absence rather than inventing state.
+Measure model load/unload, peak resident and transient memory, KV memory, token rate, p99 inference, cancellation-to-interrupt latency, reconcile success/miss/failure, held reservation age, missing usage and journal capacity. Pilot ceilings are design targets, not measurements; the selected target host supplies actual thresholds and evidence.
 
 ## 6. Concrete verification cases
 
-- WORKER-01: changed tokenizer/weights/runtime tuple fails before inference.
-- WORKER-02: request resource overflow and expired/revoked grant are denied before loading.
-- WORKER-03: kill at every load stage does not leak locks, memory or descriptors.
-- WORKER-04: actual model consumer proof includes binary/weights/device digests; a synthetic observation does not pass it.
+- WORKER-01: changed tokenizer/weights/runtime/device tuple fails before inference.
+- WORKER-02: forged, expired, revoked, stale-frontier or wrong-subject resource grants fail before load/run.
+- WORKER-03: aggregate model plus transient request memory cannot exceed the verified grant.
+- WORKER-04: kill or channel loss after durable effect entry never causes `run` replay; recovery calls `inspect` only.
+- WORKER-05: failed physical unload preserves the handle and accounting as `Zombie` until trusted zero-residency repair.
+- WORKER-06: missing App Server history remains quarantined; only an exact trusted provider receipt may establish terminal provider truth.
+- WORKER-07: unknown token or usage observations remain `None`, never fabricated zero.
+- WORKER-08: actual model consumer proof includes binary, weights, tokenizer, runtime, device lease and trusted resource observations; a synthetic driver or unit fixture does not pass it.
 
-These are required product test designs, not executed-test receipts. Each implementation supplies native test identity, exact input/output and independent oracle evidence.
+Repository tests cover source invariants and deterministic fixtures. WORKER-08 and named target-host fault tests require external evidence and are not satisfied by repository unit tests.
 
 ## 7. Integration, rollback and capability ceiling
 
-Attach Neuron's encoder only after the real-model qualification gate. The deterministic feature fixture remains available without claiming real-model use. Rollback cannot mix old checkpoints with new encoders; unload/drain precedes compatible reload.
+Attach Neuron's encoder only after the real-model qualification gate. Rollback cannot mix old checkpoints with new encoders; unload/drain and trusted resource reconciliation precede compatible reload. Device reset fences the complete local generation.
 
-Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every external gate; no generator, worker, provider adapter or CI workflow may self-accept, self-promote or self-release.
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `run` in [codex-rs/hepta-infer-worker-host/src/native_run_control.rs](../../../codex-rs/hepta-infer-worker-host/src/native_run_control.rs); `load_model` in [codex-rs/hepta-infer-worker-host/src/model_worker.rs](../../../codex-rs/hepta-infer-worker-host/src/model_worker.rs). Actual App Server driver with durable admission and a separate local-model driver interface implemented.
-- **State and recovery:** The native run invokes the private Agent/App Server once and commits matching terminal/output/optional-token observations through inference.control. Reopened uncertain runs return indeterminate without provider replay. Model-worker state delegates physical load/unload to an injected driver.
-- **Source tests:** [codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs), [codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [docs/readiness/LANE_B_NATIVE_HOST.md](../../../docs/readiness/LANE_B_NATIVE_HOST.md), [docs/modules/inference.worker/IMPLEMENTATION_MAP.json](../../../docs/modules/inference.worker/IMPLEMENTATION_MAP.json).
-- **Remaining work:** Implement/prove the local weights/device/memory driver before claiming isolated local inference. Trusted provider recovery and missing-usage reconciliation remain open.
+- **Hosted entrypoint:** `run` in [codex-rs/hepta-infer-worker-host/src/native_run_control.rs](../../../codex-rs/hepta-infer-worker-host/src/native_run_control.rs), with the physical App Server path in [native_app_server.rs](../../../codex-rs/hepta-infer-worker-host/src/native_app_server.rs).
+- **Hosted state and recovery:** exact thread-history reconciliation is implemented. The bounded `NativeRecoveryPolicy`, operational counters/snapshot, explicit missing-history quarantine and trusted terminal-receipt verification port are in [native_recovery.rs](../../../codex-rs/hepta-infer-worker-host/src/native_recovery.rs). A trusted receipt can establish terminal provider truth but cannot retroactively manufacture owner authority.
+- **Experimental local entrypoints:** signed grants and verified types are in [experimental_local/authority.rs](../../../codex-rs/hepta-infer-worker-host/src/experimental_local/authority.rs); the asynchronous driver and trusted resource-observer ports are in [experimental_local/driver.rs](../../../codex-rs/hepta-infer-worker-host/src/experimental_local/driver.rs); aggregate RAII accounting and lifecycle fencing are in [experimental_local/resources.rs](../../../codex-rs/hepta-infer-worker-host/src/experimental_local/resources.rs); durable load/run/inspect/unload composition is in [experimental_local/durable.rs](../../../codex-rs/hepta-infer-worker-host/src/experimental_local/durable.rs).
+- **Legacy boundary:** [lib.rs](../../../codex-rs/hepta-infer-worker-host/src/lib.rs) remains validation-only. The former `model_worker` path is feature-gated and deprecated and may not be used as production evidence.
+- **Source tests:** [native_run_control_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs), [native_app_server_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs), [native_recovery_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/native_recovery_tests.rs) and [experimental_local_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/experimental_local_tests.rs). Test identities are not pass receipts; exact-candidate CI artifacts supply execution results.
+- **Qualification:** [.github/workflows/inference-worker-qualification.yml](../../../.github/workflows/inference-worker-qualification.yml) separates infer-core, infer-worker-host and Agentd across Linux, macOS and deterministic synthetic merge; it retains library, binary, all-target, strict Clippy, clean-tree and nextest/JUnit evidence.
+- **Operating references:** [RECOVERY_AND_OPERATIONS.md](../../../docs/modules/inference.worker/RECOVERY_AND_OPERATIONS.md), [CURRENT_STATUS.json](../../../docs/modules/inference.worker/CURRENT_STATUS.json), [IMPLEMENTATION_MAP.json](../../../docs/modules/inference.worker/IMPLEMENTATION_MAP.json), [LANE_B_NATIVE_HOST.md](../../../docs/readiness/LANE_B_NATIVE_HOST.md) and [FINAL_USE_AUTHORITY_PORT.md](../../../codex-rs/hepta-infer-worker-host/FINAL_USE_AUTHORITY_PORT.md).
+- **Remaining product/external work:** compose and prove a real local weights/device driver, target-hardware OOM/reset/load-kill behavior, deployed provider terminal/usage verifier and history-retention contract, deployed final-use issuer/trusted-time/revocation/anti-rollback, named production caller, independent acceptance, activation and release.
