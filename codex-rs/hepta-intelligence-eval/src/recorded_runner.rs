@@ -187,7 +187,7 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
     // The unarchived qualification boundary is an internal composition helper.
     // Cross-crate product callers must use the typed-archive or selected-host
     // methods, which persist exact recovery objects before QualificationDecided.
-    #[allow(clippy::too_many_arguments)]
+    #[allow(dead_code, clippy::too_many_arguments)]
     pub(crate) fn qualify_and_persist<J: DurableProductEvaluationAttemptJournalV1>(
         &self,
         attempt_id: &StableId,
