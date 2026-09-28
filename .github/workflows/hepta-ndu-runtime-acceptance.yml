@@ -5,6 +5,7 @@ on:
     paths:
       - .github/workflows/hepta-ndu-runtime-acceptance.yml
       - scripts/ndu-bootstrap-*.b64
+      - scripts/ndu-epoch-archive-*.b64
       - scripts/hepta*ndu*.py
       - scripts/test_hepta_ndu*.py
       - codex-rs/hepta-ndu/**
@@ -56,6 +57,13 @@ jobs:
             git apply --index "${EXCLUDES[@]}" "$RUNNER_TEMP/ndu.patch"
             git rm scripts/ndu-bootstrap-0{1,2,3,4}.b64
           fi
+          if test -f scripts/ndu-epoch-archive-01.b64; then
+            cat scripts/ndu-epoch-archive-*.b64 | base64 --decode | gzip -d > "$RUNNER_TEMP/ndu-epoch-archive.patch"
+            echo '41b314a3a130d98e799cfaa966837d1c698cb40fb5228702a35a6842d6090e45  '"$RUNNER_TEMP/ndu-epoch-archive.patch" | sha256sum -c -
+            git apply --check --index "$RUNNER_TEMP/ndu-epoch-archive.patch"
+            git apply --index "$RUNNER_TEMP/ndu-epoch-archive.patch"
+            git rm scripts/ndu-epoch-archive-*.b64
+          fi
           (cd codex-rs && cargo fmt --package codex-hepta-ndu --package codex-hepta-agent-protocol --package codex-hepta-agentd)
           for test in source_policy map_integrity mounted_filesystem qualification evidence observer; do
             python3 "scripts/test_hepta_ndu_$test.py"
@@ -67,7 +75,7 @@ jobs:
           git config user.name hepta-ndu-remediation
           git config user.email qualification@invalid
           if ! git diff --cached --quiet; then
-            git commit -s -m 'fix(ndu): close recovery acknowledgements and wire operational observation'
+            git commit -s -m 'feat(ndu): materialize bounded epoch archive and retention semantics'
           fi
           test -z "$(git status --porcelain --untracked-files=all)"
           python3 scripts/hepta-ndu-implementation-map-closed-world.py --expected-sha "$(git rev-parse HEAD)" --expected-tree "$(git rev-parse HEAD^{tree})"
