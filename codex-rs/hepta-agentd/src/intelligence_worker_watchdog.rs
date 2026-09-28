@@ -13,7 +13,13 @@ use std::thread::JoinHandle;
 use std::time::Duration;
 use std::time::Instant;
 
+use super::super::AgentdIntelligenceProductRunnerV1;
 use crate::AgentdIntelligenceTelemetryV1;
+
+struct WorkerTimeoutObservationV1 {
+    timed_out: Arc<AtomicBool>,
+    telemetry: Arc<AgentdIntelligenceTelemetryV1>,
+}
 
 pub(super) struct WorkerCompletionV1 {
     completed: Arc<(Mutex<bool>, Condvar)>,
@@ -27,6 +33,34 @@ impl WorkerCompletionV1 {
         timed_out: Arc<AtomicBool>,
         telemetry: Arc<AgentdIntelligenceTelemetryV1>,
     ) -> std::io::Result<Self> {
+        Self::supervise_inner(
+            budget,
+            hard_grace,
+            Some(WorkerTimeoutObservationV1 {
+                timed_out,
+                telemetry,
+            }),
+        )
+    }
+
+    fn supervise_unobserved(
+        budget: Duration,
+        hard_grace: Duration,
+    ) -> std::io::Result<Self> {
+        Self::supervise_inner(budget, Some(hard_grace), None)
+    }
+
+    fn supervise_inner(
+        budget: Duration,
+        hard_grace: Option<Duration>,
+        observation: Option<WorkerTimeoutObservationV1>,
+    ) -> std::io::Result<Self> {
+        if budget.is_zero() || hard_grace.is_some_and(|grace| grace.is_zero()) {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                "worker supervision budget and grace must be nonzero",
+            ));
+        }
         let deadline = Instant::now().checked_add(budget).ok_or_else(|| {
             std::io::Error::new(std::io::ErrorKind::InvalidInput, "worker deadline overflow")
         })?;
@@ -38,20 +72,26 @@ impl WorkerCompletionV1 {
                 if wait_until_complete(&observer_state, deadline) {
                     return;
                 }
-                if !timed_out.swap(true, Ordering::AcqRel) {
-                    telemetry.record_request_timeout();
+                if let Some(observation) = observation.as_ref()
+                    && !observation.timed_out.swap(true, Ordering::AcqRel)
+                {
+                    observation.telemetry.record_request_timeout();
                 }
                 let Some(grace) = hard_grace else {
                     return;
                 };
                 let Some(exit_deadline) = deadline.checked_add(grace) else {
-                    telemetry.record_hard_timeout_trip();
+                    if let Some(observation) = observation.as_ref() {
+                        observation.telemetry.record_hard_timeout_trip();
+                    }
                     std::process::exit(70);
                 };
                 if !wait_until_complete(&observer_state, exit_deadline) {
-                    telemetry.record_hard_timeout_trip();
-                    // Explicit host policy only. The supervisor must recover a
-                    // new process generation and reconcile unknown operations.
+                    if let Some(observation) = observation.as_ref() {
+                        observation.telemetry.record_hard_timeout_trip();
+                    }
+                    // The supervisor must recover a new process generation and
+                    // reconcile any durable unknown operation.
                     std::process::exit(70);
                 }
             })?;
@@ -74,6 +114,28 @@ impl Drop for WorkerCompletionV1 {
         if let Some(observer) = self.observer.take() {
             let _ = observer.join();
         }
+    }
+}
+
+impl AgentdIntelligenceProductRunnerV1 {
+    pub(crate) fn spawn_unobserved_blocking<F, T>(
+        permit: tokio::sync::OwnedSemaphorePermit,
+        budget: Duration,
+        hard_grace: Duration,
+        work: F,
+    ) -> std::io::Result<tokio::task::JoinHandle<T>>
+    where
+        F: FnOnce() -> T + Send + 'static,
+        T: Send + 'static,
+    {
+        let completion = WorkerCompletionV1::supervise_unobserved(budget, hard_grace)?;
+        Ok(tokio::task::spawn_blocking(move || {
+            // The actual worker owns supervision and capacity. Detaching the
+            // request future releases neither one.
+            let _permit = permit;
+            let _completion = completion;
+            work()
+        }))
     }
 }
 
