@@ -15,3 +15,11 @@
 /docs/architecture/ @ProfHepta
 /docs/data/ @ProfHepta
 /docs/security/ @ProfHepta
+
+# control.engineering exact-blob, product-caller and external-evidence changes
+# require an independent current-head review. These routes do not manufacture
+# semantic acceptance; the executable review gate separately verifies it.
+/tools/hepta-engineering-control/ @ProfHepta @Franksudoman
+/docs/modules/control.engineering/ @ProfHepta @Franksudoman
+/qualification/module-execution-dossiers/detail/control.engineering.md @ProfHepta @Franksudoman
+/.github/workflows/control-engineering-* @ProfHepta @Franksudoman

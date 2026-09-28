@@ -1,0 +1,97 @@
+name: control.engineering production acceptance
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Exact main commit to verify
+        required: true
+        type: string
+      target_digest:
+        description: SHA-256 digest of the authorized target deployment identity
+        required: true
+        type: string
+      receipts_path:
+        description: Absolute path to the externally supplied receipt bundle on the target runner
+        required: true
+        default: /opt/hepta/control-engineering/external-receipts.json
+        type: string
+      public_keys_path:
+        description: Absolute path to the operator-controlled public-key manifest
+        required: true
+        default: /opt/hepta/control-engineering/public-keys.json
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: control-engineering-production-acceptance-${{ inputs.source_sha }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: Verify external production evidence on target host
+    runs-on: [self-hosted, linux, control-engineering-production]
+    environment: control-engineering-production
+    timeout-minutes: 60
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONPATH: tools/hepta-engineering-control
+    steps:
+      - name: Checkout exact main commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ inputs.source_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Require exact protected-main identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "${{ inputs.source_sha }}" =~ ^[0-9a-f]{40}$ ]]
+          [[ "${{ inputs.target_digest }}" =~ ^[0-9a-f]{64}$ ]]
+          test "$(git rev-parse HEAD)" = "${{ inputs.source_sha }}"
+          git fetch --no-tags origin main
+          test "$(git rev-parse refs/remotes/origin/main)" = "${{ inputs.source_sha }}"
+          test -f "${{ inputs.receipts_path }}"
+          test ! -L "${{ inputs.receipts_path }}"
+          test -f "${{ inputs.public_keys_path }}"
+          test ! -L "${{ inputs.public_keys_path }}"
+
+      - name: Re-run durable owner recovery and stress qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -v \
+            -s tools/hepta-engineering-control -p 'test_*.py'
+          python3 -m control_engineering_v2.stress_profile \
+            --crash-reopens 20 \
+            --concurrent-writers 16 \
+            --growth-records 1500 \
+            --output "$RUNNER_TEMP/control-engineering-target-stress.json"
+
+      - name: Verify externally governed role-separated evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_tree="$(git rev-parse HEAD^{tree})"
+          python3 -m control_engineering_v2.production_acceptance \
+            --receipts "${{ inputs.receipts_path }}" \
+            --public-keys "${{ inputs.public_keys_path }}" \
+            --source-commit "${{ inputs.source_sha }}" \
+            --source-tree "$source_tree" \
+            --target-digest "${{ inputs.target_digest }}" \
+            --output "$RUNNER_TEMP/control-engineering-production-verification.json"
+
+      - name: Retain target-host verification
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: control-engineering-production-verification-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/control-engineering-target-stress.json
+            ${{ runner.temp }}/control-engineering-production-verification.json
+          if-no-files-found: error
+          retention-days: 90
