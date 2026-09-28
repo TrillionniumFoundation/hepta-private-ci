@@ -16,3 +16,6 @@ include!("intelligence_learning_base.rs");
 
 #[path = "intelligence_learning_current.rs"]
 mod current_time;
+
+#[path = "intelligence_learning_product_api.rs"]
+mod product_api;
