@@ -168,7 +168,7 @@ jobs:
       fail-fast: false
       matrix:
         lane: [source-head, synthetic-merge]
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-24.04
     timeout-minutes: 240
     env:
       CARGO_TERM_COLOR: always

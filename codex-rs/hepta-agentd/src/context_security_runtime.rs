@@ -10,7 +10,6 @@ use std::pin::Pin;
 use std::sync::Arc;
 use std::sync::OnceLock;
 
-use codex_hepta_prompt_registry::ExternallyVerifiedPromptContextAuthoritySnapshotV3;
 use codex_hepta_prompt_registry::PromptContextAuthoritySnapshotV3;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -26,7 +25,7 @@ pub type ExternalContextAuthorityFuture<'a> = Pin<
     Box<
         dyn Future<
                 Output = Result<
-                    ExternallyVerifiedPromptContextAuthoritySnapshotV3,
+                    PromptContextAuthoritySnapshotV3,
                     ExternalContextSecurityErrorV3,
                 >,
             > + Send
