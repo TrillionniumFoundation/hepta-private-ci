@@ -160,9 +160,8 @@ impl AgentdCompactionCheckpointHostV1 {
         lease_expires_at_unix_seconds: u64,
         now_unix_seconds: u64,
     ) -> Result<(), AgentdError> {
-        self.checked_coordinator()
-            .await?
-            .0
+        let (coordinator, _) = self.checked_coordinator().await?;
+        coordinator
             .renew_lease(lease_expires_at_unix_seconds, now_unix_seconds)
             .await
             .map_err(compaction_error)
@@ -173,9 +172,8 @@ impl AgentdCompactionCheckpointHostV1 {
         manifest_bytes: &[u8],
         now_unix_seconds: u64,
     ) -> Result<Digest32, AgentdError> {
-        self.checked_coordinator()
-            .await?
-            .0
+        let (mut coordinator, _) = self.checked_coordinator().await?;
+        coordinator
             .install_successor_manifest(manifest_bytes, now_unix_seconds)
             .await
             .map_err(compaction_error)
@@ -189,7 +187,15 @@ impl AgentdCompactionCheckpointHostV1 {
         now_unix_seconds: u64,
     ) -> Result<CompactionPublicationReceiptV2, AgentdError> {
         let started = Instant::now();
-        let (coordinator, queue_wait_micros) = self.checked_coordinator().await?;
+        let checked = self.checked_coordinator().await;
+        let (coordinator, queue_wait_micros) = match checked {
+            Ok(value) => value,
+            Err(error) => {
+                self.record_timing(0, duration_micros(started.elapsed()), false)
+                    .await;
+                return Err(error);
+            }
+        };
         let result = coordinator
             .publish_verified_checkpoint(
                 idempotency_key,
@@ -216,21 +222,27 @@ impl AgentdCompactionCheckpointHostV1 {
         now_unix_seconds: u64,
     ) -> Result<Option<VerifiedCompactionSelectionV2>, AgentdError> {
         let started = Instant::now();
-        let (coordinator, queue_wait_micros) = self.checked_coordinator().await?;
+        let checked = self.checked_coordinator().await;
+        let (coordinator, queue_wait_micros) = match checked {
+            Ok(value) => value,
+            Err(error) => {
+                self.record_timing(0, duration_micros(started.elapsed()), false)
+                    .await;
+                return Err(error);
+            }
+        };
         let selection = coordinator
             .recover_current_checkpoint(scope_id, purpose_id, now_unix_seconds)
             .await
             .map_err(compaction_error);
         drop(coordinator);
         let result = match selection {
-            Ok(selection) => {
-                // A historical signature does not outlive current writer authority.
-                self.production_writer
-                    .writer()
-                    .verify_current_authority()
-                    .await?;
-                Ok(selection)
-            }
+            Ok(selection) => self
+                .production_writer
+                .writer()
+                .verify_current_authority()
+                .await
+                .map(|()| selection),
             Err(error) => Err(error),
         };
         self.record_timing(
@@ -248,9 +260,8 @@ impl AgentdCompactionCheckpointHostV1 {
         reason_digest: Digest32,
         revoked_at_unix_seconds: u64,
     ) -> Result<Digest32, AgentdError> {
-        self.checked_coordinator()
-            .await?
-            .0
+        let (coordinator, _) = self.checked_coordinator().await?;
+        coordinator
             .revoke_checkpoint(checkpoint_digest, reason_digest, revoked_at_unix_seconds)
             .await
             .map_err(compaction_error)
@@ -261,9 +272,8 @@ impl AgentdCompactionCheckpointHostV1 {
         checkpoint_digest: Digest32,
         now_unix_seconds: u64,
     ) -> Result<(), AgentdError> {
-        self.checked_coordinator()
-            .await?
-            .0
+        let (coordinator, _) = self.checked_coordinator().await?;
+        coordinator
             .release_source_retention(checkpoint_digest, now_unix_seconds)
             .await
             .map_err(compaction_error)
@@ -274,9 +284,8 @@ impl AgentdCompactionCheckpointHostV1 {
         now_unix_seconds: u64,
         claim_token: &str,
     ) -> Result<Option<DurableCompactionOutboxEventV1>, AgentdError> {
-        self.checked_coordinator()
-            .await?
-            .0
+        let (coordinator, _) = self.checked_coordinator().await?;
+        coordinator
             .claim_next_outbox(now_unix_seconds, claim_token)
             .await
             .map_err(compaction_error)
@@ -287,9 +296,8 @@ impl AgentdCompactionCheckpointHostV1 {
         event: &DurableCompactionOutboxEventV1,
         delivered_at_unix_seconds: u64,
     ) -> Result<(), AgentdError> {
-        self.checked_coordinator()
-            .await?
-            .0
+        let (coordinator, _) = self.checked_coordinator().await?;
+        coordinator
             .complete_outbox(event, delivered_at_unix_seconds)
             .await
             .map_err(compaction_error)
@@ -312,8 +320,9 @@ fn summarize_metrics(
     samples: &VecDeque<CompactEngineHostTimingSampleV1>,
 ) -> CompactEngineHostMetricsV1 {
     let sample_count = u64::try_from(samples.len()).unwrap_or(u64::MAX);
-    let successful_operations = u64::try_from(samples.iter().filter(|sample| sample.succeeded).count())
-        .unwrap_or(u64::MAX);
+    let successful_operations =
+        u64::try_from(samples.iter().filter(|sample| sample.succeeded).count())
+            .unwrap_or(u64::MAX);
     let failed_operations = sample_count.saturating_sub(successful_operations);
     let queue_wait = samples
         .iter()
@@ -414,5 +423,27 @@ fn compaction_error(error: CompactionCoordinatorErrorV2) -> AgentdError {
         action,
         commit_state,
         message,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn latency_summary_uses_nearest_rank_percentiles() {
+        let summary = summarize_latency((1_u64..=100).collect());
+        assert_eq!(summary.p50_micros, 50);
+        assert_eq!(summary.p95_micros, 95);
+        assert_eq!(summary.p99_micros, 99);
+        assert_eq!(summary.maximum_micros, 100);
+    }
+
+    #[test]
+    fn empty_latency_summary_is_zeroed() {
+        assert_eq!(
+            summarize_latency(Vec::new()),
+            CompactEngineLatencySummaryV1::default()
+        );
     }
 }
