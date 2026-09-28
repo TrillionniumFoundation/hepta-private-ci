@@ -1,0 +1,277 @@
+--- a/codex-rs/hepta-compact-engine/src/publication.rs
++++ b/codex-rs/hepta-compact-engine/src/publication.rs
+@@ -231,11 +231,18 @@
+         let generator = registry.resolve(CompactionTrustRoleV1::SemanticGenerator, &generation.key_id, generation.trust_epoch, accepted_at_unix_seconds)?;
+         let tokenizer = registry.resolve(CompactionTrustRoleV1::Tokenizer, &selection.tokenizer_key_id, selection.tokenizer_trust_epoch, accepted_at_unix_seconds)?;
+         let evaluator = registry.resolve(CompactionTrustRoleV1::Evaluator, &evaluation.key_id, evaluation.trust_epoch, accepted_at_unix_seconds)?;
+-        if evaluator.principal_id == generator.principal_id || evaluator.principal_id == selector.principal_id
+-            || evaluator.enrollment.verifying_key == generator.enrollment.verifying_key
+-            || evaluator.enrollment.verifying_key == selector.enrollment.verifying_key
+-        {
+-            return Err(CompactionAdmissionErrorV1::Invalid("evaluator is not an independent registered principal"));
++        for (left, right) in [
++            (selector, generator),
++            (selector, evaluator),
++            (generator, evaluator),
++        ] {
++            if left.principal_id == right.principal_id
++                || left.enrollment.verifying_key == right.enrollment.verifying_key
++            {
++                return Err(CompactionAdmissionErrorV1::Invalid(
++                    "selector, generator and evaluator must be pairwise independent registered principals",
++                ));
++            }
+         }
+         if generator.artifact_digest != request.source_snapshot.vector.model_digest
+             || tokenizer.artifact_digest != request.source_snapshot.vector.tokenizer_digest
+--- a/codex-rs/hepta-compact-engine/src/durable_facade.rs
++++ b/codex-rs/hepta-compact-engine/src/durable_facade.rs
+@@ -55,6 +55,7 @@
+             pub async fn publish(
+                 &self,
+                 bundle: &DurableCompactionBundleV1,
++                verification_time_unix_seconds: u64,
+             ) -> Result<DurableCompactionPublicationReceiptV1, DurableCompactionError> {
+                 if bundle.owner_id != self.inner.owner_id {
+                     return Err(invalid(
+@@ -65,7 +66,9 @@
+                 sqlx::query("BEGIN IMMEDIATE")
+                     .execute(&mut *connection)
+                     .await?;
+-                let result = self.publish_tx(&mut connection, bundle).await;
++                let result = self
++                    .publish_tx(&mut connection, bundle, verification_time_unix_seconds)
++                    .await;
+                 match result {
+                     Ok(receipt) => {
+                         sqlx::query("COMMIT")
+@@ -86,9 +89,14 @@
+                 &self,
+                 connection: &mut SqliteConnection,
+                 bundle: &DurableCompactionBundleV1,
++                verification_time_unix_seconds: u64,
+             ) -> Result<DurableCompactionPublicationReceiptV1, DurableCompactionError> {
+-                self.verify_publication_fence_tx(connection, bundle)
+-                    .await?;
++                self.verify_publication_fence_tx(
++                    connection,
++                    bundle,
++                    verification_time_unix_seconds,
++                )
++                .await?;
+ 
+                 if let Some(row) = sqlx::query(
+                     "SELECT candidate_digest FROM compaction_candidates
+@@ -157,6 +165,7 @@
+                 &self,
+                 connection: &mut SqliteConnection,
+                 bundle: &DurableCompactionBundleV1,
++                verification_time_unix_seconds: u64,
+             ) -> Result<(), DurableCompactionError> {
+                 let (archive_owner, archive_root, archive_manifest) =
+                     publication_archive_identity(&bundle.images.proof_image)?;
+@@ -165,6 +174,7 @@
+                     &archive_owner,
+                     archive_root,
+                     archive_manifest,
++                    verification_time_unix_seconds,
+                 )
+                 .await
+             }
+@@ -175,6 +185,7 @@
+                 archive_owner: &StableId,
+                 archive_root: Digest32,
+                 archive_manifest: Digest32,
++                verification_time_unix_seconds: u64,
+             ) -> Result<(), DurableCompactionError> {
+                 let fence = self.publication_fence.ok_or_else(|| {
+                     conflict(
+@@ -222,6 +233,7 @@
+                     || u64::try_from(lease_epoch).ok() != Some(fence.lease_epoch)
+                     || u64::try_from(lease_expiry).ok().is_none_or(|value| {
+                         value < fence.minimum_expiry_unix_seconds
++                            || value <= verification_time_unix_seconds
+                     })
+                     || active_manifest != archive_manifest.to_string()
+                     || manifest_root != archive_root.to_string()
+--- a/codex-rs/hepta-compact-engine/src/coordinator.rs
++++ b/codex-rs/hepta-compact-engine/src/coordinator.rs
+@@ -322,7 +322,7 @@
+         )?;
+ 
+         let started = Instant::now();
+-        let receipt = self.store.publish(&bundle).await?;
++        let receipt = self.store.publish(&bundle, now_unix_seconds).await?;
+         let publish_latency_micros = saturating_micros(started.elapsed().as_micros());
+         let payload_bytes = u64::try_from(
+             publication.candidate().semantic_payload().payload.len(),
+--- a/codex-rs/hepta-compact-engine/src/durable_fence_tests.rs
++++ b/codex-rs/hepta-compact-engine/src/durable_fence_tests.rs
+@@ -110,6 +110,7 @@
+             &owner,
+             root,
+             manifest,
++            10,
+         )
+         .await
+         .expect_err("stale owner must fail");
+@@ -139,12 +140,45 @@
+             &owner,
+             root,
+             Digest32::of_bytes(b"stale-manifest"),
++            10,
+         )
+         .await
+         .expect_err("stale manifest must fail");
+     assert!(matches!(error, DurableCompactionError::Conflict(_)));
+     sqlx::query("ROLLBACK")
+         .execute(&mut *connection)
++        .await
++        .expect("rollback");
++}
++
++
++#[tokio::test]
++async fn naturally_expired_owner_is_rejected_inside_artifact_transaction() {
++    let owner = StableId::new("compact-owner").expect("owner");
++    let root = Digest32::of_bytes(b"root");
++    let token = Digest32::of_bytes(b"lease-one");
++    let manifest = Digest32::of_bytes(b"manifest-one");
++    let (_temp, store) =
++        fenced_store(owner.as_str(), root, token, manifest).await;
++
++    let mut connection = store.inner.pool.acquire().await.expect("connection");
++    sqlx::query("BEGIN IMMEDIATE")
++        .execute(&mut *connection)
++        .await
++        .expect("begin");
++    let error = store
++        .verify_publication_fence_identity_tx(
++            &mut connection,
++            &owner,
++            root,
++            manifest,
++            1_000,
++        )
++        .await
++        .expect_err("lease expiring at the verification instant must fail");
++    assert!(matches!(error, DurableCompactionError::Conflict(_)));
++    sqlx::query("ROLLBACK")
++        .execute(&mut *connection)
+         .await
+         .expect("rollback");
+ }
+--- a/codex-rs/hepta-compact-engine/src/product_e2e_tests.rs
++++ b/codex-rs/hepta-compact-engine/src/product_e2e_tests.rs
+@@ -64,9 +64,22 @@
+ 
+ impl ProductTrustFixture {
+     fn new(owner_id: &StableId) -> Self {
++        Self::new_with_role_aliases(owner_id, false, false)
++    }
++
++    fn new_with_role_aliases(
++        owner_id: &StableId,
++        shared_selector_generator_principal: bool,
++        shared_selector_generator_key: bool,
++    ) -> Self {
+         let root = SigningKey::from_bytes(&[29_u8; 32]);
+         let selector_key = SigningKey::from_bytes(&[31_u8; 32]);
+-        let generator_key = SigningKey::from_bytes(&[37_u8; 32]);
++        let generator_seed = if shared_selector_generator_key {
++            [31_u8; 32]
++        } else {
++            [37_u8; 32]
++        };
++        let generator_key = SigningKey::from_bytes(&generator_seed);
+         let tokenizer_key = SigningKey::from_bytes(&[41_u8; 32]);
+         let evaluator_key = SigningKey::from_bytes(&[43_u8; 32]);
+         let selector = TrustedRetentionSelectorV1 {
+@@ -115,7 +128,11 @@
+                 },
+                 CompactionTrustedPrincipalV1 {
+                     enrollment: generator.enrollment.clone(),
+-                    principal_id: id("principal:e2e:generator"),
++                    principal_id: if shared_selector_generator_principal {
++                        id("principal:e2e:selector")
++                    } else {
++                        id("principal:e2e:generator")
++                    },
+                     subject_id: id("subject:e2e:generator"),
+                     artifact_digest: digest("model:e2e"),
+                 },
+@@ -227,7 +244,7 @@
+     checkpoint_generation: u64,
+     predecessor: Option<Digest32>,
+     nonce_label: &str,
+-) -> VerifiedCompactionPublicationV1 {
++) -> Result<VerifiedCompactionPublicationV1, CompactionAdmissionErrorV1> {
+     let source_snapshot = snapshot_key(compact_generation, checkpoint_generation + 20);
+     let mut inputs = Vec::with_capacity(record_ids.len());
+     let mut heads = BTreeMap::<StableId, MemoryRecord>::new();
+@@ -465,13 +482,44 @@
+         &fixture.registry,
+         NOW,
+     )
+-    .expect("sealed publication")
+ }
+ 
+ fn database_url(temp: &TempDir) -> String {
+     format!("sqlite://{}", temp.path().join("product-e2e.db").display())
+ }
+ 
++#[test]
++fn publication_rejects_selector_generator_principal_alias() {
++    let owner = id("agent:e2e:principal-alias-owner");
++    let fixture = ProductTrustFixture::new_with_role_aliases(&owner, true, false);
++    let error = sealed_publication(
++        &fixture,
++        &["memory:e2e:principal-alias"],
++        1,
++        2,
++        None,
++        "principal-alias",
++    )
++    .expect_err("selector and generator principal alias must fail");
++    assert!(matches!(error, CompactionAdmissionErrorV1::Invalid(_)));
++}
++
++#[test]
++fn publication_rejects_selector_generator_key_alias() {
++    let owner = id("agent:e2e:key-alias-owner");
++    let fixture = ProductTrustFixture::new_with_role_aliases(&owner, false, true);
++    let error = sealed_publication(
++        &fixture,
++        &["memory:e2e:key-alias"],
++        1,
++        2,
++        None,
++        "key-alias",
++    )
++    .expect_err("selector and generator key alias must fail");
++    assert!(matches!(error, CompactionAdmissionErrorV1::Invalid(_)));
++}
++
+ #[tokio::test]
+ async fn public_v2_path_publishes_restarts_reconstructs_and_advances() {
+     let owner = id("agent:e2e:owner");
+@@ -479,7 +527,8 @@
+     let temp = TempDir::new().expect("temp dir");
+     let url = database_url(&temp);
+ 
+-    let first = sealed_publication(&fixture, &["memory:e2e:a"], 1, 2, None, "first");
++    let first = sealed_publication(&fixture, &["memory:e2e:a"], 1, 2, None, "first")
++        .expect("sealed first publication");
+     let first_checkpoint = first.candidate().checkpoint().checkpoint_digest;
+     let coordinator = MemoryCheckpointCoordinatorV2::open(
+         &url,
+@@ -533,7 +582,8 @@
+         3,
+         Some(first_checkpoint),
+         "second",
+-    );
++    )
++    .expect("sealed second publication");
+     let second_checkpoint = second.candidate().checkpoint().checkpoint_digest;
+     reopened
+         .publish_verified_checkpoint("operation:e2e:second", &second, NOW + 600, NOW + 2)
