@@ -23,3 +23,26 @@ just test --locked --lib -p codex-hepta-infer-core --retries 0
 ```
 
 The source tests do not establish successful execution until an exact-candidate native result is retained. This journal repair does not complete physical Laya execution, Agentd/TaskFlow wiring, cross-owner recovery or a trusted provider reconciler.
+
+## Exact-candidate recovery and retained-history qualification
+
+The architecture workflow selects actual tests through the repository `just test`
+entry point with retries disabled. A successful process exit with zero observed
+passing tests remains a failed execution record. The prior nonexistent history
+and alternating-writer selectors are replaced by the current retained-history
+curve and `exclusive_owner_turnover_retains_unknown_and_completed_work`.
+
+The turnover test reopens sixteen successive exclusive owners, rejects overlap,
+retains a cancelled but dispatch-fenced operation and its occupied capacity,
+rejects replacement-worker identity and repeated dispatch, and checks complete
+historical records without extra journal bytes. Only an explicit matching
+completion settles the unknown computation; prior cancellation still prevents
+eligible delivery. This is not a claim of live split/merge, parallel writers,
+incremental replay, memory reclamation, power-loss recovery or compaction. The
+existing legacy maintenance selector continues to disclose that it measures
+retained append/fsync/reopen rather than compaction.
+
+All commands within each architecture scope retain their independent execution
+records even when an earlier command fails; any failure still makes the step
+fail. Source-head and fixed-base-merge remain separately executed, with the
+existing command/identity/zero-test and repository-control checks unchanged.

@@ -4,8 +4,9 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{Instant, SystemTime, UNIX_EPOCH};
 
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+use codex_hepta_infer_core::durable_control::Error;
 use codex_hepta_infer_core::durable_control::semantic::{
-    SemanticAdmissionV1, SemanticCompletionV1, SemanticPhaseV1,
+    SemanticAdmissionV1, SemanticCompletionV1, SemanticPhaseV1, SemanticRecordV1,
 };
 use codex_hepta_infer_core::{RetrievalSourceV1, SemanticRetrievalRequestV1};
 use codex_hepta_types::Digest32;
@@ -156,6 +157,141 @@ fn post_compaction_multi_generation_curve() {
             "model_executed": false,
             "long_term_slo_established": false,
             "legacy_filter_compatibility": true
+        })
+    );
+}
+
+/// Reopen through distinct exclusive owners without treating an unknown effect
+/// as a free slot or a new worker's permission to run it. This is sequential
+/// ownership turnover, not concurrent writers, incremental replay or compaction.
+#[test]
+#[ignore = "explicit exclusive-owner turnover and retained-history measurement"]
+fn exclusive_owner_turnover_retains_unknown_and_completed_work() {
+    let path = JournalPath::new();
+    let pending_id = "pending.original";
+    let original = admission(pending_id);
+    let mut owner = DurableInferenceControl::open(&path.0, 64).expect("owner");
+    let reserved = owner
+        .reserve_semantic(100, original.clone(), 2)
+        .expect("reserve original");
+    owner
+        .fence_semantic_dispatch(pending_id, reserved.revision, 101)
+        .expect("original dispatch fence");
+    let pending = owner.cancel_semantic(pending_id).expect("cancel unknown");
+    assert!(pending.execution_unknown());
+    assert!(pending.cancel_requested);
+    drop(owner);
+
+    let mut terminals: Vec<(String, SemanticRecordV1)> = Vec::new();
+    let mut curve = Vec::new();
+    for generation in 4..20 {
+        let before_bytes = fs::metadata(&path.0).expect("journal length").len();
+        let started = Instant::now();
+        let mut owner = DurableInferenceControl::open(&path.0, 64).expect("successor");
+        let reopen_us = started.elapsed().as_micros();
+        assert!(matches!(
+            DurableInferenceControl::open(&path.0, 64),
+            Err(Error::WriterUnavailable)
+        ));
+        assert_eq!(
+            owner
+                .reserve_semantic(10_000, original.clone(), 2)
+                .expect("history"),
+            pending
+        );
+        assert!(
+            owner
+                .fence_semantic_dispatch(pending_id, pending.revision, 102)
+                .is_err()
+        );
+        let mut substituted = original.clone();
+        substituted.worker_id = format!("worker.{generation}");
+        substituted.worker_generation = generation;
+        assert!(owner.reserve_semantic(100, substituted, 2).is_err());
+        for (id, expected) in &terminals {
+            assert_eq!(owner.semantic_record(id).expect("retained"), Some(expected));
+        }
+        assert_eq!(
+            fs::metadata(&path.0).expect("read-only history").len(),
+            before_bytes
+        );
+
+        let id = format!("successor.{generation}");
+        let mut current = admission(&id);
+        let mut input = request(&id);
+        input.generation = generation;
+        current.request_wire = input.encode().expect("new-generation request");
+        current.worker_generation = generation;
+        current.worker_id = format!("worker.{generation}");
+        let active = owner
+            .reserve_semantic(100, current.clone(), 2)
+            .expect("new work");
+        // Cancellation did not free the original unknown operation's slot.
+        assert!(matches!(
+            owner.reserve_semantic(100, admission("excess.work"), 2),
+            Err(Error::CapacityExceeded)
+        ));
+        owner
+            .fence_semantic_dispatch(&id, active.revision, 101)
+            .expect("new fence");
+        let mut observed = completion(&id);
+        // Bind the existing binary reply to this exact generation's request.
+        observed.reply_wire[8..40].copy_from_slice(Digest32::of_bytes(&current.request_wire).as_array());
+        input
+            .decode_reply(&observed.reply_wire)
+            .expect("new-generation reply");
+        owner.complete_semantic(&id, observed).expect("terminal");
+        let terminal = owner
+            .acknowledge_semantic_delivery(&id, "5".repeat(64))
+            .expect("ack");
+        terminals.push((id, terminal));
+        let after_bytes = fs::metadata(&path.0).expect("appended journal").len();
+        assert!(after_bytes > before_bytes);
+        curve.push(serde_json::json!({
+            "generation": generation,
+            "retained_terminals": terminals.len(),
+            "unknown_operations": 1,
+            "reopen_us": reopen_us,
+            "journal_bytes": after_bytes,
+            "history_lookup_appended_bytes": 0
+        }));
+        drop(owner);
+    }
+    let mut owner = DurableInferenceControl::open(&path.0, 64).expect("final successor");
+    assert_eq!(
+        owner.semantic_record(pending_id).expect("pending history"),
+        Some(&pending)
+    );
+    let settled = owner
+        .complete_semantic(pending_id, completion(pending_id))
+        .expect("observed completion");
+    assert!(!settled.execution_unknown());
+    // A late physical result cannot undo a prior cancellation or authorize use.
+    assert!(settled.cancel_requested);
+    assert!(!settled.delivery_pending());
+    drop(owner);
+    let owner = DurableInferenceControl::open(&path.0, 64).expect("settled reopen");
+    assert_eq!(
+        owner.semantic_record(pending_id).expect("settled history"),
+        Some(&settled)
+    );
+    for (id, expected) in &terminals {
+        assert_eq!(
+            owner.semantic_record(id).expect("terminal history"),
+            Some(expected)
+        );
+    }
+    println!(
+        "HEPTA_OWNER_TURNOVER={}",
+        serde_json::json!({
+            "schema": "hepta.semantic-owner.turnover.v1",
+            "curve": curve,
+            "concurrent_writers_allowed": false,
+            "unknown_operation_replayed": false,
+            "model_executed": false,
+            "compaction_performed": false,
+            "resource_reclamation_attested": false,
+            "long_term_slo_established": false
         })
     );
 }

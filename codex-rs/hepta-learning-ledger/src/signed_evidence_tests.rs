@@ -382,3 +382,68 @@ fn observer_and_evaluator_require_pairwise_independence() {
         Err(SignedEvidenceError::ControllerCollision)
     );
 }
+
+#[test]
+fn selector_role_is_explicit_and_independent_from_evaluator() {
+    for controller in ["controller-c", "controller-b"] {
+        let mut registry = trust();
+        registry.signers.push(signer(
+            "selector",
+            controller,
+            3,
+            LearningEvidenceRoleV1::Selector,
+        ));
+        let verifier = LearningEvidenceVerifierV1::new(registry).expect("trust");
+        let selection = sign(
+            &verifier,
+            "selector",
+            LearningEvidenceRoleV1::Selector,
+            3,
+            b"candidate selection",
+        );
+        let selector = verifier
+            .verify(
+                LearningEvidenceRoleV1::Selector,
+                &selection,
+                b"candidate selection",
+                50,
+            )
+            .expect("authenticated selection");
+        assert_eq!(
+            verifier.verify(
+                LearningEvidenceRoleV1::Evaluator,
+                &selection,
+                b"candidate selection",
+                50,
+            ),
+            Err(SignedEvidenceError::RoleMismatch)
+        );
+        let evaluator = verifier
+            .verify(
+                LearningEvidenceRoleV1::Evaluator,
+                &sign(
+                    &verifier,
+                    "evaluator",
+                    LearningEvidenceRoleV1::Evaluator,
+                    2,
+                    b"metrics",
+                ),
+                b"metrics",
+                50,
+            )
+            .expect("authenticated evaluation");
+        let expected = if controller == "controller-b" {
+            Err(SignedEvidenceError::ControllerCollision)
+        } else {
+            Ok(())
+        };
+        assert_eq!(
+            verify_signed_independent_roles_v1(&selector, &evaluator, 50),
+            expected
+        );
+        assert_eq!(
+            verify_signed_independent_roles_v1(&selector, &evaluator, 91),
+            Err(SignedEvidenceError::ValidityWindow)
+        );
+    }
+}
