@@ -1,0 +1,44 @@
+name: Intuition source proposal inspection
+on:
+  push:
+    branches: [codex/intuition-devhost-20260928]
+    paths: [.github/workflows/intuition-proposal-inspect.yml]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  inspect:
+    runs-on: windows-2025
+    timeout-minutes: 5
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          repository: ${{ github.repository }}
+          github-token: ${{ github.token }}
+          run-id: 36399308967
+          name: intuition-source-proposal-301cc06cbc80fe339f8f3055db5315d53acfc177-1
+          path: ${{ runner.temp }}/source-proposal
+      - name: Print bounded source identity and actual authoring test summaries
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PROPOSAL: ${{ runner.temp }}/source-proposal/proposal.json
+        run: |
+          python - <<'PY'
+          import json, os, pathlib, re, urllib.request
+          p = pathlib.Path(os.environ['PROPOSAL'])
+          assert p.stat().st_size < 100000
+          value = json.loads(p.read_text(encoding='utf-8'))
+          assert value['sourceSha'] == '301cc06cbc80fe339f8f3055db5315d53acfc177'
+          assert value['candidateRefUpdated'] is False
+          print(json.dumps(value, indent=2))
+          request = urllib.request.Request(
+              'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/108853118867/logs',
+              headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json'})
+          with urllib.request.urlopen(request, timeout=60) as response:
+              log = response.read(4000000).decode('utf-8', errors='replace')
+          lines = [line for line in log.splitlines() if re.search(r'test result:|Ran [0-9]+ tests|INTUITION_SOURCE_PROPOSAL=|Finished `dev`|Finished `test`', line)]
+          for line in lines[-20:]:
+              print(line)
+          print('Inspection only; source authoring results do not replace immutable candidate qualification.')
+          PY
