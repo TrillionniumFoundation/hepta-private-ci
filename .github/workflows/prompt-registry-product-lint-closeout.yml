@@ -49,16 +49,15 @@ jobs:
 
           path = Path('codex-rs/hepta-intelligence/src/canonical.rs')
           text = path.read_text(encoding='utf-8')
-          old = '''#[derive(Clone, Debug, Eq, PartialEq)]
-pub enum CanonicalRunOutcomeV1 {
-'''
-          new = '''#[derive(Clone, Debug, Eq, PartialEq)]
-#[expect(
-    clippy::large_enum_variant,
-    reason = "V1 is a public compatibility contract; boxing Ready would break existing Rust callers. Revisit indirection in a separately versioned outcome after measurement."
-)]
-pub enum CanonicalRunOutcomeV1 {
-'''
+          old = "#[derive(Clone, Debug, Eq, PartialEq)]\npub enum CanonicalRunOutcomeV1 {\n"
+          new = (
+              "#[derive(Clone, Debug, Eq, PartialEq)]\n"
+              "#[expect(\n"
+              "    clippy::large_enum_variant,\n"
+              "    reason = \"V1 is a public compatibility contract; boxing Ready would break existing Rust callers. Revisit indirection in a separately versioned outcome after measurement.\"\n"
+              ")]\n"
+              "pub enum CanonicalRunOutcomeV1 {\n"
+          )
           if text.count(old) != 1:
               raise SystemExit('expected exactly one CanonicalRunOutcomeV1 declaration anchor')
           path.write_text(text.replace(old, new), encoding='utf-8')
