@@ -82,12 +82,7 @@ fn cancellation_ack_and_late_terminal_fence_survive_restart() {
         reason: FederationCancellationReasonV1::CallerCancelled,
     };
     let cancel_payload = client
-        .cancel_query(
-            &id("peer-b"),
-            cancellation.clone(),
-            NOW + 3,
-            NOW + 20_000,
-        )
+        .cancel_query(&id("peer-b"), cancellation.clone(), NOW + 3, NOW + 20_000)
         .expect("durable cancel");
     let FederationHostAdmissionV1::Reply(ack_payload) = server
         .admit(&id("peer-a"), &cancel_payload, NOW + 4)
@@ -112,7 +107,9 @@ fn cancellation_ack_and_late_terminal_fence_survive_restart() {
 
     assert!(matches!(
         server.complete_query(admitted, result(403, NOW + 7), NOW + 7),
-        Err(FederationHostError::Recovery(FederationRecoveryError::Cancelled))
+        Err(FederationHostError::Recovery(
+            FederationRecoveryError::Cancelled
+        ))
     ));
     let late_response = encode_from_b(response_for_query(&query, "peer-b", NOW + 7), NOW + 8);
     assert!(matches!(

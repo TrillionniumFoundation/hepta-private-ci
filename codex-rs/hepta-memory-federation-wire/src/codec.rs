@@ -13,6 +13,7 @@ use codex_hepta_wire::encode_typed;
 
 use crate::protocol::AuthenticatedFederationFrameV1;
 use crate::protocol::AuthenticatedFrontierV1;
+use crate::protocol::DecodedFederationFrameV1;
 use crate::protocol::FEDERATION_MAC_BYTES;
 use crate::protocol::FEDERATION_NONCE_BYTES;
 use crate::protocol::FederationCancelAckMessageV1;
@@ -24,8 +25,7 @@ use crate::protocol::FederationQueryMessageV1;
 use crate::protocol::FederationResponseMessageV1;
 use crate::protocol::FederationWireMessageV1;
 
-pub const AUTHENTICATED_FRAME_SCHEMA_V1: &str =
-    "hepta-memory-federation-authenticated-frame-v1";
+pub const AUTHENTICATED_FRAME_SCHEMA_V1: &str = "hepta-memory-federation-authenticated-frame-v1";
 pub const AUTHENTICATED_FRAME_FORMAT_VERSION_V1: u16 = 1;
 pub const MAX_AUTHENTICATED_FRAME_BYTES: usize = 256 * 1024;
 
@@ -68,8 +68,8 @@ impl PayloadCodec for AuthenticatedFrameCodecV1 {
     }
 }
 
-pub fn registered_codec_v1(
-) -> Result<(SchemaRegistry, AuthenticatedFrameCodecV1), FederationCodecError> {
+pub fn registered_codec_v1()
+-> Result<(SchemaRegistry, AuthenticatedFrameCodecV1), FederationCodecError> {
     let codec = AuthenticatedFrameCodecV1::new()?;
     let mut registry = SchemaRegistry::new();
     registry
@@ -100,9 +100,7 @@ pub fn decode_registered_frame_v1(
     )
 }
 
-fn encode_frame(
-    frame: &AuthenticatedFederationFrameV1,
-) -> Result<Vec<u8>, FederationCodecError> {
+fn encode_frame(frame: &AuthenticatedFederationFrameV1) -> Result<Vec<u8>, FederationCodecError> {
     let mut bytes = Vec::new();
     bytes.extend_from_slice(&MAGIC);
     bytes.extend_from_slice(&AUTHENTICATED_FRAME_FORMAT_VERSION_V1.to_be_bytes());
@@ -144,15 +142,17 @@ fn decode_frame(payload: &[u8]) -> Result<AuthenticatedFederationFrameV1, Federa
     let mac = reader.take_array::<FEDERATION_MAC_BYTES>()?;
     reader.require_eof()?;
     Ok(AuthenticatedFederationFrameV1::from_decoded_parts(
-        sender_peer_id,
-        receiver_peer_id,
-        key_id,
-        key_generation,
-        issued_unix_ms,
-        expires_unix_ms,
-        nonce,
-        message,
-        mac,
+        DecodedFederationFrameV1 {
+            sender_peer_id,
+            receiver_peer_id,
+            key_id,
+            key_generation,
+            issued_unix_ms,
+            expires_unix_ms,
+            nonce,
+            message,
+            mac,
+        },
     ))
 }
 
@@ -202,7 +202,9 @@ pub(crate) fn encode_message_into(message: &FederationWireMessageV1, bytes: &mut
     }
 }
 
-fn decode_message(reader: &mut Reader<'_>) -> Result<FederationWireMessageV1, FederationCodecError> {
+fn decode_message(
+    reader: &mut Reader<'_>,
+) -> Result<FederationWireMessageV1, FederationCodecError> {
     match reader.read_u8()? {
         1 => Ok(FederationWireMessageV1::Query(FederationQueryMessageV1 {
             query_id: reader.read_id()?,
@@ -232,14 +234,12 @@ fn decode_message(reader: &mut Reader<'_>) -> Result<FederationWireMessageV1, Fe
                 3 => FederationCancellationReasonV1::AuthorityRevoked,
                 _ => return Err(FederationCodecError::Enum),
             };
-            Ok(FederationWireMessageV1::Cancel(
-                FederationCancelMessageV1 {
-                    query_id,
-                    query_binding_digest,
-                    cancellation_id,
-                    reason,
-                },
-            ))
+            Ok(FederationWireMessageV1::Cancel(FederationCancelMessageV1 {
+                query_id,
+                query_binding_digest,
+                cancellation_id,
+                reason,
+            }))
         }
         4 => {
             let query_id = reader.read_id()?;
@@ -274,7 +274,9 @@ fn encode_frontier(frontier: &AuthenticatedFrontierV1, bytes: &mut Vec<u8>) {
     bytes.extend_from_slice(&frontier.observed_unix_ms.to_be_bytes());
 }
 
-fn decode_frontier(reader: &mut Reader<'_>) -> Result<AuthenticatedFrontierV1, FederationCodecError> {
+fn decode_frontier(
+    reader: &mut Reader<'_>,
+) -> Result<AuthenticatedFrontierV1, FederationCodecError> {
     Ok(AuthenticatedFrontierV1 {
         owner_peer_id: reader.read_id()?,
         generation: reader.read_u64()?,
@@ -348,8 +350,8 @@ impl<'a> Reader<'a> {
         if length == 0 || length > MAX_ID_BYTES {
             return Err(FederationCodecError::Identity);
         }
-        let value = std::str::from_utf8(self.take(length)?)
-            .map_err(|_| FederationCodecError::Utf8)?;
+        let value =
+            std::str::from_utf8(self.take(length)?).map_err(|_| FederationCodecError::Utf8)?;
         StableId::new(value.to_string()).map_err(|_| FederationCodecError::Identity)
     }
 
@@ -405,7 +407,9 @@ impl fmt::Display for FederationCodecError {
         match self {
             Self::Descriptor => formatter.write_str("federation schema descriptor is invalid"),
             Self::Magic => formatter.write_str("federation wire magic is invalid"),
-            Self::Version(version) => write!(formatter, "unsupported federation wire version {version}"),
+            Self::Version(version) => {
+                write!(formatter, "unsupported federation wire version {version}")
+            }
             Self::Identity => formatter.write_str("federation wire identity is invalid"),
             Self::Oversize => formatter.write_str("federation frame is empty or oversized"),
             Self::Truncated => formatter.write_str("federation frame is truncated"),

@@ -12,6 +12,9 @@ use crate::protocol::FederationCancelAckMessageV1;
 use crate::protocol::FederationCancelMessageV1;
 use crate::protocol::FederationCancellationDispositionV1;
 use crate::protocol::FederationCancellationReasonV1;
+use crate::replay::FederationReplayKeyV1;
+
+pub const MAX_FEDERATION_RECOVERY_BYTES: usize = 32 * 1024 * 1024;
 
 const SNAPSHOT_SCHEMA: &str = "hepta.memory-federation.host-recovery.v1";
 const SNAPSHOT_DIGEST_DOMAIN: &[u8] = b"hepta.memory-federation.host-recovery.v1";
@@ -27,7 +30,9 @@ pub struct FederationRecoveryLimitsV1 {
 
 impl FederationRecoveryLimitsV1 {
     pub fn validate(self) -> Result<Self, FederationRecoveryError> {
-        if self.replay_capacity == 0
+        if self.replay_capacity > crate::replay::MAX_FEDERATION_REPLAY_ENTRIES
+            || self.attempt_capacity > crate::attempt::MAX_FEDERATION_ATTEMPTS
+            || self.replay_capacity == 0
             || self.attempt_capacity == 0
             || self.replay_per_peer_capacity == 0
             || self.attempt_per_peer_capacity == 0
@@ -108,6 +113,9 @@ impl DurableFederationStateV1 {
         bytes: &[u8],
     ) -> Result<Self, FederationRecoveryError> {
         limits.validate()?;
+        if bytes.len() > MAX_FEDERATION_RECOVERY_BYTES {
+            return Err(FederationRecoveryError::SnapshotCapacityExceeded);
+        }
         let envelope: RecoveryEnvelope =
             serde_json::from_slice(bytes).map_err(|_| FederationRecoveryError::SnapshotDecode)?;
         let canonical =
@@ -128,6 +136,14 @@ impl DurableFederationStateV1 {
         {
             return Err(FederationRecoveryError::SnapshotIdentityMismatch);
         }
+        if payload.last_observed_unix_ms == 0 {
+            return Err(FederationRecoveryError::SnapshotStateInvalid);
+        }
+        if payload.replay.len() > limits.replay_capacity
+            || payload.attempts.len() > limits.attempt_capacity
+        {
+            return Err(FederationRecoveryError::SnapshotCapacityExceeded);
+        }
         if now_unix_ms < payload.last_observed_unix_ms {
             return Err(FederationRecoveryError::ClockRegression);
         }
@@ -135,21 +151,30 @@ impl DurableFederationStateV1 {
         let mut state = Self::empty(local_peer_id, limits, now_unix_ms)?;
         let mut prior_replay_key = None;
         for record in payload.replay {
-            if prior_replay_key.as_ref().is_some_and(|key| key >= &record.key) {
+            if prior_replay_key
+                .as_ref()
+                .is_some_and(|key| key >= &record.key)
+            {
                 return Err(FederationRecoveryError::SnapshotNotCanonical);
             }
             prior_replay_key = Some(record.key);
             validate_peer(&record.peer_id)?;
-            if record.expires_unix_ms > now_unix_ms {
-                if state.replay.insert(
-                    record.key,
-                    ReplayEntry {
-                        peer_id: record.peer_id,
-                        expires_unix_ms: record.expires_unix_ms,
-                    },
-                ).is_some() {
-                    return Err(FederationRecoveryError::SnapshotDuplicate);
-                }
+            if record.expires_unix_ms == 0 || record.key == [0; 32] {
+                return Err(FederationRecoveryError::SnapshotStateInvalid);
+            }
+            if record.expires_unix_ms > now_unix_ms
+                && state
+                    .replay
+                    .insert(
+                        record.key,
+                        ReplayEntry {
+                            peer_id: record.peer_id,
+                            expires_unix_ms: record.expires_unix_ms,
+                        },
+                    )
+                    .is_some()
+            {
+                return Err(FederationRecoveryError::SnapshotDuplicate);
             }
         }
 
@@ -160,23 +185,48 @@ impl DurableFederationStateV1 {
                 query_id: record.query_id.clone(),
                 query_binding_digest: record.query_binding_digest,
             };
-            if prior_attempt.as_ref().is_some_and(|value| value >= &identity) {
+            if prior_attempt
+                .as_ref()
+                .is_some_and(|value| value >= &identity)
+            {
                 return Err(FederationRecoveryError::SnapshotNotCanonical);
             }
             prior_attempt = Some(identity.clone());
             validate_peer(&record.peer_id)?;
             StableId::new(record.query_id.clone())
                 .map_err(|_| FederationRecoveryError::SnapshotIdentityMismatch)?;
+            require_digest(Digest32::from_array(record.query_binding_digest))?;
             if record.began_unix_ms == 0
+                || record.began_unix_ms > payload.last_observed_unix_ms
                 || record.expires_unix_ms <= record.began_unix_ms
-                || record.expires_unix_ms <= now_unix_ms
             {
+                return Err(FederationRecoveryError::SnapshotStateInvalid);
+            }
+            let restored_state: AttemptState = record.state.try_into()?;
+            let observation = match &restored_state {
+                AttemptState::Pending => record.began_unix_ms,
+                AttemptState::Cancelled {
+                    observed_unix_ms, ..
+                }
+                | AttemptState::Terminal {
+                    observed_unix_ms, ..
+                } => *observed_unix_ms,
+            };
+            if observation < record.began_unix_ms
+                || observation >= record.expires_unix_ms
+                || observation > payload.last_observed_unix_ms
+            {
+                return Err(FederationRecoveryError::SnapshotStateInvalid);
+            }
+            // Expiry is garbage collection, not permission to hide malformed
+            // identities, impossible timestamps or invalid cancellation state.
+            if record.expires_unix_ms <= now_unix_ms {
                 continue;
             }
             let entry = AttemptEntry {
                 began_unix_ms: record.began_unix_ms,
                 expires_unix_ms: record.expires_unix_ms,
-                state: record.state.try_into()?,
+                state: restored_state,
             };
             if state.attempts.insert(identity, entry).is_some() {
                 return Err(FederationRecoveryError::SnapshotDuplicate);
@@ -225,14 +275,17 @@ impl DurableFederationStateV1 {
 
     pub fn preflight_frame(
         &mut self,
-        sender_peer_id: &StableId,
-        receiver_peer_id: &StableId,
-        key_id: &StableId,
-        generation: u64,
-        nonce: &[u8; FEDERATION_NONCE_BYTES],
+        identity: FederationReplayKeyV1<'_>,
         expires_unix_ms: u64,
         now_unix_ms: u64,
     ) -> Result<[u8; 32], FederationRecoveryError> {
+        let FederationReplayKeyV1 {
+            sender_peer_id,
+            receiver_peer_id,
+            key_id,
+            generation,
+            nonce,
+        } = identity;
         self.observe_time(now_unix_ms)?;
         self.purge_expired(now_unix_ms);
         if receiver_peer_id != &self.local_peer_id || generation == 0 {
@@ -241,13 +294,7 @@ impl DurableFederationStateV1 {
         if expires_unix_ms <= now_unix_ms {
             return Err(FederationRecoveryError::Expired);
         }
-        let key = replay_key(
-            sender_peer_id,
-            receiver_peer_id,
-            key_id,
-            generation,
-            nonce,
-        );
+        let key = replay_key(sender_peer_id, receiver_peer_id, key_id, generation, nonce);
         if self.replay.contains_key(&key) {
             return Err(FederationRecoveryError::Replay);
         }
@@ -508,6 +555,10 @@ impl DurableFederationStateV1 {
     }
 }
 
+/// Atomically persist before acknowledging any externally visible transition.
+/// An implementation that cannot determine whether a failed write committed must
+/// reject subsequent operations until reopened; it must not permit a stale live
+/// host to overwrite potentially committed recovery state.
 pub trait FederationRecoveryStoreV1 {
     fn load(&mut self) -> Result<Option<Vec<u8>>, FederationRecoveryError>;
     fn store(&mut self, snapshot: &[u8]) -> Result<(), FederationRecoveryError>;
@@ -770,6 +821,10 @@ pub enum FederationRecoveryError {
     SnapshotDuplicate,
     SnapshotCapacityExceeded,
     StoreUnavailable,
+    StoreLocked,
+    StoreInvalidPath,
+    StoreCapacityExceeded,
+    StoreIndeterminate,
 }
 
 impl fmt::Display for FederationRecoveryError {
@@ -784,7 +839,9 @@ impl fmt::Display for FederationRecoveryError {
             Self::ReplayCapacityExhausted => "durable replay capacity is exhausted",
             Self::ReplayPeerCapacityExhausted => "one peer exhausted its durable replay partition",
             Self::AttemptCapacityExhausted => "durable attempt capacity is exhausted",
-            Self::AttemptPeerCapacityExhausted => "one peer exhausted its durable attempt partition",
+            Self::AttemptPeerCapacityExhausted => {
+                "one peer exhausted its durable attempt partition"
+            }
             Self::DuplicateAttempt => "durable attempt identity already exists",
             Self::UnknownAttempt => "durable attempt identity is unknown",
             Self::Cancelled => "durable attempt was cancelled before terminal completion",
@@ -798,10 +855,24 @@ impl fmt::Display for FederationRecoveryError {
             Self::SnapshotIdentityMismatch => "durable recovery snapshot identity mismatch",
             Self::SnapshotStateInvalid => "durable recovery snapshot state is invalid",
             Self::SnapshotDuplicate => "durable recovery snapshot contains a duplicate identity",
-            Self::SnapshotCapacityExceeded => "durable recovery snapshot exceeds configured isolation limits",
+            Self::SnapshotCapacityExceeded => {
+                "durable recovery snapshot exceeds configured isolation limits"
+            }
             Self::StoreUnavailable => "durable federation recovery store is unavailable",
+            Self::StoreLocked => "durable federation recovery store already has a writer",
+            Self::StoreInvalidPath => "durable federation recovery path identity is invalid",
+            Self::StoreCapacityExceeded => {
+                "durable federation recovery snapshot exceeds its byte limit"
+            }
+            Self::StoreIndeterminate => {
+                "durable recovery commit is indeterminate; close and reopen the store"
+            }
         })
     }
 }
 
 impl Error for FederationRecoveryError {}
+
+#[cfg(test)]
+#[path = "recovery_validation_tests.rs"]
+mod validation_tests;

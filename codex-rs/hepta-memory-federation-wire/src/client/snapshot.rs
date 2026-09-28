@@ -106,8 +106,8 @@ pub(crate) fn encode_client_snapshot(
             })
             .collect(),
     };
-    let payload_bytes = serde_json::to_vec(&payload)
-        .map_err(|_| FederationClientError::SnapshotEncode)?;
+    let payload_bytes =
+        serde_json::to_vec(&payload).map_err(|_| FederationClientError::SnapshotEncode)?;
     let envelope = ClientSnapshotEnvelope {
         digest: client_snapshot_digest(&payload_bytes),
         payload,
@@ -122,29 +122,25 @@ fn client_snapshot_digest(payload: &[u8]) -> [u8; 32] {
     *Digest32::of_bytes(&bytes).as_array()
 }
 
+type RestoredClientSnapshot = (
+    DurableFederationStateV1,
+    BTreeMap<ClientAttemptIdentity, ClientAttemptMetadata>,
+    BTreeMap<String, AuthenticatedFrontierV1>,
+);
+
 pub(crate) fn restore_client_snapshot(
     local_peer_id: &StableId,
     limits: FederationRecoveryLimitsV1,
     now_unix_ms: u64,
     bytes: &[u8],
-) -> Result<
-    (
-        DurableFederationStateV1,
-        BTreeMap<ClientAttemptIdentity, ClientAttemptMetadata>,
-        BTreeMap<String, AuthenticatedFrontierV1>,
-    ),
-    FederationClientError,
-> {
-    let envelope: ClientSnapshotEnvelope = serde_json::from_slice(bytes)
-        .map_err(|_| FederationClientError::SnapshotDecode)?;
-    if serde_json::to_vec(&envelope)
-        .map_err(|_| FederationClientError::SnapshotEncode)?
-        != bytes
-    {
+) -> Result<RestoredClientSnapshot, FederationClientError> {
+    let envelope: ClientSnapshotEnvelope =
+        serde_json::from_slice(bytes).map_err(|_| FederationClientError::SnapshotDecode)?;
+    if serde_json::to_vec(&envelope).map_err(|_| FederationClientError::SnapshotEncode)? != bytes {
         return Err(FederationClientError::SnapshotNotCanonical);
     }
-    let payload_bytes = serde_json::to_vec(&envelope.payload)
-        .map_err(|_| FederationClientError::SnapshotEncode)?;
+    let payload_bytes =
+        serde_json::to_vec(&envelope.payload).map_err(|_| FederationClientError::SnapshotEncode)?;
     let expected = client_snapshot_digest(&payload_bytes);
     if expected != envelope.digest {
         return Err(FederationClientError::SnapshotDigestMismatch);

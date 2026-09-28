@@ -1,3 +1,4 @@
+use crate::replay::FederationReplayKeyV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
@@ -96,10 +97,7 @@ fn query_message() -> FederationQueryMessageV1 {
     }
 }
 
-fn encode_from_a(
-    message: FederationWireMessageV1,
-    nonce_byte: u8,
-) -> Vec<u8> {
+fn encode_from_a(message: FederationWireMessageV1, nonce_byte: u8) -> Vec<u8> {
     let registry = host_a_credentials();
     let credential = registry
         .require_current(&id("peer-a"), &id("peer-b"), &id("key-a-b"), 1, NOW)
@@ -129,10 +127,7 @@ fn verify_at_a(payload: &[u8], now_unix_ms: u64) -> VerifiedFederationFrameV1 {
 #[test]
 fn authenticated_transport_identity_and_owner_cut_form_a_vertical_read_path() {
     let mut host = open_host_b(InMemoryFederationRecoveryStoreV1::default(), NOW);
-    let encoded = encode_from_a(
-        FederationWireMessageV1::Query(query_message()),
-        51,
-    );
+    let encoded = encode_from_a(FederationWireMessageV1::Query(query_message()), 51);
     let admission = host
         .admit(&id("peer-a"), &encoded, NOW + 1)
         .expect("admit query");
@@ -170,10 +165,7 @@ fn authenticated_transport_identity_and_owner_cut_form_a_vertical_read_path() {
 #[test]
 fn secure_transport_peer_must_match_authenticated_frame_sender() {
     let mut host = open_host_b(InMemoryFederationRecoveryStoreV1::default(), NOW);
-    let encoded = encode_from_a(
-        FederationWireMessageV1::Query(query_message()),
-        52,
-    );
+    let encoded = encode_from_a(FederationWireMessageV1::Query(query_message()), 52);
     assert!(matches!(
         host.admit(&id("peer-c"), &encoded, NOW + 1),
         Err(FederationHostError::TransportPeerMismatch)
@@ -183,10 +175,7 @@ fn secure_transport_peer_must_match_authenticated_frame_sender() {
 #[test]
 fn durable_replay_state_survives_host_restart() {
     let mut host = open_host_b(InMemoryFederationRecoveryStoreV1::default(), NOW);
-    let encoded = encode_from_a(
-        FederationWireMessageV1::Query(query_message()),
-        53,
-    );
+    let encoded = encode_from_a(FederationWireMessageV1::Query(query_message()), 53);
     let _ = host
         .admit(&id("peer-a"), &encoded, NOW + 1)
         .expect("first admission");
@@ -194,7 +183,9 @@ fn durable_replay_state_survives_host_restart() {
     let mut restarted = open_host_b(store, NOW + 2);
     assert!(matches!(
         restarted.admit(&id("peer-a"), &encoded, NOW + 2),
-        Err(FederationHostError::Recovery(FederationRecoveryError::Replay))
+        Err(FederationHostError::Recovery(
+            FederationRecoveryError::Replay
+        ))
     ));
 }
 
@@ -202,10 +193,7 @@ fn durable_replay_state_survives_host_restart() {
 fn cancellation_persisted_before_terminal_fences_late_completion_after_restart() {
     let mut host = open_host_b(InMemoryFederationRecoveryStoreV1::default(), NOW);
     let query = query_message();
-    let query_payload = encode_from_a(
-        FederationWireMessageV1::Query(query.clone()),
-        54,
-    );
+    let query_payload = encode_from_a(FederationWireMessageV1::Query(query.clone()), 54);
     let admission = host
         .admit(&id("peer-a"), &query_payload, NOW + 1)
         .expect("query admission");
@@ -252,7 +240,9 @@ fn cancellation_persisted_before_terminal_fences_late_completion_after_restart()
     .expect("late result");
     assert!(matches!(
         restarted.complete_query(admitted, result, NOW + 4),
-        Err(FederationHostError::Recovery(FederationRecoveryError::Cancelled))
+        Err(FederationHostError::Recovery(
+            FederationRecoveryError::Cancelled
+        ))
     ));
 }
 
@@ -279,10 +269,7 @@ fn recovery_snapshot_rejects_clock_rollback_on_restart() {
 #[test]
 fn owner_cut_witness_from_another_peer_is_rejected() {
     let mut host = open_host_b(InMemoryFederationRecoveryStoreV1::default(), NOW);
-    let payload = encode_from_a(
-        FederationWireMessageV1::Query(query_message()),
-        56,
-    );
+    let payload = encode_from_a(FederationWireMessageV1::Query(query_message()), 56);
     let FederationHostAdmissionV1::Query(admitted) = host
         .admit(&id("peer-a"), &payload, NOW + 1)
         .expect("query admission")
@@ -316,16 +303,18 @@ fn durable_state_partitions_replay_and_attempt_capacity_by_peer() {
         attempt_capacity: 4,
         attempt_per_peer_capacity: 2,
     };
-    let mut state = DurableFederationStateV1::empty(id("peer-b"), limits, NOW)
-        .expect("durable state");
+    let mut state =
+        DurableFederationStateV1::empty(id("peer-b"), limits, NOW).expect("durable state");
     for byte in [61_u8, 62_u8] {
         let key = state
             .preflight_frame(
-                &id("peer-a"),
-                &id("peer-b"),
-                &id("key-a-b"),
-                1,
-                &[byte; FEDERATION_NONCE_BYTES],
+                FederationReplayKeyV1 {
+                    sender_peer_id: &id("peer-a"),
+                    receiver_peer_id: &id("peer-b"),
+                    key_id: &id("key-a-b"),
+                    generation: 1,
+                    nonce: &[byte; FEDERATION_NONCE_BYTES],
+                },
                 NOW + 100,
                 NOW,
             )
@@ -336,23 +325,27 @@ fn durable_state_partitions_replay_and_attempt_capacity_by_peer() {
     }
     assert!(matches!(
         state.preflight_frame(
-            &id("peer-a"),
-            &id("peer-b"),
-            &id("key-a-b"),
-            1,
-            &[63; FEDERATION_NONCE_BYTES],
+            FederationReplayKeyV1 {
+                sender_peer_id: &id("peer-a"),
+                receiver_peer_id: &id("peer-b"),
+                key_id: &id("key-a-b"),
+                generation: 1,
+                nonce: &[63; FEDERATION_NONCE_BYTES]
+            },
             NOW + 100,
-            NOW,
+            NOW
         ),
         Err(FederationRecoveryError::ReplayPeerCapacityExhausted)
     ));
     let other = state
         .preflight_frame(
-            &id("peer-c"),
-            &id("peer-b"),
-            &id("key-c-b"),
-            1,
-            &[64; FEDERATION_NONCE_BYTES],
+            FederationReplayKeyV1 {
+                sender_peer_id: &id("peer-c"),
+                receiver_peer_id: &id("peer-b"),
+                key_id: &id("key-c-b"),
+                generation: 1,
+                nonce: &[64; FEDERATION_NONCE_BYTES],
+            },
             NOW + 100,
             NOW,
         )

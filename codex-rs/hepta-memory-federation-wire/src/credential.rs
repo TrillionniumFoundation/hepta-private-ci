@@ -230,10 +230,7 @@ impl PeerCredentialRegistryV1 {
         if generation <= entry.revoked_through_generation {
             return Err(CredentialError::Revoked);
         }
-        let current_generation = entry
-            .current
-            .as_ref()
-            .map(PeerCredentialV1::generation);
+        let current_generation = entry.current.as_ref().map(PeerCredentialV1::generation);
         match current_generation {
             Some(current) if current == generation => {
                 entry.revoked_through_generation = generation;

@@ -14,6 +14,8 @@ mod attempt;
 mod client;
 mod codec;
 mod credential;
+#[cfg(unix)]
+mod file_store;
 mod host;
 mod protocol;
 mod recovery;
@@ -38,6 +40,10 @@ pub use credential::MAX_FEDERATION_CREDENTIAL_KEYS;
 pub use credential::MAX_FEDERATION_CREDENTIAL_KEYS_PER_PEER_PAIR;
 pub use credential::PeerCredentialRegistryV1;
 pub use credential::PeerCredentialV1;
+#[cfg(unix)]
+pub use file_store::FileFederationRecoveryStoreV1;
+#[cfg(unix)]
+pub use file_store::MAX_FEDERATION_SNAPSHOT_BYTES;
 pub use host::AdmittedFederationQueryV1;
 pub use host::FederationHostAdmissionV1;
 pub use host::FederationHostError;
@@ -65,6 +71,7 @@ pub use recovery::FederationRecoveryError;
 pub use recovery::FederationRecoveryLimitsV1;
 pub use recovery::FederationRecoveryStoreV1;
 pub use recovery::InMemoryFederationRecoveryStoreV1;
+pub use replay::FederationReplayKeyV1;
 pub use replay::MAX_FEDERATION_REPLAY_ENTRIES;
 pub use replay::MAX_FEDERATION_REPLAY_ENTRIES_PER_CREDENTIAL;
 pub use replay::ReplayCacheV1;

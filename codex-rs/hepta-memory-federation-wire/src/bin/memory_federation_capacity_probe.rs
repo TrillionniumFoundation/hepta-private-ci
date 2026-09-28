@@ -1,12 +1,13 @@
+use codex_hepta_memory_federation_wire::FederationReplayKeyV1;
 use std::error::Error;
 use std::fs;
 use std::path::PathBuf;
 use std::time::{Duration, Instant};
 
 use codex_hepta_memory_federation_wire::{
-    DurableFederationStateV1, FederationCancelMessageV1, FederationCancellationReasonV1,
-    FederationRecoveryError, FederationRecoveryLimitsV1, ReplayCacheV1, ReplayError,
-    FEDERATION_NONCE_BYTES,
+    DurableFederationStateV1, FEDERATION_NONCE_BYTES, FederationCancelMessageV1,
+    FederationCancellationReasonV1, FederationRecoveryError, FederationRecoveryLimitsV1,
+    ReplayCacheV1, ReplayError,
 };
 use codex_hepta_types::{Digest32, StableId};
 use serde::Serialize;
@@ -55,11 +56,13 @@ fn main() -> Result<(), Box<dyn Error>> {
         let key_id = sid(&format!("live-key-{peer}"))?;
         for slot in 0..REPLAY_PER_PEER {
             live.admit(
-                &peer_id,
-                &local,
-                &key_id,
-                1,
-                &nonce(peer, slot),
+                FederationReplayKeyV1 {
+                    sender_peer_id: &peer_id,
+                    receiver_peer_id: &local,
+                    key_id: &key_id,
+                    generation: 1,
+                    nonce: &nonce(peer, slot),
+                },
                 EXPIRES,
                 NOW,
             )?;
@@ -70,11 +73,13 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut live_partition_rejections = 0;
     for peer in 0..PEERS {
         match live.admit(
-            &sid(&format!("live-peer-{peer}"))?,
-            &local,
-            &sid(&format!("live-key-{peer}"))?,
-            1,
-            &nonce(peer, REPLAY_PER_PEER),
+            FederationReplayKeyV1 {
+                sender_peer_id: &sid(&format!("live-peer-{peer}"))?,
+                receiver_peer_id: &local,
+                key_id: &sid(&format!("live-key-{peer}"))?,
+                generation: 1,
+                nonce: &nonce(peer, REPLAY_PER_PEER),
+            },
             EXPIRES,
             NOW,
         ) {
@@ -104,11 +109,13 @@ fn main() -> Result<(), Box<dyn Error>> {
         let key_id = sid(&format!("durable-key-{peer}"))?;
         for slot in 0..REPLAY_PER_PEER {
             let key = durable.preflight_frame(
-                &peer_id,
-                &local,
-                &key_id,
-                1,
-                &nonce(peer, slot),
+                FederationReplayKeyV1 {
+                    sender_peer_id: &peer_id,
+                    receiver_peer_id: &local,
+                    key_id: &key_id,
+                    generation: 1,
+                    nonce: &nonce(peer, slot),
+                },
                 EXPIRES,
                 NOW,
             )?;
@@ -119,11 +126,13 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut durable_replay_partition_rejections = 0;
     for peer in 0..PEERS {
         match durable.preflight_frame(
-            &sid(&format!("durable-peer-{peer}"))?,
-            &local,
-            &sid(&format!("durable-key-{peer}"))?,
-            1,
-            &nonce(peer, REPLAY_PER_PEER),
+            FederationReplayKeyV1 {
+                sender_peer_id: &sid(&format!("durable-peer-{peer}"))?,
+                receiver_peer_id: &local,
+                key_id: &sid(&format!("durable-key-{peer}"))?,
+                generation: 1,
+                nonce: &nonce(peer, REPLAY_PER_PEER),
+            },
             EXPIRES,
             NOW,
         ) {
@@ -180,8 +189,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
     let cancellation_total_nanos = nanos(cancellation_started.elapsed());
     let cancellation_count = attempts.len();
-    let cancellation_average_nanos = cancellation_total_nanos
-        / u64::try_from(cancellation_count).unwrap_or(u64::MAX).max(1);
+    let cancellation_average_nanos =
+        cancellation_total_nanos / u64::try_from(cancellation_count).unwrap_or(u64::MAX).max(1);
 
     let encode_started = Instant::now();
     let snapshot = durable.snapshot_bytes()?;

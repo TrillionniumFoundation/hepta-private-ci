@@ -1,3 +1,4 @@
+use crate::replay::FederationReplayKeyV1;
 use std::error::Error;
 use std::fmt;
 
@@ -86,10 +87,7 @@ impl AuthenticatedFrontierV1 {
         Digest32::of_bytes(&bytes)
     }
 
-    pub fn require_successor_of(
-        &self,
-        previous: &Self,
-    ) -> Result<(), FederationProtocolError> {
+    pub fn require_successor_of(&self, previous: &Self) -> Result<(), FederationProtocolError> {
         self.validate()?;
         previous.validate()?;
         if self.owner_peer_id != previous.owner_peer_id {
@@ -232,6 +230,20 @@ pub struct AuthenticatedFederationFrameV1 {
     pub(crate) mac: [u8; FEDERATION_MAC_BYTES],
 }
 
+/// Unchecked codec output. Verification, replay admission and authority remain
+/// separate operations; this type is never exported outside the crate.
+pub(crate) struct DecodedFederationFrameV1 {
+    pub(crate) sender_peer_id: StableId,
+    pub(crate) receiver_peer_id: StableId,
+    pub(crate) key_id: StableId,
+    pub(crate) key_generation: u64,
+    pub(crate) issued_unix_ms: u64,
+    pub(crate) expires_unix_ms: u64,
+    pub(crate) nonce: FederationNonceV1,
+    pub(crate) message: FederationWireMessageV1,
+    pub(crate) mac: [u8; FEDERATION_MAC_BYTES],
+}
+
 impl AuthenticatedFederationFrameV1 {
     pub fn seal(
         credential: &PeerCredentialV1,
@@ -289,11 +301,13 @@ impl AuthenticatedFederationFrameV1 {
             .verify_slice(&self.mac)
             .map_err(|_| FederationProtocolError::MacMismatch)?;
         replay.admit(
-            &self.sender_peer_id,
-            &self.receiver_peer_id,
-            &self.key_id,
-            self.key_generation,
-            self.nonce.as_bytes(),
+            FederationReplayKeyV1 {
+                sender_peer_id: &self.sender_peer_id,
+                receiver_peer_id: &self.receiver_peer_id,
+                key_id: &self.key_id,
+                generation: self.key_generation,
+                nonce: self.nonce.as_bytes(),
+            },
             self.expires_unix_ms,
             now_unix_ms,
         )?;
@@ -314,27 +328,17 @@ impl AuthenticatedFederationFrameV1 {
         &self.mac
     }
 
-    pub(crate) fn from_decoded_parts(
-        sender_peer_id: StableId,
-        receiver_peer_id: StableId,
-        key_id: StableId,
-        key_generation: u64,
-        issued_unix_ms: u64,
-        expires_unix_ms: u64,
-        nonce: FederationNonceV1,
-        message: FederationWireMessageV1,
-        mac: [u8; FEDERATION_MAC_BYTES],
-    ) -> Self {
+    pub(crate) fn from_decoded_parts(parts: DecodedFederationFrameV1) -> Self {
         Self {
-            sender_peer_id,
-            receiver_peer_id,
-            key_id,
-            key_generation,
-            issued_unix_ms,
-            expires_unix_ms,
-            nonce,
-            message,
-            mac,
+            sender_peer_id: parts.sender_peer_id,
+            receiver_peer_id: parts.receiver_peer_id,
+            key_id: parts.key_id,
+            key_generation: parts.key_generation,
+            issued_unix_ms: parts.issued_unix_ms,
+            expires_unix_ms: parts.expires_unix_ms,
+            nonce: parts.nonce,
+            message: parts.message,
+            mac: parts.mac,
         }
     }
 
@@ -348,9 +352,7 @@ impl AuthenticatedFederationFrameV1 {
         if self.issued_unix_ms == 0 || self.issued_unix_ms >= self.expires_unix_ms {
             return Err(FederationProtocolError::InvalidLifetime);
         }
-        if self
-            .expires_unix_ms
-            .saturating_sub(self.issued_unix_ms)
+        if self.expires_unix_ms.saturating_sub(self.issued_unix_ms)
             > MAX_AUTHENTICATED_FRAME_LIFETIME_MS
         {
             return Err(FederationProtocolError::LifetimeExceeded);
@@ -466,8 +468,8 @@ fn compute_mac(
     secret: &[u8],
     input: &[u8],
 ) -> Result<[u8; FEDERATION_MAC_BYTES], FederationProtocolError> {
-    let mut mac = HmacSha256::new_from_slice(secret)
-        .map_err(|_| FederationProtocolError::InvalidMacKey)?;
+    let mut mac =
+        HmacSha256::new_from_slice(secret).map_err(|_| FederationProtocolError::InvalidMacKey)?;
     mac.update(input);
     let bytes = mac.finalize().into_bytes();
     let mut result = [0_u8; FEDERATION_MAC_BYTES];
@@ -522,22 +524,32 @@ pub enum FederationProtocolError {
 impl fmt::Display for FederationProtocolError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::EntropyUnavailable => formatter.write_str("operating-system entropy is unavailable"),
+            Self::EntropyUnavailable => {
+                formatter.write_str("operating-system entropy is unavailable")
+            }
             Self::ZeroNonce => formatter.write_str("federation nonce cannot be all zero"),
             Self::ZeroValue(name) => write!(formatter, "{name} must be non-zero"),
             Self::EmptyDigest(name) => write!(formatter, "{name} digest cannot be zero"),
             Self::SamePeer => formatter.write_str("sender and receiver peers must differ"),
             Self::InvalidLifetime => formatter.write_str("authenticated frame lifetime is invalid"),
-            Self::LifetimeExceeded => formatter.write_str("authenticated frame lifetime exceeds the protocol bound"),
+            Self::LifetimeExceeded => {
+                formatter.write_str("authenticated frame lifetime exceeds the protocol bound")
+            }
             Self::NotYetValid => formatter.write_str("authenticated frame is not yet valid"),
             Self::Expired => formatter.write_str("authenticated frame is expired"),
-            Self::MissingTerminalObservation => formatter.write_str("response is missing a terminal observation"),
-            Self::ReceiverMismatch => formatter.write_str("authenticated frame receiver does not match this host"),
+            Self::MissingTerminalObservation => {
+                formatter.write_str("response is missing a terminal observation")
+            }
+            Self::ReceiverMismatch => {
+                formatter.write_str("authenticated frame receiver does not match this host")
+            }
             Self::InvalidMacKey => formatter.write_str("federation MAC key is invalid"),
             Self::MacMismatch => formatter.write_str("federation frame MAC did not verify"),
             Self::FrontierOwnerMismatch => formatter.write_str("frontier witness owner changed"),
             Self::FrontierRollback => formatter.write_str("frontier witness regressed"),
-            Self::FrontierParentMismatch => formatter.write_str("frontier witness parent binding is invalid"),
+            Self::FrontierParentMismatch => {
+                formatter.write_str("frontier witness parent binding is invalid")
+            }
             Self::ClockRegression => formatter.write_str("frontier observation clock regressed"),
             Self::Credential(error) => error.fmt(formatter),
             Self::Replay(error) => error.fmt(formatter),

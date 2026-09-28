@@ -15,7 +15,10 @@ fn failed_store_does_not_advance_live_outbound_state() {
             FederationRecoveryError::StoreUnavailable
         ))
     ));
-    assert_eq!(client.recovery_snapshot().expect("unchanged snapshot"), before);
+    assert_eq!(
+        client.recovery_snapshot().expect("unchanged snapshot"),
+        before
+    );
     client
         .begin_query(&id("peer-b"), query(), NOW + 2, NOW + 20_000)
         .expect("retry after store recovery");
@@ -48,7 +51,10 @@ fn failed_inbound_store_can_be_retried_in_same_process_without_replay_poisoning(
             FederationRecoveryError::StoreUnavailable
         ))
     ));
-    assert_eq!(client.recovery_snapshot().expect("unchanged snapshot"), before);
+    assert_eq!(
+        client.recovery_snapshot().expect("unchanged snapshot"),
+        before
+    );
     assert!(matches!(
         client
             .admit(&id("peer-b"), &response_payload, NOW + 5)
@@ -85,7 +91,10 @@ fn failed_inbound_store_can_be_retried_after_restart_without_state_drift() {
             FederationRecoveryError::StoreUnavailable
         ))
     ));
-    assert_eq!(client.recovery_snapshot().expect("unchanged snapshot"), before);
+    assert_eq!(
+        client.recovery_snapshot().expect("unchanged snapshot"),
+        before
+    );
 
     let store = client.into_recovery_store();
     let mut restarted = open_client(store, NOW + 5);

@@ -1,3 +1,4 @@
+use crate::replay::FederationReplayKeyV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
@@ -49,7 +50,13 @@ fn seal_query(
     nonce: [u8; FEDERATION_NONCE_BYTES],
 ) -> AuthenticatedFederationFrameV1 {
     let credential = registry
-        .require_current(&id("peer-a"), &id("peer-b"), &id("key-a-b"), generation, NOW)
+        .require_current(
+            &id("peer-a"),
+            &id("peer-b"),
+            &id("key-a-b"),
+            generation,
+            NOW,
+        )
         .expect("current credential");
     AuthenticatedFederationFrameV1::seal(
         credential,
@@ -121,7 +128,9 @@ fn rotation_and_revocation_fence_old_generation() {
     let mut replay = ReplayCacheV1::new(8).expect("replay cache");
     assert!(matches!(
         old.verify(&id("peer-b"), NOW + 1, &registry, &mut replay),
-        Err(FederationProtocolError::Credential(CredentialError::Revoked))
+        Err(FederationProtocolError::Credential(
+            CredentialError::Revoked
+        ))
     ));
     let current = seal_query(&registry, 2, [6; FEDERATION_NONCE_BYTES]);
     current
@@ -133,7 +142,9 @@ fn rotation_and_revocation_fence_old_generation() {
     let later = seal_query_for_revoked_test();
     assert!(matches!(
         later.verify(&id("peer-b"), NOW + 1, &registry, &mut replay),
-        Err(FederationProtocolError::Credential(CredentialError::Revoked))
+        Err(FederationProtocolError::Credential(
+            CredentialError::Revoked
+        ))
     ));
 }
 
@@ -231,24 +242,28 @@ fn overload_fails_closed_without_evicting_unexpired_nonce() {
     let mut cache = ReplayCacheV1::new(1).expect("cache");
     cache
         .admit(
-            &id("peer-a"),
-            &id("peer-b"),
-            &id("key-a-b"),
-            1,
-            &[1; FEDERATION_NONCE_BYTES],
+            FederationReplayKeyV1 {
+                sender_peer_id: &id("peer-a"),
+                receiver_peer_id: &id("peer-b"),
+                key_id: &id("key-a-b"),
+                generation: 1,
+                nonce: &[1; FEDERATION_NONCE_BYTES],
+            },
             NOW + 100,
             NOW,
         )
         .expect("first");
     assert!(matches!(
         cache.admit(
-            &id("peer-a"),
-            &id("peer-b"),
-            &id("key-a-b"),
-            1,
-            &[2; FEDERATION_NONCE_BYTES],
+            FederationReplayKeyV1 {
+                sender_peer_id: &id("peer-a"),
+                receiver_peer_id: &id("peer-b"),
+                key_id: &id("key-a-b"),
+                generation: 1,
+                nonce: &[2; FEDERATION_NONCE_BYTES]
+            },
             NOW + 100,
-            NOW,
+            NOW
         ),
         Err(ReplayError::CapacityExhausted)
     ));
@@ -260,22 +275,26 @@ fn replay_cache_rejects_clock_regression_after_expiry_cleanup() {
     let mut cache = ReplayCacheV1::new(4).expect("cache");
     cache
         .admit(
-            &id("peer-a"),
-            &id("peer-b"),
-            &id("key-a-b"),
-            1,
-            &[21; FEDERATION_NONCE_BYTES],
+            FederationReplayKeyV1 {
+                sender_peer_id: &id("peer-a"),
+                receiver_peer_id: &id("peer-b"),
+                key_id: &id("key-a-b"),
+                generation: 1,
+                nonce: &[21; FEDERATION_NONCE_BYTES],
+            },
             NOW + 10,
             NOW,
         )
         .expect("first admission");
     cache
         .admit(
-            &id("peer-c"),
-            &id("peer-b"),
-            &id("key-c-b"),
-            1,
-            &[22; FEDERATION_NONCE_BYTES],
+            FederationReplayKeyV1 {
+                sender_peer_id: &id("peer-c"),
+                receiver_peer_id: &id("peer-b"),
+                key_id: &id("key-c-b"),
+                generation: 1,
+                nonce: &[22; FEDERATION_NONCE_BYTES],
+            },
             NOW + 1_000,
             NOW + 20,
         )
@@ -283,13 +302,15 @@ fn replay_cache_rejects_clock_regression_after_expiry_cleanup() {
     assert_eq!(cache.last_observed_unix_ms(), NOW + 20);
     assert!(matches!(
         cache.admit(
-            &id("peer-a"),
-            &id("peer-b"),
-            &id("key-a-b"),
-            1,
-            &[21; FEDERATION_NONCE_BYTES],
+            FederationReplayKeyV1 {
+                sender_peer_id: &id("peer-a"),
+                receiver_peer_id: &id("peer-b"),
+                key_id: &id("key-a-b"),
+                generation: 1,
+                nonce: &[21; FEDERATION_NONCE_BYTES]
+            },
             NOW + 10,
-            NOW + 5,
+            NOW + 5
         ),
         Err(ReplayError::ClockRegression)
     ));
@@ -301,11 +322,13 @@ fn one_directional_credential_cannot_exhaust_the_shared_replay_cache() {
     for byte in [31_u8, 32_u8] {
         cache
             .admit(
-                &id("peer-a"),
-                &id("peer-b"),
-                &id("key-a-b"),
-                1,
-                &[byte; FEDERATION_NONCE_BYTES],
+                FederationReplayKeyV1 {
+                    sender_peer_id: &id("peer-a"),
+                    receiver_peer_id: &id("peer-b"),
+                    key_id: &id("key-a-b"),
+                    generation: 1,
+                    nonce: &[byte; FEDERATION_NONCE_BYTES],
+                },
                 NOW + 100,
                 NOW,
             )
@@ -313,23 +336,27 @@ fn one_directional_credential_cannot_exhaust_the_shared_replay_cache() {
     }
     assert!(matches!(
         cache.admit(
-            &id("peer-a"),
-            &id("peer-b"),
-            &id("key-a-b"),
-            1,
-            &[33; FEDERATION_NONCE_BYTES],
+            FederationReplayKeyV1 {
+                sender_peer_id: &id("peer-a"),
+                receiver_peer_id: &id("peer-b"),
+                key_id: &id("key-a-b"),
+                generation: 1,
+                nonce: &[33; FEDERATION_NONCE_BYTES]
+            },
             NOW + 100,
-            NOW,
+            NOW
         ),
         Err(ReplayError::CredentialCapacityExhausted)
     ));
     cache
         .admit(
-            &id("peer-c"),
-            &id("peer-b"),
-            &id("key-c-b"),
-            1,
-            &[34; FEDERATION_NONCE_BYTES],
+            FederationReplayKeyV1 {
+                sender_peer_id: &id("peer-c"),
+                receiver_peer_id: &id("peer-b"),
+                key_id: &id("key-c-b"),
+                generation: 1,
+                nonce: &[34; FEDERATION_NONCE_BYTES],
+            },
             NOW + 100,
             NOW,
         )
@@ -359,6 +386,8 @@ fn two_logical_hosts_cover_partition_timeout_and_revoke_during_io() {
     let mut replay = ReplayCacheV1::new(8).expect("replay cache");
     assert!(matches!(
         outbound.verify(&id("peer-b"), NOW + 1, &host_b_trust, &mut replay),
-        Err(FederationProtocolError::Credential(CredentialError::Revoked))
+        Err(FederationProtocolError::Credential(
+            CredentialError::Revoked
+        ))
     ));
 }

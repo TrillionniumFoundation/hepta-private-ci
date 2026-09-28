@@ -69,13 +69,7 @@ fn query() -> FederationQueryMessageV1 {
 fn encode_from_a(message: FederationWireMessageV1, nonce_byte: u8) -> Vec<u8> {
     let registry = credentials();
     let credential = registry
-        .require_current(
-            &id("peer-a"),
-            &id("peer-b"),
-            &id("key-a-b"),
-            1,
-            NOW,
-        )
+        .require_current(&id("peer-a"), &id("peer-b"), &id("key-a-b"), 1, NOW)
         .expect("current A->B credential");
     let frame = AuthenticatedFederationFrameV1::seal(
         credential,
@@ -118,10 +112,7 @@ struct ControlledStore {
 
 impl ControlledStore {
     fn fail_next_store(&self) {
-        self.state
-            .lock()
-            .expect("store lock")
-            .fail_next_store = true;
+        self.state.lock().expect("store lock").fail_next_store = true;
     }
 }
 
@@ -148,16 +139,9 @@ impl FederationRecoveryStoreV1 for ControlledStore {
 }
 
 fn open_host(store: ControlledStore) -> FederationWireHostV1<ControlledStore> {
-    let mut host = FederationWireHostV1::open(
-        id("peer-b"),
-        credentials(),
-        32,
-        8,
-        limits(),
-        store,
-        NOW,
-    )
-    .expect("open host");
+    let mut host =
+        FederationWireHostV1::open(id("peer-b"), credentials(), 32, 8, limits(), store, NOW)
+            .expect("open host");
     host.bind_outbound_credential(
         id("peer-a"),
         FederationOutboundCredentialV1::new(id("key-b-a"), 1).expect("selector"),
@@ -181,7 +165,10 @@ fn query_store_failure_leaves_recovery_and_replay_retryable() {
             FederationRecoveryError::StoreUnavailable
         ))
     ));
-    assert_eq!(host.recovery_snapshot().expect("unchanged snapshot"), before);
+    assert_eq!(
+        host.recovery_snapshot().expect("unchanged snapshot"),
+        before
+    );
     assert!(matches!(
         host.admit(&id("peer-a"), &payload, NOW + 2)
             .expect("same frame remains retryable"),
@@ -195,10 +182,7 @@ fn cancel_store_failure_does_not_install_a_cancellation_fence() {
     let control = store.clone();
     let mut host = open_host(store);
     let query = query();
-    let query_payload = encode_from_a(
-        FederationWireMessageV1::Query(query.clone()),
-        102,
-    );
+    let query_payload = encode_from_a(FederationWireMessageV1::Query(query.clone()), 102);
     let FederationHostAdmissionV1::Query(_) = host
         .admit(&id("peer-a"), &query_payload, NOW + 1)
         .expect("query admission")
@@ -221,7 +205,10 @@ fn cancel_store_failure_does_not_install_a_cancellation_fence() {
             FederationRecoveryError::StoreUnavailable
         ))
     ));
-    assert_eq!(host.recovery_snapshot().expect("unchanged snapshot"), before);
+    assert_eq!(
+        host.recovery_snapshot().expect("unchanged snapshot"),
+        before
+    );
     assert!(matches!(
         host.admit(&id("peer-a"), &cancel_payload, NOW + 3)
             .expect("same cancellation remains retryable"),
@@ -251,9 +238,14 @@ fn terminal_store_failure_leaves_pending_attempt_retryable() {
             FederationRecoveryError::StoreUnavailable
         ))
     ));
-    assert_eq!(host.recovery_snapshot().expect("unchanged snapshot"), before);
-    assert!(!host
-        .complete_query(admitted, terminal, NOW + 3)
-        .expect("terminal retry")
-        .is_empty());
+    assert_eq!(
+        host.recovery_snapshot().expect("unchanged snapshot"),
+        before
+    );
+    assert!(
+        !host
+            .complete_query(admitted, terminal, NOW + 3)
+            .expect("terminal retry")
+            .is_empty()
+    );
 }

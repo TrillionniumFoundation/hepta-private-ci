@@ -39,23 +39,11 @@ where
         mut recovery_store: S,
         now_unix_ms: u64,
     ) -> Result<Self, FederationClientError> {
-        let replay = ReplayCacheV1::with_limits(
-            replay_capacity,
-            replay_per_credential_capacity,
-        )?;
+        let replay = ReplayCacheV1::with_limits(replay_capacity, replay_per_credential_capacity)?;
         let (recovery, attempts, frontiers) = match recovery_store.load()? {
-            Some(bytes) => restore_client_snapshot(
-                &local_peer_id,
-                limits,
-                now_unix_ms,
-                &bytes,
-            )?,
+            Some(bytes) => restore_client_snapshot(&local_peer_id, limits, now_unix_ms, &bytes)?,
             None => (
-                DurableFederationStateV1::empty(
-                    local_peer_id.clone(),
-                    limits,
-                    now_unix_ms,
-                )?,
+                DurableFederationStateV1::empty(local_peer_id.clone(), limits, now_unix_ms)?,
                 BTreeMap::new(),
                 BTreeMap::new(),
             ),
@@ -178,11 +166,7 @@ where
             expiry_ceiling_unix_ms,
         )?;
         let mut next = self.clone_recovery(now_unix_ms)?;
-        let acknowledgement = next.observe_cancel(
-            receiver_peer_id,
-            &cancellation,
-            now_unix_ms,
-        )?;
+        let acknowledgement = next.observe_cancel(receiver_peer_id, &cancellation, now_unix_ms)?;
         match acknowledgement.disposition {
             FederationCancellationDispositionV1::ObservedBeforeTerminal => {}
             FederationCancellationDispositionV1::TerminalAlreadyObserved => {
@@ -249,5 +233,4 @@ where
             expires_unix_ms,
         })
     }
-
 }

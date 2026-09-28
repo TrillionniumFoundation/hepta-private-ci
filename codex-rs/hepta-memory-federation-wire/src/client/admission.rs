@@ -1,3 +1,4 @@
+use crate::replay::FederationReplayKeyV1;
 use codex_hepta_types::StableId;
 
 use super::FederationClientError;
@@ -31,11 +32,13 @@ where
         let mut next = self.clone_recovery(now_unix_ms)?;
         let mut next_replay = self.replay.clone();
         let durable_replay_key = next.preflight_frame(
-            &frame.sender_peer_id,
-            &frame.receiver_peer_id,
-            &frame.key_id,
-            frame.key_generation,
-            frame.nonce.as_bytes(),
+            FederationReplayKeyV1 {
+                sender_peer_id: &frame.sender_peer_id,
+                receiver_peer_id: &frame.receiver_peer_id,
+                key_id: &frame.key_id,
+                generation: frame.key_generation,
+                nonce: frame.nonce.as_bytes(),
+            },
             frame.expires_unix_ms,
             now_unix_ms,
         )?;

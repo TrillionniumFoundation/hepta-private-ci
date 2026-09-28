@@ -127,10 +127,7 @@ pub(crate) fn result(frontier: u64, observed_unix_ms: u64) -> FederationHostQuer
     .expect("host result")
 }
 
-pub(crate) fn encode_from_b(
-    message: FederationWireMessageV1,
-    issued_unix_ms: u64,
-) -> Vec<u8> {
+pub(crate) fn encode_from_b(message: FederationWireMessageV1, issued_unix_ms: u64) -> Vec<u8> {
     let registry = bidirectional_credentials();
     let credential = registry
         .require_current(

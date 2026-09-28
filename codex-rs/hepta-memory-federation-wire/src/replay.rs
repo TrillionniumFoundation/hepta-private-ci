@@ -5,6 +5,17 @@ use std::fmt;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+/// Directional nonce identity supplied to replay admission. This raw value
+/// carries no authority; callers must still authenticate the enclosing frame.
+#[derive(Clone, Copy)]
+pub struct FederationReplayKeyV1<'a> {
+    pub sender_peer_id: &'a StableId,
+    pub receiver_peer_id: &'a StableId,
+    pub key_id: &'a StableId,
+    pub generation: u64,
+    pub nonce: &'a [u8; 32],
+}
+
 pub const MAX_FEDERATION_REPLAY_ENTRIES: usize = 16_384;
 pub const MAX_FEDERATION_REPLAY_ENTRIES_PER_CREDENTIAL: usize = 1_024;
 
@@ -62,14 +73,17 @@ impl ReplayCacheV1 {
     /// credential from consuming the entire host-wide replay budget.
     pub fn admit(
         &mut self,
-        sender_peer_id: &StableId,
-        receiver_peer_id: &StableId,
-        key_id: &StableId,
-        generation: u64,
-        nonce: &[u8; 32],
+        identity: FederationReplayKeyV1<'_>,
         expires_unix_ms: u64,
         now_unix_ms: u64,
     ) -> Result<(), ReplayError> {
+        let FederationReplayKeyV1 {
+            sender_peer_id,
+            receiver_peer_id,
+            key_id,
+            generation,
+            nonce,
+        } = identity;
         if generation == 0 {
             return Err(ReplayError::ZeroGeneration);
         }
@@ -78,19 +92,9 @@ impl ReplayCacheV1 {
             return Err(ReplayError::Expired);
         }
         self.purge_expired_unchecked(now_unix_ms);
-        let credential_scope = credential_scope_key(
-            sender_peer_id,
-            receiver_peer_id,
-            key_id,
-            generation,
-        );
-        let key = replay_key(
-            sender_peer_id,
-            receiver_peer_id,
-            key_id,
-            generation,
-            nonce,
-        );
+        let credential_scope =
+            credential_scope_key(sender_peer_id, receiver_peer_id, key_id, generation);
+        let key = replay_key(sender_peer_id, receiver_peer_id, key_id, generation, nonce);
         if self.entries.contains_key(&key) {
             return Err(ReplayError::Replay);
         }
@@ -113,10 +117,7 @@ impl ReplayCacheV1 {
                 expires_unix_ms,
             },
         );
-        *self
-            .credential_counts
-            .entry(credential_scope)
-            .or_insert(0) += 1;
+        *self.credential_counts.entry(credential_scope).or_insert(0) += 1;
         Ok(())
     }
 
@@ -237,9 +238,7 @@ impl fmt::Display for ReplayError {
                 write!(formatter, "invalid replay per-credential capacity {value}")
             }
             Self::ZeroGeneration => formatter.write_str("replay key generation must be non-zero"),
-            Self::ClockRegression => {
-                formatter.write_str("replay cache observation time regressed")
-            }
+            Self::ClockRegression => formatter.write_str("replay cache observation time regressed"),
             Self::Expired => formatter.write_str("replay entry is already expired"),
             Self::Replay => formatter.write_str("authenticated federation frame was replayed"),
             Self::CapacityExhausted => {

@@ -164,7 +164,9 @@ fn attempt_observation_clock_cannot_regress() {
         registry.observe_cancel(&cancel, 999),
         Err(AttemptRegistryError::ClockRegression)
     );
-    let first = registry.observe_cancel(&cancel, 1_100).expect("first cancel");
+    let first = registry
+        .observe_cancel(&cancel, 1_100)
+        .expect("first cancel");
     assert_eq!(
         registry.observe_cancel(&cancel, 1_099),
         Err(AttemptRegistryError::ClockRegression)

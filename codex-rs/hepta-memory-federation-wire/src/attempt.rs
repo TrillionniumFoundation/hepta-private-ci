@@ -209,11 +209,7 @@ impl FederationAttemptRegistryV1 {
         })
     }
 
-    pub fn is_cancelled(
-        &self,
-        query_id: &StableId,
-        query_binding_digest: Digest32,
-    ) -> bool {
+    pub fn is_cancelled(&self, query_id: &StableId, query_binding_digest: Digest32) -> bool {
         let identity = AttemptIdentity::new(query_id, query_binding_digest);
         self.attempts
             .get(&identity)
@@ -274,9 +270,7 @@ impl fmt::Display for AttemptRegistryError {
             Self::ZeroObservationTime => {
                 formatter.write_str("attempt observation time cannot be zero")
             }
-            Self::ClockRegression => {
-                formatter.write_str("attempt observation time regressed")
-            }
+            Self::ClockRegression => formatter.write_str("attempt observation time regressed"),
             Self::Expired => formatter.write_str("attempt is expired"),
             Self::DuplicateAttempt => formatter.write_str("attempt identity already exists"),
             Self::UnknownAttempt => formatter.write_str("attempt identity is unknown"),
@@ -284,9 +278,8 @@ impl fmt::Display for AttemptRegistryError {
             Self::ConflictingTerminal => {
                 formatter.write_str("attempt already has a different terminal result")
             }
-            Self::ConflictingCancellation => {
-                formatter.write_str("attempt already has a different cancellation identity or reason")
-            }
+            Self::ConflictingCancellation => formatter
+                .write_str("attempt already has a different cancellation identity or reason"),
             Self::CapacityExhausted => {
                 formatter.write_str("attempt registry is full with live entries")
             }
