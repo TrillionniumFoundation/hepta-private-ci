@@ -131,6 +131,42 @@ class ResidentBoundaryTests(unittest.TestCase):
             self.assertFalse(observed["model_reservation_released"])
         self.assertEqual(session.observation["completed_exchanges"], 3)
 
+    def test_cancel_during_reply_hash_retains_observation_but_cannot_deliver(self):
+        session = self.start()
+        cancel = threading.Event()
+        sha256 = hashlib.sha256
+        def hash_then_cancel(value=b"", **kwargs):
+            result = sha256(value, **kwargs)
+            if value.startswith(b"HPTARS"):
+                cancel.set()
+            return result
+        with patch("laya_resident.hashlib.sha256", side_effect=hash_then_cancel):
+            with self.assertRaises(ProcessFailure) as caught:
+                self.predict(session, cancel=cancel)
+        observed = caught.exception.observation
+        self.assertFalse(observed["eligible_reply"])
+        self.assertFalse(observed["retry_allowed"])
+        self.assertTrue(observed["direct_child_reaped"])
+        self.assertEqual(len(observed["reply_sha256"]), 64)
+        self.assertGreater(observed["stdout_bytes"], 0)
+
+    def test_expiry_during_reply_hash_cannot_deliver(self):
+        session = self.start()
+        request = fixtures.fresh()
+        ticks = [100.0]
+        deadline = OwnerDeadline.start(request["deadline_ms"], monotonic_clock=lambda: ticks[0])
+        sha256 = hashlib.sha256
+        def hash_then_expire(value=b"", **kwargs):
+            result = sha256(value, **kwargs)
+            if value.startswith(b"HPTARS"):
+                ticks[0] = deadline.monotonic_end
+            return result
+        with patch("laya_resident.hashlib.sha256", side_effect=hash_then_expire):
+            with self.assertRaises(ProcessFailure) as caught:
+                session.predict(encode_request(request), deadline)
+        self.assertFalse(caught.exception.observation["eligible_reply"])
+        self.assertTrue(caught.exception.observation["direct_child_reaped"])
+
 
 if __name__ == "__main__":
     unittest.main()

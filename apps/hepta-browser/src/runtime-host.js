@@ -18,6 +18,7 @@ import {
   stableId,
 } from "./runtime-contract.js";
 import { callWithDeadline, exclusive } from "./runtime-boundary.js";
+import { snapshotHostInput } from "./runtime-input.js";
 
 export class BrowserProfileHost {
   #driver;
@@ -62,7 +63,7 @@ export class BrowserProfileHost {
   }
 
   async openProfile(input) {
-    requireRecord(input, "input");
+    input = snapshotHostInput(input);
     const profileId = stableId(input.profileId, "profileId");
     return exclusive(this.#locks, profileId, async () => {
       if (this.#profiles.has(profileId) || this.#openingProfiles.has(profileId)) {
@@ -143,7 +144,7 @@ export class BrowserProfileHost {
   }
 
   async admitEffectGrant(input) {
-    requireRecord(input, "input");
+    input = snapshotHostInput(input);
     const profileId = stableId(input.profileId, "profileId");
     return exclusive(this.#locks, profileId, async () => {
       const state = this.#profile(input, true);
@@ -167,7 +168,7 @@ export class BrowserProfileHost {
   }
 
   async observePage(input) {
-    requireRecord(input, "input");
+    input = snapshotHostInput(input);
     const profileId = stableId(input.profileId, "profileId");
     return exclusive(this.#locks, profileId, async () => {
       const state = this.#profile(input, true);
@@ -213,7 +214,7 @@ export class BrowserProfileHost {
   }
 
   async navigateOrAct(input) {
-    requireRecord(input, "input");
+    input = snapshotHostInput(input);
     const profileId = stableId(input.profileId, "profileId");
     return exclusive(this.#locks, profileId, async () => {
       const state = this.#profile(input, true);
@@ -222,22 +223,23 @@ export class BrowserProfileHost {
         input,
         this.#clock(),
       );
-      let prior = state.operations.get(operationId);
-      if (!prior) {
-        const durable = await this.#journal.getOperation(
-          state.profileId,
-          state.generation,
-          operationId,
-        );
-        if (durable) prior = this.#entryFromDurable(durable, requestSemantics);
+      // The journal may have been advanced by persisted reconciliation. Never
+      // return a cached unknown result after that owner has recorded a terminal.
+      const durable = await this.#journal.getOperation(
+        state.profileId,
+        state.generation,
+        operationId,
+      );
+      const prior = durable ? this.#entryFromDurable(durable, requestSemantics) : null;
+      if (!durable && state.operations.has(operationId)) {
+        throw new TypeError("cached operation has no durable owner record");
       }
       if (prior) {
         if (prior.requestDigest !== requestDigest) {
           throw new TypeError("operation identity was reused with changed semantics");
         }
-        if (!state.operations.has(operationId) && !prior.receipt.terminalObserved) {
-          state.operations.set(operationId, prior);
-        }
+        if (prior.receipt.terminalObserved) state.operations.delete(operationId);
+        else state.operations.set(operationId, prior);
         return prior.receipt;
       }
       if (this.#activeOperationCount(state) >= MAX_OUTSTANDING_OPERATIONS) {
@@ -329,31 +331,31 @@ export class BrowserProfileHost {
   }
 
   async reconcileOperation(input) {
-    requireRecord(input, "input");
+    input = snapshotHostInput(input);
     const profileId = stableId(input.profileId, "profileId");
     return exclusive(this.#locks, profileId, async () => {
       const state = this.#profile(input, false);
       const operationId = stableId(input.operationId, "operationId");
-      let prior = state.operations.get(operationId);
-      if (!prior) {
-        const durable = await this.#journal.getOperation(
-          state.profileId,
-          state.generation,
-          operationId,
-        );
-        if (!durable) {
-          throw new TypeError("operation has not crossed the browser effect boundary");
-        }
-        prior = this.#entryFromDurable(
-          durable,
-          this.#requestSemanticsFromDurableInput(state, input, durable),
-        );
-        if (!prior.receipt.terminalObserved) state.operations.set(operationId, prior);
+      const durable = await this.#journal.getOperation(
+        state.profileId,
+        state.generation,
+        operationId,
+      );
+      if (!durable) {
+        throw new TypeError("operation has not crossed the browser effect boundary");
       }
+      const prior = this.#entryFromDurable(
+        durable,
+        this.#requestSemanticsFromDurableInput(state, input, durable),
+      );
       if (prior.requestDigest !== reconciliationRequestDigest(state, input, prior.semantics)) {
         throw new TypeError("operation reconciliation changed immutable semantics");
       }
-      if (prior.receipt.terminalObserved) return prior.receipt;
+      if (prior.receipt.terminalObserved) {
+        state.operations.delete(operationId);
+        return prior.receipt;
+      }
+      state.operations.set(operationId, prior);
       try {
         const observed = requireRecord(
           await this.#callDriver(
@@ -384,15 +386,15 @@ export class BrowserProfileHost {
       await this.#persistReceipt(state, prior);
       this.#pruneTerminalOperations(state);
       return prior.receipt;
-    });
+    }, { settlement: true });
   }
 
   async reconcilePersistedOperation(input) {
-    requireRecord(input, "input");
+    input = snapshotHostInput(input);
     const profileId = stableId(input.profileId, "profileId");
     const generation = positiveInteger(input.generation, "generation");
     const operationId = stableId(input.operationId, "operationId");
-    return exclusive(this.#locks, `${profileId}:${generation}`, async () => {
+    return exclusive(this.#locks, profileId, async () => {
       const durable = await this.#journal.getOperation(profileId, generation, operationId);
       if (!durable) throw new TypeError("persisted operation does not exist");
       if (input.principalId !== durable.principalId) {
@@ -411,7 +413,8 @@ export class BrowserProfileHost {
         durable,
       );
       const requestDigest = canonicalDigest(semantics);
-      if (requestDigest !== durable.requestDigest) {
+      if (requestDigest !== durable.requestDigest ||
+          reconciliationRequestDigest(pseudoState, input, semantics) !== durable.requestDigest) {
         throw new TypeError("persisted reconciliation changed immutable semantics");
       }
       if (durable.terminalObserved === true) return this.#receiptFromDurable(durable);
@@ -458,11 +461,11 @@ export class BrowserProfileHost {
         observationReason: receipt.observationReason,
       });
       return receipt;
-    });
+    }, { settlement: true });
   }
 
   async closeProfile(input) {
-    requireRecord(input, "input");
+    input = snapshotHostInput(input);
     const profileId = stableId(input.profileId, "profileId");
     return exclusive(this.#locks, profileId, async () => {
       const state = this.#profile(input, false);
@@ -497,7 +500,7 @@ export class BrowserProfileHost {
         generation: state.generation,
         terminalObserved: true,
       });
-    });
+    }, { settlement: true });
   }
 
   #profile(input, requireLiveGrant) {

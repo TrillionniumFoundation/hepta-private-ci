@@ -60,6 +60,47 @@ Prefix-preserving external appends remain readable, but this is not authorizatio
 for concurrent writers. The existing exact-predecessor write check still rejects
 concurrent growth between reduction and append.
 
+## Host admission snapshots and bounded scheduling
+
+The actual `BrowserProfileHost` captures its existing request fields before its
+first asynchronous boundary. Scalars, bounded origin/grant arrays and flat typed
+actions become private immutable data. The lock key, principal, generation and
+typed action therefore cannot be replaced by mutating the caller's object while
+it waits. Own accessor fields are rejected without invoking their getters;
+non-plain records and nested executable values are not request data. Unknown own
+action keys, including `__proto__` and keys whose value is `undefined`, remain
+visible to the existing exact-key validator. This is an in-process data contract,
+not a sandbox for hostile JavaScript proxies or arbitrary code.
+
+The snapshot retains at most 1 MiB of scalar/key data with the existing 128-origin
+and 1,024-grant count limits. This is a data-retention budget, not a claim about
+exact serialized frame size or process RSS. Oversized arrays reject before their
+elements are copied. Current profile/effect expiry, page state, payload digest and
+final-use authority are still checked after queueing and at their existing actual
+use boundaries. A captured request never caches permission to execute it later.
+
+The existing per-host serialization primitive now admits at most 64 normal
+active-plus-queued operations. Eight additional bounded slots are reserved for
+reconciliation and profile close. Counts are shared across profile keys within
+one host, so selecting fresh keys cannot bypass the queue limit. Failure as well
+as completion returns capacity; separate host instances do not share this count.
+Per-profile FIFO ordering is preserved, including live and persisted recovery for
+all generations of that profile. The reserved slots do not jump ahead of already
+admitted work or bypass unresolved effects, original identity, or resource checks.
+
+Both ordinary result replay and live reconciliation reread the existing journal.
+They do not return a stale local unknown result or re-observe the driver after
+persisted reconciliation has already recorded a terminal outcome. The stale local
+entry is retired only on that matching terminal record. Missing durable history
+cannot become permission to redispatch a cached operation. Persisted recovery
+checks the original deadline as immutable identity; an expired original deadline
+is allowed for historical observation, but a substituted one rejects.
+
+These changes do not introduce a second journal/authority owner or release a
+model/profile merely because a queue slot became free. Open-profile cardinality,
+physical child retirement, disk I/O, crash recovery and long-duration capacity
+are separate obligations; bounded pending calls do not establish those bounds.
+
 ## Verification
 
 Run through the existing Browser test entry point:
@@ -77,7 +118,7 @@ They also cover external suffixes, staged transitions, malformed suffix tails,
 checksummed regression/prefix mutation, immutable reopen and bounded queue reuse.
 The existing sync, path, rollback, identity and monotonicity tests remain intact.
 
-Developer observations for this continuation (Node 22.16.0, Linux): 13 new stream
+Retained predecessor developer observations (Node 22.16.0, Linux): 13 new stream
 cases include 12 failures on the old source; 10 new journal cases include four
 old-source failures. The remaining cases preserve already-working behavior.
 Final scoped execution passed 45 Agentd and 67 journal tests. These sets overlap
@@ -87,12 +128,20 @@ acceptance. The final source/fixed-main merge workflows remain necessary.
 
 The corresponding worker closure slice adds 12 cases, including ten failures on
 the old worker client. After synchronizing the complete current Browser sources
-and tests, the full Browser JavaScript suite passes **228 tests, zero failures,
+and tests, the predecessor Browser JavaScript suite passed **228 tests, zero failures,
 zero skipped** (193 existing plus 35 new). This supersedes the earlier supplemental
 179-test run on historical unrelated Browser files. It still does not establish
 Rust/native compilation, exact-source/fixed-base merge execution, a real Servo
 user task or full A-E completion. Source-tree and command/log identities belong
 in the delivery evidence and PR, not in an automatically advanced completion flag.
+
+The host-input/recovery/queue continuation adds 21 regression cases. Fifteen fail
+against the preceding host/boundary implementation and six preserve existing
+behavior. They use the actual host, journal reducer and Promise serialization
+with controlled driver/authority callbacks, not real Servo effects. The complete
+local suite includes all 228 predecessor cases; current execution identities and
+raw outcomes belong in the PR and delivery evidence. Native and real-host results
+must not be inferred from these JavaScript tests.
 
 ## Capacity and recovery limits
 

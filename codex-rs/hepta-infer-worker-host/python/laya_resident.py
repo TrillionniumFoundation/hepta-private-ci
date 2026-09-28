@@ -291,6 +291,10 @@ class ResidentLaya:
                                 self._selector.unregister(key.fileobj)
                                 continue
                             target.extend(chunk)
+                            if key.data == "output":
+                                self._observation["stdout_bytes"] += len(chunk)
+                            else:
+                                self._observation["stderr_bytes"] = len(self._diagnostics)
                             if len(target) > bound:
                                 raise Rejected("resident output bound exceeded")
                         except BlockingIOError:
@@ -304,11 +308,13 @@ class ResidentLaya:
                             raise Rejected("resident replied before complete request")
                         reply = bytes(output[4:])
                         decode_reply(reply, wire)
+                        # Hashing is part of observation, not a deadline reset.
+                        # Retain this current reply identity even if final use
+                        # expires, but never publish it as an eligible result.
+                        self._observation["reply_sha256"] = hashlib.sha256(reply).hexdigest()
                         check_active()
                         self._observation["completed_exchanges"] += 1
-                        self._observation["stdout_bytes"] += len(output)
-                        self._observation.update(eligible_reply=True,
-                                                 reply_sha256=hashlib.sha256(reply).hexdigest())
+                        self._observation.update(eligible_reply=True)
                         return ProcessPrediction(reply, self.observation)
             except BaseException as cause:
                 self._closed = True

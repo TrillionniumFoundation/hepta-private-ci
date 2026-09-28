@@ -59,7 +59,18 @@ export async function callWithDeadline({ call, payload, now, deadlineMs, timeout
   }
 }
 
-export async function exclusive(lockMap, key, operation) {
+// Per existing host, not per profile: otherwise fresh profile IDs bypass the
+// queue bound. Settlement retains eight slots without reordering FIFO work.
+const MAX_PENDING_NORMAL = 64;
+const RESERVED_SETTLEMENT_SLOTS = 8;
+const pendingByOwner = new WeakMap();
+
+export async function exclusive(lockMap, key, operation, { settlement = false } = {}) {
+  const pending = pendingByOwner.get(lockMap) ?? { count: 0 };
+  const limit = MAX_PENDING_NORMAL + (settlement ? RESERVED_SETTLEMENT_SLOTS : 0);
+  if (pending.count >= limit) throw new TypeError("browser host queue capacity is exhausted");
+  pending.count++;
+  pendingByOwner.set(lockMap, pending);
   const prior = lockMap.get(key) ?? Promise.resolve();
   let release;
   const current = new Promise((resolve) => { release = resolve; });
@@ -69,6 +80,8 @@ export async function exclusive(lockMap, key, operation) {
   try {
     return await operation();
   } finally {
+    pending.count--;
+    if (pending.count === 0) pendingByOwner.delete(lockMap);
     release();
     if (lockMap.get(key) === tail) lockMap.delete(key);
   }
