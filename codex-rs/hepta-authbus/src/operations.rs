@@ -1,6 +1,5 @@
 use codex_hepta_types::StableId;
 use serde::Serialize;
-use sqlx::Acquire;
 use sqlx::Row;
 
 use crate::AuthBusAuthorityError;

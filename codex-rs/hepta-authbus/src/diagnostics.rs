@@ -139,7 +139,10 @@ pub(crate) struct OwnerDiagnostics(Mutex<AuthBusOwnerDiagnostics>);
 impl OwnerDiagnostics {
     fn with<R>(&self, f: impl FnOnce(&mut AuthBusOwnerDiagnostics) -> R) -> R {
         // Observability poisoning must neither panic nor unlock authority.
-        let mut state = self.0.lock().unwrap_or_else(|poison| poison.into_inner());
+        let mut state = self
+            .0
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         f(&mut state)
     }
 

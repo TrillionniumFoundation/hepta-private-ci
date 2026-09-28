@@ -176,11 +176,14 @@ async fn failed_revoke_and_retire_preserve_exact_previous_state() {
             .await
             .expect("before");
         assert_eq!(before.state, expected_state);
-        let sql = format!(
+        let sql = if target == "revoked" {
             "CREATE TRIGGER inject_state_failure BEFORE UPDATE ON authbus_issuer_registry
-            WHEN NEW.state = '{target}' BEGIN SELECT RAISE(ABORT, 'injected state failure'); END"
-        );
-        sqlx::query(&sql)
+            WHEN NEW.state = 'revoked' BEGIN SELECT RAISE(ABORT, 'injected state failure'); END"
+        } else {
+            "CREATE TRIGGER inject_state_failure BEFORE UPDATE ON authbus_issuer_registry
+            WHEN NEW.state = 'retired' BEGIN SELECT RAISE(ABORT, 'injected state failure'); END"
+        };
+        sqlx::query(sql)
             .execute(&host.store.pool)
             .await
             .expect("fault");

@@ -158,6 +158,10 @@ impl AuthBusAuthorityHost {
         Ok(host)
     }
 
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "this dedicated owner gate must span local commit and external checkpoint publication; releasing it at await would admit an inconsistent frontier"
+    )]
     pub async fn sync_checkpoint(&self) -> Result<(), AuthBusAuthorityError> {
         let _owner = self.transition.lock().await;
         self.sync_checkpoint_locked().await
@@ -188,6 +192,10 @@ impl AuthBusAuthorityHost {
     /// checkpoint publication. Creating an async operation does not poll it.
     /// Cancellation drops the gate; the next entry reconciles before polling
     /// its own operation, including after a cancelled COMMIT acknowledgement.
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "this dedicated owner gate must span local commit and external checkpoint publication; releasing it at await would admit an inconsistent frontier"
+    )]
     pub(crate) async fn mutate<T>(
         &self,
         operation: impl std::future::Future<Output = Result<T, AuthBusAuthorityError>>,

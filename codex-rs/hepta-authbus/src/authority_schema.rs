@@ -15,6 +15,10 @@ pub(crate) async fn verify_schema(
     pool: &SqlitePool,
     migrator: &Migrator,
 ) -> Result<(), AuthBusAuthorityError> {
+    #[expect(
+        clippy::disallowed_methods,
+        reason = "this transient in-memory migration reference contains no authority or Codex runtime state and is closed before returning"
+    )]
     let reference = SqlitePoolOptions::new()
         .max_connections(1)
         .connect("sqlite::memory:")

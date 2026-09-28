@@ -153,6 +153,7 @@ impl AuthBusAuthorityStore {
             .map_err(crate::authority_store::commit_error)
     }
 
+    #[cfg(test)]
     pub(crate) async fn recovery_required(&self) -> Result<bool, AuthBusAuthorityError> {
         let value: i64 = sqlx::query_scalar(
             "SELECT recovery_required FROM authbus_recovery_state WHERE singleton = 1",

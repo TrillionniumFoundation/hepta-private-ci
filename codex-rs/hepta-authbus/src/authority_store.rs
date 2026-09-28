@@ -55,6 +55,10 @@ impl AuthBusAuthorityStore {
             .foreign_keys(true)
             .busy_timeout(Duration::from_secs(5));
         let pool_fence = owner_fence.clone();
+        #[expect(
+            clippy::disallowed_methods,
+            reason = "AuthBus owns its independent private authority database: this sole production constructor enforces FULL sync, schema attestation and pool-lifetime fencing instead of the Codex runtime-state schema"
+        )]
         let pool = SqlitePoolOptions::new()
             .after_connect(move |_connection, _metadata| {
                 let fence = pool_fence.clone();
@@ -565,7 +569,7 @@ pub(crate) fn u64_bytes(value: u64) -> [u8; 8] {
 fn is_unique_violation(error: &sqlx::Error) -> bool {
     error
         .as_database_error()
-        .is_some_and(|database| database.is_unique_violation())
+        .is_some_and(sqlx::error::DatabaseError::is_unique_violation)
 }
 
 pub(crate) fn storage(error: impl ToString) -> AuthBusAuthorityError {
