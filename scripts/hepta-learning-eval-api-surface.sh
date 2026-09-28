@@ -120,6 +120,34 @@ if not expected:
 PY
 done
 
+cat >"${tmp}/unarchived_recorded_qualification.rs" <<'RS'
+use codex_hepta_intelligence_eval::DurableProductEvaluationAttemptJournalV1;
+use codex_hepta_intelligence_eval::LockedFileFinalHoldoutCasStoreV1;
+use codex_hepta_intelligence_eval::RecordedProductEvaluationRunnerV1;
+fn bypass<J: DurableProductEvaluationAttemptJournalV1>() {
+    let _ = RecordedProductEvaluationRunnerV1::<LockedFileFinalHoldoutCasStoreV1>::qualify_and_persist::<J>;
+}
+fn main() {}
+RS
+if rustc --edition=2024 --crate-name learning_eval_unarchived_recorded_qualification --error-format=json \
+    "${tmp}/unarchived_recorded_qualification.rs" --extern "codex_hepta_intelligence_eval=${rlib}" \
+    -L "dependency=${deps}" -o "${tmp}/unarchived_recorded_qualification" \
+    >"${tmp}/unarchived_recorded_qualification.stdout" \
+    2>"${tmp}/unarchived_recorded_qualification.stderr"
+then
+  echo "unarchived recorded qualification is publicly callable" >&2
+  exit 1
+fi
+python3 - "${tmp}/unarchived_recorded_qualification.stderr" <<'PY'
+import json
+import pathlib
+import sys
+rows = [json.loads(line) for line in pathlib.Path(sys.argv[1]).read_text().splitlines() if line.strip()]
+if not any(row.get('level') == 'error' and (row.get('code') or {}).get('code') == 'E0624'
+           and 'qualify_and_persist' in row.get('message', '') for row in rows):
+    raise SystemExit('unarchived recorded qualification fixture failed for an unrelated reason')
+PY
+
 cat >"${tmp}/unverified_resume.rs" <<'RS'
 use codex_hepta_intelligence_eval::DurableProductEvaluationAttemptJournalV1;
 use codex_hepta_intelligence_eval::LockedFileFinalHoldoutCasStoreV1;
@@ -214,4 +242,4 @@ printf 'use codex_hepta_intelligence_eval::ProductEvaluationRunnerV1;\nfn main()
 rustc --edition=2024 --crate-name learning_eval_compat_surface "${tmp}/compat.rs" \
   --extern "codex_hepta_intelligence_eval=${compat}" -L "dependency=${compat_deps}" \
   -o "${tmp}/compat"
-printf '%s\n' '{"schema":"hepta.learning-eval.api-surface.v1","publicAdmission":true,"publicRecordedRunner":true,"verifiedRecoveryPublic":true,"callerDecisionDecoderAccepted":false,"unverifiedPublicationRecoveryPublic":false,"lowLevelV2Public":false,"lowLevelV3Public":false,"volatileJournalDefaultAccepted":false,"rawRunnerDefaultPublic":false,"rawRunnerExplicitCompatibilityPublic":true}'
+printf '%s\n' '{"schema":"hepta.learning-eval.api-surface.v1","publicAdmission":true,"publicRecordedRunner":true,"verifiedRecoveryPublic":true,"callerDecisionDecoderAccepted":false,"unarchivedRecordedQualificationPublic":false,"unverifiedPublicationRecoveryPublic":false,"lowLevelV2Public":false,"lowLevelV3Public":false,"volatileJournalDefaultAccepted":false,"rawRunnerDefaultPublic":false,"rawRunnerExplicitCompatibilityPublic":true}'
