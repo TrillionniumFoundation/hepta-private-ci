@@ -57,7 +57,10 @@ env:
   CARGO_BUILD_JOBS: "2"
 
 concurrency:
-  group: hepta-intuition-readonly-${{ github.event.pull_request.number || github.ref }}
+  # v2 escapes the legacy group whose `always()` sentinel could survive a
+  # cancellation. Future updates share this group, so only the newest PR head
+  # may execute qualification.
+  group: hepta-intuition-readonly-v2-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -210,7 +213,9 @@ jobs:
 
   required:
     name: Intuition required
-    if: always()
+    # Preserve a single required check on ordinary failures, but do not let a
+    # cancelled obsolete run keep a concurrency lock alive.
+    if: ${{ always() && !cancelled() }}
     needs: [evidence-tests, qualify, independent, aggregate]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
