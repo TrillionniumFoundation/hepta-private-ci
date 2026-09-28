@@ -8,7 +8,15 @@ impl LearningArtifactOwnerService {
         &self,
         now: u64,
     ) -> Result<VerifiedCurrentRegistryViewV1, LearningArtifactOwnerServiceError> {
-        self.operational_state.require_current_view()?;
+        if let Err(error) = self.operational_state.require_current_view() {
+            if matches!(
+                error,
+                LearningArtifactOwnerServiceError::WithdrawalDurabilityUnknown
+            ) {
+                self.metrics.increment_withdrawal_blocked();
+            }
+            return Err(error);
+        }
         self.metrics
             .measure(ArtifactOwnerStageV1::CurrentView, || {
                 self.host.current_registry_view(now).map_err(LearningArtifactOwnerServiceError::from)
