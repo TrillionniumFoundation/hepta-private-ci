@@ -63,22 +63,46 @@ jobs:
           git rm .github/runtime-agentd-integration.patch
           git diff --check --cached
 
-      - name: Validate deterministic scripts and Cargo target plan
+      - name: Validate exact-head receipt runner
         shell: bash
         run: |
           set -euo pipefail
-          python3 -B -m unittest discover -s scripts/qualification -p 'test_agentd_exact_head.py' -v
-          python3 -B -m unittest -v \
-            scripts.qualification.test_runtime_agentd_main_baseline \
-            scripts.qualification.test_runtime_agentd_target_host \
-            scripts.tests.test_hepta_runtime_agentd_closure
+          python3 -B -m unittest discover \
+            -s scripts/qualification -p 'test_agentd_exact_head.py' -v
+          python3 -B -m py_compile scripts/qualification/agentd_exact_head.py
+
+      - name: Validate qualification and closure contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B -m unittest discover \
+            -s scripts/qualification -p 'test_runtime_agentd_main_baseline.py' -v
+          python3 -B -m unittest discover \
+            -s scripts/qualification -p 'test_runtime_agentd_target_host.py' -v
+          python3 -B -m unittest discover \
+            -s scripts/tests -p 'test_hepta_runtime_agentd_closure.py' -v
           python3 -B -m py_compile \
             scripts/hepta_runtime_agentd_closure.py \
-            scripts/qualification/agentd_exact_head.py \
             scripts/qualification/runtime_agentd_main_baseline.py \
             scripts/qualification/runtime_agentd_target_host.py
+
+      - name: Install repository Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          toolchain=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
+          rustup toolchain install "$toolchain" --profile minimal --component rustfmt --component clippy
+
+      - name: Validate Cargo package and test-target plan
+        shell: bash
+        run: |
+          set -euo pipefail
           python3 - <<'PY'
-          import importlib.util, json, pathlib, subprocess
+          import importlib.util
+          import json
+          import pathlib
+          import subprocess
+
           root = pathlib.Path.cwd()
           spec = importlib.util.spec_from_file_location(
               'agentd_exact_head', root / 'scripts/qualification/agentd_exact_head.py')
@@ -86,8 +110,8 @@ jobs:
           assert spec.loader is not None
           spec.loader.exec_module(module)
           metadata = json.loads(subprocess.check_output([
-              'cargo', 'metadata', '--manifest-path', str(root / 'codex-rs/Cargo.toml'),
-              '--no-deps', '--format-version=1', '--offline'
+              'cargo', 'metadata', '--locked', '--manifest-path',
+              str(root / 'codex-rs/Cargo.toml'), '--no-deps', '--format-version=1'
           ]))
           packages = {package['name']: package for package in metadata['packages']}
           for package in module.PACKAGES:
@@ -109,8 +133,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          toolchain=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
-          rustup toolchain install "$toolchain" --profile minimal --component rustfmt --component clippy
           cargo fmt --manifest-path codex-rs/Cargo.toml \
             --package codex-hepta-agentd --package codex-hepta-infer-worker-host \
             --package codex-hepta-fleet --package codex-hepta-supervisor -- --check
