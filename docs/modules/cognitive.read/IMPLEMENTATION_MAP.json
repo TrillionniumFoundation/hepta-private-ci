@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "f14039ba314d8e07d420ab7571a680b737bbb97c",
-    "tree": "024c1073bc33dfd3461a23231f27dbd965c9353f"
+    "commit": "86c390857d66598292478d983251b0687aaec150",
+    "tree": "e174514fb2f5844dc076256d0262d451ac76ad0d"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.read",
@@ -205,11 +205,12 @@
     {"path": "scripts/verify-cognitive-read-constants.py", "object": "3911fa9444b876dc8619ae7c1745374beb1284e9"},
     {"path": "scripts/cognitive_read_consumers.py", "object": "32fa9eadb6bd14b8a06f19ca276d7a198aa6d4ac"},
     {"path": "scripts/test_cognitive_read_consumers.py", "object": "ed1abba4fa9d706147fa7bd2e7f274fab1cd77a8"},
-    {"path": "scripts/cognitive_read_evidence.py", "object": "3c67b2b9b4c736b93419fdf52a1e36a4dd7eac8f"},
-    {"path": "scripts/test_cognitive_read_evidence.py", "object": "cc1732c9da8cb431cb3678f828f1096ab0fd92e7"},
+    {"path": "scripts/cognitive_read_evidence.py", "object": "3cef15a61a5ce7796ed198b29630de6aee34036f"},
+    {"path": "scripts/test_cognitive_read_evidence.py", "object": "83b84b87975ef9a4fab948ed0aff3bec93c45aeb"},
+    {"path": "scripts/test_cognitive_read_native_gate.py", "object": "645ba6d730f0ba3771174aff696e49b336fc78ac"},
     {"path": "scripts/emit-cognitive-read-qualification.py", "object": "ca844e1a2cf062ef746c6829dcda8d6e4bf767b4"},
     {"path": "scripts/run-cognitive-read-qualification.sh", "object": "2faf4a18bfe16b1638af420454fcdfed1845e6b4"},
-    {"path": ".github/workflows/cognitive-read-qualification.yml", "object": "2a79a1186bcc53a011021b48246791692091dab2"},
+    {"path": ".github/workflows/cognitive-read-qualification.yml", "object": "50f5128d8b5a1710a01faae07a9cde1c6dfefe5b"},
     {"path": ".github/actions/hepta-synthetic-merge/action.yml", "object": "905fc5039016ac7aaadbb857c0a7b94bb594f7ce"}
   ],
   "productCallers": [
@@ -262,8 +263,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "f14039ba314d8e07d420ab7571a680b737bbb97c",
-    "tree": "024c1073bc33dfd3461a23231f27dbd965c9353f"
+    "commit": "86c390857d66598292478d983251b0687aaec150",
+    "tree": "e174514fb2f5844dc076256d0262d451ac76ad0d"
   },
   "canonicalMemoryEventReadMigration": {
     "state": "authoritative_shadow_adapter_source_candidate",
@@ -310,6 +311,8 @@
     "requiresPositiveTestExecution": true,
     "requiresValidMeasurements": true,
     "requiresFrozenMergeParents": true,
+    "requiresPinnedNextestVersion": "0.9.103",
+    "requiresExactNativeFinalUseCase": "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone",
     "exactSourceExecutionProved": false,
     "mergeExecutionProved": false
   },
