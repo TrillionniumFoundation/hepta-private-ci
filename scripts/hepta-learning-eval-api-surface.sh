@@ -19,8 +19,6 @@ cd "${ROOT}/codex-rs"
 tmp="$(mktemp -d)"
 trap 'rm -rf "${tmp}"' EXIT
 
-# Select the artifact reported by this invocation, never a lexicographically
-# chosen stale rlib (which may have been built with compatibility features).
 artifact() {
   python3 - "$1" "$2" <<'PY'
 import json
@@ -44,10 +42,6 @@ print(result)
 PY
 }
 
-# Cargo commonly reports the package rlib in target/debug while its transitive
-# rlibs live in target/debug/deps. Direct rustc fixtures must search the latter;
-# otherwise a valid public crate is misdiagnosed as missing before the intended
-# visibility or trait-bound assertion is reached.
 dependency_dir() {
   local rlib="$1"
   local directory
@@ -73,7 +67,6 @@ use codex_hepta_intelligence_eval::FencedFinalHoldoutOwnerV1;
 use codex_hepta_intelligence_eval::RecordedProductEvaluationRunnerV1;
 use codex_hepta_intelligence_eval::DurableProductEvaluationAttemptJournalV1;
 use codex_hepta_intelligence_eval::LockedFileFinalHoldoutCasStoreV1;
-
 #[allow(dead_code)]
 fn recorded<S: FinalHoldoutCasStoreV1>(owner: FencedFinalHoldoutOwnerV1<S>) {
     let _ = RecordedProductEvaluationRunnerV1::new(owner);
@@ -88,9 +81,7 @@ fn verified_recovery<J: DurableProductEvaluationAttemptJournalV1>() {
     let _ = RecordedProductEvaluationRunnerV1::<LockedFileFinalHoldoutCasStoreV1>::resume_decided_qualification::<J>;
     let _ = RecordedProductEvaluationRunnerV1::<LockedFileFinalHoldoutCasStoreV1>::resume_decided_outcome_qualification::<J>;
 }
-fn main() {
-    let _ = admit_signed_eligibility_v2;
-}
+fn main() { let _ = admit_signed_eligibility_v2; }
 RS
 rustc --edition=2024 --crate-name learning_eval_positive_surface \
   "${tmp}/positive.rs" --extern "codex_hepta_intelligence_eval=${rlib}" \
@@ -120,33 +111,35 @@ if not expected:
 PY
 done
 
-cat >"${tmp}/unarchived_recorded_qualification.rs" <<'RS'
+for method in qualify_and_persist qualify_outcomes_and_persist
+do
+  cat >"${tmp}/unarchived.rs" <<RS
 use codex_hepta_intelligence_eval::DurableProductEvaluationAttemptJournalV1;
 use codex_hepta_intelligence_eval::LockedFileFinalHoldoutCasStoreV1;
 use codex_hepta_intelligence_eval::RecordedProductEvaluationRunnerV1;
 fn bypass<J: DurableProductEvaluationAttemptJournalV1>() {
-    let _ = RecordedProductEvaluationRunnerV1::<LockedFileFinalHoldoutCasStoreV1>::qualify_and_persist::<J>;
+    let _ = RecordedProductEvaluationRunnerV1::<LockedFileFinalHoldoutCasStoreV1>::${method}::<J>;
 }
 fn main() {}
 RS
-if rustc --edition=2024 --crate-name learning_eval_unarchived_recorded_qualification --error-format=json \
-    "${tmp}/unarchived_recorded_qualification.rs" --extern "codex_hepta_intelligence_eval=${rlib}" \
-    -L "dependency=${deps}" -o "${tmp}/unarchived_recorded_qualification" \
-    >"${tmp}/unarchived_recorded_qualification.stdout" \
-    2>"${tmp}/unarchived_recorded_qualification.stderr"
-then
-  echo "unarchived recorded qualification is publicly callable" >&2
-  exit 1
-fi
-python3 - "${tmp}/unarchived_recorded_qualification.stderr" <<'PY'
+  if rustc --edition=2024 --crate-name learning_eval_unarchived_qualification --error-format=json \
+      "${tmp}/unarchived.rs" --extern "codex_hepta_intelligence_eval=${rlib}" \
+      -L "dependency=${deps}" -o "${tmp}/unarchived" \
+      >"${tmp}/unarchived.stdout" 2>"${tmp}/unarchived.stderr"
+  then
+    echo "unarchived recorded qualification is publicly callable: ${method}" >&2
+    exit 1
+  fi
+  python3 - "${tmp}/unarchived.stderr" "${method}" <<'PY'
 import json
 import pathlib
 import sys
 rows = [json.loads(line) for line in pathlib.Path(sys.argv[1]).read_text().splitlines() if line.strip()]
 if not any(row.get('level') == 'error' and (row.get('code') or {}).get('code') == 'E0624'
-           and 'qualify_and_persist' in row.get('message', '') for row in rows):
-    raise SystemExit('unarchived recorded qualification fixture failed for an unrelated reason')
+           and sys.argv[2] in row.get('message', '') for row in rows):
+    raise SystemExit(f'unarchived qualification fixture failed for an unrelated reason: {sys.argv[2]}')
 PY
+done
 
 cat >"${tmp}/unverified_resume.rs" <<'RS'
 use codex_hepta_intelligence_eval::DurableProductEvaluationAttemptJournalV1;
@@ -199,9 +192,6 @@ if not any(row.get('level') == 'error' and (row.get('code') or {}).get('code') =
     raise SystemExit('volatile journal fixture failed for an unrelated reason')
 PY
 
-# A second generic parameter formerly supplied an arbitrary decoder returning
-# SignedEvaluationDecisionV1. E0107 proves that this callback type slot no longer
-# exists. An unrelated type/visibility/build failure is never accepted instead.
 for symbol in recover_persisted_qualification recover_persisted_outcome_qualification \
   recover_selected_host_qualification recover_selected_host_outcome_qualification
 do
@@ -233,7 +223,6 @@ if not any(row.get('level') == 'error' and (row.get('code') or {}).get('code') =
 PY
 done
 
-# The raw facade is retained deliberately, only under an explicit test feature.
 cargo build --locked -p codex-hepta-intelligence-eval --features trusted-inprocess-eval \
   --message-format=json >"${tmp}/compat-build.jsonl"
 compat="$(artifact "${tmp}/compat-build.jsonl" compat)"
@@ -242,4 +231,4 @@ printf 'use codex_hepta_intelligence_eval::ProductEvaluationRunnerV1;\nfn main()
 rustc --edition=2024 --crate-name learning_eval_compat_surface "${tmp}/compat.rs" \
   --extern "codex_hepta_intelligence_eval=${compat}" -L "dependency=${compat_deps}" \
   -o "${tmp}/compat"
-printf '%s\n' '{"schema":"hepta.learning-eval.api-surface.v1","publicAdmission":true,"publicRecordedRunner":true,"verifiedRecoveryPublic":true,"callerDecisionDecoderAccepted":false,"unarchivedRecordedQualificationPublic":false,"unverifiedPublicationRecoveryPublic":false,"lowLevelV2Public":false,"lowLevelV3Public":false,"volatileJournalDefaultAccepted":false,"rawRunnerDefaultPublic":false,"rawRunnerExplicitCompatibilityPublic":true}'
+printf '%s\n' '{"schema":"hepta.learning-eval.api-surface.v1","publicAdmission":true,"publicRecordedRunner":true,"verifiedRecoveryPublic":true,"callerDecisionDecoderAccepted":false,"unarchivedRecordedQualificationPublic":false,"unarchivedOutcomeQualificationPublic":false,"unverifiedPublicationRecoveryPublic":false,"lowLevelV2Public":false,"lowLevelV3Public":false,"volatileJournalDefaultAccepted":false,"rawRunnerDefaultPublic":false,"rawRunnerExplicitCompatibilityPublic":true}'
