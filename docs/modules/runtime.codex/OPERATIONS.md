@@ -1,181 +1,227 @@
 # runtime.codex operations runbook
 
-This runbook covers repository qualification, target-host preparation, canary operation, incident response and rollback for the named `runtime.codex` App Server caller. It does not grant production authority. All examples preserve the separation between source qualification, target-host qualification, independent acceptance and release.
+This runbook covers repository qualification, protected target-host execution,
+canary, incident response and rollback for the named `runtime.codex` caller. It
+does not grant deployment authority. Source qualification, target-host
+qualification, independent acceptance, activation, promotion and release remain
+separate decisions.
 
-## 1. Components and ownership
+## 1. Components and owners
 
-- Codex App Server owns the canonical thread and turn execution spine.
-- `hepta-codex-adapter` validates request/terminal correlation and maps retry posture; it never grants model/provider authority.
-- `hepta-infer-worker-host` is the named product caller and consumes final-use authority immediately before physical `turn/start`.
-- `hepta-infer-core` owns the durable native request/dispatch/observation journal.
-- Agentd owns the product run lifecycle, generation, ingress and final owner-readiness decision.
-- The final-use issuer and quarantine-resolution authority are independently operated services. Their private keys must not be present in the worker, Agentd or repository checkout.
+- Codex App Server owns the canonical thread/turn/model execution spine.
+- `hepta-codex-adapter` validates request/terminal correlation and retry posture;
+  it grants no model/provider authority.
+- `hepta-infer-worker-host` is the named caller and consumes final-use authority
+  at the server-owned effect-entry boundary.
+- `hepta-infer-core` owns the durable local operation/dispatch/observation
+  journal.
+- Agentd owns generation, App Server ingress and the exact effect-entry/terminal
+  lifecycle.
+- Final-use issuer, provider audit exporter and quarantine authority are
+  independently operated. Their private keys and approval authority are absent
+  from worker, Agentd and repository jobs.
 
-## 2. Repository quickstart
+## 2. Repository qualification
 
-Use the pinned toolchain and verified V8 artifacts used by CI. From the repository root:
+Follow [`QUICKSTART.md`](QUICKSTART.md). The authoritative path is
+`.github/workflows/runtime-codex-qualification.yml`, which runs exact-head and
+deterministic synthetic-merge lanes from a clean checkout. The closed-world
+inventory is `scripts/runtime_codex_receipt_v2.py` and includes the 22-cut crash
+and quarantine protocol targets.
+
+Inspect a retained bundle with:
 
 ```bash
-python3 -m unittest scripts.tests.test_runtime_codex_receipt
-cargo fmt --manifest-path codex-rs/Cargo.toml \
-  --package codex-hepta-codex-adapter \
-  --package codex-hepta-infer-core \
-  --package codex-hepta-agent-protocol \
-  --package codex-hepta-agentd \
-  --package codex-hepta-infer-worker-host -- --check
-
-cd codex-rs
-cargo test --locked -p codex-hepta-codex-adapter -- --test-threads=1
-cargo test --locked -p codex-hepta-infer-core -- --test-threads=1
-cargo test --locked -p codex-hepta-agent-protocol -- --test-threads=1
-cargo test --locked -p codex-hepta-agentd lane_b_runtime --lib -- --test-threads=1
-cargo test --locked -p codex-hepta-infer-worker-host -- --test-threads=1
-cargo test --locked -p codex-hepta-agentd \
-  --test runtime_codex_product_e2e \
-  runtime_codex_product_caller_commits_one_authorized_terminal_turn \
-  -- --test-threads=1
+python3 scripts/runtime_codex_receipt_v2.py verify-bundle \
+  receipt.json \
+  --records records \
+  --bundle attestation.jsonl \
+  --repository TrillionniumFoundation/hepta-private-ci \
+  --signer-workflow .github/workflows/runtime-codex-qualification.yml
 ```
 
-These commands use a controlled provider in repository tests. They are not real-provider or target-host evidence. The protected workflow `.github/workflows/runtime-codex-qualification.yml` is the authoritative repository execution path because it binds exact SHA/tree, ordered synthetic-merge parents, logs, test counts and attestations.
+Both lanes must be `passed` for the same source SHA. A valid signature on a
+failed receipt remains a failure.
 
-## 3. Protected host configuration
+## 3. Protected host prerequisites
 
-The native caller requires protected absolute paths and explicit identities. At minimum configure:
+Before starting services, independently verify:
 
-- Agentd control socket and expected Agent id/generation;
-- selected model and provider;
-- final-use issuer Unix socket;
-- dedicated issuer UID and protected socket ancestry;
-- pinned signer id and Ed25519 verifying key;
-- owner-private final-use state directory;
-- nonzero authority epoch and monotonic revocation revision;
-- bounded issuer timeout;
-- journal location, capacity and filesystem durability profile;
-- trusted-time and revocation-distribution endpoints;
-- quarantine authority signer/frontier configuration.
+- accepted source/tree, binary, lockfile, toolchain and configuration digests;
+- host boot, kernel, service-unit, cgroup, namespace and mount identities;
+- Agentd/App Server/worker identities and generation;
+- final-use issuer signer/key custody and exact process instance;
+- protected socket ancestry and peer UID/PID/start/executable/cgroup/boot
+  identity;
+- trusted time, monotonic revocation distribution and anti-rollback checkpoint;
+- durable journal and quarantine-frontier integrity;
+- real provider account/endpoint/model and authenticated audit exporter;
+- rollback binary/configuration/frontier identity.
 
-Configuration files must be regular files opened without symlink following, root- or service-owner controlled, not group/world writable and bounded in size. State directories must be on a filesystem whose rename/fsync semantics were qualified. Never place signing private keys in these files.
+Keep admissions closed on any mismatch. There is no fallback issuer, socket,
+state directory, provider or model.
 
-## 4. Service identities and socket policy
+## 4. Startup order
 
-Use distinct service accounts for Agentd, worker, final-use issuer and quarantine authority. Do not rely on a shared UID as the sole identity boundary. Target qualification must bind connected peer credentials to the expected process instance, executable identity, boot/start identity, cgroup or service unit, socket inode and protected directory chain where supported.
+1. Verify source receipts, attestations and accepted release record.
+2. Restore/check external anti-rollback checkpoints.
+3. Establish trusted time and revocation distribution.
+4. Start final-use issuer and record its exact process instance.
+5. Start quarantine authority, where applicable.
+6. Start Agentd fenced; verify workspace/home/run roots and generation.
+7. Let Agentd create/own App Server ingress.
+8. Start worker with admissions closed.
+9. Verify journal schema/integrity/capacity and all authority frontiers.
+10. Verify issuer socket and process identity before/after a bounded probe.
+11. Verify model-only tool topology.
+12. Execute protected target-host qualification.
+13. Rehearse canary and rollback.
+14. Open admissions only after independent acceptance of the exact release.
 
-The issuer socket parent chain must not be writable by unrelated principals. Replacing a socket with another process under the same UID is an attack case, not a supported failover method. Planned failover uses a new independently attested process identity and monotonic authority frontier.
+## 5. Target-host qualification
 
-## 5. Startup order
+Use `.github/workflows/runtime-codex-target-host.yml` with:
 
-1. Restore and verify anti-rollback frontier checkpoints.
-2. Start trusted time/revocation distribution.
-3. Start the final-use issuer with protected key custody and publish its boot identity.
-4. Start the quarantine-resolution authority if this host participates in resolution.
-5. Start Agentd and verify generation, workspace, home root, run root and App Server ingress.
-6. Start the App Server under Agentd ownership.
-7. Start the native worker with admissions closed.
-8. Run local health, signer, socket, durable-store and provider preflight checks.
-9. Open admissions only after the canary policy and exact qualified release digest match.
+- exact `source_sha`;
+- direct signed source-qualification run id;
+- exact Agentd socket/id/generation/model;
+- protected final-use configuration and journal root;
+- 30–200 canaries (default 50).
 
-A component that cannot prove its predecessor identities remains fenced. There is no ambient fallback issuer, provider, model, state directory or App Server socket.
+The runner must expose independently provisioned environment paths for host
+identity, issuer custody, anti-rollback, canary/rollback and independent-review
+evidence, plus authenticated provider-audit and fault-runner executables.
 
-## 6. Canary procedure
+The workflow verifies source receipts/attestations, executes all canaries and
+eight faults, retains partial failure evidence, emits canonical target-host V3
+JSON and attests only a complete passing manifest.
 
-The canary release record binds exact binary/source digest, configuration digest, target-host identity, issuer boot identity, authority/revocation frontier, provider account/endpoint, Agent generation and rollback target.
+## 6. Canary policy
 
-Run a bounded canary workload that proves:
+Bind the canary to source/binary/configuration/host/issuer/provider/generation
+and rollback identities. Explicitly cap operation count, concurrency and time.
 
-- one signed final-use grant produces at most one physical provider request;
-- terminal response and usage are correlated to the exact turn;
-- cancellation/deadline after admission remain non-success;
-- owner loss is sticky;
-- overload before admission releases capacity safely;
-- lost acknowledgement is reconciled without replay;
-- process restart preserves unknown-operation ownership;
-- no model-visible or registered tools exist for the model-only profile;
-- audit and quarantine receipts are retained without secrets.
+Required observations:
 
-Do not widen traffic until the independent acceptor signs the canary result. Repository workflow success is not that signature.
+- one fresh effect-entry winner and at most one physical request per operation;
+- unique provider audit and terminal-correlation identities;
+- exact terminal/usage correlation;
+- no post-fence abort or original-operation replay;
+- cancellation/deadline/owner-loss remain non-success;
+- unknown ACK/process loss retains operation ownership;
+- no model-visible or registered tools;
+- bounded p95/p99 latency/RSS and no unexpected orphan/quarantine growth.
+
+Stop immediately on duplicate/replay, more than one fresh winner, owner revision
+rollback, authority/process/frontier mismatch, journal corruption, false success,
+unbounded resource growth or capability expansion. Traffic widening requires a
+new independent decision.
 
 ## 7. Observability
 
-Emit bounded structured events for:
+Emit bounded structured events/metrics for:
 
-- admission, durable prepare and owner dispatch revisions;
-- final-use grant id digest, signer id, authority epoch and revocation-head digest;
-- effect entry, connection/session/thread/turn correlation digests;
-- overload, rejection, timeout, cancellation, owner loss and quarantine transitions;
-- same-connection and reopened reconciliation attempts/results;
-- orphan thread cleanup attempts;
-- quarantine age and resolution frontier;
-- p50/p95/p99 latency and RSS/CPU profiles by exact release digest.
+- admission and local/Agentd revision transitions;
+- dispatch/request/payload/authority/correlation digests;
+- signer id, epoch and revocation-head digest;
+- effect-entry ACK class and physical-send attempt count;
+- overload, rejection, timeout, cancellation, owner loss and quarantine;
+- same-connection/restart reconciliation attempts/results;
+- terminal settlement and owner/local convergence;
+- thread cleanup attempts, failures/orphans and retained unknown history;
+- unresolved count/oldest age and quarantine count/oldest age;
+- p50/p95/p99/max latency, CPU/RSS/files/socket/event/journal profile.
 
-Never log private keys, bearer credentials, complete prompts, unrestricted model output, raw memory content or unredacted provider responses. Retain digests and registered reason codes instead.
+Do not log private keys, bearer credentials, full prompts, unrestricted output,
+raw memory/context or unredacted provider responses.
 
-## 8. Alert classes
+## 8. Immediate alert classes
 
-Immediate pages:
+Page on:
 
-- attempted same-operation replay;
-- signature, peer/process identity or revocation-frontier failure;
-- anti-rollback checkpoint mismatch;
-- semantic conflict for an existing operation id;
-- local/Agentd dispatch digest divergence;
-- terminal success without final ready owner;
-- release or retry without an independently signed resolution;
-- durable-store corruption or failed settlement fencing admissions.
-
-Capacity/latency alerts use measured deployment baselines. Repository design targets must not be copied into production thresholds without target-host measurements.
+- duplicate or replayed provider request;
+- more than one fresh fence winner;
+- accepted post-fence abort;
+- local/Agentd digest or revision divergence;
+- signature, issuer process, time or revocation failure;
+- anti-rollback mismatch;
+- terminal success without current owner authority;
+- release/replacement without verified quarantine envelope;
+- durable-store corruption or failed settlement;
+- unresolved/quarantine age or capacity beyond policy;
+- sustained orphan-thread growth.
 
 ## 9. Incident playbooks
 
-### Lost `turn/start` acknowledgement
+### Fence acknowledgement unknown
 
-Keep the operation unresolved. First observe an exact `turn/started` event on the original connection. After restart, reopen the authenticated original generation and use `thread/read(includeTurns=true)` with the stable client message id and original input. Never create a new `turn/start` for the same operation.
+Do not send. Preserve local/owner state and exact dispatch digest. Query Agentd:
+`ContextAttached` may still permit the original live abort proof; exact
+`Dispatched` is reconciliation only. An idempotent receipt cannot mint a send
+permit.
+
+### `turn/start` acknowledgement unknown
+
+Stop retries. On the original connection consume only an exact
+`turn/started`. After restart authenticate the original generation and use
+`thread/read(includeTurns=true)` matching both stable client-message id and
+original user input. Mismatch/multiplicity/missing history is conflict or
+quarantine, not “not sent”.
+
+### Typed pre-admission rejection
+
+Verify registered rejection class and response digest. Commit exact Agentd
+terminal rejection first; release local capacity only after matching owner ACK.
+Unknown owner ACK retains the slot for reconciliation.
 
 ### App Server history unavailable
 
-Quarantine under `QUARANTINE_AND_RELEASE.md`. Retain capacity and evidence. Do not infer absence, success or failure. Only an independently signed resolution may close operational ownership or authorize a separate new operation.
+Quarantine under [`QUARANTINE_AND_RELEASE.md`](QUARANTINE_AND_RELEASE.md).
+Retain ownership/capacity/evidence. Only a verified independent envelope may
+record exact terminal evidence, abandon without replay, or authorize a distinct
+one-shot replacement.
 
-### Owner generation or ingress changes
+### Issuer unavailable or identity drift
 
-Fence success immediately, interrupt where possible and preserve provider facts. A later healthy response cannot restore authority for the same attempt. Re-admission requires a new generation-bound operation.
-
-### Final-use issuer unavailable
-
-Reject before effect. Do not fall back to a local signer, cached unsigned approval or permissive mode. Existing possibly-sent operations remain reconcile-only.
+Reject before effect and close admissions. Never use a local signer, cached
+unsigned proposal or permissive mode. Validate release/unit/socket/process/key
+custody/epoch/frontier/anti-rollback before recovery.
 
 ### Durable store failure
 
-Close admissions, prevent settlement claims and preserve the last externally checkpointed frontier. Repair or restore only under the tested recovery procedure; do not delete unknown operations to regain capacity.
+Close admissions and preserve the last checkpoint/evidence. Repair/restore only
+through the qualified procedure. Never delete unknown operations to regain
+capacity.
 
 ## 10. Rollback
 
-Rollback is release-specific and rehearsed before canary. It must preserve interpretation of all durable records created by the candidate. Steps:
+1. Close admissions.
+2. Finish exact pre-effect compensation only for definitely-unsent work.
+3. Interrupt/reconcile started work without replay.
+4. Quarantine unresolved effects.
+5. Verify predecessor schema compatibility or restore a compatible snapshot and
+   independently checkpointed frontiers.
+6. Start predecessor generation fenced with new exact process/socket identity.
+7. Re-establish issuer, Agentd/App Server and provider identities.
+8. Run rollback canaries.
+9. Reopen only after independent approval.
 
-1. close admissions and drain definitely-unsent work;
-2. interrupt/reconcile started work without replay;
-3. quarantine unresolved effects;
-4. verify the predecessor binary understands the current schema or restore a compatible state snapshot plus independently signed anti-rollback frontier;
-5. start predecessor generation fenced;
-6. re-establish issuer, Agentd/App Server and provider identities;
-7. run rollback canaries;
-8. reopen admissions only after independent approval.
+Rollback never deletes journals, resets epochs/revisions/sequences, reuses stale
+socket identity or relabels unknown effects.
 
-Never roll back by deleting journals, resetting authority/revocation sequence, reusing an old socket identity or marking unresolved effects failed.
-
-## 11. Performance qualification
-
-`scripts/runtime_codex_benchmark.py` records exact candidate identity, command, p50/p95/p99 elapsed time and resident memory for a bounded repository workload. It is a source-candidate baseline, not a production capacity claim. Target-host qualification separately measures authority latency, durable prepare, Agentd RPC, provider queue, first token, terminal event, reconciliation, CPU, RSS, file descriptors and durable storage under representative concurrency and fault load.
-
-## 12. Acceptance handoff
+## 11. Acceptance handoff
 
 The handoff package contains:
 
-- exact-head and synthetic-merge attested receipts;
-- target-host identity and process/socket evidence;
-- issuer key-custody, trusted-time, revocation and anti-rollback evidence;
-- real-provider fault matrix and physical-request counts;
-- p50/p95/p99 resource baseline;
-- canary and rollback receipts;
-- unresolved quarantine inventory;
-- independent acceptance signature.
+- both source receipts and attestation bundles;
+- target-host V3 manifest/provenance and raw evidence;
+- host/process/socket and issuer custody records;
+- trusted time/revocation and anti-rollback evidence;
+- provider audit/fault results and resource baseline;
+- quarantine inventory/frontier;
+- canary/rollback receipts;
+- security/runtime/operations reviews;
+- independent acceptance record.
 
-Absent or failed elements remain false. No repository maintainer, workflow or generated document can self-grant activation, promotion or release.
+Absent, stale or failed elements remain false. No maintainer, workflow or
+generated document can self-grant activation, promotion or release.

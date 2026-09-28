@@ -1,55 +1,112 @@
 # runtime.codex crash-injection matrix
 
-This matrix is the repository-side fault contract for the named `runtime.codex` product caller. It is deliberately stricter than a happy-path integration test. Every row represents a distinct crash or acknowledgement window and must retain exact operation identity across reopen. A passing repository receipt proves only the named candidate and host used by the receipt; it does not prove a target deployment, real provider, independent acceptance, activation, promotion, or release.
+This matrix is the closed-world repository fault contract for the named
+`runtime.codex` caller. It is aligned with the current irreversible boundary:
+Agentd's exact `RunMarkDispatchedExact` compare-and-swap is the server-owned
+effect-entry fence. All owner, ingress, context, cancellation, deadline,
+revocation and `VerifiedUseToken::enter` checks occur while Agentd is still
+`ContextAttached`. Once the fence RPC may have committed, abort and capacity
+release are forbidden until exact rejection, terminal evidence or an
+independently verified quarantine resolution is durable.
+
+Repository tests model every cut below and exercise selected cuts against real
+repository processes and a controlled provider. They do not replace the
+protected target-host eight-scenario harness, a real provider, independent
+acceptance, activation, promotion or release.
 
 ## Global invariants
 
-1. One durable operation identity can cross the physical `turn/start` boundary at most once.
-2. A definite pre-effect abort is legal only while the same live process still owns the non-serializable, one-shot abort proof for the exact local dispatch revision.
-3. Agentd and the local inference journal must agree on the exact dispatch/request digest. Same identity and same semantics are idempotent; reused identity with different semantics is a hard conflict.
-4. After effect entry, timeout, cancellation, transport loss, process death, or missing acknowledgement are reconcile-only. They never imply “not sent”.
-5. Terminal success requires exact thread, turn, session, generation, App Server version, Codex home, connection, request and response correlation plus final owner readiness.
-6. A late provider completion may be retained as a provider fact but cannot upgrade a locally cancelled, timed-out, fenced, or quarantined boundary to success.
-7. Any unresolved effect continues to own capacity until terminal evidence or an independently authorized quarantine resolution is durably committed.
+1. One durable operation may cross physical `turn/start` at most once.
+2. Only the caller receiving a fresh, exact, non-idempotent effect-entry ACK
+   receives the non-transferable one-shot send permit.
+3. A lost, mismatched, stale or idempotent fence response grants no send permit.
+4. The local pre-effect abort proof is non-cloneable and non-serializable. It is
+   destroyed before an effect-entry RPC whose commit result may become unknown.
+5. Exact owner-first abort is legal only while Agentd is `ContextAttached`; a
+   post-fence abort is impossible.
+6. Local and Agentd identities bind the same operation, request, dispatch,
+   payload, revision and generation. Drift is a hard conflict.
+7. After the fence may have committed, timeout, cancellation, process death,
+   socket failure and unknown acknowledgement are same-operation reconciliation
+   only.
+8. Typed non-admission closes Agentd first and releases the local reservation
+   only after exact owner acknowledgement.
+9. Terminal settlement is durable before ephemeral-thread cleanup and is
+   idempotent across both owners.
+10. An unresolved effect retains capacity. Missing ephemeral history never
+    proves absence and enters signed quarantine.
 
-## Injection table
+## The 22 cut points
 
-| ID | Injection point | Required local journal state | Required Agentd owner state | Replay posture | Required evidence/test |
-| --- | --- | --- | --- | --- | --- |
-| RCX-CRASH-01 | Before durable native admission | no record | no run or admitted-only record owned by upstream coordinator | fresh admission permitted | unit test: rejected request leaves no dispatch |
-| RCX-CRASH-02 | After admission, before local dispatch prepare | reserved, no dispatch | `Admitted` or `ContextAttached` | no provider replay question exists | durable reopen test |
-| RCX-CRASH-03 | During local dispatch write or fsync | predecessor record or fenced store; never a partial valid dispatch | unchanged | fail closed | journal torn-write/fault-injection test |
-| RCX-CRASH-04 | After local dispatch prepare, before Agentd `mark_dispatched` RPC | prepared dispatch with live abort proof | `ContextAttached` | same live process may abort; reopen is reconcile/repair only | kill/reopen test at RPC entry |
-| RCX-CRASH-05 | RPC request written, response lost before caller knows outcome | prepared dispatch | either `ContextAttached` or exact `Dispatched` | query exact run state; never issue a second physical send permit | owner-RPC lost-ACK test |
-| RCX-CRASH-06 | Agentd commits `Dispatched`, caller crashes before receiving response | prepared dispatch | exact `Dispatched` bound to dispatch digest | reopen reconciles owner state; no fresh `turn/start` | duplicate-owner/restart test |
-| RCX-CRASH-07 | Agentd commits `Dispatched`, final owner/ingress check fails before effect | local `Released` only after one-shot abort succeeds | exact `CancelledBeforeEffect` through digest-bound abort transition | fresh operation only; same operation closed | exact cross-owner abort test |
-| RCX-CRASH-08 | Cognitive final-use revalidation fails after owner dispatch | local `Released`, no turn id | exact `CancelledBeforeEffect` | no physical request | tombstone/correction race test |
-| RCX-CRASH-09 | Cancellation/deadline observed before `VerifiedUseToken::enter` | local `Released`, pre-effect reason retained | exact `CancelledBeforeEffect` | no physical request | cancellation/deadline race test |
-| RCX-CRASH-10 | Revocation frontier or authority epoch changes before entry | local `Released`, stale witness retained for audit | exact `CancelledBeforeEffect` | obtain a new grant only for a new/live attempt while policy permits | revocation-head race test |
-| RCX-CRASH-11 | Immediately after token entry, before socket write is observable | accepted-or-unknown; abort proof destroyed | `Dispatched` | reconcile only | injected pause/kill at effect-entry handoff |
-| RCX-CRASH-12 | Partial socket write | indeterminate | `Dispatched` | reconcile only | transport short-write/connection reset test |
-| RCX-CRASH-13 | Full request write, App Server response lost | indeterminate | `Dispatched` | same-connection `turn/started`, then `thread/read`; no new start | lost-ACK test |
-| RCX-CRASH-14 | Exact `turn/started` observed, local `native_started` persistence fails | store fenced; turn must be interrupted where possible | `Dispatched`/`Cancelling` until reconciliation | no replay | persistence-failure injection after start |
-| RCX-CRASH-15 | Process dies after start but before terminal event | durable turn id when available, otherwise indeterminate dispatch | unresolved after dispatch | reopen original generation and `thread/read(includeTurns=true)` | restart/reopen test |
-| RCX-CRASH-16 | Terminal event observed, local settlement write fails | terminal fact retained in diagnostic path; store fenced | unresolved until exact terminal reconciliation | no replay | settlement fsync/failure test |
-| RCX-CRASH-17 | Terminal local write succeeds, Agentd terminal RPC response is lost | terminal local observation | terminal or unresolved exact owner record | query/reconcile exact owner transition | owner terminal lost-ACK test |
-| RCX-CRASH-18 | Owner readiness/generation is lost concurrently with provider completion | provider completion retained; boundary quarantined/non-success | owner loss is sticky | no replay | terminal-vs-owner-loss interleaving test |
-| RCX-CRASH-19 | App Server history is unavailable after process loss | durable indeterminate/quarantined operation | `Indeterminate` | no automatic release or replay | quarantine protocol test |
-| RCX-CRASH-20 | Two workers race the same run/revision | one exact winner; loser cannot retain a send permit | one exact `Dispatched` record | loser reconciles or aborts before effect | concurrency stress/property test |
-| RCX-CRASH-21 | Stale revision attempts abort, cancel, terminal or resolution | unchanged | unchanged | reject | stale-revision stress test |
-| RCX-CRASH-22 | Same operation id reused with different payload/request/dispatch digest | unchanged or quarantined conflict | unchanged or conflict | never execute | semantic-conflict test |
+| ID | Cut / observation | Local durable state | Agentd state | Permitted recovery |
+| --- | --- | --- | --- | --- |
+| RCX-CRASH-01 | Before native admission | no record | no runtime.codex run | a new normal admission may begin |
+| RCX-CRASH-02 | After admission, before dispatch prepare | reserved | `Admitted` or `ContextAttached` | reopen the same reservation; no effect exists |
+| RCX-CRASH-03 | During local dispatch write/fsync | predecessor or fenced store; never a partial valid dispatch | unchanged | fail closed and repair/reopen the store |
+| RCX-CRASH-04 | Exact dispatch prepared, before final validation | prepared plus live abort proof | `ContextAttached` | same live process may continue or exact-abort |
+| RCX-CRASH-05 | Local abort intent durable, before owner abort RPC | abort pending; capacity held | `ContextAttached` | replay only the exact abort protocol |
+| RCX-CRASH-06 | Owner abort request/ACK lost | abort pending; capacity held | `ContextAttached` or exact `CancelledBeforeEffect` | query/reconcile the exact owner transition |
+| RCX-CRASH-07 | Owner abort committed, before local release | prepared/abort pending; capacity held | exact `CancelledBeforeEffect` | finish the matching local release |
+| RCX-CRASH-08 | Both pre-effect owners closed | released | exact `CancelledBeforeEffect` | original operation is closed; ordinary policy may create a distinct operation |
+| RCX-CRASH-09 | Fence RPC initiated, commit result not yet known | `FenceUnknown`; abort proof destroyed | `ContextAttached` or exact `Dispatched` | reconcile owner; never send without the original fresh ACK |
+| RCX-CRASH-10 | Fence committed, response lost | `FenceUnknown`; capacity held | exact `Dispatched` | same-operation reconciliation; idempotent receipt grants no send |
+| RCX-CRASH-11 | Fresh fence ACK received, before physical write | `EffectEntered`; one send permit | exact `Dispatched` | the original live caller may attempt one write |
+| RCX-CRASH-12 | Partial/unknown socket write | accepted-or-unknown; permit consumed | exact `Dispatched` | same connection/event/history reconciliation only |
+| RCX-CRASH-13 | Full write, `turn/start` ACK lost | indeterminate | exact `Dispatched` | exact `turn/started`, then `thread/read`; no new start |
+| RCX-CRASH-14 | Typed pre-admission rejection observed | rejection prepared; no provider effect | exact `Dispatched` until terminal rejection CAS | settle Agentd exactly, then release local capacity |
+| RCX-CRASH-15 | Rejection owner ACK lost | pending rejection; capacity held | terminal rejection or exact `Dispatched` | reconcile the rejection; do not infer closure |
+| RCX-CRASH-16 | Started event observed, before `native_started` persists | dispatch plus observed turn identity | exact `Dispatched` | interrupt where possible; recover exact turn, never replay |
+| RCX-CRASH-17 | Started state durable, before terminal event | started; capacity held | `Dispatched`/`Cancelling`/`Indeterminate` | observe or reopen the same turn |
+| RCX-CRASH-18 | Terminal event observed, local settlement not durable | terminal fact in process only; capacity held | unresolved | retry exact local settlement; process loss requires history/provider evidence |
+| RCX-CRASH-19 | Local terminal durable, owner terminal not durable | terminal durable; capacity held until owner convergence | exact `Dispatched`/`Cancelling`/`Indeterminate` | exact owner terminal CAS/reconciliation |
+| RCX-CRASH-20 | Owner terminal committed, ACK/local release lost | terminal durable, release pending | terminal | finish idempotent local release |
+| RCX-CRASH-21 | Cleanup/unsubscribe fails after terminal durability, or history is unavailable for an unresolved effect | terminal record plus orphan metric, or quarantined unresolved record | terminal or `Indeterminate` | reaper for terminal orphan; signed quarantine for unresolved history loss |
+| RCX-CRASH-22 | Duplicate owner, stale revision or semantic digest conflict | unchanged or quarantined conflict | one fresh winner or unchanged | losers reconcile; stale/drifted mutations are rejected |
 
-## Required execution modes
+## Executable repository model
 
-The matrix must be exercised in four modes:
+`codex-rs/hepta-infer-worker-host/tests/runtime_codex_crash_matrix.rs` is an
+executable state model for all 22 cuts. Its required tests prove:
 
-- deterministic unit tests for every pure transition and digest invariant;
-- process-level tests using real Agentd and App Server processes with a controlled provider;
-- restart tests that close and reopen every durable store involved;
-- target-host tests with the independently operated issuer and selected real provider.
+- every declared cut preserves the global invariants;
+- fresh fence ACK is the only send permit;
+- lost and idempotent fence ACKs cannot mint a permit;
+- abort is exact before the fence and impossible after it;
+- competing workers cannot both send;
+- typed pre-admission rejection closes both owners without a provider effect;
+- terminal settlement is exactly once and releases capacity;
+- 256 duplicate owners still yield one fresh winner/send;
+- 10,000 stale revisions and 10,000 digest conflicts are mutation-atomic;
+- restart and lost-fence-ACK recovery cannot recreate a send permit.
 
-Repository CI may satisfy only the first three modes. The fourth remains an external qualification gate.
+The source qualification receipt has dedicated `crash-matrix` and
+`quarantine-protocol` records. A missing, skipped, cancelled, timed-out,
+under-floor or failed record fails the exact-head or synthetic-merge lane.
 
-## Receipt requirements
+## Process and target-host execution
 
-Each execution retains machine-readable records containing exact source SHA, tested SHA, tree, ordered parents for synthetic merges, command, host/toolchain identity, log digest, observed pass/fail counts, and claim ceiling. A skipped, cancelled, missing, dirty, under-floor, or failed record is never a pass. The exact-head and synthetic-merge receipts are generated by `scripts/runtime_codex_receipt.py` and must be attested by the workflow identity on protected pushes.
+The pure model is supplemented by:
+
+- native journal kill/reopen tests around durable writes;
+- real Agentd/App Server composition against the controlled Responses server;
+- owner-loss, cancellation, deadline, revocation and context-race tests;
+- the protected target-host scenarios in
+  [`TARGET_HOST_FAULT_HARNESS.md`](TARGET_HOST_FAULT_HARNESS.md):
+  provider ACK loss, event lag, worker kill after fence, worker restart, Agentd
+  restart, revocation advance before entry, duplicate owner and stale revision.
+
+Every target-host scenario binds the exact source, operation, provider audit,
+journal and harness digests and proves zero duplicate/replayed requests,
+monotonic owner revision and the required capacity disposition.
+
+## Receipt and claim boundary
+
+Repository receipts are generated by `scripts/runtime_codex_receipt_v2.py` for
+the exact source head and deterministic ordered-parent synthetic merge. The
+protected workflow separately attests the canonical receipt bytes. A valid
+signature authenticates bytes and workflow identity; it cannot turn a failed or
+missing record into a pass.
+
+Real-provider/host execution, key custody, trusted time/revocation,
+anti-rollback restore, canary/rollback, independent acceptance, activation,
+promotion and release remain separate externally governed facts.

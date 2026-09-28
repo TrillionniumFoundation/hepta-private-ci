@@ -7,6 +7,10 @@ on:
         description: Exact repository-qualified source commit to check out
         required: true
         type: string
+      source_qualification_run_id:
+        description: Direct runtime.codex qualification run containing both signed passed lanes
+        required: true
+        type: string
       agentd_socket:
         description: Absolute Agentd control socket on the selected host
         required: true
@@ -32,13 +36,14 @@ on:
         required: true
         type: string
       iterations:
-        description: Number of physical real-provider canary operations (3..20)
+        description: Number of physical real-provider canary operations (30..200)
         required: true
-        default: "5"
+        default: "50"
         type: string
 
 permissions:
   contents: read
+  actions: read
   id-token: write
   attestations: write
 
@@ -50,9 +55,10 @@ jobs:
   target-host:
     name: runtime.codex target-host real-provider
     runs-on: [self-hosted, linux, runtime-codex-target-host]
-    timeout-minutes: 180
+    timeout-minutes: 240
     env:
       SOURCE_SHA: ${{ inputs.source_sha }}
+      SOURCE_QUALIFICATION_RUN_ID: ${{ inputs.source_qualification_run_id }}
       AGENTD_SOCKET: ${{ inputs.agentd_socket }}
       AGENT_ID: ${{ inputs.agent_id }}
       AGENT_GENERATION: ${{ inputs.generation }}
@@ -69,6 +75,14 @@ jobs:
           persist-credentials: false
           ref: ${{ env.SOURCE_SHA }}
 
+      - name: Download signed repository qualification
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          run-id: ${{ inputs.source_qualification_run_id }}
+          github-token: ${{ github.token }}
+          pattern: runtime-codex-*
+          path: ${{ runner.temp }}/runtime-codex-source-qualification
+
       - name: Prepare repository CI environment
         uses: ./.github/actions/setup-ci
 
@@ -78,20 +92,69 @@ jobs:
           toolchain: 1.95.0
 
       - name: Validate evidence tooling
-        run: python3 -m unittest -v scripts.tests.test_runtime_codex_target_host_evidence
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            scripts/runtime_codex_receipt_v2.py \
+            scripts/runtime_codex_target_host_evidence.py
+          python3 -m unittest -v \
+            scripts.tests.test_runtime_codex_receipt_v2 \
+            scripts.tests.test_runtime_codex_target_host_evidence
+
+      - name: Verify exact signed source-head and synthetic-merge receipts
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "${SOURCE_SHA}" =~ ^[0-9a-f]{40}$ ]]
+          [[ "${SOURCE_QUALIFICATION_RUN_ID}" =~ ^[0-9]+$ ]]
+          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          command -v gh >/dev/null
+
+          root="${RUNNER_TEMP}/runtime-codex-source-qualification"
+          evidence="${RUNNER_TEMP}/runtime-codex-target-host/source-qualification"
+          mkdir -p "${evidence}"
+          for lane in source-head base-merge; do
+            artifact="${root}/runtime-codex-${lane}-${SOURCE_QUALIFICATION_RUN_ID}"
+            signature="${root}/runtime-codex-signature-${lane}-${SOURCE_QUALIFICATION_RUN_ID}"
+            receipt="${artifact}/receipt.json"
+            records="${artifact}/records"
+            bundle="$(find "${signature}" -type f -size +0c -print -quit)"
+            test -f "${receipt}"
+            test -d "${records}"
+            test -n "${bundle}"
+            python3 scripts/runtime_codex_receipt_v2.py verify-bundle \
+              "${receipt}" \
+              --records "${records}" \
+              --bundle "${bundle}" \
+              --repository "${GITHUB_REPOSITORY}" \
+              --signer-workflow .github/workflows/runtime-codex-qualification.yml
+            python3 - "${receipt}" "${SOURCE_SHA}" "${lane}" <<'PY'
+          import json, sys
+          receipt, source, lane = sys.argv[1:]
+          value = json.load(open(receipt, encoding="utf-8"))
+          if value.get("status") != "passed":
+              raise SystemExit(f"{lane}: source qualification did not pass")
+          candidate = value.get("candidate", {})
+          if candidate.get("source") != source or candidate.get("lane") != lane:
+              raise SystemExit(f"{lane}: source qualification identity mismatch")
+          if value.get("claims", {}).get("sourceQualification") is not True:
+              raise SystemExit(f"{lane}: sourceQualification claim missing")
+          PY
+            cp "${receipt}" "${evidence}/${lane}-receipt.json"
+            cp "${bundle}" "${evidence}/${lane}-attestation.jsonl"
+          done
 
       - name: Fail closed unless the runner is independently provisioned
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
-          test -z "$(git status --porcelain --untracked-files=normal)"
-          [[ "${SOURCE_SHA}" =~ ^[0-9a-f]{40}$ ]]
           [[ "${AGENTD_SOCKET}" = /* ]]
           [[ "${AUTHORITY_CONFIG}" = /* ]]
           [[ "${JOURNAL_ROOT}" = /* ]]
           [[ "${ITERATIONS}" =~ ^[0-9]+$ ]]
-          (( ITERATIONS >= 3 && ITERATIONS <= 20 ))
+          (( ITERATIONS >= 30 && ITERATIONS <= 200 ))
+          [[ "${AGENT_GENERATION}" =~ ^[1-9][0-9]*$ ]]
           test -S "${AGENTD_SOCKET}"
           test -f "${AUTHORITY_CONFIG}"
           test -d "${JOURNAL_ROOT}"
@@ -99,11 +162,13 @@ jobs:
           test -f "${HEPTA_RUNTIME_CODEX_HOST_IDENTITY_EVIDENCE:?}"
           test -f "${HEPTA_RUNTIME_CODEX_ISSUER_CUSTODY_EVIDENCE:?}"
           test -f "${HEPTA_RUNTIME_CODEX_ANTI_ROLLBACK_EVIDENCE:?}"
+          test -f "${HEPTA_RUNTIME_CODEX_CANARY_ROLLBACK_EVIDENCE:?}"
+          test -f "${HEPTA_RUNTIME_CODEX_INDEPENDENT_ACCEPTANCE_EVIDENCE:?}"
           test -x "${HEPTA_RUNTIME_CODEX_PROVIDER_AUDIT_EXPORTER:?}"
           test -x "${HEPTA_RUNTIME_CODEX_FAULT_RUNNER:?}"
           test -x /usr/bin/time
-          EVIDENCE="${RUNNER_TEMP}/runtime-codex-target-host"
-          mkdir -p "${EVIDENCE}/runs" "${EVIDENCE}/faults"
+          evidence="${RUNNER_TEMP}/runtime-codex-target-host"
+          mkdir -p "${evidence}/runs" "${evidence}/faults"
 
       - name: Build the named native caller
         working-directory: codex-rs
@@ -113,20 +178,20 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          EVIDENCE="${RUNNER_TEMP}/runtime-codex-target-host"
-          BINARY="${CARGO_TARGET_DIR:-$(pwd)/codex-rs/target}/debug/hepta-infer-worker"
-          test -x "${BINARY}"
-          printf '%s  %s\n' "$(sha256sum "${BINARY}" | cut -d' ' -f1)" "${BINARY}" \
-            > "${EVIDENCE}/binary.sha256"
+          evidence="${RUNNER_TEMP}/runtime-codex-target-host"
+          binary="${CARGO_TARGET_DIR:-$(pwd)/codex-rs/target}/debug/hepta-infer-worker"
+          test -x "${binary}"
+          printf '%s  %s\n' "$(sha256sum "${binary}" | cut -d' ' -f1)" "${binary}" \
+            > "${evidence}/binary.sha256"
           journal="${JOURNAL_ROOT}/runtime-codex-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.journal"
           for iteration in $(seq 1 "${ITERATIONS}"); do
             request_id="target-host:${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}:${iteration}"
-            log="${EVIDENCE}/runs/${iteration}.log"
-            resource="${EVIDENCE}/runs/${iteration}.time"
-            output="${EVIDENCE}/runs/${iteration}.json"
+            log="${evidence}/runs/${iteration}.log"
+            resource="${evidence}/runs/${iteration}.time"
+            output="${evidence}/runs/${iteration}.json"
             prompt="Return the exact phrase runtime codex target host canary ${iteration}."
             printf '%s' "${prompt}" | /usr/bin/time -v -o "${resource}" \
-              "${BINARY}" \
+              "${binary}" \
                 --profile native-app-server \
                 --agentd-socket "${AGENTD_SOCKET}" \
                 --agent-id "${AGENT_ID}" \
@@ -142,13 +207,13 @@ jobs:
             python3 - "${output}" "${request_id}" <<'PY'
           import json, sys
           path, request_id = sys.argv[1:]
-          value = json.load(open(path, encoding='utf-8'))
-          if value.get('terminal_observed') is not True:
-              raise SystemExit(f'{request_id}: terminal observation missing')
-          if not value.get('codex_terminal_correlation_digest'):
-              raise SystemExit(f'{request_id}: terminal correlation missing')
-          if value.get('boundary_status') not in ('Succeeded', 'succeeded'):
-              raise SystemExit(f'{request_id}: boundary did not succeed')
+          value = json.load(open(path, encoding="utf-8"))
+          if value.get("terminal_observed") is not True:
+              raise SystemExit(f"{request_id}: terminal observation missing")
+          if not value.get("codex_terminal_correlation_digest"):
+              raise SystemExit(f"{request_id}: terminal correlation missing")
+          if value.get("boundary_status") not in ("Succeeded", "succeeded"):
+              raise SystemExit(f"{request_id}: boundary did not succeed")
           PY
           done
           "${HEPTA_RUNTIME_CODEX_PROVIDER_AUDIT_EXPORTER}" \
@@ -156,20 +221,30 @@ jobs:
             --run-id "${GITHUB_RUN_ID}" \
             --attempt "${GITHUB_RUN_ATTEMPT}" \
             --expected-requests "${ITERATIONS}" \
-            --output "${EVIDENCE}/provider-audit.json"
+            --output "${evidence}/provider-audit.json"
 
-      - name: Execute real-provider failure matrix
+      - name: Execute eight-scenario real-provider failure matrix
         shell: bash
         run: |
           set -euo pipefail
-          EVIDENCE="${RUNNER_TEMP}/runtime-codex-target-host"
-          BINARY="${CARGO_TARGET_DIR:-$(pwd)/codex-rs/target}/debug/hepta-infer-worker"
-          for scenario in provider-ack-loss event-lag process-death agentd-restart; do
+          evidence="${RUNNER_TEMP}/runtime-codex-target-host"
+          binary="${CARGO_TARGET_DIR:-$(pwd)/codex-rs/target}/debug/hepta-infer-worker"
+          scenarios=(
+            provider-ack-loss
+            event-lag
+            worker-kill-after-fence
+            worker-restart
+            agentd-restart
+            revocation-advance-before-entry
+            duplicate-owner
+            stale-revision
+          )
+          for scenario in "${scenarios[@]}"; do
             operation_id="target-host-fault:${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}:${scenario}"
             "${HEPTA_RUNTIME_CODEX_FAULT_RUNNER}" \
               --scenario "${scenario}" \
               --source-sha "${SOURCE_SHA}" \
-              --binary "${BINARY}" \
+              --binary "${binary}" \
               --agentd-socket "${AGENTD_SOCKET}" \
               --agent-id "${AGENT_ID}" \
               --generation "${AGENT_GENERATION}" \
@@ -177,40 +252,43 @@ jobs:
               --authority-config "${AUTHORITY_CONFIG}" \
               --journal-root "${JOURNAL_ROOT}" \
               --operation-id "${operation_id}" \
-              --output "${EVIDENCE}/faults/${scenario}.json"
-            test -s "${EVIDENCE}/faults/${scenario}.json"
+              --output "${evidence}/faults/${scenario}.json"
+            test -s "${evidence}/faults/${scenario}.json"
           done
 
-      - name: Build canonical target-host v2 evidence
+      - name: Build canonical target-host v3 evidence
         shell: bash
         run: |
           set -euo pipefail
-          EVIDENCE="${RUNNER_TEMP}/runtime-codex-target-host"
-          cp "${HEPTA_RUNTIME_CODEX_HOST_IDENTITY_EVIDENCE}" "${EVIDENCE}/host-identity.json"
-          cp "${HEPTA_RUNTIME_CODEX_ISSUER_CUSTODY_EVIDENCE}" "${EVIDENCE}/issuer-custody.json"
-          cp "${HEPTA_RUNTIME_CODEX_ANTI_ROLLBACK_EVIDENCE}" "${EVIDENCE}/anti-rollback.json"
+          evidence="${RUNNER_TEMP}/runtime-codex-target-host"
+          cp "${HEPTA_RUNTIME_CODEX_HOST_IDENTITY_EVIDENCE}" "${evidence}/host-identity.json"
+          cp "${HEPTA_RUNTIME_CODEX_ISSUER_CUSTODY_EVIDENCE}" "${evidence}/issuer-custody.json"
+          cp "${HEPTA_RUNTIME_CODEX_ANTI_ROLLBACK_EVIDENCE}" "${evidence}/anti-rollback.json"
+          cp "${HEPTA_RUNTIME_CODEX_CANARY_ROLLBACK_EVIDENCE}" "${evidence}/canary-rollback.json"
+          cp "${HEPTA_RUNTIME_CODEX_INDEPENDENT_ACCEPTANCE_EVIDENCE}" "${evidence}/independent-acceptance.json"
           python3 scripts/runtime_codex_target_host_evidence.py build \
-            --evidence-root "${EVIDENCE}" \
+            --evidence-root "${evidence}" \
             --source-sha "${SOURCE_SHA}" \
             --source-tree "$(git rev-parse HEAD^{tree})" \
             --agent-id "${AGENT_ID}" \
             --generation "${AGENT_GENERATION}" \
             --model "${MODEL}" \
             --iterations "${ITERATIONS}" \
-            --output "${EVIDENCE}/manifest.json"
-          python3 scripts/runtime_codex_target_host_evidence.py verify "${EVIDENCE}/manifest.json"
+            --output "${evidence}/manifest.json"
+          python3 scripts/runtime_codex_target_host_evidence.py verify "${evidence}/manifest.json"
           mkdir -p .hepta-evidence/runtime-codex/target-host
-          cp -R "${EVIDENCE}/." .hepta-evidence/runtime-codex/target-host/
+          cp -R "${evidence}/." .hepta-evidence/runtime-codex/target-host/
 
-      - name: Retain target-host evidence
+      - name: Retain target-host evidence including failures
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: runtime-codex-target-host-${{ env.SOURCE_SHA }}-${{ github.run_id }}
-          path: .hepta-evidence/runtime-codex/target-host/
-          if-no-files-found: error
+          path: ${{ runner.temp }}/runtime-codex-target-host/
+          if-no-files-found: warn
           retention-days: 90
 
-      - name: Attest target-host v2 manifest provenance
+      - name: Attest target-host v3 manifest provenance
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8
         with:
           subject-path: .hepta-evidence/runtime-codex/target-host/manifest.json

@@ -36,6 +36,8 @@ PLAN = {
     "agent-protocol": (1, ["just", "test", "--locked", "-p", PACKAGES[2]]),
     "agent-run-lifecycle": (1, ["just", "test", "--locked", "-p", PACKAGES[3], "--lib", "lane_b_runtime"]),
     "worker-host": (1, ["just", "test", "--locked", "-p", PACKAGES[4]]),
+    "crash-matrix": (12, ["just", "test", "--locked", "-p", PACKAGES[4], "--test", "runtime_codex_crash_matrix"]),
+    "quarantine-protocol": (5, ["just", "test", "--locked", "-p", PACKAGES[4], "runtime_codex_quarantine"]),
     "product-e2e": (1, ["just", "test", "--locked", "-p", PACKAGES[3], "--test", "runtime_codex_product_e2e"]),
     "model-only": (1, ["just", "test", "--locked", "-p", "codex-core", "hepta_native_inference_client_has_no_model_visible_or_registered_tools"]),
     "strict-lint": (0, ["cargo", "clippy", "--locked", *[arg for package in PACKAGES for arg in ("-p", package)], "--all-targets", "--", "-D", "warnings"]),

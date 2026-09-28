@@ -1,73 +1,182 @@
 # runtime.codex remediation status and developer handoff
 
-Date: 2026-09-27 (Asia/Tokyo). Branch: `runtime-codex/closure-20260927`.
+Date: 2026-09-29 (Asia/Tokyo). Canonical candidate branch:
+`runtime-codex/closure-20260927`. Pull request: `#1123`.
 
-**Draft source candidate, not production-ready.** This status supplements the technical guide and supersedes any interpretation that the mere presence of a workflow, an operation mapping, or a test proves qualification. Main and the earlier remediation branches remain unchanged.
+**Draft source candidate; not production-ready.** This status separates code and
+evidence formats from actually observed qualification. Every new commit is a
+new candidate and invalidates earlier exact-head conclusions.
 
-## Actual changes in this candidate
+## Repository-controlled work now present
 
-The candidate builds on the existing `9bda7cd52beb86dc6397254c77e4e551a51c164d` remediation branch and incorporates the earlier abort work into actual Rust source rather than leaving it as an unapplied conversion script.
+### Cross-owner effect-entry correctness
 
-- Native journal: persist an exact owner dispatch binding, a two-stage pre-effect abort intent/acknowledgement, and a local-only loser disposition. Reopening a pending abort reconciles it instead of sending another turn. New Started/Observe/Reject transitions cannot silently bypass a pending abort. Legacy journal records retain compatibility defaults.
-- Agentd: introduce exact dispatch and pre-effect abort RPCs, checking run identity, dispatch digest, expected revision, and reason. Idempotent abort retries require the original abort revision; an unrelated ordinary cancellation is not an abort acknowledgement.
-- Product caller: move execution orchestration into `native_execution.rs`, route final-check failures through one compensation path, and connect non-cloneable attempt stages to the caller. This is a partial typestate decomposition, not a claim that every state is statically impossible to misuse.
-- Terminal durability: persist observed terminal facts before unsubscribing the ephemeral thread. A failed journal write must not remove the remaining recovery history.
-- Lifecycle: a bounded thread guard cleans up definitely pre-effect or durably terminal threads. Possible effects preserve history. Counters distinguish cleanup attempts, cleanup failures/orphans, and retained unknown history. A durable orphan reaper is not implemented.
-- Deadline: anchor the request to a monotonic clock and a wall-clock sample, refuse excessive backwards wall-clock drift, and cap later budgets by the original deadline. This is local clock discipline, not an independently trusted time service.
-- Tests: replace a brittle source-string assertion, pass an explicit Codex executable into the cognitive test host, add deadline and state tests, and add actual child-process kill/reopen tests around eight native-journal cuts.
-- Evidence tooling: V2 requires the complete ten-command inventory, exact command/test floor/candidate/lane identity, unchanged worktree, bounded logs and matching hashes. Missing, skipped, cancelled, timed-out, malformed or zero-test evidence fails. Integrity-only verification explicitly does not claim signature authenticity. External acceptance and deployment claims cannot be enabled with CLI flags.
-- CI: separate exact-head and deterministic ordered-parent merge jobs with fail-fast disabled; retain failure evidence; isolate OIDC/attestation permissions from candidate-code execution. Workflow presence is not proof of branch-protection enforcement or signed receipt production.
+The irreversible boundary is Agentd's exact `RunMarkDispatchedExact` CAS:
 
-## Verification actually observed
+- the worker freezes the exact App Server request and obtains independent
+  final-use authority;
+- the local journal durably prepares the exact dispatch and one-shot pre-effect
+  abort proof;
+- owner/ingress, context, cancellation, absolute deadline, revocation and
+  `VerifiedUseToken::enter` checks finish while Agentd is still
+  `ContextAttached`;
+- Agentd commits the exact run/revision/dispatch digest as `Dispatched`;
+- only the original caller receiving a fresh, non-idempotent ACK receives one
+  physical-send permit;
+- lost, idempotent, stale or mismatched ACKs are reconcile-only and cannot mint
+  a permit;
+- the abort proof is destroyed when fence commit may be unknown; Agentd rejects
+  abort once `Dispatched`;
+- typed non-admission and terminal settlement converge Agentd before local
+  capacity release.
 
-The 21 Python verifier tests passed both locally and on the hosted Rust 1.95.0 formatting runner. Hosted `cargo fmt` and `git diff --check` completed successfully for the assembled source. Earlier assembly failures were publication/infrastructure failures and are retained in Actions; they must not be represented as native Rust test failures or passes.
+This closes the original source-level owner split. It is not evidence until the
+exact-head and synthetic-merge lanes pass at the final commit.
 
-At the time this handoff was written, no successful complete native Rust test/Clippy/product-E2E receipt, synthetic-merge receipt, or verified attestation bundle for this final candidate had been collected. Read the exact candidate's Actions results rather than assuming a later run passed. A subsequent documentation or code commit is a new candidate.
+### Explicit execution state and lifecycle
 
-## Blocking correctness review still required
+The product caller is decomposed around typed attempt stages rather than one
+ambient collection of booleans. A bounded native thread guard:
 
-### Server-owned effect-entry fence
+- cleans definitely pre-effect and durably terminal ephemeral threads;
+- retains possible-effect history;
+- records cleanup attempts, failures/orphans and retained unknown history;
+- never lets cleanup failure erase terminal or indeterminate ownership.
 
-This source candidate now treats the fresh, non-idempotent Agentd `RunMarkDispatchedExact` CAS as the irreversible server-owned effect-entry fence. Final owner/ingress, context, cancellation, deadline and final-use-token checks all precede that CAS. Agentd accepts `abort-before-effect` only while the run remains `ContextAttached`; after the CAS reaches `Dispatched`, abort is impossible. Only the caller that receives the fresh exact ACK may issue physical `turn/start`. An idempotent response, mismatched response, transport loss or process loss authorizes no send and leaves both the local slot and owner state for same-operation reconciliation.
+The absolute runtime deadline is anchored to a monotonic clock with a sampled
+wall-clock projection and bounded backward-drift checks. This is local timing
+discipline, not an independently trusted time service.
 
-The source-level P0 design is therefore closed in this candidate, but **qualification is not yet closed**: exact-head and synthetic-merge Rust tests, adversarial duplicate-worker/fence tests and product physical-send-count evidence must pass for the final commit before this statement can be promoted from source design to verified evidence.
+### Issuer and quarantine security
 
-### Owner lifecycle and recovery
+The final-use port verifies signed exact bindings, epoch/revocation frontier,
+nonce, validity and protected Unix transport. Linux configuration additionally
+pins expected UID, PID, process start time, executable digest, cgroup digest and
+host boot-id digest and resamples the connected process around the exchange.
+Deployment still must independently attest these values and key custody.
 
-Definitive App Server rejection/overload must settle both native and Agentd state consistently. Persist and recover abort provenance across Agentd restart; do not infer it from an ordinary Cancelled state. Verify every overflow/error branch is mutation-atomic. Unknown owner acknowledgement must never release another worker's live dispatch.
+The signed quarantine protocol binds immutable operation/request/dispatch and
+evidence digests, authority epoch, monotonic resolution sequence, nonce and
+bounded validity. It distinguishes exact terminal closure, abandonment without
+replay and a one-shot distinct replacement operation. The verifier is not a
+deployed signer, UI, durable external frontier or provider oracle.
 
-### Qualification enforcement and coverage
+### Closed-world crash and source qualification
 
-Register `runtime.codex exact-head` and `runtime.codex synthetic-merge` as enforced checks or wire them into the existing required aggregate without weakening it. The connector did not change repository branch protection. Verify the final workflow is accepted by Actions, execute both lanes, and independently verify the actual attestation bundle. Regenerate/check the Bazel dependency lock after the new Cargo test dependency.
+The candidate now includes:
 
-Eight journal cuts are not all product crash boundaries. Remaining cuts include owner dispatch/abort/fence RPC before write/after write/before response/after response, partial socket writes, App Server admission versus provider request, terminal receipt persistence and cleanup failure. Each case must assert physical request count, both owners' state, capacity, restart reconciliation and no replay.
+- an executable 22-cut crash/recovery model aligned with the Agentd fence;
+- deterministic 256-contender, restart, lost-ACK, 10,000 stale-revision and
+  10,000 digest-conflict stress tests in the same named crash target;
+- dedicated `crash-matrix` and `quarantine-protocol` records in the source
+  qualification inventory;
+- independent exact-head and deterministic ordered-parent synthetic-merge
+  lanes with failure evidence retained;
+- canonical V2 source receipts and GitHub provenance attestation on direct
+  qualification runs;
+- required aggregate fan-in for inference-impacting pull requests.
 
-## External work not executed
+The repository model proves transition invariants. Real process and target-host
+fault injection remain separate gates.
 
-Expected-process-instance pinning for the issuer is not closed by UID/PID shape checks. Bind the independently provisioned expected executable/boot/start/cgroup identity to the connected peer, and qualify same-UID replacement and namespace changes. No production issuer key or target-host connection was available to this execution.
+### Target-host and operations contract
 
-The quarantine document defines a resolution envelope but a production authenticated durable resolution service/CLI remains outstanding. Missing ephemeral history must continue to hold the operation; do not force-release or replay it. A local digest or a locally generated signature is not independent resolution authority.
+The protected manual workflow now requires:
 
-Real issuer/key custody, real provider terminal/fault runs, statistically supported p95/p99 and resource profiles, canary, rollback, external anti-rollback recovery, and independent acceptance were **not executed**. Do not run inherited self-hosted workflows against production until their ref/environment/approval/secret boundaries have been reviewed. Repository tests use a mock provider.
+- the same source SHA's passed, attested source-head and synthetic-merge
+  receipts;
+- 30–200 real-provider canaries, default 50;
+- all eight external fault scenarios;
+- exact provider audit, journal and harness digests;
+- source-bound host identity, issuer custody, anti-rollback, canary/rollback and
+  independent-review records;
+- a canonical target-host V3 manifest with p50/p95/p99/maximum latency and RSS;
+- an explicit claim ceiling keeping independent acceptance, activation,
+  promotion and release false.
+
+The documentation set includes an index, quickstart, deployment,
+troubleshooting, operations, fault harness and acceptance checklist.
+
+## Evidence actually observed for this final candidate
+
+No complete green native Rust/Clippy/product-E2E receipt, synthetic-merge
+receipt, verified GitHub attestation pair or target-host V3 manifest has yet
+been observed for the commit created by this remediation update. Historical
+runs and source-file presence do not fill that gap.
+
+The target-host evidence verifier's repository unit suite is designed to reject
+missing fault scenarios, samples below 30, replay/duplicates, post-fence abort,
+owner revision rollback, wrong capacity disposition, source drift, missing
+external review and noncanonical/tampered manifests. Those tests must still run
+inside the exact candidate workflow before a source qualification claim is
+current.
+
+## Repository blockers before source closure
+
+1. Run `runtime.codex exact-head` and `runtime.codex synthetic-merge` on the
+   exact final commit and require both receipts to be `passed`.
+2. Verify both retained attestation bundles independently; a correctly signed
+   failed receipt remains failed.
+3. Confirm the required `CI required` aggregate consumed the runtime.codex job
+   for the pull request. Repository administration must separately decide
+   whether to add the two lane names as direct branch-protection contexts.
+4. Resolve any compile, Clippy, test-floor, V8, workflow or synthetic-merge
+   failure without weakening the inventory.
+5. Keep the pull request Draft if source changes continue or evidence becomes
+   stale.
+
+## External work not self-certifiable by this repository
+
+The following remain unexecuted external gates unless current independently
+issued evidence is attached to the exact source:
+
+- production issuer and quarantine key custody;
+- selected target-host process/socket/filesystem identity;
+- trusted time and revocation distribution;
+- external anti-rollback restore;
+- real provider canaries and eight fault scenarios;
+- operational quarantine signer/service and operator UI enforcement;
+- statistically meaningful resource profile on the selected host;
+- canary and rollback rehearsal;
+- security, runtime and operations review;
+- independent acceptance, activation, promotion and release.
+
+The repository must not manufacture these records with test keys or relabel a
+mock-provider run as real-provider qualification.
 
 ## Developer reproduction
 
-Use Rust 1.95.0, `just`, `cargo-nextest`, the repository's verified V8 artifact setup, and Linux build prerequisites. From a clean checkout:
+From a clean checkout, use the pinned Rust toolchain and repository CI setup:
 
 ```bash
-python3 -m unittest -v scripts.tests.test_runtime_codex_receipt_v2
+python3 -m unittest -v \
+  scripts.tests.test_runtime_codex_receipt_v2 \
+  scripts.tests.test_runtime_codex_target_host_evidence
+
 cd codex-rs
-cargo build --locked -p codex-cli --bin codex \
-  -p codex-hepta-agentd --bin codex-hepta-agentd \
-  -p codex-hepta-infer-worker-host --bin hepta-infer-worker
-just test --locked -p codex-hepta-infer-core
-just test --locked -p codex-hepta-agentd --lib lane_b_runtime
-just test --locked -p codex-hepta-infer-worker-host
-just test --locked -p codex-hepta-agentd --test runtime_codex_product_e2e
+cargo test --locked -p codex-hepta-codex-adapter -- --test-threads=1
+cargo test --locked -p codex-hepta-infer-core -- --test-threads=1
+cargo test --locked -p codex-hepta-agent-protocol -- --test-threads=1
+cargo test --locked -p codex-hepta-agentd lane_b_runtime --lib -- --test-threads=1
+cargo test --locked -p codex-hepta-infer-worker-host -- --test-threads=1
+cargo test --locked -p codex-hepta-infer-worker-host \
+  --test runtime_codex_crash_matrix -- --test-threads=1
+cargo test --locked -p codex-hepta-agentd \
+  --test runtime_codex_product_e2e -- --test-threads=1
 ```
 
-The complete CI command inventory lives in `scripts/runtime_codex_receipt_v2.py`. Set evidence paths outside the checkout so logging cannot dirty the tested tree. Use `verify-contents` for integrity; use `verify-bundle` with an independently trusted repository, signer workflow and downloaded attestation bundle for authenticity. A failed but correctly signed receipt is still failed qualification.
+The authoritative command inventory is
+`scripts/runtime_codex_receipt_v2.py`. Use receipt `verify-contents` only for
+integrity and `verify-bundle` with the downloaded attestation for authenticity.
 
 ## Operational stop conditions
 
-Keep this candidate out of production until the blockers above are closed. On mismatched dispatch bindings, missing history, a failed terminal journal write, unknown abort acknowledgement, issuer identity drift or stale revocation/time frontier: stop new admission, preserve both stores and history, retain bounded digests/error codes, and escalate to the independent owner. Never repair uncertainty by deleting a journal, resetting a revision, reusing a request ID, or manufacturing a terminal receipt.
+Stop new admissions and preserve all stores/history on dispatch mismatch,
+unknown fence/rejection/terminal acknowledgement, missing App Server history,
+failed journal persistence, issuer process drift, stale/backward time or
+revocation frontier, provider duplicate/replay evidence, owner revision
+rollback or unresolved capacity exhaustion.
+
+Never recover service by deleting journals, rewinding epochs/sequences,
+reusing an operation id, treating an idempotent owner receipt as a send permit,
+force-releasing quarantine or manufacturing a terminal receipt.

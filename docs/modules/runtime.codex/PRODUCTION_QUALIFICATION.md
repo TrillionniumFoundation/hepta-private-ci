@@ -1,146 +1,196 @@
 # runtime.codex production qualification
 
-This document is the closed-world production qualification contract for `runtime.codex`. Repository source can prepare and verify evidence, but it cannot self-certify the external principals, target host, provider, acceptance authority or release decision described here.
+This document is the closed-world qualification contract for `runtime.codex`.
+Repository source can implement and verify evidence formats, but it cannot
+self-certify the external principals, target host, real provider, acceptance
+authority or release decision described here.
 
-## 1. Required repository gates
+## 1. Repository source gates
 
-Both checks are mandatory for the exact candidate proposed for integration:
+Both lanes are mandatory for the exact candidate:
 
 - `runtime.codex exact-head`
 - `runtime.codex synthetic-merge`
 
-Each check must complete successfully, not be skipped or cancelled, and retain a canonical machine-readable receipt, SHA-256 sidecar, raw command records and logs. The synthetic merge must have ordered parents `[base, source]` and a tree independently recomputed by `git merge-tree --write-tree`. The workflow attestation is evidence of GitHub workflow execution only; it is not target-host or independent acceptance.
+The synthetic merge is the deterministic ordered-parent tree produced from the
+current base and source. Each lane must finish successfully and retain a
+canonical machine-readable receipt, raw command records, bounded logs, SHA-256
+sidecar and workflow attestation bundle. A missing, skipped, cancelled,
+timed-out, dirty, malformed, under-floor or nonzero record is a failed lane.
 
-Required repository suites include:
+The closed-world receipt inventory includes:
 
-- adapter terminal, correlation, deadline and recovery tests;
-- durable admission/dispatch/abort/reopen tests;
-- Agentd run-state and exact-dispatch tests;
-- native caller, authority, cancellation, deadline and owner-loss tests;
-- real Agentd/App Server product composition against a controlled provider;
-- strict lint and formatting checks;
-- receipt-verifier tests;
-- the crash-injection obligations in `CRASH_INJECTION_MATRIX.md` as they become executable.
+- runtime binaries;
+- adapter terminal/correlation/deadline/recovery tests;
+- durable native journal, abort, rejection, reopen and no-replay tests;
+- Agent protocol and lifecycle tests;
+- worker-host authority, issuer identity, cancellation, deadline, owner-loss,
+  typestate and thread-cleanup tests;
+- the executable 22-cut `runtime_codex_crash_matrix` test binary;
+- the signed quarantine-resolution protocol tests;
+- real repository Agentd/App Server product composition against a controlled
+  provider, proving one physical request;
+- the model-only tool-topology test;
+- strict Clippy and formatting.
 
-## 2. Final-use issuer and key custody
+The required `CI required` aggregate consumes the reusable runtime.codex
+qualification job for inference-impacting changes. Direct qualification runs on
+the canonical branch additionally produce the attestation bundles required by
+target-host qualification. Branch-protection administration remains an
+independent repository-control fact and must be inspected separately.
 
-Production evidence must establish:
+## 2. Effect-entry and recovery contract
 
-- independently operated issuer service identity;
-- signer private key in approved custody, unavailable to worker/Agentd/repository jobs;
+Before production, source and evidence must establish:
+
+- final owner/ingress, context, cancellation, deadline, revocation and
+  `VerifiedUseToken::enter` checks precede the server-owned fence;
+- Agentd's exact `RunMarkDispatchedExact` CAS accepts only `ContextAttached` and
+  binds run, dispatch digest, revision and generation;
+- only a fresh, exact, non-idempotent ACK creates one non-transferable send
+  permit;
+- idempotent/lost/mismatched/stale responses create no send permit;
+- the local one-shot abort proof cannot survive a fence whose commit may be
+  unknown, and Agentd rejects post-fence abort;
+- typed non-admission settles Agentd before local capacity release;
+- terminal facts become durable before thread cleanup and settle both owners
+  exactly/idempotently;
+- missing App Server history remains quarantined, never inferred absent;
+- original-operation replay is impossible.
+
+The repository 22-cut model proves transition invariants. Selected real process
+cuts and the external eight-scenario harness prove implementation behavior.
+Neither may substitute for the other.
+
+## 3. Final-use issuer and key custody
+
+Production evidence establishes:
+
+- an independently operated issuer service and private-key custody unavailable
+  to worker, Agentd and repository jobs;
 - signer rotation and emergency revocation procedures;
-- protected socket ancestry and connected peer/process identity;
-- issuer boot identity and failover semantics;
-- trusted time source and bounded clock uncertainty;
+- protected socket ancestry and connected peer UID;
+- exact Linux issuer PID, process start time, executable digest, cgroup digest
+  and host boot-id digest sampled before and after the exchange;
+- trusted time with bounded uncertainty;
 - monotonic revocation distribution and stale-frontier detection;
 - external anti-rollback checkpoints and rehearsed restore;
-- forged grant, stale epoch, nonce replay, key substitution, socket replacement and same-UID impersonation tests.
+- forged grant, stale epoch, nonce replay, key substitution, socket replacement,
+  same-UID impersonation and process-restart tests.
 
-A local verifying key, UID check or successful unit test alone is insufficient.
+A locally generated key, UID-only check or successful unit test is not this
+gate.
 
-## 3. Target-host identity
+## 4. Target-host identity
 
-The selected host profile binds:
+The selected profile binds:
 
-- immutable host or measured workload identity;
-- OS/kernel, architecture and sandbox features;
-- Agentd binary/configuration digest and generation;
-- App Server binary/configuration digest, socket identity, version and Codex home;
-- worker binary/configuration digest;
-- cgroup/service-unit and namespace identities;
-- durable filesystem/mount identity and fsync/rename qualification;
-- provider network egress identity;
-- release and rollback digests.
+- immutable/measured host identity, OS/kernel, architecture and sandbox;
+- service units, cgroups, namespaces, mounts and socket identities;
+- Agentd/App Server/worker binary and configuration digests;
+- exact Agent id/generation, App Server protocol/version and Codex home;
+- durable filesystem identity plus qualified rename/fsync behavior;
+- final-use and quarantine authority frontiers;
+- provider account, endpoint, model and audit exporter identity;
+- accepted release and rollback identities.
 
-Qualification is repeated after any identity-changing update. A different host image, socket owner, namespace, filesystem or service unit is a new profile.
+Any identity-changing update creates a new target-host profile.
 
-## 4. Real provider qualification
+## 5. Real provider and fault matrix
 
-Run the named caller against the selected real provider/account/endpoint and retain authenticated evidence for:
+The protected workflow consumes a direct signed repository-qualification run
+for the same source SHA. It then executes 30–200 real-provider canaries (default
+50) and all eight scenarios from
+[`TARGET_HOST_FAULT_HARNESS.md`](TARGET_HOST_FAULT_HARNESS.md):
 
-- exactly one physical request for one authorized operation;
-- exact model/provider selection or explicit substitution rejection;
-- streaming terminal and usage correlation;
-- overload before admission;
-- invalid request rejection;
-- provider 5xx and unclassified errors;
-- connection reset before, during and after request write;
-- acknowledgement loss with a provider-side accepted request;
-- delayed/duplicated/reordered terminal events;
-- cancellation and deadline after admission;
-- process kill and host restart;
-- quota exhaustion and rate limiting;
-- absence of model-visible tools for the model-only profile;
-- secret and payload redaction in all retained evidence.
+1. provider acknowledgement loss;
+2. event lag/disconnect;
+3. worker kill after the effect-entry fence;
+4. worker restart;
+5. Agentd restart;
+6. revocation advance before entry;
+7. duplicate owner;
+8. stale revision/digest drift.
 
-A mock provider proves product composition but not this gate.
+The authenticated provider audit proves one unique request per successful
+canary and the scenario-specific zero/one-send contract. Every fault output
+binds source, operation, owner revision, fresh fence count, capacity posture,
+journal digest, provider audit digest and harness digest.
 
-## 5. Quarantine and recovery
+The workflow also verifies independently issued host identity, issuer custody,
+anti-rollback, canary/rollback and independent-review records. It emits and
+attests a canonical
+`hepta.runtime-codex-target-host-qualification.v3` manifest. The manifest's
+claim ceiling leaves independent acceptance, activation, promotion and release
+false.
 
-The deployment must operate the protocol in `QUARANTINE_AND_RELEASE.md` with an independent signer and anti-rollback frontier. Demonstrate:
+## 6. Quarantine and resolution
 
-- App Server history loss leaves the operation quarantined;
-- capacity is not silently freed;
-- same-operation replay is impossible;
+The deployment operates `QUARANTINE_AND_RELEASE.md` with an independent signer
+and externally checkpointed monotonic frontier. Demonstrate:
+
+- unavailable history retains operation ownership/capacity;
 - unsigned/manual release is rejected;
-- stale revision, stale sequence, wrong evidence digest and nonce reuse are rejected;
-- late exact terminal evidence is reconciled without rewriting history;
-- a separately authorized new operation has a new identity and explicit constraints.
+- wrong operation/request/dispatch/evidence digest, stale revision/sequence,
+  wrong authority epoch, expired validity and nonce reuse fail closed;
+- exact late terminal evidence can settle without rewriting history;
+- abandonment never permits original-operation replay;
+- a replacement has a distinct operation id, exactly one attempt, a provider
+  idempotency key and any required compensation prerequisite;
+- operator UI/API cannot bypass the verifier.
 
-Restore, migration and regional failover exercises must preserve every unresolved operation and frontier.
+Restore, migration and failover preserve all unresolved records and frontiers.
 
-## 6. Performance and capacity
+## 7. Performance and capacity
 
-Measure representative concurrency and workload distributions on the selected host. Retain exact release identity and raw samples for:
+Retain exact raw samples and the release/host identity for:
 
-- final-use authority latency;
-- durable prepare/fsync latency;
-- Agentd dispatch and terminal RPC latency;
+- final-use issuer latency;
+- local durable prepare/fsync and owner CAS latency;
 - App Server thread/start and turn/start admission;
-- provider queue, first token and terminal latency;
+- provider queue, first-token and terminal latency;
 - same-connection and restart reconciliation;
-- end-to-end p50, p95 and p99;
-- CPU, RSS, open files, socket/event queue depth and journal growth;
+- end-to-end p50, p95, p99 and maximum;
+- CPU, RSS, file/socket/event depth and journal growth;
+- orphan-thread cleanup, unresolved capacity and quarantine age;
 - overload behavior and recovery time.
 
-Set admission, timeout, queue and alert thresholds from those measurements. Repository benchmark output is only a source-candidate baseline.
+Admission, timeout, queue and alert thresholds derive from the selected profile.
+Repository benchmark output is only a source-candidate baseline.
 
-## 7. Canary
+## 8. Canary and rollback
 
-The canary plan specifies traffic fraction, maximum operations, duration, stop conditions, rollback digest and independent approver. Immediate stop conditions include:
+The canary plan names operation count, concurrency, duration, stop conditions,
+rollback digest and independent approver. Immediate stop conditions include:
 
-- any duplicate physical request;
-- authority or revocation validation failure;
-- owner/local dispatch divergence;
-- terminal success without final owner readiness;
-- journal corruption or lost unresolved operation;
-- unbounded queue/resource growth;
-- release without independent resolution;
-- provider/tool capability outside the registered profile.
+- duplicate/replayed physical request or more than one fresh fence winner;
+- post-fence abort acceptance;
+- authority, process identity, time or revocation failure;
+- owner/local dispatch divergence or revision rollback;
+- terminal success without current owner authority;
+- journal/frontier corruption or lost unresolved operation;
+- unbounded resource, orphan or quarantine growth;
+- model/tool capability outside the registered model-only profile.
 
-Canary continuation and widening require independently signed decisions. Automation may recommend; it may not self-approve.
-
-## 8. Rollback and anti-rollback recovery
-
-Before activation, rehearse rollback with live unresolved and terminal records. Prove:
-
-- predecessor schema compatibility or a deterministic compatible restore;
-- no deletion or reinterpretation of indeterminate operations;
-- authority, revocation and quarantine frontiers do not move backward;
-- old binaries cannot accept new incompatible records as success;
-- restored hosts rebind issuer, Agentd, App Server, filesystem and provider identities;
-- rollback canary and independent approval complete before admissions reopen.
+Rollback is rehearsed with live unresolved and terminal records. It never
+deletes journals, resets epochs/sequences, reuses old socket/process identity or
+relabels an unknown effect. Predecessor compatibility or a deterministic
+compatible snapshot is mandatory.
 
 ## 9. Independent acceptance and release
 
-The independent acceptance record binds all repository receipts, target-host profiles, external signer evidence, real-provider fault results, performance baseline, canary, rollback and unresolved quarantine inventory. It names the accepting authority, scope, expiry and release digest.
+The acceptance record binds repository receipts and attestations, target-host
+manifest, external identity/key/anti-rollback evidence, provider fault results,
+performance profile, quarantine inventory, canary and rollback receipts and all
+reviewer decisions. It names scope, expiry and the exact release digest.
 
-The following remain false until that record exists and verifies:
+These facts remain false until the independently signed record exists and
+verifies:
 
-- deployment qualification complete;
 - independent acceptance complete;
 - activation approved;
 - promotion approved;
 - release approved.
 
-No commit message, pull request text, branch administrator exception, generated receipt or repository test may set these facts to true.
+No commit message, pull request text, branch administrator exception, generated
+receipt, source test or GitHub attestation may set them true.
