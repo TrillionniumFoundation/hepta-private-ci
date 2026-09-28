@@ -22,9 +22,11 @@ else:
 
 PACKAGE = "codex-hepta-supervisor"
 TEST = ["just", "test", "--locked", "-p", PACKAGE]
+# `just test` already installs nextest's --no-fail-fast. Keep only options that
+# are not supplied by the repository recipe so the command remains portable.
 SERIAL = [
     "--retries", "0", "--test-threads=1", "--status-level", "all",
-    "--final-status-level", "none", "--success-output", "never", "--no-fail-fast",
+    "--final-status-level", "none", "--success-output", "never",
 ]
 PLANS = {
     "format": (0, ["cargo", "fmt", "--manifest-path", "codex-rs/Cargo.toml",
