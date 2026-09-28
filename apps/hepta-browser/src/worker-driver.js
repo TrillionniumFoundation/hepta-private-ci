@@ -4,15 +4,12 @@ import { constants } from "node:fs";
 import { mkdir, open, rm } from "node:fs/promises";
 import { isAbsolute, join } from "node:path";
 
-import {
-  WorkerFrameDecoder,
-  buildWorkerFrame,
-  encodeWorkerFrame,
-} from "./worker-protocol.js";
+import { PrivateWorkerClient } from "./worker-client.js";
+import { OwnedWorkerProcess } from "./worker-process.js";
+import { buildWorkerFrame, encodeWorkerFrame } from "./worker-protocol.js";
 
 const DIGEST = /^[0-9a-f]{64}$/;
 const MAX_WORKER_ARTIFACT_BYTES = 512 * 1024 * 1024;
-const MAX_ABANDONED_RESPONSES = 1024;
 
 function requireRecord(value, name) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
@@ -30,17 +27,6 @@ function expectedDigest(value, name) {
     throw new TypeError(`${name} must be a lowercase SHA-256 digest`);
   }
   return value;
-}
-
-function requestId(kind, semanticId) {
-  const digest = createHash("sha256").update(`${kind}\u0000${semanticId}`).digest("hex");
-  return `browser.${kind}.${digest.slice(0, 32)}`;
-}
-
-function abortError(message = "browser worker request aborted") {
-  const error = new Error(message);
-  error.name = "AbortError";
-  return error;
 }
 
 export class LinuxBubblewrapLauncher {
@@ -114,161 +100,6 @@ export class LinuxBubblewrapLauncher {
   }
 }
 
-class PrivateWorkerClient {
-  #child;
-  #sessionId;
-  #generation;
-  #decoder = new WorkerFrameDecoder();
-  #nextOutgoingSequence = 1;
-  #lastIncomingSequence = 0;
-  #pending = new Map();
-  #abandoned = new Set();
-  #closed = false;
-
-  constructor({ child, sessionId, generation }) {
-    this.#child = child;
-    this.#sessionId = sessionId;
-    this.#generation = generation;
-    child.stdout.on("data", (chunk) => this.#onBytes(chunk));
-    child.stdout.on("end", () => {
-      try {
-        this.#decoder.end();
-      } catch (error) {
-        this.#failAll(error);
-      }
-    });
-    child.on("error", (error) => this.#failAll(error));
-    child.on("exit", (code, signal) => {
-      this.#closed = true;
-      this.#failAll(new Error(`browser worker exited before response: code=${code} signal=${signal}`));
-    });
-  }
-
-  request(kind, semanticId, payload, { signal, onDispatched } = {}) {
-    if (this.#closed) return Promise.reject(new Error("browser worker channel is closed"));
-    if (signal?.aborted) return Promise.reject(abortError());
-    const sequence = this.#nextOutgoingSequence++;
-    const id = requestId(kind, semanticId);
-    if (this.#pending.has(id) || this.#abandoned.has(id)) {
-      return Promise.reject(new TypeError("browser worker request identity is already live"));
-    }
-    const frame = buildWorkerFrame({
-      sessionId: this.#sessionId,
-      generation: this.#generation,
-      sequence,
-      kind,
-      requestId: id,
-      payload,
-    });
-    const encoded = encodeWorkerFrame(frame);
-    return new Promise((resolve, reject) => {
-      let writeStarted = false;
-      const entry = { resolve, reject, cleanup: null };
-      const abort = () => {
-        if (!this.#pending.delete(id)) return;
-        entry.cleanup?.();
-        if (writeStarted) {
-          if (this.#abandoned.size >= MAX_ABANDONED_RESPONSES) {
-            this.#failAll(new Error("browser worker abandoned-response capacity exhausted"));
-            this.#child.kill("SIGKILL");
-          } else {
-            this.#abandoned.add(id);
-          }
-        }
-        reject(abortError());
-      };
-      this.#pending.set(id, entry);
-      if (signal) {
-        signal.addEventListener("abort", abort, { once: true });
-        entry.cleanup = () => signal.removeEventListener("abort", abort);
-        if (signal.aborted) {
-          abort();
-          return;
-        }
-      }
-      writeStarted = true;
-      this.#child.stdin.write(encoded, (error) => {
-        if (error) {
-          if (this.#pending.delete(id)) {
-            entry.cleanup?.();
-            reject(error);
-          }
-          return;
-        }
-        try {
-          onDispatched?.();
-        } catch (callbackError) {
-          if (this.#pending.delete(id)) {
-            entry.cleanup?.();
-            reject(callbackError);
-          }
-        }
-      });
-    });
-  }
-
-  close() {
-    this.#closed = true;
-    this.#child.stdin.end();
-    this.#failAll(new Error("browser worker channel closed"));
-    this.#abandoned.clear();
-  }
-
-  #onBytes(chunk) {
-    let frames;
-    try {
-      frames = this.#decoder.push(chunk);
-    } catch (error) {
-      this.#failAll(error);
-      this.#child.kill("SIGKILL");
-      return;
-    }
-    for (const frame of frames) {
-      if (frame.sessionId !== this.#sessionId || frame.generation !== this.#generation) {
-        this.#failAll(new TypeError("browser worker response crossed session or generation"));
-        this.#child.kill("SIGKILL");
-        return;
-      }
-      if (frame.sequence !== this.#lastIncomingSequence + 1) {
-        this.#failAll(new TypeError("browser worker response sequence is not monotonic"));
-        this.#child.kill("SIGKILL");
-        return;
-      }
-      this.#lastIncomingSequence = frame.sequence;
-      if (frame.kind !== "response") {
-        this.#failAll(new TypeError("browser worker emitted an unexpected non-response frame"));
-        this.#child.kill("SIGKILL");
-        return;
-      }
-      const pending = this.#pending.get(frame.requestId);
-      if (!pending) {
-        if (this.#abandoned.delete(frame.requestId)) continue;
-        this.#failAll(new TypeError("browser worker response has no pending request"));
-        this.#child.kill("SIGKILL");
-        return;
-      }
-      this.#pending.delete(frame.requestId);
-      pending.cleanup?.();
-      const payload = requireRecord(frame.payload, "worker response payload");
-      if (payload.ok === true) {
-        pending.resolve(requireRecord(payload.observation, "worker observation"));
-      } else if (payload.ok === false && typeof payload.error === "string") {
-        pending.reject(new Error(`browser worker rejected request: ${payload.error}`));
-      } else {
-        pending.reject(new TypeError("browser worker response payload is invalid"));
-      }
-    }
-  }
-
-  #failAll(error) {
-    for (const pending of this.#pending.values()) {
-      pending.cleanup?.();
-      pending.reject(error);
-    }
-    this.#pending.clear();
-  }
-}
-
 export class SubprocessBrowserDriver {
   #workerPath;
   #workerDigest;
@@ -281,6 +112,11 @@ export class SubprocessBrowserDriver {
   #sessionId = null;
   #generation = null;
   #processId = null;
+  #process = null;
+  #starting = false;
+  #stopping = false;
+  #retirementStarted = false;
+  #retiredProfiles = new Map();
 
   constructor({ workerPath, workerDigest, profileRoot, launcher }) {
     if (!isAbsolute(workerPath)) throw new TypeError("workerPath must be absolute");
@@ -305,44 +141,56 @@ export class SubprocessBrowserDriver {
   }
 
   async start(input, { signal } = {}) {
-    if (this.#child) throw new TypeError("browser worker is already started");
-    const verifiedWorkerBytes = await this.#readVerifiedWorkerArtifact();
-    await mkdir(this.#profileRoot, { recursive: true, mode: 0o700 });
-    this.#profileDir = join(this.#profileRoot, `${input.profileId}.${input.generation}.${randomUUID()}`);
-    await mkdir(this.#profileDir, { mode: 0o700 });
-    this.#verifiedWorkerPath = join(this.#profileDir, ".verified-worker");
-    await this.#writePrivateVerifiedWorker(verifiedWorkerBytes);
-    this.#sessionId = input.profileId;
-    this.#generation = input.generation;
+    if (this.#starting || this.#child || this.#profileDir) {
+      throw new TypeError("browser worker is already started or cleanup remains owned");
+    }
+    if (signal?.aborted) throw new Error("browser worker startup cancelled");
+    // Snapshot and validate the complete input before any asynchronous file I/O.
+    const frame = buildWorkerFrame({ sessionId: input.profileId, generation: input.generation,
+      sequence: 1, kind: "start", requestId: "browser.start.preflight", payload: input });
+    encodeWorkerFrame(frame);
+    const request = frame.payload;
+    const retired = this.#retiredProfiles.get(request.profileId);
+    if (!retired && this.#retiredProfiles.size >= 1024) {
+      throw new TypeError("browser worker retained-profile capacity exhausted");
+    }
+    if (retired && request.generation <= retired.generation) {
+      throw new TypeError("browser worker generation was already retired");
+    }
+    this.#starting = true;
+    this.#sessionId = request.profileId;
+    this.#generation = request.generation;
     try {
-      this.#child = this.#launcher.spawn({
-        workerPath: this.#verifiedWorkerPath,
-        profileDir: this.#profileDir,
-      });
-      if (!this.#child?.stdin || !this.#child?.stdout || typeof this.#child.on !== "function") {
+      const verifiedWorkerBytes = await this.#readVerifiedWorkerArtifact();
+      if (signal?.aborted) throw new Error("browser worker startup cancelled");
+      await mkdir(this.#profileRoot, { recursive: true, mode: 0o700 });
+      this.#profileDir = join(this.#profileRoot, `${request.profileId}.${request.generation}.${randomUUID()}`);
+      await mkdir(this.#profileDir, { mode: 0o700 });
+      this.#verifiedWorkerPath = join(this.#profileDir, ".verified-worker");
+      await this.#writePrivateVerifiedWorker(verifiedWorkerBytes);
+      if (signal?.aborted) throw new Error("browser worker startup cancelled");
+      this.#child = this.#launcher.spawn({ workerPath: this.#verifiedWorkerPath,
+        profileDir: this.#profileDir });
+      this.#process = new OwnedWorkerProcess(this.#child);
+      if (!this.#child.stdin || !this.#child.stdout) {
         throw new TypeError("launcher did not return a pipe-connected child process");
       }
       this.#processId = `servo.pid.${this.#child.pid}`;
-      this.#client = new PrivateWorkerClient({
-        child: this.#child,
-        sessionId: this.#sessionId,
-        generation: this.#generation,
-      });
-      const observed = await this.#client.request(
-        "start",
-        `${input.profileId}.${input.generation}`,
-        input,
-        { signal },
-      );
+      this.#client = new PrivateWorkerClient({ child: this.#child,
+        sessionId: this.#sessionId, generation: this.#generation });
+      const observed = await this.#client.request("start",
+        `${request.profileId}.${request.generation}`, request, { signal });
+      if (signal?.aborted) throw new Error("browser worker startup cancelled before delivery");
       if (observed.started !== true) throw new TypeError("worker did not acknowledge start");
       return { started: true, processId: this.#processId };
     } catch (error) {
-      this.#child?.kill?.("SIGKILL");
-      await this.#cleanupProfile();
-      this.#child = null;
-      this.#client = null;
+      this.#retirementStarted = true;
+      try { await this.#retire({ signal }); }
+      catch (cause) {
+        throw new AggregateError([error, cause], "browser startup failed; cleanup remains owned");
+      }
       throw error;
-    }
+    } finally { this.#starting = false; }
   }
 
   async observe(input, { signal } = {}) {
@@ -396,23 +244,57 @@ export class SubprocessBrowserDriver {
   }
 
   async stop(input, { signal } = {}) {
-    this.#requireSession(input);
-    try {
-      const observed = await this.#client.request(
-        "stop",
-        `${input.profileId}.${input.generation}`,
-        input,
-        { signal },
-      );
-      if (observed.stopped !== true) throw new TypeError("worker did not acknowledge stop");
-      return { stopped: true };
-    } finally {
-      this.#client?.close();
-      this.#child?.kill?.("SIGTERM");
-      this.#client = null;
-      this.#child = null;
-      await this.#cleanupProfile();
+    const generation = input.generation ?? input.profileGeneration;
+    const retired = this.#retiredProfiles.get(input.profileId);
+    if (retired && generation === retired.generation) {
+      if (input.processId !== undefined && input.processId !== retired.processId) {
+        throw new TypeError("browser worker historical process identity mismatch");
+      }
+      return { ...retired.observation };
     }
+    if (this.#starting || this.#stopping) throw new Error("browser worker lifecycle change in progress");
+    this.#requireIdentity(input);
+    if (!this.#child && !this.#profileDir) throw new TypeError("browser worker is not started");
+    this.#stopping = true;
+    try {
+      if (!this.#retirementStarted) {
+        this.#retirementStarted = true;
+        // A stop response is only a protocol acknowledgment. Bound that wait,
+        // then require actual child exit and stdio closure even if it rejects.
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 1000);
+        try {
+          await this.#client?.request("stop", `${input.profileId}.${generation}`, input,
+            { signal: signal ? AbortSignal.any([signal, controller.signal]) : controller.signal });
+        } catch { /* the durable effect owner still retains unknown operations */ }
+        finally { clearTimeout(timer); }
+      }
+      return await this.#retire({ signal });
+    } finally { this.#stopping = false; }
+  }
+
+  async #retire({ signal } = {}) {
+    this.#client?.close();
+    if (this.#child) {
+      if (!this.#process) throw new Error("browser worker lacks observable cleanup; ownership retained");
+      await this.#process.retire({ signal });
+    }
+    // Preserve both handle and profile if file cleanup fails. Re-entry never
+    // resends stop or another effect and cannot start a replacement process.
+    await this.#cleanupProfile();
+    const observation = { stopped: true, ...(this.#process?.observation ?? {
+      directChildExited: false, stdioClosed: false, spawnFailed: false,
+    }), descendantExitVerified: false };
+    if (this.#child) {
+      this.#retiredProfiles.set(this.#sessionId, { generation: this.#generation,
+        processId: this.#processId, observation });
+    }
+    this.#child = null;
+    this.#client = null;
+    this.#process = null;
+    this.#processId = null;
+    this.#retirementStarted = false;
+    return { ...observation };
   }
 
   async #readVerifiedWorkerArtifact() {
@@ -450,7 +332,13 @@ export class SubprocessBrowserDriver {
   }
 
   #requireSession(input) {
-    if (!this.#child || !this.#client) throw new TypeError("browser worker is not started");
+    if (this.#starting || this.#retirementStarted || !this.#child || !this.#client) {
+      throw new TypeError("browser worker is not started or is retiring");
+    }
+    this.#requireIdentity(input);
+  }
+
+  #requireIdentity(input) {
     const generation = input.generation ?? input.profileGeneration;
     if (input.profileId !== this.#sessionId || generation !== this.#generation) {
       throw new TypeError("browser worker session or generation mismatch");
@@ -463,8 +351,8 @@ export class SubprocessBrowserDriver {
   async #cleanupProfile() {
     if (!this.#profileDir) return;
     const profileDir = this.#profileDir;
+    await rm(profileDir, { recursive: true, force: true });
     this.#profileDir = null;
     this.#verifiedWorkerPath = null;
-    await rm(profileDir, { recursive: true, force: true });
   }
 }

@@ -39,7 +39,14 @@ function fakeLauncher({ holdDispatchResponse = null } = {}) {
       child.stdin = new PassThrough();
       child.stdout = new PassThrough();
       child.stderr = new PassThrough();
-      child.kill = () => true;
+      let exited = false;
+      child.kill = () => {
+        if (!exited) {
+          exited = true;
+          queueMicrotask(() => { child.emit("exit", null, "SIGKILL"); child.emit("close", null, "SIGKILL"); });
+        }
+        return true;
+      };
       const decoder = new WorkerFrameDecoder();
       let sequence = 1;
       child.stdin.on("data", (chunk) => {
