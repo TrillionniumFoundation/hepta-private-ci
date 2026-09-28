@@ -15,7 +15,7 @@ concurrency:
 
 env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
-  EXPECTED_PARENT: 6e631312771f5492402f2f955592b68217f4ef5b
+  EXPECTED_PARENT: 0966642d84632af31fd43bfc44caba522e0de9bb
   RESTORE_COMMIT: a80f50a552d2608f238a9e934bf6fade66876912
   PATCH_SHA256: c2599a124d0e1574aaebaadf3ce0313d4f906a9e9f9f1472c10491fa83100f57
   PATCH_PATH: .github/remediation/inference-control-remediation.patch.gz
@@ -27,7 +27,7 @@ jobs:
     if: github.event.pull_request.head.ref == 'codex/inference-control-v2-closure-20260927'
     permissions:
       contents: read
-    runs-on: ubuntu-latest
+    runs-on: macos-15
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -43,7 +43,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
           test -z "$(git status --porcelain --untracked-files=normal)"
-          test "$(sha256sum "$PATCH_PATH" | awk '{print $1}')" = "$PATCH_SHA256"
+          test "$(shasum -a 256 "$PATCH_PATH" | awk '{print $1}')" = "$PATCH_SHA256"
 
       - uses: dtolnay/rust-toolchain@5d458579430fc14a04a08a1e7d3694f545e91ce6
         with:
@@ -83,7 +83,7 @@ jobs:
     needs: verify
     permissions:
       contents: write
-    runs-on: ubuntu-latest
+    runs-on: macos-15
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -99,7 +99,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
           test -z "$(git status --porcelain --untracked-files=normal)"
-          test "$(sha256sum "$PATCH_PATH" | awk '{print $1}')" = "$PATCH_SHA256"
+          test "$(shasum -a 256 "$PATCH_PATH" | awk '{print $1}')" = "$PATCH_SHA256"
           gzip -dc "$PATCH_PATH" | git apply --index --whitespace=error-all
           rm -f "$PATCH_PATH"
           rmdir .github/remediation 2>/dev/null || true
