@@ -6,9 +6,9 @@ use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 
-use codex_hepta_authbus::IssuerRegistration;
-use codex_hepta_types::Generation;
-use codex_hepta_types::StableId;
+use codex_hepta_agent_components::authbus::IssuerRegistration;
+use codex_hepta_agent_components::types::Generation;
+use codex_hepta_agent_components::types::StableId;
 use ed25519_dalek::VerifyingKey;
 use serde::Deserialize;
 

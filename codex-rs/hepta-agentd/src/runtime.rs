@@ -6,10 +6,10 @@ use codex_app_server_client::RemoteAppServerClient;
 use codex_app_server_client::RemoteAppServerConnectArgs;
 use codex_app_server_client::RemoteAppServerEndpoint;
 use codex_arg0::Arg0DispatchPaths;
-use codex_hepta_automation::AutomationError;
-use codex_hepta_automation::AutomationStore;
-use codex_hepta_cognitive_store::DurableCognitiveStore as CognitiveStore;
-use codex_hepta_memory::CognitiveRuntime;
+use codex_hepta_agent_components::automation::AutomationError;
+use codex_hepta_agent_components::automation::AutomationStore;
+use codex_hepta_agent_components::cognitive_store::DurableCognitiveStore as CognitiveStore;
+use codex_hepta_agent_components::memory::CognitiveRuntime;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use tokio::time::Instant;
 use tokio::time::sleep;
@@ -358,7 +358,9 @@ async fn open_automation_store_after_generation_fence<Open, OpenFuture>(
 ) -> Result<Option<AutomationStore>, AgentdError>
 where
     Open: FnOnce() -> OpenFuture,
-    OpenFuture: Future<Output = Result<AutomationStore, codex_hepta_automation::AutomationError>>,
+    OpenFuture: Future<
+        Output = Result<AutomationStore, codex_hepta_agent_components::automation::AutomationError>,
+    >,
 {
     state.refresh_generation()?;
     let opened = open().await;
@@ -373,7 +375,7 @@ where
 async fn attach_federation_after_generation_fence(
     state: &AgentdState,
     runtime: CognitiveRuntime,
-    owner_layouts: Vec<codex_hepta_paths::HeptaAgentLayout>,
+    owner_layouts: Vec<codex_hepta_agent_components::paths::HeptaAgentLayout>,
 ) -> Result<CognitiveRuntime, AgentdError> {
     if runtime.available_store().is_none() || owner_layouts.is_empty() {
         return Ok(runtime);
@@ -392,7 +394,9 @@ async fn open_cognitive_runtime_after_generation_fence<Open, OpenFuture>(
 ) -> Result<CognitiveRuntime, AgentdError>
 where
     Open: FnOnce() -> OpenFuture,
-    OpenFuture: Future<Output = Result<CognitiveStore, codex_hepta_memory::CognitiveStoreError>>,
+    OpenFuture: Future<
+        Output = Result<CognitiveStore, codex_hepta_agent_components::memory::CognitiveStoreError>,
+    >,
 {
     state.refresh_generation()?;
     let cognitive_runtime = CognitiveRuntime::from_open_result(open().await);

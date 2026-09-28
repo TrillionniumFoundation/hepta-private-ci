@@ -3,20 +3,20 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::Mutex;
 
-use codex_hepta_bellman_operator::TabularOperatorPlanV1;
-use codex_hepta_bellman_operator::TabularOperatorSampleV1;
-use codex_hepta_bellman_operator::encode_tabular_payload_v1;
-use codex_hepta_bellman_operator::fit_tabular_operator_strict_v2;
-use codex_hepta_learning_artifacts::ArtifactEvent;
-use codex_hepta_learning_artifacts::ArtifactKind;
-use codex_hepta_learning_artifacts::ArtifactManifest;
-use codex_hepta_learning_artifacts::ArtifactRegistry;
-use codex_hepta_learning_artifacts::CreateOnlyArtifactFile;
-use codex_hepta_learning_artifacts::StateChange;
-use codex_hepta_learning_artifacts::write_candidate_payload;
-use codex_hepta_learning_artifacts::write_registry_snapshot;
-use codex_hepta_types::FixedQ32;
-use codex_hepta_types::Generation;
+use codex_hepta_agent_components::bellman_operator::TabularOperatorPlanV1;
+use codex_hepta_agent_components::bellman_operator::TabularOperatorSampleV1;
+use codex_hepta_agent_components::bellman_operator::encode_tabular_payload_v1;
+use codex_hepta_agent_components::bellman_operator::fit_tabular_operator_strict_v2;
+use codex_hepta_agent_components::learning_artifacts::ArtifactEvent;
+use codex_hepta_agent_components::learning_artifacts::ArtifactKind;
+use codex_hepta_agent_components::learning_artifacts::ArtifactManifest;
+use codex_hepta_agent_components::learning_artifacts::ArtifactRegistry;
+use codex_hepta_agent_components::learning_artifacts::CreateOnlyArtifactFile;
+use codex_hepta_agent_components::learning_artifacts::StateChange;
+use codex_hepta_agent_components::learning_artifacts::write_candidate_payload;
+use codex_hepta_agent_components::learning_artifacts::write_registry_snapshot;
+use codex_hepta_agent_components::types::FixedQ32;
+use codex_hepta_agent_components::types::Generation;
 
 use super::*;
 
@@ -303,17 +303,17 @@ fn new_generation_candidate_changes_behavior_and_explicit_predecessor_reload_res
 
 #[tokio::test]
 async fn sqlite_read_consumer_uses_fitted_order_before_limit_and_rechecks_deletion() {
-    use codex_hepta_memory::CognitiveAccess;
-    use codex_hepta_memory::CognitiveScope;
-    use codex_hepta_memory::CognitiveStore;
-    use codex_hepta_memory::ForgetMemoryDraft;
-    use codex_hepta_memory::LedgerSourceKind;
-    use codex_hepta_memory::MemoryDraft;
-    use codex_hepta_memory::MemoryLifecycleState;
-    use codex_hepta_memory::MemoryRevisionDraft;
-    use codex_hepta_memory::MemoryVerification;
-    use codex_hepta_memory::SourceDraft;
-    use codex_hepta_paths::HeptaFleetRoot;
+    use codex_hepta_agent_components::memory::CognitiveAccess;
+    use codex_hepta_agent_components::memory::CognitiveScope;
+    use codex_hepta_agent_components::memory::CognitiveStore;
+    use codex_hepta_agent_components::memory::ForgetMemoryDraft;
+    use codex_hepta_agent_components::memory::LedgerSourceKind;
+    use codex_hepta_agent_components::memory::MemoryDraft;
+    use codex_hepta_agent_components::memory::MemoryLifecycleState;
+    use codex_hepta_agent_components::memory::MemoryRevisionDraft;
+    use codex_hepta_agent_components::memory::MemoryVerification;
+    use codex_hepta_agent_components::memory::SourceDraft;
+    use codex_hepta_agent_components::paths::HeptaFleetRoot;
 
     let directory = tempfile::tempdir().unwrap();
     let fleet = directory.path().join("fleet");
@@ -402,22 +402,22 @@ async fn sqlite_read_consumer_uses_fitted_order_before_limit_and_rechecks_deleti
 /// provider/App Server startup test or an independent task-benefit experiment.
 #[tokio::test]
 async fn running_socket_uses_launch_bound_model_and_isolates_ranker_revocation() {
-    use codex_hepta_fleet::AgentLifecycle;
-    use codex_hepta_fleet::AgentManifest;
-    use codex_hepta_fleet::FleetRegistry;
-    use codex_hepta_fleet::ResourceBudget;
-    use codex_hepta_fleet::WorkspaceBinding;
-    use codex_hepta_memory::CognitiveAccess;
-    use codex_hepta_memory::CognitiveScope;
-    use codex_hepta_memory::CognitiveStore;
-    use codex_hepta_memory::ForgetMemoryDraft;
-    use codex_hepta_memory::LedgerSourceKind;
-    use codex_hepta_memory::MemoryDraft;
-    use codex_hepta_memory::MemoryLifecycleState;
-    use codex_hepta_memory::MemoryRevisionDraft;
-    use codex_hepta_memory::MemoryVerification;
-    use codex_hepta_memory::SourceDraft;
-    use codex_hepta_paths::HeptaFleetRoot;
+    use codex_hepta_agent_components::fleet::AgentLifecycle;
+    use codex_hepta_agent_components::fleet::AgentManifest;
+    use codex_hepta_agent_components::fleet::FleetRegistry;
+    use codex_hepta_agent_components::fleet::ResourceBudget;
+    use codex_hepta_agent_components::fleet::WorkspaceBinding;
+    use codex_hepta_agent_components::memory::CognitiveAccess;
+    use codex_hepta_agent_components::memory::CognitiveScope;
+    use codex_hepta_agent_components::memory::CognitiveStore;
+    use codex_hepta_agent_components::memory::ForgetMemoryDraft;
+    use codex_hepta_agent_components::memory::LedgerSourceKind;
+    use codex_hepta_agent_components::memory::MemoryDraft;
+    use codex_hepta_agent_components::memory::MemoryLifecycleState;
+    use codex_hepta_agent_components::memory::MemoryRevisionDraft;
+    use codex_hepta_agent_components::memory::MemoryVerification;
+    use codex_hepta_agent_components::memory::SourceDraft;
+    use codex_hepta_agent_components::paths::HeptaFleetRoot;
     use tokio_util::sync::CancellationToken;
 
     let directory = tempfile::tempdir().unwrap();

@@ -8,24 +8,24 @@ use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
 
-use codex_hepta_automation::AutomationAdmission;
-use codex_hepta_automation::AutomationError;
-use codex_hepta_automation::AutomationFuture;
-use codex_hepta_automation::AutomationQueueReceipt;
-use codex_hepta_automation::AutomationSchedule;
-use codex_hepta_automation::AutomationScheduler;
-use codex_hepta_automation::AutomationStore;
-use codex_hepta_automation::AutomationTaskDraft;
-use codex_hepta_automation::AutomationTurnQueue;
-use codex_hepta_automation::TimerPhase;
-use codex_hepta_contracts::AgentId;
-use codex_hepta_fleet::AgentLifecycle;
-use codex_hepta_fleet::AgentManifest;
-use codex_hepta_fleet::FleetRegistry;
-use codex_hepta_fleet::ResourceBudget;
-use codex_hepta_fleet::WorkspaceBinding;
-use codex_hepta_paths::HeptaFleetRoot;
-use codex_hepta_types::Generation;
+use codex_hepta_agent_components::automation::AutomationAdmission;
+use codex_hepta_agent_components::automation::AutomationError;
+use codex_hepta_agent_components::automation::AutomationFuture;
+use codex_hepta_agent_components::automation::AutomationQueueReceipt;
+use codex_hepta_agent_components::automation::AutomationSchedule;
+use codex_hepta_agent_components::automation::AutomationScheduler;
+use codex_hepta_agent_components::automation::AutomationStore;
+use codex_hepta_agent_components::automation::AutomationTaskDraft;
+use codex_hepta_agent_components::automation::AutomationTurnQueue;
+use codex_hepta_agent_components::automation::TimerPhase;
+use codex_hepta_agent_components::contracts::AgentId;
+use codex_hepta_agent_components::fleet::AgentLifecycle;
+use codex_hepta_agent_components::fleet::AgentManifest;
+use codex_hepta_agent_components::fleet::FleetRegistry;
+use codex_hepta_agent_components::fleet::ResourceBudget;
+use codex_hepta_agent_components::fleet::WorkspaceBinding;
+use codex_hepta_agent_components::paths::HeptaFleetRoot;
+use codex_hepta_agent_components::types::Generation;
 use tokio::sync::Notify;
 use tokio::time::timeout;
 use tokio_util::sync::CancellationToken;
@@ -300,10 +300,11 @@ async fn cancellation_preserves_in_flight_queue_ack_before_scheduler_exit() {
         .compare_and_transition(&fixture.identity.agent_id, 1, AgentLifecycle::Running)
         .expect("running");
     fixture.state.refresh_generation().expect("generation");
-    let cognitive =
-        codex_hepta_cognitive_store::DurableCognitiveStore::open(&fixture.identity.layout)
-            .await
-            .expect("real cognitive owner");
+    let cognitive = codex_hepta_agent_components::cognitive_store::DurableCognitiveStore::open(
+        &fixture.identity.layout,
+    )
+    .await
+    .expect("real cognitive owner");
     fixture
         .state
         .attach_cognitive_store(Arc::new(cognitive))

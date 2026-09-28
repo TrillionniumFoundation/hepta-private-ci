@@ -128,5 +128,9 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 }
 
 #[cfg(test)]
+#[path = "prompt_factor_tests.rs"]
+mod prompt_factor_tests;
+
+#[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;

@@ -8,10 +8,10 @@ use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 
-use codex_hepta_automation::AutomationError;
-use codex_hepta_automation::AutomationStore;
-use codex_hepta_automation::TimerPhase;
-use codex_hepta_types::Generation;
+use codex_hepta_agent_components::automation::AutomationError;
+use codex_hepta_agent_components::automation::AutomationStore;
+use codex_hepta_agent_components::automation::TimerPhase;
+use codex_hepta_agent_components::types::Generation;
 use tokio_util::sync::CancellationToken;
 
 use crate::AgentdError;

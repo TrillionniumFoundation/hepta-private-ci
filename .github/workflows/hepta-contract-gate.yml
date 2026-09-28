@@ -2,7 +2,19 @@ name: Hepta contract gate
 
 on:
   workflow_call:
+    inputs:
+      require_exact_source:
+        description: Require release-grade source maps, receipts, and dossiers
+        required: false
+        type: boolean
+        default: false
   workflow_dispatch:
+    inputs:
+      require_exact_source:
+        description: Require release-grade source maps, receipts, and dossiers
+        required: false
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -45,8 +57,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # Includes manifest-backed module, algorithm, readiness, CNS and HNMF checks.
+          # It deliberately excludes mutable exact-source observations.
+          python3 scripts/hepta-docs.py verify
+      - name: Validate exact candidate evidence
+        if: ${{ inputs.require_exact_source }}
+        shell: bash
+        run: |
+          set -euo pipefail
           python3 scripts/hepta-implementation-maps.py verify --expected-sha "${GITHUB_SHA}"
           python3 scripts/hepta-technical-receipts.py verify
           python3 scripts/hepta-implementation-dossiers.py verify
-          # Includes module, algorithm, readiness, CNS and HNMF checks.
-          python3 scripts/hepta-docs.py verify

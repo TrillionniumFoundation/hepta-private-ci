@@ -16,6 +16,10 @@ use codex_hepta_types::StableId;
 
 /// Concurrent selected modules, including draining/quarantined writer reservations.
 pub const MAX_RUNTIME_MODULES: usize = 128;
+/// Total distinct module identities retained by anti-resurrection generation fences.
+/// Payload history is compacted independently, but a retired identity keeps one
+/// bounded fence so an old generation can never be admitted after restart.
+pub const MAX_RUNTIME_MODULE_IDENTITIES: usize = 4096;
 /// Concurrent unselected candidates. Historical generations consume neither quota.
 const MAX_PENDING_RUNTIME_MODULES: usize = 128;
 pub const MAX_MODULE_PORTS: usize = 64;
@@ -179,6 +183,9 @@ pub enum RuntimeModuleRegistryError {
     AuthoritativeWriterConflict(StableId),
     ActiveGenerationConflict,
     RollbackGenerationNotAdvanced,
+    CheckpointDigestMismatch,
+    CheckpointDuplicate,
+    CheckpointInvalid,
 }
 
 impl fmt::Display for RuntimeModuleRegistryError {
@@ -200,6 +207,12 @@ pub struct RuntimeModuleRegistryV1 {
     generation_fences: BTreeMap<StableId, (Generation, Generation)>,
 }
 
+#[path = "module_runtime_checkpoint.rs"]
+mod checkpoint;
+pub use checkpoint::RuntimeModuleActiveReservationV1;
+pub use checkpoint::RuntimeModuleGenerationFenceV1;
+pub use checkpoint::RuntimeModuleRegistryCheckpointV1;
+
 impl RuntimeModuleRegistryV1 {
     pub fn new() -> Self {
         Self::default()
@@ -219,17 +232,18 @@ impl RuntimeModuleRegistryV1 {
     ) -> Result<(), RuntimeModuleRegistryError> {
         abi.validate()?;
         let key = (abi.module_id.clone(), abi.generation);
-        if self.records.contains_key(&key) {
-            return Err(RuntimeModuleRegistryError::DuplicateCandidate);
-        }
-        // Candidate epochs are monotone even after retirement or quarantine.
-        // A removed route is not permission to resurrect an older identity.
+        // Candidate epochs are monotone even after retirement, quarantine or
+        // checkpoint restore. Reject the epoch before consulting retained
+        // payload rows so compaction cannot change the observable fence result.
         if self
             .generation_fences
             .get(&abi.module_id)
             .is_some_and(|(_, greatest)| *greatest >= abi.generation)
         {
             return Err(RuntimeModuleRegistryError::InvalidGeneration);
+        }
+        if self.records.contains_key(&key) {
+            return Err(RuntimeModuleRegistryError::DuplicateCandidate);
         }
         if let Some(predecessor_generation) = abi.predecessor_generation {
             let predecessor = self
@@ -240,7 +254,10 @@ impl RuntimeModuleRegistryV1 {
                 return Err(RuntimeModuleRegistryError::PredecessorDigestMismatch);
             }
         }
-        if self.pending_candidate_count() >= pending_limit {
+        if self.pending_candidate_count() >= pending_limit
+            || (!self.generation_fences.contains_key(&abi.module_id)
+                && self.generation_fences.len() >= MAX_RUNTIME_MODULE_IDENTITIES)
+        {
             return Err(RuntimeModuleRegistryError::Bounds);
         }
         self.generation_fences

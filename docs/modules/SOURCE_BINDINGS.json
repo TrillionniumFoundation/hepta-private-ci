@@ -170,6 +170,8 @@
         "codex-rs/hepta-agentd"
       ],
       "sourceEvidenceRoots": [
+        "codex-rs/hepta-agentd-core",
+        "codex-rs/hepta-agent-components",
         "codex-rs/hepta-agentd"
       ],
       "missingDeclaredRoots": [],
@@ -184,15 +186,21 @@
       "source_root_present": true,
       "production_implementation": false,
       "declaredRoots": [
-        "codex-rs/codex-app-server",
-        "codex-rs/hepta-codex-adapter"
+        "codex-rs/app-server",
+        "codex-rs/hepta-codex-adapter",
+        "codex-rs/hepta-app-bridge",
+        "codex-rs/hepta-app-host"
       ],
       "existingDeclaredRoots": [
-        "codex-rs/codex-app-server",
-        "codex-rs/hepta-codex-adapter"
+        "codex-rs/app-server",
+        "codex-rs/hepta-codex-adapter",
+        "codex-rs/hepta-app-bridge",
+        "codex-rs/hepta-app-host"
       ],
       "sourceEvidenceRoots": [
-        "codex-rs/codex-app-server",
+        "codex-rs/app-server",
+        "codex-rs/hepta-app-bridge",
+        "codex-rs/hepta-app-host",
         "codex-rs/hepta-codex-adapter"
       ],
       "missingDeclaredRoots": [],

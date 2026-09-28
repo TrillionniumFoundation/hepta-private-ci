@@ -12,19 +12,19 @@
 //! its original predecessor through a freshly recovered journal.
 
 #[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_intelligence::AdvisoryDecisionV1;
+use codex_hepta_agent_components::intelligence::AdvisoryDecisionV1;
 #[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::AppendReceipt;
+use codex_hepta_agent_components::learning_ledger::AppendReceipt;
 #[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::CandidateSetCompleteness;
+use codex_hepta_agent_components::learning_ledger::CandidateSetCompleteness;
 #[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::EpisodeDecision;
+use codex_hepta_agent_components::learning_ledger::EpisodeDecision;
 #[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::OutcomeFinality;
+use codex_hepta_agent_components::learning_ledger::OutcomeFinality;
 #[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::OutcomeObservation;
+use codex_hepta_agent_components::learning_ledger::OutcomeObservation;
 #[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_types::FixedQ32;
+use codex_hepta_agent_components::types::FixedQ32;
 
 #[path = "intelligence_evaluation.rs"]
 mod evaluation;
@@ -44,54 +44,52 @@ use std::time::Instant;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
-use codex_hepta_context_compiler::CompilationRequest;
-use codex_hepta_context_compiler::compile;
-use codex_hepta_intelligence::CanonicalFreshnessOracleV1;
-use codex_hepta_intelligence::CanonicalIntelligenceError;
-use codex_hepta_intelligence::CanonicalIntelligenceRunRequestV1;
-use codex_hepta_intelligence::CanonicalIntelligenceSnapshotV1;
-use codex_hepta_intelligence::CanonicalOwnerPortsV1;
-use codex_hepta_intelligence::CanonicalPortDecisionV1;
-use codex_hepta_intelligence::CanonicalPortFailureClassV1;
-use codex_hepta_intelligence::CanonicalPortFailureV1;
-use codex_hepta_intelligence::CanonicalPortInputV1;
-use codex_hepta_intelligence::CanonicalPortReceiptV1;
-use codex_hepta_intelligence::CanonicalRunOutcomeV1;
-use codex_hepta_intelligence::CanonicalStageV1;
-use codex_hepta_intelligence::CurrentOwnerStateV1;
-use codex_hepta_intelligence::IntelligenceHostEnvelopeV1;
-use codex_hepta_intelligence::prepare_intelligence_run;
-use codex_hepta_intelligence::validate_current_snapshot;
-use codex_hepta_intelligence_eval::EvaluationRequest;
-use codex_hepta_intuition::CalibratedDecisionRequestV1;
-use codex_hepta_intuition::CalibratedDispositionV1;
-use codex_hepta_intuition::decide_calibrated_v2;
+use codex_hepta_agent_components::context_compiler::CompilationRequest;
+use codex_hepta_agent_components::context_compiler::compile;
+use codex_hepta_agent_components::intelligence::CanonicalFreshnessOracleV1;
+use codex_hepta_agent_components::intelligence::CanonicalIntelligenceError;
+use codex_hepta_agent_components::intelligence::CanonicalIntelligenceRunRequestV1;
+use codex_hepta_agent_components::intelligence::CanonicalIntelligenceSnapshotV1;
+use codex_hepta_agent_components::intelligence::CanonicalOwnerPortsV1;
+use codex_hepta_agent_components::intelligence::CanonicalPortDecisionV1;
+use codex_hepta_agent_components::intelligence::CanonicalPortFailureClassV1;
+use codex_hepta_agent_components::intelligence::CanonicalPortFailureV1;
+use codex_hepta_agent_components::intelligence::CanonicalPortInputV1;
+use codex_hepta_agent_components::intelligence::CanonicalPortReceiptV1;
+use codex_hepta_agent_components::intelligence::CanonicalRunOutcomeV1;
+use codex_hepta_agent_components::intelligence::CanonicalStageV1;
+use codex_hepta_agent_components::intelligence::CurrentOwnerStateV1;
+use codex_hepta_agent_components::intelligence::IntelligenceHostEnvelopeV1;
+use codex_hepta_agent_components::intelligence::prepare_intelligence_run;
+use codex_hepta_agent_components::intelligence::validate_current_snapshot;
+use codex_hepta_agent_components::intelligence_eval::EvaluationRequest;
+use codex_hepta_agent_components::intuition::CalibratedDecisionRequestV1;
+use codex_hepta_agent_components::intuition::CalibratedDispositionV1;
+use codex_hepta_agent_components::intuition::decide_calibrated_v2;
 #[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::DurableLearningJournal;
-#[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::DurableLedger;
-use codex_hepta_learning_ledger::DurableLedgerError;
-use codex_hepta_learning_ledger::LedgerEvent;
-use codex_hepta_ndu::ContributionSet;
-use codex_hepta_ndu::EvaluationPolicyV1;
-use codex_hepta_ndu::ScalarizationProfile;
-use codex_hepta_ndu::UtilityProfile;
-use codex_hepta_ndu::evaluate_candidates_with_policy;
-use codex_hepta_neuron::SparseCheckpoint;
-use codex_hepta_neuron::SparseConfig;
-use codex_hepta_neuron::SparseTick;
-use codex_hepta_neuron::sparse_tick;
-use codex_hepta_objective::CompileDisposition;
-use codex_hepta_objective::ObjectiveAdmissionContextV1;
-use codex_hepta_objective::ObjectiveAdmissionProfileV1;
-use codex_hepta_objective::ObjectiveSourceEnvelopeV1;
-use codex_hepta_objective::admit_and_compile_objective_v1;
-use codex_hepta_prompt_optimizer::OptimizationRequest;
-use codex_hepta_prompt_optimizer::optimize;
-use codex_hepta_types::AuthorityPosture;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::Generation;
-use codex_hepta_types::StableId;
+use codex_hepta_agent_components::learning_ledger::DurableLedger;
+use codex_hepta_agent_components::learning_ledger::DurableLedgerError;
+use codex_hepta_agent_components::learning_ledger::LedgerEvent;
+use codex_hepta_agent_components::ndu::ContributionSet;
+use codex_hepta_agent_components::ndu::EvaluationPolicyV1;
+use codex_hepta_agent_components::ndu::ScalarizationProfile;
+use codex_hepta_agent_components::ndu::UtilityProfile;
+use codex_hepta_agent_components::ndu::evaluate_candidates_with_policy;
+use codex_hepta_agent_components::neuron::SparseCheckpoint;
+use codex_hepta_agent_components::neuron::SparseConfig;
+use codex_hepta_agent_components::neuron::SparseTick;
+use codex_hepta_agent_components::neuron::sparse_tick;
+use codex_hepta_agent_components::objective::CompileDisposition;
+use codex_hepta_agent_components::objective::ObjectiveAdmissionContextV1;
+use codex_hepta_agent_components::objective::ObjectiveAdmissionProfileV1;
+use codex_hepta_agent_components::objective::ObjectiveSourceEnvelopeV1;
+use codex_hepta_agent_components::objective::admit_and_compile_objective_v1;
+use codex_hepta_agent_components::prompt_optimizer::OptimizationRequest;
+use codex_hepta_agent_components::prompt_optimizer::optimize;
+use codex_hepta_agent_components::types::AuthorityPosture;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::Generation;
+use codex_hepta_agent_components::types::StableId;
 use ed25519_dalek::Signature;
 use ed25519_dalek::Verifier;
 use ed25519_dalek::VerifyingKey;
@@ -624,7 +622,9 @@ pub struct AgentdIntelligenceProductRunnerV1 {
     worker_slots: std::sync::Arc<tokio::sync::Semaphore>,
     authority_file: PathBuf,
     authority_verifier: IntelligenceAuthorityVerifierV1,
-    evaluation_trust: Option<std::sync::Arc<codex_hepta_learning_ledger::ActivatedLearningTrustV1>>,
+    evaluation_trust: Option<
+        std::sync::Arc<codex_hepta_agent_components::learning_ledger::ActivatedLearningTrustV1>,
+    >,
 }
 
 #[path = "intelligence_product_runner.rs"]

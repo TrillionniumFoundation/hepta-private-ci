@@ -11,18 +11,18 @@ use std::sync::Arc;
 use std::sync::Mutex;
 use std::sync::RwLock;
 
-use codex_hepta_learning_artifacts::ArtifactKind;
-use codex_hepta_learning_artifacts::ArtifactManifest;
-use codex_hepta_learning_artifacts::ArtifactRegistry;
-use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
-use codex_hepta_learning_ledger::verify_dataset_snapshot_receipt_v3;
-use codex_hepta_ndu::NduProjectionJournalV1;
-use codex_hepta_neuron::JournalAnchor;
-use codex_hepta_neuron::SparseCheckpoint;
-use codex_hepta_neuron::SparseJournal;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::FixedQ32;
-use codex_hepta_types::StableId;
+use codex_hepta_agent_components::learning_artifacts::ArtifactKind;
+use codex_hepta_agent_components::learning_artifacts::ArtifactManifest;
+use codex_hepta_agent_components::learning_artifacts::ArtifactRegistry;
+use codex_hepta_agent_components::learning_ledger::DatasetSnapshotReceiptV3;
+use codex_hepta_agent_components::learning_ledger::verify_dataset_snapshot_receipt_v3;
+use codex_hepta_agent_components::ndu::NduProjectionJournalV1;
+use codex_hepta_agent_components::neuron::JournalAnchor;
+use codex_hepta_agent_components::neuron::SparseCheckpoint;
+use codex_hepta_agent_components::neuron::SparseJournal;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::FixedQ32;
+use codex_hepta_agent_components::types::StableId;
 
 use crate::PlasticityOwnerEvidenceErrorV1;
 use crate::PlasticityOwnerEvidenceKindV1;
@@ -773,17 +773,17 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use codex_hepta_learning_artifacts::ArtifactEvent;
-    use codex_hepta_learning_artifacts::ArtifactManifest;
-    use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
-    use codex_hepta_learning_ledger::DatasetFreezeRequestV1;
-    use codex_hepta_learning_ledger::freeze_dataset_receipt_v3;
-    use codex_hepta_ndu::NduProjectionKindV1;
-    use codex_hepta_neuron::JournalScope;
-    use codex_hepta_neuron::SparseConfig;
-    use codex_hepta_neuron::SparseTick;
-    use codex_hepta_plasticity::ProposalWindowV2;
-    use codex_hepta_types::Generation;
+    use codex_hepta_agent_components::learning_artifacts::ArtifactEvent;
+    use codex_hepta_agent_components::learning_artifacts::ArtifactManifest;
+    use codex_hepta_agent_components::learning_ledger::AuthenticatedPrincipalV1;
+    use codex_hepta_agent_components::learning_ledger::DatasetFreezeRequestV1;
+    use codex_hepta_agent_components::learning_ledger::freeze_dataset_receipt_v3;
+    use codex_hepta_agent_components::ndu::NduProjectionKindV1;
+    use codex_hepta_agent_components::neuron::JournalScope;
+    use codex_hepta_agent_components::neuron::SparseConfig;
+    use codex_hepta_agent_components::neuron::SparseTick;
+    use codex_hepta_agent_components::plasticity::ProposalWindowV2;
+    use codex_hepta_agent_components::types::Generation;
     use tempfile::tempfile;
 
     use crate::PlasticityOwnerEvidencePolicyV1;

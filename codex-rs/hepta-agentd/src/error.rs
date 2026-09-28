@@ -3,11 +3,11 @@ use std::fmt;
 use std::path::Path;
 use std::path::PathBuf;
 
-use codex_hepta_automation::AutomationError;
-use codex_hepta_cognitive_store::DurableCognitiveStoreError;
-use codex_hepta_fleet::FleetRegistryError;
-use codex_hepta_memory::ProductionCognitiveMutationError;
-use codex_hepta_memory::ProductionWriterError;
+use codex_hepta_agent_components::automation::AutomationError;
+use codex_hepta_agent_components::cognitive_store::DurableCognitiveStoreError;
+use codex_hepta_agent_components::fleet::FleetRegistryError;
+use codex_hepta_agent_components::memory::ProductionCognitiveMutationError;
+use codex_hepta_agent_components::memory::ProductionWriterError;
 
 #[derive(Debug, thiserror::Error)]
 pub enum AgentdError {

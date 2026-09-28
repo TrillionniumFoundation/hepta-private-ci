@@ -4,21 +4,21 @@
 
 use std::time::Duration;
 
-use codex_hepta_automation::AutomationError;
-use codex_hepta_automation::AutomationOperationReceipt;
-use codex_hepta_automation::AutomationSchedule;
-use codex_hepta_automation::AutomationStore;
-use codex_hepta_automation::AutomationTaskDraft;
-use codex_hepta_automation::TimerPhase;
-use codex_hepta_automation::automation_task_operation_intent;
-use codex_hepta_contracts::AgentId;
-use codex_hepta_fleet::AgentManifest;
-use codex_hepta_fleet::FleetRegistry;
-use codex_hepta_fleet::ResourceBudget;
-use codex_hepta_fleet::WorkspaceBinding;
+use codex_hepta_agent_components::automation::AutomationError;
+use codex_hepta_agent_components::automation::AutomationOperationReceipt;
+use codex_hepta_agent_components::automation::AutomationSchedule;
+use codex_hepta_agent_components::automation::AutomationStore;
+use codex_hepta_agent_components::automation::AutomationTaskDraft;
+use codex_hepta_agent_components::automation::TimerPhase;
+use codex_hepta_agent_components::automation::automation_task_operation_intent;
+use codex_hepta_agent_components::contracts::AgentId;
+use codex_hepta_agent_components::fleet::AgentManifest;
+use codex_hepta_agent_components::fleet::FleetRegistry;
+use codex_hepta_agent_components::fleet::ResourceBudget;
+use codex_hepta_agent_components::fleet::WorkspaceBinding;
+use codex_hepta_agent_components::paths::HeptaFleetRoot;
+use codex_hepta_agent_components::types::Generation;
 use codex_hepta_operations::DestinationApplyDisposition;
-use codex_hepta_paths::HeptaFleetRoot;
-use codex_hepta_types::Generation;
 use tokio::sync::mpsc;
 use tokio::sync::oneshot;
 use tokio::time::timeout;

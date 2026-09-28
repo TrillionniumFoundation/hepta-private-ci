@@ -14,7 +14,7 @@ use std::io::Seek;
 use std::io::SeekFrom;
 use std::io::Write;
 
-use codex_hepta_types::Digest32;
+use codex_hepta_agent_components::types::Digest32;
 
 const HEADER_BYTES: usize = 8 + 32 + 32;
 const FRAME_BYTES: usize = 1 + 8 + 8 + 32 + 32;

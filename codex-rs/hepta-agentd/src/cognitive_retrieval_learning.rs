@@ -6,16 +6,16 @@
 
 use std::sync::Mutex;
 
-use codex_hepta_contracts::AgentId;
-use codex_hepta_learning_ledger::AppendReceipt;
-use codex_hepta_learning_ledger::LedgerEvent;
-use codex_hepta_learning_ledger::LedgerWriter;
-use codex_hepta_learning_ledger::retrieval_assignment_event_with_delivery_policy;
-use codex_hepta_memory_retrieval::RetrievalAssignmentObservationV1;
-use codex_hepta_memory_retrieval::RetrievalCandidateIdentityV1;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::ProbabilityQ32;
-use codex_hepta_types::StableId;
+use codex_hepta_agent_components::contracts::AgentId;
+use codex_hepta_agent_components::learning_ledger::AppendReceipt;
+use codex_hepta_agent_components::learning_ledger::LedgerEvent;
+use codex_hepta_agent_components::learning_ledger::LedgerWriter;
+use codex_hepta_agent_components::learning_ledger::retrieval_assignment_event_with_delivery_policy;
+use codex_hepta_agent_components::memory_retrieval::RetrievalAssignmentObservationV1;
+use codex_hepta_agent_components::memory_retrieval::RetrievalCandidateIdentityV1;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::ProbabilityQ32;
+use codex_hepta_agent_components::types::StableId;
 
 pub struct CognitiveRetrievalLearningSink {
     writer: Mutex<LedgerWriter>,

@@ -1,0 +1,654 @@
+{
+  "schema": "hepta.module-ci-matrix.v1",
+  "generatedFrom": "docs/modules/*/module.toml",
+  "groups": [
+    "effects",
+    "inference",
+    "learning",
+    "lifecycle",
+    "objective"
+  ],
+  "packages": [
+    {
+      "packagePath": "codex-rs/ext/hepta-governance",
+      "packageName": "codex-hepta-governance",
+      "module": "control.engineering",
+      "ciGroups": [
+        "effects",
+        "inference",
+        "learning",
+        "lifecycle",
+        "objective"
+      ],
+      "compileLayer": 3
+    },
+    {
+      "packagePath": "codex-rs/ext/hepta-memory",
+      "packageName": "codex-hepta-memory-extension",
+      "module": "runtime.codex",
+      "ciGroups": [
+        "effects",
+        "inference",
+        "learning",
+        "lifecycle",
+        "objective"
+      ],
+      "compileLayer": 4
+    },
+    {
+      "packagePath": "codex-rs/ext/hepta-prompt",
+      "packageName": "codex-hepta-prompt-extension",
+      "module": "runtime.codex",
+      "ciGroups": [
+        "effects",
+        "inference",
+        "learning",
+        "lifecycle",
+        "objective"
+      ],
+      "compileLayer": 1
+    },
+    {
+      "packagePath": "codex-rs/hepta-agent-components",
+      "packageName": "codex-hepta-agent-components",
+      "module": "runtime.agentd",
+      "ciGroups": [
+        "effects",
+        "inference",
+        "learning",
+        "lifecycle",
+        "objective"
+      ],
+      "compileLayer": 6
+    },
+    {
+      "packagePath": "codex-rs/hepta-agent-protocol",
+      "packageName": "codex-hepta-agent-protocol",
+      "module": "runtime.agentd",
+      "ciGroups": [
+        "effects",
+        "inference",
+        "learning",
+        "lifecycle",
+        "objective"
+      ],
+      "compileLayer": 3
+    },
+    {
+      "packagePath": "codex-rs/hepta-agentd",
+      "packageName": "codex-hepta-agentd",
+      "module": "runtime.agentd",
+      "ciGroups": [
+        "effects",
+        "inference",
+        "learning",
+        "lifecycle",
+        "objective"
+      ],
+      "compileLayer": 7
+    },
+    {
+      "packagePath": "codex-rs/hepta-agentd-core",
+      "packageName": "codex-hepta-agentd-core",
+      "module": "runtime.agentd",
+      "ciGroups": [
+        "lifecycle"
+      ],
+      "compileLayer": 2
+    },
+    {
+      "packagePath": "codex-rs/hepta-app-bridge",
+      "packageName": "codex-hepta-app-bridge",
+      "module": "runtime.codex",
+      "ciGroups": [
+        "effects",
+        "inference",
+        "learning",
+        "lifecycle",
+        "objective"
+      ],
+      "compileLayer": 5
+    },
+    {
+      "packagePath": "codex-rs/hepta-app-host",
+      "packageName": "codex-hepta-app-host",
+      "module": "runtime.codex",
+      "ciGroups": [
+        "effects",
+        "inference",
+        "learning",
+        "lifecycle",
+        "objective"
+      ],
+      "compileLayer": 6
+    },
+    {
+      "packagePath": "codex-rs/hepta-authbus",
+      "packageName": "codex-hepta-authbus",
+      "module": "auth.authbus",
+      "ciGroups": [
+        "effects",
+        "inference",
+        "learning",
+        "lifecycle",
+        "objective"
+      ],
+      "compileLayer": 1
+    },
+    {
+      "packagePath": "codex-rs/hepta-authbus-p1-3-qualification",
+      "packageName": "codex-hepta-authbus-p1-3-qualification",
+      "module": "auth.authbus",
+      "ciGroups": [
+        "effects",
+        "inference",
+        "learning",
+        "lifecycle",
+        "objective"
+      ],
+      "compileLayer": 2
+    },
+    {
+      "packagePath": "codex-rs/hepta-automation",
+      "packageName": "codex-hepta-automation",
+      "module": "automation.taskflow",
+      "ciGroups": [
+        "effects",
+        "lifecycle"
+      ],
+      "compileLayer": 2
+    },
+    {
+      "packagePath": "codex-rs/hepta-bao-adapter",
+      "packageName": "codex-hepta-bao-adapter",
+      "module": "secrets.heptabao",
+      "ciGroups": [
+        "effects",
+        "inference",
+        "learning",
+        "lifecycle",
+        "objective"
+      ],
+      "compileLayer": 2
+    },
+    {
+      "packagePath": "codex-rs/hepta-bellman-operator",
+      "packageName": "codex-hepta-bellman-operator",
+      "module": "learning.operator",
+      "ciGroups": [
+        "effects",
+        "inference",
+        "learning",
+        "lifecycle",
+        "objective"
+      ],
+      "compileLayer": 4
+    },
+    {
+      "packagePath": "codex-rs/hepta-codex-adapter",
+      "packageName": "codex-hepta-codex-adapter",
+      "module": "runtime.codex",
+      "ciGroups": [
+        "effects",
+        "inference",
+        "learning",
+        "lifecycle",
+        "objective"
+      ],
+      "compileLayer": 2
+    },
+    {
+      "packagePath": "codex-rs/hepta-cognitive-read",
+      "packageName": "codex-hepta-cognitive-read",
+      "module": "cognitive.read",
+      "ciGroups": [
+        "learning"
+      ],
+      "compileLayer": 2
+    },
+    {
+      "packagePath": "codex-rs/hepta-cognitive-store",
+      "packageName": "codex-hepta-cognitive-store",
+      "module": "cognitive.store",
+      "ciGroups": [
+        "learning",
+        "lifecycle"
+      ],
+      "compileLayer": 4
+    },
+    {
+      "packagePath": "codex-rs/hepta-cognitive-types",
+      "packageName": "codex-hepta-cognitive-types",
+      "module": "cognitive.types",
+      "ciGroups": [
+        "effects",
+        "inference",
+        "learning",
+        "lifecycle",
+        "objective"
+      ],
+      "compileLayer": 1
+    },
+    {
+      "packagePath": "codex-rs/hepta-compact-engine",
+      "packageName": "codex-hepta-compact-engine",
+      "module": "compact.engine",
+      "ciGroups": [
+        "effects",
+        "inference",
+        "learning",
+        "lifecycle",
+        "objective"
+      ],
+      "compileLayer": 2
+    },
+    {
+      "packagePath": "codex-rs/hepta-context-compiler",
+      "packageName": "codex-hepta-context-compiler",
+      "module": "context.compiler",
+      "ciGroups": [
+        "effects",
+        "inference",
+        "learning",
+        "lifecycle",
+        "objective"
+      ],
+      "compileLayer": 2
+    },
+    {
+      "packagePath": "codex-rs/hepta-contracts",
+      "packageName": "codex-hepta-contracts",
+      "module": "kernel.authority",
+      "ciGroups": [
+        "effects",
+        "inference",
+        "learning",
+        "lifecycle",
+        "objective"
+      ],
+      "compileLayer": 0
+    },
+    {
+      "packagePath": "codex-rs/hepta-control-plane",
+      "packageName": "codex-hepta-control-plane",
+      "module": "control.runtime",
+      "ciGroups": [
+        "effects",
+        "lifecycle",
+        "objective"
+      ],
+      "compileLayer": 2
+    },
+    {
+      "packagePath": "codex-rs/hepta-evidence",
+      "packageName": "codex-hepta-evidence",
+      "module": "kernel.evidence",
+      "ciGroups": [
+        "effects",
+        "inference",
+        "learning",
+        "lifecycle",
+        "objective"
+      ],
+      "compileLayer": 2
+    },
+    {
+      "packagePath": "codex-rs/hepta-fleet",
+      "packageName": "codex-hepta-fleet",
+      "module": "runtime.fleet",
+      "ciGroups": [
+        "lifecycle"
+      ],
+      "compileLayer": 2
+    },
+    {
+      "packagePath": "codex-rs/hepta-infer-core",
+      "packageName": "codex-hepta-infer-core",
+      "module": "inference.control",
+      "ciGroups": [
+        "inference"
+      ],
+      "compileLayer": 1
+    },
+    {
+      "packagePath": "codex-rs/hepta-infer-worker-host",
+      "packageName": "codex-hepta-infer-worker-host",
+      "module": "inference.worker",
+      "ciGroups": [
+        "effects",
+        "inference",
+        "learning",
+        "lifecycle",
+        "objective"
+      ],
+      "compileLayer": 8
+    },
+    {
+      "packagePath": "codex-rs/hepta-inferd",
+      "packageName": "codex-hepta-inferd",
+      "module": "inference.control",
+      "ciGroups": [
+        "effects",
+        "inference",
+        "learning",
+        "lifecycle",
+        "objective"
+      ],
+      "compileLayer": 1
+    },
+    {
+      "packagePath": "codex-rs/hepta-intelligence",
+      "packageName": "codex-hepta-intelligence",
+      "module": "intelligence.control",
+      "ciGroups": [
+        "learning",
+        "objective"
+      ],
+      "compileLayer": 5
+    },
+    {
+      "packagePath": "codex-rs/hepta-intelligence-eval",
+      "packageName": "codex-hepta-intelligence-eval",
+      "module": "learning.eval",
+      "ciGroups": [
+        "learning"
+      ],
+      "compileLayer": 4
+    },
+    {
+      "packagePath": "codex-rs/hepta-intuition",
+      "packageName": "codex-hepta-intuition",
+      "module": "intuition.policy",
+      "ciGroups": [
+        "learning",
+        "objective"
+      ],
+      "compileLayer": 1
+    },
+    {
+      "packagePath": "codex-rs/hepta-kg",
+      "packageName": "codex-hepta-kg",
+      "module": "knowledge.graph",
+      "ciGroups": [
+        "effects",
+        "inference",
+        "learning",
+        "lifecycle",
+        "objective"
+      ],
+      "compileLayer": 2
+    },
+    {
+      "packagePath": "codex-rs/hepta-learning-artifacts",
+      "packageName": "codex-hepta-learning-artifacts",
+      "module": "learning.artifacts",
+      "ciGroups": [
+        "learning"
+      ],
+      "compileLayer": 1
+    },
+    {
+      "packagePath": "codex-rs/hepta-learning-ledger",
+      "packageName": "codex-hepta-learning-ledger",
+      "module": "learning.ledger",
+      "ciGroups": [
+        "learning"
+      ],
+      "compileLayer": 3
+    },
+    {
+      "packagePath": "codex-rs/hepta-matrix-protocol",
+      "packageName": "codex-hepta-matrix-protocol",
+      "module": "channel.matrix",
+      "ciGroups": [
+        "effects",
+        "inference",
+        "learning",
+        "lifecycle",
+        "objective"
+      ],
+      "compileLayer": 1
+    },
+    {
+      "packagePath": "codex-rs/hepta-matrix-sdk",
+      "packageName": "codex-hepta-matrix-sdk",
+      "module": "channel.matrix",
+      "ciGroups": [
+        "effects",
+        "inference",
+        "learning",
+        "lifecycle",
+        "objective"
+      ],
+      "compileLayer": 3
+    },
+    {
+      "packagePath": "codex-rs/hepta-matrix-store",
+      "packageName": "codex-hepta-matrix-store",
+      "module": "channel.matrix",
+      "ciGroups": [
+        "effects",
+        "inference",
+        "learning",
+        "lifecycle",
+        "objective"
+      ],
+      "compileLayer": 2
+    },
+    {
+      "packagePath": "codex-rs/hepta-matrixd",
+      "packageName": "codex-hepta-matrixd",
+      "module": "channel.matrix",
+      "ciGroups": [
+        "effects",
+        "inference",
+        "learning",
+        "lifecycle",
+        "objective"
+      ],
+      "compileLayer": 8
+    },
+    {
+      "packagePath": "codex-rs/hepta-memory",
+      "packageName": "codex-hepta-memory",
+      "module": "cognitive.store",
+      "ciGroups": [
+        "effects",
+        "inference",
+        "learning",
+        "lifecycle",
+        "objective"
+      ],
+      "compileLayer": 3
+    },
+    {
+      "packagePath": "codex-rs/hepta-memory-federation",
+      "packageName": "codex-hepta-memory-federation",
+      "module": "memory.federation",
+      "ciGroups": [
+        "learning",
+        "lifecycle"
+      ],
+      "compileLayer": 1
+    },
+    {
+      "packagePath": "codex-rs/hepta-memory-retrieval",
+      "packageName": "codex-hepta-memory-retrieval",
+      "module": "memory.retrieval",
+      "ciGroups": [
+        "learning"
+      ],
+      "compileLayer": 2
+    },
+    {
+      "packagePath": "codex-rs/hepta-native-gateway",
+      "packageName": "codex-hepta-native-gateway",
+      "module": "runtime.codex",
+      "ciGroups": [
+        "effects",
+        "inference",
+        "learning",
+        "lifecycle",
+        "objective"
+      ],
+      "compileLayer": 4
+    },
+    {
+      "packagePath": "codex-rs/hepta-ndu",
+      "packageName": "codex-hepta-ndu",
+      "module": "utility.ndu",
+      "ciGroups": [
+        "learning",
+        "objective"
+      ],
+      "compileLayer": 1
+    },
+    {
+      "packagePath": "codex-rs/hepta-neuron",
+      "packageName": "codex-hepta-neuron",
+      "module": "neuron.runtime",
+      "ciGroups": [
+        "learning"
+      ],
+      "compileLayer": 2
+    },
+    {
+      "packagePath": "codex-rs/hepta-objective",
+      "packageName": "codex-hepta-objective",
+      "module": "objective.compiler",
+      "ciGroups": [
+        "learning",
+        "objective"
+      ],
+      "compileLayer": 1
+    },
+    {
+      "packagePath": "codex-rs/hepta-operations",
+      "packageName": "codex-hepta-operations",
+      "module": "kernel.operations",
+      "ciGroups": [
+        "effects",
+        "lifecycle"
+      ],
+      "compileLayer": 1
+    },
+    {
+      "packagePath": "codex-rs/hepta-operator-acceptance",
+      "packageName": "codex-hepta-operator-acceptance",
+      "module": "learning.operator",
+      "ciGroups": [
+        "effects",
+        "inference",
+        "learning",
+        "lifecycle",
+        "objective"
+      ],
+      "compileLayer": 0
+    },
+    {
+      "packagePath": "codex-rs/hepta-paths",
+      "packageName": "codex-hepta-paths",
+      "module": "platform.types",
+      "ciGroups": [
+        "effects",
+        "inference",
+        "learning",
+        "lifecycle",
+        "objective"
+      ],
+      "compileLayer": 1
+    },
+    {
+      "packagePath": "codex-rs/hepta-plasticity",
+      "packageName": "codex-hepta-plasticity",
+      "module": "learning.plasticity",
+      "ciGroups": [
+        "learning",
+        "lifecycle"
+      ],
+      "compileLayer": 1
+    },
+    {
+      "packagePath": "codex-rs/hepta-prompt-optimizer",
+      "packageName": "codex-hepta-prompt-optimizer",
+      "module": "prompt.optimizer",
+      "ciGroups": [
+        "learning",
+        "objective"
+      ],
+      "compileLayer": 4
+    },
+    {
+      "packagePath": "codex-rs/hepta-prompt-registry",
+      "packageName": "codex-hepta-prompt-registry",
+      "module": "prompt.registry",
+      "ciGroups": [
+        "learning",
+        "objective"
+      ],
+      "compileLayer": 1
+    },
+    {
+      "packagePath": "codex-rs/hepta-runtime",
+      "packageName": "codex-hepta-runtime",
+      "module": "control.runtime",
+      "ciGroups": [
+        "effects",
+        "inference",
+        "learning",
+        "lifecycle",
+        "objective"
+      ],
+      "compileLayer": 3
+    },
+    {
+      "packagePath": "codex-rs/hepta-shadow-qualification",
+      "packageName": "codex-hepta-shadow-qualification",
+      "module": "learning.eval",
+      "ciGroups": [
+        "effects",
+        "inference",
+        "learning",
+        "lifecycle",
+        "objective"
+      ],
+      "compileLayer": 0
+    },
+    {
+      "packagePath": "codex-rs/hepta-supervisor",
+      "packageName": "codex-hepta-supervisor",
+      "module": "runtime.supervisor",
+      "ciGroups": [
+        "effects",
+        "lifecycle"
+      ],
+      "compileLayer": 5
+    },
+    {
+      "packagePath": "codex-rs/hepta-types",
+      "packageName": "codex-hepta-types",
+      "module": "platform.types",
+      "ciGroups": [
+        "effects",
+        "inference",
+        "learning",
+        "lifecycle",
+        "objective"
+      ],
+      "compileLayer": 0
+    },
+    {
+      "packagePath": "codex-rs/hepta-wire",
+      "packageName": "codex-hepta-wire",
+      "module": "platform.wire",
+      "ciGroups": [
+        "effects",
+        "inference",
+        "learning",
+        "lifecycle",
+        "objective"
+      ],
+      "compileLayer": 1
+    }
+  ]
+}

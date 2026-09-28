@@ -14,30 +14,30 @@ use std::sync::Mutex;
 use std::thread;
 use std::time::Duration;
 
-use codex_hepta_automation::AuthorizedEffectDriver;
-use codex_hepta_automation::AuthorizedEffectDriverError;
-use codex_hepta_automation::AuthorizedEffectIntent;
-use codex_hepta_automation::AuthorizedEffectOutcome;
-use codex_hepta_automation::AuthorizedEffectPending;
-use codex_hepta_automation::AuthorizedEffectProviderReceipt;
-use codex_hepta_automation::AuthorizedEffectRecovery;
-use codex_hepta_automation::AuthorizedEffectRecoveryResult;
-use codex_hepta_automation::AuthorizedEffectRequest;
-use codex_hepta_automation::AutomationStore;
-use codex_hepta_automation::TaskFlowFence;
-use codex_hepta_automation::TaskFlowStepObservation;
-use codex_hepta_automation::TaskFlowStepReceipt;
-use codex_hepta_contracts::FinalUseAuthority;
-use codex_hepta_contracts::FinalUseRevocations;
-use codex_hepta_contracts::ProviderEffectAck;
-use codex_hepta_contracts::ProviderEffectAckStatus;
-use codex_hepta_contracts::ProviderEffectAdapter;
-use codex_hepta_contracts::ProviderEffectDispatch;
-use codex_hepta_contracts::ProviderEffectIntent;
-use codex_hepta_contracts::ProviderEffectKey;
-use codex_hepta_contracts::ProviderEffectLookup;
-use codex_hepta_contracts::Sha256Digest;
-use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_agent_components::automation::AuthorizedEffectDriver;
+use codex_hepta_agent_components::automation::AuthorizedEffectDriverError;
+use codex_hepta_agent_components::automation::AuthorizedEffectIntent;
+use codex_hepta_agent_components::automation::AuthorizedEffectOutcome;
+use codex_hepta_agent_components::automation::AuthorizedEffectPending;
+use codex_hepta_agent_components::automation::AuthorizedEffectProviderReceipt;
+use codex_hepta_agent_components::automation::AuthorizedEffectRecovery;
+use codex_hepta_agent_components::automation::AuthorizedEffectRecoveryResult;
+use codex_hepta_agent_components::automation::AuthorizedEffectRequest;
+use codex_hepta_agent_components::automation::AutomationStore;
+use codex_hepta_agent_components::automation::TaskFlowFence;
+use codex_hepta_agent_components::automation::TaskFlowStepObservation;
+use codex_hepta_agent_components::automation::TaskFlowStepReceipt;
+use codex_hepta_agent_components::contracts::FinalUseAuthority;
+use codex_hepta_agent_components::contracts::FinalUseRevocations;
+use codex_hepta_agent_components::contracts::ProviderEffectAck;
+use codex_hepta_agent_components::contracts::ProviderEffectAckStatus;
+use codex_hepta_agent_components::contracts::ProviderEffectAdapter;
+use codex_hepta_agent_components::contracts::ProviderEffectDispatch;
+use codex_hepta_agent_components::contracts::ProviderEffectIntent;
+use codex_hepta_agent_components::contracts::ProviderEffectKey;
+use codex_hepta_agent_components::contracts::ProviderEffectLookup;
+use codex_hepta_agent_components::contracts::Sha256Digest;
+use codex_hepta_agent_components::contracts::SignedFinalUseGrant;
 use codex_model_provider::HttpProviderEffectAdapter;
 use codex_model_provider::HttpProviderEffectConfig;
 use codex_model_provider::HttpProviderEffectContractAttestation;
@@ -63,7 +63,7 @@ pub(crate) enum AgentdAutomationEffectReconcileOutcome {
 
 #[derive(Clone)]
 pub(crate) struct AgentdAutomationEffectHost {
-    agent_id: codex_hepta_contracts::AgentId,
+    agent_id: codex_hepta_agent_components::contracts::AgentId,
     provider_scope: String,
     destination_id: String,
     final_use_scope_digest: Sha256Digest,
@@ -316,7 +316,7 @@ impl AgentdAutomationEffectHost {
                 AuthorizedEffectRecoveryResult::Observed(receipt)
                     if receipt.observation != Some(TaskFlowStepObservation::Indeterminate) =>
                 {
-                    return Ok(AgentdAutomationEffectReconcileOutcome::Observed(receipt));
+                    return Ok(AgentdAutomationEffectReconcileOutcome::Observed(*receipt));
                 }
                 AuthorizedEffectRecoveryResult::ProvenAbsent => {
                     return Ok(AgentdAutomationEffectReconcileOutcome::ProvenAbsent);
@@ -346,7 +346,7 @@ impl AgentdAutomationEffectHost {
                         ))
                     })? {
                     AuthorizedEffectRecoveryResult::Observed(receipt) => {
-                        Ok(AgentdAutomationEffectReconcileOutcome::Observed(receipt))
+                        Ok(AgentdAutomationEffectReconcileOutcome::Observed(*receipt))
                     }
                     AuthorizedEffectRecoveryResult::ProvenAbsent => Err(AgentdError::Protocol(
                         "status lookup cannot manufacture provider absence".to_string(),
@@ -416,7 +416,7 @@ impl AgentdAutomationEffectHost {
 
     fn current_fence(
         &self,
-        run: &codex_hepta_automation::TaskFlowRun,
+        run: &codex_hepta_agent_components::automation::TaskFlowRun,
         now_ms: u64,
     ) -> Result<TaskFlowFence, AgentdError> {
         if run.owner_agent_id != self.agent_id {
@@ -673,22 +673,22 @@ mod tests {
     use std::time::SystemTime;
     use std::time::UNIX_EPOCH;
 
-    use codex_hepta_automation::AuthorizedEffectIntent;
-    use codex_hepta_automation::TaskFlowCommand;
-    use codex_hepta_automation::TaskFlowDefinition;
-    use codex_hepta_automation::TaskFlowEdgeSpec;
-    use codex_hepta_automation::TaskFlowNodeKind;
-    use codex_hepta_automation::TaskFlowNodeSpec;
-    use codex_hepta_automation::TaskFlowStepObservation;
-    use codex_hepta_automation::TaskFlowTransition;
-    use codex_hepta_contracts::FinalUseGrant;
-    use codex_hepta_contracts::ProviderEffectKey;
-    use codex_hepta_contracts::SignedFinalUseGrant;
-    use codex_hepta_fleet::AgentManifest;
-    use codex_hepta_fleet::FleetRegistry;
-    use codex_hepta_fleet::ResourceBudget;
-    use codex_hepta_fleet::WorkspaceBinding;
-    use codex_hepta_paths::HeptaFleetRoot;
+    use codex_hepta_agent_components::automation::AuthorizedEffectIntent;
+    use codex_hepta_agent_components::automation::TaskFlowCommand;
+    use codex_hepta_agent_components::automation::TaskFlowDefinition;
+    use codex_hepta_agent_components::automation::TaskFlowEdgeSpec;
+    use codex_hepta_agent_components::automation::TaskFlowNodeKind;
+    use codex_hepta_agent_components::automation::TaskFlowNodeSpec;
+    use codex_hepta_agent_components::automation::TaskFlowStepObservation;
+    use codex_hepta_agent_components::automation::TaskFlowTransition;
+    use codex_hepta_agent_components::contracts::FinalUseGrant;
+    use codex_hepta_agent_components::contracts::ProviderEffectKey;
+    use codex_hepta_agent_components::contracts::SignedFinalUseGrant;
+    use codex_hepta_agent_components::fleet::AgentManifest;
+    use codex_hepta_agent_components::fleet::FleetRegistry;
+    use codex_hepta_agent_components::fleet::ResourceBudget;
+    use codex_hepta_agent_components::fleet::WorkspaceBinding;
+    use codex_hepta_agent_components::paths::HeptaFleetRoot;
     use codex_model_provider::PROVIDER_EFFECT_IDEMPOTENCY_KEY_HEADER;
     use ed25519_dalek::Signer;
     use ed25519_dalek::SigningKey;
@@ -721,7 +721,8 @@ mod tests {
             let workspace = root.join("workspace");
             fs::create_dir(&workspace).expect("workspace");
             let workspace = workspace.canonicalize().expect("canonical workspace");
-            let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID).expect("agent id");
+            let agent_id = codex_hepta_agent_components::contracts::AgentId::parse(AGENT_ID)
+                .expect("agent id");
             let resources = ResourceBudget::local_default();
             let manifest = AgentManifest::new(
                 agent_id.clone(),

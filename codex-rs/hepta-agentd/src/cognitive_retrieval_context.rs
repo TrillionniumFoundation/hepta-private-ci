@@ -4,8 +4,8 @@
 //! memory store. Agentd never fabricates model, prompt, encoder, compact,
 //! authority, retrieval-profile, or engram generations.
 
-use codex_hepta_contracts::AgentId;
-use codex_hepta_memory::RetrievalExecutionContextV1;
+use codex_hepta_agent_components::contracts::AgentId;
+use codex_hepta_agent_components::memory::RetrievalExecutionContextV1;
 
 /// Host-owned currentness boundary for HNMF retrieval composition.
 ///

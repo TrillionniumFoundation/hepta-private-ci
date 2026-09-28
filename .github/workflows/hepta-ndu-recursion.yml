@@ -1,58 +1,9 @@
 name: Hepta NDU recursion (read-only)
 
 on:
-  pull_request:
-    paths:
-      - "codex-rs/hepta-ndu/**"
-      - "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs"
-      - "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs"
-      - "codex-rs/hepta-intelligence-eval/src/ndu_convergence.rs"
-      - "codex-rs/hepta-intelligence-eval/src/ndu_convergence_tests.rs"
-      - "codex-rs/hepta-intelligence-eval/src/ndu_well_posedness.rs"
-      - "codex-rs/hepta-intelligence-eval/src/ndu_well_posedness_tests.rs"
-      - "codex-rs/hepta-learning-artifacts/src/pinned.rs"
-      - "codex-rs/hepta-learning-ledger/src/signed_evidence.rs"
-      - "codex-rs/Cargo.lock"
-      - "codex-rs/hepta-control-plane/src/planner_ndu.rs"
-      - "codex-rs/hepta-control-plane/src/planner_ndu_tests.rs"
-      - "codex-rs/hepta-control-plane/src/planner_context.rs"
-      - "codex-rs/hepta-control-plane/src/planner_context_tests.rs"
-      - "docs/modules/utility.ndu/**"
-      - "docs/readiness/LANE_D_MATURITY.json"
-      - "docs/readiness/NDU_SYSTEM_EXECUTION.md"
-      - "docs/learning/NDU_FBSDE_SPEC.md"
-      - "qualification/module-execution-dossiers/detail/utility.ndu.md"
-      - "scripts/verify_cargo_lock.py"
-      - "scripts/test_verify_cargo_lock.py"
-      - "scripts/hepta-ndu-source-policy.py"
-      - ".github/workflows/hepta-ndu-recursion.yml"
-  push:
-    branches:
-      - main
-    paths:
-      - "codex-rs/hepta-ndu/**"
-      - "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs"
-      - "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs"
-      - "codex-rs/hepta-intelligence-eval/src/ndu_convergence.rs"
-      - "codex-rs/hepta-intelligence-eval/src/ndu_convergence_tests.rs"
-      - "codex-rs/hepta-intelligence-eval/src/ndu_well_posedness.rs"
-      - "codex-rs/hepta-intelligence-eval/src/ndu_well_posedness_tests.rs"
-      - "codex-rs/hepta-learning-artifacts/src/pinned.rs"
-      - "codex-rs/hepta-learning-ledger/src/signed_evidence.rs"
-      - "codex-rs/Cargo.lock"
-      - "codex-rs/hepta-control-plane/src/planner_ndu.rs"
-      - "codex-rs/hepta-control-plane/src/planner_ndu_tests.rs"
-      - "codex-rs/hepta-control-plane/src/planner_context.rs"
-      - "codex-rs/hepta-control-plane/src/planner_context_tests.rs"
-      - "docs/modules/utility.ndu/**"
-      - "docs/readiness/LANE_D_MATURITY.json"
-      - "docs/readiness/NDU_SYSTEM_EXECUTION.md"
-      - "docs/learning/NDU_FBSDE_SPEC.md"
-      - "qualification/module-execution-dossiers/detail/utility.ndu.md"
-      - "scripts/verify_cargo_lock.py"
-      - "scripts/test_verify_cargo_lock.py"
-      - "scripts/hepta-ndu-source-policy.py"
-      - ".github/workflows/hepta-ndu-recursion.yml"
+  # Automatic pull-request and main-branch fan-out is owned by the two
+  # aggregate checks. Deep qualifications remain reusable and manually runnable.
+  workflow_call:
   workflow_dispatch:
 
 permissions:

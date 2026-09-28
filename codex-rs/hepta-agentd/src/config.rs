@@ -4,12 +4,12 @@ use std::fs::OpenOptions;
 use std::path::Path;
 use std::path::PathBuf;
 
-use codex_hepta_contracts::AgentId;
-use codex_hepta_fleet::AgentLifecycle;
-use codex_hepta_fleet::FleetRegistry;
-use codex_hepta_fleet::ResourceBudget;
-use codex_hepta_paths::HeptaAgentLayout;
-use codex_hepta_paths::HeptaFleetRoot;
+use codex_hepta_agent_components::contracts::AgentId;
+use codex_hepta_agent_components::fleet::AgentLifecycle;
+use codex_hepta_agent_components::fleet::FleetRegistry;
+use codex_hepta_agent_components::fleet::ResourceBudget;
+use codex_hepta_agent_components::paths::HeptaAgentLayout;
+use codex_hepta_agent_components::paths::HeptaFleetRoot;
 
 use crate::AgentdError;
 
@@ -98,7 +98,7 @@ pub struct AgentdConfig {
 impl AgentdConfig {
     pub fn from_process_environment() -> Result<Self, AgentdError> {
         let cognitive_retrieval_mode = cognitive_retrieval_mode_from_process_environment()?;
-        let fleet_root = required_path(codex_hepta_paths::HEPTA_FLEET_ROOT_ENV)?;
+        let fleet_root = required_path(codex_hepta_agent_components::paths::HEPTA_FLEET_ROOT_ENV)?;
         let agent_id = required_utf8(HEPTA_AGENT_ID_ENV)?;
         let spawn_generation = required_utf8(HEPTA_AGENT_GENERATION_ENV)?
             .parse::<u64>()

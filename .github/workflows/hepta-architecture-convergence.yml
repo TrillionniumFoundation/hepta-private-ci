@@ -115,6 +115,20 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/repository-controls.json" --minimum-tests 1 -- python3 -m unittest -v scripts.tests.test_hepta_repository_controls
+      - name: Generated module truth, physical Cargo graph and add/remove acceptance
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v \
+            scripts.test_hepta_rust_reachability \
+            scripts.test_hepta_module_manifest \
+            scripts.test_hepta_architecture_graph \
+            scripts.test_hepta_module_product_acceptance \
+            scripts.test_hepta_composition_boundary \
+            scripts.test_hepta_ci_consolidation
+          python3 scripts/hepta_module_manifest.py --check
+          python3 scripts/hepta_architecture_graph.py --check
+          python3 scripts/hepta_rust_reachability.py --strict --pretty \
+            > "$RUNNER_TEMP/hepta-command-records/rust-reachability.json"
       - name: Prepare native prerequisites
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.native == 'true'
         run: |
@@ -189,6 +203,8 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-module-catalog.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-fleet module_catalog
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-module-abi.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane module_runtime
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-module-supervisor.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor module_runtime
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-module-durable-restart.json" --minimum-tests 1 -- just test --locked -p codex-hepta-supervisor stateful_generation_replacement_survives_process_loss_and_rolls_back_fresh --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/app-bridge-host.json" --minimum-tests 1 -- just test --locked -p codex-hepta-app-bridge -p codex-hepta-app-host
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/writer-handoff-generations.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor writer_handoff
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/topology-contract.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-types topology
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/topology-proposal.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-plasticity topology_v3
@@ -214,6 +230,7 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/self-evolution-selection.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-intelligence-eval self_evolution_selection
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/selector-role.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-ledger selector_role_is_explicit_and_independent_from_evaluator
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/ledger.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-ledger
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/product-self-evolution.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --features qualification-legacy-learning-write ordinary_product_request_drives_signed_future_window_candidate_promotion_and_rollback --test-threads=1
       - name: Optional service process lifecycle and executable identity
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.lifecycle == 'true'
         run: |

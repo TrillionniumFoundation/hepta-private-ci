@@ -3,19 +3,19 @@
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
-use codex_hepta_automation::AutomationError;
-use codex_hepta_automation::TaskFlowStepObservation;
-use codex_hepta_fleet::AgentLifecycle;
-use codex_hepta_memory::CognitiveAccess;
-use codex_hepta_memory::CognitiveScope;
-use codex_hepta_memory::CognitiveStoreError;
-use codex_hepta_memory::FederationCapabilityId;
-use codex_hepta_memory::FederationCapabilityState;
-use codex_hepta_memory::FederationCapabilityStatus;
-use codex_hepta_memory::FederationGrantRequest;
-use codex_hepta_memory::FederationGrantScope;
-use codex_hepta_memory::MAX_FEDERATION_GRANT_LIFETIME_SECONDS;
-use codex_hepta_memory::workspace_binding_digest;
+use codex_hepta_agent_components::automation::AutomationError;
+use codex_hepta_agent_components::automation::TaskFlowStepObservation;
+use codex_hepta_agent_components::fleet::AgentLifecycle;
+use codex_hepta_agent_components::memory::CognitiveAccess;
+use codex_hepta_agent_components::memory::CognitiveScope;
+use codex_hepta_agent_components::memory::CognitiveStoreError;
+use codex_hepta_agent_components::memory::FederationCapabilityId;
+use codex_hepta_agent_components::memory::FederationCapabilityState;
+use codex_hepta_agent_components::memory::FederationCapabilityStatus;
+use codex_hepta_agent_components::memory::FederationGrantRequest;
+use codex_hepta_agent_components::memory::FederationGrantScope;
+use codex_hepta_agent_components::memory::MAX_FEDERATION_GRANT_LIFETIME_SECONDS;
+use codex_hepta_agent_components::memory::workspace_binding_digest;
 
 use crate::AgentdError;
 use crate::AgentdPayload;
@@ -1073,7 +1073,7 @@ fn automation_effect_unavailable() -> AgentdPayload {
 }
 
 fn effect_snapshot(
-    receipt: codex_hepta_automation::TaskFlowStepReceipt,
+    receipt: codex_hepta_agent_components::automation::TaskFlowStepReceipt,
 ) -> Result<crate::AutomationEffectSnapshot, AgentdError> {
     let observation = match receipt.observation {
         Some(TaskFlowStepObservation::Succeeded) => crate::AutomationEffectObservation::Succeeded,
@@ -1169,7 +1169,7 @@ fn require_cognitive_control_ready(
 }
 
 fn owner_access_for_scope(
-    owner_agent_id: &codex_hepta_contracts::AgentId,
+    owner_agent_id: &codex_hepta_agent_components::contracts::AgentId,
     owner_workspace: &std::path::Path,
     scope: &CognitiveScope,
 ) -> Result<CognitiveAccess, AgentdError> {
@@ -1266,7 +1266,7 @@ fn require_current_run_identity(
     material.extend_from_slice(identity.agent_id.as_str().as_bytes());
     material.extend_from_slice(&identity.spawn_generation.to_be_bytes());
     material.extend_from_slice(&current_generation.to_be_bytes());
-    let expected = codex_hepta_contracts::Sha256Digest::for_bytes(&material);
+    let expected = codex_hepta_agent_components::contracts::Sha256Digest::for_bytes(&material);
     if fence_digest != expected.as_str() {
         return Err(AgentdError::GenerationFenced(
             "run fence digest does not match the current Agent generation".to_string(),

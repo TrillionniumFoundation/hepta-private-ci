@@ -34,12 +34,17 @@ fn production_layout_is_stable_and_fleet_scoped() -> Result<()> {
             fleet_config: expected_root.join("fleet.toml"),
             state_root: expected_root.join("state"),
             supervisor_database: expected_root.join("state/supervisor.sqlite3"),
+            runtime_module_supervisor_state: expected_root.join("state/runtime-modules.json"),
             run_root: expected_root.join("run"),
             supervisor_socket: expected_root.join("run/supervisor.sock"),
             supervisor_lock: expected_root.join("run/supervisor.lock"),
             releases_root: expected_root.join("releases"),
             agents_root: expected_root.join("agents"),
         }
+    );
+    assert_eq!(
+        layout.runtime_module_supervisor_state(),
+        expected_root.join("state/runtime-modules.json")
     );
     Ok(())
 }

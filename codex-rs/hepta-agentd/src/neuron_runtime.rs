@@ -6,13 +6,13 @@
 //! supplying drive/prediction vectors directly.  Constructing this owner does
 //! not itself activate it in the daemon startup path.
 
-use codex_hepta_neuron::AnchorWitnessStore;
-use codex_hepta_neuron::InferenceControlModelPort;
-use codex_hepta_neuron::NeuronInferenceControlPort;
-use codex_hepta_neuron::NeuronRuntime;
-use codex_hepta_neuron::NeuronRuntimeError;
-use codex_hepta_neuron::NeuronRuntimeOutputV1;
-use codex_hepta_neuron::NeuronTickInputV1;
+use codex_hepta_agent_components::neuron::AnchorWitnessStore;
+use codex_hepta_agent_components::neuron::InferenceControlModelPort;
+use codex_hepta_agent_components::neuron::NeuronInferenceControlPort;
+use codex_hepta_agent_components::neuron::NeuronRuntime;
+use codex_hepta_agent_components::neuron::NeuronRuntimeError;
+use codex_hepta_agent_components::neuron::NeuronRuntimeOutputV1;
+use codex_hepta_agent_components::neuron::NeuronTickInputV1;
 
 pub struct AgentdNeuronOwner<W, P>
 where

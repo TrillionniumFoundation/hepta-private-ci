@@ -5,8 +5,8 @@
 //! material.  A composition owner derives those inputs from the already-durable
 //! RunStart record and the current owner generation.
 
-use codex_hepta_intelligence::CanonicalIntelligenceRunRequestV1;
-use codex_hepta_learning_ledger::RunStartRecordV1;
+use codex_hepta_agent_components::intelligence::CanonicalIntelligenceRunRequestV1;
+use codex_hepta_agent_components::learning_ledger::RunStartRecordV1;
 
 use crate::AgentdError;
 use crate::AgentdIdentity;

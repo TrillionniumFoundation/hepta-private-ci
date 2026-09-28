@@ -3,15 +3,15 @@ use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
 
-use codex_hepta_automation::AuthorizedEffectIntent;
-use codex_hepta_automation::AutomationCalendarScheduleV2;
-use codex_hepta_automation::AutomationMissedRunPolicy;
-use codex_hepta_automation::AutomationOverlapPolicy;
-use codex_hepta_automation::AutomationTask;
-use codex_hepta_automation::AutomationTaskDraft;
-use codex_hepta_automation::AutomationTaskId;
-use codex_hepta_contracts::AgentId;
-use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_agent_components::automation::AuthorizedEffectIntent;
+use codex_hepta_agent_components::automation::AutomationCalendarScheduleV2;
+use codex_hepta_agent_components::automation::AutomationMissedRunPolicy;
+use codex_hepta_agent_components::automation::AutomationOverlapPolicy;
+use codex_hepta_agent_components::automation::AutomationTask;
+use codex_hepta_agent_components::automation::AutomationTaskDraft;
+use codex_hepta_agent_components::automation::AutomationTaskId;
+use codex_hepta_agent_components::contracts::AgentId;
+use codex_hepta_agent_components::contracts::SignedFinalUseGrant;
 use codex_uds::UnixStream;
 use tokio::io::AsyncBufReadExt;
 use tokio::io::AsyncReadExt;
@@ -249,7 +249,7 @@ impl AgentdClient {
     pub async fn append_kernel_evidence(
         &self,
         request: crate::KernelEvidenceAppendIngress,
-    ) -> Result<codex_hepta_evidence::EvidenceId, AgentdError> {
+    ) -> Result<codex_hepta_agent_components::evidence::EvidenceId, AgentdError> {
         let result = match self
             .send(AgentdRequest {
                 schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
@@ -269,7 +269,7 @@ impl AgentdClient {
     pub async fn query_kernel_evidence(
         &self,
         request: crate::KernelEvidenceQueryV1,
-    ) -> Result<Vec<codex_hepta_evidence::EvidenceReferenceV1>, AgentdError> {
+    ) -> Result<Vec<codex_hepta_agent_components::evidence::EvidenceReferenceV1>, AgentdError> {
         let result = match self
             .send(AgentdRequest {
                 schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
@@ -289,7 +289,7 @@ impl AgentdClient {
     pub async fn verify_kernel_evidence(
         &self,
         request: crate::KernelEvidenceVerifyV1,
-    ) -> Result<codex_hepta_evidence::EvidenceDispositionV1, AgentdError> {
+    ) -> Result<codex_hepta_agent_components::evidence::EvidenceDispositionV1, AgentdError> {
         let result = match self
             .send(AgentdRequest {
                 schema_version: AGENTD_CONTROL_SCHEMA_VERSION,

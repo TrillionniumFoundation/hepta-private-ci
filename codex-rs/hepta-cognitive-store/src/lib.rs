@@ -6,6 +6,7 @@
 #![forbid(unsafe_code)]
 
 mod durable;
+mod production;
 mod v2;
 
 use std::collections::BTreeMap;
@@ -64,6 +65,8 @@ pub use durable::ProductionWriterError;
 pub use durable::RecoveredCognitiveReadOnly;
 pub use durable::SourceDraft;
 pub use durable::StableMemoryId;
+pub use production::ProductionCognitiveStore;
+pub use production::ProductionCognitiveStoreError;
 
 pub use v2::AdmittedCognitiveStoreV2;
 pub use v2::CanonicalDurableMemoryEventBindingV1;

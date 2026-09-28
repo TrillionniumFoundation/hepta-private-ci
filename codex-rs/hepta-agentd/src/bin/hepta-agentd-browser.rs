@@ -11,16 +11,16 @@ use std::collections::BTreeSet;
 use std::io::Read;
 use std::path::PathBuf;
 
+use codex_hepta_agent_components::contracts::FinalUseAuthority;
+use codex_hepta_agent_components::contracts::FinalUseBinding;
+use codex_hepta_agent_components::contracts::FinalUseRevocations;
+use codex_hepta_agent_components::contracts::SignedFinalUseGrant;
 use codex_hepta_agentd::BrowserFinalUseInvocation;
 use codex_hepta_agentd::BrowserServoCall;
 use codex_hepta_agentd::BrowserServoMethod;
 use codex_hepta_agentd::BrowserServoPort;
 use codex_hepta_agentd::BrowserServoProcessConfig;
 use codex_hepta_agentd::ChildBrowserTransport;
-use codex_hepta_contracts::FinalUseAuthority;
-use codex_hepta_contracts::FinalUseBinding;
-use codex_hepta_contracts::FinalUseRevocations;
-use codex_hepta_contracts::SignedFinalUseGrant;
 use serde::Deserialize;
 use serde_json::Value;
 

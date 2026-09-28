@@ -4,22 +4,22 @@ use std::os::unix::fs::PermissionsExt;
 use std::sync::Arc;
 
 use super::*;
-use codex_hepta_authbus::SignedMessageClaims;
-use codex_hepta_contracts::AgentId;
-use codex_hepta_fleet::AgentManifest;
-use codex_hepta_fleet::ResourceBudget;
-use codex_hepta_fleet::WorkspaceBinding;
-use codex_hepta_learning_ledger::DurableRunStartJournal;
-use codex_hepta_learning_ledger::RunStartAdmissionBindingV1;
-use codex_hepta_learning_ledger::RunStartAuthenticationV1;
-use codex_hepta_learning_ledger::RunStartObjectiveDispositionV1;
-use codex_hepta_learning_ledger::RunStartRecordV1;
-use codex_hepta_learning_ledger::RunStartSnapshotV1;
-use codex_hepta_paths::HeptaFleetRoot;
-use codex_hepta_types::AuthorityPosture;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::Generation;
-use codex_hepta_types::StableId;
+use codex_hepta_agent_components::authbus::SignedMessageClaims;
+use codex_hepta_agent_components::contracts::AgentId;
+use codex_hepta_agent_components::fleet::AgentManifest;
+use codex_hepta_agent_components::fleet::ResourceBudget;
+use codex_hepta_agent_components::fleet::WorkspaceBinding;
+use codex_hepta_agent_components::learning_ledger::DurableRunStartJournal;
+use codex_hepta_agent_components::learning_ledger::RunStartAdmissionBindingV1;
+use codex_hepta_agent_components::learning_ledger::RunStartAuthenticationV1;
+use codex_hepta_agent_components::learning_ledger::RunStartObjectiveDispositionV1;
+use codex_hepta_agent_components::learning_ledger::RunStartRecordV1;
+use codex_hepta_agent_components::learning_ledger::RunStartSnapshotV1;
+use codex_hepta_agent_components::paths::HeptaFleetRoot;
+use codex_hepta_agent_components::types::AuthorityPosture;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::Generation;
+use codex_hepta_agent_components::types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
@@ -194,7 +194,7 @@ fn run_fence(state: &AgentdState, current_generation: u64) -> String {
     material.extend_from_slice(state.identity.agent_id.as_str().as_bytes());
     material.extend_from_slice(&state.identity.spawn_generation.to_be_bytes());
     material.extend_from_slice(&current_generation.to_be_bytes());
-    codex_hepta_contracts::Sha256Digest::for_bytes(&material)
+    codex_hepta_agent_components::contracts::Sha256Digest::for_bytes(&material)
         .as_str()
         .to_string()
 }
@@ -423,10 +423,11 @@ async fn current_durable_run_start_requires_live_owner_trust() {
     fs::set_permissions(&state.identity.home_root, fs::Permissions::from_mode(0o700))
         .expect("private home");
 
-    let cognitive =
-        codex_hepta_cognitive_store::DurableCognitiveStore::open(&state.identity.layout)
-            .await
-            .expect("cognitive owner");
+    let cognitive = codex_hepta_agent_components::cognitive_store::DurableCognitiveStore::open(
+        &state.identity.layout,
+    )
+    .await
+    .expect("cognitive owner");
     state
         .attach_cognitive_store(Arc::new(cognitive))
         .expect("attach cognitive owner");
@@ -462,7 +463,7 @@ async fn current_durable_run_start_requires_live_owner_trust() {
     let checkpoint_file = temp.path().join("run-start-replay-checkpoint.json");
     // The external fixture witness is captured from the canonical empty owner,
     // never invented from a label or recaptured from a suspect backup.
-    let evidence = codex_hepta_evidence::HeptaEvidenceStore::open(
+    let evidence = codex_hepta_agent_components::evidence::HeptaEvidenceStore::open(
         &codex_state::SqliteConfig::from_sqlite_home(
             codex_utils_absolute_path::AbsolutePathBuf::from_absolute_path(
                 &state.identity.home_root,

@@ -4,31 +4,31 @@ use std::sync::atomic::Ordering;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use codex_hepta_agent_components::contracts::AgentId;
+use codex_hepta_agent_components::memory::CognitiveAccess;
+use codex_hepta_agent_components::memory::CognitiveScope;
+use codex_hepta_agent_components::memory::CognitiveStore;
+use codex_hepta_agent_components::memory::LedgerSourceKind;
+use codex_hepta_agent_components::memory::MemoryDraft;
+use codex_hepta_agent_components::memory::MemoryLifecycleState;
+use codex_hepta_agent_components::memory::MemoryRevisionDraft;
+use codex_hepta_agent_components::memory::MemoryVerification;
+use codex_hepta_agent_components::memory::RetrievalExecutionContextV1;
+use codex_hepta_agent_components::memory::SourceDraft;
+use codex_hepta_agent_components::memory::sqlite_owner_cue_profile_digest;
+use codex_hepta_agent_components::memory::sqlite_owner_retrieval_policy_v1;
+use codex_hepta_agent_components::memory_retrieval::EngramDynamicsPolicyV1;
+use codex_hepta_agent_components::memory_retrieval::EngramNodeV1;
+use codex_hepta_agent_components::memory_retrieval::EngramPopulationV1;
+use codex_hepta_agent_components::memory_retrieval::EngramSnapshotV1;
+use codex_hepta_agent_components::memory_retrieval::EngramSupportV1;
+use codex_hepta_agent_components::paths::HeptaFleetRoot;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::Generation;
+use codex_hepta_agent_components::types::ProbabilityQ32;
+use codex_hepta_agent_components::types::Revision;
+use codex_hepta_agent_components::types::StableId;
 use codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1;
-use codex_hepta_contracts::AgentId;
-use codex_hepta_memory::CognitiveAccess;
-use codex_hepta_memory::CognitiveScope;
-use codex_hepta_memory::CognitiveStore;
-use codex_hepta_memory::LedgerSourceKind;
-use codex_hepta_memory::MemoryDraft;
-use codex_hepta_memory::MemoryLifecycleState;
-use codex_hepta_memory::MemoryRevisionDraft;
-use codex_hepta_memory::MemoryVerification;
-use codex_hepta_memory::RetrievalExecutionContextV1;
-use codex_hepta_memory::SourceDraft;
-use codex_hepta_memory::sqlite_owner_cue_profile_digest;
-use codex_hepta_memory::sqlite_owner_retrieval_policy_v1;
-use codex_hepta_memory_retrieval::EngramDynamicsPolicyV1;
-use codex_hepta_memory_retrieval::EngramNodeV1;
-use codex_hepta_memory_retrieval::EngramPopulationV1;
-use codex_hepta_memory_retrieval::EngramSnapshotV1;
-use codex_hepta_memory_retrieval::EngramSupportV1;
-use codex_hepta_paths::HeptaFleetRoot;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::Generation;
-use codex_hepta_types::ProbabilityQ32;
-use codex_hepta_types::Revision;
-use codex_hepta_types::StableId;
 
 use crate::CurrentMemoryRetrievalContext;
 
@@ -167,7 +167,7 @@ async fn fixture(
             record_id: StableId::new(second.id.memory_id.as_str()).unwrap(),
             record_revision: Revision::new(second.id.revision).unwrap(),
         }],
-        threshold: codex_hepta_types::FixedQ32::ZERO,
+        threshold: codex_hepta_agent_components::types::FixedQ32::ZERO,
         confidence: ProbabilityQ32::ONE,
         generation_vector_digest: vector_digest,
     };
@@ -295,7 +295,7 @@ async fn final_use_revalidation_rejects_changed_hnmf_context() {
     assert!(matches!(
         rejected,
         Err(CognitiveContextError::Store(
-            codex_hepta_memory::CognitiveStoreError::Conflict(_)
+            codex_hepta_agent_components::memory::CognitiveStoreError::Conflict(_)
         ))
     ));
 }

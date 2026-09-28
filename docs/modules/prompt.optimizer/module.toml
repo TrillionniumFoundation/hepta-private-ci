@@ -1,0 +1,42 @@
+schema = "hepta.module-manifest.v1"
+order = 18
+id = "prompt.optimizer"
+plane = "domain"
+kind = "optimizer"
+lifecycle = "target"
+state = "stateless_runtime"
+architectureRole = "intervention_policy"
+writes = []
+uses = ["platform.types", "prompt.registry", "utility.ndu", "memory.retrieval", "learning.artifacts"]
+owner = "intelligence-platform"
+deputy = "performance"
+denies = ["registry_write", "objective_rewrite", "authority_issuance"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = ["codex-rs/hepta-prompt-optimizer"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW"
+technicalDocument = "docs/modules/prompt.optimizer/TECHNICAL.md"
+documentationReady = true
+sourceInterpretation = "source_root_present_is_separate_from_production_implementation; activation_acceptance_promotion_and_release_remain_separate"
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "codex-rs/hepta-prompt-optimizer"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/hepta-prompt-optimizer"
+compileLayer = 4
+ciGroups = ["learning", "objective"]

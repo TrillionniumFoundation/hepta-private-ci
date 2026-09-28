@@ -9,8 +9,8 @@ use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 
-use codex_hepta_evidence::ReplayCheckpoint;
-use codex_hepta_types::Digest32;
+use codex_hepta_agent_components::evidence::ReplayCheckpoint;
+use codex_hepta_agent_components::types::Digest32;
 use serde::Deserialize;
 use serde::Serialize;
 

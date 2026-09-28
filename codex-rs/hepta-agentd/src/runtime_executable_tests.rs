@@ -2,8 +2,8 @@
 use std::fs::File;
 use std::io::Write;
 
-use codex_hepta_types::Digest32;
-use codex_hepta_types::StableId;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::StableId;
 
 use super::RuntimeExecutableIdentity;
 use super::RuntimeExecutableOrigin;

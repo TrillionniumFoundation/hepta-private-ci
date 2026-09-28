@@ -29,7 +29,7 @@ impl AgentdIntelligenceProductRunnerV1 {
     /// No request or wire field can install an evaluator key or grant itself trust.
     pub fn with_evaluation_trust(
         mut self,
-        trust: codex_hepta_learning_ledger::ActivatedLearningTrustV1,
+        trust: codex_hepta_agent_components::learning_ledger::ActivatedLearningTrustV1,
     ) -> Result<Self, AgentdIntelligenceProductError> {
         if self.evaluation_trust.is_some() {
             return Err(AgentdIntelligenceProductError::InvalidAuthorityVerifier);

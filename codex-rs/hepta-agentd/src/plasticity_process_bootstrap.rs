@@ -19,31 +19,31 @@ use std::sync::Arc;
 use std::sync::Mutex;
 use std::sync::RwLock;
 
-use codex_hepta_learning_artifacts::ArtifactRegistry;
-use codex_hepta_learning_artifacts::RegistrySnapshotReceipt;
-use codex_hepta_learning_artifacts::read_registry_snapshot;
-use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
-use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
-use codex_hepta_learning_ledger::DatasetSnapshotV2;
-use codex_hepta_learning_ledger::DurableLedger;
-use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
-use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
-use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
-use codex_hepta_learning_ledger::LedgerAnchor;
-use codex_hepta_learning_ledger::LedgerRecovery;
-use codex_hepta_learning_ledger::TrustedLearningSignerV1;
-use codex_hepta_learning_ledger::verify_dataset_snapshot_receipt_v3;
-use codex_hepta_ndu::NduProjectionJournalV1;
-use codex_hepta_neuron::InhibitoryEdge;
-use codex_hepta_neuron::JournalAnchor;
-use codex_hepta_neuron::JournalScope;
-use codex_hepta_neuron::SparseConfig;
-use codex_hepta_neuron::SparseJournal;
-use codex_hepta_types::AuthorityPosture;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::FixedQ32;
-use codex_hepta_types::Generation;
-use codex_hepta_types::StableId;
+use codex_hepta_agent_components::learning_artifacts::ArtifactRegistry;
+use codex_hepta_agent_components::learning_artifacts::RegistrySnapshotReceipt;
+use codex_hepta_agent_components::learning_artifacts::read_registry_snapshot;
+use codex_hepta_agent_components::learning_ledger::AuthenticatedPrincipalV1;
+use codex_hepta_agent_components::learning_ledger::DatasetSnapshotReceiptV3;
+use codex_hepta_agent_components::learning_ledger::DatasetSnapshotV2;
+use codex_hepta_agent_components::learning_ledger::DurableLedger;
+use codex_hepta_agent_components::learning_ledger::LearningEvidenceRoleV1;
+use codex_hepta_agent_components::learning_ledger::LearningEvidenceTrustV1;
+use codex_hepta_agent_components::learning_ledger::LearningEvidenceVerifierV1;
+use codex_hepta_agent_components::learning_ledger::LedgerAnchor;
+use codex_hepta_agent_components::learning_ledger::LedgerRecovery;
+use codex_hepta_agent_components::learning_ledger::TrustedLearningSignerV1;
+use codex_hepta_agent_components::learning_ledger::verify_dataset_snapshot_receipt_v3;
+use codex_hepta_agent_components::ndu::NduProjectionJournalV1;
+use codex_hepta_agent_components::neuron::InhibitoryEdge;
+use codex_hepta_agent_components::neuron::JournalAnchor;
+use codex_hepta_agent_components::neuron::JournalScope;
+use codex_hepta_agent_components::neuron::SparseConfig;
+use codex_hepta_agent_components::neuron::SparseJournal;
+use codex_hepta_agent_components::types::AuthorityPosture;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::FixedQ32;
+use codex_hepta_agent_components::types::Generation;
+use codex_hepta_agent_components::types::StableId;
 use serde::Deserialize;
 
 use crate::AgentdError;
@@ -681,7 +681,7 @@ fn open_parameter_writer(
     descriptor: &RegistryDescriptorV1,
 ) -> Result<
     (
-        codex_hepta_intelligence::AnchoredPlasticityWriterV1,
+        codex_hepta_agent_components::intelligence::AnchoredPlasticityWriterV1,
         crate::AgentdPlasticityAnchorStoreV1,
     ),
     AgentdError,

@@ -1,36 +1,10 @@
 name: hnmf-qualification
 
 on:
-  pull_request:
-    paths:
-      - "codex-rs/hepta-cognitive-types/**"
-      - "docs/contracts/CONTRACTS.json"
-      - "docs/contracts/PROTOCOL_SCHEMAS.json"
-      - "docs/modules/cognitive.types/IMPLEMENTATION_MAP.json"
-      - "docs/hnmf/**"
-      - "qualification/cognitive-types-v1/**"
-      - "qualification/hnmf-reference/**"
-      - "qualification/hnmf-contract-reference/**"
-      - "qualification/hnmf-adversarial-reference/**"
-      - "scripts/hepta-hnmf.py"
-      - ".github/workflows/hnmf-qualification.yml"
-      - "README.md"
-  push:
-    branches:
-      - main
-    paths:
-      - "codex-rs/hepta-cognitive-types/**"
-      - "docs/contracts/CONTRACTS.json"
-      - "docs/contracts/PROTOCOL_SCHEMAS.json"
-      - "docs/modules/cognitive.types/IMPLEMENTATION_MAP.json"
-      - "docs/hnmf/**"
-      - "qualification/cognitive-types-v1/**"
-      - "qualification/hnmf-reference/**"
-      - "qualification/hnmf-contract-reference/**"
-      - "qualification/hnmf-adversarial-reference/**"
-      - "scripts/hepta-hnmf.py"
-      - ".github/workflows/hnmf-qualification.yml"
-      - "README.md"
+  # Automatic pull-request and main-branch fan-out is owned by the two
+  # aggregate checks. Deep qualifications remain reusable and manually runnable.
+  workflow_call:
+  workflow_dispatch:
 
 permissions:
   contents: read

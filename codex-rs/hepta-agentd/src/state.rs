@@ -3,20 +3,20 @@ use std::sync::Mutex;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
-use codex_app_server::AppServerDrainHandle;
+use codex_hepta_agent_components::authbus::SignedMessage;
+use codex_hepta_agent_components::authbus::SignedMessageClaims;
+use codex_hepta_agent_components::automation::AutomationStore;
+use codex_hepta_agent_components::cognitive_store::DurableCognitiveStore as CognitiveStore;
+use codex_hepta_agent_components::contracts::Sha256Digest;
+use codex_hepta_agent_components::fleet::AgentLifecycle;
+use codex_hepta_agent_components::fleet::FleetRegistry;
+use codex_hepta_agent_components::learning_ledger::DurableRunStartJournal;
+use codex_hepta_agent_components::learning_ledger::RunStartRecordV1;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::Generation;
+use codex_hepta_agent_components::types::StableId;
 use codex_hepta_agent_protocol::DrainSnapshot;
-use codex_hepta_authbus::SignedMessage;
-use codex_hepta_authbus::SignedMessageClaims;
-use codex_hepta_automation::AutomationStore;
-use codex_hepta_cognitive_store::DurableCognitiveStore as CognitiveStore;
-use codex_hepta_contracts::Sha256Digest;
-use codex_hepta_fleet::AgentLifecycle;
-use codex_hepta_fleet::FleetRegistry;
-use codex_hepta_learning_ledger::DurableRunStartJournal;
-use codex_hepta_learning_ledger::RunStartRecordV1;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::Generation;
-use codex_hepta_types::StableId;
+use codex_hepta_app_host::AppServerDrainHandle;
 
 use crate::AgentRunCoordinator;
 use crate::AgentRunError;
@@ -177,10 +177,10 @@ impl AgentdState {
     /// Callers never receive the mutable writer or a second owner handle.
     pub(crate) async fn submit_parameter_plasticity_v1(
         &self,
-        request: codex_hepta_intelligence::ParameterPlasticityProductRequestV1,
+        request: codex_hepta_agent_components::intelligence::ParameterPlasticityProductRequestV1,
         now: u64,
     ) -> Result<
-        codex_hepta_intelligence::ParameterPlasticityProductReceiptV1,
+        codex_hepta_agent_components::intelligence::ParameterPlasticityProductReceiptV1,
         crate::PlasticityRuntimeCallErrorV1,
     > {
         let producer = self
@@ -194,10 +194,10 @@ impl AgentdState {
     /// The long-lived owner performs final artifact/ledger/trust/anchor checks.
     pub(crate) async fn submit_topology_plasticity_v1(
         &self,
-        request: codex_hepta_intelligence::TopologyPlasticityProductRequestV1,
+        request: codex_hepta_agent_components::intelligence::TopologyPlasticityProductRequestV1,
         now: u64,
     ) -> Result<
-        codex_hepta_intelligence::TopologyPlasticityProductReceiptV1,
+        codex_hepta_agent_components::intelligence::TopologyPlasticityProductReceiptV1,
         crate::PlasticityRuntimeCallErrorV1,
     > {
         let producer = self

@@ -1,12 +1,10 @@
 name: Hepta durable learning roundtrip (read-only)
 
 on:
-  pull_request:
-    paths:
-      - "codex-rs/hepta-shadow-qualification/**"
-      - "codex-rs/hepta-learning-ledger/**"
-      - "codex-rs/hepta-learning-artifacts/**"
-      - ".github/workflows/hepta-durable-learning-roundtrip.yml"
+  # Automatic pull-request and main-branch fan-out is owned by the two
+  # aggregate checks. Deep qualifications remain reusable and manually runnable.
+  workflow_call:
+  workflow_dispatch:
 
 permissions:
   contents: read

@@ -3,7 +3,7 @@ use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
 
-use codex_hepta_types::Generation;
+use codex_hepta_agent_components::types::Generation;
 use tokio::sync::oneshot;
 use tokio_util::sync::CancellationToken;
 

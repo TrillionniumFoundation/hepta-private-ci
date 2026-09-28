@@ -1,9 +1,9 @@
 //! Qualification-only local keys and actual durable owners; no runtime authority.
-use codex_hepta_learning_ledger::*;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::FixedQ32;
-use codex_hepta_types::ProbabilityQ32;
-use codex_hepta_types::StableId;
+use codex_hepta_agent_components::learning_ledger::*;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::FixedQ32;
+use codex_hepta_agent_components::types::ProbabilityQ32;
+use codex_hepta_agent_components::types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use std::fs;

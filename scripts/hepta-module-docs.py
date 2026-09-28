@@ -12,7 +12,6 @@ import argparse
 import hashlib
 import json
 import re
-import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -390,19 +389,11 @@ def verify():
         verify_local_links(path, text)
     readme = ROOT / "docs/modules/README.md"
     verify_local_links(readme, readme.read_text(encoding="utf-8"))
-    # Every registered module must expose a source navigation map.  The map
-    # records the distinction between a source root being present and a
-    # production implementation being composed; it never upgrades claims.
-    maps = subprocess.run(
-        ["python3", "scripts/hepta-implementation-maps.py", "verify"],
-        cwd=ROOT,
-        text=True,
-        capture_output=True,
-    )
-    need(
-        maps.returncode == 0,
-        "implementation maps: " + (maps.stderr.strip() or maps.stdout.strip()),
-    )
+    # Exact Git/source-map identity belongs to candidate qualification, not
+    # ordinary source or documentation development.  Module documentation
+    # verifies the single manifest projection, ownership and usable navigation;
+    # high-risk and release workflows invoke hepta-implementation-maps.py
+    # explicitly when exact candidate evidence is required.
     print(
         json.dumps(
             {

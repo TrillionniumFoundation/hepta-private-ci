@@ -1,10 +1,10 @@
 use super::*;
 use crate::intelligence_product::evaluation_tests::evidence_fixture;
-use codex_hepta_intelligence::build_legal_candidates;
+use codex_hepta_agent_components::intelligence::build_legal_candidates;
 
-fn signed_fixture() -> (
+pub(super) fn signed_fixture() -> (
     Fixture,
-    codex_hepta_learning_ledger::ActivatedLearningTrustV1,
+    codex_hepta_agent_components::learning_ledger::ActivatedLearningTrustV1,
 ) {
     let mut value = fixture();
     let key = SigningKey::from_bytes(&[47; 32]);

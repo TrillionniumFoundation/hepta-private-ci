@@ -1,10 +1,10 @@
 use std::path::PathBuf;
 
+use codex_hepta_agent_components::types::Digest32;
 use codex_hepta_agentd::AgentdConfig;
 use codex_hepta_agentd::AgentdIntelligenceProductRunnerV1;
 use codex_hepta_agentd::IntelligenceAuthorityVerifierV1;
 use codex_hepta_agentd::load_plasticity_process_bootstrap_v1;
-use codex_hepta_types::Digest32;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use std::ffi::OsString;
 use std::sync::Arc;

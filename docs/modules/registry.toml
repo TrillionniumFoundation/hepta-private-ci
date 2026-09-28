@@ -1,0 +1,46 @@
+schema = "hepta.module-manifest-registry.v1"
+
+[projection]
+schema = "hepta.module-registry.v7"
+schemaVersion = 7
+documentClass = "canonical_registry"
+authorityScope = "module_identity_ownership_dependency_and_writer_source"
+planId = "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN"
+planVersion = "8.0.0"
+
+[defaults]
+lifecycle = "existing_or_target"
+runtimeAuthority = false
+centralSynchronousRpcAllowed = false
+crossOwnerDirectWriteAllowed = false
+
+[rules]
+oneModulePerPrimarySourceRoot = true
+oneAuthoritativeWriterPerDurableDomain = true
+primaryAndDeputyRequired = true
+qualificationToProductionDependencyAllowed = false
+moduleMayClaimGlobalOptimality = false
+compositionFacadeMayOwnDomainFacts = false
+sourceBindingStateRequired = true
+technicalDocumentRequired = true
+missingDeclaredRootsMustBeExplicit = true
+documentationDoesNotImplyImplementation = true
+
+[authorityFlags]
+runtimeAuthority = false
+productionCaller = false
+productionWriter = false
+modelInvocation = false
+providerDispatch = false
+toolExecution = false
+networkConnect = false
+externalFilesystemMutation = false
+secretOperation = false
+matrixSend = false
+externalEffect = false
+fleetMutation = false
+canonicalSelection = false
+merge = false
+operatorAcceptance = false
+promotion = false
+release = false

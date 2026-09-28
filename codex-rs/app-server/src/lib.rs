@@ -541,10 +541,10 @@ pub struct AppServerRuntimeOptions {
     /// Plain Codex and the Hepta live shell pass `Absent`. A workspace agent
     /// hands in `Available` or a sanitized `Unavailable`; extensions must
     /// never infer store ownership from environment variables.
-    pub hepta_cognitive_runtime: codex_hepta_memory::CognitiveRuntime,
+    pub hepta_cognitive_runtime: codex_hepta_app_bridge::memory::CognitiveRuntime,
     /// Opaque production cognitive mutation capability supplied by the owning runtime.
     pub hepta_cognitive_production_mutation:
-        Option<Arc<dyn codex_hepta_memory::ProductionCognitiveMutation>>,
+        Option<Arc<dyn codex_hepta_app_bridge::memory::ProductionCognitiveMutation>>,
     /// Explicit local-development-only turn lifecycle journal capability.
     /// This is false by default and is never inferred from environment or
     /// feature flags.
@@ -552,7 +552,8 @@ pub struct AppServerRuntimeOptions {
     /// Explicit qualification-only policy for the host-owned witness seam.
     /// `None` keeps ordinary Codex and production-facing embeddings caller
     /// zero; a value is accepted only when its closed-world policy validates.
-    pub hepta_local_development_policy: Option<codex_hepta_memory::LocalDevelopmentLifecyclePolicy>,
+    pub hepta_local_development_policy:
+        Option<codex_hepta_app_bridge::memory::LocalDevelopmentLifecyclePolicy>,
     /// Explicit qualification-only gate for the host-owned Agent-local turn
     /// writer.  This is false for ordinary Codex and production-facing
     /// embeddings; it is never inferred from a CognitiveRuntime or config.
@@ -561,11 +562,12 @@ pub struct AppServerRuntimeOptions {
     /// The capability is inert unless the explicit qualification gate, a
     /// validated local policy, and an available CognitiveRuntime all hold.
     pub hepta_qualification_turn_writer:
-        Option<codex_hepta_memory_extension::QualificationTurnWriterHost>,
+        Option<codex_hepta_app_bridge::memory_extension::QualificationTurnWriterHost>,
     /// Optional source-bound prompt runtime capability. Ordinary Codex keeps
     /// this absent; only an embedding that already owns an exercise-bound
     /// attachment may install the runtime.codex delivery bridge.
-    pub hepta_prompt_runtime_host: Option<codex_hepta_prompt_extension::PromptRuntimeHost>,
+    pub hepta_prompt_runtime_host:
+        Option<codex_hepta_app_bridge::prompt_extension::PromptRuntimeHost>,
     /// Embedding-owned feature states applied after ordinary config layers
     /// and per-request overrides. Empty for ordinary Codex runtimes; a local
     /// embedding can use this to keep a capability boundary fail-closed.
@@ -669,7 +671,7 @@ impl Default for AppServerRuntimeOptions {
             turn_queue_capacity: None,
             required_sqlite_home: None,
             required_thread_store_mode: None,
-            hepta_cognitive_runtime: codex_hepta_memory::CognitiveRuntime::Absent,
+            hepta_cognitive_runtime: codex_hepta_app_bridge::memory::CognitiveRuntime::Absent,
             hepta_cognitive_production_mutation: None,
             hepta_local_turn_lifecycle_enabled: false,
             hepta_local_development_policy: None,
@@ -1780,8 +1782,9 @@ mod tests {
             .expect_err("legacy bool must not bypass the policy gate");
         assert_eq!(ErrorKind::PermissionDenied, error.kind());
 
-        options.hepta_local_development_policy =
-            Some(codex_hepta_memory::LocalDevelopmentLifecyclePolicy::qualification_only());
+        options.hepta_local_development_policy = Some(
+            codex_hepta_app_bridge::memory::LocalDevelopmentLifecyclePolicy::qualification_only(),
+        );
         options.hepta_local_turn_lifecycle_enabled = false;
         validate_hepta_local_lifecycle_runtime_options(&options)
             .expect("canonical local policy remains valid when callback is disabled");
@@ -1796,7 +1799,8 @@ mod tests {
 
     #[test]
     fn invalid_local_policy_fails_before_app_server_startup() {
-        let mut policy = codex_hepta_memory::LocalDevelopmentLifecyclePolicy::qualification_only();
+        let mut policy =
+            codex_hepta_app_bridge::memory::LocalDevelopmentLifecyclePolicy::qualification_only();
         policy.external_effects = true;
         let options = AppServerRuntimeOptions {
             hepta_local_development_policy: Some(policy),

@@ -24,18 +24,20 @@ async fn missing_and_replaced_authority_triggers_fail_closed_on_reopen() {
             // data or untrusted SQL fragments are interpolated.
             let quoted_name = format!("\"{}\"", name.replace('"', "\"\""));
             let quoted_table = format!("\"{}\"", table.replace('"', "\"\""));
+            let mut mutation = store.pool.begin().await.unwrap();
             sqlx::query(sqlx::AssertSqlSafe(format!("DROP TRIGGER {quoted_name}")))
-                .execute(&store.pool)
+                .execute(&mut *mutation)
                 .await
                 .unwrap();
             if replace {
                 sqlx::query(sqlx::AssertSqlSafe(format!(
                     "CREATE TRIGGER {quoted_name} AFTER UPDATE ON {quoted_table} BEGIN SELECT 1; END"
                 )))
-                .execute(&store.pool)
+                .execute(&mut *mutation)
                 .await
                 .unwrap();
             }
+            mutation.commit().await.unwrap();
             let check: String = sqlx::query_scalar("PRAGMA quick_check")
                 .fetch_one(&store.pool)
                 .await

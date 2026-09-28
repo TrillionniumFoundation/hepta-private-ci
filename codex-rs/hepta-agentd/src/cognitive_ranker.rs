@@ -9,21 +9,21 @@ use std::fs::File;
 use std::sync::Arc;
 use std::sync::Mutex;
 
-use codex_hepta_bellman_operator::LoadedTabularOperatorV1;
-use codex_hepta_bellman_operator::TabularPayloadError;
-use codex_hepta_bellman_operator::TabularPayloadPinV1;
-use codex_hepta_contracts::AgentId;
-use codex_hepta_intelligence_eval::VerifiedSelfEvolutionRollbackV1;
-use codex_hepta_intelligence_eval::VerifiedSelfEvolutionSelectionV1;
-use codex_hepta_learning_artifacts::PinnedCandidateSpec;
+use codex_hepta_agent_components::bellman_operator::LoadedTabularOperatorV1;
+use codex_hepta_agent_components::bellman_operator::TabularPayloadError;
+use codex_hepta_agent_components::bellman_operator::TabularPayloadPinV1;
+use codex_hepta_agent_components::contracts::AgentId;
+use codex_hepta_agent_components::intelligence_eval::VerifiedSelfEvolutionRollbackV1;
+use codex_hepta_agent_components::intelligence_eval::VerifiedSelfEvolutionSelectionV1;
+use codex_hepta_agent_components::learning_artifacts::PinnedCandidateSpec;
 #[cfg(test)]
-use codex_hepta_learning_artifacts::RegistrySnapshotReceipt;
-use codex_hepta_learning_artifacts::RevalidatingCandidate;
-use codex_hepta_learning_artifacts::VerifiedCurrentRegistryViewV1;
-use codex_hepta_learning_artifacts::load_pinned_candidate;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::ProbabilityQ32;
-use codex_hepta_types::StableId;
+use codex_hepta_agent_components::learning_artifacts::RegistrySnapshotReceipt;
+use codex_hepta_agent_components::learning_artifacts::RevalidatingCandidate;
+use codex_hepta_agent_components::learning_artifacts::VerifiedCurrentRegistryViewV1;
+use codex_hepta_agent_components::learning_artifacts::load_pinned_candidate;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::ProbabilityQ32;
+use codex_hepta_agent_components::types::StableId;
 
 use crate::CognitiveContextItem;
 
@@ -40,13 +40,13 @@ pub(crate) fn verified_fixture_current_view(
     receipt: RegistrySnapshotReceipt,
     expected_predecessor_head_digest: Digest32,
 ) -> Result<VerifiedCurrentRegistryViewV1, String> {
-    use codex_hepta_learning_artifacts::ArtifactOwnerTrustV1;
-    use codex_hepta_learning_artifacts::ArtifactOwnerVerifierV1;
-    use codex_hepta_learning_artifacts::RegistryHeadRequirementV1;
-    use codex_hepta_learning_artifacts::RegistryHeadWitnessV1;
-    use codex_hepta_learning_artifacts::SignedCurrentArtifactHeadV1;
-    use codex_hepta_learning_artifacts::TrustedArtifactSignerV1;
-    use codex_hepta_types::Generation;
+    use codex_hepta_agent_components::learning_artifacts::ArtifactOwnerTrustV1;
+    use codex_hepta_agent_components::learning_artifacts::ArtifactOwnerVerifierV1;
+    use codex_hepta_agent_components::learning_artifacts::RegistryHeadRequirementV1;
+    use codex_hepta_agent_components::learning_artifacts::RegistryHeadWitnessV1;
+    use codex_hepta_agent_components::learning_artifacts::SignedCurrentArtifactHeadV1;
+    use codex_hepta_agent_components::learning_artifacts::TrustedArtifactSignerV1;
+    use codex_hepta_agent_components::types::Generation;
     use ed25519_dalek::Signer;
     use ed25519_dalek::SigningKey;
 
@@ -159,7 +159,8 @@ impl PinnedCognitiveRanker {
         model_pin: TabularPayloadPinV1,
         current: Arc<dyn CurrentCognitiveRegistry>,
     ) -> Result<Self, String> {
-        if selected.manifest.kind != codex_hepta_learning_artifacts::ArtifactKind::Policy
+        if selected.manifest.kind
+            != codex_hepta_agent_components::learning_artifacts::ArtifactKind::Policy
             || body_generation == 0
             || selected.manifest.content_digest != model_pin.payload_digest
             || selected.manifest.objective_digest != model_pin.objective_digest

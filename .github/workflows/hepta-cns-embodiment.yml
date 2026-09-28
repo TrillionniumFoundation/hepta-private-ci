@@ -1,35 +1,9 @@
 name: Hepta CNS organ embodiment
 
 on:
-  pull_request:
-    paths:
-      - "docs/cns/**"
-      - "docs/hnmf/**"
-      - "docs/learning/**"
-      - "qualification/cns-organ-reference/**"
-      - "qualification/hnmf-*/**"
-      - "scripts/hepta-cns.py"
-      - "scripts/hepta-hnmf.py"
-      - "scripts/hepta-paper-evidence.py"
-      - "scripts/test_hepta_paper_evidence.py"
-      - ".github/workflows/hepta-cns-embodiment.yml"
-      - ".github/actions/hepta-synthetic-merge/action.yml"
-      - "README.md"
-  push:
-    branches:
-      - main
-    paths:
-      - "docs/cns/**"
-      - "docs/hnmf/**"
-      - "docs/learning/**"
-      - "qualification/cns-organ-reference/**"
-      - "qualification/hnmf-*/**"
-      - "scripts/hepta-cns.py"
-      - "scripts/hepta-hnmf.py"
-      - "scripts/hepta-paper-evidence.py"
-      - "scripts/test_hepta_paper_evidence.py"
-      - ".github/workflows/hepta-cns-embodiment.yml"
-      - "README.md"
+  # Automatic pull-request and main-branch fan-out is owned by the two
+  # aggregate checks. Deep qualifications remain reusable and manually runnable.
+  workflow_call:
   workflow_dispatch:
 
 permissions:

@@ -1,7 +1,7 @@
 use std::fs::OpenOptions;
 
-use codex_hepta_learning_ledger::RunStartAdmissionBindingV1;
-use codex_hepta_learning_ledger::RunStartSnapshotV1;
+use codex_hepta_agent_components::learning_ledger::RunStartAdmissionBindingV1;
+use codex_hepta_agent_components::learning_ledger::RunStartSnapshotV1;
 use tempfile::TempDir;
 
 use super::*;
@@ -42,7 +42,7 @@ fn record(
             admitted_source_digest: digest(&format!("source:{run_id}")),
             observed_at_unix_micros: 1_000_000,
             deadline_unix_micros: 100_000_000,
-            authority: codex_hepta_types::AuthorityPosture::DENY_ALL,
+            authority: codex_hepta_agent_components::types::AuthorityPosture::DENY_ALL,
         },
         disposition,
         snapshot: RunStartSnapshotV1 {
@@ -156,13 +156,13 @@ fn legacy_record_without_protocol_identity_is_rejected_at_final_use() {
 fn recovered_authentication_rejects_revoked_and_stale_owner_trust() {
     use std::os::unix::fs::PermissionsExt;
 
-    use codex_hepta_authbus::SignedMessageClaims;
-    use codex_hepta_contracts::AgentId;
-    use codex_hepta_fleet::AgentManifest;
-    use codex_hepta_fleet::FleetRegistry;
-    use codex_hepta_fleet::ResourceBudget;
-    use codex_hepta_fleet::WorkspaceBinding;
-    use codex_hepta_paths::HeptaFleetRoot;
+    use codex_hepta_agent_components::authbus::SignedMessageClaims;
+    use codex_hepta_agent_components::contracts::AgentId;
+    use codex_hepta_agent_components::fleet::AgentManifest;
+    use codex_hepta_agent_components::fleet::FleetRegistry;
+    use codex_hepta_agent_components::fleet::ResourceBudget;
+    use codex_hepta_agent_components::fleet::WorkspaceBinding;
+    use codex_hepta_agent_components::paths::HeptaFleetRoot;
     use ed25519_dalek::Signer;
     use ed25519_dalek::SigningKey;
 
@@ -226,7 +226,7 @@ fn recovered_authentication_rejects_revoked_and_stale_owner_trust() {
     let mut durable = record("run.trust", 21, RunStartObjectiveDispositionV1::Compiled);
     let claims = SignedMessageClaims {
         issuer_id: id("issuer.objective"),
-        key_epoch: codex_hepta_types::Generation::new(1).expect("epoch"),
+        key_epoch: codex_hepta_agent_components::types::Generation::new(1).expect("epoch"),
         message_id: id("message.run.trust"),
         subject_id: StableId::new(identity.agent_id.as_str()).expect("subject"),
         scope_digest: objective_scope(&identity),

@@ -72,6 +72,7 @@ pub struct HeptaFleetLayout {
     fleet_config: PathBuf,
     state_root: PathBuf,
     supervisor_database: PathBuf,
+    runtime_module_supervisor_state: PathBuf,
     run_root: PathBuf,
     supervisor_socket: PathBuf,
     supervisor_lock: PathBuf,
@@ -86,6 +87,7 @@ impl HeptaFleetLayout {
         Self {
             fleet_config: fleet_root.as_path().join("fleet.toml"),
             supervisor_database: state_root.join("supervisor.sqlite3"),
+            runtime_module_supervisor_state: state_root.join("runtime-modules.json"),
             supervisor_socket: run_root.join("supervisor.sock"),
             supervisor_lock: run_root.join("supervisor.lock"),
             releases_root: fleet_root.as_path().join("releases"),
@@ -110,6 +112,11 @@ impl HeptaFleetLayout {
 
     pub fn supervisor_database(&self) -> &Path {
         &self.supervisor_database
+    }
+
+    /// Durable topology, active generations, and monotone generation fences.
+    pub fn runtime_module_supervisor_state(&self) -> &Path {
+        &self.runtime_module_supervisor_state
     }
 
     pub fn run_root(&self) -> &Path {

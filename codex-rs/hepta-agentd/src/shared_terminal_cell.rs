@@ -6,30 +6,30 @@
 //! This adapter owns no database, authority issuer, effect executor or live model
 //! selection. Laya and multi-source causal training are separate profiles.
 
-use codex_hepta_bellman_operator::LoadedTabularOperatorV1;
-use codex_hepta_bellman_operator::TabularOperatorArtifactV1;
-use codex_hepta_bellman_operator::TabularOperatorPredictionV1;
-use codex_hepta_bellman_operator::TabularPayloadPinV1;
-use codex_hepta_bellman_operator::TerminalCellError;
-use codex_hepta_bellman_operator::TerminalCellProfileV1;
-use codex_hepta_bellman_operator::encode_tabular_payload_v1;
-use codex_hepta_bellman_operator::fit_terminal_cell_from_owner_v1;
-use codex_hepta_bellman_operator::freeze_terminal_cell_from_owner_v1;
-use codex_hepta_contracts::AgentId;
-use codex_hepta_contracts::Sha256Digest;
-use codex_hepta_learning_artifacts::ArtifactKind;
-use codex_hepta_learning_artifacts::ArtifactRegistry;
-use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
-use codex_hepta_learning_ledger::LedgerEvent;
-use codex_hepta_learning_ledger::LedgerWriter;
-use codex_hepta_learning_ledger::ProductionLedgerError;
-use codex_hepta_memory::CognitiveStore;
-use codex_hepta_memory::CognitiveStoreError;
-use codex_hepta_memory::FederationConsumerAccess;
-use codex_hepta_memory::SharedExperiencePurposeV1;
-use codex_hepta_memory::SharedExperienceUseV1;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::StableId;
+use codex_hepta_agent_components::bellman_operator::LoadedTabularOperatorV1;
+use codex_hepta_agent_components::bellman_operator::TabularOperatorArtifactV1;
+use codex_hepta_agent_components::bellman_operator::TabularOperatorPredictionV1;
+use codex_hepta_agent_components::bellman_operator::TabularPayloadPinV1;
+use codex_hepta_agent_components::bellman_operator::TerminalCellError;
+use codex_hepta_agent_components::bellman_operator::TerminalCellProfileV1;
+use codex_hepta_agent_components::bellman_operator::encode_tabular_payload_v1;
+use codex_hepta_agent_components::bellman_operator::fit_terminal_cell_from_owner_v1;
+use codex_hepta_agent_components::bellman_operator::freeze_terminal_cell_from_owner_v1;
+use codex_hepta_agent_components::contracts::AgentId;
+use codex_hepta_agent_components::contracts::Sha256Digest;
+use codex_hepta_agent_components::learning_artifacts::ArtifactKind;
+use codex_hepta_agent_components::learning_artifacts::ArtifactRegistry;
+use codex_hepta_agent_components::learning_ledger::DatasetSnapshotReceiptV3;
+use codex_hepta_agent_components::learning_ledger::LedgerEvent;
+use codex_hepta_agent_components::learning_ledger::LedgerWriter;
+use codex_hepta_agent_components::learning_ledger::ProductionLedgerError;
+use codex_hepta_agent_components::memory::CognitiveStore;
+use codex_hepta_agent_components::memory::CognitiveStoreError;
+use codex_hepta_agent_components::memory::FederationConsumerAccess;
+use codex_hepta_agent_components::memory::SharedExperiencePurposeV1;
+use codex_hepta_agent_components::memory::SharedExperienceUseV1;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::StableId;
 use std::sync::Arc;
 
 #[derive(Debug, thiserror::Error)]

@@ -1,28 +1,28 @@
 use super::*;
-use codex_hepta_prompt_optimizer::canonical::*;
-use codex_hepta_types::AuthorityPosture;
+use codex_hepta_agent_components::prompt_optimizer::canonical::*;
+use codex_hepta_agent_components::types::AuthorityPosture;
 
 use std::collections::BTreeSet;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
-use codex_hepta_context_compiler::ContextModelProfileV2;
-use codex_hepta_contracts::FinalUseAuthority;
-use codex_hepta_contracts::FinalUseGrant;
-use codex_hepta_contracts::FinalUseRevocations;
-use codex_hepta_contracts::SignedFinalUseGrant;
-use codex_hepta_prompt_registry::FactorSource;
-use codex_hepta_prompt_registry::Lifecycle;
-use codex_hepta_prompt_registry::PromptFactor;
-use codex_hepta_prompt_registry::PromptModelTupleV2;
-use codex_hepta_prompt_registry::PromptRealizationBindingV2;
-use codex_hepta_prompt_registry::PromptRoleV2;
-use codex_hepta_prompt_registry::final_use_admission_binding;
-use codex_hepta_prompt_registry::final_use_realization_binding;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::FixedQ32;
-use codex_hepta_types::PromptDeliveryObservationV1;
-use codex_hepta_types::StableId;
+use codex_hepta_agent_components::context_compiler::ContextModelProfileV2;
+use codex_hepta_agent_components::contracts::FinalUseAuthority;
+use codex_hepta_agent_components::contracts::FinalUseGrant;
+use codex_hepta_agent_components::contracts::FinalUseRevocations;
+use codex_hepta_agent_components::contracts::SignedFinalUseGrant;
+use codex_hepta_agent_components::prompt_registry::FactorSource;
+use codex_hepta_agent_components::prompt_registry::Lifecycle;
+use codex_hepta_agent_components::prompt_registry::PromptFactor;
+use codex_hepta_agent_components::prompt_registry::PromptModelTupleV2;
+use codex_hepta_agent_components::prompt_registry::PromptRealizationBindingV2;
+use codex_hepta_agent_components::prompt_registry::PromptRoleV2;
+use codex_hepta_agent_components::prompt_registry::final_use_admission_binding;
+use codex_hepta_agent_components::prompt_registry::final_use_realization_binding;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::FixedQ32;
+use codex_hepta_agent_components::types::PromptDeliveryObservationV1;
+use codex_hepta_agent_components::types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
@@ -715,7 +715,7 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
             wall_now + 60_000,
             &portfolio,
             &exercise_request,
-            codex_hepta_intelligence::PromptRegistryCompilationRequestV2 {
+            codex_hepta_agent_components::intelligence::PromptRegistryCompilationRequestV2 {
                 compilation_id: id("compilation:agentd-product"),
                 serialization_id: id("serialization:agentd-product"),
                 attachment_id: id("attachment:agentd-product"),

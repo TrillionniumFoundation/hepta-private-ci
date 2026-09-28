@@ -21,11 +21,11 @@ use codex_app_server_protocol::Turn;
 use codex_app_server_protocol::TurnItemsView;
 use codex_app_server_protocol::TurnStatus;
 use codex_app_server_protocol::UserInput;
-use codex_hepta_automation::AutomationOccurrenceTerminalState;
-use codex_hepta_automation::AutomationOccurrenceWork;
-use codex_hepta_automation::AutomationQueueReceipt;
-use codex_hepta_automation::AutomationStore;
-use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_agent_components::automation::AutomationOccurrenceTerminalState;
+use codex_hepta_agent_components::automation::AutomationOccurrenceWork;
+use codex_hepta_agent_components::automation::AutomationQueueReceipt;
+use codex_hepta_agent_components::automation::AutomationStore;
+use codex_hepta_agent_components::contracts::Sha256Digest;
 use codex_protocol::user_input::user_input_payload_sha256;
 use codex_utils_absolute_path::AbsolutePathBuf;
 
@@ -388,7 +388,7 @@ async fn complete_work(
 
 async fn pending_exact(
     store: &AutomationStore,
-    task_id: codex_hepta_automation::AutomationTaskId,
+    task_id: codex_hepta_agent_components::automation::AutomationTaskId,
     occurrence: u64,
 ) -> Result<AutomationOccurrenceWork, AgentdError> {
     store
@@ -548,6 +548,6 @@ fn observation_digest(value: &impl serde::Serialize) -> Result<Sha256Digest, Age
     Ok(Sha256Digest::for_bytes(&serde_json::to_vec(value)?))
 }
 
-fn taskflow_error(error: codex_hepta_automation::TaskFlowError) -> AgentdError {
+fn taskflow_error(error: codex_hepta_agent_components::automation::TaskFlowError) -> AgentdError {
     AgentdError::Protocol(format!("automation TaskFlow recovery failed: {error}"))
 }

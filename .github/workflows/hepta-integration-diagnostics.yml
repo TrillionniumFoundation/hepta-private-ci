@@ -4,24 +4,10 @@ name: Hepta integration diagnostics
 # pull_request CI. These push jobs NEVER replace exact-head/prospective-merge
 # qualification, independent review, repository controls, or deployment gates.
 on:
-  push:
-    branches: [work/architecture-scalability-convergence-20260918]
-    paths:
-      - .github/workflows/hepta-integration-diagnostics.yml
-      - scripts/hepta_integration_diagnostics.py
-      - scripts/test_hepta_integration_feedback.py
-      - scripts/test_hepta_preflight_logging.py
-      - scripts/hepta_workspace.py
-      - scripts/test_hepta_workspace*.py
-      - scripts/hepta-implementation-maps.py
-      - scripts/test_hepta_implementation*.py
-      - codex-rs/Cargo.toml
-      - codex-rs/Cargo.lock
-      - codex-rs/rust-toolchain.toml
-      - codex-rs/.cargo/**
-      - codex-rs/hepta-contracts/**
-      - codex-rs/hepta-operations/**
-      - codex-rs/hepta-automation/**
+  # Automatic pull-request and main-branch fan-out is owned by the two
+  # aggregate checks. Deep qualifications remain reusable and manually runnable.
+  workflow_call:
+  workflow_dispatch:
 
 permissions:
   contents: read

@@ -13,13 +13,13 @@ use codex_app_server_protocol::ThreadQueueReconcileOutcome;
 use codex_app_server_protocol::ThreadQueueReconcileParams;
 use codex_app_server_protocol::ThreadQueueReconcileResponse;
 use codex_app_server_protocol::UserInput;
-use codex_hepta_automation::AutomationAdmission;
-use codex_hepta_automation::AutomationError;
-use codex_hepta_automation::AutomationFuture;
-use codex_hepta_automation::AutomationQueueReceipt;
-use codex_hepta_automation::AutomationScheduler;
-use codex_hepta_automation::AutomationStore;
-use codex_hepta_automation::AutomationTurnQueue;
+use codex_hepta_agent_components::automation::AutomationAdmission;
+use codex_hepta_agent_components::automation::AutomationError;
+use codex_hepta_agent_components::automation::AutomationFuture;
+use codex_hepta_agent_components::automation::AutomationQueueReceipt;
+use codex_hepta_agent_components::automation::AutomationScheduler;
+use codex_hepta_agent_components::automation::AutomationStore;
+use codex_hepta_agent_components::automation::AutomationTurnQueue;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use tokio_util::sync::CancellationToken;
 
@@ -309,7 +309,7 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
 /// exact-client-id reconciliation path above. Only repeated proven
 /// pre-admission failures exhaust the bounded retry budget.
 pub(crate) async fn handle_automation_tick(
-    tick: codex_hepta_automation::AutomationTick,
+    tick: codex_hepta_agent_components::automation::AutomationTick,
     retry_budget: &mut DispatchRetryBudget,
     state: &AgentdState,
     cancellation: &CancellationToken,
@@ -332,14 +332,16 @@ pub(crate) struct DispatchRetryBudget {
 }
 
 impl DispatchRetryBudget {
-    fn observe(&mut self, tick: &codex_hepta_automation::AutomationTick) -> bool {
+    fn observe(&mut self, tick: &codex_hepta_agent_components::automation::AutomationTick) -> bool {
         match tick {
-            codex_hepta_automation::AutomationTick::RetryScheduled { .. } => {
+            codex_hepta_agent_components::automation::AutomationTick::RetryScheduled { .. } => {
                 self.consecutive_retries = self.consecutive_retries.saturating_add(1);
             }
-            codex_hepta_automation::AutomationTick::Idle
-            | codex_hepta_automation::AutomationTick::Submitted { .. }
-            | codex_hepta_automation::AutomationTick::DispatchUncertain { .. } => {
+            codex_hepta_agent_components::automation::AutomationTick::Idle
+            | codex_hepta_agent_components::automation::AutomationTick::Submitted { .. }
+            | codex_hepta_agent_components::automation::AutomationTick::DispatchUncertain {
+                ..
+            } => {
                 self.consecutive_retries = 0;
             }
         }
@@ -397,9 +399,9 @@ fn unix_time_ms() -> Result<u64, AutomationError> {
 
 #[cfg(test)]
 mod tests {
-    use codex_hepta_automation::AutomationTaskId;
-    use codex_hepta_automation::AutomationTick;
-    use codex_hepta_contracts::AgentId;
+    use codex_hepta_agent_components::automation::AutomationTaskId;
+    use codex_hepta_agent_components::automation::AutomationTick;
+    use codex_hepta_agent_components::contracts::AgentId;
 
     use super::*;
 
