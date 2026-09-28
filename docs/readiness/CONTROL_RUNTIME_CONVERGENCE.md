@@ -9,7 +9,8 @@
 This document describes the source candidate introduced to close planner integrity,
 durability and execution-boundary gaps. It is not an activation, independent
 acceptance, promotion or release receipt. The machine-readable current claim
-boundary is `docs/modules/control.runtime/MATURITY.json`.
+boundary remains `docs/readiness/LANE_D_MATURITY.json`; native symbol mapping
+remains `docs/modules/control.runtime/IMPLEMENTATION_MAP.json`.
 
 ## 1. Subsystem boundaries
 
