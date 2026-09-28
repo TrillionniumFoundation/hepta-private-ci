@@ -119,7 +119,11 @@ mod tests {
         .await
         .expect("create isolated fault-injection table");
 
-        let mut connection = store.pool.acquire().await.expect("pin fault-injection connection");
+        let mut connection = store
+            .pool
+            .acquire()
+            .await
+            .expect("pin fault-injection connection");
         let page_count: i64 = sqlx::query_scalar("PRAGMA page_count")
             .fetch_one(&mut *connection)
             .await
@@ -149,7 +153,10 @@ mod tests {
         .await;
         let error = result.expect_err("disk-full injection unexpectedly succeeded");
         assert_eq!(
-            error.as_database_error().and_then(|error| error.code()).as_deref(),
+            error
+                .as_database_error()
+                .and_then(|error| error.code())
+                .as_deref(),
             Some("13"),
             "fault must be SQLITE_FULL, not an unrelated SQL failure: {error}"
         );

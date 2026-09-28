@@ -794,12 +794,8 @@ async fn append_direct_evidence(
         signature: key.sign(&claims.signing_bytes()).to_bytes(),
         claims,
     };
-    let trust = VerifiedEvidenceTrustSnapshot::load_owner_registry(
-        store,
-        trust_file,
-        agent_id,
-        None,
-    )?;
+    let trust =
+        VerifiedEvidenceTrustSnapshot::load_owner_registry(store, trust_file, agent_id, None)?;
     let issuer = trust.issuer_for(issuer_id, 1, envelope.issuer_role)?;
     store
         .qualification()

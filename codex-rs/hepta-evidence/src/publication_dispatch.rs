@@ -65,10 +65,9 @@ impl HeptaEvidenceStore {
             .await
             .map_err(sql_error)?;
         trust.validate_store(self).map_err(local_error)?;
-        let mode = validate_dispatch_epoch(
-            &mut transaction, lease, batch_id, trust, proposed, &digest,
-        )
-        .await?;
+        let mode =
+            validate_dispatch_epoch(&mut transaction, lease, batch_id, trust, proposed, &digest)
+                .await?;
         // File checks are not a replacement for the durable generation check
         // above. Recheck the private file after all asynchronous SQL reads too.
         trust.validate_store(self).map_err(local_error)?;
@@ -136,10 +135,9 @@ impl HeptaEvidenceStore {
             .await
             .map_err(sql_error)?;
         trust.validate_store(self).map_err(local_error)?;
-        let mode = validate_dispatch_epoch(
-            &mut transaction, lease, batch_id, trust, proposed, &digest,
-        )
-        .await?;
+        let mode =
+            validate_dispatch_epoch(&mut transaction, lease, batch_id, trust, proposed, &digest)
+                .await?;
         require_live_lease(lease)?;
         let row = sqlx::query(
             "SELECT intent_count, durable_audit_sequence FROM evidence_publication_batches WHERE batch_id = ?",
@@ -149,9 +147,7 @@ impl HeptaEvidenceStore {
         .await
         .map_err(sql_error)?;
         if mode == EvidencePublicationDispatchModeV1::RecoverOnly {
-            let sequence: Option<i64> = row
-                .try_get("durable_audit_sequence")
-                .map_err(sql_error)?;
+            let sequence: Option<i64> = row.try_get("durable_audit_sequence").map_err(sql_error)?;
             if sequence.and_then(|value| u64::try_from(value).ok())
                 != Some(acknowledgement.audit_sequence)
             {
@@ -249,12 +245,9 @@ async fn validate_dispatch_epoch(
     let generation: i64 = row
         .try_get("proposed_frontier_generation")
         .map_err(sql_error)?;
-    let stored_digest: Option<String> = row
-        .try_get("proposed_frontier_sha256")
-        .map_err(sql_error)?;
-    let backend: Option<String> = row
-        .try_get("backend_identity_sha256")
-        .map_err(sql_error)?;
+    let stored_digest: Option<String> =
+        row.try_get("proposed_frontier_sha256").map_err(sql_error)?;
+    let backend: Option<String> = row.try_get("backend_identity_sha256").map_err(sql_error)?;
     let snapshot: String = row.try_get("snapshot_sha256").map_err(sql_error)?;
     let expected_snapshot =
         Sha256Digest::for_bytes(&canonical_json(&proposed.snapshot).map_err(local_error)?);
@@ -268,7 +261,9 @@ async fn validate_dispatch_epoch(
         || backend.as_deref() != Some(proposed.backend_identity_sha256.as_str())
         || snapshot != expected_snapshot.as_str()
     {
-        return Err(invalid("publication dispatch identity or owner was replaced"));
+        return Err(invalid(
+            "publication dispatch identity or owner was replaced",
+        ));
     }
     let accepted_trust = sqlx::query(
         "SELECT agent_id, registry_generation, registry_sha256, backend_identity_sha256
@@ -328,9 +323,8 @@ async fn validate_dispatch_epoch(
     let expected_generation: Option<i64> = row
         .try_get("expected_frontier_generation")
         .map_err(sql_error)?;
-    let expected_digest: Option<String> = row
-        .try_get("expected_frontier_sha256")
-        .map_err(sql_error)?;
+    let expected_digest: Option<String> =
+        row.try_get("expected_frontier_sha256").map_err(sql_error)?;
     let expected_backend: Option<String> = row
         .try_get("expected_backend_identity_sha256")
         .map_err(sql_error)?;

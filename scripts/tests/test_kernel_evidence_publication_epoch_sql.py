@@ -41,8 +41,14 @@ class PublicationEpochSqlTests(unittest.TestCase):
                 updated_at_ms
             ) VALUES (?, ?, ?, 1, 'dispatching', 1, 1, 1, '{}', ?, 1, ?, ?, 2, ?, ?, NULL, 100, 100)""",
             (
-                "batch:epoch", "store:epoch", "owner:epoch", "a" * 64,
-                "b" * 64, "c" * 64, "d" * 64, "c" * 64,
+                "batch:epoch",
+                "store:epoch",
+                "owner:epoch",
+                "a" * 64,
+                "b" * 64,
+                "c" * 64,
+                "d" * 64,
+                "c" * 64,
             ),
         )
         self.queries = re.findall(
@@ -58,7 +64,9 @@ class PublicationEpochSqlTests(unittest.TestCase):
         self.assertEqual(len(matches), 1, fragment)
         return matches[0]
 
-    def test_every_production_statement_prepares_against_actual_migrations(self) -> None:
+    def test_every_production_statement_prepares_against_actual_migrations(
+        self,
+    ) -> None:
         self.assertEqual(len(self.queries), 6)
         for query in self.queries:
             self.connection.execute("EXPLAIN " + query, (None,) * query.count("?"))
@@ -87,20 +95,28 @@ class PublicationEpochSqlTests(unittest.TestCase):
     def test_uncommitted_acknowledgement_preserves_dispatch_identity(self) -> None:
         update = self.query("UPDATE evidence_publication_batches")
         self.connection.execute("BEGIN IMMEDIATE")
-        self.assertEqual(self.connection.execute(update, (2, 200, "batch:epoch")).rowcount, 1)
+        self.assertEqual(
+            self.connection.execute(update, (2, 200, "batch:epoch")).rowcount, 1
+        )
         self.connection.execute("ROLLBACK")
-        row = self.connection.execute(self.query("SELECT b.store_id"), ("batch:epoch",)).fetchone()
+        row = self.connection.execute(
+            self.query("SELECT b.store_id"), ("batch:epoch",)
+        ).fetchone()
         self.assertEqual(row["state"], "dispatching")
         self.assertEqual(row["proposed_frontier_sha256"], "d" * 64)
 
     def test_acknowledged_batch_cannot_be_reopened_for_dispatch(self) -> None:
-        self.connection.execute(self.query("UPDATE evidence_publication_batches"), (2, 200, "batch:epoch"))
+        self.connection.execute(
+            self.query("UPDATE evidence_publication_batches"), (2, 200, "batch:epoch")
+        )
         with self.assertRaises(sqlite3.IntegrityError):
             self.connection.execute(
                 "UPDATE evidence_publication_batches SET state = 'dispatching', durable_audit_sequence = NULL, updated_at_ms = 300 WHERE batch_id = 'batch:epoch'"
             )
         self.assertEqual(
-            self.connection.execute(self.query("SELECT b.store_id"), ("batch:epoch",)).fetchone()["state"],
+            self.connection.execute(
+                self.query("SELECT b.store_id"), ("batch:epoch",)
+            ).fetchone()["state"],
             "acknowledged",
         )
 
@@ -111,12 +127,24 @@ class PublicationEpochSqlTests(unittest.TestCase):
                 predecessor_sha256, accepted_frontier_generation,
                 accepted_frontier_sha256, backend_identity_sha256, accepted_at_ms
             ) VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?)""",
-            ("store:epoch", "agent:epoch", (1).to_bytes(8, "big"), "a" * 64,
-             (1).to_bytes(8, "big"), "b" * 64, "c" * 64, (100).to_bytes(8, "big")),
+            (
+                "store:epoch",
+                "agent:epoch",
+                (1).to_bytes(8, "big"),
+                "a" * 64,
+                (1).to_bytes(8, "big"),
+                "b" * 64,
+                "c" * 64,
+                (100).to_bytes(8, "big"),
+            ),
         )
         with self.assertRaises(sqlite3.IntegrityError):
-            self.connection.execute("UPDATE evidence_trust_acceptance SET registry_sha256 = ?", ("d" * 64,))
-        row = self.connection.execute(self.query("SELECT agent_id"), ("store:epoch",)).fetchone()
+            self.connection.execute(
+                "UPDATE evidence_trust_acceptance SET registry_sha256 = ?", ("d" * 64,)
+            )
+        row = self.connection.execute(
+            self.query("SELECT agent_id"), ("store:epoch",)
+        ).fetchone()
         self.assertEqual(row["registry_generation"], (1).to_bytes(8, "big"))
         self.assertEqual(row["registry_sha256"], "a" * 64)
 

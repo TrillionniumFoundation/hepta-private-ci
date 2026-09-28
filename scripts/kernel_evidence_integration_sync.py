@@ -172,7 +172,9 @@ def source_inventory(anchor: str) -> list[str]:
     }
     missing = required_product_paths - set(paths)
     if missing:
-        raise ValueError(f"source anchor lacks product admission paths: {sorted(missing)}")
+        raise ValueError(
+            f"source anchor lacks product admission paths: {sorted(missing)}"
+        )
     exact = required_product_paths | {
         ".github/workflows/blocking-ci.yml",
         "codex-rs/Cargo.toml",
@@ -214,11 +216,17 @@ def sync_metadata(anchor: str) -> None:
     status["sourcePaths"] = source_inventory(anchor)
     if any(status[gate] for gate, _ in status_tools.GATES):
         raise ValueError("qualified status requires a separate reviewed transition")
-    if status["evidenceReceipts"] or status["workflowRunId"] or status["artifactDigest"]:
+    if (
+        status["evidenceReceipts"]
+        or status["workflowRunId"]
+        or status["artifactDigest"]
+    ):
         raise ValueError("do not overwrite existing authority receipts")
     dump(status_tools.STATUS_PATH, status)
     replace_block(GUIDE, INTEGRATION_GUIDE)
-    replace_block(ROOT / "docs/lane-a-foundation/kernel.evidence/STORE_V1.md", STORE_NOTE)
+    replace_block(
+        ROOT / "docs/lane-a-foundation/kernel.evidence/STORE_V1.md", STORE_NOTE
+    )
     store_path = ROOT / "docs/lane-a-foundation/kernel.evidence/STORE_V1.md"
     store_text = store_path.read_text(encoding="utf-8")
     store_text = store_text.replace(
@@ -229,16 +237,20 @@ def sync_metadata(anchor: str) -> None:
     status_tools.validate_status(status)
     status_tools.sync(status)
     index = json.loads(INDEX.read_text(encoding="utf-8"))
-    entries = [entry for entry in index["modules"] if entry["module"] == "kernel.evidence"]
+    entries = [
+        entry for entry in index["modules"] if entry["module"] == "kernel.evidence"
+    ]
     if len(entries) != 1:
         raise ValueError("ambiguous kernel.evidence document registry")
     data = GUIDE.read_bytes()
-    entries[0].update({
-        "sha256": hashlib.sha256(data).hexdigest(),
-        "bytes": len(data),
-        "words": len(re.findall(r"\b[\w.-]+\b", data.decode("utf-8"))),
-        "production_implementation": False,
-    })
+    entries[0].update(
+        {
+            "sha256": hashlib.sha256(data).hexdigest(),
+            "bytes": len(data),
+            "words": len(re.findall(r"\b[\w.-]+\b", data.decode("utf-8"))),
+            "production_implementation": False,
+        }
+    )
     dump(INDEX, index)
     status_tools.verify(status)
 
@@ -249,15 +261,23 @@ def bind_map(anchor: str) -> None:
     parent_path = "codex-rs/hepta-agentd/src/evidence_production.rs"
     checks_path = "codex-rs/hepta-agentd/src/evidence_production_checks.rs"
     marker = "kernel.evidence recovery_required"
-    if 'include!("evidence_production_checks.rs");' not in git("show", f"{anchor}:{parent_path}"):
+    if 'include!("evidence_production_checks.rs");' not in git(
+        "show", f"{anchor}:{parent_path}"
+    ):
         raise ValueError("production verifier no longer includes its recovery checks")
     if marker not in git("show", f"{anchor}:{checks_path}"):
-        raise ValueError("production recovery checks lost their fail-closed error boundary")
+        raise ValueError(
+            "production recovery checks lost their fail-closed error boundary"
+        )
     bindings = [
-        entry for entry in mapping["productionWriterBindings"]
+        entry
+        for entry in mapping["productionWriterBindings"]
         if entry.get("mustContain") == marker
     ]
-    if len(bindings) != 1 or bindings[0]["sourcePath"] not in (parent_path, checks_path):
+    if len(bindings) != 1 or bindings[0]["sourcePath"] not in (
+        parent_path,
+        checks_path,
+    ):
         raise ValueError("ambiguous production recovery writer binding")
     # Keep the verifier itself as a product caller, but bind the error oracle
     # to its actual included source. Do not invent a marker in the caller.
@@ -265,25 +285,31 @@ def bind_map(anchor: str) -> None:
     mapping["sourceBase"] = identity
     mapping["productionImplementation"] = False
     for key in (
-        "productionImplementation", "productExecutionProved", "independentAcceptance",
-        "activation", "release",
+        "productionImplementation",
+        "productExecutionProved",
+        "independentAcceptance",
+        "activation",
+        "release",
     ):
         mapping["claimBoundary"][key] = False
     new_operations = [
         (
-            "guard_publication_dispatch", "HeptaEvidenceStore::with_publication_dispatch_guard",
+            "guard_publication_dispatch",
+            "HeptaEvidenceStore::with_publication_dispatch_guard",
             "codex-rs/hepta-evidence/src/publication_dispatch.rs",
             "codex-rs/hepta-evidence/src/publication_dispatch_tests.rs",
             "current_trust_and_owner_fenced_publication_dispatch",
         ),
         (
-            "acknowledge_publication_with_trust", "HeptaEvidenceStore::acknowledge_publication_with_trust",
+            "acknowledge_publication_with_trust",
+            "HeptaEvidenceStore::acknowledge_publication_with_trust",
             "codex-rs/hepta-evidence/src/publication_dispatch.rs",
             "codex-rs/hepta-evidence/src/publication_dispatch_tests.rs",
             "atomic_current_trust_frontier_and_batch_acknowledgement",
         ),
         (
-            "frontier_try_compare_and_swap", "LockedFileEvidenceFrontierBackend::try_compare_and_swap",
+            "frontier_try_compare_and_swap",
+            "LockedFileEvidenceFrontierBackend::try_compare_and_swap",
             "codex-rs/hepta-evidence/src/frontier_backend_file/segmented/trait.rs",
             "codex-rs/hepta-evidence/src/frontier_backend_file/segmented/trait.rs",
             "nonblocking_lock_admission_for_existing_durable_cas",
@@ -291,11 +317,17 @@ def bind_map(anchor: str) -> None:
     ]
     for operation, symbol, source, test, authority in new_operations:
         entry = {
-            "operation": operation, "nativeSymbol": symbol, "sourcePath": source,
-            "state": "source_implemented_product_composed", "authority": authority,
-            "tests": [test], "sourcePathExists": True,
+            "operation": operation,
+            "nativeSymbol": symbol,
+            "sourcePath": source,
+            "state": "source_implemented_product_composed",
+            "authority": authority,
+            "tests": [test],
+            "sourcePathExists": True,
         }
-        existing = [item for item in mapping["operations"] if item["operation"] == operation]
+        existing = [
+            item for item in mapping["operations"] if item["operation"] == operation
+        ]
         if len(existing) > 1:
             raise ValueError(f"ambiguous operation mapping: {operation}")
         if existing:
