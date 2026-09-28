@@ -183,6 +183,11 @@ impl AppServerModelDriver {
         authority: Option<NativeExecutionAuthority<'_>>,
         cancellation: &CancellationToken,
     ) -> Result<NativeRunOutput> {
+        // Compatibility spelling remains source-compatible but cannot perform
+        // reservations, RPCs or effects in the production library.
+        if authority.is_none() && !cfg!(test) {
+            return Err("an independently verified exact execution plan is required".into());
+        }
         if prompt.is_empty() || prompt.len() > super::MAX_PROMPT_BYTES {
             return Err("prompt must contain 1..32768 bytes".into());
         }

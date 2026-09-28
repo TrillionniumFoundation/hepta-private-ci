@@ -1,5 +1,4 @@
-//! Asynchronous state-transition port shared by the direct compatibility owner
-//! and the production journal-writer actor.
+//! Sealed asynchronous state-transition port for the production journal actor.
 //!
 //! The provider/effect path never owns `DurableInferenceControl` directly. All
 //! durable transitions cross this port, which lets production use the unique
@@ -12,6 +11,7 @@ use std::fmt;
 use async_trait::async_trait;
 use codex_hepta_infer_core::control_contracts::ProtectedOutput;
 use codex_hepta_infer_core::control_contracts::VerifiedExecutionPlan;
+#[cfg(test)]
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::Error;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
@@ -23,19 +23,15 @@ use codex_hepta_infer_core::durable_control::native::NativeRunRecord;
 
 #[derive(Debug)]
 pub enum NativeControlPortError {
+    Actor(crate::control_actor::NativeControlActorError),
     Durable(Error),
     Backend(String),
-}
-
-impl NativeControlPortError {
-    pub(crate) fn backend(error: impl fmt::Display) -> Self {
-        Self::Backend(error.to_string())
-    }
 }
 
 impl fmt::Display for NativeControlPortError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Self::Actor(error) => write!(formatter, "{error}"),
             Self::Durable(error) => write!(formatter, "{error}"),
             Self::Backend(error) => write!(formatter, "native control backend failed: {error}"),
         }
@@ -45,6 +41,7 @@ impl fmt::Display for NativeControlPortError {
 impl StdError for NativeControlPortError {
     fn source(&self) -> Option<&(dyn StdError + 'static)> {
         match self {
+            Self::Actor(error) => Some(error),
             Self::Durable(error) => Some(error),
             Self::Backend(_) => None,
         }
@@ -59,10 +56,17 @@ impl From<Error> for NativeControlPortError {
 
 pub type NativeControlPortResult<T> = Result<T, NativeControlPortError>;
 
+mod sealed {
+    pub trait Sealed {}
+    impl Sealed for crate::control_actor::NativeJournalWriterHandle {}
+    #[cfg(test)]
+    impl Sealed for codex_hepta_infer_core::durable_control::DurableInferenceControl {}
+}
+
 /// Durable transition port. Each method completes one bounded journal command.
 /// Provider and network awaits occur outside the unique writer actor.
 #[async_trait]
-pub trait NativeControlPort: Send + Sync {
+pub trait NativeControlPort: Send + Sync + sealed::Sealed {
     async fn reserve_native(
         &mut self,
         request: NativeRequest,
@@ -140,6 +144,7 @@ pub trait NativeControlPort: Send + Sync {
     ) -> NativeControlPortResult<Option<NativeRunRecord>>;
 }
 
+#[cfg(test)]
 #[async_trait]
 impl NativeControlPort for DurableInferenceControl {
     async fn reserve_native(

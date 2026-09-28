@@ -7,7 +7,7 @@ use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
 use codex_hepta_infer_core::durable_control::native::NativeRequest;
 use codex_hepta_infer_core::durable_control::native::NativeReservationState;
-use codex_hepta_infer_worker_host::NativeJournalWriterActor;
+use crate::NativeJournalWriterActor;
 
 struct TestJournal {
     directory: PathBuf,
@@ -39,7 +39,7 @@ impl Drop for TestJournal {
 }
 
 #[tokio::test]
-async fn production_actor_denies_unsigned_dispatch_and_retains_one_writer() {
+async fn one_writer_owns_the_journal_and_effect_capability_is_one_shot() {
     let paths = TestJournal::new();
     let actor = NativeJournalWriterActor::spawn(paths.journal.clone(), 8).unwrap();
     let writer = actor.handle();
@@ -63,7 +63,7 @@ async fn production_actor_denies_unsigned_dispatch_and_retains_one_writer() {
     // cannot acquire the same lifecycle lock while the actor is alive.
     assert!(DurableInferenceControl::open(&paths.journal, 8).is_err());
 
-    let rejected = writer
+    let prepared = writer
         .prepare_dispatch(
             request_id.clone(),
             NativeDispatch {
@@ -86,11 +86,11 @@ async fn production_actor_denies_unsigned_dispatch_and_retains_one_writer() {
                 codex_authority_witness_sha256: None,
             },
         )
-        .await;
-    assert!(matches!(rejected, Err(codex_hepta_infer_worker_host::NativeControlActorError::LegacyDisabled)));
-    assert_eq!(writer.record(request_id.clone()).await.unwrap().unwrap().state, NativeReservationState::Reserved);
-    let released = writer
-        .stop_before_dispatch(request_id.clone(), "unsigned execution refused before effect".to_string())
+        .await
+        .unwrap();
+    assert_eq!(prepared.record().state, NativeReservationState::Dispatching);
+    let released = prepared
+        .abort_before_effect("effect executor never sent the request".to_string())
         .await
         .unwrap();
     assert_eq!(released.state, NativeReservationState::Released);

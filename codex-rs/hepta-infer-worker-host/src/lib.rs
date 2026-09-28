@@ -7,6 +7,7 @@
 
 #![forbid(unsafe_code)]
 
+mod actor_mailbox;
 pub mod control_actor;
 pub mod control_port;
 /// Model-manifest/grant state machine for native driver implementations.

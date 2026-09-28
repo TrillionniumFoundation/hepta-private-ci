@@ -10,6 +10,7 @@ use std::fmt;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::thread;
+use std::time::Duration;
 
 use async_trait::async_trait;
 use codex_hepta_infer_core::control_contracts::ProtectedOutput;
@@ -26,9 +27,10 @@ use codex_hepta_infer_core::durable_control::native::NativeRunRecord;
 use codex_hepta_infer_core::recovery_contracts::RecoveryExecutionPlan;
 use codex_hepta_infer_core::recovery_contracts::VerifiedRecoveryReconciliationReceipt;
 use codex_hepta_infer_core::recovery_contracts::VerifiedRecoveryRetirement;
-use tokio::sync::mpsc;
 use tokio::sync::oneshot;
 
+use crate::actor_mailbox;
+pub use crate::actor_mailbox::NativeWriterQueueMetrics;
 use crate::control_port::NativeControlPort;
 use crate::control_port::NativeControlPortError;
 use crate::control_port::NativeControlPortResult;
@@ -36,6 +38,9 @@ use crate::control_port::NativeControlPortResult;
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum NativeControlActorError {
     Closed,
+    Overloaded,
+    LegacyDisabled,
+    ShutdownDeadlineExceeded,
     Startup(String),
     Control(String),
     Join(String),
@@ -61,12 +66,21 @@ pub struct NativeJournalWriterActor {
 /// journal owner.
 #[derive(Clone)]
 pub struct NativeJournalWriterHandle {
-    sender: mpsc::UnboundedSender<Command>,
+    sender: actor_mailbox::Sender<Command>,
 }
 
 impl NativeJournalWriterActor {
     pub fn spawn(journal: PathBuf, capacity: usize) -> ActorResult<Self> {
-        let (sender, mut receiver) = mpsc::unbounded_channel();
+        Self::spawn_with_queue_capacity(journal, capacity, actor_mailbox::DEFAULT_QUEUE_CAPACITY)
+    }
+
+    pub fn spawn_with_queue_capacity(
+        journal: PathBuf,
+        capacity: usize,
+        queue_capacity: usize,
+    ) -> ActorResult<Self> {
+        let (sender, mut receiver) = actor_mailbox::channel::<Command>(queue_capacity)
+            .ok_or_else(|| NativeControlActorError::Startup("invalid mailbox capacity".to_string()))?;
         let (startup_sender, startup_receiver) = std::sync::mpsc::sync_channel(1);
         let join = thread::Builder::new()
             .name("hepta-inference-journal-writer".to_string())
@@ -112,10 +126,11 @@ impl NativeJournalWriterActor {
         let (reply, response) = oneshot::channel();
         self.handle
             .sender
-            .send(Command::Shutdown { reply })
+            .seal_and_send(Command::Shutdown { reply })
             .map_err(|_| NativeControlActorError::Closed)?;
-        response
+        tokio::time::timeout(Duration::from_secs(30), response)
             .await
+            .map_err(|_| NativeControlActorError::ShutdownDeadlineExceeded)?
             .map_err(|_| NativeControlActorError::Closed)?;
         if let Some(join) = self.join.take() {
             tokio::task::spawn_blocking(move || join.join())
@@ -129,7 +144,21 @@ impl NativeJournalWriterActor {
     }
 }
 
+impl Drop for NativeJournalWriterActor {
+    fn drop(&mut self) {
+        // Never leave a writable detached owner behind on an early return.
+        // A blocked filesystem call is not forcibly interrupted or reported as
+        // stopped: the lock stays held until the actual writer thread exits.
+        let (reply, _response) = oneshot::channel();
+        let _ = self.handle.sender.seal_and_send(Command::Shutdown { reply });
+    }
+}
+
 impl NativeJournalWriterHandle {
+    pub fn queue_metrics(&self) -> ActorResult<NativeWriterQueueMetrics> {
+        self.sender.metrics().map_err(|_| NativeControlActorError::Closed)
+    }
+
     pub async fn reserve(
         &self,
         request: NativeRequest,
@@ -165,6 +194,9 @@ impl NativeJournalWriterHandle {
         request_id: String,
         dispatch: NativeDispatch,
     ) -> ActorResult<(NativeRunRecord, NativePreEffectAbortToken)> {
+        if !cfg!(test) {
+            return Err(NativeControlActorError::LegacyDisabled);
+        }
         let (reply, response) = oneshot::channel();
         self.send(Command::PrepareDispatch {
             request_id,
@@ -197,6 +229,9 @@ impl NativeJournalWriterHandle {
         request_id: String,
         dispatch: NativeDispatch,
     ) -> ActorResult<PreparedNativeEffect> {
+        if !cfg!(test) {
+            return Err(NativeControlActorError::LegacyDisabled);
+        }
         let (reply, response) = oneshot::channel();
         self.send(Command::PrepareDispatch {
             request_id: request_id.clone(),
@@ -303,6 +338,9 @@ impl NativeJournalWriterHandle {
         request_id: String,
         output: NativeRunOutput,
     ) -> ActorResult<NativeRunRecord> {
+        if !cfg!(test) {
+            return Err(NativeControlActorError::LegacyDisabled);
+        }
         let (reply, response) = oneshot::channel();
         self.send(Command::SettleLegacy {
             request_id,
@@ -351,9 +389,10 @@ impl NativeJournalWriterHandle {
     }
 
     fn send(&self, command: Command) -> ActorResult<()> {
-        self.sender
-            .send(command)
-            .map_err(|_| NativeControlActorError::Closed)
+        self.sender.send(command).map_err(|error| match error {
+            actor_mailbox::SendError::Full => NativeControlActorError::Overloaded,
+            actor_mailbox::SendError::Closed => NativeControlActorError::Closed,
+        })
     }
 }
 
@@ -366,7 +405,7 @@ impl NativeControlPort for NativeJournalWriterHandle {
     ) -> NativeControlPortResult<NativeRunRecord> {
         self.reserve(request, maximum_in_flight)
             .await
-            .map_err(NativeControlPortError::backend)
+            .map_err(NativeControlPortError::Actor)
     }
 
     async fn bind_native_execution(
@@ -377,7 +416,7 @@ impl NativeControlPort for NativeJournalWriterHandle {
     ) -> NativeControlPortResult<NativeRunRecord> {
         self.bind_execution(request_id.to_string(), Arc::new(plan.clone()), now_unix_ms)
             .await
-            .map_err(NativeControlPortError::backend)
+            .map_err(NativeControlPortError::Actor)
     }
 
     async fn dispatch_native_with_pre_effect_abort(
@@ -385,9 +424,17 @@ impl NativeControlPort for NativeJournalWriterHandle {
         request_id: &str,
         dispatch: NativeDispatch,
     ) -> NativeControlPortResult<(NativeRunRecord, NativePreEffectAbortToken)> {
-        self.prepare_dispatch_raw(request_id.to_string(), dispatch)
-            .await
-            .map_err(NativeControlPortError::backend)
+        // The App Server compatibility spelling is bound-only in production.
+        // The actor validates its durable plan binding and real wall clock at
+        // application time; an unbound caller cannot use this as a raw port.
+        let (reply, response) = oneshot::channel();
+        self.send(Command::PrepareDispatch {
+            request_id: request_id.to_string(),
+            dispatch,
+            reply,
+        })
+        .map_err(NativeControlPortError::Actor)?;
+        receive(response).await.map_err(NativeControlPortError::Actor)
     }
 
     async fn dispatch_native_authorized_with_pre_effect_abort(
@@ -404,7 +451,7 @@ impl NativeControlPort for NativeJournalWriterHandle {
             now_unix_ms,
         )
         .await
-        .map_err(NativeControlPortError::backend)
+        .map_err(NativeControlPortError::Actor)
     }
 
     async fn abort_native_before_effect(
@@ -414,7 +461,7 @@ impl NativeControlPort for NativeJournalWriterHandle {
     ) -> NativeControlPortResult<NativeRunRecord> {
         self.abort_raw(token, reason)
             .await
-            .map_err(NativeControlPortError::backend)
+            .map_err(NativeControlPortError::Actor)
     }
 
     async fn native_started(
@@ -424,7 +471,7 @@ impl NativeControlPort for NativeJournalWriterHandle {
     ) -> NativeControlPortResult<NativeRunRecord> {
         self.started(request_id.to_string(), turn_id)
             .await
-            .map_err(NativeControlPortError::backend)
+            .map_err(NativeControlPortError::Actor)
     }
 
     async fn reject_native_before_start(
@@ -434,7 +481,7 @@ impl NativeControlPort for NativeJournalWriterHandle {
     ) -> NativeControlPortResult<NativeRunRecord> {
         self.reject_before_start(request_id.to_string(), rejection)
             .await
-            .map_err(NativeControlPortError::backend)
+            .map_err(NativeControlPortError::Actor)
     }
 
     async fn cancel_native(
@@ -443,7 +490,7 @@ impl NativeControlPort for NativeJournalWriterHandle {
     ) -> NativeControlPortResult<NativeRunRecord> {
         self.cancel(request_id.to_string())
             .await
-            .map_err(NativeControlPortError::backend)
+            .map_err(NativeControlPortError::Actor)
     }
 
     async fn stop_native_before_dispatch(
@@ -453,7 +500,7 @@ impl NativeControlPort for NativeJournalWriterHandle {
     ) -> NativeControlPortResult<NativeRunRecord> {
         self.stop_before_dispatch(request_id.to_string(), reason)
             .await
-            .map_err(NativeControlPortError::backend)
+            .map_err(NativeControlPortError::Actor)
     }
 
     async fn settle_native(
@@ -463,7 +510,7 @@ impl NativeControlPort for NativeJournalWriterHandle {
     ) -> NativeControlPortResult<NativeRunRecord> {
         self.settle_legacy(request_id.to_string(), output)
             .await
-            .map_err(NativeControlPortError::backend)
+            .map_err(NativeControlPortError::Actor)
     }
 
     async fn settle_native_authorized(
@@ -482,7 +529,7 @@ impl NativeControlPort for NativeJournalWriterHandle {
             protected_output,
         )
         .await
-        .map_err(NativeControlPortError::backend)
+        .map_err(NativeControlPortError::Actor)
     }
 
     async fn native_record(
@@ -491,7 +538,7 @@ impl NativeControlPort for NativeJournalWriterHandle {
     ) -> NativeControlPortResult<Option<NativeRunRecord>> {
         self.record(request_id.to_string())
             .await
-            .map_err(NativeControlPortError::backend)
+            .map_err(NativeControlPortError::Actor)
     }
 }
 
@@ -731,10 +778,21 @@ impl Command {
                 request_id,
                 dispatch,
                 reply,
-            } => send_result(
-                reply,
-                control.dispatch_native_with_pre_effect_abort(&request_id, dispatch),
-            ),
+            } => {
+                if !cfg!(test)
+                    && control
+                        .native_record(&request_id)
+                        .and_then(|record| record.execution_binding.as_ref())
+                        .is_none()
+                {
+                    let _ = reply.send(Err(NativeControlActorError::LegacyDisabled));
+                } else {
+                    send_result(
+                        reply,
+                        control.dispatch_native_with_pre_effect_abort(&request_id, dispatch),
+                    );
+                }
+            }
             Self::PrepareAuthorizedDispatch {
                 request_id,
                 dispatch,
@@ -847,3 +905,7 @@ async fn receive<T>(response: oneshot::Receiver<ActorResult<T>>) -> ActorResult<
         .await
         .map_err(|_| NativeControlActorError::Closed)?
 }
+
+#[cfg(test)]
+#[path = "control_actor_compat_tests.rs"]
+mod compatibility_tests;

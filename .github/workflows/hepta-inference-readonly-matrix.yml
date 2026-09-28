@@ -1,0 +1,139 @@
+name: Hepta inference read-only matrix
+
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-infer-core/**'
+      - 'codex-rs/hepta-infer-worker-host/**'
+      - 'codex-rs/hepta-types/**'
+      - 'codex-rs/Cargo.*'
+      - 'docs/modules/inference.control/**'
+      - 'scripts/*inference*'
+      - 'scripts/hepta-lane-b-truth.py'
+      - '.github/workflows/hepta-inference-readonly-matrix.yml'
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: inference-readonly-${{ github.event.pull_request.head.sha }}
+  cancel-in-progress: false
+
+jobs:
+  identity:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      source: ${{ steps.resolve.outputs.source }}
+      base: ${{ steps.resolve.outputs.base }}
+    steps:
+      - name: Freeze source and current main without executing candidate code
+        id: resolve
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          SOURCE: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          test "$(gh api "repos/$REPO/pulls/$PR" --jq .head.sha)" = "$SOURCE"
+          base="$(gh api "repos/$REPO/git/ref/heads/main" --jq .object.sha)"
+          [[ "$base" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$SOURCE" =~ ^[0-9a-f]{40}$ ]]
+          printf 'source=%s\nbase=%s\n' "$SOURCE" "$base" >> "$GITHUB_OUTPUT"
+
+  qualify:
+    needs: identity
+    runs-on: ubuntu-24.04
+    timeout-minutes: 70
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, base-merge]
+    env:
+      SOURCE_SHA: ${{ needs.identity.outputs.source }}
+      BASE_SHA: ${{ needs.identity.outputs.base }}
+      HEPTA_CI_LANE: ${{ matrix.lane }}
+      CARGO_INCREMENTAL: '0'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONPATH: scripts
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@5d458579430fc14a04a08a1e7d3694f545e91ce6
+        id: toolchain
+        with:
+          toolchain: '1.95.0'
+          components: rustfmt, clippy
+      - name: Bind exact checkout and deterministic merge
+        id: bound
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          if test "$HEPTA_CI_LANE" = base-merge; then
+            tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+            export GIT_AUTHOR_NAME='Hepta Inference CI' GIT_COMMITTER_NAME='Hepta Inference CI'
+            export GIT_AUTHOR_EMAIL='hepta-inference-ci@users.noreply.github.com'
+            export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+            export GIT_AUTHOR_DATE='2000-01-01T00:00:00Z' GIT_COMMITTER_DATE='2000-01-01T00:00:00Z'
+            tested="$(printf 'Synthetic inference.control merge\n' | git commit-tree "$tree" -p "$BASE_SHA" -p "$SOURCE_SHA")"
+            git checkout --detach "$tested"
+            test "$(git rev-parse HEAD^{tree})" = "$tree"
+          fi
+          out="$RUNNER_TEMP/inference-readonly-$HEPTA_CI_LANE"
+          mkdir -p "$out/commands"
+          printf 'TESTED_SHA=%s\nRECORDS_DIR=%s\n' "$(git rev-parse HEAD)" "$out" >> "$GITHUB_ENV"
+          git archive --format=tar HEAD | gzip -1 > "$out/source-input.tar.gz"
+          rustc --version --verbose > "$out/toolchain.txt"
+          cargo --version >> "$out/toolchain.txt"
+          printf 'image_os=%s\nimage_version=%s\nworkflow_sha=%s\n' "$ImageOS" "$ImageVersion" "$GITHUB_WORKFLOW_SHA" >> "$out/toolchain.txt"
+      - name: Execute all required commands without hiding earlier failures
+        if: ${{ !cancelled() && steps.bound.outcome == 'success' }}
+        run: |
+          set -uo pipefail
+          result=0
+          record() {
+            name="$1"; minimum="$2"; shift 2
+            python3 scripts/hepta_ci_exec.py --output "$RECORDS_DIR/commands/$name.json" --minimum-tests "$minimum" --timeout-seconds 1200 -- "$@" || result=1
+          }
+          record 01-state 0 python3 scripts/hepta-inference-control-current-state.py check
+          record 02-actor 0 python3 scripts/hepta-inference-control-actor-migrate.py check
+          record 03-regressions 1 python3 -m unittest -v scripts.test_hepta_inference_hardening scripts.test_hepta_ci_source_identity
+          record 04-lane-b 0 python3 scripts/hepta-lane-b-truth.py verify
+          record 05-maps 0 python3 scripts/hepta-implementation-maps.py verify
+          record 06-metadata 0 cargo metadata --locked --manifest-path codex-rs/Cargo.toml --format-version 1
+          record 07-tests 1 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-types
+          record 08-crash 1 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core --test process_crash_recovery -- --test-threads=1
+          record 09-clippy 0 cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-types --all-targets --all-features -- -D warnings
+          record 10-format 0 cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-core --package codex-hepta-infer-worker-host --package codex-hepta-types -- --check
+          record 11-soak 1 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core post_compaction_multi_generation_curve -- --ignored --nocapture --test-threads=1
+          exit "$result"
+      - name: Retain formatting proposal outside the tested source
+        if: ${{ always() && steps.bound.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          proposal="$RUNNER_TEMP/inference-format-$HEPTA_CI_LANE"
+          git worktree add --detach "$proposal" "$TESTED_SHA"
+          trap 'git worktree remove --force "$proposal"' EXIT
+          cargo fmt --manifest-path "$proposal/codex-rs/Cargo.toml" --package codex-hepta-infer-core --package codex-hepta-infer-worker-host --package codex-hepta-types
+          git -C "$proposal" diff --binary > "$RECORDS_DIR/format-proposal.patch"
+      - name: Require unchanged tested source
+        if: ${{ always() && steps.bound.outcome == 'success' }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ always() && steps.bound.outcome == 'success' }}
+        with:
+          name: inference-readonly-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
+          path: ${{ env.RECORDS_DIR }}
+          if-no-files-found: error
+          retention-days: 30
