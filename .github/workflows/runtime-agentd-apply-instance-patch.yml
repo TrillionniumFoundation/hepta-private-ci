@@ -1,0 +1,102 @@
+name: Runtime Agentd apply reviewed instance patch
+
+on:
+  push:
+    branches:
+      - work/runtime-agentd-production-closure-20260928
+    paths:
+      - '.github/runtime-agentd-instance.patch.gz'
+      - '.github/workflows/runtime-agentd-apply-instance-patch.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-agentd-instance-patch
+  cancel-in-progress: false
+
+jobs:
+  apply-test-push:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      BASE_SHA: 35a87891852355e75a350973c33871d2b0889fd5
+      PATCH_SHA256: 01122ea4d8abeab07df292dfc56334a6d6d2c3bc85b5cb240f9e108fe0fae4c1
+      PATCH_PATH: .github/runtime-agentd-instance.patch.gz
+      CARGO_INCREMENTAL: '0'
+    steps:
+      - name: Checkout immutable carrier
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify carrier scope and patch identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor "$BASE_SHA" HEAD
+          unexpected=$(git diff --name-only "$BASE_SHA" HEAD | grep -Ev '^(\.github/runtime-agentd-instance\.patch\.gz|\.github/workflows/runtime-agentd-apply-instance-patch\.yml)$' || true)
+          test -z "$unexpected"
+          printf '%s  %s\n' "$PATCH_SHA256" "$PATCH_PATH" | sha256sum -c -
+          gzip -dc "$PATCH_PATH" > "$RUNNER_TEMP/runtime-agentd-instance.patch"
+          git apply --check "$RUNNER_TEMP/runtime-agentd-instance.patch"
+
+      - name: Apply source patch and remove one-shot carrier
+        shell: bash
+        run: |
+          set -euo pipefail
+          git apply "$RUNNER_TEMP/runtime-agentd-instance.patch"
+          rm "$PATCH_PATH"
+          rm .github/workflows/runtime-agentd-apply-instance-patch.yml
+          git diff --check
+
+      - name: Install exact Rust formatter and linter
+        shell: bash
+        run: |
+          set -euo pipefail
+          toolchain=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
+          rustup toolchain install "$toolchain" --profile minimal --component rustfmt --component clippy
+          rustup override set "$toolchain"
+
+      - name: Format the Agentd package
+        working-directory: codex-rs
+        run: cargo fmt --manifest-path Cargo.toml --package codex-hepta-agentd
+
+      - name: Verify patch structure and status generator
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          python3 -B -m unittest scripts.qualification.test_runtime_agentd_current_status -v
+
+      - name: Compile and execute Agentd owner tests
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-agentd --lib
+
+      - name: Compile the read-only core profile
+        working-directory: codex-rs
+        run: cargo check --locked -p codex-hepta-agentd --no-default-features --lib
+
+      - name: Execute the runtime.codex product process test
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-agentd --test runtime_codex_product_e2e
+
+      - name: Run strict Agentd lint
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-agentd --all-targets -- -D warnings
+
+      - name: Commit only the tested final tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          test ! -e "$PATCH_PATH"
+          test ! -e .github/workflows/runtime-agentd-apply-instance-patch.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'runtime.agentd: own supervisor instances and bound maintenance'
+          git push origin HEAD:work/runtime-agentd-production-closure-20260928
