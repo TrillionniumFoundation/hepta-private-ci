@@ -13,7 +13,7 @@ permissions:
 
 concurrency:
   group: intuition-durable-closure-author-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   author-durable-closure:
