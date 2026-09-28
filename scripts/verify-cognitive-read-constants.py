@@ -1,24 +1,29 @@
 #!/usr/bin/env python3
-"""Verify cognitive.read compiled limits and developer-contract documentation.
-
-The verifier reads Rust declarations directly and compares them with the
-machine-readable block in CONTRACT_LIMITS.md. It deliberately fails closed on
-missing, duplicate, unsupported, or drifting declarations.
-"""
+"""Check compiled read bounds, documented boundaries and the actual qualification inventory."""
 from __future__ import annotations
 
 import ast
 import json
-import re
 from pathlib import Path
+import re
+
+from cognitive_read_evidence import commands
 
 ROOT = Path(__file__).resolve().parents[1]
+DECLARATIONS = {
+    "MAX_READ_IDS_V1": "codex-rs/hepta-cognitive-read/src/ids.rs",
+    "MAX_ENCODED_READ_RESULT_BYTES_V2": "codex-rs/hepta-cognitive-read/src/v2.rs",
+    "MAX_COGNITIVE_CONTEXT_BYTES": "codex-rs/hepta-agent-protocol/src/lib.rs",
+    "MAX_SELECTED_CONTEXT_RECORDS": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+    "REVALIDATION_ALERT_THRESHOLD_PER_MINUTE": "codex-rs/hepta-agentd/src/cognitive_context_metrics.rs",
+    "REVALIDATION_ALERT_WINDOW_SECONDS": "codex-rs/hepta-agentd/src/cognitive_context_metrics.rs",
+}
 
 
 def read(path: str) -> str:
     target = ROOT / path
     if not target.is_file():
-        raise SystemExit(f"missing required file: {path}")
+        raise ValueError(f"missing required file: {path}")
     return target.read_text(encoding="utf-8")
 
 
@@ -26,232 +31,108 @@ def evaluate_integer(expression: str) -> int:
     node = ast.parse(expression.replace("_", ""), mode="eval").body
 
     def visit(value: ast.AST) -> int:
-        if isinstance(value, ast.Constant) and isinstance(value.value, int):
+        if isinstance(value, ast.Constant) and type(value.value) is int:
             return value.value
         if isinstance(value, ast.BinOp) and isinstance(value.op, (ast.Add, ast.Mult)):
-            left = visit(value.left)
-            right = visit(value.right)
+            left, right = visit(value.left), visit(value.right)
             return left + right if isinstance(value.op, ast.Add) else left * right
-        raise SystemExit(f"unsupported Rust integer expression: {expression!r}")
+        raise ValueError(f"unsupported Rust integer expression: {expression!r}")
 
     result = visit(node)
     if result < 0:
-        raise SystemExit(f"negative contract limit: {expression!r}")
+        raise ValueError("negative contract limit")
     return result
 
 
 def rust_constant(path: str, name: str) -> int:
-    body = read(path)
-    pattern = re.compile(
-        rf"(?m)^\s*(?:pub(?:\(crate\))?\s+)?const\s+{re.escape(name)}\s*:\s*"
-        rf"(?:usize|u16|u32|u64)\s*=\s*([^;]+);"
-    )
-    matches = pattern.findall(body)
+    pattern = rf"(?m)^\s*(?:pub(?:\(crate\))?\s+)?const\s+{re.escape(name)}\s*:\s*(?:usize|u16|u32|u64)\s*=\s*([^;]+);"
+    matches = re.findall(pattern, read(path))
     if len(matches) != 1:
-        raise SystemExit(f"{path}: expected one {name} declaration, found {len(matches)}")
-    return evaluate_integer(matches[0].strip())
+        raise ValueError(f"{path}: expected exactly one {name}")
+    return evaluate_integer(matches[0])
 
 
 def documented_limits() -> dict[str, int]:
-    body = read("docs/modules/cognitive.read/CONTRACT_LIMITS.md")
-    blocks = re.findall(r"```text\n(.*?)\n```", body, flags=re.DOTALL)
+    blocks = re.findall(r"```text\n(.*?)\n```", read("docs/modules/cognitive.read/CONTRACT_LIMITS.md"), re.DOTALL)
     if len(blocks) != 1:
-        raise SystemExit(
-            f"CONTRACT_LIMITS.md: expected one text limit block, found {len(blocks)}"
-        )
-    parsed: dict[str, int] = {}
+        raise ValueError("expected exactly one compiled-limit block")
+    result = {}
     for line in blocks[0].splitlines():
         match = re.fullmatch(r"([A-Z][A-Z0-9_]*)\s*=\s*([0-9]+)", line.strip())
-        if match is None:
-            raise SystemExit(f"CONTRACT_LIMITS.md: invalid limit line: {line!r}")
-        name, raw = match.groups()
-        if name in parsed:
-            raise SystemExit(f"CONTRACT_LIMITS.md: duplicate limit {name}")
-        parsed[name] = int(raw)
-    return parsed
+        if match is None or match[1] in result:
+            raise ValueError(f"invalid or duplicate limit: {line}")
+        result[match[1]] = int(match[2])
+    return result
+
+
+def require(path: str, markers: tuple[str, ...]) -> None:
+    body = read(path)
+    missing = [marker for marker in markers if marker not in body]
+    if missing:
+        raise ValueError(f"{path}: missing contract language: {missing}")
 
 
 def require_contract_language() -> None:
-    limits_doc = read("docs/modules/cognitive.read/CONTRACT_LIMITS.md")
-    technical = read("docs/modules/cognitive.read/TECHNICAL.md")
-    operations = read("docs/modules/cognitive.read/OPERATIONS.md")
-    compatibility = read("docs/modules/cognitive.read/COMPATIBILITY.md")
-    metrics_source = read("codex-rs/hepta-agentd/src/cognitive_context_metrics.rs")
-    fuzz_manifest = read("codex-rs/hepta-cognitive-read/fuzz/Cargo.toml")
-    fuzz_target = read(
-        "codex-rs/hepta-cognitive-read/fuzz/fuzz_targets/read_ids.rs"
-    )
-    qualification_workflow = read(
-        ".github/workflows/cognitive-read-qualification.yml"
-    )
-    qualification_runner = read("scripts/run-cognitive-read-qualification.sh")
-
-    required_limits = (
-        "total_encoded_bytes",
-        "payload_encoded_bytes",
-        "trailing 32-byte",
-        "AuthorityPosture::DENY_ALL",
-        "activation=false",
-        "CI required",
-        "Architecture required",
-        "TransientSnapshotProjectionV1",
-        "cognitive.context.revalidate@1",
-        "cognitive_context_revalidation_alert",
-    )
-    missing = [term for term in required_limits if term not in limits_doc]
-    if missing:
-        raise SystemExit(f"CONTRACT_LIMITS.md missing contract language: {missing}")
-
-    required_technical = (
-        "at most 512 IDs",
-        "at most 1 MiB",
-        "MAX_COGNITIVE_CONTEXT_BYTES = 8 KiB",
-        "1..=4",
-    )
-    missing = [term for term in required_technical if term not in technical]
-    if missing:
-        raise SystemExit(f"TECHNICAL.md missing compiled-limit language: {missing}")
-
-    required_operations = (
-        "cognitive_context_revalidation_alert",
-        "REVALIDATION_ALERT_THRESHOLD_PER_MINUTE",
-        "REVALIDATION_ALERT_WINDOW_SECONDS",
-        "activation=false",
-        "low-cardinality",
-        "runbook",
-        "codex_otel",
-    )
-    missing = [term for term in required_operations if term not in operations]
-    if missing:
-        raise SystemExit(f"OPERATIONS.md missing operational contract language: {missing}")
-
-    required_compatibility = (
-        "hepta.cognitive.read.ids.request.v1",
-        "hepta.cognitive.read.ids.v1",
-        "hepta.agentd.cognitive-context-read.v1",
-        "cognitive.context.revalidate@1",
-        "hepta.cognitive.read.golden-vector.v1",
-        "hepta.cognitive.read.qualification.v1",
-        "hepta.cognitive.read.benchmark.v1",
-        "activation=false",
-        "Never by schema migration alone",
-    )
-    missing = [term for term in required_compatibility if term not in compatibility]
-    if missing:
-        raise SystemExit(f"COMPATIBILITY.md missing version contract: {missing}")
-
-    metric_names = (
-        "codex.hepta.cognitive_read.requests",
-        "codex.hepta.cognitive_read.selected_items",
-        "codex.hepta.cognitive_read.missing_ids",
-        "codex.hepta.cognitive_read.payload_bytes",
-        "codex.hepta.cognitive_read.total_bytes",
-        "codex.hepta.cognitive_read.budget_rejections",
-        "codex.hepta.cognitive_read.revalidation_failures",
-        "codex.hepta.cognitive_read.stale_cut_rejections",
-        "codex.hepta.cognitive_read.revalidation_alerts",
-        "codex.hepta.cognitive_read.latency_us",
-    )
-    for path, body in (
-        ("cognitive_context_metrics.rs", metrics_source),
-        ("OPERATIONS.md", operations),
-    ):
-        missing = [name for name in metric_names if name not in body]
-        if missing:
-            raise SystemExit(f"{path} missing exported metric names: {missing}")
-
-    if "cargo-fuzz = true" not in fuzz_manifest:
-        raise SystemExit("cognitive.read fuzz manifest is not an isolated cargo-fuzz workspace")
-    for marker in ("fuzz_target!", "read_ids_v1", "total_encoded_bytes"):
-        if marker not in fuzz_target:
-            raise SystemExit(f"cognitive.read fuzz target missing marker: {marker}")
-
-    required_workflow = (
-        "run-cognitive-read-qualification.sh",
-        "actions/upload-artifact",
-        "artifact-digest",
-        "exact-head",
-        "merge-candidate",
-    )
-    missing = [term for term in required_workflow if term not in qualification_workflow]
-    if missing:
-        raise SystemExit(f"qualification workflow missing evidence markers: {missing}")
-
-    required_runner = (
-        "--manifest-path codex-rs/Cargo.toml",
-        "product-read-replay",
-        "product-write-smoke",
-        "SHA256SUMS",
-        "tar --sort=name",
-        "qualification-receipt.json",
-    )
-    missing = [term for term in required_runner if term not in qualification_runner]
-    if missing:
-        raise SystemExit(f"qualification runner missing evidence markers: {missing}")
+    prefix = "docs/modules/cognitive.read/"
+    require(prefix + "CONTRACT_LIMITS.md", (
+        "total_encoded_bytes", "payload_encoded_bytes", "trailing 32-byte",
+        "AuthorityPosture::DENY_ALL", "activation=false", "CI required", "Architecture required",
+        "TransientSnapshotProjectionV1", "cognitive.context.revalidate@1", "cognitive_context_revalidation_alert",
+    ))
+    require(prefix + "TECHNICAL.md", ("at most 512 IDs", "at most 1 MiB", "MAX_COGNITIVE_CONTEXT_BYTES = 8 KiB", "1..=4"))
+    require(prefix + "OPERATIONS.md", (
+        "cognitive_context_revalidation_alert", "REVALIDATION_ALERT_THRESHOLD_PER_MINUTE",
+        "REVALIDATION_ALERT_WINDOW_SECONDS", "activation=false", "low-cardinality", "runbook", "codex_otel",
+    ))
+    require(prefix + "COMPATIBILITY.md", (
+        "hepta.cognitive.read.ids.request.v1", "hepta.cognitive.read.ids.v1",
+        "hepta.agentd.cognitive-context-read.v1", "cognitive.context.revalidate@1",
+        "hepta.cognitive.read.golden-vector.v1", "hepta.cognitive.read.qualification.v1",
+        "hepta.cognitive.read.qualification.v2", "hepta.cognitive.read.benchmark.v1",
+        "PreparedReadSnapshotV1", "activation=false", "Never by schema migration alone",
+    ))
+    metrics = tuple("codex.hepta.cognitive_read." + name for name in (
+        "requests", "selected_items", "missing_ids", "payload_bytes", "total_bytes",
+        "budget_rejections", "revalidation_failures", "stale_cut_rejections", "revalidation_alerts", "latency_us",
+    ))
+    require("codex-rs/hepta-agentd/src/cognitive_context_metrics.rs", metrics)
+    require(prefix + "OPERATIONS.md", metrics)
+    require("codex-rs/hepta-cognitive-read/fuzz/Cargo.toml", ("cargo-fuzz = true",))
+    require("codex-rs/hepta-cognitive-read/fuzz/fuzz_targets/read_ids.rs", ("fuzz_target!", "read_ids_v1", "total_encoded_bytes"))
+    workflow_path = ".github/workflows/cognitive-read-qualification.yml"
+    require(workflow_path, ("run-cognitive-read-qualification.sh", "actions/upload-artifact", "artifact-digest", "exact-head", "merge-candidate", "contents: read", "persist-credentials: false"))
+    if "contents: write" in read(workflow_path) or "git push" in read(workflow_path):
+        raise ValueError("qualification may not write repository source")
+    require("scripts/run-cognitive-read-qualification.sh", ('exec python3 scripts/cognitive_read_evidence.py "$@"',))
+    require("scripts/cognitive_read_evidence.py", ("SHA256SUMS", "qualification-receipt.json", "tarfile.open", "info.uid = info.gid = info.mtime = 0", "validate_evidence"))
+    inventory = commands("0" * 40, ROOT / ".hepta-evidence/contract-probe")
+    required = {"product-read-replay", "product-write-smoke", "core-tests", "owner-tests",
+                "native-core-tests", "native-worker-tests", "all-target-check", "strict-clippy",
+                "rust-format", "consumer-audit", "benchmark", "prepared-benchmark", "tracked-clean"}
+    if not required.issubset(inventory):
+        raise ValueError("required qualification gate omitted")
+    if any(argv[:2] == ["cargo", "test"] for argv in inventory.values()):
+        raise ValueError("repository test execution must use just test")
 
 
-def require_inactive_mapping() -> None:
-    path = "docs/modules/cognitive.read/IMPLEMENTATION_MAP.json"
-    body = read(path)
-    try:
-        mapping = json.loads(body)
-    except json.JSONDecodeError as error:
-        raise SystemExit(f"{path}: invalid JSON: {error}") from error
-
-    def collect(value: object, key: str) -> list[object]:
-        found: list[object] = []
-        if isinstance(value, dict):
-            for current_key, current_value in value.items():
-                if current_key == key:
-                    found.append(current_value)
-                found.extend(collect(current_value, key))
-        elif isinstance(value, list):
-            for current_value in value:
-                found.extend(collect(current_value, key))
-        return found
-
-    activations = collect(mapping, "activation")
-    if not activations or any(value is not False for value in activations):
-        raise SystemExit(
-            f"{path}: activation must remain explicitly false until exact-head proof"
-        )
+def collect(value: object, key: str) -> list[object]:
+    if isinstance(value, dict):
+        result = [value[key]] if key in value else []
+        return result + [found for child in value.values() for found in collect(child, key)]
+    if isinstance(value, list):
+        return [found for child in value for found in collect(child, key)]
+    return []
 
 
 def main() -> None:
-    compiled = {
-        "MAX_READ_IDS_V1": rust_constant(
-            "codex-rs/hepta-cognitive-read/src/ids.rs", "MAX_READ_IDS_V1"
-        ),
-        "MAX_ENCODED_READ_RESULT_BYTES_V2": rust_constant(
-            "codex-rs/hepta-cognitive-read/src/v2.rs",
-            "MAX_ENCODED_READ_RESULT_BYTES_V2",
-        ),
-        "MAX_COGNITIVE_CONTEXT_BYTES": rust_constant(
-            "codex-rs/hepta-agent-protocol/src/lib.rs",
-            "MAX_COGNITIVE_CONTEXT_BYTES",
-        ),
-        "MAX_SELECTED_CONTEXT_RECORDS": rust_constant(
-            "codex-rs/hepta-agentd/src/cognitive_context.rs",
-            "MAX_SELECTED_CONTEXT_RECORDS",
-        ),
-        "REVALIDATION_ALERT_THRESHOLD_PER_MINUTE": rust_constant(
-            "codex-rs/hepta-agentd/src/cognitive_context_metrics.rs",
-            "REVALIDATION_ALERT_THRESHOLD_PER_MINUTE",
-        ),
-        "REVALIDATION_ALERT_WINDOW_SECONDS": rust_constant(
-            "codex-rs/hepta-agentd/src/cognitive_context_metrics.rs",
-            "REVALIDATION_ALERT_WINDOW_SECONDS",
-        ),
-    }
-    documented = documented_limits()
-    if documented != compiled:
-        raise SystemExit(
-            "cognitive.read compiled/documented limit drift:\n"
-            f"  compiled={compiled}\n"
-            f"  documented={documented}"
-        )
+    compiled = {name: rust_constant(path, name) for name, path in DECLARATIONS.items()}
+    if documented_limits() != compiled:
+        raise ValueError("compiled/documented cognitive.read limit drift")
     require_contract_language()
-    require_inactive_mapping()
+    mapping = json.loads(read("docs/modules/cognitive.read/IMPLEMENTATION_MAP.json"))
+    activation = collect(mapping, "activation")
+    if not activation or any(value is not False for value in activation):
+        raise ValueError("activation must remain explicitly false")
     print(json.dumps({"status": "ok", "limits": compiled}, sort_keys=True))
 
 

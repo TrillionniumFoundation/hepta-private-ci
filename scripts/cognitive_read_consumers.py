@@ -54,6 +54,20 @@ def safe_path(path: str) -> str:
     return parsed.as_posix().rstrip("/")
 
 
+def mapped_tests(mapping: dict, objects: dict[str, str]) -> list[dict]:
+    result = {}
+    for operation in mapping.get("operations", []):
+        for reference in operation.get("tests", []):
+            path = reference if isinstance(reference, str) else reference.get("path") if isinstance(reference, dict) else None
+            symbol = reference.get("symbol") if isinstance(reference, dict) else None
+            if path is not None:
+                path = safe_path(path)
+            row = {"path": path, "symbol": symbol, "blob": objects.get(path),
+                   "present": path in objects, "declared_reference": reference}
+            result[json.dumps(row, sort_keys=True)] = row
+    return [result[key] for key in sorted(result)]
+
+
 def audit(root: Path, candidate: str) -> dict:
     if re.fullmatch(r"[0-9a-f]{40}", candidate) is None:
         raise ValueError("candidate must be a complete SHA")
@@ -94,7 +108,7 @@ def audit(root: Path, candidate: str) -> dict:
         roots = [safe_path(item.removesuffix("/**")) for item in roots]
         sources = []
         for path, blob in sorted(objects.items()):
-            if not path.endswith(".rs") or not any(path.startswith(item + "/") for item in roots):
+            if not path.endswith(".rs") or not any(path == item or path.startswith(item + "/") for item in roots):
                 continue
             if "/tests/" in path or path.endswith("_tests.rs"):
                 continue
@@ -102,13 +116,20 @@ def audit(root: Path, candidate: str) -> dict:
             if matches:
                 sources.append({"path": path, "blob": blob, "interfaces": matches,
                                 "inspection": "lexical_reference_not_execution"})
-        tests = sorted({test for operation in mapping.get("operations", [])
-                        for test in operation.get("tests", []) if isinstance(test, str)})
+        mapped_operations = []
+        for operation in mapping.get("operations", []):
+            path = operation.get("sourcePath")
+            mapped_operations.append({"operation": operation.get("operation"),
+                                      "symbol": operation.get("nativeSymbol"),
+                                      "path": path, "blob": objects.get(path),
+                                      "declared_state": operation.get("state")})
         rows.append({
             "consumer": consumer, "contract": PORT_PREFIX + consumer,
             "implementation_map": {"path": map_path, "blob": objects[map_path]},
             "roots": roots, "read_source_references": sources,
-            "mapped_tests": [{"path": path, "blob": objects.get(path), "present": path in objects} for path in tests],
+            "mapped_operations": mapped_operations,
+            "declared_product_caller_state": mapping.get("productCallerState"),
+            "mapped_tests": mapped_tests(mapping, objects),
             "final_use_responsibility": "consumer_and_existing_effect_owner; per-consumer execution not established",
             "error_mapping_state": "requires_consumer_specific_execution_evidence",
             "migration_state": "registered_source_inspected_execution_unproven",

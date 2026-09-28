@@ -46,7 +46,10 @@ def commands(candidate: str, evidence: Path) -> dict[str, list[str]]:
         ("core-tests", "owner-tests", "agentd-tests", "native-core-tests", "native-worker-tests"),
         PACKAGES, strict=True,
     ):
-        result[label] = ["just", "test", "--locked", "-p", package, "--lib", "--no-tests=fail"]
+        result[label] = ["just", "test", "--locked", "-p", package, "--no-tests=fail"]
+    compatibility = ["--locked", "-p", "codex-hepta-agentd", "--features", "qualification-cognitive-write", "--all-targets"]
+    result["compatibility-check"] = [cargo[0], "check", *cargo[1:], *compatibility]
+    result["compatibility-clippy"] = [cargo[0], "clippy", *cargo[1:], *compatibility, "--", "-D", "warnings"]
     product = ["just", "test", "--locked", "-p", "codex-hepta-agentd", "--test", "cognitive_product_e2e", "--no-tests=fail"]
     result["product-read-replay"] = [*product, "-E", "test(=real_agentd_local_memory_review_is_read_only_and_replayable)"]
     result["product-write-smoke"] = [*product, "--features", "qualification-cognitive-write", "-E",
@@ -59,7 +62,11 @@ def commands(candidate: str, evidence: Path) -> dict[str, list[str]]:
 
 
 def digest(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    value = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            value.update(chunk)
+    return value.hexdigest()
 
 
 def validate_measurement(label: str, value: object) -> list[str]:
@@ -137,6 +144,27 @@ def git(root: Path, *args: str) -> str:
     return subprocess.check_output(["git", "--literal-pathspecs", *args], cwd=root, env=env, text=True).strip()
 
 
+def validate_candidate_claims(candidate: str, kind: str, parents: list[str], mapping: object,
+                              source: str | None, base: str | None) -> list[str]:
+    def activations(value: object) -> list[object]:
+        if isinstance(value, dict):
+            direct = [value["activation"]] if "activation" in value else []
+            return direct + [flag for child in value.values() for flag in activations(child)]
+        if isinstance(value, list):
+            return [flag for child in value for flag in activations(child)]
+        return []
+    problems = []
+    flags = activations(mapping)
+    if not flags or any(flag is not False for flag in flags):
+        problems.append("candidate implementation map must remain explicitly inactive")
+    if kind == "source-head" and source and candidate != source:
+        problems.append("source-head receipt does not match the frozen source input")
+    if kind == "merge-candidate":
+        if not source or not base or parents != [base, source]:
+            problems.append("merge receipt must bind the exact ordered base/source parents")
+    return problems
+
+
 def emit(root: Path, evidence: Path, candidate: str, kind: str, output: Path) -> bool:
     if re.fullmatch(r"[0-9a-f]{40}", candidate) is None or git(root, "rev-parse", "HEAD") != candidate:
         raise ValueError("exact candidate identity mismatch")
@@ -147,6 +175,13 @@ def emit(root: Path, evidence: Path, candidate: str, kind: str, output: Path) ->
     problems = validate_evidence(evidence, commands(candidate, evidence))
     if git(root, "status", "--porcelain", "--untracked-files=no"):
         problems.append("candidate tracked worktree changed during qualification")
+    parents = git(root, "show", "-s", "--format=%P", "HEAD").split()
+    mapping = json.loads(git(root, "show", f"{candidate}:docs/modules/cognitive.read/IMPLEMENTATION_MAP.json"))
+    event = json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_text()) if os.environ.get("GITHUB_EVENT_PATH") else {}
+    pull_request = event.get("pull_request", {})
+    source = os.environ.get("COGNITIVE_READ_SOURCE_SHA") or pull_request.get("head", {}).get("sha")
+    base = os.environ.get("COGNITIVE_READ_BASE_SHA") or pull_request.get("base", {}).get("sha")
+    problems.extend(validate_candidate_claims(candidate, kind, parents, mapping, source, base))
     inventory = []
     for path in sorted(evidence.rglob("*")):
         if path.is_symlink():
@@ -156,10 +191,13 @@ def emit(root: Path, evidence: Path, candidate: str, kind: str, output: Path) ->
     receipt = {
         "schema": "hepta.cognitive.read.qualification.v2", "kind": kind,
         "candidate": {"commit": candidate, "tree": git(root, "rev-parse", "HEAD^{tree}")},
-        "parents": git(root, "show", "-s", "--format=%P", "HEAD").split(),
+        "parents": parents,
+        "frozen_inputs": {"source": source, "base": base},
+        "implementation_map": {"source_base": mapping.get("sourceBase"), "observed_at_head": mapping.get("observedAtHead")},
         "workflow": {key: os.environ.get(key) for key in (
             "GITHUB_SHA", "GITHUB_WORKFLOW_SHA", "GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT",
-            "GITHUB_JOB", "GITHUB_EVENT_NAME", "RUNNER_OS", "RUNNER_ARCH", "ImageOS", "ImageVersion")},
+            "GITHUB_JOB", "GITHUB_EVENT_NAME", "RUNNER_OS", "RUNNER_ARCH", "ImageOS", "ImageVersion",
+            "COGNITIVE_READ_SOURCE_SHA", "COGNITIVE_READ_BASE_SHA")},
         "host": {"platform": platform.platform(), "machine": platform.machine()},
         "required_gates": list(commands(candidate, evidence)),
         "evidence_files": inventory, "problems": problems, "passed": not problems,

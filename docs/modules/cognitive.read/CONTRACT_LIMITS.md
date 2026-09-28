@@ -38,4 +38,6 @@ Golden vectors live in `qualification/cognitive-read/golden/cognitive_read_vecto
 
 `activation=false` remains mandatory until the exact candidate has successful required repository checks, source-head and deterministic synthetic-merge suites, immutable matching evidence, and independent acceptance. Qualification V2 requires the complete mandatory command inventory and valid measurements, not an arbitrary nonempty subset of successful exit codes. See `STRUCTURAL_REUSE.md` for measurement boundaries and `CONSUMERS.md` for the exact-candidate consumer matrix.
 
+The named repository aggregate gates remain `CI required` and `Architecture required`; module-local qualification does not replace them.
+
 Operational signal names, alert routing, and the incident runbook are defined in `OPERATIONS.md`. The error event is `cognitive_context_revalidation_alert`.

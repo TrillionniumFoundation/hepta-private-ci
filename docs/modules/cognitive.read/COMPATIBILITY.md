@@ -50,3 +50,8 @@ independent acceptance is recorded.
 The source-revision equivalence gap in legacy citations remains explicit. This
 version change concerns qualification evidence, not an owner schema migration
 or admission of canonical bytes as a transport protocol.
+
+`activation=false` remains required. Golden vectors are reviewed protocol artifacts
+for local integrity conformance, not admission of a network wire format.
+The activation rule remains **Never by schema migration alone**; source edits
+also cannot activate the module.

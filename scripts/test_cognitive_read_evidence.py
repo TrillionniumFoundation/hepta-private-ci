@@ -3,7 +3,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from cognitive_read_evidence import BENCHMARK_SCHEMAS, TEST_GATES, commands, validate_evidence
+from cognitive_read_evidence import BENCHMARK_SCHEMAS, TEST_GATES, commands, validate_evidence, validate_candidate_claims
 
 
 class EvidenceGateTests(unittest.TestCase):
@@ -84,6 +84,23 @@ class EvidenceGateTests(unittest.TestCase):
         path.unlink()
         path.symlink_to(self.evidence / "owner-tests.log")
         self.assertTrue(validate_evidence(self.evidence, self.required))
+
+
+class CandidateIdentityTests(unittest.TestCase):
+    def test_source_cannot_be_relabelled_as_a_merge(self):
+        self.assertTrue(validate_candidate_claims("a" * 40, "merge-candidate", ["b" * 40],
+                                                  {"activation": False}, "c" * 40, "b" * 40))
+
+    def test_ordered_merge_parents_must_match_frozen_inputs(self):
+        self.assertEqual(validate_candidate_claims("a" * 40, "merge-candidate", ["b" * 40, "c" * 40],
+                                                   {"activation": False}, "c" * 40, "b" * 40), [])
+        self.assertTrue(validate_candidate_claims("a" * 40, "merge-candidate", ["c" * 40, "b" * 40],
+                                                  {"activation": False}, "c" * 40, "b" * 40))
+
+    def test_active_or_missing_activation_is_rejected(self):
+        for mapping in ({}, {"activation": True}, {"activation": False, "nested": {"activation": True}}):
+            with self.subTest(mapping=mapping):
+                self.assertTrue(validate_candidate_claims("a" * 40, "source-head", [], mapping, "a" * 40, None))
 
 
 if __name__ == "__main__":
