@@ -21,8 +21,9 @@ concurrency:
 
 env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-  EXPECTED_PARENT: 2ea495c2218e6ac625bc6ef805967df8ffee73f7
+  EXPECTED_PARENT: b2c75d5965aa3c187bbe332d3e656c6386f9ab31
   RESTORE_COMMIT: a80f50a552d2608f238a9e934bf6fade66876912
+  RESTORE_BLOB: c8fe5357b5b8efac14a220c29f94ba061a5f5c34
   PATCH_SHA256: c2599a124d0e1574aaebaadf3ce0313d4f906a9e9f9f1472c10491fa83100f57
   PATCH_PATH: .github/remediation/inference-control-remediation.patch.gz
   WORKFLOW_PATH: .github/workflows/hepta-inference-source-export.yml
@@ -37,11 +38,13 @@ jobs:
       contents: read
     runs-on: macos-15
     timeout-minutes: 60
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ env.SOURCE_SHA }}
-          fetch-depth: 0
+          fetch-depth: 2
           persist-credentials: false
 
       - name: Bind transport commit and patch identity
@@ -52,7 +55,9 @@ jobs:
           test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
           test -z "$(git status --porcelain --untracked-files=normal)"
           test "$(shasum -a 256 "$PATCH_PATH" | awk '{print $1}')" = "$PATCH_SHA256"
-          git cat-file -e "$RESTORE_COMMIT:$WORKFLOW_PATH"
+          gh api "repos/$GITHUB_REPOSITORY/contents/$WORKFLOW_PATH?ref=$RESTORE_COMMIT" \
+            --jq .content | base64 --decode > "$RUNNER_TEMP/restored-workflow.yml"
+          test "$(git hash-object "$RUNNER_TEMP/restored-workflow.yml")" = "$RESTORE_BLOB"
 
       - uses: dtolnay/rust-toolchain@5d458579430fc14a04a08a1e7d3694f545e91ce6
         with:
@@ -66,12 +71,13 @@ jobs:
           gzip -dc "$PATCH_PATH" | git apply --index --whitespace=error-all
           rm -f "$PATCH_PATH"
           rmdir .github/remediation 2>/dev/null || true
-          git show "$RESTORE_COMMIT:$WORKFLOW_PATH" > "$WORKFLOW_PATH"
-          cargo fmt --manifest-path codex-rs/Cargo.toml --all
+          cp "$RUNNER_TEMP/restored-workflow.yml" "$WORKFLOW_PATH"
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-infer-core --package codex-hepta-infer-worker-host
           git add -A
           git diff --cached --check
           test ! -e "$PATCH_PATH"
-          test "$(git hash-object "$WORKFLOW_PATH")" = "$(git rev-parse "$RESTORE_COMMIT:$WORKFLOW_PATH")"
+          test "$(git hash-object "$WORKFLOW_PATH")" = "$RESTORE_BLOB"
 
       - name: Execute focused native verification
         shell: bash
@@ -94,11 +100,13 @@ jobs:
       contents: write
     runs-on: macos-15
     timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ env.SOURCE_SHA }}
-          fetch-depth: 0
+          fetch-depth: 2
           persist-credentials: true
 
       - name: Reproduce reviewed source tree without executing candidate code
@@ -109,15 +117,17 @@ jobs:
           test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
           test -z "$(git status --porcelain --untracked-files=normal)"
           test "$(shasum -a 256 "$PATCH_PATH" | awk '{print $1}')" = "$PATCH_SHA256"
-          git cat-file -e "$RESTORE_COMMIT:$WORKFLOW_PATH"
+          gh api "repos/$GITHUB_REPOSITORY/contents/$WORKFLOW_PATH?ref=$RESTORE_COMMIT" \
+            --jq .content | base64 --decode > "$RUNNER_TEMP/restored-workflow.yml"
+          test "$(git hash-object "$RUNNER_TEMP/restored-workflow.yml")" = "$RESTORE_BLOB"
           gzip -dc "$PATCH_PATH" | git apply --index --whitespace=error-all
           rm -f "$PATCH_PATH"
           rmdir .github/remediation 2>/dev/null || true
-          git show "$RESTORE_COMMIT:$WORKFLOW_PATH" > "$WORKFLOW_PATH"
+          cp "$RUNNER_TEMP/restored-workflow.yml" "$WORKFLOW_PATH"
           git add -A
           git diff --cached --check
           test ! -e "$PATCH_PATH"
-          test "$(git hash-object "$WORKFLOW_PATH")" = "$(git rev-parse "$RESTORE_COMMIT:$WORKFLOW_PATH")"
+          test "$(git hash-object "$WORKFLOW_PATH")" = "$RESTORE_BLOB"
 
       - name: Publish ordinary source commit
         shell: bash
