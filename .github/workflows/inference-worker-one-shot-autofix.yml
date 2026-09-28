@@ -1,0 +1,319 @@
+name: inference.worker one-shot convergence
+
+on:
+  push:
+    branches:
+      - codex/inference-worker-convergence
+
+permissions:
+  contents: write
+
+concurrency:
+  group: inference-worker-one-shot-convergence
+  cancel-in-progress: false
+
+jobs:
+  patch-format-and-rebind:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/inference-worker-convergence
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Apply bounded source and qualification patches
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from __future__ import annotations
+          import json
+          import re
+          from pathlib import Path
+
+          root = Path('.')
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              file = root / path
+              text = file.read_text(encoding='utf-8')
+              if text.count(old) != 1:
+                  raise SystemExit(f'{path}: expected one occurrence, found {text.count(old)}')
+              file.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+          # Export recovery and metrics from the default hosted profile.
+          replace_once(
+              'codex-rs/hepta-infer-worker-host/src/lib.rs',
+              'pub mod native_app_server;\npub mod profile_status;',
+              'pub mod native_app_server;\npub mod native_observability;\npub mod native_recovery;\npub mod profile_status;',
+          )
+
+          native = root / 'codex-rs/hepta-infer-worker-host/src/native_app_server.rs'
+          text = native.read_text(encoding='utf-8')
+          old = 'const TURN_START_RECONCILE_GRACE: Duration = Duration::from_secs(2);'
+          new = '''const DEFAULT_TURN_START_RECONCILE_GRACE: Duration = Duration::from_secs(2);
+          const MAX_TURN_START_RECONCILE_GRACE: Duration = Duration::from_secs(30);
+
+          fn parse_turn_start_reconcile_grace(value: Option<&str>) -> Duration {
+              value
+                  .and_then(|raw| raw.parse::<u64>().ok())
+                  .filter(|millis| {
+                      (1..=u64::try_from(MAX_TURN_START_RECONCILE_GRACE.as_millis())
+                          .unwrap_or(u64::MAX))
+                          .contains(millis)
+                  })
+                  .map(Duration::from_millis)
+                  .unwrap_or(DEFAULT_TURN_START_RECONCILE_GRACE)
+          }
+
+          fn turn_start_reconcile_grace() -> Duration {
+              static VALUE: std::sync::OnceLock<Duration> = std::sync::OnceLock::new();
+              *VALUE.get_or_init(|| {
+                  parse_turn_start_reconcile_grace(
+                      std::env::var("HEPTA_TURN_START_RECONCILE_GRACE_MS")
+                          .ok()
+                          .as_deref(),
+                  )
+              })
+          }'''
+          if text.count(old) != 1:
+              raise SystemExit('native_app_server.rs: reconcile grace constant drifted')
+          text = text.replace(old, new, 1)
+          use = 'Instant::now() + TURN_START_RECONCILE_GRACE'
+          if text.count(use) != 1:
+              raise SystemExit('native_app_server.rs: reconcile grace use drifted')
+          text = text.replace(use, 'Instant::now() + turn_start_reconcile_grace()', 1)
+          native.write_text(text, encoding='utf-8')
+
+          tests = root / 'codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs'
+          test_text = tests.read_text(encoding='utf-8')
+          marker = 'fn reconcile_grace_configuration_is_bounded()'
+          if marker not in test_text:
+              test_text += '''
+
+          #[test]
+          fn reconcile_grace_configuration_is_bounded() {
+              assert_eq!(parse_turn_start_reconcile_grace(None), Duration::from_secs(2));
+              assert_eq!(
+                  parse_turn_start_reconcile_grace(Some("125")),
+                  Duration::from_millis(125)
+              );
+              assert_eq!(
+                  parse_turn_start_reconcile_grace(Some("0")),
+                  Duration::from_secs(2)
+              );
+              assert_eq!(
+                  parse_turn_start_reconcile_grace(Some("30001")),
+                  Duration::from_secs(2)
+              );
+              assert_eq!(
+                  parse_turn_start_reconcile_grace(Some("not-a-number")),
+                  Duration::from_secs(2)
+              );
+          }
+          '''
+              tests.write_text(test_text, encoding='utf-8')
+
+          # Split the legacy grouped owner step so failures identify the crate.
+          workflow = root / '.github/workflows/hepta-gap-agentd-process.yml'
+          text = workflow.read_text(encoding='utf-8')
+          pattern = re.compile(
+              r'      - name: Exercise owner and lifecycle libraries\n.*?'
+              r'(?=      - name: Exercise actual optional retirement and durable destination recovery)',
+              re.S,
+          )
+          replacement = '''      - name: Exercise inference.control library
+                  if: steps.execution.outputs.run_native == 'true'
+                  working-directory: codex-rs
+                  run: just test --locked --lib -p codex-hepta-infer-core --test-threads=1
+                - name: Exercise inference.worker hosted library
+                  if: steps.execution.outputs.run_native == 'true'
+                  working-directory: codex-rs
+                  run: just test --locked --lib -p codex-hepta-infer-worker-host --test-threads=1
+                - name: Exercise inference.worker local experimental library
+                  if: steps.execution.outputs.run_native == 'true'
+                  working-directory: codex-rs
+                  run: just test --locked --lib -p codex-hepta-infer-worker-host --features local-model-experimental --test-threads=1
+                - name: Exercise Agentd and lifecycle support libraries
+                  if: steps.execution.outputs.run_native == 'true'
+                  working-directory: codex-rs
+                  run: |
+                    set -euo pipefail
+                    just test --locked --lib -p codex-hepta-agentd -p codex-hepta-cognitive-read \\
+                      -p codex-hepta-supervisor --test-threads=1
+          '''
+          text, count = pattern.subn(replacement, text, count=1)
+          if count != 1:
+              raise SystemExit('hepta-gap-agentd-process.yml: grouped step drifted')
+          workflow.write_text(text, encoding='utf-8')
+
+          # Ensure Lane B is triggered by and tests inference owner changes.
+          lane = root / '.github/workflows/hepta-lane-b-truth.yml'
+          text = lane.read_text(encoding='utf-8')
+          for anchor in ('      - "codex-rs/hepta-agentd/**"\n',):
+              addition = (
+                  anchor
+                  + '      - "codex-rs/hepta-infer-core/**"\n'
+                  + '      - "codex-rs/hepta-infer-worker-host/**"\n'
+              )
+              # The anchor occurs in both pull_request and push path sets.
+              text = text.replace(anchor, addition)
+          hosted_binary = '          cargo test -p codex-hepta-infer-worker-host --bin hepta-infer-worker\n'
+          hosted_tests = hosted_binary + (
+              '          cargo test -p codex-hepta-infer-worker-host --lib\n'
+              '          cargo test -p codex-hepta-infer-worker-host --lib --features local-model-experimental\n'
+          )
+          if text.count(hosted_binary) != 1:
+              raise SystemExit('hepta-lane-b-truth.yml: hosted binary anchor drifted')
+          text = text.replace(hosted_binary, hosted_tests, 1)
+          merge_anchor = '            cargo test -p codex-hepta-automation --features taskflow-structural-qualification\n'
+          merge_tests = merge_anchor + (
+              '            cargo test -p codex-hepta-infer-core --lib\n'
+              '            cargo test -p codex-hepta-infer-worker-host --lib\n'
+              '            cargo test -p codex-hepta-infer-worker-host --lib --features local-model-experimental\n'
+          )
+          if text.count(merge_anchor) != 1:
+              raise SystemExit('hepta-lane-b-truth.yml: merge test anchor drifted')
+          text = text.replace(merge_anchor, merge_tests, 1)
+          lane.write_text(text, encoding='utf-8')
+
+          qualification = root / '.github/workflows/inference-worker-qualification.yml'
+          text = qualification.read_text(encoding='utf-8')
+          text = text.replace(
+              'permissions:\n  contents: read\n',
+              'permissions:\n  actions: read\n  contents: read\n',
+              1,
+          )
+          schema_anchor = '          python3 scripts/hepta-implementation-maps.py verify\n'
+          if text.count(schema_anchor) != 2:
+              raise SystemExit('qualification workflow: source truth anchors drifted')
+          text = text.replace(
+              schema_anchor,
+              schema_anchor + '          python3 scripts/hepta-inference-worker-status.py --check-schema\n',
+              1,
+          )
+          if '\n  qualification-status:\n' not in text:
+              text += '''
+
+            qualification-status:
+              name: Generate exact inference.worker status
+              if: always()
+              needs: [source-truth, owner-qualification, synthetic-merge]
+              runs-on: ubuntu-24.04
+              timeout-minutes: 10
+              permissions:
+                actions: read
+                contents: read
+              steps:
+                - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+                  with:
+                    ref: ${{ github.event.pull_request.head.sha || github.sha }}
+                    fetch-depth: 0
+                    persist-credentials: false
+                - name: Generate exact status receipt
+                  env:
+                    GITHUB_TOKEN: ${{ github.token }}
+                  run: python3 scripts/hepta-inference-worker-status.py --output CURRENT_STATUS.json
+                - name: Upload exact status receipt
+                  uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+                  with:
+                    name: inference-worker-current-status
+                    path: CURRENT_STATUS.json
+                    if-no-files-found: error
+          '''
+          qualification.write_text(text, encoding='utf-8')
+
+          technical = root / 'docs/modules/inference.worker/TECHNICAL.md'
+          text = technical.read_text(encoding='utf-8')
+          status_note = '''The current public claim ceiling is split into three profiles: `HostedAppServerWorker` is a production candidate, `LocalModelWorker` is feature-gated experimental/non-production, and `LegacyReceiptBoundary` is validation-only. Exact current-head qualification is emitted by `.github/workflows/inference-worker-qualification.yml` through `scripts/hepta-inference-worker-status.py`; source presence or documentation closure is never reported as a passing current qualification. See [current status and evidence](CURRENT_STATUS.md).\n\n'''
+          heading = '# inference.worker technical development guide\n\n'
+          if status_note not in text:
+              if text.count(heading) != 1:
+                  raise SystemExit('TECHNICAL.md heading drifted')
+              text = text.replace(heading, heading + status_note, 1)
+          technical.write_text(text, encoding='utf-8')
+
+          dossier = root / 'qualification/module-execution-dossiers/detail/inference.worker.md'
+          text = dossier.read_text(encoding='utf-8')
+          old_remaining = '- **Remaining work:** Implement/prove the local weights/device/memory driver before claiming isolated local inference. Trusted provider recovery and missing-usage reconciliation remain open.'
+          new_remaining = '''- **Profile ceiling:** `HostedAppServerWorker` is a production candidate; `LocalModelWorker` is opt-in experimental/non-production; `LegacyReceiptBoundary` is validation-only.
+          - **Experimental local runtime:** verified grant/manifest/input types, asynchronous load/run/inspect/unload, aggregate RAII resource accounting, zombie retention and durable no-replay coordination are implemented behind `local-model-experimental`. Real weights/device/process qualification remains external.
+          - **Reconciliation:** exact App Server thread-history reconciliation and an independently verified provider terminal/usage receipt port are implemented. Missing history or usage remains held unless that external receipt is available; zero is never inferred.
+          - **Remaining external work:** qualify the deployed receipt authority, provider history retention and usage stream, real local model driver, target host, OOM/device-reset/load-kill behavior, product composition and independent acceptance.'''
+          if old_remaining in text:
+              text = text.replace(old_remaining, new_remaining, 1)
+          elif new_remaining not in text:
+              raise SystemExit('inference.worker dossier remaining-work anchor drifted')
+          dossier.write_text(text, encoding='utf-8')
+
+          implementation = root / 'docs/modules/inference.worker/IMPLEMENTATION_MAP.json'
+          row = json.loads(implementation.read_text(encoding='utf-8'))
+          row['sourceMaturity'] = 'durable_native_app_server_profile_and_experimental_verified_local_runtime'
+          row['profileStatus'] = {
+              'HostedAppServerWorker': 'production-candidate',
+              'LocalModelWorker': 'experimental-non-production',
+              'LegacyReceiptBoundary': 'validation-only',
+          }
+          row['reconciliationStatus'] = {
+              'exactAppServerThreadHistory': 'implemented',
+              'missingHistoryResolution': 'verified_external_receipt_port_implemented_external_authority_not_proved',
+              'trustedTokenUsageReconciliation': 'verified_external_receipt_port_implemented_provider_evidence_not_proved',
+              'realProviderTargetHostQualification': 'not_proved',
+          }
+          row['repositoryControlledGaps'] = [
+              'Implement and independently qualify a real local model driver that proves weights, device, memory and process isolation before enabling the experimental profile in a product.',
+              'Integrate a deployed provider-receipt authority and retention/usage source; repository code supplies the verified port but cannot manufacture external receipts.',
+          ]
+          row['externalEvidenceGates'] = [
+              'identified real weights/tokenizer/runtime/device and isolated worker process',
+              'deployed provider history retention and independently verified terminal/usage receipts',
+              'OOM/device-reset/load-kill target qualification',
+              'product composition, canary, rollback and independent acceptance',
+          ]
+          implementation.write_text(json.dumps(row, indent=2) + '\n', encoding='utf-8')
+
+          # Delete this one-shot workflow in the commit it creates.
+          (root / '.github/workflows/inference-worker-one-shot-autofix.yml').unlink()
+          PY
+
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-infer-worker-host \
+            --package codex-hepta-infer-core
+          python3 -m py_compile scripts/hepta-inference-worker-status.py
+
+      - name: Commit source, workflow and documentation convergence
+        run: |
+          set -euo pipefail
+          git config user.name "inference.worker convergence bot"
+          git config user.email "inference-worker-ci@users.noreply.github.com"
+          git add -A
+          git commit -m "inference.worker: close recovery and qualification source gaps"
+
+      - name: Rebind generated module evidence
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py migrate --module inference.worker
+          python3 scripts/hepta-module-docs.py refresh-derived
+          git add docs/modules/inference.worker qualification/module-execution-dossiers/detail/inference.worker.md
+          if ! git diff --cached --quiet; then
+            git commit -m "inference.worker: refresh exact source evidence"
+          fi
+
+      - name: Push converged branch
+        run: git push origin HEAD:codex/inference-worker-convergence
+
+      - name: Resolve verified sandboxed V8 artifacts
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+
+      - name: Compile and lint converged worker
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-infer-worker-host --lib
+          cargo test --locked -p codex-hepta-infer-worker-host --lib --features local-model-experimental
+          cargo check --locked -p codex-hepta-infer-worker-host --all-targets --features local-model-experimental
+          cargo clippy --locked -p codex-hepta-infer-worker-host --all-targets --features local-model-experimental --no-deps -- -D warnings
