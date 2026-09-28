@@ -124,6 +124,24 @@ jobs:
           }
           map_path.write_text(json.dumps(mapping, indent=2) + "\n", encoding="utf-8")
 
+          extension_path = root / "docs/modules/utility.ndu/IMPLEMENTATION_MAP_EXTENSIONS.json"
+          extension = json.loads(extension_path.read_text(encoding="utf-8"))
+          supporting = extension.get("supportingSources")
+          if not isinstance(supporting, list):
+              raise SystemExit("implementation-map extension supportingSources drifted")
+          retired = {
+              ".github/workflows/hepta-ndu-abcd-materialize.yml",
+              ".github/workflows/hepta-ndu-final-regression-repair.yml",
+              ".github/workflows/hepta-ndu-runtime-acceptance.yml",
+              ".github/workflows/ndu-sync-main-and-retrigger-once.yml",
+              ".github/workflows/hepta-ndu-final-evidence-sync.yml",
+          }
+          removed = {path for path in supporting if path in retired}
+          if ".github/workflows/hepta-ndu-runtime-acceptance.yml" not in removed:
+              raise SystemExit("retired runtime-acceptance evidence reference was not present")
+          extension["supportingSources"] = [path for path in supporting if path not in retired]
+          extension_path.write_text(json.dumps(extension, indent=2) + "\n", encoding="utf-8")
+
           workflow_path = root / ".github/workflows/hepta-ndu-recursion.yml"
           workflow = workflow_path.read_text(encoding="utf-8")
           tool = "          tool: just@1.51.0,nextest@0.9.103\n"
