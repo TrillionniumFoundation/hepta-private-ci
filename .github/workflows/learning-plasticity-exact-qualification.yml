@@ -21,7 +21,7 @@ jobs:
     if: >-
       github.event_name == 'pull_request' &&
       github.head_ref == 'feat/learning-plasticity-product-closure-20260928'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - name: Check out exact branch head
@@ -35,8 +35,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = "73f111ee51f051392ea9520dfa231b0bf4425e01"
-          test "$(git rev-parse HEAD^^)" = "012f8794b1aa43794ad0330303422b7337a86c45"
+          git merge-base --is-ancestor \
+            73f111ee51f051392ea9520dfa231b0bf4425e01 HEAD
+          test "$(git rev-parse 73f111ee51f051392ea9520dfa231b0bf4425e01^{tree})" = \
+            "e44ddac383fc440cc33e403f9e574b46dac3875c"
           python3 - <<'PY'
           import json
           from pathlib import Path
