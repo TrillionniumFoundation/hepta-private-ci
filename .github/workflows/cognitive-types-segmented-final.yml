@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   materialize:
-    if: ${{ github.event.head_commit.message == 'ci(cognitive.types): launch segmented final verifier' }}
+    if: "${{ github.event.head_commit.message == 'ci(cognitive.types): launch segmented final verifier' }}"
     runs-on: ubuntu-slim
     timeout-minutes: 14
     permissions:
@@ -78,7 +78,7 @@ jobs:
           git push origin "HEAD:refs/heads/${branch}"
 
   static-contracts:
-    if: ${{ github.event.head_commit.message == 'fix(cognitive.types): close remaining qualification blockers' }}
+    if: "${{ github.event.head_commit.message == 'fix(cognitive.types): close remaining qualification blockers' }}"
     runs-on: ubuntu-slim
     timeout-minutes: 14
     steps:
@@ -120,7 +120,7 @@ jobs:
           test -z "$(git status --short)"
 
   package-check:
-    if: ${{ github.event.head_commit.message == 'fix(cognitive.types): close remaining qualification blockers' }}
+    if: "${{ github.event.head_commit.message == 'fix(cognitive.types): close remaining qualification blockers' }}"
     strategy:
       fail-fast: false
       matrix:
@@ -147,7 +147,7 @@ jobs:
         run: cargo check --manifest-path codex-rs/Cargo.toml --locked --all-targets -p '${{ matrix.package }}'
 
   package-test:
-    if: ${{ github.event.head_commit.message == 'fix(cognitive.types): close remaining qualification blockers' }}
+    if: "${{ github.event.head_commit.message == 'fix(cognitive.types): close remaining qualification blockers' }}"
     strategy:
       fail-fast: false
       matrix:
@@ -174,7 +174,7 @@ jobs:
         run: cargo test --manifest-path codex-rs/Cargo.toml --locked -p '${{ matrix.package }}'
 
   package-clippy:
-    if: ${{ github.event.head_commit.message == 'fix(cognitive.types): close remaining qualification blockers' }}
+    if: "${{ github.event.head_commit.message == 'fix(cognitive.types): close remaining qualification blockers' }}"
     strategy:
       fail-fast: false
       matrix:
@@ -203,7 +203,7 @@ jobs:
         run: cargo clippy --manifest-path codex-rs/Cargo.toml --locked --all-targets -p '${{ matrix.package }}' -- -D warnings
 
   fuzz-harness:
-    if: ${{ github.event.head_commit.message == 'fix(cognitive.types): close remaining qualification blockers' }}
+    if: "${{ github.event.head_commit.message == 'fix(cognitive.types): close remaining qualification blockers' }}"
     runs-on: ubuntu-slim
     timeout-minutes: 14
     steps:
@@ -218,7 +218,7 @@ jobs:
         run: cargo check --manifest-path codex-rs/hepta-cognitive-types/fuzz/Cargo.toml --all-targets
 
   remove-verifier:
-    if: ${{ always() && github.event.head_commit.message == 'fix(cognitive.types): close remaining qualification blockers' && needs.static-contracts.result == 'success' && needs.package-check.result == 'success' && needs.package-test.result == 'success' && needs.package-clippy.result == 'success' && needs.fuzz-harness.result == 'success' }}
+    if: "${{ always() && github.event.head_commit.message == 'fix(cognitive.types): close remaining qualification blockers' && needs.static-contracts.result == 'success' && needs.package-check.result == 'success' && needs.package-test.result == 'success' && needs.package-clippy.result == 'success' && needs.fuzz-harness.result == 'success' }}"
     needs:
       - static-contracts
       - package-check
