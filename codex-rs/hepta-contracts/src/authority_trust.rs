@@ -2,8 +2,8 @@
 //!
 //! These traits deliberately do not manufacture trust. Deployments provide an
 //! attested/monotonic clock, an externally durable CAS frontier store and a
-//! live key-custody identity. Authority owners use the resulting bundle to fail
-//! closed on time uncertainty, local snapshot rollback and key-set drift.
+//! live key-custody identity. The owner retains production custody and bounded
+//! uncertainty after open; compatibility remains explicitly distinct.
 
 use crate::VerifiedUseTokenWitnessV1;
 use crate::authority_lease::AuthorityLeaseBinding;
@@ -32,8 +32,10 @@ use std::sync::Arc;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
-/// Repository-wide upper bound for production authority clock uncertainty.
-/// Deployment evidence may select a stricter bound but cannot raise this cap.
+#[path = "authority_runtime_clock.rs"]
+mod runtime_clock;
+
+/// A deployment may choose a stricter limit but cannot raise this cap.
 pub const MAX_PRODUCTION_CLOCK_UNCERTAINTY_MS: u64 = 60_000;
 const AUTHORITY_LEASE_KEY_ROLE: &str = "authority-lease-owner";
 const FINAL_USE_ISSUER_KEY_ROLE: &str = "final-use-issuer";
@@ -54,12 +56,16 @@ impl fmt::Display for AuthorityTrustError {
 impl std::error::Error for AuthorityTrustError {}
 
 /// Host-owned trusted wall/monotonic-time projection.
-///
-/// Production implementations are expected to bind this to an attested or
-/// otherwise protected time source. The system clock implementation below is a
-/// compatibility/testing implementation, not an attestation claim.
 pub trait AuthorityClock: Send + Sync {
     fn now_unix_ms(&self) -> Result<u64, AuthorityTrustError>;
+
+    /// One coherent centre/radius sample in milliseconds. Legacy clocks have
+    /// point-time semantics; that default is not production qualification.
+    /// Production constructors always install a wrapper that supplies the
+    /// qualified uncertainty and retains live key-custody validation.
+    fn now_with_uncertainty(&self) -> Result<(u64, u64), AuthorityTrustError> {
+        self.now_unix_ms().map(|now| (now, 0))
+    }
 }
 
 #[derive(Clone, Copy, Debug, Default)]
@@ -75,14 +81,8 @@ impl AuthorityClock for SystemAuthorityClock {
     }
 }
 
-/// Externally durable compare-and-set frontier.
-///
-/// The external store must survive rollback/replacement of the local authority
-/// directory. compare_and_set must durably commit next only when the current
-/// value exactly equals expected. Authority owners call it before committing
-/// the corresponding local state. If the local commit then fails, the owner
-/// fences itself; reopening observes an external frontier ahead of local state
-/// and fails closed until operator recovery.
+/// Externally durable CAS, independent of local authority directory rollback.
+/// Success commits next before return; local-write uncertainty fences the owner.
 pub trait AuthorityFrontierStore<F>: Send + Sync {
     fn load(&self, owner_id: &str) -> Result<F, AuthorityTrustError>;
 
@@ -94,45 +94,32 @@ pub trait AuthorityFrontierStore<F>: Send + Sync {
     ) -> Result<(), AuthorityTrustError>;
 }
 
-/// Marker contract for a clock that a deployment has independently qualified
-/// for production authority decisions. `SystemAuthorityClock` deliberately
-/// does not implement this trait.
+/// Independently qualified production clock; SystemAuthorityClock is not one.
 pub trait ProductionAuthorityClock: AuthorityClock {
     fn production_trust_domain(&self) -> &str;
 
     fn maximum_uncertainty_ms(&self) -> u64;
 }
 
-/// Marker contract for an external, rollback-independent and linearizable CAS
-/// frontier. Local-file compatibility stores deliberately do not implement it.
+/// Rollback-independent linearizable CAS; local compatibility files are not one.
 pub trait ProductionAuthorityFrontierStore<F>: AuthorityFrontierStore<F> {
     fn production_trust_domain(&self) -> &str;
 }
 
-/// Live KMS/HSM custody identity used by production constructors.
-///
-/// The authority kernel never asks this interface for private key bytes. It
-/// samples the externally controlled public key-set digest and generation, and
-/// rejects an exportable or unexpectedly rolled-back custody state.
+/// Live externally controlled custody identity. The kernel never requests key bytes.
+/// Implementations must bound calls; a local authenticated cache must expire
+/// fail-closed and must not conceal a known rotation or revocation generation.
 pub trait ProductionAuthorityKeyCustody: Send + Sync {
     fn provider_id(&self) -> &str;
-
     fn key_role(&self) -> &str;
-
     fn production_trust_domain(&self) -> &str;
-
     fn active_key_set_sha256(&self) -> Result<[u8; 32], AuthorityTrustError>;
-
     fn active_generation(&self) -> Result<u64, AuthorityTrustError>;
-
     fn revoked_before_generation(&self) -> Result<u64, AuthorityTrustError>;
-
     fn private_key_exportable(&self) -> Result<bool, AuthorityTrustError>;
 }
 
-/// Deployment evidence required by the production constructor. The digests
-/// identify externally retained receipts; they are evidence references, not a
-/// claim that this crate performed attestation or a disaster-recovery drill.
+/// References to externally retained evidence; not self-issued attestations.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ProductionAuthorityTrustEvidence {
     pub schema_version: u32,
@@ -180,8 +167,6 @@ impl ProductionAuthorityTrustEvidence {
     }
 }
 
-/// Evidence for the live key-custody component of a production trust bundle.
-/// Every receipt is retained outside the process and content-addressed here.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ProductionAuthorityKeyCustodyEvidence {
     pub schema_version: u32,
@@ -230,11 +215,7 @@ impl ProductionAuthorityKeyCustodyEvidence {
     }
 }
 
-/// Opaque proof that one exact revocation head was authenticated by a
-/// pinned distributor key while the signed feed was fresh.
-///
-/// Fields are private so a caller cannot turn an arbitrary
-/// `FinalUseRevocations` value into production recovery authority.
+/// Opaque signature-verified recovery head. Raw DTOs are not recovery authority.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct VerifiedFinalUseRevocationHead {
     distributor_id: String,
@@ -295,9 +276,7 @@ impl VerifiedFinalUseRevocationHead {
         now_unix_ms: u64,
         maximum_uncertainty_ms: u64,
     ) -> Result<FinalUseRevocations, FinalUseError> {
-        let definitely_live_after = self
-            .issued_at_unix_ms
-            .saturating_add(maximum_uncertainty_ms);
+        let definitely_live_after = self.issued_at_unix_ms.saturating_add(maximum_uncertainty_ms);
         let possibly_expired_at = now_unix_ms.saturating_add(maximum_uncertainty_ms);
         if now_unix_ms < definitely_live_after || possibly_expired_at >= self.expires_at_unix_ms {
             return Err(FinalUseError::InvalidTrust);
@@ -306,10 +285,7 @@ impl VerifiedFinalUseRevocationHead {
     }
 }
 
-/// Complete production trust bundle. Construction and every privileged open
-/// revalidate the live clock, frontier and key-custody identities against the
-/// retained evidence. No component is optional and no local compatibility
-/// adapter implements all three production marker contracts.
+/// Mandatory production trust components; no component is optional.
 pub struct ProductionAuthorityTrustBundle<C, S, K, F> {
     clock: Arc<C>,
     frontier_store: Arc<S>,
@@ -358,16 +334,13 @@ where
             || self.clock.production_trust_domain() != self.evidence.trust_domain
             || self.frontier_store.production_trust_domain() != self.evidence.trust_domain
             || self.key_custody.production_trust_domain() != self.evidence.trust_domain
-            || self.key_custody_evidence.trust_domain.as_str()
-                != self.evidence.trust_domain.as_str()
-            || self.key_custody.provider_id()
-                != self.key_custody_evidence.provider_id.as_str()
+            || self.key_custody_evidence.trust_domain.as_str() != self.evidence.trust_domain.as_str()
+            || self.key_custody.provider_id() != self.key_custody_evidence.provider_id.as_str()
             || self.key_custody.key_role() != self.key_custody_evidence.key_role.as_str()
             || self.clock.maximum_uncertainty_ms() == 0
             || self.clock.maximum_uncertainty_ms() > MAX_PRODUCTION_CLOCK_UNCERTAINTY_MS
             || self.clock.maximum_uncertainty_ms() > self.evidence.maximum_clock_uncertainty_ms
-            || self.evidence.key_custody_attestation_sha256
-                != self.key_custody_evidence.custody_receipt_sha256
+            || self.evidence.key_custody_attestation_sha256 != self.key_custody_evidence.custody_receipt_sha256
         {
             return Err(AuthorityTrustError::Invalid);
         }
@@ -385,11 +358,7 @@ where
     }
 }
 
-/// Opaque, one-shot production dispatch capability for one exact general lease.
-///
-/// The value is intentionally non-cloneable and non-serializable. Dispatch
-/// revalidates expiry, epoch, replacement, binding and revocation while holding
-/// the authority owner lock across one bounded local irreversible boundary.
+/// One-shot exact general-lease dispatch capability; no serialization or clone.
 #[must_use = "dropping an authority dispatch binding performs no privileged effect"]
 pub struct AuthorityDispatchBinding {
     verifier: AuthorityLeaseVerifier,
@@ -408,19 +377,12 @@ impl AuthorityDispatchBinding {
         self,
         dispatch_boundary: impl FnOnce(&VerifiedUseTokenWitnessV1) -> T,
     ) -> Result<(T, VerifiedUseTokenWitnessV1), AuthorityLeaseError> {
-        dispatch_authority_lease_with_witness(
-            &self.verifier,
-            self.token,
-            &self.expected,
-            dispatch_boundary,
-        )
+        dispatch_authority_lease_with_witness(&self.verifier, self.token, &self.expected, dispatch_boundary)
     }
 }
 
 impl AuthorityLeaseVerifier {
-    /// Bind one exact lease to the only closed-world product final-use
-    /// capability. Raw verification helpers remain compatibility/test
-    /// primitives and must have no production product callers.
+    /// Exact one-shot product binding. Raw helpers stay closed to product callers.
     pub fn bind_dispatch(
         &self,
         lease_id: &str,
@@ -437,9 +399,7 @@ impl AuthorityLeaseVerifier {
 }
 
 impl AuthorityLeaseRegistry {
-    /// Production-only constructor. The complete bundle is mandatory, and is
-    /// revalidated immediately before local state opens. Compatibility clocks,
-    /// local frontier stores and evidence-only key claims cannot satisfy it.
+    /// Mandatory production bundle. Live custody remains bound after open.
     pub fn open_production_state_dir<C, S, K>(
         directory: &Path,
         owner_id: String,
@@ -448,23 +408,19 @@ impl AuthorityLeaseRegistry {
     where
         C: ProductionAuthorityClock + 'static,
         S: ProductionAuthorityFrontierStore<AuthorityLeaseFrontier> + 'static,
-        K: ProductionAuthorityKeyCustody,
+        K: ProductionAuthorityKeyCustody + 'static,
     {
-        bundle
-            .validate()
-            .map_err(|_| AuthorityLeaseError::InvalidTrust)?;
+        bundle.validate().map_err(|_| AuthorityLeaseError::InvalidTrust)?;
         if bundle.key_custody_evidence.key_role.as_str() != AUTHORITY_LEASE_KEY_ROLE {
             return Err(AuthorityLeaseError::InvalidTrust);
         }
-        let clock: Arc<dyn AuthorityClock> = bundle.clock.clone();
-        let frontier_store: Arc<dyn AuthorityFrontierStore<AuthorityLeaseFrontier>> =
-            bundle.frontier_store.clone();
+        let clock = runtime_clock::bind(bundle);
+        let frontier_store: Arc<dyn AuthorityFrontierStore<AuthorityLeaseFrontier>> = bundle.frontier_store.clone();
         Self::open_state_dir_with_trust(directory, owner_id, clock, frontier_store)
     }
 }
 
-/// Open a FinalUse key-ring owner only when the exact issuer public-key set is
-/// the live, externally custodied set named by the production trust bundle.
+/// Exact externally custodied issuer set and authenticated, live initial head.
 pub fn open_production_final_use_authority<C, S, K>(
     directory: &Path,
     signer_id: String,
@@ -475,30 +431,17 @@ pub fn open_production_final_use_authority<C, S, K>(
 where
     C: ProductionAuthorityClock + 'static,
     S: ProductionAuthorityFrontierStore<FinalUseFrontier> + 'static,
-    K: ProductionAuthorityKeyCustody,
+    K: ProductionAuthorityKeyCustody + 'static,
 {
     validate_final_use_production_bundle(&issuer_keys, bundle)?;
-    let now_unix_ms = bundle
-        .clock
-        .now_unix_ms()
-        .map_err(|_| FinalUseError::InvalidTrust)?;
-    let head = verified_head.head_at(now_unix_ms, bundle.clock.maximum_uncertainty_ms())?;
-    let clock: Arc<dyn AuthorityClock> = bundle.clock.clone();
-    let frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>> =
-        bundle.frontier_store.clone();
-    FinalUseAuthority::open_state_dir_with_issuer_keys(
-        directory,
-        signer_id,
-        issuer_keys,
-        head,
-        clock,
-        frontier_store,
-    )
+    let clock = runtime_clock::bind(bundle);
+    let (now, uncertainty) = clock.now_with_uncertainty().map_err(|_| FinalUseError::InvalidTrust)?;
+    let head = verified_head.head_at(now, uncertainty)?;
+    let frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>> = bundle.frontier_store.clone();
+    FinalUseAuthority::open_state_dir_with_issuer_keys(directory, signer_id, issuer_keys, head, clock, frontier_store)
 }
 
-/// Recover a FinalUse key-ring owner only after the same production bundle and
-/// issuer set validate. Existing state still has to match the external frontier;
-/// the supplied head initializes only a virgin store.
+/// Recover only an exact external frontier under the same production trust.
 pub fn recover_production_final_use_authority<C, S, K>(
     directory: &Path,
     signer_id: String,
@@ -509,25 +452,14 @@ pub fn recover_production_final_use_authority<C, S, K>(
 where
     C: ProductionAuthorityClock + 'static,
     S: ProductionAuthorityFrontierStore<FinalUseFrontier> + 'static,
-    K: ProductionAuthorityKeyCustody,
+    K: ProductionAuthorityKeyCustody + 'static,
 {
     validate_final_use_production_bundle(&issuer_keys, bundle)?;
-    let now_unix_ms = bundle
-        .clock
-        .now_unix_ms()
-        .map_err(|_| FinalUseError::InvalidTrust)?;
-    let head = verified_head.head_at(now_unix_ms, bundle.clock.maximum_uncertainty_ms())?;
-    let clock: Arc<dyn AuthorityClock> = bundle.clock.clone();
-    let frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>> =
-        bundle.frontier_store.clone();
-    FinalUseAuthority::recover_state_dir_with_issuer_keys(
-        directory,
-        signer_id,
-        issuer_keys,
-        head,
-        clock,
-        frontier_store,
-    )
+    let clock = runtime_clock::bind(bundle);
+    let (now, uncertainty) = clock.now_with_uncertainty().map_err(|_| FinalUseError::InvalidTrust)?;
+    let head = verified_head.head_at(now, uncertainty)?;
+    let frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>> = bundle.frontier_store.clone();
+    FinalUseAuthority::recover_state_dir_with_issuer_keys(directory, signer_id, issuer_keys, head, clock, frontier_store)
 }
 
 fn validate_final_use_production_bundle<C, S, K>(
@@ -539,21 +471,16 @@ where
     S: ProductionAuthorityFrontierStore<FinalUseFrontier>,
     K: ProductionAuthorityKeyCustody,
 {
-    bundle
-        .validate()
-        .map_err(|_| FinalUseError::InvalidTrust)?;
+    bundle.validate().map_err(|_| FinalUseError::InvalidTrust)?;
     if bundle.key_custody_evidence.key_role.as_str() != FINAL_USE_ISSUER_KEY_ROLE
-        || final_use_issuer_trust_sha256(issuer_keys)?
-            != bundle.key_custody_evidence.active_key_set_sha256
+        || final_use_issuer_trust_sha256(issuer_keys)? != bundle.key_custody_evidence.active_key_set_sha256
     {
         return Err(FinalUseError::InvalidTrust);
     }
     Ok(())
 }
 
-fn final_use_issuer_trust_sha256(
-    issuer_keys: &[FinalUseIssuerTrustKey],
-) -> Result<[u8; 32], FinalUseError> {
+fn final_use_issuer_trust_sha256(issuer_keys: &[FinalUseIssuerTrustKey]) -> Result<[u8; 32], FinalUseError> {
     if issuer_keys.is_empty() || issuer_keys.len() > 8 {
         return Err(FinalUseError::InvalidTrust);
     }
@@ -564,8 +491,7 @@ fn final_use_issuer_trust_sha256(
     let mut digest = Sha256::new();
     digest.update(b"hepta.kernel.authority.final-use-issuer-trust.v1\0");
     for candidate in keys {
-        let key = VerifyingKey::from_bytes(&candidate.verifying_key)
-            .map_err(|_| FinalUseError::InvalidTrust)?;
+        let key = VerifyingKey::from_bytes(&candidate.verifying_key).map_err(|_| FinalUseError::InvalidTrust)?;
         if !identifier(&candidate.key_id)
             || key.is_weak()
             || candidate.not_before_authority_epoch == 0
@@ -587,9 +513,7 @@ fn final_use_issuer_trust_sha256(
 fn identifier(value: &str) -> bool {
     !value.is_empty()
         && value.len() <= 128
-        && value
-            .bytes()
-            .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.' | b':'))
+        && value.bytes().all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.' | b':'))
 }
 
 #[cfg(test)]
