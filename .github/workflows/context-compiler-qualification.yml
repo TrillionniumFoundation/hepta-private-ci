@@ -50,7 +50,7 @@ concurrency:
 
 jobs:
   identity:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     outputs:
       source: ${{ steps.identity.outputs.source }}
       base: ${{ steps.identity.outputs.base }}
@@ -93,50 +93,31 @@ jobs:
           python3 -B - <<'PY'
           from pathlib import Path
 
-          forbidden = (
-              'contents: write',
-              'persist-credentials: true',
-              'git push',
-              'git commit',
-              'apply_context_compiler_',
-              'remediate_context_compiler_',
+          retired = (
+              Path('.github/workflows/context-compiler-source-promotion.yml'),
+              Path('.github/workflows/context-compiler-v3-source-bundle.yml'),
           )
-          offenders = []
+          forbidden = (
+              'contents:' + ' write',
+              'persist-credentials:' + ' true',
+              'git ' + 'push',
+              'git ' + 'commit',
+              'apply_context_' + 'compiler_',
+              'remediate_context_' + 'compiler_',
+          )
+          offenders = [f'{path}: retired source writer still present' for path in retired if path.exists()]
           for path in sorted(Path('.github/workflows').glob('context-compiler*.yml')):
               text = path.read_text(encoding='utf-8')
-              if path.name == 'context-compiler-v3-source-bundle.yml':
-                  # Ephemeral source generation is read-only and never a qualification receipt.
-                  if 'permissions:\n  contents: read' not in text:
-                      offenders.append(f'{path}: missing contents: read')
-                  for token in ('contents: write', 'persist-credentials: true', 'git push'):
-                      if token in text:
-                          offenders.append(f'{path}: {token}')
-                  continue
-              if path.name == 'context-compiler-source-promotion.yml':
-                  # This branch-only one-shot exists solely to turn reviewed generators into
-                  # ordinary source. It is not a qualification workflow and deletes itself
-                  # in the promoted source commit.
-                  required = (
-                      'codex/context-compiler-v3-closure-20260928',
-                      "contains(github.event.head_commit.message, '[promote-context-source]')",
-                      'rm -f .github/workflows/context-compiler-source-promotion.yml',
-                  )
-                  for token in required:
-                      if token not in text:
-                          offenders.append(f'{path}: missing restricted promotion invariant {token!r}')
-                  if 'pull_request:' in text or 'workflow_dispatch:' in text:
-                      offenders.append(f'{path}: promotion must remain push-only')
-                  continue
               for token in forbidden:
                   if token in text:
-                      offenders.append(f'{path}: {token}')
+                      offenders.append(f'{path}: forbidden source-writing token {token!r}')
           if offenders:
               raise SystemExit('source-writing context workflow detected:\n' + '\n'.join(offenders))
           PY
 
   source-snapshot:
     needs: identity
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -187,7 +168,7 @@ jobs:
       fail-fast: false
       matrix:
         lane: [source-head, synthetic-merge]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     timeout-minutes: 240
     env:
       CARGO_TERM_COLOR: always
@@ -268,7 +249,7 @@ jobs:
     name: Context compiler required
     if: always()
     needs: [identity, qualification]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     steps:
       - name: Require both candidate lanes
         env:
