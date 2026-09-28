@@ -210,13 +210,17 @@ fn indeterminate_dispatch_can_converge_to_a_durable_reconciliation() {
         &mut store,
     ));
     assert_eq!(reconciled.disposition, PlannerEffectDispositionV1::Succeeded);
-    assert_eq!(store.records().len(), 2);
+    assert_eq!(store.records().len(), 3);
     assert_eq!(
         store.records()[0].kind,
-        PlannerStoreRecordKindV1::TerminalReceipt
+        PlannerStoreRecordKindV1::Selection
     );
     assert_eq!(
         store.records()[1].kind,
+        PlannerStoreRecordKindV1::TerminalReceipt
+    );
+    assert_eq!(
+        store.records()[2].kind,
         PlannerStoreRecordKindV1::Reconciliation
     );
 }
