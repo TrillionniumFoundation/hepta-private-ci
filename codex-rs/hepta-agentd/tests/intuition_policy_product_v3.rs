@@ -453,6 +453,16 @@ fn v3_product_host_commits_once_replays_idempotently_and_reopens() {
         prepared.decision().decision.disposition,
         ProductionDispositionV1::Selected(_)
     ));
+    let production = prepared
+        .production_decision()
+        .expect("selected decision has a durable ledger projection");
+    assert_eq!(production.completeness.candidate_count, 2);
+    assert!(
+        production
+            .candidate_ids
+            .iter()
+            .any(|candidate| candidate.as_str() == "abstain")
+    );
     let decision_payload = prepared
         .decision_signing_payload()
         .expect("decision payload result")
@@ -527,8 +537,5 @@ fn v3_product_host_commits_once_replays_idempotently_and_reopens() {
     .expect("reopened writer");
     let records = reopened.records().expect("reopened records");
     assert_eq!(records.len(), 1, "idempotent replay appended a duplicate");
-    assert_eq!(
-        reopened.snapshot().expect("snapshot").records().len(),
-        1
-    );
+    assert_eq!(reopened.snapshot().expect("snapshot").records().len(), 1);
 }
