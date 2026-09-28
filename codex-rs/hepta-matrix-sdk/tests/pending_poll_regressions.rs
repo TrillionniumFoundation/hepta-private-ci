@@ -288,11 +288,7 @@ async fn check_interruption(interruption: Interruption) -> TestResult {
     let (_temp, layout, store, txn) = fixture().await?;
     let polls = Arc::new(AtomicU64::new(0));
     let constructions = Arc::new(AtomicU64::new(0));
-    let authority = Authorizer::new(
-        Arc::clone(&polls),
-        Arc::clone(&constructions),
-        interruption,
-    )?;
+    let authority = Authorizer::new(Arc::clone(&polls), Arc::clone(&constructions), interruption)?;
     let transport = Transport {
         polls: Arc::clone(&polls),
         constructions: Arc::clone(&constructions),

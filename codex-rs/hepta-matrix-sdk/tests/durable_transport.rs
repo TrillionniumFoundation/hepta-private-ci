@@ -943,9 +943,7 @@ async fn pre_io_crash_cuts_never_cross_network_and_retry_uses_fresh_grant() -> T
 
     // Cut 1: the current sender has created an opaque fenced claim and pinned
     // immutable content/scope, but no grant or transport future exists yet.
-    let mut first = store
-        .claim_outbox_fenced(10, config.lease_ms, 1)
-        .await?;
+    let mut first = store.claim_outbox_fenced(10, config.lease_ms, 1).await?;
     let first = first.pop().ok_or("missing first crash-cut claim")?;
     let prepared = store.prepare_outbox_dispatch(first.record(), 10).await?;
     store.record_outbox_prepared(&first, 11).await?;
@@ -956,12 +954,7 @@ async fn pre_io_crash_cuts_never_cross_network_and_retry_uses_fresh_grant() -> T
         &fake_outbound_identity(),
     )?;
     store
-        .pin_outbox_content(
-            &first,
-            &request.payload_digest,
-            &request.scope_digest,
-            12,
-        )
+        .pin_outbox_content(&first, &request.payload_digest, &request.scope_digest, 12)
         .await?;
     assert!(transport.txn_ids()?.is_empty());
     assert!(
@@ -976,9 +969,7 @@ async fn pre_io_crash_cuts_never_cross_network_and_retry_uses_fresh_grant() -> T
     // marked dispatching, but has not crossed kernel entry and has not created
     // or polled the lazy transport future.
     let store = MatrixDurableStore::open(&layout, MatrixDurableConfig::default()).await?;
-    let mut second = store
-        .claim_outbox_fenced(5_011, config.lease_ms, 1)
-        .await?;
+    let mut second = store.claim_outbox_fenced(5_011, config.lease_ms, 1).await?;
     let second = second.pop().ok_or("missing second crash-cut claim")?;
     let prepared = store
         .prepare_outbox_dispatch(second.record(), 5_011)

@@ -155,10 +155,7 @@ impl<'claim, T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + 
                         let Some(permit) = permit.take() else {
                             return Poll::Ready(Err(OutboxDispatchError::Store));
                         };
-                        let future = match self
-                            .transport
-                            .send_authorized(self.record, permit)
-                        {
+                        let future = match self.transport.send_authorized(self.record, permit) {
                             Ok(future) => future,
                             Err(error) => return Poll::Ready(Err(error)),
                         };
