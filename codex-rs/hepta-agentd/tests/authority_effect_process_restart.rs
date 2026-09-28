@@ -18,6 +18,7 @@ use std::time::UNIX_EPOCH;
 
 use anyhow::Context;
 use anyhow::Result;
+use anyhow::anyhow;
 use anyhow::bail;
 use anyhow::ensure;
 use app_test_support::MockResponsesConfig;
@@ -84,6 +85,7 @@ const PROVIDER_SCOPE: &str = "provider/process-fixture-v1";
 const DESTINATION_ID: &str = "provider:process-fixture";
 const AUTHORITY_EPOCH: u64 = 9;
 const PROCESS_TIMEOUT: Duration = Duration::from_secs(90);
+const TRUST_WINDOW_MS: u64 = 600_000;
 
 struct AgentProcess {
     child: Child,
@@ -122,6 +124,14 @@ fn now_ms() -> u64 {
             .as_millis(),
     )
     .expect("time fits u64")
+}
+
+fn test_signing_key(label: &[u8]) -> SigningKey {
+    let mut digest = Sha256::new();
+    digest.update(b"hepta.kernel-authority.process-recovery-signing-key.v1\0");
+    digest.update(label);
+    let seed: [u8; 32] = digest.finalize().into();
+    SigningKey::from_bytes(&seed)
 }
 
 fn hex(bytes: &[u8]) -> String {
@@ -219,7 +229,7 @@ async fn prepare_effect(
         )
         .await?;
     let claimed = store
-        .claim_taskflow_run(&intent.run_id, &fence, now + 1, 600_000)
+        .claim_taskflow_run(&intent.run_id, &fence, now + 1, TRUST_WINDOW_MS)
         .await?;
     store
         .apply_taskflow_command(&TaskFlowCommand::new(
@@ -273,7 +283,7 @@ fn signed_final_use(
         nonce,
         binding: intent.final_use_binding().expect("final-use binding"),
         not_before_unix_ms: now.saturating_sub(1_000),
-        expires_at_unix_ms: now + 120_000,
+        expires_at_unix_ms: now + TRUST_WINDOW_MS,
     };
     SignedFinalUseGrant {
         signature: signer
@@ -293,7 +303,7 @@ fn signed_revocation_update(
         "automation-revocation-distributor".to_string(),
         head,
         now.saturating_sub(1_000),
-        now + 120_000,
+        now + TRUST_WINDOW_MS,
     );
     SignedFinalUseRevocationUpdate {
         signature: signer
@@ -363,7 +373,10 @@ async fn wait_for_health(
 async fn wait_for_provider_method(server: &MockServer, expected: &str) -> Result<()> {
     let deadline = Instant::now() + Duration::from_secs(10);
     loop {
-        let requests = server.received_requests().await.context("provider requests")?;
+        let requests = server
+            .received_requests()
+            .await
+            .context("provider request recording disabled")?;
         if requests
             .iter()
             .any(|request| request.method.as_str() == expected)
@@ -403,7 +416,7 @@ fn assert_single_nonce_frame(path: &Path, grant: &SignedFinalUseGrant) -> Result
         "nonce epoch drifted"
     );
     ensure!(
-        bytes[8..] == grant.grant.nonce,
+        bytes[8..] == grant.grant.nonce[..],
         "nonce identity was not preserved"
     );
     Ok(bytes)
@@ -437,8 +450,12 @@ async fn two_agentd_processes_preserve_pending_nonce_attempt_witness_and_termina
     store.close().await;
 
     let provider = MockServer::start().await;
-    let provider_key =
-        ProviderEffectKey::for_operation(PROVIDER_SCOPE, &intent.run_id, &intent.step_id)?;
+    let provider_key = ProviderEffectKey::for_operation(
+        PROVIDER_SCOPE,
+        &intent.run_id,
+        &intent.step_id,
+    )
+    .map_err(|error| anyhow!("derive provider effect key: {error:?}"))?;
     let provider_receipt = Sha256Digest::for_bytes(b"provider-process-operation");
     let ack = serde_json::json!({
         "effect_key": provider_key.as_str(),
@@ -467,9 +484,9 @@ async fn two_agentd_processes_preserve_pending_nonce_attempt_witness_and_termina
         .mount(&provider)
         .await;
 
-    let contract_signer = SigningKey::from_bytes(&[23_u8; 32]);
-    let final_use_signer = SigningKey::from_bytes(&[29_u8; 32]);
-    let revocation_signer = SigningKey::from_bytes(&[31_u8; 32]);
+    let contract_signer = test_signing_key(b"provider-contract");
+    let final_use_signer = test_signing_key(b"final-use-issuer");
+    let revocation_signer = test_signing_key(b"revocation-distributor");
     let provider_config = HttpProviderEffectConfig {
         dispatch_url: format!("{}/dispatch", provider.uri()),
         lookup_url_template: format!("{}/status/{{key}}", provider.uri()),
@@ -478,7 +495,9 @@ async fn two_agentd_processes_preserve_pending_nonce_attempt_witness_and_termina
         contract_id: "agentd-process-effect-contract".to_string(),
         attestation: None,
     };
-    let contract_digest = provider_config.contract_sha256()?;
+    let contract_digest = provider_config
+        .contract_sha256()
+        .map_err(|error| anyhow!("derive provider contract digest: {error}"))?;
     let contract_statement = HttpProviderEffectContractAttestation::statement_for(
         "agentd-process-effect-contract",
         &contract_digest,
@@ -609,8 +628,10 @@ async fn two_agentd_processes_preserve_pending_nonce_attempt_witness_and_termina
     let authority_root = layout.automation_root().join("final-use-authority");
     let authority_snapshot = authority_root.join("authority.json");
     let pending_snapshot = wait_for_pending_snapshot(&authority_snapshot).await?;
-    ensure!(pending_snapshot["head"]["revision"] == 1);
-    ensure!(pending_snapshot["pending_revocations"]["revision"] == 2);
+    ensure!(pending_snapshot["head"]["revision"].as_u64() == Some(1));
+    ensure!(
+        pending_snapshot["pending_revocations"]["revision"].as_u64() == Some(2)
+    );
     let claims_path = authority_root.join("authority.claims");
     let first_claims = assert_single_nonce_frame(&claims_path, &grant)?;
 
@@ -699,11 +720,13 @@ async fn two_agentd_processes_preserve_pending_nonce_attempt_witness_and_termina
     second.kill_and_wait()?;
     let committed_snapshot: Value = serde_json::from_slice(&fs::read(&authority_snapshot)?)?;
     ensure!(committed_snapshot["pending_revocations"].is_null());
-    ensure!(committed_snapshot["head"]["revision"] == 2);
+    ensure!(committed_snapshot["head"]["revision"].as_u64() == Some(2));
     ensure!(
         committed_snapshot["head"]["revoked_grant_ids"]
             .as_array()
-            .is_some_and(|ids| ids.iter().any(|id| id == &Value::String(grant.grant.grant_id.clone())))
+            .is_some_and(|ids| ids.iter().any(|id| {
+                id.as_str() == Some(grant.grant.grant_id.as_str())
+            }))
     );
     let second_claims = assert_single_nonce_frame(&claims_path, &grant)?;
     ensure!(
@@ -725,7 +748,10 @@ async fn two_agentd_processes_preserve_pending_nonce_attempt_witness_and_termina
     ensure!(durable_receipt.receipt_digest == recovered_effect.receipt_digest);
     recovered_store.close().await;
 
-    let requests = provider.received_requests().await?;
+    let requests = provider
+        .received_requests()
+        .await
+        .context("provider request recording disabled")?;
     let posts = requests
         .iter()
         .filter(|request| request.method.as_str() == "POST")
