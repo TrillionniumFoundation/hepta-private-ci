@@ -16,6 +16,7 @@ use crate::hnmf::ContractIdV1;
 use crate::hnmf::MemoryEventV1;
 use crate::hnmf_learning::ForgetPropagationReceiptV1;
 use crate::hnmf_learning::RecallPacketV1;
+use crate::wire::ContractDigestProfileV1;
 use crate::wire::canonical_contract_digest_v1;
 
 const CONSUMER_BINDING_DOMAIN: &[u8] = b"hepta.cognitive.consumer-binding.v1\0";
@@ -120,13 +121,31 @@ pub struct CanonicalConsumerBindingV1 {
 
 impl CanonicalConsumerBindingV1 {
     fn seal(mut value: Self) -> Result<Self, CanonicalConsumerBindingError> {
+        authorize_migration_posture_v1(value.consumer, value.migration_posture)?;
         value.binding_sha256 = value.compute_binding_sha256()?;
-        value.validate()?;
+        value.validate_historical()?;
         Ok(value)
     }
 
+    /// Validate this binding for a current product use.
+    ///
+    /// In addition to frozen structural and digest checks, this consults the
+    /// current migration registry. A historical receipt must not call this
+    /// method after the owning consumer has retired its compatibility surface;
+    /// use [`Self::validate_historical`] for immutable audit evidence instead.
     pub fn validate(&self) -> Result<(), CanonicalConsumerBindingError> {
-        authorize_migration_posture_v1(self.consumer, self.migration_posture)?;
+        self.validate_historical()?;
+        authorize_migration_posture_v1(self.consumer, self.migration_posture)
+    }
+
+    /// Validate immutable historical evidence without reinterpreting it through
+    /// today's migration registry.
+    ///
+    /// This still checks the frozen digest, payload/consumer matrix, migration
+    /// field shape and mandatory final-use revalidation marker. It deliberately
+    /// does not authorize a new use and therefore cannot revive a retired legacy
+    /// path or replace the current owner observation required by `validate()`.
+    pub fn validate_historical(&self) -> Result<(), CanonicalConsumerBindingError> {
         match self.migration_posture {
             CanonicalMigrationPostureV1::CompatibilityBound
                 if self.compatibility_payload_sha256.is_none() =>
@@ -155,6 +174,14 @@ impl CanonicalConsumerBindingV1 {
         Ok(())
     }
 
+    /// The digest stored in a V1 consumer binding is intentionally the frozen
+    /// historical profile. Current semantic parity is checked separately with
+    /// the schema-bound profile by `CanonicalHandoffV1`.
+    #[must_use]
+    pub const fn payload_digest_profile(&self) -> ContractDigestProfileV1 {
+        ContractDigestProfileV1::FrozenCanonicalJsonV1
+    }
+
     pub fn compute_binding_sha256(
         &self,
     ) -> Result<ContractDigestV1, CanonicalConsumerBindingError> {
@@ -178,18 +205,15 @@ impl CanonicalConsumerBindingV1 {
     }
 }
 
-/// Fail closed when a caller tries to promote or retire a consumer by choosing
-/// a posture in the request. The reviewed registry state, not the payload
-/// producer, authorizes migration. Current shadow and pending-cutover consumers
-/// therefore require an exact compatibility digest.
-pub fn authorize_migration_posture_v1(
-    consumer: CanonicalConsumerV1,
+/// Return whether the current reviewed registry state permits a newly created
+/// or newly used binding with `posture`. Historical evidence uses its frozen
+/// posture and is checked by `CanonicalConsumerBindingV1::validate_historical`.
+#[must_use]
+pub const fn migration_posture_authorized_for_state_v1(
+    state: ConsumerConvergenceStateV1,
     posture: CanonicalMigrationPostureV1,
-) -> Result<(), CanonicalConsumerBindingError> {
-    let registration = registered_consumer_v1(consumer.as_str()).ok_or(
-        CanonicalConsumerBindingError::ConsumerNotRegistered { consumer },
-    )?;
-    let authorized = match registration.state {
+) -> bool {
+    match state {
         ConsumerConvergenceStateV1::CanonicalShadow
         | ConsumerConvergenceStateV1::RegisteredPendingCutover => {
             matches!(posture, CanonicalMigrationPostureV1::CompatibilityBound)
@@ -203,8 +227,21 @@ pub fn authorize_migration_posture_v1(
             posture,
             CanonicalMigrationPostureV1::Native | CanonicalMigrationPostureV1::LegacyRetired
         ),
-    };
-    if authorized {
+    }
+}
+
+/// Fail closed when a caller tries to promote or retire a consumer by choosing
+/// a posture in the request. The reviewed registry state, not the payload
+/// producer, authorizes migration. Current shadow and pending-cutover consumers
+/// therefore require an exact compatibility digest.
+pub fn authorize_migration_posture_v1(
+    consumer: CanonicalConsumerV1,
+    posture: CanonicalMigrationPostureV1,
+) -> Result<(), CanonicalConsumerBindingError> {
+    let registration = registered_consumer_v1(consumer.as_str()).ok_or(
+        CanonicalConsumerBindingError::ConsumerNotRegistered { consumer },
+    )?;
+    if migration_posture_authorized_for_state_v1(registration.state, posture) {
         Ok(())
     } else {
         Err(CanonicalConsumerBindingError::MigrationPostureNotAuthorized {
