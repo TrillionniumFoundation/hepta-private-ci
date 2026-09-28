@@ -1,0 +1,59 @@
+name: control.engineering projection
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - codex/control-engineering-production-closure-20260928
+
+permissions:
+  contents: read
+
+concurrency:
+  group: control-engineering-projection-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  project:
+    name: Generate exact-blob status projection
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONPATH: tools/hepta-engineering-control
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Generate and verify canonical projections
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.sha }}"
+          python3 -m control_engineering_v2.status_projection prepare \
+            --repository "$GITHUB_WORKSPACE" \
+            --output "$RUNNER_TEMP/control-engineering-projection.json"
+          python3 -m control_engineering_v2.status_projection verify \
+            --repository "$GITHUB_WORKSPACE"
+          git diff --check
+
+      - name: Exercise repository closure against projected worktree
+        shell: bash
+        run: python3 scripts/hepta-gap-closure.py verify
+
+      - name: Retain generated canonical files
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: control-engineering-projection-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/control-engineering-projection.json
+            docs/modules/control.engineering/IMPLEMENTATION_MAP.json
+            docs/modules/control.engineering/STATUS.json
+            docs/modules/control.engineering/API_COMPATIBILITY.json
+          if-no-files-found: error
+          retention-days: 30
