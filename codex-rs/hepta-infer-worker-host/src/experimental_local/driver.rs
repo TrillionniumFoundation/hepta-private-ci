@@ -214,6 +214,10 @@ impl AttestedModelHandle {
         self.device_epoch
     }
 
+    pub fn worker_generation(&self) -> u64 {
+        self.worker_generation
+    }
+
     pub fn resident_memory_bytes(&self) -> u64 {
         self.resident_memory_bytes
     }
