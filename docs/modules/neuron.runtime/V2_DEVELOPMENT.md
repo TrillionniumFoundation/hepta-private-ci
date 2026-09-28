@@ -200,3 +200,30 @@ under the same revision directory is rejected. Diagnostic offline receipts do no
 forge upstream verification; later audits remain separate records. Source identity
 does not imply code review, licensing, independent calibration or product authority.
 The guarded V2 owner and its existing state/operation/witness stores remain unchanged.
+
+## Concrete DecisionCell encoder process: source scope
+
+The inference-worker Python package contains a frozen, manifest-bound mDeBERTa
+encoder and the shared trained organ/cell/typed-head graph. Its resident process
+protocol supports exact observed-result reuse, query-only lookup, bounded pipe I/O,
+physical child cancellation and owner-side private-snapshot cleanup. Detailed
+commands and limits are in the
+[qualification guide](../../../codex-rs/hepta-neuron/qualification/README.md#private-resident-encoder-process-and-bounded-interruption).
+The local IPC frame is package-private; it does not replace ComputerActionIR or
+change the registered DecisionCell request/receipt schema.
+
+This four-target CPU profile is stateless, has no parameter-value head, and is not
+installed by ordinary Agentd startup. The Python model observation, the Rust
+`DecisionCellModelPortV2` adapter, the durable Neuron commit, and a platform effect
+are distinct boundaries. A production composition still has to bind raw text and
+target projections to the admitted Rust request, select the exact parameter and
+calibration/OOD bundle through current artifact-owner trust, define clock-domain
+conversion and supply measured feature/state semantics. Do not fabricate a
+learned state successor or treat a Python response hash as that complete bridge.
+
+Transport/model lifecycle tests and a real isolated clipboard qualification do
+not, individually or together, prove a normal product model-to-action chain.
+Synthetic-corpus backend runs and actual adapter/head optimization remain bounded
+experiments, not independently accepted OOD calibration or prospective efficacy.
+The developer/operator's permission to run experiments is not a third-party
+provider's contractual training/distribution permission or an independent review.

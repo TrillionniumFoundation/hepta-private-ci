@@ -9,6 +9,9 @@ import sys
 import threading
 import time
 import unittest
+from unittest import mock
+import subprocess
+import tempfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "hepta-infer-worker-host/python"))
 from decision_cell_process import FrozenEncoderProcess, WorkerTransportError, WorkerDeadline, WorkerCancelled
@@ -156,6 +159,34 @@ class FrozenProcessTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "frame bound"):
             child.exchange(value, "a" * 64)
         self.assertIsNone(child._process.poll())
+
+    def test_failed_spawn_cleans_owned_snapshot_parent(self):
+        created = []
+        original = tempfile.TemporaryDirectory
+        def tracked(*args, **kwargs):
+            value = original(*args, **kwargs)
+            created.append(Path(value.name))
+            return value
+        with original(prefix="hepta-spawn-test-") as missing_root:
+            executable = str(Path(missing_root) / "missing-executable")
+            with mock.patch("decision_cell_process.tempfile.TemporaryDirectory", side_effect=tracked):
+                with self.assertRaises(FileNotFoundError):
+                    FrozenEncoderProcess([executable], self.ready, environment={})
+        self.assertEqual(len(created), 1)
+        self.assertFalse(created[0].exists())
+
+    def test_uncertain_exit_retains_snapshot_and_can_finish_cleanup(self):
+        child = self.launch("hang")
+        with mock.patch.object(child._process, "wait", side_effect=subprocess.TimeoutExpired("fixture", 5)):
+            with self.assertRaises(subprocess.TimeoutExpired):
+                child.close()
+        self.assertTrue(child.private_snapshot_root.exists())
+        self.assertTrue(child._closed)
+        self.assertFalse(child._reaped)
+        with self.assertRaises(WorkerTransportError):
+            child.exchange(self.request(), "a" * 64)
+        child.close()
+        self.assert_reaped(child)
 
 
 if __name__ == "__main__":
