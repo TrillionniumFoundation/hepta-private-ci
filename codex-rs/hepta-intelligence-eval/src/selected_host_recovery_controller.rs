@@ -42,36 +42,166 @@ impl RecoveryTrustFrontierV1 {
         now: u64,
         previous: Option<Self>,
     ) -> Result<Self, RecordedError> {
-        let current = Self {
+        Self {
             root_digest: trust.root_digest(),
             distribution_digest: trust.distribution_digest(),
             generation: trust.generation(),
             effective_at: trust.effective_at(),
             authority_epoch: trust.verifier().authority_epoch(),
-        };
-        if current.root_digest.is_zero()
-            || current.distribution_digest.is_zero()
-            || current.generation == 0
-            || current.authority_epoch == 0
-            || current.effective_at > now
+        }
+        .validate(now, previous)
+    }
+
+    fn validate(self, now: u64, previous: Option<Self>) -> Result<Self, RecordedError> {
+        if self.root_digest.is_zero()
+            || self.distribution_digest.is_zero()
+            || self.generation == 0
+            || self.authority_epoch == 0
+            || self.effective_at > now
         {
             return Err(RecordedError::Invariant(
                 "selected-host recovery trust is not current",
             ));
         }
         if let Some(previous) = previous
-            && (current.root_digest != previous.root_digest
-                || current.generation < previous.generation
-                || current.effective_at < previous.effective_at
-                || current.authority_epoch < previous.authority_epoch
-                || (current.generation == previous.generation
-                    && current.distribution_digest != previous.distribution_digest))
+            && (self.root_digest != previous.root_digest
+                || self.generation < previous.generation
+                || self.effective_at < previous.effective_at
+                || self.authority_epoch < previous.authority_epoch
+                || (self.generation == previous.generation
+                    && self.distribution_digest != previous.distribution_digest))
         {
             return Err(RecordedError::Invariant(
                 "selected-host recovery trust regressed",
             ));
         }
-        Ok(current)
+        Ok(self)
+    }
+}
+
+#[cfg(test)]
+mod trust_frontier_tests {
+    use super::*;
+
+    fn frontier(label: &str) -> RecoveryTrustFrontierV1 {
+        RecoveryTrustFrontierV1 {
+            root_digest: Digest32::of_bytes(format!("root:{label}").as_bytes()),
+            distribution_digest: Digest32::of_bytes(
+                format!("distribution:{label}").as_bytes(),
+            ),
+            generation: 7,
+            effective_at: 70,
+            authority_epoch: 11,
+        }
+    }
+
+    fn assert_not_current(value: RecoveryTrustFrontierV1, now: u64) {
+        assert!(matches!(
+            value.validate(now, None),
+            Err(RecordedError::Invariant(
+                "selected-host recovery trust is not current"
+            ))
+        ));
+    }
+
+    fn assert_regressed(value: RecoveryTrustFrontierV1, previous: RecoveryTrustFrontierV1) {
+        assert!(matches!(
+            value.validate(100, Some(previous)),
+            Err(RecordedError::Invariant(
+                "selected-host recovery trust regressed"
+            ))
+        ));
+    }
+
+    #[test]
+    fn recovery_trust_rejects_zero_and_future_frontiers() {
+        let valid = frontier("valid");
+        assert_not_current(
+            RecoveryTrustFrontierV1 {
+                root_digest: Digest32::ZERO,
+                ..valid
+            },
+            100,
+        );
+        assert_not_current(
+            RecoveryTrustFrontierV1 {
+                distribution_digest: Digest32::ZERO,
+                ..valid
+            },
+            100,
+        );
+        assert_not_current(
+            RecoveryTrustFrontierV1 {
+                generation: 0,
+                ..valid
+            },
+            100,
+        );
+        assert_not_current(
+            RecoveryTrustFrontierV1 {
+                authority_epoch: 0,
+                ..valid
+            },
+            100,
+        );
+        assert_not_current(
+            RecoveryTrustFrontierV1 {
+                effective_at: 101,
+                ..valid
+            },
+            100,
+        );
+    }
+
+    #[test]
+    fn recovery_trust_rejects_every_in_page_regression_class() {
+        let previous = frontier("previous");
+        assert_regressed(frontier("different-root"), previous);
+        assert_regressed(
+            RecoveryTrustFrontierV1 {
+                generation: previous.generation - 1,
+                ..previous
+            },
+            previous,
+        );
+        assert_regressed(
+            RecoveryTrustFrontierV1 {
+                effective_at: previous.effective_at - 1,
+                ..previous
+            },
+            previous,
+        );
+        assert_regressed(
+            RecoveryTrustFrontierV1 {
+                authority_epoch: previous.authority_epoch - 1,
+                ..previous
+            },
+            previous,
+        );
+        assert_regressed(
+            RecoveryTrustFrontierV1 {
+                distribution_digest: Digest32::of_bytes(b"same-generation-substitution"),
+                ..previous
+            },
+            previous,
+        );
+    }
+
+    #[test]
+    fn recovery_trust_accepts_same_frontier_and_monotonic_rotation() {
+        let previous = frontier("previous");
+        assert!(previous.validate(100, Some(previous)).is_ok());
+        let rotated = RecoveryTrustFrontierV1 {
+            distribution_digest: Digest32::of_bytes(b"rotated-distribution"),
+            generation: previous.generation + 1,
+            effective_at: previous.effective_at + 1,
+            authority_epoch: previous.authority_epoch + 1,
+            ..previous
+        };
+        assert_eq!(
+            rotated.validate(100, Some(previous)).map(|value| value.generation),
+            Ok(rotated.generation)
+        );
     }
 }
 
