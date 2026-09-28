@@ -85,6 +85,7 @@
       "released": false,
       "notes": [
         "The public owner wrapper holds an operating-system-backed lock across open, backup and restore; uncertain mutation errors poison the current handle until drop and reopen.",
+        "A poisoned handle rejects authoritative checkpoint verification and dispatch-state inspection; its retained in-memory records are diagnostic only.",
         "Compaction preserves all non-snapshot semantic evidence and its preceding snapshot; independent anchor ownership and two-process target-host recovery remain external gates."
       ]
     },
@@ -102,6 +103,7 @@
       "notes": [
         "A stable request/grant dispatch claim is persisted before final authority revalidation and executor invocation; v1 claim envelopes remain readable.",
         "Conclusive receipts are returned unchanged, unresolved claims reconcile by stable operation identity with the original grant, and public reconciliation requires an existing durable claim.",
+        "PlannerStore terminal sinks verify the canonical receipt digest, exact durable claim and original grant, and reject replacement of a conclusive terminal result.",
         "Authority failure after claim persists an explicit not-dispatched terminal receipt instead of leaving a false unknown-effect state."
       ]
     },
@@ -118,7 +120,7 @@
       "released": false,
       "notes": [
         "Trusted in-process read-only handlers are not a sandbox.",
-        "Fanout receipts preserve every admitted target identity and partial-delivery disposition."
+        "Fanout receipts preserve every admitted target identity, partial-delivery disposition, and exact output digest for each successfully delivered prefix target."
       ]
     }
   },
