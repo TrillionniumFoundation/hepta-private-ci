@@ -4,27 +4,27 @@
 //! prove that a historical generation is still current or grant any authority.
 
 use super::*;
-
-/// Query-local inspections plus retained support copies, not a latency promise.
-/// The cognitive owner has at most 10,000 node and 50,000 edge occurrences per
-/// scope, so this ceiling does not tighten that owner's admitted source bound.
-const MAX_QUERY_SUPPORT_WORK_V2: u64 = 1_000_000;
+use crate::DEFAULT_QUERY_SUPPORT_WORK_V2;
+use crate::KnowledgeQueryAdmissionErrorV2;
+use crate::MAX_QUERY_SUPPORT_WORK_V2;
 
 /// Charge before inspecting or copying. Exhaustion never yields a partial result
-/// with a misleading exact omitted_count. Lower caller limits cannot raise the
-/// library ceiling. Generation validation/index construction is a separate cost.
+/// with a misleading exact omitted_count. Generation validation/index
+/// construction is a separate cost.
 fn charge_support_work(
     used: &mut u64,
     maximum: u64,
     amount: usize,
-) -> Result<(), KnowledgeGenerationErrorV2> {
-    let amount = u64::try_from(amount)
-        .map_err(|_| KnowledgeGenerationErrorV2::InvalidQueryLimit)?;
-    let next = used
-        .checked_add(amount)
-        .filter(|next| *next <= maximum)
-        .ok_or(KnowledgeGenerationErrorV2::InvalidQueryLimit)?;
-    *used = next;
+) -> Result<(), KnowledgeQueryAdmissionErrorV2> {
+    let amount = u64::try_from(amount).unwrap_or(u64::MAX);
+    let attempted = used.checked_add(amount).unwrap_or(u64::MAX);
+    if attempted > maximum {
+        return Err(KnowledgeQueryAdmissionErrorV2::BudgetExceeded {
+            maximum_support_work: maximum,
+            attempted_support_work: attempted,
+        });
+    }
+    *used = attempted;
     Ok(())
 }
 
@@ -97,42 +97,83 @@ impl VerifiedKnowledgeGenerationV2 {
         query: KnowledgeRelationQueryV2,
     ) -> Result<(KnowledgeRelationResultV2, KnowledgeRelationQueryWorkV2), KnowledgeGenerationErrorV2>
     {
-        self.query_relations_with_work_budget(query, MAX_QUERY_SUPPORT_WORK_V2)
+        self.query_relations_with_work_budget(query, DEFAULT_QUERY_SUPPORT_WORK_V2)
     }
 
-    /// Apply a lower request-local resource ceiling without changing successful
-    /// query semantics or receipts. One work unit is one support inspected or
-    /// copied. Invalid/exhausted budgets return InvalidQueryLimit, never a
-    /// truncated-success result. The budget is not an authorization mechanism.
+    /// Backward-compatible budgeted query surface.
+    ///
+    /// Invalid budgets and runtime exhaustion retain the historical
+    /// `InvalidQueryLimit` error. New external callers should use
+    /// [`Self::query_relations_external`] for distinct admission and exhaustion
+    /// classification.
     pub fn query_relations_with_work_budget(
         &self,
         query: KnowledgeRelationQueryV2,
         maximum_support_work: u64,
     ) -> Result<(KnowledgeRelationResultV2, KnowledgeRelationQueryWorkV2), KnowledgeGenerationErrorV2>
     {
-        if query.generation_digest != self.generation.generation_digest {
-            return Err(KnowledgeGenerationErrorV2::DigestMismatch(
-                "query_generation",
-            ));
+        match self.query_relations_external(query, Some(maximum_support_work)) {
+            Ok(result) => Ok(result),
+            Err(KnowledgeQueryAdmissionErrorV2::Query(error)) => Err(error),
+            Err(KnowledgeQueryAdmissionErrorV2::InvalidBudget { .. })
+            | Err(KnowledgeQueryAdmissionErrorV2::BudgetExceeded { .. }) => {
+                Err(KnowledgeGenerationErrorV2::InvalidQueryLimit)
+            }
         }
-        if maximum_support_work == 0
-            || maximum_support_work > MAX_QUERY_SUPPORT_WORK_V2
-            || query.seed_node_ids.len() > MAX_KNOWLEDGE_NODES_V2
+    }
+
+    /// The bounded external query contract.
+    ///
+    /// `None` selects [`DEFAULT_QUERY_SUPPORT_WORK_V2`]. A caller may lower the
+    /// budget but cannot raise [`MAX_QUERY_SUPPORT_WORK_V2`]. A successful empty
+    /// result is `Ok` with no edges; exhausted work is `BudgetExceeded`; invalid
+    /// admission is `InvalidBudget`. No branch returns a partial success.
+    pub fn query_relations_external(
+        &self,
+        query: KnowledgeRelationQueryV2,
+        maximum_support_work: Option<u64>,
+    ) -> Result<
+        (KnowledgeRelationResultV2, KnowledgeRelationQueryWorkV2),
+        KnowledgeQueryAdmissionErrorV2,
+    > {
+        let maximum_support_work =
+            maximum_support_work.unwrap_or(DEFAULT_QUERY_SUPPORT_WORK_V2);
+        if maximum_support_work == 0 || maximum_support_work > MAX_QUERY_SUPPORT_WORK_V2 {
+            return Err(KnowledgeQueryAdmissionErrorV2::InvalidBudget {
+                requested_support_work: maximum_support_work,
+                maximum_support_work: MAX_QUERY_SUPPORT_WORK_V2,
+            });
+        }
+        self.query_relations_with_admitted_budget(query, maximum_support_work)
+    }
+
+    fn query_relations_with_admitted_budget(
+        &self,
+        query: KnowledgeRelationQueryV2,
+        maximum_support_work: u64,
+    ) -> Result<
+        (KnowledgeRelationResultV2, KnowledgeRelationQueryWorkV2),
+        KnowledgeQueryAdmissionErrorV2,
+    > {
+        if query.generation_digest != self.generation.generation_digest {
+            return Err(KnowledgeGenerationErrorV2::DigestMismatch("query_generation").into());
+        }
+        if query.seed_node_ids.len() > MAX_KNOWLEDGE_NODES_V2
             || query.relation_kinds.len() > MAX_KNOWLEDGE_EDGES_V2
         {
-            return Err(KnowledgeGenerationErrorV2::InvalidQueryLimit);
+            return Err(KnowledgeGenerationErrorV2::InvalidQueryLimit.into());
         }
         ensure_unique_ids("query_seed", &query.seed_node_ids)?;
         let seeds = query.seed_node_ids.iter().cloned().collect::<BTreeSet<_>>();
         let mut kinds = BTreeSet::new();
         for kind in &query.relation_kinds {
             if !kinds.insert(kind.clone()) {
-                return Err(KnowledgeGenerationErrorV2::DuplicateRelationKind);
+                return Err(KnowledgeGenerationErrorV2::DuplicateRelationKind.into());
             }
         }
         let maximum = usize::try_from(query.maximum_edges).unwrap_or(usize::MAX);
         if maximum == 0 || maximum > MAX_KNOWLEDGE_EDGES_V2 {
-            return Err(KnowledgeGenerationErrorV2::InvalidQueryLimit);
+            return Err(KnowledgeGenerationErrorV2::InvalidQueryLimit.into());
         }
         let request_digest = compute_query_request_digest(&query, &seeds, &kinds);
         // A validated generation bounds this set by MAX_KNOWLEDGE_EDGES_V2;

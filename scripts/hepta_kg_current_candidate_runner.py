@@ -27,6 +27,7 @@ NATIVE = {
     "prompt-registry",
     "prompt-optimizer",
     "cognitive-owner",
+    "delivery-consistency",
     "agentd-default",
     "agentd-witness",
 }
@@ -100,8 +101,7 @@ class Executor:
         status = 127
         try:
             with log_path.open("wb") as log:
-                encoded = heading.encode("utf-8")
-                log.write(encoded)
+                log.write(heading.encode("utf-8"))
                 log.flush()
                 process = subprocess.Popen(
                     list(command),
@@ -122,7 +122,10 @@ class Executor:
                     sys.stdout.buffer.flush()
                 status = process.wait()
         except OSError as exc:
-            message = f"runner failed to start/record {name}: {type(exc).__name__}: {exc}\n"
+            message = (
+                f"runner failed to start/record {name}: "
+                f"{type(exc).__name__}: {exc}\n"
+            )
             sys.stderr.write(message)
             try:
                 with log_path.open("ab") as log:
@@ -132,7 +135,8 @@ class Executor:
         if status == 0:
             try:
                 semantic_status = native_summary_status(
-                    name, log_path.read_text(encoding="utf-8", errors="replace")
+                    name,
+                    log_path.read_text(encoding="utf-8", errors="replace"),
                 )
             except OSError:
                 semantic_status = 94
@@ -267,7 +271,15 @@ def main() -> int:
         )
         executor.run(
             "kg-kernel",
-            ["cargo", "test", "--locked", "-p", "codex-hepta-kg", "--", "--nocapture"],
+            [
+                "cargo",
+                "test",
+                "--locked",
+                "-p",
+                "codex-hepta-kg",
+                "--",
+                "--nocapture",
+            ],
             cwd=CODEX,
         )
         executor.run(
@@ -342,6 +354,22 @@ def main() -> int:
                 "-p",
                 "codex-hepta-memory",
                 "--lib",
+                "--",
+                "--nocapture",
+                "--test-threads=1",
+            ],
+            cwd=CODEX,
+        )
+        executor.run(
+            "delivery-consistency",
+            [
+                "cargo",
+                "test",
+                "--locked",
+                "-p",
+                "codex-hepta-memory",
+                "--test",
+                "kg_delivery_consistency",
                 "--",
                 "--nocapture",
                 "--test-threads=1",

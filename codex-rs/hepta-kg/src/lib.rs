@@ -41,6 +41,83 @@ pub use prompt_factor::PromptFactorProjectionErrorV1;
 pub use prompt_factor::PromptFactorProjectionV1;
 pub use prompt_factor::build_prompt_factor_projection_v1;
 
+/// Default support-inspection/copy budget for the bounded external query entry.
+///
+/// This is operation accounting, not a latency, allocator or authorization bound.
+pub const DEFAULT_QUERY_SUPPORT_WORK_V2: u64 = 1_000_000;
+
+/// Hard library ceiling for one bounded external query.
+pub const MAX_QUERY_SUPPORT_WORK_V2: u64 = 1_000_000;
+
+/// Admission/result classification for the bounded external query entry.
+///
+/// Successful empty results remain `Ok`; budget exhaustion is a distinct error
+/// and never returns a partial result or an inexact omitted count. Semantic or
+/// source-cut failures retain their original generation error.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum KnowledgeQueryAdmissionErrorV2 {
+    InvalidBudget {
+        requested_support_work: u64,
+        maximum_support_work: u64,
+    },
+    BudgetExceeded {
+        maximum_support_work: u64,
+        attempted_support_work: u64,
+    },
+    Query(KnowledgeGenerationErrorV2),
+}
+
+impl From<KnowledgeGenerationErrorV2> for KnowledgeQueryAdmissionErrorV2 {
+    fn from(error: KnowledgeGenerationErrorV2) -> Self {
+        Self::Query(error)
+    }
+}
+
+impl fmt::Display for KnowledgeQueryAdmissionErrorV2 {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::InvalidBudget {
+                requested_support_work,
+                maximum_support_work,
+            } => write!(
+                formatter,
+                "invalid query support-work budget {requested_support_work}; maximum is {maximum_support_work}"
+            ),
+            Self::BudgetExceeded {
+                maximum_support_work,
+                attempted_support_work,
+            } => write!(
+                formatter,
+                "query support-work budget {maximum_support_work} exhausted at {attempted_support_work}"
+            ),
+            Self::Query(error) => write!(formatter, "{error}"),
+        }
+    }
+}
+
+impl StdError for KnowledgeQueryAdmissionErrorV2 {
+    fn source(&self) -> Option<&(dyn StdError + 'static)> {
+        match self {
+            Self::Query(error) => Some(error),
+            Self::InvalidBudget { .. } | Self::BudgetExceeded { .. } => None,
+        }
+    }
+}
+
+/// Explicit unbounded reference/oracle query.
+///
+/// Product-facing callers should use
+/// [`VerifiedKnowledgeGenerationV2::query_relations_external`] instead. This
+/// function validates and scans the complete generation and exists for oracle,
+/// migration and trusted-owner comparison work; it is not the external resource
+/// contract.
+pub fn query_relations_reference_unbounded(
+    generation: &KnowledgeGenerationV2,
+    query: KnowledgeRelationQueryV2,
+) -> Result<KnowledgeRelationResultV2, KnowledgeGenerationErrorV2> {
+    generation::query_relations(generation, query)
+}
+
 const MAX_EDGES: usize = 65_536;
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]

@@ -1,96 +1,83 @@
 # knowledge.graph acceptance extension — 2026-09-28
 
-This candidate extends the existing sealed indexed-query implementation and
-exact-candidate workflow. It does not replace the runtime writer, create another
-fact store or grant production acceptance.
+This candidate closes delivery evidence around the existing indexed-query and durable-owner implementation. It does not add another graph store, replace the selected writer, or grant production acceptance.
 
-## Public query verification
+## Public query resource contract
 
-`codex-rs/hepta-kg/tests/query_acceptance.rs` adds five public-API tests. The
-reference/indexed equivalence test exercises 768 combinations of seed subsets,
-structural and temporal cuts, relation filters and output limits. Full result
-objects are compared, including request/result digests and exact omitted counts.
-Input permutations, self-loops, duplicate support identity with payload drift,
-exact work-budget exhaustion, simultaneous node/edge withdrawal, retained
-dangling-edge rejection and mismatched source-cut digests are covered.
+`VerifiedKnowledgeGenerationV2` owns one validated immutable generation and derived node, incident-edge and relation indexes. Temporal visibility is evaluated on every request; only structural validation and immutable indexes are reused.
 
-The actual indexed type is `VerifiedKnowledgeGenerationV2` in `indexed_query.rs`.
-It owns a validated immutable generation and derived adjacency/node indexes.
-Product `RetrievalGeneration` caches that view and compact support identities
-inside one owner's SQLite transaction. Raw `query_relations` remains the checked
-reference path. The indexed path's default ceiling is 1,000,000 support inspections
-plus copies; validation/index construction are separate costs. No constant-time
-or allocation-byte bound is implied by the output edge count.
+The external entry point is `VerifiedKnowledgeGenerationV2::query_relations_external`. It has a public default budget and a public hard maximum. A caller may lower the per-request support-work budget but cannot raise the library ceiling. Its outcomes are deliberately distinct:
 
-Budget exhaustion is an error, never a truncated successful result. Consequently
-a successful empty result is distinguishable from an exhausted request, and no
-caller receives an inexact omitted count. The explicit lower-budget API cannot
-raise the library ceiling. Trusted code that needs broader work must use a
-different, named operation instead of silently treating the external entry point
-as unbounded.
+- a successful empty result is `Ok` with no edges and an exact omitted count;
+- invalid admission is `KnowledgeQueryAdmissionErrorV2::InvalidBudget`;
+- runtime exhaustion is `KnowledgeQueryAdmissionErrorV2::BudgetExceeded`;
+- semantic and source-cut failures retain `KnowledgeGenerationErrorV2` inside `Query`;
+- no exhausted request returns a partial success.
 
-## Publish, crash, recovery and retry evidence
+`query_relations_reference_unbounded` is the explicitly named full-scan oracle operation. It is retained for migration, trusted-owner comparison and equivalence testing; it is not the external resource contract. The older budgeted method remains source-compatible and maps admission/exhaustion to its historical `InvalidQueryLimit` error.
 
-The durable owner suite names the lost-acknowledgement replay, competing-head
-rollback and publication-failure rollback tests. The ignored destructive test
-`qualification_kg_projection_crash_windows_restore_exact_predecessor` launches a
-child process, waits at both `before_semantic_receipt` and
-`after_semantic_receipt_before_current_pointer`, force-kills the child and reopens
-the same store. Each reopen must contain the exact predecessor and pass SQLite
-integrity checking. Zero-test, skipped or build-only output is rejected.
+`codex-rs/hepta-kg/tests/query_resource_contract.rs` proves that true empty, invalid budget, exhausted budget and explicit unbounded reference execution cannot be confused. The existing public acceptance matrix continues to compare complete indexed/reference results, including request/result digests and exact omitted counts.
 
-The exact-candidate runner records these contracts separately from ordinary
-source checks. Missing `protoc`, a failed native build, an unobserved named test,
-or an absent destructive receipt fails the lane. `protoc --version` is therefore
-an explicit prerequisite rather than an ambient runner assumption.
+## Publish, crash, recovery and retry consistency
+
+The durable owner keeps source append, memory revision, immutable facts, generation/publication receipts and current-pointer advancement in one SQLite transaction. The candidate now requires three complementary evidence classes:
+
+1. ordinary owner tests for lost source acknowledgement, competing corrections and rollback before publication;
+2. `kg_delivery_consistency` public-API tests that reconcile a committed-but-unacknowledged correction after reopen, reject a stale whole-operation retry, and bind the recovered memory head and KG generation digest to the exact successful receipt;
+3. the ignored child-process crash matrix at `before_semantic_receipt` and `after_semantic_receipt_before_current_pointer`, followed by reopen and SQLite integrity checking.
+
+The exact-candidate runner executes all three. A test definition, successful compilation, ignored test, zero-test result or skipped crash scenario is not scenario evidence.
 
 ## Long-history concurrency and deletion
 
-`cognitive_kg_benchmark_tests::history::qualification_kg_history_reopen_no_resurrection`
-is the exact ignored test name. Each of the default 128 corrections now overlaps
-one product retrieval. A concurrent reader may observe the complete predecessor
-or successor, never an unrelated revision. Its memory revision and KG generation
-binding must agree for this single-memory fixture. At history checkpoints, after
-writer completion and reopen, the latest revision must be retrieved. Final
-tombstoning is checked over three reopens, and an attempted correction cannot
-resurrect it.
+`cognitive_kg_benchmark_tests::history::qualification_kg_history_reopen_no_resurrection` overlaps each correction with product retrieval. A reader may observe the complete predecessor or successor, never a mixed memory/KG cut. The probe also checks the latest revision after writer completion and reopen, then verifies across repeated reopens that deletion cannot resurrect.
 
-Receipts add `concurrentReads`, `concurrentReaderNs`, `concurrentRoundNs` p50/p95/p99
-and an explicit `correctionTimingScope`. `correctionNs` measures the correction
-future itself; reader latency and the complete concurrent round are measured
-separately. None of these is relabeled as isolated SQLite transaction time.
+Writer latency, reader latency and the complete contention round remain separate distributions. None is relabeled as isolated SQLite transaction time.
 
-## Operation measurement and evidence contract
+## Complete-operation measurements
 
-`codex-rs/hepta-kg/tests/operation_measurement.rs` records the current public
-operation boundaries: input clone, combined build/validate/seal, verified-view
-construction, repeated hot query and publication-receipt construction. It does
-not pretend that the public combined builder exposes internal timings that it
-does not expose. The native SQLite measurement separately records durable
-mutation, query, reopen, writer, reader and complete contention-round
-distributions.
+`codex-rs/hepta-kg/tests/operation_measurement.rs` emits `hepta.knowledge-graph-operation-metrics.v2` and separately records:
 
-Every exact candidate lane writes
-`hepta.knowledge-graph-delivery-evidence.v1`. Each contract row binds:
+- input clone;
+- complete build/validate/seal;
+- bounded generation update;
+- verified-view construction;
+- first bounded query;
+- repeated hot bounded queries;
+- explicit unbounded reference query;
+- predecessor-bound publication-receipt construction.
+
+These are regression observations, not host-independent service-level claims. The native SQLite measurement separately records durable mutation, query, reopen, writer, reader and complete contention-round distributions, plus bounded-query work and storage/process observations.
+
+## Exact evidence chain
+
+Every exact candidate lane writes `hepta.knowledge-graph-delivery-evidence.v2`. Each contract row binds:
 
 ```
 contract → implementation symbol → named test → tested commit/tree
-         → runner environment → evidence file → remaining open reason
+         → runner environment identity → content-addressed evidence file
+         → remaining open reason
 ```
 
-The artifact keeps source checks, native compilation, actual scenario execution,
-target-host qualification, independent acceptance, activation and release as
-separate states. Hosted lanes may prove only the first three.
+The evidence validator checks `identity.txt`, all required result rows, exact native test summaries, named tests, operation metric schema, live Rust/Cargo identity and—on product lanes—the recorded `protoc` identity. Source-head release measurements must bind both the tested commit and tested tree.
 
-## Storage, evidence and remaining acceptance
+The claim boundary keeps these states separate:
 
-`revision_facts_v1` is compact persistent representation, not incremental runtime
-recalculation. Complete bounded rebuild remains selected. Current active graph
-size and retained history growth must both be qualified before changing it.
+- source checks passed;
+- native binary compiled;
+- query scenario executed;
+- recovery scenario executed;
+- destructive scenario executed;
+- history scenario executed;
+- target host qualified;
+- independent acceptance;
+- activation;
+- release.
 
-The existing exact-source/fixed-base workflow, source-object map binding, native
-execution inventory audit and independent acceptance gates remain required.
-These added tests are definitions, not successful execution receipts. A hosted
-runner is not automatically the operator's production CPU/storage profile.
-No source-implementation, product-execution, target-host acceptance, activation or
-release flag is advanced by this extension.
+Hosted lanes may establish only the applicable source, compilation and scenario states. They do not establish operator target-host qualification, independent acceptance, activation or release.
+
+## Remaining acceptance boundary
+
+`revision_facts_v1` remains compact persistent representation, not an incremental-runtime claim. Complete bounded rebuild remains the selected writer until a separately reviewed design proves correction, deletion, lineage, crash and recovery parity and wins a predeclared comparison on a named target CPU/storage profile.
+
+The implementation and tests in this document are not themselves successful execution receipts. The PR remains a candidate until the exact commit has produced complete passing artifacts for all required lanes.

@@ -3,16 +3,21 @@
 //! These are regression observations, not host-independent latency claims.
 use std::time::Instant;
 
+use codex_hepta_kg::DEFAULT_QUERY_SUPPORT_WORK_V2;
 use codex_hepta_kg::KnowledgeEdgeIdentityV2;
 use codex_hepta_kg::KnowledgeEdgeV2;
 use codex_hepta_kg::KnowledgeNodeV2;
+use codex_hepta_kg::KnowledgeProjectionDeltaV2;
 use codex_hepta_kg::KnowledgeProjectionInputV2;
 use codex_hepta_kg::KnowledgeRelationKindV2;
 use codex_hepta_kg::KnowledgeRelationQueryV2;
 use codex_hepta_kg::KnowledgeSupportV2;
+use codex_hepta_kg::MAX_QUERY_SUPPORT_WORK_V2;
 use codex_hepta_kg::VerifiedKnowledgeGenerationV2;
+use codex_hepta_kg::apply_incremental_delta;
 use codex_hepta_kg::build_complete_generation;
 use codex_hepta_kg::publish_generation;
+use codex_hepta_kg::query_relations_reference_unbounded;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::ProbabilityQ32;
@@ -61,8 +66,8 @@ fn input() -> KnowledgeProjectionInputV2 {
         })
         .collect();
     KnowledgeProjectionInputV2 {
-        source_snapshot_digest: digest("source-cut"),
-        generation_vector_digest: digest("generation-vector"),
+        source_snapshot_digest: digest("source-cut:1"),
+        generation_vector_digest: digest("generation-vector:1"),
         graph_profile_digest: digest("graph-profile"),
         complete_source_cut: true,
         nodes,
@@ -79,12 +84,30 @@ fn public_operation_boundaries_emit_nonzero_regression_metrics() {
     let input_clone_ns = started.elapsed().as_nanos();
 
     let started = Instant::now();
-    let generation = build_complete_generation(
+    let predecessor = build_complete_generation(
         Generation::new(1).expect("generation"),
         cloned,
     )
     .expect("build, validate and seal");
     let build_validate_seal_ns = started.elapsed().as_nanos();
+
+    let started = Instant::now();
+    let generation = apply_incremental_delta(
+        &predecessor,
+        Generation::new(2).expect("next generation"),
+        KnowledgeProjectionDeltaV2 {
+            expected_predecessor_digest: predecessor.generation_digest,
+            source_snapshot_digest: digest("source-cut:2"),
+            generation_vector_digest: digest("generation-vector:2"),
+            graph_profile_digest: predecessor.graph_profile_digest,
+            remove_node_ids: Vec::new(),
+            upsert_nodes: Vec::new(),
+            remove_edge_identities: Vec::new(),
+            upsert_edges: Vec::new(),
+        },
+    )
+    .expect("bounded generation update");
+    let generation_update_ns = started.elapsed().as_nanos();
 
     let started = Instant::now();
     let verified =
@@ -99,31 +122,52 @@ fn public_operation_boundaries_emit_nonzero_regression_metrics() {
         valid_at_unix_seconds: Some(100),
         maximum_edges: 8,
     };
+
+    let started = Instant::now();
+    let cold = verified
+        .query_relations_external(query.clone(), None)
+        .expect("cold bounded query")
+        .0;
+    let cold_bounded_query_ns = started.elapsed().as_nanos();
+    assert_eq!(cold.edges.len(), 1);
+
     let iterations = 128_u64;
     let started = Instant::now();
     for _ in 0..iterations {
-        let result = verified.query_relations(query.clone()).expect("hot query");
-        assert_eq!(result.edges.len(), 1);
-        assert_eq!(result.omitted_count, 0);
+        let result = verified
+            .query_relations_external(query.clone(), None)
+            .expect("hot bounded query")
+            .0;
+        assert_eq!(result, cold);
     }
-    let hot_query_total_ns = started.elapsed().as_nanos();
+    let hot_bounded_query_total_ns = started.elapsed().as_nanos();
 
     let started = Instant::now();
-    let receipt = publish_generation(None, &generation).expect("publication receipt");
+    let reference = query_relations_reference_unbounded(&generation, query)
+        .expect("explicit unbounded reference query");
+    let unbounded_reference_query_ns = started.elapsed().as_nanos();
+    assert_eq!(reference, cold);
+
+    let started = Instant::now();
+    let receipt = publish_generation(Some(&predecessor), &generation)
+        .expect("publication receipt");
     receipt.validate().expect("valid publication receipt");
     let publication_receipt_ns = started.elapsed().as_nanos();
 
     for value in [
         input_clone_ns,
         build_validate_seal_ns,
+        generation_update_ns,
         verified_view_build_ns,
-        hot_query_total_ns,
+        cold_bounded_query_ns,
+        hot_bounded_query_total_ns,
+        unbounded_reference_query_ns,
         publication_receipt_ns,
     ] {
         assert!(value > 0);
     }
 
     println!(
-        "HEPTA_KG_OPERATION_METRICS={{\"schema\":\"hepta.knowledge-graph-operation-metrics.v1\",\"inputCloneNs\":{input_clone_ns},\"buildValidateSealNs\":{build_validate_seal_ns},\"verifiedViewBuildNs\":{verified_view_build_ns},\"hotQueryTotalNs\":{hot_query_total_ns},\"publicationReceiptNs\":{publication_receipt_ns},\"iterations\":{iterations}}}"
+        "HEPTA_KG_OPERATION_METRICS={{\"schema\":\"hepta.knowledge-graph-operation-metrics.v2\",\"inputCloneNs\":{input_clone_ns},\"buildValidateSealNs\":{build_validate_seal_ns},\"generationUpdateNs\":{generation_update_ns},\"verifiedViewBuildNs\":{verified_view_build_ns},\"coldBoundedQueryNs\":{cold_bounded_query_ns},\"hotBoundedQueryTotalNs\":{hot_bounded_query_total_ns},\"unboundedReferenceQueryNs\":{unbounded_reference_query_ns},\"publicationReceiptNs\":{publication_receipt_ns},\"iterations\":{iterations},\"defaultSupportWork\":{DEFAULT_QUERY_SUPPORT_WORK_V2},\"maximumSupportWork\":{MAX_QUERY_SUPPORT_WORK_V2}}}"
     );
 }
