@@ -293,15 +293,20 @@ fn reconcile_failed_recovery_candidate(
     // A pointer rename can succeed while the following directory fsync reports
     // an error. In that state publication durability is unknown: never launder
     // it into ordinary Unavailable and never delete the possibly-active
-    // generation. A later trusted recovery ceremony must reconcile it.
-    let active = resolve_active_database_path(root).ok();
-    if active.as_deref() == Some(candidate) {
-        return CognitiveRecoveryError::Indeterminate(format!(
+    // generation. Failure to authenticate the pointer is itself ambiguous;
+    // absence of proof that the candidate is active is not proof it is inactive.
+    match resolve_active_database_path(root) {
+        Ok(active) if active == candidate => CognitiveRecoveryError::Indeterminate(format!(
             "active generation publication became ambiguous after pointer rename: {error}"
-        ));
+        )),
+        Ok(_) => {
+            cleanup_recovery_candidate(candidate);
+            error
+        }
+        Err(pointer_error) => CognitiveRecoveryError::Indeterminate(format!(
+            "active generation cannot be established after recovery failure; retained candidate for trusted reconciliation: publication error: {error}; pointer resolution error: {pointer_error}"
+        )),
     }
-    cleanup_recovery_candidate(candidate);
-    error
 }
 
 fn cleanup_candidate_sidecars(path: &std::path::Path) -> Result<(), CognitiveRecoveryError> {
@@ -621,6 +626,36 @@ async fn capture(
         schema_digest,
         state_digest: Sha256Digest::from_sha256_output(state.finalize()),
     })
+}
+
+#[cfg(test)]
+mod reconciliation_tests {
+    use super::*;
+    use tempfile::TempDir;
+
+    #[test]
+    fn unreadable_active_pointer_retains_candidate_as_indeterminate() {
+        let temp = TempDir::new().expect("temporary recovery root");
+        let root = temp.path();
+        let candidate = root.join("cognitive_recovered_v1_candidate.sqlite3");
+        std::fs::write(&candidate, b"candidate").expect("candidate file");
+        let pointer = root.join(super::super::COGNITIVE_ACTIVE_DB_POINTER);
+        std::fs::create_dir(&pointer).expect("unreadable pointer identity");
+
+        let error = reconcile_failed_recovery_candidate(
+            root,
+            &candidate,
+            CognitiveRecoveryError::Unavailable("injected publication failure".to_string()),
+        );
+
+        assert!(matches!(
+            error,
+            CognitiveRecoveryError::Indeterminate(ref message)
+                if message.contains("pointer resolution error")
+        ));
+        assert!(candidate.exists(), "ambiguous candidate must be retained");
+        assert!(pointer.is_dir(), "the ambiguous pointer must remain untouched");
+    }
 }
 
 #[cfg(test)]
