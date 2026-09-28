@@ -1,17 +1,17 @@
-name: Intuition durable closure authoring once
+name: Intuition isolated durable closure authoring Windows
 
 on:
-  pull_request:
+  push:
+    branches:
+      - codex/intuition-policy-direct-author-20260928-r2-windows
     paths:
       - ".github/workflows/intuition-closure-authoring-once.yml"
-      - ".github/workflows/hepta-intuition-qualification.yml"
-      - "scripts/intuition_closure_author_once.b85.part*"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
-  group: intuition-durable-closure-authoring-once-${{ github.event.pull_request.number }}
+  group: intuition-isolated-durable-closure-authoring-windows
   cancel-in-progress: true
 
 env:
@@ -20,20 +20,19 @@ env:
   CARGO_PROFILE_TEST_DEBUG: "0"
   CARGO_BUILD_JOBS: "2"
   RUST_BACKTRACE: "1"
+  TARGET_BRANCH: codex/intuition-policy-production-closure-20260927
+  TARGET_SHA: 6656bfa03a5bb74705a05777cff26fc49c55953e
 
 jobs:
   author:
-    name: Author durable handoff and V2 transport on macOS
-    if: ${{ github.event.pull_request.head.ref == 'codex/intuition-policy-production-closure-20260927' }}
-    permissions:
-      contents: write
-    runs-on: macos-15
+    name: Author durable handoff and V2 transport on Windows
+    runs-on: windows-2025
     timeout-minutes: 120
     steps:
-      - name: Check out exact authoring source
+      - name: Check out exact isolated authoring source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.sha }}
           fetch-depth: 0
       - uses: ./.github/actions/setup-ci
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
@@ -41,7 +40,7 @@ jobs:
           components: rustfmt,clippy
       - name: Apply bounded source transformation
         env:
-          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          SOURCE_SHA: ${{ github.sha }}
         shell: bash
         run: |
           set -euo pipefail
@@ -110,9 +109,9 @@ jobs:
             -p codex-hepta-agent-protocol \
             -p codex-hepta-learning-ledger \
             -p codex-hepta-agentd --lib -- -D warnings
-      - name: Commit ordinary reviewed source and remove authoring machinery
+      - name: Commit ordinary reviewed source and advance target branch
         env:
-          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          SOURCE_SHA: ${{ github.sha }}
         shell: bash
         run: |
           set -euo pipefail
@@ -150,10 +149,10 @@ jobs:
           if unexpected:
               raise SystemExit("unexpected authoring paths: " + ", ".join(unexpected))
           PY
-          remote_sha="$(git ls-remote origin refs/heads/codex/intuition-policy-production-closure-20260927 | cut -f1)"
-          test "$remote_sha" = "$SOURCE_SHA"
+          remote_sha="$(git ls-remote origin refs/heads/$TARGET_BRANCH | cut -f1)"
+          test "$remote_sha" = "$TARGET_SHA"
           git config user.name "Hepta Intuition Authoring"
           git config user.email "hepta-intuition-authoring@users.noreply.github.com"
           git add -A
           git commit -m "feat(intuition): persist admission handoff and acknowledge V2 delivery"
-          git push origin HEAD:codex/intuition-policy-production-closure-20260927
+          git push origin HEAD:"$TARGET_BRANCH"
