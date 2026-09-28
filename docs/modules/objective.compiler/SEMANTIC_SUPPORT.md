@@ -34,12 +34,15 @@ those operators can be admitted losslessly.
 
 ## Public API boundary
 
-The existing Agentd product route calls the intelligence facade
-`compile_and_publish_objective_run_v1`. Its compiler/publication sequence is:
+The existing Agentd product route validates and freezes its owner-local profile once in
+`ObjectiveRuntimeHost::open`. Each `ObjectiveRuntimeHost::submit` then constructs a fresh
+authenticated admission context and calls the intelligence façade
+`compile_and_publish_validated_objective_run_v1`. Its compiler/publication sequence is:
 
 ```text
-ObjectiveSourceEnvelopeV1 + current authenticated ObjectiveAdmissionContextV1
-+ ValidatedAdmissionProfileV1
+process-generation ValidatedAdmissionProfileV1
++ ObjectiveSourceEnvelopeV1
++ current authenticated ObjectiveAdmissionContextV1
 -> compile_authoritative_objective_v1(...)
 -> ProofBearingObjectiveCompileV1
 -> encode_proof_bearing_objective_function_v1(&outcome, &source, &profile)
@@ -53,8 +56,10 @@ wire decoder. It does not repeat authenticated admission or native feasibility s
 A hard conflict follows the existing conflict-journal path and cannot be projected into
 a compiled run. `ExplicitAbstain` remains a valid immutable publication with no effect authority.
 
-The lower-level `admit_objective_v1 -> AdmittedObjectiveV1 -> compile_admitted_objective_v1`
-API remains available; it is not the recommended product publication composition.
+The raw-profile façade `compile_and_publish_objective_run_v1` remains a compatibility entrypoint:
+it validates one raw profile and delegates to the validated-profile publication function. The
+lower-level `admit_objective_v1 -> AdmittedObjectiveV1 -> compile_admitted_objective_v1`
+API also remains available; neither is the normal Agentd product composition.
 `encode_authenticated_objective_function_v1` remains the compatibility/revalidation
 entrypoint for callers holding separate receipts and the original authenticated context.
 It independently repeats admission and compilation. `encode_objective_function_v1` is
@@ -67,12 +72,17 @@ as `compile_prevalidated_legacy_objective_v1` under the explicit
 
 ### Static reuse is not authorization reuse
 
-The current facade still constructs a validated profile from the raw profile on each
-request, and the strict projection still validates its raw profile. Full process-generation
-profile caching is not claimed by this change. A future reuse key must bind profile digest,
-revision and compiler-contract identity. Current issuer trust, source identity, time,
-revocation, generation, fence and final-use authority must continue to be checked by the
-existing owners for every applicable request/use; none are cacheable grants.
+`ObjectiveRuntimeHost::open` constructs one opaque `ValidatedAdmissionProfileV1` for the
+process generation. Reuse is bound to the exact profile digest, profile revision and
+compiler-contract digest and covers only static profile validation, indexes and collision
+proofs. The host does not expose a caller-controlled cache key or skip-validation flag.
+
+Every submission still authenticates the signed source and checks source identity, principal
+scope, intent/schema/normalization binding, locale, freshness, deadline and exact selected
+profile. Current issuer trust, revocation, generation, fence and final-use authority remain
+checks of their existing owners for every applicable request/use; none are cached grants.
+Changing the owner-local profile requires a new process generation rather than mutating the
+frozen profile in place.
 
 ## Canonical ObjectiveFunctionV1 publication
 
@@ -90,7 +100,7 @@ semantics used by `RunStartSnapshotV1.objectiveDigest`; the protocol digest iden
 registered JSON transport including explicit evidence requirements, legal/forbidden actions,
 resource endowment and deadline. The durable run-start v2 record binds both identities.
 Legacy v1 records may be decoded for migration/recovery inspection but cannot be admitted
-to Agentd runtime final use without the canonical protocol identity. The facade's returned
+to Agentd runtime final use without the canonical protocol identity. The façade's returned
 admission-proof digest is distinct from durable proof persistence; the latter requires its
 own versioned storage/recovery closure and is not established by an in-memory proof alone.
 
