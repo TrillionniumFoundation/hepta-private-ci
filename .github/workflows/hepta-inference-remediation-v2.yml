@@ -20,6 +20,9 @@ env:
   PATCH_PATH: .github/remediation/inference-control-remediation.patch.gz
   PATCH_SHA256: c2599a124d0e1574aaebaadf3ce0313d4f906a9e9f9f1472c10491fa83100f57
   TEMP_WORKFLOW: .github/workflows/hepta-inference-remediation-v2.yml
+  WORKFLOW_PATH: .github/workflows/hepta-inference-source-export.yml
+  RESTORE_COMMIT: a80f50a552d2608f238a9e934bf6fade66876912
+  RESTORE_BLOB: c8fe5357b5b8efac14a220c29f94ba061a5f5c34
   TARGET_BRANCH: codex/inference-control-v2-closure-20260927
   CARGO_INCREMENTAL: '0'
   CARGO_BUILD_JOBS: '2'
@@ -48,6 +51,8 @@ jobs:
           test -z "$(git status --porcelain --untracked-files=normal)"
           test -f "$PATCH_PATH"
           test "$(sha256sum "$PATCH_PATH" | awk '{print $1}')" = "$PATCH_SHA256"
+          test "$(git hash-object "$RESTORE_COMMIT:$WORKFLOW_PATH")" = "$RESTORE_BLOB" 2>/dev/null || \
+            test "$(git show "$RESTORE_COMMIT:$WORKFLOW_PATH" | git hash-object --stdin)" = "$RESTORE_BLOB"
           mkdir -p "$RUNNER_TEMP/inference-remediation-v2/logs"
           printf 'transport_sha=%s\ntransport_tree=%s\ntransport_parent=%s\n' \
             "$GITHUB_SHA" "$(git rev-parse HEAD^{tree})" "$(git rev-parse HEAD^)" \
@@ -66,7 +71,11 @@ jobs:
           gzip -dc "$PATCH_PATH" > "$evidence/remediation.patch"
           git apply --check --whitespace=error-all "$evidence/remediation.patch"
           git apply --index --whitespace=error-all "$evidence/remediation.patch"
+          git rm -f "$PATCH_PATH"
+          git show "$RESTORE_COMMIT:$WORKFLOW_PATH" > "$WORKFLOW_PATH"
+          test "$(git hash-object "$WORKFLOW_PATH")" = "$RESTORE_BLOB"
           git rm -f "$TEMP_WORKFLOW"
+          rmdir .github/remediation 2>/dev/null || true
           cargo fmt --manifest-path codex-rs/Cargo.toml \
             --package codex-hepta-infer-core --package codex-hepta-infer-worker-host
           git add -A
