@@ -1,6 +1,82 @@
+diff --git a/codex-rs/hepta-bao-adapter/src/consumption_lifecycle.rs b/codex-rs/hepta-bao-adapter/src/consumption_lifecycle.rs
+index 53822ac..7fd796e 100644
+--- a/codex-rs/hepta-bao-adapter/src/consumption_lifecycle.rs
++++ b/codex-rs/hepta-bao-adapter/src/consumption_lifecycle.rs
+@@ -21,7 +21,7 @@ pub struct BaoSecretReceipt {
+     pub secret_bytes: usize,
+ }
+ 
+-/// Non-sensitive fields safe for ordinary operational telemetry.
++/// Digest-free, bounded telemetry fields; version and size remain sensitive metadata.
+ #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+ pub struct BaoSecretTelemetryV1 {
+     pub version: u64,
+diff --git a/codex-rs/hepta-bao-adapter/src/final_use_host.rs b/codex-rs/hepta-bao-adapter/src/final_use_host.rs
+index 5731e94..fdee2d2 100644
+--- a/codex-rs/hepta-bao-adapter/src/final_use_host.rs
++++ b/codex-rs/hepta-bao-adapter/src/final_use_host.rs
+@@ -826,7 +826,14 @@ impl BaoFinalUseHost {
+                             reservation.reservation_id.as_str(),
+                         )
+                         .map_err(BaoProductHostError::Store)?;
+-                    if reservation.state == ReservationState::Indeterminate {
++                    if reservation.state == ReservationState::Indeterminate
++                        && owner
++                            .consumption_result(operation_id)
++                            .map_err(BaoProductHostError::Store)?
++                            .state
++                            .recovery_action()
++                            == BaoConsumptionRecoveryActionV1::ObserveOriginalOutcome
++                    {
+                         owner
+                             .mark_consumption_indeterminate(operation_id)
+                             .map_err(BaoProductHostError::Store)?;
+@@ -1228,6 +1235,12 @@ impl BaoProductHostError {
+                 BaoProductErrorClassV1::CommitIndeterminate
+             }
+             Self::Store(_) => BaoProductErrorClassV1::DurableOwnerFailure,
++            Self::AuthBus(BaoAuthBusError::Indeterminate { .. }) => {
++                BaoProductErrorClassV1::AwaitingOriginalEvidence
++            }
++            Self::AuthBus(BaoAuthBusError::SettlementPending { .. }) => {
++                BaoProductErrorClassV1::AwaitingSettlement
++            }
+             Self::Host(_) | Self::AuthBus(_) => BaoProductErrorClassV1::ExternalControlFailure,
+         }
+     }
+@@ -1317,4 +1330,27 @@ mod tests {
+             BaoFinalUseHostError::DuplicateConsumer
+         );
+     }
++    #[test]
++    fn pending_authbus_errors_have_actionable_metric_classes() {
++        let reservation_id = StableId::new("reservation:bao-pending").unwrap();
++        let indeterminate = BaoProductHostError::AuthBus(BaoAuthBusError::Indeterminate {
++            reservation_id: reservation_id.clone(),
++            provider_error: BaoClientError::TimedOut,
++        });
++        assert_eq!(
++            indeterminate.class(),
++            BaoProductErrorClassV1::AwaitingOriginalEvidence
++        );
++
++        let settlement = BaoProductHostError::AuthBus(BaoAuthBusError::SettlementPending {
++            reservation_id,
++            receipt: None,
++            control_error: "synthetic settlement outage".to_owned(),
++        });
++        assert_eq!(
++            settlement.class(),
++            BaoProductErrorClassV1::AwaitingSettlement
++        );
++    }
++
+ }
+diff --git a/codex-rs/hepta-bao-adapter/src/saga_crash_tests.rs b/codex-rs/hepta-bao-adapter/src/saga_crash_tests.rs
+index 29ac4fb..7bdcf14 100644
 --- a/codex-rs/hepta-bao-adapter/src/saga_crash_tests.rs
 +++ b/codex-rs/hepta-bao-adapter/src/saga_crash_tests.rs
-@@ -70,7 +70,7 @@
+@@ -70,7 +70,7 @@ async fn child_process() {
          authority,
          &grant,
          Arc::new(move |operation, digest, secret| {
@@ -9,7 +85,7 @@
              write_private(
                  &callback_outcome,
                  &serde_json::to_vec(&(operation, digest)).unwrap(),
-@@ -173,7 +173,7 @@
+@@ -173,7 +173,7 @@ async fn registered_saga_sigkill_matrix() {
          child.kill().unwrap();
          let status = child.wait().unwrap();
          use std::os::unix::process::ExitStatusExt;
@@ -18,7 +94,7 @@
  
          let inputs: RecoveryInputs = serde_json::from_slice(
              &std::fs::read(root.path().join("inputs.json")).unwrap(),
-@@ -286,19 +286,19 @@
+@@ -286,19 +286,19 @@ async fn registered_saga_sigkill_matrix() {
              assert!(row.state.has_dispatch_fence(), "{cut}: {row:?}");
              assert!(row.receipt.is_none(), "{cut}: {row:?}");
              let diagnostics = registry.lock().unwrap().diagnostics().unwrap();
@@ -42,7 +118,7 @@
                  registry
                      .lock()
                      .unwrap()
-@@ -310,17 +310,17 @@
+@@ -310,17 +310,17 @@ async fn registered_saga_sigkill_matrix() {
          }
  
          if consumer_effect_recorded(cut) {
@@ -63,7 +139,7 @@
              registry
                  .lock()
                  .unwrap()
-@@ -332,7 +332,7 @@
+@@ -332,7 +332,7 @@ async fn registered_saga_sigkill_matrix() {
              .quota_snapshot(&StableId::new("quota:bao-read").unwrap())
              .await
              .unwrap();
