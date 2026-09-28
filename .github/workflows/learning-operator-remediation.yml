@@ -1,18 +1,14 @@
-name: Learning operator remediation materializer
+name: Learning operator remediation executor
 
 on:
   push:
-    branches: [codex/learning-operator-full-convergence-20260926]
-    paths:
-      - '.github/workflows/learning-operator-remediation.yml'
-      - 'scripts/learning_operator_remediation.py'
-  workflow_dispatch:
+    branches: [ops/learning-operator-remediation-exec-20260928]
 
 permissions:
   contents: write
 
 concurrency:
-  group: learning-operator-remediation
+  group: learning-operator-remediation-executor
   cancel-in-progress: true
 
 jobs:
