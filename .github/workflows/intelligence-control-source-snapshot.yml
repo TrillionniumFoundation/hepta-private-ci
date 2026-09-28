@@ -21,7 +21,7 @@ concurrency:
 
 jobs:
   snapshot:
-    runs-on: ubuntu-24.04
+    runs-on: macos-15
     timeout-minutes: 20
     steps:
       - name: Check out exact candidate
@@ -54,11 +54,17 @@ jobs:
           docs/modules/intelligence.control/TEST_TRACEABILITY.json
           .github/workflows/hepta-intelligence-control.yml
           PATHS
-          {
-            printf 'commit=%s\n' "$(git rev-parse HEAD)"
-            printf 'tree=%s\n' "$(git rev-parse HEAD^{tree})"
-            find "$root" -type f -print0 | sort -z | xargs -0 sha256sum
-          } > "$root/SNAPSHOT_MANIFEST.txt"
+          python3 - "$root" <<'PY'
+          import hashlib, pathlib, subprocess, sys
+          root = pathlib.Path(sys.argv[1])
+          lines = [
+              f"commit={subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()}",
+              f"tree={subprocess.check_output(['git', 'rev-parse', 'HEAD^{{tree}}'], text=True).strip()}",
+          ]
+          for path in sorted(p for p in root.rglob('*') if p.is_file()):
+              lines.append(f"{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.relative_to(root)}")
+          (root / 'SNAPSHOT_MANIFEST.txt').write_text('\n'.join(lines) + '\n', encoding='utf-8')
+          PY
 
       - name: Upload exact source snapshot
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
