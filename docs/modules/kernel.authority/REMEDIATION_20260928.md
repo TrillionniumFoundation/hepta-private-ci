@@ -48,6 +48,28 @@ exit, renamed case, ignored test, missing case or projected success without the
 captured identity is a failure. These are repository-process guarantees, not
 provider terminality or target-host acceptance.
 
+`authority_effect_process_restart.rs` now exercises two fresh normal
+`codex-hepta-agentd` processes through the ordinary Fleet lifecycle and public
+Agentd control socket. The first process crosses the real configured provider
+adapter, durably records the attempt and authority witness, persists an exact
+pending revocation while the effect is active, and is terminated before a remote
+response can be consumed. The second Fleet generation reopens the same owners,
+commits the pending head, reconciles the original provider occurrence by status
+lookup, reuses the terminal receipt and proves that no second provider POST or
+second nonce frame was created. It checks the V4 pending/committed snapshot,
+40-byte claim frame, attempt, witness and terminal receipt identities. The
+provider and trust services are controlled process fixtures, so this is normal
+product-process recovery evidence, not selected production-provider or
+rollback-independent target-host evidence.
+
+`product_process_recovery.py` requires the exact single integration-test identity
+and a coherent one-test libtest summary. The dedicated read-only workflow runs
+parser regressions, formatting, strict Clippy and the product-process test on both
+exact-head and deterministic synthetic-merge candidates. Missing, ignored,
+renamed, duplicate or zero-test execution cannot project the process guarantees.
+Until those exact runs complete successfully, the source test is execution
+pending rather than a pass receipt.
+
 `capacity_matrix.py` implements a strict target-host collector for the full
 five-state-point by eleven-operation matrix, all eight fault cuts, reserve alert
 and 25 history-sensitive diagnostics. It binds every driver response to one
@@ -55,6 +77,24 @@ candidate, profile and host; retains request/response/log hashes; and rejects
 synthetic, incomplete, mixed-host, contradictory or authority-claiming output.
 Its CI self-test is explicitly synthetic and cannot count as a target row or a
 production-evidence pass.
+
+The manual target-capacity workflow is read-only, main-dispatched, protected by
+the `kernel-authority-target` environment and restricted to the matching
+self-hosted runner label. It executes only the exact main-branch collector and
+hot-path evaluator; the selected candidate checkout supplies commit/tree identity
+but no candidate script is executed on the privileged runner. The host driver and
+site policy use fixed paths and independently supplied SHA-256 identities. Control,
+candidate, collector, evaluator, driver and policy identities are retained with
+the 55 measurement rows, eight fault cuts, 25 diagnostics and reserve observation.
+The workflow cannot run from this branch and has not produced a target receipt.
+
+`hot_path_gate.py` reopens a validated real collection against a separately owned,
+candidate/profile-bound policy. It checks absolute p99 and touched-byte limits at
+all five history points plus bounded work-per-history growth for frontier hashing,
+lease cloning, lease serialization, clock-floor persistence and restart rebuild.
+A pass still sets `runtimeOptimizationAuthorized=false`; it is evidence for a
+later reviewed design decision, not authority to replace the current owner,
+frontier ordering or runtime store.
 
 `run_native_checks.py` executes and retains an explicit plan: toolchain identity,
 formatting, all-target compilation, full affected package tests with no retries
@@ -89,21 +129,30 @@ of these files. Local Python observations cover the materialized qualification
 scripts only; they are not a full-checkout, native-package or target-deployment
 receipt.
 
+The current product-process and production-closure workflow runs are pending in
+the hosted queue. Pending, queued, missing-job, cancelled, skipped, stale or
+historical runs are not pass receipts.
+
 ## Remaining repository-controlled work
 
 - Obtain successful formatting, all-target compilation, package tests, strict
   lint, closed-caller proof and generated-state checks for the same exact source
   and deterministic merge candidate.
+- Obtain successful exact-head and deterministic-merge receipts for the new two-
+  normal-Agentd-process recovery test. Keep its fixture scope separate from
+  selected production-provider and target-host claims.
 - Attach selected real production time, independent frontier and custody
   providers to normal Agentd/Fleet bootstrap; reject production configuration
   without them rather than falling back to compatibility trust.
-- Establish two normal product-process cold-start recovery using the actual
-  provider and independent frontier, preserving nonce history, pending
-  revocation, attempt identity and provider-owned terminal evidence.
-- Execute the complete target-host matrix through the selected driver. The
-  collector and its synthetic self-test are not measurements, SLO approval or
-  external fault evidence.
-- Use the retained hot-path diagnostics to decide whether frontier hashing,
+- Repeat cold-start recovery on the selected target with the actual provider and
+  independently protected frontier, preserving nonce history, pending revocation,
+  attempt identity, exact provider occurrence and provider-owned terminal or
+  indeterminate evidence.
+- Provision the protected target environment, runner, candidate runtime, reviewed
+  fixed-path driver and independent site policy. Execute and independently reopen
+  the complete real 55/8/25 collection. A collector, workflow, policy or synthetic
+  self-test is not a measurement, SLO approval or external fault receipt.
+- Use the retained hot-path decision to determine whether frontier hashing,
   lease-image persistence, clock-floor commits or restart reconstruction justify
   an incremental digest/checkpoint migration. The WAL/checkpoint/sharding model
   remains qualification-only until a runtime design preserves existing
@@ -115,6 +164,7 @@ receipt.
 ## External evidence not manufactured
 
 No attested clock, independent production frontier, KMS/HSM deployment, real key
-rotation/compromise ceremony, revocation transport fanout, target-host latency
-result, operator/independent acceptance, canary, promotion or release is created
-by this change. All corresponding authority and acceptance flags remain false.
+rotation/compromise ceremony, revocation transport fanout, selected target-host
+latency result, operator/independent acceptance, canary, promotion or release is
+created by this change. All corresponding authority and acceptance flags remain
+false.
