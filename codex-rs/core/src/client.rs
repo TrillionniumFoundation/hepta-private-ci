@@ -3086,26 +3086,34 @@ fn map_response_stream(
         upstream_request_id: None,
     };
     map_response_events(
-        upstream_request_id,
         api_stream,
-        session_telemetry,
-        inference_trace_attempt,
-        provider,
-        provider_attempt,
-        redact_provider_errors,
-        encoded_request_observer,
+        ResponseEventContext {
+            upstream_request_id,
+            session_telemetry,
+            inference_trace_attempt,
+            provider,
+            provider_attempt,
+            redact_provider_errors,
+            encoded_request_observer,
+        },
     )
 }
 
-fn map_response_events<S>(
+/// Per-attempt policy, tracing and observation inputs travel together while
+/// mapping response events. This does not change admission or terminal ACKs.
+struct ResponseEventContext {
     upstream_request_id: Option<String>,
-    api_stream: S,
     session_telemetry: SessionTelemetry,
     inference_trace_attempt: InferenceTraceAttempt,
     provider: SharedModelProvider,
     provider_attempt: Option<ProviderAttemptOwner>,
     redact_provider_errors: bool,
     encoded_request_observer: Option<Arc<dyn codex_api::EncodedRequestBodyObserver>>,
+}
+
+fn map_response_events<S>(
+    api_stream: S,
+    context: ResponseEventContext,
 ) -> (ResponseStream, oneshot::Receiver<LastResponse>)
 where
     S: futures::Stream<Item = std::result::Result<ResponseEvent, ApiError>>
@@ -3113,6 +3121,15 @@ where
         + Send
         + 'static,
 {
+    let ResponseEventContext {
+        upstream_request_id,
+        session_telemetry,
+        inference_trace_attempt,
+        provider,
+        provider_attempt,
+        redact_provider_errors,
+        encoded_request_observer,
+    } = context;
     let (tx_event, rx_event) =
         mpsc::channel::<Result<ResponseEvent>>(RESPONSE_STREAM_CHANNEL_CAPACITY);
     let (tx_last_response, rx_last_response) = oneshot::channel::<LastResponse>();
