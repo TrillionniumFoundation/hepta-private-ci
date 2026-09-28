@@ -24,7 +24,7 @@ class EvidenceTests(unittest.TestCase):
                 root = self.root / f"{lane}-{suite}"
                 root.mkdir()
                 (root / "test.log").write_bytes(b"actual fixture log\n")
-                receipt = {"schema": "hepta.ndu.suite-receipt.v1", "lane": lane, "suite": suite, "sourceSha": "a" * 40 if lane == "source-head" else "c" * 40, "sourceTree": "d" * 40, "parents": ["b" * 40, "a" * 40], "passed": True, "sourceUnchanged": True, "commands": [{"name": "fixture", "exitCode": 0, "log": "test.log", "logSha256": evidence.digest(b"actual fixture log\n")]}
+                receipt = {"schema": "hepta.ndu.suite-receipt.v1", "lane": lane, "suite": suite, "sourceSha": "a" * 40 if lane == "source-head" else "c" * 40, "sourceTree": "d" * 40, "parents": ["b" * 40, "a" * 40], "passed": True, "sourceUnchanged": True, "commands": [{"name": "fixture", "exitCode": 0, "log": "test.log", "logSha256": evidence.digest(b"actual fixture log\n")}]}
                 receipt["commands"] = [{"name": name, "command": command, "exitCode": 0, "log": "test.log", "logSha256": evidence.digest(b"actual fixture log\n")} for name, command in evidence.expected_commands(suite, receipt["sourceSha"], receipt["sourceTree"]).items()]
                 receipt["host"] = "fixture-host"
                 if suite == "host":
@@ -50,7 +50,7 @@ class EvidenceTests(unittest.TestCase):
         (self.root / "a").write_bytes(b"abc")
         evidence.seal(self.root)
         evidence.verify(self.root)
-        (self.root / "a").write_bytes(b"modified")
+        (self.root / "a").write_bytes(b"abd")
         with self.assertRaises(ValueError): evidence.verify(self.root)
         (self.root / "a").unlink()
         with self.assertRaises(ValueError): evidence.verify(self.root)
