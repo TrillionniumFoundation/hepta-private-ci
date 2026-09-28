@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
-"""Freeze committed native sources and refresh only native identity metadata.
+"""Verify committed native sources and refresh only native identity metadata.
 
-The one-time source migration is already committed. This command does not
-create implementation, alter owner authority, or turn test sources into passes.
+The current-source manifest owns the inventory policy, not a self-referential
+snapshot of every file hash. Verification recomputes a canonical SHA-256 path
+map from the exact checked-out commit. Qualification receipts bind that digest
+to the source commit/tree and retained check log. This command does not create
+implementation, alter owner authority, or turn test sources into passes.
 """
 
 import argparse
@@ -16,8 +19,13 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[3]
 APP = ROOT / "apps/hepta-native"
 BASE = "7ddbfac88525196e7a4b31387ceae194958275f5"
-BRANCH = "work/ui-native-acceptance-repair-20260927"
-WRITE_BRANCHES = {"work/ui-native-verified-closure-20260927", "work/ui-native-operational-closure-20260927", BRANCH, "work/ui-native-remediation-20260927", "work/ui-native-closure-20260927"}
+BRANCH = "work/ui-native-qualified-integration-20260928"
+WRITE_BRANCHES = {BRANCH}
+TRACKED_ROOTS = (
+    "apps/hepta-native",
+    "codex-rs/hepta-native-gateway",
+    "codex-rs/hepta-private-state",
+)
 INTEGRATION_ROOTS = (
     ROOT / "codex-rs/hepta-native-gateway",
     ROOT / "codex-rs/hepta-private-state",
@@ -27,6 +35,7 @@ INTEGRATION_FILES = (
     ROOT / "docs/modules/ui.native/TECHNICAL.md",
     ROOT / "docs/modules/ui.native/REMEDIATION-20260927.md",
     ROOT / "docs/modules/ui.native/ACCEPTANCE-REPAIR-20260927.md",
+    ROOT / "docs/modules/ui.native/QUALIFIED-INTEGRATION-20260928.md",
     ROOT / "docs/modules/ui.native/CURRENT_SOURCE.json",
     ROOT / "codex-rs/Cargo.toml",
     ROOT / "codex-rs/Cargo.lock",
@@ -45,24 +54,29 @@ INTEGRATION_FILES = (
     ROOT / ".github/workflows/hepta-ui-native-current-source.yml",
     ROOT / ".github/workflows/hepta-ui-native-remediation.yml",
     ROOT / ".github/workflows/hepta-ui-native-remediation-format.yml",
+    ROOT / ".github/workflows/hepta-ui-native-qualified-integration.yml",
+    ROOT / ".github/workflows/hepta-ui-native-integrate-20260928.yml",
     ROOT / "scripts/hepta_ui_native_evidence.py",
     ROOT / "scripts/test_hepta_ui_native_evidence.py",
     ROOT / "scripts/hepta_ui_native_aggregate.py",
     ROOT / "scripts/test_hepta_ui_native_aggregate.py",
+    ROOT / "scripts/hepta_ui_native_product_evidence.py",
+    ROOT / "scripts/hepta_ui_native_integrate_20260928.py",
     ROOT / "scripts/test_hepta_ui_native_source.py",
 )
 SOURCE_LOG_PATHS = tuple(
     path.relative_to(ROOT).as_posix() for path in INTEGRATION_FILES
-) + (
-    "apps/hepta-native",
-    "codex-rs/hepta-native-gateway",
-    "codex-rs/hepta-private-state",
-    ":(exclude)apps/hepta-native/CURRENT_SOURCE.json",
-)
+) + TRACKED_ROOTS + (":(exclude)apps/hepta-native/CURRENT_SOURCE.json",)
 
 
 def git(*args):
-    return subprocess.check_output(["git", *args], cwd=ROOT, text=True, encoding="utf-8", errors="strict").strip()
+    return subprocess.check_output(
+        ["git", *args],
+        cwd=ROOT,
+        text=True,
+        encoding="utf-8",
+        errors="strict",
+    ).strip()
 
 
 def committed_blob(path):
@@ -85,8 +99,15 @@ def require_branch():
     if branch == write_branch:
         return
     if not branch and subprocess.run(
-        ["git", "merge-base", "--is-ancestor", f"refs/remotes/origin/{write_branch}", "HEAD"],
-        cwd=ROOT, check=False,
+        [
+            "git",
+            "merge-base",
+            "--is-ancestor",
+            f"refs/remotes/origin/{write_branch}",
+            "HEAD",
+        ],
+        cwd=ROOT,
+        check=False,
     ).returncode == 0:
         return
     raise RuntimeError(
@@ -96,7 +117,9 @@ def require_branch():
 
 def prepare():
     subprocess.run(
-        ["git", "merge-base", "--is-ancestor", BASE, "HEAD"], cwd=ROOT, check=True
+        ["git", "merge-base", "--is-ancestor", BASE, "HEAD"],
+        cwd=ROOT,
+        check=True,
     )
     if git("status", "--porcelain"):
         raise RuntimeError("source preparation requires a clean committed candidate")
@@ -110,12 +133,28 @@ def prepare():
     print("committed native candidate", git("rev-parse", "HEAD"))
 
 
+def inventory_policy():
+    return {
+        "trackedRoots": list(TRACKED_ROOTS),
+        "integrationFiles": sorted(
+            path.relative_to(ROOT).as_posix() for path in INTEGRATION_FILES
+        ),
+        "excluded": ["apps/hepta-native/CURRENT_SOURCE.json"],
+        "digest": "sha256-canonical-path-map-at-verification",
+    }
+
+
+def inventory_digest(observed):
+    canonical = json.dumps(
+        observed, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+    ).encode("utf-8")
+    return hashlib.sha256(canonical).hexdigest()
+
+
 def fingerprint(write):
     path = APP / "CURRENT_SOURCE.json"
-    # Inventory committed paths, not incidental caches or generated/untracked files.
     tracked = subprocess.check_output(
-        ["git", "ls-files", "-z", "--", "apps/hepta-native",
-         "codex-rs/hepta-native-gateway", "codex-rs/hepta-private-state"], cwd=ROOT
+        ["git", "ls-files", "-z", "--", *TRACKED_ROOTS], cwd=ROOT
     )
     names = {ROOT / name.decode("utf-8") for name in tracked.split(b"\0") if name}
     names.discard(path)
@@ -134,17 +173,19 @@ def fingerprint(write):
         if source_path.read_bytes() != committed:
             raise RuntimeError(f"native source differs from committed bytes: {relative}")
         observed[relative] = hashlib.sha256(committed).hexdigest()
+    policy = inventory_policy()
     if write:
         require_branch()
         path.write_text(
             json.dumps(
                 {
-                    "schema": "hepta.ui.native.current-source.v2",
+                    "schema": "hepta.ui.native.current-source.v3",
                     "baselineCommit": BASE,
                     "baselineRole": "initial_convergence_ancestor",
                     "historicalSourceCommit": "3198549d80d6c59887b82e2c50018ab818217c53",
                     "canonicalBranch": BRANCH,
-                    "files": observed,
+                    "inventoryPolicy": policy,
+                    "identityBinding": "exact-git-commit-tree-plus-retained-sha256-inventory-log",
                     "productionQualified": False,
                     "releaseAuthorized": False,
                 },
@@ -154,30 +195,32 @@ def fingerprint(write):
             encoding="utf-8",
         )
     else:
-        manifest = json.loads(path.read_text(encoding="utf-8"))
-        if (manifest.get("schema") != "hepta.ui.native.current-source.v2"
-                or manifest.get("canonicalBranch") != BRANCH
-                or manifest.get("productionQualified") is not False
-                or manifest.get("releaseAuthorized") is not False):
-            raise RuntimeError("native source manifest is not a non-promoting v2 identity")
-        expected = manifest["files"]
-        if observed != expected:
-            changed = sorted(
-                set(observed) ^ set(expected)
-                | {
-                    key
-                    for key in set(observed) & set(expected)
-                    if observed[key] != expected[key]
-                }
+        committed_manifest = committed_blob(path)
+        if path.read_bytes() != committed_manifest:
+            raise RuntimeError("native source manifest differs from committed bytes")
+        manifest = json.loads(committed_manifest.decode("utf-8"))
+        if (
+            manifest.get("schema") != "hepta.ui.native.current-source.v3"
+            or manifest.get("canonicalBranch") != BRANCH
+            or manifest.get("inventoryPolicy") != policy
+            or manifest.get("identityBinding")
+            != "exact-git-commit-tree-plus-retained-sha256-inventory-log"
+            or manifest.get("productionQualified") is not False
+            or manifest.get("releaseAuthorized") is not False
+        ):
+            raise RuntimeError(
+                "native source manifest is not the exact non-promoting v3 inventory policy"
             )
-            raise RuntimeError("native source identity mismatch: " + ", ".join(changed))
-        print(f"verified {len(observed)} native source identities")
+    print(
+        f"verified {len(observed)} native source identities; "
+        f"inventory_sha256={inventory_digest(observed)}"
+    )
 
 
 def native_row(data, collection):
     rows = [row for row in data[collection] if row.get("module") == "ui.native"]
     if len(rows) != 1:
-        raise RuntimeError(f"expected exactly one ui.native row in {collection}")
+        raise RuntimeError("expected exactly one ui.native row in {collection}")
     return rows[0]
 
 
@@ -200,13 +243,8 @@ def rewrite_retired_navigation(value):
         return {key: rewrite_retired_navigation(child) for key, child in value.items()}
     return value
 
-
 def sync_registry_metadata():
     changes = {}
-    # CARGO_BINDINGS.json is intentionally scoped to `codex-hepta-*` crates
-    # discovered under codex-rs. The standalone native application is owned by
-    # ui.native through MODULES/SOURCE_BINDINGS, not by pretending it is a
-    # codex-rs workspace package.
     cargo_bindings = json.loads(
         (ROOT / "docs/modules/CARGO_BINDINGS.json").read_text(encoding="utf-8")
     )
@@ -253,10 +291,7 @@ def sync_registry_metadata():
     changes[relative] = json.dumps(data, indent=2, ensure_ascii=False) + "\n"
     for relative, text in changes.items():
         (ROOT / relative).write_text(text, encoding="utf-8")
-    # The exact-source metadata commit stages only these scoped registry
-    # changes; no unrelated owner source or authority registry is staged.
     subprocess.run(["git", "add", "--", *changes], cwd=ROOT, check=True)
-
 
 def sync_metadata():
     require_branch()
@@ -266,15 +301,18 @@ def sync_metadata():
     tree = git("rev-parse", f"{source}^{{tree}}")
     path = ROOT / "docs/modules/ui.native/IMPLEMENTATION_MAP.json"
     data = json.loads(path.read_text(encoding="utf-8"))
-    # The reviewed implementation map owns operation descriptions. Refresh
-    # identities without regenerating claims or declaring open gaps closed.
     data["sourceBase"] = {"commit": source, "tree": tree}
     for item in data.get("sourceObjects", []):
         item["object"] = git("rev-parse", f"{source}:{item['path']}")
     for key in [
-        "productExecutionComplete", "deploymentQualificationComplete",
-        "independentAcceptanceComplete", "productionImplementation",
-        "productExecutionProved", "independentAcceptance", "activation", "release",
+        "productExecutionComplete",
+        "deploymentQualificationComplete",
+        "independentAcceptanceComplete",
+        "productionImplementation",
+        "productExecutionProved",
+        "independentAcceptance",
+        "activation",
+        "release",
     ]:
         data["claimBoundary"][key] = False
     data["productionImplementation"] = False
@@ -306,11 +344,10 @@ def sync_metadata():
 
     visit(bindings)
     if len(changed) != 1:
-        raise RuntimeError(f"expected one native source binding, found {len(changed)}")
+        raise RuntimeError("expected one native source binding, found {len(changed)}")
     path.write_text(json.dumps(bindings, indent=2) + "\n", encoding="utf-8")
     sync_registry_metadata()
     print("bound native mapping to committed source", source)
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
