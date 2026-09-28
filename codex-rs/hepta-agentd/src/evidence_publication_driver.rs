@@ -35,6 +35,10 @@ impl AgentdIdentity {
         issuer_trust_file: &Path,
         signer_trust_file: &Path,
     ) -> Result<String, AgentdError> {
+        let process_guard = publication_process_lock::PublicationProcessGuard::acquire(
+            &self.home_root,
+        )
+        .map_err(|error| recovery_required(&format!("publication owner fence: {error}")))?;
         let request_bytes = read_owner_file(request_file, self)?;
         let request: EvidencePublicationRequestV1 = serde_json::from_slice(&request_bytes)?;
         if request.schema_version != 1 {
@@ -64,6 +68,7 @@ impl AgentdIdentity {
             &store,
             &config,
             &EvidencePublicationFiles {
+                process_guard: &process_guard,
                 descriptor_bytes: &descriptor_bytes,
                 descriptor_file,
                 issuer_trust_file,
@@ -78,6 +83,7 @@ impl AgentdIdentity {
 }
 
 struct EvidencePublicationFiles<'a> {
+    process_guard: &'a publication_process_lock::PublicationProcessGuard,
     descriptor_bytes: &'a [u8],
     descriptor_file: &'a Path,
     issuer_trust_file: &'a Path,
@@ -94,6 +100,7 @@ async fn execute_publication_request(
     use codex_hepta_evidence::EvidenceFrontierHistoryRangeV1;
 
     let EvidencePublicationFiles {
+        process_guard,
         descriptor_bytes,
         descriptor_file,
         issuer_trust_file,
@@ -299,6 +306,9 @@ async fn execute_publication_request(
             }
             // Recovery re-fsyncs a matching stored record. A latest read alone
             // is never converted into a successful durability acknowledgement.
+            process_guard
+                .validate()
+                .map_err(|error| recovery_required(&format!("publication owner fence: {error}")))?;
             let result = match backend.recover_durable_acknowledgement(
                 &config.store_id,
                 proposed.frontier_generation,
@@ -346,6 +356,9 @@ async fn execute_publication_request(
                 Some(&predecessor.issuer_trust_registry_sha256),
             )
             .map_err(evidence_error)?;
+            process_guard
+                .validate()
+                .map_err(|error| recovery_required(&format!("publication owner fence: {error}")))?;
             store
                 .acknowledge_publication(
                     &lease,
@@ -396,6 +409,9 @@ fn validate_publication_continuation(
     }
     Ok(())
 }
+
+#[path = "evidence_publication_process_lock.rs"]
+mod publication_process_lock;
 
 #[cfg(test)]
 #[path = "evidence_publication_driver_tests.rs"]
