@@ -146,15 +146,20 @@ fn perform_maintenance(
     );
     match refresh_capacity_idempotent(&mut owner, &capacity_operation_id, &observer) {
         Ok(_) => Ok(()),
-        // Pressure is an observed unavailable state, not fabricated zero
-        // capacity. Do not refresh the prior observation; it expires within one
-        // TTL and new allocation then fails closed while lifecycle supervision
-        // remains available.
-        Err(DurableFleetError::Capacity(CapacityObservationError::PressureLimitExceeded {
-            ..
-        })) => Ok(()),
+        // The Unix spawn boundary independently samples current capacity and
+        // pressure before preparing execution. Never refresh stale capacity or
+        // release physical pins here, and keep stop/adoption supervision alive.
+        Err(error) if is_capacity_degradation(&error) => Ok(()),
         Err(error) => Err(map_owner_error(error)),
     }
+}
+
+fn is_capacity_degradation(error: &DurableFleetError) -> bool {
+    matches!(
+        error,
+        DurableFleetError::Capacity(CapacityObservationError::PressureLimitExceeded { .. })
+            | DurableFleetError::Ledger(codex_hepta_fleet::LeaseLedgerError::CapacityExceeded)
+    )
 }
 
 fn map_owner_error(error: DurableFleetError) -> SupervisorError {
@@ -368,6 +373,20 @@ fn unix_ms() -> Result<u64, SupervisorError> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn ordinary_capacity_shrink_is_not_an_integrity_failure() {
+        assert!(is_capacity_degradation(&DurableFleetError::Ledger(
+            codex_hepta_fleet::LeaseLedgerError::CapacityExceeded,
+        )));
+        assert!(!is_capacity_degradation(&DurableFleetError::CorruptState));
+        assert!(!is_capacity_degradation(
+            &DurableFleetError::InvalidHostIncarnation
+        ));
+        assert!(!is_capacity_degradation(
+            &DurableFleetError::ExecutionContextMismatch
+        ));
+    }
 
     #[test]
     fn product_identity_survives_reopen_and_orders_boots_by_commit_not_hash() {
