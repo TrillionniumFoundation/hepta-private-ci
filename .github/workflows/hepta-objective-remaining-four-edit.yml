@@ -77,10 +77,12 @@ jobs:
             codex-rs/hepta-intelligence/src/lib.rs \
             codex-rs/hepta-intelligence/src/objective_run.rs \
             codex-rs/hepta-objective/src/lib.rs \
+            codex-rs/hepta-objective/src/compiler_tests.rs \
             codex-rs/hepta-objective/src/objective_admission.rs \
             codex-rs/hepta-objective/src/objective_admission_tests.rs \
             codex-rs/hepta-objective/src/objective_function_v1.rs \
             codex-rs/hepta-objective/src/proof_projection.rs \
+            codex-rs/hepta-objective/src/proof_projection_tests.rs \
             codex-rs/hepta-objective/src/validated_admission.rs \
             codex-rs/hepta-objective/src/validated_admission_tests.rs
           git diff --check
@@ -147,11 +149,13 @@ jobs:
               'codex-rs/hepta-agentd/tests/objective_product_e2e.rs',
               'codex-rs/hepta-intelligence/src/lib.rs',
               'codex-rs/hepta-intelligence/src/objective_run.rs',
+              'codex-rs/hepta-objective/src/compiler_tests.rs',
               'codex-rs/hepta-objective/src/lib.rs',
               'codex-rs/hepta-objective/src/objective_admission.rs',
               'codex-rs/hepta-objective/src/objective_admission_tests.rs',
               'codex-rs/hepta-objective/src/objective_function_v1.rs',
               'codex-rs/hepta-objective/src/proof_projection.rs',
+              'codex-rs/hepta-objective/src/proof_projection_tests.rs',
               'codex-rs/hepta-objective/src/validated_admission.rs',
               'codex-rs/hepta-objective/src/validated_admission_tests.rs',
               'docs/modules/objective.compiler/DELIVERY_EVIDENCE.md',
