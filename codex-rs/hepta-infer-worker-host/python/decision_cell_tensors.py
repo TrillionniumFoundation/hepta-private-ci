@@ -96,6 +96,41 @@ def strict_json(data: bytes) -> dict[str, Any]:
     return result
 
 
+def validate_runtime_profile(profile: dict[str, Any]) -> None:
+    """Reject correctly hashed but unsupported semantic interpretations."""
+    actions = ["open_path", "navigate", "copy_text", "notify", "request_evidence", "stop"]
+    expected = {
+        "schema": "hepta.decision-cell-runtime-profile.v2",
+        "composition": "shared-base/organ-adapter/cell-adapter/typed-heads",
+        "projection_schema": "hepta.decision-cell-text-projection.v1",
+        "actions": actions,
+        "action_semantic_digests": {
+            name: hashlib.sha256(b"hepta.decision-cell-action-label.v1\0" + name.encode()).hexdigest()
+            for name in actions
+        },
+        "dispositions": ["continue", "stop", "abstain", "request_evidence", "slow_path", "success"],
+        "target_count": 4,
+        "maximum_length": 192,
+        "target_pointer_profile": "candidate-pair-shared-scorer.v1",
+        "pooling": "attention-mask-mean-v1",
+        "parameter_values": "none-v1",
+        "postcondition_labels": actions,
+        "postcondition_semantic_digests": {
+            name: hashlib.sha256(b"hepta.decision-cell-postcondition-label.v1\0" + name.encode()).hexdigest()
+            for name in actions
+        },
+    }
+    if set(profile) != {*expected, "head_width"}:
+        raise ValueError("unsupported runtime profile fields")
+    for name in ("target_count", "maximum_length", "head_width"):
+        if type(profile[name]) is not int:
+            raise ValueError("runtime profile dimensions must be integers")
+    if not 1 <= profile["head_width"] <= 512:
+        raise ValueError("unsupported head width")
+    if any(profile[name] != value for name, value in expected.items()):
+        raise ValueError("unsupported runtime profile semantics")
+
+
 class HeadTensorBundleV2:
     """Load a caller-bound artifact into the same tensor graph used for training.
 
@@ -118,14 +153,8 @@ class HeadTensorBundleV2:
         profile = manifest.get("runtime_profile")
         if profile != expected_runtime_profile or not isinstance(profile, dict):
             raise ValueError("runtime profile substitution")
-        width = profile.get("head_width")
-        if (type(width) is not int or not 1 <= width <= 512 or
-                profile.get("schema") != "hepta.decision-cell-runtime-profile.v2" or
-                profile.get("composition") != "shared-base/organ-adapter/cell-adapter/typed-heads" or
-                profile.get("target_count") != 4 or profile.get("parameter_values") != "none-v1" or
-                profile.get("actions") != ["open_path", "navigate", "copy_text", "notify", "request_evidence", "stop"] or
-                profile.get("dispositions") != ["continue", "stop", "abstain", "request_evidence", "slow_path", "success"]):
-            raise ValueError("unsupported stateless tensor profile")
+        validate_runtime_profile(profile)
+        width = profile["head_width"]
         weight_bytes = checked_bytes(weights_path, weights_sha256, 16 * 1024 * 1024)
         if len(weight_bytes) != manifest.get("weights_bytes"):
             raise ValueError("head weight size mismatch")
@@ -168,12 +197,15 @@ class HeadTensorBundleV2:
             raise ValueError("invalid state feature shape")
         if tuple(candidates.shape) != (state.shape[0], 4, self._hidden_size):
             raise ValueError("invalid target feature shape")
+        if not state.is_floating_point() or not candidates.is_floating_point():
+            raise ValueError("model features must use real floating-point tensors")
+        # Validate the owned snapshot after conversion, not mutable caller buffers.
+        state = state.detach().to(device="cpu", dtype=torch.float32).clone()
+        candidates = candidates.detach().to(device="cpu", dtype=torch.float32).clone()
         if not torch.isfinite(state).all() or not torch.isfinite(candidates).all():
             raise ValueError("non-finite model features")
         with torch.inference_mode():
-            outputs = self._model(
-                state.detach().to(device="cpu", dtype=torch.float32).clone(),
-                candidates.detach().to(device="cpu", dtype=torch.float32).clone())
+            outputs = self._model(state, candidates)
             if any(not torch.isfinite(value).all() for value in outputs.values()):
                 raise ValueError("non-finite head output")
         return {key: value.clone() for key, value in outputs.items()}
@@ -187,6 +219,8 @@ class HeadTensorBundleV2:
         outputs = self.observe(state, candidates)
         result = {name: torch.softmax(outputs[name] / temperature, dim=-1)
                   for name, temperature in self._temperatures.items()}
+        if any(not torch.isfinite(value).all() for value in result.values()):
+            raise ValueError("non-finite calibrated probabilities")
         confidence = result["action"].max(dim=-1).values
         result["supported"] = (confidence >= self._minimum_confidence) & (
             result["ood"][:, 1] < self._maximum_ood)

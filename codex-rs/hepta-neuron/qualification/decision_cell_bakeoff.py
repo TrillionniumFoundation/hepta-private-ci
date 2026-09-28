@@ -36,6 +36,8 @@ from torch.nn import functional as F
 from transformers import AutoModel, AutoModelForMaskedLM, AutoTokenizer
 
 from snapshot_identity import normalized_hub_manifest, snapshot_supply_chain_admission, verify_snapshot_files
+from decision_cell_metrics import (EVALUATION_PROFILE, HEADS, quality_gates, recommendations,
+                                   selection_statistics, verify_summary_projection)
 
 SEED = 20260927
 SCHEMA = "hepta.decision-cell-backend-bakeoff.v1"
@@ -1019,12 +1021,6 @@ def evaluate(
     }
     target_mask = labels["target"] >= 0
     action_prediction = probabilities["action"].argmax(axis=1)
-    disposition_prediction = probabilities["disposition"].argmax(axis=1)
-    target_prediction = probabilities["target"].argmax(axis=1)
-    joint = (action_prediction == labels["action"]) & (
-        disposition_prediction == labels["disposition"]
-    )
-    joint[target_mask] &= target_prediction[target_mask] == labels["target"][target_mask]
     ood_score = probabilities["ood"][:, 1]
     ood_prediction = ood_score >= calibration["maximum_ood_probability"]
     in_domain = labels["ood"] == 0
@@ -1034,7 +1030,12 @@ def evaluate(
     confidence_error = (
         float((action_prediction[confidence_accept] != labels["action"][confidence_accept]).mean())
         if confidence_accept.any()
-        else 0.0
+        else None
+    )
+    selection = selection_statistics(
+        {name: probabilities[name].argmax(axis=1).tolist() for name in HEADS},
+        {name: labels[name].tolist() for name in HEADS},
+        confidence_accept.tolist(), ood_prediction.tolist(), in_domain.tolist(),
     )
     regression = outputs["value_cost"].detach().cpu().numpy()
     expected = batch["value_cost"].numpy()
@@ -1055,7 +1056,7 @@ def evaluate(
         "postcondition_accuracy": accuracy(
             probabilities["postcondition"], labels["postcondition"]
         ),
-        "joint_exact_accuracy": float(joint.mean()),
+        **selection,
         "action_ece": expected_calibration_error(
             probabilities["action"], labels["action"]
         ),
@@ -1363,6 +1364,8 @@ def run_model(
         native_reference = laya_native_reference(encoder, test_rows)
         encoder.verify_loader_inputs()
         artifact_metadata = {
+            "evaluation_profile": EVALUATION_PROFILE,
+            "evaluation_implementation_sha256": sha256_file(Path(__file__).with_name("decision_cell_metrics.py")),
             "dataset_sha256": dataset_digest,
             "source": source,
             "script_sha256": script_digest,
@@ -1379,6 +1382,8 @@ def run_model(
         )
         receipt = {
             "schema": SCHEMA,
+            "evaluation_profile": EVALUATION_PROFILE,
+            "evaluation_implementation_sha256": artifact_metadata["evaluation_implementation_sha256"],
             "model_name": model_name,
             "source": source,
             "script_sha256": script_digest,
@@ -1470,7 +1475,8 @@ def verified_receipt(path: Path) -> tuple[dict[str, Any], str]:
     manifest_path = bound_file(head["manifest_path"], head["manifest_sha256"])
     bound_file(head["weights_path"], head["weights_sha256"])
     manifest = json.loads(manifest_path.read_text())
-    for key in ("dataset_sha256", "source", "script_sha256", "base_model", "calibration"):
+    for key in ("dataset_sha256", "source", "script_sha256", "base_model", "calibration",
+                "evaluation_profile", "evaluation_implementation_sha256"):
         if manifest.get(key) != value.get(key):
             raise RuntimeError("bakeoff manifest/receipt semantic mismatch: " + key)
     if manifest.get("weights_sha256") != head["weights_sha256"]:
@@ -1522,24 +1528,8 @@ def candidate_quality(receipt: dict[str, Any]) -> tuple[float, dict[str, float]]
     }
 
 
-def eligibility(receipt: dict[str, Any]) -> dict[str, bool]:
-    test = receipt["test_metrics"]
-    ood = receipt["ood_test_metrics"]
-    return {
-        "action_accuracy_at_least_0_80": test["action_accuracy"] >= 0.80,
-        "target_accuracy_at_least_0_70": test["target_accuracy"] >= 0.70,
-        "disposition_accuracy_at_least_0_80": (
-            test["disposition_accuracy"] >= 0.80
-        ),
-        "joint_exact_accuracy_at_least_0_65": (
-            test["joint_exact_accuracy"] >= 0.65
-        ),
-        "ood_false_acceptance_at_most_0_05": (
-            ood["ood_false_acceptance"] is not None
-            and ood["ood_false_acceptance"] <= 0.05
-        ),
-        "confidence_error_at_most_0_05": test["confidence_error"] <= 0.05,
-    }
+eligibility = quality_gates
+
 
 def repository_source() -> dict[str, str]:
     root = Path(__file__).resolve().parents[3]
@@ -1574,14 +1564,21 @@ def supply_chain_admission(receipt: dict[str, Any]) -> dict[str, bool]:
     return snapshot_supply_chain_admission(receipt["base_model"])
 
 
-def summarize_receipts(output_dir: Path, models: Sequence[str]) -> Path:
+def comparison_rows(output_dir: Path, models: Sequence[str]) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     if len(models) != len(set(models)):
         raise RuntimeError("duplicate model identity in comparison")
     comparison_identity = None
     for model_name in models:
         receipt, receipt_digest, receipt_path = current_model_receipt(output_dir, model_name)
-        identity = (receipt["dataset_sha256"], receipt["script_sha256"], receipt["source"]["commit"], receipt["source"]["tree"], receipt["maximum_length"])
+        if receipt.get("evaluation_profile") != EVALUATION_PROFILE or receipt.get(
+            "evaluation_implementation_sha256"
+        ) != sha256_file(Path(__file__).with_name("decision_cell_metrics.py")):
+            raise RuntimeError("historical evaluation profile requires its original evaluator or an explicit new evaluation")
+        identity = (receipt["dataset_sha256"], receipt["script_sha256"], receipt["source"]["commit"],
+                    receipt["source"]["tree"], receipt["maximum_length"],
+                    receipt["evaluation_profile"], receipt["evaluation_implementation_sha256"],
+                    canonical_json(receipt["process"]))
         if receipt["model_name"] != model_name or (comparison_identity is not None and identity != comparison_identity):
             raise RuntimeError("bakeoff comparison mixes source, data or model identities")
         comparison_identity = identity
@@ -1606,33 +1603,19 @@ def summarize_receipts(output_dir: Path, models: Sequence[str]) -> Path:
                 and all(supply.values()),
             }
         )
-    internal = [row for row in rows if row["internal_shadow_eligible"]]
-    distributable = [row for row in rows if row["distribution_candidate_eligible"]]
-    internal.sort(key=lambda row: (-row["score"], row["model_name"]))
-    distributable.sort(key=lambda row: (-row["score"], row["model_name"]))
+    return rows
+
+
+def summarize_receipts(output_dir: Path, models: Sequence[str]) -> Path:
+    rows = comparison_rows(output_dir, models)
     summary = {
         "schema": "hepta.decision-cell-backend-bakeoff-summary.v1",
+        "evaluation_profile": EVALUATION_PROFILE,
+        "evaluation_implementation_sha256": sha256_file(Path(__file__).with_name("decision_cell_metrics.py")),
         "source": repository_source(),
         "script_sha256": sha256_file(Path(__file__)),
         "models": rows,
-        "internal_shadow_recommendation": (
-            {
-                "model_name": internal[0]["model_name"],
-                "receipt_sha256": internal[0]["receipt_sha256"],
-                "reason": "highest preregistered quality-resource score among exact-revision quality-eligible candidates",
-            }
-            if internal
-            else None
-        ),
-        "distribution_candidate_recommendation": (
-            {
-                "model_name": distributable[0]["model_name"],
-                "receipt_sha256": distributable[0]["receipt_sha256"],
-                "reason": "highest score among candidates also passing current license and remote-code supply-chain gates",
-            }
-            if distributable
-            else None
-        ),
+        **recommendations(rows),
         "selection_authority": False,
         "candidate_scope": "synthetic_fixture_only",
         "runtime_selection_eligible": False,
@@ -1682,6 +1665,10 @@ def verify_outputs(output_dir: Path, models: Sequence[str]) -> dict[str, Any]:
     observed = [(row["model_name"], row["receipt_sha256"]) for row in summary["models"]]
     if len(observed) != len(expected) or set(observed) != expected:
         raise RuntimeError("summary does not bind exactly the verified model receipts")
+    verify_summary_projection(
+        summary, comparison_rows(output_dir, models),
+        sha256_file(Path(__file__).with_name("decision_cell_metrics.py")),
+    )
     return {
         "status": "PASS_DECISION_CELL_BACKEND_BAKEOFF_OUTPUTS",
         "models": verified_models,

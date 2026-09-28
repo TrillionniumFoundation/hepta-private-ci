@@ -18,6 +18,10 @@ import decision_cell_bakeoff as bakeoff
 def replay(receipt_path: Path, model_root: Path, device: str) -> dict:
     consumer_source = bakeoff.repository_source()
     receipt, receipt_digest = bakeoff.verified_receipt(receipt_path)
+    if receipt.get("evaluation_profile") != bakeoff.EVALUATION_PROFILE or receipt.get(
+        "evaluation_implementation_sha256"
+    ) != bakeoff.sha256_file(Path(bakeoff.__file__).with_name("decision_cell_metrics.py")):
+        raise ValueError("historical evaluation profile cannot be reinterpreted during replay")
     name = receipt["model_name"]
     spec = bakeoff.MODEL_SPECS[name]
     head = receipt["head_artifact"]

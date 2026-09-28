@@ -117,3 +117,30 @@ applicable output-training rights before training a distributable artifact. Teac
 agreement is not ground truth. Retain independent environment outcomes, human review,
 student-state coverage and prospective holdout; do not replace them with synthetic
 labels or a successful HTTP response.
+
+## Complete-decision evaluation profile
+
+`hepta.decision-cell-selection-evaluation.v2` includes action, applicable target,
+disposition **and postcondition** in joint accuracy. Report the actual intersection
+of confidence acceptance and OOD acceptance, its in-domain coverage, complete-decision
+error and a Wilson 95% upper bound. An empty accepted set has an undefined error
+rate (`null`), not observed zero risk. Accepted OOD rows count as unsupported errors.
+
+The pre-run synthetic diagnostic panel retains prior quality floors and additionally
+requires postcondition accuracy >=0.80, at least 20 supported in-domain rows,
+supported in-domain coverage >=0.25 and supported joint error <=0.05. These empirical
+pilot thresholds do not relax any production bound or establish statistical safety.
+All-reject behavior remains a valid fallback, but cannot win backend selection.
+
+Receipts and head manifests bind the evaluation profile and implementation digest.
+Do not relabel old metrics with new semantics: use the historical evaluator or record
+a new evaluation. Comparisons also require identical recorded host/runtime/thread/
+device profiles. Summary verification recomputes model rows, gates and recommendations
+from the verified receipts; merely rehashing a modified summary cannot certify it.
+
+The shared tensor consumer separately checks the closed runtime-profile semantics,
+including projection, pooling, class digests and integer dimensions. It validates
+owned floating-point feature snapshots and rejects non-finite calibrated outputs.
+These integrity checks do not manufacture independent calibration or OOD trust.
+
+Dependency-free regressions: `python3 -m unittest -v test_decision_cell_metrics`.
