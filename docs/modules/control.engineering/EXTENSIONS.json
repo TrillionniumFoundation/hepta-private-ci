@@ -26,7 +26,8 @@
       "nativeSymbol": "create_audit_checkpoint",
       "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/audit_checkpoint.py",
       "tests": [
-        "tools/hepta-engineering-control/test_audit_checkpoint.py"
+        "tools/hepta-engineering-control/test_audit_checkpoint.py",
+        "tools/hepta-engineering-control/test_product_runtime.py"
       ]
     },
     {
@@ -35,7 +36,8 @@
       "nativeSymbol": "advance_audit_checkpoint",
       "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/audit_checkpoint.py",
       "tests": [
-        "tools/hepta-engineering-control/test_audit_checkpoint.py"
+        "tools/hepta-engineering-control/test_audit_checkpoint.py",
+        "tools/hepta-engineering-control/test_product_runtime.py"
       ]
     },
     {
@@ -44,7 +46,8 @@
       "nativeSymbol": "evaluate_database_capacity",
       "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/capacity_policy.py",
       "tests": [
-        "tools/hepta-engineering-control/test_capacity_policy.py"
+        "tools/hepta-engineering-control/test_capacity_policy.py",
+        "tools/hepta-engineering-control/test_product_runtime.py"
       ]
     },
     {
@@ -112,11 +115,21 @@
     },
     {
       "operation": "database_capacity",
-      "designOperation": "named_product_capacity_admission",
+      "designOperation": "named_product_transactional_capacity_admission",
       "nativeSymbol": "EngineeringControlProduct.database_capacity",
       "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/product_runtime.py",
       "tests": [
-        "tools/hepta-engineering-control/test_capacity_policy.py"
+        "tools/hepta-engineering-control/test_capacity_policy.py",
+        "tools/hepta-engineering-control/test_product_runtime.py"
+      ]
+    },
+    {
+      "operation": "product_audit_checkpoint",
+      "designOperation": "named_product_checkpoint_lifecycle",
+      "nativeSymbol": "EngineeringControlProduct.advance_audit_checkpoint",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/product_runtime.py",
+      "tests": [
+        "tools/hepta-engineering-control/test_product_runtime.py"
       ]
     },
     {
@@ -125,6 +138,7 @@
       "nativeSymbol": "main",
       "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/production_acceptance.py",
       "tests": [
+        "tools/hepta-engineering-control/test_production_acceptance.py",
         "tools/hepta-engineering-control/test_production_adapters.py"
       ]
     }
