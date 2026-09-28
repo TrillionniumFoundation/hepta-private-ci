@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - ".github/workflows/learning-plasticity-exact-qualification.yml"
+      - ".github/workflows/learning-plasticity-verifier-remediation.yml"
       - "docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json"
       - "docs/modules/control.engineering/IMPLEMENTATION_MAP.json"
   workflow_dispatch:
@@ -21,8 +22,8 @@ jobs:
     if: >-
       github.event_name == 'pull_request' &&
       github.head_ref == 'feat/learning-plasticity-product-closure-20260928'
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
+    runs-on: macos-latest
+    timeout-minutes: 25
     steps:
       - name: Check out exact branch head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -47,11 +48,10 @@ jobs:
               "commit": "73f111ee51f051392ea9520dfa231b0bf4425e01",
               "tree": "e44ddac383fc440cc33e403f9e574b46dac3875c",
           }
-          paths = [
+          for path in (
               Path("docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json"),
               Path("docs/modules/control.engineering/IMPLEMENTATION_MAP.json"),
-          ]
-          for path in paths:
+          ):
               row = json.loads(path.read_text(encoding="utf-8"))
               row["sourceBase"] = dict(identity)
               row["observedAtHead"] = dict(identity)
@@ -62,6 +62,16 @@ jobs:
           PY
           git diff --check
 
+      - name: Restore the read-only qualification workflow and remove temporary writer
+        shell: bash
+        run: |
+          set -euo pipefail
+          git show \
+            dabab071c12f0415a1dc1b8c1c827c0f97c79f4e:.github/workflows/learning-plasticity-exact-qualification.yml \
+            > .github/workflows/learning-plasticity-exact-qualification.yml
+          git rm .github/workflows/learning-plasticity-verifier-remediation.yml
+          git diff --check
+
       - name: Commit locally before strict clean-tree verification
         shell: bash
         run: |
@@ -69,9 +79,10 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add \
+            .github/workflows/learning-plasticity-exact-qualification.yml \
             docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json \
             docs/modules/control.engineering/IMPLEMENTATION_MAP.json
-          git commit -m "fix(docs): rebind squashed integration provenance"
+          git commit -m "fix(plasticity): close exact qualification provenance"
 
       - name: Verify the complete canonical documentation gate
         shell: bash
@@ -85,7 +96,7 @@ jobs:
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"
 
-      - name: Push verified map repair to the active convergence branch
+      - name: Push verified and self-cleaned repair
         shell: bash
         run: |
           set -euo pipefail
