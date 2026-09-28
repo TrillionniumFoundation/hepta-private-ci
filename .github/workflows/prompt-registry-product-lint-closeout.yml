@@ -9,7 +9,7 @@ permissions:
   actions: write
 jobs:
   closeout:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     timeout-minutes: 45
     env:
       EXPECTED_SOURCE: b6cdf7d069a84592c610d57f2685096bb1cf0859
