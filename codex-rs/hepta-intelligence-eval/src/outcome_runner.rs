@@ -17,14 +17,9 @@ use crate::outcome_channels::MAX_BATCH_ROWS;
 use crate::outcome_channels::validate_inputs;
 use crate::outcome_receipt::compose;
 
-// Inherent implementations remain within the recorded runner's private module
-// hierarchy. They do not make the raw runner or its fields externally visible.
-#[path = "qualification_artifacts.rs"]
-mod artifact_temporal;
-#[path = "outcome_qualification_artifacts.rs"]
-mod artifact_outcome;
-#[path = "selected_host_recovery_controller.rs"]
-mod recovery_controller;
+// Publication, typed-archive and selected-host recovery extensions are mounted
+// exactly once under `recorded_publication`; duplicating those path modules here
+// creates a second set of inherent methods on the same recorded runner type.
 
 struct OutcomeProvider<'a, P> {
     plan: &'a ProductFrozenOutcomePlanV1,
