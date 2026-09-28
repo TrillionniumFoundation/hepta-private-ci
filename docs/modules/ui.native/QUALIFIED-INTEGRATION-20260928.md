@@ -75,11 +75,20 @@ qualification.
 
 The Linux installed-product lane additionally exercises an isolated real gateway,
 system keyring service, packaged visible GUI, keyboard traversal and normal
-window-manager close, and records launch-to-readiness, launch-to-visible-window,
-normal-close and resident-memory observations. Those hosted-runner observations
-remain non-promoting: Xvfb, virtual input and a CI keyring session are not
-physical-host accessibility, IME, DPI, multi-monitor, endurance or production
-key-custody acceptance.
+window-manager close. Its product receipt binds the candidate, actual head or
+deterministic merge, source tree, workflow, run attempt, runner image, package
+binary digests, gateway digest, keyring creation and deletion receipts, two fresh
+sessions, virtual focus observations, normal-close exit codes and measured
+launch/visibility/keyboard-command/close/RSS samples. The six-subject aggregator
+reopens the retained receipt and package receipt, verifies those identities and
+digests, and records the product-receipt hash in the final aggregate. Missing,
+tampered, cross-subject or promotion-bearing product evidence fails aggregation.
+
+Those hosted-runner observations remain non-promoting: Xvfb, virtual input and an
+ephemeral CI keyring session are not physical-host accessibility, IME, DPI,
+multi-monitor, endurance or production key-custody acceptance. The recorded
+keyboard command duration is not an end-to-end input-latency measurement and no
+production threshold is evaluated.
 
 ## Remaining gates, not completion claims
 
