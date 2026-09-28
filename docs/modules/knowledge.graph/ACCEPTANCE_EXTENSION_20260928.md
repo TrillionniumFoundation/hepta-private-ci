@@ -27,13 +27,16 @@ or allocation-byte bound is implied by the output edge count.
 `cognitive_kg_benchmark_tests::history::qualification_kg_history_reopen_no_resurrection`
 is the exact ignored test name. Each of the default 128 corrections now overlaps
 one product retrieval. A concurrent reader may observe the complete predecessor
-or successor, never an unrelated revision. At history checkpoints, after writer
-completion and reopen, the latest revision must be retrieved. Final tombstoning
-is checked over three reopens, and an attempted correction cannot resurrect it.
+or successor, never an unrelated revision. Its memory revision and KG generation
+binding must agree for this single-memory fixture. At history checkpoints, after
+writer completion and reopen, the latest revision must be retrieved. Final
+tombstoning is checked over three reopens, and an attempted correction cannot
+resurrect it.
 
-Receipts add `concurrentReads`, `concurrentReaderNs` p50/p95/p99 and an explicit
-`correctionTimingScope`. `correctionNs` measures the concurrent writer/reader join;
-it is not relabeled as isolated transaction time.
+Receipts add `concurrentReads`, `concurrentReaderNs`, `concurrentRoundNs` p50/p95/p99
+and an explicit `correctionTimingScope`. `correctionNs` measures the correction
+future itself; reader latency and the complete concurrent round are measured
+separately. None of these is relabeled as isolated SQLite transaction time.
 
 ## Storage, evidence and remaining acceptance
 
