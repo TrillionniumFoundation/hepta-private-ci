@@ -118,3 +118,13 @@ A mismatch is corruption or unsupported schema, never silent projection rebuild.
 ## 9. Retention, backup and restore
 
 Dispatch identities, grants, witnesses, entered-use proofs, canonical pins, legacy holds, claim digests, observations and attempt events are audit evidence. Compaction requires authenticated archival and cannot delete unresolved or terminal lineage. Parked legacy holds intentionally consume unresolved capacity until authenticated reconciliation or separately governed archival; resetting their schedule, attempts or transaction ID is prohibited. A backup must preserve a consistent SQLite snapshot together with matching authority-frontier metadata. Restore qualification must prove revoked/redacted content, expired active claims and stale session/outbox state cannot resurrect or re-enter physical I/O.
+
+## Migration 13 — inbox recovery scheduling
+
+`matrix_inbox_recovery` references the original inbox event; it retains attempt
+count, last start, next due time, running/ready/retry/quarantined disposition and
+closed-set failure class. Update triggers reject identity/attempt/time rollback
+and quarantine reset. Deletion is forbidden. This is mutable operational
+scheduling, not append-only execution evidence. Exact store-open schema checking
+includes this migration. [Migration inventory](MIGRATIONS.md) is generated and
+verified against committed SQL filenames.

@@ -102,6 +102,7 @@ pub use runner::run;
 
 pub use runtime::MatrixDispatchOutcome;
 pub use runtime::MatrixEventProjection;
+pub use runtime::MatrixRecoveryPolicy;
 pub use runtime::MatrixRuntime;
 pub use runtime::MatrixRuntimeBridge;
 pub use runtime::MatrixRuntimeError;

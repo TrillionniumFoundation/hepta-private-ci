@@ -9,7 +9,10 @@ import time
 from pathlib import Path
 
 MAX_I64 = 2**63 - 1
-SCHEMA_VERSION = 12
+SCHEMA_VERSION = 13
+RECOVERY = ('running', 'ready', 'retry', 'quarantined')
+RECOVERY_FAILURES = ('dependency_unavailable', 'identity_conflict',
+                     'binding_unrecoverable', 'invalid_input')
 OUTBOX = ('pending', 'in_flight', 'retry_scheduled', 'sent', 'permanent_failure')
 LEDGER = ('dispatched', 'accepted', 'indeterminate', 'succeeded',
           'observed_unqualified', 'failed', 'redacted')
@@ -39,13 +42,15 @@ def age(now: int, timestamp: int | None) -> int | None:
 
 
 def diagnose(db: sqlite3.Connection, now_ms: int, capacity: int = 4096,
-             transaction: str | None = None) -> dict:
+             transaction: str | None = None, event: str | None = None) -> dict:
     if type(now_ms) is not int or not 0 <= now_ms <= MAX_I64:
         raise ValueError('invalid observation time')
     if type(capacity) is not int or not 1 <= capacity <= 1_000_000:
         raise ValueError('invalid capacity policy')
     if transaction is not None and not 1 <= len(transaction.encode()) <= 512:
         raise ValueError('invalid transaction identity')
+    if event is not None and not 1 <= len(event.encode()) <= 512:
+        raise ValueError('invalid event identity')
     versions = db.execute('SELECT version, success FROM _sqlx_migrations ORDER BY version').fetchall()
     if versions != [(version, 1) for version in range(1, SCHEMA_VERSION + 1)]:
         raise ValueError('unsupported or incomplete migration history')
@@ -68,6 +73,32 @@ def diagnose(db: sqlite3.Connection, now_ms: int, capacity: int = 4096,
         WHERE state IN ('pending','in_flight','retry_scheduled') AND next_attempt_at_ms=?''', (MAX_I64,)).fetchone()[0]
     unresolved = sum(ledger[state] for state in LEDGER[:3])
     pending = sum(outbox[state] for state in OUTBOX[:3])
+    inbox_oldest = db.execute("SELECT min(received_at_ms) FROM matrix_visible_inbox_events_v2 WHERE state='pending'").fetchone()[0]
+    unknown_oldest = db.execute("SELECT min(prepared_at_ms) FROM matrix_dispatch_ledger WHERE state='indeterminate'").fetchone()[0]
+    recovery = grouped(db, """SELECT r.outcome, count(*) FROM matrix_inbox_recovery r
+        JOIN matrix_visible_inbox_events_v2 i USING(event_id) WHERE i.state='pending'
+        GROUP BY r.outcome""", RECOVERY)
+    recovery_failures = grouped(db, """SELECT r.failure_class, count(*) FROM matrix_inbox_recovery r
+        JOIN matrix_visible_inbox_events_v2 i USING(event_id) WHERE i.state='pending'
+        AND r.failure_class IS NOT NULL GROUP BY r.failure_class""", RECOVERY_FAILURES)
+    recovery_attempts = db.execute("SELECT COALESCE(sum(attempts),0) FROM matrix_inbox_recovery").fetchone()[0]
+    selected_event = None
+    if event is not None:
+        detail = db.execute("""SELECT i.state, r.outcome, r.attempts, r.failure_class, r.next_attempt_at_ms
+            FROM matrix_visible_inbox_events_v2 i LEFT JOIN matrix_inbox_recovery r USING(event_id)
+            WHERE i.event_id=?""", (event,)).fetchone()
+        if detail is None:
+            selected_event = {'reason': 'not_visible_or_absent'}
+        else:
+            state, outcome, attempts, failure, next_ms = detail
+            if outcome not in (*RECOVERY, None) or failure not in (*RECOVERY_FAILURES, None):
+                raise ValueError('unsupported recovery state')
+            action = ('none' if state == 'processed' else
+                      'inspect_binding_preserve_identity_no_manual_unquarantine' if outcome == 'quarantined' else
+                      'wait_dependency_and_owner_backoff' if outcome == 'retry' else
+                      'wait_same_identity_reconciliation' if outcome == 'running' else 'wait_owner')
+            selected_event = {'inbox_state': state, 'recovery_state': outcome, 'attempts': attempts or 0,
+                              'failure_class': failure, 'next_attempt_at_ms': next_ms, 'action': action}
     alerts = []
     if unresolved >= capacity:
         alerts.append({'code': 'unresolved_capacity', 'severity': 'critical', 'action': 'stop_admission_preserve_evidence'})
@@ -79,6 +110,9 @@ def diagnose(db: sqlite3.Connection, now_ms: int, capacity: int = 4096,
         alerts.append({'code': 'queue_age', 'severity': 'warning', 'action': 'inspect_owner_and_reconciliation'})
     if expired:
         alerts.append({'code': 'expired_claims', 'severity': 'warning', 'action': 'inspect_process_lease_never_edit_claim'})
+    if recovery['quarantined']:
+        alerts.append({'code': 'inbox_quarantine', 'severity': 'warning',
+                       'action': 'inspect_exact_binding_preserve_pending_event'})
     selected = None
     if transaction is not None:
         row = db.execute('''SELECT o.state, d.state, o.attempts, o.next_attempt_at_ms,
@@ -113,12 +147,16 @@ def diagnose(db: sqlite3.Connection, now_ms: int, capacity: int = 4096,
             'unresolved_legacy_holds': holds, 'parked_queue': parked,
             'expired_claims': expired, 'sync_checkpoint_age_ms': sync_age,
             'oldest_queue_age_ms': oldest_age, 'alerts': alerts,
+            'oldest_pending_inbox_age_ms': age(now_ms, inbox_oldest),
+            'oldest_indeterminate_age_ms': age(now_ms, unknown_oldest),
+            'recovery': recovery, 'recovery_failures': recovery_failures,
+            'recovery_attempts_lifetime': recovery_attempts, 'selected_event': selected_event,
             'admission': ('blocked_at_unresolved_capacity' if unresolved >= capacity
                           else 'capacity_available_not_authorization'),
             'selected': selected, 'not_in_snapshot': list(UNMEASURED), 'authority_granted': False}
 
 
-def inspect(path: Path, now_ms: int, capacity: int = 4096, transaction: str | None = None) -> dict:
+def inspect(path: Path, now_ms: int, capacity: int = 4096, transaction: str | None = None, event: str | None = None) -> dict:
     absolute = path.absolute()
     if absolute.is_symlink() or not absolute.is_file() or absolute.resolve() != absolute:
         raise ValueError('canonical regular database required')
@@ -134,7 +172,7 @@ def inspect(path: Path, now_ms: int, capacity: int = 4096, transaction: str | No
         db.execute('PRAGMA query_only=ON')
         db.set_progress_handler(budget, 1000)
         db.execute('BEGIN')
-        return diagnose(db, now_ms, capacity, transaction)
+        return diagnose(db, now_ms, capacity, transaction, event)
     finally:
         db.close()
 
@@ -142,11 +180,13 @@ def inspect(path: Path, now_ms: int, capacity: int = 4096, transaction: str | No
 def prometheus(row: dict) -> str:
     lines = []
     for metric, key in (('outbox', 'outbox'), ('dispatch', 'dispatch'), ('active_claims', 'active_claims'),
-                        ('failure_events_last_300s', 'failures_last_300s')):
+                        ('failure_events_last_300s', 'failures_last_300s'),
+                        ('inbox_recovery', 'recovery'), ('inbox_recovery_failures', 'recovery_failures')):
         for state, value in row[key].items():
             lines.append(f'hepta_matrix_{metric}{{state="{state}"}} {value}')
     for key in ('unresolved', 'unresolved_legacy_holds', 'parked_queue', 'expired_claims',
-                'sync_checkpoint_age_ms', 'oldest_queue_age_ms'):
+                'sync_checkpoint_age_ms', 'oldest_queue_age_ms', 'oldest_pending_inbox_age_ms',
+                'oldest_indeterminate_age_ms', 'recovery_attempts_lifetime'):
         value = row[key]
         lines.append(f'hepta_matrix_{key}_available {int(value is not None)}')
         if value is not None:
@@ -160,12 +200,13 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--database', required=True, type=Path)
     parser.add_argument('--transaction')
+    parser.add_argument('--event')
     parser.add_argument('--capacity', type=int, default=4096)
     parser.add_argument('--format', choices=('json', 'prometheus'), default='json')
     parser.add_argument('--check', action='store_true')
     args = parser.parse_args()
     try:
-        row = inspect(args.database, time.time_ns() // 1_000_000, args.capacity, args.transaction)
+        row = inspect(args.database, time.time_ns() // 1_000_000, args.capacity, args.transaction, args.event)
         print(json.dumps(row, indent=2, sort_keys=True) if args.format == 'json' else prometheus(row), end='\n')
         severity = max(({'warning': 1, 'critical': 2}[a['severity']] for a in row['alerts']), default=0)
         return severity if args.check else 0

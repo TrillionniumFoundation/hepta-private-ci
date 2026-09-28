@@ -87,7 +87,7 @@ Wire and storage identities are versioned and bounded. Unknown critical fields, 
 
 ## 6. Data authority, persistence and migrations
 
-`MatrixDurableStore` owns one private per-Agent SQLite database. Migrations 1-5 own the existing room/inbox/outbox/sync/control surfaces. Migration 6 adds the immutable dispatch ledger, observations and authority claims. Migration 7 adds random-capability attempt claims, active claim phases, verified-use/revocation-head witnesses and append-only attempt events. Migration 8 pins canonical Matrix content and scope, migration 9 seals inherited unpinned attempts, migration 10 persists the non-constructible entered-use proof, and migration 11 parks every legacy hold behind authenticated reconciliation while materializing its unresolved durable ledger state. Migration 12 qualifies a stable transaction against any matching entered attempt no newer than the current attempt.
+`MatrixDurableStore` owns one private per-Agent SQLite database. Migrations 1-5 own the existing room/inbox/outbox/sync/control surfaces. Migration 6 adds the immutable dispatch ledger, observations and authority claims. Migration 7 adds random-capability attempt claims, active claim phases, verified-use/revocation-head witnesses and append-only attempt events. Migration 8 pins canonical Matrix content and scope, migration 9 seals inherited unpinned attempts, migration 10 persists the non-constructible entered-use proof, and migration 11 parks every legacy hold behind authenticated reconciliation while materializing its unresolved durable ledger state. Migration 12 qualifies delayed stable-transaction observations against prior entered attempts. Migration 13 persists inbox recovery scheduling, safe failure classes and monotone quarantine without changing admission authority. Migration 12 qualifies a stable transaction against any matching entered attempt no newer than the current attempt.
 
 Operation ID, stable transaction ID and event IDs are independently unique. Logical identity columns are immutable; audit rows cannot be deleted. Store open validates migration history, exact table/index/view/trigger SQL, constraints, foreign keys, integrity and legacy-hold parking before work.
 
@@ -199,3 +199,20 @@ continuation poll. Diagnostic windows are observations, not dispatch truth.
 The schema compatibility floor for startup/rollback is migration **12**,
 including cross-attempt terminal qualification. A binary compatible only with
 migrations 1-11 is not a qualified rollback target.
+
+## 18. Recovery isolation and executable qualification ledger
+
+See [Recovery and diagnostics](RECOVERY_DIAGNOSTICS.md) and the generated
+[Migration inventory](MIGRATIONS.md). The current native runtime selects only
+bounded due event IDs, records recovery attempts before bridge calls, and yields
+its admission gate between events. Known-turn output uses a separate local
+projection gate; unknown-turn reconciliation targets only the existing thread
+and is always `ReconcileOnly`. Projection association failure is an explicit
+runtime-generation error, not proof of delivery or replay.
+
+`QUALIFICATION_SCENARIOS.json` maps MATRIX-Q01–Q29 to exact native test identities
+and remaining target requirements. `scripts/channel_matrix_qualification.py`
+binds the registry to the tested source and derives `scenario-ledger.json` from
+the focused command's hashed nextest JUnit report. A missing, skipped or flaky
+case is not a pass. Q24–Q29 are required in both candidate lanes. This ledger
+never grants production, independent-acceptance or release authority.

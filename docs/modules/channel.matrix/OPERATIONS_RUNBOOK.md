@@ -97,3 +97,9 @@ Unmeasured live broker/revocation freshness, redaction propagation latency,
 supervisor restart counts and encrypted-session continuity remain explicitly
 `not_in_snapshot`, never zero-valued green signals. Missing metrics require
 independent live probes/receipts; the tool does not authorize rollout.
+
+## Ingress recovery diagnostic workflow
+
+See [Recovery and diagnostics](RECOVERY_DIAGNOSTICS.md) for exact-event selectors,
+quarantine/backoff classifications, gate metrics and the cooperative budget.
+Never turn a pending/quarantined/unknown identity into new work by editing SQL.

@@ -96,3 +96,26 @@ strict lint and owner formatting from `codex-rs`, preserving the pinned toolchai
 The evidence directory's generated `status.json`/`status.md` separates those
 states from real target qualification and independent acceptance. Historical
 local pass counts above apply only to their stated snapshots and test scopes.
+
+## 7. Machine-checkable scenario ledger and new native regressions
+
+`QUALIFICATION_SCENARIOS.json` is the current scenario-to-test inventory.
+`scenario-ledger.json` is derived outside the checkout from exact candidate and
+command receipts plus a hashed nextest JUnit report. Native binary+test identity
+must match; compilation or aggregate test success cannot substitute for a case.
+Missing reports, stale source/registry hashes, duplicate tests, XML DTDs, skips,
+flaky retries and failed cases cannot yield an unqualified pass. External fields
+remain not_proved even when native fixtures pass.
+
+| ID | New required native fixture | Oracle |
+|---|---|---|
+| MATRIX-Q24 | presentation_extensions_reach_agent_as_plain_text_only | only plain text forwarded |
+| MATRIX-Q25 | bad_event_is_delayed_durably_while_next_event_progresses | same identity deferred across reopen; good event advances |
+| MATRIX-Q26 | budget_yields_without_canceling_or_reordering_identity | finish current event; next pass selects untouched event |
+| MATRIX-Q27 | known_turn_projection_does_not_wait_for_slow_admission | output advances while unrelated bridge is blocked |
+| MATRIX-Q28 | missing_turn_lookup_reconciles_only_its_existing_thread | no new submission from projection |
+| MATRIX-Q29 | missing_core_identity_quarantines_without_losing_output_silently | explicit association failure; never silent success |
+
+All six live in `codex-hepta-matrixd`'s `runtime::tests::recovery_tests` module.
+They are source fixtures until the final exact-candidate JUnit proves execution.
+Migration summary drift is blocked by `test_channel_matrix_migrations.py`.

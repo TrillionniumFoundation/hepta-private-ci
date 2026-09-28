@@ -63,3 +63,9 @@ Qualification injects failure:
 - during authenticated backup/restore with expired claims and redacted/revoked content.
 
 Each fixture records whether kernel entry occurred, whether adapter polling occurred, stable transaction, attempt/lease, claim-token digest, authority frontier/witness digest, typed failure class and final durable state. A missing adapter poll does not authorize pre-entry release once kernel entry is known or its durable proof-write acknowledgement is uncertain.
+
+## Bounded ingress recovery
+
+[Recovery and diagnostics](RECOVERY_DIAGNOSTICS.md) defines migration-13 scheduling,
+per-event backoff/quarantine, fatal owner errors, exact-thread reconciliation,
+cooperative cancellation boundaries and the unresolved-association limitation.

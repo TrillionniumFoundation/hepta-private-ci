@@ -32,22 +32,53 @@
   ],
   "laneId": "LANE-B-RUNTIME",
   "module": "channel.matrix",
-  "sourceMaturity": "native_durable_channel_runtime_entered_use_legacy_park_source_composed_unqualified",
-  "declaredRoots": ["codex-rs/hepta-matrix-sdk", "codex-rs/hepta-matrixd"],
-  "resolvedRoots": ["codex-rs/hepta-matrix-sdk", "codex-rs/hepta-matrixd"],
+  "sourceMaturity": "native_durable_channel_runtime_entered_use_legacy_park_source_composed_unqualified_recovery_scheduler_unqualified",
+  "declaredRoots": [
+    "codex-rs/hepta-matrix-sdk",
+    "codex-rs/hepta-matrixd"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-matrix-sdk",
+    "codex-rs/hepta-matrixd"
+  ],
   "stateOwnerDisposition": "MatrixDurableStore owns ingress, sync frontier, outbox, dispatch ledger, fenced claims, witness metadata, entered-use proofs, attempt events, immutable canonical content/scope pins and sealed/parked legacy-content holds. No second sender or in-memory terminal ledger is introduced.",
   "terminalObserverDisposition": "The canonical sync reducer commits matching authenticated remote event observations; HTTP acceptance is not qualified terminality. The kernel entered-use proof is durably bound before transport, while trusted target-ingress and exact-candidate execution remain qualification gates.",
   "productCallers": [
-    {"role": "lifecycle_product_caller", "sourcePath": "codex-rs/hepta-supervisor/src/matrix.rs", "nativeSymbol": "pub(crate) fn start_matrix_companion("},
-    {"role": "runtime_product_composition", "sourcePath": "codex-rs/hepta-matrixd/src/runner.rs", "nativeSymbol": "pub async fn run("}
+    {
+      "role": "lifecycle_product_caller",
+      "sourcePath": "codex-rs/hepta-supervisor/src/matrix.rs",
+      "nativeSymbol": "pub(crate) fn start_matrix_companion("
+    },
+    {
+      "role": "runtime_product_composition",
+      "sourcePath": "codex-rs/hepta-matrixd/src/runner.rs",
+      "nativeSymbol": "pub async fn run("
+    }
   ],
   "operations": [
     {
       "designOperation": "admit_event",
       "mappingClass": "owner_native",
-      "ownerEntrypoint": {"role": "owner_entrypoint", "path": "codex-rs/hepta-matrixd/src/runtime.rs", "symbol": "pub async fn process_event(", "buildTarget": "codex-hepta-matrixd"},
-      "delegatedCallees": [{"role": "runtime_recovery_caller", "path": "codex-rs/hepta-matrixd/src/runner.rs", "symbol": ".recover_pending(INBOX_RECOVERY_LIMIT"}],
-      "tests": [{"path": "codex-rs/hepta-matrixd/src/runtime/tests.rs", "kind": "runtime_ingress_recovery", "command": "just test -p codex-hepta-matrixd --lib"}],
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-matrixd/src/runtime.rs",
+        "symbol": "pub async fn process_event(",
+        "buildTarget": "codex-hepta-matrixd"
+      },
+      "delegatedCallees": [
+        {
+          "role": "runtime_recovery_caller",
+          "path": "codex-rs/hepta-matrixd/src/runner.rs",
+          "symbol": ".recover_pending(INBOX_RECOVERY_LIMIT"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-matrixd/src/runtime/tests.rs",
+          "kind": "runtime_ingress_recovery",
+          "command": "just test -p codex-hepta-matrixd --lib"
+        }
+      ],
       "sourceSemantics": "Consumes the durable enrolled-room projection and bridges pending events into the exact Agent App Server binding. Source mapping is not execution proof.",
       "operation": "admit_event",
       "nativeSymbol": "pub async fn process_event(",
@@ -58,15 +89,40 @@
     {
       "designOperation": "prepare_send",
       "mappingClass": "owner_native",
-      "ownerEntrypoint": {"role": "durable_dispatch_owner_entrypoint", "path": "codex-rs/hepta-matrix-store/src/dispatch.rs", "symbol": "pub async fn prepare_outbox_dispatch(", "buildTarget": "codex-hepta-matrix-store"},
+      "ownerEntrypoint": {
+        "role": "durable_dispatch_owner_entrypoint",
+        "path": "codex-rs/hepta-matrix-store/src/dispatch.rs",
+        "symbol": "pub async fn prepare_outbox_dispatch(",
+        "buildTarget": "codex-hepta-matrix-store"
+      },
       "delegatedCallees": [
-        {"role": "fenced_authorized_sender_callsite", "path": "codex-rs/hepta-matrix-sdk/src/outbound_v2/admission.rs", "symbol": "prepare_outbox_dispatch(record, prepared_at_ms)"},
-        {"role": "canonical_content_pin_callsite", "path": "codex-rs/hepta-matrix-sdk/src/outbound_v2/admission.rs", "symbol": ".pin_outbox_content("},
-        {"role": "physical_final_use_entry", "path": "codex-rs/hepta-matrix-sdk/src/outbound_v2/gate.rs", "symbol": "send_authorized(self.record, permit)"}
+        {
+          "role": "fenced_authorized_sender_callsite",
+          "path": "codex-rs/hepta-matrix-sdk/src/outbound_v2/admission.rs",
+          "symbol": "prepare_outbox_dispatch(record, prepared_at_ms)"
+        },
+        {
+          "role": "canonical_content_pin_callsite",
+          "path": "codex-rs/hepta-matrix-sdk/src/outbound_v2/admission.rs",
+          "symbol": ".pin_outbox_content("
+        },
+        {
+          "role": "physical_final_use_entry",
+          "path": "codex-rs/hepta-matrix-sdk/src/outbound_v2/gate.rs",
+          "symbol": "send_authorized(self.record, permit)"
+        }
       ],
       "tests": [
-        {"path": "codex-rs/hepta-matrix-sdk/tests/durable_transport.rs", "kind": "authority_identity_claim_fencing_crash_and_retry", "command": "just test -p codex-hepta-matrix-sdk"},
-        {"path": "codex-rs/hepta-matrix-store/tests/content_binding.rs", "kind": "canonical_pin_reopen_cancel_drift_and_schema", "command": "just test -p codex-hepta-matrix-store"}
+        {
+          "path": "codex-rs/hepta-matrix-sdk/tests/durable_transport.rs",
+          "kind": "authority_identity_claim_fencing_crash_and_retry",
+          "command": "just test -p codex-hepta-matrix-sdk"
+        },
+        {
+          "path": "codex-rs/hepta-matrix-store/tests/content_binding.rs",
+          "kind": "canonical_pin_reopen_cancel_drift_and_schema",
+          "command": "just test -p codex-hepta-matrix-store"
+        }
       ],
       "sourceSemantics": "Wires fenced claims, immutable canonical plaintext content/scope pins, schema-v2 grant proposals, a non-constructible entered-use proof and a sealed SDK permit into the real transport facade. Witness metadata alone cannot qualify success; authenticated sync terminality must match the persisted proof chain.",
       "operation": "prepare_send",
@@ -78,14 +134,35 @@
     {
       "designOperation": "observe_send",
       "mappingClass": "owner_native",
-      "ownerEntrypoint": {"role": "durable_terminal_observer", "path": "codex-rs/hepta-matrix-store/src/dispatch.rs", "symbol": "pub(crate) async fn observe_outbound_event_tx(", "buildTarget": "codex-hepta-matrix-store"},
+      "ownerEntrypoint": {
+        "role": "durable_terminal_observer",
+        "path": "codex-rs/hepta-matrix-store/src/dispatch.rs",
+        "symbol": "pub(crate) async fn observe_outbound_event_tx(",
+        "buildTarget": "codex-hepta-matrix-store"
+      },
       "delegatedCallees": [
-        {"role": "sync_atomic_reconciliation_callsite", "path": "codex-rs/hepta-matrix-store/src/sync_v2.rs", "symbol": "observe_outbound_event_tx("},
-        {"role": "redaction_atomic_reconciliation_callsite", "path": "codex-rs/hepta-matrix-store/src/sync_v2.rs", "symbol": "apply_dispatch_redaction_tx("}
+        {
+          "role": "sync_atomic_reconciliation_callsite",
+          "path": "codex-rs/hepta-matrix-store/src/sync_v2.rs",
+          "symbol": "observe_outbound_event_tx("
+        },
+        {
+          "role": "redaction_atomic_reconciliation_callsite",
+          "path": "codex-rs/hepta-matrix-store/src/sync_v2.rs",
+          "symbol": "apply_dispatch_redaction_tx("
+        }
       ],
       "tests": [
-        {"path": "codex-rs/hepta-matrix-sdk/tests/durable_transport.rs", "kind": "ack_loss_terminal_reconciliation_and_attempt_history", "command": "just test -p codex-hepta-matrix-sdk"},
-        {"path": "codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs", "kind": "real_homeserver_source_fixture", "command": "feature-selected target-host qualification"}
+        {
+          "path": "codex-rs/hepta-matrix-sdk/tests/durable_transport.rs",
+          "kind": "ack_loss_terminal_reconciliation_and_attempt_history",
+          "command": "just test -p codex-hepta-matrix-sdk"
+        },
+        {
+          "path": "codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs",
+          "kind": "real_homeserver_source_fixture",
+          "command": "feature-selected target-host qualification"
+        }
       ],
       "sourceSemantics": "The sync owner reaches durable send/redaction reconciliation. Unknown effects remain unresolved; a concurrent observed terminal result is retained over a later attempt rejection. Authenticated observation and qualified authority provenance still require their native and external gates.",
       "operation": "observe_send",
@@ -100,7 +177,9 @@
     "Compile, format, strictly lint and execute all new and inherited native fixtures on the final source-head and deterministic merge candidate.",
     "Execute the stored hermetic Synapse, ACK-loss/crash, revocation-entry and redaction scenarios with exact candidate receipts.",
     "Provide authenticated archival/retention for sustained legacy-hold and unresolved-dispatch capacity without deleting evidence.",
-    "Qualify authenticated login/access-token and encryption-session transaction scope across rotation; configured session generation alone is not a rotation proof."
+    "Qualify authenticated login/access-token and encryption-session transaction scope across rotation; configured session generation alone is not a rotation proof.",
+    "Execute migration-13 recovery, projection isolation and Q24-Q29 on the final source and merge candidates; no artifact generator is independent acceptance.",
+    "Provide a durable deferred-output/replay target profile for persistent missing turn associations."
   ],
   "externalEvidenceGates": [
     "real enrolled homeserver/user/device identity and protected final-use clock/frontier composition",
@@ -131,21 +210,66 @@
   "owner": "channels-platform",
   "deputy": "security-authority",
   "technicalGuide": "docs/modules/channel.matrix/TECHNICAL.md",
-  "sourceRoot": ["codex-rs/hepta-matrix-sdk", "codex-rs/hepta-matrixd"],
+  "sourceRoot": [
+    "codex-rs/hepta-matrix-sdk",
+    "codex-rs/hepta-matrixd"
+  ],
   "sourceObjects": [
-    {"path": "codex-rs/hepta-matrix-sdk", "object": "55a18a9a4ae9f67879b34fd0b82d1e10befd95d5"},
-    {"path": "codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs", "object": "6dbd30816e4bc89e06f81cd430b43b91f00e37fc"},
-    {"path": "codex-rs/hepta-matrix-sdk/tests/durable_transport.rs", "object": "4226334b588c0b32fa95274ee2539879b27e3fe3"},
-    {"path": "codex-rs/hepta-matrix-store/src/dispatch.rs", "object": "f6b54aa390368b9db0625debaf28096fd4af4f46"},
-    {"path": "codex-rs/hepta-matrix-store/src/sync_v2.rs", "object": "93983a61fa232d2e9b454c2c1c3a1132aeea16ec"},
-    {"path": "codex-rs/hepta-matrix-store/migrations/0008_matrix_content_binding.sql", "object": "65bd1295cd0eacb8c56e45b317aa95d6e307f64d"},
-    {"path": "codex-rs/hepta-matrix-store/migrations/0009_matrix_legacy_content_holds.sql", "object": "4e7229e4e7576ce2ba41eafe428846854b25ab60"},
-    {"path": "codex-rs/hepta-matrixd", "object": "28890d84f868b61145a54c2bda09131b78d89fcc"},
-    {"path": "codex-rs/hepta-matrixd/src/runner.rs", "object": "31fadf65428421f40386508b14f588792115c326"},
-    {"path": "codex-rs/hepta-matrixd/src/runtime.rs", "object": "7a81a5a338e153bae8df20c46575fc3e5d1b1080"},
-    {"path": "codex-rs/hepta-matrixd/src/runtime/tests.rs", "object": "1cfe4d48b28ff0053eef92f6d9465b407b934ce2"},
-    {"path": "codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs", "object": "7f3ab77bf60de3220f26cd2c47238442c5243d3b"},
-    {"path": "codex-rs/hepta-supervisor/src/matrix.rs", "object": "58f0ac9ef340c5253b56e22a5baef969a941055f"},
-    {"path": "docs/modules/channel.matrix/TECHNICAL.md", "object": "dc8cc7442a7e97c370648891e78e6b215cc4d0bd"}
+    {
+      "path": "codex-rs/hepta-matrix-sdk",
+      "object": "55a18a9a4ae9f67879b34fd0b82d1e10befd95d5"
+    },
+    {
+      "path": "codex-rs/hepta-matrix-sdk/src/outbound_v2/mod.rs",
+      "object": "6dbd30816e4bc89e06f81cd430b43b91f00e37fc"
+    },
+    {
+      "path": "codex-rs/hepta-matrix-sdk/tests/durable_transport.rs",
+      "object": "4226334b588c0b32fa95274ee2539879b27e3fe3"
+    },
+    {
+      "path": "codex-rs/hepta-matrix-store/src/dispatch.rs",
+      "object": "f6b54aa390368b9db0625debaf28096fd4af4f46"
+    },
+    {
+      "path": "codex-rs/hepta-matrix-store/src/sync_v2.rs",
+      "object": "93983a61fa232d2e9b454c2c1c3a1132aeea16ec"
+    },
+    {
+      "path": "codex-rs/hepta-matrix-store/migrations/0008_matrix_content_binding.sql",
+      "object": "65bd1295cd0eacb8c56e45b317aa95d6e307f64d"
+    },
+    {
+      "path": "codex-rs/hepta-matrix-store/migrations/0009_matrix_legacy_content_holds.sql",
+      "object": "4e7229e4e7576ce2ba41eafe428846854b25ab60"
+    },
+    {
+      "path": "codex-rs/hepta-matrixd",
+      "object": "28890d84f868b61145a54c2bda09131b78d89fcc"
+    },
+    {
+      "path": "codex-rs/hepta-matrixd/src/runner.rs",
+      "object": "31fadf65428421f40386508b14f588792115c326"
+    },
+    {
+      "path": "codex-rs/hepta-matrixd/src/runtime.rs",
+      "object": "7a81a5a338e153bae8df20c46575fc3e5d1b1080"
+    },
+    {
+      "path": "codex-rs/hepta-matrixd/src/runtime/tests.rs",
+      "object": "1cfe4d48b28ff0053eef92f6d9465b407b934ce2"
+    },
+    {
+      "path": "codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs",
+      "object": "7f3ab77bf60de3220f26cd2c47238442c5243d3b"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/matrix.rs",
+      "object": "58f0ac9ef340c5253b56e22a5baef969a941055f"
+    },
+    {
+      "path": "docs/modules/channel.matrix/TECHNICAL.md",
+      "object": "dc8cc7442a7e97c370648891e78e6b215cc4d0bd"
+    }
   ]
 }

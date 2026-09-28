@@ -189,8 +189,7 @@ impl MatrixOutboundAuthorizer for Authorizer {
 
     fn signed_grant<'a>(&'a self, request: &'a MatrixFinalUseRequest) -> MatrixGrantFuture<'a> {
         Box::pin(async move {
-            let nonce =
-                next_test_material().map_err(|_| MatrixAuthorityError::Unavailable)?;
+            let nonce = next_test_material().map_err(|_| MatrixAuthorityError::Unavailable)?;
             self.sign(request.binding.clone(), nonce)
         })
     }
@@ -221,8 +220,7 @@ impl MatrixOutboundAuthorizer for Authorizer {
                     scope_sha256: [3; 32],
                     payload_sha256: [4; 32],
                 };
-                let nonce =
-                    next_test_material().map_err(|_| MatrixAuthorityError::Unavailable)?;
+                let nonce = next_test_material().map_err(|_| MatrixAuthorityError::Unavailable)?;
                 let signed = self.sign(binding.clone(), nonce)?;
                 self.authority
                     .claim(&signed, &binding)

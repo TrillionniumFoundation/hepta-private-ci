@@ -561,7 +561,7 @@ async fn unsupported_room_messages_fail_closed_without_core_admission() -> anyho
 
     for (index, payload) in [
         br#"{"msgtype":"m.notice","body":"do not dispatch"}"#.as_slice(),
-        br#"{"msgtype":"m.text","body":"hidden","formatted_body":"<b>hidden</b>"}"#.as_slice(),
+        br#"{"msgtype":"m.text","body":"edit","m.relates_to":{"rel_type":"m.replace","event_id":"$old"}}"#.as_slice(),
         br#"{"msgtype":"m.text","body":"hidden","m.mentions":{"user_ids":["@agent:example.test"],"critical":true}}"#.as_slice(),
         br#"{"msgtype":"m.text","body":"hidden","m.mentions":{"user_ids":["invalid"]}}"#.as_slice(),
         br#"{"msgtype":"m.text","body":"hidden","m.mentions":{"room":"true"}}"#.as_slice(),
@@ -611,15 +611,26 @@ async fn queued_recovery_never_recreates_a_missing_core_record() -> anyhow::Resu
     let client_id = client_user_message_id(&agent_id, &room_id(), &event_id);
     fake.lose_core_record(&client_id);
 
-    let error = runtime
-        .recover_pending(10, 30)
-        .await
-        .expect_err("queued dispatch must not create a replacement Core record");
+    let recovery = runtime.recover_pending(10, 30).await?;
+    assert_eq!(recovery.quarantined, 1);
+    assert!(recovery.outcomes.is_empty());
     assert!(matches!(
-        error,
-        MatrixRuntimeError::Bridge(MatrixBridgeError::Protocol(_))
+        runtime.process_event(&event_id, 40).await,
+        Err(MatrixRuntimeError::RecoveryDeferred)
     ));
+    assert_eq!(
+        runtime
+            .store()
+            .inbox(&event_id)
+            .await?
+            .expect("retained inbox")
+            .state,
+        InboxState::Pending
+    );
     assert_eq!(fake.admissions(), 1);
     runtime.store().close().await;
     Ok(())
 }
+
+#[path = "recovery_tests.rs"]
+mod recovery_tests;

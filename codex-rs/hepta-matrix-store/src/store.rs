@@ -59,6 +59,10 @@ use crate::RoomThreadBindingDraft;
 use crate::model::MAX_PAGE_ITEMS;
 use crate::model::MAX_PAYLOAD_BYTES;
 
+#[path = "recovery.rs"]
+mod recovery;
+pub use recovery::{MatrixRecoveryDisposition, MatrixRecoveryFailure, MatrixRecoveryPurpose};
+
 #[path = "sync_observation.rs"]
 mod sync_observation;
 #[path = "sync_v2.rs"]
@@ -82,6 +86,7 @@ const MATRIX_DISPATCH_SCHEMA_SOURCES: &[&str] = &[
     include_str!("../migrations/0010_matrix_entered_use_proofs.sql"),
     include_str!("../migrations/0011_matrix_legacy_hold_remediation.sql"),
     include_str!("../migrations/0012_matrix_terminal_any_entered_attempt.sql"),
+    include_str!("../migrations/0013_matrix_inbox_recovery.sql"),
 ];
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, thiserror::Error)]

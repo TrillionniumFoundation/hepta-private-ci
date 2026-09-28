@@ -22,17 +22,33 @@ impl TelemetryWindow {
         }
     }
 
-    pub(super) fn observe(&mut self, stats: &OutboxDispatchStats, error: Option<OutboxDispatchError>) {
+    pub(super) fn observe(
+        &mut self,
+        stats: &OutboxDispatchStats,
+        error: Option<OutboxDispatchError>,
+    ) {
         macro_rules! add {
             ($($field:ident),+ $(,)?) => {
                 $(self.stats.$field = self.stats.$field.saturating_add(stats.$field);)+
             };
         }
         add!(
-            claimed, sent, transport_accepted, indeterminate, observed_unqualified,
-            retry_scheduled, permanent_failure, entered_attempts, pre_entry_failures,
-            post_entry_failures, claim_to_first_poll_samples, claim_to_first_poll_ms,
-            transport_polls, payload_digest_checks, payload_digest_ns, dynamic_checks,
+            claimed,
+            sent,
+            transport_accepted,
+            indeterminate,
+            observed_unqualified,
+            retry_scheduled,
+            permanent_failure,
+            entered_attempts,
+            pre_entry_failures,
+            post_entry_failures,
+            claim_to_first_poll_samples,
+            claim_to_first_poll_ms,
+            transport_polls,
+            payload_digest_checks,
+            payload_digest_ns,
+            dynamic_checks,
             dynamic_check_ns,
         );
         self.stats.cancelled |= stats.cancelled;

@@ -9,7 +9,6 @@ use codex_app_server_protocol::UserInput;
 use codex_hepta_matrix_protocol::MatrixEventId;
 use codex_hepta_matrix_protocol::MatrixProtocolError;
 use codex_hepta_matrix_protocol::MatrixRoomId;
-use codex_hepta_matrix_protocol::MatrixUserId;
 use codex_hepta_matrix_protocol::outbox_id;
 use codex_hepta_matrix_protocol::room_project_idempotency_key;
 use codex_hepta_matrix_protocol::transaction_id;
@@ -25,7 +24,6 @@ use codex_hepta_matrix_store::OutboxDisposition;
 use codex_hepta_matrix_store::OutboxDraft;
 use codex_hepta_matrix_store::OutboxKind;
 use codex_hepta_matrix_store::RoomThreadBindingDraft;
-use serde::Deserialize;
 use tokio::sync::Semaphore;
 
 use crate::MatrixAdmissionMode;
@@ -36,9 +34,14 @@ use crate::MatrixSubmission;
 use crate::MatrixSubmissionState;
 use crate::RoomThreadBinding;
 
-const MATRIX_ROOM_MESSAGE: &str = "m.room.message";
-const MATRIX_TEXT_MESSAGE: &str = "m.text";
-const DEFAULT_RECOVERY_LIMIT: usize = 1_024;
+mod input;
+mod recovery;
+mod telemetry;
+
+use codex_hepta_matrix_store::MatrixRecoveryPurpose;
+use input::supported_text_input;
+pub use recovery::MatrixRecoveryPolicy;
+use telemetry::{GateKind, RuntimeTelemetry};
 
 pub type MatrixRuntimeFuture<'a, T> =
     Pin<Box<dyn Future<Output = Result<T, MatrixBridgeError>> + Send + 'a>>;
@@ -104,6 +107,9 @@ pub enum MatrixDispatchOutcome {
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct MatrixRuntimeRecovery {
     pub outcomes: Vec<MatrixDispatchOutcome>,
+    pub deferred: u64,
+    pub quarantined: u64,
+    pub budget_exhausted: bool,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -125,7 +131,9 @@ pub struct MatrixRuntime<B> {
     store: MatrixDurableStore,
     bridge: B,
     operation: Semaphore,
-    recovery_limit: usize,
+    projection: Semaphore,
+    recovery_policy: MatrixRecoveryPolicy,
+    telemetry: RuntimeTelemetry,
 }
 
 impl<B> MatrixRuntime<B>
@@ -137,7 +145,9 @@ where
             store,
             bridge,
             operation: Semaphore::new(1),
-            recovery_limit: DEFAULT_RECOVERY_LIMIT,
+            projection: Semaphore::new(1),
+            recovery_policy: MatrixRecoveryPolicy::default(),
+            telemetry: RuntimeTelemetry::default(),
         }
     }
 
@@ -154,32 +164,45 @@ where
         event_id: &MatrixEventId,
         now_ms: u64,
     ) -> Result<MatrixDispatchOutcome, MatrixRuntimeError> {
-        let _operation = self.operation.acquire().await.map_err(|_| {
-            MatrixRuntimeError::Protocol("Matrix runtime operation gate closed".to_string())
-        })?;
+        let _operation = self
+            .telemetry
+            .acquire(&self.operation, GateKind::Admission)
+            .await?;
         let inbox = self
             .store
             .inbox(event_id)
             .await
             .store_operation("load inbox event")?
             .ok_or(MatrixRuntimeError::MissingInbox)?;
-        self.process_inbox_locked(&inbox, now_ms).await
+        if inbox.state == InboxState::Processed {
+            return self
+                .process_inbox_locked(&inbox, MatrixRecoveryPurpose::Scheduled, now_ms)
+                .await;
+        }
+        self.recover_one_locked(event_id, MatrixRecoveryPurpose::Scheduled, now_ms)
+            .await?
+            .ok_or(MatrixRuntimeError::RecoveryDeferred)
     }
 
-    pub async fn recover_pending(
-        &self,
-        limit: usize,
-        now_ms: u64,
-    ) -> Result<MatrixRuntimeRecovery, MatrixRuntimeError> {
-        if limit == 0 {
+    /// A cooperative budget bounds a pass, not an in-flight external effect.
+    pub fn with_recovery_policy(
+        mut self,
+        policy: MatrixRecoveryPolicy,
+    ) -> Result<Self, MatrixRuntimeError> {
+        if !(1..=256).contains(&policy.max_batch)
+            || policy.pass_budget.is_zero()
+            || policy.pass_budget > std::time::Duration::from_secs(5)
+        {
             return Err(MatrixRuntimeError::Invalid(
-                "Matrix runtime recovery limit must be non-zero".to_string(),
+                "invalid recovery policy".to_string(),
             ));
         }
-        let _operation = self.operation.acquire().await.map_err(|_| {
-            MatrixRuntimeError::Protocol("Matrix runtime operation gate closed".to_string())
-        })?;
-        self.recover_pending_locked(limit, now_ms).await
+        self.recovery_policy = policy;
+        Ok(self)
+    }
+
+    pub fn operational_metrics(&self) -> serde_json::Value {
+        self.telemetry.snapshot()
     }
 
     pub async fn project_app_server_event(
@@ -187,25 +210,17 @@ where
         event: &AppServerEvent,
         now_ms: u64,
     ) -> Result<MatrixEventProjection, MatrixRuntimeError> {
-        let _operation = self.operation.acquire().await.map_err(|_| {
-            MatrixRuntimeError::Protocol("Matrix runtime operation gate closed".to_string())
-        })?;
+        // Serialize projection revisions independently of slow admissions.
+        // All binding/currentness checks and durable mutations stay in the store.
+        let _projection = self
+            .telemetry
+            .acquire(&self.projection, GateKind::Projection)
+            .await?;
         let Some(projectable) = ProjectableEvent::from_app_server(event)? else {
             return Ok(MatrixEventProjection::Ignored);
         };
 
-        // A turn event can race the local durable admission transition.  Core
-        // has already persisted the user item before emitting turn activity,
-        // so exact client-id reconciliation closes that window without a new
-        // admission.
-        self.recover_pending_locked(self.recovery_limit, now_ms)
-            .await?;
-        let Some(dispatch) = self
-            .store
-            .inbox_dispatch_for_turn(projectable.thread_id(), projectable.turn_id())
-            .await
-            .store_operation("find dispatch for projected turn")?
-        else {
+        let Some(dispatch) = self.dispatch_for_projection(&projectable, now_ms).await? else {
             return Ok(MatrixEventProjection::Ignored);
         };
 
@@ -237,26 +252,10 @@ where
         })
     }
 
-    async fn recover_pending_locked(
-        &self,
-        limit: usize,
-        now_ms: u64,
-    ) -> Result<MatrixRuntimeRecovery, MatrixRuntimeError> {
-        let pending = self
-            .store
-            .pending_inbox(limit)
-            .await
-            .store_operation("list pending inbox events")?;
-        let mut outcomes = Vec::with_capacity(pending.len());
-        for inbox in pending {
-            outcomes.push(self.process_inbox_locked(&inbox, now_ms).await?);
-        }
-        Ok(MatrixRuntimeRecovery { outcomes })
-    }
-
     async fn process_inbox_locked(
         &self,
         inbox: &InboxRecord,
+        purpose: MatrixRecoveryPurpose,
         now_ms: u64,
     ) -> Result<MatrixDispatchOutcome, MatrixRuntimeError> {
         if inbox.state == InboxState::Processed {
@@ -278,14 +277,18 @@ where
             };
         }
 
-        let Some(input) = supported_text_input(inbox) else {
-            self.store
-                .mark_inbox_processed(&inbox.event_id, now_ms.max(inbox.received_at_ms))
-                .await
-                .store_operation("mark unsupported inbox event processed")?;
-            return Ok(MatrixDispatchOutcome::IgnoredUnsupported {
-                event_id: inbox.event_id.clone(),
-            });
+        let input = match supported_text_input(inbox) {
+            Ok(input) => input,
+            Err(reason) => {
+                self.telemetry.ignored(reason);
+                self.store
+                    .mark_inbox_processed(&inbox.event_id, now_ms.max(inbox.received_at_ms))
+                    .await
+                    .store_operation("mark unsupported inbox event processed")?;
+                return Ok(MatrixDispatchOutcome::IgnoredUnsupported {
+                    event_id: inbox.event_id.clone(),
+                });
+            }
         };
 
         let at_ms = now_ms.max(inbox.received_at_ms);
@@ -310,11 +313,12 @@ where
             .await
             .store_operation("begin inbox dispatch")?;
         if dispatch.project_id != project_key {
-            return Err(MatrixRuntimeError::Protocol(
-                "durable dispatch project drifted from the exact Agent/room identity".to_string(),
-            ));
+            return Err(MatrixRuntimeError::IdentityConflict);
         }
 
+        if purpose == MatrixRecoveryPurpose::Projection && durable_binding.thread_id.is_none() {
+            return Err(MatrixRuntimeError::IdentityConflict);
+        }
         let binding = self
             .bridge
             .ensure_room_thread(&inbox.room_id, durable_binding.thread_id.as_deref())
@@ -336,7 +340,9 @@ where
             .await
             .store_operation("bind resolved App Server thread")?;
 
-        let admission_mode = if dispatch.state == InboxDispatchState::Begun {
+        let admission_mode = if purpose == MatrixRecoveryPurpose::Scheduled
+            && dispatch.state == InboxDispatchState::Begun
+        {
             MatrixAdmissionMode::AllowIfAbsent
         } else {
             MatrixAdmissionMode::ReconcileOnly
@@ -354,9 +360,7 @@ where
         if submission.binding != binding
             || submission.client_user_message_id != dispatch.client_user_message_id
         {
-            return Err(MatrixRuntimeError::Protocol(
-                "App Server submission identity drifted from durable dispatch".to_string(),
-            ));
+            return Err(MatrixRuntimeError::IdentityConflict);
         }
 
         let transition_at_ms = at_ms.max(dispatch.updated_at_ms);
@@ -460,40 +464,6 @@ where
             .await
             .store_operation("enqueue projected Matrix outbox message")
     }
-}
-
-#[derive(Deserialize)]
-#[serde(deny_unknown_fields)]
-struct TextMessageContent {
-    msgtype: String,
-    body: String,
-    // Ingress already checked the configured mention gate. Preserve the SDK's
-    // typed metadata here without forwarding it as agent input or authority.
-    #[serde(default, rename = "m.mentions")]
-    _mentions: TextMessageMentions,
-}
-
-#[derive(Default, Deserialize)]
-#[serde(deny_unknown_fields)]
-struct TextMessageMentions {
-    #[serde(default, rename = "user_ids")]
-    _user_ids: Vec<MatrixUserId>,
-    #[serde(default, rename = "room")]
-    _room: bool,
-}
-
-fn supported_text_input(inbox: &InboxRecord) -> Option<Vec<UserInput>> {
-    if inbox.event_type != MATRIX_ROOM_MESSAGE {
-        return None;
-    }
-    let content: TextMessageContent = serde_json::from_slice(&inbox.payload).ok()?;
-    if content.msgtype != MATRIX_TEXT_MESSAGE || content.body.trim().is_empty() {
-        return None;
-    }
-    Some(vec![UserInput::Text {
-        text: content.body,
-        text_elements: Vec::new(),
-    }])
 }
 
 enum ProjectableEvent {
@@ -657,6 +627,14 @@ fn admission_from_dispatch(
 
 #[derive(Debug, thiserror::Error)]
 pub enum MatrixRuntimeError {
+    #[error("Matrix recovery scheduling persistence failed: {0}")]
+    RecoveryPersistence(MatrixDurableError),
+    #[error("Matrix event, payload or binding identity conflicts with its durable dispatch")]
+    IdentityConflict,
+    #[error("Matrix event recovery is delayed or quarantined; inspect the durable recovery reason")]
+    RecoveryDeferred,
+    #[error("Matrix output association unresolved; generation stopped without a delivery claim")]
+    ProjectionPending,
     #[error("invalid Matrix runtime request: {0}")]
     Invalid(String),
     #[error("Matrix runtime could not find the durable inbox event")]

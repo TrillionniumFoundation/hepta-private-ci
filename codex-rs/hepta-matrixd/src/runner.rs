@@ -431,14 +431,18 @@ where
 {
     let mut interval = tokio::time::interval(INBOX_POLL);
     interval.set_missed_tick_behavior(MissedTickBehavior::Skip);
+    let mut last_metrics = tokio::time::Instant::now();
     loop {
         tokio::select! {
             biased;
             _ = cancel.cancelled() => return Ok(()),
             _ = interval.tick() => {
-                runtime
-                    .recover_pending(INBOX_RECOVERY_LIMIT, system_time_ms()?)
-                    .await?;
+                let recovered = runtime.recover_pending(INBOX_RECOVERY_LIMIT, system_time_ms()?).await;
+                if recovered.is_err() || last_metrics.elapsed() >= std::time::Duration::from_secs(10) {
+                    eprintln!("{}", runtime.operational_metrics());
+                    last_metrics = tokio::time::Instant::now();
+                }
+                recovered?;
             }
         }
     }

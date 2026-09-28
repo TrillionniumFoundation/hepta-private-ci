@@ -144,6 +144,11 @@ jobs:
         run: >-
           python3 scripts/channel_matrix_status.py
           --directory "$RUNNER_TEMP/matrix-evidence"
+      - name: Bind each required recovery scenario to actual nextest cases
+        if: always()
+        run: >-
+          python3 scripts/channel_matrix_qualification.py
+          --directory "$RUNNER_TEMP/matrix-evidence"
       - name: Record command outcome and artifact digests
         if: always()
         env:

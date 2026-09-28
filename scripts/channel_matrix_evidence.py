@@ -7,6 +7,7 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import subprocess
 import time
 from pathlib import Path
@@ -20,7 +21,7 @@ SOURCE_ROOTS = (
     "scripts/channel_matrix_evidence.py", "scripts/tests/test_channel_matrix_evidence.py",
     ".github/workflows/channel-matrix-preserve-unknown.yml",
     "codex-rs/Cargo.lock", "MODULE.bazel.lock", "codex-rs/Cargo.toml",
-    "codex-rs/rust-toolchain.toml", "justfile",
+    "codex-rs/rust-toolchain.toml", "codex-rs/.config/nextest.toml", "justfile",
     "scripts/*channel_matrix*", "scripts/tests/test_channel_matrix*",
 )
 PACKAGES = ("codex-hepta-matrix-protocol", "codex-hepta-matrix-store",
@@ -149,6 +150,17 @@ def run_command(root: Path, directory: Path, label: str) -> int:
     receipt = directory / f"{label}.command.json"
     if receipt.exists() or receipt.is_symlink():
         raise ValueError("command receipt already exists")
+    junit = None
+    junit_path = None
+    if label == "focused-tests":
+        target = Path(os.environ.get("CARGO_TARGET_DIR", "target"))
+        if not target.is_absolute():
+            target = root / "codex-rs" / target
+        junit_path = target / "nextest/local/junit.xml"
+        if junit_path.is_symlink():
+            raise ValueError("symlinked JUnit report")
+        # A prior execution's report is never evidence for this command.
+        junit_path.unlink(missing_ok=True)
     started = time.monotonic_ns()
     code = None
     launch_error = None
@@ -160,6 +172,14 @@ def run_command(root: Path, directory: Path, label: str) -> int:
             launch_error = type(exc).__name__
         stream.flush()
         os.fsync(stream.fileno())
+    if junit_path is not None and junit_path.is_file():
+        if junit_path.is_symlink() or junit_path.stat().st_size > 32 * 1024 * 1024:
+            raise ValueError("invalid JUnit report")
+        retained = directory / "focused-tests.junit.xml"
+        with junit_path.open("rb") as src, retained.open("xb") as dst:
+            shutil.copyfileobj(src, dst)
+        junit = {"path": retained.name, "bytes": retained.stat().st_size,
+                 "sha256": file_digest(retained)}
     unchanged = False
     try:
         unchanged = (snapshot(root, *identity) == source
@@ -171,7 +191,7 @@ def run_command(root: Path, directory: Path, label: str) -> int:
              "arguments": COMMANDS[label], "workingDirectory": "codex-rs",
              "testedSha": source["testedSha"],
              "sourceSnapshotSha256": source_digest, "exitCode": code,
-             "completed": code is not None, "launchError": launch_error,
+             "completed": code is not None, "launchError": launch_error, "junit": junit,
              "durationNs": time.monotonic_ns() - started, "sourceUnchanged": unchanged,
              "log": {"path": log.name, "bytes": log.stat().st_size,
                      "sha256": file_digest(log), "withinBudget": bounded}}

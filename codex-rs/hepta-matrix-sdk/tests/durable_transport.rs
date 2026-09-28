@@ -337,9 +337,9 @@ impl MatrixOutboundAuthorizer for TestAuthorizer {
                 SigningKey::from_bytes(
                     &test_material().map_err(|_| MatrixAuthorityError::Unavailable)?,
                 )
-                    .sign(&signing_bytes)
-                    .to_bytes()
-                    .to_vec()
+                .sign(&signing_bytes)
+                .to_bytes()
+                .to_vec()
             } else {
                 self.signer.sign(&signing_bytes).to_bytes().to_vec()
             };
@@ -669,15 +669,8 @@ async fn retry_preserves_stable_transaction_and_shutdown_is_bounded() -> TestRes
         .await?
         .ok_or("retry outbox disappeared")?
         .next_attempt_at_ms;
-    let accepted = dispatch_outbox_once(
-        &store,
-        &transport,
-        &authorizer,
-        &config,
-        &cancel,
-        retry_at,
-    )
-    .await?;
+    let accepted =
+        dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, retry_at).await?;
     assert_eq!(accepted.sent, 0);
     assert_eq!(accepted.transport_accepted, 1);
     assert_eq!(
@@ -750,15 +743,8 @@ async fn post_send_ack_loss_reuses_txn_and_commits_same_synapse_event_id() -> Te
     assert_eq!(after_response_loss.sent_event_id, None);
 
     let retry_at = after_response_loss.next_attempt_at_ms;
-    let second = dispatch_outbox_once(
-        &store,
-        &transport,
-        &authorizer,
-        &config,
-        &cancel,
-        retry_at,
-    )
-    .await?;
+    let second =
+        dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, retry_at).await?;
     assert_eq!(second.sent, 0);
     assert_eq!(second.transport_accepted, 1);
     assert_eq!(
@@ -1231,15 +1217,8 @@ async fn later_permanent_rejection_cannot_erase_prior_transport_acceptance() -> 
         .await?
         .ok_or("accepted outbox disappeared before reconciliation retry")?
         .next_attempt_at_ms;
-    let rejected_retry = dispatch_outbox_once(
-        &store,
-        &transport,
-        &authorizer,
-        &config,
-        &cancel,
-        retry_at,
-    )
-    .await?;
+    let rejected_retry =
+        dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, retry_at).await?;
     assert_eq!(rejected_retry.permanent_failure, 0);
     assert_eq!(rejected_retry.indeterminate, 1);
 

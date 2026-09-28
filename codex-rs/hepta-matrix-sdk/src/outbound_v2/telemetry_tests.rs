@@ -38,7 +38,8 @@ fn counters_accumulate_saturate_and_keep_maximum_not_sum() {
 }
 
 #[test]
-fn structured_failure_event_retains_entered_measurements_without_ids() -> Result<(), Box<dyn std::error::Error>> {
+fn structured_failure_event_retains_entered_measurements_without_ids()
+-> Result<(), Box<dyn std::error::Error>> {
     let mut window = TelemetryWindow::new();
     window.stats.entered_attempts = 1;
     window.stats.post_entry_failures = 1;
@@ -47,8 +48,12 @@ fn structured_failure_event_retains_entered_measurements_without_ids() -> Result
     assert_eq!(event["counters"]["post_entry_failures"], 1);
     let object = event.as_object().ok_or("metrics object missing")?;
     assert_eq!(object.len(), 5);
-    assert!(object["counters"].as_object().ok_or("counters missing")?.values().all(
-        |value| value.is_u64() || value.is_boolean()
-    ));
+    assert!(
+        object["counters"]
+            .as_object()
+            .ok_or("counters missing")?
+            .values()
+            .all(|value| value.is_u64() || value.is_boolean())
+    );
     Ok(())
 }

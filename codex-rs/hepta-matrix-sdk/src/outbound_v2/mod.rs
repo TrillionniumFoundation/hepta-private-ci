@@ -202,11 +202,17 @@ pub async fn dispatch_outbox_once<
     now_ms: u64,
 ) -> Result<OutboxDispatchStats, OutboxDispatchError> {
     let mut stats = OutboxDispatchStats::default();
-    dispatch_pass(store, transport, authorizer, config, cancel, now_ms, &mut stats).await?;
+    dispatch_pass(
+        store, transport, authorizer, config, cancel, now_ms, &mut stats,
+    )
+    .await?;
     Ok(stats)
 }
 
-async fn dispatch_pass<T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + ?Sized>(
+async fn dispatch_pass<
+    T: MatrixOutboundTransport + ?Sized,
+    A: MatrixOutboundAuthorizer + ?Sized,
+>(
     store: &MatrixDurableStore,
     transport: &T,
     authorizer: &A,
@@ -317,7 +323,13 @@ pub async fn run_outbox_sender<
     let mut telemetry = TelemetryWindow::new();
     loop {
         if cancel.is_cancelled() {
-            telemetry.observe(&OutboxDispatchStats { cancelled: true, ..OutboxDispatchStats::default() }, /*error*/ None);
+            telemetry.observe(
+                &OutboxDispatchStats {
+                    cancelled: true,
+                    ..OutboxDispatchStats::default()
+                },
+                /*error*/ None,
+            );
             return Ok(());
         }
         let mut stats = OutboxDispatchStats::default();
