@@ -1,0 +1,125 @@
+name: Prompt registry isolated candidate authoring
+on:
+  push:
+    branches: [ops/prompt-registry-candidate-authoring-20260928]
+    paths:
+      - scripts/prompt-registry-author-once.py
+      - .github/workflows/prompt-registry-author-once.yml
+permissions:
+  contents: write
+concurrency:
+  group: prompt-registry-isolated-authoring
+  cancel-in-progress: false
+jobs:
+  author:
+    runs-on: ubuntu-slim
+    timeout-minutes: 15
+    env:
+      SOURCE_SHA: 6c83671014ee5f65e6e6a61f4df5d714d904c0be
+      TARGET_BRANCH: codex/prompt-registry-delivery-consistency-20260928
+      CARGO_INCREMENTAL: '0'
+      CARGO_BUILD_JOBS: '1'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          path: tooling
+          persist-credentials: false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          path: source
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Apply reviewed edits outside qualification
+        run: python3 tooling/scripts/prompt-registry-author-once.py source
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+      - name: Format only prompt-owned changed files
+        working-directory: source
+        run: |
+          set -euo pipefail
+          rustfmt --edition 2024 --config-path codex-rs/rustfmt.toml \
+            codex-rs/hepta-prompt-registry/src/durable_maintenance.rs \
+            codex-rs/hepta-prompt-registry/src/durable_maintenance_tests.rs \
+            codex-rs/hepta-prompt-registry/src/durable_payloads.rs \
+            codex-rs/hepta-agentd/src/prompt_final_use.rs \
+            codex-rs/hepta-agentd/src/prompt_final_use_tests.rs \
+            codex-rs/hepta-agentd/src/prompt_runtime.rs \
+            codex-rs/hepta-agentd/src/prompt_runtime_tests.rs \
+            codex-rs/ext/hepta-prompt/src/lib.rs \
+            codex-rs/ext/hepta-prompt/src/lib_tests.rs
+          git diff --check
+          python3 - <<'PY'
+          import subprocess
+          allowed = {
+              'codex-rs/hepta-prompt-registry/src/durable_maintenance.rs',
+              'codex-rs/hepta-prompt-registry/src/durable_maintenance_tests.rs',
+              'codex-rs/hepta-prompt-registry/src/durable_payloads.rs',
+              'codex-rs/hepta-agentd/src/prompt_final_use.rs',
+              'codex-rs/hepta-agentd/src/prompt_final_use_tests.rs',
+              'codex-rs/hepta-agentd/src/prompt_runtime.rs',
+              'codex-rs/hepta-agentd/src/prompt_runtime_tests.rs',
+              'codex-rs/ext/hepta-prompt/src/lib.rs',
+              'codex-rs/ext/hepta-prompt/src/lib_tests.rs',
+          }
+          changed = set(subprocess.check_output(['git', 'diff', '--name-only'], text=True).splitlines())
+          if changed - allowed:
+              raise SystemExit('out-of-scope changes: ' + repr(sorted(changed - allowed)))
+          PY
+      - name: Commit canonical source with compare-and-swap branch guard
+        working-directory: source
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "+refs/heads/$TARGET_BRANCH:refs/remotes/origin/$TARGET_BRANCH"
+          test "$(git rev-parse refs/remotes/origin/$TARGET_BRANCH)" = "$SOURCE_SHA"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add codex-rs/hepta-prompt-registry/src/durable_maintenance.rs codex-rs/hepta-prompt-registry/src/durable_maintenance_tests.rs codex-rs/hepta-prompt-registry/src/durable_payloads.rs codex-rs/hepta-agentd/src/prompt_final_use.rs codex-rs/hepta-agentd/src/prompt_final_use_tests.rs codex-rs/hepta-agentd/src/prompt_runtime.rs codex-rs/hepta-agentd/src/prompt_runtime_tests.rs codex-rs/ext/hepta-prompt/src/lib.rs codex-rs/ext/hepta-prompt/src/lib_tests.rs
+          git diff --cached --check
+          git commit -m 'fix(prompt.registry): enforce current-use gate on preparation, cache and dispatch'
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          mkdir -p "$RUNNER_TEMP/prompt-development"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/prompt-development/identity.txt"
+          git diff --binary "$SOURCE_SHA" HEAD > "$RUNNER_TEMP/prompt-development/source.patch"
+          git archive --format=tar.gz -o "$RUNNER_TEMP/prompt-development/source.tar.gz" HEAD
+          cp "$(command -v rustfmt)" "$RUNNER_TEMP/prompt-development/rustfmt"
+      - name: Upload committed source before compilation
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-registry-authored-source-${{ github.run_id }}
+          path: ${{ runner.temp }}/prompt-development/
+          if-no-files-found: error
+          retention-days: 7
+      - name: Collect focused native diagnostics against that source commit
+        working-directory: source/codex-rs
+        shell: bash
+        run: |
+          set -uo pipefail
+          evidence="$RUNNER_TEMP/prompt-development"
+          failed=0
+          check() {
+            local name="$1"; shift
+            timeout 240 "$@" > "$evidence/$name.log" 2>&1
+            local code=$?
+            printf '%s\t%s\n' "$name" "$code" >> "$evidence/results.tsv"
+            tail -n 50 "$evidence/$name.log"
+            if test "$code" -ne 0; then failed=1; fi
+          }
+          check registry cargo test --locked -p codex-hepta-prompt-registry -- --test-threads=1
+          check extension cargo test --locked -p codex-hepta-prompt-extension -- --test-threads=1
+          check agentd cargo test --locked -p codex-hepta-agentd prompt_ -- --test-threads=1
+          check lint cargo clippy --locked -p codex-hepta-prompt-registry --all-targets --no-deps -- -D warnings
+          exit "$failed"
+      - name: Upload diagnostics without asserting success
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-registry-development-results-${{ github.run_id }}
+          path: ${{ runner.temp }}/prompt-development/
+          if-no-files-found: warn
+          retention-days: 14
