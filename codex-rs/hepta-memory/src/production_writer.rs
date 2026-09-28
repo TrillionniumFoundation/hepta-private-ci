@@ -1608,11 +1608,13 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
                 .correct_with_kg_tx(
                     &mut transaction,
                     access,
-                    memory_id,
-                    expected_revision,
-                    source,
-                    draft,
-                    facts,
+                    crate::cognitive_intelligence_writer::CognitiveCorrection {
+                        memory_id,
+                        expected_revision,
+                        source,
+                        draft,
+                        facts,
+                    },
                 )
                 .await?;
             let receipt = self
