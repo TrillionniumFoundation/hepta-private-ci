@@ -37,13 +37,12 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${{ github.sha }}"
           git merge-base --is-ancestor "$EXPECTED_SOURCE_HEAD" HEAD
-          mapfile -t changed < <(git diff --name-only "$EXPECTED_SOURCE_HEAD" HEAD | sort)
-          expected=(
-            ".github/workflows/cognitive-store-source-identity-finalizer-macos.yml"
-            ".github/workflows/cognitive-store-source-identity-finalizer.yml"
-            "scripts/cognitive_source_identity.patch"
-          )
-          test "${changed[*]}" = "${expected[*]}"
+          changed="$(git diff --name-only "$EXPECTED_SOURCE_HEAD" HEAD | sort)"
+          expected="$(printf '%s\n' \
+            '.github/workflows/cognitive-store-source-identity-finalizer-macos.yml' \
+            '.github/workflows/cognitive-store-source-identity-finalizer.yml' \
+            'scripts/cognitive_source_identity.patch' | sort)"
+          test "$changed" = "$expected"
           test -z "$(git status --porcelain --untracked-files=normal)"
 
       - name: Apply fail-closed source identity patch
