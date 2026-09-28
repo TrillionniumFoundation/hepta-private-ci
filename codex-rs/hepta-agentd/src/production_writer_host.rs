@@ -13,6 +13,7 @@ use std::time::Duration;
 
 use codex_hepta_cognitive_store::CognitiveAccess;
 use codex_hepta_cognitive_store::CognitiveRecoveryRequirement;
+#[cfg(feature = "qualification-cognitive-write")]
 use codex_hepta_cognitive_store::DurableCognitiveStore as CognitiveStore;
 use codex_hepta_cognitive_store::ForgetMemoryDraft;
 use codex_hepta_cognitive_store::KgFactSetDraft;
@@ -33,6 +34,8 @@ use codex_hepta_cognitive_store::StableMemoryId;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::SignedFinalUseGrant;
+#[cfg(not(feature = "qualification-cognitive-write"))]
+use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::FinalUseProductionOutboxTarget;
 use codex_hepta_memory::ProductionFinalUseOutboxDispatcher;
 
@@ -389,6 +392,14 @@ impl AgentdProductionWriterHost {
     #[cfg(not(feature = "qualification-cognitive-write"))]
     pub(crate) fn writer(&self) -> Arc<ProductionDurableWriter> {
         Arc::clone(&self.writer)
+    }
+
+    /// Derive the bounded read surface from this exact recovered owner.
+    /// No raw store, second connection or write authority escapes this method.
+    pub fn read_capability(
+        &self,
+    ) -> Option<codex_hepta_cognitive_store::DurableCognitiveReadStore> {
+        codex_hepta_cognitive_store::DurableCognitiveReadStore::from_runtime(&self.cognitive_runtime)
     }
 
     pub(crate) fn owner_agent_id(&self) -> &codex_hepta_contracts::AgentId {

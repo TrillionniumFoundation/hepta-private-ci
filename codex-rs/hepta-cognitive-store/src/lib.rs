@@ -37,10 +37,7 @@ pub use durable::DurableCognitiveReadStore;
 pub use durable::DurableCognitiveSnapshot;
 pub use durable::DurableCognitiveSnapshotCursor;
 pub use durable::DurableCognitiveSnapshotPage;
-#[cfg(any(
-    feature = "agentd-production-host",
-    feature = "qualification-cognitive-write"
-))]
+#[cfg(feature = "qualification-cognitive-write")]
 pub use durable::DurableCognitiveStore;
 pub use durable::DurableCognitiveStoreError;
 pub use durable::ForgetMemoryDraft;

@@ -3,8 +3,9 @@
 //! `hepta-memory::CognitiveStore` remains the physical database owner. Product
 //! serving code receives [`DurableCognitiveReadStore`], which exposes bounded
 //! reads and, only for the named Agentd host, bounded owner-policy controls.
-//! The mutable raw backend is visible only to the named Agentd production host
-//! or explicit qualification builds.
+//! The mutable compatibility alias is qualification-only, even when Cargo
+//! unifies the Agentd host feature. The canonical host composes the physical
+//! owner directly; ordinary consumers receive only this bounded capability.
 
 use std::fmt;
 use std::sync::Arc;
@@ -61,13 +62,10 @@ pub use codex_hepta_memory::StableMemoryId;
 
 /// Mutable physical owner compatibility alias.
 ///
-/// This type does not exist in the default feature set. Only the named Agentd
-/// production host and explicit qualification builds can import it, so normal
-/// product crates cannot open a second writer or bypass the sealed capability.
-#[cfg(any(
-    feature = "agentd-production-host",
-    feature = "qualification-cognitive-write"
-))]
+/// Host-feature unification must not expose this alias to ordinary consumers.
+/// The physical-owner import is restricted to the canonical host by the source
+/// boundary check; this compatibility spelling is only for qualification.
+#[cfg(feature = "qualification-cognitive-write")]
 #[doc(hidden)]
 pub use codex_hepta_memory::CognitiveStore as DurableCognitiveStore;
 
@@ -131,6 +129,50 @@ impl DurableCognitiveReadStore {
         self.backend
             .lane_c_snapshot(access, scope, now_unix_seconds)
             .await
+    }
+
+    /// Page through the existing owner without exposing a writable handle.
+    /// The owner enforces 1..=512 heads, complete selected ancestry/citations,
+    /// scope authorization and exact-cut/observation-time cursor currentness.
+    pub async fn lane_c_snapshot_page(
+        &self,
+        access: &CognitiveAccess,
+        scope: &CognitiveScope,
+        now_unix_seconds: i64,
+        maximum_heads: u32,
+        after: Option<DurableCognitiveSnapshotCursor>,
+    ) -> Result<DurableCognitiveSnapshotPage, DurableCognitiveStoreError> {
+        self.backend
+            .lane_c_snapshot_page(access, scope, now_unix_seconds, maximum_heads, after)
+            .await
+    }
+
+    /// Recheck exactly the same page through the owner before consumer use.
+    /// A changed scope, page size, observation time or owner cut is not a valid
+    /// continuation and never causes silent replacement with a newer page.
+    pub async fn revalidate_lane_c_snapshot_page(
+        &self,
+        access: &CognitiveAccess,
+        scope: &CognitiveScope,
+        now_unix_seconds: i64,
+        maximum_heads: u32,
+        expected: &DurableCognitiveSnapshotPage,
+    ) -> Result<DurableCognitiveSnapshotPage, DurableCognitiveStoreError> {
+        let observed = self
+            .lane_c_snapshot_page(
+                access,
+                scope,
+                now_unix_seconds,
+                maximum_heads,
+                expected.after().cloned(),
+            )
+            .await?;
+        if observed != *expected {
+            return Err(DurableCognitiveStoreError::Conflict(
+                "Lane C product page no longer matches its exact owner observation".to_string(),
+            ));
+        }
+        Ok(observed)
     }
 
     pub async fn observe_memory_retrieval(

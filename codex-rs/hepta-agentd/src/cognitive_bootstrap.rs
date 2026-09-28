@@ -113,12 +113,62 @@ struct CognitiveProductionBootstrapWireV1 {
     signature_hex: String,
 }
 
+/// Source identity supplied by the trusted deployment host, never copied from
+/// the manifest being checked. Construction validates shape, not attestation.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CognitiveProductionSourceIdentityV1 {
+    commit: String,
+    tree: String,
+}
+
+impl CognitiveProductionSourceIdentityV1 {
+    pub fn new(commit: impl Into<String>, tree: impl Into<String>) -> Result<Self, AgentdError> {
+        let identity = Self {
+            commit: commit.into(),
+            tree: tree.into(),
+        };
+        identity.validate()?;
+        Ok(identity)
+    }
+
+    pub fn validate(&self) -> Result<(), AgentdError> {
+        validate_git_oid(&self.commit, "deployed source commit")?;
+        validate_git_oid(&self.tree, "deployed source tree")?;
+        if self.commit.len() != self.tree.len() {
+            return Err(invalid("deployed source commit/tree use different object formats"));
+        }
+        Ok(())
+    }
+
+    pub fn commit(&self) -> &str {
+        &self.commit
+    }
+
+    pub fn tree(&self) -> &str {
+        &self.tree
+    }
+
+    fn require_manifest(
+        &self,
+        manifest: &CognitiveProductionBootstrapV1,
+    ) -> Result<(), AgentdError> {
+        self.validate()?;
+        if manifest.source_commit != self.commit || manifest.source_tree != self.tree {
+            return Err(fenced(
+                "signed cognitive bootstrap source identity differs from the trusted deployment",
+            ));
+        }
+        Ok(())
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CognitiveProductionBootstrapFilesV1 {
     pub bootstrap_file: PathBuf,
     pub authority_state_file: PathBuf,
     pub signer_trust_file: PathBuf,
     pub authority_token_file: PathBuf,
+    pub expected_source: CognitiveProductionSourceIdentityV1,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -167,11 +217,69 @@ impl CognitiveProductionBootstrapReceiptV1 {
     }
 }
 
+/// V2 separates the verified recovery cut from the cut after lease admission.
+/// V1 remains a historical format and is never silently reinterpreted as V2.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CognitiveProductionBootstrapReceiptV2 {
+    pub schema_version: u32,
+    pub namespace: String,
+    pub agent_id: AgentId,
+    pub bootstrap_sha256: Sha256Digest,
+    pub authority_state_sha256: Sha256Digest,
+    pub recovered_state_sha256: Sha256Digest,
+    pub opened_state_sha256: Sha256Digest,
+    pub source_commit: String,
+    pub source_tree: String,
+    pub lease_id: String,
+    pub writer_generation: u64,
+    pub rollback_generation_floor: u64,
+    pub opened_at_unix_ms: u64,
+    pub receipt_sha256: Sha256Digest,
+}
+
+impl CognitiveProductionBootstrapReceiptV2 {
+    fn compute_receipt_sha256(&self) -> Sha256Digest {
+        let mut bytes = b"hepta.cognitive.bootstrap-receipt.v2\0".to_vec();
+        bytes.extend_from_slice(&self.schema_version.to_be_bytes());
+        push_part(&mut bytes, self.namespace.as_bytes());
+        push_part(&mut bytes, self.agent_id.as_str().as_bytes());
+        push_sha256(&mut bytes, &self.bootstrap_sha256);
+        push_sha256(&mut bytes, &self.authority_state_sha256);
+        push_sha256(&mut bytes, &self.recovered_state_sha256);
+        push_sha256(&mut bytes, &self.opened_state_sha256);
+        push_part(&mut bytes, self.source_commit.as_bytes());
+        push_part(&mut bytes, self.source_tree.as_bytes());
+        push_part(&mut bytes, self.lease_id.as_bytes());
+        bytes.extend_from_slice(&self.writer_generation.to_be_bytes());
+        bytes.extend_from_slice(&self.rollback_generation_floor.to_be_bytes());
+        bytes.extend_from_slice(&self.opened_at_unix_ms.to_be_bytes());
+        Sha256Digest::for_bytes(&bytes)
+    }
+
+    pub fn validate(&self) -> Result<(), AgentdError> {
+        validate_git_oid(&self.source_commit, "receipt source commit")?;
+        validate_git_oid(&self.source_tree, "receipt source tree")?;
+        if self.schema_version != 2
+            || self.namespace != "hepta.cognitive.bootstrap-receipt.v2"
+            || self.source_commit.len() != self.source_tree.len()
+            || self.writer_generation == 0
+            || self.rollback_generation_floor <= self.writer_generation
+            || self.lease_id.is_empty()
+            || self.opened_at_unix_ms == 0
+            || self.receipt_sha256 != self.compute_receipt_sha256()
+        {
+            return Err(invalid("stale or malformed cognitive bootstrap V2 receipt"));
+        }
+        Ok(())
+    }
+}
+
 pub struct CognitiveProductionBootstrapOutcomeV1 {
     host: Arc<AgentdProductionWriterHost>,
     manifest: CognitiveProductionBootstrapV1,
     authority_state: CognitiveAuthorityStateV1,
-    receipt: CognitiveProductionBootstrapReceiptV1,
+    receipt: CognitiveProductionBootstrapReceiptV2,
 }
 
 impl CognitiveProductionBootstrapOutcomeV1 {
@@ -187,7 +295,7 @@ impl CognitiveProductionBootstrapOutcomeV1 {
         &self.authority_state
     }
 
-    pub fn receipt(&self) -> &CognitiveProductionBootstrapReceiptV1 {
+    pub fn receipt(&self) -> &CognitiveProductionBootstrapReceiptV2 {
         &self.receipt
     }
 
@@ -347,11 +455,13 @@ pub async fn open_cognitive_production_host_from_signed_bootstrap(
 ) -> Result<CognitiveProductionBootstrapOutcomeV1, AgentdError> {
     let now = current_time_millis()?;
     let identity = config.identity();
+    files.expected_source.validate()?;
     let trust = load_trust(identity, &files.signer_trust_file)?;
     if trust.revoked {
         return Err(fenced("cognitive bootstrap signer is revoked"));
     }
     let bootstrap = load_bootstrap(identity, &files.bootstrap_file, &trust, now)?;
+    files.expected_source.require_manifest(&bootstrap)?;
     let state = load_authority_state(identity, &files.authority_state_file, &trust, now)?;
     let state_digest = cognitive_authority_state_sha256(&state).map_err(contract_error)?;
     let bootstrap_agent = parse_agent_id(&bootstrap.agent_id)?;
@@ -412,26 +522,28 @@ pub async fn open_cognitive_production_host_from_signed_bootstrap(
         )
         .await?,
     );
-    let recovered = host.writer().recovery_anchor().await?;
-    if recovered != bootstrap.recovery_anchor {
-        return Err(fenced(
-            "recovered cognitive generation differs from the signed current cut",
-        ));
-    }
+    // open_with_recovery compared the exact signed cut before admitting the
+    // writer lease. Lease admission itself appends durable owner rows, so the
+    // subsequently observed cut must NOT be required to equal the pre-lease cut.
+    let opened = host.writer().recovery_anchor().await?;
+    host.writer().verify_current_authority().await?;
 
-    let mut receipt = CognitiveProductionBootstrapReceiptV1 {
-        schema_version: COGNITIVE_BOOTSTRAP_SCHEMA_VERSION,
-        namespace: BOOTSTRAP_RECEIPT_NAMESPACE.to_string(),
+    let mut receipt = CognitiveProductionBootstrapReceiptV2 {
+        schema_version: 2,
+        namespace: "hepta.cognitive.bootstrap-receipt.v2".to_string(),
         agent_id: identity.agent_id.clone(),
         bootstrap_sha256: digest32_to_sha256(
             cognitive_production_bootstrap_sha256(&bootstrap).map_err(contract_error)?,
         )?,
         authority_state_sha256: digest32_to_sha256(state_digest)?,
-        recovered_state_sha256: recovered.state_digest,
+        recovered_state_sha256: bootstrap.recovery_anchor.state_digest.clone(),
+        opened_state_sha256: opened.state_digest,
+        source_commit: bootstrap.source_commit.clone(),
+        source_tree: bootstrap.source_tree.clone(),
         lease_id: bootstrap.lease_id.to_string(),
         writer_generation: bootstrap.writer_generation,
         rollback_generation_floor: bootstrap.rollback_generation_floor,
-        opened_at_unix_ms: now,
+        opened_at_unix_ms: current_time_millis()?,
         receipt_sha256: Sha256Digest::for_bytes(b"pending"),
     };
     receipt.receipt_sha256 = receipt.compute_receipt_sha256();
@@ -739,6 +851,20 @@ fn digest32_to_sha256(value: Digest32) -> Result<Sha256Digest, AgentdError> {
     Sha256Digest::parse(value.to_string()).map_err(contract_error)
 }
 
+fn validate_git_oid(value: &str, label: &str) -> Result<(), AgentdError> {
+    if !matches!(value.len(), 40 | 64)
+        || value.bytes().all(|byte| byte == b'0')
+        || !value
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+    {
+        return Err(invalid(&format!(
+            "{label} must be a nonzero lowercase hexadecimal Git object id"
+        )));
+    }
+    Ok(())
+}
+
 fn current_time_millis() -> Result<u64, AgentdError> {
     let millis = SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -766,4 +892,25 @@ fn push_part(bytes: &mut Vec<u8>, part: &[u8]) {
 
 fn push_sha256(bytes: &mut Vec<u8>, digest: &Sha256Digest) {
     push_part(bytes, digest.as_str().as_bytes());
+}
+
+impl AgentdProductionWriterHost {
+    /// Capture a coherent cut for independent host retention. This is a read
+    /// observation, not a signature, freshness promise or permission grant.
+    pub async fn capture_current_cut(
+        &self,
+    ) -> Result<codex_hepta_cognitive_store::CognitiveRecoveryAnchor, AgentdError> {
+        Ok(self.writer().recovery_anchor().await?)
+    }
+
+    /// Fence this lease before capturing the restart witness. Release itself
+    /// appends owner rows; a witness captured before release would be stale.
+    /// The host must drain/drop every generation handle before reopening.
+    pub async fn prepare_restart(
+        &self,
+    ) -> Result<codex_hepta_cognitive_store::CognitiveRecoveryAnchor, AgentdError> {
+        self.writer().verify_current_authority().await?;
+        self.writer().release().await?;
+        self.capture_current_cut().await
+    }
 }

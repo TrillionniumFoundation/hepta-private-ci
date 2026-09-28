@@ -9,6 +9,7 @@ use std::time::UNIX_EPOCH;
 
 use codex_hepta_agentd::AgentdConfig;
 use codex_hepta_agentd::cognitive_bootstrap::CognitiveProductionBootstrapFilesV1;
+use codex_hepta_agentd::cognitive_bootstrap::CognitiveProductionSourceIdentityV1;
 use codex_hepta_agentd::cognitive_bootstrap::execute_cognitive_bootstrap_canary;
 use codex_hepta_agentd::cognitive_bootstrap::open_cognitive_production_host_from_signed_bootstrap;
 use codex_hepta_cognitive_store::DurableCognitiveStore;
@@ -141,18 +142,71 @@ async fn signed_bootstrap_rotates_restarts_canaries_and_revokes_live()
         authority_state_file: state_file.clone(),
         signer_trust_file: trust_file,
         authority_token_file: token_file.clone(),
+        expected_source: CognitiveProductionSourceIdentityV1::new("1".repeat(40), "2".repeat(40))?,
     };
+
+    let pointer = config
+        .identity()
+        .layout
+        .cognitive_root()
+        .join(".cognitive-active-v1");
+    let pointer_before = fs::read(&pointer).ok();
+    for (commit, tree) in [
+        ("f".repeat(40), "2".repeat(40)),
+        ("1".repeat(40), "e".repeat(40)),
+    ] {
+        let mismatched = CognitiveProductionBootstrapFilesV1 {
+            expected_source: CognitiveProductionSourceIdentityV1::new(commit, tree)?,
+            ..files.clone()
+        };
+        let error =
+            match open_cognitive_production_host_from_signed_bootstrap(&config, &mismatched).await {
+                Ok(_) => panic!("a valid signature for another source must not admit recovery"),
+                Err(error) => error,
+            };
+        assert!(error.to_string().contains("source identity"), "{error}");
+        assert_eq!(fs::read(&pointer).ok(), pointer_before);
+    }
 
     let first = open_cognitive_production_host_from_signed_bootstrap(&config, &files).await?;
     first.receipt().validate()?;
+    assert_eq!(first.receipt().schema_version, 2);
+    assert_eq!(first.receipt().source_commit, "1".repeat(40));
+    assert_eq!(first.receipt().source_tree, "2".repeat(40));
+    assert_eq!(
+        first.receipt().recovered_state_sha256,
+        bootstrap_one.recovery_anchor.state_digest
+    );
+    assert_ne!(
+        first.receipt().opened_state_sha256,
+        first.receipt().recovered_state_sha256
+    );
+    let mut tampered = first.receipt().clone();
+    tampered.source_tree = "f".repeat(40);
+    assert!(tampered.validate().is_err());
     let canary = execute_cognitive_bootstrap_canary(&first).await?;
     canary.validate()?;
     assert_eq!(canary.remembered_revision, 1);
     assert_eq!(canary.tombstone_revision, 2);
+    let reader = first
+        .host()
+        .read_capability()
+        .ok_or("missing product read capability")?;
+    let page = reader
+        .lane_c_snapshot_page(
+            &codex_hepta_cognitive_store::CognitiveAccess::agent_private(owner.clone()),
+            &codex_hepta_cognitive_store::CognitiveScope::AgentPrivate,
+            i64::try_from(current_time_millis()? / 1000)?,
+            512,
+            None,
+        )
+        .await?;
+    assert_eq!(page.frontiers().tombstone, 1);
+    assert!(!page.authority().grants_any());
+    drop(reader);
 
     let first_host = first.host();
-    let rotated_anchor = first_host.writer().recovery_anchor().await?;
-    first_host.writer().release().await?;
+    let rotated_anchor = first_host.prepare_restart().await?;
     drop(first_host);
     drop(first);
 
@@ -210,8 +264,15 @@ async fn signed_bootstrap_rotates_restarts_canaries_and_revokes_live()
         &token_two,
     )?;
 
-    let second = open_cognitive_production_host_from_signed_bootstrap(&config, &files).await?;
+    let second_files = CognitiveProductionBootstrapFilesV1 {
+        expected_source: CognitiveProductionSourceIdentityV1::new("3".repeat(40), "4".repeat(40))?,
+        ..files.clone()
+    };
+    let second =
+        open_cognitive_production_host_from_signed_bootstrap(&config, &second_files).await?;
     second.receipt().validate()?;
+    assert_eq!(second.receipt().source_commit, "3".repeat(40));
+    assert_eq!(second.receipt().source_tree, "4".repeat(40));
     assert_eq!(second.receipt().writer_generation, 2);
 
     let state_two_digest = cognitive_authority_state_sha256(&state_two)?;
@@ -370,4 +431,19 @@ fn encode_hex(bytes: &[u8]) -> String {
         output.push(char::from(HEX[usize::from(byte & 0x0f)]));
     }
     output
+}
+
+#[test]
+fn deployed_source_identity_rejects_missing_zero_malformed_and_mixed_formats() {
+    for (commit, tree) in [
+        (String::new(), "2".repeat(40)),
+        ("0".repeat(40), "2".repeat(40)),
+        ("1".repeat(40), "0".repeat(40)),
+        ("A".repeat(40), "2".repeat(40)),
+        ("1".repeat(40), "2".repeat(64)),
+        ("1".repeat(39), "2".repeat(40)),
+    ] {
+        assert!(CognitiveProductionSourceIdentityV1::new(commit, tree).is_err());
+    }
+    assert!(CognitiveProductionSourceIdentityV1::new("1".repeat(64), "2".repeat(64)).is_ok());
 }

@@ -102,6 +102,9 @@ tokio = { workspace = true, features = [
 tokio-util = { workspace = true }
 
 [dev-dependencies]
+# Existing fixtures may seed the raw owner. This feature is NOT a normal
+# product dependency; external compile probes exclude this dev graph.
+codex-hepta-cognitive-store = { path = "../hepta-cognitive-store", features = ["qualification-cognitive-write"] }
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = ["qualification-legacy-write"] }
 codex-hepta-operations = { workspace = true }
 codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }

@@ -96,14 +96,32 @@ impl CognitiveStore {
     /// Capture one coherent bounded owner cut. The host retains/authenticates it
     /// independently; this method does not publish an acknowledgement witness.
     pub async fn recovery_anchor(&self) -> Result<CognitiveRecoveryAnchor, CognitiveStoreError> {
+        self.recovery_anchor_measured()
+            .await
+            .map(|(anchor, _, _)| anchor)
+    }
+
+    /// Capture the same exact cut plus separate acquisition and held-transaction
+    /// durations. Acquisition includes pool scheduling and SQLite lock wait;
+    /// held duration includes capture and COMMIT acknowledgement, not only SQL.
+    /// These observations grant no authority and never change digest semantics.
+    pub async fn recovery_anchor_measured(
+        &self,
+    ) -> Result<
+        (CognitiveRecoveryAnchor, std::time::Duration, std::time::Duration),
+        CognitiveStoreError,
+    > {
+        let acquisition = std::time::Instant::now();
         let mut transaction = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(unavailable)?;
+        let acquisition_duration = acquisition.elapsed();
+        let held = std::time::Instant::now();
         let anchor = capture(&mut transaction, &self.owner_agent_id).await?;
         transaction.commit().await.map_err(unavailable)?;
-        Ok(anchor)
+        Ok((anchor, acquisition_duration, held.elapsed()))
     }
 
     /// Recover one exact current owner cut into a new writable generation.
@@ -259,8 +277,26 @@ impl CognitiveStore {
                 return Err(error);
             }
 
-            publish_active_database(&canonical_root, &candidate)
-                .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+            // The copy/checkpoint path may be slow. Preflight authority is not
+            // a permission cache: reread live authority and expiry at final use,
+            // while the store fence is still exclusive. No await separates a
+            // successful final check from the synchronous pointer publication.
+            let publication_authority = verifier
+                .verify(authority, layout.agent_id())
+                .map_err(CognitiveRecoveryError::AccessDenied)
+                .and_then(|()| {
+                    authority
+                        .validate_for_agent(layout.agent_id())
+                        .map_err(|error| CognitiveRecoveryError::AccessDenied(error.to_string()))
+                });
+            if let Err(error) = publication_authority {
+                pool.close().await;
+                return Err(error);
+            }
+            if let Err(error) = publish_active_database(&canonical_root, &candidate) {
+                pool.close().await;
+                return Err(CognitiveRecoveryError::Unavailable(error.to_string()));
+            }
             // Keep the recovery fence exclusive for this recovered writer
             // generation. Callers that need additional handles clone this
             // store; reopening by path would otherwise create a second writer
@@ -661,3 +697,7 @@ mod reconciliation_tests {
 #[cfg(test)]
 #[path = "cognitive_store_recovery_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "cognitive_store_recovery_final_use_tests.rs"]
+mod final_use_tests;
