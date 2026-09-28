@@ -39,9 +39,23 @@ async fn normal_product_bounded_evolution_under_concurrent_load() -> Result<()> 
         "experiment rounds must be in 2..=32"
     );
     const WIDTH: usize = 4;
-    let mut fleet = FleetHarness::new()?;
+    // Deliberate process rotations consume the same durable budget as fault
+    // recovery. Declare this bounded experiment's budget instead of changing
+    // production defaults, resetting its journal or advancing a synthetic clock.
+    let mut supervisor_config = codex_hepta_supervisor::SupervisorConfig::local_default();
+    supervisor_config.restart_max_attempts = u32::try_from(rounds)?;
+    // High-churn experiment: exercise real persisted backoff without spending
+    // the workload on production anti-flapping delays. Report this policy with
+    // measurements; these are not production-default restart latency claims.
+    supervisor_config.restart_backoff_base = Duration::from_micros(10);
+    let restart_backoff_base_us = supervisor_config.restart_backoff_base.as_micros();
+    let restart_window_ms = supervisor_config.restart_window.as_millis();
+    let mut fleet = FleetHarness::with_supervisor_config(supervisor_config)?;
     let agent = fleet.register(AGENT_A, "bounded-evolution-load")?;
-    let model = responses::start_mock_server().await;
+    let model = wiremock::MockServer::builder()
+        .body_print_limit(wiremock::BodyPrintLimit::Limited(512))
+        .start()
+        .await;
     MockResponsesConfig::new(&model.uri()).write(agent.layout.home_root())?;
     let model_calls = responses::mount_sse_sequence(
         &model,
@@ -205,6 +219,8 @@ async fn normal_product_bounded_evolution_under_concurrent_load() -> Result<()> 
     normal.shutdown().await?;
     println!("{}", json!({"fixture": "ordinary_product_bounded_concurrent_evolution",
         "rounds": rounds, "concurrent_requests_per_wave": WIDTH,
+        "restart_attempt_budget": rounds, "restart_window_ms": restart_window_ms,
+        "restart_backoff_base_us": restart_backoff_base_us,
         "terminal_turns": terminal_identities.len(), "cancelled_tasks": rounds * WIDTH,
         "process_restarts": restart_latencies.len(), "wall_us": started.elapsed().as_micros(),
         "wave_terminal_observation_latency": latency_summary(&wave_latencies),

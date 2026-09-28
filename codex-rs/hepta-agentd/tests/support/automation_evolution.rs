@@ -19,6 +19,7 @@ use super::ensure;
 use super::final_sse;
 use super::json;
 use super::responses;
+use super::wait_inactive;
 use codex_hepta_agent_components::automation::AUTOMATION_SCHEMA_VERSION;
 use codex_hepta_agent_components::automation::AutomationError;
 use codex_hepta_agent_components::automation::AutomationStore;
@@ -317,8 +318,10 @@ async fn normal_due_automation_reaches_app_server_terminal_and_does_not_replay_a
     let agent = fleet.register(AGENT_A, "automation-due-product")?;
     let model = responses::start_mock_server().await;
     MockResponsesConfig::new(&model.uri()).write(agent.layout.home_root())?;
+    eprintln!("due automation stage: startup");
     fleet.start(&agent)?;
     let (control, _) = fleet.wait_ready(&agent, 1).await?;
+    eprintln!("due automation stage: ready");
     let mut product = ProductClient::connect(&agent, &control).await?;
     let thread = product
         .start_thread_with_ephemeral(&agent.workspace, false)
@@ -338,6 +341,7 @@ async fn normal_due_automation_reaches_app_server_terminal_and_does_not_replay_a
             now,
         ))
         .await?;
+    eprintln!("due automation stage: task committed");
     let deadline = Instant::now() + Duration::from_secs(20);
     let terminal = loop {
         let tasks = control.automation_list(4).await?;
@@ -372,6 +376,7 @@ async fn normal_due_automation_reaches_app_server_terminal_and_does_not_replay_a
         );
         tokio::time::sleep(Duration::from_millis(25)).await;
     };
+    eprintln!("due automation stage: terminal observed");
     let terminal_us = started.elapsed().as_micros();
     ensure!(
         model_call.requests().len() == 1,
@@ -383,9 +388,11 @@ async fn normal_due_automation_reaches_app_server_terminal_and_does_not_replay_a
     );
     let turn_id = terminal.thread.turns[0].id.clone();
     product.shutdown().await?;
+    eprintln!("due automation stage: first client closed");
     let generation = agent_generation(&fleet, &agent.agent_id)?;
     fleet.supervisor.restart(&agent.agent_id, Instant::now())?;
     let (recovered_control, _) = fleet.wait_new_spawn(&agent, generation).await?;
+    eprintln!("due automation stage: replacement ready");
     let mut recovered_product = ProductClient::connect(&agent, &recovered_control).await?;
     let recovered = recovered_product.read_thread(&thread).await?;
     ensure!(recovered.thread.turns.len() == 1 && recovered.thread.turns[0].id == turn_id);
@@ -401,6 +408,7 @@ async fn normal_due_automation_reaches_app_server_terminal_and_does_not_replay_a
         model_call.requests().len() == 1,
         "restart replayed a completed occurrence"
     );
+    eprintln!("due automation stage: recovered terminal checked");
     recovered_product.shutdown().await?;
     println!(
         "{}",
@@ -417,3 +425,91 @@ async fn normal_due_automation_reaches_app_server_terminal_and_does_not_replay_a
 
 #[path = "automation_evolution_soak.rs"]
 mod soak;
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn normal_pending_task_survives_kill_without_old_client_or_provider_replay() -> Result<()> {
+    let mut fleet = FleetHarness::new()?;
+    let agent = fleet.register(AGENT_A, "pending-automation-process-loss")?;
+    let model = wiremock::MockServer::builder()
+        .body_print_limit(wiremock::BodyPrintLimit::Limited(512))
+        .start()
+        .await;
+    MockResponsesConfig::new(&model.uri()).write(agent.layout.home_root())?;
+    let model_calls = responses::mount_sse_sequence(
+        &model,
+        vec![final_sse("normal-product-after-pending-task-recovery")],
+    )
+    .await;
+    fleet.start(&agent)?;
+    let (original, old_health) = fleet.wait_ready(&agent, 1).await?;
+    let mut product = ProductClient::connect(&agent, &original).await?;
+    let thread = product
+        .start_thread_with_ephemeral(&agent.workspace, false)
+        .await?;
+    let now = u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis())?;
+    let pending = original
+        .automation_create(AutomationTaskDraft::new(
+            thread,
+            "persisted but not due across process loss",
+            AutomationSchedule::Once,
+            now + 3_600_000,
+            now,
+        ))
+        .await?;
+    ensure!(pending.state == AutomationTaskState::Enabled);
+    product.shutdown().await?;
+    let old_generation = agent_generation(&fleet, &agent.agent_id)?;
+    let started = Instant::now();
+    // Use the real supervisor's immediate kill, not graceful drain or a
+    // synthetic owner reopen. The durable task has not been cancelled/settled.
+    fleet.supervisor.kill(&agent.agent_id)?;
+    wait_inactive(&mut fleet, &agent.agent_id).await?;
+    fleet.start(&agent)?;
+    let (current, health) = fleet.wait_new_spawn(&agent, old_generation).await?;
+    let recovery_us = started.elapsed().as_micros();
+    ensure!(health.process_id != old_health.process_id);
+    let recovered = current.automation_list(8).await?;
+    ensure!(
+        recovered == vec![pending.clone()],
+        "pending task changed across kill/reopen"
+    );
+    ensure!(
+        original.automation_cancel(pending.task_id).await.is_err(),
+        "old generation client mutated the successor"
+    );
+    ensure!(current.automation_list(8).await? == vec![pending.clone()]);
+    ensure!(
+        model_calls.requests().is_empty(),
+        "not-due work reached the provider"
+    );
+    ensure!(
+        current.automation_cancel(pending.task_id).await?.state == AutomationTaskState::Cancelled
+    );
+    let mut normal = ProductClient::connect(&agent, &current).await?;
+    let thread = normal.start_thread(&agent.workspace).await?;
+    normal
+        .run_turn(&thread, "normal product after pending task recovery")
+        .await?;
+    normal.shutdown().await?;
+    ensure!(
+        model_calls.requests().len() == 1,
+        "recovery duplicated provider dispatch"
+    );
+    let (_, count, _) = owner_observation(&agent).await?;
+    ensure!(count == 1);
+    println!(
+        "{}",
+        json!({
+            "fixture": "normal_pending_task_kill_recovery",
+            "retained_pending_tasks": count,
+            "unchanged_task_after_reopen": true,
+            "old_generation_cancel_rejected": true,
+            "recovery_us": recovery_us,
+            "provider_requests_from_pending_task": 0,
+            "post_recovery_normal_turns": 1,
+            "provider": "local_fixture",
+            "provider_inflight_crash_claim": false
+        })
+    );
+    Ok(())
+}

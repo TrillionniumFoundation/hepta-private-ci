@@ -51,11 +51,14 @@ pub(crate) struct FleetHarness {
 
 impl FleetHarness {
     pub(crate) fn new() -> Result<Self> {
+        Self::with_supervisor_config(SupervisorConfig::local_default())
+    }
+
+    pub(crate) fn with_supervisor_config(mut config: SupervisorConfig) -> Result<Self> {
         let temp = tempfile::tempdir()?;
         let root = temp.path().canonicalize()?;
         let fleet_root = HeptaFleetRoot::parse(root.join("fleet"))?;
         let registry = FleetRegistry::initialize(fleet_root.clone())?;
-        let mut config = SupervisorConfig::local_default();
         config.health_timeout = READY_TIMEOUT;
         config.drain_timeout = Duration::from_secs(2);
         config.stop_grace = Duration::from_secs(1);

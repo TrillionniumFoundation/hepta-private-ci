@@ -484,6 +484,16 @@ Timer retirement additionally writes one create-only `timer-retired.v1` fence in
 
 This protects a historical SQLite restore while the current external fence is retained; it cannot detect an administrator rolling back or deleting every copy of both the database and its fence. Such full-owner rollback requires an independently retained current recovery checkpoint. Unix process/filesystem tests exercise file and directory sync; non-Unix power-loss durability requires its own target qualification. The existing `operation_timer_fence` and `cognitive_product_e2e` suites cover this boundary; the latter's `automation_evolution` cases use the ordinary control socket, real owner storage and App Server with a local provider fixture. `HEPTA_EVOLUTION_ROUNDS=16` expands the bounded concurrent-load test; measured business-history growth is reported separately from runtime-generation retention.
 
+The bounded churn experiment explicitly configures its supervisor restart attempt
+budget from the requested round count and reports its short laboratory backoff
+alongside the measurements. Production restart defaults, durable attempts,
+per-request deadlines and writer fences are unchanged. These samples are not
+production-default restart latency or multi-day capacity evidence. Run on a named
+persistent filesystem with normal synchronization, record `TMPDIR`, and separate
+fixture/provider time and retained task history from runtime metadata. The pending
+task kill/reopen case proves an unchanged not-yet-due task and rejects the old
+control client; it does not claim recovery of an in-flight external provider effect.
+
 ### Circuit adoption and historical interpretation
 
 A circuit upgrade freezes definition, routing/termination policy, cell parameters,
