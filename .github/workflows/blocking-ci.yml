@@ -189,6 +189,11 @@ jobs:
     name: runtime.codex qualification
     needs: scope
     if: needs.scope.outputs.inference == 'true'
+    permissions:
+      actions: read
+      attestations: write
+      contents: read
+      id-token: write
     uses: ./.github/workflows/runtime-codex-qualification.yml
     with:
       called_from_blocking_ci: true
