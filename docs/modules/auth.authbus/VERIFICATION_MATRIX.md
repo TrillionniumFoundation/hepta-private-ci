@@ -25,6 +25,7 @@ This matrix binds security claims to source, fault tests and immutable execution
 | Checkpoint write failures at write, file-sync, rename and directory-sync boundaries are recoverable and never reported as ordinary success. | `AuthorityCheckpointFile::replace`; test-only checkpoint failpoints. | `host::tests::checkpoint_stage_failures_are_classified_and_recoverable` | AuthBus package tests. |
 | Restoring an older authority database or witness fails closed. | `recovery.rs`; checkpoint dirty/frontier migrations; host preflight. | `recovery_tests.rs`; host bootstrap/open tests. | AuthBus package tests and qualification package. |
 | Durable replay remains rejected after restart and witness reconciliation. | Evidence-owned AuthBus replay checkpoint and recovery implementation. | `codex-rs/hepta-evidence/src/authbus_recovery_tests.rs` | `Test Evidence AuthBus recovery and outbox`. |
+| Evidence outbox backlog, retained claim retries and enqueue-to-ack latency are observable without claiming or mutating a delivery. | `codex-rs/hepta-evidence/src/authbus_operations.rs`; `HeptaEvidenceStore::authbus_outbox_operational_snapshot` | `authbus_operations_tests::snapshot_explains_backlog_retries_and_acknowledgement_latency`; empty-snapshot side-effect test | Evidence package tests in exact head and synthetic merge. |
 | Evidence/Bao handoff does not settle early and preserves ambiguous outcomes. | Evidence outbox identity/lease checks; Bao dispatch fence and signed settlement. | Evidence outbox tests; `hepta-bao-adapter` HTTPS consumer tests. | Evidence, Agentd and Bao package jobs. |
 | Seal, digest, checkpoint and settlement tampering is rejected without publishing partial authority. | Checkpoint identity validation, signed settlement verification, closed handles and digest-bound records. | Host symlink/hard-link/checkpoint tests; settlement negative tests; Evidence/Bao tamper tests. | Focused package jobs and workspace regression. |
 
@@ -39,7 +40,9 @@ This matrix binds security claims to source, fault tests and immutable execution
 - maintenance failures and incomplete bounded recovery ticks;
 - complete-operation mutation and maintenance latency summaries (`count`, `p50`, `p95`, `p99`, `max`), measured across gate wait, checkpoint preflight, SQLite work and checkpoint publication.
 
-Counters are process-lifetime cumulative values. Exporters compute rates/deltas and use only bounded labels. Evidence outbox claim retries and Agentd/Bao acknowledgement latency remain owned by their downstream components; AuthBus must not fabricate those observations. The exact-head workflow executes those product owners alongside the AuthBus crate.
+Counters above are process-lifetime cumulative values. Exporters compute rates/deltas and use only bounded labels.
+
+The Evidence owner separately exports `AuthBusOutboxOperationalSnapshot`. It reports queued/leased/terminal counts, active depth, oldest unsettled age, retained claim attempts and retries, exhausted active deliveries, and retained enqueue-to-ack latency percentiles. The query is read-only and bounded by `AUTHBUS_OUTBOX_MAX_ROWS + 1`; retained-window counters are not represented as lifetime monotonic totals. Bao/provider request latency remains owned by the Bao adapter and HTTP client because AuthBus and Evidence cannot observe it faithfully.
 
 ## Exact-candidate evidence
 
