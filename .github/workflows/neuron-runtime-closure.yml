@@ -9,7 +9,7 @@ on:
       - "codex-rs/hepta-neuron/**"
       - "codex-rs/hepta-agentd/**"
       - "codex-rs/hepta-infer-core/**"
-      - "codex-rs/hepta-infer-worker-host/python/**"
+      - "codex-rs/hepta-infer-worker-host/**"
       - "codex-rs/hepta-intelligence/**"
       - "codex-rs/hepta-types/**"
       - "codex-rs/Cargo.toml"
@@ -24,7 +24,7 @@ on:
       - "codex-rs/hepta-neuron/**"
       - "codex-rs/hepta-agentd/**"
       - "codex-rs/hepta-infer-core/**"
-      - "codex-rs/hepta-infer-worker-host/python/**"
+      - "codex-rs/hepta-infer-worker-host/**"
       - "codex-rs/hepta-intelligence/**"
       - "codex-rs/hepta-types/**"
       - "codex-rs/Cargo.toml"
@@ -113,10 +113,15 @@ jobs:
 
           cd codex-rs
           cargo metadata --locked --format-version=1 >/dev/null
-          cargo check --locked -p codex-hepta-neuron -p codex-hepta-agentd --all-targets
-          just test --locked -p codex-hepta-neuron -p codex-hepta-agentd
-          cargo clippy --locked -p codex-hepta-neuron -p codex-hepta-agentd --all-targets -- -D warnings
-          cargo fmt --package codex-hepta-neuron --package codex-hepta-agentd -- --check
+          cargo check --locked -p codex-hepta-neuron -p codex-hepta-agentd -p codex-hepta-infer-worker-host --all-targets
+          # The real embedded App Server requires an actual same-candidate Codex
+          # executable for its child helpers. A test harness is not that binary.
+          cargo build --locked -p codex-cli --bin codex
+          export CARGO_BIN_EXE_codex="$(cargo metadata --locked --format-version=1 --no-deps | python3 -c 'import json,sys; print(json.load(sys.stdin)["target_directory"] + "/debug/codex")')"
+          test -x "$CARGO_BIN_EXE_codex"
+          just test --locked --retries 0 -p codex-hepta-neuron -p codex-hepta-agentd -p codex-hepta-infer-core -p codex-hepta-infer-worker-host
+          cargo clippy --locked -p codex-hepta-neuron -p codex-hepta-agentd -p codex-hepta-infer-worker-host --all-targets -- -D warnings
+          cargo fmt --package codex-hepta-neuron --package codex-hepta-agentd --package codex-hepta-infer-core --package codex-hepta-infer-worker-host -- --check
 
           export HEPTA_NEURON_DIAGNOSTIC_SOURCE_SHA="$(git rev-parse HEAD)"
           just test --locked -p codex-hepta-neuron --run-ignored only \
