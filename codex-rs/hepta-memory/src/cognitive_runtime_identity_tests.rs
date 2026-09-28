@@ -107,9 +107,7 @@ fn federation_host_profile_rejects_zero_and_architecture_widening() {
     use std::time::Duration;
 
     assert!(MemoryFederationHostProfile::try_new(Duration::ZERO, 1, 1, 1, 1, 1).is_err());
-    assert!(
-        MemoryFederationHostProfile::try_new(Duration::from_nanos(1), 1, 1, 1, 1, 1,).is_err()
-    );
+    assert!(MemoryFederationHostProfile::try_new(Duration::from_nanos(1), 1, 1, 1, 1, 1,).is_err());
     assert!(
         MemoryFederationHostProfile::try_new(
             crate::MAX_PRODUCT_FEDERATION_TOTAL_BUDGET + Duration::from_millis(1),
