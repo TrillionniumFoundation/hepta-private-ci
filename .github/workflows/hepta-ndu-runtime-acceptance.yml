@@ -45,7 +45,7 @@ jobs:
           # source. Later pushes work without a patch or a fixed predecessor.
           if test -f scripts/ndu-bootstrap-01.b64; then
             cat scripts/ndu-bootstrap-0{1,2,3,4}.b64 | base64 --decode | gzip -d > "$RUNNER_TEMP/ndu.patch"
-            echo 'cd2742f1bd61ae430bacd5b4b5e96dfd6cc480ebb81bfb6205f00cfcd9ad7595'"  $RUNNER_TEMP/ndu.patch" | sha256sum -c -
+            echo '6d75d61ce7ad5ea9622d8990fa30a7cebe031fc16b5b586581535dd8747afc93'"  $RUNNER_TEMP/ndu.patch" | sha256sum -c -
             # Workflow changes are published by the authorized connector, not
             # by a job token. Verify their exact reviewed bytes before excluding
             # those two paths from the already checksum-verified source patch.
