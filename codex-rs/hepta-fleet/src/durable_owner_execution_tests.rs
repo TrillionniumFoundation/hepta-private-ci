@@ -29,7 +29,9 @@ struct UnavailableQuiescenceProbe;
 #[cfg(unix)]
 impl crate::FleetQuiescenceProbe for UnavailableQuiescenceProbe {
     fn is_quiescent(&self, _hold: &crate::FleetExecutionHoldV1) -> std::io::Result<bool> {
-        Err(std::io::Error::other("selected-host observation unavailable"))
+        Err(std::io::Error::other(
+            "selected-host observation unavailable",
+        ))
     }
 }
 
