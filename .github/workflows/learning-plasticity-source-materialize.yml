@@ -83,7 +83,7 @@ jobs:
 
       - name: Enforce strict Agentd lint
         working-directory: codex-rs
-        run: cargo clippy --locked --all-targets -p codex-hepta-agentd -- -D warnings
+        run: cargo clippy --locked --no-deps --all-targets -p codex-hepta-agentd -- -D warnings
 
       - name: Publish normal source and remove every authoring-only path
         shell: bash
