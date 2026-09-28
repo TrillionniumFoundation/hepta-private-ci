@@ -1,6 +1,6 @@
 # learning.artifacts operational closure
 
-**Exact source commit:** `6fdf4ddba394c60b04d2f9c5c46ae629bc47b61f`
+**Exact source commit:** `088202de65c8df92b93db0c9500a0ead021872b9`
 
 This addendum records the repository-controlled implementation that closes the
 four operational optimization tracks without inventing a second artifact runtime.
