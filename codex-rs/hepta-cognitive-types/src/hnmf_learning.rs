@@ -1,5 +1,6 @@
 //! Canonical HNMF V1 engram, recall, replay, plasticity, topology and forget contracts.
 
+use std::cmp::Ordering;
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 
@@ -420,9 +421,19 @@ impl RecallPacketV1 {
         for value in [self.coverage_ppm, self.confidence_ppm, self.ood_ppm] {
             ppm(value, "recall probability")?;
         }
-        ensure_strict_order(&self.selected_events, "selectedEvents")?;
-        ensure_strict_order(&self.active_nodes, "activeNodes")?;
-        ensure_strict_order(&self.activation_paths, "activationPaths")?;
+        ensure_strict_identity_order(&self.selected_events, "selectedEvents", |left, right| {
+            (&left.event_id, left.revision).cmp(&(&right.event_id, right.revision))
+        })?;
+        ensure_strict_identity_order(&self.active_nodes, "activeNodes", |left, right| {
+            left.node_id.cmp(&right.node_id)
+        })?;
+        ensure_strict_identity_order(&self.activation_paths, "activationPaths", |left, right| {
+            (&left.source_node_id, &left.target_node_id, left.relation).cmp(&(
+                &right.source_node_id,
+                &right.target_node_id,
+                right.relation,
+            ))
+        })?;
         ensure_strict_order(&self.contradictions, "contradictions")?;
         for selected in &self.selected_events {
             selected.validate()?;
@@ -666,8 +677,18 @@ impl PlasticityBatchV1 {
                 maximum: MAX_THRESHOLD_PROPOSALS,
             });
         }
-        ensure_strict_order(&self.weight_proposals, "weightProposals")?;
-        ensure_strict_order(&self.threshold_proposals, "thresholdProposals")?;
+        ensure_strict_identity_order(&self.weight_proposals, "weightProposals", |left, right| {
+            (&left.source_node_id, &left.target_node_id, left.relation).cmp(&(
+                &right.source_node_id,
+                &right.target_node_id,
+                right.relation,
+            ))
+        })?;
+        ensure_strict_identity_order(
+            &self.threshold_proposals,
+            "thresholdProposals",
+            |left, right| left.node_id.cmp(&right.node_id),
+        )?;
         for proposal in &self.weight_proposals {
             proposal.validate()?;
         }
@@ -734,7 +755,9 @@ impl TopologyTypedNodesEdgesV1 {
         if self.nodes.len() > MAX_NODES || self.edges.len() > MAX_SYNAPSES {
             return Err(HnmfContractError::Invalid("topology delta bound"));
         }
-        ensure_strict_order(&self.nodes, "topologyNodes")?;
+        ensure_strict_identity_order(&self.nodes, "topologyNodes", |left, right| {
+            left.node_id.cmp(&right.node_id)
+        })?;
         ensure_strict_order(&self.edges, "topologyEdges")?;
         for node in &self.nodes {
             node.validate()?;
@@ -934,6 +957,24 @@ fn q16_delta_ppm(old: i32, new: i32) -> Result<i32, HnmfContractError> {
         .ok_or(HnmfContractError::Invalid("q16 delta overflow"))?
         / i64::from(Q16_ONE);
     i32::try_from(scaled).map_err(|_| HnmfContractError::Invalid("q16 delta overflow"))
+}
+
+/// Identity ordering deliberately excludes non-identity payload fields. The
+/// logical keys are prefixes of the frozen V1 order, so valid wire bytes and
+/// digests are unchanged; conflicting duplicates are rejected, never deduped.
+fn ensure_strict_identity_order<T>(
+    values: &[T],
+    field: &'static str,
+    compare: impl Fn(&T, &T) -> Ordering,
+) -> Result<(), HnmfContractError> {
+    for pair in values.windows(2) {
+        match compare(&pair[0], &pair[1]) {
+            Ordering::Less => {}
+            Ordering::Equal => return Err(HnmfContractError::DuplicateIdentity(field)),
+            Ordering::Greater => return Err(HnmfContractError::Invalid(field)),
+        }
+    }
+    Ok(())
 }
 
 fn ensure_strict_order<T: Ord>(values: &[T], field: &'static str) -> Result<(), HnmfContractError> {
