@@ -222,11 +222,11 @@ class ProductionExternalControlClient:
             custody_observations.append(observation)
 
         decision = verify_production_controls(
-            store,
             lease,
             envelope,
             fence,
             frontier,
+            store,
             anchor,
             tuple(custody_receipts),
             self.trust_store,
