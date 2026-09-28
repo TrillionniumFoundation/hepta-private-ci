@@ -26,20 +26,29 @@ class WorkflowCoverageTests(unittest.TestCase):
             'codex-rs/hepta-contracts/src/authority_runtime_clock.rs',
             'codex-rs/hepta-agentd/src/authority_feed_clock.rs',
             'codex-rs/hepta-agentd/src/authority_effect_tasks.rs',
+            'codex-rs/hepta-agentd/tests/authority_effect_process_restart.rs',
             'codex-rs/hepta-automation/src/authorized_effect.rs',
-            'codex-rs/Cargo.lock', 'CALLERS.toml',
+            'codex-rs/Cargo.lock',
+            'CALLERS.toml',
             'qa/b4-no-bypass/KERNEL_AUTHORITY_EXTENSION_API.json',
+            'qualification/kernel-authority/product_process_recovery.py',
             'qualification/kernel-authority/status_manifest.json',
         ]
         for event in ('push', 'pull_request'):
             paths = event_paths(text, event)
             self.assertTrue(paths)
             for path in critical:
-                self.assertTrue(any(fnmatch.fnmatchcase(path, pattern) for pattern in paths), (event, path))
+                self.assertTrue(
+                    any(fnmatch.fnmatchcase(path, pattern) for pattern in paths),
+                    (event, path),
+                )
 
     def test_read_only_qualification_and_post_merge_source(self):
         text = WORKFLOW.read_text()
-        self.assertIn('branches: [main, work/kernel-authority-convergence-20260925]', text)
+        self.assertIn(
+            'branches: [main, work/kernel-authority-convergence-20260925]',
+            text,
+        )
         self.assertIn('contents: read', text)
         self.assertNotIn('contents: write', text)
         self.assertIn('persist-credentials: false', text)
@@ -48,6 +57,21 @@ class WorkflowCoverageTests(unittest.TestCase):
         self.assertIn("modes='[\"exact-head\"]'", text)
         self.assertNotIn('git push', text)
         self.assertNotIn('--fix', text)
+
+    def test_two_process_recovery_is_part_of_the_total_gate(self):
+        text = WORKFLOW.read_text()
+        self.assertIn(
+            'lane: [trust-bundle, product-pilot, product-process, performance]',
+            text,
+        )
+        self.assertIn('product-process)', text)
+        self.assertIn('test_product_process_recovery.py', text)
+        self.assertIn('product_process_recovery.py', text)
+        self.assertIn('--test authority_effect_process_restart', text)
+        self.assertIn('cargo fmt --check -p codex-hepta-agentd', text)
+        self.assertIn('-- -D warnings', text)
+        self.assertIn('needs: [identity, qualify]', text)
+        self.assertIn('test "$QUALIFY_RESULT" = success', text)
 
 
 if __name__ == '__main__':
