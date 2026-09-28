@@ -192,8 +192,12 @@ impl AttestedModelHandle {
                 "driver/resource tuple mismatch",
             ));
         }
+        let observed_peak_memory = observed
+            .resident_memory_bytes
+            .checked_add(observed.transient_memory_bytes)
+            .ok_or(LocalWorkerError::ArithmeticOverflow)?;
         if observed.resident_memory_bytes == 0
-            || observed.resident_memory_bytes > claims.maximum_aggregate_memory_bytes
+            || observed_peak_memory > claims.maximum_aggregate_memory_bytes
         {
             return Err(LocalWorkerError::CapacityExceeded);
         }
@@ -271,5 +275,28 @@ impl AttestedModelHandle {
             ));
         }
         Ok(())
+    }
+
+    #[cfg(test)]
+    pub(super) fn test_fixture(
+        handle_id: &str,
+        worker_generation: u64,
+        device_epoch: u64,
+        resident_memory_bytes: u64,
+    ) -> Self {
+        Self {
+            handle_id: handle_id.to_string(),
+            model_id: "model.test".to_string(),
+            model_digest: "1".repeat(64),
+            weights_digest: "2".repeat(64),
+            runtime_digest: "3".repeat(64),
+            device_uuid: "device.test".to_string(),
+            device_epoch,
+            worker_generation,
+            resident_memory_bytes,
+            manifest_semantic_digest: "4".repeat(64),
+            grant_witness_digest: "5".repeat(64),
+            resource_attestation_digest: "6".repeat(64),
+        }
     }
 }
