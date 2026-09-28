@@ -194,3 +194,33 @@ compares complete-decision metrics against the frozen source receipt. Unit tests
 use an explicitly fake backbone for lifecycle faults, not model quality evidence.
 Neither path establishes independent calibration, prospective GUI efficacy,
 production activation, teacher-data rights, operator acceptance or release.
+
+## Private resident encoder process and bounded interruption
+
+`hepta-infer-worker-host/python/frozen_decision_cell_worker.py` serves the same
+frozen encoder/tensor graph through a closed JSON-lines private channel. Its
+command envelope binds a host-selected session, exact invocation digest, request
+identity, immutable text/target projection and process-local deadline. A bounded
+volatile result cache retains observed or indeterminate executions; identical
+queries reuse bytes, changed semantics reject, and lookup never invokes a model.
+A fresh process returns unknown for an unretained request, never NotApplied.
+The existing Neuron operation owner must persist dispatch/result and owns recovery;
+this cache is not another durable journal. Capacity rejects before model work.
+
+`decision_cell_process.py` is the POSIX private transport for that worker. Both
+pipe writes and reads honor bounded deadlines and cancellation. Channel corruption,
+identity drift, timeout or cancellation permanently closes the handle, kills its
+private child process group and reaps the child. It never starts a replacement or
+retries an unknown inference. A host supplies reviewed code/environment, selected
+artifacts, reservation and current authority; a ready message grants none of them.
+Windows, general daemon bootstrap, real temporal/parameter-value heads and
+independent calibration are not implemented by this four-target CPU profile.
+
+`test_frozen_worker_protocol.py` and `test_frozen_process.py` test duplicate/lost
+reply behavior, unknown recovery, bounded framing, real child exit/kill, blocked
+writes, cross-session binding and cancellation. The subprocess fixtures are not
+model-quality tests. `frozen_process_probe.py` separately loads the actual retained
+base and trained tensors, reuses a resident worker, verifies original reply reuse,
+checks lookup after replacement, and interrupts a real model child. Its report
+retains exact source/artifact identity and does not claim production activation,
+external action success, independent acceptance or prospective efficacy.

@@ -216,6 +216,10 @@ class HeadTensorBundleV2:
         `supported` is only the recorded statistical rule. Legal-action masking,
         current evidence, authority and terminal observation remain outside it.
         """
+        return self.observe_with_probabilities(state, candidates)[1]
+
+    def observe_with_probabilities(self, state: torch.Tensor, candidates: torch.Tensor):
+        """Consume adapters/heads once and calibrate that exact tensor result."""
         outputs = self.observe(state, candidates)
         result = {name: torch.softmax(outputs[name] / temperature, dim=-1)
                   for name, temperature in self._temperatures.items()}
@@ -224,4 +228,4 @@ class HeadTensorBundleV2:
         confidence = result["action"].max(dim=-1).values
         result["supported"] = (confidence >= self._minimum_confidence) & (
             result["ood"][:, 1] < self._maximum_ood)
-        return result
+        return outputs, result

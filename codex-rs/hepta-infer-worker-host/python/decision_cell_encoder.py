@@ -189,8 +189,7 @@ class FrozenMdebertaDecisionCellV2:
         pairs = tuple(text + "\nCandidate under evaluation: " + candidate
                       for text, row in zip(texts, candidates) for candidate in row)
         targets = self._encode(pairs, deadline_ns).reshape(len(texts), 4, state.shape[1])
-        outputs = self._heads.observe(state, targets)
-        probabilities = self._heads.probabilities(state, targets)
+        outputs, probabilities = self._heads.observe_with_probabilities(state, targets)
         self._deadline(deadline_ns)
         return {"schema": "hepta.frozen-encoder-observation.v2",
                 "input_sha256": hashlib.sha256(bound_input).hexdigest(),
