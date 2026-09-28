@@ -12,10 +12,8 @@ use crate::SignedEvaluationDecisionV1;
 
 #[path = "attempt_publication_resume.rs"]
 mod resume;
-#[path = "qualification_artifacts.rs"]
-mod qualification_artifacts;
-#[path = "outcome_qualification_artifacts.rs"]
-mod outcome_qualification_artifacts;
+#[path = "qualification_archive.rs"]
+pub(crate) mod archive;
 #[path = "selected_host_publication.rs"]
 mod selected_host_publication;
 
@@ -57,7 +55,6 @@ impl<J: ProductEvaluationAttemptJournalV1> ProductQualificationEvidenceSinkV1
         execution_digest: Digest32,
         decision: &SignedEvaluationDecisionV1,
     ) -> Result<Digest32, ProductEvidenceSinkErrorV1> {
-        // Use the store's canonical request constructor, not a second hash ABI.
         let request = crate::ProductQualificationPublicationRequestV1::new(
             execution_digest,
             decision,

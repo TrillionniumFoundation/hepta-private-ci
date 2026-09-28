@@ -38,9 +38,6 @@ impl AttemptCapacity {
     ) -> Result<Reservation, ProductEvaluationAttemptJournalErrorV1> {
         let before = previous.map_or(0, remaining);
         let after = remaining(transition.phase);
-        // The existing format has 99 payload bytes besides the UTF-8 ID,
-        // a four-byte frame length and a 32-byte checksum. All phases for an
-        // attempt have the same frame size; the ID cannot change mid-history.
         let frame = 135_u64
             .checked_add(u64::try_from(transition.attempt_id.as_str().len())
                 .map_err(|_| ProductEvaluationAttemptJournalErrorV1::Capacity)?)
@@ -110,10 +107,10 @@ impl Reservation {
 fn remaining(phase: ProductEvaluationAttemptPhaseV1) -> u64 {
     use ProductEvaluationAttemptPhaseV1 as Phase;
     match phase {
-        // One extra slot is reserved for durable qualification-artifact binding.
         Phase::IntentPersisted => 6,
         Phase::HoldoutConsumed => 5,
         Phase::ComparisonSealed => 4,
+        Phase::QualificationArtifactsPersisted => 3,
         Phase::QualificationDecided => 2,
         Phase::PublicationPending => 1,
         Phase::Failed | Phase::RejectedBeforeHoldout | Phase::Published => 0,

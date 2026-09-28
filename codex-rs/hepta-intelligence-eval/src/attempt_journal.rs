@@ -36,6 +36,8 @@ pub enum ProductEvaluationAttemptPhaseV1 {
     QualificationDecided,
     PublicationPending,
     Published,
+    /// Exact typed archive bytes are durable and anchored before qualification.
+    QualificationArtifactsPersisted,
 }
 
 impl ProductEvaluationAttemptPhaseV1 {
@@ -49,6 +51,7 @@ impl ProductEvaluationAttemptPhaseV1 {
             Self::QualificationDecided => 5,
             Self::PublicationPending => 6,
             Self::Published => 7,
+            Self::QualificationArtifactsPersisted => 8,
         }
     }
 
@@ -62,6 +65,7 @@ impl ProductEvaluationAttemptPhaseV1 {
             5 => Ok(Self::QualificationDecided),
             6 => Ok(Self::PublicationPending),
             7 => Ok(Self::Published),
+            8 => Ok(Self::QualificationArtifactsPersisted),
             _ => Err(ProductEvaluationAttemptJournalErrorV1::Corrupt),
         }
     }
@@ -82,8 +86,8 @@ pub struct ProductEvaluationAttemptTransitionV1 {
     pub holdout_record_digest: Digest32,
     /// Phase-bound payload: pre-consumption owner state for IntentPersisted;
     /// zero for HoldoutConsumed; execution for ComparisonSealed; failure for
-    /// Failed/RejectedBeforeHoldout; exact publication request for
-    /// QualificationDecided/PublicationPending; durable publication for Published.
+    /// Failed/RejectedBeforeHoldout; exact archive for QualificationArtifactsPersisted;
+    /// request for QualificationDecided/PublicationPending; publication for Published.
     pub terminal_digest: Digest32,
 }
 
@@ -140,8 +144,8 @@ impl ProductEvaluationAttemptTransitionV1 {
             Phase::HoldoutConsumed => {
                 !self.holdout_record_digest.is_zero() && self.terminal_digest.is_zero()
             }
-            Phase::ComparisonSealed | Phase::Failed | Phase::QualificationDecided
-            | Phase::PublicationPending | Phase::Published => {
+            Phase::ComparisonSealed | Phase::Failed | Phase::QualificationArtifactsPersisted
+            | Phase::QualificationDecided | Phase::PublicationPending | Phase::Published => {
                 !self.holdout_record_digest.is_zero() && !self.terminal_digest.is_zero()
             }
         };
@@ -245,7 +249,8 @@ fn preview_transition(attempts: &AttemptEvents, plan_owners: &BTreeMap<[u8; 32],
             (Phase::IntentPersisted, Phase::HoldoutConsumed) => true,
             (Phase::IntentPersisted, Phase::RejectedBeforeHoldout) => before.holdout_record_digest == transition.holdout_record_digest,
             (Phase::HoldoutConsumed, Phase::ComparisonSealed | Phase::Failed)
-            | (Phase::ComparisonSealed, Phase::QualificationDecided | Phase::Failed)
+            | (Phase::ComparisonSealed, Phase::QualificationArtifactsPersisted | Phase::QualificationDecided | Phase::Failed)
+            | (Phase::QualificationArtifactsPersisted, Phase::QualificationDecided | Phase::Failed)
             | (Phase::PublicationPending, Phase::Published) => before.holdout_record_digest == transition.holdout_record_digest,
             (Phase::QualificationDecided, Phase::PublicationPending) => {
                 before.holdout_record_digest == transition.holdout_record_digest

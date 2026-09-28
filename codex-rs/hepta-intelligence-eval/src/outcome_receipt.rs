@@ -1,5 +1,6 @@
 //! Immutable multi-outcome receipts assembled only from native estimators.
 
+use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -49,12 +50,18 @@ impl ProductOutcomeEvaluationReceiptV1 {
 }
 
 /// A signed decision and durable publication identity, not a deployment grant.
-/// This type deliberately does not masquerade as a one-stream product receipt.
+/// Its immutable semantic header comes from the actual native evaluation, not
+/// from the consumer's requested destination context. Consumers must separately
+/// authenticate an exact-use attestation before binding a new runtime snapshot.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ProductOutcomeQualificationReceiptV1 {
     pub(crate) decision: SignedEvaluationDecisionV1,
     pub(crate) execution_digest: Digest32,
     pub(crate) publication_digest: Digest32,
+    pub(crate) objective_digest: Digest32,
+    pub(crate) dataset_digest: Digest32,
+    pub(crate) evaluator: AuthenticatedPrincipalV1,
+    pub(crate) snapshot_ids: Vec<StableId>,
 }
 
 impl ProductOutcomeQualificationReceiptV1 {
@@ -66,6 +73,18 @@ impl ProductOutcomeQualificationReceiptV1 {
 
     #[must_use]
     pub fn publication_digest(&self) -> Digest32 { self.publication_digest }
+
+    #[must_use]
+    pub fn objective_digest(&self) -> Digest32 { self.objective_digest }
+
+    #[must_use]
+    pub fn dataset_digest(&self) -> Digest32 { self.dataset_digest }
+
+    #[must_use]
+    pub fn evaluator(&self) -> &AuthenticatedPrincipalV1 { &self.evaluator }
+
+    #[must_use]
+    pub fn snapshot_ids(&self) -> &[StableId] { &self.snapshot_ids }
 
     #[must_use]
     pub fn authority(&self) -> AuthorityPosture { AuthorityPosture::DENY_ALL }

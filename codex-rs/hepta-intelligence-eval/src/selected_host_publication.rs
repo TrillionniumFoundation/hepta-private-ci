@@ -1,4 +1,6 @@
-//! Selected-host persistent publication store and composed product facade.
+//! Selected-host publication storage shared by both qualification families.
+//! The namespace must be owner-protected. Local durability is not independent
+//! host authentication or qualification of a network filesystem.
 
 use std::fs;
 use std::fs::File;
@@ -11,24 +13,18 @@ use std::path::PathBuf;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 
-use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_types::Digest32;
-use codex_hepta_types::StableId;
 
-use crate::DurableProductEvaluationAttemptJournalV1;
-use crate::FinalHoldoutCasStoreV1;
-use crate::ProductAttemptRecoveryErrorV1;
-use crate::ProductEvaluationAttemptReceiptV1;
 use crate::ProductEvaluationError;
+use crate::ProductEvidenceSinkErrorV1;
 use crate::ProductQualificationPublicationRecordV1;
 use crate::ProductQualificationPublicationRequestV1;
 use crate::ProductQualificationPublicationStoreErrorV1;
 use crate::ProductQualificationPublicationStoreV1;
-use crate::ReconciledProductQualificationSinkV1;
 use crate::RecordedProductEvaluationErrorV1;
-use crate::RecordedProductEvaluationRunnerV1;
-use crate::SignedEvaluationDecisionV1;
-use crate::reconcile_product_attempt_publication_v1;
+
+#[path = "selected_host_facade.rs"]
+mod facade;
 
 const MAGIC: &[u8; 8] = b"HQPUBF01";
 const FILE_BYTES: usize = 8 + (8 * 32);
@@ -48,7 +44,32 @@ impl LockedQualificationPublicationStoreV1 {
             return Err(ProductQualificationPublicationStoreErrorV1::Rejected);
         }
         let root = root.into();
-        fs::create_dir_all(&root).map_err(map_io)?;
+        match fs::create_dir(&root) {
+            Ok(()) => {
+                #[cfg(unix)]
+                {
+                    use std::os::unix::fs::PermissionsExt;
+                    fs::set_permissions(&root, fs::Permissions::from_mode(0o700))
+                        .map_err(map_io)?;
+                }
+                let parent = root.parent().filter(|path| !path.as_os_str().is_empty())
+                    .unwrap_or(Path::new("."));
+                File::open(parent).and_then(|file| file.sync_all()).map_err(map_io)?;
+            }
+            Err(error) if error.kind() == io::ErrorKind::AlreadyExists => {}
+            Err(error) => return Err(map_io(error)),
+        }
+        Self::open_existing(root, host_binding)
+    }
+
+    fn open_existing(
+        root: impl Into<PathBuf>,
+        host_binding: Digest32,
+    ) -> Result<Self, ProductQualificationPublicationStoreErrorV1> {
+        if host_binding.is_zero() {
+            return Err(ProductQualificationPublicationStoreErrorV1::Rejected);
+        }
+        let root = root.into();
         let metadata = fs::symlink_metadata(&root).map_err(map_io)?;
         if !metadata.file_type().is_dir() {
             return Err(ProductQualificationPublicationStoreErrorV1::Rejected);
@@ -64,10 +85,7 @@ impl LockedQualificationPublicationStoreV1 {
         &self,
         path: &Path,
         execution_digest: Digest32,
-    ) -> Result<
-        Option<ProductQualificationPublicationRecordV1>,
-        ProductQualificationPublicationStoreErrorV1,
-    > {
+    ) -> Result<Option<ProductQualificationPublicationRecordV1>, ProductQualificationPublicationStoreErrorV1> {
         let metadata = match fs::symlink_metadata(path) {
             Ok(value) => value,
             Err(error) if error.kind() == io::ErrorKind::NotFound => return Ok(None),
@@ -76,66 +94,62 @@ impl LockedQualificationPublicationStoreV1 {
         if !metadata.file_type().is_file() || metadata.len() as usize != FILE_BYTES {
             return Err(ProductQualificationPublicationStoreErrorV1::Rejected);
         }
+        let file = File::open(path).map_err(map_io)?;
+        if !file.metadata().map_err(map_io)?.file_type().is_file() {
+            return Err(ProductQualificationPublicationStoreErrorV1::Rejected);
+        }
         let mut bytes = Vec::with_capacity(FILE_BYTES);
-        File::open(path)
-            .map_err(map_io)?
-            .read_to_end(&mut bytes)
-            .map_err(map_io)?;
+        file.take(FILE_BYTES as u64 + 1).read_to_end(&mut bytes).map_err(map_io)?;
         decode_record(&bytes, self.host_binding, execution_digest).map(Some)
+    }
+
+    fn sync_record(&self, path: &Path) -> Result<(), ProductQualificationPublicationStoreErrorV1> {
+        File::open(path).and_then(|file| file.sync_all()).map_err(map_io)?;
+        File::open(&self.root).and_then(|file| file.sync_all()).map_err(map_io)
     }
 
     fn write_record(
         &self,
         record: &ProductQualificationPublicationRecordV1,
-    ) -> Result<
-        ProductQualificationPublicationRecordV1,
-        ProductQualificationPublicationStoreErrorV1,
-    > {
+    ) -> Result<ProductQualificationPublicationRecordV1, ProductQualificationPublicationStoreErrorV1> {
         record.validate()?;
         let final_path = self.path_for(record.request.execution_digest);
         if let Some(existing) = self.read_path(&final_path, record.request.execution_digest)? {
-            return if existing.request == record.request {
-                Ok(existing)
-            } else {
-                Err(ProductQualificationPublicationStoreErrorV1::Conflict)
-            };
+            if existing.request != record.request {
+                return Err(ProductQualificationPublicationStoreErrorV1::Conflict);
+            }
+            self.sync_record(&final_path)?;
+            return Ok(existing);
         }
         let bytes = encode_record(record, self.host_binding)?;
         let ordinal = NEXT_TEMP.fetch_add(1, Ordering::Relaxed);
         let temp = self.root.join(format!(
-            ".{}.{}.{}.tmp",
-            record.request.execution_digest,
-            std::process::id(),
-            ordinal
+            ".{}.{}.{}.tmp", record.request.execution_digest, std::process::id(), ordinal
         ));
         let result = (|| {
-            let mut file = OpenOptions::new()
-                .write(true)
-                .create_new(true)
-                .open(&temp)
-                .map_err(map_io)?;
-            file.write_all(&bytes).map_err(map_io)?;
-            file.sync_all().map_err(map_io)?;
-            match fs::hard_link(&temp, &final_path) {
-                Ok(()) => {
-                    File::open(&self.root)
-                        .map_err(map_io)?
-                        .sync_all()
-                        .map_err(map_io)?;
-                    Ok(record.clone())
-                }
-                Err(error) if error.kind() == io::ErrorKind::AlreadyExists => {
-                    let existing = self
-                        .read_path(&final_path, record.request.execution_digest)?
-                        .ok_or(ProductQualificationPublicationStoreErrorV1::Indeterminate)?;
-                    if existing.request == record.request {
-                        Ok(existing)
-                    } else {
-                        Err(ProductQualificationPublicationStoreErrorV1::Conflict)
-                    }
-                }
-                Err(error) => Err(map_io(error)),
+            let mut options = OpenOptions::new();
+            options.write(true).create_new(true);
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::OpenOptionsExt;
+                options.mode(0o600);
             }
+            let mut file = options.open(&temp).map_err(map_io)?;
+            file.write_all(&bytes).and_then(|()| file.sync_all()).map_err(map_io)?;
+            let observed = match fs::hard_link(&temp, &final_path) {
+                Ok(()) => record.clone(),
+                Err(error) if error.kind() == io::ErrorKind::AlreadyExists => {
+                    let existing = self.read_path(&final_path, record.request.execution_digest)?
+                        .ok_or(ProductQualificationPublicationStoreErrorV1::Indeterminate)?;
+                    if existing.request != record.request {
+                        return Err(ProductQualificationPublicationStoreErrorV1::Conflict);
+                    }
+                    existing
+                }
+                Err(error) => return Err(map_io(error)),
+            };
+            self.sync_record(&final_path)?;
+            Ok(observed)
         })();
         let _ = fs::remove_file(temp);
         result
@@ -146,28 +160,29 @@ impl ProductQualificationPublicationStoreV1 for LockedQualificationPublicationSt
     fn load(
         &mut self,
         execution_digest: Digest32,
-    ) -> Result<
-        Option<ProductQualificationPublicationRecordV1>,
-        ProductQualificationPublicationStoreErrorV1,
-    > {
+    ) -> Result<Option<ProductQualificationPublicationRecordV1>, ProductQualificationPublicationStoreErrorV1> {
         if execution_digest.is_zero() {
             return Err(ProductQualificationPublicationStoreErrorV1::Rejected);
         }
-        self.read_path(&self.path_for(execution_digest), execution_digest)
+        let path = self.path_for(execution_digest);
+        let record = self.read_path(&path, execution_digest)?;
+        if record.is_some() {
+            // Durability acknowledgement after a prior unknown sync must not
+            // be inferred from a merely readable directory entry. No new
+            // logical record is written by this barrier.
+            self.sync_record(&path)?;
+        }
+        Ok(record)
     }
 
     fn compare_and_publish(
         &mut self,
         expected_record_digest: Option<Digest32>,
         request: &ProductQualificationPublicationRequestV1,
-    ) -> Result<
-        ProductQualificationPublicationRecordV1,
-        ProductQualificationPublicationStoreErrorV1,
-    > {
+    ) -> Result<ProductQualificationPublicationRecordV1, ProductQualificationPublicationStoreErrorV1> {
         if let Some(existing) = self.load(request.execution_digest)? {
             if existing.request != *request
-                || expected_record_digest
-                    .is_some_and(|expected| expected != existing.record_digest)
+                || expected_record_digest.is_some_and(|expected| expected != existing.record_digest)
             {
                 return Err(ProductQualificationPublicationStoreErrorV1::Conflict);
             }
@@ -181,120 +196,8 @@ impl ProductQualificationPublicationStoreV1 for LockedQualificationPublicationSt
             self.host_binding.as_array(),
             request.request_digest.as_array(),
         ]);
-        let record = ProductQualificationPublicationRecordV1::new(
-            request.clone(),
-            publication_digest,
-        )?;
+        let record = ProductQualificationPublicationRecordV1::new(request.clone(), publication_digest)?;
         self.write_record(&record)
-    }
-}
-
-impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
-    /// Concrete single-host composition: complete qualification inputs and the
-    /// publication record are both durable and bound to the same selected-host
-    /// identity before a success receipt is returned.
-    #[allow(clippy::too_many_arguments)]
-    pub fn qualify_and_persist_on_selected_host<J: DurableProductEvaluationAttemptJournalV1>(
-        &self,
-        attempt_id: &StableId,
-        temporal: &crate::ProductTemporalEvaluationReceiptV1,
-        context: &crate::ProductQualificationContextV1,
-        evidence: &crate::SignedEvaluationEvidenceV1,
-        timing: crate::ProductTimingEvidenceV1<'_>,
-        verifier: &LearningEvidenceVerifierV1,
-        now: u64,
-        journal: &mut J,
-        artifact_root: impl AsRef<Path>,
-        publication_root: impl AsRef<Path>,
-        selected_host_binding: Digest32,
-        sealed_temporal_receipt: Vec<u8>,
-        sealed_qualification_context: Vec<u8>,
-        sealed_signed_evidence: Vec<u8>,
-        sealed_timing_evidence: Vec<u8>,
-    ) -> Result<crate::ProductQualificationReceiptV1, RecordedProductEvaluationErrorV1> {
-        let store = LockedQualificationPublicationStoreV1::new(
-            publication_root.as_ref(),
-            selected_host_binding,
-        )
-        .map_err(map_store_to_recorded)?;
-        let mut sink = ReconciledProductQualificationSinkV1::new(store);
-        self.qualify_and_persist_with_artifacts(
-            attempt_id,
-            temporal,
-            context,
-            evidence,
-            timing,
-            verifier,
-            now,
-            journal,
-            artifact_root,
-            selected_host_binding,
-            sealed_temporal_receipt,
-            sealed_qualification_context,
-            sealed_signed_evidence,
-            sealed_timing_evidence,
-            &mut sink,
-        )
-    }
-
-    /// Resume a prewrite artifact against the concrete selected-host
-    /// publication store. Current evidence is re-verified by the supplied host
-    /// codec; a Pending attempt is never routed through this first-write path.
-    #[allow(clippy::too_many_arguments)]
-    pub fn recover_selected_host_qualification<J, F>(
-        &self,
-        journal: &mut J,
-        attempt_id: &StableId,
-        artifact_root: impl AsRef<Path>,
-        publication_root: impl AsRef<Path>,
-        selected_host_binding: Digest32,
-        verifier: &LearningEvidenceVerifierV1,
-        now: u64,
-        decode_and_verify: F,
-    ) -> Result<ProductEvaluationAttemptReceiptV1, RecordedProductEvaluationErrorV1>
-    where
-        J: DurableProductEvaluationAttemptJournalV1,
-        F: FnOnce(
-            &[u8],
-            &[u8],
-            &[u8],
-            &[u8],
-            &LearningEvidenceVerifierV1,
-            u64,
-        ) -> Result<SignedEvaluationDecisionV1, ProductEvaluationError>,
-    {
-        let store = LockedQualificationPublicationStoreV1::new(
-            publication_root.as_ref(),
-            selected_host_binding,
-        )
-        .map_err(map_store_to_recorded)?;
-        let mut sink = ReconciledProductQualificationSinkV1::new(store);
-        self.recover_persisted_qualification(
-            journal,
-            attempt_id,
-            artifact_root,
-            selected_host_binding,
-            verifier,
-            now,
-            decode_and_verify,
-            &mut sink,
-        )
-    }
-
-    /// Resolve QualificationDecided/PublicationPending by read-verifying the
-    /// persistent publication record. This operation never calls a writer.
-    pub fn reconcile_selected_host_publication<J: DurableProductEvaluationAttemptJournalV1>(
-        journal: &mut J,
-        attempt_id: &StableId,
-        publication_root: impl AsRef<Path>,
-        selected_host_binding: Digest32,
-    ) -> Result<ProductEvaluationAttemptReceiptV1, ProductAttemptRecoveryErrorV1> {
-        let mut store = LockedQualificationPublicationStoreV1::new(
-            publication_root.as_ref(),
-            selected_host_binding,
-        )
-        .map_err(|_| ProductAttemptRecoveryErrorV1::Unresolved)?;
-        reconcile_product_attempt_publication_v1(journal, &mut store, attempt_id)
     }
 }
 
@@ -305,16 +208,10 @@ fn encode_record(
     record.validate()?;
     let mut bytes = Vec::with_capacity(FILE_BYTES);
     bytes.extend_from_slice(MAGIC);
-    for digest in [
-        host_binding,
-        record.request.execution_digest,
-        record.request.decision_evidence_digest,
-        record.request.trust_digest,
-        record.request.authentication_digest,
-        record.request.request_digest,
-        record.publication_digest,
-        record.record_digest,
-    ] {
+    for digest in [host_binding, record.request.execution_digest,
+        record.request.decision_evidence_digest, record.request.trust_digest,
+        record.request.authentication_digest, record.request.request_digest,
+        record.publication_digest, record.record_digest] {
         bytes.extend_from_slice(digest.as_array());
     }
     Ok(bytes)
@@ -324,8 +221,7 @@ fn decode_record(
     bytes: &[u8],
     expected_binding: Digest32,
     expected_execution: Digest32,
-) -> Result<ProductQualificationPublicationRecordV1, ProductQualificationPublicationStoreErrorV1>
-{
+) -> Result<ProductQualificationPublicationRecordV1, ProductQualificationPublicationStoreErrorV1> {
     if bytes.len() != FILE_BYTES || &bytes[..MAGIC.len()] != MAGIC {
         return Err(ProductQualificationPublicationStoreErrorV1::Rejected);
     }
@@ -349,14 +245,10 @@ fn decode_record(
     }
     let record = ProductQualificationPublicationRecordV1 {
         request: ProductQualificationPublicationRequestV1 {
-            execution_digest,
-            decision_evidence_digest,
-            trust_digest,
-            authentication_digest,
-            request_digest,
+            execution_digest, decision_evidence_digest, trust_digest,
+            authentication_digest, request_digest,
         },
-        publication_digest,
-        record_digest,
+        publication_digest, record_digest,
     };
     record.validate()?;
     Ok(record)
@@ -371,24 +263,14 @@ fn map_io(error: io::Error) -> ProductQualificationPublicationStoreErrorV1 {
     }
 }
 
-fn map_store_to_recorded(
-    error: ProductQualificationPublicationStoreErrorV1,
-) -> RecordedProductEvaluationErrorV1 {
-    let label = match error {
-        ProductQualificationPublicationStoreErrorV1::Conflict => {
-            "selected-host publication conflict"
-        }
-        ProductQualificationPublicationStoreErrorV1::Rejected => {
-            "selected-host publication rejected"
-        }
-        ProductQualificationPublicationStoreErrorV1::Unavailable => {
-            "selected-host publication unavailable"
-        }
-        ProductQualificationPublicationStoreErrorV1::Indeterminate => {
-            "selected-host publication indeterminate"
-        }
+fn map_store_to_recorded(error: ProductQualificationPublicationStoreErrorV1) -> RecordedProductEvaluationErrorV1 {
+    let cause = match error {
+        ProductQualificationPublicationStoreErrorV1::Conflict
+        | ProductQualificationPublicationStoreErrorV1::Rejected => ProductEvidenceSinkErrorV1::Rejected,
+        ProductQualificationPublicationStoreErrorV1::Unavailable => ProductEvidenceSinkErrorV1::Unavailable,
+        ProductQualificationPublicationStoreErrorV1::Indeterminate => ProductEvidenceSinkErrorV1::Indeterminate,
     };
-    RecordedProductEvaluationErrorV1::Invariant(label)
+    RecordedProductEvaluationErrorV1::Evaluation(ProductEvaluationError::Sink(cause))
 }
 
 #[cfg(test)]
@@ -396,11 +278,11 @@ mod tests {
     use super::*;
     use crate::IndependentEvaluationDecisionV1;
     use crate::IndependentEvaluationDispositionV1;
+    use crate::SignedEvaluationDecisionV1;
     use codex_hepta_types::AuthorityPosture;
+    use codex_hepta_types::StableId;
 
-    fn id(value: &str) -> StableId {
-        StableId::new(value).expect("valid id")
-    }
+    fn id(value: &str) -> StableId { StableId::new(value).expect("valid id") }
 
     fn request(execution: &[u8]) -> ProductQualificationPublicationRequestV1 {
         ProductQualificationPublicationRequestV1::new(
@@ -410,8 +292,7 @@ mod tests {
                     evaluation_id: id("evaluation:persistent"),
                     candidate_id: id("candidate:persistent"),
                     baseline_id: id("baseline:persistent"),
-                    disposition:
-                        IndependentEvaluationDispositionV1::EligibleForIndependentSelection,
+                    disposition: IndependentEvaluationDispositionV1::EligibleForIndependentSelection,
                     failed_metrics: Vec::new(),
                     evidence_digest: Digest32::of_bytes(b"evidence"),
                     authority: AuthorityPosture::DENY_ALL,
@@ -419,35 +300,25 @@ mod tests {
                 trust_digest: Digest32::of_bytes(b"trust"),
                 authentication_digest: Digest32::of_bytes(b"authentication"),
             },
-        )
-        .expect("request")
+        ).expect("request")
     }
 
     #[test]
     fn publication_survives_restart_and_is_idempotent() {
         let root = std::env::temp_dir().join(format!(
-            "hepta-publication-store-{}-{}",
-            std::process::id(),
-            NEXT_TEMP.fetch_add(1, Ordering::Relaxed)
+            "hepta-publication-store-{}-{}", std::process::id(), NEXT_TEMP.fetch_add(1, Ordering::Relaxed)
         ));
         let binding = Digest32::of_bytes(b"selected-host");
         let request = request(b"execution");
         let first = {
-            let mut store =
-                LockedQualificationPublicationStoreV1::new(&root, binding).expect("store");
+            let mut store = LockedQualificationPublicationStoreV1::new(&root, binding).expect("store");
             store.compare_and_publish(None, &request).expect("publish")
         };
         let second = {
-            let mut store =
-                LockedQualificationPublicationStoreV1::new(&root, binding).expect("reopen");
-            let loaded = store
-                .load(request.execution_digest)
-                .expect("load")
-                .expect("record");
+            let mut store = LockedQualificationPublicationStoreV1::open_existing(&root, binding).expect("reopen");
+            let loaded = store.load(request.execution_digest).expect("load").expect("record");
             assert_eq!(loaded, first);
-            store
-                .compare_and_publish(None, &request)
-                .expect("idempotent")
+            store.compare_and_publish(None, &request).expect("idempotent")
         };
         assert_eq!(second, first);
         let _ = fs::remove_dir_all(root);
@@ -456,35 +327,23 @@ mod tests {
     #[test]
     fn conflicting_request_and_host_binding_fail_closed() {
         let root = std::env::temp_dir().join(format!(
-            "hepta-publication-conflict-{}-{}",
-            std::process::id(),
-            NEXT_TEMP.fetch_add(1, Ordering::Relaxed)
+            "hepta-publication-conflict-{}-{}", std::process::id(), NEXT_TEMP.fetch_add(1, Ordering::Relaxed)
         ));
         let binding = Digest32::of_bytes(b"selected-host");
         let request = request(b"execution");
-        let mut store =
-            LockedQualificationPublicationStoreV1::new(&root, binding).expect("store");
+        let mut store = LockedQualificationPublicationStoreV1::new(&root, binding).expect("store");
         store.compare_and_publish(None, &request).expect("publish");
-
         let conflict = ProductQualificationPublicationRequestV1 {
-            authentication_digest: Digest32::of_bytes(b"different"),
-            ..request.clone()
+            authentication_digest: Digest32::of_bytes(b"different"), ..request.clone()
         };
-        assert!(matches!(
-            store.compare_and_publish(None, &conflict),
+        assert!(matches!(store.compare_and_publish(None, &conflict),
             Err(ProductQualificationPublicationStoreErrorV1::Conflict)
-                | Err(ProductQualificationPublicationStoreErrorV1::Rejected)
-        ));
-
-        let mut wrong = LockedQualificationPublicationStoreV1::new(
-            &root,
-            Digest32::of_bytes(b"other-host"),
-        )
-        .expect("wrong store");
-        assert!(matches!(
-            wrong.load(request.execution_digest),
-            Err(ProductQualificationPublicationStoreErrorV1::Rejected)
-        ));
+            | Err(ProductQualificationPublicationStoreErrorV1::Rejected)));
+        let mut wrong = LockedQualificationPublicationStoreV1::open_existing(
+            &root, Digest32::of_bytes(b"other-host")
+        ).expect("wrong store");
+        assert!(matches!(wrong.load(request.execution_digest),
+            Err(ProductQualificationPublicationStoreErrorV1::Rejected)));
         let _ = fs::remove_dir_all(root);
     }
 }

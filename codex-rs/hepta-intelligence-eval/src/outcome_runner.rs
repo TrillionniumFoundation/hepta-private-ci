@@ -17,6 +17,13 @@ use crate::outcome_channels::MAX_BATCH_ROWS;
 use crate::outcome_channels::validate_inputs;
 use crate::outcome_receipt::compose;
 
+// Inherent implementations remain within the recorded runner's private module
+// hierarchy. They do not make the raw runner or its fields externally visible.
+#[path = "qualification_artifacts.rs"]
+mod artifact_temporal;
+#[path = "outcome_qualification_artifacts.rs"]
+mod artifact_outcome;
+
 struct OutcomeProvider<'a, P> {
     plan: &'a ProductFrozenOutcomePlanV1,
     inner: &'a mut P,
@@ -178,6 +185,10 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
         }
         Ok(ProductOutcomeQualificationReceiptV1 {
             decision, execution_digest: temporal.execution_digest, publication_digest,
+            objective_digest: temporal.carrier.product_plan.frozen_plan.objective_digest,
+            dataset_digest: temporal.carrier.product_plan.frozen_plan.dataset_digest,
+            evaluator: context.evaluator.clone(),
+            snapshot_ids: temporal.carrier.snapshot_ids.clone(),
         })
     }
 }
