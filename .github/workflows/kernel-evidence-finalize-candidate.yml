@@ -1,0 +1,133 @@
+name: Kernel evidence candidate metadata finalization
+
+on:
+  pull_request:
+    types: [synchronize]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kernel-evidence-candidate-metadata-finalization
+  cancel-in-progress: false
+
+jobs:
+  finalize:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'fix/kernel-evidence-production-closure'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      EVENT_SHA: ${{ github.event.pull_request.head.sha }}
+      EXPECTED_PARENT: c538493fdb6fc77816973ecb9791300358e92bd9
+      SOURCE_ANCHOR: 4dd844af8af04372d75001be10fcabbf97f6e679
+      SOURCE_TREE: 598697096a10d1015609168ab7064298c0dc8ace
+      TARGET_BRANCH: fix/kernel-evidence-production-closure
+    steps:
+      - name: Check out exact metadata-finalization request
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Admit only the fixed source and parent
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EVENT_SHA"
+          test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
+          git log -1 --format=%B | grep -Fq '[kernel-evidence-finalize-candidate]'
+          git merge-base --is-ancestor "$SOURCE_ANCHOR" "$EXPECTED_PARENT"
+          test "$(git rev-parse "$SOURCE_ANCHOR^{tree}")" = "$SOURCE_TREE"
+          test -z "$(git status --porcelain)"
+
+      - name: Bind canonical status and implementation map to immutable source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          import os
+
+          status_path = Path('qualification/kernel-evidence/STATUS_SOURCE.json')
+          status = json.loads(status_path.read_text(encoding='utf-8'))
+          status['asOfCommit'] = os.environ['SOURCE_ANCHOR']
+          status['asOfTree'] = os.environ['SOURCE_TREE']
+          for key in (
+              'exactSourceQualified', 'mergeCandidateQualified',
+              'independentAcceptance', 'externalFrontierActive',
+              'backupRestoreDrilled', 'canaryAccepted', 'releaseApproved',
+          ):
+              status[key] = False
+          status['workflowRunId'] = None
+          status['artifactDigest'] = None
+          status['evidenceReceipts'] = {}
+          status_path.write_text(json.dumps(status, indent=2) + '\n', encoding='utf-8')
+
+          map_path = Path('docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json')
+          implementation = json.loads(map_path.read_text(encoding='utf-8'))
+          implementation['sourceBase'] = {
+              'commit': os.environ['SOURCE_ANCHOR'],
+              'tree': os.environ['SOURCE_TREE'],
+          }
+          boundary = implementation['claimBoundary']
+          boundary['productionImplementation'] = False
+          boundary['productExecutionProved'] = False
+          boundary['independentAcceptance'] = False
+          boundary['activation'] = False
+          boundary['release'] = False
+          map_path.write_text(json.dumps(implementation, indent=2) + '\n', encoding='utf-8')
+          PY
+
+      - name: Regenerate and verify all canonical projections
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/kernel_evidence_status.py sync
+          python3 scripts/hepta-module-docs.py sync
+          python3 scripts/kernel_evidence_status.py verify
+          python3 scripts/hepta-module-docs.py verify
+          python3 scripts/hepta-docs.py verify
+          python3 scripts/hepta-implementation-maps.py verify
+          python3 scripts/verify_lane_a_foundation.py verify
+          git diff --check
+
+      - name: Enforce the metadata-only write set
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import subprocess
+          allowed = {
+              '.github/workflows/kernel-evidence-finalize-candidate.yml',
+              'qualification/kernel-evidence/STATUS_SOURCE.json',
+              'docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json',
+              'docs/modules/MODULE_DOCS.json',
+              'docs/modules/kernel.evidence/TECHNICAL.md',
+              'docs/lane-a-foundation/kernel.evidence/CURRENT_IMPLEMENTATION.md',
+              'qualification/kernel-evidence/TRACEABILITY.md',
+              'qualification/module-execution-dossiers/detail/kernel.evidence.md',
+              'qualification/kernel-evidence/RELEASE_DASHBOARD.md',
+          }
+          changed = set(filter(None, subprocess.check_output(
+              ['git', 'diff', '--name-only', '-z'], text=True
+          ).split('\0')))
+          unexpected = sorted(changed - allowed)
+          if unexpected:
+              raise SystemExit(f'unexpected metadata-finalization changes: {unexpected}')
+          PY
+
+      - name: Commit deterministic metadata and retire this workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/kernel-evidence-finalize-candidate.yml
+          git diff --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -s -m 'docs(kernel.evidence): bind final source and regenerate projections [kernel-evidence-status-sync]'
+          git fetch origin "refs/heads/$TARGET_BRANCH"
+          test "$(git rev-parse HEAD^)" = "$(git rev-parse FETCH_HEAD)"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
