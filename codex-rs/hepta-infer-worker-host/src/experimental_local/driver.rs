@@ -132,7 +132,7 @@ pub struct AttestedModelHandle {
     runtime_digest: String,
     device_uuid: String,
     device_epoch: u64,
-    worker_generation: u64,
+    pub(super) worker_generation: u64,
     resident_memory_bytes: u64,
     manifest_semantic_digest: String,
     grant_witness_digest: String,
