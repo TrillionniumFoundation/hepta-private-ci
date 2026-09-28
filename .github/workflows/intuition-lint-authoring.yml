@@ -1,0 +1,105 @@
+name: Intuition scoped lint source authoring
+on:
+  push:
+    branches: [codex/intuition-devhost-20260928]
+    paths: [.github/workflows/intuition-lint-authoring.yml]
+permissions:
+  contents: write
+jobs:
+  author:
+    runs-on: windows-2025
+    timeout-minutes: 15
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      CARGO_INCREMENTAL: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_TERM_COLOR: never
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 53aa8ff536237c4ac97f1c1761d51b196598c379
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: '1.95.0'
+          components: rustfmt,clippy
+      - name: Apply only diagnosed source corrections
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import subprocess
+          assert subprocess.check_output(['git','rev-parse','HEAD']).decode().strip() == '53aa8ff536237c4ac97f1c1761d51b196598c379'
+          def change(path, old, new):
+              p=Path(path); s=p.read_text(encoding='utf-8')
+              assert s.count(old)==1, (path,old)
+              p.write_text(s.replace(old,new,1),encoding='utf-8',newline='\n')
+          p='codex-rs/hepta-intuition/examples/fast_gate.rs'
+          error='Box<dyn std::error::Error>'
+          change(p,'fn main() {',f'fn main() -> Result<(), {error}> {{')
+          change(p,'        run_gate(gate);\n    }\n}', '        run_gate(gate)?;\n    }\n    Ok(())\n}')
+          change(p,'fn run_gate(gate: Gate) {',f'fn run_gate(gate: Gate) -> Result<(), {error}> {{')
+          change(p,'let (template, profile) = fixture(gate.candidates);','let (template, profile) = fixture(gate.candidates)?;')
+          change(p,'decide_calibrated_v3(template.clone(), &profile).expect("warmup decision")','decide_calibrated_v3(template.clone(), &profile)?')
+          change(p,'decide_calibrated_v3(black_box(request), &profile).expect("qualified decision")','decide_calibrated_v3(black_box(request), &profile)?')
+          change(p,'    let throughput = if total_ns == 0 {\n        u64::MAX\n    } else {\n        u64::try_from((gate.iterations as u128 * 1_000_000_000) / total_ns).unwrap_or(u64::MAX)\n    };', '    let throughput = (gate.iterations as u128 * 1_000_000_000)\n        .checked_div(total_ns)\n        .and_then(|value| u64::try_from(value).ok())\n        .unwrap_or(u64::MAX);')
+          change(p,'        gate.max_allocation_bytes\n    );\n}', '        gate.max_allocation_bytes\n    );\n    Ok(())\n}')
+          change(p,'((values.len() - 1) * percentile + 99) / 100','((values.len() - 1) * percentile).div_ceil(100)')
+          change(p,'fn fixture(candidate_count: usize) -> (CalibratedDecisionRequestV1, CanonicalPolicyProfileV1) {',f'fn fixture(candidate_count: usize) -> Result<(CalibratedDecisionRequestV1, CanonicalPolicyProfileV1), {error}> {{')
+          change(p,'.map(|index| CalibratedActionCandidateV1 {','.map(|index| Ok(CalibratedActionCandidateV1 {')
+          change(p,'candidate_id: id(&format!("candidate:{index:03}")),','candidate_id: id(&format!("candidate:{index:03}"))?,')
+          change(p,'        })\n        .collect::<Vec<_>>();',f'        }}))\n        .collect::<Result<Vec<_>, {error}>>()?;')
+          change(p,'canonical_candidate_set_digest_v1(&candidates).unwrap()','canonical_candidate_set_digest_v1(&candidates)?')
+          change(p,'canonical_candidate_order_digest_v1(&candidates).unwrap()','canonical_candidate_order_digest_v1(&candidates)?')
+          change(p,'decision_id: id("benchmark-decision"),','decision_id: id("benchmark-decision")?,')
+          change(p,'profile_id: id("benchmark-profile"),','profile_id: id("benchmark-profile")?,')
+          s=Path(p).read_text(encoding='utf-8')
+          assert s.count('probability_ppm(500_000),')==2 and s.count('probability_ppm(250_000),')==2
+          s=s.replace('probability_ppm(500_000),','probability_ppm(500_000)?,').replace('probability_ppm(250_000),','probability_ppm(250_000)?,')
+          Path(p).write_text(s,encoding='utf-8',newline='\n')
+          change(p,'    (request, profile)\n}', '    Ok((request, profile))\n}')
+          change(p,'fn id(value: &str) -> StableId {\n    StableId::new(value).unwrap()\n}',f'fn id(value: &str) -> Result<StableId, {error}> {{\n    Ok(StableId::new(value)?)\n}}')
+          change(p,'fn probability_ppm(ppm: u32) -> ProbabilityQ32 {',f'fn probability_ppm(ppm: u32) -> Result<ProbabilityQ32, {error}> {{')
+          change(p,'ProbabilityQ32::from_raw(raw as u64).unwrap()','Ok(ProbabilityQ32::from_raw(u64::try_from(raw)?)?)')
+          change('codex-rs/hepta-intuition/src/production_tests.rs','let mut ordered = request.candidates.clone();','let mut ordered = request.candidates;')
+          change('codex-rs/hepta-intuition/src/qualified_tests.rs','let mut changed_request = request.clone();','let mut changed_request = request;')
+          PY
+      - name: Format and execute strict unchanged-threshold regressions
+        shell: bash
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intuition-lint-target
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          rustfmt --edition 2024 --config skip_children=true hepta-intuition/examples/fast_gate.rs hepta-intuition/src/production_tests.rs hepta-intuition/src/qualified_tests.rs
+          cargo clippy --locked -p codex-hepta-intuition --all-targets -- -D warnings > "$RUNNER_TEMP/intuition-lint.log" 2>&1 || { tail -n 100 "$RUNNER_TEMP/intuition-lint.log"; exit 1; }
+          tail -n 5 "$RUNNER_TEMP/intuition-lint.log"
+          cargo test --locked -p codex-hepta-intuition --lib
+          cargo fmt -p codex-hepta-intuition -- --check
+          cd ..
+          python scripts/intuition_state.py --check
+          git diff --check
+      - name: Store three reviewed source blobs only, never update a ref
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -u - <<'PY'
+          import base64, hashlib, json, os, pathlib, subprocess, urllib.request
+          expected={'codex-rs/hepta-intuition/examples/fast_gate.rs','codex-rs/hepta-intuition/src/production_tests.rs','codex-rs/hepta-intuition/src/qualified_tests.rs'}
+          paths=subprocess.check_output(['git','diff','--name-only']).decode().splitlines()
+          assert set(paths)==expected
+          assert not subprocess.check_output(['git','ls-files','--others','--exclude-standard'])
+          for path in paths:
+              data=pathlib.Path(path).read_bytes().replace(b'\r\n',b'\n')
+              sha=hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()
+              req=urllib.request.Request('https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs',
+                  data=json.dumps({'encoding':'base64','content':base64.b64encode(data).decode()}).encode(),method='POST',
+                  headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Content-Type':'application/json','Accept':'application/vnd.github+json'})
+              with urllib.request.urlopen(req,timeout=60) as response: result=json.load(response)
+              assert result['sha']==sha
+              print('LINT_SOURCE_BLOB='+json.dumps({'path':path,'sha':sha}),flush=True)
+          print('Source authoring only; candidate ref remains unchanged pending separate review.')
+          PY
