@@ -27,6 +27,10 @@ CALLERS = [
     {"kind": "sealed_product_qualification_consumer", "sourcePath": "codex-rs/hepta-intelligence/src/evaluated_shadow.rs", "nativeSymbol": "run_evaluated_shadow_v1", "authority": "deny_all"},
     {"kind": "sealed_multi_outcome_qualification_consumer", "sourcePath": "codex-rs/hepta-agentd/src/intelligence_evaluation.rs", "nativeSymbol": "AgentdEvaluationBindingV1::consume_outcome_qualification_v1", "authority": "deny_all"},
 ]
+CALLER_TOKEN_SOURCE = {
+    "AgentdEvaluationBindingV1::consume_outcome_qualification_v1":
+        "codex-rs/hepta-agentd/src/intelligence_outcome_evaluation.rs",
+}
 SELECTED_HOST_E2E = "codex-rs/hepta-intelligence-eval/tests/selected_host_recovery_e2e.rs"
 RECOVERY_OPERATIONS = [
     ("AnchoredProductEvaluationAttemptJournalV1", "attempt_journal_anchor.rs", SRC + "attempt_journal_tests.rs"),
@@ -48,6 +52,14 @@ RECOVERY_OPERATIONS = [
     ("RecordedProductEvaluationRunnerV1::evaluate_outcome_comparison", "outcome_runner.rs", SRC + "outcome_tests.rs"),
     ("RecordedProductEvaluationRunnerV1::qualify_outcomes_and_persist", "outcome_runner.rs", SRC + "outcome_tests.rs"),
 ]
+OPERATION_TOKEN_SOURCE = {
+    "RecordedProductEvaluationRunnerV1::qualify_and_persist_on_selected_host":
+        "selected_host_facade.rs",
+    "RecordedProductEvaluationRunnerV1::recover_selected_host_qualification":
+        "selected_host_facade.rs",
+    "RecordedProductEvaluationRunnerV1::reconcile_selected_host_publication":
+        "selected_host_facade.rs",
+}
 REPOSITORY_GAPS = [
     "Execute formatting, compilation, tests, strict lint and coverage on the final exact source and ordered-parent merge tree.",
     "Extend complete host-sealed artifact persistence and restart recovery to ProductOutcomeEvaluationReceiptV1, then exercise the signed multi-outcome resume path.",
@@ -98,7 +110,8 @@ def verify_implementation_map(callers: list[dict]) -> None:
         entry = operations[symbol]
         if entry.get("sourcePath") != SRC + source:
             raise SystemExit(f"incorrect source path for {symbol}")
-        require_token(SRC + source, symbol.rsplit("::", 1)[-1])
+        token_source = OPERATION_TOKEN_SOURCE.get(symbol, source)
+        require_token(SRC + token_source, symbol.rsplit("::", 1)[-1])
         if test not in entry.get("tests", []) or not (ROOT / test).is_file():
             raise SystemExit(f"missing recovery/outcome test mapping for {symbol}")
     def identities(items: list[dict]) -> set[tuple]:
@@ -199,6 +212,7 @@ def source_facts() -> dict:
         ("recorded_publication.rs", '#[path = "attempt_publication_resume.rs"]'),
         ("recorded_publication.rs", '#[path = "qualification_artifacts.rs"]'),
         ("recorded_publication.rs", '#[path = "selected_host_publication.rs"]'),
+        ("recorded_publication.rs", '#[path = "selected_host_recovery_controller.rs"]'),
         ("attempt_recovery.rs", "validated_history"),
         ("attempt_recovery_tests.rs", "pending_cursor_advances_past_unresolved_attempts"),
         ("attempt_recovery_tests.rs", "individually_valid_frames_cannot_be_spliced_across_attempts"),
@@ -206,9 +220,9 @@ def source_facts() -> dict:
         ("attempt_publication_resume.rs", "verify_decision"),
         ("qualification_artifacts.rs", "qualify_and_persist_with_artifacts"),
         ("qualification_artifacts.rs", "recover_persisted_qualification"),
-        ("selected_host_publication.rs", "qualify_and_persist_on_selected_host"),
-        ("selected_host_publication.rs", "recover_selected_host_qualification"),
-        ("selected_host_publication.rs", "reconcile_selected_host_publication"),
+        ("selected_host_facade.rs", "qualify_and_persist_on_selected_host"),
+        ("selected_host_facade.rs", "recover_selected_host_qualification"),
+        ("selected_host_facade.rs", "reconcile_selected_host_publication"),
         ("outcome_channels.rs", "const MAX_CHANNELS: usize = 32;"),
         ("outcome_channels.rs", "const MAX_BATCH_ROWS: usize = 100_000;"),
         ("outcome_tests.rs", "measured_channels_with_same_estimator_have_distinct_intervals_and_one_consumption"),
@@ -239,8 +253,9 @@ def source_facts() -> dict:
         "sealed_multi_outcome_qualification_consumer": "ProductOutcomeQualificationReceiptV1",
     }
     for caller in CALLERS:
-        require_token(caller["sourcePath"], caller_tokens[caller["kind"]])
-        require_token(caller["sourcePath"], caller["nativeSymbol"].rsplit("::", 1)[-1])
+        token_source = CALLER_TOKEN_SOURCE.get(caller["nativeSymbol"], caller["sourcePath"])
+        require_token(token_source, caller_tokens[caller["kind"]])
+        require_token(token_source, caller["nativeSymbol"].rsplit("::", 1)[-1])
     verify_implementation_map(CALLERS)
     return expected_source_facts()
 
