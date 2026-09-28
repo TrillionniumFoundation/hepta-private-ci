@@ -549,3 +549,7 @@ fn release_request_locked(
         .ok_or(LocalWorkerError::ArithmeticOverflow)?;
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "resources_tests.rs"]
+mod tests;
