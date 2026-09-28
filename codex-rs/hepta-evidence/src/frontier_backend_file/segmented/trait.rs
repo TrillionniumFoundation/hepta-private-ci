@@ -25,6 +25,92 @@ impl EvidenceFrontierBackend for SegmentedFileEvidenceFrontierBackend {
         expected_generation: Option<u64>,
         new_frontier: &EvidenceRecoveryFrontierV2,
     ) -> Result<EvidenceFrontierDurableAckV1, EvidenceFrontierBackendError> {
+        self.compare_and_swap_with_lock_policy(store_id, expected_generation, new_frontier, false)
+    }
+
+    fn get_history(
+        &mut self,
+        store_id: &str,
+        range: EvidenceFrontierHistoryRangeV1,
+    ) -> Result<Vec<EvidenceRecoveryFrontierV2>, EvidenceFrontierBackendError> {
+        self.ensure_available()?;
+        self.verify_backend_identity()?;
+        let paths = self.paths(store_id)?;
+        let lock = self.open_store_lock(&paths)?;
+        lock.lock_shared().map_err(unavailable)?;
+        let mut active = self.open_active_existing(&paths)?;
+        if let Some(file) = active.as_ref() {
+            file.lock_shared().map_err(unavailable)?;
+        }
+        let state = self.load_state_from_active(&paths, store_id, active.as_mut())?;
+        let mut result = Vec::new();
+        let archived_last = state.archived_records();
+        if archived_last > 0 && range.first_generation() <= archived_last {
+            let requested_last = range.last_generation().min(archived_last);
+            let latest = state
+                .latest_segment()
+                .cloned()
+                .ok_or_else(|| corrupt("archived frontier history has no latest segment"))?;
+            if let Some(mut metadata) = self.locate_segment(store_id, latest, requested_last)? {
+                loop {
+                    let records = self.read_segment_records(store_id, &metadata)?;
+                    for record in records {
+                        if (range.first_generation()..=range.last_generation())
+                            .contains(&record.frontier.frontier_generation)
+                        {
+                            result.push(record.frontier);
+                        }
+                    }
+                    if metadata.first_generation <= range.first_generation() {
+                        break;
+                    }
+                    let Some(previous) = metadata.previous_segment.clone() else {
+                        break;
+                    };
+                    metadata = self.read_segment_metadata(&previous, store_id)?;
+                }
+                result.sort_by_key(|frontier| frontier.frontier_generation);
+            }
+        }
+        for record in state.active_records {
+            if (range.first_generation()..=range.last_generation())
+                .contains(&record.frontier.frontier_generation)
+            {
+                result.push(record.frontier);
+            }
+        }
+        result.sort_by_key(|frontier| frontier.frontier_generation);
+        result.dedup_by_key(|frontier| frontier.frontier_generation);
+        Ok(result)
+    }
+
+    fn verify_backend_identity(
+        &mut self,
+    ) -> Result<EvidenceFrontierBackendIdentityV1, EvidenceFrontierBackendError> {
+        self.legacy.verify_backend_identity()
+    }
+}
+
+impl SegmentedFileEvidenceFrontierBackend {
+    /// Fast-fail lock admission for callers already holding a local writer
+    /// reservation. Contention is unavailable, not a fabricated CAS conflict;
+    /// no frontier bytes have been written when lock admission fails.
+    pub fn try_compare_and_swap(
+        &mut self,
+        store_id: &str,
+        expected_generation: Option<u64>,
+        new_frontier: &EvidenceRecoveryFrontierV2,
+    ) -> Result<EvidenceFrontierDurableAckV1, EvidenceFrontierBackendError> {
+        self.compare_and_swap_with_lock_policy(store_id, expected_generation, new_frontier, true)
+    }
+
+    fn compare_and_swap_with_lock_policy(
+        &mut self,
+        store_id: &str,
+        expected_generation: Option<u64>,
+        new_frontier: &EvidenceRecoveryFrontierV2,
+        nonblocking: bool,
+    ) -> Result<EvidenceFrontierDurableAckV1, EvidenceFrontierBackendError> {
         self.ensure_available()?;
         self.verify_backend_identity()?;
         new_frontier
@@ -39,9 +125,9 @@ impl EvidenceFrontierBackend for SegmentedFileEvidenceFrontierBackend {
         }
         let paths = self.paths(store_id)?;
         let lock = self.open_store_lock(&paths)?;
-        lock.lock().map_err(unavailable)?;
+        acquire_cas_file_lock(&lock, nonblocking)?;
         let mut active = self.open_active_writable(&paths)?;
-        active.lock().map_err(unavailable)?;
+        acquire_cas_file_lock(&active, nonblocking)?;
         let mut state = self.load_state_from_active(&paths, store_id, Some(&mut active))?;
         let actual_generation = state.latest_generation();
         if actual_generation != expected_generation {
@@ -158,66 +244,38 @@ impl EvidenceFrontierBackend for SegmentedFileEvidenceFrontierBackend {
             audit_sequence,
         })
     }
+}
 
-    fn get_history(
-        &mut self,
-        store_id: &str,
-        range: EvidenceFrontierHistoryRangeV1,
-    ) -> Result<Vec<EvidenceRecoveryFrontierV2>, EvidenceFrontierBackendError> {
-        self.ensure_available()?;
-        self.verify_backend_identity()?;
-        let paths = self.paths(store_id)?;
-        let lock = self.open_store_lock(&paths)?;
-        lock.lock_shared().map_err(unavailable)?;
-        let mut active = self.open_active_existing(&paths)?;
-        if let Some(file) = active.as_ref() {
-            file.lock_shared().map_err(unavailable)?;
-        }
-        let state = self.load_state_from_active(&paths, store_id, active.as_mut())?;
-        let mut result = Vec::new();
-        let archived_last = state.archived_records();
-        if archived_last > 0 && range.first_generation() <= archived_last {
-            let requested_last = range.last_generation().min(archived_last);
-            let latest = state
-                .latest_segment()
-                .cloned()
-                .ok_or_else(|| corrupt("archived frontier history has no latest segment"))?;
-            if let Some(mut metadata) = self.locate_segment(store_id, latest, requested_last)? {
-                loop {
-                    let records = self.read_segment_records(store_id, &metadata)?;
-                    for record in records {
-                        if (range.first_generation()..=range.last_generation())
-                            .contains(&record.frontier.frontier_generation)
-                        {
-                            result.push(record.frontier);
-                        }
-                    }
-                    if metadata.first_generation <= range.first_generation() {
-                        break;
-                    }
-                    let Some(previous) = metadata.previous_segment.clone() else {
-                        break;
-                    };
-                    metadata = self.read_segment_metadata(&previous, store_id)?;
-                }
-                result.sort_by_key(|frontier| frontier.frontier_generation);
-            }
-        }
-        for record in state.active_records {
-            if (range.first_generation()..=range.last_generation())
-                .contains(&record.frontier.frontier_generation)
-            {
-                result.push(record.frontier);
-            }
-        }
-        result.sort_by_key(|frontier| frontier.frontier_generation);
-        result.dedup_by_key(|frontier| frontier.frontier_generation);
-        Ok(result)
+fn acquire_cas_file_lock(
+    file: &File,
+    nonblocking: bool,
+) -> Result<(), EvidenceFrontierBackendError> {
+    if nonblocking {
+        file.try_lock().map_err(|error| {
+            EvidenceFrontierBackendError::Unavailable(format!(
+                "publication CAS lock unavailable before dispatch: {error}"
+            ))
+        })
+    } else {
+        file.lock().map_err(unavailable)
     }
+}
 
-    fn verify_backend_identity(
-        &mut self,
-    ) -> Result<EvidenceFrontierBackendIdentityV1, EvidenceFrontierBackendError> {
-        self.legacy.verify_backend_identity()
+#[cfg(all(test, unix))]
+mod nonblocking_cas_lock_tests {
+    use super::*;
+
+    #[test]
+    fn occupied_cas_lock_fails_without_waiting_and_can_be_retried_after_release() {
+        let temporary = tempfile::NamedTempFile::new().expect("lock file");
+        let first = OpenOptions::new().read(true).write(true).open(temporary.path()).unwrap();
+        let second = OpenOptions::new().read(true).write(true).open(temporary.path()).unwrap();
+        first.lock().expect("first owner");
+        assert!(matches!(
+            acquire_cas_file_lock(&second, true),
+            Err(EvidenceFrontierBackendError::Unavailable(_))
+        ));
+        drop(first);
+        acquire_cas_file_lock(&second, true).expect("retry after owner release");
     }
 }

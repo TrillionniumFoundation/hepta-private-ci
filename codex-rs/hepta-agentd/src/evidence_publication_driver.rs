@@ -98,6 +98,7 @@ async fn execute_publication_request(
     action: EvidencePublicationActionV1,
 ) -> Result<String, AgentdError> {
     use codex_hepta_evidence::EvidenceFrontierHistoryRangeV1;
+    use codex_hepta_evidence::EvidencePublicationDispatchModeV1;
 
     let EvidencePublicationFiles {
         process_guard,
@@ -293,8 +294,6 @@ async fn execute_publication_request(
                     "publication controls changed before dispatch",
                 ));
             }
-            // Checking only at acknowledgement is too late: a revoked or
-            // replaced issuer policy must not authorize an external CAS.
             let dispatch_trust = VerifiedEvidenceTrustSnapshot::load_owner_registry(
                 store,
                 issuer_trust_file,
@@ -310,8 +309,7 @@ async fn execute_publication_request(
                     "publication issuer authority changed before dispatch",
                 ));
             }
-            // Recheck the durable owner AFTER expensive file/backup reads.
-            // The exact operation identity remains durable before any CAS.
+            // Commit the exact intent before reserving a stable dispatch epoch.
             store
                 .mark_publication_dispatched(
                     &lease,
@@ -326,24 +324,48 @@ async fn execute_publication_request(
                 .validate()
                 .map_err(|error| recovery_required(&format!("publication owner fence: {error}")))?;
             require_publication_dispatch_lease(&lease, current_time_millis()?)?;
-            // Recovery re-fsyncs a matching stored record. A latest read alone
-            // is never converted into a successful durability acknowledgement.
-            let result = match backend.recover_durable_acknowledgement(
-                &config.store_id,
-                proposed.frontier_generation,
-                &digest,
-            ) {
-                Ok(Some(ack)) => Ok(ack),
-                Ok(None) => {
-                    require_publication_dispatch_lease(&lease, current_time_millis()?)?;
-                    backend.compare_and_swap(
-                        &config.store_id,
-                        batch.expected_frontier_generation,
-                        &proposed,
-                    )
-                }
-                Err(error) => Err(error),
-            };
+            let result = store
+                .with_publication_dispatch_guard(
+                    &lease,
+                    &batch_id,
+                    &dispatch_trust,
+                    &proposed,
+                    |mode| {
+                        process_guard.validate().map_err(|error| {
+                            codex_hepta_evidence::EvidenceFrontierBackendError::Invalid(format!(
+                                "publication process fence changed: {error}"
+                            ))
+                        })?;
+                        // Re-fsync the exact record; a latest read is not a
+                        // durable acknowledgement. Never recreate lost history
+                        // for a batch already recorded as acknowledged.
+                        match backend.recover_durable_acknowledgement(
+                            &config.store_id,
+                            proposed.frontier_generation,
+                            &digest,
+                        ) {
+                            Ok(Some(ack)) => Ok(ack),
+                            Ok(None) if mode == EvidencePublicationDispatchModeV1::PublishOrRecover => {
+                                let now = current_time_millis().map_err(|error| {
+                                    codex_hepta_evidence::EvidenceFrontierBackendError::Unavailable(error.to_string())
+                                })?;
+                                require_publication_dispatch_lease(&lease, now).map_err(|error| {
+                                    codex_hepta_evidence::EvidenceFrontierBackendError::Unavailable(error.to_string())
+                                })?;
+                                backend.try_compare_and_swap(
+                                    &config.store_id,
+                                    batch.expected_frontier_generation,
+                                    &proposed,
+                                )
+                            }
+                            Ok(None) => Err(codex_hepta_evidence::EvidenceFrontierBackendError::Corrupt(
+                                "acknowledged publication is missing from external history; refusing to republish".to_string(),
+                            )),
+                            Err(error) => Err(error),
+                        }
+                    },
+                )
+                .await;
             let acknowledgement = match result {
                 Ok(acknowledgement) => acknowledgement,
                 Err(error) => {
@@ -357,8 +379,6 @@ async fn execute_publication_request(
                     )));
                 }
             };
-            // A changed/revoked policy or expired lease after external IO leaves
-            // the SAME batch unresolved for a newly authorized reconciler.
             if read_external_private_file(
                 signer_trust_file,
                 &config.external_backend_root,
@@ -371,7 +391,7 @@ async fn execute_publication_request(
                     "publication controls changed before acknowledgement",
                 ));
             }
-            VerifiedEvidenceTrustSnapshot::load_owner_registry(
+            let acknowledgement_trust = VerifiedEvidenceTrustSnapshot::load_owner_registry(
                 store,
                 issuer_trust_file,
                 identity.agent_id.as_str(),
@@ -382,14 +402,15 @@ async fn execute_publication_request(
                 .validate()
                 .map_err(|error| recovery_required(&format!("publication owner fence: {error}")))?;
             store
-                .acknowledge_publication(
+                .acknowledge_publication_with_trust(
                     &lease,
                     &batch_id,
+                    &acknowledgement_trust,
+                    &proposed,
                     &acknowledgement,
-                    current_time_millis()?,
                 )
                 .await
-                .map_err(evidence_error)?;
+                .map_err(backend_error)?;
             Ok(serde_json::to_string(&acknowledgement)?)
         }
     }
