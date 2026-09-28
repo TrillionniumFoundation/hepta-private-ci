@@ -9,9 +9,11 @@ on:
       - codex-rs/hepta-intelligence/**
       - codex-rs/hepta-agentd/**
       - codex-rs/hepta-learning-ledger/**
+      - docs/modules/objective.compiler/**
       - scripts/hepta-objective-target-measure.py
       - scripts/hepta-objective-evidence-project.py
       - scripts/test_hepta_objective_evidence_project.py
+      - .github/workflows/hepta-objective-exact-execution.yml
       - .github/workflows/hepta-objective-target-measurement.yml
   workflow_dispatch:
     inputs:
