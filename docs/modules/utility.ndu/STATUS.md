@@ -1,4 +1,4 @@
-## Recovery/observability follow-up (2026-09-28)
+## Earlier recovery/observability follow-up (2026-09-28)
 
 The isolated branch `work/utility-ndu-recovery-observability-20260928` inherits
 `9c70d28ecacd5b95d5267ef42ca92305e1622285` and adds recovery fsync acknowledgement,
@@ -8,6 +8,22 @@ metrics observer with shared Rust/Python wire tests. See
 The inherited twelve-suite success in run `36338190108` is not a pass for changed
 source. Current source and merge identities/results are in the new run receipts.
 No online history truncation, live alert installation or cloud success is claimed.
+
+## Exact A–D engineering qualification binding (2026-09-28)
+
+The current convergence branch is `work/utility-ndu-abcd-convergence-20260928`.
+This document and the implementation map are bound to qualification workflow run
+`36393371823`. Its materialize job emits one exact descendant source SHA; the same run
+executes source-head and deterministic synthetic-merge lanes for source, core,
+callers, product, strict lint and host suites, then independently reopens and
+verifies every retained command receipt and checksum. The successful predecessor
+qualification is run `36383272993`; it is historical evidence, not a substitute
+for this changed exact head.
+
+A successful `ndu-qualified-evidence-<exact-source-sha>` aggregate establishes the
+engineering qualification fields below for that exact source only. It does not
+select or activate a production writer, enroll a production clock/frontier, prove
+physical power-loss durability, or grant release authority.
 
 # utility.ndu status and claim boundary
 
@@ -76,7 +92,7 @@ The following remain separate gates and must stay false/not-established until ev
 
 The dedicated NDU workflow independently executes source checks, core tests, Control callers, normal Agentd product tests, strict lint and host qualification for both source-head and deterministic synthetic-merge candidates. It runs on relevant pushes to `main` and manual dispatch. One red suite cannot suppress execution of the others; both aggregate NDU gates require every suite to pass. A workflow definition is not itself a qualification receipt. The runner retains command lines, exit codes, log hashes, SHA/tree/parents, host/kernel and source-cleanliness checks.
 
-`exactHeadSourceQualification` remains pending until the exact candidate/head named by the maturity claim has a passing workflow result. Do not promote that field merely because an older source base passed scoped tests or because the NDU source files were unchanged between two commits.
+`exactHeadSourceQualification` for this revision is bound to workflow run `36393371823` and is established only when that run finishes with a successful aggregate for its emitted exact source SHA. An older source result, an unchanged code subtree, or a workflow definition is never substituted for that receipt.
 
 ## Safe claim language
 

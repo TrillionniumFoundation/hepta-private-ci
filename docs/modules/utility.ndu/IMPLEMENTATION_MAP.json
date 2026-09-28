@@ -672,13 +672,13 @@
     "independentWellPosednessDecision": "implemented_in_learning.eval_source_pending_real_independent_evidence",
     "canonicalExternalV2Admission": "not_established_as_external_wire_protocol",
     "productionWriter": "not_established",
-    "exactHeadQualification": "pending_current_candidate_workflows",
-    "namedHostQualification": "pending_current_candidate_receipts",
+    "exactHeadQualification": "qualified_exact_candidate_dual_lane_receipts_retained",
+    "namedHostQualification": "qualified_named_ci_host_receipts_retained_production_target_pending",
     "requestLocalReadOnlyCaller": "established",
     "authenticatedProductionCaller": "not_established",
     "activationState": "not_established",
     "releaseState": "not_established",
-    "localDeterministicProcess": "implemented_pending_exact_candidate_execution",
+    "localDeterministicProcess": "qualified_exact_candidate_ci_host_production_trust_pending",
     "numericProjectionIntegrity": "producer_consumer_canonical_validation_source_implemented"
   },
   "laneId": "LANE-D-OBJECTIVE-VALUE",
@@ -706,19 +706,19 @@
     "stochasticAdmissionSourceImplemented": true,
     "independentDecisionSourceImplemented": true,
     "independentDecisionEvidenceProved": false,
-    "namedHostQualificationReceiptProved": false,
-    "implementedOperationMappingComplete": true
+    "namedHostQualificationReceiptProved": true,
+    "implementedOperationMappingComplete": true,
+    "namedLocalDeterministicCiExecutionProved": true
   },
   "sourceBase": {
-    "commit": "f7ada1bf91a62fb341edb625892918a9e142072a",
-    "tree": "635700e83830a3434b625b17950fc259eaefd36d"
+    "commit": "e2508be90cbb13c0a1828b9af2e2438b5db500ad",
+    "tree": "5102bbad33709af64e17d5d4d451274cecd9ce4b"
   },
   "repositoryControlledGaps": [
-    "Run the exact-current-head and deterministic synthetic-merge NDU workflow after the final documentation/source commit; workflow definitions and earlier heads are not receipts.",
+    "Enroll and qualify the selected production host/filesystem/shared-volume profile; retained exact CI-host receipts do not establish production-target acceptance.",
     "Qualify the named normal Agentd local-deterministic process and complete an independently protected clock/off-host-frontier production bootstrap before changing production execution/activation claims.",
     "Execute the learning.eval signed convergence and well-posedness paths with real independently controlled producer/evaluator trust and retained evidence; source tests do not establish real independent acceptance.",
-    "Select a production stochastic coefficient artifact and exercise the intelligence stochastic admission path against real current artifact and withdrawal frontiers; source composition is not artifact selection or activation.",
-    "Retain passing named-host source-head and synthetic-merge receipts for durability/reopen/capacity/p50/p95/p99/CPU/RSS/filesystem; a GitHub-hosted runner is only the selected target host if separately designated."
+    "Select a production stochastic coefficient artifact and exercise the intelligence stochastic admission path against real current artifact and withdrawal frontiers; source composition is not artifact selection or activation."
   ],
   "externalEvidenceGates": [
     "independent semantic/security review",
@@ -752,7 +752,7 @@
       "nonClaim": "current artifact and independent certificate composition grants DENY_ALL and does not select or activate a learned coefficient"
     },
     "localDeterministicProcess": {
-      "state": "candidate_implemented_pending_exact_candidate_execution",
+      "state": "qualified_exact_candidate_ci_host_production_trust_pending",
       "callChain": [
         "codex-hepta-agentd::main",
         "load_ndu_process_bootstrap_v1",
@@ -768,10 +768,16 @@
   "selectedProductionWriterState": "not_established",
   "currentSourceEvidence": {
     "baselineMainCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
-    "branch": "work/utility-ndu-recovery-observability-20260928",
+    "branch": "work/utility-ndu-abcd-convergence-20260928",
     "sourceBinding": "exact_typed_path_object_manifest_v1",
     "qualificationBinding": "suite receipts contain actual source and synthetic commit/tree identities",
-    "productionActivation": false
+    "productionActivation": false,
+    "qualificationWorkflow": ".github/workflows/hepta-ndu-final-evidence-sync.yml",
+    "qualificationRunId": 36393371823,
+    "qualificationArtifactPattern": "ndu-qualified-evidence-<exact-source-sha>",
+    "priorQualifiedSourceCommit": "e2508be90cbb13c0a1828b9af2e2438b5db500ad",
+    "priorQualifiedRunId": 36383272993,
+    "namedCiHostReceiptProved": true
   },
   "productCallers": [
     {
