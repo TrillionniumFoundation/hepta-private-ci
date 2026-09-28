@@ -62,12 +62,17 @@ external authority checkpoint. `open` requires both an existing database and
 matching existing checkpoint. `bootstrap` is valid only when neither state
 domain exists; it is not a witness-reconstruction path.
 
-Before opening or recovering the authority database, the host acquires a
-process-lifetime cross-process owner fence backed by an independent SQLite lock
-database and an exclusive transaction. A second process fails closed. Process
-exit, including `SIGKILL`, closes the connection and releases the OS-managed
-lock. Checkpoint compare, publish and local promotion occur while the owner
-fence is held.
+Before opening or recovering the authority database, the host claims the lock
+path inside the process, securely opens a private regular single-link lock inode,
+and holds both a descriptor-associated exclusive `flock` and a POSIX record
+lock for the process lifetime. The process-local reservation is acquired first
+so a failed duplicate open cannot close a descriptor and accidentally release
+the existing POSIX lock. A second cooperating process fails closed. Process
+exit, including `SIGKILL`, closes the descriptor and releases the OS-managed
+locks. Checkpoint compare, publish and local promotion occur while the owner
+fence is held. Advisory locks do not protect against arbitrary same-UID code
+that deliberately ignores the protocol, so the dedicated service-account
+boundary remains an activation prerequisite.
 
 The authority database uses WAL, `synchronous=FULL`, foreign keys, ordered
 migrations, live-schema comparison against the compiled migrations,
@@ -204,7 +209,8 @@ The repository candidate does not by itself prove that a production operator
 has provisioned independent checkpoint storage, non-exportable KMS/HSM keys,
 trusted-time service, target-host disk semantics or an external durable
 `kernel.operations` owner. Distributed multi-host AuthBus consensus is not
-implemented; the supported model is one active authority owner per database.
+implemented; the supported model is one active cooperating authority owner per
+database.
 
 Production activation remains blocked until one unchanged candidate obtains
 terminal-success source-head and synthetic-merge receipts, target-host ENOSPC

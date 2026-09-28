@@ -2,14 +2,16 @@
 
 ## Deployment topology
 
-Run one `AuthBusAuthorityHost` per authority database. Place the SQLite database and its owner-lock database in a private local directory. Place the checkpoint in a separate private filesystem or independently retained volume so one rollback cannot restore both domains. Agentd owns signed-message replay/outbox state; Bao is a product caller and never becomes an AuthBus writer.
+Run one `AuthBusAuthorityHost` per authority database. Place the SQLite database in a private local directory. The adjacent `*.authbus-owner-lock.sqlite` path is a private regular lock inode, **not** another SQLite database: the host holds both a descriptor-associated exclusive `flock` and a POSIX record lock for the process lifetime. Place the checkpoint in a separate private filesystem or independently retained volume so one rollback cannot restore both state domains. Agentd owns signed-message replay/outbox state; Bao is a product caller and never becomes an AuthBus writer.
 
 The production topology has four named roles:
 
-- **authority owner:** opens `AuthBusAuthorityHost`, holds the owner fence and publishes checkpoints;
+- **authority owner:** opens `AuthBusAuthorityHost`, holds both advisory owner locks and publishes checkpoints;
 - **trusted-time verifier:** verifies signed monotonic time attestations before maintenance or mutations;
 - **settlement signer:** HSM/KMS-backed signer enrolled only for `Settlement` purpose;
 - **observer/exporter:** reads the bounded operational snapshot and exports metrics without write capability.
+
+The owner fence serializes cooperating AuthBus binaries, including accidental duplicate starts. Advisory locks do not protect state from arbitrary code running under the same OS identity and deliberately ignoring the protocol. The authority service account therefore must not host untrusted plugins or unrelated writers, and database/checkpoint directory permissions remain part of the activation boundary.
 
 ## Startup
 
@@ -17,7 +19,7 @@ The production topology has four named roles:
 2. Resolve immutable database/checkpoint paths and owner identity.
 3. For first installation only, call the explicit bootstrap path when neither database nor checkpoint exists.
 4. For every later start, call open; never recreate a missing witness.
-5. Acquire the single-owner fence before database recovery or checkpoint publication.
+5. Acquire the process-local path reservation, exclusive `flock`, and POSIX record lock before database recovery or checkpoint publication.
 6. Verify SQLite integrity, migrations, live schema and checkpoint generation/digest.
 7. Run one bounded restart-reconciliation and expiration-maintenance batch.
 8. Keep write admission fail-closed while `recovery_required` remains true; the authority worker continues bounded batches.
@@ -45,7 +47,7 @@ Take a consistent SQLite backup and capture the current external checkpoint sepa
 
 ## Incident classes
 
-- **Owner collision:** do not steal the lock. Identify the live PID/service generation. Stop the duplicate deployment.
+- **Owner collision:** do not unlink, replace, or steal the lock inode. Identify the live PID/service generation and stop the duplicate deployment.
 - **Checkpoint dirty/publish failure:** stop new mutations, preserve database and external witness, then follow `RECOVERY.md`.
 - **Expired-active growth:** verify authority worker health and trusted time; increase batch frequency, not unbounded batch size.
 - **Indeterminate reservation:** do not refund automatically. Reconcile with authenticated terminal provider evidence.
@@ -54,4 +56,4 @@ Take a consistent SQLite backup and capture the current external checkpoint sepa
 
 ## Shutdown
 
-Stop new admission, complete or fence in-flight owner calls, run one final maintenance tick, require a clean checkpoint, close the SQLite pool and then release the owner fence. Forced termination is safe only because the OS releases the fence and restart reconciliation preserves ambiguous effects as indeterminate.
+Stop new admission, complete or fence in-flight owner calls, run one final maintenance tick, require a clean checkpoint, close the SQLite pool and then release the owner fence. Forced termination is safe only because descriptor close releases the advisory locks and restart reconciliation preserves ambiguous effects as indeterminate.
