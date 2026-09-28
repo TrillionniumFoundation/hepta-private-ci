@@ -39,6 +39,31 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("scripts/platform_types_apply_closure_repair.py")
+          text = path.read_text(encoding="utf-8")
+          old = """    replace_once(
+                  \"codex-rs/hepta-wire/src/platform_manifest_json.rs\",
+                  \".set(index.checked_add(1).ok_or_else(|| StrictJsonError::InvalidValue(field))?);\",
+                  \".set(index.checked_add(1).ok_or(StrictJsonError::InvalidValue(field))?);\",
+              )
+          """
+          new = """    replace_once(
+                  \"codex-rs/hepta-wire/src/platform_manifest_json.rs\",
+                  '''                depth = depth.checked_add(1).ok_or_else(|| {
+                              PlatformManifestWireError::Wire(PlatformTypesWireError::DepthExceeded)
+                          })?;''',
+                  '''                depth = depth.checked_add(1).ok_or(
+                              PlatformManifestWireError::Wire(PlatformTypesWireError::DepthExceeded),
+                          )?;''',
+              )
+          """
+          if text.count(old) != 1:
+              raise SystemExit("platform manifest repair anchor drifted")
+          path.write_text(text.replace(old, new), encoding="utf-8")
+          PY
           python3 scripts/platform_types_apply_closure_repair.py
           rustfmt --edition 2024 --emit files \
             codex-rs/hepta-types/src/registry.rs \
