@@ -6,6 +6,7 @@
 
 use std::error::Error as StdError;
 use std::fmt;
+use std::sync::Arc;
 
 use codex_hepta_prompt_registry::PromptFactorGraphSourceV1;
 use codex_hepta_prompt_registry::PromptFactorRelationKind;
@@ -20,8 +21,13 @@ use crate::KnowledgeEdgeV2;
 use crate::KnowledgeGenerationV2;
 use crate::KnowledgeNodeV2;
 use crate::KnowledgeProjectionInputV2;
+use crate::KnowledgeQueryAdmissionErrorV2;
 use crate::KnowledgeRelationKindV2;
+use crate::KnowledgeRelationQueryV2;
+use crate::KnowledgeRelationQueryWorkV2;
+use crate::KnowledgeRelationResultV2;
 use crate::KnowledgeSupportV2;
+use crate::VerifiedKnowledgeGenerationV2;
 use crate::build_complete_generation;
 
 const PROMPT_FACTOR_PROFILE_DOMAIN: &[u8] = b"hepta.knowledge.prompt-factor-profile.v1";
@@ -29,14 +35,26 @@ const PROMPT_FACTOR_NODE_DOMAIN: &[u8] = b"hepta.knowledge.prompt-factor-node.v1
 const PROMPT_FACTOR_VALIDITY_DOMAIN: &[u8] = b"hepta.knowledge.prompt-factor-validity.v1";
 const PROMPT_RELATION_VALIDITY_DOMAIN: &[u8] = b"hepta.knowledge.prompt-relation-validity.v1";
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug)]
 pub struct PromptFactorProjectionV1 {
     registry_revision: u64,
     registry_snapshot_digest: Digest32,
     source_digest: Digest32,
-    generation: KnowledgeGenerationV2,
+    verified_generation: Arc<VerifiedKnowledgeGenerationV2>,
     authority: AuthorityPosture,
 }
+
+impl PartialEq for PromptFactorProjectionV1 {
+    fn eq(&self, other: &Self) -> bool {
+        self.registry_revision == other.registry_revision
+            && self.registry_snapshot_digest == other.registry_snapshot_digest
+            && self.source_digest == other.source_digest
+            && self.generation() == other.generation()
+            && self.authority == other.authority
+    }
+}
+
+impl Eq for PromptFactorProjectionV1 {}
 
 impl PromptFactorProjectionV1 {
     #[must_use]
@@ -56,7 +74,23 @@ impl PromptFactorProjectionV1 {
 
     #[must_use]
     pub fn generation(&self) -> &KnowledgeGenerationV2 {
-        &self.generation
+        self.verified_generation.generation()
+    }
+
+    /// Executes the public bounded query contract against the immutable view
+    /// built when this owner projection was sealed. Structural validation and
+    /// indexes are reused; any temporal visibility cut is still evaluated by
+    /// the indexed query on every call.
+    pub fn query_relations_external(
+        &self,
+        query: KnowledgeRelationQueryV2,
+        maximum_support_work: Option<u64>,
+    ) -> Result<
+        (KnowledgeRelationResultV2, KnowledgeRelationQueryWorkV2),
+        KnowledgeQueryAdmissionErrorV2,
+    > {
+        self.verified_generation
+            .query_relations_external(query, maximum_support_work)
     }
 
     #[must_use]
@@ -68,14 +102,16 @@ impl PromptFactorProjectionV1 {
         if self.registry_revision == 0
             || self.registry_snapshot_digest.is_zero()
             || self.source_digest.is_zero()
-            || self.generation.source_snapshot_digest != self.source_digest
+            || self.generation().source_snapshot_digest != self.source_digest
+            || self.generation().generation_digest.is_zero()
             || self.authority.grants_any()
         {
             return Err(PromptFactorProjectionErrorV1::InvalidProjection);
         }
-        self.generation
-            .validate()
-            .map_err(|error| PromptFactorProjectionErrorV1::Kernel(error.to_string()))
+        // The verified view is created only by `VerifiedKnowledgeGenerationV2::new`
+        // and is immutable behind `Arc`; repeating full structural validation on
+        // every optimizer call would discard the purpose of the sealed view.
+        Ok(())
     }
 }
 
@@ -171,12 +207,14 @@ pub fn build_prompt_factor_projection_v1(
         },
     )
     .map_err(|error| PromptFactorProjectionErrorV1::Kernel(error.to_string()))?;
+    let verified_generation = VerifiedKnowledgeGenerationV2::new(projected)
+        .map_err(|error| PromptFactorProjectionErrorV1::Kernel(error.to_string()))?;
 
     let result = PromptFactorProjectionV1 {
         registry_revision: source.registry_revision().get(),
         registry_snapshot_digest: source.registry_snapshot_digest(),
         source_digest: source.source_digest(),
-        generation: projected,
+        verified_generation: Arc::new(verified_generation),
         authority: AuthorityPosture::DENY_ALL,
     };
     result.validate()?;

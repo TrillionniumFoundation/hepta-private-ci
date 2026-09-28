@@ -200,6 +200,13 @@ jobs:
         working-directory: codex-rs
         run: cargo test --locked -p codex-hepta-memory --lib -- --nocapture --test-threads=1
 
+      - name: Test publication retry and competing-head delivery consistency
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-memory \
+            --test kg_delivery_consistency -- --nocapture --test-threads=1
+
       - name: Crash/reopen KG transaction windows
         working-directory: codex-rs
         run: |

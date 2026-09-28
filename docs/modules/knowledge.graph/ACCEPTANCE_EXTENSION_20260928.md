@@ -16,7 +16,9 @@ The external entry point is `VerifiedKnowledgeGenerationV2::query_relations_exte
 
 `query_relations_reference_unbounded` is the explicitly named full-scan oracle operation. It is retained for migration, trusted-owner comparison and equivalence testing; it is not the external resource contract. The older budgeted method remains source-compatible and maps admission/exhaustion to its historical `InvalidQueryLimit` error.
 
-`codex-rs/hepta-kg/tests/query_resource_contract.rs` proves that true empty, invalid budget, exhausted budget and explicit unbounded reference execution cannot be confused. The existing public acceptance matrix continues to compare complete indexed/reference results, including request/result digests and exact omitted counts.
+The product call paths are now closed over bounded indexed views rather than the unbounded oracle. Cognitive retrieval retains one verified view per owner SQLite read transaction and uses the library default budget, which is above the composed owner's bounded node/edge occurrence ceiling. `PromptFactorProjectionV1` seals one shared immutable verified view and the optimizer calls `query_relations_external` on that view. Repeated optimizer calls therefore reuse structural validation and indexes, while any temporal cut supplied by a query would still be evaluated per call. The graph-bound optimizer receipt binds both charged support work and the applicable default budget.
+
+`codex-rs/hepta-kg/tests/query_resource_contract.rs` proves that true empty, invalid budget, exhausted budget and explicit unbounded reference execution cannot be confused. The prompt optimizer additionally proves that its real owner projection distinguishes exhaustion from a true empty result. The existing public acceptance matrix continues to compare complete indexed/reference results, including request/result digests and exact omitted counts.
 
 ## Publish, crash, recovery and retry consistency
 
@@ -26,7 +28,7 @@ The durable owner keeps source append, memory revision, immutable facts, generat
 2. `kg_delivery_consistency` public-API tests that reconcile a committed-but-unacknowledged correction after reopen, reject a stale whole-operation retry, and bind the recovered memory head and KG generation digest to the exact successful receipt;
 3. the ignored child-process crash matrix at `before_semantic_receipt` and `after_semantic_receipt_before_current_pointer`, followed by reopen and SQLite integrity checking.
 
-The exact-candidate runner executes all three. A test definition, successful compilation, ignored test, zero-test result or skipped crash scenario is not scenario evidence.
+Both the exact-candidate runner and the normal knowledge.graph qualification workflow execute the public delivery-consistency integration test. The exact-candidate runner also executes the destructive crash matrix and requires exact non-skipped summaries. A test definition, successful compilation, ignored test, zero-test result or skipped crash scenario is not scenario evidence.
 
 ## Long-history concurrency and deletion
 
@@ -47,7 +49,7 @@ Writer latency, reader latency and the complete contention round remain separate
 - explicit unbounded reference query;
 - predecessor-bound publication-receipt construction.
 
-These are regression observations, not host-independent service-level claims. The native SQLite measurement separately records durable mutation, query, reopen, writer, reader and complete contention-round distributions, plus bounded-query work and storage/process observations.
+The prompt optimizer's product receipt separately binds the actual support-work charge and default budget used by its bounded indexed query. These are regression observations, not host-independent service-level claims. The native SQLite measurement separately records durable mutation, query, reopen, writer, reader and complete contention-round distributions, plus bounded-query work and storage/process observations.
 
 ## Exact evidence chain
 
@@ -59,7 +61,7 @@ contract → implementation symbol → named test → tested commit/tree
          → remaining open reason
 ```
 
-The evidence validator checks `identity.txt`, all required result rows, exact native test summaries, named tests, operation metric schema, live Rust/Cargo identity and—on product lanes—the recorded `protoc` identity. Source-head release measurements must bind both the tested commit and tested tree.
+The product execution inventory includes the prompt-optimizer package and retains its native log as content-addressed evidence. The implementation map binds the changed consumer source and named optimizer tests to the exact candidate; the existing evidence validator continues to check `identity.txt`, all required result rows, exact native test summaries, operation metric schema, live Rust/Cargo identity and—on product lanes—the recorded `protoc` identity. Source-head release measurements must bind both the tested commit and tested tree.
 
 The claim boundary keeps these states separate:
 

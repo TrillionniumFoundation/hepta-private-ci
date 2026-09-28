@@ -1,4 +1,7 @@
 use super::*;
+use codex_hepta_kg::KnowledgeQueryAdmissionErrorV2;
+use codex_hepta_kg::KnowledgeRelationKindV2;
+use codex_hepta_kg::KnowledgeRelationQueryV2;
 use codex_hepta_kg::build_prompt_factor_projection_v1;
 use codex_hepta_prompt_registry::FactorSource;
 use codex_hepta_prompt_registry::Lifecycle;
@@ -118,6 +121,11 @@ fn graph_conflicts_are_hard_constraints_and_receipt_binds_relation_view() {
         receipt.portfolio.selected,
         vec![id("candidate:a"), id("candidate:c")]
     );
+    assert_eq!(receipt.relation_support_work, 3);
+    assert_eq!(
+        receipt.relation_support_work_budget,
+        DEFAULT_QUERY_SUPPORT_WORK_V2
+    );
     assert_eq!(receipt.observed_relation_count, 3);
     assert_eq!(receipt.observed_complement_count, 1);
     assert_eq!(receipt.observed_substitute_count, 1);
@@ -137,6 +145,52 @@ fn graph_conflicts_are_hard_constraints_and_receipt_binds_relation_view() {
     }));
     receipt.validate().expect("bound receipt");
     assert!(!receipt.authority.grants_any());
+}
+
+#[test]
+fn factor_projection_bounded_query_distinguishes_exhaustion_from_empty() {
+    let factor_graph = graph();
+    let exhausted = factor_graph
+        .query_relations_external(
+            KnowledgeRelationQueryV2 {
+                query_id: id("query:factor-budget-exhaustion"),
+                generation_digest: factor_graph.generation().generation_digest,
+                seed_node_ids: vec![id("factor:a"), id("factor:b"), id("factor:c")],
+                relation_kinds: vec![
+                    KnowledgeRelationKindV2::PromptComplements,
+                    KnowledgeRelationKindV2::PromptSubstitutes,
+                    KnowledgeRelationKindV2::PromptConflicts,
+                ],
+                valid_at_unix_seconds: None,
+                maximum_edges: 3,
+            },
+            Some(1),
+        )
+        .expect_err("one support-work unit cannot copy all factor relations");
+    assert!(matches!(
+        exhausted,
+        KnowledgeQueryAdmissionErrorV2::BudgetExceeded {
+            maximum_support_work: 1,
+            ..
+        }
+    ));
+
+    let (empty, work) = factor_graph
+        .query_relations_external(
+            KnowledgeRelationQueryV2 {
+                query_id: id("query:factor-empty"),
+                generation_digest: factor_graph.generation().generation_digest,
+                seed_node_ids: vec![id("factor:a")],
+                relation_kinds: vec![KnowledgeRelationKindV2::PromptDominates],
+                valid_at_unix_seconds: None,
+                maximum_edges: 3,
+            },
+            None,
+        )
+        .expect("true empty result remains a successful bounded query");
+    assert!(empty.edges.is_empty());
+    assert_eq!(empty.omitted_count, 0);
+    assert_eq!(work.selected_supports_cloned, 0);
 }
 
 #[test]
