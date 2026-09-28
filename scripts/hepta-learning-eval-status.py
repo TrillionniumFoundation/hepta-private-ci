@@ -28,7 +28,9 @@ TRUE_SOURCE = {
     "durableAttemptJournalImplemented",
     "lifecycleCapacityReservationImplemented",
     "multiOutcomeTypedArchiveImplemented",
+    "nearCapacityFileRegressionImplemented",
     "publicationReconciliationImplemented",
+    "rootActivatedRecoveryTrustImplemented",
     "sequentialClusterConfidenceImplemented",
     "temporalCrossFitExecutorImplemented",
     "typedArchiveInternalReverificationImplemented",
@@ -41,6 +43,8 @@ REQUIRED_SYMBOLS = {
     "ReconciledProductQualificationSinkV1::persist",
     "LockedFileProductEvaluationAttemptJournalV1",
     "AttemptCapacity::project",
+    "LockedFileProductEvaluationAttemptJournalV1::create_with_qualification_limits",
+    "LockedFileProductEvaluationAttemptJournalV1::recover_with_qualification_limits",
     "LockedFileProductEvaluationAttemptJournalV1::checkpoint_into",
     "LockedFileProductEvaluationAttemptJournalV1::recover_with_checkpoint",
     "AnchoredProductEvaluationAttemptJournalV1::recover_with_checkpoint",
@@ -52,6 +56,7 @@ REQUIRED_SYMBOLS = {
     "RecordedProductEvaluationRunnerV1::recover_selected_host_qualification",
     "RecordedProductEvaluationRunnerV1::recover_selected_host_outcome_qualification",
     "RecordedProductEvaluationRunnerV1::recover_selected_host_pending_page",
+    "RecoveryTrustFrontierV1::admit",
     "CrossFoldPlanV1::execute_temporal_cross_fit_v1",
     "SequentialPlan::estimate_cluster_intervals_v1",
     "LockedFileFinalHoldoutCasStoreV1::compact_into",
@@ -66,6 +71,8 @@ REQUIRED_TOKENS = {
     ],
     "codex-rs/hepta-intelligence-eval/src/selected_host_recovery_controller.rs": [
         "recover_selected_host_pending_page",
+        "ActivatedLearningTrustV1",
+        "selected-host recovery trust regressed",
         "cursor.save(Some(&id))",
         "PublicationPending",
     ],
@@ -78,6 +85,11 @@ REQUIRED_TOKENS = {
         "checkpoint_into",
         "recover_with_checkpoint",
         "checkpoint_binding",
+    ],
+    "codex-rs/hepta-intelligence-eval/tests/near_capacity.rs": [
+        "create_with_qualification_limits",
+        "recover_with_qualification_limits",
+        "near_capacity_rejects_new_admission_but_reserved_attempt_reaches_terminal",
     ],
     "codex-rs/hepta-intelligence-eval/src/temporal_cross_fit.rs": [
         "execute_temporal_cross_fit_v1",
@@ -112,6 +124,11 @@ REQUIRED_TOKENS = {
         "Canonical typed qualification archive",
         "Independently anchored checkpoints and tail replay",
         "Persistent recovery controller",
+    ],
+    "codex-rs/hepta-intelligence-eval/RECOVERY_TRUST_CAPACITY_CONTRACT.md": [
+        "Per-attempt current trust at recovery use",
+        "Full-lifecycle capacity and qualification limits",
+        "External gates remain false",
     ],
     "codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md": [
         "execute_temporal_cross_fit_v1",
@@ -249,7 +266,7 @@ def main() -> None:
     elif not STATUS.is_file() or STATUS.read_text(encoding="utf-8") != output:
         raise SystemExit("learning.eval status is stale; run scripts/hepta-learning-eval-status.py write")
     else:
-        print(json.dumps({"status": "ok", "evidenceClass": "lexical_source_inventory", "documentsChecked": 5}))
+        print(json.dumps({"status": "ok", "evidenceClass": "lexical_source_inventory", "documentsChecked": 6}))
 
 
 if __name__ == "__main__":
