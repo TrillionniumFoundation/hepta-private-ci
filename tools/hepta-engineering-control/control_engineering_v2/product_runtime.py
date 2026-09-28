@@ -1,17 +1,30 @@
 """Named product owner composition for control.engineering.
 
-This object is the source-level product composition point: one durable
-EngineeringStore, one exact repository identity, one injected signature-verifier
-port, resource-aware planning, and the worker claim lifecycle. It grants no merge,
-release, deployment, or runtime capability authority.
+One durable EngineeringStore owns coordination facts. The TEMP capacity monitor
+is rebuildable connection-local data, never a second authority or result store.
+No merge, release, deployment, or runtime capability authority is granted here.
 """
-
 from __future__ import annotations
 
 from pathlib import Path
+from types import TracebackType
 from typing import Iterable
 
-from .control_plane import EngineeringError, EngineeringStore, WorkEnvelope
+from .audit_checkpoint import (
+    AuditCheckpoint,
+    AuditReadCut,
+    AuditSuffixPage,
+    AuditVerificationBudget,
+    create_audit_checkpoint,
+    verify_audit_suffix,
+    verify_audit_suffix_page,
+)
+from .capacity_policy import (
+    StoreCapacityMonitor,
+    StoreCapacityPolicy,
+    evaluate_store_capacity,
+)
+from .control_plane import EngineeringError, EngineeringStore, LeaseReceipt, WorkEnvelope
 from .evidence import SignatureTrustStore
 from .integration_controller import (
     IntegrationQueueGeneration,
@@ -32,7 +45,10 @@ from .orchestration import (
     issue_repository_work_envelope,
     plan_engineering_work,
 )
+from .time_policy import ClockSkewPolicy, STRICT_CLOCK_SKEW_POLICY
+from .worker_registration import WorkerRegistrationRenewalReceipt, renew_worker_registration
 from .worker_lifecycle import (
+    WorkerCapacityUsage,
     WorkerClaim,
     WorkerHeartbeatReceipt,
     WorkerRecoveryReport,
@@ -58,17 +74,27 @@ class EngineeringControlProduct:
         *,
         expected_repository: str,
         trust_store: SignatureTrustStore,
-    ):
+    ) -> None:
         self.repository = Path(repository).resolve()
         self.expected_repository = expected_repository
         self.trust_store = trust_store
         self.store = EngineeringStore(database)
+        try:
+            self._capacity_monitor = StoreCapacityMonitor(self.store)
+        except BaseException:
+            self.store.connection.close()
+            raise
         self._startup_reconciled = False
 
     def __enter__(self) -> "EngineeringControlProduct":
         return self
 
-    def __exit__(self, exc_type, exc, traceback) -> None:
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
         if exc_type is None:
             self.store.close()
         else:
@@ -77,6 +103,51 @@ class EngineeringControlProduct:
 
     def close(self) -> None:
         self.store.close()
+
+    def capacity_state(
+        self,
+        policy: StoreCapacityPolicy = StoreCapacityPolicy(),
+        *,
+        calibrate: bool = False,
+    ) -> dict[str, object]:
+        if type(calibrate) is not bool:
+            raise EngineeringError("invalid_capacity_calibration_request")
+        if calibrate:
+            self._capacity_monitor.reconcile()
+        return evaluate_store_capacity(self.store, policy, monitor=self._capacity_monitor)
+
+    def create_audit_checkpoint(self, *, now_ns: int | None = None) -> AuditCheckpoint:
+        return create_audit_checkpoint(self.store, now_ns=now_ns)
+
+    def verify_audit_suffix(
+        self,
+        checkpoint: AuditCheckpoint,
+        *,
+        budget: AuditVerificationBudget = AuditVerificationBudget(),
+        through: AuditReadCut | None = None,
+    ) -> dict[str, object]:
+        return verify_audit_suffix(self.store, checkpoint, budget=budget, through=through)
+
+    def verify_audit_suffix_page(
+        self,
+        checkpoint: AuditCheckpoint,
+        *,
+        budget: AuditVerificationBudget = AuditVerificationBudget(),
+        through: AuditReadCut | None = None,
+    ) -> AuditSuffixPage:
+        return verify_audit_suffix_page(self.store, checkpoint, budget=budget, through=through)
+
+    def renew_worker_registration(
+        self,
+        receipt: WorkerRegistrationRenewalReceipt,
+        *,
+        now_ns: int | None = None,
+        clock_policy: ClockSkewPolicy = STRICT_CLOCK_SKEW_POLICY,
+    ) -> str:
+        return renew_worker_registration(
+            self.store, receipt, self.trust_store, now_ns=now_ns,
+            clock_policy=clock_policy,
+        )
 
     def admit_repository_envelope(
         self,
@@ -102,7 +173,7 @@ class EngineeringControlProduct:
         authority_epoch: int,
         expires_unix_ns: int,
         now_ns: int | None = None,
-    ):
+    ) -> LeaseReceipt:
         return self.store.acquire_path_lease(
             lease_id,
             envelope_id,
@@ -141,11 +212,13 @@ class EngineeringControlProduct:
         *,
         now_ns: int | None = None,
     ) -> WorkerRecoveryReport:
+        self._startup_reconciled = False
         report = recover_worker_lifecycle(self.store, now_ns=now_ns)
+        self._capacity_monitor.reconcile()
         self._startup_reconciled = True
         return report
 
-    def worker_capacity(self, worker_id: str):
+    def worker_capacity(self, worker_id: str) -> WorkerCapacityUsage:
         return worker_capacity_usage(self.store, worker_id)
 
     def register_worker(
