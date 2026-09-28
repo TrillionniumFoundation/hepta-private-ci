@@ -5,6 +5,13 @@
 //! material. A composition owner derives those inputs from the already-durable
 //! RunStart record and the current owner generation.
 
+use std::sync::Arc;
+use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::Ordering;
+use std::sync::mpsc::RecvTimeoutError;
+use std::sync::mpsc::sync_channel;
+use std::time::Duration;
+
 use codex_hepta_intelligence::CanonicalIntelligenceRunRequestV1;
 use codex_hepta_learning_ledger::RunStartObjectiveDispositionV1;
 use codex_hepta_learning_ledger::RunStartRecordV1;
@@ -14,6 +21,11 @@ use codex_hepta_types::StableId;
 use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::AgentdIntelligenceOwnerInputsV1;
+
+const DEFAULT_INVOCATION_FACTORY_BUDGET: Duration = Duration::from_millis(250);
+const MAX_INVOCATION_FACTORY_BUDGET: Duration = Duration::from_secs(30);
+const DEFAULT_INVOCATION_FACTORY_WORKERS: usize = 4;
+const MAX_INVOCATION_FACTORY_WORKERS: usize = 64;
 
 /// Exact durable RunStart identity inherited by the prepared intelligence run.
 ///
@@ -230,17 +242,65 @@ impl AgentdIntelligenceInvocationV1 {
 
 /// Concrete host-owned provider backed by one typed factory.
 ///
-/// The factory supplies the seven owner values. The provider itself overwrites
-/// the run identity with the exact durable RunStart binding, validates the final
-/// invocation and only then returns it to Agentd.
+/// The factory supplies the seven owner values. The provider overwrites the run
+/// identity with the exact durable RunStart binding. Factory execution occurs in
+/// a separately supervised bounded worker: a timed-out factory cannot publish
+/// an invocation and continues to hold its worker slot until it really exits.
 pub struct HostOwnedAgentdIntelligenceInvocationProviderV1<F> {
-    factory: F,
+    factory: Arc<F>,
+    budget: Duration,
+    active_workers: Arc<AtomicUsize>,
+    max_workers: usize,
 }
 
 impl<F> HostOwnedAgentdIntelligenceInvocationProviderV1<F> {
     #[must_use]
-    pub const fn new(factory: F) -> Self {
-        Self { factory }
+    pub fn new(factory: F) -> Self {
+        Self {
+            factory: Arc::new(factory),
+            budget: DEFAULT_INVOCATION_FACTORY_BUDGET,
+            active_workers: Arc::new(AtomicUsize::new(0)),
+            max_workers: DEFAULT_INVOCATION_FACTORY_WORKERS,
+        }
+    }
+
+    pub fn with_worker_policy(
+        mut self,
+        budget: Duration,
+        max_workers: usize,
+    ) -> Result<Self, AgentdError> {
+        if budget.is_zero()
+            || budget > MAX_INVOCATION_FACTORY_BUDGET
+            || max_workers == 0
+            || max_workers > MAX_INVOCATION_FACTORY_WORKERS
+        {
+            return Err(AgentdError::Invalid(
+                "intelligence invocation factory policy is out of bounds".to_string(),
+            ));
+        }
+        self.budget = budget;
+        self.max_workers = max_workers;
+        Ok(self)
+    }
+
+    fn acquire_worker(&self) -> Result<(), AgentdError> {
+        let mut observed = self.active_workers.load(Ordering::Acquire);
+        loop {
+            if observed >= self.max_workers {
+                return Err(AgentdError::Overloaded {
+                    retry_after_ms: duration_millis(self.budget),
+                });
+            }
+            match self.active_workers.compare_exchange_weak(
+                observed,
+                observed + 1,
+                Ordering::AcqRel,
+                Ordering::Acquire,
+            ) {
+                Ok(_) => return Ok(()),
+                Err(actual) => observed = actual,
+            }
+        }
     }
 }
 
@@ -252,20 +312,56 @@ where
             &RunStartRecordV1,
         ) -> Result<AgentdIntelligenceInvocationV1, AgentdError>
         + Send
-        + Sync,
+        + Sync
+        + 'static,
 {
     fn build(
         &self,
         identity: &AgentdIdentity,
         record: &RunStartRecordV1,
     ) -> Result<AgentdIntelligenceInvocationV1, AgentdError> {
-        let mut invocation = (self.factory)(identity, record)?;
+        self.acquire_worker()?;
+        let factory = Arc::clone(&self.factory);
+        let active_workers = Arc::clone(&self.active_workers);
+        let identity = identity.clone();
+        let record = record.clone();
+        let (sender, receiver) = sync_channel(1);
+        let spawn = std::thread::Builder::new()
+            .name("agentd-intelligence-invocation".to_string())
+            .spawn(move || {
+                let result = (factory)(&identity, &record);
+                active_workers.fetch_sub(1, Ordering::AcqRel);
+                let _ = sender.send(result);
+            });
+        if let Err(error) = spawn {
+            self.active_workers.fetch_sub(1, Ordering::AcqRel);
+            return Err(AgentdError::Io(error));
+        }
+
+        let mut invocation = match receiver.recv_timeout(self.budget) {
+            Ok(result) => result?,
+            Err(RecvTimeoutError::Timeout) => {
+                return Err(AgentdError::Overloaded {
+                    retry_after_ms: duration_millis(self.budget),
+                });
+            }
+            Err(RecvTimeoutError::Disconnected) => {
+                return Err(AgentdError::Protocol(
+                    "intelligence invocation factory worker terminated without a result"
+                        .to_string(),
+                ));
+            }
+        };
         invocation.inputs.run_identity = Some(AgentdIntelligenceRunIdentityV1::from_run_start(
-            identity, record,
+            &identity, &record,
         )?);
-        invocation.validate(identity, record)?;
+        invocation.validate(&identity, &record)?;
         Ok(invocation)
     }
+}
+
+fn duration_millis(value: Duration) -> u64 {
+    u64::try_from(value.as_millis()).unwrap_or(u64::MAX).max(1)
 }
 
 /// Composition seam for the seven canonical intelligence owners.
@@ -280,4 +376,68 @@ pub trait AgentdIntelligenceInvocationProviderV1: Send + Sync {
         identity: &AgentdIdentity,
         record: &RunStartRecordV1,
     ) -> Result<AgentdIntelligenceInvocationV1, AgentdError>;
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn provider() -> HostOwnedAgentdIntelligenceInvocationProviderV1<
+        impl Fn(
+            &AgentdIdentity,
+            &RunStartRecordV1,
+        ) -> Result<AgentdIntelligenceInvocationV1, AgentdError>,
+    > {
+        HostOwnedAgentdIntelligenceInvocationProviderV1::new(
+            |_: &AgentdIdentity,
+             _: &RunStartRecordV1|
+             -> Result<AgentdIntelligenceInvocationV1, AgentdError> {
+                unreachable!("policy test never invokes the factory")
+            },
+        )
+    }
+
+    #[test]
+    fn invocation_factory_policy_is_bounded() {
+        assert!(
+            provider()
+                .with_worker_policy(Duration::from_millis(1), 1)
+                .is_ok()
+        );
+        assert!(
+            provider()
+                .with_worker_policy(Duration::ZERO, 1)
+                .is_err()
+        );
+        assert!(
+            provider()
+                .with_worker_policy(Duration::from_secs(31), 1)
+                .is_err()
+        );
+        assert!(
+            provider()
+                .with_worker_policy(Duration::from_millis(1), 0)
+                .is_err()
+        );
+        assert!(
+            provider()
+                .with_worker_policy(Duration::from_millis(1), 65)
+                .is_err()
+        );
+    }
+
+    #[test]
+    fn invocation_factory_worker_slots_are_not_overcommitted() {
+        let provider = provider()
+            .with_worker_policy(Duration::from_millis(10), 1)
+            .expect("valid policy");
+        provider.acquire_worker().expect("first slot");
+        assert!(matches!(
+            provider.acquire_worker(),
+            Err(AgentdError::Overloaded { .. })
+        ));
+        provider.active_workers.fetch_sub(1, Ordering::AcqRel);
+        provider.acquire_worker().expect("released slot");
+        provider.active_workers.fetch_sub(1, Ordering::AcqRel);
+    }
 }
