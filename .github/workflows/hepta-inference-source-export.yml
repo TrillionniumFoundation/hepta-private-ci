@@ -7,21 +7,14 @@ on:
     paths:
       - '.github/workflows/hepta-inference-source-export.yml'
       - '.github/remediation/inference-control-remediation.patch.gz'
-  pull_request:
-    types: [opened, reopened, synchronize]
-    branches:
-      - main
-    paths:
-      - '.github/workflows/hepta-inference-source-export.yml'
-      - '.github/remediation/inference-control-remediation.patch.gz'
 
 concurrency:
-  group: hepta-inference-one-shot-remediation-${{ github.event.pull_request.number || github.ref }}
+  group: hepta-inference-one-shot-remediation-${{ github.ref }}
   cancel-in-progress: true
 
 env:
-  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-  EXPECTED_PARENT: 65822d52842662038812aa03fc8640f2e25983d7
+  SOURCE_SHA: ${{ github.sha }}
+  EXPECTED_PARENT: f04f75c1ca622852f1bafd4a67fcfc3ca8d6d761
   RESTORE_COMMIT: a80f50a552d2608f238a9e934bf6fade66876912
   RESTORE_BLOB: c8fe5357b5b8efac14a220c29f94ba061a5f5c34
   PATCH_SHA256: c2599a124d0e1574aaebaadf3ce0313d4f906a9e9f9f1472c10491fa83100f57
@@ -31,13 +24,10 @@ env:
 jobs:
   verify:
     name: Verify bounded inference remediation
-    if: >-
-      (github.event_name == 'push' && github.ref == 'refs/heads/codex/inference-control-v2-closure-20260927') ||
-      (github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'codex/inference-control-v2-closure-20260927')
     permissions:
       contents: read
-    runs-on: [self-hosted, linux, x64, rog]
-    timeout-minutes: 60
+    runs-on: ubuntu-22.04
+    timeout-minutes: 75
     env:
       GH_TOKEN: ${{ github.token }}
     steps:
@@ -47,7 +37,7 @@ jobs:
           fetch-depth: 2
           persist-credentials: false
 
-      - name: Bind transport commit and patch identity
+      - name: Bind transport commit and immutable inputs
         shell: bash
         run: |
           set -euo pipefail
@@ -64,7 +54,7 @@ jobs:
           toolchain: '1.95.0'
           components: rustfmt, clippy
 
-      - name: Apply bounded patch in read-only qualification job
+      - name: Apply reviewed remediation in read-only job
         shell: bash
         run: |
           set -euo pipefail
@@ -79,13 +69,14 @@ jobs:
           test ! -e "$PATCH_PATH"
           test "$(git hash-object "$WORKFLOW_PATH")" = "$RESTORE_BLOB"
 
-      - name: Execute focused native verification
+      - name: Execute focused native qualification
         shell: bash
         run: |
           set -euo pipefail
           cargo metadata --locked --manifest-path codex-rs/Cargo.toml --format-version 1 >/dev/null
           cargo test --locked --manifest-path codex-rs/Cargo.toml \
-            -p codex-hepta-infer-core -p codex-hepta-infer-worker-host
+            -p codex-hepta-infer-core -p codex-hepta-infer-worker-host \
+            --all-targets --all-features
           cargo clippy --locked --manifest-path codex-rs/Cargo.toml \
             -p codex-hepta-infer-core -p codex-hepta-infer-worker-host \
             --all-targets --all-features -- -D warnings
@@ -93,13 +84,34 @@ jobs:
             --package codex-hepta-infer-core --package codex-hepta-infer-worker-host -- --check
           git diff --cached --check
 
+      - name: Retain reviewed candidate diff
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/inference-remediation-evidence"
+          git diff --cached --binary > "$RUNNER_TEMP/inference-remediation-evidence/remediation.patch"
+          git diff --cached --stat > "$RUNNER_TEMP/inference-remediation-evidence/remediation.stat"
+          git status --short > "$RUNNER_TEMP/inference-remediation-evidence/status.txt"
+          printf 'source=%s\nparent=%s\npatch_sha256=%s\n' \
+            "$SOURCE_SHA" "$EXPECTED_PARENT" "$PATCH_SHA256" \
+            > "$RUNNER_TEMP/inference-remediation-evidence/identity.txt"
+
+      - name: Upload verification evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: inference-remediation-verify-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/inference-remediation-evidence/*
+          if-no-files-found: error
+          retention-days: 30
+
   publish:
     name: Publish verified inference remediation
     needs: verify
     permissions:
       contents: write
-    runs-on: [self-hosted, linux, x64, rog]
-    timeout-minutes: 10
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
     env:
       GH_TOKEN: ${{ github.token }}
     steps:
@@ -109,7 +121,7 @@ jobs:
           fetch-depth: 2
           persist-credentials: true
 
-      - name: Reproduce reviewed source tree without executing candidate code
+      - name: Reproduce exact verified source tree
         shell: bash
         run: |
           set -euo pipefail
@@ -124,6 +136,8 @@ jobs:
           rm -f "$PATCH_PATH"
           rmdir .github/remediation 2>/dev/null || true
           cp "$RUNNER_TEMP/restored-workflow.yml" "$WORKFLOW_PATH"
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-infer-core --package codex-hepta-infer-worker-host
           git add -A
           git diff --cached --check
           test ! -e "$PATCH_PATH"
@@ -141,11 +155,11 @@ jobs:
           printf 'source_sha=%s\nsource_tree=%s\n' "$source_sha" "$source_tree" | tee "$RUNNER_TEMP/remediation-source.txt"
           git push origin HEAD:codex/inference-control-v2-closure-20260927
 
-      - name: Retain transport execution record
+      - name: Retain publication identity
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: inference-remediation-transport-${{ github.run_id }}-${{ github.run_attempt }}
+          name: inference-remediation-publish-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/remediation-source.txt
           if-no-files-found: warn
-          retention-days: 3
+          retention-days: 30
