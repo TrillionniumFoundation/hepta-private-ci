@@ -586,6 +586,13 @@ ignored = [
 # across local dev builds.
 debug = "limited"
 
+# Identity checks stream the real executable, including large debug binaries.
+# Optimize only the hash implementation instead of skipping bytes, substituting
+# a manifest digest, or relaxing the normal test deadline. Test/ci-test inherit
+# this override; debug assertions and overflow checks remain enabled.
+[profile.dev.package.sha2]
+opt-level = 3
+
 [profile.dev-small]
 inherits = "dev"
 opt-level = 0
