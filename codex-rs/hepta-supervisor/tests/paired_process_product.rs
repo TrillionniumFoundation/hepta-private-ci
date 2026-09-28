@@ -191,6 +191,11 @@ fn five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash() -> Resu
         "paired-stage isolated_matrix_replaced elapsed={:?}",
         started.elapsed()
     );
+    assert_eq!(
+        fixture.pids(&failed_agent)?.0,
+        adopted[0].0,
+        "a Matrix-only crash must not replace its healthy Agentd peer"
+    );
     for (agent_id, expected) in fixture.agents.iter().skip(1).zip(before.iter().skip(1)) {
         assert_eq!(fixture.pids(agent_id)?, *expected, "peer pair changed");
     }
@@ -452,6 +457,16 @@ impl PairFleet {
                 "shutdown tick faults: {:?}",
                 report.faults
             );
+            // The tick may just have observed every exit. Judge its new state,
+            // not the pre-tick snapshot, before declaring an unresolved timeout.
+            // This is a convergence watchdog, not an exit-latency measurement.
+            if self.agents.iter().all(|agent_id| {
+                supervisor
+                    .snapshot(agent_id)
+                    .is_some_and(|snapshot| !snapshot.active && !snapshot.matrix.active)
+            }) {
+                return Ok(());
+            }
             if Instant::now() >= deadline {
                 let snapshots: Vec<_> = self
                     .agents
@@ -536,10 +551,9 @@ fn run_agent_child() -> Result<()> {
     prepare_fixture_socket(&socket)?;
     let listener = UnixListener::bind(&socket)?;
     for stream in listener.incoming() {
-        let mut reader = BufReader::new(stream?);
-        let mut bytes = Vec::new();
-        reader.read_until(b'\n', &mut bytes)?;
-        let request: AgentdRequest = serde_json::from_slice(&bytes)?;
+        let Some((request, mut stream)) = read_fixture_request::<AgentdRequest>(stream?)? else {
+            continue;
+        };
         let run_root = PathBuf::from(
             std::env::var_os("HEPTA_AGENT_RUN_ROOT").context("HEPTA_AGENT_RUN_ROOT")?,
         );
@@ -575,9 +589,7 @@ fn run_agent_child() -> Result<()> {
             current_generation: lifecycle.generation,
             payload,
         };
-        let mut stream = reader.into_inner();
-        serde_json::to_writer(&mut stream, &response)?;
-        stream.write_all(b"\n")?;
+        write_fixture_response(&mut stream, &response)?;
     }
     Ok(())
 }
@@ -624,10 +636,9 @@ fn run_matrix_child() -> Result<()> {
     prepare_fixture_socket(&socket)?;
     let listener = UnixListener::bind(&socket)?;
     for stream in listener.incoming() {
-        let mut reader = BufReader::new(stream?);
-        let mut bytes = Vec::new();
-        reader.read_until(b'\n', &mut bytes)?;
-        let request: MatrixdRequest = serde_json::from_slice(&bytes)?;
+        let Some((request, mut stream)) = read_fixture_request::<MatrixdRequest>(stream?)? else {
+            continue;
+        };
         let response = MatrixdResponse {
             schema_version: MATRIXD_CONTROL_SCHEMA_VERSION,
             request_id: request.request_id,
@@ -646,10 +657,65 @@ fn run_matrix_child() -> Result<()> {
                 fenced: false,
             }),
         };
-        let mut stream = reader.into_inner();
-        serde_json::to_writer(&mut stream, &response)?;
-        stream.write_all(b"\n")?;
+        write_fixture_response(&mut stream, &response)?;
     }
+    Ok(())
+}
+
+// A cancelled health-probe connection is not a crash of the process being
+// observed. Keep malformed nonempty frames fatal and never invent a response.
+fn read_fixture_request<T: serde::de::DeserializeOwned>(
+    stream: std::os::unix::net::UnixStream,
+) -> Result<Option<(T, std::os::unix::net::UnixStream)>> {
+    let mut reader = BufReader::new(stream);
+    let mut bytes = Vec::new();
+    match reader.read_until(b'\n', &mut bytes) {
+        Ok(0) => return Ok(None),
+        Err(error) if bytes.is_empty() && error.kind() == std::io::ErrorKind::ConnectionReset => {
+            return Ok(None);
+        }
+        result => {
+            result?;
+        }
+    }
+    let request = serde_json::from_slice(&bytes)?;
+    Ok(Some((request, reader.into_inner())))
+}
+
+fn write_fixture_response<T: serde::Serialize>(
+    stream: &mut std::os::unix::net::UnixStream,
+    response: &T,
+) -> Result<()> {
+    let mut bytes = serde_json::to_vec(response)?;
+    bytes.push(b'\n');
+    match stream.write_all(&bytes) {
+        Ok(()) => Ok(()),
+        Err(error)
+            if matches!(
+                error.kind(),
+                std::io::ErrorKind::BrokenPipe | std::io::ErrorKind::ConnectionReset
+            ) =>
+        {
+            Ok(())
+        }
+        Err(error) => Err(error.into()),
+    }
+}
+
+#[test]
+fn cancelled_fixture_probe_is_not_a_crash_but_malformed_input_is_rejected() -> Result<()> {
+    use std::os::unix::net::UnixStream;
+    let (client, server) = UnixStream::pair()?;
+    drop(client);
+    assert!(read_fixture_request::<AgentdRequest>(server)?.is_none());
+
+    let (mut client, server) = UnixStream::pair()?;
+    client.write_all(b"not-json\n")?;
+    assert!(read_fixture_request::<AgentdRequest>(server).is_err());
+
+    let (client, mut server) = UnixStream::pair()?;
+    drop(client);
+    write_fixture_response(&mut server, &serde_json::json!({"cancelled_probe": true}))?;
     Ok(())
 }
 
