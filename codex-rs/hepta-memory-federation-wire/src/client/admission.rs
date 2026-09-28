@@ -3,7 +3,6 @@ use codex_hepta_types::StableId;
 use super::FederationClientError;
 use super::FederationWireClientV1;
 use super::snapshot::ClientAttemptIdentity;
-use super::snapshot::ClientAttemptMetadata;
 use crate::codec::decode_registered_frame_v1;
 use crate::codec::registered_codec_v1;
 use crate::protocol::FederationCancelAckMessageV1;
@@ -30,6 +29,7 @@ where
         }
 
         let mut next = self.clone_recovery(now_unix_ms)?;
+        let mut next_replay = self.replay.clone();
         let durable_replay_key = next.preflight_frame(
             &frame.sender_peer_id,
             &frame.receiver_peer_id,
@@ -43,7 +43,7 @@ where
             &self.local_peer_id,
             now_unix_ms,
             &self.credentials,
-            &mut self.replay,
+            &mut next_replay,
         )?;
         next.record_verified_frame(
             durable_replay_key,
@@ -51,6 +51,8 @@ where
             verified.expires_unix_ms(),
         )?;
 
+        let mut attempts = self.attempts.clone();
+        let mut frontiers = self.frontiers.clone();
         match verified.message() {
             FederationWireMessageV1::Response(response) => {
                 if &response.frontier.owner_peer_id != verified.sender_peer_id() {
@@ -88,14 +90,11 @@ where
                     verified.message().binding_digest(),
                     now_unix_ms,
                 )?;
-                let mut attempts = self.attempts.clone();
                 attempts.remove(&identity);
-                let mut frontiers = self.frontiers.clone();
                 frontiers.insert(
                     verified.sender_peer_id().as_str().to_string(),
                     response.frontier.clone(),
                 );
-                self.replace_state(next, attempts, frontiers)?;
             }
             FederationWireMessageV1::CancelAck(acknowledgement) => {
                 self.validate_cancellation_ack(
@@ -104,16 +103,12 @@ where
                     acknowledgement,
                     verified.issued_unix_ms(),
                 )?;
-                self.replace_state(
-                    next,
-                    self.attempts.clone(),
-                    self.frontiers.clone(),
-                )?;
             }
             FederationWireMessageV1::Query(_) | FederationWireMessageV1::Cancel(_) => {
                 return Err(FederationClientError::UnexpectedInboundMessage);
             }
         }
+        self.replace_state_and_replay(next, attempts, frontiers, next_replay)?;
         Ok(verified)
     }
 
@@ -140,16 +135,15 @@ where
             acknowledgement.query_binding_digest,
         );
         match self.attempts.get(&identity) {
-            Some(ClientAttemptMetadata {
+            Some(super::snapshot::ClientAttemptMetadata {
                 cancellation_id: Some(expected),
                 ..
             }) if expected == &acknowledgement.cancellation_id => Ok(()),
-            Some(ClientAttemptMetadata {
+            Some(super::snapshot::ClientAttemptMetadata {
                 cancellation_id: Some(_),
                 ..
             }) => Err(FederationClientError::CancellationAckMismatch),
             Some(_) | None => Err(FederationClientError::UnknownCancellation),
         }
     }
-
 }

@@ -11,6 +11,7 @@ use super::snapshot::retain_live_attempts;
 use crate::protocol::AuthenticatedFrontierV1;
 use crate::recovery::DurableFederationStateV1;
 use crate::recovery::FederationRecoveryStoreV1;
+use crate::replay::ReplayCacheV1;
 
 impl<S> FederationWireClientV1<S>
 where
@@ -45,8 +46,18 @@ where
     pub(super) fn replace_state(
         &mut self,
         next: DurableFederationStateV1,
+        attempts: BTreeMap<ClientAttemptIdentity, ClientAttemptMetadata>,
+        frontiers: BTreeMap<String, AuthenticatedFrontierV1>,
+    ) -> Result<(), FederationClientError> {
+        self.replace_state_and_replay(next, attempts, frontiers, self.replay.clone())
+    }
+
+    pub(super) fn replace_state_and_replay(
+        &mut self,
+        next: DurableFederationStateV1,
         mut attempts: BTreeMap<ClientAttemptIdentity, ClientAttemptMetadata>,
         frontiers: BTreeMap<String, AuthenticatedFrontierV1>,
+        replay: ReplayCacheV1,
     ) -> Result<(), FederationClientError> {
         retain_live_attempts(&next, &mut attempts);
         let snapshot = encode_client_snapshot(
@@ -60,6 +71,7 @@ where
         self.recovery = next;
         self.attempts = attempts;
         self.frontiers = frontiers;
+        self.replay = replay;
         Ok(())
     }
 
@@ -68,5 +80,4 @@ where
         self.recovery_store.store(&snapshot)?;
         Ok(())
     }
-
 }
