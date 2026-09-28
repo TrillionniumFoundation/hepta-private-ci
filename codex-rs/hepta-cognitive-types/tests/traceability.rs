@@ -54,6 +54,7 @@ fn traceability_manifest_has_closed_unique_invariant_inventory() {
         "CTYPE-EVIDENCE-01",
         "CTYPE-ID-01",
         "CTYPE-MUTATION-01",
+        "CTYPE-PERF-01",
         "CTYPE-VALIDATE-01",
         "CTYPE-WIRE-01",
         "CTYPE-WRITE-01",
