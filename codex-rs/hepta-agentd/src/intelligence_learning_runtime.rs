@@ -8,6 +8,8 @@
 use std::sync::Arc;
 use std::time::Duration;
 
+use codex_hepta_contracts::FinalUseError;
+use codex_hepta_operations::DurableOperationError;
 use tokio_util::sync::CancellationToken;
 
 use crate::AgentdError;
@@ -68,6 +70,41 @@ fn validate_runtime_policy(interval: Duration, max_batch: u32) -> Result<(), Age
     Ok(())
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+struct CycleBudget {
+    reconcile: u32,
+    dispatch: u32,
+}
+
+/// Reserve work for both restart reconciliation and newly prepared operations.
+/// A batch of one alternates ownership between the two classes; larger batches
+/// always reserve at least one slot for each class. This prevents a permanently
+/// indeterminate oldest row from starving all newly prepared work.
+fn cycle_budget(max_batch: u32, reconcile_turn: &mut bool) -> CycleBudget {
+    debug_assert!(max_batch > 0);
+    if max_batch == 1 {
+        let budget = if *reconcile_turn {
+            CycleBudget {
+                reconcile: 1,
+                dispatch: 0,
+            }
+        } else {
+            CycleBudget {
+                reconcile: 0,
+                dispatch: 1,
+            }
+        };
+        *reconcile_turn = !*reconcile_turn;
+        return budget;
+    }
+
+    let dispatch = (max_batch / 4).max(1);
+    CycleBudget {
+        reconcile: max_batch - dispatch,
+        dispatch,
+    }
+}
+
 pub(crate) async fn run_intelligence_learning_runtime_v1(
     host: Arc<AgentdIntelligenceLearningHostV1>,
     state: Arc<AgentdState>,
@@ -76,6 +113,7 @@ pub(crate) async fn run_intelligence_learning_runtime_v1(
     cancellation: CancellationToken,
 ) -> Result<(), AgentdError> {
     validate_runtime_policy(interval, max_batch)?;
+    let mut reconcile_turn = true;
     loop {
         if !state.automation_admission_ready()? {
             tokio::select! {
@@ -94,16 +132,24 @@ pub(crate) async fn run_intelligence_learning_runtime_v1(
             )));
         }
 
-        let reconciled = host
-            .reconcile_unsettled(max_batch)
-            .await
-            .map_err(learning_error)?;
-        let reconciled = u32::try_from(reconciled.len()).unwrap_or(max_batch);
-        let mut remaining = max_batch.saturating_sub(reconciled);
-        while remaining > 0 {
-            match host.dispatch_next().await.map_err(learning_error)? {
-                Some(_) => remaining -= 1,
-                None => break,
+        let budget = cycle_budget(max_batch, &mut reconcile_turn);
+        let reconciled = if budget.reconcile == 0 {
+            0
+        } else {
+            match host.reconcile_unsettled(budget.reconcile).await {
+                Ok(receipts) => u32::try_from(receipts.len()).unwrap_or(budget.reconcile),
+                Err(error) if retryable_learning_error(&error) => budget.reconcile,
+                Err(error) => return Err(learning_error(error)),
+            }
+        };
+        let unused_reconciliation = budget.reconcile.saturating_sub(reconciled);
+        let dispatch_budget = budget.dispatch.saturating_add(unused_reconciliation);
+        for _ in 0..dispatch_budget {
+            match host.dispatch_next().await {
+                Ok(Some(_)) => {}
+                Ok(None) => break,
+                Err(error) if retryable_learning_error(&error) => break,
+                Err(error) => return Err(learning_error(error)),
             }
         }
 
@@ -125,6 +171,29 @@ pub(crate) async fn run_intelligence_learning_runtime_v1(
     }
 }
 
+fn retryable_learning_error(error: &AgentdIntelligenceLearningErrorV1) -> bool {
+    match error {
+        AgentdIntelligenceLearningErrorV1::Io(_) => true,
+        AgentdIntelligenceLearningErrorV1::Agentd(
+            AgentdError::Overloaded { .. } | AgentdError::Io(_),
+        ) => true,
+        AgentdIntelligenceLearningErrorV1::Operation(
+            DurableOperationError::Capacity
+            | DurableOperationError::StaleLease
+            | DurableOperationError::Unavailable(_),
+        ) => true,
+        AgentdIntelligenceLearningErrorV1::Authority(
+            FinalUseError::AlreadyClaimed
+            | FinalUseError::CapacityExceeded
+            | FinalUseError::DispatchInProgress
+            | FinalUseError::Unavailable
+            | FinalUseError::UnsafeStateDirectory
+            | FinalUseError::StateLocked,
+        ) => true,
+        _ => false,
+    }
+}
+
 fn learning_error(error: AgentdIntelligenceLearningErrorV1) -> AgentdError {
     AgentdError::Protocol(format!(
         "intelligence learning reconciliation failed: {error}"
@@ -133,6 +202,8 @@ fn learning_error(error: AgentdIntelligenceLearningErrorV1) -> AgentdError {
 
 #[cfg(test)]
 mod tests {
+    use std::io;
+
     use super::*;
 
     #[test]
@@ -144,5 +215,68 @@ mod tests {
         assert!(validate_runtime_policy(Duration::from_secs(3601), 1).is_err());
         assert!(validate_runtime_policy(Duration::from_secs(1), 0).is_err());
         assert!(validate_runtime_policy(Duration::from_secs(1), 257).is_err());
+    }
+
+    #[test]
+    fn single_slot_cycles_alternate_without_starvation() {
+        let mut reconcile_turn = true;
+        assert_eq!(
+            cycle_budget(1, &mut reconcile_turn),
+            CycleBudget {
+                reconcile: 1,
+                dispatch: 0
+            }
+        );
+        assert_eq!(
+            cycle_budget(1, &mut reconcile_turn),
+            CycleBudget {
+                reconcile: 0,
+                dispatch: 1
+            }
+        );
+        assert_eq!(
+            cycle_budget(1, &mut reconcile_turn),
+            CycleBudget {
+                reconcile: 1,
+                dispatch: 0
+            }
+        );
+    }
+
+    #[test]
+    fn multi_slot_cycles_reserve_both_classes() {
+        let mut reconcile_turn = true;
+        for batch in 2..=MAX_RECONCILE_BATCH {
+            let budget = cycle_budget(batch, &mut reconcile_turn);
+            assert!(budget.reconcile > 0);
+            assert!(budget.dispatch > 0);
+            assert_eq!(budget.reconcile + budget.dispatch, batch);
+        }
+    }
+
+    #[test]
+    fn temporary_capacity_and_io_failures_remain_retryable() {
+        assert!(retryable_learning_error(
+            &AgentdIntelligenceLearningErrorV1::Operation(DurableOperationError::Capacity)
+        ));
+        assert!(retryable_learning_error(
+            &AgentdIntelligenceLearningErrorV1::Agentd(AgentdError::Overloaded {
+                retry_after_ms: 10
+            })
+        ));
+        assert!(retryable_learning_error(
+            &AgentdIntelligenceLearningErrorV1::Io("temporary".to_string())
+        ));
+        assert!(!retryable_learning_error(
+            &AgentdIntelligenceLearningErrorV1::Agentd(AgentdError::Io(io::Error::new(
+                io::ErrorKind::InvalidData,
+                "permanent fixture"
+            )))
+        ) || retryable_learning_error(
+            &AgentdIntelligenceLearningErrorV1::Agentd(AgentdError::Io(io::Error::new(
+                io::ErrorKind::WouldBlock,
+                "temporary fixture"
+            )))
+        ));
     }
 }
