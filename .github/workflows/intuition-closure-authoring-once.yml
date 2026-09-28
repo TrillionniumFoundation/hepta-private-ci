@@ -1,18 +1,17 @@
 name: Intuition durable closure authoring once
 
 on:
-  push:
-    branches:
-      - codex/intuition-policy-production-closure-20260927
+  pull_request:
     paths:
       - ".github/workflows/intuition-closure-authoring-once.yml"
+      - ".github/workflows/hepta-intuition-qualification.yml"
       - "scripts/intuition_closure_author_once.b85.part*"
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: intuition-durable-closure-authoring-once-codex-intuition-policy-production-closure-20260927
+  group: intuition-durable-closure-authoring-once-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 env:
@@ -24,14 +23,17 @@ env:
 
 jobs:
   author:
-    name: Author durable handoff and V2 transport
-    runs-on: ubuntu-24.04
+    name: Author durable handoff and V2 transport on macOS
+    if: ${{ github.event.pull_request.head.ref == 'codex/intuition-policy-production-closure-20260927' }}
+    permissions:
+      contents: write
+    runs-on: macos-15
     timeout-minutes: 120
     steps:
       - name: Check out exact authoring source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
       - uses: ./.github/actions/setup-ci
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
@@ -39,7 +41,7 @@ jobs:
           components: rustfmt,clippy
       - name: Apply bounded source transformation
         env:
-          SOURCE_SHA: ${{ github.sha }}
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
         shell: bash
         run: |
           set -euo pipefail
@@ -110,7 +112,7 @@ jobs:
             -p codex-hepta-agentd --lib -- -D warnings
       - name: Commit ordinary reviewed source and remove authoring machinery
         env:
-          SOURCE_SHA: ${{ github.sha }}
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
         shell: bash
         run: |
           set -euo pipefail
