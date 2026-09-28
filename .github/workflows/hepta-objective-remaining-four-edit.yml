@@ -6,6 +6,7 @@ on:
       - work/objective-compiler-production-convergence-20260927
     paths:
       - .github/workflows/hepta-objective-remaining-four-edit.yml
+      - .github/maintenance/objective_strict_clippy_edit.py
 
 permissions:
   contents: read
@@ -26,142 +27,23 @@ jobs:
         with:
           ref: ${{ github.sha }}
           fetch-depth: 0
-      - name: Bind exact development source
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          test -z "$(git status --porcelain)"
-      - name: Apply bounded remaining-four source changes
+      - name: Apply, validate and publish bounded source closure
         shell: bash
         run: |
           set -euo pipefail
           out="$RUNNER_TEMP/objective-remaining-four-development"
           mkdir -p "$out"
-          exec > >(tee "$out/edit.log") 2>&1
+          exec > >(tee "$out/run.log") 2>&1
           set -x
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain)"
+
           python3 .github/maintenance/objective_profile_reuse_edit.py
           python3 .github/maintenance/objective_measurement_edit.py
           python3 .github/maintenance/objective_evidence_edit.py
           python3 .github/maintenance/objective_docs_edit.py
-          python3 - <<'PY'
-          from pathlib import Path
+          python3 .github/maintenance/objective_strict_clippy_edit.py
 
-          def replace_exact(path: str, old: str, new: str) -> None:
-              target = Path(path)
-              text = target.read_text()
-              count = text.count(old)
-              if count != 1:
-                  raise SystemExit(f"{path}: expected one match, found {count}: {old!r}")
-              target.write_text(text.replace(old, new, 1))
-
-          # Keep the strict package lint enabled: introduce real indirection for
-          # the large outcome variant and update the sole product consumer.
-          replace_exact(
-              "codex-rs/hepta-intelligence/src/canonical.rs",
-              "    Ready(IntelligenceHostEnvelopeV1),\n",
-              "    Ready(Box<IntelligenceHostEnvelopeV1>),\n",
-          )
-          replace_exact(
-              "codex-rs/hepta-intelligence/src/canonical.rs",
-              "    Ok(CanonicalRunOutcomeV1::Ready(IntelligenceHostEnvelopeV1 {\n",
-              "    Ok(CanonicalRunOutcomeV1::Ready(Box::new(IntelligenceHostEnvelopeV1 {\n",
-          )
-          replace_exact(
-              "codex-rs/hepta-intelligence/src/canonical.rs",
-              "        authority: AuthorityPosture::DENY_ALL,\n    }))\n}\n\nfn run_stage",
-              "        authority: AuthorityPosture::DENY_ALL,\n    })))\n}\n\nfn run_stage",
-          )
-          replace_exact(
-              "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
-              "            CanonicalRunOutcomeV1::Ready(envelope) => {\n                let mut oracle = FileBackedFreshnessOracleV1::new(\n",
-              "            CanonicalRunOutcomeV1::Ready(envelope) => {\n                let envelope = *envelope;\n                let mut oracle = FileBackedFreshnessOracleV1::new(\n",
-          )
-
-          # The generated test no longer needs the legacy encoder import.
-          replace_exact(
-              "codex-rs/hepta-objective/src/objective_admission_tests.rs",
-              "use crate::encode_objective_function_v1;\n",
-              "",
-          )
-
-          # The strict all-target gate also checks examples. Replace eleven
-          # expect-based fixture exits with one explicit diagnostic/exit helper;
-          # do not suppress clippy::expect_used or narrow --all-targets.
-          path = "codex-rs/hepta-intelligence/examples/intuition_authenticated_fast_gate.rs"
-          replace_exact(
-              path,
-              "const MIN_THROUGHPUT_PER_SEC: f64 = 20.0;\n\nfn id(value: &str) -> StableId {\n    StableId::new(value).expect(\"id\")\n}\n",
-              "const MIN_THROUGHPUT_PER_SEC: f64 = 20.0;\n\nfn required<T, E: std::fmt::Debug>(result: Result<T, E>, context: &str) -> T {\n    match result {\n        Ok(value) => value,\n        Err(error) => {\n            eprintln!(\"{context}: {error:?}\");\n            std::process::exit(2);\n        }\n    }\n}\n\nfn id(value: &str) -> StableId {\n    required(StableId::new(value), \"invalid stable id\")\n}\n",
-          )
-          replace_exact(
-              path,
-              "    let candidate_set_digest = canonical_candidate_set_digest_v1(&candidates).expect(\"set\");\n",
-              "    let candidate_set_digest = required(\n        canonical_candidate_set_digest_v1(&candidates),\n        \"candidate set digest\",\n    );\n",
-          )
-          replace_exact(
-              path,
-              "    let canonical_order_digest = canonical_candidate_order_digest_v1(&candidates).expect(\"order\");\n",
-              "    let canonical_order_digest = required(\n        canonical_candidate_order_digest_v1(&candidates),\n        \"candidate order digest\",\n    );\n",
-          )
-          replace_exact(
-              path,
-              "            candidate_count: u32::try_from(candidate_count).expect(\"bounded\"),\n",
-              "            candidate_count: required(\n                u32::try_from(candidate_count),\n                \"candidate count conversion\",\n            ),\n",
-          )
-          replace_exact(
-              path,
-              "        scored_outputs_digest: canonical_scored_outputs_digest_v1(&request).expect(\"scores\"),\n",
-              "        scored_outputs_digest: required(\n            canonical_scored_outputs_digest_v1(&request),\n            \"scored outputs digest\",\n        ),\n",
-          )
-          replace_exact(
-              path,
-              "    let verifier = LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {\n",
-              "    let verifier = required(\n        LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {\n",
-          )
-          replace_exact(
-              path,
-              "    })\n    .expect(\"verifier\");\n\n    let completeness_payload",
-              "        }),\n        \"learning evidence verifier\",\n    );\n\n    let completeness_payload",
-          )
-          replace_exact(
-              path,
-              "    let completeness_payload =\n        canonical_completeness_evidence_payload_v1(&request).expect(\"complete\");\n",
-              "    let completeness_payload = required(\n        canonical_completeness_evidence_payload_v1(&request),\n        \"completeness evidence payload\",\n    );\n",
-          )
-          replace_exact(
-              path,
-              "    let profile_payload = canonical_profile_qualification_payload_v1(&profile).expect(\"profile\");\n",
-              "    let profile_payload = required(\n        canonical_profile_qualification_payload_v1(&profile),\n        \"profile qualification payload\",\n    );\n",
-          )
-          replace_exact(
-              path,
-              "    let runtime_payload =\n        canonical_runtime_commitment_payload_v1(&request, &profile, &scoring, &assignment)\n            .expect(\"runtime\");\n",
-              "    let runtime_payload = required(\n        canonical_runtime_commitment_payload_v1(&request, &profile, &scoring, &assignment),\n        \"runtime commitment payload\",\n    );\n",
-          )
-          replace_exact(
-              path,
-              "            let _ = decide_authenticated_intuition_v2(\n",
-              "            let _ = required(\n                decide_authenticated_intuition_v2(\n",
-          )
-          replace_exact(
-              path,
-              "            )\n            .expect(\"warmup\");\n",
-              "                ),\n                \"authenticated warmup decision\",\n            );\n",
-          )
-          replace_exact(
-              path,
-              "            let receipt = decide_authenticated_intuition_v2(\n",
-              "            let receipt = required(\n                decide_authenticated_intuition_v2(\n",
-          )
-          replace_exact(
-              path,
-              "            )\n            .expect(\"authenticated decision\");\n",
-              "                ),\n                \"authenticated measured decision\",\n            );\n",
-          )
-          if ".expect(" in Path(path).read_text():
-              raise SystemExit(f"{path}: expect() remains after strict-lint repair")
-          PY
           python3 - <<'PY'
           import subprocess
           expected = {
@@ -174,6 +56,7 @@ jobs:
               'codex-rs/hepta-intelligence/src/canonical.rs',
               'codex-rs/hepta-intelligence/src/lib.rs',
               'codex-rs/hepta-intelligence/src/objective_run.rs',
+              'codex-rs/hepta-intelligence/tests/intuition_frozen_qualification.rs',
               'codex-rs/hepta-objective/src/lib.rs',
               'codex-rs/hepta-objective/src/objective_admission.rs',
               'codex-rs/hepta-objective/src/objective_admission_tests.rs',
@@ -192,6 +75,7 @@ jobs:
           if changed != expected:
               raise SystemExit(f'editing scope mismatch: missing={expected-changed}; unexpected={changed-expected}')
           PY
+
           rustfmt --edition 2024 --config skip_children=true \
             codex-rs/hepta-agentd/src/intelligence_product_runner.rs \
             codex-rs/hepta-agentd/src/objective_runtime.rs \
@@ -200,6 +84,7 @@ jobs:
             codex-rs/hepta-intelligence/src/canonical.rs \
             codex-rs/hepta-intelligence/src/lib.rs \
             codex-rs/hepta-intelligence/src/objective_run.rs \
+            codex-rs/hepta-intelligence/tests/intuition_frozen_qualification.rs \
             codex-rs/hepta-objective/src/lib.rs \
             codex-rs/hepta-objective/src/compiler_tests.rs \
             codex-rs/hepta-objective/src/objective_admission.rs \
@@ -210,14 +95,7 @@ jobs:
             codex-rs/hepta-objective/src/validated_admission.rs \
             codex-rs/hepta-objective/src/validated_admission_tests.rs
           git diff --check
-      - name: Validate Python evidence and measurement semantics
-        shell: bash
-        run: |
-          set -euo pipefail
-          out="$RUNNER_TEMP/objective-remaining-four-development"
-          mkdir -p "$out"
-          exec > >(tee "$out/python.log") 2>&1
-          set -x
+
           python3 -m py_compile \
             scripts/hepta-objective-evidence-project.py \
             scripts/hepta-objective-target-measure.py \
@@ -226,15 +104,8 @@ jobs:
           python3 scripts/hepta-objective-target-measure.py --self-test
           python3 scripts/hepta-objective-current-state.py sync
           python3 scripts/hepta-objective-current-state.py verify
-      - name: Compile and test changed Rust boundaries
-        shell: bash
-        working-directory: codex-rs
-        run: |
-          set -euo pipefail
-          out="$RUNNER_TEMP/objective-remaining-four-development"
-          mkdir -p "$out"
-          exec > >(tee "$out/rust.log") 2>&1
-          set -x
+
+          cd codex-rs
           cargo fmt -p codex-hepta-objective -p codex-hepta-intelligence -p codex-hepta-agentd -- --check
           cargo test --locked -p codex-hepta-objective
           cargo test --locked -p codex-hepta-intelligence --lib objective_run
@@ -245,10 +116,8 @@ jobs:
             -p codex-hepta-intelligence \
             -p codex-hepta-agentd \
             --all-targets --no-deps -- -D warnings
-      - name: Publish ordinary source commit
-        shell: bash
-        run: |
-          set -euo pipefail
+          cd ..
+
           branch=work/objective-compiler-production-convergence-20260927
           remote=$(git ls-remote origin "refs/heads/$branch" | cut -f1)
           test "$remote" = "$GITHUB_SHA"
@@ -257,8 +126,10 @@ jobs:
             .github/maintenance/objective_measurement_edit.py \
             .github/maintenance/objective_evidence_edit.py \
             .github/maintenance/objective_docs_edit.py \
+            .github/maintenance/objective_strict_clippy_edit.py \
             .github/workflows/hepta-objective-remaining-four-edit.yml
           git diff --check
+
           python3 - <<'PY'
           import subprocess
           expected = {
@@ -266,6 +137,7 @@ jobs:
               '.github/maintenance/objective_measurement_edit.py',
               '.github/maintenance/objective_evidence_edit.py',
               '.github/maintenance/objective_docs_edit.py',
+              '.github/maintenance/objective_strict_clippy_edit.py',
               '.github/workflows/hepta-objective-exact-execution.yml',
               '.github/workflows/hepta-objective-remaining-four-edit.yml',
               '.github/workflows/hepta-objective-target-measurement.yml',
@@ -276,6 +148,7 @@ jobs:
               'codex-rs/hepta-intelligence/src/canonical.rs',
               'codex-rs/hepta-intelligence/src/lib.rs',
               'codex-rs/hepta-intelligence/src/objective_run.rs',
+              'codex-rs/hepta-intelligence/tests/intuition_frozen_qualification.rs',
               'codex-rs/hepta-objective/src/compiler_tests.rs',
               'codex-rs/hepta-objective/src/lib.rs',
               'codex-rs/hepta-objective/src/objective_admission.rs',
@@ -298,6 +171,7 @@ jobs:
           if changed != expected:
               raise SystemExit(f'final scope mismatch: missing={expected-changed}; unexpected={changed-expected}')
           PY
+
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
@@ -311,7 +185,7 @@ jobs:
           set -euo pipefail
           out="$RUNNER_TEMP/objective-remaining-four-development"
           mkdir -p "$out"
-          git log -2 --format='%H %T %s' > "$out/commits.txt"
+          git log -3 --format='%H %T %s' > "$out/commits.txt"
           git status --short > "$out/status.txt"
           git diff HEAD^ > "$out/final.patch" || true
           printf '%s\n' 'Development artifact only. It is not exact-head qualification, selected deployment-host acceptance, independent acceptance, activation, promotion, or release.' > "$out/CLAIM_BOUNDARY.txt"
