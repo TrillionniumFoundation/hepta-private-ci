@@ -1,5 +1,7 @@
 name: Hepta inference exact-source export
 
+# The export is intentionally read-only; this comment also provides a reviewed
+# push trigger for exact-source remediation work on the active convergence line.
 on:
   push:
     branches:
