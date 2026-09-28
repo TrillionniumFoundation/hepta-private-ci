@@ -1,0 +1,122 @@
+{
+  "schema": "hepta.runtime-fleet.scoped-local-evidence.v1",
+  "codeAnchor": "3b3285b007e822911bafd867404316c010fe6d5e",
+  "scope": "selected_file_blob_checks_and_qualification_mechanism_regressions_only",
+  "fullRepositoryCheckout": false,
+  "cargoExecuted": false,
+  "exactSourceQualificationPassed": false,
+  "syntheticMergeQualificationPassed": false,
+  "selectedHostProductExecutionProved": false,
+  "independentAcceptance": false,
+  "python": "3.13.5",
+  "git": "git version 2.47.3",
+  "rustfmt": "rustfmt 1.9.0-stable (59807616e1 2026-04-14), repository artifact runtime-fleet-rustfmt-1.95.0",
+  "formatterArtifactId": 10938600303,
+  "formatterArtifactArchiveSha256": "c198302f3134dbb42126a2a9163dbddf8557c6297747cf608547bb472ccfe630",
+  "checks": [
+    {
+      "name": "qualification_git_object_regressions",
+      "argv": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_runtime_fleet_qualify.py",
+        "-v"
+      ],
+      "exitCode": 0,
+      "tests": 16,
+      "outcome": "passed",
+      "log": "runtime-fleet-local-qualification-tests-final.log"
+    },
+    {
+      "name": "six_selected_Rust_files_format_parse",
+      "argv": [
+        "rustfmt",
+        "--edition",
+        "2024",
+        "--config",
+        "skip_children=true",
+        "--check",
+        "codex-rs/hepta-fleet/src/manifest_readonly.rs",
+        "codex-rs/hepta-fleet/src/durable_owner_execution.rs",
+        "codex-rs/hepta-fleet/src/durable_owner_execution_tests.rs",
+        "codex-rs/hepta-supervisor/src/fleet_execution_admission.rs",
+        "codex-rs/hepta-supervisor/src/fleet_runtime_product.rs",
+        "codex-rs/hepta-supervisor/src/unix.rs"
+      ],
+      "exitCode": 0,
+      "outcome": "passed",
+      "log": "runtime-fleet-local-rustfmt-check.log",
+      "limitation": "Standalone format/parse only; not cargo fmt --all, type checking, test execution or Clippy."
+    }
+  ],
+  "sourceBlobs": [
+    {
+      "path": "codex-rs/hepta-fleet/src/manifest_readonly.rs",
+      "git_blob": "10bfb8599928b1daeb18bfa92fe4e27e19fd79be",
+      "sha256": "07e3f5370024362fede64228e5e573e3ebb092a1f5e709ed68e31191ab25ff39"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/durable_owner_execution.rs",
+      "git_blob": "7ff0a65603243fa4db3028ff60df3496a8361a9b",
+      "sha256": "54ff1a98df0fc5d2451ef0fa99b7b0042d505464184d32df93e6d3f969e359b6"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/durable_owner_execution_tests.rs",
+      "git_blob": "31fb15244a86f7ef05b858ffa4d3c82450306ee8",
+      "sha256": "1f7f901fa69eb0bb456aabdb0af3c114e4fdb99c736c9ea18782fa59bccd8b11"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/fleet_execution_admission.rs",
+      "git_blob": "18d8c7f1361689a4145b116943fb7b51f93102ff",
+      "sha256": "9fecf4af1144a8f30b79cbb4cd37129606fbce026d35c9d7871c61ec0132c8c4"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/fleet_runtime_product.rs",
+      "git_blob": "7e77dd241842ef6d3b9efe22ee52766e2dc0acf7",
+      "sha256": "eacc06e00d322cdfce84d448753b1eddbcccd6d714b34553ab29d15a2ba72779"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/unix.rs",
+      "git_blob": "bda4c8a0bf4e504610abb6d93a9efb50746a4514",
+      "sha256": "d0a24a6fd66ac2db74797668a1ebf38109527015fc0f0b45ad400af3e3b04802"
+    },
+    {
+      "path": "scripts/runtime_fleet_qualify.py",
+      "git_blob": "ae2e5ef5e8da32fe7248b7feb4f48a739052fc3e",
+      "sha256": "6d935b3744170a89f9821ec4b59c35102b9ddd563186943005fa1555e90fa905"
+    },
+    {
+      "path": "scripts/test_runtime_fleet_qualify.py",
+      "git_blob": "0a55a83d14893cbd4ccfc0798cc4608e4162673d",
+      "sha256": "d27f1447b7e4f119208e293dbbe1aa31d07a704e553b138e6e658ca281022c91"
+    }
+  ],
+  "logs": [
+    {
+      "name": "runtime-fleet-local-qualification-tests-final.log",
+      "sha256": "b651ee009fcd3227ecf0dbe3b080142afa8aa42657469c480cd32a7222cadffc",
+      "content": "test_correct_parents_with_wrong_tree_are_rejected (test_runtime_fleet_qualify.QualificationTests.test_correct_parents_with_wrong_tree_are_rejected) ... ok\ntest_exact_source (test_runtime_fleet_qualify.QualificationTests.test_exact_source) ... ok\ntest_floating_ref_is_rejected (test_runtime_fleet_qualify.QualificationTests.test_floating_ref_is_rejected) ... ok\ntest_missing_program_is_infrastructure_invalid (test_runtime_fleet_qualify.QualificationTests.test_missing_program_is_infrastructure_invalid) ... ok\ntest_no_evidence_inside_candidate (test_runtime_fleet_qualify.QualificationTests.test_no_evidence_inside_candidate) ... ok\ntest_no_reuse_of_previous_attempt (test_runtime_fleet_qualify.QualificationTests.test_no_reuse_of_previous_attempt) ... ok\ntest_nonzero_command_has_failed_receipt (test_runtime_fleet_qualify.QualificationTests.test_nonzero_command_has_failed_receipt) ... ok\ntest_preflight_failure_still_has_failed_receipt (test_runtime_fleet_qualify.QualificationTests.test_preflight_failure_still_has_failed_receipt) ... ok\ntest_real_merge (test_runtime_fleet_qualify.QualificationTests.test_real_merge) ... ok\ntest_staged_entry_is_rejected (test_runtime_fleet_qualify.QualificationTests.test_staged_entry_is_rejected) ... ok\ntest_success_binds_logs_archive_and_checkout (test_runtime_fleet_qualify.QualificationTests.test_success_binds_logs_archive_and_checkout) ... ok\ntest_timeout_is_invalid_and_parent_is_reaped (test_runtime_fleet_qualify.QualificationTests.test_timeout_is_invalid_and_parent_is_reaped) ... ok\ntest_tracked_dirty_entry_is_rejected (test_runtime_fleet_qualify.QualificationTests.test_tracked_dirty_entry_is_rejected) ... ok\ntest_untracked_entry_is_rejected (test_runtime_fleet_qualify.QualificationTests.test_untracked_entry_is_rejected) ... ok\ntest_wrong_parent_order_is_rejected (test_runtime_fleet_qualify.QualificationTests.test_wrong_parent_order_is_rejected) ... ok\ntest_zero_exit_does_not_hide_mutation (test_runtime_fleet_qualify.QualificationTests.test_zero_exit_does_not_hide_mutation) ... ok\n\n----------------------------------------------------------------------\nRan 16 tests in 2.350s\n\nOK\n"
+    },
+    {
+      "name": "runtime-fleet-local-rustfmt-check.log",
+      "sha256": "7e529cb64b93d674b436ba70aee6f941a6a3ddc449b6b337ca6b1138c0b2c2f9",
+      "content": "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.\nWarning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.\nWarning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.\nWarning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.\nWarning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.\nWarning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.\n"
+    }
+  ],
+  "notRun": [
+    "Cargo package tests",
+    "Cargo binary compilation",
+    "strict Clippy",
+    "full workspace formatting",
+    "full source tree qualification",
+    "synthetic merge qualification",
+    "real Agentd/Matrixd containment and crash E2E",
+    "protected selected-host qualification"
+  ]
+}
