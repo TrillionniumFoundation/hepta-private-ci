@@ -19,8 +19,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: authbus-ownership-${{ github.ref }}
-  cancel-in-progress: true
+  group: authbus-ownership-${{ github.sha }}
+  cancel-in-progress: false
 
 env:
   CARGO_TERM_COLOR: never
@@ -54,6 +54,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: codex-rs
+          save-if: true
       - name: Exact-source format and public-boundary inventory
         shell: bash
         run: |
@@ -70,24 +71,6 @@ jobs:
         run: |
           set -euo pipefail
           cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-authbus -p codex-hepta-authbus-p1-3-qualification --all-targets 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/authbus-tests.log"
-      - name: Evidence regression tests
-        if: ${{ !cancelled() }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-evidence --all-targets 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/evidence-tests.log"
-      - name: Bao integration tests
-        if: ${{ !cancelled() }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-bao-adapter --all-targets 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/bao-tests.log"
-      - name: Agentd signed-ingress integration
-        if: ${{ !cancelled() }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --test kernel_evidence_product 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/agentd-tests.log"
       - name: Strict AuthBus lint
         if: ${{ !cancelled() }}
         shell: bash
@@ -103,6 +86,46 @@ jobs:
           set -euo pipefail
           cargo +1.95.0 build --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-authbus --example owner_latency
           /usr/bin/time -l "$CARGO_TARGET_DIR/debug/examples/owner_latency" 64 > "$RUNNER_TEMP/authbus-evidence/owner-latency.json" 2> "$RUNNER_TEMP/authbus-evidence/owner-peak-rss.txt"
+      - name: Retain core evidence immediately
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: authbus-core-${{ github.sha }}
+          path: ${{ runner.temp }}/authbus-evidence/
+          retention-days: 14
+      - name: Evidence regression tests
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-evidence --all-targets 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/evidence-tests.log"
+      - name: Retain Evidence suite result immediately
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: authbus-evidence-suite-${{ github.sha }}
+          path: ${{ runner.temp }}/authbus-evidence/
+          retention-days: 14
+      - name: Bao integration tests
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-bao-adapter --all-targets 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/bao-tests.log"
+      - name: Retain Bao suite result immediately
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: authbus-bao-suite-${{ github.sha }}
+          path: ${{ runner.temp }}/authbus-evidence/
+          retention-days: 14
+      - name: Agentd signed-ingress integration
+        if: ${{ !cancelled() }}
+        timeout-minutes: 20
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --test kernel_evidence_product 2>&1 | tee "$RUNNER_TEMP/authbus-evidence/agentd-tests.log"
       - name: Check unchanged tracked source
         if: ${{ !cancelled() }}
         shell: bash
