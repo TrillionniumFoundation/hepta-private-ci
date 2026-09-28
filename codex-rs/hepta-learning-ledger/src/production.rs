@@ -593,7 +593,7 @@ impl LedgerWriter {
                 },
                 |record| record.predecessor_chain_digest,
             );
-        self.append_retrieval_assignment(predecessor, assignment)
+        self.commit(predecessor, LedgerEvent::RetrievalPrepared(assignment))
     }
 
     /// Revalidate a frozen dataset immediately before final artifact use.
