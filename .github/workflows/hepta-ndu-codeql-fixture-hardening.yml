@@ -2,8 +2,10 @@ name: NDU cryptographic fixture materialization
 
 on:
   push:
-    branches: [work/utility-ndu-abcd-convergence-20260928]
-    paths: [.github/workflows/hepta-ndu-codeql-fixture-hardening.yml]
+    branches:
+      - work/utility-ndu-abcd-convergence-20260928
+    paths:
+      - .github/workflows/hepta-ndu-codeql-fixture-hardening.yml
 
 permissions:
   contents: write
@@ -17,243 +19,51 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
           fetch-depth: 0
-      - name: Derive cryptographic fixtures and stabilize qualification claims
+      - name: Materialize validated runtime-derived fixtures
         shell: bash
         env:
           REQUEST_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
-          BRANCH=work/utility-ndu-abcd-convergence-20260928
+          branch=work/utility-ndu-abcd-convergence-20260928
+          fixture_commit=9710c7275ea0836bebcb64030a33e3c3f0b6457a
           test "$(git rev-parse HEAD)" = "$REQUEST_SHA"
-          git fetch --no-tags origin main "$BRANCH"
-          test "$(git rev-parse refs/remotes/origin/$BRANCH)" = "$REQUEST_SHA"
-          BASE=$(git rev-parse refs/remotes/origin/main)
-          git merge-base --is-ancestor "$BASE" HEAD
-          python3 - <<'PY'
-          import json
-          from pathlib import Path
-
-          def replace_once(path: str, old: str, new: str) -> None:
-              target = Path(path)
-              text = target.read_text(encoding="utf-8")
-              count = text.count(old)
-              if count != 1:
-                  raise SystemExit(f"{path}: expected one replacement, found {count}")
-              target.write_text(text.replace(old, new, 1), encoding="utf-8")
-
-          replace_once(
-              "codex-rs/hepta-agentd/src/ndu_owner_tests.rs",
-              "    let signing = SigningKey::from_bytes(&[93; 32]);\n",
-              '''    let signing_seed = format!(
-                  "ndu-owner-tests:{}:{}:{}",
-                  authority_dir.path().display(),
-                  SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos(),
-                  std::process::id(),
-              );
-              let signing_bytes = *digest(&signing_seed).as_array();
-              let signing = SigningKey::from_bytes(&signing_bytes);
-          ''',
-          )
-          replace_once(
-              "codex-rs/hepta-agentd/src/ndu_owner_tests.rs",
-              '''        let mut nonce = [0; 32];
-                  nonce[0] = self.nonce;
-                  self.nonce = self.nonce.checked_add(1).ok_or("nonce bound")?;
-          ''',
-              '''        let nonce_sequence = self.nonce;
-                  self.nonce = self.nonce.checked_add(1).ok_or("nonce bound")?;
-                  let nonce_material = format!(
-                      "ndu-owner-tests:{}:{}:{}:{}",
-                      grant_id,
-                      nonce_sequence,
-                      now,
-                      self.store.path().display(),
-                  );
-                  let nonce = *digest(&nonce_material).as_array();
-          ''',
-          )
-          replace_once(
-              "codex-rs/hepta-agentd/tests/ndu_process_e2e.rs",
-              '''    let now = now_ms()?;
-              let grant = FinalUseGrant {
-          ''',
-              '''    let now = now_ms()?;
-              let nonce_material = format!(
-                  "ndu-process-e2e:{grant_id}:{nonce}:{now}:{}",
-                  std::process::id(),
-              );
-              let grant = FinalUseGrant {
-          ''',
-          )
-          replace_once(
-              "codex-rs/hepta-agentd/tests/ndu_process_e2e.rs",
-              "        nonce: [nonce; 32],\n",
-              "        nonce: digest(&nonce_material),\n",
-          )
-          replace_once(
-              "codex-rs/hepta-agentd/tests/ndu_process_e2e.rs",
-              '''    let issuer = SigningKey::from_bytes(&[93; 32]);
-              let distributor = SigningKey::from_bytes(&[94; 32]);
-          ''',
-              '''    let fixture_seed = format!(
-                  "ndu-process-e2e:{}:{}:{}",
-                  root.display(),
-                  now_ms()?,
-                  std::process::id(),
-              );
-              let issuer = SigningKey::from_bytes(&digest(&format!("{fixture_seed}:issuer")));
-              let distributor =
-                  SigningKey::from_bytes(&digest(&format!("{fixture_seed}:distributor")));
-          ''',
-          )
-          replace_once(
-              "codex-rs/hepta-contracts/src/final_use_control.rs",
-              '''    fn fixture() -> Result<Fixture, Box<dyn std::error::Error>> {
-                  let issuer = SigningKey::from_bytes(&[41; 32]);
-                  let approver = SigningKey::from_bytes(&[42; 32]);
-                  let distributor = SigningKey::from_bytes(&[43; 32]);
-                  let now = SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis() as u64;
-                  let grant = FinalUseGrant {
-                      schema_version: 1,
-                      signer_id: "security-owner".into(),
-                      authority_epoch: 11,
-                      grant_id: "approved-use".into(),
-                      nonce: [7; 32],
-                      binding: FinalUseBinding {
-                          subject_id: "agent-one".into(),
-                          destination_id: "provider:heptabao".into(),
-                          request_sha256: [1; 32],
-                          scope_sha256: [2; 32],
-                          payload_sha256: [3; 32],
-                      },
-                      not_before_unix_ms: now - 1_000,
-                      expires_at_unix_ms: now + 30_000,
-                  };
-                  let signature = issuer.sign(&grant.signing_bytes()?).to_bytes().to_vec();
-                  let directory = tempfile::tempdir()?;
-                  std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
-          ''',
-              '''    fn fixture() -> Result<Fixture, Box<dyn std::error::Error>> {
-                  let directory = tempfile::tempdir()?;
-                  std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
-                  let now = SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis() as u64;
-                  let fixture_seed = format!(
-                      "final-use-control:{}:{now}:{}",
-                      directory.path().display(),
-                      std::process::id(),
-                  );
-                  let fixture_bytes = |label: &str| -> [u8; 32] {
-                      let mut hasher = Sha256::new();
-                      hasher.update(fixture_seed.as_bytes());
-                      hasher.update([0]);
-                      hasher.update(label.as_bytes());
-                      hasher.finalize().into()
-                  };
-                  let issuer = SigningKey::from_bytes(&fixture_bytes("issuer"));
-                  let approver = SigningKey::from_bytes(&fixture_bytes("approver"));
-                  let distributor = SigningKey::from_bytes(&fixture_bytes("distributor"));
-                  let grant = FinalUseGrant {
-                      schema_version: 1,
-                      signer_id: "security-owner".into(),
-                      authority_epoch: 11,
-                      grant_id: "approved-use".into(),
-                      nonce: fixture_bytes("approved-use-nonce"),
-                      binding: FinalUseBinding {
-                          subject_id: "agent-one".into(),
-                          destination_id: "provider:heptabao".into(),
-                          request_sha256: fixture_bytes("request"),
-                          scope_sha256: fixture_bytes("scope"),
-                          payload_sha256: fixture_bytes("payload"),
-                      },
-                      not_before_unix_ms: now - 1_000,
-                      expires_at_unix_ms: now + 30_000,
-                  };
-                  let signature = issuer.sign(&grant.signing_bytes()?).to_bytes().to_vec();
-          ''',
-          )
-
-          status_path = Path("docs/modules/utility.ndu/STATUS.md")
-          status = status_path.read_text(encoding="utf-8")
-          start = status.index("## Exact A–D engineering qualification binding (2026-09-28)")
-          end = status.index("# utility.ndu status and claim boundary", start)
-          status = status[:start] + '''## Exact-source qualification identity policy (2026-09-28)
-
-The convergence branch is `work/utility-ndu-abcd-convergence-20260928`. Every
-changed revision must be qualified by receipts that bind the exact source commit,
-source tree, deterministic synthetic-merge commit/tree, command line, exit code,
-log digest and aggregate checksum. Run numbers in prose are historical navigation
-only and never substitute for the retained receipt matching the reviewed SHA.
-
-A successful `ndu-qualified-evidence-<exact-source-sha>` aggregate establishes the
-bounded engineering qualification fields for that exact source only. Main-branch
-publication additionally requires the OIDC/KMS/versioned-object receipt and exact
-read-back checksum. Neither receipt selects or activates a production writer,
-enrolls a protected clock/frontier, proves physical power-loss durability, or
-grants release authority.
-
-''' + status[end:]
-          old = "`exactHeadSourceQualification` for this revision is bound to workflow run `36393371823` and is established only when that run finishes with a successful aggregate for its emitted exact source SHA. An older source result, an unchanged code subtree, or a workflow definition is never substituted for that receipt."
-          new = "`exactHeadSourceQualification` is established only by the successful aggregate whose retained identity equals the exact revision under review. An older source result, an unchanged code subtree, a mutable run number in documentation, or a workflow definition is never substituted for that receipt."
-          if status.count(old) != 1:
-              raise SystemExit("STATUS.md exact-head qualification paragraph drifted")
-          status_path.write_text(status.replace(old, new, 1), encoding="utf-8")
-
-          map_path = Path("docs/modules/utility.ndu/IMPLEMENTATION_MAP.json")
-          data = json.loads(map_path.read_text(encoding="utf-8"))
-          completion = data["completion"]
-          completion["exactHeadQualification"] = "external_exact_sha_dual_lane_receipt_required"
-          completion["namedHostQualification"] = "external_exact_sha_named_ci_receipt_required_production_target_pending"
-          completion["localDeterministicProcess"] = "candidate_named_local_process_exact_receipt_required_production_trust_pending"
-          claims = data["claimBoundary"]
-          claims["namedHostQualificationReceiptProved"] = False
-          claims["namedLocalDeterministicCiExecutionProved"] = False
-          evidence = data["currentSourceEvidence"]
-          evidence["baselineMainCommit"] = "__BASE__"
-          evidence["branch"] = "work/utility-ndu-abcd-convergence-20260928"
-          evidence["qualificationBinding"] = "external exact-source and deterministic synthetic-merge receipts with command/log/checksum identity"
-          evidence["productionActivation"] = False
-          evidence["qualificationWorkflow"] = ".github/workflows/hepta-ndu-final-evidence-sync.yml"
-          evidence["evidencePublicationWorkflow"] = ".github/workflows/hepta-ndu-evidence-publication.yml"
-          evidence["qualificationArtifactPattern"] = "ndu-qualified-evidence-<exact-source-sha>"
-          evidence["qualificationIdentityPolicy"] = "match exact source SHA/tree and synthetic commit/tree; run IDs are non-authoritative navigation"
-          for key in (
-              "qualificationRunId",
-              "priorQualifiedSourceCommit",
-              "priorQualifiedRunId",
-              "namedCiHostReceiptProved",
-          ):
-              evidence.pop(key, None)
-          map_path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
-          PY
-          sed -i "s/__BASE__/$BASE/" docs/modules/utility.ndu/IMPLEMENTATION_MAP.json
-
-          (cd codex-rs && cargo fmt --package codex-hepta-contracts --package codex-hepta-agentd)
-          (cd codex-rs && cargo test --locked -p codex-hepta-contracts --lib final_use_control::tests)
-          (cd codex-rs && cargo test --locked -p codex-hepta-agentd --lib ndu_owner_tests)
-          (cd codex-rs && cargo test --locked -p codex-hepta-agentd --test ndu_process_e2e --no-run)
-
-          git add codex-rs/hepta-agentd/src/ndu_owner_tests.rs \
-                  codex-rs/hepta-agentd/tests/ndu_process_e2e.rs \
-                  codex-rs/hepta-contracts/src/final_use_control.rs \
-                  docs/modules/utility.ndu/STATUS.md \
-                  docs/modules/utility.ndu/IMPLEMENTATION_MAP.json
+          git fetch --no-tags origin main work/utility-ndu-recovery-observability-20260928
+          test "$(git rev-parse refs/remotes/origin/$branch)" = "$REQUEST_SHA"
+          git cat-file -e "$fixture_commit^{commit}"
+          git checkout "$fixture_commit" -- \
+            codex-rs/hepta-agentd/src/ndu_owner_tests.rs \
+            codex-rs/hepta-agentd/tests/ndu_process_e2e.rs \
+            codex-rs/hepta-contracts/src/final_use_control.rs
+          cd codex-rs
+          cargo fmt --package codex-hepta-contracts --package codex-hepta-agentd
+          cargo test --locked -p codex-hepta-contracts --lib final_use_control::tests
+          cargo test --locked -p codex-hepta-agentd --lib ndu_owner_tests
+          cargo test --locked -p codex-hepta-agentd --test ndu_process_e2e --no-run
+          cd ..
+          git add \
+            codex-rs/hepta-agentd/src/ndu_owner_tests.rs \
+            codex-rs/hepta-agentd/tests/ndu_process_e2e.rs \
+            codex-rs/hepta-contracts/src/final_use_control.rs
+          base=$(git rev-parse refs/remotes/origin/main)
           python3 scripts/hepta_ndu_map_integrity.py \
             --rebind-index \
-            --candidate-branch "$BRANCH" \
-            --baseline-main "$BASE"
+            --candidate-branch "$branch" \
+            --baseline-main "$base"
           git add docs/modules/utility.ndu/IMPLEMENTATION_MAP.json
           python3 scripts/test_hepta_ndu_map_integrity.py
           python3 scripts/test_hepta_ndu_source_policy.py
           git diff --cached --check
           git config user.name hepta-ndu-remediation
           git config user.email qualification@invalid
-          git commit -s -m 'test(ndu): derive cryptographic fixtures and stabilize evidence binding'
+          git commit -s -m 'test(ndu): derive cryptographic fixture material at runtime'
           test -z "$(git status --porcelain --untracked-files=all)"
           python3 scripts/hepta-ndu-implementation-map-closed-world.py \
             --expected-sha "$(git rev-parse HEAD)" \
             --expected-tree "$(git rev-parse HEAD^{tree})"
-          git push origin "HEAD:$BRANCH"
+          git push origin "HEAD:$branch"
