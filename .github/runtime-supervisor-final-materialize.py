@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+# Runner epoch 2: the transformation is intentionally platform-neutral.
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
