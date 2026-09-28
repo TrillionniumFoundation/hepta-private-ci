@@ -1,0 +1,111 @@
+name: Prompt registry closeout fixture and native smoke
+on:
+  push:
+    branches: [ops/prompt-registry-author-closeout-20260928]
+    paths: ['.github/workflows/prompt-registry-closeout-repair.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: write
+jobs:
+  repair:
+    runs-on: ubuntu-slim
+    timeout-minutes: 15
+    env:
+      EXPECTED_SOURCE: fcedbac7fce013ba81450f5da8b31f50621758fd
+      TARGET_BRANCH: codex/prompt-registry-verified-closeout-20260928
+      PYTHONDONTWRITEBYTECODE: '1'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: fcedbac7fce013ba81450f5da8b31f50621758fd
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+      - name: Correct measured fixture length in developer commit
+        run: |
+          set -eu
+          mkdir -p "$RUNNER_TEMP/prompt-native"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('codex-rs/hepta-prompt-registry/src/durable_gc_tests.rs')
+          text = p.read_text()
+          old = 'assert_eq!(receipt.unlinked_file_bytes, 23);'
+          assert text.count(old) == 1
+          assert len(b'aborted unselected write') == 24
+          p.write_text(text.replace(old, 'assert_eq!(receipt.unlinked_file_bytes, 24);'))
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add codex-rs/hepta-prompt-registry/src/durable_gc_tests.rs
+          git diff --cached --check
+          git commit -m 'test(prompt.registry): bind orphan reclamation expectation to actual 24-byte fixture'
+          python3 scripts/hepta-prompt-registry-map.py --write
+          git add docs/modules/prompt.registry/IMPLEMENTATION_MAP.json
+          git commit -m 'docs(prompt.registry): refresh exact source map after GC fixture correction'
+          python3 scripts/hepta-prompt-registry-map.py --check
+          git fetch --no-tags origin "+refs/heads/$TARGET_BRANCH:refs/remotes/origin/$TARGET_BRANCH"
+          test "$(git rev-parse "refs/remotes/origin/$TARGET_BRANCH")" = "$EXPECTED_SOURCE"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          git rev-parse HEAD > "$RUNNER_TEMP/prompt-native/source-sha.txt"
+          git rev-parse 'HEAD^{tree}' > "$RUNNER_TEMP/prompt-native/source-tree.txt"
+          git archive HEAD | gzip -n > "$RUNNER_TEMP/prompt-native/source.tar.gz"
+      - name: Dispatch full independent qualification
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import json, os, urllib.request
+          url = 'https://api.github.com/repos/' + os.environ['GITHUB_REPOSITORY'] + '/actions/workflows/hepta-prompt-registry-qualification.yml/dispatches'
+          req = urllib.request.Request(url, data=json.dumps({'ref': os.environ['TARGET_BRANCH']}).encode(), headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json'}, method='POST')
+          with urllib.request.urlopen(req, timeout=30) as r:
+              assert r.status == 204
+          PY
+      - name: Ensure native linker exists
+        run: |
+          if ! command -v cc; then
+            sudo apt-get update
+            sudo apt-get install -y build-essential pkg-config
+          fi
+      - name: Execute registry checks on the committed tree without patching it
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, signal, subprocess, time
+          out = pathlib.Path(os.environ['RUNNER_TEMP']) / 'prompt-native'
+          receipt = {'schema': 'hepta.prompt-registry.native-smoke.v1', 'sourceSha': subprocess.check_output(['git','rev-parse','HEAD'], text=True).strip(), 'sourceTree': subprocess.check_output(['git','rev-parse','HEAD^{tree}'], text=True).strip(), 'runId': os.environ['GITHUB_RUN_ID'], 'runAttempt': os.environ['GITHUB_RUN_ATTEMPT'], 'checks': [], 'productQualified': False, 'accepted': False, 'released': False}
+          commands = [('registry', ['cargo','test','--locked','-p','codex-hepta-prompt-registry','--','--test-threads=1'], 480), ('lint', ['cargo','clippy','--locked','-p','codex-hepta-prompt-registry','--all-targets','--no-deps','--','-D','warnings'], 120)]
+          for name, command, budget in commands:
+              row = {'name': name, 'state': 'running'}
+              receipt['checks'].append(row)
+              (out/'receipt.json').write_text(json.dumps(receipt, indent=2)+'\n')
+              log = out/(name+'.log')
+              start = time.monotonic()
+              with log.open('w') as stream:
+                  child = subprocess.Popen(command, cwd='codex-rs', stdout=stream, stderr=subprocess.STDOUT, start_new_session=True)
+                  try:
+                      code = child.wait(timeout=budget)
+                  except subprocess.TimeoutExpired:
+                      os.killpg(child.pid, signal.SIGKILL)
+                      child.wait()
+                      code = 124
+              row.update({'state': 'passed' if code == 0 else 'failed', 'exitCode': code, 'seconds': time.monotonic()-start, 'logSha256': hashlib.sha256(log.read_bytes()).hexdigest()})
+              (out/'receipt.json').write_text(json.dumps(receipt, indent=2)+'\n')
+              print(name, code, log.read_text(errors='replace')[-6000:], flush=True)
+          subprocess.run(['git','diff','--exit-code','HEAD'], check=True)
+          raise SystemExit(0 if all(c['state']=='passed' for c in receipt['checks']) else 1)
+          PY
+      - name: Retain exact source and unqualified smoke diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-registry-native-smoke-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/prompt-native/
+          if-no-files-found: warn
+          retention-days: 14
