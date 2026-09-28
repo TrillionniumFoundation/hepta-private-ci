@@ -11,6 +11,8 @@ use crate::SupervisorEventKind;
 use crate::control_intent;
 use crate::restart_budget::RestartBudgetError;
 use crate::restart_budget::claim_restart;
+use crate::restart_lineage;
+use crate::restart_lineage::RestartProcessWitness;
 use crate::runtime::AgentRuntime;
 use crate::runtime::AgentSlot;
 use crate::runtime::DeferredAgentActionKind;
@@ -210,8 +212,13 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot.restart_pending = false;
         slot.restart_not_before = None;
         let record = self.record(agent_id)?;
-        crate::restart_budget::cancel_restart(record.layout.run_root())
-            .map_err(|error| SupervisorError::Invalid(error.to_string()))
+        // Attempt both durable cancellations. A sidecar failure must not hide
+        // the budget cancellation, and vice versa.
+        let lineage = restart_lineage::cancel(record.layout.run_root(), agent_id)
+            .map_err(|error| SupervisorError::Invalid(error.to_string()));
+        let budget = crate::restart_budget::cancel_restart(record.layout.run_root())
+            .map_err(|error| SupervisorError::Invalid(error.to_string()));
+        lineage.and(budget)
     }
 
     pub(crate) fn kill_slot(
@@ -348,6 +355,26 @@ impl<D: ProcessDriver> Supervisor<D> {
             }
             other => SupervisorError::Invalid(other.to_string()),
         })?;
+        let predecessor = slot
+            .runtime
+            .as_ref()
+            .map(|runtime| {
+                RestartProcessWitness::new(
+                    runtime.spawn_generation,
+                    runtime.identity.clone(),
+                    runtime.release_id.clone(),
+                )
+            })
+            .transpose()
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        restart_lineage::begin(
+            record.layout.run_root(),
+            agent_id,
+            claim.window_started_unix_ms,
+            claim.attempt,
+            predecessor,
+        )
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         slot.restart_attempt = claim.attempt;
         slot.restart_not_before = Some(deadline(now, claim.backoff)?);
         if slot.runtime.is_none() {
