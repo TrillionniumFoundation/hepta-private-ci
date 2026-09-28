@@ -26,6 +26,12 @@ and certifies neither an effect outcome nor child/resource retirement. Errors
 during an active service exchange still reject; malformed protocol input is not
 converted into a normal service completion.
 
+The private worker pipe client now applies the same close/finish and synchronous
+retired-stream checks at construction, request admission, write callback and
+reply delivery. A diagnostic-only pipe closing does not itself prove a transport
+failure. Worker signalling remains best effort; its unchanged process owner must
+still observe actual child exit and pipe closure before releasing the profile.
+
 ## Journal reduction index, not cached authority
 
 `FileBrowserOperationJournal` retains the immutable latest record per operation
@@ -78,6 +84,15 @@ Final scoped execution passed 45 Agentd and 67 journal tests. These sets overlap
 with the complete Browser suite; they must not be summed as independent coverage.
 These are developer test observations, not production activation or independent
 acceptance. The final source/fixed-main merge workflows remain necessary.
+
+The corresponding worker closure slice adds 12 cases, including ten failures on
+the old worker client. After synchronizing the complete current Browser sources
+and tests, the full Browser JavaScript suite passes **228 tests, zero failures,
+zero skipped** (193 existing plus 35 new). This supersedes the earlier supplemental
+179-test run on historical unrelated Browser files. It still does not establish
+Rust/native compilation, exact-source/fixed-base merge execution, a real Servo
+user task or full A-E completion. Source-tree and command/log identities belong
+in the delivery evidence and PR, not in an automatically advanced completion flag.
 
 ## Capacity and recovery limits
 

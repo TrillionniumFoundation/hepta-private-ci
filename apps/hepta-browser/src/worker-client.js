@@ -43,6 +43,9 @@ export class PrivateWorkerClient {
     this.#sessionId = sessionId;
     this.#generation = generation;
     child.stdout.on("data", (chunk) => this.#onBytes(chunk));
+    child.stdout.on("close", () => this.#fail(new Error("browser worker response stream closed")));
+    child.stdin.on("close", () => this.#fail(new Error("browser worker request stream closed")));
+    child.stdin.on("finish", () => this.#fail(new Error("browser worker request stream finished")));
     child.stdout.on("end", () => {
       try { this.#decoder.end(); }
       catch (error) { this.#fail(error); return; }
@@ -64,9 +67,11 @@ export class PrivateWorkerClient {
       this.#exited = true;
       this.#fail(new Error(`browser worker exited: code=${code} signal=${signal}`));
     });
+    this.#checkStreams();
   }
 
   request(kind, semanticId, payload, { signal, onDispatched } = {}) {
+    this.#checkStreams();
     if (this.#failure) return Promise.reject(this.#failure);
     if (signal?.aborted) return Promise.reject(abortError());
     const digest = createHash("sha256").update(`${kind}\u0000${semanticId}`).digest("hex");
@@ -119,6 +124,7 @@ export class PrivateWorkerClient {
         if (error) { this.#fail(error); return; }
         // Cancellation, terminal reply or channel poison closes the callback's
         // lifetime, including reuse of the same string ID by a later request.
+        this.#checkStreams();
         if (this.#failure || this.#pending.get(id) !== entry) return;
         try { onDispatched?.(); }
         catch (callbackError) { this.#fail(callbackError); }
@@ -138,6 +144,7 @@ export class PrivateWorkerClient {
   }
 
   #onBytes(chunk) {
+    this.#checkStreams();
     if (this.#failure) return;
     try {
       const frames = this.#decoder.push(chunk);
@@ -179,6 +186,17 @@ export class PrivateWorkerClient {
         else pending.resolve(observation);
       }
     } catch (error) { this.#fail(error); }
+  }
+
+  #checkStreams() {
+    // A real stream can mark itself destroyed/ended before emitting close.
+    // Neither a late write callback nor a buffered reply may cross that fence.
+    if (this.#failure) return;
+    const { stdin, stdout } = this.#child;
+    if (stdin.destroyed || stdin.closed || stdin.writableEnded
+        || stdout.destroyed || stdout.closed || stdout.readableEnded) {
+      this.#fail(new Error("browser worker transport stream is closed"));
+    }
   }
 
   #fail(error) {
