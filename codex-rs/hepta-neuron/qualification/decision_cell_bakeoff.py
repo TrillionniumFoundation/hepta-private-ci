@@ -29,11 +29,9 @@ from typing import Any, Iterable, Sequence
 
 import numpy as np
 import torch
-from huggingface_hub import HfApi, snapshot_download
 from safetensors.torch import save_file
 from torch import nn
 from torch.nn import functional as F
-from transformers import AutoModel, AutoModelForMaskedLM, AutoTokenizer
 
 from snapshot_identity import normalized_hub_manifest, snapshot_supply_chain_admission, verify_snapshot_files
 from decision_cell_metrics import (EVALUATION_PROFILE, HEADS, quality_gates, recommendations,
@@ -549,6 +547,8 @@ def model_snapshot(spec: dict[str, Any], model_root: Path) -> tuple[Path, dict[s
     target = model_root / spec["repo"].replace("/", "--") / spec["revision"]
     target.mkdir(parents=True, exist_ok=True)
     offline = os.environ.get("HEPTA_BAKEOFF_OFFLINE") == "1"
+    if not offline:
+        from huggingface_hub import HfApi, snapshot_download
     missing_before = missing_snapshot_paths(target, spec)
     snapshot_source = "prepopulated_local_snapshot"
     if missing_before:
@@ -667,6 +667,8 @@ class EncoderAdapter:
                 "exact_checkpoint_loaded": True,
             }
         else:
+            from transformers import AutoModel, AutoModelForMaskedLM, AutoTokenizer
+
             self.tokenizer = AutoTokenizer.from_pretrained(
                 model_path,
                 local_files_only=True,

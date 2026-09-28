@@ -144,3 +144,23 @@ owned floating-point feature snapshots and rejects non-finite calibrated outputs
 These integrity checks do not manufacture independent calibration or OOD trust.
 
 Dependency-free regressions: `python3 -m unittest -v test_decision_cell_metrics`.
+
+## Bounded head retraining when backbone materialization is already retained
+
+`head_retraining.py --source-receipt PATH --source-receipt-sha256 SHA256
+--output-dir OUTPUT` reuses this package's existing `fit_heads`, calibration,
+evaluation, artifact serializer and the shared inference-worker tensor consumer.
+It checks the original receipt/artifact hashes, exact dataset labels, row order,
+feature dimensions, finite values and bounded NPZ expansion before optimization.
+No source or historical receipt is rewritten. Model/download dependencies are
+loaded only at the boundary that actually needs them.
+
+The resulting `hepta.decision-cell-head-retraining.v1` report records actual
+optimizer execution, separately changed organ/cell/head parameter groups, exact
+saved-weight reload parity, and the versioned complete-decision metrics. The
+original base-materialization source and feature artifact remain explicit inputs.
+This is **head retraining from historical real-encoder features**, not a new base
+inference, current upstream audit, full model bakeoff, independent calibration,
+prospective data collection, artifact selection or production activation. The
+current entry admits only the already declared synthetic corpus. A success here
+cannot supply missing Laya execution or justify distributing vendor-derived models.
