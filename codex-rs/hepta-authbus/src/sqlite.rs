@@ -21,9 +21,7 @@ use crate::authority_store::storage;
     clippy::disallowed_methods,
     reason = "single audited AuthBus durable SQLite construction boundary"
 )]
-pub(crate) async fn open_durable_pool(
-    path: &Path,
-) -> Result<SqlitePool, AuthBusAuthorityError> {
+pub(crate) async fn open_durable_pool(path: &Path) -> Result<SqlitePool, AuthBusAuthorityError> {
     let options = SqliteConnectOptions::new()
         .filename(path)
         .create_if_missing(true)
