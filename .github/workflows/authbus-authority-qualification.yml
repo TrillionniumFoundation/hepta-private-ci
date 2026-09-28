@@ -12,10 +12,11 @@ on:
       - codex-rs/Cargo.lock
       - codex-rs/rust-toolchain.toml
       - docs/modules/auth.authbus/**
+      - docs/lane-a-foundation/auth.authbus/**
       - scripts/*authbus*.py
       - .github/workflows/authbus-authority-qualification.yml
   push:
-    branches: [main, codex/authbus-concurrency-closure-20260927]
+    branches: [main]
     paths:
       - codex-rs/hepta-authbus/**
       - codex-rs/hepta-authbus-p1-3-qualification/**
@@ -26,6 +27,7 @@ on:
       - codex-rs/Cargo.lock
       - codex-rs/rust-toolchain.toml
       - docs/modules/auth.authbus/**
+      - docs/lane-a-foundation/auth.authbus/**
       - scripts/*authbus*.py
       - .github/workflows/authbus-authority-qualification.yml
   workflow_dispatch:
