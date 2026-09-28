@@ -52,6 +52,7 @@ The registered primary source is [apps/hepta-native/src/native.js](../../../apps
 
 Direct dependencies:
 
+- `platform.wire`
 - `runtime.agentd`
 
 Authoritative write domains:
@@ -82,6 +83,39 @@ Adapters translate one registered contract, verify final payload and grant immed
 
 Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
 
+### Implemented HAC1 reference boundary and query-only observation
+
+[NativeShellRuntime](../../../apps/hepta-native/src/shell-runtime.js) accepts
+`requestPlatformCapabilityBinary` through the registered `ComputerActionIRV1`
+consumer. The existing six-field text API remains unchanged. The host installs
+principal, selected body generation, bounded read-only reference resolver and
+monotonic clock. Body generation is independent of UI projection generation.
+The adapter supports only the existing open/reveal/copy/notify reference actions;
+no raw host paths, arbitrary desktop events or executable model bytes are accepted.
+
+Frame bytes and the source view are frozen before asynchronous resolution. The
+existing platform owner receives the full action digest, resolved payload digest,
+operation and session identities, and deadline. The deadline is checked both before
+awaiting and after promise settlement; a microtask beating an overdue timer cannot
+turn late evidence into an on-time result. Failure before invoke permits only the
+existing local-reservation cleanup. After invoke, timeout or malformed/lost reply
+stays indeterminate and cannot be blindly retried or replaced by late success.
+
+`observePlatformOperationBinary({operationId, sourceActionDigest})` reads the
+retained exact local operation without requiring a live view or unexpired action.
+Its phases are `not_recorded`, `permission_pending`, `dispatched` and `observed`;
+an observed receipt separately retains rejected/succeeded/failed/indeterminate.
+It neither resolves references nor calls permission/invoke, and rejects a changed
+action digest. This is an owner-local library method, not a new unauthenticated RPC.
+The installed caller must retain its existing authenticated principal/session scope.
+
+Operation memory is bounded to 1024 entries; unknown identities are not evicted.
+The observer does not persist history across process restart, make local absence a
+proof of nonapplication, or supply authoritative external reconciliation. A real
+platform adapter still needs kernel-owned final-use revocation, durable operation
+identity and independent OS outcome observation. Selected OS-driver/bootstrap,
+physical cancellation and packaged restart acceptance remain incomplete.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:
@@ -90,12 +124,13 @@ None.
 
 Consumed contracts:
 
+- `ComputerActionIRV1`
 - `DomainRead::runtime_health_observationV1`
 - `ModulePort::runtime.agentd::ui.native`
 
 Critical protocol schemas:
 
-None.
+- `ComputerActionIRV1` (registered HAC1 encoding; no additional effect authority).
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
@@ -162,7 +197,9 @@ Current focused test sources (source references, not pass receipts):
 - [apps/hepta-native/test/native.test.js](../../../apps/hepta-native/test/native.test.js); named case: `native intent requires exact payload binding`.
 - [apps/hepta-native/test/shell-runtime.test.js](../../../apps/hepta-native/test/shell-runtime.test.js); named case: `executes a final-payload-bound platform request`.
 
-From the repository root, run `node --test apps/hepta-native/test/native.test.js apps/hepta-native/test/shell-runtime.test.js`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.native.md) separately labels target acceptance designs.
+- [apps/hepta-native/test/computer-action.test.js](../../../apps/hepta-native/test/computer-action.test.js) covers exact frame and body binding, asynchronous deadlines, late replies and query-only operation observation.
+
+From the repository root, run `node --test apps/hepta-native/test/*.test.js codex-rs/hepta-wire/js/*test.mjs`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.native.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 

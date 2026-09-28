@@ -318,3 +318,127 @@ test("UI generation does not grant a different body generation", async () => {
     /body generation mismatch/);
   assert.equal(io.calls.some(([name])=>name==="invoke"),false);
 });
+
+
+test("expired completion is unknown even before the event-loop timer fires", async () => {
+  let now = 1_000_000;
+  const { runtime, io } = await connected({ monotonicMicros: () => now });
+  let calls = 0;
+  io.platform.invoke = () => {
+    calls++;
+    return new Promise((resolve) => queueMicrotask(() => {
+      now = 2_000_000;
+      resolve({ terminalObserved: true, status: "succeeded", outcomeDigest: D4 });
+    }));
+  };
+  const frame = notifyFrame("notification.channel.1");
+  const receipt = await runtime.requestPlatformCapabilityBinary({
+    frameBytes: encodeComputerActionFrameV1(frame), grantPayloadDigest: frame.finalPayloadDigest,
+  });
+  assert.equal(receipt.status, "indeterminate");
+  assert.equal(receipt.terminalObserved, false);
+  assert.equal(calls, 1);
+});
+
+test("exact binary observation survives expiry and close without resolving or invoking", async () => {
+  let now = 1_000_000, resolutions = 0;
+  const { runtime, io } = await connected({ monotonicMicros: () => now,
+    resolver: { resolve: async () => { resolutions++; return { resource: "notification.channel.1" }; } },
+  });
+  const frame = notifyFrame("notification.channel.1");
+  const receipt = await runtime.requestPlatformCapabilityBinary({
+    frameBytes: encodeComputerActionFrameV1(frame), grantPayloadDigest: frame.finalPayloadDigest,
+  });
+  now = 3_000_000;
+  await runtime.close();
+  const observed = runtime.observePlatformOperationBinary({
+    operationId: frame.operationId, sourceActionDigest: computerActionAuthorityBindingDigestV1(frame),
+  });
+  assert.equal(observed.phase, "observed");
+  assert.deepEqual(observed.receipt, receipt);
+  assert.equal(observed.authorityGranted, false);
+  assert.equal(resolutions, 1);
+  assert.equal(io.calls.filter(([name]) => name === "invoke").length, 1);
+  assert.throws(() => runtime.observePlatformOperationBinary({
+    operationId: frame.operationId, sourceActionDigest: D1,
+  }), /changed semantics/);
+});
+
+test("binary observation is nonblocking during permission and dispatch", async () => {
+  let releasePermission, releaseInvoke;
+  const { runtime, io } = await connected();
+  io.platform.permission = () => new Promise((resolve) => { releasePermission = resolve; });
+  io.platform.invoke = () => new Promise((resolve) => { releaseInvoke = resolve; });
+  const frame = notifyFrame("notification.channel.1");
+  const key = { operationId: frame.operationId, sourceActionDigest: computerActionAuthorityBindingDigestV1(frame) };
+  const pending = runtime.requestPlatformCapabilityBinary({
+    frameBytes: encodeComputerActionFrameV1(frame), grantPayloadDigest: frame.finalPayloadDigest,
+  });
+  await new Promise(setImmediate);
+  const before = runtime.observePlatformOperationBinary(key);
+  assert.equal(before.phase, "permission_pending");
+  assert.equal(before.receipt, null);
+  releasePermission({ allowed: true });
+  await new Promise(setImmediate);
+  assert.equal(runtime.observePlatformOperationBinary(key).phase, "dispatched");
+  releaseInvoke({ terminalObserved: false });
+  const receipt = await pending;
+  assert.equal(receipt.status, "indeterminate");
+  assert.deepEqual(runtime.observePlatformOperationBinary(key).receipt, receipt);
+  assert.equal(before.phase, "permission_pending");
+  assert.ok(Object.isFrozen(before));
+});
+
+test("local absence and malformed observation never claim nonapplication", async () => {
+  const { runtime, io } = await connected();
+  const key = { operationId: "operation.absent", sourceActionDigest: D1 };
+  const absent = runtime.observePlatformOperationBinary(key);
+  assert.equal(absent.phase, "not_recorded");
+  assert.equal(absent.receipt, null);
+  assert.equal(absent.authorityGranted, false);
+  let evaluated = 0;
+  const hostile = { ...key };
+  Object.defineProperty(hostile, "sourceActionDigest", { enumerable: true,
+    get() { evaluated++; return D1; } });
+  assert.throws(() => runtime.observePlatformOperationBinary(hostile), /own data fields/);
+  assert.equal(evaluated, 0);
+  assert.throws(() => runtime.observePlatformOperationBinary({ ...key, renew: true }), /own data fields/);
+  assert.equal(io.calls.some(([name]) => name === "permission" || name === "invoke"), false);
+});
+
+test("late denial cannot masquerade as a timely permission result", async () => {
+  let now = 1_000_000;
+  const { runtime, io } = await connected({ monotonicMicros: () => now });
+  io.platform.permission = () => new Promise((resolve) => queueMicrotask(() => {
+    now = 2_000_000; resolve({ allowed: false, outcomeDigest: D4 });
+  }));
+  const frame = notifyFrame("notification.channel.1");
+  await assert.rejects(runtime.requestPlatformCapabilityBinary({
+    frameBytes: encodeComputerActionFrameV1(frame), grantPayloadDigest: frame.finalPayloadDigest,
+  }), /deadline has expired/);
+  assert.equal(io.calls.some(([name]) => name === "invoke"), false);
+});
+
+test("querying a timed-out operation never adopts its late success", async () => {
+  let now = 1_000_000, release;
+  const { runtime, io } = await connected({ monotonicMicros: () => now });
+  let invocations = 0;
+  io.platform.invoke = () => {
+    invocations++;
+    return new Promise((resolve) => { release = resolve; });
+  };
+  const frame = notifyFrame("notification.channel.1", { deadlineMonotonicMicros: 1_005_000 });
+  const receipt = await runtime.requestPlatformCapabilityBinary({
+    frameBytes: encodeComputerActionFrameV1(frame), grantPayloadDigest: frame.finalPayloadDigest,
+  });
+  assert.equal(receipt.status, "indeterminate");
+  release({ terminalObserved: true, status: "succeeded", outcomeDigest: D4 });
+  await new Promise(setImmediate);
+  now = 3_000_000;
+  await runtime.close();
+  const observed = runtime.observePlatformOperationBinary({
+    operationId: frame.operationId, sourceActionDigest: computerActionAuthorityBindingDigestV1(frame),
+  });
+  assert.deepEqual(observed.receipt, receipt);
+  assert.equal(invocations, 1);
+});

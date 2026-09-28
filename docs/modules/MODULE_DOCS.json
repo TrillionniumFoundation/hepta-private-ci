@@ -2747,10 +2747,13 @@
       ],
       "producedContracts": [],
       "consumedContracts": [
+        "ComputerActionIRV1",
         "DomainRead::runtime_health_observationV1",
         "ModulePort::runtime.agentd::ui.native"
       ],
-      "protocols": [],
+      "protocols": [
+        "ComputerActionIRV1"
+      ],
       "ownedDomains": [],
       "readDomains": [
         "runtime_health_observation"

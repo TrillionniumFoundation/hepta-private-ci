@@ -108,6 +108,52 @@
       "nativeSymbol": "async applyShellUpdate(",
       "sourcePath": "apps/hepta-native/src/shell-runtime.js",
       "sourcePathExists": true
+    },
+    {
+      "designOperation": "request_platform_capability_binary",
+      "mappingClass": "owner_boundary",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "apps/hepta-native/src/shell-runtime.js",
+        "symbol": "async requestPlatformCapabilityBinary(",
+        "buildTarget": "hepta-native"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "apps/hepta-native/test/computer-action.test.js",
+          "kind": "node_product_boundary",
+          "command": "node --test apps/hepta-native/test/computer-action.test.js"
+        }
+      ],
+      "sourceSemantics": "Consumes HAC1 using a host-installed principal/body generation, immutable frame and view, bounded resolver and monotonic deadline; dispatches only through the existing platform owner and retains post-invoke uncertainty.",
+      "operation": "request_platform_capability_binary",
+      "nativeSymbol": "async requestPlatformCapabilityBinary(",
+      "sourcePath": "apps/hepta-native/src/shell-runtime.js",
+      "sourcePathExists": true
+    },
+    {
+      "designOperation": "observe_platform_operation_binary",
+      "mappingClass": "owner_boundary",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "apps/hepta-native/src/shell-runtime.js",
+        "symbol": "observePlatformOperationBinary(",
+        "buildTarget": "hepta-native"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "apps/hepta-native/test/computer-action.test.js",
+          "kind": "node_product_boundary",
+          "command": "node --test apps/hepta-native/test/computer-action.test.js"
+        }
+      ],
+      "sourceSemantics": "Reads the exact process-local binary operation by operation ID and full action digest after deadline or session close without resolver, permission or invocation; not_recorded is not proof of nonapplication or durable cross-process recovery.",
+      "operation": "observe_platform_operation_binary",
+      "nativeSymbol": "observePlatformOperationBinary(",
+      "sourcePath": "apps/hepta-native/src/shell-runtime.js",
+      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [],

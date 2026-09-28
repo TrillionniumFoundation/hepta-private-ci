@@ -37,6 +37,9 @@ for (const [index, [opcode, targetRef, payload]] of cases.entries()) {
     assert.equal(protocol.contractId, contract.id);
     assert.equal(contract.producer, "platform.wire");
     assert.ok(contract.consumers.includes("browser.servo"));
+    if (index >= 5 && index <= 8) {
+      assert.ok(contract.consumers.includes("ui.native"), "native reference consumer is registered");
+    }
     assert.equal(contract.authorityDelta, "none");
     assert.equal(protocol.canonicalEncoding, "HAC1_big_endian_v1");
     const value = {

@@ -189,11 +189,32 @@ export class NativeShellRuntime {
     if (remaining > 2_147_483_647_000) throw new TypeError("binary deadline exceeds timer range");
     let timer;
     try {
-      return await Promise.race([promise, new Promise((_, reject) => {
+      const observed = await Promise.race([promise, new Promise((_, reject) => {
         timer = setTimeout(() => reject(new TypeError("binary native deadline has expired")),
           Math.max(1, Math.ceil(remaining / 1000)));
       })]);
+      // A resolved microtask may run before an overdue timer. The trusted clock,
+      // not timer callback ordering, decides whether this result arrived in time.
+      if (this.#now() >= deadline) throw new TypeError("binary native deadline has expired");
+      return observed;
     } finally { clearTimeout(timer); }
+  }
+
+  // Observation only: no current view, grant renewal, resolver or driver call.
+  // Absence is local absence, never proof that another process did not execute.
+  observePlatformOperationBinary(input) {
+    if (!this.#binary) throw new TypeError("binary native profile is not installed");
+    const request = platformInput(input, ["operationId", "sourceActionDigest"]);
+    const operationId = stableId(request.operationId, "operationId");
+    const sourceActionDigest = digest(request.sourceActionDigest, "sourceActionDigest");
+    const entry = this.#operations.get(operationId);
+    if (entry && entry.sourceActionDigest !== sourceActionDigest) {
+      throw new TypeError("operation identity was reused with changed semantics");
+    }
+    return result({
+      kind: "NativeOperationObservationV1", operationId, sourceActionDigest,
+      phase: entry?.phase ?? "not_recorded", receipt: entry?.receipt ?? null,
+    });
   }
 
   async requestPlatformCapabilityBinary(input) {
@@ -255,7 +276,9 @@ export class NativeShellRuntime {
       throw new TypeError("platform operation capacity exceeded");
     }
     // Reserve before any asynchronous permission call. Do not evict unknown work.
-    const entry = { binding, promise: null };
+    const entry = { binding, promise: null,
+      sourceActionDigest: binary?.sourceActionDigest ?? null,
+      phase: "permission_pending", receipt: null };
     this.#operations.set(operationId, entry);
     entry.promise = Promise.resolve().then(async () => {
       if (binary && binary.deadlineMonotonicMicros <= this.#now()) {
@@ -289,6 +312,7 @@ export class NativeShellRuntime {
       const indeterminate = result({ ...common, status: "indeterminate",
         terminalObserved: false, outcomeDigest: null });
       try {
+        entry.phase = "dispatched";
         const invocation = this.#platform.invoke({
           sessionId: session.sessionId, sessionGeneration: session.generation,
           operationId, action: request.action, resource, finalPayloadDigest,
@@ -308,6 +332,10 @@ export class NativeShellRuntime {
         // non-application nor safe retry. Retain the identity and uncertainty.
         return indeterminate;
       }
+    }).then((receipt) => {
+      entry.receipt = receipt;
+      entry.phase = "observed";
+      return receipt;
     }).catch((error) => {
       // Only a proven pre-invoke failure may release the local reservation.
       if (this.#operations.get(operationId) === entry) this.#operations.delete(operationId);

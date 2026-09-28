@@ -29,3 +29,18 @@ The platform owner remains responsible for final-use revocation, persistent oper
 identity, stop/reconcile and OS-specific outcome evidence.
 
 The selected body generation is distinct from the UI projection generation; a matching UI generation cannot authorize an action for a different body.
+
+## Query without redispatch
+
+`observePlatformOperationBinary({ operationId, sourceActionDigest })` returns an
+immutable snapshot of the exact retained local operation: `not_recorded`,
+`permission_pending`, `dispatched`, or `observed` plus the original receipt.
+It remains readable after action expiry or session close; it never invokes the
+resolver, permission adapter or platform operation. A different action digest is
+an identity conflict. An indeterminate receipt is not replaced by a late success.
+This owner-local method is not an external unauthenticated endpoint.
+
+Local `not_recorded` is not evidence that a previous process did nothing. Durable
+lookup and terminal reconciliation belong to the existing platform/kernel owners.
+The deadline is checked again on promise settlement, independently of Node timer
+callback ordering. A result arriving after the monotonic deadline is not timely.
