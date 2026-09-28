@@ -279,13 +279,15 @@ def qualify(root: Path, out: Path, source: str, base: str, lane: str) -> int:
     package = ["--manifest-path", "codex-rs/Cargo.toml", "--locked", "-p", PACKAGE]
     junit = root / "codex-rs/target/nextest/local/junit.xml"
     junit.unlink(missing_ok=True)
+    # The repository just recipe already supplies --no-fail-fast. Repeating it
+    # prevents nextest from starting, even though every native gate is attempted.
     commands = {
         "closure": [sys.executable, "scripts/hepta-lane-e-closure.py", "verify"],
         "build": ["cargo", "check", *package, "--all-targets"],
         "clippy": ["cargo", "clippy", *package, "--all-targets", "--", "-D", "warnings"],
         "format": ["cargo", "fmt", "--manifest-path", "codex-rs/Cargo.toml", "-p", PACKAGE, "--", "--check"],
         "inventory": ["cargo", "nextest", "list", *package, "--ignore-default-filter", "--message-format", "json"],
-        "tests": ["just", "test", "--locked", "-p", PACKAGE, "--ignore-default-filter", "--run-ignored", "all", "--retries", "0", "--no-fail-fast"],
+        "tests": ["just", "test", "--locked", "-p", PACKAGE, "--ignore-default-filter", "--run-ignored", "all", "--retries", "0"],
     }
     gates = {}
     for name, argv in commands.items():

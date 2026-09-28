@@ -11,6 +11,7 @@ use std::time::Duration;
 use std::time::Instant;
 
 use super::*;
+use pretty_assertions::assert_eq;
 
 struct ChildGuard(Child);
 

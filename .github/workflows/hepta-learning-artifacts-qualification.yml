@@ -35,8 +35,6 @@ jobs:
         lane: [exact-head, synthetic-merge]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 100
-    env:
-      HEPTA_ARTIFACT_PHASE_OUTPUT: ${{ runner.temp }}/artifact-phase-measurements
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -51,6 +49,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          echo "HEPTA_ARTIFACT_PHASE_OUTPUT=$RUNNER_TEMP/artifact-phase-measurements" >> "$GITHUB_ENV"
           if [[ -z "$BASE_SHA" ]]; then
             if [[ "$GITHUB_EVENT_NAME" == push && "$GITHUB_REF" == refs/heads/main ]]; then
               BASE_SHA="$PUSH_BEFORE"
