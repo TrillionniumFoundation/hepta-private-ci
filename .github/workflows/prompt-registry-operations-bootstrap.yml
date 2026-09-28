@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   apply:
-    runs-on: windows-2025
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -71,10 +71,6 @@ jobs:
               elif new in text:
                   already_normalized += 1
               else:
-                  # The reviewed bootstrap evolves with the maintained source. A
-                  # missing legacy anchor is acceptable when the target no longer
-                  # requires that normalization; subsequent source and CI gates
-                  # remain authoritative.
                   continue
           if applied == 0 and already_normalized == 0:
               raise SystemExit("reviewed bootstrap contains no recognized normalization anchors")
