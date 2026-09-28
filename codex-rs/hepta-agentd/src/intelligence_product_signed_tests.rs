@@ -45,7 +45,10 @@ fn signed_authority_profile(
 ) -> (PathBuf, Arc<crate::IntelligenceAuthorityRollbackGuardV1>) {
     // Resolve the OS temporary-directory alias while provisioning the fixture.
     // The production reader must still reject every symlink at final use.
-    let root = directory.path().canonicalize().expect("canonical test root");
+    let root = directory
+        .path()
+        .canonicalize()
+        .expect("canonical test root");
     let path = root.join("authority.json");
     write_authority_file(
         &path,
@@ -53,8 +56,7 @@ fn signed_authority_profile(
         value.request.snapshot.revocation_frontier_digest(),
     );
     let manifest: IntelligenceAuthorityFileV1 =
-        serde_json::from_slice(&std::fs::read(&path).expect("manifest bytes"))
-            .expect("manifest");
+        serde_json::from_slice(&std::fs::read(&path).expect("manifest bytes")).expect("manifest");
     let guard = crate::IntelligenceAuthorityRollbackGuardV1::open(
         &root.join("authority-floor.json"),
         manifest.authority_epoch,
