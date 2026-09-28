@@ -1,0 +1,217 @@
+name: AuthBus exact read-barrier repair
+
+on:
+  push:
+    branches: [codex/authbus-final-hardening-20260928]
+    paths: [.github/workflows/authbus-read-barrier-repair.yml]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: authbus-read-barrier-repair
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/codex/authbus-final-hardening-20260928'
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Apply the exact fail-closed read barrier and regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git ls-remote origin "$GITHUB_REF" | cut -f1)" = "$GITHUB_SHA"
+          python3 - <<'PY'
+          from pathlib import Path
+
+          host_path = Path('codex-rs/hepta-authbus/src/host.rs')
+          tests_path = Path('codex-rs/hepta-authbus/src/host_tests.rs')
+          host = host_path.read_text()
+
+          replacements = [
+              (
+                  '''    pub async fn message_issuer(
+                      &self,
+                      issuer_id: &StableId,
+                      key_epoch: Generation,
+                  ) -> Result<IssuerRegistration, AuthBusAuthorityError> {
+                      let _mutation = self.mutation.lock().await;
+                      self.store.message_issuer(issuer_id, key_epoch).await
+                  }
+          ''',
+                  '''    pub async fn message_issuer(
+                      &self,
+                      issuer_id: &StableId,
+                      key_epoch: Generation,
+                  ) -> Result<IssuerRegistration, AuthBusAuthorityError> {
+                      let _mutation = self.begin_mutation().await?;
+                      self.store.message_issuer(issuer_id, key_epoch).await
+                  }
+          ''',
+              ),
+              (
+                  '''    pub async fn settlement_issuer(
+                      &self,
+                      issuer_id: &StableId,
+                      key_epoch: Generation,
+                  ) -> Result<SettlementIssuerRegistration, AuthBusAuthorityError> {
+                      let _mutation = self.mutation.lock().await;
+                      self.store.settlement_issuer(issuer_id, key_epoch).await
+                  }
+          ''',
+                  '''    pub async fn settlement_issuer(
+                      &self,
+                      issuer_id: &StableId,
+                      key_epoch: Generation,
+                  ) -> Result<SettlementIssuerRegistration, AuthBusAuthorityError> {
+                      let _mutation = self.begin_mutation().await?;
+                      self.store.settlement_issuer(issuer_id, key_epoch).await
+                  }
+          ''',
+              ),
+              (
+                  '''    pub async fn quota_snapshot(
+                      &self,
+                      quota_key: &StableId,
+                  ) -> Result<QuotaSnapshot, AuthBusAuthorityError> {
+                      let _mutation = self.mutation.lock().await;
+                      self.store.quota_snapshot(quota_key).await
+                  }
+          ''',
+                  '''    pub async fn quota_snapshot(
+                      &self,
+                      quota_key: &StableId,
+                  ) -> Result<QuotaSnapshot, AuthBusAuthorityError> {
+                      let _mutation = self.begin_mutation().await?;
+                      self.store.quota_snapshot(quota_key).await
+                  }
+          ''',
+              ),
+              (
+                  '''    pub async fn reservation(
+                      &self,
+                      reservation_id: &StableId,
+                  ) -> Result<QuotaReservation, AuthBusAuthorityError> {
+                      let _mutation = self.mutation.lock().await;
+                      self.store.reservation(reservation_id).await
+                  }
+          ''',
+                  '''    pub async fn reservation(
+                      &self,
+                      reservation_id: &StableId,
+                  ) -> Result<QuotaReservation, AuthBusAuthorityError> {
+                      let _mutation = self.begin_mutation().await?;
+                      self.store.reservation(reservation_id).await
+                  }
+          ''',
+              ),
+          ]
+          for before, after in replacements:
+              if host.count(before) != 1:
+                  raise SystemExit('refusing drifted AuthBus host read surface')
+              host = host.replace(before, after)
+          host_path.write_text(host)
+
+          tests = tests_path.read_text()
+          marker = 'async fn reads_fail_closed_until_pending_checkpoint_is_published()'
+          if marker in tests:
+              raise SystemExit('read-barrier regression already exists unexpectedly')
+          tests += r'''
+
+          #[tokio::test]
+          async fn reads_fail_closed_until_pending_checkpoint_is_published() {
+              let paths = private_paths();
+              let host = AuthBusAuthorityHost::bootstrap(
+                  &paths.database,
+                  paths.checkpoint.clone(),
+                  "read-barrier-owner",
+              )
+              .await
+              .expect("bootstrap owner");
+              let issuer_id = StableId::new("issuer:read-barrier").expect("issuer id");
+              let fault = set_checkpoint_failpoint(&paths.checkpoint, 1);
+              assert!(matches!(
+                  host.enroll_issuer(
+                      IssuerPurpose::Message,
+                      IssuerSpec {
+                          issuer_id: issuer_id.clone(),
+                          key_epoch: Generation::new(1).expect("epoch"),
+                          verifying_key: SigningKey::from_bytes(&[61; 32]).verifying_key(),
+                      },
+                  )
+                  .await,
+                  Err(AuthBusAuthorityError::Storage(_))
+              ));
+              assert!(matches!(
+                  host.message_issuer(&issuer_id, Generation::new(1).expect("epoch"))
+                      .await,
+                  Err(AuthBusAuthorityError::Storage(_))
+              ));
+              drop(fault);
+              host.message_issuer(&issuer_id, Generation::new(1).expect("epoch"))
+                  .await
+                  .expect("read publishes and observes the committed authority state");
+          }
+          '''
+          tests_path.write_text(tests)
+          PY
+
+      - name: Regenerate and verify machine contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/check-authbus-closed-world.py --write
+          python3 scripts/generate-authbus-implementation-map.py --write
+          python3 scripts/check-authbus-closed-world.py --check
+          python3 scripts/generate-authbus-implementation-map.py --check
+          python3 scripts/test-authbus-closed-world.py
+          python3 scripts/test-authbus-exact-head-evidence.py
+          python3 scripts/test-authbus-operations.py
+          git diff --check
+
+      - name: Publish the repaired source and remove this one-shot workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/authbus-read-barrier-repair.yml
+          python3 - <<'PY'
+          import subprocess
+          allowed = {
+              '.github/workflows/authbus-read-barrier-repair.yml',
+              'codex-rs/hepta-authbus/src/host.rs',
+              'codex-rs/hepta-authbus/src/host_tests.rs',
+              'docs/modules/auth.authbus/IMPLEMENTATION_MAP.json',
+              'docs/modules/auth.authbus/PUBLIC_API_INVENTORY.json',
+          }
+          changed = set(subprocess.check_output(['git', 'diff', '--name-only', 'HEAD'], text=True).splitlines())
+          unexpected = changed - allowed
+          required = {
+              '.github/workflows/authbus-read-barrier-repair.yml',
+              'codex-rs/hepta-authbus/src/host.rs',
+              'codex-rs/hepta-authbus/src/host_tests.rs',
+              'docs/modules/auth.authbus/IMPLEMENTATION_MAP.json',
+          }
+          if unexpected or not required <= changed:
+              raise SystemExit(f'refusing unexpected repair delta: changed={sorted(changed)}, unexpected={sorted(unexpected)}')
+          PY
+          git config user.name 'hepta-authbus-remediation-bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add --all -- \
+            .github/workflows/authbus-read-barrier-repair.yml \
+            codex-rs/hepta-authbus/src/host.rs \
+            codex-rs/hepta-authbus/src/host_tests.rs \
+            docs/modules/auth.authbus/IMPLEMENTATION_MAP.json \
+            docs/modules/auth.authbus/PUBLIC_API_INVENTORY.json
+          git commit -s -m 'fix(authbus): reconcile checkpoint before authority reads'
+          test -z "$(git status --porcelain)"
+          test "$(git ls-remote origin "$GITHUB_REF" | cut -f1)" = "$GITHUB_SHA"
+          git push origin "HEAD:$GITHUB_REF"
