@@ -4,7 +4,14 @@ from control_engineering_v2.review_gate import require_independent_approved_revi
 
 
 class ReviewGateTests(unittest.TestCase):
-    def review(self, review_id, state="APPROVED", commit="a" * 40, login="reviewer", user_id=2):
+    def review(
+        self,
+        review_id,
+        state="APPROVED",
+        commit="a" * 40,
+        login="reviewer",
+        user_id=2,
+    ):
         return {
             "id": review_id,
             "user": {"id": user_id, "login": login},
@@ -25,13 +32,29 @@ class ReviewGateTests(unittest.TestCase):
         self.assertFalse(decision["independentSemanticAcceptance"])
         self.assertFalse(decision["mergeAuthority"])
 
-    def test_latest_review_author_bot_outdated_and_unapproved_are_rejected(self):
+    def test_comment_and_pending_after_approval_do_not_erase_decision(self):
+        decision = require_independent_approved_review(
+            [
+                self.review(1),
+                self.review(2, state="COMMENTED"),
+                self.review(3, state="PENDING"),
+            ],
+            expected_head_sha="a" * 40,
+            author_user_id=1,
+            author_login="author",
+        )
+        self.assertEqual(decision["approvals"][0]["reviewId"], 1)
+
+    def test_latest_decisive_author_bot_outdated_and_unapproved_are_rejected(self):
         cases = (
             [self.review(1, login="author", user_id=1)],
             [self.review(1, login="ci[bot]", user_id=3)],
             [self.review(1, commit="b" * 40)],
             [self.review(1, state="CHANGES_REQUESTED")],
             [self.review(1), self.review(2, state="CHANGES_REQUESTED")],
+            [self.review(1), self.review(2, state="DISMISSED")],
+            [self.review(1, state="COMMENTED")],
+            [self.review(1, state="PENDING")],
         )
         for reviews in cases:
             with self.subTest(reviews=reviews), self.assertRaisesRegex(
