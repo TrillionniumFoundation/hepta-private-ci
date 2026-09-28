@@ -112,6 +112,10 @@ jobs:
           record cross-runtime 2 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-shadow-qualification --test cross_runtime_wire_session
           record gateway 1 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-native-gateway --lib http_accept
           record strict-clippy 0 cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-wire -p codex-hepta-codex-adapter --all-targets --no-deps -- -D warnings
+          record managed-fleet-profile-selftest 9 python3 scripts/platform_wire_managed_fleet_profile.py --self-test
+          record managed-fleet-profile-build 0 cargo build --release --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-wire --example managed_fleet_profile
+          record managed-fleet-profile-run 0 bash -c '"$CARGO_TARGET_DIR/release/examples/managed_fleet_profile" 8 > "$RECORDS/managed-fleet-profile.measurements.json"'
+          record managed-fleet-profile-validation 0 python3 scripts/platform_wire_managed_fleet_profile.py --input "$RECORDS/managed-fleet-profile.measurements.json" --rounds 8
           record clean-diff 0 bash -c 'git diff --exit-code && git diff --cached --exit-code && test -z "$(git status --porcelain --untracked-files=all)"'
           echo "$status" > "$RECORDS/exit-code"
           exit "$status"
@@ -139,7 +143,7 @@ jobs:
           parents = (git('show', '-s', '--format=%P', 'HEAD') or '').split()
           root = Path(os.environ['RUNNER_TEMP']) / ('wire-'+os.environ['WIRE_LANE']+'-'+os.environ['GITHUB_RUN_ID'])
           root.mkdir(parents=True, exist_ok=True)
-          expected = ['path-tests','path-drift','lane-truth','status-tests','status-drift','wire','consumer-contracts','wire-doc','ports','cross-runtime','gateway','strict-clippy','clean-diff']
+          expected = ['path-tests','path-drift','lane-truth','status-tests','status-drift','wire','consumer-contracts','wire-doc','ports','cross-runtime','gateway','strict-clippy','managed-fleet-profile-selftest','managed-fleet-profile-build','managed-fleet-profile-run','managed-fleet-profile-validation','clean-diff']
           errors = []
           if os.environ.get('EXECUTION_OUTCOME') != 'success':
               errors.append('execution step did not pass')
@@ -189,6 +193,7 @@ jobs:
               'generated_at': datetime.now(timezone.utc).isoformat(),
               'runner_image': os.environ.get('ImageOS'), 'runner_image_version': os.environ.get('ImageVersion'),
               'runner': platform.platform(), 'rustc': run('rustc','--version','--verbose'), 'cargo': run('cargo','--version'),
+              'qualification_scope': 'public managed HPTM consumer contracts and bounded multi-peer release measurements; no transport or acceptance claim',
               'status': status, 'errors': errors, 'command_records': records,
               'independent_acceptance': False, 'activation': False, 'release': False,
           }
