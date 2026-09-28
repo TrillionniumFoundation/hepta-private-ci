@@ -40,7 +40,7 @@ mod qualification {
         pub(super) use ::sqlx::Transaction;
 
         pub(super) mod sqlite {
-            pub(super) use ::sqlx::sqlite::SqliteRow;
+            pub(in super::super) use ::sqlx::sqlite::SqliteRow;
         }
 
         pub(super) trait AuditedQualificationSql {
