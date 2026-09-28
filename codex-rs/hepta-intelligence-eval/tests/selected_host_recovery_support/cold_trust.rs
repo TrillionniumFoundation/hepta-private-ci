@@ -1,12 +1,14 @@
 //! Fixed synthetic trust configuration for cold-recovery and consumer fixtures.
-//! A recovering child can load this host configuration without constructing a
-//! model, a dataset, a qualification bundle, or a cached decision.
+//! A recovering child loads this host configuration without constructing a
+//! model, dataset, qualification bundle or cached decision.
 use codex_hepta_intelligence_eval::*;
 use codex_hepta_learning_ledger::*;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
+
+pub const MINIMUM_WINDOW_MICROS: u64 = 10;
 
 pub fn id(value: &str) -> StableId { StableId::new(value).expect("id") }
 pub fn digest(value: &str) -> Digest32 { Digest32::of_bytes(value.as_bytes()) }
@@ -102,12 +104,13 @@ pub fn timing(bundle: &IndependentEvaluationBundleV1) -> LongitudinalTimeEvidenc
                 window_id: window.clone(), snapshot_id: bundle.snapshot_ids[index + 1].clone(),
                 starts_unix_micros: 31 + index as u64 * 11,
                 ends_unix_micros: 41 + index as u64 * 11,
-                observation_count: 512, observed_source_cut: digest(&format!("synthetic-cut-{index}")),
+                observation_count: 2048, observed_source_cut: digest(&format!("synthetic-cut-{index}")),
             }
         }).collect(),
         observer: sign(LearningEvidenceRoleV1::Observer, b"placeholder", 70),
     };
-    let payload = future_window_signing_payload_v1(bundle, &timing).expect("observer payload");
+    let payload = future_window_signing_payload_v1(bundle, &timing, MINIMUM_WINDOW_MICROS)
+        .expect("observer payload");
     timing.observer = sign(LearningEvidenceRoleV1::Observer, &payload, 70);
     timing
 }
@@ -115,7 +118,9 @@ pub fn timing(bundle: &IndependentEvaluationBundleV1) -> LongitudinalTimeEvidenc
 pub fn evidence(bundle: &IndependentEvaluationBundleV1, roles: &[MetricRoleContractV2],
     timing: Option<&LongitudinalTimeEvidenceV1>) -> SignedEvaluationEvidenceV1 {
     let payload = match timing {
-        Some(timing) => longitudinal_evaluation_signing_payload_v3(bundle, roles, timing).expect("V3 payload"),
+        Some(timing) => longitudinal_evaluation_signing_payload_v3(
+            bundle, roles, timing, MINIMUM_WINDOW_MICROS,
+        ).expect("V3 payload"),
         None => evaluation_signing_payload_v2(bundle, roles).expect("V2 payload"),
     };
     SignedEvaluationEvidenceV1 {

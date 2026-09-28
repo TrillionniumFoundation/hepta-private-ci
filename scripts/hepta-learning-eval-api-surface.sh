@@ -153,6 +153,40 @@ if not any(row.get('level') == 'error' and (row.get('code') or {}).get('code') =
     raise SystemExit('volatile journal fixture failed for an unrelated reason')
 PY
 
+# A second generic parameter formerly supplied an arbitrary decoder returning
+# SignedEvaluationDecisionV1. E0107 proves that this callback type slot no longer
+# exists. An unrelated type/visibility/build failure is never accepted instead.
+for symbol in recover_persisted_qualification recover_persisted_outcome_qualification \
+  recover_selected_host_qualification recover_selected_host_outcome_qualification
+do
+  cat >"${tmp}/callback.rs" <<RS
+use codex_hepta_intelligence_eval::DurableProductEvaluationAttemptJournalV1;
+use codex_hepta_intelligence_eval::LockedFileFinalHoldoutCasStoreV1;
+use codex_hepta_intelligence_eval::RecordedProductEvaluationRunnerV1;
+fn bypass<J: DurableProductEvaluationAttemptJournalV1>() {
+    let _ = RecordedProductEvaluationRunnerV1::<LockedFileFinalHoldoutCasStoreV1>::${symbol}::<J, ()>;
+}
+fn main() {}
+RS
+  if rustc --edition=2024 --crate-name learning_eval_callback_surface --error-format=json \
+      "${tmp}/callback.rs" --extern "codex_hepta_intelligence_eval=${rlib}" \
+      -L "dependency=${deps}" -o "${tmp}/callback" \
+      >"${tmp}/callback.stdout" 2>"${tmp}/callback.stderr"
+  then
+    echo "recovery still accepts a caller-supplied decoder type: ${symbol}" >&2
+    exit 1
+  fi
+  python3 - "${tmp}/callback.stderr" "${symbol}" <<'PY'
+import json
+import pathlib
+import sys
+rows = [json.loads(line) for line in pathlib.Path(sys.argv[1]).read_text().splitlines() if line.strip()]
+if not any(row.get('level') == 'error' and (row.get('code') or {}).get('code') == 'E0107'
+           and sys.argv[2] in (row.get('rendered') or '') for row in rows):
+    raise SystemExit(f'callback-removal fixture failed for an unrelated reason: {sys.argv[2]}')
+PY
+done
+
 # The raw facade is retained deliberately, only under an explicit test feature.
 cargo build --locked -p codex-hepta-intelligence-eval --features trusted-inprocess-eval \
   --message-format=json >"${tmp}/compat-build.jsonl"
@@ -161,4 +195,4 @@ printf 'use codex_hepta_intelligence_eval::ProductEvaluationRunnerV1;\nfn main()
 rustc --edition=2024 --crate-name learning_eval_compat_surface "${tmp}/compat.rs" \
   --extern "codex_hepta_intelligence_eval=${compat}" -L "dependency=$(dirname "${compat}")" \
   -o "${tmp}/compat"
-printf '%s\n' '{"schema":"hepta.learning-eval.api-surface.v1","publicAdmission":true,"publicRecordedRunner":true,"verifiedRecoveryPublic":true,"unverifiedPublicationRecoveryPublic":false,"lowLevelV2Public":false,"lowLevelV3Public":false,"volatileJournalDefaultAccepted":false,"rawRunnerDefaultPublic":false,"rawRunnerExplicitCompatibilityPublic":true}'
+printf '%s\n' '{"schema":"hepta.learning-eval.api-surface.v1","publicAdmission":true,"publicRecordedRunner":true,"verifiedRecoveryPublic":true,"callerDecisionDecoderAccepted":false,"unverifiedPublicationRecoveryPublic":false,"lowLevelV2Public":false,"lowLevelV3Public":false,"volatileJournalDefaultAccepted":false,"rawRunnerDefaultPublic":false,"rawRunnerExplicitCompatibilityPublic":true}'
