@@ -7,12 +7,19 @@
 const WORKFLOW: &str = include_str!(
     "../../../../.github/workflows/hepta-intelligence-control-closure.yml"
 );
+const PORTABILITY_WORKFLOW: &str = include_str!(
+    "../../../../.github/workflows/hepta-intelligence-control-portability.yml"
+);
 const REQUIREMENT_MAP: &str = include_str!(
     "../../../../docs/modules/intelligence.control/REQUIREMENT_TEST_MAP.json"
 );
 const STATUS_ENTRYPOINT: &str =
     include_str!("../../../../scripts/hepta-intelligence-control-status.py");
 const PRODUCT_ROUTE: &str = include_str!("../state_intelligence_product_loop.rs");
+const OBJECTIVE_ROUTE: &str = include_str!("../objective_runtime.rs");
+const PRODUCT_CONTINUATION: &str = include_str!(
+    "../../../hepta-infer-worker-host/src/canonical_intelligence_product_loop_base.rs"
+);
 const LEARNING_PRODUCT_API: &str = include_str!("../intelligence_learning_product_api.rs");
 const RUNTIME_PROFILE_GATE: &str = include_str!("../runtime.rs");
 const PRODUCT_PROFILE: &str = include_str!("../intelligence_product_profile.rs");
@@ -46,6 +53,24 @@ fn current_candidate_workflow_requires_source_and_merge_native_execution() {
 }
 
 #[test]
+fn portability_workflow_executes_private_state_and_dependency_boundaries() {
+    for required in [
+        "runs-on: macos-15",
+        "signed_evaluation_completes_existing_owner_preparation_and_run_admission",
+        "signed_input_cannot_install_host_trust_or_change_actual_context",
+        "guard_rejects_rollback_and_same_epoch_drift_and_survives_reopen",
+        "authority_read_rejects_parent_leaf_links_and_oversize",
+        "cargo clippy --locked -p codex-hepta-ndu --all-targets -- -D warnings",
+        "SOURCE_SHA",
+    ] {
+        assert!(
+            PORTABILITY_WORKFLOW.contains(required),
+            "portability workflow omitted required gate: {required}"
+        );
+    }
+}
+
+#[test]
 fn tracked_claim_boundary_remains_fail_closed() {
     for required in [
         "\"sourcePresenceIsExecutionEvidence\": false",
@@ -56,6 +81,7 @@ fn tracked_claim_boundary_remains_fail_closed() {
         "\"release\": false",
         "\"phase\": \"B\"",
         "\"phase\": \"D\"",
+        "INT-B-POST-TERMINAL-RECONCILIATION",
     ] {
         assert!(
             REQUIREMENT_MAP.contains(required),
@@ -91,6 +117,25 @@ fn canonical_product_route_requires_continuation_before_admission() {
             "runtime product-profile gate omitted: {required}"
         );
     }
+}
+
+#[test]
+fn post_terminal_failures_are_reconciliation_required_not_redispatchable_errors() {
+    for required in [
+        "matching_terminal_receipt",
+        "reconciliation_required_receipt",
+        "AgentdIntelligenceProductLoopDispositionV1::ReconciliationRequired",
+        "physical_terminal_digest: Some(physical_terminal_digest)",
+    ] {
+        assert!(
+            PRODUCT_CONTINUATION.contains(required),
+            "post-terminal continuation omitted reconciliation guard: {required}"
+        );
+    }
+    assert!(
+        OBJECTIVE_ROUTE.contains("canonical_reconciliation_required"),
+        "ObjectiveStart must expose post-terminal reconciliation as a distinct state"
+    );
 }
 
 #[test]
