@@ -30,6 +30,7 @@ mod taskflow_kernel;
 mod taskflow_recovery;
 mod taskflow_step;
 mod timer_lifecycle;
+mod timer_retirement;
 
 pub use authorized_effect::AsyncAuthorizedEffectDriver;
 pub use authorized_effect::AuthorizedEffectDependency;

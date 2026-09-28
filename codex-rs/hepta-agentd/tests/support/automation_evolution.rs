@@ -414,3 +414,6 @@ async fn normal_due_automation_reaches_app_server_terminal_and_does_not_replay_a
     );
     Ok(())
 }
+
+#[path = "automation_evolution_soak.rs"]
+mod soak;
