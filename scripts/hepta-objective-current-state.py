@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Synchronize objective.compiler state facts across the map and narrative docs."""
+"""Synchronize objective.compiler static source facts across map and narrative docs.
+
+Dynamic source-head, synthetic-merge and target-host outcomes are deliberately
+excluded from the checked-in manifest. They are projected only from observed
+artifacts by scripts/hepta-objective-evidence-project.py.
+"""
 
 from __future__ import annotations
 
@@ -20,6 +25,23 @@ DOCS = (
 )
 BEGIN = "<!-- BEGIN GENERATED OBJECTIVE.COMPILER STATUS -->"
 END = "<!-- END GENERATED OBJECTIVE.COMPILER STATUS -->"
+SCHEMA = "hepta.objective-compiler-current-state.v2"
+PROJECTION_SCHEMA = "hepta.objective-evidence-projection.v2"
+STATIC_STATE_KEYS = {
+    "core",
+    "productComposition",
+    "semanticHardening",
+    "qualificationEvidence",
+    "independentAcceptance",
+    "canaryPromotionRollback",
+}
+FORBIDDEN_DYNAMIC_KEYS = {
+    "currentHeadQualification",
+    "syntheticMergeQualification",
+    "targetHostQualification",
+    "checksPassed",
+    "measurementObserved",
+}
 
 
 def load(path: Path) -> dict[str, Any]:
@@ -44,72 +66,99 @@ def digest(manifest: dict[str, Any]) -> str:
     return hashlib.sha256(payload).hexdigest()
 
 
+def string_list(manifest: dict[str, Any], key: str) -> list[str]:
+    values = manifest.get(key)
+    if (
+        not isinstance(values, list)
+        or not values
+        or any(not isinstance(value, str) or not value for value in values)
+    ):
+        raise ValueError(f"{key} must be a non-empty string list")
+    return values
+
+
 def validate(manifest: dict[str, Any]) -> None:
     if (
-        manifest.get("schema") != "hepta.objective-compiler-current-state.v1"
-        or manifest.get("schemaVersion") != 1
+        manifest.get("schema") != SCHEMA
+        or manifest.get("schemaVersion") != 2
         or manifest.get("module") != "objective.compiler"
     ):
         raise ValueError("invalid objective current-state identity")
     state = manifest.get("implementationState")
-    if not isinstance(state, dict) or any(
-        not isinstance(state.get(key), str) or not state.get(key)
-        for key in (
-            "core",
-            "productComposition",
-            "semanticHardening",
-            "currentHeadQualification",
-            "syntheticMergeQualification",
-            "targetHostQualification",
-            "independentAcceptance",
-            "canaryPromotionRollback",
-        )
+    if (
+        not isinstance(state, dict)
+        or set(state) != STATIC_STATE_KEYS
+        or any(not isinstance(state[key], str) or not state[key] for key in STATIC_STATE_KEYS)
     ):
-        raise ValueError("implementationState is incomplete")
+        raise ValueError("implementationState must contain only static source facts")
+    if FORBIDDEN_DYNAMIC_KEYS.intersection(state):
+        raise ValueError("dynamic qualification fields are forbidden in source state")
+
     truth = manifest.get("truth")
-    if not isinstance(truth, dict):
-        raise ValueError("truth must be an object")
-    for key in ("productionImplementation", "accepted", "activated", "released"):
-        if type(truth.get(key)) is not bool:
-            raise ValueError(f"truth.{key} must be boolean")
+    truth_keys = {"productionImplementation", "accepted", "activated", "released"}
+    if (
+        not isinstance(truth, dict)
+        or set(truth) != truth_keys
+        or any(type(truth[key]) is not bool for key in truth_keys)
+    ):
+        raise ValueError("truth must contain four booleans")
     if any(truth.values()):
         raise ValueError(
             "source generation cannot assert production, acceptance, activation or release"
         )
-    for key in ("requiredChecks", "externalGates"):
-        values = manifest.get(key)
-        if not isinstance(values, list) or not values or any(
-            not isinstance(value, str) or not value for value in values
-        ):
-            raise ValueError(f"{key} must be a non-empty string list")
+
+    projection = manifest.get("evidenceProjection")
+    if (
+        not isinstance(projection, dict)
+        or projection.get("schema") != PROJECTION_SCHEMA
+        or projection.get("producer") != "scripts/hepta-objective-evidence-project.py"
+        or projection.get("manualPassFieldsForbidden") is not True
+        or set(projection.get("dynamicClaims", []))
+        != {
+            "sourceHeadQualification",
+            "syntheticMergeQualification",
+            "targetHostMeasurement",
+        }
+    ):
+        raise ValueError("invalid dynamic evidence-projection contract")
+    string_list(manifest, "requiredChecks")
+    string_list(manifest, "externalGates")
 
 
 def block(manifest: dict[str, Any]) -> str:
     state = manifest["implementationState"]
     truth = manifest["truth"]
+    projection = manifest["evidenceProjection"]
     lines = [
         BEGIN,
-        "## Generated implementation status",
+        "## Generated source-state status",
         "",
         "This block is generated from `docs/modules/objective.compiler/CURRENT_STATE.json`. "
-        "It is a source-state declaration, not an activation or release receipt.",
+        "The manifest contains static source and policy facts only. Exact source-head, "
+        "synthetic-merge and target-host observations are never hand-maintained here; "
+        "they are emitted by the receipt-bound evidence projection named below.",
         "",
         f"- Manifest SHA-256: `{digest(manifest)}`",
         f"- Core: `{state['core']}`",
         f"- Product composition: `{state['productComposition']}`",
         f"- Semantic hardening: `{state['semanticHardening']}`",
-        f"- Current-head qualification: `{state['currentHeadQualification']}`",
-        f"- Synthetic-merge qualification: `{state['syntheticMergeQualification']}`",
-        f"- Target-host qualification: `{state['targetHostQualification']}`",
+        f"- Qualification evidence policy: `{state['qualificationEvidence']}`",
         f"- Independent acceptance: `{state['independentAcceptance']}`",
         f"- Canary/promotion/rollback: `{state['canaryPromotionRollback']}`",
+        f"- Dynamic projection schema: `{projection['schema']}`",
+        f"- Dynamic projection producer: `{projection['producer']}`",
+        "- Manual dynamic pass fields: `forbidden`",
         "",
-        "| Claim | Value |",
+        "| Source claim | Value |",
         "| --- | --- |",
         f"| `productionImplementation` | `{str(truth['productionImplementation']).lower()}` |",
         f"| `accepted` | `{str(truth['accepted']).lower()}` |",
         f"| `activated` | `{str(truth['activated']).lower()}` |",
         f"| `released` | `{str(truth['released']).lower()}` |",
+        "",
+        "### Dynamic claims projected only from artifacts",
+        "",
+        *[f"- `{value}`" for value in projection["dynamicClaims"]],
         "",
         "### Required repository checks",
         "",
@@ -153,6 +202,7 @@ def project(original: dict[str, Any], manifest: dict[str, Any]) -> dict[str, Any
         "manifestSha256": digest(manifest),
         "implementationState": state,
         "truth": truth,
+        "evidenceProjection": manifest["evidenceProjection"],
         "requiredChecks": manifest["requiredChecks"],
         "externalGates": manifest["externalGates"],
     }
@@ -202,6 +252,7 @@ def verify() -> None:
                 "module": manifest["module"],
                 "manifestSha256": digest(manifest),
                 "truth": manifest["truth"],
+                "dynamicQualificationSource": "receipt_projection_only",
             },
             sort_keys=True,
         )

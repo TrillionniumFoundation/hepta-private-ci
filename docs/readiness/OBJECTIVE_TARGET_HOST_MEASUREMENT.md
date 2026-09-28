@@ -21,96 +21,153 @@ python3 scripts/hepta-objective-target-measure.py \
 ```
 
 The recorder refuses a dirty tree or source SHA mismatch before measurement and
-rechecks the same commit/tree and cleanliness after all fixtures. It records the exact
-commit/tree, the operator-supplied host profile identifier, platform/machine,
-Rust/Cargo versions and release build profile.
+rechecks the same commit/tree and cleanliness after all fixtures. It records the
+exact commit/tree, workflow/run identity when available, the operator-supplied
+host profile identifier, platform/machine, Rust/Cargo versions and release build
+profile.
 
 ## 2. Separately measured paths
 
-The ordinary fixture executes the canonical source-owned product path with a
-frozen authenticated context and admission profile:
+### Static profile validation and request-local compilation
+
+The ordinary fixture measures the canonical owner path used by Agentd rather
+than the lower-level compatibility wrapper:
 
 ```text
-admit_objective_v1
--> opaque AdmittedObjectiveV1
--> compile_admitted_objective_v1
--> encode_authenticated_objective_function_v1
--> exact canonical JSON plus semantic decode/round-trip validation
+cold ValidatedAdmissionProfileV1::from_profile(raw_profile)
+
+process-generation ValidatedAdmissionProfileV1
++ ObjectiveSourceEnvelopeV1
++ fresh ObjectiveAdmissionContextV1
+-> admit_validated_objective_v1
+-> compile_validated_objective_v1
+-> encode_proof_bearing_objective_function_v1
+-> decode_objective_function_v1
 ```
 
-The measurement timer surrounds authenticated admission, deterministic compile
-and canonical `ObjectiveFunctionV1` projection/validation. It does not include
-Cargo startup. The compatibility convenience wrapper
-`admit_and_compile_objective_v1` is not used as the target-host measurement
-surface.
+It publishes separate p50/p95/p99 distributions for:
+
+- cold profile validation and index/collision construction;
+- warm authenticated admission using the frozen profile;
+- native deterministic compilation;
+- proof-bound canonical protocol encoding;
+- strict canonical protocol decoding.
+
+The result binds the exact static reuse key—profile digest, profile revision and
+compiler-contract digest—and states `dynamicAuthorizationCached: false`.
+Authentication, source identity, scope, freshness, deadline, current trust,
+revocation, generation, fence and final-use authority are not part of the reused
+profile result. The compatibility convenience wrapper
+`admit_and_compile_objective_v1` and the raw-profile publication façade are not
+the normal Agentd measurement surface.
+
+### Maximum conflict work
 
 The conflict fixture executes a 256-hard-atom scalar conflict that requires the
 maximum 257 feasibility-oracle calls. Its timer surrounds
 `check_feasibility_v1`; fixture cloning occurs before the timed interval.
 Ordinary-path latency may not be reused as conflict-extraction latency.
 
-The compiler fixtures are normal Rust tests marked `#[ignore]`. Repository CI
-compiles, formats and lints them but does not run them as qualification evidence.
-The target-host recorder runs them in `--release` and parses their structured
-`OBJECTIVE_MEASUREMENT=...` records.
+### Product owner path
 
 The product fixture is the real Unix Agentd process test
-`objective_product_e2e::measurement_signed_objective_daemon_round_trip`. It starts
-Supervisor and Agentd with private AuthBus trust, an independently retained AuthBus
-checkpoint, the selected objective profile and an external run-start checkpoint.
-It records separate distributions for signed intrinsic-abstain admission and
-compiled objective execution. Compiled executions attach the exact daemon-issued
-identity to a trusted fixture context, acquire a current signed final-use grant
-through the Unix authority socket, send one physical App Server request to a local
-controlled HTTP/SSE model endpoint, and observe the terminal state.
+`objective_product_e2e::measurement_signed_objective_daemon_round_trip`. It
+starts Supervisor and Agentd with private AuthBus trust, an independently
+retained AuthBus checkpoint, the selected objective profile and an external
+run-start checkpoint.
 
-The fixture closes and reopens the inference journal before exact replay and
-requires the original result without another grant or physical send. It separately
-measures Supervisor restart-to-readiness and checks generation non-resurrection.
-Its single `OBJECTIVE_PRODUCT_MEASUREMENT=...` row includes requested and actual
-sample counts, physical sends, terminal observations and the durable checkpoint
-sequence. The recorder rejects non-integer/Boolean counters, mismatched sample
-counts, non-monotone latency distributions and incomplete worst-case conflict work.
+The fixture records distributions for signed ingress and for compiled objective
+execution. The phase
+`signedIngressCompileDurableAppendCheckpointAndAgentdHandoff` deliberately
+keeps the destination-owner append, external checkpoint CAS and Agentd handoff
+inside the observable atomic boundary. The recorder must not invent separate
+success or timing claims for internal operations that are not independently
+committed. It additionally records compiled publication/handoff, context
+attachment, and current final-use/provider/terminal-observation phases.
+
+Compiled executions attach the exact daemon-issued identity to a trusted fixture
+context, acquire a current signed final-use grant through the Unix authority
+socket, send one physical App Server request to a local controlled HTTP/SSE
+model endpoint, and observe the terminal state. The fixture closes and reopens
+the inference journal before exact replay and requires the original result
+without another grant or physical send. It separately measures Supervisor
+restart-to-readiness and checks generation non-resurrection.
+
+The product record includes requested and actual sample counts, physical sends,
+terminal observations and the durable checkpoint sequence. The recorder rejects
+Boolean/fractional counters, mismatched sample counts, non-monotone latency
+distributions, incomplete phase sets, a split atomic-owner declaration and
+incomplete worst-case conflict work.
+
+## 3. Resource observation semantics
+
+Each Rust workload is launched below a fresh Python helper process. The helper
+reports one `hepta.objective-command-resource-observation.v1` record containing:
+
+- isolated command-process-tree peak resident set size;
+- user and system CPU nanoseconds;
+- wall nanoseconds;
+- minor and major page faults;
+- voluntary and involuntary context switches.
+
+This fixes the previous ambiguity in which `RUSAGE_CHILDREN.ru_maxrss` accumulated
+across all earlier Cargo fixtures in the recorder process. Each workload now has
+its own process-tree resource observation.
+
+The process-tree peak still includes the Cargo/test executable and descendants.
+It is **not** an allocation profile for an individual internal Rust phase. Phase
+latencies are measured inside the fixture; resource values are isolated per
+ordinary, maximum-conflict and product fixture. In particular, the product
+resource observation covers the combined append/checkpoint/handoff boundary
+rather than pretending to assign memory to non-separable owner substeps.
+Detailed allocator, I/O and per-internal-phase profiling may be attached by the
+selected host profile as additional evidence, but may not replace these bounded
+workload identities.
+
+The compiler fixtures are normal Rust tests marked `#[ignore]`. Repository CI
+compiles, formats and lints them but does not treat source presence as target-host
+evidence. The recorder runs them in `--release` and parses their structured
+measurement rows. Its parser and negative tests run in both objective admission
+qualification and the dedicated target-measurement workflow.
+
+## 4. Filesystem and evidence boundary
 
 This is process-level development evidence with a controlled model and trusted
-context fixture. The controlled fixture disables plugin provisioning to avoid unrelated network
-startup work. The recorder includes the actual temporary-filesystem mount/type;
-memory-backed and disk-backed runs must not be pooled into the same storage
-qualification result. Neither successful timing nor filesystem identification
-grants storage qualification. It is not evidence of a live model service, autonomous assembly
-of all seven canonical owner inputs, or recovery of an unpersisted canonical
-owner handoff. Those remain separate product/deployment qualification boundaries.
+context fixture. The controlled fixture disables plugin provisioning to avoid
+unrelated network startup work. The recorder includes the actual temporary
+filesystem mount/type; memory-backed and disk-backed runs must not be pooled
+into one storage qualification result. Filesystem identification and successful
+timing do not grant storage qualification.
 
-## 3. Evidence semantics
+The measurement output is consumed by
+`scripts/hepta-objective-evidence-project.py` together with the static
+`CURRENT_STATE.json`. The resulting projection binds source commit/tree,
+workflow/run identity when available, and the measurement artifact digest.
+Checked-in source does not hand-edit a target-host pass field.
 
-Each path publishes sample count and p50/p95/p99 latency in nanoseconds. The
-conflict path additionally publishes constraint count and oracle calls per
-sample. The recorder also records total harness wall time, which includes Cargo
-and test-process overhead and must not be substituted for the algorithm
-percentiles.
+A GitHub-hosted runner remains qualification/development evidence, not selected
+deployment-host acceptance. Closing `LANE-D-EXT-HOST-MEASUREMENT` requires the
+external qualification owner to bind the artifact to the selected host profile,
+resource policy and storage configuration.
 
-A GitHub-hosted CI runner is development evidence only. Closing
-`LANE-D-EXT-HOST-MEASUREMENT` requires the target-host qualification owner to
-bind this output to the selected deployment host profile, resource policy and
-candidate identity and to retain any additional CPU/RSS/IO observations required
-by that host profile. The product fixture covers normal signed ingress, socket
-round-trip, RunStart fsync, exact replay, final-use authorization, a controlled
-physical model send, terminal observation and restart recovery. Segment saturation,
-rotation, compacted-prefix rewrite and power loss remain destructive qualification
-scenarios rather than latency-loop operations. The selected filesystem profile must
-therefore also qualify active-frame fsync, segment rename and successor creation,
-compacted-summary atomic replace, external-checkpoint atomic replace and sidecar-lock
-ownership at every documented crash cut. Unix source synchronizes the relevant
-containing directories; non-Unix source makes no equivalent receipt without
-host-specific evidence.
+The product fixture covers normal signed ingress, Unix socket round-trip,
+RunStart fsync, exact replay, final-use authorization, one controlled physical
+model send, terminal observation and restart recovery. Segment saturation,
+rotation, compacted-prefix rewrite and power loss remain destructive
+qualification scenarios rather than latency-loop operations. The selected
+filesystem profile must separately qualify active-frame fsync, segment rename
+and successor creation, compacted-summary atomic replace, external-checkpoint
+atomic replace and sidecar-lock ownership at every documented crash cut. Unix
+source synchronizes the relevant containing directories; non-Unix source makes
+no equivalent receipt without host-specific evidence.
 
-## 4. Acceptance boundary
+## 5. Acceptance boundary
 
-No universal latency threshold is declared in source. p95/p99 budgets belong to
-the selected host profile and must be compared by the target-host qualification
-owner. Failure, overload or resource exhaustion cannot weaken a hard constraint,
-expand the legal action set or convert an unavailable result into a compiled
-objective.
+No universal latency or memory threshold is declared in source. p95/p99 and
+resource budgets belong to the selected host profile and must be evaluated by
+the target-host qualification owner. Failure, overload or exhaustion cannot
+weaken a hard constraint, expand the legal action set or convert an unavailable
+result into a compiled objective.
 
 The output is measurement evidence only. Independent semantic review, deployed
 caller authentication, operator acceptance, activation, promotion and release

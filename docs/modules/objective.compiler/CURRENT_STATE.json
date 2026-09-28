@@ -1,15 +1,13 @@
 {
-  "schema": "hepta.objective-compiler-current-state.v1",
-  "schemaVersion": 1,
+  "schema": "hepta.objective-compiler-current-state.v2",
+  "schemaVersion": 2,
   "module": "objective.compiler",
   "implementationState": {
     "core": "source_complete",
     "productComposition": "source_composed_durable_proof_bound_not_activated",
-    "semanticHardening": "source_complete_pending_exact_head_qualification",
-    "currentHeadQualification": "required_check_not_embedded_in_source",
-    "syntheticMergeQualification": "required_check_not_embedded_in_source",
-    "targetHostQualification": "selected_target_host_receipt_absent",
-    "independentAcceptance": "absent",
+    "semanticHardening": "source_complete_pending_exact_candidate_receipts",
+    "qualificationEvidence": "dynamic_receipt_projection_required",
+    "independentAcceptance": "external_receipt_required",
     "canaryPromotionRollback": "source_policy_not_activated"
   },
   "truth": {
@@ -17,6 +15,16 @@
     "accepted": false,
     "activated": false,
     "released": false
+  },
+  "evidenceProjection": {
+    "schema": "hepta.objective-evidence-projection.v2",
+    "producer": "scripts/hepta-objective-evidence-project.py",
+    "dynamicClaims": [
+      "sourceHeadQualification",
+      "syntheticMergeQualification",
+      "targetHostMeasurement"
+    ],
+    "manualPassFieldsForbidden": true
   },
   "requiredChecks": [
     "Hepta objective admission qualification",

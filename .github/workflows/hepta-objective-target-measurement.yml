@@ -10,7 +10,11 @@ on:
       - codex-rs/hepta-agentd/**
       - codex-rs/hepta-learning-ledger/**
       - docs/modules/objective.compiler/**
+      - docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md
+      - qualification/module-execution-dossiers/detail/objective.compiler.md
+      - scripts/hepta-objective-current-state.py
       - scripts/hepta-objective-target-measure.py
+      - scripts/test_hepta_objective_target_measure.py
       - scripts/hepta-objective-evidence-project.py
       - scripts/test_hepta_objective_evidence_project.py
       - .github/workflows/hepta-objective-exact-execution.yml
@@ -49,12 +53,15 @@ jobs:
           [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           test -z "$(git status --porcelain)"
-      - name: Test measurement and evidence recorders
+      - name: Test static state, measurement and evidence recorders
         shell: bash
         run: |
           set -euo pipefail
+          python3 scripts/hepta-objective-current-state.py verify
           python3 scripts/hepta-objective-target-measure.py --self-test
-          python3 -m unittest -v scripts.test_hepta_objective_evidence_project
+          python3 -m unittest -v \
+            scripts.test_hepta_objective_target_measure \
+            scripts.test_hepta_objective_evidence_project
       - name: Measure named qualification host
         shell: bash
         run: |
@@ -72,6 +79,7 @@ jobs:
           python3 scripts/hepta-objective-evidence-project.py \
             --source-commit "$SOURCE_SHA" \
             --source-tree "$(git rev-parse HEAD^{tree})" \
+            --current-state docs/modules/objective.compiler/CURRENT_STATE.json \
             --target-measurement "$out/measurement.json" \
             --output "$out/evidence-projection.json"
       - name: Preserve measurement or observed failure evidence

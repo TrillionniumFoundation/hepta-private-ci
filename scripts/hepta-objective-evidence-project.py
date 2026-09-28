@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
-"""Project objective.compiler execution artifacts into one traceable status view.
+"""Project objective.compiler source facts and observed receipts into one status view.
 
-The projection is derived from observed receipts. It never grants independent
-acceptance, activation, promotion, release, or selected deployment-host approval.
+The checked-in current-state manifest contains static source facts and policy only.
+Dynamic source-head, synthetic-merge and target-host observations are accepted
+solely from exact artifacts bound to the requested source commit/tree. The
+projection never grants independent acceptance, selected deployment-host
+approval, activation, promotion or release.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -15,6 +19,16 @@ from typing import Any
 
 SHA = re.compile(r"[0-9a-f]{40}\Z")
 LOG_SHA = re.compile(r"[0-9a-f]{64}\Z")
+CURRENT_SCHEMA = "hepta.objective-compiler-current-state.v2"
+PROJECTION_SCHEMA = "hepta.objective-evidence-projection.v2"
+RESOURCE_SCHEMA = "hepta.objective-command-resource-observation.v1"
+DYNAMIC_SOURCE_FIELDS = {
+    "currentHeadQualification",
+    "syntheticMergeQualification",
+    "targetHostQualification",
+    "checksPassed",
+    "measurementObserved",
+}
 
 
 def load(path: Path) -> dict[str, Any]:
@@ -34,6 +48,85 @@ def load(path: Path) -> dict[str, Any]:
 
 def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def nonempty_strings(value: Any, field: str) -> list[str]:
+    if (
+        not isinstance(value, list)
+        or not value
+        or any(not isinstance(item, str) or not item for item in value)
+    ):
+        raise ValueError(f"{field} must be a non-empty string list")
+    return value
+
+
+def current_state_projection(path: Path) -> dict[str, Any]:
+    manifest = load(path)
+    if (
+        manifest.get("schema") != CURRENT_SCHEMA
+        or manifest.get("schemaVersion") != 2
+        or manifest.get("module") != "objective.compiler"
+    ):
+        raise ValueError("unexpected objective current-state schema or identity")
+    state = manifest.get("implementationState")
+    required_state = {
+        "core",
+        "productComposition",
+        "semanticHardening",
+        "qualificationEvidence",
+        "independentAcceptance",
+        "canaryPromotionRollback",
+    }
+    if (
+        not isinstance(state, dict)
+        or set(state) != required_state
+        or any(not isinstance(state[key], str) or not state[key] for key in required_state)
+    ):
+        raise ValueError("objective current-state implementationState is incomplete")
+    if DYNAMIC_SOURCE_FIELDS.intersection(state):
+        raise ValueError("dynamic qualification fields are forbidden in source state")
+
+    truth = manifest.get("truth")
+    truth_keys = {"productionImplementation", "accepted", "activated", "released"}
+    if (
+        not isinstance(truth, dict)
+        or set(truth) != truth_keys
+        or any(type(truth[key]) is not bool for key in truth_keys)
+    ):
+        raise ValueError("objective current-state truth is invalid")
+    if any(truth.values()):
+        raise ValueError("source state cannot grant production, acceptance or release")
+
+    contract = manifest.get("evidenceProjection")
+    if (
+        not isinstance(contract, dict)
+        or contract.get("schema") != PROJECTION_SCHEMA
+        or contract.get("producer") != "scripts/hepta-objective-evidence-project.py"
+        or contract.get("manualPassFieldsForbidden") is not True
+    ):
+        raise ValueError("objective evidence-projection contract is invalid")
+    dynamic_claims = nonempty_strings(contract.get("dynamicClaims"), "dynamicClaims")
+    if set(dynamic_claims) != {
+        "sourceHeadQualification",
+        "syntheticMergeQualification",
+        "targetHostMeasurement",
+    }:
+        raise ValueError("objective evidence-projection dynamic claim set is invalid")
+
+    return {
+        "artifactSha256": sha256(path),
+        "schema": manifest["schema"],
+        "schemaVersion": manifest["schemaVersion"],
+        "implementationState": state,
+        "truth": truth,
+        "requiredChecks": nonempty_strings(
+            manifest.get("requiredChecks"), "requiredChecks"
+        ),
+        "externalGates": nonempty_strings(
+            manifest.get("externalGates"), "externalGates"
+        ),
+        "projectionContract": contract,
+    }
 
 
 def candidate_state(receipt: dict[str, Any], kind: str) -> str:
@@ -77,18 +170,43 @@ def exact_projection(
         or receipt.get("sourceTree") != source_tree
     ):
         raise ValueError("exact-execution source identity mismatch")
+    source_state = candidate_state(receipt, "source-head")
+    merge_state = candidate_state(receipt, "synthetic-merge")
+    errors = receipt.get("errors") if isinstance(receipt.get("errors"), list) else []
+    derived_pass = source_state == merge_state == "passed" and not errors
+    if (receipt.get("checksPassed") is True) != derived_pass:
+        raise ValueError("exact-execution checksPassed disagrees with observed checks")
     return {
         "artifactSha256": sha256(path),
         "runId": receipt.get("runId"),
         "runAttempt": receipt.get("runAttempt"),
         "workflowCommit": receipt.get("workflowCommit"),
-        "sourceHeadQualification": candidate_state(receipt, "source-head"),
-        "syntheticMergeQualification": candidate_state(receipt, "synthetic-merge"),
-        "checksPassed": receipt.get("checksPassed") is True,
-        "errors": receipt.get("errors")
-        if isinstance(receipt.get("errors"), list)
-        else [],
+        "workflowRef": receipt.get("workflowRef"),
+        "sourceHeadQualification": source_state,
+        "syntheticMergeQualification": merge_state,
+        "checksPassed": derived_pass,
+        "errors": errors,
     }
+
+
+def valid_resource_observation(value: Any) -> bool:
+    if not isinstance(value, dict) or value.get("schema") != RESOURCE_SCHEMA:
+        return False
+    if not isinstance(value.get("scope"), str) or not value["scope"]:
+        return False
+    for field in (
+        "peakResidentSetBytes",
+        "userCpuNanoseconds",
+        "systemCpuNanoseconds",
+        "wallNanoseconds",
+        "minorPageFaults",
+        "majorPageFaults",
+        "voluntaryContextSwitches",
+        "involuntaryContextSwitches",
+    ):
+        if type(value.get(field)) is not int or value[field] < 0:
+            return False
+    return value["wallNanoseconds"] > 0
 
 
 def target_projection(
@@ -103,14 +221,43 @@ def target_projection(
     ):
         raise ValueError("target-measurement source identity mismatch")
     measurements = receipt.get("measurements")
-    observed = isinstance(measurements, list) and bool(measurements)
+    expected_paths = {
+        "ordinary_authenticated_admission_compile",
+        "maximum_conflict_extraction",
+        "signed_objective_daemon_round_trip",
+    }
+    if not isinstance(measurements, list) or len(measurements) != len(expected_paths):
+        raise ValueError("target measurement must contain three bounded workloads")
+    by_path = {
+        item.get("path"): item for item in measurements if isinstance(item, dict)
+    }
+    if set(by_path) != expected_paths or len(by_path) != len(measurements):
+        raise ValueError("target measurement workload identities are incomplete")
+    if not all(
+        valid_resource_observation(item.get("fixtureProcessResources"))
+        for item in by_path.values()
+    ):
+        raise ValueError("target measurement lacks isolated fixture resources")
+    interpretation = receipt.get("interpretation")
+    if (
+        not isinstance(interpretation, dict)
+        or interpretation.get("fixtureResourcesIsolatedByFreshHelperProcess") is not True
+        or interpretation.get("memoryIsNotPerInternalPhaseAllocation") is not True
+        or interpretation.get("dynamicAuthorizationCachingAllowed") is not False
+        or interpretation.get("atomicAppendCheckpointHandoffBoundaryPreserved") is not True
+    ):
+        raise ValueError("target measurement interpretation boundary is incomplete")
     return {
         "artifactSha256": sha256(path),
+        "runId": receipt.get("workflowRunId"),
+        "runAttempt": receipt.get("workflowRunAttempt"),
+        "workflowCommit": receipt.get("workflowCommit"),
+        "workflowRef": receipt.get("workflowRef"),
         "hostProfileId": receipt.get("hostProfileId"),
-        "measurementObserved": observed,
-        "measurementCount": len(measurements)
-        if isinstance(measurements, list)
-        else 0,
+        "measurementObserved": True,
+        "measurementCount": len(measurements),
+        "workloadPaths": sorted(expected_paths),
+        "resourceObservation": "isolated_fixture_process_tree",
         "selectedDeploymentHostAccepted": False,
         "storageQualificationProved": False,
     }
@@ -120,6 +267,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source-commit", required=True)
     parser.add_argument("--source-tree", required=True)
+    parser.add_argument("--current-state", type=Path, required=True)
     parser.add_argument("--exact-execution", type=Path)
     parser.add_argument("--target-measurement", type=Path)
     parser.add_argument("--output", type=Path, required=True)
@@ -130,6 +278,7 @@ def main() -> int:
     if args.exact_execution is None and args.target_measurement is None:
         parser.error("at least one evidence input is required")
 
+    source = current_state_projection(args.current_state)
     exact = (
         exact_projection(args.exact_execution, args.source_commit, args.source_tree)
         if args.exact_execution is not None
@@ -148,24 +297,39 @@ def main() -> int:
             "storageQualificationProved": False,
         }
     )
+    status = {
+        "core": source["implementationState"]["core"],
+        "productComposition": source["implementationState"]["productComposition"],
+        "semanticHardening": source["implementationState"]["semanticHardening"],
+        "sourceHeadQualification": exact["sourceHeadQualification"],
+        "syntheticMergeQualification": exact["syntheticMergeQualification"],
+        "targetHostMeasurement": (
+            "observed" if target["measurementObserved"] else "unverified"
+        ),
+        "selectedDeploymentHostQualification": "unverified",
+        "independentAcceptance": "unverified",
+        "operatorAcceptance": "unverified",
+        "canaryPromotionRollback": source["implementationState"][
+            "canaryPromotionRollback"
+        ],
+    }
     projection = {
-        "schema": "hepta.objective-evidence-projection.v1",
+        "schema": PROJECTION_SCHEMA,
+        "schemaVersion": 2,
         "module": "objective.compiler",
         "sourceCommit": args.source_commit,
         "sourceTree": args.source_tree,
-        "exactExecution": exact,
-        "targetHostMeasurement": target,
-        "independentAcceptance": "unverified",
-        "operatorAcceptance": "unverified",
-        "truth": {
-            "productionImplementation": False,
-            "accepted": False,
-            "activated": False,
-            "released": False,
+        "sourceState": source,
+        "executionEvidence": {
+            "exactExecution": exact,
+            "targetHostMeasurement": target,
         },
+        "status": status,
+        "truth": source["truth"],
         "claimBoundary": (
-            "observed execution only; no independent acceptance, selected-host "
-            "approval, activation, promotion, or release authority"
+            "static source facts plus authenticated artifact observations only; no "
+            "independent acceptance, selected deployment-host approval, activation, "
+            "promotion or release authority"
         ),
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)

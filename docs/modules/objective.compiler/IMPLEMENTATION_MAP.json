@@ -532,7 +532,7 @@
   },
   "repositoryControlledGaps": [
     "Obtain successful read-only source-head and deterministic synthetic-merge receipts for one final canonical candidate checkout.",
-    "Record the staged latency/resource harness on the selected deployment host and qualify its real storage, crash/restart and backpressure policy.",
+    "Record staged latency and isolated fixture-process resources on the selected deployment host and qualify its storage, crash/restart and backpressure policy.",
     "Add a separately versioned durable admission-proof persistence/recovery contract before claiming proof recovery beyond the currently persisted admission/native/protocol identities."
   ],
   "externalEvidenceGates": [
@@ -543,7 +543,7 @@
   "sourceBaseRole": "historical_mapping_baseline_not_exact_head_receipt",
   "exactHeadQualificationPolicy": {
     "state": "read_only_exact_candidate_receipt_required",
-    "verifier": "python3 scripts/hepta-objective-qualify-exact.py plus python3 scripts/hepta-implementation-maps.py verify --module objective.compiler",
+    "verifier": "python3 scripts/hepta-objective-current-state.py verify; python3 scripts/hepta-objective-qualify-exact.py; python3 scripts/hepta-objective-evidence-project.py; python3 scripts/hepta-implementation-maps.py verify --module objective.compiler",
     "moduleSourceRule": "exactSourceCandidate equals the newest Git commit/tree touching every declared source root",
     "workflows": [
       ".github/workflows/hepta-lane-d-semantic-conformance.yml",
@@ -649,15 +649,18 @@
       "codex-rs/hepta-objective/src/proof_projection_tests.rs",
       "codex-rs/hepta-objective/src/validated_admission.rs",
       "codex-rs/hepta-objective/src/validated_admission_tests.rs",
+      "docs/modules/objective.compiler/CURRENT_STATE.json",
       "docs/modules/objective.compiler/DELIVERY_EVIDENCE.md",
       "docs/modules/objective.compiler/SEMANTIC_SUPPORT.md",
       "docs/modules/objective.compiler/TECHNICAL.md",
       "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
       "docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md",
       "qualification/module-execution-dossiers/detail/objective.compiler.md",
+      "scripts/hepta-objective-current-state.py",
       "scripts/hepta-objective-evidence-project.py",
       "scripts/hepta-objective-qualify-exact.py",
       "scripts/hepta-objective-target-measure.py",
+      "scripts/test_hepta_objective_evidence_project.py",
       "scripts/test_hepta_objective_target_measure.py"
     ],
     "role": "product_composition_source_identity_not_execution_receipt"
@@ -680,11 +683,27 @@
   "sourceObjects": [
     {
       "path": ".github/workflows/hepta-objective-admission.yml",
-      "object": "4ccce06b47d37049ff664a47916e257f67f07c8b"
+      "object": "73b3181de4c803ac7e34ce40a858d264c500c7cc"
+    },
+    {
+      "path": ".github/workflows/hepta-objective-exact-execution.yml",
+      "object": "7fcbd476ba1820fd2a88c0bda3de0f0b5d46dc69"
     },
     {
       "path": ".github/workflows/hepta-objective-product-composition.yml",
       "object": "66b4640916f9def290be02c12e4ea9fd16e07623"
+    },
+    {
+      "path": ".github/workflows/hepta-objective-target-measurement.yml",
+      "object": "ac7bc151d72d5bec646825e58de6d9ca98ea20ec"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol/src/authbus.rs",
+      "object": "4def8e85f0060f7fee6abf5481df20316e125935"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol/src/objective_tests.rs",
+      "object": "f0be97361aa78b37a73dd112e8c5ab4c0388b92e"
     },
     {
       "path": "codex-rs/hepta-agentd/src/config.rs",
@@ -737,6 +756,18 @@
     {
       "path": "codex-rs/hepta-agentd/tests/support/fleet.rs",
       "object": "5f363167a0a115a593a4866bd69e229689f9f18f"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "object": "ad6ab69a7b72e16d6309fc6b8164cc5bde297eb4"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_intelligence_receipts.rs",
+      "object": "c7a5ac4f53e8074ced44312c5a06f24338b62759"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_intelligence_receipts_tests.rs",
+      "object": "fd153a4fe44b70a5e58048133043028233061796"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/objective_run.rs",
@@ -843,8 +874,20 @@
       "object": "a6d5fbd003f6b69ab192252e58ea29da84b96e49"
     },
     {
+      "path": "docs/modules/objective.compiler/CURRENT_STATE.json",
+      "object": "a1f74a7d1cac9144659fdbaba6f36c68678455c4"
+    },
+    {
+      "path": "docs/modules/objective.compiler/DELIVERY_EVIDENCE.md",
+      "object": "3717491d9040268c443619b6bf68f99d39b0db75"
+    },
+    {
+      "path": "docs/modules/objective.compiler/SEMANTIC_SUPPORT.md",
+      "object": "a58208709a3327e738cfe76849d27e1444bf70d4"
+    },
+    {
       "path": "docs/modules/objective.compiler/TECHNICAL.md",
-      "object": "0fa7ed5be7b46138ae5d03f4c854a5d5c5ed677f"
+      "object": "c4bb1154ab414c9ebdcaa5d32f57b95ea2c49b7e"
     },
     {
       "path": "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
@@ -852,15 +895,35 @@
     },
     {
       "path": "docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md",
-      "object": "d755dfda717c097f9680aa2d59c416cd16f53c6a"
+      "object": "f84e92f97e0100b886af43736657a6fb31f04934"
     },
     {
       "path": "qualification/module-execution-dossiers/detail/objective.compiler.md",
-      "object": "5ccf7433e9cad86c94bcebbe6b9853762675133e"
+      "object": "5c2ed658e12dda26b4668077a8e508b6ec696dfb"
+    },
+    {
+      "path": "scripts/hepta-objective-current-state.py",
+      "object": "2ebfdbbe8c668d88095a56fe75cec0d43ee29e4f"
+    },
+    {
+      "path": "scripts/hepta-objective-evidence-project.py",
+      "object": "ed5ee69bfa95b6c58c012490df222113a17e082e"
+    },
+    {
+      "path": "scripts/hepta-objective-qualify-exact.py",
+      "object": "9bc214da20697ae2153564fda22c418fb8aeff9f"
     },
     {
       "path": "scripts/hepta-objective-target-measure.py",
-      "object": "466372170bbdadf58697ff37601bff657549067b"
+      "object": "20c39ffad943a8f690d190862b3255ace00a6597"
+    },
+    {
+      "path": "scripts/test_hepta_objective_evidence_project.py",
+      "object": "51cd099f5fbf9f0452cbfaa35dffdac3ffb73c59"
+    },
+    {
+      "path": "scripts/test_hepta_objective_target_measure.py",
+      "object": "f69c476f7edca8ffb37718744edcc93f8964a783"
     }
   ],
   "status": {
@@ -869,18 +932,16 @@
     "qualified": false
   },
   "generatedCurrentState": {
-    "schema": "hepta.objective-compiler-current-state.v1",
-    "schemaVersion": 1,
+    "schema": "hepta.objective-compiler-current-state.v2",
+    "schemaVersion": 2,
     "manifestPath": "docs/modules/objective.compiler/CURRENT_STATE.json",
-    "manifestSha256": "ce7142bba220f7318d8cae66823197124a51f6b5abd4eb95b30dcf0efcfc128b",
+    "manifestSha256": "14bc95a145f63da905593f3022ecb309dbd1d6094f0bd9912871a52fe35e47a2",
     "implementationState": {
       "core": "source_complete",
       "productComposition": "source_composed_durable_proof_bound_not_activated",
-      "semanticHardening": "source_complete_pending_exact_head_qualification",
-      "currentHeadQualification": "required_check_not_embedded_in_source",
-      "syntheticMergeQualification": "required_check_not_embedded_in_source",
-      "targetHostQualification": "selected_target_host_receipt_absent",
-      "independentAcceptance": "absent",
+      "semanticHardening": "source_complete_pending_exact_candidate_receipts",
+      "qualificationEvidence": "dynamic_receipt_projection_required",
+      "independentAcceptance": "external_receipt_required",
       "canaryPromotionRollback": "source_policy_not_activated"
     },
     "truth": {
@@ -888,6 +949,16 @@
       "accepted": false,
       "activated": false,
       "released": false
+    },
+    "evidenceProjection": {
+      "schema": "hepta.objective-evidence-projection.v2",
+      "producer": "scripts/hepta-objective-evidence-project.py",
+      "dynamicClaims": [
+        "sourceHeadQualification",
+        "syntheticMergeQualification",
+        "targetHostMeasurement"
+      ],
+      "manualPassFieldsForbidden": true
     },
     "requiredChecks": [
       "Hepta objective admission qualification",
@@ -907,6 +978,17 @@
       "promotion approval",
       "rollback authority validation",
       "release authority approval"
+    ]
+  },
+  "dynamicQualificationEvidence": {
+    "schema": "hepta.objective-evidence-projection.v2",
+    "staticManifest": "docs/modules/objective.compiler/CURRENT_STATE.json",
+    "producer": "scripts/hepta-objective-evidence-project.py",
+    "manualPassFieldsForbidden": true,
+    "dynamicClaims": [
+      "sourceHeadQualification",
+      "syntheticMergeQualification",
+      "targetHostMeasurement"
     ]
   }
 }

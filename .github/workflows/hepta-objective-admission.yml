@@ -21,13 +21,16 @@ on:
       - qualification/module-execution-dossiers/detail/objective.compiler.md
       - scripts/hepta-objective-target-measure.py
       - scripts/test_hepta_objective_target_measure.py
-      - scripts/hepta-implementation-maps.py
+      - scripts/hepta-objective-evidence-project.py
+      - scripts/test_hepta_objective_evidence_project.py
       - scripts/hepta-objective-current-state.py
-      - scripts/hepta-objective-materialize-closure.py
-      - scripts/hepta-objective-evidence-materialize.py
+      - scripts/hepta-objective-qualify-exact.py
+      - scripts/test_hepta_objective_qualify_exact.py
+      - scripts/hepta-implementation-maps.py
       - scripts/hepta-objective-release-gate.py
       - .github/workflows/hepta-objective-admission.yml
-      - .github/workflows/hepta-objective-closure-materialize.yml
+      - .github/workflows/hepta-objective-exact-execution.yml
+      - .github/workflows/hepta-objective-target-measurement.yml
 
 permissions:
   contents: read
@@ -57,7 +60,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
           git rev-parse HEAD HEAD^{tree}
 
-      - name: Validate exact-source and target-host recorders
+      - name: Validate exact-source, static-state and evidence recorders
         shell: bash
         run: |
           set -euo pipefail
@@ -67,8 +70,12 @@ jobs:
             --module objective.compiler \
             --expected-sha "${SOURCE_SHA}" \
             --expected-tree "${SOURCE_TREE}"
+          python3 scripts/hepta-objective-current-state.py verify
           python3 scripts/hepta-objective-target-measure.py --self-test
-          python3 -m unittest scripts.test_hepta_objective_target_measure
+          python3 -m unittest -v \
+            scripts.test_hepta_objective_target_measure \
+            scripts.test_hepta_objective_evidence_project \
+            scripts.test_hepta_objective_qualify_exact
 
       - name: Objective and product-composition tests
         working-directory: codex-rs
@@ -98,10 +105,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # This is a module qualification lane. Keep warnings fatal for every
-          # selected package and all of their targets, but do not let unrelated
-          # workspace path dependencies turn this evidence into a global lint
-          # proxy. Those dependencies remain covered by their own required lanes.
           cargo clippy --locked \
             -p codex-hepta-objective \
             -p codex-hepta-learning-ledger \

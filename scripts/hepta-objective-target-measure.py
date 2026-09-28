@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
-"""Record objective.compiler target-host latency evidence for one exact source."""
+"""Record objective.compiler target-host latency and resource evidence.
+
+Every workload fixture runs below a fresh helper process. Resource counters are
+therefore scoped to that fixture's command process tree instead of being the
+cumulative maximum of every previously executed child. Internal Rust phase
+latencies remain separately reported; the helper does not pretend that a
+process-tree RSS peak is an allocation measurement for an individual phase.
+"""
+
+from __future__ import annotations
 
 import argparse
 import json
@@ -18,8 +27,10 @@ ROOT = Path(__file__).resolve().parents[1]
 CARGO_ROOT = ROOT / "codex-rs"
 PREFIX = "OBJECTIVE_MEASUREMENT="
 PRODUCT_PREFIX = "OBJECTIVE_PRODUCT_MEASUREMENT="
+RESOURCE_PREFIX = "OBJECTIVE_PROCESS_RESOURCE="
 SCHEMA = "hepta.objective-target-host-evidence.v1"
 PRODUCT_SCHEMA = "hepta.objective-product-target-measurement.v1"
+RESOURCE_SCHEMA = "hepta.objective-command-resource-observation.v1"
 
 
 def fail(message: str) -> None:
@@ -54,11 +65,133 @@ def latency_distribution(value: Any, field: str) -> dict[str, int]:
     return value
 
 
-def observed_children_peak_resident_set_bytes() -> int:
-    value = resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss
+def _peak_rss_bytes(value: float) -> int:
     # Darwin reports bytes; Linux and BSD-compatible CI images report KiB.
     scale = 1 if platform.system() == "Darwin" else 1024
     return max(0, int(value) * scale)
+
+
+def _resource_payload(usage: resource.struct_rusage, wall_ns: int) -> dict[str, Any]:
+    return {
+        "schema": RESOURCE_SCHEMA,
+        "scope": (
+            "one isolated fixture command process tree; peak RSS includes the "
+            "test executable and descendants, not per-phase allocations"
+        ),
+        "peakResidentSetBytes": _peak_rss_bytes(usage.ru_maxrss),
+        "userCpuNanoseconds": max(0, int(usage.ru_utime * 1_000_000_000)),
+        "systemCpuNanoseconds": max(0, int(usage.ru_stime * 1_000_000_000)),
+        "wallNanoseconds": max(0, wall_ns),
+        "minorPageFaults": max(0, int(usage.ru_minflt)),
+        "majorPageFaults": max(0, int(usage.ru_majflt)),
+        "voluntaryContextSwitches": max(0, int(usage.ru_nvcsw)),
+        "involuntaryContextSwitches": max(0, int(usage.ru_nivcsw)),
+    }
+
+
+def process_resource_observation(value: Any) -> dict[str, Any]:
+    if not isinstance(value, dict) or value.get("schema") != RESOURCE_SCHEMA:
+        fail("invalid isolated process resource observation schema")
+    if not isinstance(value.get("scope"), str) or not value["scope"]:
+        fail("isolated process resource observation lacks scope")
+    fields = (
+        "peakResidentSetBytes",
+        "userCpuNanoseconds",
+        "systemCpuNanoseconds",
+        "wallNanoseconds",
+        "minorPageFaults",
+        "majorPageFaults",
+        "voluntaryContextSwitches",
+        "involuntaryContextSwitches",
+    )
+    for field in fields:
+        if type(value.get(field)) is not int or value[field] < 0:
+            fail(f"invalid isolated process resource field: {field}")
+    if value["wallNanoseconds"] == 0:
+        fail("isolated process resource wall time must be positive")
+    return value
+
+
+def resource_helper(cwd: Path, argv: list[str]) -> int:
+    if not argv:
+        print("resource helper requires one command", file=sys.stderr)
+        return 2
+    started = time.monotonic_ns()
+    try:
+        result = subprocess.run(
+            argv,
+            cwd=cwd,
+            env=os.environ.copy(),
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+        )
+        output = result.stdout
+        code = result.returncode
+    except OSError as error:
+        output = f"{type(error).__name__}: {error}\n"
+        code = 127
+    usage = resource.getrusage(resource.RUSAGE_CHILDREN)
+    if output:
+        sys.stdout.write(output)
+        if not output.endswith("\n"):
+            sys.stdout.write("\n")
+    print(
+        RESOURCE_PREFIX
+        + json.dumps(
+            _resource_payload(usage, time.monotonic_ns() - started),
+            sort_keys=True,
+        )
+    )
+    return code
+
+
+def run_isolated_command(
+    *args: str, cwd: Path, env: dict[str, str] | None = None
+) -> tuple[str, dict[str, Any]]:
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(Path(__file__).resolve()),
+            "--resource-helper",
+            "--resource-cwd",
+            str(cwd),
+            "--",
+            *args,
+        ],
+        cwd=ROOT,
+        env=env,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    resource_rows = [
+        line.split(RESOURCE_PREFIX, 1)[1]
+        for line in result.stdout.splitlines()
+        if line.startswith(RESOURCE_PREFIX)
+    ]
+    child_lines = [
+        line for line in result.stdout.splitlines() if not line.startswith(RESOURCE_PREFIX)
+    ]
+    child_output = "\n".join(child_lines)
+    if child_output:
+        child_output += "\n"
+    if len(resource_rows) != 1:
+        fail(
+            "expected exactly one isolated process resource row, received "
+            f"{len(resource_rows)}"
+        )
+    try:
+        observation = process_resource_observation(json.loads(resource_rows[0]))
+    except ValueError as error:
+        fail(f"invalid isolated process resource JSON: {error}")
+    if result.returncode != 0:
+        raise subprocess.CalledProcessError(
+            result.returncode,
+            args,
+            output=child_output,
+        )
+    return child_output, observation
 
 
 def parse_measurement(output: str, expected_path: str) -> dict[str, Any]:
@@ -100,6 +233,18 @@ def parse_measurement(output: str, expected_path: str) -> dict[str, Any]:
             fail("ordinary measurement phase set is incomplete")
         for name, distribution in phases.items():
             latency_distribution(distribution, f"ordinary.{name}")
+        reuse = value.get("staticProfileReuseKey")
+        if not isinstance(reuse, dict) or set(reuse) != {
+            "profileDigest",
+            "profileRevision",
+            "compilerContractDigest",
+        }:
+            fail("ordinary measurement lacks the exact static-profile reuse key")
+        if type(reuse.get("profileRevision")) is not int or reuse["profileRevision"] <= 0:
+            fail("ordinary measurement has an invalid profile revision")
+        for field in ("profileDigest", "compilerContractDigest"):
+            if not isinstance(reuse.get(field), str) or not reuse[field]:
+                fail(f"ordinary measurement has an invalid {field}")
         if value.get("dynamicAuthorizationCached") is not False:
             fail("ordinary measurement must state that dynamic authorization is not cached")
     return value
@@ -167,12 +312,19 @@ def parse_product_measurement(output: str) -> dict[str, Any]:
     return value
 
 
+def attach_resources(
+    measurement: dict[str, Any], observation: dict[str, Any]
+) -> dict[str, Any]:
+    measurement["harnessWallNanoseconds"] = observation["wallNanoseconds"]
+    measurement["fixtureProcessResources"] = observation
+    return measurement
+
+
 def run_product_fixture(samples: int, execution_samples: int) -> dict[str, Any]:
     env = os.environ.copy()
     env["HEPTA_OBJECTIVE_PRODUCT_MEASUREMENT_SAMPLES"] = str(samples)
     env["HEPTA_OBJECTIVE_PRODUCT_EXECUTION_SAMPLES"] = str(execution_samples)
-    started = time.monotonic_ns()
-    output = command(
+    output, observation = run_isolated_command(
         "cargo",
         "test",
         "--locked",
@@ -189,28 +341,19 @@ def run_product_fixture(samples: int, execution_samples: int) -> dict[str, Any]:
         cwd=CARGO_ROOT,
         env=env,
     )
-    harness_ns = time.monotonic_ns() - started
     measurement = parse_product_measurement(output)
     if (
         measurement["samples"] != samples
         or measurement["executionSamples"] != execution_samples
     ):
         fail("product fixture sample count differs from requested measurement")
-    measurement["harnessWallNanoseconds"] = harness_ns
-    measurement["observedChildrenPeakResidentSetBytes"] = (
-        observed_children_peak_resident_set_bytes()
-    )
-    measurement["memoryObservationScope"] = (
-        "cumulative process-tree peak through this fixture; not per-phase isolation"
-    )
-    return measurement
+    return attach_resources(measurement, observation)
 
 
 def run_fixture(test_name: str, expected_path: str, samples: int) -> dict[str, Any]:
     env = os.environ.copy()
     env["HEPTA_OBJECTIVE_MEASUREMENT_SAMPLES"] = str(samples)
-    started = time.monotonic_ns()
-    output = command(
+    output, observation = run_isolated_command(
         "cargo",
         "test",
         "--locked",
@@ -224,18 +367,25 @@ def run_fixture(test_name: str, expected_path: str, samples: int) -> dict[str, A
         cwd=CARGO_ROOT,
         env=env,
     )
-    harness_ns = time.monotonic_ns() - started
     measurement = parse_measurement(output, expected_path)
     if measurement["samples"] != samples:
         fail("fixture sample count differs from requested measurement")
-    measurement["harnessWallNanoseconds"] = harness_ns
-    measurement["observedChildrenPeakResidentSetBytes"] = (
-        observed_children_peak_resident_set_bytes()
-    )
-    measurement["memoryObservationScope"] = (
-        "cumulative process-tree peak through this fixture; not per-phase isolation"
-    )
-    return measurement
+    return attach_resources(measurement, observation)
+
+
+def sample_resource_observation() -> dict[str, Any]:
+    return {
+        "schema": RESOURCE_SCHEMA,
+        "scope": "one isolated fixture command process tree",
+        "peakResidentSetBytes": 1024,
+        "userCpuNanoseconds": 10,
+        "systemCpuNanoseconds": 5,
+        "wallNanoseconds": 20,
+        "minorPageFaults": 1,
+        "majorPageFaults": 0,
+        "voluntaryContextSwitches": 2,
+        "involuntaryContextSwitches": 0,
+    }
 
 
 def self_test() -> int:
@@ -249,7 +399,8 @@ def self_test() -> int:
         '"nativeCompile":{"p50":1,"p95":2,"p99":3},'
         '"protocolEncode":{"p50":1,"p95":2,"p99":3},'
         '"protocolDecode":{"p50":1,"p95":2,"p99":3}},'
-        '"dynamicAuthorizationCached":false}'
+        '"staticProfileReuseKey":{"profileDigest":"a","profileRevision":1,'
+        '"compilerContractDigest":"b"},"dynamicAuthorizationCached":false}'
     )
     parsed = parse_measurement(fixture, "ordinary_authenticated_admission_compile")
     if parsed["latencyNanoseconds"]["p99"] != 30:
@@ -275,11 +426,12 @@ def self_test() -> int:
     product = parse_product_measurement(product_fixture)
     if product["restartReadyNanoseconds"] != 400:
         fail("product self-test parse mismatch")
+    process_resource_observation(sample_resource_observation())
     print("PASS_HEPTA_OBJECTIVE_TARGET_MEASUREMENT_SELF_TEST")
     return 0
 
 
-def filesystem_context(root: Path, mountinfo: str) -> dict:
+def filesystem_context(root: Path, mountinfo: str) -> dict[str, Any]:
     """Describe the actual fixture filesystem without claiming storage acceptance."""
     root = root.resolve()
     selected = None
@@ -311,7 +463,7 @@ def filesystem_context(root: Path, mountinfo: str) -> dict:
                 selected = entry
         except (ValueError, IndexError):
             continue
-    result = {
+    result: dict[str, Any] = {
         "temporaryRoot": str(root),
         "mountIdentityAvailable": selected is not None,
     }
@@ -322,7 +474,7 @@ def filesystem_context(root: Path, mountinfo: str) -> dict:
     return result
 
 
-def current_filesystem_context() -> dict:
+def current_filesystem_context() -> dict[str, Any]:
     try:
         mountinfo = Path("/proc/self/mountinfo").read_text(encoding="utf-8")
     except OSError:
@@ -354,7 +506,6 @@ def measure(args: argparse.Namespace) -> int:
     )
     product = run_product_fixture(args.product_samples, args.execution_samples)
 
-    # A concurrent checkout or edit during the fixtures invalidates this receipt.
     if (
         git("rev-parse", "HEAD") != source_sha
         or git("rev-parse", "HEAD^{tree}") != source_tree
@@ -367,6 +518,10 @@ def measure(args: argparse.Namespace) -> int:
         "schema": SCHEMA,
         "sourceCommit": source_sha,
         "sourceTree": source_tree,
+        "workflowRunId": os.environ.get("GITHUB_RUN_ID"),
+        "workflowRunAttempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
+        "workflowCommit": os.environ.get("GITHUB_WORKFLOW_SHA", os.environ.get("GITHUB_SHA")),
+        "workflowRef": os.environ.get("GITHUB_WORKFLOW_REF"),
         "hostProfileId": args.host_profile_id,
         "host": {
             "hostname": socket.gethostname(),
@@ -381,6 +536,9 @@ def measure(args: argparse.Namespace) -> int:
         "measurements": [ordinary, conflict, product],
         "interpretation": {
             "ordinaryAndConflictAreSeparate": True,
+            "phaseLatencyMeasuredInsideFixture": True,
+            "fixtureResourcesIsolatedByFreshHelperProcess": True,
+            "memoryIsNotPerInternalPhaseAllocation": True,
             "productIncludesSignedIngressSocketFsyncAndRestart": True,
             "productExecutionIncludesFinalUsePhysicalSendAndTerminal": True,
             "ciRunnerIsNotProductionEvidence": True,
@@ -388,7 +546,6 @@ def measure(args: argparse.Namespace) -> int:
             "storageQualificationProved": False,
             "staticProfileReuseMeasuredSeparately": True,
             "dynamicAuthorizationCachingAllowed": False,
-            "memoryIsObservedProcessTreePeakNotPhaseIsolation": True,
             "atomicAppendCheckpointHandoffBoundaryPreserved": True,
             "activationGranted": False,
             "releaseGranted": False,
@@ -409,6 +566,8 @@ def measure(args: argparse.Namespace) -> int:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--resource-helper", action="store_true", help=argparse.SUPPRESS)
+    parser.add_argument("--resource-cwd", help=argparse.SUPPRESS)
     parser.add_argument("--self-test", action="store_true")
     parser.add_argument("--expected-sha")
     parser.add_argument("--host-profile-id")
@@ -417,8 +576,16 @@ def main() -> int:
     parser.add_argument("--product-samples", type=int, default=32)
     parser.add_argument("--execution-samples", type=int, default=4)
     parser.add_argument("--output")
+    parser.add_argument("resource_command", nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
     args = parser.parse_args()
 
+    if args.resource_helper:
+        if not args.resource_cwd:
+            parser.error("--resource-cwd is required for the resource helper")
+        helper_command = args.resource_command[1:] if args.resource_command[:1] == ["--"] else args.resource_command
+        return resource_helper(Path(args.resource_cwd), helper_command)
+    if args.resource_command:
+        parser.error("unexpected trailing command")
     if args.self_test:
         return self_test()
     if not args.expected_sha or len(args.expected_sha) != 40:

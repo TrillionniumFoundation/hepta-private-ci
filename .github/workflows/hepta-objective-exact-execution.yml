@@ -12,6 +12,8 @@ on:
       - codex-rs/Cargo.lock
       - codex-rs/rust-toolchain.toml
       - docs/modules/objective.compiler/**
+      - qualification/module-execution-dossiers/detail/objective.compiler.md
+      - scripts/hepta-objective-current-state.py
       - scripts/hepta-objective-qualify-exact.py
       - scripts/test_hepta_objective_qualify_exact.py
       - scripts/hepta-objective-evidence-project.py
@@ -67,12 +69,13 @@ jobs:
           test "$(git rev-parse "$BASE^{commit}")" = "$BASE"
           printf 'MERGE_BASE_SHA=%s\n' "$BASE" >> "$GITHUB_ENV"
           printf 'Source: %s\nMerge base: %s\n' "$SOURCE_SHA" "$BASE" >> "$GITHUB_STEP_SUMMARY"
-      - name: Test recorder failure semantics
+      - name: Verify static state and recorder failure semantics
         shell: bash
-        run: python3 -m unittest -v scripts.test_hepta_objective_qualify_exact
-      - name: Test evidence projection semantics
-        shell: bash
-        run: python3 -m unittest -v scripts.test_hepta_objective_evidence_project
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-objective-current-state.py verify
+          python3 -m unittest -v scripts.test_hepta_objective_qualify_exact
+          python3 -m unittest -v scripts.test_hepta_objective_evidence_project
       - name: Qualify source and deterministic merge without source writes
         shell: bash
         run: |
@@ -92,6 +95,7 @@ jobs:
             python3 scripts/hepta-objective-evidence-project.py \
               --source-commit "$SOURCE_SHA" \
               --source-tree "$(git rev-parse HEAD^{tree})" \
+              --current-state docs/modules/objective.compiler/CURRENT_STATE.json \
               --exact-execution "$receipt" \
               --output "$RUNNER_TEMP/objective-exact-evidence/evidence-projection.json"
           fi

@@ -1,26 +1,33 @@
 # objective.compiler technical development guide
 
 <!-- BEGIN GENERATED OBJECTIVE.COMPILER STATUS -->
-## Generated implementation status
+## Generated source-state status
 
-This block is generated from `docs/modules/objective.compiler/CURRENT_STATE.json`. It is a source-state declaration, not an activation or release receipt.
+This block is generated from `docs/modules/objective.compiler/CURRENT_STATE.json`. The manifest contains static source and policy facts only. Exact source-head, synthetic-merge and target-host observations are never hand-maintained here; they are emitted by the receipt-bound evidence projection named below.
 
-- Manifest SHA-256: `ce7142bba220f7318d8cae66823197124a51f6b5abd4eb95b30dcf0efcfc128b`
+- Manifest SHA-256: `14bc95a145f63da905593f3022ecb309dbd1d6094f0bd9912871a52fe35e47a2`
 - Core: `source_complete`
 - Product composition: `source_composed_durable_proof_bound_not_activated`
-- Semantic hardening: `source_complete_pending_exact_head_qualification`
-- Current-head qualification: `required_check_not_embedded_in_source`
-- Synthetic-merge qualification: `required_check_not_embedded_in_source`
-- Target-host qualification: `selected_target_host_receipt_absent`
-- Independent acceptance: `absent`
+- Semantic hardening: `source_complete_pending_exact_candidate_receipts`
+- Qualification evidence policy: `dynamic_receipt_projection_required`
+- Independent acceptance: `external_receipt_required`
 - Canary/promotion/rollback: `source_policy_not_activated`
+- Dynamic projection schema: `hepta.objective-evidence-projection.v2`
+- Dynamic projection producer: `scripts/hepta-objective-evidence-project.py`
+- Manual dynamic pass fields: `forbidden`
 
-| Claim | Value |
+| Source claim | Value |
 | --- | --- |
 | `productionImplementation` | `false` |
 | `accepted` | `false` |
 | `activated` | `false` |
 | `released` | `false` |
+
+### Dynamic claims projected only from artifacts
+
+- `sourceHeadQualification`
+- `syntheticMergeQualification`
+- `targetHostMeasurement`
 
 ### Required repository checks
 
