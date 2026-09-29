@@ -15,44 +15,69 @@ concurrency:
 jobs:
   materialize:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 75
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
           persist-credentials: true
           ref: ${{ github.sha }}
-      - name: Apply bounded source closure and refresh source identities
+      - name: Install pinned Rust
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+      - name: Apply bounded source closure, format and refresh identities
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           python3 scripts/apply_learning_artifacts_consumer_closure.py
-          git add \
-            codex-rs/hepta-learning-artifacts/Cargo.toml \
-            codex-rs/hepta-learning-artifacts/REFERENCE_HOST_PROTOCOL.md \
-            codex-rs/hepta-learning-artifacts/src/lib.rs \
-            codex-rs/hepta-learning-artifacts/src/owner_service.rs \
-            codex-rs/hepta-learning-artifacts/src/pinned.rs \
-            codex-rs/hepta-learning-artifacts/src/owner/operational_metrics.rs \
-            codex-rs/hepta-learning-artifacts/src/owner/publication_coordination.rs \
-            .github/workflows/hepta-learning-artifacts-qualification.yml
+          python3 scripts/apply_learning_artifacts_compile_fixes.py
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-artifacts
+          git add -A
           tree=$(git write-tree)
           python3 scripts/hepta_artifact_source_binding.py \
             --tree "$tree" --write \
             --include codex-rs/hepta-learning-artifacts/Cargo.toml \
+            --include codex-rs/hepta-learning-artifacts/REFERENCE_HOST_PROTOCOL.md \
             --include codex-rs/hepta-learning-artifacts/src/lib.rs \
             --include codex-rs/hepta-learning-artifacts/src/pinned.rs \
-            --include codex-rs/hepta-learning-artifacts/src/owner/request_identity.rs \
+            --include codex-rs/hepta-learning-artifacts/src/owner_service.rs \
+            --include codex-rs/hepta-learning-artifacts/src/owner_service_tests.rs \
+            --include codex-rs/hepta-learning-artifacts/src/owner/bootstrap.rs \
+            --include codex-rs/hepta-learning-artifacts/src/owner/capability_validation.rs \
             --include codex-rs/hepta-learning-artifacts/src/owner/operational_metrics.rs \
             --include codex-rs/hepta-learning-artifacts/src/owner/publication_coordination.rs \
-            --include codex-rs/hepta-learning-artifacts/REFERENCE_HOST_PROTOCOL.md
+            --include codex-rs/hepta-learning-artifacts/src/owner/request_identity.rs \
+            --include codex-rs/hepta-learning-artifacts/src/owner/service_crash_tests.rs \
+            --include qualification/lane-e/TEST_TRACEABILITY.json \
+            --include .github/workflows/hepta-learning-artifacts-qualification.yml
           git add docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json
+      - name: Verify materialized source before publication
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts -p 'test_hepta_artifact_*.py' -v
+          cargo check --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-learning-artifacts --all-targets
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-learning-artifacts --all-targets -- -D warnings
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-learning-artifacts --features artifact_test_hooks \
+            -- --test-threads=1
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-learning-artifacts -- --check
+          git diff --check --cached
+      - name: Commit exact materialized source
+        shell: bash
+        run: |
+          set -euo pipefail
           if git diff --cached --quiet; then
             echo 'source closure already materialized'
             exit 0
           fi
           git config user.name 'learning.artifacts materializer'
           git config user.email 'learning-artifacts-materializer@users.noreply.github.com'
-          git commit -m 'learning.artifacts: close pinned withdrawal and refresh source binding'
+          git commit -m 'learning.artifacts: close owner, pinned withdrawal and operational evidence'
           git push origin "HEAD:${GITHUB_REF_NAME}"
