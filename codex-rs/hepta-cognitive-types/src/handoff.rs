@@ -8,6 +8,7 @@
 use codex_hepta_types::Digest32;
 
 use crate::consumer::CanonicalConsumerBindingV1;
+use crate::consumer::CanonicalPayloadKindV1;
 use crate::contract::ContractErrorCodeV1;
 use crate::contract::ContractViolationV1;
 use crate::contract::Validated;
@@ -15,8 +16,7 @@ use crate::wire::CANONICAL_PROJECTION_COMPARISON_V1;
 use crate::wire::CognitiveContractV1;
 use crate::wire::ContractDigestProfileV1;
 use crate::wire::canonical_contract_digest_bound_v1;
-use crate::wire::canonical_contract_digests_v1;
-use crate::wire::decode_validated_wire_v1;
+use crate::wire::decode_validated_wire_with_digests_v1;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum CanonicalParityV1 {
@@ -53,13 +53,30 @@ impl CanonicalConsumerBindingV1 {
                 "payload kind does not match the expected canonical contract",
             ));
         }
-        let payload =
-            decode_validated_wire_v1::<T>(canonical_wire).map_err(|error| error.violation())?;
-        // Reuse only the checked canonical encoding of this received payload.
-        // Its historical and schema-bound digests remain different profiles;
-        // neither is evidence of current owner authorization.
-        let (frozen_digest, observed_semantic_digest) =
-            canonical_contract_digests_v1(payload.as_inner()).map_err(|error| error.violation())?;
+        // The frozen payload digest deliberately omits the schema. A generic
+        // alias with the same contract name must not substitute a different
+        // schema or resource policy and manufacture a matched handoff.
+        let (schema, maximum) = payload_profile(self.payload_kind);
+        if T::SCHEMA_ID != schema {
+            return Err(violation(
+                ContractErrorCodeV1::SchemaMismatch,
+                "binding.payloadSchema",
+                "payload schema does not match the registered contract family",
+            ));
+        }
+        if T::MAX_ENCODED_BYTES != maximum {
+            return Err(violation(
+                ContractErrorCodeV1::ContractMismatch,
+                "binding.payloadLimit",
+                "payload limit does not match the registered contract family",
+            ));
+        }
+        // Reuse the exact canonical bytes checked by this decode, not an
+        // earlier request or an authorization result. The independent expected
+        // owner projection below is still checked in its own right.
+        let (payload, frozen_digest, observed_semantic_digest) =
+            decode_validated_wire_with_digests_v1::<T>(canonical_wire)
+                .map_err(|error| error.violation())?;
         if frozen_digest != self.canonical_payload_sha256.digest() {
             return Err(violation(
                 ContractErrorCodeV1::DigestMismatch,
@@ -151,6 +168,23 @@ impl<T> CanonicalHandoffV1<T> {
     #[must_use]
     pub const fn receipt_digest(&self) -> Digest32 {
         self.receipt_digest
+    }
+}
+
+fn payload_profile(kind: CanonicalPayloadKindV1) -> (&'static str, usize) {
+    match kind {
+        CanonicalPayloadKindV1::MemoryEvent => (
+            crate::hnmf::MemoryEventV1::SCHEMA_ID,
+            crate::hnmf::MemoryEventV1::MAX_ENCODED_BYTES,
+        ),
+        CanonicalPayloadKindV1::RecallPacket => (
+            crate::hnmf_learning::RecallPacketV1::SCHEMA_ID,
+            crate::hnmf_learning::RecallPacketV1::MAX_ENCODED_BYTES,
+        ),
+        CanonicalPayloadKindV1::ForgetPropagationReceipt => (
+            crate::hnmf_learning::ForgetPropagationReceiptV1::SCHEMA_ID,
+            crate::hnmf_learning::ForgetPropagationReceiptV1::MAX_ENCODED_BYTES,
+        ),
     }
 }
 

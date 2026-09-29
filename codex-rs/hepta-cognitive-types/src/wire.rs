@@ -6,9 +6,6 @@
 //! to be canonical, which rejects duplicate keys, alternate key ordering,
 //! whitespace drift and semantically equivalent but non-canonical encodings.
 
-use std::error::Error as StdError;
-use std::fmt;
-
 use codex_hepta_types::Digest32;
 use serde::Deserialize;
 use serde::Serialize;
@@ -16,8 +13,6 @@ use serde::de::DeserializeOwned;
 use serde_json::Value;
 
 use crate::contract::CANONICALIZATION_ALGORITHM_V1;
-use crate::contract::ContractErrorCodeV1;
-use crate::contract::ContractViolationV1;
 use crate::contract::ValidateContractV1;
 use crate::contract::Validated;
 use crate::hnmf::CrossModalBindingV1;
@@ -33,6 +28,10 @@ use crate::hnmf_learning::RecallPacketV1;
 use crate::hnmf_learning::ReplaySelectionReceiptV1;
 use crate::hnmf_learning::SynapseV1;
 use crate::hnmf_learning::TopologyProposalV1;
+
+#[path = "wire_error.rs"]
+mod error;
+pub use error::CognitiveWireError;
 
 pub const COGNITIVE_WIRE_VERSION_V1: u32 = 1;
 const MAX_ENVELOPE_OVERHEAD_BYTES: usize = 1_024;
@@ -233,7 +232,16 @@ fn encode_envelope_from_payload<T: CognitiveContractV1>(
     Ok(encoded)
 }
 
-pub fn decode_wire_v1<T: CognitiveContractV1>(bytes: &[u8]) -> Result<T, CognitiveWireError> {
+// Constructed only by the strict decoder. The bytes and validated value never
+// escape independently before canonical identity and length checks complete.
+struct DecodedCanonicalPayloadV1<T> {
+    value: Validated<T>,
+    bytes: Vec<u8>,
+}
+
+fn decode_canonical_payload_v1<T: CognitiveContractV1>(
+    bytes: &[u8],
+) -> Result<DecodedCanonicalPayloadV1<T>, CognitiveWireError> {
     let maximum = envelope_maximum::<T>()?;
     if bytes.is_empty() || bytes.len() > maximum {
         return Err(CognitiveWireError::EnvelopeLength {
@@ -252,11 +260,8 @@ pub fn decode_wire_v1<T: CognitiveContractV1>(bytes: &[u8]) -> Result<T, Cogniti
     if envelope.contract != T::CONTRACT_ID {
         return Err(CognitiveWireError::ContractMismatch);
     }
-    envelope
-        .payload
-        .validate_contract()
-        .map_err(CognitiveWireError::Contract)?;
-    let payload = canonical_json_bytes(&envelope.payload)?;
+    let value = Validated::new(envelope.payload).map_err(CognitiveWireError::Contract)?;
+    let payload = canonical_json_bytes(value.as_inner())?;
     if payload.len() > T::MAX_ENCODED_BYTES {
         return Err(CognitiveWireError::PayloadLength {
             actual: payload.len(),
@@ -267,14 +272,31 @@ pub fn decode_wire_v1<T: CognitiveContractV1>(bytes: &[u8]) -> Result<T, Cogniti
     if canonical.as_slice() != bytes {
         return Err(CognitiveWireError::NonCanonicalInput);
     }
-    Ok(envelope.payload)
+    Ok(DecodedCanonicalPayloadV1 {
+        value,
+        bytes: payload,
+    })
+}
+
+pub fn decode_wire_v1<T: CognitiveContractV1>(bytes: &[u8]) -> Result<T, CognitiveWireError> {
+    Ok(decode_validated_wire_v1::<T>(bytes)?.into_inner())
 }
 
 pub fn decode_validated_wire_v1<T: CognitiveContractV1>(
     bytes: &[u8],
 ) -> Result<Validated<T>, CognitiveWireError> {
-    let value = decode_wire_v1(bytes)?;
-    Validated::new(value).map_err(CognitiveWireError::Contract)
+    Ok(decode_canonical_payload_v1::<T>(bytes)?.value)
+}
+
+/// Reuse only this decode's checked bytes; retain both distinct digest profiles.
+/// There is no cache and no owner, currentness or authorization conclusion.
+pub(crate) fn decode_validated_wire_with_digests_v1<T: CognitiveContractV1>(
+    bytes: &[u8],
+) -> Result<(Validated<T>, Digest32, Digest32), CognitiveWireError> {
+    let decoded = decode_canonical_payload_v1::<T>(bytes)?;
+    let frozen = frozen_digest_from_checked_payload::<T>(&decoded.bytes);
+    let bound = bound_digest_from_checked_payload::<T>(&decoded.bytes);
+    Ok((decoded.value, frozen, bound))
 }
 
 /// Canonical V1 digest for one validated contract payload. The contract name is
@@ -301,7 +323,7 @@ pub fn canonical_contract_digest_bound_v1<T: CognitiveContractV1>(
 /// Bytes are local to this call: no owner identity, currentness or authorization
 /// conclusion is cached. Callers must still recheck the current owner binding.
 /// The independent expected projection must not be replaced by this payload.
-pub(crate) fn canonical_contract_digests_v1<T: CognitiveContractV1>(
+pub fn canonical_contract_digests_v1<T: CognitiveContractV1>(
     value: &T,
 ) -> Result<(Digest32, Digest32), CognitiveWireError> {
     let payload = encode_payload_canonical_v1(value)?;
@@ -312,7 +334,7 @@ pub(crate) fn canonical_contract_digests_v1<T: CognitiveContractV1>(
 }
 
 // Private byte-level helpers are only called after the bounded, validating
-// canonical encoder above. Do not expose unchecked byte-to-proof constructors.
+// canonical encoder or decoder. Never expose unchecked byte-to-proof constructors.
 fn frozen_digest_from_checked_payload<T: CognitiveContractV1>(payload: &[u8]) -> Digest32 {
     Digest32::of_parts(&[
         DIGEST_DOMAIN_V1,
@@ -323,22 +345,26 @@ fn frozen_digest_from_checked_payload<T: CognitiveContractV1>(payload: &[u8]) ->
 }
 
 fn bound_digest_from_checked_payload<T: CognitiveContractV1>(payload: &[u8]) -> Digest32 {
-    let mut bytes = BOUND_DIGEST_DOMAIN_V1.to_vec();
-    push_digest_component_v1(&mut bytes, T::SCHEMA_ID.as_bytes());
-    bytes.extend_from_slice(&COGNITIVE_WIRE_VERSION_V1.to_be_bytes());
-    push_digest_component_v1(&mut bytes, T::CONTRACT_ID.as_bytes());
-    push_digest_component_v1(&mut bytes, CANONICALIZATION_ALGORITHM_V1.as_bytes());
-    push_digest_component_v1(&mut bytes, payload);
-    Digest32::of_bytes(&bytes)
+    // Stream the exact historical framing. Do not allocate another payload-size
+    // vector, alter component order, or collapse the two digest domains.
+    Digest32::of_parts(&[
+        BOUND_DIGEST_DOMAIN_V1,
+        &digest_component_length(T::SCHEMA_ID.as_bytes()),
+        T::SCHEMA_ID.as_bytes(),
+        &COGNITIVE_WIRE_VERSION_V1.to_be_bytes(),
+        &digest_component_length(T::CONTRACT_ID.as_bytes()),
+        T::CONTRACT_ID.as_bytes(),
+        &digest_component_length(CANONICALIZATION_ALGORITHM_V1.as_bytes()),
+        CANONICALIZATION_ALGORITHM_V1.as_bytes(),
+        &digest_component_length(payload),
+        payload,
+    ])
 }
 
-fn push_digest_component_v1(bytes: &mut Vec<u8>, component: &[u8]) {
-    bytes.extend_from_slice(
-        &u64::try_from(component.len())
-            .unwrap_or(u64::MAX)
-            .to_be_bytes(),
-    );
-    bytes.extend_from_slice(component);
+fn digest_component_length(component: &[u8]) -> [u8; 8] {
+    u64::try_from(component.len())
+        .unwrap_or(u64::MAX)
+        .to_be_bytes()
 }
 
 fn canonical_json_bytes<T: Serialize>(value: &T) -> Result<Vec<u8>, CognitiveWireError> {
@@ -389,111 +415,6 @@ fn write_canonical_value(value: &Value, output: &mut String) -> Result<(), Cogni
     Ok(())
 }
 
-#[derive(Debug)]
-pub enum CognitiveWireError {
-    Contract(HnmfContractError),
-    Json(serde_json::Error),
-    SchemaMismatch,
-    VersionMismatch(u32),
-    ContractMismatch,
-    NonCanonicalInput,
-    NonIntegerNumber,
-    PayloadLength { actual: usize, maximum: usize },
-    EnvelopeLength { actual: usize, maximum: usize },
-}
-
-impl fmt::Display for CognitiveWireError {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::Contract(error) => error.fmt(formatter),
-            Self::Json(error) => error.fmt(formatter),
-            Self::SchemaMismatch => formatter.write_str("cognitive wire schema mismatch"),
-            Self::VersionMismatch(version) => {
-                write!(formatter, "unsupported cognitive wire version {version}")
-            }
-            Self::ContractMismatch => formatter.write_str("cognitive wire contract mismatch"),
-            Self::NonCanonicalInput => {
-                formatter.write_str("cognitive wire bytes are not canonical V1 JSON")
-            }
-            Self::NonIntegerNumber => {
-                formatter.write_str("canonical V1 JSON forbids non-integer numbers")
-            }
-            Self::PayloadLength { actual, maximum } => {
-                write!(
-                    formatter,
-                    "cognitive payload length {actual} exceeds {maximum}"
-                )
-            }
-            Self::EnvelopeLength { actual, maximum } => {
-                write!(
-                    formatter,
-                    "cognitive envelope length {actual} exceeds {maximum}"
-                )
-            }
-        }
-    }
-}
-
-impl CognitiveWireError {
-    #[must_use]
-    pub fn violation(&self) -> ContractViolationV1 {
-        match self {
-            Self::Contract(error) => error.violation(),
-            Self::Json(error) => ContractViolationV1::new(
-                ContractErrorCodeV1::InvalidValue,
-                "wire",
-                error.to_string(),
-            ),
-            Self::SchemaMismatch => ContractViolationV1::new(
-                ContractErrorCodeV1::SchemaMismatch,
-                "schema",
-                "wire schema does not match the requested contract",
-            ),
-            Self::VersionMismatch(version) => ContractViolationV1::new(
-                ContractErrorCodeV1::VersionMismatch,
-                "schemaVersion",
-                format!("unsupported cognitive wire version {version}"),
-            ),
-            Self::ContractMismatch => ContractViolationV1::new(
-                ContractErrorCodeV1::ContractMismatch,
-                "contract",
-                "wire contract identity does not match the requested type",
-            ),
-            Self::NonCanonicalInput | Self::NonIntegerNumber => ContractViolationV1::new(
-                ContractErrorCodeV1::NonCanonicalEncoding,
-                "wire",
-                self.to_string(),
-            ),
-            Self::PayloadLength { actual, maximum } => ContractViolationV1::new(
-                ContractErrorCodeV1::LimitExceeded,
-                "payload",
-                format!("{actual} exceeds maximum {maximum}"),
-            ),
-            Self::EnvelopeLength { actual, maximum } => ContractViolationV1::new(
-                ContractErrorCodeV1::LimitExceeded,
-                "envelope",
-                format!("{actual} exceeds maximum {maximum}"),
-            ),
-        }
-    }
-}
-
-impl From<CognitiveWireError> for ContractViolationV1 {
-    fn from(value: CognitiveWireError) -> Self {
-        value.violation()
-    }
-}
-
-impl StdError for CognitiveWireError {
-    fn source(&self) -> Option<&(dyn StdError + 'static)> {
-        match self {
-            Self::Contract(error) => Some(error),
-            Self::Json(error) => Some(error),
-            _ => None,
-        }
-    }
-}
-
 /// Version of typed common-semantic equality, not a wire or schema revision.
 pub const CANONICAL_PROJECTION_COMPARISON_V1: &str = "typed-canonical-projection-equality-v1";
 
@@ -528,6 +449,7 @@ mod digest_reuse_tests {
 
     thread_local! {
         static SERIALIZATIONS: Cell<usize> = const { Cell::new(0) };
+        static VALIDATIONS: Cell<usize> = const { Cell::new(0) };
     }
 
     #[derive(Clone, Debug, Deserialize, Eq, PartialEq)]
@@ -547,6 +469,7 @@ mod digest_reuse_tests {
         const MAX_ENCODED_BYTES: usize = 64;
 
         fn validate_contract(&self) -> Result<(), HnmfContractError> {
+            VALIDATIONS.with(|count| count.set(count.get() + 1));
             Ok(())
         }
     }
@@ -566,6 +489,50 @@ mod digest_reuse_tests {
             assert_ne!(pair.0, pair.1);
             assert!(paired_work > 0);
             assert_eq!(separate_work, paired_work * 2);
+        }
+    }
+
+    #[test]
+    fn decoded_profiles_reuse_one_validation_and_one_serialization() {
+        for number in [0, 1, u64::MAX] {
+            let bytes = encode_wire_v1(&DigestReuseProbe(number)).expect("wire");
+            SERIALIZATIONS.with(|count| count.set(0));
+            VALIDATIONS.with(|count| count.set(0));
+            let (value, frozen, bound) =
+                decode_validated_wire_with_digests_v1::<DigestReuseProbe>(&bytes)
+                    .expect("checked profiles");
+            assert_eq!(SERIALIZATIONS.with(Cell::get), 1);
+            assert_eq!(VALIDATIONS.with(Cell::get), 1);
+            assert_eq!(value.as_inner(), &DigestReuseProbe(number));
+            assert_eq!(
+                (frozen, bound),
+                canonical_contract_digests_v1(value.as_inner()).expect("separate reference")
+            );
+            assert_ne!(frozen, bound);
+        }
+    }
+
+    #[test]
+    fn streaming_bound_digest_preserves_the_exact_framed_byte_stream() {
+        for number in [0, 1, u64::MAX] {
+            let payload = encode_payload_canonical_v1(&DigestReuseProbe(number)).expect("payload");
+            let mut reference = BOUND_DIGEST_DOMAIN_V1.to_vec();
+            let schema = DigestReuseProbe::SCHEMA_ID.as_bytes();
+            reference.extend_from_slice(&(schema.len() as u64).to_be_bytes());
+            reference.extend_from_slice(schema);
+            reference.extend_from_slice(&COGNITIVE_WIRE_VERSION_V1.to_be_bytes());
+            for component in [
+                DigestReuseProbe::CONTRACT_ID.as_bytes(),
+                CANONICALIZATION_ALGORITHM_V1.as_bytes(),
+                payload.as_slice(),
+            ] {
+                reference.extend_from_slice(&(component.len() as u64).to_be_bytes());
+                reference.extend_from_slice(component);
+            }
+            assert_eq!(
+                bound_digest_from_checked_payload::<DigestReuseProbe>(&payload),
+                Digest32::of_bytes(&reference)
+            );
         }
     }
 }

@@ -14,8 +14,10 @@ import subprocess
 import sys
 import time
 
+from evidence_inventory import collect_inventory, require_files, require_fresh_output
+
 SHA = re.compile(r"[0-9a-f]{40}")
-CHECK_PLAN_VERSION = 1
+CHECK_PLAN_VERSION = 2
 GROUPS = {
     "native": ["codex-hepta-cognitive-types"],
     "consumers": ["codex-hepta-cognitive-read", "codex-hepta-cognitive-store",
@@ -146,6 +148,7 @@ def command_plan(root: Path, group: str, output: Path) -> list[tuple[str, list[s
     if group == "native":
         target = output.parent / "cognitive-probe-target"
         probe = target / "debug/examples/canonical_probe"
+        mutation_output = output.parent / "cognitive-mutation-work" / "evidence"
         plan += [("python-regressions", [sys.executable, "-m", "unittest", "discover", "-s",
                                         "qualification/cognitive-types-v1", "-p", "test_*.py"], root),
                  ("traceability", [sys.executable, "qualification/cognitive-types-v1/render_traceability.py", "--check"], root),
@@ -160,10 +163,28 @@ def command_plan(root: Path, group: str, output: Path) -> list[tuple[str, list[s
                  ("differential-quality", [sys.executable, "qualification/cognitive-types-v1/quality_checks.py",
                                           "--probe", str(probe), "--output", str(output / "quality-receipt.json")], root),
                  ("targeted-source-mutations", [sys.executable, "qualification/cognitive-types-v1/run_mutations.py",
-                                               "--probe", str(probe), "--output", str(output / "mutations")], root),
+                                               "--probe", str(probe), "--output", str(mutation_output)], root),
+                 ("archive-mutation-evidence", [sys.executable, "qualification/cognitive-types-v1/evidence_inventory.py",
+                                                "--archive", str(mutation_output),
+                                                "--destination", str(output / "mutations")], root),
                  ("fuzz-build", ["cargo", "check", "--manifest-path",
                                   "hepta-cognitive-types/fuzz/Cargo.toml", "--all-targets"], rust)]
     return plan
+
+
+def validate_execution_paths(root: Path, output: Path) -> None:
+    """Reject source/evidence overlap, including resolved scratch symlinks."""
+    root, output = root.resolve(), output.resolve()
+    if output == root or root in output.parents or output in root.parents:
+        raise ValueError("receipts must be disjoint from the source worktree")
+    scratch = (output.parent / "cognitive-types-cargo-target",
+               output.parent / "cognitive-probe-target",
+               output.parent / "cognitive-mutation-work")
+    for path in scratch:
+        resolved = path.resolve()
+        if (resolved == root or root in resolved.parents or resolved in root.parents
+                or resolved == output or output in resolved.parents or resolved in output.parents):
+            raise ValueError("build and mutation scratch must be disjoint from source and evidence")
 
 
 def finish_receipt(receipt: dict, output: Path) -> bool:
@@ -182,6 +203,19 @@ def finish_receipt(receipt: dict, output: Path) -> bool:
                       and type(check.get("exit_code")) is int and check["exit_code"] == 0
                       and check.get("error") is None for check in checks)
               and checks[-1].get("porcelain") == "")
+    # Seal all logs and nested result files, not just their console summaries.
+    output.mkdir(parents=True, exist_ok=True)
+    try:
+        inventory = collect_inventory(output)
+        receipt["evidence_files"] = inventory
+        required = [name + ".log" for name in expected if name != "clean-tree"]
+        if group == "native":
+            required += ["quality-receipt.json", "mutations/mutation-receipt.json"]
+        require_files(inventory, required)
+    except (OSError, ValueError) as exc:
+        receipt["evidence_error"] = f"{type(exc).__name__}: {exc}"
+        passed = False
+    passed = passed and receipt.get("error") is None and receipt.get("evidence_error") is None
     receipt["qualification_passed"] = passed
     receipt["product_acceptance"] = False
     receipt["activation"] = False
@@ -202,11 +236,27 @@ def main() -> int:
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[2]
+    try:
+        require_fresh_output(args.output)
+    except (OSError, ValueError) as exc:
+        parser.error(str(exc))
     output = args.output.resolve()
-    if output == root or root in output.parents:
-        parser.error("receipts must be outside the source worktree")
+    try:
+        validate_execution_paths(root, output)
+    except ValueError as exc:
+        parser.error(str(exc))
+    # Keep all compiler artifacts and disposable mutation work outside both the
+    # qualified source and the uploaded evidence, without changing any checks.
+    cargo_target = output.parent / "cognitive-types-cargo-target"
+    mutation_evidence = output.parent / "cognitive-mutation-work" / "evidence"
+    try:
+        require_fresh_output(mutation_evidence)
+    except (OSError, ValueError) as exc:
+        parser.error(str(exc))
+    os.environ["CARGO_TARGET_DIR"] = str(cargo_target)
     receipt = {"schema": "hepta.cognitive-types.readonly-execution.v1", "group": args.group,
                "check_plan_version": CHECK_PLAN_VERSION,
+               "cargo_target_directory": str(cargo_target),
                "source_worktree": str(root), "evidence_directory": str(output),
                "python_executable": sys.executable,
                "workflow_sha": os.environ.get("GITHUB_WORKFLOW_SHA"),

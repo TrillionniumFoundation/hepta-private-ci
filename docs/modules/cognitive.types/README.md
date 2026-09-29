@@ -11,3 +11,5 @@ The existing [IMPLEMENTATION_MAP.json](IMPLEMENTATION_MAP.json) is the status au
 `CanonicalShadowComparisonV1` is a raw digest-equality diagnostic only, even when its inputs match. Typed migration parity and compatibility-cutover evidence must use `CanonicalHandoffV1` over one explicit common semantic projection, followed by current owner revalidation at the physical-use boundary.
 
 The [execution dossier](../../../qualification/module-execution-dossiers/detail/cognitive.types.md) and [HNMF specification](../../hnmf/TECHNICAL.md) retain their separate design and ownership scopes. A path, token, test declaration, or green historical run cannot establish current-candidate execution, authenticated consumer cutover, acceptance, activation, or release.
+
+The [checked decoder and complete evidence inventory supplement](CHECKED_DECODE_EVIDENCE_20260929.md) covers registered handoff profiles, same-decode digest reuse, payload-free JSON violations, bounded auxiliary-file integrity, and mutation-build separation under check-plan version 2. Its local Python evidence is explicitly not Rust or product-cutover qualification.

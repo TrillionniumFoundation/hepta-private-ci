@@ -11,6 +11,7 @@ import sys
 import tempfile
 import unittest
 
+import evidence_inventory as inventory
 import run_qualification as qualification
 import verify_receipts as verifier
 
@@ -65,6 +66,12 @@ class ReceiptVerificationTests(unittest.TestCase):
                            "evidence_directory": str(output), "python_executable": sys.executable,
                            "runner_image": {"os": "fixture-os", "version": "fixture-version", "platform": "fixture"},
                            "checks": checks}
+                if group == "native":
+                    (artifact / "quality-receipt.json").write_text('{"fixture": "no Rust execution"}\n')
+                    (artifact / "mutations").mkdir()
+                    (artifact / "mutations/mutation-receipt.json").write_text('{"fixture": "no mutants executed"}\n')
+                receipt["evidence_files"] = inventory.collect_inventory(artifact)
+                receipt["cargo_target_directory"] = str(output.parent / "cognitive-types-cargo-target")
                 self.artifacts[group, kind] = artifact
                 self.receipts[group, kind] = receipt
                 self.write_receipt(artifact, receipt)
@@ -208,6 +215,7 @@ class ReceiptVerificationTests(unittest.TestCase):
     def test_partial_success_cannot_be_sealed_by_runner(self):
         output = self.directory / "finish"
         original = self.receipts["native", "exact-head"]
+        shutil.copytree(self.artifacts["native", "exact-head"], output)
         self.assertTrue(qualification.finish_receipt(copy.deepcopy(original), output))
         for checks in ([original["checks"][0]], original["checks"][:-1],
                        original["checks"] + [original["checks"][0]]):
@@ -218,6 +226,50 @@ class ReceiptVerificationTests(unittest.TestCase):
         value = copy.deepcopy(original)
         value["checks"][0]["exit_code"] = False
         self.assertFalse(qualification.finish_receipt(value, output))
+
+    def test_auxiliary_result_tampering_is_rejected(self):
+        for kind in verifier.KINDS:
+            artifact = self.artifacts["native", kind]
+            for name in ("quality-receipt.json", "mutations/mutation-receipt.json"):
+                with self.subTest(kind=kind, name=name):
+                    path = artifact / name
+                    original = path.read_bytes()
+                    path.write_bytes(b'{"passed":true}')
+                    with self.assertRaises(verifier.EvidenceError):
+                        self.verify()
+                    path.write_bytes(original)
+                    path.unlink()
+                    with self.assertRaises(verifier.EvidenceError):
+                        self.verify()
+                    path.write_bytes(original)
+
+    def test_resealed_inventory_cannot_hide_missing_required_result(self):
+        artifact = self.artifacts["native", "exact-head"]
+        (artifact / "quality-receipt.json").unlink()
+        receipt = copy.deepcopy(self.receipts["native", "exact-head"])
+        receipt["evidence_files"] = inventory.collect_inventory(artifact)
+        self.write_receipt(artifact, receipt)
+        with self.assertRaises(verifier.EvidenceError):
+            self.verify()
+
+    def test_unrecorded_nested_file_and_boolean_size_are_rejected(self):
+        artifact = self.artifacts["native", "exact-head"]
+        extra = artifact / "mutations/extra.log"
+        extra.write_text("unrecorded")
+        with self.assertRaises(verifier.EvidenceError):
+            self.verify()
+        extra.unlink()
+        self.assert_resealed_change_rejected(
+            lambda r: r["evidence_files"]["files"][0].update(bytes=False))
+        self.assert_resealed_change_rejected(lambda r: r.update(cargo_target_directory="/other/target"))
+
+    def test_runner_refuses_success_when_auxiliary_evidence_is_missing(self):
+        output = self.directory / "missing-auxiliary"
+        shutil.copytree(self.artifacts["native", "exact-head"], output)
+        (output / "mutations/mutation-receipt.json").unlink()
+        receipt = copy.deepcopy(self.receipts["native", "exact-head"])
+        self.assertFalse(qualification.finish_receipt(receipt, output))
+        self.assertIn("evidence_error", receipt)
 
     def test_dirty_verifier_checkout_is_rejected(self):
         (self.root / "change").write_text("dirty\n")

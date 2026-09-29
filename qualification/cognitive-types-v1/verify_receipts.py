@@ -16,6 +16,7 @@ import re
 import subprocess
 import sys
 
+from evidence_inventory import require_files, verify_inventory
 from run_qualification import CHECK_PLAN_VERSION, GROUPS, SHA, command_plan, git, resolve_candidate
 
 KINDS = ("exact-head", "synthetic-merge")
@@ -92,12 +93,23 @@ def verify_receipt(directory: Path, group: str, identity: dict, execution: dict)
     for key in ("product_acceptance", "activation", "release"):
         require(receipt.get(key) is False, f"unexpected authority claim: {key}")
     require(receipt.get("error") is None, "receipt has a preparation error")
+    require(receipt.get("evidence_error") is None, "receipt has an evidence sealing error")
     image = receipt.get("runner_image")
     require(isinstance(image, dict) and all(isinstance(image.get(key), str) and image[key]
             for key in ("os", "version", "platform")), "missing runner image identity")
     root = absolute_recorded_path(receipt.get("source_worktree"), "source_worktree")
     output = absolute_recorded_path(receipt.get("evidence_directory"), "evidence_directory")
-    require(output != root and root not in output.parents, "evidence was written inside source")
+    require(output != root and root not in output.parents and output not in root.parents, "evidence was written inside source")
+    require(receipt.get("cargo_target_directory") == str(output.parent / "cognitive-types-cargo-target"),
+            "cargo target directory identity mismatch")
+    try:
+        inventory = verify_inventory(directory, receipt.get("evidence_files"))
+        required = [name + ".log" for name, _, _ in command_plan(root, group, output)]
+        if group == "native":
+            required += ["quality-receipt.json", "mutations/mutation-receipt.json"]
+        require_files(inventory, required)
+    except (OSError, ValueError) as error:
+        raise EvidenceError(str(error)) from error
     python = absolute_recorded_path(receipt.get("python_executable"), "python_executable")
     plan = command_plan(root, group, output)
     checks = receipt.get("checks")
@@ -128,7 +140,7 @@ def verify_receipt(directory: Path, group: str, identity: dict, execution: dict)
     return {"group": group, "candidate_kind": identity["candidate_kind"],
             "candidate_commit": identity["candidate_commit"], "candidate_tree": identity["candidate_tree"],
             "artifact": directory.name, "receipt_sha256": digest, "logs": log_digests,
-            "runner_image": image}
+            "runner_image": image, "evidence_files": inventory}
 
 
 def verify_matrix(root: Path, evidence: Path, source: str, base: str, execution: dict) -> dict:
