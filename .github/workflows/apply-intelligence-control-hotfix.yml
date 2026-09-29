@@ -3,7 +3,7 @@ name: Apply intelligence.control qualification hotfix
 on:
   push:
     branches:
-      - codex/intelligence-control-product-closure-20260926
+      - codex/intelligence-control-hotfix-apply-20260929
     paths:
       - scripts/intelligence-control-hotfix.patch
       - .github/workflows/apply-intelligence-control-hotfix.yml
@@ -12,7 +12,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: intelligence-control-hotfix-${{ github.ref }}
+  group: intelligence-control-hotfix-apply
   cancel-in-progress: true
 
 jobs:
