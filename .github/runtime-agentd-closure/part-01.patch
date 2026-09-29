@@ -1,0 +1,145 @@
+           ref: ${{ env.EXPECTED_SHA }}
+           persist-credentials: false
+-      - uses: actions/setup-python@v5
++      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+         with:
+           python-version: '3.12'
+-      - uses: actions/download-artifact@v4
++      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+         with:
+           pattern: agentd-exact-${{ github.run_id }}-${{ github.run_attempt }}-*
+           path: ${{ runner.temp }}/agentd-evidence
+@@ -121,17 +183,40 @@
+             --sha "$EXPECTED_SHA" --run-id "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT" \
+             --evidence "$RUNNER_TEMP/agentd-evidence" --output "$RUNNER_TEMP/agentd-engineering-result.json" \
+             --contract-result "$CONTRACT_RESULT" --suite-result "$SUITE_RESULT"
++      - name: Generate exact-candidate status without changing source claims
++        if: ${{ always() }}
++        env:
++          CANDIDATE_BRANCH: ${{ github.head_ref || github.ref_name }}
++          MERGE_RESULT: ${{ needs.merge-candidate.result }}
++        run: |
++          python3 -B scripts/qualification/runtime_agentd_current_status.py \
++            --repository "$GITHUB_WORKSPACE" --sha "$EXPECTED_SHA" \
++            --branch "$CANDIDATE_BRANCH" --run-id "$GITHUB_RUN_ID" \
++            --attempt "$GITHUB_RUN_ATTEMPT" --event-name "$GITHUB_EVENT_NAME" \
++            --merge-result "$MERGE_RESULT" \
++            --engineering-result "$RUNNER_TEMP/agentd-engineering-result.json" \
++            --output "$RUNNER_TEMP/runtime-agentd-current-status.json"
+       - name: Require every independent job to succeed
+         if: ${{ always() }}
+         env:
+           CONTRACT_RESULT: ${{ needs.contract.result }}
+           SUITE_RESULT: ${{ needs.suite.result }}
++          MERGE_RESULT: ${{ needs.merge-candidate.result }}
++        shell: bash
+         run: |
++          set -euo pipefail
+           test "$CONTRACT_RESULT" = success
+           test "$SUITE_RESULT" = success
+-      - uses: actions/upload-artifact@v4
++          if [ "$GITHUB_EVENT_NAME" = pull_request ]; then
++            test "$MERGE_RESULT" = success
++          else
++            test "$MERGE_RESULT" = skipped
++          fi
++      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+         if: ${{ always() }}
+         with:
+           name: agentd-engineering-result-${{ github.run_id }}-${{ github.run_attempt }}
+-          path: ${{ runner.temp }}/agentd-engineering-result.json
++          path: |
++            ${{ runner.temp }}/agentd-engineering-result.json
++            ${{ runner.temp }}/runtime-agentd-current-status.json
+           if-no-files-found: error
+--- a/codex-rs/hepta-agentd/src/state.rs
++++ b/codex-rs/hepta-agentd/src/state.rs
+@@ -815,6 +815,7 @@
+     /// Revalidate a durable run-start record against the current owner trust,
+     /// current Fleet generation and exact Agentd fence, then project it into
+     /// the sole daemon-owned run coordinator.
++    #[cfg(test)]
+     pub(crate) fn start_current_run_start(
+         &self,
+         journal: &DurableRunStartJournal,
+--- a/codex-rs/hepta-agentd/src/runtime_codex_executor_process_base.rs
++++ b/codex-rs/hepta-agentd/src/runtime_codex_executor_process_base.rs
+@@ -257,7 +257,7 @@
+     child.start_kill().map_err(Into::into)
+ }
+ 
+-async fn read_bounded<R>(mut reader: R, maximum: usize) -> Result<Vec<u8>, AgentdError>
++async fn read_bounded<R>(reader: R, maximum: usize) -> Result<Vec<u8>, AgentdError>
+ where
+     R: AsyncRead + Unpin,
+ {
+--- a/codex-rs/hepta-agentd/src/runtime_codex_executor_persistence.rs
++++ b/codex-rs/hepta-agentd/src/runtime_codex_executor_persistence.rs
+@@ -330,8 +330,9 @@
+     })
+ }
+ 
+-/// Compatibility helper for focused tests and callers that require one complete
+-/// bounded set. Production recovery and archive maintenance use cursor batches.
++/// Compatibility helper for focused tests that require one complete bounded set.
++/// Production recovery and archive maintenance use cursor batches.
++#[cfg(test)]
+ pub(super) fn list_operation_directories(root: &Path) -> Result<Vec<PathBuf>, AgentdError> {
+     let batch = list_operation_directory_batch(root, None, MAX_RECONCILE_OPERATIONS)?;
+     if batch.next_after.is_some() {
+@@ -730,14 +731,14 @@
+ }
+ 
+ fn digest_file(path: &Path, expected_len: u64) -> Result<Digest32, AgentdError> {
+-    let mut file = File::open(path)?;
++    let file = File::open(path)?;
+     let before = file.metadata()?;
+     if before.len() != expected_len {
+         return Err(AgentdError::GenerationFenced(
+             "runtime.codex protected file changed before observation".to_string(),
+         ));
+     }
+-    let digest = Digest32::of_reader(&mut file, expected_len)?;
++    let digest = Digest32::of_reader(&file, expected_len)?;
+     let after = file.metadata()?;
+     if before.len() != after.len() || before.modified()? != after.modified()? {
+         return Err(AgentdError::GenerationFenced(
+--- a/codex-rs/hepta-agentd/src/state_isolation_tests.rs
++++ b/codex-rs/hepta-agentd/src/state_isolation_tests.rs
+@@ -157,7 +157,7 @@
+ }
+ 
+ #[tokio::test]
+-async fn canonical_intelligence_is_advertised_only_with_runner_and_host_provider() {
++async fn canonical_intelligence_is_not_advertised_without_ready_runtime_codex_owner() {
+     let (temp, _registry, state) = fixture().expect("runtime fixture");
+     let signer = ed25519_dalek::SigningKey::from_bytes(&[42; 32]);
+     let runner = crate::AgentdIntelligenceProductRunnerV1::new(
+@@ -182,7 +182,8 @@
+     let AgentdPayload::Capabilities(capabilities) = response.payload else {
+         panic!("capabilities payload");
+     };
+-    assert!(capabilities.capabilities.iter().any(|capability| {
++    assert!(!state.canonical_intelligence_configured());
++    assert!(!capabilities.capabilities.iter().any(|capability| {
+         capability.id == crate::AGENTD_CAPABILITY_CANONICAL_INTELLIGENCE_V1
+             && capability.major == 1
+             && capability.minor == 0
+--- a/codex-rs/hepta-infer-worker-host/tests/native_host_process_e2e.rs
++++ b/codex-rs/hepta-infer-worker-host/tests/native_host_process_e2e.rs
+@@ -7,10 +7,10 @@
+         .output()
+         .expect("execute native worker help");
+     assert!(output.status.success(), "{output:?}");
++    assert!(output.stderr.is_empty(), "{output:?}");
+     let stdout = String::from_utf8(output.stdout).expect("UTF-8 help output");
+     assert!(stdout.contains("--profile native-app-server"));
+     assert!(stdout.contains("--resume"));
+-    assert!(output.stderr.is_empty(), "{output:?}");
+ }
+ 
+ #[test]
+--- a/docs/modules/runtime.agentd/TECHNICAL.md
++++ b/docs/modules/runtime.agentd/TECHNICAL.md
+@@ -317,6 +317,8 @@
+ 
