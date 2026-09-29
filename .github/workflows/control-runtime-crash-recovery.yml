@@ -1,10 +1,13 @@
-name: control.runtime canonical rustfmt capture
+name: control.runtime verified final-tree builder
 
 on:
   pull_request:
     branches: [main]
     paths:
       - 'codex-rs/hepta-control-plane/**'
+      - 'docs/modules/control.runtime/**'
+      - 'scripts/.control-runtime-finalize-*.py.part'
+      - '.github/workflows/control-runtime-apply-rustfmt.yml'
       - '.github/workflows/control-runtime-crash-recovery.yml'
   workflow_dispatch:
 
@@ -12,64 +15,179 @@ permissions:
   contents: read
 
 concurrency:
-  group: control-runtime-rustfmt-${{ github.event.pull_request.number || github.ref }}
+  group: control-runtime-final-tree-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+env:
+  EXPECTED_BRANCH: codex/control-runtime-convergence-v1
+  CARGO_INCREMENTAL: '0'
+  CARGO_BUILD_JOBS: '2'
+  CARGO_PROFILE_TEST_DEBUG: '0'
+  CARGO_PROFILE_DEV_DEBUG: '0'
+
 jobs:
-  capture-rustfmt:
+  finalize:
+    if: >-
+      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
+      (github.event_name == 'workflow_dispatch' ||
+       github.event.pull_request.head.ref == 'codex/control-runtime-convergence-v1')
     runs-on: macos-14
-    timeout-minutes: 20
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
           persist-credentials: false
 
-      - name: Generate canonical package formatting
-        working-directory: codex-rs
-        run: cargo fmt -p codex-hepta-control-plane
-
-      - name: Retain exact formatted files and patch
+      - name: Acquire exact target-branch lease
         shell: bash
         run: |
           set -euo pipefail
-          bundle="$RUNNER_TEMP/control-runtime-rustfmt"
-          mkdir -p "$bundle/files"
-          git diff --check
-          git diff --binary > "$bundle/rustfmt.patch"
-          git diff --name-only --diff-filter=ACMRT > "$bundle/paths.txt"
-          git rev-parse HEAD > "$bundle/source-head.txt"
-          rustfmt --version > "$bundle/rustfmt-version.txt"
+          if [[ "$GITHUB_EVENT_NAME" == workflow_dispatch ]]; then
+            test "$GITHUB_REF_NAME" = "$EXPECTED_BRANCH"
+          fi
+          checked_head="$(git rev-parse HEAD)"
+          remote_head="$(git ls-remote origin "refs/heads/$EXPECTED_BRANCH" | awk '{print $1}')"
+          test -n "$remote_head"
+          test "$checked_head" = "$remote_head"
+          echo "CHECKED_HEAD=$checked_head" >> "$GITHUB_ENV"
+
+      - name: Install Linux native prerequisites
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libcap-dev
+
+      - name: Close canonical mapping and recovery-driver gaps
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat \
+            scripts/.control-runtime-finalize-1.py.part \
+            scripts/.control-runtime-finalize-2.py.part \
+            scripts/.control-runtime-finalize-3.py.part \
+            scripts/.control-runtime-finalize-4.py.part \
+            > "$RUNNER_TEMP/control-runtime-finalize.py"
+          python3 "$RUNNER_TEMP/control-runtime-finalize.py"
+
+      - name: Canonical formatting
+        working-directory: codex-rs
+        run: |
+          cargo fmt -p codex-hepta-control-plane
+          cargo fmt -p codex-hepta-control-plane -- --check
+
+      - name: Refresh mapped Git object identities
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A
+          export INDEX_TREE="$(git write-tree)"
           python3 - <<'PY'
+          import json
           import os
-          import shutil
+          import subprocess
           from pathlib import Path
 
-          root = Path.cwd()
-          bundle_root = Path(os.environ["RUNNER_TEMP"]) / "control-runtime-rustfmt"
-          files = bundle_root / "files"
-          paths = (bundle_root / "paths.txt").read_text().splitlines()
-          for value in paths:
-              source = root / value
-              if not source.is_file():
-                  raise SystemExit(f"formatted path is not a file: {value}")
-              destination = files / value
+          path = Path("docs/modules/control.runtime/IMPLEMENTATION_MAP.json")
+          implementation = json.loads(path.read_text(encoding="utf-8"))
+          source_objects = implementation.get("sourceObjects")
+          if not isinstance(source_objects, list):
+              raise SystemExit("sourceObjects must be a list")
+          tree = os.environ["INDEX_TREE"]
+          for source_object in source_objects:
+              source_path = source_object.get("path")
+              if not isinstance(source_path, str) or not source_path:
+                  raise SystemExit("source object path must be non-empty")
+              source_object["object"] = subprocess.check_output(
+                  ["git", "rev-parse", f"{tree}:{source_path}"],
+                  text=True,
+              ).strip()
+          path.write_text(
+              json.dumps(implementation, indent=2, ensure_ascii=False) + "\n",
+              encoding="utf-8",
+          )
+          PY
+          git add docs/modules/control.runtime/IMPLEMENTATION_MAP.json
+          git diff --cached --check
+
+      - name: Validate exact source candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/control_runtime_validate_state.py --output "$RUNNER_TEMP/control-runtime-state.json"
+          cd codex-rs
+          cargo fmt -p codex-hepta-control-plane -- --check
+          cargo test --locked -p codex-hepta-control-plane
+          cargo check --locked --all-targets -p codex-hepta-control-plane
+          cargo clippy --locked --all-targets -p codex-hepta-control-plane -- -D warnings
+
+      - name: Package the verified final tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e .github/workflows/control-runtime-apply-rustfmt.yml
+          git diff --exit-code
+          git diff --cached --check
+          remote_head="$(git ls-remote origin "refs/heads/$EXPECTED_BRANCH" | awk '{print $1}')"
+          test "$remote_head" = "$CHECKED_HEAD"
+          artifact="$RUNNER_TEMP/control-runtime-final-tree"
+          mkdir -p "$artifact/files"
+          export ARTIFACT_ROOT="$artifact"
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          import shutil
+          import subprocess
+          from pathlib import Path
+
+          artifact = Path(os.environ["ARTIFACT_ROOT"])
+          names = subprocess.check_output(
+              ["git", "diff", "--cached", "--name-only", "-z"]
+          ).split(b"\0")
+          deleted = set(
+              part.decode("utf-8")
+              for part in subprocess.check_output(
+                  ["git", "diff", "--cached", "--diff-filter=D", "--name-only", "-z"]
+              ).split(b"\0")
+              if part
+          )
+          manifest = []
+          for raw in names:
+              if not raw:
+                  continue
+              path = raw.decode("utf-8")
+              if path in deleted:
+                  manifest.append({"path": path, "status": "delete"})
+                  continue
+              source = Path(path)
+              destination = artifact / "files" / path
               destination.parent.mkdir(parents=True, exist_ok=True)
               shutil.copy2(source, destination)
-
-          status = "changes\n" if paths else "clean\n"
-          (bundle_root / "format-status.txt").write_text(status)
+              payload = source.read_bytes()
+              manifest.append(
+                  {
+                      "path": path,
+                      "status": "upsert",
+                      "sha256": hashlib.sha256(payload).hexdigest(),
+                      "bytes": len(payload),
+                  }
+              )
+          (artifact / "manifest.json").write_text(
+              json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
           PY
-          test -f "$bundle/rustfmt.patch"
-          test -f "$bundle/paths.txt"
-          test -s "$bundle/source-head.txt"
-          test -s "$bundle/rustfmt-version.txt"
-          test -s "$bundle/format-status.txt"
+          git diff --cached --binary > "$artifact/changes.patch"
+          git write-tree > "$artifact/tree.txt"
+          git rev-parse HEAD > "$artifact/base-commit.txt"
+          cp "$RUNNER_TEMP/control-runtime-state.json" "$artifact/state.json"
 
-      - name: Upload canonical formatting bundle
+      - name: Upload verified final tree
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: control-runtime-rustfmt-${{ github.event.pull_request.head.sha || github.sha }}
-          path: ${{ runner.temp }}/control-runtime-rustfmt
+          name: control-runtime-final-tree-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/control-runtime-final-tree
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 30
