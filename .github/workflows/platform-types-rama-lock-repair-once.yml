@@ -1,0 +1,79 @@
+name: platform.types one-shot Rama lock repair
+
+on:
+  push:
+    branches:
+      - codex/platform-types-production-convergence-20260925
+    paths:
+      - '.github/workflows/platform-types-rama-lock-repair-once.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: platform-types-rama-lock-repair-once
+  cancel-in-progress: false
+
+env:
+  RUSTUP_TOOLCHAIN: "1.96.0"
+  RAMA_VERSION: "0.3.0-alpha.4"
+  CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
+  CARGO_NET_RETRY: "20"
+  CARGO_HTTP_TIMEOUT: "600"
+  CARGO_HTTP_MULTIPLEXING: "false"
+  CARGO_HTTP_LOW_SPEED_LIMIT: "1"
+
+jobs:
+  repair-lock:
+    name: Generate reviewed Rama lock update
+    if: >-
+      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
+      github.ref_name == 'codex/platform-types-production-convergence-20260925'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install pinned resolver and compiler
+        run: |
+          set -euo pipefail
+          rustup toolchain install "$RUSTUP_TOOLCHAIN" --profile minimal
+          rustc --version --verbose
+          cargo --version --verbose
+
+      - name: Resolve the coherent Rama prerelease graph
+        run: |
+          set -euo pipefail
+          for package in rama-error rama-macros rama-utils; do
+            cargo update --manifest-path codex-rs/Cargo.toml \
+              -p "$package" --precise "$RAMA_VERSION"
+          done
+          python3 scripts/platform_types_rama_lock_guard.py
+          cargo metadata --manifest-path codex-rs/Cargo.toml --locked --no-deps > /dev/null
+          cargo check --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-network-proxy
+
+      - name: Prove the repair changes only Cargo.lock
+        run: |
+          set -euo pipefail
+          mapfile -t changed < <(git diff --name-only)
+          printf 'changed=%s\n' "${changed[*]}"
+          test "${#changed[@]}" -eq 1
+          test "${changed[0]}" = 'codex-rs/Cargo.lock'
+          git diff --check
+          git diff -- codex-rs/Cargo.lock
+
+      - name: Commit the generated lockfile
+        env:
+          TARGET_BRANCH: codex/platform-types-production-convergence-20260925
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add codex-rs/Cargo.lock
+          git commit -m 'fix(platform.types): resolve coherent Rama alpha.4 lock'
+          git push origin "HEAD:${TARGET_BRANCH}"
