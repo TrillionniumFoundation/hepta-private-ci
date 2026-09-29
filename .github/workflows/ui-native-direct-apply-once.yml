@@ -1,0 +1,121 @@
+name: ui.native direct source verification and publication
+
+on:
+  pull_request:
+    branches: [work/ui-native-qualified-integration-20260928]
+    paths:
+      - .ci/ui-native-direct-trigger/**
+      - .ci/ui-native-direct/**
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ui-native-direct-source-${{ github.event.pull_request.base.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: "0"
+  TARGET_BRANCH: work/ui-native-qualified-integration-20260928
+  TARGET_SHA: ${{ github.event.pull_request.base.sha }}
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+  PATCH_SHA256: 35abb5656ec7aa5ba2ba5573c80cb78319a710bbc211bfa01f3bccdcd01beafc
+  GZIP_SHA256: 376d3ff8ff872cf92de7a57d431b8c6274beeedab907dc5710b80a746cfd71ab
+
+jobs:
+  verify-and-publish:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: true
+
+      - name: Reconstruct and apply the exact reviewed patch
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          test -z "$(git status --porcelain)"
+          git fetch --no-tags --depth=1 origin "$SOURCE_SHA"
+          : > /tmp/ui-native-direct.patch.gz.b64
+          for part in 00 01 02; do
+            git show "$SOURCE_SHA:.ci/ui-native-direct/part-$part" >> /tmp/ui-native-direct.patch.gz.b64
+          done
+          base64 -d /tmp/ui-native-direct.patch.gz.b64 > /tmp/ui-native-direct.patch.gz
+          printf '%s  %s\n' "$GZIP_SHA256" /tmp/ui-native-direct.patch.gz | sha256sum --check --strict
+          gzip -dc /tmp/ui-native-direct.patch.gz > /tmp/ui-native-direct.patch
+          printf '%s  %s\n' "$PATCH_SHA256" /tmp/ui-native-direct.patch | sha256sum --check --strict
+          git apply --check --verbose --whitespace=error-all /tmp/ui-native-direct.patch
+          git apply --index --whitespace=error-all /tmp/ui-native-direct.patch
+          git diff --cached --check
+          python3 - <<'PYTHON'
+          import subprocess
+          expected = {
+              'apps/hepta-native/src/journal.rs',
+              'apps/hepta-native/src/journal_storage.rs',
+              'apps/hepta-native/src/journal_storage_tests.rs',
+              'apps/hepta-native/src/journal_wal_tests.rs',
+              'apps/hepta-native/src/retirement.rs',
+              'apps/hepta-native/src/ui/operations_view.rs',
+          }
+          observed = set(subprocess.check_output(
+              ['git', 'diff', '--cached', '--name-only'], text=True,
+              encoding='utf-8', errors='strict'
+          ).splitlines())
+          if observed != expected:
+              raise SystemExit(f'unexpected source paths: {sorted(observed ^ expected)}')
+          PYTHON
+
+      - name: Install pinned Rust and native Linux prerequisites
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y \
+            libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev \
+            libxkbcommon-dev libxkbcommon-x11-dev libwayland-dev \
+            libgl1-mesa-dev libssl-dev desktop-file-utils \
+            xvfb xauth dbus-x11 gnome-keyring xdotool x11-utils \
+            python3-cryptography fonts-noto-cjk
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
+
+      - name: Format and freeze the source candidate
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml
+          git add apps/hepta-native/src/journal.rs \
+            apps/hepta-native/src/journal_storage.rs \
+            apps/hepta-native/src/journal_storage_tests.rs \
+            apps/hepta-native/src/journal_wal_tests.rs \
+            apps/hepta-native/src/retirement.rs \
+            apps/hepta-native/src/ui/operations_view.rs
+          git rm -f .ci/ui-native-wal-index/source.patch.gz || true
+          git rm -f .github/workflows/ui-native-wal-index-apply-once.yml || true
+          git rm -f .github/workflows/ui-native-wal-index-export-pr.yml || true
+          git rm -f .github/workflows/ui-native-source-export-pr.yml || true
+          git rm -f .github/workflows/ui-native-direct-apply-once.yml
+          git diff --cached --check
+          git config user.name 'hepta-native-source-bot'
+          git config user.email 'hepta-native-source-bot@users.noreply.github.com'
+          git commit -m 'feat(ui.native): bound durable history and journal writes' \
+            -m 'Add a checkpoint-bound retirement disk index, exact active-operation index, checksummed fsynced WAL, bounded checkpointing and recovery tests while preserving Prepared/Invoking durability, final-use ownership and unknown-result replay fences. Remove consumed temporary source transport.'
+
+      - name: Verify the exact committed source
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain)"
+          cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml --check
+          cargo +1.95.0 check --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets --all-features
+          cargo +1.95.0 clippy --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets --all-features -- -D warnings
+          cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s scripts -p 'test_hepta_ui_native*.py' -v
+
+      - name: Fast-forward only the unchanged target branch
+        run: |
+          set -euo pipefail
+          remote_head="$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | cut -f1)"
+          test "$remote_head" = "$TARGET_SHA"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
