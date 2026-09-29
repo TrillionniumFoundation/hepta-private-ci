@@ -1,0 +1,105 @@
+{
+  "annotations": {"list": []},
+  "editable": false,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []},
+      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 0},
+      "id": 1,
+      "options": {"legend": {"displayMode": "list", "placement": "bottom"}},
+      "targets": [{"expr": "hepta_learning_artifact_owner_oldest_pending_attempt_age_seconds", "refId": "A"}],
+      "title": "Oldest pending attempt",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []},
+      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 0},
+      "id": 2,
+      "targets": [{"expr": "hepta_learning_artifact_owner_drain_age_seconds", "refId": "A"}],
+      "title": "Drain age",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "fieldConfig": {"defaults": {}, "overrides": []},
+      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 0},
+      "id": 3,
+      "targets": [
+        {"expr": "increase(hepta_learning_artifact_owner_recovery_failures_total[15m])", "legendFormat": "recovery", "refId": "A"},
+        {"expr": "increase(hepta_learning_artifact_owner_persistence_unknown_failures_total[15m])", "legendFormat": "persistence unknown", "refId": "B"},
+        {"expr": "increase(hepta_learning_artifact_owner_identity_conflicts_total[15m])", "legendFormat": "identity conflict", "refId": "C"}
+      ],
+      "title": "Correctness failures",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "fieldConfig": {"defaults": {}, "overrides": []},
+      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 8},
+      "id": 4,
+      "targets": [
+        {"expr": "hepta_learning_artifact_owner_withdrawal_blocks_total", "legendFormat": "blocks", "refId": "A"},
+        {"expr": "hepta_learning_artifact_owner_withdrawal_block_seconds_total", "legendFormat": "blocked seconds", "refId": "B"}
+      ],
+      "title": "Withdrawal blocking",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "fieldConfig": {"defaults": {"unit": "bytes"}, "overrides": []},
+      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 8},
+      "id": 5,
+      "targets": [
+        {"expr": "hepta_learning_artifact_owner_pinned_bytes", "legendFormat": "pinned", "refId": "A"},
+        {"expr": "hepta_learning_artifact_owner_pending_physical_erasure_bytes", "legendFormat": "pending erase", "refId": "B"}
+      ],
+      "title": "Retention bytes",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "fieldConfig": {"defaults": {}, "overrides": []},
+      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 8},
+      "id": 6,
+      "targets": [
+        {"expr": "rate(hepta_learning_artifact_owner_publications_succeeded_total[5m])", "legendFormat": "success", "refId": "A"},
+        {"expr": "rate(hepta_learning_artifact_owner_publications_failed_total[5m])", "legendFormat": "failed", "refId": "B"},
+        {"expr": "rate(hepta_learning_artifact_owner_recovery_publications_succeeded_total[5m])", "legendFormat": "recovered", "refId": "C"}
+      ],
+      "title": "Publication rate",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": ["hepta", "learning.artifacts", "owner"],
+  "templating": {
+    "list": [
+      {
+        "current": {},
+        "hide": 0,
+        "includeAll": false,
+        "label": "Prometheus",
+        "multi": false,
+        "name": "DS_PROMETHEUS",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "type": "datasource"
+      }
+    ]
+  },
+  "time": {"from": "now-6h", "to": "now"},
+  "timezone": "browser",
+  "title": "Hepta learning.artifacts owner",
+  "uid": "hepta-learning-artifacts-owner-v1",
+  "version": 1,
+  "weekStart": ""
+}
