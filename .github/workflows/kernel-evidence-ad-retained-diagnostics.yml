@@ -1,0 +1,143 @@
+name: Kernel evidence A-D retained diagnostics
+
+on:
+  push:
+    branches: [work/kernel-evidence-ad-integration-20260928]
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kernel-evidence-ad-retained-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.event_name }}
+  cancel-in-progress: false
+
+jobs:
+  retained-qualification:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.ref == 'work/kernel-evidence-ad-integration-20260928'
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, base-merge]
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: a126987b84737dbc2ee2592442a314117bddb4a2
+      LANE: ${{ matrix.lane }}
+      RUSTUP_TOOLCHAIN: 1.95.0
+      OUT: ${{ runner.temp }}/kernel-evidence-ad-retained
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind immutable candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT"
+          printf '%s\n' "$SOURCE_SHA" "$BASE_SHA" "$LANE" > "$OUT/requested-identity.txt"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          test "$(git rev-parse "$BASE_SHA^{commit}")" = "$BASE_SHA"
+          if [ "$LANE" = base-merge ]; then
+            git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA" > "$OUT/merge-tree.txt"
+            tree="$(head -n 1 "$OUT/merge-tree.txt")"
+            export GIT_AUTHOR_NAME='Kernel evidence retained diagnostic'
+            export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+            export GIT_AUTHOR_EMAIL='noreply@github.com'
+            export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+            export GIT_AUTHOR_DATE="$(git show -s --format=%cI "$SOURCE_SHA")"
+            export GIT_COMMITTER_DATE="$GIT_AUTHOR_DATE"
+            candidate="$(printf '%s\n' 'kernel.evidence fixed-main retained diagnostic merge' | git commit-tree "$tree" -p "$BASE_SHA" -p "$SOURCE_SHA")"
+            git checkout --detach "$candidate"
+          fi
+          git rev-parse HEAD HEAD^{tree} > "$OUT/tested-identity.txt"
+          git status --porcelain > "$OUT/dirty-before.txt"
+          test ! -s "$OUT/dirty-before.txt"
+
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+
+      - uses: ./.github/actions/setup-ci
+
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-nextest
+
+      - name: Execute and retain every A-D oracle
+        id: diagnostics
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -uo pipefail
+          set +e
+          test -s "$OUT/tested-identity.txt" || exit 1
+          test "$(git rev-parse HEAD)" = "$(head -n 1 "$OUT/tested-identity.txt")" || exit 1
+          test -z "$(git status --porcelain)" || exit 1
+          failures=0
+          run_check() {
+            local name="$1"; local budget="$2"; shift 2
+            printf '%q ' "$@" > "$OUT/$name.command"
+            printf '\n' >> "$OUT/$name.command"
+            printf '%s\n' "$budget" > "$OUT/$name.timeout"
+            printf '%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$OUT/$name.started-at"
+            timeout --signal=TERM --kill-after=30s "$budget" "$@" > "$OUT/$name.log" 2>&1
+            local rc=$?
+            printf '%s\n' "$rc" > "$OUT/$name.exit"
+            printf '%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$OUT/$name.finished-at"
+            if [ "$rc" -ne 0 ]; then failures=$((failures + 1)); fi
+          }
+          run_check format 10m just fmt-check
+          run_check evidence-tests 75m just test --locked -p codex-hepta-evidence
+          run_check agentd-tests 100m just test --locked -p codex-hepta-agentd --lib --test kernel_evidence_product --test kernel_evidence_profile --test kernel_evidence_paging_product --test kernel_evidence_publication_cli
+          cd codex-rs
+          run_check doctests 30m cargo test --locked -p codex-hepta-evidence --doc
+          run_check strict-clippy 50m cargo clippy --locked -p codex-hepta-evidence -p codex-hepta-agentd --all-targets -- -D warnings
+          run_check build 30m cargo build --locked -p codex-hepta-evidence -p codex-hepta-agentd
+          cd ..
+          run_check lane-a 10m python3 scripts/verify_lane_a_foundation.py verify
+          run_check status 5m python3 scripts/kernel_evidence_status.py verify
+          run_check docs 10m python3 scripts/hepta-docs.py verify
+          run_check implementation-maps 5m python3 scripts/hepta-implementation-maps.py verify
+          git status --porcelain > "$OUT/dirty-after.txt"
+          if [ -s "$OUT/dirty-after.txt" ]; then failures=$((failures + 1)); fi
+          printf '%s\n' "$failures" > "$OUT/failed-check-count.txt"
+          printf '%s\n' "$failures" >> "$GITHUB_STEP_SUMMARY"
+          exit 0
+
+      - name: Bind final immutable inventory
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT"
+          printf '%s\n' 'Diagnostic execution only. Missing, skipped, timed-out or failed checks are non-success. No independent acceptance, deployment, restore witnessing, canary, promotion or release.' > "$OUT/CLAIM_BOUNDARY.txt"
+          git rev-parse HEAD HEAD^{tree} > "$OUT/final-identity.txt"
+          git status --porcelain > "$OUT/final-dirty.txt"
+          cd "$OUT"
+          find . -maxdepth 1 -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: kernel-evidence-ad-retained-${{ matrix.lane }}-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.event_name }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/kernel-evidence-ad-retained
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Fail closed after retaining diagnostics
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s "$OUT/failed-check-count.txt"
+          failures="$(cat "$OUT/failed-check-count.txt")"
+          test "$failures" = 0
