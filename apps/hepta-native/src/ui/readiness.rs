@@ -46,10 +46,15 @@ impl ReadinessFrames {
         view: &RuntimeView,
     ) -> Result<Option<RenderedViewWitness>, ShellError> {
         if frame == 0 || self.previous.as_ref().is_some_and(|(old, _)| frame <= *old) {
-            return Err(ShellError::State("readiness requires a later GUI callback".into()));
+            return Err(ShellError::State(
+                "readiness requires a later GUI callback".into(),
+            ));
         }
         let identity = Identity::from_view(view)?;
-        let ready = self.previous.as_ref().is_some_and(|(_, old)| *old == identity);
+        let ready = self
+            .previous
+            .as_ref()
+            .is_some_and(|(_, old)| *old == identity);
         self.previous = Some((frame, identity.clone()));
         Ok(ready.then_some(RenderedViewWitness(identity)))
     }
@@ -57,13 +62,17 @@ impl ReadinessFrames {
 
 impl RenderedViewWitness {
     pub(super) fn verify_current(&self, runtime: &NativeShellRuntime) -> Result<(), ShellError> {
-        let view = runtime.view().ok_or_else(|| ShellError::State("readiness view expired".into()))?;
+        let view = runtime
+            .view()
+            .ok_or_else(|| ShellError::State("readiness view expired".into()))?;
         self.verify_view(view)
     }
 
     fn verify_view(&self, view: &RuntimeView) -> Result<(), ShellError> {
         if Identity::from_view(view)? != self.0 {
-            return Err(ShellError::State("readiness witness does not match current view".into()));
+            return Err(ShellError::State(
+                "readiness witness does not match current view".into(),
+            ));
         }
         Ok(())
     }
@@ -90,7 +99,12 @@ mod tests {
         let view = view();
         assert!(frames.observe(1, &view).unwrap().is_none());
         assert!(frames.observe(1, &view).is_err());
-        frames.observe(2, &view).unwrap().unwrap().verify_view(&view).unwrap();
+        frames
+            .observe(2, &view)
+            .unwrap()
+            .unwrap()
+            .verify_view(&view)
+            .unwrap();
         frames.reset();
         assert!(frames.observe(3, &view).unwrap().is_none());
     }

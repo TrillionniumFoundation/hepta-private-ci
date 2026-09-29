@@ -37,12 +37,18 @@ fn legacy_tombstone_cannot_acquire_an_uncommitted_receipt_in_a_mixed_batch() {
     let new_id = retirement_digest(&new.endpoint_id, &new.key).unwrap();
     store.append(std::slice::from_ref(&old_id)).unwrap();
     let before = store.checkpoint();
-    assert!(store.append_records(&[old_id.clone(), new_id.clone()], &[old, new]).is_err());
+    assert!(
+        store
+            .append_records(&[old_id.clone(), new_id.clone()], &[old, new])
+            .is_err()
+    );
     assert_eq!(store.checkpoint(), before);
     assert!(store.read_record(&old_id).unwrap().is_none());
     assert!(!store.contains(&new_id));
     drop(store);
-    let reopened = RetirementStore::open(&journal, Some(&before)).unwrap().unwrap();
+    let reopened = RetirementStore::open(&journal, Some(&before))
+        .unwrap()
+        .unwrap();
     assert!(reopened.contains(&old_id));
     assert!(reopened.read_record(&old_id).unwrap().is_none());
     assert!(!reopened.contains(&new_id));
@@ -55,12 +61,18 @@ fn exact_archived_duplicate_still_returns_the_same_receipt_after_restart() {
     let mut store = RetirementStore::create(&journal).unwrap();
     let record = terminal("operation.one");
     let id = retirement_digest(&record.endpoint_id, &record.key).unwrap();
-    store.append_records(std::slice::from_ref(&id), std::slice::from_ref(&record)).unwrap();
+    store
+        .append_records(std::slice::from_ref(&id), std::slice::from_ref(&record))
+        .unwrap();
     let before = store.checkpoint();
-    store.append_records(std::slice::from_ref(&id), std::slice::from_ref(&record)).unwrap();
+    store
+        .append_records(std::slice::from_ref(&id), std::slice::from_ref(&record))
+        .unwrap();
     assert_eq!(store.checkpoint(), before);
     assert_eq!(store.read_record(&id).unwrap(), Some(record.clone()));
     drop(store);
-    let reopened = RetirementStore::open(&journal, Some(&before)).unwrap().unwrap();
+    let reopened = RetirementStore::open(&journal, Some(&before))
+        .unwrap()
+        .unwrap();
     assert_eq!(reopened.read_record(&id).unwrap(), Some(record));
 }

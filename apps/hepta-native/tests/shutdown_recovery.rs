@@ -37,7 +37,9 @@ struct Backend {
 impl BackendAdapter for Backend {
     fn connect(&mut self, _: &EndpointManifest) -> Result<SessionIncarnation, ShellError> {
         self.state.lock().unwrap().connects += 1;
-        self.sessions.pop_front().ok_or_else(|| ShellError::Backend("unexpected connect".to_owned()))
+        self.sessions
+            .pop_front()
+            .ok_or_else(|| ShellError::Backend("unexpected connect".to_owned()))
     }
 
     fn runtime_status(&mut self) -> Result<AuthenticatedRuntimeStatus, ShellError> {
@@ -63,7 +65,11 @@ impl PlatformAdapter for NoEffects {
     fn permission(&self, _: &PlatformPayload) -> Result<PermissionDecision, ShellError> {
         panic!("cleanup must not request platform permission")
     }
-    fn invoke(&mut self, _: &OperationKey, _: &PlatformPayload) -> Result<PlatformObservation, ShellError> {
+    fn invoke(
+        &mut self,
+        _: &OperationKey,
+        _: &PlatformPayload,
+    ) -> Result<PlatformObservation, ShellError> {
         panic!("cleanup must not dispatch an effect")
     }
     fn reconcile(&mut self, _: &OperationRecord) -> Result<PlatformObservation, ShellError> {
@@ -88,9 +94,16 @@ fn session(id: &str) -> SessionIncarnation {
     }
 }
 
-fn runtime(path: std::path::PathBuf, state: Arc<Mutex<BackendState>>, sessions: Vec<SessionIncarnation>) -> NativeShellRuntime {
+fn runtime(
+    path: std::path::PathBuf,
+    state: Arc<Mutex<BackendState>>,
+    sessions: Vec<SessionIncarnation>,
+) -> NativeShellRuntime {
     NativeShellRuntime::new(
-        Box::new(Backend { state, sessions: sessions.into() }),
+        Box::new(Backend {
+            state,
+            sessions: sessions.into(),
+        }),
         Box::new(NoEffects),
         None,
         OperationJournal::open(path).unwrap(),
@@ -102,7 +115,11 @@ fn failed_close_keeps_identity_without_usable_view_and_retries_same_owner() {
     let temp = private_tempdir();
     let state = Arc::new(Mutex::new(BackendState::default()));
     let original = session("session.close");
-    let mut runtime = runtime(temp.path().join("operations.json"), Arc::clone(&state), vec![original.clone()]);
+    let mut runtime = runtime(
+        temp.path().join("operations.json"),
+        Arc::clone(&state),
+        vec![original.clone()],
+    );
     runtime.connect_runtime(&manifest()).unwrap();
     runtime.refresh_runtime_view().unwrap();
     state.lock().unwrap().fail_closes = 1;
@@ -113,7 +130,10 @@ fn failed_close_keeps_identity_without_usable_view_and_retries_same_owner() {
     runtime.close().unwrap();
     runtime.close().unwrap();
     assert!(runtime.session().is_none());
-    assert_eq!(state.lock().unwrap().closes, vec![original.clone(), original]);
+    assert_eq!(
+        state.lock().unwrap().closes,
+        vec![original.clone(), original]
+    );
 }
 
 #[test]
@@ -122,7 +142,11 @@ fn reconnect_cannot_acquire_replacement_before_old_owner_is_closed() {
     let state = Arc::new(Mutex::new(BackendState::default()));
     let first = session("session.first");
     let second = session("session.second");
-    let mut runtime = runtime(temp.path().join("operations.json"), Arc::clone(&state), vec![first.clone(), second.clone()]);
+    let mut runtime = runtime(
+        temp.path().join("operations.json"),
+        Arc::clone(&state),
+        vec![first.clone(), second.clone()],
+    );
     runtime.connect_runtime(&manifest()).unwrap();
     state.lock().unwrap().fail_closes = 1;
     assert!(runtime.connect_runtime(&manifest()).is_err());
@@ -136,15 +160,25 @@ fn reconnect_cannot_acquire_replacement_before_old_owner_is_closed() {
 #[test]
 fn rejected_session_cleanup_is_retained_but_never_exposed_as_active() {
     let temp = private_tempdir();
-    let state = Arc::new(Mutex::new(BackendState { fail_closes: 2, ..BackendState::default() }));
+    let state = Arc::new(Mutex::new(BackendState {
+        fail_closes: 2,
+        ..BackendState::default()
+    }));
     let mut rejected = session("session.rejected");
     rejected.endpoint_id = "runtime.wrong".to_owned();
-    let mut runtime = runtime(temp.path().join("operations.json"), Arc::clone(&state), vec![rejected.clone()]);
+    let mut runtime = runtime(
+        temp.path().join("operations.json"),
+        Arc::clone(&state),
+        vec![rejected.clone()],
+    );
     assert!(runtime.connect_runtime(&manifest()).is_err());
     assert!(runtime.session().is_none());
     assert!(runtime.refresh_runtime_view().is_err());
     assert!(runtime.connect_runtime(&manifest()).is_err());
     assert_eq!(state.lock().unwrap().connects, 1);
     runtime.close().unwrap();
-    assert_eq!(state.lock().unwrap().closes, vec![rejected.clone(), rejected.clone(), rejected]);
+    assert_eq!(
+        state.lock().unwrap().closes,
+        vec![rejected.clone(), rejected.clone(), rejected]
+    );
 }
