@@ -13,6 +13,8 @@ export const MAX_OUTSTANDING_OPERATIONS = 1024;
 export const MAX_RETAINED_TERMINAL_OPERATIONS = 256;
 export const DEFAULT_DRIVER_CALL_TIMEOUT_MS = 30_000;
 export const MAX_DRIVER_CALL_TIMEOUT_MS = 120_000;
+export const REPLAY_PROBE_ABSENCE_CODE =
+  "hepta.browser.operation-not-crossed.v1";
 
 const STABLE_ID = /^[A-Za-z0-9._:-]{1,128}$/;
 const DIGEST = /^[0-9a-f]{64}$/;
@@ -124,11 +126,19 @@ export function admitNewOperation(state, input, now) {
   // `replayOnly` is an internal non-effect probe. Existing operations are
   // resolved by BrowserProfileHost before this function. Reaching this point
   // proves that no operation exists, so fail with the one typed absence result
-  // consumed by Agentd; never authorize or dispatch a new effect.
+  // consumed by the Browser replay adapter; never authorize or dispatch a new
+  // effect. The human message is diagnostic only. Callers must use `code`.
   if (input.replayOnly === true) {
-    throw new TypeError(
+    const error = new TypeError(
       "operation has not crossed the browser effect boundary",
     );
+    Object.defineProperty(error, "code", {
+      value: REPLAY_PROBE_ABSENCE_CODE,
+      writable: false,
+      enumerable: false,
+      configurable: false,
+    });
+    throw error;
   }
   if (input.replayOnly !== undefined && input.replayOnly !== false) {
     throw new TypeError("replayOnly must be boolean when supplied");
