@@ -1,0 +1,93 @@
+name: Hepta prompt.registry independent acceptance
+
+on:
+  workflow_dispatch:
+    inputs:
+      qualification_run_id:
+        description: Successful four-lane qualification run ID
+        required: true
+        type: string
+      qualification_attempt:
+        description: Qualification run attempt
+        required: true
+        default: "1"
+        type: string
+      source_sha:
+        description: Exact qualified source SHA
+        required: true
+        type: string
+      pull_request_number:
+        description: Implementation pull request number
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  accept:
+    name: independent prompt.registry acceptance
+    runs-on: ubuntu-24.04
+    environment: prompt-registry-independent-acceptance
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ inputs.source_sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: prompt-registry-summary-${{ inputs.source_sha }}-${{ inputs.qualification_attempt }}
+          path: ${{ runner.temp }}/prompt-registry-summary
+          run-id: ${{ inputs.qualification_run_id }}
+          github-token: ${{ github.token }}
+      - id: pr
+        name: Bind independent actor and exact PR head
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ inputs.pull_request_number }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(printf '%s' "$SOURCE_SHA" | grep -Ec '^[a-f0-9]{40}$')" = 1
+          pr=$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER")
+          head=$(jq -r '.head.sha' <<<"$pr")
+          author=$(jq -r '.user.login' <<<"$pr")
+          test "$head" = "$SOURCE_SHA"
+          test -n "$author"
+          test "${author,,}" != "${GITHUB_ACTOR,,}"
+          echo "author=$author" >> "$GITHUB_OUTPUT"
+      - name: Produce source-bound acceptance statement
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          QUALIFICATION_RUN: ${{ inputs.qualification_run_id }}
+          QUALIFICATION_ATTEMPT: ${{ inputs.qualification_attempt }}
+          PR_NUMBER: ${{ inputs.pull_request_number }}
+          PR_AUTHOR: ${{ steps.pr.outputs.author }}
+          ACCEPTOR: ${{ github.actor }}
+          ACCEPTANCE_WORKFLOW_SHA: ${{ github.workflow_sha }}
+          ACCEPTANCE_RUN: ${{ github.run_id }}
+          ACCEPTANCE_ATTEMPT: ${{ github.run_attempt }}
+        shell: bash
+        run: >-
+          python3 scripts/hepta-prompt-registry-accept.py
+          --summary "$RUNNER_TEMP/prompt-registry-summary/prompt-registry-summary.json"
+          --source "$SOURCE_SHA"
+          --qualification-run "$QUALIFICATION_RUN"
+          --qualification-attempt "$QUALIFICATION_ATTEMPT"
+          --pull-request "$PR_NUMBER"
+          --pull-request-author "$PR_AUTHOR"
+          --actor "$ACCEPTOR"
+          --acceptance-workflow-sha "$ACCEPTANCE_WORKFLOW_SHA"
+          --acceptance-run "$ACCEPTANCE_RUN"
+          --acceptance-attempt "$ACCEPTANCE_ATTEMPT"
+          --output "$RUNNER_TEMP/prompt-registry-acceptance.json"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-registry-acceptance-${{ inputs.source_sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/prompt-registry-acceptance.json
+          if-no-files-found: error
+          retention-days: 90
