@@ -11,12 +11,31 @@ on:
       - .github/intelligence-control-closure.patch.part-03
       - .github/intelligence-control-closure.patch.part-04
       - .github/workflows/intelligence-control-apply-closure.yml
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+    paths:
+      - .github/intelligence-control-closure.patch.part-00
+      - .github/intelligence-control-closure.patch.part-01
+      - .github/intelligence-control-closure.patch.part-02
+      - .github/intelligence-control-closure.patch.part-03
+      - .github/intelligence-control-closure.patch.part-04
+      - .github/workflows/intelligence-control-apply-closure.yml
 
 permissions:
   contents: write
 
 jobs:
   apply:
+    if: >-
+      (github.event_name == 'push' && github.ref_name == 'codex/intelligence-control-product-closure-20260926') ||
+      (github.event_name == 'pull_request' &&
+       github.event.pull_request.head.repo.full_name == github.repository &&
+       github.event.pull_request.head.ref == 'codex/intelligence-control-product-closure-20260926')
     # This transport is architecture-neutral. Use the hosted ARM pool so a
     # saturated x64 queue cannot delay the one-shot, SHA-guarded application.
     runs-on: ubuntu-24.04-arm
@@ -24,7 +43,8 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          fetch-depth: 5
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
       - name: Verify, apply and remove transport
         shell: bash
         env:
@@ -32,7 +52,15 @@ jobs:
           EXPECTED_PATCH_SHA256: 851c60e292318b61cbee37e753c0bcdc5f93388cf1757b2a4edf7e95245c4f92
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD~4)" = "$EXPECTED_SOURCE_PARENT"
+          git merge-base --is-ancestor "$EXPECTED_SOURCE_PARENT" HEAD
+          unexpected="$({
+            git diff --name-only "$EXPECTED_SOURCE_PARENT"..HEAD \
+              | grep -Ev '^\.github/(intelligence-control-closure\.patch\.part-[0-9][0-9]|workflows/intelligence-control-apply-closure\.yml)$'
+          } || true)"
+          test -z "$unexpected" || {
+            printf 'unexpected transport commit paths:\n%s\n' "$unexpected" >&2
+            exit 1
+          }
           cat .github/intelligence-control-closure.patch.part-* > "$RUNNER_TEMP/intelligence-control-closure.patch"
           printf '%s  %s\n' "$EXPECTED_PATCH_SHA256" "$RUNNER_TEMP/intelligence-control-closure.patch" | sha256sum --check --strict
           git apply --check "$RUNNER_TEMP/intelligence-control-closure.patch"
@@ -46,4 +74,5 @@ jobs:
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git commit -m "fix(intelligence-control): close qualification and recovery gaps"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+          target_branch="${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}"
+          git push origin "HEAD:${target_branch}"
