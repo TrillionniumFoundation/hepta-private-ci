@@ -326,8 +326,11 @@ fn bind_consumer_v1<T: ConsumerPayloadV1>(
 ) -> Result<CanonicalConsumerBindingV1, CanonicalConsumerBindingError> {
     // Retain the existing validation order and frozen digest profile. Only
     // immutable per-call work is reused; current migration checks still run.
-    let payload = canonical_contract_digest_v1(value)
-        .map_err(|error| CanonicalConsumerBindingError::CanonicalContract(error.to_string()))?;
+    let payload = canonical_contract_digest_v1(value).map_err(|error| {
+        CanonicalConsumerBindingError::CanonicalContractTyped(
+            CanonicalContractFailureV1::from_wire(&error),
+        )
+    })?;
     let canonical_payload_sha256 = digest(payload)?;
     CanonicalConsumerBindingV1::seal(CanonicalConsumerBindingV1 {
         operation_id,
@@ -370,7 +373,10 @@ fn digest(value: Digest32) -> Result<ContractDigestV1, CanonicalConsumerBindingE
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum CanonicalConsumerBindingError {
+    /// Historical untyped diagnostics remain readable but are never parsed.
     CanonicalContract(String),
+    /// A payload-free typed refusal from the existing checked codec.
+    CanonicalContractTyped(CanonicalContractFailureV1),
     ZeroDigest,
     CompatibilityDigestRequired,
     UnexpectedCompatibilityDigest,
@@ -401,5 +407,6 @@ impl StdError for CanonicalConsumerBindingError {}
 
 #[path = "consumer_error.rs"]
 mod error_mapping;
+pub use error_mapping::CanonicalContractFailureV1;
 #[path = "consumer_digest.rs"]
 mod digest_encoding;

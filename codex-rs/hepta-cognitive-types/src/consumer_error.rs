@@ -4,6 +4,20 @@ use super::CanonicalConsumerBindingError;
 use crate::contract::ContractErrorCodeV1;
 use crate::contract::ContractViolationV1;
 
+/// A sealed, payload-free projection of a checked codec refusal.
+///
+/// There is no public constructor, deserializer or mutable field. Historical
+/// diagnostic strings cannot be promoted into this typed error by parsing them.
+/// The projection is diagnostic evidence only, never a retry or owner capability.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CanonicalContractFailureV1(ContractViolationV1);
+
+impl CanonicalContractFailureV1 {
+    pub(super) fn from_wire(error: &crate::wire::CognitiveWireError) -> Self {
+        Self(error.violation())
+    }
+}
+
 impl CanonicalConsumerBindingError {
     /// Preserve the failure category without copying payload-bearing debug
     /// strings into the handoff audit surface. A refusal grants no retry,
@@ -14,6 +28,7 @@ impl CanonicalConsumerBindingError {
     #[must_use]
     pub fn violation(&self) -> ContractViolationV1 {
         let (code, field, message) = match self {
+            Self::CanonicalContractTyped(failure) => return failure.0.clone(),
             Self::CanonicalContract(_) => (
                 ContractErrorCodeV1::InvalidValue,
                 "binding.canonicalPayload",
@@ -184,3 +199,7 @@ mod tests {
         assert_eq!(small.violation(), large.violation());
     }
 }
+
+#[cfg(test)]
+#[path = "consumer_typed_error_tests.rs"]
+mod typed_tests;
