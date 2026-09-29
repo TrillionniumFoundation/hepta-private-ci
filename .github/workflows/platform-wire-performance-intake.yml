@@ -45,6 +45,7 @@ jobs:
       MEASUREMENT_WORKFLOW_PATH: ${{ inputs.measurement_workflow_path }}
       MEASUREMENT_ARTIFACT: ${{ inputs.measurement_artifact }}
       PLAN_SHA256: ${{ inputs.plan_sha256 }}
+      MAX_ARTIFACT_BYTES: 20971520
       REGISTRY: docs/modules/platform.wire/PERFORMANCE_PRODUCERS.json
       INPUT_DIR: ${{ runner.temp }}/platform-wire-performance-${{ github.run_id }}-${{ github.run_attempt }}/input
       RECORDS: ${{ runner.temp }}/platform-wire-performance-${{ github.run_id }}-${{ github.run_attempt }}/evidence
@@ -136,6 +137,10 @@ jobs:
           if len(matches) != 1:
               raise SystemExit("exactly one selected measurement artifact is required")
           artifact = matches[0]
+          size = artifact.get("size_in_bytes")
+          maximum = int(os.environ["MAX_ARTIFACT_BYTES"])
+          if type(size) is not int or not 1 <= size <= maximum:
+              raise SystemExit("measurement artifact exceeds the bounded intake size")
           if artifact.get("expired") is not False:
               raise SystemExit("selected measurement artifact is expired")
           digest = artifact.get("digest")
@@ -204,6 +209,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import os
+          root = Path(os.environ["INPUT_DIR"])
+          entries = sorted(root.iterdir(), key=lambda item: item.name)
+          expected = ["paired-measurements.json", "performance-plan.json"]
+          if [item.name for item in entries] != expected:
+              raise SystemExit("measurement artifact must contain exactly the two registered root files")
+          if any(item.is_symlink() or not item.is_file() for item in entries):
+              raise SystemExit("measurement artifact contains a non-regular file")
+          PY
           plan="$INPUT_DIR/performance-plan.json"
           report="$INPUT_DIR/paired-measurements.json"
           test -f "$plan" && test ! -L "$plan"

@@ -69,7 +69,7 @@ The intake runs in the `platform-wire-performance` environment. It verifies that
 - exposes one unexpired artifact with an immutable SHA-256 and the same source identity;
 - has a positive run attempt matching the report's canonical run identity.
 
-It then downloads that exact artifact, applies byte and symlink bounds, validates the registry selection and runs the five-path gate. It emits a `hepta.platform-wire.receipt.v2` receipt of kind `platform-wire-performance`. The receipt binds the source, registry, registered owner, producer repository/run/attempt/workflow, artifact identity, plan and report digests, paired environment, thresholds and all five reduced path results. Failed intake attempts retain a failed receipt and available metadata; they never become acceptance.
+It rejects artifacts larger than 20 MiB before download, requires exactly the two registered regular files at the artifact root, applies individual file byte and symlink bounds, validates the registry selection and runs the five-path gate. It emits a `hepta.platform-wire.receipt.v2` receipt of kind `platform-wire-performance`. The receipt binds the source, registry, registered owner, producer repository/run/attempt/workflow, artifact identity, plan and report digests, paired environment, thresholds and all five reduced path results. Failed intake attempts retain a failed receipt and available metadata; they never become acceptance.
 
 The workflow does not accept arbitrary refs, arbitrary same-repository workflows, unregistered plans, averages that hide a bad path, the ordinary in-process probes, or fixtures as production measurements.
 
