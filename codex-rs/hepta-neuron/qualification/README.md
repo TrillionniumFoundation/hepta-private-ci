@@ -473,3 +473,39 @@ absent operations and request substitution before provider reconciliation.
 Providers in these fault schedules are explicit fixtures, not model-quality or
 production qualification evidence. These APIs do not bootstrap a selected real
 model in Agentd, migrate live V1 state, or grant calibration or activation trust.
+
+
+## Fail-closed complete-decision support calibration
+
+`decision_cell_calibration.py` fits the existing scalar support predicate to the
+complete typed decision: action, applicable target, disposition and postcondition.
+An accepted OOD row is an error even when the remaining labels match. The OOD
+threshold is frozen first; confidence selection evaluates the exact intersection
+of confidence and OOD acceptance, so rejected rows cannot dilute supported error.
+Only the separate calibration partition is used, never test/native outcomes.
+
+The package-local profile is
+`hepta.decision-cell-joint-support-calibration.v1`. It keeps the empirical 5% pilot
+error cap and records supported count, coverage, joint error and feasibility.
+Those empirical observations neither establish independence nor issue calibrated
+trust. Marginal confidence/action and OOD diagnostics retain their old meanings;
+they must not be substituted for supported complete-decision risk.
+
+If no nonempty supported set meets the cap, the calibrator returns `reject_all`.
+It encodes `minimum_confidence=1` and `maximum_ood_probability=0`; the existing
+strict OOD comparison rejects every finite probability, including zero. A
+confidence threshold of one alone is not reject-all: softmax may round to one.
+Empty supported risk is `null`, not zero. Invalid/nonfinite probabilities,
+nonboolean correctness, inconsistent labels or missing OOD/in-domain calibration
+populations fail before producing an artifact. Calibration inputs are bounded.
+
+The trainer records the policy and implementation digest inside the calibration
+metadata retained by each new head manifest/receipt. Existing V2 artifact formats,
+scalar runtime predicates and historical `selection-evaluation.v2` receipts are
+not reinterpreted. New calibration requires new execution and immutable artifacts;
+old receipts remain old evidence. No wire registration or durable owner is added.
+
+`test_decision_cell_calibration.py` covers saturated wrong predictions, confident
+wrong non-action heads, missing populations, accepted OOD errors, threshold ties
+and saved-artifact consumption by the actual shared tensor graph. Synthetic test
+fixtures establish regression behavior, not model quality or prospective efficacy.

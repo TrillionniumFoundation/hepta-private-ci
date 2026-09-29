@@ -36,6 +36,8 @@ from torch.nn import functional as F
 from snapshot_identity import normalized_hub_manifest, snapshot_supply_chain_admission, verify_snapshot_files
 from decision_cell_metrics import (EVALUATION_PROFILE, HEADS, quality_gates, recommendations,
                                    selection_statistics, verify_summary_projection)
+from decision_cell_calibration import (joint_support_calibration, select_confidence_threshold,
+                                       select_ood_threshold)
 
 SEED = 20260927
 SCHEMA = "hepta.decision-cell-backend-bakeoff.v1"
@@ -907,61 +909,6 @@ def accuracy(probabilities: np.ndarray, labels: np.ndarray) -> float:
     return float(np.mean(probabilities.argmax(axis=1) == labels))
 
 
-def select_ood_threshold(
-    scores: np.ndarray, labels: np.ndarray
-) -> tuple[float, dict[str, float]]:
-    candidates = sorted(set([0.0, 1.0, *scores.tolist()]))
-    feasible: list[tuple[float, float, float, float]] = []
-    all_rows: list[tuple[float, float, float, float]] = []
-    for threshold in candidates:
-        prediction = scores >= threshold
-        in_domain = labels == 0
-        out_domain = labels == 1
-        in_accept = float((~prediction[in_domain]).mean()) if in_domain.any() else 0.0
-        ood_reject = float(prediction[out_domain].mean()) if out_domain.any() else 0.0
-        ood_false_accept = 1.0 - ood_reject
-        balanced = (in_accept + ood_reject) / 2.0
-        row = (balanced, -ood_false_accept, in_accept, threshold)
-        all_rows.append(row)
-        if ood_false_accept <= 0.05:
-            feasible.append(row)
-    selected = max(feasible or all_rows)
-    threshold = float(selected[3])
-    prediction = scores >= threshold
-    return threshold, {
-        "calibration_in_domain_acceptance": float(
-            (~prediction[labels == 0]).mean()
-        ),
-        "calibration_ood_rejection": float(prediction[labels == 1].mean()),
-        "calibration_ood_false_acceptance": float(
-            (~prediction[labels == 1]).mean()
-        ),
-    }
-def select_confidence_threshold(
-    confidence: np.ndarray, correct: np.ndarray
-) -> tuple[float, dict[str, float]]:
-    candidates = sorted(set([0.0, 1.0, *confidence.tolist()]))
-    feasible: list[tuple[float, float, float]] = []
-    all_rows: list[tuple[float, float, float]] = []
-    for threshold in candidates:
-        accepted = confidence >= threshold
-        coverage = float(accepted.mean())
-        error = float((~correct[accepted]).mean()) if accepted.any() else 0.0
-        row = (coverage, -error, threshold)
-        all_rows.append(row)
-        if error <= 0.05:
-            feasible.append(row)
-    selected = max(feasible or all_rows)
-    threshold = float(selected[2])
-    accepted = confidence >= threshold
-    return threshold, {
-        "calibration_confidence_coverage": float(accepted.mean()),
-        "calibration_confidence_error": float(
-            (~correct[accepted]).mean() if accepted.any() else 0.0
-        ),
-    }
-
-
 def calibrate(
     model: TypedHeads, calibration: dict[str, torch.Tensor]
 ) -> dict[str, Any]:
@@ -982,26 +929,16 @@ def calibrate(
     temperatures["target"] = fit_temperature(
         outputs["target"][target_mask], calibration["target"][target_mask]
     )
-    action_probabilities = softmax_numpy(
-        outputs["action"], temperatures["action"]
-    )
-    action_labels = calibration["action"].numpy()
-    confidence = action_probabilities.max(axis=1)
-    correct = action_probabilities.argmax(axis=1) == action_labels
-    confidence_threshold, confidence_metrics = select_confidence_threshold(
-        confidence, correct
-    )
-    ood_probabilities = softmax_numpy(outputs["ood"], temperatures["ood"])
-    ood_threshold, ood_metrics = select_ood_threshold(
-        ood_probabilities[:, 1], calibration["ood"].numpy()
-    )
+    probabilities = {name: softmax_numpy(outputs[name], temperature)
+                     for name, temperature in temperatures.items()}
+    support = joint_support_calibration(
+        probabilities, {name: calibration[name].numpy() for name in probabilities})
     return {
         "temperatures": temperatures,
-        "minimum_confidence": confidence_threshold,
-        "maximum_ood_probability": ood_threshold,
-        **confidence_metrics,
-        **ood_metrics,
+        "calibration_implementation_sha256": sha256_file(Path(__file__).with_name("decision_cell_calibration.py")),
+        **support,
     }
+
 
 
 def evaluate(
