@@ -120,6 +120,7 @@ impl RegistryDefinitionV1 {
 pub struct ContractRegistryV1 {
     entries: Vec<RegistryDefinitionV1>,
     numeric_profiles: Vec<NumericProfileDefinitionV1>,
+    registry_digest: Digest32,
 }
 
 impl ContractRegistryV1 {
@@ -164,9 +165,11 @@ impl ContractRegistryV1 {
                 return Err(RegistryError::DuplicateNumericProfile);
             }
         }
+        let registry_digest = compute_registry_digest(&entries, &numeric_profiles)?;
         Ok(Self {
             entries,
             numeric_profiles,
+            registry_digest,
         })
     }
 
@@ -184,9 +187,17 @@ impl ContractRegistryV1 {
         id: &StableId,
         version: u32,
     ) -> Option<&RegistryDefinitionV1> {
-        self.entries
-            .iter()
-            .find(|entry| entry.kind == kind && entry.id == *id && entry.version == version)
+        let index = self
+            .entries
+            .binary_search_by(|entry| {
+                entry
+                    .kind
+                    .cmp(&kind)
+                    .then_with(|| entry.id.as_str().cmp(id.as_str()))
+                    .then_with(|| entry.version.cmp(&version))
+            })
+            .ok()?;
+        self.entries.get(index)
     }
 
     pub fn resolve_digest(
@@ -215,37 +226,46 @@ impl ContractRegistryV1 {
         &self,
         profile: NumericProfileV1,
     ) -> Result<&NumericProfileDefinitionV1, RegistryError> {
-        self.numeric_profiles
-            .iter()
-            .find(|definition| definition.profile() == profile)
-            .ok_or(RegistryError::UnknownNumericProfile)
+        let index = self
+            .numeric_profiles
+            .binary_search_by(|definition| definition.profile().cmp(&profile))
+            .map_err(|_| RegistryError::UnknownNumericProfile)?;
+        Ok(&self.numeric_profiles[index])
     }
 
+    /// Return the immutable, versioned canonical registry commitment computed
+    /// during construction. The result proves content identity; freshness and
+    /// current-generation policy remain with the product owner.
     pub fn registry_digest(&self) -> Result<Digest32, RegistryError> {
-        let type_id = StableId::new("platform.types:contract-registry-v1")
-            .map_err(RegistryError::Identity)?;
-        let definition_values: Vec<CanonicalValueV1<'_>> = self
-            .entries
-            .iter()
-            .map(|entry| CanonicalValueV1::Digest(entry.digest))
-            .collect();
-        let profile_values: Vec<CanonicalValueV1<'_>> = self
-            .numeric_profiles
-            .iter()
-            .map(|profile| CanonicalValueV1::Digest(profile.digest()))
-            .collect();
-        let fields = [
-            CanonicalFieldV1 {
-                name: "definitions",
-                value: CanonicalValueV1::Array(&definition_values),
-            },
-            CanonicalFieldV1 {
-                name: "numeric_profiles",
-                value: CanonicalValueV1::Array(&profile_values),
-            },
-        ];
-        canonical_digest_v1(&type_id, 1, &fields).map_err(RegistryError::Canonical)
+        Ok(self.registry_digest)
     }
+}
+
+fn compute_registry_digest(
+    entries: &[RegistryDefinitionV1],
+    numeric_profiles: &[NumericProfileDefinitionV1],
+) -> Result<Digest32, RegistryError> {
+    let type_id = StableId::new("platform.types:contract-registry-v1")
+        .map_err(RegistryError::Identity)?;
+    let definition_values: Vec<CanonicalValueV1<'_>> = entries
+        .iter()
+        .map(|entry| CanonicalValueV1::Digest(entry.digest))
+        .collect();
+    let profile_values: Vec<CanonicalValueV1<'_>> = numeric_profiles
+        .iter()
+        .map(|profile| CanonicalValueV1::Digest(profile.digest()))
+        .collect();
+    let fields = [
+        CanonicalFieldV1 {
+            name: "definitions",
+            value: CanonicalValueV1::Array(&definition_values),
+        },
+        CanonicalFieldV1 {
+            name: "numeric_profiles",
+            value: CanonicalValueV1::Array(&profile_values),
+        },
+    ];
+    canonical_digest_v1(&type_id, 1, &fields).map_err(RegistryError::Canonical)
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
