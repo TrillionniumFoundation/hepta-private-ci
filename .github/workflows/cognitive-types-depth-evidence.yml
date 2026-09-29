@@ -34,8 +34,44 @@ env:
   RUST_BACKTRACE: '1'
 
 jobs:
+  resolve:
+    name: Resolve immutable depth candidate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      source: ${{ steps.identity.outputs.source }}
+      base: ${{ steps.identity.outputs.base }}
+    steps:
+      - id: checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - id: identity
+        name: Bind one source and current base before fanout
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          BASE_REF: ${{ github.base_ref || github.ref_name }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^{commit})" = "$SOURCE_SHA"
+          git check-ref-format "refs/heads/$BASE_REF"
+          git fetch --no-tags origin "refs/heads/$BASE_REF:refs/remotes/origin/$BASE_REF"
+          BASE_SHA=$(git rev-parse "refs/remotes/origin/$BASE_REF^{commit}")
+          echo "source=$SOURCE_SHA" >> "$GITHUB_OUTPUT"
+          echo "base=$BASE_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Execute adversarial verifier regressions
+        run: >-
+          python3 -m unittest discover
+          -s qualification/cognitive-types-v1
+          -p 'test_depth_evidence.py'
+
   consumer-paths:
     name: consumer path (${{ matrix.consumer }}, ${{ matrix.candidate }})
+    needs: resolve
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     strategy:
@@ -54,17 +90,17 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0
-          ref: ${{ github.event_name == 'pull_request' && matrix.candidate == 'exact-head' && github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ needs.resolve.outputs.source }}
 
-      - name: Verify immutable candidate identity
+      - name: Prepare the exact deterministic candidate
         id: identity
         if: ${{ !cancelled() && steps.checkout.outcome == 'success' }}
-        env:
-          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
-          BASE_REF: ${{ github.base_ref || github.ref_name }}
-          CANDIDATE_KIND: ${{ matrix.candidate }}
-        run: python3 qualification/cognitive-types-v1/verify_candidate.py
+        run: >-
+          python3 qualification/cognitive-types-v1/depth_evidence.py prepare
+          --source '${{ needs.resolve.outputs.source }}'
+          --base '${{ needs.resolve.outputs.base }}'
+          --kind '${{ matrix.candidate }}'
+          --output "$RUNNER_TEMP/cognitive-types-depth/candidate.json"
 
       - name: Select the existing consumer package
         id: select
@@ -81,8 +117,6 @@ jobs:
             *) echo "unregistered consumer" >&2; exit 2 ;;
           esac
           echo "package=$package" >> "$GITHUB_OUTPUT"
-          mkdir -p "$RUNNER_TEMP/cognitive-types-depth"
-          cp "$RUNNER_TEMP/hnmf-candidate.json" "$RUNNER_TEMP/cognitive-types-depth/candidate.json"
 
       - name: Record the selected Rust toolchain
         id: toolchain
@@ -136,7 +170,7 @@ jobs:
             -p "${{ steps.select.outputs.package }}" \
             2>&1 | tee "$RUNNER_TEMP/cognitive-types-depth/tests.log"
 
-      - name: Seal outcomes and require every consumer check
+      - name: Record outcomes and require every consumer check
         id: seal
         if: ${{ always() && steps.checkout.outcome == 'success' }}
         env:
@@ -172,17 +206,32 @@ jobs:
               raise SystemExit(f"incomplete consumer depth evidence: {bad}")
           PY
 
-      - name: Preserve consumer evidence, including failures
+      - name: Seal the complete consumer artifact
+        if: ${{ always() && steps.checkout.outcome == 'success' }}
+        continue-on-error: true
+        run: >-
+          python3 qualification/cognitive-types-v1/depth_evidence.py seal
+          --directory "$RUNNER_TEMP/cognitive-types-depth"
+          --role consumer
+          --consumer '${{ matrix.consumer }}'
+          --source '${{ needs.resolve.outputs.source }}'
+          --base '${{ needs.resolve.outputs.base }}'
+          --kind '${{ matrix.candidate }}'
+          --run-id '${{ github.run_id }}'
+          --run-attempt '${{ github.run_attempt }}'
+
+      - name: Preserve consumer evidence, including refusals
         if: ${{ always() && steps.checkout.outcome == 'success' }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: cognitive-types-consumer-${{ matrix.consumer }}-${{ matrix.candidate }}-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
+          name: cognitive-types-consumer-${{ matrix.consumer }}-${{ matrix.candidate }}-${{ needs.resolve.outputs.source }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/cognitive-types-depth
           if-no-files-found: error
           retention-days: 30
 
   owner-paths:
     name: owner final-use paths (${{ matrix.candidate }})
+    needs: resolve
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     strategy:
@@ -195,25 +244,22 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0
-          ref: ${{ github.event_name == 'pull_request' && matrix.candidate == 'exact-head' && github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ needs.resolve.outputs.source }}
 
-      - name: Verify immutable candidate identity
+      - name: Prepare the exact deterministic candidate
         id: identity
         if: ${{ !cancelled() && steps.checkout.outcome == 'success' }}
-        env:
-          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
-          BASE_REF: ${{ github.base_ref || github.ref_name }}
-          CANDIDATE_KIND: ${{ matrix.candidate }}
-        run: python3 qualification/cognitive-types-v1/verify_candidate.py
+        run: >-
+          python3 qualification/cognitive-types-v1/depth_evidence.py prepare
+          --source '${{ needs.resolve.outputs.source }}'
+          --base '${{ needs.resolve.outputs.base }}'
+          --kind '${{ matrix.candidate }}'
+          --output "$RUNNER_TEMP/cognitive-types-owner-depth/candidate.json"
 
       - name: Prepare owner evidence directory
         id: prepare
         if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
-        run: |
-          set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/cognitive-types-owner-depth"
-          cp "$RUNNER_TEMP/hnmf-candidate.json" "$RUNNER_TEMP/cognitive-types-owner-depth/candidate.json"
+        run: test -s "$RUNNER_TEMP/cognitive-types-owner-depth/candidate.json"
 
       - name: Lint the existing owners strictly
         id: clippy
@@ -255,7 +301,7 @@ jobs:
             -p codex-hepta-memory shared_experience \
             2>&1 | tee "$RUNNER_TEMP/cognitive-types-owner-depth/shared-experience.log"
 
-      - name: Seal outcomes and require every owner path
+      - name: Record outcomes and require every owner path
         id: seal
         if: ${{ always() && steps.checkout.outcome == 'success' }}
         env:
@@ -287,17 +333,31 @@ jobs:
               raise SystemExit(f"incomplete owner-path evidence: {bad}")
           PY
 
-      - name: Preserve owner evidence, including failures
+      - name: Seal the complete owner artifact
+        if: ${{ always() && steps.checkout.outcome == 'success' }}
+        continue-on-error: true
+        run: >-
+          python3 qualification/cognitive-types-v1/depth_evidence.py seal
+          --directory "$RUNNER_TEMP/cognitive-types-owner-depth"
+          --role owner
+          --source '${{ needs.resolve.outputs.source }}'
+          --base '${{ needs.resolve.outputs.base }}'
+          --kind '${{ matrix.candidate }}'
+          --run-id '${{ github.run_id }}'
+          --run-attempt '${{ github.run_attempt }}'
+
+      - name: Preserve owner evidence, including refusals
         if: ${{ always() && steps.checkout.outcome == 'success' }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: cognitive-types-owner-${{ matrix.candidate }}-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
+          name: cognitive-types-owner-${{ matrix.candidate }}-${{ needs.resolve.outputs.source }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/cognitive-types-owner-depth
           if-no-files-found: error
           retention-days: 30
 
   fuzz-campaign:
     name: decoder fuzz campaign (${{ matrix.candidate }})
+    needs: resolve
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     strategy:
@@ -310,17 +370,17 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0
-          ref: ${{ github.event_name == 'pull_request' && matrix.candidate == 'exact-head' && github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ needs.resolve.outputs.source }}
 
-      - name: Verify immutable candidate identity
+      - name: Prepare the exact deterministic candidate
         id: identity
         if: ${{ !cancelled() && steps.checkout.outcome == 'success' }}
-        env:
-          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
-          BASE_REF: ${{ github.base_ref || github.ref_name }}
-          CANDIDATE_KIND: ${{ matrix.candidate }}
-        run: python3 qualification/cognitive-types-v1/verify_candidate.py
+        run: >-
+          python3 qualification/cognitive-types-v1/depth_evidence.py prepare
+          --source '${{ needs.resolve.outputs.source }}'
+          --base '${{ needs.resolve.outputs.base }}'
+          --kind '${{ matrix.candidate }}'
+          --output "$RUNNER_TEMP/cognitive-types-fuzz/candidate.json"
 
       - name: Install the pinned fuzz toolchain
         id: setup
@@ -334,7 +394,6 @@ jobs:
           mkdir -p "$RUNNER_TEMP/cognitive-types-fuzz/corpus"
           mkdir -p "$RUNNER_TEMP/cognitive-types-fuzz/artifacts"
           mkdir -p "$RUNNER_TEMP/cognitive-types-fuzz/target"
-          cp "$RUNNER_TEMP/hnmf-candidate.json" "$RUNNER_TEMP/cognitive-types-fuzz/candidate.json"
           chmod a-w codex-rs/hepta-cognitive-types/fuzz/Cargo.lock
           {
             rustc +"$FUZZ_TOOLCHAIN" --version --verbose
@@ -351,8 +410,7 @@ jobs:
           import os
           from pathlib import Path
 
-          source = Path("qualification/cognitive-types-v1/bound_vector.json")
-          vector = json.loads(source.read_text())
+          vector = json.loads(Path("qualification/cognitive-types-v1/bound_vector.json").read_text())
           envelope = {
               "contract": vector["contract"],
               "payload": vector["payload"],
@@ -404,7 +462,7 @@ jobs:
             | tee "$RUNNER_TEMP/cognitive-types-fuzz/source-status.txt"
           test ! -s "$RUNNER_TEMP/cognitive-types-fuzz/source-status.txt"
 
-      - name: Seal outcomes and require the completed campaign
+      - name: Record outcomes and require the completed campaign
         id: seal
         if: ${{ always() && steps.checkout.outcome == 'success' }}
         env:
@@ -435,45 +493,86 @@ jobs:
               raise SystemExit(f"incomplete decoder fuzz evidence: {bad}")
           PY
 
-      - name: Preserve fuzz corpus, findings and logs even on failure
+      - name: Seal the complete fuzz artifact
+        if: ${{ always() && steps.checkout.outcome == 'success' }}
+        continue-on-error: true
+        run: >-
+          python3 qualification/cognitive-types-v1/depth_evidence.py seal
+          --directory "$RUNNER_TEMP/cognitive-types-fuzz"
+          --role fuzz
+          --source '${{ needs.resolve.outputs.source }}'
+          --base '${{ needs.resolve.outputs.base }}'
+          --kind '${{ matrix.candidate }}'
+          --run-id '${{ github.run_id }}'
+          --run-attempt '${{ github.run_attempt }}'
+
+      - name: Preserve fuzz corpus, findings, and refusal evidence
         if: ${{ always() && steps.checkout.outcome == 'success' }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: cognitive-types-fuzz-${{ matrix.candidate }}-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
-          path: |
-            ${{ runner.temp }}/cognitive-types-fuzz/candidate.json
-            ${{ runner.temp }}/cognitive-types-fuzz/toolchain.log
-            ${{ runner.temp }}/cognitive-types-fuzz/campaign-seconds.txt
-            ${{ runner.temp }}/cognitive-types-fuzz/corpus
-            ${{ runner.temp }}/cognitive-types-fuzz/artifacts
-            ${{ runner.temp }}/cognitive-types-fuzz/fuzz.log
-            ${{ runner.temp }}/cognitive-types-fuzz/source-status.txt
-            ${{ runner.temp }}/cognitive-types-fuzz/results.json
+          name: cognitive-types-fuzz-${{ matrix.candidate }}-${{ needs.resolve.outputs.source }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cognitive-types-fuzz
           if-no-files-found: error
           retention-days: 30
 
   depth-evidence-required:
     name: Cognitive types depth evidence required
     if: ${{ always() }}
-    needs: [consumer-paths, owner-paths, fuzz-campaign]
+    needs: [resolve, consumer-paths, owner-paths, fuzz-campaign]
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
-      - name: Require all applicable fixed-candidate evidence
-        env:
-          RESULTS: ${{ toJSON(needs) }}
-        run: |
-          python3 - <<'PY'
-          import json
-          import os
+      - id: checkout
+        if: ${{ needs.resolve.result == 'success' }}
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ needs.resolve.outputs.source }}
 
-          results = json.loads(os.environ["RESULTS"])
-          bad = {
-              name: value.get("result", "missing")
-              for name, value in results.items()
-              if value.get("result") != "success"
-          }
-          if bad:
-              raise SystemExit(f"cognitive.types depth evidence incomplete: {bad}")
-          print("PASS_COGNITIVE_TYPES_DEPTH_EVIDENCE")
-          PY
+      - name: Download only this attempt's fixed-candidate artifacts
+        id: download
+        if: ${{ always() && steps.checkout.outcome == 'success' }}
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: cognitive-types-*-${{ needs.resolve.outputs.source }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cognitive-types-depth-matrix
+          merge-multiple: false
+
+      - name: Verify exact artifact set, identities, and complete bytes
+        id: evidence
+        if: ${{ always() && steps.checkout.outcome == 'success' }}
+        run: >-
+          python3 qualification/cognitive-types-v1/depth_evidence.py verify
+          --evidence "$RUNNER_TEMP/cognitive-types-depth-matrix"
+          --source '${{ needs.resolve.outputs.source }}'
+          --base '${{ needs.resolve.outputs.base }}'
+          --event '${{ github.event_name }}'
+          --run-id '${{ github.run_id }}'
+          --run-attempt '${{ github.run_attempt }}'
+          --output "$RUNNER_TEMP/cognitive-types-depth-verified/matrix.json"
+
+      - name: Require execution success and independently verified evidence
+        if: ${{ always() }}
+        env:
+          RESOLVE_RESULT: ${{ needs.resolve.result }}
+          CONSUMER_RESULT: ${{ needs.consumer-paths.result }}
+          OWNER_RESULT: ${{ needs.owner-paths.result }}
+          FUZZ_RESULT: ${{ needs.fuzz-campaign.result }}
+          EVIDENCE_RESULT: ${{ steps.evidence.outcome }}
+        run: |
+          set -euo pipefail
+          test "$RESOLVE_RESULT" = success
+          test "$CONSUMER_RESULT" = success
+          test "$OWNER_RESULT" = success
+          test "$FUZZ_RESULT" = success
+          test "$EVIDENCE_RESULT" = success
+
+      - name: Preserve the aggregate decision, including refusals
+        if: ${{ always() && steps.checkout.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cognitive-types-depth-verified-${{ needs.resolve.outputs.source }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cognitive-types-depth-verified
+          if-no-files-found: error
+          retention-days: 30
