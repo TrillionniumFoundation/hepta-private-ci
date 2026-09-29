@@ -23,7 +23,8 @@ def update_technical() -> None:
     path = MODULE / "TECHNICAL.md"
     body = path.read_text(encoding="utf-8")
     body = body.replace(
-        "**Durable store schema:** **v21**", "**Durable store schema:** **v22**"
+        "**Durable store schema:** **v21**  \n",
+        "**Durable store schema:** **v22**\n",
     )
     body = body.replace(
         "## 3. Durable schema v21 and retained history",
