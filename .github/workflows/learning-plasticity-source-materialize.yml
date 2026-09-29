@@ -56,8 +56,8 @@ jobs:
 
           test "$(git hash-object scripts/.learning_plasticity_phase_timing.part00)" = "44194fbf03b24d700ee2b2f6083dbf7e31e05302"
           test "$(git hash-object scripts/.learning_plasticity_phase_timing.part01)" = "68783839e39f70a3b0226f1bd7752b3cd6e878f5"
-          test "$(git hash-object scripts/.learning_plasticity_phase_timing.part02)" = "45670eaef38701d944e9c912ff26113ec34db741"
-          test "$(git hash-object scripts/.learning_plasticity_phase_timing.part03)" = "ef790f9701d49028d6b22c0c69cd4c75b432355c"
+          test "$(git hash-object scripts/.learning_plasticity_phase_timing.part02)" = "3d4aaa47d5185cb2312f18b8492e802121c0ae37"
+          test "$(git hash-object scripts/.learning_plasticity_phase_timing.part03)" = "0d6bb75f1ec35fc77372b64935a2b56740eb808a"
           cat scripts/.learning_plasticity_phase_timing.part{00..03} \
             > scripts/materialize_learning_plasticity_phase_timing.py
           python3 -m py_compile scripts/materialize_learning_plasticity_phase_timing.py
@@ -65,7 +65,7 @@ jobs:
           import hashlib
           from pathlib import Path
 
-          expected = "3c4288133a7deeae984aca4fd7746ae42108969b578dc5e6d6940b0f9c096d47"
+          expected = "22c0752ebc0f8abaa64fea5cae1c08c21d59c38e2311e95dd9e12ecd4793aba9"
           actual = hashlib.sha256(
               Path("scripts/materialize_learning_plasticity_phase_timing.py").read_bytes()
           ).hexdigest()
