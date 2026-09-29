@@ -7,7 +7,7 @@ on:
     paths:
       - .github/materialization/inference-worker-stage1/**
       - .github/materialization/inference-worker-stage2/**
-      - .github/workflows/inference-worker-authoritative-converge.yml
+      - .github/workflows/inference-worker-authoritative-materialize.yml
 
 permissions:
   contents: write
@@ -113,7 +113,7 @@ jobs:
           set -euo pipefail
           rm -rf .github/materialization/inference-worker-stage1
           rm -rf .github/materialization/inference-worker-stage2
-          rm -f .github/workflows/inference-worker-authoritative-converge.yml
+          rm -f .github/workflows/inference-worker-authoritative-materialize.yml
           python3 - <<'PY'
           import subprocess
           expected = sorted([
