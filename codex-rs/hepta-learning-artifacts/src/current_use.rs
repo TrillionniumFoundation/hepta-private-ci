@@ -28,6 +28,17 @@ pub struct VerifiedCurrentArtifactUseV1 {
 }
 
 impl VerifiedCurrentArtifactUseV1 {
+    pub(crate) fn new(
+        current: VerifiedCurrentRegistryViewV1,
+        admission: WithdrawalBoundArtifactAdmissionV3,
+    ) -> Self {
+        Self {
+            withdrawal_head_digest: admission.withdrawal_head_digest,
+            current,
+            admission,
+        }
+    }
+
     #[must_use]
     pub fn artifact_id(&self) -> &StableId {
         &self.admission.validated_manifest.manifest.artifact_id
@@ -91,11 +102,7 @@ impl LearningArtifactOwnerService {
         {
             return Err(CurrentArtifactUseError::ProjectionMismatch);
         }
-        Ok(VerifiedCurrentArtifactUseV1 {
-            current,
-            withdrawal_head_digest: admission.withdrawal_head_digest,
-            admission,
-        })
+        Ok(VerifiedCurrentArtifactUseV1::new(current, admission))
     }
 }
 
@@ -155,5 +162,118 @@ impl From<LearningArtifactOwnerServiceError> for CurrentArtifactUseError {
 impl From<ArtifactAdmissionError> for CurrentArtifactUseError {
     fn from(value: ArtifactAdmissionError) -> Self {
         Self::Admission(value)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use codex_hepta_types::Generation;
+
+    use super::*;
+    use crate::ArtifactKind;
+    use crate::DatasetWithdrawalNoticeV1;
+    use crate::DatasetWithdrawalRegistry;
+    use crate::DatasetWithdrawalScopeV1;
+    use crate::LearningArtifactManifestV2;
+    use crate::ProvenanceModeV1;
+    use crate::admit_manifest_at_withdrawal_head_v3;
+    use crate::test_support::FixtureValue;
+
+    fn id(value: &str) -> StableId {
+        StableId::new(value.to_owned()).fixture("stable id")
+    }
+
+    fn digest(value: &str) -> Digest32 {
+        Digest32::of_bytes(value.as_bytes())
+    }
+
+    fn scope() -> DatasetWithdrawalScopeV1 {
+        DatasetWithdrawalScopeV1 {
+            authority_domain_id: id("dataset-authority"),
+            registry_id: id("withdrawals"),
+            scope_id: id("scope"),
+        }
+    }
+
+    fn manifest() -> LearningArtifactManifestV2 {
+        LearningArtifactManifestV2 {
+            artifact_id: id("candidate"),
+            kind: ArtifactKind::Policy,
+            generation: Generation::new(1).fixture("generation"),
+            provenance_mode: ProvenanceModeV1::DatasetDerived,
+            source_dataset_digests: vec![digest("dataset")],
+            lineage_digests: vec![digest("lineage")],
+            predecessor_ids: Vec::new(),
+            rollback_predecessor: None,
+            bytes_digest: digest("payload"),
+            encoded_size_bytes: 7,
+            training_code_digest: digest("code"),
+            runtime_tuple_digest: digest("runtime"),
+            device_profile_digest: digest("device"),
+            objective_class_digest: digest("objective"),
+            compatibility_digest: digest("compatibility"),
+            schema_profile_digest: digest("schema"),
+            normalization_digest: digest("normalization"),
+            producer_id: id("trainer"),
+            created_at: 10,
+            expires_at: 1_000,
+        }
+    }
+
+    #[test]
+    fn v1_projection_must_match_the_complete_validated_v2_manifest() {
+        let withdrawals = DatasetWithdrawalRegistry::new_scoped(scope());
+        let admission = admit_manifest_at_withdrawal_head_v3(
+            &withdrawals,
+            withdrawals.head_digest(),
+            manifest(),
+            20,
+        )
+        .fixture("admission");
+        let v2 = &admission.validated_manifest;
+        let manifest = &v2.manifest;
+        let mut projected = ArtifactManifest {
+            artifact_id: manifest.artifact_id.clone(),
+            kind: manifest.kind,
+            generation: manifest.generation,
+            predecessor_id: None,
+            content_digest: manifest.bytes_digest,
+            objective_digest: manifest.objective_class_digest,
+            support_digest: v2.manifest_digest,
+            producer_id: manifest.producer_id.clone(),
+            compatibility_digest: manifest.compatibility_digest,
+            encoded_size_bytes: manifest.encoded_size_bytes,
+        };
+        assert!(projection_matches(&projected, v2));
+        projected.support_digest = digest("substituted-admission");
+        assert!(!projection_matches(&projected, v2));
+    }
+
+    #[test]
+    fn newer_withdrawal_frontier_invalidates_the_old_final_use_admission() {
+        let mut withdrawals = DatasetWithdrawalRegistry::new_scoped(scope());
+        let admission = admit_manifest_at_withdrawal_head_v3(
+            &withdrawals,
+            withdrawals.head_digest(),
+            manifest(),
+            20,
+        )
+        .fixture("admission");
+        withdrawals
+            .append(DatasetWithdrawalNoticeV1 {
+                notice_id: id("withdrawal"),
+                dataset_digest: digest("dataset"),
+                source_tombstone_digest: digest("tombstone"),
+                authority_id: id("authority"),
+                credential_chain_digest: digest("credential"),
+                signing_key_digest: digest("key"),
+                authority_epoch: 2,
+                issued_at: 21,
+            })
+            .fixture("withdrawal append");
+        assert!(matches!(
+            validate_artifact_publication_v3(&admission, &withdrawals, 21),
+            Err(ArtifactAdmissionError::WithdrawalHeadChanged)
+        ));
     }
 }
