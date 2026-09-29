@@ -7,14 +7,21 @@ on:
     paths:
       - .github/patches/memory-retrieval-phase1a.patch
       - .github/patches/memory-retrieval-phase1b.patch
+      - .github/patches/memory-retrieval-phase2.patch
       - .github/workflows/memory-retrieval-apply-closure.yml
+      - codex-rs/hepta-memory-retrieval/src/lifecycle.rs
+      - docs/modules/memory.retrieval/FULL_CLOSURE.md
+      - qualification/memory-retrieval/product-composition.json
+      - qualification/memory-retrieval/quality-performance-policy.json
+      - qualification/memory-retrieval/production-qualification.json
+      - scripts/validate_memory_retrieval_closure.py
 
 permissions:
   contents: write
 
 concurrency:
   group: memory-retrieval-closure-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   apply-validate-commit:
@@ -37,26 +44,25 @@ jobs:
           git rev-parse HEAD
           git rev-parse HEAD^{tree}
 
-      - name: Preflight phase 1A patch
+      - name: Preflight closure patches
         shell: bash
         run: |
           set -euxo pipefail
           git apply --check --verbose .github/patches/memory-retrieval-phase1a.patch
-
-      - name: Preflight phase 1B patch
-        shell: bash
-        run: |
-          set -euxo pipefail
           git apply --check --verbose .github/patches/memory-retrieval-phase1b.patch
+          git apply --check --verbose .github/patches/memory-retrieval-phase2.patch
 
-      - name: Apply exact closure patches
+      - name: Apply exact source-closure patches
         shell: bash
         run: |
           set -euxo pipefail
           git apply --index --verbose .github/patches/memory-retrieval-phase1a.patch
           git apply --index --verbose .github/patches/memory-retrieval-phase1b.patch
+          git apply --index --verbose .github/patches/memory-retrieval-phase2.patch
+          python3 scripts/validate_memory_retrieval_closure.py \
+            --stamp-observation "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})"
+          git add -A
           git diff --cached --check
-          git status --short
 
       - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
         with:
@@ -70,7 +76,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends pkg-config libssl-dev protobuf-compiler
 
-      - name: Format the complete repository
+      - name: Format and validate the complete repository
         shell: bash
         run: |
           set -euxo pipefail
@@ -78,40 +84,32 @@ jobs:
           git add -A
           git diff --cached --check
           python3 scripts/format.py --check
+          python3 scripts/validate_memory_retrieval_closure.py
 
       - name: Validate Cargo graph
         shell: bash
         working-directory: codex-rs
-        run: |
-          set -euxo pipefail
-          cargo metadata --locked --no-deps --format-version 1 >/dev/null
+        run: cargo metadata --locked --no-deps --format-version 1 >/dev/null
 
-      - name: Test retrieval core
+      - name: Test retrieval core and direct lifecycle mappings
         shell: bash
         working-directory: codex-rs
-        run: |
-          set -euxo pipefail
-          cargo test --locked -p codex-hepta-memory-retrieval
+        run: cargo test --locked -p codex-hepta-memory-retrieval
 
       - name: Test durable memory migration
         shell: bash
         working-directory: codex-rs
-        run: |
-          set -euxo pipefail
-          cargo test --locked -p codex-hepta-memory
+        run: cargo test --locked -p codex-hepta-memory
 
       - name: Compile Agentd product path
         shell: bash
         working-directory: codex-rs
-        run: |
-          set -euxo pipefail
-          cargo test --locked -p codex-hepta-agentd --no-run
+        run: cargo test --locked -p codex-hepta-agentd --no-run
 
       - name: Run strict all-target Clippy
         shell: bash
         working-directory: codex-rs
         run: |
-          set -euxo pipefail
           cargo clippy --locked --all-targets \
             -p codex-hepta-memory-retrieval \
             -p codex-hepta-memory \
@@ -121,12 +119,12 @@ jobs:
             -- -D warnings
 
       - name: Commit only after every source gate passes
-        if: github.event_name == 'push'
         shell: bash
         run: |
           set -euxo pipefail
           rm .github/patches/memory-retrieval-phase1a.patch
           rm .github/patches/memory-retrieval-phase1b.patch
+          rm .github/patches/memory-retrieval-phase2.patch
           rm .github/workflows/memory-retrieval-apply-closure.yml
           git add -A
           git diff --cached --check
