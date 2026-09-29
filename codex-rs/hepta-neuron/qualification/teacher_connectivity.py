@@ -33,6 +33,36 @@ def strict_json(raw: bytes) -> Any:
                       parse_constant=invalid_constant)
 
 
+def unsupported_auth_route(diagnostics: bytes, expected_model: str) -> dict | None:
+    """Classify a retained CLI rejection, never successful provider authority.
+
+    Only the exact structured upstream error for the requested model qualifies.
+    Prose, a different model, timeout or a model-list omission is insufficient.
+    A diagnostic run ID is retained for lookup, not proof of no remote work.
+    """
+    text = diagnostics.decode("utf-8", errors="replace")
+    text = re.sub(r"\x1b\[[0-9;]*m", "", text)
+    message = "The '" + expected_model.split("/", 1)[1] + "' model is not supported when using Codex with a ChatGPT account."
+    for match in re.finditer(r"rawError=", text):
+        candidate = text[match.end():].lstrip()
+        try:
+            _, end = json.JSONDecoder().raw_decode(candidate)
+            error = strict_json(candidate[:end].encode())
+        except (ValueError, UnicodeError):
+            continue
+        if (isinstance(error, dict) and error.get("type") == "error" and
+                type(error.get("status")) is int and error["status"] == 400 and
+                isinstance(error.get("error"), dict) and
+                error["error"].get("type") == "invalid_request_error" and
+                error["error"].get("message") == message):
+            line = text[text.rfind("\n", 0, match.start()) + 1:match.start()]
+            run = re.search(r"\brunId=([A-Za-z0-9._:-]{1,128})(?:\s|$)", line)
+            return {"status": "requested_model_unsupported_for_auth_route",
+                    "upstream_http_status": 400,
+                    "gateway_run_id": run.group(1) if run else None}
+    return None
+
+
 def inspect_response(*, catalog: bytes, response: bytes, diagnostics: bytes,
                      expected_model: str, nonce: str) -> dict:
     if not MODEL_REF.fullmatch(expected_model) or not NONCE.fullmatch(nonce):
@@ -70,10 +100,12 @@ def inspect_response(*, catalog: bytes, response: bytes, diagnostics: bytes,
         if value.get("ok") is False or value.get("error") is not None:
             report["status"] = "gateway_error_reconcile_before_retry"
             return report
-    elif expected_model not in models:
-        report["status"] = "requested_model_not_configured"
-        return report
     else:
+        rejected = unsupported_auth_route(diagnostics, expected_model)
+        if rejected is not None:
+            report.update(rejected)
+        elif expected_model not in models:
+            report["status"] = "requested_model_not_configured"
         return report
     result = value.get("result", value)
     if value.get("status") not in (None, "ok", "completed"):

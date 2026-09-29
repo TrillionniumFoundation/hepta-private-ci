@@ -1,0 +1,163 @@
+"""Exercise real frozen encoder -> typed decision -> binary IR -> real X11.
+
+Uses the existing resident inference process and existing native clipboard probe.
+Inputs are held-out synthetic commands, not GUI observations or prospective
+windows. The isolated OS effect is real; backend authorization remains a fixture.
+No new product owner, automatic retry, production selection or teacher is created.
+"""
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import os
+from pathlib import Path
+import signal
+import subprocess
+import sys
+import time
+import uuid
+
+import decision_cell_bakeoff as panel
+
+WORKER = Path(__file__).resolve().parents[2] / "hepta-infer-worker-host/python"
+ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(WORKER))
+from decision_cell_process import FrozenEncoderProcess, build_request, canonical
+
+
+def write_new(path: Path, data: bytes) -> str:
+    with path.open("xb") as stream:
+        stream.write(data)
+    return hashlib.sha256(data).hexdigest()
+
+
+def run_native(command: list[str], output_dir: Path, index: int) -> tuple[int, bool]:
+    """Bound one existing native probe; kill only this created process group."""
+    with (output_dir / f"native-{index}.stdout").open("xb") as stdout, (output_dir / f"native-{index}.stderr").open("xb") as stderr:
+        process = subprocess.Popen(command, stdout=stdout, stderr=stderr,
+            env={"PATH": os.environ["PATH"], "LANG": "C.UTF-8"}, start_new_session=True)
+        try:
+            return process.wait(timeout=20), False
+        except subprocess.TimeoutExpired:
+            os.killpg(process.pid, signal.SIGKILL)
+            process.wait()
+            return process.returncode, True
+
+
+def probe(receipt_path: Path, model_path: Path, output: Path, count: int) -> dict:
+    if not 1 <= count <= 12:
+        raise ValueError("bounded number of positive cases required")
+    source = panel.repository_source()
+    receipt, digest = panel.verified_receipt(receipt_path)
+    if receipt["model_name"] != "mdeberta-v3-base":
+        raise ValueError("the existing resident profile only admits mDeBERTa")
+    artifact = receipt["head_artifact"]
+    manifest = panel._tensor_module.strict_json(panel._tensor_module.checked_bytes(
+        Path(artifact["manifest_path"]), artifact["manifest_sha256"], 256 * 1024))
+    expected = {"schema": "hepta.frozen-encoder-ready.v1", "session_id": "nativeprobe." + uuid.uuid4().hex,
+        "head_manifest_sha256": artifact["manifest_sha256"],
+        "base_snapshot_digest": receipt["base_model"]["snapshot_digest"],
+        "runtime_profile_sha256": hashlib.sha256(canonical(manifest["runtime_profile"])).hexdigest(),
+        "device": "cpu", "advisory_only": True, "external_effect": False}
+    environment = {key: os.environ[key] for key in ("PATH", "PYTHONPATH", "OMP_NUM_THREADS",
+        "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "TOKENIZERS_PARALLELISM") if key in os.environ}
+    environment.update(HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1", PYTHONNOUSERSITE="1")
+    command = [sys.executable, "-u", str(WORKER / "frozen_decision_cell_worker.py"),
+        "--session-id", expected["session_id"], "--model-path", str(model_path),
+        "--manifest", artifact["manifest_path"], "--manifest-sha256", artifact["manifest_sha256"],
+        "--weights", artifact["weights_path"], "--weights-sha256", artifact["weights_sha256"],
+        "--base-snapshot-sha256", expected["base_snapshot_digest"],
+        "--runtime-profile-sha256", expected["runtime_profile_sha256"]]
+    dataset = panel.build_dataset()
+    positive = [row for row in dataset if row.split == "test" and row.action == 2][:count]
+    negative = [row for row in dataset if row.ood == 1 and row.split == "ood_test"][:2]
+    if len(positive) != count or len(negative) != 2:
+        raise ValueError("required held-out positive and OOD cases are absent")
+    output.mkdir(parents=True, exist_ok=False)
+    records = []
+    with FrozenEncoderProcess(command, expected, environment=environment) as child:
+        for index, example in enumerate([*positive, *negative]):
+            request = build_request(f"nativeprobe.{index}", example.text, example.candidates,
+                                    deadline_ns=time.monotonic_ns() + 120 * 10**9)
+            invocation = hashlib.sha256(canonical({"request": request, "source": source})).hexdigest()
+            reply = child.exchange(request, invocation, timeout_seconds=120)
+            reply_digest = write_new(output / f"model-{index}.json", canonical(reply))
+            item = {"example_id": example.example_id, "model_reply_sha256": reply_digest,
+                    "expected_target_index": example.target, "expected_ood": bool(example.ood)}
+            if reply["status"] != "observed":
+                item.update(status="model_unresolved", task_passed=False, external_effect=False)
+                records.append(item)
+                continue
+            observed = reply["observation"]
+            if observed["head_manifest_sha256"] != expected["head_manifest_sha256"] or observed["base_snapshot_digest"] != expected["base_snapshot_digest"]:
+                raise ValueError("model artifact binding drift")
+            probabilities = {}
+            for key in ("action", "target", "disposition", "postcondition", "ood"):
+                values = observed["probabilities"][key]
+                if not isinstance(values, list) or len(values) != 1 or not isinstance(values[0], list):
+                    raise ValueError("expected one typed probability row")
+                probabilities[key] = values[0]
+            packet = {"schema": "hepta.model-native-probe-input.v1", "requestId": request["request_id"],
+                "replySha256": reply_digest, "projectionSha256": reply["projection_sha256"],
+                "headManifestSha256": expected["head_manifest_sha256"],
+                "baseSnapshotDigest": expected["base_snapshot_digest"], "probabilities": probabilities,
+                "targets": [{"referenceId": f"clipboard.reference.{target}", "generation": 1,
+                    "text": f"Hepta nonsecret selected target {target}: {text}"}
+                    for target, text in enumerate(example.candidates)]}
+            # Match the existing JS parser's canonical byte representation exactly.
+            encoded = subprocess.run(["node", "-e", "const fs=require('fs');process.stdout.write(JSON.stringify(JSON.parse(fs.readFileSync(0,'utf8')))+'\\n')"],
+                input=canonical(packet), stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, timeout=5).stdout
+            packet_path = output / f"decision-{index}.json"
+            packet_digest = write_new(packet_path, encoded)
+            native_path = output / f"native-{index}.json"
+            code, timed_out = run_native(["node", str(ROOT / "apps/hepta-native/qualification/x11-clipboard.mjs"),
+                str(native_path), str(packet_path), packet_digest], output, index)
+            native = json.loads(native_path.read_text()) if native_path.is_file() and native_path.stat().st_size <= 32768 else None
+            item.update(native_exit=code, timed_out=timed_out, packet_sha256=packet_digest,
+                        base_forward_passes=observed["base_forward_passes"], model_latency_ns=observed["latency_ns"])
+            if timed_out or native is None:
+                item.update(status="native_indeterminate", task_passed=False, external_effect=None)
+            elif code == 3:
+                item.update(status="abstained", task_passed=bool(example.ood), external_effect=False)
+            elif code == 0:
+                choice = native["modelChoice"]
+                selected = choice["targetIndex"]
+                actual_text = packet["targets"][selected]["text"]
+                readback_matches = native["readbackSha256"] == hashlib.sha256(actual_text.encode()).hexdigest()
+                binding_matches = choice["replySha256"] == reply_digest
+                item.update(status="observed", selected_target_index=selected, external_effect=True,
+                    readback_matches_selected=readback_matches, model_receipt_bound=binding_matches,
+                    task_passed=not example.ood and selected == example.target and readback_matches and binding_matches,
+                    frame_sha256=native["frameSha256"], outcome_digest=native["outcomeDigest"])
+            else:
+                item.update(status="native_rejected", task_passed=False, external_effect=False)
+            records.append(item)
+    if panel.repository_source() != source:
+        raise ValueError("source changed during qualification")
+    report = {"schema": "hepta.model-native-execution-probe.v1", "source": source,
+        "training_receipt_sha256": digest, "head_manifest_sha256": artifact["manifest_sha256"],
+        "profile": "synthetic-heldout-command-to-isolated-real-X11-clipboard",
+        "records": records, "passed": all(row["task_passed"] for row in records),
+        "actual_native_effects": sum(row["external_effect"] is True for row in records),
+        "model_process_reaped": child._process.poll() is not None,
+        "calibration_trust_granted": False, "backend_and_authority_are_fixtures": True,
+        "general_gui_competence": False, "durable_cross_process_recovery": False,
+        "teacher_output_used": False, "prospective_future_window_evidence": False,
+        "runtime_selection_eligible": False, "production_activation": False, "operator_acceptance": False}
+    write_new(output / "report.json", canonical(report))
+    return report
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--receipt", type=Path, required=True)
+    parser.add_argument("--model-path", type=Path, required=True)
+    parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument("--count", type=int, default=4)
+    args = parser.parse_args()
+    result = probe(args.receipt.resolve(strict=True), args.model_path.resolve(strict=True), args.output_dir.resolve(), args.count)
+    print(json.dumps({"passed": result["passed"], "cases": len(result["records"]),
+        "actual_native_effects": result["actual_native_effects"], "output": str(args.output_dir / "report.json"),
+        "production_activation": False}))
+    raise SystemExit(0 if result["passed"] else 2)

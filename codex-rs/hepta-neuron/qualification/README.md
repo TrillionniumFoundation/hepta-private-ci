@@ -283,3 +283,76 @@ python3 teacher_connectivity.py --catalog /observed/models.txt \
 This package-local observation is not a cross-module authority protocol. Exit 2
 means connectivity was not established; it is not permission to change models,
 copy tokens, switch agents or reissue an uncertain provider request.
+
+
+## Model-to-native execution probe
+
+`native_cell_probe.py` connects the existing artifact-bound resident mDeBERTa
+worker to the existing `ui.native` binary clipboard qualification path. It uses a
+fixed held-out copy-command slice and two OOD cases. Actual model probabilities
+select the action, target and postcondition; expected labels are used only by the
+subsequent evaluator. The effect is not preselected from the expected answer.
+
+`apps/hepta-native/qualification/model-decision.mjs` checks the closed probability
+shape, finite normalized values, current target generation and a predeclared
+confidence/OOD rule. Unsupported decisions abstain before starting Xvfb. An accepted
+choice is encoded with the existing ComputerActionIR codec, executes through
+NativeShellRuntime/X11ClipboardPlatform and is independently read back by xclip.
+The source/model/reply/frame/outcome chain is retained. The probe cannot issue a
+capability: its authorizer is still explicitly a fixture on an isolated display.
+The input digest checks provenance consistency within this probe, not independent
+product trust. No second effect executor or durable operation owner is introduced.
+
+Run against a clean committed source and exact retained artifact:
+
+```sh
+python3 native_cell_probe.py --receipt /qualified/receipts/mdeberta.json \
+  --model-path /qualified/models/mdeberta --count 4 \
+  --output-dir /qualified/model-native-run
+node --test apps/hepta-native/test/model-decision.test.js
+```
+
+All selected cases, abstentions and failures are retained. No failed case is retried
+or replaced with an easier case. Real clipboard execution does not establish general
+GUI perception, independent calibration, a signed product caller, durable native
+cross-process recovery, future-window efficacy or production activation. A missing
+Python environment/model snapshot is an execution blocker, not a passed probe.
+
+## Finite-sample support before calibration trust
+
+`binomial_support.py` adds a separate count diagnostic, without changing historical
+`selection-evaluation.v2` receipts or their pilot gates. It calculates one-sided
+Clopper-Pearson binomial upper limits for OOD false acceptance and accepted-decision
+error, allocating alpha=0.025 to each (familywise alpha <=0.05 by Bonferroni).
+An empty accepted population has no bound. Zero observed errors are not zero risk.
+The algorithm inverts the binomial CDF; small-population exact-sum regressions,
+zero-error closed-form tests and bounded large-population checks accompany it.
+
+For a 0.5% maximum error probability, even zero errors require at least 736
+independent trials in each of those two populations. Zero errors among 64 OOD
+examples has an upper limit about 5.60%, not 0.5%. These statements assume
+independent Bernoulli units and a frozen evaluation rule; a repeated or correlated
+synthetic panel does not satisfy that assumption merely by increasing row count.
+Episode/source clusters, post-selection effects, additional comparisons and future
+windows require their separately declared evaluation method. Passing this count
+check cannot issue calibration, artifact-selection or activation authority.
+
+```sh
+python3 -m unittest -v test_binomial_support
+```
+
+## Auth-route rejection and training rights
+
+The teacher diagnostic distinguishes an exact structured upstream HTTP 400
+`invalid_request_error` stating that the requested model is unsupported for the
+ChatGPT/Codex auth route from a missing local catalog entry or unknown outcome.
+It preserves the associated diagnostic run identity and all negative authority
+flags. Free-form stderr, a different model or a timeout is not that rejection.
+Do not silently replace the requested model or reinterpret a subscription login
+as a separately entitled API account. Tests: `test_teacher_entitlement.py`.
+
+Provider connectivity, selected account entitlement, input privacy, permitted
+output-training use and derived-weight distribution are distinct checks. The
+actual governing contract and any written permission must be retained by the
+appropriate owner. Public API model availability and repository-owner permission
+do not by themselves establish rights for a particular subscription/auth route.

@@ -2,9 +2,10 @@
  * The injected backend/authorization below are test fixtures, not production trust.
  */
 import assert from "node:assert/strict";
+import { clipboardChoiceFromModel } from "./model-decision.mjs";
 import { spawn, execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync, openSync, closeSync, fstatSync, readSync, constants } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { NativeShellRuntime } from "../src/shell-runtime.js";
 import { InlineNativeReferenceResolver, nativePlatformPayloadDigestV1 } from "../src/computer-action.js";
@@ -18,6 +19,33 @@ const root = fileURLToPath(new URL("../../../", import.meta.url));
 const git = (...args) => execFileSync("git", args, { cwd: root, encoding: "utf8" }).trim();
 const source = { commit: git("rev-parse", "HEAD"), tree: git("rev-parse", "HEAD^{tree}"), dirty: git("status", "--porcelain") !== "" };
 assert.equal(source.dirty, false, "real-OS qualification requires a committed clean source");
+
+let modelChoice = null;
+if (process.argv[3] || process.argv[4]) {
+  const descriptor = openSync(process.argv[3], constants.O_RDONLY | constants.O_NOFOLLOW);
+  let bytes;
+  try {
+    const stat = fstatSync(descriptor);
+    assert.ok(stat.isFile() && stat.size <= 32768, "model probe input exceeds regular-file bound");
+    const buffer = Buffer.alloc(32769);
+    let offset = 0, amount;
+    while (offset < buffer.length && (amount = readSync(descriptor, buffer, offset, buffer.length - offset, null)) > 0) offset += amount;
+    assert.ok(offset <= 32768, "model probe input grew beyond bound");
+    bytes = buffer.subarray(0, offset);
+  } finally { closeSync(descriptor); }
+  assert.equal(sha256(bytes), process.argv[4], "model probe input digest mismatch");
+  const input = JSON.parse(bytes);
+  assert.equal(Buffer.from(JSON.stringify(input) + "\n").compare(bytes), 0, "non-canonical or duplicate-field input");
+  modelChoice = clipboardChoiceFromModel(input, 1);
+  if (modelChoice.status !== "selected") {
+    const output = JSON.stringify({ schema: "hepta.native-model-abstention.v1", source,
+      modelChoice, externalEffect: false, productionActivation: false }) + "\n";
+    writeFileSync(process.argv[2], output, { flag: "wx", mode: 0o600 });
+    console.log(output);
+    process.exit(3);
+  }
+}
+
 const server = spawn("/usr/bin/Xvfb", ["-displayfd", "3", "-screen", "0", "640x480x24", "-nolisten", "tcp", "-ac"],
   { stdio: ["ignore", "ignore", "pipe", "pipe"], env: { LANG: "C.UTF-8" }, shell: false });
 server.stderr.resume();
@@ -32,15 +60,15 @@ try {
   const display = `:${number}`;
   const executable = "/usr/bin/xclip";
   const executableSha256 = sha256(readFileSync(executable));
-  const text = "Hepta isolated clipboard / 原生二进制执行验证 / no secrets";
+  const text = modelChoice?.text ?? "Hepta isolated clipboard / 原生二进制执行验证 / no secrets";
   const resource = clipboardTextReference(text);
   const origin = process.hrtime.bigint();
   const clock = () => Number((process.hrtime.bigint() - origin) / 1000n) + 1;
-  const payload = { kind: "reference", referenceId: "clipboard.text.1" };
-  const frame = { operationId: "operation.clipboard.1", subjectId: "principal.qualifier",
+  const payload = { kind: "reference", referenceId: modelChoice?.referenceId ?? "clipboard.text.1" };
+  const frame = { operationId: modelChoice ? `cell.${modelChoice.requestId}` : "operation.clipboard.1", subjectId: "principal.qualifier",
     actuatorId: "native-shell", opcode: "copy_text_reference", targetRef: null,
     bodyGeneration: 1, sessionGeneration: 1, observationRevision: 1,
-    deadlineMonotonicMicros: clock() + 5_000_000, preconditionDigest: hash("isolated-display-view"),
+    deadlineMonotonicMicros: clock() + 5_000_000, preconditionDigest: hash(modelChoice ? `isolated-display-view:${modelChoice.replySha256}` : "isolated-display-view"),
     argumentPayloadDigest: computerActionPayloadDigestV1("copy_text_reference", payload),
     finalPayloadDigest: nativePlatformPayloadDigestV1("copy_text", resource),
     expectedPostconditionDigest: hash("content-equal-in-isolated-clipboard"), payload };
@@ -100,7 +128,7 @@ try {
     changedPrincipalRejected: true, realOsClipboard: true,
     isolatedDisplay: true, tcpListenerEnabled: false, backendAndAuthorityAreFixtures: true,
     independentPrincipalObservation: false, durableCrossProcessRecovery: false,
-    productionActivation: false, operatorAcceptance: false };
+    productionActivation: false, operatorAcceptance: false, modelChoice };
   const encoded = JSON.stringify(receipt, null, 2) + "\n";
   if (process.argv[2]) writeFileSync(process.argv[2], encoded, { flag: "wx", mode: 0o600 });
   console.log(encoded);
