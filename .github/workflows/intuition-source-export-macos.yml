@@ -1,0 +1,174 @@
+name: intuition.policy One-shot Source Authoring macOS
+
+on:
+  push:
+    branches: [codex/intuition-policy-final-use-recovery-20260929]
+    paths:
+      - ".github/workflows/intuition-source-export-macos.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: intuition-one-shot-authoring-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  TARGET_BRANCH: codex/intuition-policy-final-use-recovery-20260929
+  CLEAN_PARENT: 696447e733e22e425cd05691d98f4fe0ef63f759
+  AUTHORING_HEAD: ${{ github.sha }}
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  author:
+    runs-on: macos-15
+    timeout-minutes: 120
+    steps:
+      - name: Check out exact reviewed carrier
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.AUTHORING_HEAD }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Uniquely reconstruct reviewed patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$AUTHORING_HEAD"
+          ready=.github/intuition-authoring-patch/READY
+          test "$(sed -n 's/^base=//p' "$ready" | tr -d '\r')" = "$CLEAN_PARENT"
+          test "$(sed -n 's/^part-000=//p' "$ready" | tr -d '\r')" = ff90ec4b0bb594c6659c0805f7683e625f423d46
+          test "$(sed -n 's/^part-001=//p' "$ready" | tr -d '\r')" = 8ef03a50ccef25591918ed67fb42506bcfdd21f1
+          test "$(sed -n 's/^part-002=//p' "$ready" | tr -d '\r')" = 627e323cc4086e712a04ffa58b02e7723415e64c
+          git cat-file blob ff90ec4b0bb594c6659c0805f7683e625f423d46 > "$RUNNER_TEMP/part-000.b64"
+          git cat-file blob 8ef03a50ccef25591918ed67fb42506bcfdd21f1 > "$RUNNER_TEMP/part-001.b64"
+          git cat-file blob 627e323cc4086e712a04ffa58b02e7723415e64c > "$RUNNER_TEMP/part-002.b64"
+          CLEAN_PARENT="$CLEAN_PARENT" RUNNER_TEMP="$RUNNER_TEMP" python3 - <<'PY'
+          import base64
+          import hashlib
+          import os
+          from pathlib import Path
+          import subprocess
+          import tempfile
+
+          temp = Path(os.environ['RUNNER_TEMP'])
+          parts = [b''.join((temp / f'part-{i:03}.b64').read_bytes().split()) for i in range(3)]
+          if [len(value) for value in parts] != [12000, 12001, 12000]:
+              raise SystemExit(f'unexpected compact lengths: {[len(value) for value in parts]}')
+
+          def valid(encoded: bytes):
+              try:
+                  patch = base64.b64decode(encoded, validate=True)
+                  text = patch.decode('utf-8')
+              except (ValueError, UnicodeDecodeError):
+                  return None
+              if not text.startswith('diff --git a/') or not text.endswith('\n') or '\x00' in text:
+                  return None
+              with tempfile.NamedTemporaryFile(delete=False, suffix='.patch') as handle:
+                  handle.write(patch)
+                  path = Path(handle.name)
+              try:
+                  check = subprocess.run(['git', 'apply', '--check', str(path)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+              finally:
+                  path.unlink(missing_ok=True)
+              return patch if check.returncode == 0 else None
+
+          candidates = []
+          for index in range(len(parts[1])):
+              encoded = parts[0] + parts[1][:index] + parts[1][index + 1:] + parts[2]
+              patch = valid(encoded)
+              if patch is not None:
+                  candidates.append((index, parts[1][index:index + 1], patch))
+          if len(candidates) != 1:
+              raise SystemExit(f'expected one applicable reconstruction, found {len(candidates)}')
+          index, removed, patch = candidates[0]
+          target = temp / 'intuition-source.patch'
+          target.write_bytes(patch)
+          digest = hashlib.sha256(patch).hexdigest()
+          (temp / 'intuition-source.recovery').write_text(
+              f'index={index}\nremoved={removed!r}\nsha256={digest}\n', encoding='utf-8')
+          print(f'unique reconstruction index={index} removed={removed!r} bytes={len(patch)} sha256={digest}')
+          PY
+
+      - name: Apply to fixed clean parent
+        shell: bash
+        run: |
+          set -euo pipefail
+          git checkout --detach "$CLEAN_PARENT"
+          test "$(git rev-parse HEAD)" = "$CLEAN_PARENT"
+          git reset --hard "$CLEAN_PARENT"
+          git clean -fdx
+          git apply --check "$RUNNER_TEMP/intuition-source.patch"
+          git apply "$RUNNER_TEMP/intuition-source.patch"
+          git diff --check
+          git status --short
+
+      - name: Set up repository CI dependencies
+        uses: ./.github/actions/setup-ci
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt,clippy
+
+      - name: Format and verify projections
+        shell: bash
+        run: |
+          set -euo pipefail
+          (cd codex-rs && cargo fmt --all)
+          python3 scripts/intuition_legacy_consumers.py
+          python3 -m unittest discover -s scripts/tests -p 'test_intuition*.py' -v
+
+      - name: Execute final-use regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo test --locked -p codex-hepta-intuition
+          cargo test --locked -p codex-hepta-intelligence intuition
+          cargo test --locked -p codex-hepta-agentd --test intuition_policy_final_use_v4
+          cargo test --locked -p codex-hepta-agentd --test intuition_policy_commit_boundary
+          cargo test --locked -p codex-hepta-agentd --lib intuition_policy
+          cargo clippy --locked -p codex-hepta-agentd --lib --tests -- -D warnings
+          cargo fmt --all -- --check
+
+      - name: Publish one clean source commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          test -z "$(find . -type d -name __pycache__ -print -quit)"
+          git config user.name "OpenAI source authoring"
+          git config user.email "assistant@openai.invalid"
+          git add -A
+          tree="$(git write-tree)"
+          commit="$(printf '%s\n\n%s\n' \
+            'fix(intuition): revalidate authority at final use' \
+            'Preserve the sole ledger owner while moving fresh time, generation, and three-party qualification checks under its serialization boundary. Add typed boundary domains, stage telemetry, legacy-consumer drift checks, and separate safety/effectiveness/operator acceptance states.' \
+            | git commit-tree "$tree" -p "$CLEAN_PARENT")"
+          git push --force-with-lease="refs/heads/$TARGET_BRANCH:$AUTHORING_HEAD" \
+            origin "$commit:refs/heads/$TARGET_BRANCH"
+          echo "published=$commit"
+
+      - name: Retain failure diagnostics
+        if: failure()
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/intuition-source-authoring-failure"
+          mkdir -p "$out"
+          git status --short > "$out/status.txt"
+          git diff --binary > "$out/worktree.patch"
+          cp "$RUNNER_TEMP/intuition-source.patch" "$out/source.patch" 2>/dev/null || true
+          cp "$RUNNER_TEMP/intuition-source.recovery" "$out/source.recovery" 2>/dev/null || true
+
+      - name: Upload failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intuition-source-authoring-macos-${{ env.AUTHORING_HEAD }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/intuition-source-authoring-failure/
+          if-no-files-found: warn
+          retention-days: 3
