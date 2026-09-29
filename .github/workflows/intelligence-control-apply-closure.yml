@@ -36,9 +36,10 @@ jobs:
       (github.event_name == 'pull_request' &&
        github.event.pull_request.head.repo.full_name == github.repository &&
        github.event.pull_request.head.ref == 'codex/intelligence-control-product-closure-20260926')
-    # This transport is architecture-neutral. Use the hosted ARM pool so a
-    # saturated x64 queue cannot delay the one-shot, SHA-guarded application.
-    runs-on: ubuntu-24.04-arm
+    # This is a short architecture-neutral transport job. The ARM pool was
+    # observed queued while the standard hosted pool was actively executing,
+    # so use the generally available pool and retain all SHA/hash guards.
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
@@ -55,7 +56,7 @@ jobs:
           git merge-base --is-ancestor "$EXPECTED_SOURCE_PARENT" HEAD
           unexpected="$({
             git diff --name-only "$EXPECTED_SOURCE_PARENT"..HEAD \
-              | grep -Ev '^\.github/(intelligence-control-closure\.patch\.part-[0-9][0-9]|workflows/intelligence-control-apply-closure\.yml)$'
+              | grep -Ev '^\.github/(intelligence-control-closure\.patch\.part-[0-9][0-9]|workflows/intelligence-control-apply-closure\.yml|workflows/hepta-intelligence-diagnostics\.yml)$'
           } || true)"
           test -z "$unexpected" || {
             printf 'unexpected transport commit paths:\n%s\n' "$unexpected" >&2
@@ -67,6 +68,7 @@ jobs:
           git apply --index "$RUNNER_TEMP/intelligence-control-closure.patch"
           git rm -f .github/intelligence-control-closure.patch.part-* \
             .github/workflows/intelligence-control-apply-closure.yml
+          git checkout "$EXPECTED_SOURCE_PARENT" -- .github/workflows/hepta-intelligence-diagnostics.yml
           git diff --cached --check
           python3 scripts/hepta-intelligence-control-status.py --check-tracked
           python3 scripts/hepta-intelligence-control-status-tests.py
