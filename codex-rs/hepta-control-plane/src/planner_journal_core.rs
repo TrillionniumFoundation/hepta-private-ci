@@ -5,9 +5,6 @@ use std::fmt;
 
 use codex_hepta_types::Digest32;
 
-use crate::FeasiblePlanReceiptV1;
-use crate::GlobalStateSnapshotV1;
-
 const MAGIC: &[u8; 8] = b"HCPJNL01";
 const MAX_RECORDS: usize = 4096;
 const RECORD_BYTES: usize = 8 + 1 + 32 + 32 + 32 + 32;
@@ -99,61 +96,6 @@ impl PlannerJournalV1 {
     #[must_use]
     pub fn entries(&self) -> &[PlannerJournalEntryV1] {
         &self.entries
-    }
-
-    pub fn record_snapshot(
-        &mut self,
-        snapshot: &GlobalStateSnapshotV1,
-    ) -> Result<PlannerJournalEntryV1, PlannerJournalError> {
-        self.append(
-            PlannerJournalKindV1::Snapshot,
-            snapshot.snapshot_digest(),
-            snapshot.snapshot_digest(),
-        )
-    }
-
-    pub fn record_decision(
-        &mut self,
-        receipt: &FeasiblePlanReceiptV1,
-    ) -> Result<PlannerJournalEntryV1, PlannerJournalError> {
-        self.append(
-            PlannerJournalKindV1::Decision,
-            receipt.receipt_digest(),
-            receipt.receipt_digest(),
-        )
-    }
-
-    pub fn select_plan(
-        &mut self,
-        operation_identity_digest: Digest32,
-        receipt: &FeasiblePlanReceiptV1,
-    ) -> Result<PlannerJournalEntryV1, PlannerJournalError> {
-        if !self.entries.iter().any(|entry| {
-            entry.kind == PlannerJournalKindV1::Decision
-                && entry.payload_digest == receipt.receipt_digest()
-        }) {
-            return Err(PlannerJournalError::DecisionNotRecorded);
-        }
-        if self.revoked_digests().contains(&receipt.receipt_digest()) {
-            return Err(PlannerJournalError::RevokedPlan);
-        }
-        self.append(
-            PlannerJournalKindV1::SelectedPlan,
-            operation_identity_digest,
-            receipt.receipt_digest(),
-        )
-    }
-
-    pub fn revoke(
-        &mut self,
-        revocation_identity_digest: Digest32,
-        target_digest: Digest32,
-    ) -> Result<PlannerJournalEntryV1, PlannerJournalError> {
-        self.append(
-            PlannerJournalKindV1::Revocation,
-            revocation_identity_digest,
-            target_digest,
-        )
     }
 
     #[must_use]
