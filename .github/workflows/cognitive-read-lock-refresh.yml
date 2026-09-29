@@ -38,10 +38,10 @@ concurrency:
 jobs:
   prepare:
     if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/work/cognitive-read-production-convergence-20260927'
-    # Source authoring remains on a GitHub-hosted runner. The repository's
-    # self-hosted target machines are not exposed to branch-authored code, and
-    # qualification/target-host acceptance remain separate workflows.
-    runs-on: macos-15-xlarge
+    # Source authoring remains on a standard GitHub-hosted runner. The
+    # repository's self-hosted target machines are not exposed to branch-authored
+    # code, and qualification/target-host acceptance remain separate workflows.
+    runs-on: macos-14
     timeout-minutes: 45
     permissions:
       contents: write
