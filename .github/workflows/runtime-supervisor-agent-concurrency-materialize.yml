@@ -12,13 +12,13 @@ permissions:
   contents: write
 
 concurrency:
-  group: runtime-supervisor-agent-concurrency-materializer
+  group: runtime-supervisor-agent-concurrency-${{ github.sha }}
   cancel-in-progress: false
 
 jobs:
   materialize:
     if: "${{ github.event.head_commit.message == 'chore(runtime.supervisor): stage per-Agent concurrency materializer' }}"
-    runs-on: ubuntu-24.04
+    runs-on: macos-15
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -26,15 +26,6 @@ jobs:
           ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: true
-      - name: Install native prerequisites
-        run: |
-          set -euo pipefail
-          sudo apt-get update
-          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
-          sudo sysctl -w kernel.unprivileged_userns_clone=1
-          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
-            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
-          fi
       - name: Install exact Rust toolchain
         run: |
           set -euo pipefail
