@@ -171,7 +171,7 @@ impl VectorIndexPublicationV1 {
         if (self.sequence == 1) != self.previous_publication_digest.is_none()
             || self
                 .previous_publication_digest
-                .is_some_and(Digest32::is_zero)
+                .is_some_and(|digest| digest.is_zero())
         {
             return Err(VectorPublicationErrorV1::InvalidPreviousPublication);
         }
@@ -221,8 +221,12 @@ impl VectorIndexPublicationV1 {
     ) -> Result<(), VectorPublicationErrorV1> {
         self.validate()?;
         next.validate()?;
+        let expected_sequence = self
+            .sequence
+            .checked_add(1)
+            .ok_or(VectorPublicationErrorV1::SequenceExhausted)?;
         if self.tenant_digest != next.tenant_digest
-            || next.sequence != self.sequence.saturating_add(1)
+            || next.sequence != expected_sequence
             || next.previous_publication_digest != Some(self.publication_digest)
         {
             return Err(VectorPublicationErrorV1::InvalidSuccessor);
@@ -399,6 +403,7 @@ pub enum VectorPublicationErrorV1 {
     EmptyDigest(&'static str),
     InvalidDimensions,
     InvalidSequence,
+    SequenceExhausted,
     InvalidPreviousPublication,
     InvalidWithdrawalSet,
     WithdrawnRecordPublished,
