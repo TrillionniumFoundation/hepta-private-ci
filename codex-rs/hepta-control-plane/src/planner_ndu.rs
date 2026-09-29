@@ -18,6 +18,10 @@ use codex_hepta_ndu::canonical_evaluation_policy_digest;
 use codex_hepta_ndu::canonical_scalarization_digest;
 use codex_hepta_ndu::canonical_utility_profile_digest;
 use codex_hepta_ndu::evaluate_candidates_with_policy;
+use codex_hepta_ndu::{
+    NduActorScenarioV1, NduEvidenceErrorV1, NduEvidencePolicyV1, NduFeatureEvidenceV1,
+    bind_contribution_evidence_v1, canonical_ndu_evidence_policy_digest_v1,
+};
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
@@ -39,6 +43,62 @@ pub struct NduPlanningInputV1 {
     pub scalarization: Option<ScalarizationProfile>,
 }
 
+/// Versioned, host-observed evidence. The policy is frozen before preparation;
+/// a caller cannot erase actors or downgrade risk after seeing the candidates.
+#[derive(Clone, Debug)]
+pub struct NduPlanningInputV2 {
+    pub base: NduPlanningInputV1,
+    pub evidence_policy: NduEvidencePolicyV1,
+    pub features: Vec<NduFeatureEvidenceV1>,
+    pub actor_scenarios: Vec<NduActorScenarioV1>,
+}
+
+pub fn canonical_ndu_planning_policy_digest_v2(
+    input: &NduPlanningInputV2,
+) -> Result<Digest32, NduPlanningError> {
+    let mut bytes = b"hepta.control.ndu-planning-policy.v2\0".to_vec();
+    bytes.extend_from_slice(
+        canonical_ndu_planning_policy_digest(&input.base)
+            .map_err(NduPlanningError::Ndu)?
+            .as_array(),
+    );
+    bytes.extend_from_slice(
+        canonical_ndu_evidence_policy_digest_v1(&input.evidence_policy)
+            .map_err(NduPlanningError::Evidence)?
+            .as_array(),
+    );
+    Ok(Digest32::of_bytes(&bytes))
+}
+
+pub fn evaluate_prepared_plan_with_ndu_v2(
+    snapshot: &GlobalStateSnapshotV1,
+    prepared: &PreparedPlanInputV1,
+    mut input: NduPlanningInputV2,
+    now_micros: u64,
+) -> Result<EvaluatedPlanV1, NduPlanningError> {
+    let digest = canonical_ndu_planning_policy_digest_v2(&input)?;
+    if requires_explicit_evidence(prepared, &input.base) && !input.evidence_policy.high_risk {
+        return Err(NduPlanningError::EvidenceRequired);
+    }
+    input.base.contributions = bind_contribution_evidence_v1(
+        &input.base.contributions,
+        &input.base.profile,
+        &input.evidence_policy,
+        &input.features,
+        &input.actor_scenarios,
+    )
+    .map_err(NduPlanningError::Evidence)?;
+    evaluate_prepared_plan_bound(snapshot, prepared, input.base, now_micros, digest)
+}
+
+fn requires_explicit_evidence(prepared: &PreparedPlanInputV1, input: &NduPlanningInputV1) -> bool {
+    !input.profile.risk_ceilings.is_empty()
+        || prepared
+            .feasible_candidates()
+            .iter()
+            .any(|value| !value.final_payload_digests.is_empty())
+}
+
 /// The original NDU evaluation and sealed, authority-free planning projection.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct EvaluatedPlanV1 {
@@ -51,6 +111,9 @@ pub enum NduPlanningError {
     Planner(PlannerError),
     Ndu(NduError),
     CandidateCoverage,
+    EffectfulAbstain,
+    EvidenceRequired,
+    Evidence(NduEvidenceErrorV1),
     OwnerCoverage(StableId),
 }
 
@@ -89,7 +152,26 @@ pub fn evaluate_prepared_plan_with_ndu(
     input: NduPlanningInputV1,
     now_micros: u64,
 ) -> Result<EvaluatedPlanV1, NduPlanningError> {
+    if requires_explicit_evidence(prepared, &input) {
+        return Err(NduPlanningError::EvidenceRequired);
+    }
+    let digest = canonical_ndu_planning_policy_digest(&input).map_err(NduPlanningError::Ndu)?;
+    evaluate_prepared_plan_bound(snapshot, prepared, input, now_micros, digest)
+}
+
+fn evaluate_prepared_plan_bound(
+    snapshot: &GlobalStateSnapshotV1,
+    prepared: &PreparedPlanInputV1,
+    input: NduPlanningInputV1,
+    now_micros: u64,
+    policy_digest: Digest32,
+) -> Result<EvaluatedPlanV1, NduPlanningError> {
     use NduPlanningError as E;
+    if prepared.feasible_candidates().iter().any(|candidate| {
+        candidate.candidate_id.as_str() == "abstain" && !candidate.final_payload_digests.is_empty()
+    }) {
+        return Err(E::EffectfulAbstain);
+    }
     if input.contributions.contributions.len() > 4096 {
         return Err(E::Ndu(NduError::ContributionLimitExceeded));
     }
@@ -99,7 +181,6 @@ pub fn evaluate_prepared_plan_with_ndu(
     if input.contributions.generation != prepared.body_generation() {
         return Err(E::Planner(PlannerError::MixedBodyGeneration));
     }
-    let policy_digest = canonical_ndu_planning_policy_digest(&input).map_err(E::Ndu)?;
     if policy_digest != prepared.evaluation_policy_digest() {
         return Err(E::Planner(PlannerError::EvaluationBindingMismatch));
     }

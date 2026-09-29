@@ -13,8 +13,8 @@
     "codex-rs/hepta-ndu"
   ],
   "authorityDelta": "none",
-  "productCallerState": "request_local_read_only_established_authenticated_owner_source_candidate_not_product_composed",
-  "productionWriterState": "durable_writer_source_candidate_not_selected_or_activated",
+  "productCallerState": "read_only_established_named_local_deterministic_process_candidate_production_trust_pending",
+  "productionWriterState": "named_local_deterministic_writer_candidate_production_activation_pending",
   "operations": [
     {
       "operation": "evaluate_candidates",
@@ -44,8 +44,7 @@
       "designOperation": "evaluate_candidates",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "072b84f7abd0cd4276092b0afd24af22a49f4032"
+      "sourcePathExists": true
     },
     {
       "operation": "evaluate_candidates_with_policy",
@@ -82,13 +81,16 @@
         {
           "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
           "symbol": "candidate_support_digest_binds_organ_and_contribution_semantics"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
+          "symbol": "invalid_scalarization_rejects_singleton_and_abstain_only_frontiers"
         }
       ],
       "designOperation": "evaluate_candidates_with_policy",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "072b84f7abd0cd4276092b0afd24af22a49f4032"
+      "sourcePathExists": true
     },
     {
       "operation": "canonical_evaluation_policy_digest",
@@ -112,8 +114,7 @@
       "designOperation": "canonical_evaluation_policy_digest",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "072b84f7abd0cd4276092b0afd24af22a49f4032"
+      "sourcePathExists": true
     },
     {
       "operation": "solve_preference_target",
@@ -147,22 +148,21 @@
         },
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
-          "symbol": "iteration_bound_exhaustion_is_unavailable"
+          "symbol": "iteration_exhaustion_is_unavailable"
         },
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
-          "symbol": "parent_and_child_updates_cannot_share_generation_within_one_hierarchy"
+          "symbol": "parent_and_child_updates_cannot_share_generation"
         },
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
-          "symbol": "unrelated_hierarchies_may_advance_different_levels_in_same_generation"
+          "symbol": "unrelated_hierarchy_updates_can_share_generation"
         }
       ],
       "designOperation": "solve_preference_target",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "e26a97ba4b9063bc85e5daa491a917b7fcc608b2"
+      "sourcePathExists": true
     },
     {
       "operation": "bind_solver_iteration_receipt_v1",
@@ -188,14 +188,25 @@
         },
         {
           "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
-          "symbol": "malformed_local_solver_receipts_reject_before_protocol_publication"
+          "symbol": "solver_receipt_cannot_be_rebound_to_another_subject"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+          "symbol": "original_solve_context_cannot_be_replaced_after_numerical_execution"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+          "symbol": "unbound_legacy_solver_step_cannot_gain_original_context_after_the_fact"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+          "symbol": "solve_input_digest_binds_actual_target_and_eta_with_unchanged_claimed_context"
         }
       ],
       "designOperation": "bind_solver_iteration_receipt_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "6740841eebb1c4a540971989cf1e6dcf0db3deb6"
+      "sourcePathExists": true
     },
     {
       "operation": "solve_backward_regression",
@@ -213,14 +224,29 @@
       "tests": [
         {
           "path": "codex-rs/hepta-ndu/src/covariance_tests.rs",
-          "symbol": "scaled, correlated, singular and covariance analytic fixtures"
+          "symbol": "scaled_covariance_recovers_three_instead_of_six_and_converts_microseconds"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/covariance_tests.rs",
+          "symbol": "centers_both_terms_and_recovers_correlated_goldens"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/covariance_tests.rs",
+          "symbol": "identity_covariance_reduces_to_cross_moment_over_dt"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/covariance_tests.rs",
+          "symbol": "zero_cross_moment_returns_zero_sensitivity"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/covariance_tests.rs",
+          "symbol": "rejects_singular_indefinite_ill_conditioned_and_collapsed_covariance"
         }
       ],
       "designOperation": "solve_backward_regression",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "985df3333fc8b7664ac867c53a9f7111e6dd999f"
+      "sourcePathExists": true
     },
     {
       "operation": "convert_z_to_original_q24",
@@ -262,8 +288,7 @@
       "designOperation": "convert_z_to_original_q24",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "91e51909b9231686e8218e1f5564c3025859418b"
+      "sourcePathExists": true
     },
     {
       "operation": "NduProjectionJournalV1",
@@ -294,22 +319,33 @@
         },
         {
           "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
-          "symbol": "live_selection_and_revocation_require_a_recorded_projection"
-        },
-        {
-          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
-          "symbol": "hash_valid_but_semantically_impossible_recovery_rejects"
-        },
-        {
-          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
           "symbol": "truncation_and_tampering_fail_closed"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
+          "symbol": "stale_selection_cannot_replace_newer_selection"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
+          "symbol": "revocation_requires_a_recorded_projection"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
+          "symbol": "capacity_reserves_a_revocation_for_every_live_projection"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
+          "symbol": "reopen_rejects_well_hashed_selection_without_projection"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
+          "symbol": "reopen_rejects_well_hashed_revocation_without_projection"
         }
       ],
       "designOperation": "NduProjectionJournalV1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "3cc7db74bac5014b1ed5a8c50c4e8da7f98bc75f"
+      "sourcePathExists": true
     },
     {
       "operation": "NduProjectionStoreV1",
@@ -352,13 +388,20 @@
         {
           "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
           "symbol": "persistence_failpoints_reconcile_at_real_durability_boundaries"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
+          "symbol": "oversized_sparse_image_is_rejected_before_unbounded_read"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
+          "symbol": "full_capacity_envelope_preserves_revocation_and_restart_recovery"
         }
       ],
       "designOperation": "NduProjectionStoreV1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "7ffa8e5f0e4dff4ae6031e3c3d3bf9b1d391ad7e"
+      "sourcePathExists": true
     },
     {
       "operation": "admit_ndu_coefficient_profile",
@@ -384,8 +427,7 @@
       "designOperation": "admit_ndu_coefficient_profile",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "6643f52aee0c689142323d967f976b76395c7c8b"
+      "sourcePathExists": true
     },
     {
       "operation": "project_z_estimate_to_coefficient_q24",
@@ -422,8 +464,7 @@
           "role": "source_declaration"
         }
       ],
-      "sourcePathExists": true,
-      "sourceBlob": "6643f52aee0c689142323d967f976b76395c7c8b"
+      "sourcePathExists": true
     },
     {
       "operation": "NduAuthenticatedOwnerV1",
@@ -441,7 +482,7 @@
       ],
       "state": "source_implemented_authenticated_owner_candidate_not_product_activated",
       "authority": "consumes_external_final_use_only",
-      "nonClaim": "utility.ndu never mints authority; named product bootstrap, selected writer enrollment and target-host activation remain external",
+      "nonClaim": "Named local-deterministic Agentd entry consumes external signatures; protected clock/off-host rollback frontier, independent acceptance and production activation remain unproved.",
       "tests": [
         {
           "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
@@ -454,6 +495,50 @@
         {
           "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
           "symbol": "live_revocation_frontier_blocks_previously_signed_write"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "authenticated_evaluation_receipt_binds_the_original_owner_context"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "selection_grant_binds_expected_predecessor_and_stale_selection_rejects"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "unrelated_head_advance_rejects_a_stale_owner_context"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "head_bound_product_selection_rejects_aba_without_consuming_grant"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "head_bound_commit_can_be_queried_after_lost_ack_and_reopen"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "durable_owner_binding_rejects_policy_and_principal_substitution"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "stale_direct_owner_cannot_publish_an_authenticated_evaluation"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "product_lifecycle_is_rechecked_at_actual_mutation_entry"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "pending_owner_binding_recovers_only_an_empty_store"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "missing_owner_binding_never_adopts_committed_history"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "symbol": "mutation_effect_fences_authority_updates_until_durable_entry_returns"
         }
       ],
       "designOperation": "NduAuthenticatedOwnerV1",
@@ -473,10 +558,93 @@
           "path": "codex-rs/hepta-ndu/src/projection_store.rs",
           "symbol": "NduProjectionStoreV1",
           "role": "source_declaration"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_binding.rs",
+          "symbol": "bind_owner",
+          "role": "source_declaration"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_digests.rs",
+          "symbol": "evaluation_source_context_digest",
+          "role": "source_declaration"
         }
       ],
-      "sourcePathExists": true,
-      "sourceBlob": "b178fa45920c465d038d57569c4f6556a2dabc84"
+      "sourcePathExists": true
+    },
+    {
+      "operation": "validate_ndu_coefficient_projection_v1",
+      "nativeSymbol": "codex_hepta_ndu::validate_ndu_coefficient_projection_v1",
+      "sourcePath": "codex-rs/hepta-ndu/src/coefficient_profile.rs",
+      "inputs": [
+        "AdmittedNduCoefficientProfileV1",
+        "NduCoefficientProjectionV1 including actual Q24 matrix"
+      ],
+      "outputs": [
+        "integrity-valid projection or explicit rejection"
+      ],
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/coefficient_profile_tests.rs",
+          "symbol": "projection_numeric_mutation_rejects_even_with_original_metadata"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs",
+          "symbol": "numeric_payload_replacement_cannot_reuse_solver_or_independent_evidence"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs",
+          "symbol": "every_q24_coordinate_and_projection_source_is_integrity_bound"
+        }
+      ],
+      "designOperation": "validate_ndu_coefficient_projection_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs",
+          "symbol": "canonical_ndu_stochastic_solver_digest_v1",
+          "role": "product_consumer"
+        }
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "solve_preference_target_with_context_v1",
+      "nativeSymbol": "codex_hepta_ndu::solve_preference_target_with_context_v1",
+      "sourcePath": "codex-rs/hepta-ndu/src/protocol.rs",
+      "inputs": [
+        "PreferenceState",
+        "target AxisValue set",
+        "eta",
+        "NduIterationContextV1 frozen before execution"
+      ],
+      "outputs": [
+        "PreferenceState",
+        "NduSolverTerminationReceipt",
+        "source-bound NduSolverIterationReceipt list"
+      ],
+      "state": "source_implemented_context_bound_existing_kernel",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+          "symbol": "original_solve_context_cannot_be_replaced_after_numerical_execution"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+          "symbol": "unbound_legacy_solver_step_cannot_gain_original_context_after_the_fact"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+          "symbol": "solve_input_digest_binds_actual_target_and_eta_with_unchanged_claimed_context"
+        }
+      ],
+      "designOperation": "solve_preference_target_with_context_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
     }
   ],
   "canonicalReadinessProtocols": [
@@ -493,8 +661,8 @@
     "deterministicKernel": "candidate_implemented",
     "preferenceStateInvariants": "candidate_implemented",
     "ownerLocalDurabilityReference": "candidate_implemented",
-    "durableProjectionStore": "candidate_implemented_not_activated",
-    "authenticatedOwnerBoundary": "candidate_implemented_not_product_composed",
+    "durableProjectionStore": "candidate_with_named_local_writer_and_head_cas",
+    "authenticatedOwnerBoundary": "candidate_composed_in_named_local_process_production_trust_pending",
     "productionPolicySemanticBinding": "candidate_implemented",
     "legacyEvaluatorCallerPolicy": "candidate_implemented",
     "stochasticCoordinateQ24Conversion": "candidate_implemented",
@@ -504,12 +672,14 @@
     "independentWellPosednessDecision": "implemented_in_learning.eval_source_pending_real_independent_evidence",
     "canonicalExternalV2Admission": "not_established_as_external_wire_protocol",
     "productionWriter": "not_established",
-    "exactHeadQualification": "pending_current_candidate_workflows",
-    "namedHostQualification": "pending_current_candidate_receipts",
+    "exactHeadQualification": "derived_only_from_current_read_only_dual_lane_required_check_and_sealed_aggregate",
+    "namedHostQualification": "ci_host_receipts_are_exact_head_scoped; named_production_target_pending",
     "requestLocalReadOnlyCaller": "established",
     "authenticatedProductionCaller": "not_established",
     "activationState": "not_established",
-    "releaseState": "not_established"
+    "releaseState": "not_established",
+    "localDeterministicProcess": "implemented_and_exact_head_qualified_only_when_current_aggregate_passes; production_trust_pending",
+    "numericProjectionIntegrity": "producer_consumer_canonical_validation_source_implemented"
   },
   "laneId": "LANE-D-OBJECTIVE-VALUE",
   "declaredRoots": [
@@ -536,19 +706,20 @@
     "stochasticAdmissionSourceImplemented": true,
     "independentDecisionSourceImplemented": true,
     "independentDecisionEvidenceProved": false,
-    "namedHostQualificationReceiptProved": false,
-    "implementedOperationMappingComplete": true
+    "namedHostQualificationReceiptProved": true,
+    "implementedOperationMappingComplete": true,
+    "namedLocalDeterministicCiExecutionProved": true
   },
   "sourceBase": {
-    "commit": "22cd31ebf4f36e4e6e1582b768fc8c847040acdb",
-    "tree": "7d41af3e5925fdd213e27ce8f8cefb03a8ffcc08"
+    "commit": "e2508be90cbb13c0a1828b9af2e2438b5db500ad",
+    "tree": "5102bbad33709af64e17d5d4d451274cecd9ce4b",
+    "role": "historical_materialized_source_baseline_not_current_head_identity"
   },
   "repositoryControlledGaps": [
-    "Run the exact-current-head and deterministic synthetic-merge NDU workflow after the final documentation/source commit; workflow definitions and earlier heads are not receipts.",
-    "Compose NduAuthenticatedOwnerV1 in a named authenticated product bootstrap with a selected NduProjectionStoreV1 and host-managed current fence/revocation feed before changing authenticated production product execution or writer activation claims.",
+    "Enroll and qualify the selected production host/filesystem/shared-volume profile; retained exact CI-host receipts do not establish production-target acceptance.",
+    "Qualify the named normal Agentd local-deterministic process and complete an independently protected clock/off-host-frontier production bootstrap before changing production execution/activation claims.",
     "Execute the learning.eval signed convergence and well-posedness paths with real independently controlled producer/evaluator trust and retained evidence; source tests do not establish real independent acceptance.",
-    "Select a production stochastic coefficient artifact and exercise the intelligence stochastic admission path against real current artifact and withdrawal frontiers; source composition is not artifact selection or activation.",
-    "Retain passing named-host source-head and synthetic-merge receipts for durability/reopen/capacity/p50/p95/p99/CPU/RSS/filesystem; a GitHub-hosted runner is only the selected target host if separately designated."
+    "Select a production stochastic coefficient artifact and exercise the intelligence stochastic admission path against real current artifact and withdrawal frontiers; source composition is not artifact selection or activation."
   ],
   "externalEvidenceGates": [
     "independent semantic/security review",
@@ -571,109 +742,398 @@
       "nonClaim": "request-local read-only/planning composition is not the authenticated production NDU owner/caller"
     },
     "authenticatedOwnerSource": {
-      "state": "candidate_implemented_not_product_composed",
+      "state": "candidate_named_local_process_composed_production_trust_pending",
       "callSurface": "codex_hepta_ndu::NduAuthenticatedOwnerV1",
       "authorityModel": "consumes host-owned FinalUseAuthority; binds principal, owner, host generation, fence, revocation frontier, frozen production policy and exact mutation",
-      "nonClaim": "source candidate is not a named product bootstrap, selected writer, target-host activation or release"
+      "nonClaim": "Explicit local-deterministic process profile is not protected-time/off-host-frontier production trust, independent acceptance or activation."
     },
     "stochasticConsumerSource": {
       "state": "candidate_implemented_in_intelligence_control_not_product_activated",
       "callSurface": "codex_hepta_intelligence::admit_ndu_stochastic_candidate_v1",
       "nonClaim": "current artifact and independent certificate composition grants DENY_ALL and does not select or activate a learned coefficient"
+    },
+    "localDeterministicProcess": {
+      "state": "qualified_exact_candidate_ci_host_production_trust_pending",
+      "callChain": [
+        "codex-hepta-agentd::main",
+        "load_ndu_process_bootstrap_v1",
+        "AgentdConfig::with_ndu_owner_host",
+        "AgentdState::attach_ndu_owner",
+        "AgentdNduOwnerHostV1::control",
+        "NduAuthenticatedOwnerV1::apply_mutation_at_head_guarded"
+      ],
+      "authority": "external_signed_final_use_with_independent_fresh_signed_revocation_feed",
+      "nonClaim": "Uses explicit local system-clock/local-authority baseline; no off-host anti-rollback, independent efficacy or release claim."
     }
   },
   "selectedProductionWriterState": "not_established",
   "currentSourceEvidence": {
-    "baselineMainCommit": "331b81d385a88837e252bd80fda8b8ac35ea4191",
-    "implementationCommit": "de5f600d5f644d6ce9030d04b350fc27239063ec",
-    "branch": "fix/ndu-current-main-convergence-20260920",
-    "scope": "current-main NDU correctness, bounded preference invariants, real persistence fault cuts, authenticated owner/frozen policy, stochastic provenance/current-artifact chain, signed independent learning.eval decisions and named-host qualification runner",
-    "exactHeadQualification": "pending_current_candidate_workflows",
-    "namedHostQualification": "pending_current_candidate_receipts"
+    "baselineMainCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
+    "branch": "work/utility-ndu-abcd-convergence-20260928",
+    "sourceBinding": "exact_typed_path_object_manifest_v1",
+    "qualificationBinding": "suite receipts contain actual source and synthetic commit/tree identities",
+    "productionActivation": false,
+    "qualificationWorkflow": ".github/workflows/hepta-ndu-recursion.yml",
+    "qualificationMode": "read_only_exact_pr_head_dual_lane",
+    "concreteIdentityLocation": "sealed aggregate artifact and pull-request metadata",
+    "sourceSelfReferenceProhibited": true,
+    "invalidatedByAnyNewCommit": true
   },
   "productCallers": [
     {
       "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product.rs",
-      "nativeSymbol": "evaluate_utility",
-      "state": "compiled_owner_adapter_canonical_daemon_ingress_pending"
+      "nativeSymbol": "AgentdOwnerPortsV1::evaluate_utility",
+      "state": "named_agentd_read_only_owner_port_established_authenticated_owner_not_composed"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/ndu_process_bootstrap.rs",
+      "nativeSymbol": "load_ndu_process_bootstrap_v1",
+      "state": "named_local_deterministic_candidate_not_production_qualified",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/tests/ndu_process_e2e.rs",
+          "symbol": "normal_agentd_ndu_mutation_lost_ack_revocation_and_process_recovery"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/ndu_process_bootstrap_tests.rs",
+          "symbol": "signed_feed_advance_during_admission_rejects_physical_mutation"
+        }
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/ndu_owner.rs",
+      "nativeSymbol": "AgentdNduOwnerHostV1",
+      "state": "named_local_deterministic_candidate_not_production_qualified",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/tests/ndu_process_e2e.rs",
+          "symbol": "normal_agentd_ndu_mutation_lost_ack_revocation_and_process_recovery"
+        }
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/ndu_control.rs",
+      "nativeSymbol": "AgentdNduOwnerHostV1::control",
+      "state": "named_local_deterministic_candidate_not_production_qualified",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/tests/ndu_process_e2e.rs",
+          "symbol": "normal_agentd_ndu_mutation_lost_ack_revocation_and_process_recovery"
+        }
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/state_control.rs",
+      "nativeSymbol": "AgentdState::response",
+      "state": "named_local_deterministic_candidate_not_production_qualified",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/tests/ndu_process_e2e.rs",
+          "symbol": "normal_agentd_ndu_mutation_lost_ack_revocation_and_process_recovery"
+        }
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/client.rs",
+      "nativeSymbol": "AgentdClient::ndu_control",
+      "state": "named_local_deterministic_candidate_not_production_qualified",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/tests/ndu_process_e2e.rs",
+          "symbol": "normal_agentd_ndu_mutation_lost_ack_revocation_and_process_recovery"
+        }
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agent-protocol/src/ndu.rs",
+      "nativeSymbol": "NduControlRequestV1",
+      "state": "bounded_existing_socket_transport_no_authority"
     }
   ],
   "sourceObjects": [
     {
+      "path": ".github/workflows/hepta-ndu-recursion.yml",
+      "object": "7cc339555bc39d9b4aef841327fcd66bb056b2b8"
+    },
+    {
+      "path": "BUILD.bazel",
+      "object": "6e6e07f68595be4d41eac1530345f69c4afa2c8e"
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "object": "7445fc1c7c7097842a84c8657ecf3690c08386ae"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "object": "3bad9efdcb5ed9a5e4590a280bd1aba8058c021a"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol/BUILD.bazel",
+      "object": "e11d0c3f553c9196ba4af1a46177d47f14bfb4bf"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol/src/ndu.rs",
+      "object": "549e5b0234cc6c5a8793733b28aa69f427905f01"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol/src/ndu_observer_contract_tests.rs",
+      "object": "6f3ea58ecfd05736cb79593d8bfa122587f4341a"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol/tests/fixtures/ndu-observer-wire.json",
+      "object": "9b37b16cfc743d2d1d0737aec8686da5c028671b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/BUILD.bazel",
+      "object": "eea0ae7f96b0245765fed98efc1b4dd8c33179bc"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/client.rs",
+      "object": "2059fe32fe80b8a49d83b5995d667bbfbf4c0745"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
-      "object": "1781996175ec7f16f44b9f58ac3e2c2bd41358af"
+      "object": "d2ed9bc10b0b0c217c91aac3f59d9eb9715941fc"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "object": "f9aad423c740d63fceabe5f7dddbcb06ef186d97"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/ndu_control.rs",
+      "object": "d60bdfcd39add7f41bc2f95949aba066e65dc4c3"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/ndu_owner.rs",
+      "object": "5e81cf03e20850dc8852ed176245f81a69cfe52c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/ndu_owner_tests.rs",
+      "object": "b586d025aa0c3d42ffec86ab764da9e0f57b283d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/ndu_process_bootstrap.rs",
+      "object": "dc65c012104bf736a10e046ec92d010551fe4468"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/ndu_process_bootstrap_tests.rs",
+      "object": "bdeefacfd5f16144056e00cb5f7a4e3b2d3da517"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/ndu_replay.rs",
+      "object": "079781277fe6d41431c1e9a6d69b6ee916254159"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
+      "object": "507dc9a4e89399a3a67dc48c8f8b12f2a1a46a67"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "object": "83dcba9e8d01aac819c2161bf0b1bd607e5a4a4f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/ndu_process_e2e.rs",
+      "object": "7ee1af9d12e4e7f2a307960bab50b726e9ef8b05"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/ndu_observer.rs",
+      "object": "4725604f28d2d1968bec49f4a992394e2528399a"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use.rs",
-      "object": "3cc75fab4185789514e4ecc7522e52f1ca59249f"
+      "object": "87d246d32305aa78d3f5a29ae0c6a2cc8bf55d63"
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/src/planner_ndu_tests.rs",
+      "object": "cf065e9f857cea6ce0c4142191d436850a6fcf43"
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/tests/runtime_retirement_dependencies.rs",
+      "object": "637c5c7d8655039165a83be1e69956bca12c46c6"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs",
+      "object": "ce8e29c1764f14714676c93ad337567d0aa96842"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs",
+      "object": "4f5021be9e3e5962372fd99b6578552a98b1d6b6"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_lifecycle.rs",
+      "object": "0b1bd2fbde36f1e93fb47a2ae8319824a3cf3c8e"
     },
     {
       "path": "codex-rs/hepta-ndu",
-      "object": "377667b8c58a9c6eb43967e6ed2627a7698ffdaa"
+      "object": "4bfbbc032c330ea4f589ef9558d11ac70ef3a51c"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/bin/ndu-mounted-filesystem-qualification.rs",
+      "object": "3d0235b25a5cb22eb43943093fe81a7d0850e6f4"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/bin/ndu-named-host-qualification.rs",
+      "object": "50fc2d7360ac6af8def0ecf7e9bec5ef7837933a"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/bin/ndu-named-host-qualification/fixture.rs",
+      "object": "6e6cd520aff93aa629a8c21035ea9524d15b475d"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/candidate_quarantine.rs",
+      "object": "4a0ac0ff1eea1ca220f39631c41341be11fa24f3"
     },
     {
       "path": "codex-rs/hepta-ndu/src/coefficient_profile.rs",
-      "object": "6643f52aee0c689142323d967f976b76395c7c8b"
+      "object": "66adac86a57121508793f8445d1690aa8deba1f0"
     },
     {
       "path": "codex-rs/hepta-ndu/src/coefficient_profile_tests.rs",
-      "object": "274029ed1b0d86e4f3ff172e57db56b6d6d9e8a3"
+      "object": "748bf8ba2347167f7de8c274c5979ca74e3661c8"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/conditional_moments.rs",
+      "object": "b0ab72d328508013f07aa915e7ab258924d43d7e"
     },
     {
       "path": "codex-rs/hepta-ndu/src/covariance.rs",
       "object": "985df3333fc8b7664ac867c53a9f7111e6dd999f"
     },
     {
+      "path": "codex-rs/hepta-ndu/src/covariance_profile.rs",
+      "object": "4c288a14e6f1763515a325d9d7bf21deb7a0c12a"
+    },
+    {
       "path": "codex-rs/hepta-ndu/src/covariance_tests.rs",
       "object": "a0288c9c1f732b51b0f8594c15679cf7d2e532cb"
     },
     {
+      "path": "codex-rs/hepta-ndu/src/error.rs",
+      "object": "4bbfd280d1e686cc153e528caac6bbc95df9531f"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/evaluation_digest.rs",
+      "object": "ac945746587aa1afa97957ed2f4d44ce3270204c"
+    },
+    {
       "path": "codex-rs/hepta-ndu/src/evaluator.rs",
-      "object": "072b84f7abd0cd4276092b0afd24af22a49f4032"
+      "object": "8dd003588257ae4a82acd8855f5b7e251c902dcf"
     },
     {
       "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
-      "object": "645d13e169f5ad849aa8dc7d83213bb888ebd0cb"
+      "object": "064ad3dcf13732d62c0f8d52978672700c24356e"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/feature_evidence.rs",
+      "object": "e3b88172e4264b9366777efc05c9cfd828ed2070"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/fixed.rs",
+      "object": "eb6b1fe339c7ebdfc2d647cebebd899e7a0a507a"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/fixed_tests.rs",
+      "object": "210f0e22ba7164de8752bcfd5973aad5cddb25cc"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/hierarchy.rs",
+      "object": "cf60aa619406cd56f91f2b42f3885fe41d02bbf0"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/lib.rs",
+      "object": "b33fd3cac7a80843ba3ddaf98996fb72dcf5824a"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/model.rs",
+      "object": "aa09d1b00bd62f484f95a464f1523edb009fa9a2"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/operational_metrics.rs",
+      "object": "25f5fd509f973203a86581c01c01d26aeea40c6c"
     },
     {
       "path": "codex-rs/hepta-ndu/src/owner.rs",
-      "object": "b178fa45920c465d038d57569c4f6556a2dabc84"
+      "object": "a726c130730e2f1f36ba7f63fddb635de1c78fdb"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/owner_binding.rs",
+      "object": "9ded2734c6e254095cbed939feb8f5e7cb5cf69c"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/owner_digests.rs",
+      "object": "56faee6c586c9fb74e8ce45aa76ac197b5fbdc53"
     },
     {
       "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
-      "object": "776d6aa24763b35de925be2670586798156803f2"
+      "object": "500f30cfec56b8afc5b2ff5d61bbc233aa322cd8"
     },
     {
       "path": "codex-rs/hepta-ndu/src/preference.rs",
-      "object": "e26a97ba4b9063bc85e5daa491a917b7fcc608b2"
+      "object": "37385daa37b28b75d780675ab834a2acab6a8cd4"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/preference_receipts.rs",
+      "object": "e471600cd4f0062e2ef39de5c72c57396d171e98"
     },
     {
       "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
-      "object": "b8ea26756281b80957cbfd2ede9d41b098493a22"
+      "object": "4047371915712fd398c307d6467005995786cd7a"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/projection_epoch.rs",
+      "object": "9243a4007fda533fddcce84404a5c0917f70c0d4"
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_journal.rs",
-      "object": "3cc7db74bac5014b1ed5a8c50c4e8da7f98bc75f"
+      "object": "bffcfa3ae52423d2e8eb1210b93dc8a5fbdb849c"
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
-      "object": "3018e57b24b4e5a3a86b9b205504744426ade4f0"
+      "object": "1dd7f13a344fb1a3a8c8797fec97266c90799fc3"
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_store.rs",
-      "object": "7ffa8e5f0e4dff4ae6031e3c3d3bf9b1d391ad7e"
+      "object": "81b94f37ba10e8e8ddcf23c1160566eb12b10760"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/projection_store_process_kill_tests.rs",
+      "object": "51e47c70900f1ad7138c5d52375812395d6bd2e2"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/projection_store_recovery_tests.rs",
+      "object": "565f3b80818b80b9ae38910b1526b7abb8c9f453"
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
-      "object": "3a8d8bc99aab620dc37e07b30024fc33f06738b4"
+      "object": "17c92572ae61f63a98c35442ede0da11a4744ed8"
     },
     {
       "path": "codex-rs/hepta-ndu/src/protocol.rs",
-      "object": "6740841eebb1c4a540971989cf1e6dcf0db3deb6"
+      "object": "3e677ec6b3c1434d2590ce5cb9c29490bc3df1f3"
     },
     {
       "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
-      "object": "8e58a93aea0a93fb15d7e83922219c51fee93489"
+      "object": "23930af9569ad497d76434c840494aef4e54c823"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/recursive.rs",
+      "object": "e471d92e69c160f9f5c82727e1ce6b7a1be0ed2d"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/recursive_tests.rs",
+      "object": "e16311c89ed05083a4d477d8fe8f88ecd4a3ac18"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/scoring.rs",
+      "object": "f47a251bdfc46bf2294bc18049c73b322f47808c"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/scoring_tests.rs",
+      "object": "a4ffc2107eed0402ac36954888b9b58a85ded558"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/validated_scalarization.rs",
+      "object": "99dfe4edb837e17aa04114f77df1ed2e7de87dc4"
     },
     {
       "path": "codex-rs/hepta-ndu/src/z_conversion.rs",
@@ -684,8 +1144,109 @@
       "object": "69664c267c19eb7c0204367a949e45e66b033f1b"
     },
     {
+      "path": "codex-rs/rust-toolchain.toml",
+      "object": "910c65114ec128a8317ee8257428451f3cd28230"
+    },
+    {
+      "path": "codex-rs/rustfmt.toml",
+      "object": "f9686f9732d3d48311c41c4fd06b40781928b8ec"
+    },
+    {
+      "path": "docs/learning/NDU_FBSDE_SPEC.md",
+      "object": "4c6d6e10b1bf6573290d47614143aa67b541f931"
+    },
+    {
+      "path": "docs/modules/MODULE_DOCS.json",
+      "object": "1ac87f5e5d295510524239da07537ee5b183d3c2"
+    },
+    {
+      "path": "docs/modules/utility.ndu/IMPLEMENTATION_MAP_EXTENSIONS.json",
+      "object": "43d288518c39e545c5340d4a8a8b708a980fba46"
+    },
+    {
+      "path": "docs/modules/utility.ndu/OPERATOR_RUNBOOK.md",
+      "object": "d15562dafeb4d48adf632b61160741f13948cd60"
+    },
+    {
+      "path": "docs/modules/utility.ndu/RECOVERY_OBSERVABILITY_2026-09-28.md",
+      "object": "8e6924ccf312d38e449aa8213b9f5e1da0982e72"
+    },
+    {
       "path": "docs/modules/utility.ndu/TECHNICAL.md",
-      "object": "ad0623f414e9ef4e53a5f431b9fe4a0625c09001"
+      "object": "76ff9a4e85a1f81f5515ccf90a681e91e05cf195"
+    },
+    {
+      "path": "docs/modules/utility.ndu/operations",
+      "object": "59a3503e90f6fcf519bace1381f9e4c124e15d75"
+    },
+    {
+      "path": "docs/readiness/NDU_SYSTEM_EXECUTION.md",
+      "object": "a6e255c502910c64e7d4a0dc77605a309f63fca4"
+    },
+    {
+      "path": "justfile",
+      "object": "6ac734346c989cad04b754986032e364691233f3"
+    },
+    {
+      "path": "scripts/hepta-ndu-implementation-map-closed-world.py",
+      "object": "2ba571c9d0314799735c1c41247d0dff8015ff0a"
+    },
+    {
+      "path": "scripts/hepta-ndu-mounted-filesystem.py",
+      "object": "9f6ce262ba6e8fffd821a5ffe15b5b72214b7265"
+    },
+    {
+      "path": "scripts/hepta-ndu-qualification.py",
+      "object": "370f04b9c6b805060cb799bfbfb4e2ebd550a507"
+    },
+    {
+      "path": "scripts/hepta-ndu-source-policy.py",
+      "object": "bf314d777b595f60a1240c93fe05b179c914c6a2"
+    },
+    {
+      "path": "scripts/hepta_ndu_evidence.py",
+      "object": "8d4457ca2a4c75ee20dced3a9f36afb6ae86ca1d"
+    },
+    {
+      "path": "scripts/hepta_ndu_map_integrity.py",
+      "object": "85ffd4debca8f1b8ff2fb77b658b9e0986174306"
+    },
+    {
+      "path": "scripts/hepta_ndu_observer.py",
+      "object": "98a5a7c84609fad5bc44a20bd4090f3c55547ce7"
+    },
+    {
+      "path": "scripts/test_hepta_ndu_evidence.py",
+      "object": "4cbac5540d0be7c00a533b8548af304b137c75fa"
+    },
+    {
+      "path": "scripts/test_hepta_ndu_map_integrity.py",
+      "object": "a5036f59538842eaa95319e0ddc6d5b756ef1581"
+    },
+    {
+      "path": "scripts/test_hepta_ndu_mounted_filesystem.py",
+      "object": "6c5303e675498715c3793fe1682b4de36347a68d"
+    },
+    {
+      "path": "scripts/test_hepta_ndu_observer.py",
+      "object": "8a8d683de99839f84c2ed3f20dfe061acce1d855"
+    },
+    {
+      "path": "scripts/test_hepta_ndu_qualification.py",
+      "object": "5341bae3da5236591967ecf08ea6d91b09955003"
+    },
+    {
+      "path": "scripts/test_hepta_ndu_source_policy.py",
+      "object": "bfaea8577f4f5daa18cf2e90d68368ab61df3045"
     }
-  ]
+  ],
+  "qualificationGovernance": {
+    "workflow": ".github/workflows/hepta-ndu-recursion.yml",
+    "mode": "read_only_exact_pr_head_dual_lane",
+    "branchMutationByQualification": false,
+    "sourceSelfReferenceProhibited": true,
+    "concreteIdentityLocation": "sealed aggregate artifact and pull-request metadata",
+    "invalidatedByAnyNewCommit": true,
+    "productionActivation": false
+  }
 }

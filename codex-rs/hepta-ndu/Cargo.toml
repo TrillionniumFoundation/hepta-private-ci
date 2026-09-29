@@ -16,6 +16,7 @@ workspace = true
 [dependencies]
 codex-hepta-contracts = { path = "../hepta-contracts" }
 codex-hepta-types = { path = "../hepta-types" }
+rustix = { workspace = true, features = ["fs", "process"] }
 
 [dev-dependencies]
 ed25519-dalek = { workspace = true }

@@ -2,6 +2,7 @@ use std::fmt::Debug;
 
 use codex_hepta_types::Digest32;
 
+use super::MAX_RECORDS;
 use super::NduProjectionJournalError;
 use super::NduProjectionJournalV1;
 use super::NduProjectionKindV1;
@@ -30,7 +31,13 @@ fn projection_journal_round_trips_and_restores_selection() {
         subject,
         projection,
     ));
-    must(journal.select_projection(digest("selection-identity"), objective, subject, projection));
+    must(journal.select_projection_if_current(
+        digest("selection-identity"),
+        objective,
+        subject,
+        None,
+        projection,
+    ));
 
     let bytes = journal.export_bytes();
     let reopened = must(NduProjectionJournalV1::reopen(&bytes));
@@ -80,6 +87,72 @@ fn identity_replay_is_idempotent_and_drift_conflicts() {
 }
 
 #[test]
+fn stale_selection_cannot_replace_newer_selection() {
+    let objective = digest("objective");
+    let subject = digest("subject");
+    let projection_a = digest("projection-a");
+    let projection_b = digest("projection-b");
+    let mut journal = NduProjectionJournalV1::new();
+    must(journal.append_projection(
+        NduProjectionKindV1::Preference,
+        digest("projection-a-identity"),
+        objective,
+        subject,
+        projection_a,
+    ));
+    must(journal.append_projection(
+        NduProjectionKindV1::Preference,
+        digest("projection-b-identity"),
+        objective,
+        subject,
+        projection_b,
+    ));
+    must(journal.select_projection_if_current(
+        digest("selection-a"),
+        objective,
+        subject,
+        None,
+        projection_a,
+    ));
+
+    assert_eq!(
+        journal
+            .select_projection_if_current(
+                digest("stale-selection-b"),
+                objective,
+                subject,
+                None,
+                projection_b,
+            )
+            .expect_err("late selection must not overwrite a newer selected predecessor"),
+        NduProjectionJournalError::SelectionPredecessorMismatch
+    );
+
+    let selected_b = must(journal.select_projection_if_current(
+        digest("selection-b"),
+        objective,
+        subject,
+        Some(projection_a),
+        projection_b,
+    ));
+    let replay = must(journal.select_projection_if_current(
+        digest("selection-b"),
+        objective,
+        subject,
+        None,
+        projection_b,
+    ));
+    assert_eq!(
+        replay, selected_b,
+        "exact operation replay stays idempotent"
+    );
+    assert_eq!(
+        journal.selected_projection_digest(objective, subject),
+        Some(projection_b)
+    );
+}
+
+#[test]
 fn revocation_prevents_projection_resurrection() {
     let objective = digest("objective");
     let subject = digest("subject");
@@ -92,7 +165,13 @@ fn revocation_prevents_projection_resurrection() {
         subject,
         projection,
     ));
-    must(journal.select_projection(digest("selection-identity"), objective, subject, projection));
+    must(journal.select_projection_if_current(
+        digest("selection-identity"),
+        objective,
+        subject,
+        None,
+        projection,
+    ));
     must(journal.revoke_projection(
         digest("revocation-identity"),
         objective,
@@ -102,7 +181,13 @@ fn revocation_prevents_projection_resurrection() {
     assert_eq!(journal.selected_projection_digest(objective, subject), None);
     assert_eq!(
         journal
-            .select_projection(digest("second-selection"), objective, subject, projection,)
+            .select_projection_if_current(
+                digest("second-selection"),
+                objective,
+                subject,
+                None,
+                projection,
+            )
             .expect_err("revoked projection must not be reselected"),
         NduProjectionJournalError::RevokedProjection
     );
@@ -132,7 +217,13 @@ fn revocation_is_scoped_to_objective_and_subject() {
         projection,
     ));
     must(journal.revoke_projection(digest("revoke-a"), objective_a, subject_a, projection));
-    must(journal.select_projection(digest("select-b"), objective_b, subject_b, projection));
+    must(journal.select_projection_if_current(
+        digest("select-b"),
+        objective_b,
+        subject_b,
+        None,
+        projection,
+    ));
 
     assert_eq!(
         journal.selected_projection_digest(objective_a, subject_a),
@@ -158,6 +249,45 @@ fn revocation_requires_a_recorded_projection() {
             .expect_err("unknown projection cannot be revoked"),
         NduProjectionJournalError::ProjectionNotRecorded
     );
+}
+
+#[test]
+fn capacity_reserves_a_revocation_for_every_live_projection() {
+    let objective = digest("capacity-objective");
+    let subject = digest("capacity-subject");
+    let mut journal = NduProjectionJournalV1::new();
+
+    for index in 0..(MAX_RECORDS / 2) {
+        must(journal.append_projection(
+            NduProjectionKindV1::Preference,
+            digest(&format!("capacity-identity-{index}")),
+            objective,
+            subject,
+            digest(&format!("capacity-projection-{index}")),
+        ));
+    }
+
+    assert_eq!(
+        journal
+            .append_projection(
+                NduProjectionKindV1::Preference,
+                digest("capacity-overflow-identity"),
+                objective,
+                subject,
+                digest("capacity-overflow-projection"),
+            )
+            .expect_err("ordinary history must not consume the reserved revocation frontier"),
+        NduProjectionJournalError::RevocationCapacityExhausted
+    );
+
+    must(journal.revoke_projection(
+        digest("capacity-revocation"),
+        objective,
+        subject,
+        digest("capacity-projection-0"),
+    ));
+    let reopened = must(NduProjectionJournalV1::reopen(&journal.export_bytes()));
+    assert_eq!(reopened.entries(), journal.entries());
 }
 
 #[test]

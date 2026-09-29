@@ -1,0 +1,32 @@
+name: NDU pinned remediation source
+on:
+  push:
+    branches: [work/utility-ndu-abcd-convergence-20260928]
+    paths: [.github/workflows/hepta-ndu-abcd-source-export.yml]
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Export committed source and identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = '${{ github.sha }}'
+          mkdir -p "$RUNNER_TEMP/ndu-source"
+          git archive --format=tar.gz HEAD > "$RUNNER_TEMP/ndu-source/source.tar.gz"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/ndu-source/IDENTITY"
+          cd "$RUNNER_TEMP/ndu-source"
+          sha256sum source.tar.gz > SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ndu-remediation-source-${{ github.sha }}
+          path: ${{ runner.temp }}/ndu-source/
+          if-no-files-found: error
+          retention-days: 7

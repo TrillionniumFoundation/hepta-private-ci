@@ -20,11 +20,29 @@ class CargoLockVerifierTests(unittest.TestCase):
         count = MODULE.verify_lockfile(MODULE.DEFAULT_LOCKFILE)
         self.assertGreaterEqual(count, len(MODULE.REQUIRED_PACKAGES))
 
+    def test_python_310_fallback_parses_current_lockfile(self) -> None:
+        document = MODULE.DEFAULT_LOCKFILE.read_text(encoding="utf-8")
+        parsed = MODULE.parse_cargo_lock_subset(
+            document, source=str(MODULE.DEFAULT_LOCKFILE)
+        )
+        packages = parsed.get("package")
+        self.assertIsInstance(packages, list)
+        self.assertGreaterEqual(len(packages), len(MODULE.REQUIRED_PACKAGES))
+
     def test_truncation_marker_is_rejected_as_invalid_toml(self) -> None:
         document = MODULE.DEFAULT_LOCKFILE.read_text(encoding="utf-8")
         with self.assertRaises(MODULE.VerificationFailure):
             MODULE.validate_lock_document(
                 "Warning: truncated output (original token count: 103930)\n" + document
+            )
+
+    def test_fallback_rejects_truncated_array(self) -> None:
+        with self.assertRaisesRegex(
+            MODULE.VerificationFailure, "truncated multiline array"
+        ):
+            MODULE.parse_cargo_lock_subset(
+                'version = 4\n[[package]]\nname = "x"\nversion = "1"\ndependencies = [\n "y",\n',
+                source="truncated.lock",
             )
 
     def test_dependency_count_can_change_but_duplicate_identity_is_rejected(self) -> None:
@@ -44,8 +62,6 @@ class CargoLockVerifierTests(unittest.TestCase):
 
     def test_missing_required_package_is_rejected(self) -> None:
         document = MODULE.DEFAULT_LOCKFILE.read_text(encoding="utf-8")
-        # Keep the test focused on the required-name check without depending
-        # on a serializer that could alter Cargo's canonical lockfile format.
         with self.assertRaisesRegex(
             MODULE.VerificationFailure, "missing required packages"
         ):

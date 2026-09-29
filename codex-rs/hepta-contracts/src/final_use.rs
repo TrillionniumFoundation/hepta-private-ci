@@ -523,6 +523,23 @@ impl FinalUseAuthority {
         Ok(state.head.clone())
     }
 
+    /// Canonical digest of the exact currently trusted revocation head.
+    ///
+    /// This is the same digest embedded in `VerifiedUseToken`. Claimed nonces
+    /// are deliberately excluded, while every epoch, revision and revoked-grant
+    /// change advances the value.
+    pub fn revocation_head_sha256(&self) -> Result<[u8; 32], FinalUseError> {
+        let state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        if state.failed {
+            return Err(FinalUseError::Unavailable);
+        }
+        revocation_head_sha256(&state.head)
+    }
+
     /// Called only by the trusted host, not from a provider response or grant.
     /// Revocations are monotonic within an epoch and are never silently dropped.
     pub fn update_revocations(&self, head: FinalUseRevocations) -> Result<(), FinalUseError> {
@@ -629,9 +646,7 @@ impl FinalUseAuthority {
         let claimed_head = state.head.clone();
         let claimed_head_bytes =
             serde_json::to_vec(&claimed_head).map_err(|_| FinalUseError::InvalidTrust)?;
-        let mut head_witness = b"hepta.kernel.authority.revocation-head.v1\0".to_vec();
-        head_witness.extend_from_slice(&claimed_head_bytes);
-        let claimed_head_sha256: [u8; 32] = Sha256::digest(&head_witness).into();
+        let claimed_head_sha256 = revocation_head_sha256(&claimed_head)?;
         let mut witness = b"hepta.kernel.authority.final-use-witness.v2\0".to_vec();
         witness.extend_from_slice(&input);
         witness.extend_from_slice(&signed.signature);
@@ -964,6 +979,13 @@ fn validate_live(
         return Err(FinalUseError::Expired);
     }
     Ok(())
+}
+
+fn revocation_head_sha256(head: &FinalUseRevocations) -> Result<[u8; 32], FinalUseError> {
+    let encoded = serde_json::to_vec(head).map_err(|_| FinalUseError::InvalidTrust)?;
+    let mut witness = b"hepta.kernel.authority.revocation-head.v1\0".to_vec();
+    witness.extend_from_slice(&encoded);
+    Ok(Sha256::digest(&witness).into())
 }
 
 fn frontier_for_state(state: &State) -> FinalUseFrontier {

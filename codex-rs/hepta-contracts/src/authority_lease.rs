@@ -1246,17 +1246,17 @@ mod tests {
         }
     }
 
-    fn fixture() -> (AuthorityLeaseRegistry, tempfile::TempDir) {
-        let directory = tempfile::tempdir().unwrap();
-        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+    fn fixture() -> Result<(AuthorityLeaseRegistry, tempfile::TempDir), Box<dyn std::error::Error>>
+    {
+        let directory = tempfile::tempdir()?;
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
         let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(
             directory.path(),
             "security-authority".into(),
-            AuthorityLeaseFrontier::for_empty_epoch(7).unwrap(),
+            AuthorityLeaseFrontier::for_empty_epoch(7)?,
             Arc::new(FixedClock(2_000)),
-        )
-        .unwrap();
-        (registry, directory)
+        )?;
+        Ok((registry, directory))
     }
 
     fn binding() -> AuthorityLeaseBinding {
@@ -1283,7 +1283,7 @@ mod tests {
 
     #[test]
     fn lease_is_durable_verified_and_cas_revoked() {
-        let (registry, directory) = fixture();
+        let (registry, directory) = fixture().unwrap();
         registry.put_lease(lease(), 0).unwrap();
         let verifier = registry.verifier();
         let token = verifier.verify_use("lease-one", 1, &binding()).unwrap();
@@ -1308,7 +1308,7 @@ mod tests {
 
     #[test]
     fn verified_use_witness_binds_current_lease_and_store_revision() {
-        let (registry, _directory) = fixture();
+        let (registry, _directory) = fixture().unwrap();
         let written = registry.put_lease(lease(), 0).unwrap();
         let verifier = registry.verifier();
         let token = verifier.verify_use("lease-one", 1, &binding()).unwrap();
@@ -1332,7 +1332,7 @@ mod tests {
 
     #[test]
     fn verified_use_releases_owner_lock_before_consumer_code() {
-        let (registry, _directory) = fixture();
+        let (registry, _directory) = fixture().unwrap();
         registry.put_lease(lease(), 0).unwrap();
         let verifier = registry.verifier();
         let token = verifier.verify_use("lease-one", 1, &binding()).unwrap();
@@ -1340,28 +1340,39 @@ mod tests {
         let expected = binding();
         std::thread::spawn(move || {
             let result = verifier.with_verified_use(token, &expected, || {
+                // Assert the mutex invariant before any real filesystem I/O.
+                assert!(registry.0.state.try_lock().is_ok());
                 registry.revoke("lease-one", 1, [8; 32]).unwrap();
                 7
             });
             let _ = tx.send(result);
         });
         assert_eq!(
-            rx.recv_timeout(Duration::from_secs(2))
-                .expect("lease consumer remained blocked on the owner mutex"),
+            // The existing 60-second nextest watchdog still bounds this test;
+            // fsync latency is not a two-second mutex-release contract.
+            rx.recv().expect("lease consumer failed before returning"),
             Ok(7)
         );
     }
 
     #[test]
     fn dispatch_boundary_serializes_revocation_until_local_entry_returns() {
-        let (registry, _directory) = fixture();
+        let (registry, _directory) = fixture().unwrap();
         registry.put_lease(lease(), 0).unwrap();
         let verifier = registry.verifier();
         let token = verifier.verify_use("lease-one", 1, &binding()).unwrap();
         let (entered_tx, entered_rx) = mpsc::channel();
         let (revoked_tx, revoked_rx) = mpsc::channel();
-        std::thread::spawn(move || {
+        let (lock_probe_tx, lock_probe_rx) = mpsc::channel();
+        let revoker = std::thread::spawn(move || {
             entered_rx.recv().unwrap();
+            // Observe exclusion directly: a slow disk must not make a missing
+            // dispatch fence look correct merely because revoke has not synced.
+            let held = matches!(
+                registry.0.state.try_lock(),
+                Err(std::sync::TryLockError::WouldBlock)
+            );
+            lock_probe_tx.send(held).unwrap();
             let result = registry.revoke("lease-one", 1, [8; 32]);
             let _ = revoked_tx.send(result);
         });
@@ -1370,6 +1381,7 @@ mod tests {
         let result = verifier
             .with_dispatch_boundary(token, &expected, || {
                 entered_tx.send(()).unwrap();
+                assert!(lock_probe_rx.recv_timeout(Duration::from_secs(2)).unwrap());
                 assert!(
                     revoked_rx.recv_timeout(Duration::from_millis(100)).is_err(),
                     "revocation crossed the local dispatch linearization fence"
@@ -1380,15 +1392,16 @@ mod tests {
         assert_eq!(result, 11);
         assert!(
             revoked_rx
-                .recv_timeout(Duration::from_secs(2))
+                .recv()
                 .expect("revocation did not complete after local dispatch boundary")
                 .is_ok()
         );
+        revoker.join().expect("revocation worker panicked");
     }
 
     #[test]
     fn stale_cas_and_binding_drift_fail_closed() {
-        let (registry, _directory) = fixture();
+        let (registry, _directory) = fixture().unwrap();
         registry.put_lease(lease(), 0).unwrap();
         let mut replacement = lease();
         replacement.revision = 2;
@@ -1409,7 +1422,7 @@ mod tests {
 
     #[test]
     fn token_is_invalidated_by_lease_replacement() {
-        let (registry, _directory) = fixture();
+        let (registry, _directory) = fixture().unwrap();
         registry.put_lease(lease(), 0).unwrap();
         let verifier = registry.verifier();
         let token = verifier.verify_use("lease-one", 1, &binding()).unwrap();
@@ -1427,7 +1440,7 @@ mod tests {
 
     #[test]
     fn revoke_retry_reuses_server_owned_timestamp() {
-        let (registry, _directory) = fixture();
+        let (registry, _directory) = fixture().unwrap();
         registry.put_lease(lease(), 0).unwrap();
         let first = registry.revoke("lease-one", 1, [9; 32]).unwrap();
         let retry = registry.revoke("lease-one", 1, [9; 32]).unwrap();
@@ -1441,7 +1454,7 @@ mod tests {
 
     #[test]
     fn bounded_prune_reclaims_only_expired_unrevoked_leases() {
-        let (registry, _directory) = fixture();
+        let (registry, _directory) = fixture().unwrap();
         let mut expired = lease();
         expired.expires_at_unix_ms = 1_500;
         registry.put_lease(expired, 0).unwrap();
@@ -1460,7 +1473,7 @@ mod tests {
 
     #[test]
     fn pruned_lease_id_preserves_monotonic_revision_lineage() {
-        let (registry, _directory) = fixture();
+        let (registry, _directory) = fixture().unwrap();
         let mut expired = lease();
         expired.expires_at_unix_ms = 1_500;
         registry.put_lease(expired, 0).unwrap();
@@ -1492,7 +1505,7 @@ mod tests {
 
     #[test]
     fn epoch_rollover_is_the_only_revision_lineage_reset() {
-        let (registry, _directory) = fixture();
+        let (registry, _directory) = fixture().unwrap();
         let mut expired = lease();
         expired.expires_at_unix_ms = 1_500;
         registry.put_lease(expired, 0).unwrap();
@@ -1664,7 +1677,7 @@ mod tests {
 
     #[test]
     fn external_frontier_detects_old_snapshot_and_missing_store_reset() {
-        let (registry, directory) = fixture();
+        let (registry, directory) = fixture().unwrap();
         registry.put_lease(lease(), 0).unwrap();
         let frontier = registry.frontier().unwrap();
         drop(registry);
@@ -1698,7 +1711,7 @@ mod tests {
 
     #[test]
     fn epoch_rollover_is_durable_and_clears_bounded_history() {
-        let (registry, _directory) = fixture();
+        let (registry, _directory) = fixture().unwrap();
         registry.put_lease(lease(), 0).unwrap();
         let before = registry.frontier().unwrap();
         let after = registry.advance_epoch(before.store_revision, 8).unwrap();
