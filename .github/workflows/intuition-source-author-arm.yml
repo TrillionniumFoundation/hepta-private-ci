@@ -1,0 +1,148 @@
+name: intuition.policy Reviewed Source Authoring ARM
+
+on:
+  push:
+    branches: [codex/intuition-policy-production-closure-20260927]
+    paths:
+      - ".github/workflows/intuition-source-author-arm.yml"
+      - ".github/intuition-authoring-patch/READY"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: intuition-one-shot-authoring-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  author:
+    name: Verify reviewed patch and publish clean source
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 90
+    steps:
+      - name: Check out exact authoring head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Recover and apply exact reviewed patch
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          ready=.github/intuition-authoring-patch/READY
+          base="$(sed -n 's/^base=//p' "$ready" | tr -d '\r')"
+          part0="$(sed -n 's/^part-000=//p' "$ready" | tr -d '\r')"
+          part1="$(sed -n 's/^part-001=//p' "$ready" | tr -d '\r')"
+          part2="$(sed -n 's/^part-002=//p' "$ready" | tr -d '\r')"
+          test "$base" = 696447e733e22e425cd05691d98f4fe0ef63f759
+          test "$part0" = ff90ec4b0bb594c6659c0805f7683e625f423d46
+          test "$part1" = 8ef03a50ccef25591918ed67fb42506bcfdd21f1
+          test "$part2" = 627e323cc4086e712a04ffa58b02e7723415e64c
+          for spec in "0:$part0" "1:$part1" "2:$part2"; do
+            index="${spec%%:*}"
+            blob="${spec#*:}"
+            curl --fail --silent --show-error --location \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "https://api.github.com/repos/$GITHUB_REPOSITORY/git/blobs/$blob" \
+              | python3 -c 'import base64,json,sys; sys.stdout.buffer.write(base64.b64decode(json.load(sys.stdin)["content"]))' \
+              > ".git/intuition-part-$index.b64"
+          done
+          python3 - <<'PY'
+          import base64
+          import hashlib
+          import pathlib
+
+          expected = "d9988033416a6bf64588b593c34496abba4d3f66a20df57d749a6308500ca3dc"
+          parts = [
+              b"".join(pathlib.Path(f".git/intuition-part-{i}.b64").read_bytes().split())
+              for i in range(3)
+          ]
+          encoded = b"".join(parts)
+          candidates = [("direct", None, encoded)]
+          if len(encoded) % 4 == 1 and len(parts[1]) == 12001:
+              candidates += [
+                  ("part-001-single-byte-removal", i, parts[0] + parts[1][:i] + parts[1][i + 1:] + parts[2])
+                  for i in range(len(parts[1]))
+              ]
+          matches = []
+          for method, index, candidate in candidates:
+              try:
+                  patch = base64.b64decode(candidate, validate=True)
+              except ValueError:
+                  continue
+              if hashlib.sha256(patch).hexdigest() == expected:
+                  matches.append((method, index, patch))
+          if len(matches) != 1:
+              raise SystemExit(f"expected one reviewed reconstruction, found {len(matches)}")
+          method, index, patch = matches[0]
+          if not patch.startswith(b"diff --git a/") or not patch.endswith(b"\n"):
+              raise SystemExit("reviewed object is not a complete unified patch")
+          pathlib.Path(".git/intuition-source.patch").write_bytes(patch)
+          pathlib.Path(".git/intuition-source.patch.identity").write_text(
+              f"sha256={expected}\nmethod={method}\nindex={index}\n",
+              encoding="utf-8",
+          )
+          PY
+          git diff --quiet
+          git apply --check .git/intuition-source.patch
+          git apply --index .git/intuition-source.patch
+          rm -rf .github/intuition-authoring-patch
+          rm -f .github/workflows/intuition-source-export.yml
+          rm -f .github/workflows/intuition-source-author-arm.yml
+
+      - name: Set up repository CI dependencies
+        uses: ./.github/actions/setup-ci
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt,clippy
+
+      - name: Format and verify boundary inventories
+        shell: bash
+        run: |
+          set -euo pipefail
+          (cd codex-rs && cargo fmt --all)
+          python scripts/intuition_legacy_consumers.py
+          python -m unittest discover -s scripts/tests -p 'test_intuition*.py' -v
+
+      - name: Run product and final-use regressions
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-intuition
+          cargo test --locked -p codex-hepta-intelligence intuition
+          cargo test --locked -p codex-hepta-agentd --test intuition_policy_final_use_v4
+          cargo test --locked -p codex-hepta-agentd --test intuition_policy_commit_boundary
+          cargo test --locked -p codex-hepta-agentd --lib intuition_policy
+          cargo clippy --locked -p codex-hepta-agentd --lib --tests -- -D warnings
+          cargo fmt --all -- --check
+
+      - name: Publish one clean source commit on reviewed base
+        shell: bash
+        env:
+          TARGET_BRANCH: codex/intuition-policy-production-closure-20260927
+          CLEAN_PARENT: 696447e733e22e425cd05691d98f4fe0ef63f759
+        run: |
+          set -euo pipefail
+          git diff --check
+          git config user.name "OpenAI source authoring"
+          git config user.email "assistant@openai.invalid"
+          git add -A
+          test -z "$(git diff --cached --name-only | grep -E '^\.github/(intuition-authoring-patch|workflows/intuition-source-(export|author-arm)\.yml)' || true)"
+          tree="$(git write-tree)"
+          commit="$(printf '%s\n\n%s\n' \
+            'fix(intuition): revalidate authority at final use' \
+            'Preserve the sole ledger owner while moving fresh time, generation, and three-party qualification checks under its serialization boundary. Add typed boundary domains, stage telemetry, legacy-consumer drift checks, and separate safety/effectiveness/operator acceptance states.' \
+            | git commit-tree "$tree" -p "$CLEAN_PARENT")"
+          git push --force-with-lease="refs/heads/$TARGET_BRANCH:$GITHUB_SHA" \
+            origin "$commit:refs/heads/$TARGET_BRANCH"
+          printf 'published=%s\n' "$commit"
