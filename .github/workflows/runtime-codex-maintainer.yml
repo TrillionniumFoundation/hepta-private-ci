@@ -48,6 +48,7 @@ jobs:
           set -euo pipefail
           python3 -m py_compile scripts/runtime-codex-maintainer.py
           python3 scripts/runtime-codex-maintainer.py
+          sed -i '/NativeOwnerDispatchBinding/d' codex-rs/hepta-infer-worker-host/src/native_app_server.rs
           cd codex-rs
           cargo fmt --all
       - name: Verify convergence candidate
