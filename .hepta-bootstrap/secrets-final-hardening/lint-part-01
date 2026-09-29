@@ -1,0 +1,86 @@
+-fn is_zero_u64(value: &u64) -> bool {
+-    *value == 0
++fn is_default<T>(value: &T) -> bool
++where
++    T: Default + PartialEq,
++{
++    value == &T::default()
+ }
+ 
+ pub(super) fn migrate_schema_three_consumptions(
+diff --git a/codex-rs/hepta-bao-adapter/src/consumption_lifecycle_saga_tests.rs b/codex-rs/hepta-bao-adapter/src/consumption_lifecycle_saga_tests.rs
+index d7aa1dd..946c9ef 100644
+--- a/codex-rs/hepta-bao-adapter/src/consumption_lifecycle_saga_tests.rs
++++ b/codex-rs/hepta-bao-adapter/src/consumption_lifecycle_saga_tests.rs
+@@ -1,12 +1,11 @@
+ use super::*;
+ use std::os::unix::fs::PermissionsExt;
+ 
+-fn registry_path() -> (tempfile::TempDir, std::path::PathBuf) {
+-    let directory = tempfile::tempdir().expect("temporary directory");
+-    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
+-        .expect("private directory");
++fn registry_path() -> std::io::Result<(tempfile::TempDir, std::path::PathBuf)> {
++    let directory = tempfile::tempdir()?;
++    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
+     let path = directory.path().join("consumption-owner.json");
+-    (directory, path)
++    Ok((directory, path))
+ }
+ 
+ fn operation() -> BaoConsumptionOperationV1 {
+@@ -40,18 +39,18 @@ fn receipt() -> BaoSecretReceipt {
+     }
+ }
+ 
+-fn reopen(path: &std::path::Path) -> DurableLeaseRegistryV1 {
+-    DurableLeaseRegistryV1::open(path).expect("reopen durable owner")
++fn reopen(path: &std::path::Path) -> Result<DurableLeaseRegistryV1, LeaseRegistryErrorV1> {
++    DurableLeaseRegistryV1::open(path)
+ }
+ 
+ #[test]
+ fn claimed_reserved_and_dispatch_fenced_are_distinct_durable_states() {
+-    let (_directory, path) = registry_path();
+-    let mut owner = reopen(&path);
++    let (_directory, path) = registry_path().expect("create private registry fixture");
++    let mut owner = reopen(&path).expect("reopen durable owner");
+     owner.claim_consumption(operation()).expect("durable claim");
+     drop(owner);
+ 
+-    let mut owner = reopen(&path);
++    let mut owner = reopen(&path).expect("reopen durable owner");
+     assert_eq!(
+         owner
+             .consumption_result("operation:consumption-saga")
+@@ -67,7 +66,7 @@ fn claimed_reserved_and_dispatch_fenced_are_distinct_durable_states() {
+         .expect("bind reservation");
+     drop(owner);
+ 
+-    let mut owner = reopen(&path);
++    let mut owner = reopen(&path).expect("reopen durable owner");
+     assert_eq!(
+         owner
+             .consumption_result("operation:consumption-saga")
+@@ -83,7 +82,7 @@ fn claimed_reserved_and_dispatch_fenced_are_distinct_durable_states() {
+         .expect("commit dispatch fence");
+     drop(owner);
+ 
+-    let owner = reopen(&path);
++    let owner = reopen(&path).expect("reopen durable owner");
+     assert_eq!(
+         owner
+             .consumption_result("operation:consumption-saga")
+@@ -95,8 +94,8 @@ fn claimed_reserved_and_dispatch_fenced_are_distinct_durable_states() {
+ 
+ #[test]
+ fn every_success_boundary_reopens_without_redispatch() {
+-    let (_directory, path) = registry_path();
+-    let mut owner = reopen(&path);
++    let (_directory, path) = registry_path().expect("create private registry fixture");
++    let mut owner = reopen(&path).expect("reopen durable owner");
+     owner.claim_consumption(operation()).unwrap();
+     owner
+         .mark_consumption_reserved(
+@@ -115,7 +114,7 @@ fn every_success_boundary_reopens_without_redispatch() {
+         .unwrap();
