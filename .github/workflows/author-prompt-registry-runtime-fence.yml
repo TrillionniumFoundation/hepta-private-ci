@@ -1,0 +1,98 @@
+name: Author prompt.registry runtime fence
+
+on:
+  push:
+    branches:
+      - ops/prompt-registry-production-convergence-author-20260929
+    paths:
+      - ops/trigger-prompt-registry-runtime-fence
+
+permissions:
+  contents: write
+
+concurrency:
+  group: author-prompt-registry-runtime-fence
+  cancel-in-progress: true
+
+env:
+  TARGET_BRANCH: codex/prompt-registry-production-convergence-20260929
+
+jobs:
+  author-runtime-fence:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - name: Checkout authoring source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          path: authoring
+          persist-credentials: false
+
+      - name: Checkout target branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.TARGET_BRANCH }}
+          path: target
+          fetch-depth: 0
+          token: ${{ github.token }}
+
+      - name: Install repository Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+
+      - name: Prepare native dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+
+      - name: Require output-gate predecessor
+        working-directory: target
+        run: |
+          set -euo pipefail
+          grep -q 'ModelProviderOutputBatch' codex-rs/ext/extension-api/src/contributors/model_provider_policy.rs
+          grep -q 'authorize_output' codex-rs/core/src/model_provider_policy/attempt_owner.rs
+
+      - name: Apply runtime-fence source changes
+        run: python3 authoring/scripts/author_prompt_registry_runtime_fence.py target
+
+      - name: Format and validate focused crates
+        working-directory: target/codex-rs
+        run: |
+          set -euo pipefail
+          cargo fmt --all
+          cargo check --locked \
+            -p codex-hepta-prompt-extension \
+            -p codex-hepta-codex-adapter \
+            -p codex-hepta-agentd \
+            --all-targets
+          cargo test --locked -p codex-hepta-prompt-extension --lib -- --test-threads=1
+          cargo test --locked -p codex-hepta-agentd prompt_runtime --lib -- --test-threads=1
+          cargo clippy --locked \
+            -p codex-hepta-prompt-extension \
+            -p codex-hepta-codex-adapter \
+            -p codex-hepta-agentd \
+            --all-targets --no-deps -- -D warnings
+
+      - name: Verify patch hygiene
+        working-directory: target
+        run: |
+          set -euo pipefail
+          git diff --check
+          git status --short
+
+      - name: Publish runtime-fence commit
+        working-directory: target
+        run: |
+          set -euo pipefail
+          git config user.name "ChatGPT Codex Connector"
+          git config user.email "14957082+openai@users.noreply.github.com"
+          git add \
+            codex-rs/ext/hepta-prompt/src/lib.rs \
+            codex-rs/hepta-codex-adapter/src/lib.rs \
+            codex-rs/hepta-agentd/src/prompt_runtime.rs \
+            codex-rs/hepta-agentd/src/prompt_runtime_tests.rs
+          test -n "$(git status --short)"
+          git commit -m "prompt.registry: persist and enforce final-output fences"
+          git push origin HEAD:refs/heads/${TARGET_BRANCH}
