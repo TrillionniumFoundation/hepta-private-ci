@@ -103,7 +103,8 @@ async fn time_sample(
     revision: u64,
     wall_time_ms: u64,
 ) -> codex_hepta_authbus::TrustedTimeSample {
-    host.observe_trusted_time_attestation(&signed_time(key, issuer_id, revision, wall_time_ms))
+    host.execution()
+        .observe_trusted_time_attestation(&signed_time(key, issuer_id, revision, wall_time_ms))
         .await
         .expect("observe trusted time")
 }
@@ -220,47 +221,52 @@ async fn authority_host_executes_modern_owner_purpose_sweep_and_settlement_matri
     let time_key = SigningKey::from_bytes(&[43; 32]);
     let shared_issuer_id = id("issuer:qualification-shared");
     let time_issuer_id = id("issuer:qualification-time");
-    host.enroll_issuer(
-        IssuerPurpose::Message,
-        IssuerSpec {
-            issuer_id: shared_issuer_id.clone(),
-            key_epoch: Generation::new(1).expect("message epoch"),
-            verifying_key: message_key.verifying_key(),
-        },
-    )
-    .await
-    .expect("enroll message issuer");
-    assert!(matches!(
-        host.settlement_issuer(
-            &shared_issuer_id,
-            Generation::new(1).expect("message epoch"),
+    host.admin()
+        .enroll_issuer(
+            IssuerPurpose::Message,
+            IssuerSpec {
+                issuer_id: shared_issuer_id.clone(),
+                key_epoch: Generation::new(1).expect("message epoch"),
+                verifying_key: message_key.verifying_key(),
+            },
         )
-        .await,
+        .await
+        .expect("enroll message issuer");
+    assert!(matches!(
+        host.read()
+            .settlement_issuer(
+                &shared_issuer_id,
+                Generation::new(1).expect("message epoch"),
+            )
+            .await,
         Err(AuthBusAuthorityError::IssuerMissing)
     ));
-    host.enroll_issuer(
-        IssuerPurpose::Settlement,
-        IssuerSpec {
-            issuer_id: shared_issuer_id.clone(),
-            key_epoch: Generation::new(1).expect("settlement epoch"),
-            verifying_key: settlement_key.verifying_key(),
-        },
-    )
-    .await
-    .expect("enroll settlement issuer");
-    host.enroll_issuer(
-        IssuerPurpose::TrustedTime,
-        IssuerSpec {
-            issuer_id: time_issuer_id.clone(),
-            key_epoch: Generation::new(1).expect("time epoch"),
-            verifying_key: time_key.verifying_key(),
-        },
-    )
-    .await
-    .expect("enroll trusted-time issuer");
+    host.admin()
+        .enroll_issuer(
+            IssuerPurpose::Settlement,
+            IssuerSpec {
+                issuer_id: shared_issuer_id.clone(),
+                key_epoch: Generation::new(1).expect("settlement epoch"),
+                verifying_key: settlement_key.verifying_key(),
+            },
+        )
+        .await
+        .expect("enroll settlement issuer");
+    host.admin()
+        .enroll_issuer(
+            IssuerPurpose::TrustedTime,
+            IssuerSpec {
+                issuer_id: time_issuer_id.clone(),
+                key_epoch: Generation::new(1).expect("time epoch"),
+                verifying_key: time_key.verifying_key(),
+            },
+        )
+        .await
+        .expect("enroll trusted-time issuer");
 
     let scope = Digest32::of_bytes(b"qualification-provider-scope");
     let policy = host
+        .admin()
         .create_policy(
             PolicySpec {
                 policy_id: id("policy:qualification-provider"),
@@ -276,6 +282,7 @@ async fn authority_host_executes_modern_owner_purpose_sweep_and_settlement_matri
         .await
         .expect("create policy");
     let decision = host
+        .execution()
         .authorize(
             &policy.principal,
             &policy.action,
@@ -286,6 +293,7 @@ async fn authority_host_executes_modern_owner_purpose_sweep_and_settlement_matri
         .await
         .expect("authorize provider call");
     let quota = host
+        .admin()
         .create_quota(
             QuotaSpec {
                 quota_key: id("quota:qualification-provider"),
@@ -301,6 +309,7 @@ async fn authority_host_executes_modern_owner_purpose_sweep_and_settlement_matri
         .expect("create quota");
 
     let expiring = host
+        .execution()
         .reserve(
             &decision,
             ReservationRequest {
@@ -316,6 +325,7 @@ async fn authority_host_executes_modern_owner_purpose_sweep_and_settlement_matri
         .await
         .expect("reserve expiring quota");
     let sweep = host
+        .maintenance()
         .sweep_expired_reservations(
             time_sample(&host, &time_key, &time_issuer_id, 5, 1_600).await,
             1,
@@ -325,7 +335,8 @@ async fn authority_host_executes_modern_owner_purpose_sweep_and_settlement_matri
     assert_eq!(sweep.examined, 1);
     assert_eq!(sweep.expired_held, 1);
     assert_eq!(
-        host.reservation(&expiring.reservation_id)
+        host.read()
+            .reservation(&expiring.reservation_id)
             .await
             .expect("expired reservation")
             .state,
@@ -333,10 +344,12 @@ async fn authority_host_executes_modern_owner_purpose_sweep_and_settlement_matri
     );
 
     let quota_after_sweep = host
+        .read()
         .quota_snapshot(&quota.quota_key)
         .await
         .expect("quota after sweep");
     let reservation = host
+        .execution()
         .reserve(
             &decision,
             ReservationRequest {
@@ -352,6 +365,7 @@ async fn authority_host_executes_modern_owner_purpose_sweep_and_settlement_matri
         .await
         .expect("reserve settlement quota");
     let dispatched = host
+        .execution()
         .mark_dispatch_attempted(
             &reservation.reservation_id,
             reservation.revision,
@@ -360,16 +374,9 @@ async fn authority_host_executes_modern_owner_purpose_sweep_and_settlement_matri
         )
         .await
         .expect("persist dispatch fence");
-    let settlement_issuer = host
-        .settlement_issuer(
-            &shared_issuer_id,
-            Generation::new(1).expect("settlement epoch"),
-        )
-        .await
-        .expect("resolve settlement issuer");
     let settlement_claims = SettlementEvidenceClaims {
-        issuer_id: settlement_issuer.issuer_id.clone(),
-        key_epoch: settlement_issuer.key_epoch,
+        issuer_id: shared_issuer_id.clone(),
+        key_epoch: Generation::new(1).expect("settlement epoch"),
         reservation_id: dispatched.reservation_id.clone(),
         operation_id: dispatched.operation_id.clone(),
         status: SettlementStatus::Completed,
@@ -385,8 +392,8 @@ async fn authority_host_executes_modern_owner_purpose_sweep_and_settlement_matri
         claims: settlement_claims,
     };
     let settled = host
+        .execution()
         .settle(
-            &settlement_issuer,
             &settlement_evidence,
             time_sample(&host, &time_key, &time_issuer_id, 8, 1_900).await,
         )

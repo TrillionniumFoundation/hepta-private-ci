@@ -126,8 +126,18 @@ impl AuthBusAuthorityHost {
             }
         };
         let store = AuthBusAuthorityStore::open(database_path).await?;
+        let checkpoint_database_path = database_path.to_path_buf();
+        let checkpoint_owner_id = owner_id.to_owned();
         let (checkpoint, external) = if checkpoint_exists {
-            AuthorityCheckpointFile::open(checkpoint_path, database_path, owner_id)?
+            tokio::task::spawn_blocking(move || {
+                AuthorityCheckpointFile::open(
+                    checkpoint_path,
+                    &checkpoint_database_path,
+                    &checkpoint_owner_id,
+                )
+            })
+            .await
+            .map_err(checkpoint_task_error)??
         } else {
             if !allow_bootstrap || store.authority_checkpoint().await?.is_some() {
                 return Err(AuthBusAuthorityError::RollbackDetected);
@@ -136,13 +146,22 @@ impl AuthBusAuthorityHost {
                 generation: 1,
                 digest: store.authority_frontier_digest().await?,
             };
-            AuthorityCheckpointFile::create(checkpoint_path, database_path, owner_id, initial)?
+            tokio::task::spawn_blocking(move || {
+                AuthorityCheckpointFile::create(
+                    checkpoint_path,
+                    &checkpoint_database_path,
+                    &checkpoint_owner_id,
+                    initial,
+                )
+            })
+            .await
+            .map_err(checkpoint_task_error)??
         };
         match store.authority_checkpoint().await? {
             None => store.initialize_authority_checkpoint(external).await?,
             Some(_) => {
                 if let Some(next) = store.reconcile_authority_checkpoint(external).await? {
-                    checkpoint.replace(external, next)?;
+                    checkpoint.replace_async(external, next).await?;
                     store
                         .advance_authority_checkpoint(external.generation, next)
                         .await?;
@@ -171,16 +190,16 @@ impl AuthBusAuthorityHost {
 
     /// Reconcile the independently retained checkpoint while excluding every
     /// mutation and safety-relevant read from the authority frontier.
-    pub async fn sync_checkpoint(&self) -> Result<(), AuthBusAuthorityError> {
+    pub(crate) async fn sync_checkpoint(&self) -> Result<(), AuthBusAuthorityError> {
         let _guard = self.mutation_gate.lock().await;
         self.sync_checkpoint_locked().await
     }
 
     async fn sync_checkpoint_locked(&self) -> Result<(), AuthBusAuthorityError> {
         let result = async {
-            let external = self.checkpoint.read()?;
+            let external = self.checkpoint.read_async().await?;
             if let Some(next) = self.store.reconcile_authority_checkpoint(external).await? {
-                self.checkpoint.replace(external, next)?;
+                self.checkpoint.replace_async(external, next).await?;
                 self.store
                     .advance_authority_checkpoint(external.generation, next)
                     .await?;
@@ -274,7 +293,7 @@ impl AuthBusAuthorityHost {
         result
     }
 
-    pub async fn enroll_issuer(
+    pub(crate) async fn enroll_issuer(
         &self,
         purpose: IssuerPurpose,
         spec: IssuerSpec,
@@ -282,7 +301,7 @@ impl AuthBusAuthorityHost {
         self.mutate(self.store.enroll_issuer(purpose, spec)).await
     }
 
-    pub async fn rotate_issuer(
+    pub(crate) async fn rotate_issuer(
         &self,
         purpose: IssuerPurpose,
         spec: IssuerSpec,
@@ -296,7 +315,7 @@ impl AuthBusAuthorityHost {
         .await
     }
 
-    pub async fn revoke_issuer(
+    pub(crate) async fn revoke_issuer(
         &self,
         purpose: IssuerPurpose,
         issuer_id: &StableId,
@@ -310,7 +329,7 @@ impl AuthBusAuthorityHost {
         .await
     }
 
-    pub async fn retire_issuer_epoch(
+    pub(crate) async fn retire_issuer_epoch(
         &self,
         purpose: IssuerPurpose,
         issuer_id: &StableId,
@@ -326,7 +345,7 @@ impl AuthBusAuthorityHost {
         .await
     }
 
-    pub async fn observe_trusted_time_attestation(
+    pub(crate) async fn observe_trusted_time_attestation(
         &self,
         attestation: &SignedTrustedTimeAttestation,
     ) -> Result<TrustedTimeSample, AuthBusAuthorityError> {
@@ -334,7 +353,7 @@ impl AuthBusAuthorityHost {
             .await
     }
 
-    pub async fn message_issuer(
+    pub(crate) async fn message_issuer(
         &self,
         issuer_id: &StableId,
         key_epoch: Generation,
@@ -343,7 +362,7 @@ impl AuthBusAuthorityHost {
             .await
     }
 
-    pub async fn settlement_issuer(
+    pub(crate) async fn settlement_issuer(
         &self,
         issuer_id: &StableId,
         key_epoch: Generation,
@@ -352,7 +371,7 @@ impl AuthBusAuthorityHost {
             .await
     }
 
-    pub async fn create_policy(
+    pub(crate) async fn create_policy(
         &self,
         spec: PolicySpec,
         time: TrustedTimeSample,
@@ -360,7 +379,7 @@ impl AuthBusAuthorityHost {
         self.mutate(self.store.create_policy(spec, time)).await
     }
 
-    pub async fn replace_policy(
+    pub(crate) async fn replace_policy(
         &self,
         spec: PolicySpec,
         expected_revision: u64,
@@ -370,7 +389,7 @@ impl AuthBusAuthorityHost {
             .await
     }
 
-    pub async fn revoke_policy(
+    pub(crate) async fn revoke_policy(
         &self,
         policy_id: &StableId,
         expected_revision: u64,
@@ -380,7 +399,7 @@ impl AuthBusAuthorityHost {
             .await
     }
 
-    pub async fn retire_policy(
+    pub(crate) async fn retire_policy(
         &self,
         policy_id: &StableId,
         expected_revision: u64,
@@ -393,7 +412,7 @@ impl AuthBusAuthorityHost {
         .await
     }
 
-    pub async fn authorize(
+    pub(crate) async fn authorize(
         &self,
         principal: &StableId,
         action: &StableId,
@@ -408,7 +427,7 @@ impl AuthBusAuthorityHost {
         .await
     }
 
-    pub async fn create_quota(
+    pub(crate) async fn create_quota(
         &self,
         spec: QuotaSpec,
         time: TrustedTimeSample,
@@ -416,7 +435,7 @@ impl AuthBusAuthorityHost {
         self.mutate(self.store.create_quota(spec, time)).await
     }
 
-    pub async fn replace_quota(
+    pub(crate) async fn replace_quota(
         &self,
         spec: QuotaSpec,
         expected_revision: u64,
@@ -426,7 +445,7 @@ impl AuthBusAuthorityHost {
             .await
     }
 
-    pub async fn reserve(
+    pub(crate) async fn reserve(
         &self,
         decision: &PolicyDecision,
         request: ReservationRequest,
@@ -436,7 +455,7 @@ impl AuthBusAuthorityHost {
             .await
     }
 
-    pub async fn mark_dispatch_attempted(
+    pub(crate) async fn mark_dispatch_attempted(
         &self,
         reservation_id: &StableId,
         expected_revision: u64,
@@ -452,7 +471,7 @@ impl AuthBusAuthorityHost {
         .await
     }
 
-    pub async fn mark_indeterminate(
+    pub(crate) async fn mark_indeterminate(
         &self,
         reservation_id: &StableId,
         expected_revision: u64,
@@ -465,7 +484,7 @@ impl AuthBusAuthorityHost {
         .await
     }
 
-    pub async fn cancel_reservation(
+    pub(crate) async fn cancel_reservation(
         &self,
         reservation_id: &StableId,
         expected_revision: u64,
@@ -478,7 +497,7 @@ impl AuthBusAuthorityHost {
         .await
     }
 
-    pub async fn reconcile_expired_reservation(
+    pub(crate) async fn reconcile_expired_reservation(
         &self,
         reservation_id: &StableId,
         expected_revision: u64,
@@ -492,7 +511,7 @@ impl AuthBusAuthorityHost {
         .await
     }
 
-    pub async fn sweep_expired_reservations(
+    pub(crate) async fn sweep_expired_reservations(
         &self,
         time: TrustedTimeSample,
         limit: u32,
@@ -501,16 +520,15 @@ impl AuthBusAuthorityHost {
             .await
     }
 
-    pub async fn settle(
+    pub(crate) async fn settle(
         &self,
-        issuer: &SettlementIssuerRegistration,
         evidence: &SignedSettlementEvidence,
         time: TrustedTimeSample,
     ) -> Result<Settlement, AuthBusAuthorityError> {
-        self.mutate(self.store.settle(issuer, evidence, time)).await
+        self.mutate(self.store.settle(evidence, time)).await
     }
 
-    pub async fn compact_terminal_reservations(
+    pub(crate) async fn compact_terminal_reservations(
         &self,
         older_than_ms: u64,
         limit: u32,
@@ -522,7 +540,7 @@ impl AuthBusAuthorityHost {
         .await
     }
 
-    pub async fn quota_snapshot(
+    pub(crate) async fn quota_snapshot(
         &self,
         quota_key: &StableId,
     ) -> Result<QuotaSnapshot, AuthBusAuthorityError> {
@@ -530,13 +548,17 @@ impl AuthBusAuthorityHost {
             .await
     }
 
-    pub async fn reservation(
+    pub(crate) async fn reservation(
         &self,
         reservation_id: &StableId,
     ) -> Result<QuotaReservation, AuthBusAuthorityError> {
         self.read_authoritative(self.store.reservation(reservation_id))
             .await
     }
+}
+
+fn checkpoint_task_error(error: tokio::task::JoinError) -> AuthBusAuthorityError {
+    AuthBusAuthorityError::Storage(format!("checkpoint I/O task failed: {error}"))
 }
 
 fn normalize_mutation_error(error: AuthBusAuthorityError) -> AuthBusAuthorityError {
@@ -557,6 +579,7 @@ struct CheckpointDocument {
     digest: String,
 }
 
+#[derive(Clone)]
 struct AuthorityCheckpointFile {
     path: PathBuf,
     owner_id: String,
@@ -591,6 +614,24 @@ impl AuthorityCheckpointFile {
         }
         create_private_checkpoint(&path, owner_id, initial)?;
         Self::open(path, database_path, owner_id)
+    }
+
+    async fn read_async(&self) -> Result<AuthorityCheckpoint, AuthBusAuthorityError> {
+        let checkpoint = self.clone();
+        tokio::task::spawn_blocking(move || checkpoint.read())
+            .await
+            .map_err(checkpoint_task_error)?
+    }
+
+    async fn replace_async(
+        &self,
+        expected: AuthorityCheckpoint,
+        next: AuthorityCheckpoint,
+    ) -> Result<(), AuthBusAuthorityError> {
+        let checkpoint = self.clone();
+        tokio::task::spawn_blocking(move || checkpoint.replace(expected, next))
+            .await
+            .map_err(checkpoint_task_error)?
     }
 
     fn read(&self) -> Result<AuthorityCheckpoint, AuthBusAuthorityError> {

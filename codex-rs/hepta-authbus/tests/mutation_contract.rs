@@ -76,18 +76,20 @@ async fn deterministic_rejection_does_not_claim_separately_observed_time_was_rol
 
     let time_issuer = id("issuer:contract-time");
     let time_key = SigningKey::from_bytes(&[71; 32]);
-    host.enroll_issuer(
-        IssuerPurpose::TrustedTime,
-        IssuerSpec {
-            issuer_id: time_issuer.clone(),
-            key_epoch: Generation::new(1).expect("time epoch"),
-            verifying_key: time_key.verifying_key(),
-        },
-    )
-    .await
-    .expect("enroll time issuer");
+    host.admin()
+        .enroll_issuer(
+            IssuerPurpose::TrustedTime,
+            IssuerSpec {
+                issuer_id: time_issuer.clone(),
+                key_epoch: Generation::new(1).expect("time epoch"),
+                verifying_key: time_key.verifying_key(),
+            },
+        )
+        .await
+        .expect("enroll time issuer");
 
     let first_time = host
+        .execution()
         .observe_trusted_time_attestation(&signed_time(&time_key, &time_issuer, 100, 1))
         .await
         .expect("observe first trusted time");
@@ -104,15 +106,18 @@ async fn deterministic_rejection_does_not_claim_separately_observed_time_was_rol
         not_before_ms: 1,
         expires_at_ms: 1_000,
     };
-    host.create_policy(allow, first_time)
+    host.admin()
+        .create_policy(allow, first_time)
         .await
         .expect("create policy");
 
     let second_time = host
+        .execution()
         .observe_trusted_time_attestation(&signed_time(&time_key, &time_issuer, 200, 2))
         .await
         .expect("observe second trusted time");
     let rejected = host
+        .admin()
         .replace_policy(
             PolicySpec {
                 policy_id: policy_id.clone(),
@@ -135,6 +140,7 @@ async fn deterministic_rejection_does_not_claim_separately_observed_time_was_rol
     );
 
     let decision = host
+        .execution()
         .authorize(&principal, &action, scope_digest, 1, second_time)
         .await
         .expect("original policy remains authoritative");

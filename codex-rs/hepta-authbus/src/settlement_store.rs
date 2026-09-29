@@ -40,7 +40,6 @@ impl AuthBusAuthorityStore {
                 "dispatch transition requires revision and digest",
             ));
         }
-        self.observe_time(time.clone()).await?;
         let mut tx = begin(&self.pool).await?;
         advance_time(&mut tx, &time).await?;
         let mut reservation = load_reservation(&mut tx, reservation_id).await?;
@@ -88,7 +87,6 @@ impl AuthBusAuthorityStore {
         expected_revision: u64,
         time: TrustedTimeSample,
     ) -> Result<QuotaReservation, AuthBusAuthorityError> {
-        self.observe_time(time.clone()).await?;
         let mut tx = begin(&self.pool).await?;
         advance_time(&mut tx, &time).await?;
         let mut reservation = load_reservation(&mut tx, reservation_id).await?;
@@ -116,7 +114,6 @@ impl AuthBusAuthorityStore {
         expected_revision: u64,
         time: TrustedTimeSample,
     ) -> Result<QuotaReservation, AuthBusAuthorityError> {
-        self.observe_time(time.clone()).await?;
         let mut tx = begin(&self.pool).await?;
         advance_time(&mut tx, &time).await?;
         let mut reservation = load_reservation(&mut tx, reservation_id).await?;
@@ -147,7 +144,6 @@ impl AuthBusAuthorityStore {
         expected_revision: u64,
         time: TrustedTimeSample,
     ) -> Result<QuotaReservation, AuthBusAuthorityError> {
-        self.observe_time(time.clone()).await?;
         let mut tx = begin(&self.pool).await?;
         advance_time(&mut tx, &time).await?;
         let mut reservation = load_reservation(&mut tx, reservation_id).await?;
@@ -174,7 +170,6 @@ impl AuthBusAuthorityStore {
                 "expired reservation sweep batch must be in 1..=1024",
             ));
         }
-        self.observe_time(time.clone()).await?;
         let mut tx = begin(&self.pool).await?;
         advance_time(&mut tx, &time).await?;
         let ids: Vec<String> = sqlx::query_scalar(
@@ -224,25 +219,18 @@ impl AuthBusAuthorityStore {
 
     pub(crate) async fn settle(
         &self,
-        issuer: &SettlementIssuerRegistration,
         evidence: &SignedSettlementEvidence,
         time: TrustedTimeSample,
     ) -> Result<Settlement, AuthBusAuthorityError> {
-        self.observe_time(time.clone()).await?;
         let mut tx = begin(&self.pool).await?;
         advance_time(&mut tx, &time).await?;
-        if evidence.claims.issuer_id != issuer.issuer_id
-            || evidence.claims.key_epoch != issuer.key_epoch
-        {
-            return Err(AuthBusAuthorityError::SettlementIssuerMismatch);
-        }
         let reservation_id = &evidence.claims.reservation_id;
         let mut reservation = load_reservation(&mut tx, reservation_id).await?;
         let record = load_issuer(
             &mut tx,
             IssuerPurpose::Settlement,
-            &issuer.issuer_id,
-            issuer.key_epoch,
+            &evidence.claims.issuer_id,
+            evidence.claims.key_epoch,
         )
         .await?;
         let current_issuer = SettlementIssuerRegistration::from_record(&record)?;

@@ -472,7 +472,7 @@ pub struct AuthBusMaintenanceReport {
 }
 
 impl AuthBusAuthorityHost {
-    pub async fn operational_snapshot(
+    pub(crate) async fn operational_snapshot(
         &self,
         time: &TrustedTimeSample,
     ) -> Result<AuthBusOperationalSnapshot, AuthBusAuthorityError> {
@@ -483,7 +483,7 @@ impl AuthBusAuthorityHost {
 
     /// Execute one bounded owner-maintenance iteration through the same owner
     /// gate and checkpoint boundary used by normal mutations.
-    pub async fn maintenance_tick(
+    pub(crate) async fn maintenance_tick(
         &self,
         time: TrustedTimeSample,
         limit: u32,

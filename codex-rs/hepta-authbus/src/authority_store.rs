@@ -59,6 +59,10 @@ impl AuthBusAuthorityStore {
             pool.close().await;
             return Err(error);
         }
+        if let Err(error) = crate::owner_fence::harden_authority_state_files(path) {
+            pool.close().await;
+            return Err(error);
+        }
         sqlx::query(
             "UPDATE authbus_recovery_state
              SET recovery_required = (
@@ -103,7 +107,6 @@ impl AuthBusAuthorityStore {
         time: TrustedTimeSample,
     ) -> Result<AuthPolicy, AuthBusAuthorityError> {
         validate_policy_spec(&spec)?;
-        self.observe_time(time.clone()).await?;
         let mut tx = begin(&self.pool).await?;
         advance_time(&mut tx, &time).await?;
         let archived: bool = sqlx::query_scalar(
@@ -168,7 +171,6 @@ impl AuthBusAuthorityStore {
         time: TrustedTimeSample,
     ) -> Result<AuthPolicy, AuthBusAuthorityError> {
         validate_policy_spec(&spec)?;
-        self.observe_time(time.clone()).await?;
         let mut tx = begin(&self.pool).await?;
         advance_time(&mut tx, &time).await?;
         let mut current = load_policy_by_id(&mut tx, &spec.policy_id).await?;
@@ -209,7 +211,6 @@ impl AuthBusAuthorityStore {
         expected_revision: u64,
         time: TrustedTimeSample,
     ) -> Result<AuthPolicy, AuthBusAuthorityError> {
-        self.observe_time(time.clone()).await?;
         let mut tx = begin(&self.pool).await?;
         advance_time(&mut tx, &time).await?;
         let mut current = load_policy_by_id(&mut tx, policy_id).await?;
@@ -297,7 +298,6 @@ impl AuthBusAuthorityStore {
                 "authorization requires non-zero scope and policy revision",
             ));
         }
-        self.observe_time(time.clone()).await?;
         let mut tx = begin(&self.pool).await?;
         advance_time(&mut tx, &time).await?;
         let row = sqlx::query(
@@ -359,6 +359,9 @@ pub(crate) async fn advance_time(
         }
         if sample.source_revision == prior.source_revision && sample != &prior {
             return Err(AuthBusAuthorityError::TimeConflict);
+        }
+        if sample == &prior {
+            return Ok(());
         }
     }
     sqlx::query(

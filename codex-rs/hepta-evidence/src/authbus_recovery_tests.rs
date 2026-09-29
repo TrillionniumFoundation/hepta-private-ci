@@ -179,6 +179,7 @@ async fn issuer_retirement_proof_prunes_replay_rows_but_tombstone_prevents_resur
     .await
     .unwrap();
     authority
+        .admin()
         .enroll_issuer(
             IssuerPurpose::Message,
             IssuerSpec {
@@ -190,6 +191,7 @@ async fn issuer_retirement_proof_prunes_replay_rows_but_tombstone_prevents_resur
         .await
         .unwrap();
     authority
+        .admin()
         .revoke_issuer(
             IssuerPurpose::Message,
             &issuer.issuer_id,
@@ -199,6 +201,7 @@ async fn issuer_retirement_proof_prunes_replay_rows_but_tombstone_prevents_resur
         .await
         .unwrap();
     let retirement = authority
+        .admin()
         .retire_issuer_epoch(
             IssuerPurpose::Message,
             &issuer.issuer_id,

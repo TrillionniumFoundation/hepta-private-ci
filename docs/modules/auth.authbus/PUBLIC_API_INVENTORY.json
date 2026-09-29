@@ -1,35 +1,45 @@
 {
   "activation": false,
+  "capabilityPorts": {
+    "AuthBusAdminPort": [
+      "create_policy",
+      "create_quota",
+      "enroll_issuer",
+      "replace_policy",
+      "replace_quota",
+      "retire_issuer_epoch",
+      "retire_policy",
+      "revoke_issuer",
+      "revoke_policy",
+      "rotate_issuer"
+    ],
+    "AuthBusExecutionPort": [
+      "authorize",
+      "cancel_reservation",
+      "mark_dispatch_attempted",
+      "mark_indeterminate",
+      "observe_trusted_time_attestation",
+      "reserve",
+      "settle"
+    ],
+    "AuthBusMaintenancePort": [
+      "compact_terminal_reservations",
+      "maintenance_tick",
+      "reconcile_expired_reservation",
+      "sweep_expired_reservations",
+      "sync_checkpoint"
+    ],
+    "AuthBusReadPort": [
+      "message_issuer",
+      "operational_snapshot",
+      "quota_snapshot",
+      "reservation",
+      "settlement_issuer"
+    ]
+  },
   "hostOperations": [
-    "authorize",
     "bootstrap",
-    "cancel_reservation",
-    "compact_terminal_reservations",
-    "create_policy",
-    "create_quota",
-    "enroll_issuer",
-    "maintenance_tick",
-    "mark_dispatch_attempted",
-    "mark_indeterminate",
-    "message_issuer",
-    "observe_trusted_time_attestation",
-    "open",
-    "operational_snapshot",
-    "quota_snapshot",
-    "reconcile_expired_reservation",
-    "replace_policy",
-    "replace_quota",
-    "reservation",
-    "reserve",
-    "retire_issuer_epoch",
-    "retire_policy",
-    "revoke_issuer",
-    "revoke_policy",
-    "rotate_issuer",
-    "settle",
-    "settlement_issuer",
-    "sweep_expired_reservations",
-    "sync_checkpoint"
+    "open"
   ],
   "module": "auth.authbus",
   "periodicOwner": "AuthBusAuthorityWorker",
@@ -54,7 +64,13 @@
     }
   ],
   "writer": {
-    "publicMutationHost": "AuthBusAuthorityHost",
+    "owner": "AuthBusAuthorityHost",
+    "publicMutationPorts": [
+      "AuthBusAdminPort",
+      "AuthBusExecutionPort",
+      "AuthBusMaintenancePort",
+      "AuthBusReadPort"
+    ],
     "type": "AuthBusAuthorityStore",
     "visibility": "crate_private"
   }

@@ -12,37 +12,28 @@ ROOT = Path(__file__).resolve().parents[1]
 INVENTORY = ROOT / "docs/modules/auth.authbus/PUBLIC_API_INVENTORY.json"
 AUTHBUS = ROOT / "codex-rs/hepta-authbus/src"
 
-HOST_OPERATIONS = {
-    "open",
-    "bootstrap",
-    "sync_checkpoint",
-    "enroll_issuer",
-    "rotate_issuer",
-    "revoke_issuer",
-    "retire_issuer_epoch",
-    "observe_trusted_time_attestation",
-    "message_issuer",
-    "settlement_issuer",
-    "create_policy",
-    "replace_policy",
-    "revoke_policy",
-    "retire_policy",
-    "authorize",
-    "create_quota",
-    "replace_quota",
-    "reserve",
-    "mark_dispatch_attempted",
-    "mark_indeterminate",
-    "cancel_reservation",
-    "reconcile_expired_reservation",
-    "sweep_expired_reservations",
-    "settle",
-    "compact_terminal_reservations",
-    "quota_snapshot",
-    "reservation",
-    "operational_snapshot",
-    "maintenance_tick",
+HOST_OPERATIONS = {"open", "bootstrap"}
+
+PORT_OPERATIONS = {
+    "AuthBusAdminPort": {
+        "enroll_issuer", "rotate_issuer", "revoke_issuer", "retire_issuer_epoch",
+        "create_policy", "replace_policy", "revoke_policy", "retire_policy",
+        "create_quota", "replace_quota",
+    },
+    "AuthBusExecutionPort": {
+        "observe_trusted_time_attestation", "authorize", "reserve",
+        "mark_dispatch_attempted", "mark_indeterminate", "cancel_reservation", "settle",
+    },
+    "AuthBusReadPort": {
+        "message_issuer", "settlement_issuer", "quota_snapshot", "reservation",
+        "operational_snapshot",
+    },
+    "AuthBusMaintenancePort": {
+        "sync_checkpoint", "reconcile_expired_reservation",
+        "sweep_expired_reservations", "compact_terminal_reservations", "maintenance_tick",
+    },
 }
+
 
 STORE_OPERATIONS = {
     "open",
@@ -178,17 +169,45 @@ def verify_boundaries() -> list[str]:
         elif re.search(r"(?m)^\s*pub(?:\([^)]*\))?\s+\w+\s*:", match.group("body")):
             errors.append(f"trusted fields are externally writable on {type_name}")
 
-    discovered: set[str] = set()
-    for path in [AUTHBUS / "host.rs", AUTHBUS / "operations.rs"]:
-        discovered.update(
-            re.findall(r"(?m)^\s*pub async fn ([a-z][a-z0-9_]*)\s*\(", source(path))
+    discovered_host = set(
+        re.findall(
+            r"(?m)^\s*pub async fn ([a-z][a-z0-9_]*)\s*\(",
+            source(AUTHBUS / "host.rs"),
         )
-    missing = sorted(HOST_OPERATIONS - discovered)
-    unexpected = sorted(discovered - HOST_OPERATIONS)
+    )
+    missing = sorted(HOST_OPERATIONS - discovered_host)
+    unexpected = sorted(discovered_host - HOST_OPERATIONS)
     if missing:
-        errors.append("missing host operations: " + ", ".join(missing))
+        errors.append("missing public host constructors: " + ", ".join(missing))
     if unexpected:
-        errors.append("unexpected host operations: " + ", ".join(unexpected))
+        errors.append("unexpected public host authority methods: " + ", ".join(unexpected))
+
+    ports_source = source(AUTHBUS / "ports.rs")
+    for port, expected in PORT_OPERATIONS.items():
+        match = re.search(
+            rf"impl {port}<'_> \{{(?P<body>.*?)(?=\n\}}\n(?:\n|$))",
+            ports_source,
+            flags=re.DOTALL,
+        )
+        if match is None:
+            errors.append(f"missing capability port implementation: {port}")
+            continue
+        observed = set(
+            re.findall(
+                r"(?m)^\s*pub async fn ([a-z][a-z0-9_]*)\s*\(",
+                match.group("body"),
+            )
+        )
+        if observed != expected:
+            errors.append(
+                f"capability port drift {port}: expected {sorted(expected)}, observed {sorted(observed)}"
+            )
+
+    bao = source(ROOT / "codex-rs/hepta-bao-adapter/src/https_consumer.rs")
+    if "AuthBusAuthorityHost" in bao:
+        errors.append("Bao adapter holds full AuthBus authority host")
+    if "AuthBusExecutionPort" not in bao:
+        errors.append("Bao adapter is not bound to AuthBusExecutionPort")
     return errors
 
 
@@ -199,7 +218,8 @@ def inventory() -> dict[str, object]:
         "writer": {
             "type": "AuthBusAuthorityStore",
             "visibility": "crate_private",
-            "publicMutationHost": "AuthBusAuthorityHost",
+            "owner": "AuthBusAuthorityHost",
+            "publicMutationPorts": sorted(PORT_OPERATIONS),
         },
         "sealedRegistrations": [
             {
@@ -216,6 +236,9 @@ def inventory() -> dict[str, object]:
             },
         ],
         "hostOperations": sorted(HOST_OPERATIONS),
+        "capabilityPorts": {
+            port: sorted(operations) for port, operations in sorted(PORT_OPERATIONS.items())
+        },
         "periodicOwner": "AuthBusAuthorityWorker",
         "activation": False,
     }

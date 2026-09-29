@@ -159,6 +159,7 @@ fn validate_existing_database_path(path: &Path) -> Result<(), AuthBusAuthorityEr
     if !metadata.file_type().is_file()
         || metadata.nlink() != 1
         || metadata.uid() != parent_metadata.uid()
+        || metadata.mode() & 0o077 != 0
         || path.canonicalize().map_err(storage_io)? != path
     {
         return Err(AuthBusAuthorityError::UnsafeCheckpoint);
@@ -168,6 +169,55 @@ fn validate_existing_database_path(path: &Path) -> Result<(), AuthBusAuthorityEr
 
 #[cfg(not(target_os = "linux"))]
 fn validate_existing_database_path(_path: &Path) -> Result<(), AuthBusAuthorityError> {
+    Err(AuthBusAuthorityError::UnsafeCheckpoint)
+}
+
+#[cfg(unix)]
+pub(crate) fn harden_authority_state_files(
+    database_path: &Path,
+) -> Result<(), AuthBusAuthorityError> {
+    use std::io::ErrorKind;
+    use std::os::unix::fs::MetadataExt;
+    use std::os::unix::fs::PermissionsExt;
+
+    let parent = database_path
+        .parent()
+        .ok_or(AuthBusAuthorityError::UnsafeCheckpoint)?;
+    let parent_metadata = std::fs::metadata(parent).map_err(storage_io)?;
+    for suffix in ["", "-wal", "-shm"] {
+        let mut raw = database_path.as_os_str().to_os_string();
+        raw.push(suffix);
+        let path = PathBuf::from(raw);
+        let metadata = match std::fs::symlink_metadata(&path) {
+            Ok(metadata) => metadata,
+            Err(error) if error.kind() == ErrorKind::NotFound => continue,
+            Err(error) => return Err(storage_io(error)),
+        };
+        if !metadata.file_type().is_file()
+            || metadata.nlink() != 1
+            || metadata.uid() != parent_metadata.uid()
+            || path.canonicalize().map_err(storage_io)? != path
+        {
+            return Err(AuthBusAuthorityError::UnsafeCheckpoint);
+        }
+        std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600))
+            .map_err(storage_io)?;
+        let hardened = match std::fs::symlink_metadata(&path) {
+            Ok(metadata) => metadata,
+            Err(error) if error.kind() == ErrorKind::NotFound => continue,
+            Err(error) => return Err(storage_io(error)),
+        };
+        if hardened.mode() & 0o077 != 0 {
+            return Err(AuthBusAuthorityError::UnsafeCheckpoint);
+        }
+    }
+    Ok(())
+}
+
+#[cfg(not(unix))]
+pub(crate) fn harden_authority_state_files(
+    _database_path: &Path,
+) -> Result<(), AuthBusAuthorityError> {
     Err(AuthBusAuthorityError::UnsafeCheckpoint)
 }
 

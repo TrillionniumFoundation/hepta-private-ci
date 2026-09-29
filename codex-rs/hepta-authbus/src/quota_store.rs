@@ -36,7 +36,6 @@ impl AuthBusAuthorityStore {
         time: TrustedTimeSample,
     ) -> Result<QuotaSnapshot, AuthBusAuthorityError> {
         validate_quota_spec(&spec)?;
-        self.observe_time(time.clone()).await?;
         let mut tx = begin(&self.pool).await?;
         advance_time(&mut tx, &time).await?;
         let count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM authbus_quota_registry")
@@ -95,7 +94,6 @@ impl AuthBusAuthorityStore {
         time: TrustedTimeSample,
     ) -> Result<QuotaSnapshot, AuthBusAuthorityError> {
         validate_quota_spec(&spec)?;
-        self.observe_time(time.clone()).await?;
         let mut tx = begin(&self.pool).await?;
         advance_time(&mut tx, &time).await?;
         let mut quota = load_quota(&mut tx, &spec.quota_key).await?;
@@ -160,7 +158,6 @@ impl AuthBusAuthorityStore {
                 "reservation amount, revision or expiry is invalid",
             ));
         }
-        self.observe_time(time.clone()).await?;
         let mut tx = begin(&self.pool).await?;
         advance_time(&mut tx, &time).await?;
         ensure_recovery_complete(&mut tx).await?;

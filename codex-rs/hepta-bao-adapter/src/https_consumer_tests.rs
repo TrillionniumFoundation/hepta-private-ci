@@ -584,17 +584,21 @@ async fn authbus_host(
 
     let host = AuthBusAuthorityHost::bootstrap(&database, checkpoint, "bao-product-owner").await?;
     let mut evidence = AuthBusEvidence::new(now);
-    host.enroll_issuer(IssuerPurpose::TrustedTime, evidence.time_spec())
+    host.admin()
+        .enroll_issuer(IssuerPurpose::TrustedTime, evidence.time_spec())
         .await?;
-    host.enroll_issuer(IssuerPurpose::Settlement, evidence.settlement_spec())
+    host.admin()
+        .enroll_issuer(IssuerPurpose::Settlement, evidence.settlement_spec())
         .await?;
 
     let binding = client.binding(request)?;
     let scope = Digest32::from_array(binding.scope_sha256);
     let time = host
+        .execution()
         .observe_trusted_time_attestation(&evidence.trusted_time()?)
         .await?;
     let policy = host
+        .admin()
         .create_policy(
             PolicySpec {
                 policy_id: StableId::new("policy:bao-read")?,
@@ -609,9 +613,11 @@ async fn authbus_host(
         )
         .await?;
     let time = host
+        .execution()
         .observe_trusted_time_attestation(&evidence.trusted_time()?)
         .await?;
     let quota = host
+        .admin()
         .create_quota(
             QuotaSpec {
                 quota_key: StableId::new("quota:bao-read")?,
@@ -656,7 +662,7 @@ async fn authbus_product_path_reserves_fences_final_use_and_settles_observed_cos
 
     let receipt = client
         .consume_kv_v2_with_authbus(
-            &authbus,
+            authbus.execution(),
             &admission,
             &authority,
             &grant,
@@ -670,7 +676,11 @@ async fn authbus_product_path_reserves_fences_final_use_and_settles_observed_cos
         .await
         .unwrap();
     assert_eq!(receipt.secret_sha256, request.expected_secret_sha256);
-    let quota = authbus.quota_snapshot(&admission.quota_key).await.unwrap();
+    let quota = authbus
+        .read()
+        .quota_snapshot(&admission.quota_key)
+        .await
+        .unwrap();
     assert_eq!((quota.available, quota.reserved, quota.consumed), (0, 0, 1));
     task.await.unwrap().unwrap();
 }
@@ -700,7 +710,7 @@ async fn authbus_timeout_keeps_quota_held_as_indeterminate() {
 
     let result = client
         .consume_kv_v2_with_authbus(
-            &authbus,
+            authbus.execution(),
             &admission,
             &authority,
             &grant,
@@ -716,7 +726,11 @@ async fn authbus_timeout_keeps_quota_held_as_indeterminate() {
             ..
         })
     ));
-    let quota = authbus.quota_snapshot(&admission.quota_key).await.unwrap();
+    let quota = authbus
+        .read()
+        .quota_snapshot(&admission.quota_key)
+        .await
+        .unwrap();
     assert_eq!((quota.available, quota.reserved, quota.consumed), (0, 1, 0));
     task.abort();
     let _ = task.await;
