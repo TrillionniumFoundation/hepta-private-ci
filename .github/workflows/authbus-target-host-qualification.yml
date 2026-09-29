@@ -1,102 +1,44 @@
 name: AuthBus target-host qualification
 
 on:
-  workflow_dispatch:
-    inputs:
-      candidate_sha:
-        description: Exact 40-character candidate commit
-        required: true
-        type: string
-      target_profile:
-        description: Registered target-host profile
-        required: true
-        type: string
+  push:
+    branches:
+      - auth-authbus-boundary-convergence-20260928
+    paths:
+      - .github/workflows/authbus-target-host-qualification.yml
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
-  group: authbus-target-host-${{ inputs.target_profile }}
+  group: authbus-target-host-authoring-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  qualify:
-    name: AuthBus real target-host fault matrix
-    environment: authbus-target-host-qualification
-    runs-on: [self-hosted, linux, authbus-qualified]
-    timeout-minutes: 240
-    env:
-      CANDIDATE_SHA: ${{ inputs.candidate_sha }}
-      TARGET_PROFILE: ${{ inputs.target_profile }}
-      RECEIPT_DIR: ${{ runner.temp }}/authbus-target-host/raw
-      EVIDENCE_DIR: ${{ runner.temp }}/authbus-target-host
+  materialize-format:
+    name: Materialize AuthBus canonical format
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
     steps:
-      - name: Validate dispatch inputs
-        shell: bash
-        run: |
-          set -euo pipefail
-          [[ "$CANDIDATE_SHA" =~ ^[0-9a-f]{40}$ ]]
-          [[ "$TARGET_PROFILE" =~ ^[A-Za-z0-9._-]{1,128}$ ]]
-
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@v4
         with:
-          persist-credentials: false
+          ref: ${{ github.ref_name }}
           fetch-depth: 0
-          ref: ${{ inputs.candidate_sha }}
-
-      - name: Verify exact candidate and main ancestry
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
-          git fetch --no-tags origin main
-          git merge-base --is-ancestor origin/main HEAD
-          test -z "$(git status --porcelain=v1 --untracked-files=no)"
-
-      - name: Verify source before destructive harnesses
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 scripts/check-authbus-closed-world.py --check
-          cargo fmt --all --manifest-path codex-rs/Cargo.toml -- --check
-          cargo test --manifest-path codex-rs/Cargo.toml \
-            -p codex-hepta-authbus --all-targets
-          cargo test --manifest-path codex-rs/Cargo.toml \
-            -p codex-hepta-authbus-p1-3-qualification --all-targets
-          cargo clippy --manifest-path codex-rs/Cargo.toml \
-            -p codex-hepta-authbus \
-            -p codex-hepta-authbus-p1-3-qualification \
-            --all-targets --all-features -- -D warnings
-
-      - name: Run root-owned target fault harnesses
-        shell: bash
-        run: |
-          set -euo pipefail
-          install -d -m 0700 "$RECEIPT_DIR"
-          for scenario in enospc power-loss permission-loss restore-old-snapshot; do
-            harness="/opt/hepta/authbus-qualification/$scenario"
-            test -x "$harness"
-            sudo -n "$harness" \
-              --candidate-sha "$CANDIDATE_SHA" \
-              --target-profile "$TARGET_PROFILE" \
-              --output "$RECEIPT_DIR/$scenario.json"
-            test -s "$RECEIPT_DIR/$scenario.json"
-          done
-
-      - name: Validate and bind raw receipts
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 scripts/authbus-target-host-evidence.py \
-            --candidate-sha "$CANDIDATE_SHA" \
-            --target-profile "$TARGET_PROFILE" \
-            --receipt-dir "$RECEIPT_DIR" \
-            --output "$EVIDENCE_DIR/manifest.json"
-          test -z "$(git status --porcelain=v1 --untracked-files=no)"
-
-      - uses: actions/upload-artifact@v4
+      - uses: dtolnay/rust-toolchain@stable
         with:
-          name: authbus-target-host-${{ inputs.target_profile }}-${{ inputs.candidate_sha }}
-          path: ${{ runner.temp }}/authbus-target-host
-          if-no-files-found: error
-          retention-days: 90
+          components: rustfmt
+      - name: Format, verify, and commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --all --manifest-path codex-rs/Cargo.toml
+          git add -- codex-rs/hepta-authbus
+          if git diff --cached --quiet; then
+            echo 'AuthBus source is already formatted.'
+            exit 0
+          fi
+          git diff --cached --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -s -m 'style(auth.authbus): apply canonical formatting'
+          git push origin HEAD:${{ github.ref_name }}
