@@ -83,6 +83,37 @@ async fn owner_observation(agent: &AgentFixture) -> Result<(i64, i64, Vec<Vec<u8
     Ok((schema, tasks, checksums))
 }
 
+/// Independent read-only observation: timer completion/queue admission is not
+/// enough. The occurrence and its existing TaskFlow owner must agree on success.
+async fn settled_receipt(
+    agent: &AgentFixture,
+    task_id: codex_hepta_agent_components::automation::AutomationTaskId,
+    turn_id: &str,
+) -> Result<Option<String>> {
+    let options = sqlx::sqlite::SqliteConnectOptions::new()
+        .filename(agent.layout.automation_root().join("automation_1.sqlite3"))
+        .read_only(true);
+    let pool = sqlx::sqlite::SqlitePoolOptions::new()
+        .max_connections(1)
+        .connect_with(options)
+        .await?;
+    let result = sqlx::query_scalar::<_, String>(
+        "SELECT o.terminal_receipt_digest
+         FROM automation_occurrence_lifecycle o
+         JOIN taskflow_runs r ON r.owner_agent_id = o.owner_agent_id
+                             AND r.run_id = o.taskflow_run_id
+         WHERE o.task_id = ? AND o.occurrence = 1 AND o.turn_id = ?
+           AND o.state = 'succeeded' AND r.state = 'succeeded'
+           AND o.terminal_receipt_digest IS NOT NULL",
+    )
+    .bind(task_id.to_string())
+    .bind(turn_id)
+    .fetch_optional(&pool)
+    .await;
+    pool.close().await;
+    Ok(result?)
+}
+
 async fn stop_process(fleet: &mut FleetHarness, agent: &AgentFixture) -> Result<()> {
     fleet.supervisor.stop(&agent.agent_id, Instant::now())?;
     let deadline = Instant::now() + Duration::from_secs(15);
@@ -387,6 +418,20 @@ async fn normal_due_automation_reaches_app_server_terminal_and_does_not_replay_a
         "wrong input reached the owning thread"
     );
     let turn_id = terminal.thread.turns[0].id.clone();
+    let receipt = loop {
+        if let Some(receipt) = settled_receipt(&agent, task.task_id, &turn_id).await? {
+            ensure!(
+                receipt.len() == 64,
+                "terminal owner receipt is not a digest"
+            );
+            break receipt;
+        }
+        ensure!(
+            Instant::now() < deadline,
+            "App Server terminal was not durably reconciled"
+        );
+        tokio::time::sleep(Duration::from_millis(25)).await;
+    };
     product.shutdown().await?;
     eprintln!("due automation stage: first client closed");
     let generation = agent_generation(&fleet, &agent.agent_id)?;
@@ -397,6 +442,10 @@ async fn normal_due_automation_reaches_app_server_terminal_and_does_not_replay_a
     let recovered = recovered_product.read_thread(&thread).await?;
     ensure!(recovered.thread.turns.len() == 1 && recovered.thread.turns[0].id == turn_id);
     ensure!(recovered.thread.turns[0].status == codex_app_server_protocol::TurnStatus::Completed);
+    ensure!(
+        settled_receipt(&agent, task.task_id, &turn_id).await? == Some(receipt),
+        "restart changed the committed occurrence/TaskFlow terminal receipt",
+    );
     let tasks = recovered_control.automation_list(4).await?;
     ensure!(
         tasks.len() == 1
