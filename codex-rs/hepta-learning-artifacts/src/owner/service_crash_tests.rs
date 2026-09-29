@@ -76,6 +76,14 @@ fn phase_worker() {
     let service =
         LearningArtifactOwnerService::open(config(root.join("store"))).fixture("worker service");
     let (request, staged) = request_and_registry(&service);
+    let request_digest = service
+        .request_identity
+        .verify_and_digest(&request)
+        .fixture("canonical request identity");
+    service
+        .durable_request_identities
+        .bind(&request.operation_id, request_digest)
+        .fixture("durable request identity");
     let withdrawals = service.withdrawal_registry();
     let mut transaction = service
         .host
