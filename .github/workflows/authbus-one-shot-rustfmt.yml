@@ -1,0 +1,52 @@
+name: AuthBus one-shot rustfmt repair
+
+on:
+  push:
+    branches:
+      - auth-authbus-boundary-convergence-20260928
+    paths:
+      - .github/workflows/authbus-one-shot-rustfmt.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: authbus-one-shot-rustfmt-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rustfmt-repair:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref_name }}
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+
+      - name: Apply canonical workspace formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --all --manifest-path codex-rs/Cargo.toml
+          git diff --check
+
+      - name: Commit formatting-only changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet; then
+            echo "Workspace is already formatted"
+            exit 0
+          fi
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -- '*.rs'
+          test -z "$(git diff --cached --name-only | grep -Ev '\.rs$' || true)"
+          git commit -m "style(authbus): apply canonical rustfmt"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
