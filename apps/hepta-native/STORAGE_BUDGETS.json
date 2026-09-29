@@ -1,0 +1,40 @@
+{
+  "schema": "hepta.ui-native-storage-budgets.v1",
+  "baselineSourceSha": "4bc29cf124dc5532d04349e478bc82f5d4959fd9",
+  "status": "provisional-unqualified",
+  "structural": {
+    "maxActiveRecords": 4096,
+    "maxSnapshotBytes": 8388608,
+    "maxWalBytes": 4194304,
+    "maxWalFrameBytes": 131072,
+    "checkpointWalEntries": 128,
+    "retirementSegmentEntries": 1024,
+    "retirementSegmentBytes": 524288,
+    "retirementRecordBytes": 32768,
+    "retirementIndexBuckets": 256,
+    "retirementIndexBucketEntries": 65536,
+    "retirementIndexCacheEntries": 65536
+  },
+  "performance": {
+    "activeRecordsSubject": 4096,
+    "retiredIdentitiesSubject": 1000000,
+    "coldStartP95Milliseconds": 2000,
+    "mutationP50Milliseconds": 25,
+    "mutationP95Milliseconds": 100,
+    "mutationP99Milliseconds": 250,
+    "millionRetiredPeakRssMiB": 256,
+    "millionRetiredIndexRebuildP95Milliseconds": 30000,
+    "maximumWriteAmplificationBytesPerStateTransition": 262144
+  },
+  "requiredMeasurements": [
+    "4096-active-record cold restart",
+    "1000000-retired-identity cold restart",
+    "p50-p95-p99 prepared-invoking-terminal mutation latency",
+    "fsync count by state transition",
+    "WAL and snapshot byte growth",
+    "peak resident set size",
+    "retirement index deterministic rebuild time"
+  ],
+  "measurements": null,
+  "qualificationRule": "Every performance field is a blocking ceiling. Missing, cancelled, skipped or non-identical-SHA evidence is failure, not not-applicable."
+}

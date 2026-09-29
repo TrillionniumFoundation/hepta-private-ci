@@ -301,8 +301,45 @@ fn run_bounded_launcher(
     }
 }
 
+#[cfg(any(target_os = "macos", all(unix, not(target_os = "macos"))))]
+fn restrict_launcher_environment(command: &mut Command) {
+    command.env_clear();
+    command.env("PATH", "/usr/bin:/bin");
+    for key in [
+        "HOME",
+        "TMPDIR",
+        "LANG",
+        "LC_ALL",
+        "LC_MESSAGES",
+        "DISPLAY",
+        "WAYLAND_DISPLAY",
+        "XDG_RUNTIME_DIR",
+        "DBUS_SESSION_BUS_ADDRESS",
+    ] {
+        if let Some(value) = std::env::var_os(key) {
+            command.env(key, value);
+        }
+    }
+}
+
+#[cfg(target_os = "macos")]
 fn notification_supported() -> bool {
-    !cfg!(target_os = "windows")
+    Path::new("/usr/bin/osascript").is_file()
+}
+
+#[cfg(target_os = "windows")]
+fn notification_supported() -> bool {
+    false
+}
+
+#[cfg(all(unix, not(target_os = "macos")))]
+fn notification_supported() -> bool {
+    Path::new("/usr/bin/notify-send").is_file()
+}
+
+#[cfg(not(any(unix, target_os = "windows")))]
+fn notification_supported() -> bool {
+    false
 }
 
 #[cfg(target_os = "macos")]
@@ -311,7 +348,8 @@ fn launch_notification(
     body: &str,
     active: &Arc<AtomicUsize>,
 ) -> Result<ExitStatus, ShellError> {
-    let mut command = Command::new("osascript");
+    let mut command = Command::new("/usr/bin/osascript");
+    restrict_launcher_environment(&mut command);
     command.args([
         "-e",
         "on run argv",
@@ -344,7 +382,8 @@ fn launch_notification(
     body: &str,
     active: &Arc<AtomicUsize>,
 ) -> Result<ExitStatus, ShellError> {
-    let mut command = Command::new("notify-send");
+    let mut command = Command::new("/usr/bin/notify-send");
+    restrict_launcher_environment(&mut command);
     command.arg("--").arg(title).arg(body);
     run_bounded_launcher(command, "send notification", active)
 }
@@ -453,6 +492,22 @@ mod tests {
                 .allowed
         );
         let _ = std::fs::remove_file(outside);
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn native_launchers_use_absolute_system_paths_and_cleared_environments() {
+        let mut command = if cfg!(target_os = "macos") {
+            Command::new("/usr/bin/osascript")
+        } else {
+            Command::new("/usr/bin/notify-send")
+        };
+        command.env("HEPTA_UNTRUSTED_TEST_VALUE", "must-not-survive");
+        restrict_launcher_environment(&mut command);
+        assert!(Path::new(command.get_program()).is_absolute());
+        assert!(command
+            .get_envs()
+            .all(|(key, _)| key != "HEPTA_UNTRUSTED_TEST_VALUE"));
     }
 }
 
