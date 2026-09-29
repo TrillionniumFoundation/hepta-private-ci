@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   native:
-    if: github.event.pull_request.head.ref == 'fix/kernel-evidence-production-closure'
+    if: contains(fromJSON('["fix/kernel-evidence-production-closure","codex/kernel-evidence-protocol-closure-20260929"]'), github.event.pull_request.head.ref)
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     strategy:
