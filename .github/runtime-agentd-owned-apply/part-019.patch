@@ -1,0 +1,121 @@
+
++        )
++        result = verify(root)
++        self.assertFalse(result["productAdaptersOptionalized"])
++
+     def test_optionalization_claim_requires_real_feature(self) -> None:
+         root = self.fixture()
+         path = root / "codex-rs/hepta-agentd/DEPENDENCY_BOUNDARY.json"
+diff --git a/scripts/qualification/test_runtime_agentd_scope.py b/scripts/qualification/test_runtime_agentd_scope.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..111c878621877a059fe5c2daad8caeb6dca904ad
+--- /dev/null
++++ b/scripts/qualification/test_runtime_agentd_scope.py
+@@ -0,0 +1,107 @@
++import json
++from pathlib import Path
++import tempfile
++import unittest
++
++from scripts.qualification.runtime_agentd_scope import evaluate
++from scripts.qualification.runtime_agentd_scope import normalize
++from scripts.qualification.runtime_agentd_scope import parse_name_status
++from scripts.qualification.runtime_agentd_scope import qualification_roots
++
++
++class RuntimeAgentdScopeTests(unittest.TestCase):
++    def fixture(self) -> Path:
++        temp = tempfile.TemporaryDirectory()
++        self.addCleanup(temp.cleanup)
++        root = Path(temp.name)
++        (root / "docs/delivery").mkdir(parents=True)
++        (root / "codex-rs/hepta-agentd").mkdir(parents=True)
++        (root / "codex-rs/hepta-types").mkdir(parents=True)
++        (root / "codex-rs/hepta-infer-worker-host").mkdir(parents=True)
++        (root / "codex-rs/hepta-infer-core").mkdir(parents=True)
++        (root / "codex-rs/Cargo.toml").write_text(
++            """[workspace]\nmembers = [\"hepta-agentd\"]\n\n[workspace.dependencies]\ncodex-hepta-types = { path = \"hepta-types\" }\n""",
++            encoding="utf-8",
++        )
++        (root / "codex-rs/hepta-agentd/Cargo.toml").write_text(
++            """[package]\nname = \"codex-hepta-agentd\"\nversion = \"0.0.0\"\n\n[dependencies]\ncodex-hepta-types = { workspace = true }\n\n[dev-dependencies]\ncodex-hepta-infer-worker-host = { path = \"../hepta-infer-worker-host\" }\n""",
++            encoding="utf-8",
++        )
++        (root / "codex-rs/hepta-types/Cargo.toml").write_text(
++            """[package]\nname = \"codex-hepta-types\"\nversion = \"0.0.0\"\n""",
++            encoding="utf-8",
++        )
++        (root / "codex-rs/hepta-infer-worker-host/Cargo.toml").write_text(
++            """[package]\nname = \"codex-hepta-infer-worker-host\"\nversion = \"0.0.0\"\n\n[target.'cfg(unix)'.dependencies]\ncodex-hepta-infer-core = { path = \"../hepta-infer-core\" }\n""",
++            encoding="utf-8",
++        )
++        (root / "codex-rs/hepta-infer-core/Cargo.toml").write_text(
++            """[package]\nname = \"codex-hepta-infer-core\"\nversion = \"0.0.0\"\n""",
++            encoding="utf-8",
++        )
++        ownership = {
++            "moduleNamespaces": [
++                {
++                    "module": "runtime.agentd",
++                    "rootBindings": [{"path": "codex-rs/hepta-agentd", "mode": "exclusive"}],
++                }
++            ]
++        }
++        (root / "docs/delivery/PATH_OWNERSHIP.json").write_text(
++            json.dumps(ownership), encoding="utf-8"
++        )
++        return root
++
++    def test_agentd_and_direct_local_dependencies_are_selected(self) -> None:
++        root = self.fixture()
++        roots = qualification_roots(root)
++        self.assertIn("codex-rs/hepta-agentd", roots)
++        self.assertIn("codex-rs/hepta-types", roots)
++        self.assertIn("codex-rs/hepta-infer-worker-host", roots)
++        self.assertNotIn("codex-rs/hepta-infer-core", roots)
++        result = evaluate(root, ["codex-rs/hepta-types/src/lib.rs"])
++        self.assertTrue(result["applicable"])
++        self.assertEqual(
++            result["matchedPaths"],
++            [{"path": "codex-rs/hepta-types/src/lib.rs", "root": "codex-rs/hepta-types"}],
++        )
++
++    def test_unrelated_module_is_not_selected(self) -> None:
++        result = evaluate(self.fixture(), ["apps/hepta-native/src/main.rs"])
++        self.assertFalse(result["applicable"])
++        self.assertEqual(result["matchedPaths"], [])
++
++    def test_qualification_infrastructure_is_selected(self) -> None:
++        result = evaluate(
++            self.fixture(), ["scripts/qualification/runtime_agentd_scope.py"]
++        )
++        self.assertTrue(result["applicable"])
++
++    def test_deleted_and_both_renamed_paths_are_selected(self) -> None:
++        changed = parse_name_status(
++            b"D\0codex-rs/hepta-agentd/src/old.rs\0"
++            b"R100\0codex-rs/hepta-agentd/src/from.rs\0apps/elsewhere/to.rs\0"
++        )
++        self.assertEqual(
++            changed,
++            [
++                "codex-rs/hepta-agentd/src/old.rs",
++                "codex-rs/hepta-agentd/src/from.rs",
++                "apps/elsewhere/to.rs",
++            ],
++        )
++        self.assertTrue(evaluate(self.fixture(), changed)["applicable"])
++
++    def test_truncated_or_non_utf8_git_output_is_rejected(self) -> None:
++        for value in (b"R100\0only-one-path\0", b"M\0bad-\xff\0"):
++            with self.subTest(value=value), self.assertRaises(ValueError):
++                parse_name_status(value)
++
++    def test_unsafe_path_is_rejected(self) -> None:
++        for value in ("../escape", "/absolute", "", "line\nbreak"):
++            with self.subTest(value=value), self.assertRaises(ValueError):
++                normalize(value)
++
++
++if __name__ == "__main__":
++    unittest.main()
