@@ -1,0 +1,161 @@
+ead_bounded<R>(mut reader: R, maximum: usize) -> Result<Vec<u8>, AgentdError>
++async fn read_bounded<R>(reader: R, maximum: usize) -> Result<Vec<u8>, AgentdError>
+ where
+     R: AsyncRead + Unpin,
+ {
+diff --git a/codex-rs/hepta-agentd/src/runtime_codex_executor_tests.rs b/codex-rs/hepta-agentd/src/runtime_codex_executor_tests.rs
+index c6436df86c5f4c1a896e8c48f4d22871198f29b6..d9385ae14e1e13ce2cc36a97d76ddab44192b227 100644
+--- a/codex-rs/hepta-agentd/src/runtime_codex_executor_tests.rs
++++ b/codex-rs/hepta-agentd/src/runtime_codex_executor_tests.rs
+@@ -452,6 +452,10 @@ printf '%s\n' '__TERMINAL_JSON__'
+         .await
+         .expect_err("drift must conflict");
+     assert!(error.to_string().contains("semantic drift"), "{error}");
++    assert_eq!(
++        error.runtime_codex_failure_class(),
++        Some(crate::RuntimeCodexFailureClassV1::DurableIdentityConflict),
++    );
+     assert_eq!(std::fs::read(&fixture.counter).expect("counter"), b"x");
+ }
+ 
+@@ -500,6 +504,14 @@ fn supervisor_installation_is_scoped_to_an_explicit_handle() {
+         .snapshot()
+         .expect("second independent snapshot");
+     assert!(first_after.closed);
++    assert_eq!(
++        first_after.admission_failure,
++        Some(crate::RuntimeCodexFailureClassV1::AdmissionClosed),
++    );
++    assert_eq!(
++        first_after.recommended_action,
++        Some(crate::RuntimeCodexCallerActionV1::ExitProcess),
++    );
+     assert!(!second_after.closed);
+ }
+ 
+diff --git a/codex-rs/hepta-agentd/src/runtime_codex_policy.rs b/codex-rs/hepta-agentd/src/runtime_codex_policy.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..88151326133daf79ee67a97de1165b9abfb9c041
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/runtime_codex_policy.rs
+@@ -0,0 +1,127 @@
++use std::fmt;
++
++/// Stable runtime.codex failure categories for caller policy and operations.
++///
++/// The category is intentionally independent of product adapters and payloads so
++/// the daemon core can decide whether to retry, reconcile, stop, or require an
++/// operator without parsing error text.
++#[non_exhaustive]
++#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
++pub enum RuntimeCodexFailureClassV1 {
++    AdmissionClosed,
++    StartupReconciliation,
++    QueueCapacity,
++    CurrentTrustExpired,
++    GenerationFenced,
++    DurableIdentityConflict,
++    PreparedUnfenced,
++    FencedUnresolved,
++    PersistenceOutcomeUnknown,
++    TerminalWitnessConflict,
++    ShutdownRecoveryRequired,
++    OwnerFailed,
++}
++
++/// Required caller action for a stable runtime.codex failure category.
++#[non_exhaustive]
++#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
++pub enum RuntimeCodexCallerActionV1 {
++    RetryLater,
++    RetrySameIdentity,
++    ReconcileOnly,
++    OperatorRequired,
++    ExitProcess,
++}
++
++impl RuntimeCodexFailureClassV1 {
++    pub const fn as_str(self) -> &'static str {
++        match self {
++            Self::AdmissionClosed => "admission_closed",
++            Self::StartupReconciliation => "startup_reconciliation",
++            Self::QueueCapacity => "queue_capacity",
++            Self::CurrentTrustExpired => "current_trust_expired",
++            Self::GenerationFenced => "generation_fenced",
++            Self::DurableIdentityConflict => "durable_identity_conflict",
++            Self::PreparedUnfenced => "prepared_unfenced",
++            Self::FencedUnresolved => "fenced_unresolved",
++            Self::PersistenceOutcomeUnknown => "persistence_outcome_unknown",
++            Self::TerminalWitnessConflict => "terminal_witness_conflict",
++            Self::ShutdownRecoveryRequired => "shutdown_recovery_required",
++            Self::OwnerFailed => "owner_failed",
++        }
++    }
++
++    pub const fn caller_action(self) -> RuntimeCodexCallerActionV1 {
++        match self {
++            Self::QueueCapacity | Self::StartupReconciliation => {
++                RuntimeCodexCallerActionV1::RetryLater
++            }
++            Self::CurrentTrustExpired | Self::PreparedUnfenced => {
++                RuntimeCodexCallerActionV1::RetrySameIdentity
++            }
++            Self::FencedUnresolved
++            | Self::PersistenceOutcomeUnknown
++            | Self::ShutdownRecoveryRequired => RuntimeCodexCallerActionV1::ReconcileOnly,
++            Self::DurableIdentityConflict | Self::TerminalWitnessConflict => {
++                RuntimeCodexCallerActionV1::OperatorRequired
++            }
++            Self::AdmissionClosed | Self::GenerationFenced | Self::OwnerFailed => {
++                RuntimeCodexCallerActionV1::ExitProcess
++            }
++        }
++    }
++
++    pub const fn blocks_readiness(self) -> bool {
++        !matches!(self, Self::QueueCapacity)
++    }
++
++    pub const fn permits_immediate_retry(self) -> bool {
++        false
++    }
++
++    pub const fn permits_same_identity_retry(self) -> bool {
++        matches!(
++            self.caller_action(),
++            RuntimeCodexCallerActionV1::RetryLater
++                | RuntimeCodexCallerActionV1::RetrySameIdentity
++        )
++    }
++
++    pub const fn requires_reconciliation(self) -> bool {
++        matches!(
++            self.caller_action(),
++            RuntimeCodexCallerActionV1::ReconcileOnly
++        )
++    }
++
++    pub const fn requires_operator(self) -> bool {
++        matches!(
++            self.caller_action(),
++            RuntimeCodexCallerActionV1::OperatorRequired
++        )
++    }
++}
++
++impl RuntimeCodexCallerActionV1 {
++    pub const fn as_str(self) -> &'static str {
++        match self {
++            Self::RetryLater => "retry_later",
++            Self::RetrySameIdentity => "retry_same_identity",
++            Self::ReconcileOnly => "reconcile_only",
++            Self::OperatorRequired => "operator_required",
++            Self::ExitProcess => "exit_process",
++        }
++    }
++}
++
++impl fmt::Display for RuntimeCodexFailureClassV1 {
++    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
++        formatter.write_str(self.as_str())
++    
