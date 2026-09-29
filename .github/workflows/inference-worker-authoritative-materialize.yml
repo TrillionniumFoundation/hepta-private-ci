@@ -210,6 +210,7 @@ jobs:
               'docs/modules/inference.worker/RECOVERY_AND_OPERATIONS.md',
               'docs/modules/inference.worker/TECHNICAL.md',
               'scripts/inference_worker_command_receipt.py',
+              'scripts/run_inference_worker_qualification_lane.sh',
               'scripts/test_inference_worker_command_receipt.py',
           ])
           actual = sorted(filter(None, subprocess.check_output(
