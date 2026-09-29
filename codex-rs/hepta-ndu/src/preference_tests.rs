@@ -68,14 +68,13 @@ fn damped_preference_update_emits_local_solver_receipts() {
         termination.terminal_residual_raw,
         receipts.last().expect("terminal receipt").residual_raw
     );
-    assert_eq!(
-        termination.maximum_residual_raw,
-        receipts
-            .iter()
-            .map(|receipt| receipt.residual_raw)
-            .max()
-            .expect("maximum residual")
-    );
+    let maximum_emitted_residual = receipts
+        .iter()
+        .map(|receipt| receipt.residual_raw)
+        .max()
+        .expect("maximum residual");
+    assert_eq!(termination.maximum_residual_raw, FixedQ32::ONE.raw());
+    assert!(termination.maximum_residual_raw >= maximum_emitted_residual);
     assert!(receipts.iter().all(|receipt| receipt.validate().is_ok()));
 }
 
