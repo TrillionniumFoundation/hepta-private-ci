@@ -6,12 +6,13 @@ on:
       - codex/runtime-codex-full-convergence-20260929
     paths:
       - .github/workflows/runtime-codex-materialize-once.yml
+      - scripts/runtime-codex-terminal-outbox-migration.py
 
 permissions:
   contents: write
 
 concurrency:
-  group: runtime-codex-materialize-once-rog-${{ github.ref }}
+  group: runtime-codex-materialize-once-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -42,6 +43,7 @@ jobs:
           python3 scripts/runtime-codex-cleanup-migration.py
           python3 scripts/runtime-codex-storage-fixup.py
           python3 scripts/runtime-codex-process-crash-migration.py
+          python3 scripts/runtime-codex-terminal-outbox-migration.py
           python3 scripts/runtime-codex-qualification-fixup.py
           python3 scripts/runtime-codex-finalize-map.py
           python3 scripts/runtime-codex-finalize-map-followup.py
