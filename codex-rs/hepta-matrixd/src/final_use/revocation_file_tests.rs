@@ -4,6 +4,7 @@ use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
 
 use codex_hepta_contracts::FinalUseRevocations;
+use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 
 use super::*;

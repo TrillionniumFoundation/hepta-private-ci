@@ -111,7 +111,7 @@ fn read_private_json_if_changed<T: DeserializeOwned>(
     maximum: usize,
     accepted_stamp: Option<PrivateFileStamp>,
 ) -> Result<Option<PrivateJsonSnapshot<T>>, MatrixFinalUseBrokerError> {
-    let (file, before) = open_private_file(path, maximum)?;
+    let (mut file, before) = open_private_file(path, maximum)?;
     if let Some(accepted_stamp) = accepted_stamp {
         if accepted_stamp == before {
             verify_private_file(path, &file, maximum, before)?;
@@ -123,7 +123,7 @@ fn read_private_json_if_changed<T: DeserializeOwned>(
     }
 
     let mut bytes = Vec::new();
-    (&file)
+    file.by_ref()
         .take((maximum + 1) as u64)
         .read_to_end(&mut bytes)
         .map_err(|_| MatrixFinalUseBrokerError::UnsafePath)?;

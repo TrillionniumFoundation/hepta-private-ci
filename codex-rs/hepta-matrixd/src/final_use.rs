@@ -80,8 +80,7 @@ impl MatrixFinalUseBroker {
         }
         let broker_socket = PathBuf::from(&config.broker_socket);
         validate_private_socket(&broker_socket)?;
-        let (revocations, head) =
-            RevocationFeed::open(revocations_file, REVOCATIONS_MAX_BYTES)?;
+        let (revocations, head) = RevocationFeed::open(revocations_file, REVOCATIONS_MAX_BYTES)?;
         let authority = FinalUseAuthority::open_state_dir(
             &layout.matrix_root().join(STATE_DIRECTORY),
             config.signer_id,
@@ -347,14 +346,14 @@ mod tests {
         let signer = SigningKey::from_bytes(&[71; 32]);
         let revocations_file = root.join("revocations.json");
         write_private_json(&revocations_file, &initial)?;
-        let (revocations, initial) =
+        let (revocations, initial_head) =
             RevocationFeed::open(revocations_file.clone(), REVOCATIONS_MAX_BYTES)?;
         replace_private_json(&revocations_file, &file_head)?;
         let authority = FinalUseAuthority::open_state_dir(
             &root.join("authority"),
             "matrix-broker-test".to_string(),
             signer.verifying_key().to_bytes(),
-            initial,
+            initial_head,
         )?;
         let broker = MatrixFinalUseBroker {
             authority,
@@ -408,8 +407,7 @@ mod tests {
     #[cfg(unix)]
     #[test]
     fn stronger_revocation_file_is_adopted_monotonically() -> TestResult {
-        let (_directory, broker) =
-            test_broker(head(17, 1, &[]), head(17, 2, &["revoked-a"]))?;
+        let (_directory, broker) = test_broker(head(17, 1, &[]), head(17, 2, &["revoked-a"]))?;
         broker.refresh_revocations()?;
         let frontier = broker.authority.revocation_head()?;
         assert_eq!(frontier.authority_epoch, 17);
