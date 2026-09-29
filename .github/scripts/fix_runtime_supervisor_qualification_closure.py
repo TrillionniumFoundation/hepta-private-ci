@@ -78,4 +78,13 @@ workflow = workflow.replace(
     path_anchor,
     path_anchor + '      - "codex-rs/hepta-supervisor/**"\n',
 )
+test_anchor = "          cargo test -p codex-hepta-supervisor --lib\n"
+if workflow.count(test_anchor) != 1:
+    raise RuntimeError("Lane B supervisor test anchor changed")
+workflow = workflow.replace(
+    test_anchor,
+    test_anchor
+    + "          cargo test -p codex-hepta-supervisor --test authority_distribution\n",
+    1,
+)
 write(workflow_name, workflow)
