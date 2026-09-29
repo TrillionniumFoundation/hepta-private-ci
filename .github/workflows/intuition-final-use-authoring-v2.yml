@@ -1,0 +1,155 @@
+name: intuition.policy final-use source authoring v2
+
+on:
+  push:
+    branches: [codex/intuition-policy-final-use-recovery-20260929]
+    paths:
+      - ".github/workflows/intuition-final-use-authoring-v2.yml"
+      - "codex-rs/hepta-agentd/src/intuition_policy_final_use.rs"
+      - "scripts/intuition_final_use_apply.py"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: intuition-final-use-authoring-v2-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  TARGET_BRANCH: codex/intuition-policy-final-use-recovery-20260929
+  CLEAN_PARENT: 696447e733e22e425cd05691d98f4fe0ef63f759
+  AUTHORING_HEAD: ${{ github.sha }}
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  apply-verify-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Check out exact staged authoring head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.AUTHORING_HEAD }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Rebuild source from the fixed clean parent
+        shell: bash
+        run: |
+          exec > >(tee "$RUNNER_TEMP/intuition-final-use-authoring.log") 2>&1
+          set -euxo pipefail
+          test "$(git rev-parse HEAD)" = "$AUTHORING_HEAD"
+          test "$(git cat-file -t "$CLEAN_PARENT")" = commit
+          cp codex-rs/hepta-agentd/src/intuition_policy_final_use.rs \
+            "$RUNNER_TEMP/intuition_policy_final_use.rs"
+          cp scripts/intuition_final_use_apply.py \
+            "$RUNNER_TEMP/intuition_final_use_apply.py"
+          git reset --hard "$CLEAN_PARENT"
+          cp "$RUNNER_TEMP/intuition_policy_final_use.rs" \
+            codex-rs/hepta-agentd/src/intuition_policy_final_use.rs
+          python3 "$RUNNER_TEMP/intuition_final_use_apply.py"
+          test -f codex-rs/hepta-agentd/src/intuition_policy_final_use.rs
+          test -f scripts/intuition_legacy_consumers.py
+          test ! -e .github/intuition-authoring-patch
+          test ! -e .github/workflows/intuition-carrier-export.yml
+          test ! -e .github/workflows/intuition-final-use-authoring-v2.yml
+
+      - name: Preserve reconstructed source patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/intuition-final-use-source"
+          mkdir -p "$out"
+          git diff --binary "$CLEAN_PARENT" > "$out/source.patch"
+          sha256sum "$out/source.patch" > "$out/source.patch.sha256"
+          cp "$RUNNER_TEMP/intuition-final-use-authoring.log" "$out/authoring.log"
+
+      - name: Upload reconstructed source evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intuition-final-use-source-${{ env.AUTHORING_HEAD }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/intuition-final-use-source/
+          if-no-files-found: error
+          retention-days: 3
+
+      - name: Set up repository CI dependencies
+        uses: ./.github/actions/setup-ci
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt,clippy
+
+      - name: Format exact Rust source
+        working-directory: codex-rs
+        run: cargo fmt --all
+
+      - name: Verify generated boundaries and state tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/intuition_legacy_consumers.py
+          python3 -m unittest discover -s scripts/tests -p 'test_intuition*.py' -v
+
+      - name: Run policy, authentication, host and durable-boundary tests
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-intuition
+          cargo test --locked -p codex-hepta-intelligence intuition
+          cargo test --locked -p codex-hepta-agentd --test intuition_policy_product_v3
+          cargo test --locked -p codex-hepta-agentd --test intuition_policy_commit_boundary
+          cargo test --locked -p codex-hepta-agentd --lib intuition_policy
+
+      - name: Run strict lint on the affected product package
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-agentd --lib --tests -- -D warnings
+
+      - name: Verify format and repository hygiene
+        shell: bash
+        run: |
+          set -euo pipefail
+          (cd codex-rs && cargo fmt --all -- --check)
+          git diff --check
+          test -z "$(find . -type d -name __pycache__ -print -quit)"
+          test -z "$(git diff --name-only "$CLEAN_PARENT" | grep -E '^\.github/(intuition-authoring-patch|workflows/intuition-(carrier-export|final-use-authoring-v2)\.yml)$' || true)"
+
+      - name: Publish one clean fixed-parent source commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "OpenAI source authoring"
+          git config user.email "assistant@openai.invalid"
+          git add -A
+          tree="$(git write-tree)"
+          commit="$(printf '%s\n\n%s\n' \
+            'fix(intuition): revalidate authority at final use' \
+            'Preserve the sole ledger owner while moving fresh wall-clock, generation, and generator/evaluator/observer qualification checks under its serialization boundary. Add typed boundary domains, stage telemetry, legacy product-consumer drift checks, and keep known durable commits as recovery evidence.' \
+            | git commit-tree "$tree" -p "$CLEAN_PARENT")"
+          git push --force-with-lease="refs/heads/$TARGET_BRANCH:$AUTHORING_HEAD" \
+            origin "$commit:refs/heads/$TARGET_BRANCH"
+          printf 'published=%s\n' "$commit"
+
+      - name: Retain diagnostics on failure
+        if: failure()
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/intuition-final-use-failure"
+          mkdir -p "$out"
+          git status --short > "$out/status.txt"
+          git diff --binary > "$out/worktree.patch"
+          git diff --cached --binary > "$out/index.patch"
+          git log -1 --format=fuller > "$out/head.txt"
+          cp "$RUNNER_TEMP/intuition-final-use-authoring.log" "$out/authoring.log" 2>/dev/null || true
+
+      - name: Upload failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intuition-final-use-failure-${{ env.AUTHORING_HEAD }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/intuition-final-use-failure/
+          if-no-files-found: warn
+          retention-days: 3
