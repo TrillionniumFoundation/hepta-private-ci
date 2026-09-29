@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import tomllib
 import unittest
 from pathlib import Path
 
@@ -28,6 +29,41 @@ def event_block(path: Path) -> str:
 
 
 class HeptaCiConsolidationTests(unittest.TestCase):
+    def test_product_fixture_group_does_not_change_workload_deadlines_or_retries(self):
+        config = tomllib.loads((ROOT / "codex-rs/.config/nextest.toml").read_text())
+        self.assertEqual(
+            config["test-groups"]["hepta_product_lifecycle"], {"max-threads": 1}
+        )
+        overrides = config["profile"]["default"]["overrides"]
+        group = [
+            item
+            for item in overrides
+            if item.get("test-group") == "hepta_product_lifecycle"
+        ]
+        self.assertEqual(len(group), 1)
+        self.assertEqual(
+            group[0],
+            {
+                "filter": "package(codex-hepta-agentd) & test(automation_evolution::)",
+                "test-group": "hepta_product_lifecycle",
+            },
+        )
+        soak = [
+            item
+            for item in overrides
+            if "normal_product_bounded_evolution_under_concurrent_load"
+            in item["filter"]
+        ]
+        self.assertEqual(len(soak), 1)
+        self.assertEqual(
+            soak[0]["slow-timeout"], {"period": "60s", "terminate-after": 4}
+        )
+        self.assertNotIn("retries", soak[0])
+        self.assertEqual(
+            config["profile"]["default"]["slow-timeout"],
+            {"period": "30s", "terminate-after": 2},
+        )
+
     def test_only_two_aggregate_workflows_automatically_run_for_pull_requests(
         self,
     ) -> None:

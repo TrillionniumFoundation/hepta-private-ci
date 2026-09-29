@@ -103,6 +103,17 @@ test-group = 'hepta_durable_capacity'
 slow-timeout = { period = "30s", terminate-after = 20 }
 retries = 0
 
+# Each product-lifecycle case launches real processes and durable writers on
+# the same runner filesystem. Bound contention BETWEEN independent fixtures;
+# the soak still drives its own four concurrent request streams. This changes
+# neither workload size, per-request deadlines, retries, nor test watchdogs.
+[test-groups.hepta_product_lifecycle]
+max-threads = 1
+
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-agentd) & test(automation_evolution::)'
+test-group = 'hepta_product_lifecycle'
+
 # This single experiment starts and restarts the real product repeatedly. Keep
 # each request/terminal/recovery deadline in the test; its total wall budget is
 # not the one-process default. The opt-in round count remains bounded to 32.
