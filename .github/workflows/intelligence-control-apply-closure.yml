@@ -17,12 +17,12 @@ permissions:
 
 jobs:
   apply:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
         with:
-          fetch-depth: 3
+          fetch-depth: 4
       - name: Verify, apply and remove transport
         shell: bash
         env:
@@ -30,7 +30,7 @@ jobs:
           EXPECTED_PATCH_SHA256: 851c60e292318b61cbee37e753c0bcdc5f93388cf1757b2a4edf7e95245c4f92
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD~2)" = "$EXPECTED_SOURCE_PARENT"
+          test "$(git rev-parse HEAD~3)" = "$EXPECTED_SOURCE_PARENT"
           cat .github/intelligence-control-closure.patch.part-* > "$RUNNER_TEMP/intelligence-control-closure.patch"
           printf '%s  %s\n' "$EXPECTED_PATCH_SHA256" "$RUNNER_TEMP/intelligence-control-closure.patch" | sha256sum --check --strict
           git apply --check "$RUNNER_TEMP/intelligence-control-closure.patch"
