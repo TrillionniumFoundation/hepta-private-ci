@@ -68,7 +68,13 @@
       "id": "utility.ndu.registered-numeric",
       "kind": "registered_owner_evaluation_source_consumer",
       "path": "codex-rs/hepta-ndu/src/owner.rs",
-      "mustContain": ["pub fn evaluate(", "let admitted = registry", ".admit_utility_axes(", "admitted.admission.admission_digest", "production_policy_digest_with_numeric_registry"]
+      "mustContain": ["pub fn evaluate(", "let admitted = registry", ".admit_utility_axes(", "admitted.admission.admission_digest", "production_policy_digest_with_numeric_registry", "self.admit_snapshot_contributions(&mut contributions)?", "numeric_snapshot::snapshot_policy_digest"]
+    },
+    {
+      "id": "utility.ndu.pinned-numeric-v2",
+      "kind": "owner_pinned_numeric_snapshot_consumer",
+      "path": "codex-rs/hepta-ndu/src/owner_numeric_snapshot.rs",
+      "mustContain": ["pub fn open_with_numeric_registry_snapshot(", "pub fn verify_utility_signal_v2(", ".verify_for_snapshot(", "pub(super) fn snapshot_policy_digest(", "owner_numeric_snapshot_tests.rs"]
     },
     {
       "id": "utility.ndu.random-stream-owner",

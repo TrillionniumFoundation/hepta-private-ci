@@ -20,6 +20,7 @@ EXPECTED = [
     "wire.rust-product-codec",
     "wire.rust-manifest-codec",
     "utility.ndu.registered-numeric",
+    "utility.ndu.pinned-numeric-v2",
     "utility.ndu.random-stream-owner",
     "runtime.codex.prompt-delivery",
     "learning.ledger.prompt-delivery",

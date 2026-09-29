@@ -1,8 +1,9 @@
 # `platform.types` current implementation
 
 This is the stable module-level entrypoint for executable state. Read
-`TECHNICAL.md`, `PROTOCOL_AND_QUALIFICATION_V1.md` and
-`OPTIMIZATION_CLOSURE_20260929.md` together. The detailed source map remains
+`TECHNICAL.md`, `PROTOCOL_AND_QUALIFICATION_V1.md`,
+`OPTIMIZATION_CLOSURE_20260929.md` and `NDU_SNAPSHOT_INTEGRATION_20260929.md`
+together. The detailed source map remains
 `docs/lane-a-foundation/platform.types/CURRENT_IMPLEMENTATION.md`.
 
 ## 1. Normative precedence
@@ -73,14 +74,19 @@ is bounded by the same number.
 | --- | --- | --- |
 | Codex/Agentd and Learning Ledger | frozen Prompt V1 compatibility | durable policy and actual execution |
 | Runtime Supervisor | validated topology candidate | selection and effect-boundary authority |
-| NDU numeric owner | V1 registered receipt and configured immutable registry digest | authenticated provisioning and any generation-sensitive V2 migration |
+| NDU numeric owner | legacy V1 plus explicitly configured owner-pinned V2 | authenticated snapshot provisioning, durable anti-rollback and lifecycle rotation |
 | NDU random-stream admission | manifest bound to seed, namespace, generator, episode, decision and span | actual random execution and counter consumption |
 | Supervisor external-system admission | system/class, host identity and witness equality | current witness authorization and observation freshness |
 | Supervisor sensor admission | sensor/class, hardware, generation, clock and failure policy | trusted-clock validity at final use |
 
-The `RegisteredNumericConversionReceiptV2` API and its owner-pinned verifier
-exist in `platform.types`; this does not prove that the ordinary NDU V1 owner
-already uses V2. Earlier prose that conflated these states is superseded here.
+`NduAuthenticatedOwnerV1::open_with_numeric_registry_snapshot` now composes V2
+through the existing ordinary `evaluate` method, evaluator, projection store and
+kernel final-use mutation chain. It freezes the independently supplied snapshot
+in a versioned policy commitment. `verify_utility_signal_v2` uses
+`verify_for_snapshot`; explicit V2 owners reject silent V1 admission downgrade.
+The old constructors retain V1 behavior. No deployment caller is automatically
+reconfigured, and no snapshot authentication or global freshness is inferred
+from the type. See `NDU_SNAPSHOT_INTEGRATION_20260929.md` for rotation and tests.
 All admission receipts remain `NonAuthorizingPosture::DENY_ALL`.
 
 ## 5. Prompt capacity and migration
@@ -106,6 +112,8 @@ It keeps schema/catalog parity, semantic capacity, provenance, full rustdoc API,
 MSRV, native tests/strict lint, Miri, coverage fuzz and document bundles distinct.
 The consumer matrix still runs all 24 checks; successful but empty Rust test
 selections cannot qualify. Consumer logs are retained under each deep candidate.
+The source-consumer map now includes the named owner-pinned V2 module; provenance
+also enumerates that module and its eight native regression tests.
 
 All five product fuzz decoders now assert that successful admission implies a
 computable digest and semantic-preserving encode/decode roundtrip. This remains

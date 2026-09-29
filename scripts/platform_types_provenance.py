@@ -21,6 +21,8 @@ PATHS = (
     "codex-rs/hepta-ndu/src/lib.rs",
     "codex-rs/hepta-ndu/src/numeric_admission.rs",
     "codex-rs/hepta-ndu/src/owner.rs",
+    "codex-rs/hepta-ndu/src/owner_numeric_snapshot.rs",
+    "codex-rs/hepta-ndu/src/owner_numeric_snapshot_tests.rs",
     "codex-rs/hepta-ndu/src/random_stream_owner.rs",
     "codex-rs/hepta-supervisor/src/lib.rs",
     "codex-rs/hepta-supervisor/src/module_runtime.rs",
