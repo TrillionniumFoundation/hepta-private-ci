@@ -16,7 +16,7 @@ concurrency:
 jobs:
   apply-verify-push:
     name: Apply, format, verify, and publish source patch
-    runs-on: macos-15
+    runs-on: windows-2025
     timeout-minutes: 75
     steps:
       - name: Check out exact authoring head
@@ -42,7 +42,7 @@ jobs:
           test "$(git hash-object .github/intuition-authoring-patch/part-000.b64)" = "$part_000"
           test "$(git hash-object .github/intuition-authoring-patch/part-001.b64)" = "$part_001"
           test "$(git hash-object .github/intuition-authoring-patch/part-002.b64)" = "$part_002"
-          python3 - <<'PY'
+          python - <<'PY'
           import base64
           import hashlib
           import pathlib
@@ -50,15 +50,17 @@ jobs:
           root = pathlib.Path('.github/intuition-authoring-patch')
           encoded = b''.join((root / f'part-{index:03}.b64').read_bytes() for index in range(3))
           patch = base64.b64decode(encoded, validate=True)
-          target = pathlib.Path(__import__('os').environ['RUNNER_TEMP']) / 'intuition-source.patch'
+          target = pathlib.Path('.git/intuition-source.patch')
           target.write_bytes(patch)
           digest = hashlib.sha256(patch).hexdigest()
-          (target.parent / 'intuition-source.patch.sha256').write_text(f'{digest}  {target.name}\n')
+          pathlib.Path('.git/intuition-source.patch.sha256').write_text(
+              f'{digest}  {target.name}\n', encoding='utf-8'
+          )
           print(digest)
           PY
           git diff --quiet
-          git apply --check "$RUNNER_TEMP/intuition-source.patch"
-          git apply --index "$RUNNER_TEMP/intuition-source.patch"
+          git apply --check .git/intuition-source.patch
+          git apply --index .git/intuition-source.patch
           rm -rf .github/intuition-authoring-patch
           rm -f .github/workflows/intuition-source-export.yml
       - name: Set up repository CI dependencies
@@ -75,8 +77,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 scripts/intuition_legacy_consumers.py
-          python3 -m unittest discover -s scripts/tests -p 'test_intuition*.py' -v
+          python scripts/intuition_legacy_consumers.py
+          python -m unittest discover -s scripts/tests -p 'test_intuition*.py' -v
       - name: Run final-use and existing boundary regressions
         working-directory: codex-rs
         shell: bash
@@ -112,7 +114,7 @@ jobs:
             | git commit-tree "$tree" -p "$CLEAN_PARENT")"
           git push --force-with-lease="refs/heads/$TARGET_BRANCH:$GITHUB_SHA" \
             origin "$commit:refs/heads/$TARGET_BRANCH"
-          printf '%s\n' "$commit" | tee "$RUNNER_TEMP/final-source-sha.txt"
+          printf '%s\n' "$commit" > .git/final-source-sha.txt
       - name: Retain authoring diagnostics on failure
         if: failure()
         shell: bash
@@ -123,8 +125,8 @@ jobs:
           git status --short > "$output/status.txt"
           git diff --binary > "$output/worktree.patch"
           git diff --cached --binary > "$output/index.patch"
-          cp "$RUNNER_TEMP/intuition-source.patch" "$output/source.patch" 2>/dev/null || true
-          cp "$RUNNER_TEMP/intuition-source.patch.sha256" "$output/source.patch.sha256" 2>/dev/null || true
+          cp .git/intuition-source.patch "$output/source.patch" 2>/dev/null || true
+          cp .git/intuition-source.patch.sha256 "$output/source.patch.sha256" 2>/dev/null || true
       - name: Upload failure diagnostics
         if: failure()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
