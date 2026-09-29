@@ -206,6 +206,8 @@ mod tests {
     #[test]
     fn explicit_hard_timeout_terminates_a_real_child_process() {
         const CHILD: &str = "HEPTA_INTELLIGENCE_WATCHDOG_TEST_CHILD";
+        const SAMPLES: &str = "HEPTA_INTELLIGENCE_HARD_KILL_SAMPLES";
+        const OUTPUT: &str = "HEPTA_INTELLIGENCE_HARD_KILL_OUTPUT";
         if std::env::var_os(CHILD).is_some() {
             let telemetry = Arc::new(AgentdIntelligenceTelemetryV1::new(1));
             let completion = WorkerCompletionV1::supervise(
@@ -225,28 +227,53 @@ mod tests {
             std::thread::sleep(Duration::from_secs(10));
             panic!("hard timeout did not terminate child");
         }
+        let samples = std::env::var(SAMPLES)
+            .ok()
+            .and_then(|value| value.parse::<usize>().ok())
+            .unwrap_or(1)
+            .clamp(1, 32);
         let executable = std::env::current_exe().expect("test binary");
         let test_name = format!(
             "{}::explicit_hard_timeout_terminates_a_real_child_process",
             module_path!().split_once("::").expect("crate prefix").1,
         );
-        let mut child = std::process::Command::new(executable)
-            .args(["--exact", &test_name, "--nocapture"])
-            .env(CHILD, "1")
-            .spawn()
-            .expect("child process");
-        let deadline = Instant::now() + Duration::from_secs(15);
-        let status = loop {
-            if let Some(status) = child.try_wait().expect("observe child") {
-                break status;
-            }
-            if Instant::now() >= deadline {
-                let _ = child.kill();
-                let _ = child.wait();
-                panic!("child watchdog deadline exceeded");
-            }
-            std::thread::sleep(Duration::from_millis(5));
-        };
-        assert_eq!(status.code(), Some(70));
+        let mut samples_nanos = Vec::with_capacity(samples);
+        for _ in 0..samples {
+            let started = Instant::now();
+            let mut child = std::process::Command::new(&executable)
+                .args(["--exact", &test_name, "--nocapture"])
+                .env(CHILD, "1")
+                .spawn()
+                .expect("child process");
+            let deadline = Instant::now() + Duration::from_secs(15);
+            let status = loop {
+                if let Some(status) = child.try_wait().expect("observe child") {
+                    break status;
+                }
+                if Instant::now() >= deadline {
+                    let _ = child.kill();
+                    let _ = child.wait();
+                    panic!("child watchdog deadline exceeded");
+                }
+                std::thread::sleep(Duration::from_millis(5));
+            };
+            assert_eq!(status.code(), Some(70));
+            samples_nanos.push(
+                u64::try_from(started.elapsed().as_nanos())
+                    .expect("hard-timeout duration fits u64"),
+            );
+        }
+        if let Some(path) = std::env::var_os(OUTPUT) {
+            let record = serde_json::json!({
+                "schema": "hepta.intelligence-control.hard-kill-profile.v1",
+                "sampleCount": samples_nanos.len(),
+                "samplesNanos": samples_nanos,
+            });
+            std::fs::write(
+                path,
+                serde_json::to_vec_pretty(&record).expect("encode hard-kill profile"),
+            )
+            .expect("write hard-kill profile");
+        }
     }
 }
