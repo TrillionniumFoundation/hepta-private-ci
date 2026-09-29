@@ -2,10 +2,12 @@
 
 ## Current source candidate, 2026-09-29
 
-The ordinary owner and Agentd selected-cut integration is materialized in
-commit `fb6d8dc76579ac2b00e23c15cc4508e684c335b8`. It is not waiting for a source
-repair script to create the product caller. This is a source candidate, not a
-successful Rust, exact-merge, production or release receipt.
+The ordinary owner and Agentd selected-cut integration is materialized in the
+immutable source parent `de6bfea76ab71d17b29ad45f24693224ab14b388`
+(tree `71bafea3b6f02b28eaa0eb35309ec04e1f2aeaa0`). The implementation map is a
+documentation-only descendant and binds exact source objects back to that parent.
+This is a source candidate, not a successful Rust, exact-merge, production or
+release receipt.
 
 Read the documents together:
 
@@ -68,13 +70,13 @@ SQL and row-bound behavior only, NOT execution of the Rust owner or product E2E.
 ## Evidence boundary
 
 The original qualification run `36533405154` failed; inspected logs showed
-locked-dependency and formatting blockers. No historical run is reused as a
-pass for this candidate. The explicitly scoped source-preparation workflow may
-make ordinary lock/format/map commits; it is not the read-only qualification
-workflow and cannot certify product execution. Its queue entry is not a pass.
+locked-dependency and formatting blockers. No historical run is reused as a pass
+for this candidate. The explicitly scoped source-preparation workflow may make
+ordinary lock/format/map commits; it is not the read-only qualification workflow
+and cannot certify product execution. Its queue entry is not a pass.
 
-The implementation map must be refreshed to the exact prepared source parent
-and checked before acceptance. Full package/Clippy/golden/product suites, both
+The implementation map is bound to the exact prepared source parent and must be
+checked on every candidate. Full package/Clippy/golden/product suites, both
 source-head and deterministic-merge receipts, target-host qualification,
 independent review, acceptance and release remain required. All production,
 execution-proof, independent-acceptance, activation and release flags remain
