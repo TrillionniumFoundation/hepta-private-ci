@@ -97,7 +97,31 @@ jobs:
           record production-gate-tests 9 python3 scripts/platform_wire_production_gate.py --self-test
           record lifecycle-tests 0 python3 scripts/platform_wire_status.py self-test
           record lifecycle-document 0 python3 scripts/platform_wire_status.py check-doc
-          record registry-shape 0 python3 -c 'import json; p=json.load(open("docs/modules/platform.wire/PRODUCTION_PRODUCERS.json", encoding="utf-8")); assert p == {"schema":"hepta.platform-wire.production-producers.v1","producers":[]}'
+          record registry-shape 0 python3 -c '
+          import json, re
+          path = "docs/modules/platform.wire/PRODUCTION_PRODUCERS.json"
+          payload = json.load(open(path, encoding="utf-8"))
+          assert set(payload) == {"schema", "producers"}
+          assert payload["schema"] == "hepta.platform-wire.production-producers.v1"
+          rows = payload["producers"]
+          assert isinstance(rows, list) and len(rows) <= 32
+          required = {"workflow_path", "artifact_name", "plan_sha256", "host_profile", "deployment_profile", "owner", "enabled"}
+          seen = set()
+          for row in rows:
+              assert isinstance(row, dict) and set(row) == required
+              workflow = row["workflow_path"]
+              artifact = row["artifact_name"]
+              plan = row["plan_sha256"]
+              assert isinstance(workflow, str) and re.fullmatch(r"\.github/workflows/[A-Za-z0-9._/-]+\.ya?ml", workflow)
+              assert isinstance(artifact, str) and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}", artifact)
+              assert isinstance(plan, str) and re.fullmatch(r"[0-9a-f]{64}", plan)
+              for field in ("host_profile", "deployment_profile", "owner"):
+                  assert isinstance(row[field], str) and 0 < len(row[field].strip()) <= 128
+              assert type(row["enabled"]) is bool
+              identity = (workflow, artifact, plan)
+              assert identity not in seen
+              seen.add(identity)
+          '
           record clean-tree 0 bash -c 'git diff --exit-code && git diff --cached --exit-code && test -z "$(git status --porcelain --untracked-files=all)"'
           exit "$status"
 
