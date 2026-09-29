@@ -33,20 +33,34 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
           test -z "$(git status --porcelain=v1)"
+          fingerprint() {
+            local label="$1"
+            printf '%s ' "$label"
+            shasum -a 256 scripts/runtime-codex-process-crash-migration.py
+            wc -l scripts/runtime-codex-process-crash-migration.py
+          }
+          fingerprint initial
           python3 scripts/runtime-codex-maintainer.py
+          fingerprint maintainer
           python3 scripts/runtime-codex-maintainer-followup.py
+          fingerprint maintainer-followup
           python3 scripts/runtime-codex-durability-migration.py
+          fingerprint durability
           python3 scripts/runtime-codex-durability-fixup.py
+          fingerprint durability-fixup
           python3 scripts/runtime-codex-quarantine-migration.py
+          fingerprint quarantine
           python3 scripts/runtime-codex-deadline-migration.py
+          fingerprint deadline
           python3 scripts/runtime-codex-cleanup-migration.py
+          fingerprint cleanup
           python3 scripts/runtime-codex-storage-fixup.py
+          fingerprint storage-fixup
           echo '--- generated process-crash migration identity ---'
-          wc -l scripts/runtime-codex-process-crash-migration.py
           grep -n -E 'current-lease guarded run|def patch_native_execution|unguarded =|guarded_with_existing_lease' scripts/runtime-codex-process-crash-migration.py || true
-          nl -ba scripts/runtime-codex-process-crash-migration.py | sed -n '430,525p'
-          echo '--- generator diff ---'
-          git diff -- scripts/runtime-codex-process-crash-migration.py
+          nl -ba scripts/runtime-codex-process-crash-migration.py | sed -n '420,500p'
+          echo '--- generator diff stat ---'
+          git diff --stat -- scripts/runtime-codex-process-crash-migration.py
           exit 42
       - name: Commit exactly the materialized source
         if: ${{ success() }}
