@@ -11,18 +11,14 @@ use crate::GrantRequestV1;
 use crate::PlannerStoreRecordKindV1;
 use crate::PlannerStoreRecordV1;
 
-const DISPATCH_CLAIM_IDENTITY_DOMAIN: &[u8] =
-    b"hepta.control.execution-dispatch-claim-identity.v1";
-const DISPATCH_CLAIM_BINDING_DOMAIN_V1: &[u8] =
-    b"hepta.control.execution-dispatch-claim.v1";
-const DISPATCH_CLAIM_BINDING_DOMAIN_V2: &[u8] =
-    b"hepta.control.execution-dispatch-claim.v2";
+const DISPATCH_CLAIM_IDENTITY_DOMAIN: &[u8] = b"hepta.control.execution-dispatch-claim-identity.v1";
+const DISPATCH_CLAIM_BINDING_DOMAIN_V1: &[u8] = b"hepta.control.execution-dispatch-claim.v1";
+const DISPATCH_CLAIM_BINDING_DOMAIN_V2: &[u8] = b"hepta.control.execution-dispatch-claim.v2";
 pub(super) const DISPATCH_CLAIM_ENVELOPE_DOMAIN_V1: &[u8] =
     b"hepta.control.execution-dispatch-claim-envelope.v1";
 const DISPATCH_CLAIM_ENVELOPE_DOMAIN_V2: &[u8] =
     b"hepta.control.execution-dispatch-claim-envelope.v2";
-const TERMINAL_ENVELOPE_DOMAIN_V1: &[u8] =
-    b"hepta.control.execution-terminal-envelope.v1";
+const TERMINAL_ENVELOPE_DOMAIN_V1: &[u8] = b"hepta.control.execution-terminal-envelope.v1";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub(super) struct DecodedDispatchClaimV1 {
@@ -81,8 +77,7 @@ pub(super) fn decode_dispatch_claim(
     };
     if encoded_claim_digest != expected_claim_digest
         || record.payload_digest != expected_claim_digest
-        || record.operation_identity_digest
-            != dispatch_claim_identity(operation_identity_digest)
+        || record.operation_identity_digest != dispatch_claim_identity(operation_identity_digest)
     {
         return Err(store_error("dispatch claim envelope digest mismatch"));
     }
@@ -217,8 +212,7 @@ pub(super) fn validate_grant(
     {
         return Err(PlannerExecutionError::GrantMismatch);
     }
-    if now_micros >= grant.expires_at_micros
-        || grant.expires_at_micros > request.expires_at_micros
+    if now_micros >= grant.expires_at_micros || grant.expires_at_micros > request.expires_at_micros
     {
         return Err(PlannerExecutionError::GrantExpired);
     }
@@ -359,10 +353,7 @@ fn read_u64(bytes: &[u8], offset: &mut usize) -> Result<u64, PlannerExecutionErr
     Ok(u64::from_be_bytes(value))
 }
 
-fn read_digest(
-    bytes: &[u8],
-    offset: &mut usize,
-) -> Result<Digest32, PlannerExecutionError> {
+fn read_digest(bytes: &[u8], offset: &mut usize) -> Result<Digest32, PlannerExecutionError> {
     let end = (*offset)
         .checked_add(32)
         .ok_or_else(|| store_error("execution envelope offset overflow"))?;
@@ -376,11 +367,7 @@ fn read_digest(
 }
 
 fn push_id(bytes: &mut Vec<u8>, value: &str) {
-    bytes.extend_from_slice(
-        &u64::try_from(value.len())
-            .unwrap_or(u64::MAX)
-            .to_be_bytes(),
-    );
+    bytes.extend_from_slice(&u64::try_from(value.len()).unwrap_or(u64::MAX).to_be_bytes());
     bytes.extend_from_slice(value.as_bytes());
 }
 

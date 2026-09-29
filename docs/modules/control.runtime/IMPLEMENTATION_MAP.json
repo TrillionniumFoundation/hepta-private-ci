@@ -9,8 +9,7 @@
   "executionSpecification": "docs/readiness/CONTROL_RUNTIME_EXECUTION.md",
   "convergenceGuide": "docs/readiness/CONTROL_RUNTIME_CONVERGENCE.md",
   "sourceRoot": [
-    "codex-rs/hepta-control-plane",
-    "codex-rs/hepta-agentd"
+    "codex-rs/hepta-control-plane"
   ],
   "authorityDelta": "none",
   "productCallerState": "read_only_agentd_composed_global_effect_uncomposed",
@@ -38,7 +37,10 @@
       "designOperation": "collect_snapshot",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "planner::collect_snapshot"
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner.rs",
+          "symbol": "collect_snapshot"
+        }
       ],
       "sourcePathExists": true
     },
@@ -80,7 +82,10 @@
       "designOperation": "prepare_plan",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "planner::prepare_plan"
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner.rs",
+          "symbol": "prepare_plan"
+        }
       ],
       "sourcePathExists": true
     },
@@ -106,7 +111,10 @@
       "designOperation": "bind_ndu_plan_evaluation_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "planner::bind_ndu_plan_evaluation_v1"
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner.rs",
+          "symbol": "bind_ndu_plan_evaluation_v1"
+        }
       ],
       "sourcePathExists": true
     },
@@ -142,7 +150,10 @@
       "designOperation": "finalize_plan",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "planner::finalize_plan"
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner.rs",
+          "symbol": "finalize_plan"
+        }
       ],
       "sourcePathExists": true
     },
@@ -183,7 +194,10 @@
       "designOperation": "request_execution_grants",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "planner::request_execution_grants"
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner.rs",
+          "symbol": "request_execution_grants"
+        }
       ],
       "sourcePathExists": true
     },
@@ -212,7 +226,10 @@
       "designOperation": "authenticated_context_final_use",
       "mappingClass": "product_adapter",
       "delegatedCallees": [
-        "plan_observed_context"
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_context.rs",
+          "symbol": "plan_observed_context"
+        }
       ],
       "sourcePathExists": true
     },
@@ -247,7 +264,10 @@
       "designOperation": "PlannerJournalV1",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "planner_journal_core::PlannerJournalV1"
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_journal_core.rs",
+          "symbol": "PlannerJournalV1"
+        }
       ],
       "sourcePathExists": true
     },
@@ -298,14 +318,17 @@
       "designOperation": "PlannerStoreV1",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "planner_store_core::PlannerStoreV1"
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store_core.rs",
+          "symbol": "PlannerStoreV1"
+        }
       ],
       "sourcePathExists": true
     },
     {
       "operation": "execute_planner_request_v1",
       "nativeSymbol": "codex_hepta_control_plane::execute_planner_request_v1",
-      "sourcePath": "codex-rs/hepta-control-plane/src/planner_execution.rs",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_execution_durable.rs",
       "inputs": [
         "GrantRequestV1",
         "independent authority consumer",
@@ -359,16 +382,25 @@
       "designOperation": "execute_planner_request_v1",
       "mappingClass": "owner_boundary",
       "delegatedCallees": [
-        "PlannerAuthorityConsumerV1",
-        "PlannerEffectExecutorV1",
-        "PlannerDispatchClaimSinkV1"
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_execution.rs",
+          "symbol": "PlannerAuthorityConsumerV1"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_execution.rs",
+          "symbol": "PlannerEffectExecutorV1"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_execution.rs",
+          "symbol": "PlannerDispatchClaimSinkV1"
+        }
       ],
       "sourcePathExists": true
     },
     {
       "operation": "reconcile_planner_request_v1",
       "nativeSymbol": "codex_hepta_control_plane::reconcile_planner_request_v1",
-      "sourcePath": "codex-rs/hepta-control-plane/src/planner_execution.rs",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_execution_durable.rs",
       "inputs": [
         "previously claimed operation identity",
         "effect owner reconciliation port"
@@ -391,7 +423,10 @@
       "designOperation": "reconcile_planner_request_v1",
       "mappingClass": "owner_boundary",
       "delegatedCallees": [
-        "PlannerEffectExecutorV1::reconcile"
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_execution.rs",
+          "symbol": "PlannerEffectExecutorV1::reconcile"
+        }
       ],
       "sourcePathExists": true
     },
@@ -420,7 +455,10 @@
       "designOperation": "organ_fanout_receipt",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "organ_runtime_core::OrganHostV1::dispatch_once"
+        {
+          "path": "codex-rs/hepta-control-plane/src/organ_runtime_core.rs",
+          "symbol": "OrganHostV1::dispatch_once"
+        }
       ],
       "sourcePathExists": true
     }
@@ -460,12 +498,10 @@
   },
   "laneId": "LANE-D-OBJECTIVE-VALUE",
   "declaredRoots": [
-    "codex-rs/hepta-control-plane",
-    "codex-rs/hepta-agentd"
+    "codex-rs/hepta-control-plane"
   ],
   "resolvedRoots": [
-    "codex-rs/hepta-control-plane",
-    "codex-rs/hepta-agentd"
+    "codex-rs/hepta-control-plane"
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
@@ -497,5 +533,17 @@
     "independent semantic review",
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
+  ],
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "nativeSymbol": "read_with_retrieval_context_and_learning",
+      "state": "authenticated_read_only_planning_source_composed"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "nativeSymbol": "revalidate_with_retrieval_context",
+      "state": "complete_plan_receipt_and_monotonic_lease_final_use_source_composed"
+    }
   ]
 }

@@ -209,7 +209,7 @@
           ]
         },
         "productCaller": {
-          "state": "request_local_read_only_established_authenticated_production_not_composed",
+          "state": "request_local_read_only_established_authenticated_owner_source_candidate_not_product_composed",
           "evidence": [
             "codex-rs/hepta-agentd/src/cognitive_context.rs",
             "codex-rs/hepta-control-plane/src/planner_context.rs",
@@ -306,8 +306,14 @@
           "evidence": []
         },
         "productCaller": {
-          "state": "not_established",
-          "evidence": []
+          "state": "read_only_agentd_composed_global_effect_uncomposed",
+          "evidence": [
+            "docs/modules/control.runtime/CURRENT_STATE.json",
+            "codex-rs/hepta-agentd/src/cognitive_context.rs",
+            "codex-rs/hepta-control-plane/src/planner_context.rs",
+            "codex-rs/hepta-control-plane/src/planner_ndu.rs",
+            "codex-rs/hepta-control-plane/src/planner_context_tests.rs"
+          ]
         },
         "productionWriter": {
           "state": "not_established",

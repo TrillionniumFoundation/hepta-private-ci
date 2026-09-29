@@ -122,9 +122,7 @@ pub struct OrganFanoutReceiptV1 {
 }
 
 mod organ_fanout_recovery;
-pub use organ_fanout_recovery::{
-    OrganFanoutContinuationV1, OrganFanoutRecoveryErrorV1,
-};
+pub use organ_fanout_recovery::{OrganFanoutContinuationV1, OrganFanoutRecoveryErrorV1};
 
 mod authenticated_context;
 pub use authenticated_context::{

@@ -4,18 +4,18 @@
 //! persists an exact claim before dispatch, returns conclusive receipts
 //! idempotently, and reconciles unresolved operations without replay.
 
-#[path = "planner_execution_core.rs"]
-mod core;
 #[path = "planner_execution_codec.rs"]
 mod codec;
+#[path = "planner_execution_core.rs"]
+mod core;
 #[path = "planner_execution_durable.rs"]
 mod durable;
 #[path = "planner_execution_pending.rs"]
 mod pending;
 
-pub use core::PlannerAuthorizationDecisionV1;
 pub use core::PlannerAuthorityConsumerV1;
 pub use core::PlannerAuthorityRevalidationV1;
+pub use core::PlannerAuthorizationDecisionV1;
 pub use core::PlannerEffectDispositionV1;
 pub use core::PlannerEffectExecutorV1;
 pub use core::PlannerEffectObservationV1;

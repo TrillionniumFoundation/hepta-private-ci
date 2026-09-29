@@ -26,10 +26,7 @@ fn current_authority_claims_before_execution_and_records_terminal_receipt() {
     assert_eq!(authority.revalidations, 1);
     assert!(!receipt.authority.grants_any());
     assert_eq!(store.records().len(), 2);
-    assert_eq!(
-        store.records()[0].kind,
-        PlannerStoreRecordKindV1::Selection
-    );
+    assert_eq!(store.records()[0].kind, PlannerStoreRecordKindV1::Selection);
     assert_eq!(
         store.records()[1].kind,
         PlannerStoreRecordKindV1::TerminalReceipt
@@ -65,7 +62,10 @@ fn repeated_request_never_replays_after_a_durable_claim() {
         &mut executor,
         &mut sink,
     ));
-    assert_eq!(reconciled.disposition, PlannerEffectDispositionV1::Succeeded);
+    assert_eq!(
+        reconciled.disposition,
+        PlannerEffectDispositionV1::Succeeded
+    );
     assert_eq!(reconciled.grant_digest, digest("grant-one"));
     assert_eq!(executor.executions, 1);
     assert_eq!(executor.reconciliations, 1);
@@ -181,7 +181,10 @@ fn durable_v2_claim_reopens_after_unknown_executor_without_timestamp_conflict() 
         &mut executor,
         &mut reopened,
     ));
-    assert_eq!(reconciled.disposition, PlannerEffectDispositionV1::Succeeded);
+    assert_eq!(
+        reconciled.disposition,
+        PlannerEffectDispositionV1::Succeeded
+    );
     assert_eq!(reconciled.grant_digest, digest("original-grant"));
     assert_eq!(executor.executions, 1);
     assert_eq!(executor.reconciliations, 1);
@@ -194,8 +197,7 @@ fn durable_v2_claim_reopens_after_unknown_executor_without_timestamp_conflict() 
 fn legacy_v1_claim_reopens_into_reconciliation_without_redispatch() {
     let directory = must(tempdir());
     let request = request();
-    let operation_identity_digest =
-        super::super::super::codec::operation_identity_digest(&request);
+    let operation_identity_digest = super::super::super::codec::operation_identity_digest(&request);
     let request_digest = super::super::super::codec::request_digest(&request);
     let grant_digest = digest("legacy-grant");
     let claimed_at_micros = 900;
@@ -206,8 +208,7 @@ fn legacy_v1_claim_reopens_into_reconciliation_without_redispatch() {
         request.final_payload_digest,
         claimed_at_micros,
     );
-    let mut envelope =
-        super::super::super::codec::DISPATCH_CLAIM_ENVELOPE_DOMAIN_V1.to_vec();
+    let mut envelope = super::super::super::codec::DISPATCH_CLAIM_ENVELOPE_DOMAIN_V1.to_vec();
     envelope.extend_from_slice(operation_identity_digest.as_array());
     envelope.extend_from_slice(request_digest.as_array());
     envelope.extend_from_slice(grant_digest.as_array());
@@ -280,7 +281,10 @@ fn durable_store_reopens_and_converges_without_redispatch() {
         &mut executor,
         &mut reopened,
     ));
-    assert_eq!(reconciled.disposition, PlannerEffectDispositionV1::Succeeded);
+    assert_eq!(
+        reconciled.disposition,
+        PlannerEffectDispositionV1::Succeeded
+    );
     assert_eq!(executor.executions, 1);
     assert_eq!(executor.reconciliations, 1);
     assert_eq!(reopened.records().len(), 3);
@@ -478,8 +482,7 @@ fn reopened_terminal_without_claim_is_rejected_before_authority_or_effect() {
 fn reopened_terminal_must_match_the_original_claim_grant() {
     let directory = must(tempdir());
     let request = request();
-    let operation_identity_digest =
-        super::super::super::codec::operation_identity_digest(&request);
+    let operation_identity_digest = super::super::super::codec::operation_identity_digest(&request);
     let request_digest = super::super::super::codec::request_digest(&request);
 
     let mut store = must(PlannerStoreV1::open(

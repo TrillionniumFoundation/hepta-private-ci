@@ -17,12 +17,12 @@ use super::codec::decode_dispatch_claim;
 use super::codec::decode_terminal_receipt;
 use super::codec::store_error;
 use super::codec::validate_existing_operation;
+use crate::MAX_PENDING_DISPATCH_PAGE_ITEMS_V1;
 use crate::PlannerPendingDispatchPageV1;
 use crate::PlannerPendingDispatchV1;
 use crate::PlannerStoreRecordKindV1;
 use crate::PlannerStoreRecordV1;
 use crate::PlannerStoreV1;
-use crate::MAX_PENDING_DISPATCH_PAGE_ITEMS_V1;
 
 const DISPATCH_CLAIM_ENVELOPE_DOMAIN_V1: &[u8] =
     b"hepta.control.execution-dispatch-claim-envelope.v1";
@@ -133,8 +133,7 @@ impl PlannerStoreV1 {
                         .as_ref()
                         .map(|receipt| receipt.disposition),
                     Some(
-                        PlannerEffectDispositionV1::Succeeded
-                            | PlannerEffectDispositionV1::Failed
+                        PlannerEffectDispositionV1::Succeeded | PlannerEffectDispositionV1::Failed
                     )
                 ) {
                     return None;
@@ -309,9 +308,8 @@ mod tests {
     #[test]
     fn pending_dispatch_inventory_is_bounded_and_round_robin() {
         let directory = tempdir().expect("temporary planner store");
-        let mut store =
-            PlannerStoreV1::open(directory.path(), PlannerStoreConfigV1::default())
-                .expect("open planner store");
+        let mut store = PlannerStoreV1::open(directory.path(), PlannerStoreConfigV1::default())
+            .expect("open planner store");
         append_claim(&mut store, "first");
         append_claim(&mut store, "second");
         append_claim(&mut store, "third");
@@ -341,9 +339,8 @@ mod tests {
     #[test]
     fn pending_dispatch_inventory_excludes_conclusive_and_keeps_indeterminate() {
         let directory = tempdir().expect("temporary planner store");
-        let mut store =
-            PlannerStoreV1::open(directory.path(), PlannerStoreConfigV1::default())
-                .expect("open planner store");
+        let mut store = PlannerStoreV1::open(directory.path(), PlannerStoreConfigV1::default())
+            .expect("open planner store");
         let conclusive = append_claim(&mut store, "conclusive");
         append_terminal(
             &mut store,
@@ -372,9 +369,8 @@ mod tests {
     #[test]
     fn pending_dispatch_inventory_rejects_invalid_bounds_and_poisoned_state() {
         let directory = tempdir().expect("temporary planner store");
-        let mut store =
-            PlannerStoreV1::open(directory.path(), PlannerStoreConfigV1::default())
-                .expect("open planner store");
+        let mut store = PlannerStoreV1::open(directory.path(), PlannerStoreConfigV1::default())
+            .expect("open planner store");
         assert!(matches!(
             store.pending_dispatches_page(None, 0),
             Err(PlannerExecutionError::Store(message))
@@ -386,9 +382,7 @@ mod tests {
                 if message.contains("limit is out of bounds")
         ));
 
-        store.set_failpoint(Some(
-            PlannerStoreFailpointV1::AfterLogSyncBeforePublish,
-        ));
+        store.set_failpoint(Some(PlannerStoreFailpointV1::AfterLogSyncBeforePublish));
         let error = store
             .append(
                 PlannerStoreRecordKindV1::Decision,
@@ -399,9 +393,7 @@ mod tests {
             .expect_err("failpoint must poison store");
         assert!(matches!(
             error,
-            PlannerStoreError::Failpoint(
-                PlannerStoreFailpointV1::AfterLogSyncBeforePublish
-            )
+            PlannerStoreError::Failpoint(PlannerStoreFailpointV1::AfterLogSyncBeforePublish)
         ));
         assert!(matches!(
             store.pending_dispatches_page(None, 1),

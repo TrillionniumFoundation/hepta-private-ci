@@ -87,9 +87,10 @@ impl OrganFanoutReceiptV1 {
             return Err(OrganFanoutRecoveryErrorV1::ReceiptEvidenceMismatch);
         }
 
-        let first_incomplete = self.targets.iter().position(|target| {
-            target.disposition != OrganTargetDeliveryDispositionV1::Delivered
-        });
+        let first_incomplete = self
+            .targets
+            .iter()
+            .position(|target| target.disposition != OrganTargetDeliveryDispositionV1::Delivered);
         let Some(first_incomplete) = first_incomplete else {
             if self.error.is_some() {
                 return Err(OrganFanoutRecoveryErrorV1::ErrorDispositionMismatch);
@@ -138,9 +139,7 @@ impl OrganFanoutReceiptV1 {
                 || target.output_digest.is_some()
                 || target.fault_code.is_some()
             {
-                return Err(OrganFanoutRecoveryErrorV1::InvalidDispositionOrder {
-                    route_index,
-                });
+                return Err(OrganFanoutRecoveryErrorV1::InvalidDispositionOrder { route_index });
             }
         }
 

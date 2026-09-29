@@ -6,8 +6,6 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 
-use super::collect_snapshot;
-use super::prepare_plan;
 use super::super::planner::OwnerReadinessV1;
 use super::super::planner::OwnerSummaryV1;
 use super::super::planner::PlanCandidateV1;
@@ -16,6 +14,8 @@ use super::super::planner::PlannerError;
 use super::super::planner::PlanningRequestV1;
 use super::super::planner::ResourceReservationV1;
 use super::super::planner::SnapshotRequestV1;
+use super::collect_snapshot;
+use super::prepare_plan;
 
 fn must<T, E: Debug>(result: Result<T, E>) -> T {
     match result {

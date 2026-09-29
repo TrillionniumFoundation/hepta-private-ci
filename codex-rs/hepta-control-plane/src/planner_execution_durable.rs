@@ -3,9 +3,9 @@
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 
-use super::PlannerAuthorizationDecisionV1;
 use super::PlannerAuthorityConsumerV1;
 use super::PlannerAuthorityRevalidationV1;
+use super::PlannerAuthorizationDecisionV1;
 use super::PlannerEffectDispositionV1;
 use super::PlannerEffectExecutorV1;
 use super::PlannerEffectObservationV1;
@@ -74,9 +74,9 @@ where
         now_micros,
     )?;
     match state {
-        PlannerDispatchClaimOutcomeV1::Acquired => execute_claimed_dispatch(
-            request, now_micros, authority, executor, sink, &grant,
-        ),
+        PlannerDispatchClaimOutcomeV1::Acquired => {
+            execute_claimed_dispatch(request, now_micros, authority, executor, sink, &grant)
+        }
         existing => resolve_existing_dispatch(request, executor, sink, existing),
     }
 }
@@ -115,9 +115,9 @@ where
             }
             core::reconcile_planner_request_v1(request, original_grant_digest, executor, sink)
         }
-        Some(PlannerDispatchClaimOutcomeV1::Acquired) => Err(store_error(
-            "invalid acquired state during reconciliation",
-        )),
+        Some(PlannerDispatchClaimOutcomeV1::Acquired) => {
+            Err(store_error("invalid acquired state during reconciliation"))
+        }
         None => Err(store_error(
             "reconciliation requires a durable dispatch claim",
         )),
@@ -138,12 +138,7 @@ where
         PlannerDispatchClaimOutcomeV1::ExistingTerminal { receipt } => Ok(*receipt),
         PlannerDispatchClaimOutcomeV1::ExistingClaim {
             original_grant_digest,
-        } => core::reconcile_planner_request_v1(
-            request,
-            original_grant_digest,
-            executor,
-            sink,
-        ),
+        } => core::reconcile_planner_request_v1(request, original_grant_digest, executor, sink),
         PlannerDispatchClaimOutcomeV1::Acquired => Err(store_error(
             "invalid acquired state while resolving durable dispatch",
         )),
@@ -168,13 +163,7 @@ where
             let mut prevalidated = PrevalidatedAuthorityV1 {
                 grant: grant.clone(),
             };
-            core::execute_planner_request_v1(
-                request,
-                now_micros,
-                &mut prevalidated,
-                executor,
-                sink,
-            )
+            core::execute_planner_request_v1(request, now_micros, &mut prevalidated, executor, sink)
         }
         PlannerAuthorityRevalidationV1::Revoked => {
             persist_not_dispatched(
@@ -406,9 +395,12 @@ impl PlannerDispatchClaimSinkV1 for PlannerStoreV1 {
                 if matches!(
                     receipt.disposition,
                     PlannerEffectDispositionV1::Succeeded | PlannerEffectDispositionV1::Failed
-                ) => Ok(Some(PlannerDispatchClaimOutcomeV1::ExistingTerminal {
-                receipt: Box::new(receipt),
-            })),
+                ) =>
+            {
+                Ok(Some(PlannerDispatchClaimOutcomeV1::ExistingTerminal {
+                    receipt: Box::new(receipt),
+                }))
+            }
             Some(_) | None => Ok(Some(PlannerDispatchClaimOutcomeV1::ExistingClaim {
                 original_grant_digest: claim.grant_digest,
             })),

@@ -46,8 +46,7 @@ const DISPATCH_CLAIM_ENVELOPE_DOMAIN_V1: &[u8] =
     b"hepta.control.execution-dispatch-claim-envelope.v1";
 const DISPATCH_CLAIM_ENVELOPE_DOMAIN_V2: &[u8] =
     b"hepta.control.execution-dispatch-claim-envelope.v2";
-const TERMINAL_ENVELOPE_DOMAIN_V1: &[u8] =
-    b"hepta.control.execution-terminal-envelope.v1";
+const TERMINAL_ENVELOPE_DOMAIN_V1: &[u8] = b"hepta.control.execution-terminal-envelope.v1";
 
 pub struct PlannerStoreV1 {
     root: PathBuf,
@@ -114,12 +113,7 @@ impl PlannerStoreV1 {
         if is_reserved_execution_record(kind, envelope) {
             return Err(PlannerStoreError::InvalidConfiguration);
         }
-        self.append_owner_record(
-            kind,
-            operation_identity_digest,
-            payload_digest,
-            envelope,
-        )
+        self.append_owner_record(kind, operation_identity_digest, payload_digest, envelope)
     }
 
     /// Crate-local write port used only after the execution state machine has
@@ -134,12 +128,7 @@ impl PlannerStoreV1 {
         if !is_reserved_execution_record(kind, envelope) {
             return Err(PlannerStoreError::InvalidConfiguration);
         }
-        self.append_owner_record(
-            kind,
-            operation_identity_digest,
-            payload_digest,
-            envelope,
-        )
+        self.append_owner_record(kind, operation_identity_digest, payload_digest, envelope)
     }
 
     fn append_owner_record(
@@ -201,10 +190,7 @@ impl PlannerStoreV1 {
         self.finish_mutation(result, MutationBoundary::Compaction)
     }
 
-    pub fn backup_to(
-        &mut self,
-        destination: impl AsRef<Path>,
-    ) -> Result<(), PlannerStoreError> {
+    pub fn backup_to(&mut self, destination: impl AsRef<Path>) -> Result<(), PlannerStoreError> {
         self.ensure_healthy()?;
         let destination = destination.as_ref();
         fs::create_dir_all(destination)?;
@@ -306,10 +292,7 @@ impl PlannerOwnerLockV1 {
     }
 }
 
-fn preflight_log(
-    root: &Path,
-    config: PlannerStoreConfigV1,
-) -> Result<(), PlannerStoreError> {
+fn preflight_log(root: &Path, config: PlannerStoreConfigV1) -> Result<(), PlannerStoreError> {
     if config.maximum_records == 0 || config.maximum_envelope_bytes == 0 {
         return Err(PlannerStoreError::InvalidConfiguration);
     }
@@ -348,9 +331,7 @@ fn preflight_log(
                 .try_into()
                 .map_err(|_| PlannerStoreError::Truncated)?,
         ));
-        if envelope_length
-            > u64::try_from(config.maximum_envelope_bytes).unwrap_or(u64::MAX)
-        {
+        if envelope_length > u64::try_from(config.maximum_envelope_bytes).unwrap_or(u64::MAX) {
             return Err(PlannerStoreError::EnvelopeTooLarge {
                 actual: usize::try_from(envelope_length).unwrap_or(usize::MAX),
                 maximum: config.maximum_envelope_bytes,
@@ -580,7 +561,10 @@ mod hardening_tests {
             digest("claim-payload"),
             DISPATCH_CLAIM_ENVELOPE_DOMAIN_V2,
         );
-        assert!(matches!(claim, Err(PlannerStoreError::InvalidConfiguration)));
+        assert!(matches!(
+            claim,
+            Err(PlannerStoreError::InvalidConfiguration)
+        ));
         assert!(store.records().is_empty());
         assert!(!store.recovery_required());
     }
@@ -602,7 +586,8 @@ mod hardening_tests {
     #[test]
     fn public_owner_lock_excludes_a_second_open() {
         let directory = tempdir().unwrap();
-        let first = PlannerStoreV1::open(directory.path(), PlannerStoreConfigV1::default()).unwrap();
+        let first =
+            PlannerStoreV1::open(directory.path(), PlannerStoreConfigV1::default()).unwrap();
         let second = PlannerStoreV1::open(directory.path(), PlannerStoreConfigV1::default());
         assert!(matches!(second, Err(PlannerStoreError::Locked)));
         drop(first);
@@ -667,10 +652,7 @@ mod hardening_tests {
         store.compact(1).unwrap();
         assert_eq!(store.records().len(), 3);
         assert_eq!(store.records()[0].kind, PlannerStoreRecordKindV1::Snapshot);
-        assert_eq!(
-            store.records()[1].kind,
-            PlannerStoreRecordKindV1::Selection
-        );
+        assert_eq!(store.records()[1].kind, PlannerStoreRecordKindV1::Selection);
         assert_eq!(
             store.records()[2].kind,
             PlannerStoreRecordKindV1::Revocation

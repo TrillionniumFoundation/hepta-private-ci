@@ -4,9 +4,9 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 use tempfile::tempdir;
 
-use super::PlannerAuthorizationDecisionV1;
 use super::PlannerAuthorityConsumerV1;
 use super::PlannerAuthorityRevalidationV1;
+use super::PlannerAuthorizationDecisionV1;
 use super::PlannerEffectDispositionV1;
 use super::PlannerEffectExecutorV1;
 use super::PlannerEffectObservationV1;
@@ -172,8 +172,7 @@ impl PlannerDispatchClaimSinkV1 for CollectSink {
                 ));
             }
             return match receipt.disposition {
-                PlannerEffectDispositionV1::Succeeded
-                | PlannerEffectDispositionV1::Failed => {
+                PlannerEffectDispositionV1::Succeeded | PlannerEffectDispositionV1::Failed => {
                     Ok(Some(PlannerDispatchClaimOutcomeV1::ExistingTerminal {
                         receipt: Box::new(receipt.clone()),
                     }))

@@ -100,9 +100,8 @@ fn restore_holds_the_destination_owner_boundary_for_the_whole_replacement() {
     let destination = tempdir().expect("destination store");
     let anchor = Digest32::of_bytes(b"planner-store-process-anchor-v1");
 
-    let mut source_store =
-        PlannerStoreV1::open(source.path(), PlannerStoreConfigV1::default())
-            .expect("open source store");
+    let mut source_store = PlannerStoreV1::open(source.path(), PlannerStoreConfigV1::default())
+        .expect("open source store");
     source_store
         .append(
             PlannerStoreRecordKindV1::Decision,
@@ -111,9 +110,7 @@ fn restore_holds_the_destination_owner_boundary_for_the_whole_replacement() {
             b"restore-envelope-v1",
         )
         .expect("append source record");
-    source_store
-        .checkpoint(anchor)
-        .expect("checkpoint source");
+    source_store.checkpoint(anchor).expect("checkpoint source");
     source_store
         .backup_to(backup.path())
         .expect("backup source");

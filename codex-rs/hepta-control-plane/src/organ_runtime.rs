@@ -200,12 +200,8 @@ impl OrganHostV1 {
     ) -> Result<(), OrganRuntimeError> {
         let routes = route_map(&graph);
         let (handlers, observations) = wrap_handlers(handlers);
-        self.inner.replace_read_only_generation_with_migration(
-            expected,
-            graph,
-            handlers,
-            migration,
-        )?;
+        self.inner
+            .replace_read_only_generation_with_migration(expected, graph, handlers, migration)?;
         self.routes = routes;
         self.observations = observations;
         Ok(())
@@ -225,11 +221,7 @@ impl OrganHostV1 {
             observations,
         } = candidate;
         self.inner
-            .replace_admitted_read_only_generation_with_migration(
-                expected,
-                inner,
-                migration,
-            )?;
+            .replace_admitted_read_only_generation_with_migration(expected, inner, migration)?;
         self.routes = routes;
         self.observations = observations;
         Ok(())
@@ -249,11 +241,7 @@ impl OrganHostV1 {
             observations,
         } = candidate;
         self.inner
-            .recover_admitted_read_only_generation_with_migration(
-                expected,
-                inner,
-                migration,
-            )?;
+            .recover_admitted_read_only_generation_with_migration(expected, inner, migration)?;
         self.routes = routes;
         self.observations = observations;
         Ok(())
@@ -374,10 +362,7 @@ impl OrganHostV1 {
 
 fn wrap_handlers(
     handlers: Vec<Box<dyn TrustedReadOnlyOrganV1>>,
-) -> (
-    Vec<Box<dyn TrustedReadOnlyOrganV1>>,
-    OrganObservationLogV1,
-) {
+) -> (Vec<Box<dyn TrustedReadOnlyOrganV1>>, OrganObservationLogV1) {
     let observations = Arc::new(Mutex::new(OrganObservationStateV1::default()));
     let wrapped = handlers
         .into_iter()
@@ -406,9 +391,7 @@ fn begin_observation(observations: &OrganObservationLogV1) {
     state.enabled = true;
 }
 
-fn finish_observation(
-    observations: &OrganObservationLogV1,
-) -> Vec<OrganHandlerObservationV1> {
+fn finish_observation(observations: &OrganObservationLogV1) -> Vec<OrganHandlerObservationV1> {
     let mut state = observation_state(observations);
     state.enabled = false;
     std::mem::take(&mut state.entries)
@@ -455,9 +438,7 @@ fn mark_unrecorded_delivered_prefix(
     }
 }
 
-fn route_map(
-    graph: &OrganGraphsV1,
-) -> BTreeMap<(StableId, usize), Vec<(StableId, usize)>> {
+fn route_map(graph: &OrganGraphsV1) -> BTreeMap<(StableId, usize), Vec<(StableId, usize)>> {
     let mut routes: BTreeMap<_, Vec<_>> = BTreeMap::new();
     for link in &graph.runtime {
         let (Some(source), Some(target)) = (

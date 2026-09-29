@@ -37,9 +37,7 @@ fn hold(root: &Path) -> Result<(), Box<dyn Error>> {
 
 fn crash_after_sync(root: &Path) -> Result<(), Box<dyn Error>> {
     let mut store = PlannerStoreV1::open(root, PlannerStoreConfigV1::default())?;
-    store.set_failpoint(Some(
-        PlannerStoreFailpointV1::AfterLogSyncBeforePublish,
-    ));
+    store.set_failpoint(Some(PlannerStoreFailpointV1::AfterLogSyncBeforePublish));
     let result = store.append(
         PlannerStoreRecordKindV1::Decision,
         Digest32::of_bytes(b"planner-store-process-operation-v1"),

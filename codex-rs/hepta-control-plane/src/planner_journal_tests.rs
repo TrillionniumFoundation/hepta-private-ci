@@ -212,7 +212,7 @@ fn truncation_and_tampering_fail_closed() {
 }
 
 #[test]
-fn revocation_clears_selection_projection() {
+fn revocation_clears_selection_and_prevents_reselection() {
     let mut journal = PlannerJournalV1::new();
     let receipt = receipt();
     must(journal.append(
@@ -231,4 +231,17 @@ fn revocation_clears_selection_projection() {
         receipt.receipt_digest(),
     ));
     assert_eq!(journal.selected_plan_digest(), None);
+    assert_eq!(
+        journal
+            .append(
+                PlannerJournalKindV1::SelectedPlan,
+                digest("select-2"),
+                receipt.receipt_digest(),
+            )
+            .expect_err("revoked decision must not be selectable again"),
+        PlannerJournalError::RevokedPlan
+    );
+
+    let reopened = must(PlannerJournalV1::reopen(&journal.export_bytes()));
+    assert_eq!(reopened.selected_plan_digest(), None);
 }

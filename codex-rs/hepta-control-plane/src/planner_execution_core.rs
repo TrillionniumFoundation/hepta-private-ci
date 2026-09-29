@@ -359,8 +359,7 @@ fn validate_grant(
     {
         return Err(PlannerExecutionError::GrantMismatch);
     }
-    if now_micros >= grant.expires_at_micros
-        || grant.expires_at_micros > request.expires_at_micros
+    if now_micros >= grant.expires_at_micros || grant.expires_at_micros > request.expires_at_micros
     {
         return Err(PlannerExecutionError::GrantExpired);
     }
@@ -461,11 +460,7 @@ fn encode_terminal_receipt(receipt: &PlannerTerminalReceiptV1) -> Vec<u8> {
 }
 
 fn push_id(bytes: &mut Vec<u8>, value: &str) {
-    bytes.extend_from_slice(
-        &u64::try_from(value.len())
-            .unwrap_or(u64::MAX)
-            .to_be_bytes(),
-    );
+    bytes.extend_from_slice(&u64::try_from(value.len()).unwrap_or(u64::MAX).to_be_bytes());
     bytes.extend_from_slice(value.as_bytes());
 }
 

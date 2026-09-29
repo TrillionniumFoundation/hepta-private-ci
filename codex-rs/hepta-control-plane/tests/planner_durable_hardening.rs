@@ -1,9 +1,9 @@
 use std::fmt::Debug;
 
 use codex_hepta_control_plane::GrantRequestV1;
-use codex_hepta_control_plane::PlannerAuthorizationDecisionV1;
 use codex_hepta_control_plane::PlannerAuthorityConsumerV1;
 use codex_hepta_control_plane::PlannerAuthorityRevalidationV1;
+use codex_hepta_control_plane::PlannerAuthorizationDecisionV1;
 use codex_hepta_control_plane::PlannerEffectDispositionV1;
 use codex_hepta_control_plane::PlannerEffectExecutorV1;
 use codex_hepta_control_plane::PlannerEffectObservationV1;
@@ -177,9 +177,7 @@ fn disk_full_does_not_publish_or_dirty_the_log() {
         directory.path(),
         PlannerStoreConfigV1::default(),
     ));
-    store.set_failpoint(Some(
-        PlannerStoreFailpointV1::DiskFullBeforeFrameWrite,
-    ));
+    store.set_failpoint(Some(PlannerStoreFailpointV1::DiskFullBeforeFrameWrite));
     let error = must_err(store.append(
         PlannerStoreRecordKindV1::Decision,
         digest("operation"),
@@ -225,12 +223,12 @@ fn indeterminate_dispatch_can_converge_to_a_durable_reconciliation() {
         &mut executor,
         &mut store,
     ));
-    assert_eq!(reconciled.disposition, PlannerEffectDispositionV1::Succeeded);
-    assert_eq!(store.records().len(), 3);
     assert_eq!(
-        store.records()[0].kind,
-        PlannerStoreRecordKindV1::Selection
+        reconciled.disposition,
+        PlannerEffectDispositionV1::Succeeded
     );
+    assert_eq!(store.records().len(), 3);
+    assert_eq!(store.records()[0].kind, PlannerStoreRecordKindV1::Selection);
     assert_eq!(
         store.records()[1].kind,
         PlannerStoreRecordKindV1::TerminalReceipt

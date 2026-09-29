@@ -137,12 +137,7 @@ fn failed_fanout_preserves_the_exact_successful_prefix_digest() {
     let mut host = OrganHostV1::new(graph(), handlers).expect("valid host");
     host.start_all().expect("start host");
 
-    let receipt = host.dispatch_once_with_receipt(
-        generation(7),
-        &id("source"),
-        0,
-        b"request",
-    );
+    let receipt = host.dispatch_once_with_receipt(generation(7), &id("source"), 0, b"request");
 
     assert!(matches!(
         receipt.error,
@@ -212,8 +207,6 @@ fn failed_fanout_preserves_the_exact_successful_prefix_digest() {
         .expect("canonical incomplete evidence");
     assert_eq!(
         incomplete_delivered.continuation(incomplete_digest),
-        Err(OrganFanoutRecoveryErrorV1::IncompleteDeliveredEvidence {
-            route_index: 0,
-        }),
+        Err(OrganFanoutRecoveryErrorV1::IncompleteDeliveredEvidence { route_index: 0 }),
     );
 }

@@ -177,8 +177,8 @@ impl PlannerWriterLockV1 {
                     });
                 }
                 Err(error) if error.kind() == ErrorKind::AlreadyExists => {
-                    let existing = fs::read_to_string(&path)
-                        .map_err(|_| PlannerStoreError::CorruptLock)?;
+                    let existing =
+                        fs::read_to_string(&path).map_err(|_| PlannerStoreError::CorruptLock)?;
                     if lock_owner_is_current(existing.trim())? {
                         return Err(PlannerStoreError::Locked);
                     }
@@ -284,9 +284,11 @@ impl PlannerStoreV1 {
                 maximum: self.config.maximum_envelope_bytes,
             });
         }
-        if let Some(existing) = self.records.iter().find(|record| {
-            record.operation_identity_digest == operation_identity_digest
-        }) {
+        if let Some(existing) = self
+            .records
+            .iter()
+            .find(|record| record.operation_identity_digest == operation_identity_digest)
+        {
             if existing.kind == kind
                 && existing.payload_digest == payload_digest
                 && existing.envelope == envelope
@@ -521,11 +523,12 @@ fn decode_records(
         let payload_digest = read_digest(bytes, &mut offset)?;
         require_digest(operation_identity_digest, "serialized operation identity")?;
         require_digest(payload_digest, "serialized payload")?;
-        let envelope_len = usize::try_from(read_u32(bytes, &mut offset)?)
-            .map_err(|_| PlannerStoreError::EnvelopeTooLarge {
+        let envelope_len = usize::try_from(read_u32(bytes, &mut offset)?).map_err(|_| {
+            PlannerStoreError::EnvelopeTooLarge {
                 actual: usize::MAX,
                 maximum: config.maximum_envelope_bytes,
-            })?;
+            }
+        })?;
         if envelope_len > config.maximum_envelope_bytes {
             return Err(PlannerStoreError::EnvelopeTooLarge {
                 actual: envelope_len,
@@ -544,12 +547,15 @@ fn decode_records(
         }
         let envelope = take(bytes, &mut offset, envelope_len)?.to_vec();
         let record_digest = read_digest(bytes, &mut offset)?;
-        let expected_sequence = records.last().map_or(Ok(sequence), |record: &PlannerStoreRecordV1| {
-            record
-                .sequence
-                .checked_add(1)
-                .ok_or(PlannerStoreError::CorruptSequence)
-        })?;
+        let expected_sequence =
+            records
+                .last()
+                .map_or(Ok(sequence), |record: &PlannerStoreRecordV1| {
+                    record
+                        .sequence
+                        .checked_add(1)
+                        .ok_or(PlannerStoreError::CorruptSequence)
+                })?;
         if sequence == 0 || sequence != expected_sequence {
             return Err(PlannerStoreError::CorruptSequence);
         }
@@ -563,9 +569,10 @@ fn decode_records(
         if expected_digest != record_digest {
             return Err(PlannerStoreError::CorruptRecordDigest);
         }
-        if records.iter().any(|record| {
-            record.operation_identity_digest == operation_identity_digest
-        }) {
+        if records
+            .iter()
+            .any(|record| record.operation_identity_digest == operation_identity_digest)
+        {
             return Err(PlannerStoreError::IdentityConflict);
         }
         records.push(PlannerStoreRecordV1 {
@@ -588,12 +595,11 @@ fn decode_records(
 }
 
 fn encode_record(record: &PlannerStoreRecordV1) -> Result<Vec<u8>, PlannerStoreError> {
-    let envelope_len = u32::try_from(record.envelope.len()).map_err(|_| {
-        PlannerStoreError::EnvelopeTooLarge {
+    let envelope_len =
+        u32::try_from(record.envelope.len()).map_err(|_| PlannerStoreError::EnvelopeTooLarge {
             actual: record.envelope.len(),
             maximum: usize::try_from(u32::MAX).unwrap_or(usize::MAX),
-        }
-    })?;
+        })?;
     let mut bytes = Vec::with_capacity(FRAME_FIXED_BYTES + record.envelope.len());
     bytes.extend_from_slice(STORE_MAGIC);
     bytes.extend_from_slice(&SCHEMA_VERSION.to_be_bytes());
@@ -620,14 +626,22 @@ fn digest_record(
     bytes.push(kind.tag());
     bytes.extend_from_slice(operation_identity_digest.as_array());
     bytes.extend_from_slice(payload_digest.as_array());
-    bytes.extend_from_slice(&u64::try_from(envelope.len()).unwrap_or(u64::MAX).to_be_bytes());
+    bytes.extend_from_slice(
+        &u64::try_from(envelope.len())
+            .unwrap_or(u64::MAX)
+            .to_be_bytes(),
+    );
     bytes.extend_from_slice(envelope);
     Digest32::of_bytes(&bytes)
 }
 
 fn digest_store(records: &[PlannerStoreRecordV1]) -> Digest32 {
     let mut bytes = b"hepta.control.planner-store.v1".to_vec();
-    bytes.extend_from_slice(&u64::try_from(records.len()).unwrap_or(u64::MAX).to_be_bytes());
+    bytes.extend_from_slice(
+        &u64::try_from(records.len())
+            .unwrap_or(u64::MAX)
+            .to_be_bytes(),
+    );
     for record in records {
         bytes.extend_from_slice(record.record_digest.as_array());
     }

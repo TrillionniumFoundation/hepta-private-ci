@@ -47,6 +47,9 @@ pub use error::NduError;
 pub use evaluator::canonical_evaluation_policy_digest;
 pub use evaluator::canonical_scalarization_digest;
 pub use evaluator::canonical_utility_profile_digest;
+// Compatibility remains intentional for existing callers. The symbol itself
+// stays deprecated so new call sites still receive the migration diagnostic.
+#[allow(deprecated)]
 pub use evaluator::evaluate_candidates;
 pub use evaluator::evaluate_candidates_with_policy;
 pub use evaluator::legacy_evaluation_policy;

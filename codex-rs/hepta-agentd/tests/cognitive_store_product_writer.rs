@@ -183,7 +183,13 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     )
     .await?;
     let recovered_anchor = host.writer().recovery_anchor().await?;
-    assert_eq!(recovered_anchor, expected);
+    assert_eq!(recovered_anchor.profile, expected.profile);
+    assert_eq!(recovered_anchor.owner_agent_id, expected.owner_agent_id);
+    assert_eq!(recovered_anchor.schema_digest, expected.schema_digest);
+    assert_ne!(
+        recovered_anchor.state_digest, expected.state_digest,
+        "opening the fenced writer generation must append its host-bound lease after exact-cut authentication"
+    );
 
     let now = i64::try_from(now_unix_seconds()?)?;
     let access = CognitiveAccess::agent_private(owner.clone());
