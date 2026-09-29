@@ -14,6 +14,7 @@ use codex_hepta_infer_core::control_contracts::TrustKey;
 use codex_hepta_infer_core::control_contracts::verify_execution_plan;
 use codex_hepta_infer_worker_host::NativeJournalWriterActor;
 use codex_hepta_infer_worker_host::NativeOutputProtector;
+use codex_hepta_infer_worker_host::NativeWriterLimits;
 use codex_hepta_infer_worker_host::UnixOutputProtector;
 use codex_hepta_infer_worker_host::final_use_authorizer::UnixFinalUseAuthorizer;
 use codex_hepta_infer_worker_host::native_app_server::AppServerModelDriver;
@@ -41,6 +42,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let mut generation = None;
     let mut model = None;
     let mut journal = None;
+    let mut writer_limits = NativeWriterLimits::default();
     let mut request_id = None;
     let mut maximum_in_flight = None;
     let mut context_query = None;
@@ -57,12 +59,24 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     while let Some(flag) = args.next() {
         if flag == "--help" {
             println!(
-                "hepta-infer-worker [--profile native-app-server] --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N --final-use-authority-config ABSOLUTE_JSON --execution-trust-store ABSOLUTE_JSON --execution-authority-bundle ABSOLUTE_JSON [--output-protector-config ABSOLUTE_JSON] [--intelligence-run-id ID --intelligence-revision N --intelligence-context-digest HEX --intelligence-envelope-digest HEX] [--context-query TEXT] [--timeout-ms N]\nThe sole release profile is native-app-server and is selected by default. Reads one prompt from stdin. Four independent execution authorities and an independent final-use authority must authenticate the exact model/runtime/resource/quota/data binding before physical turn/start. External-encrypted output policies additionally require the UID-bound output-vault configuration."
+                "hepta-infer-worker [--profile native-app-server] --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N --final-use-authority-config ABSOLUTE_JSON --execution-trust-store ABSOLUTE_JSON --execution-authority-bundle ABSOLUTE_JSON [--output-protector-config ABSOLUTE_JSON] [--intelligence-run-id ID --intelligence-revision N --intelligence-context-digest HEX --intelligence-envelope-digest HEX] [--context-query TEXT] [--timeout-ms N] [--writer-ordinary-capacity N --writer-terminal-capacity N --writer-reply-timeout-ms N --writer-shutdown-timeout-ms N]\nThe sole release profile is native-app-server and is selected by default. Reads one prompt from stdin. Four independent execution authorities and an independent final-use authority must authenticate the exact model/runtime/resource/quota/data binding before physical turn/start. External-encrypted output policies additionally require the UID-bound output-vault configuration."
             );
             return Ok(());
         }
         let value = args.next().ok_or("missing argument value")?;
         match flag.as_str() {
+            "--writer-ordinary-capacity" => {
+                writer_limits.ordinary_queue_capacity = value.parse()?
+            }
+            "--writer-terminal-capacity" => {
+                writer_limits.terminal_queue_capacity = value.parse()?
+            }
+            "--writer-reply-timeout-ms" => {
+                writer_limits.reply_timeout = Duration::from_millis(value.parse()?)
+            }
+            "--writer-shutdown-timeout-ms" => {
+                writer_limits.shutdown_timeout = Duration::from_millis(value.parse()?)
+            }
             "--profile" if value == "native-app-server" => {}
             "--profile" => return Err(format!("unsupported worker profile: {value}").into()),
             "--agentd-socket" => socket = Some(PathBuf::from(value)),
@@ -143,7 +157,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     if !journal.is_absolute() {
         return Err("--journal must be absolute".into());
     }
-    let actor = NativeJournalWriterActor::spawn(journal, /*capacity*/ 16_384)?;
+    let actor = NativeJournalWriterActor::spawn_with_limits(
+        journal,
+        /*capacity*/ 16_384,
+        writer_limits,
+    )?;
     let mut control = actor.handle();
     let admission = NativeAdmission {
         request_id,

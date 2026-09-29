@@ -37,11 +37,14 @@ Exact candidate success is not stored here; it is carried by a CI evidence recei
 | `process_kill_and_torn_tail_recovery` | `source_implemented` | `codex-rs/hepta-infer-core/tests/process_crash_recovery.rs` | 2 |
 | `exact_plan_native_app_server_execution` | `product_composed_unique_writer_actor_exact_head_qualification_pending` | `codex-rs/hepta-infer-worker-host/src/native_run_control.rs` | 1 |
 | `unique_writer_effect_reconciler_actor_boundary` | `product_composed_exact_head_qualification_pending` | `codex-rs/hepta-infer-worker-host/src/control_actor.rs` | 1 |
-| `external_encrypted_output` | `product_composed` | `codex-rs/hepta-infer-worker-host/src/unix_output_protector.rs` | 1 |
+| `external_encrypted_output` | `product_composed_vault_target_qualification_pending` | `codex-rs/hepta-infer-worker-host/src/unix_output_protector.rs` | 2 |
 | `signed_operator_recovery_cli` | `product_composed_unique_writer_actor` | `codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-recovery.rs` | 1 |
 | `bounded_maintenance_cli` | `product_composed_unique_writer_actor` | `codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-maintenance.rs` | 1 |
 | `native_control_metrics` | `source_implemented` | `codex-rs/hepta-infer-core/src/native_control_v2_control_b.rs` | 1 |
 | `operator_slo_alert_policy` | `documentation_implemented_runtime_export_pending` | `docs/modules/inference.control/SLO_ALERTS.json` | 1 |
+| `bounded_terminal_admission_and_fifo_fairness` | `source_implemented_execution_pending` | `codex-rs/hepta-infer-worker-host/src/actor_mailbox.rs` | 3 |
+| `accepted_response_loss_and_post_commit_observation` | `source_implemented_execution_pending` | `codex-rs/hepta-infer-worker-host/src/control_actor.rs` | 5 |
+| `immutable_observational_metrics` | `source_implemented_execution_pending` | `codex-rs/hepta-infer-worker-host/src/control_actor.rs` | 1 |
 
 ## Repository-controlled gaps
 
@@ -49,6 +52,8 @@ Exact candidate success is not stored here; it is carried by a CI evidence recei
 - retain native-host process-kill, disk-fault, torn-write, vault and App Server command records as CI artifacts
 - complete signed output-vault deletion confirmation rather than treating a maintenance receipt as deletion proof
 - export runtime metrics to the selected telemetry backend and qualify alert delivery
+- qualify host-selected mailbox, response and shutdown limits under real provider and storage contention
+- deliver last-published and queue metrics to the selected telemetry backend; cached observations are not authority
 
 ## External evidence gates
 

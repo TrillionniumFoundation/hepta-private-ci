@@ -196,7 +196,11 @@ jobs:
           record 01-current-state.json python3 scripts/hepta-inference-control-current-state.py check
           record 01a-ownership.json python3 scripts/hepta-inference-control-ownership.py check
           record 01b-actor-migration.json python3 scripts/hepta-inference-control-actor-migrate.py check
-          record 02-implementation-maps.json python3 scripts/hepta-implementation-maps.py verify
+          python3 scripts/hepta_ci_exec.py --output "$RECORDS_DIR/commands/01c-boundary-planning.json" \
+            --minimum-tests 10 -- python3 -m unittest -v \
+            scripts.test_hepta_inference_current_state scripts.test_hepta_inference_capacity
+          map_exit=0
+          record 02-implementation-maps.json python3 scripts/hepta-implementation-maps.py verify || map_exit=$?
           python3 scripts/hepta_ci_exec.py --output "$RECORDS_DIR/commands/03-runner.json" \
             --minimum-tests 1 -- python3 -m unittest discover -v -s scripts -p 'test_hepta_ci_exec*.py'
           python3 scripts/hepta_ci_exec.py --output "$RECORDS_DIR/commands/04-controls-scope.json" \
@@ -217,6 +221,7 @@ jobs:
           record 09-format.json cargo fmt --manifest-path codex-rs/Cargo.toml \
             --package codex-hepta-infer-core --package codex-hepta-infer-worker-host \
             --package codex-hepta-types -- --check
+          exit "$map_exit"
 
       - name: Emit exact candidate evidence receipt
         if: always()
@@ -240,7 +245,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          expected=(00-candidate.json 01-current-state.json 01a-ownership.json 01b-actor-migration.json \
+          expected=(00-candidate.json 01-current-state.json 01a-ownership.json 01b-actor-migration.json 01c-boundary-planning.json \
             02-implementation-maps.json 03-runner.json 04-controls-scope.json 05-cargo-metadata.json \
             06-tests.json 07-clippy.json 08-maintenance-scale.json 09-format.json)
           args=()
@@ -360,7 +365,11 @@ jobs:
           record 00-current-state.json python3 scripts/hepta-inference-control-current-state.py check
           record 00a-ownership.json python3 scripts/hepta-inference-control-ownership.py check
           record 00b-actor-migration.json python3 scripts/hepta-inference-control-actor-migrate.py check
-          record 01-implementation-maps.json python3 scripts/hepta-implementation-maps.py verify
+          python3 scripts/hepta_ci_exec.py --output "$RECORDS_DIR/commands/00c-boundary-planning.json" \
+            --minimum-tests 10 -- python3 -m unittest -v \
+            scripts.test_hepta_inference_current_state scripts.test_hepta_inference_capacity
+          map_exit=0
+          record 01-implementation-maps.json python3 scripts/hepta-implementation-maps.py verify || map_exit=$?
           python3 scripts/hepta_ci_exec.py --output "$RECORDS_DIR/commands/02-native-host.json" \
             --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml \
             -p codex-hepta-infer-worker-host --all-targets --all-features
@@ -385,6 +394,7 @@ jobs:
             --all-targets --all-features -- -D warnings
           record 08-format.json cargo fmt --manifest-path codex-rs/Cargo.toml \
             --package codex-hepta-infer-core --package codex-hepta-infer-worker-host -- --check
+          exit "$map_exit"
 
       - name: Emit native-host evidence receipt
         if: always()
@@ -408,7 +418,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          expected=(00-current-state.json 00a-ownership.json 00b-actor-migration.json \
+          expected=(00-current-state.json 00a-ownership.json 00b-actor-migration.json 00c-boundary-planning.json \
             01-implementation-maps.json 02-native-host.json 03-durable-faults.json \
             04-checkpoint-tamper.json 05-process-crash.json 06-expired-recovery.json \
             07-clippy.json 08-format.json)

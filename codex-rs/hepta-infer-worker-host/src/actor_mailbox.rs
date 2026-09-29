@@ -1,9 +1,11 @@
-//! Bounded, non-waiting admission with a reserved shutdown barrier.
+//! Bounded, non-waiting FIFO admission with terminal and shutdown reserves.
 //!
 //! The gate serializes admission with shutdown, not journal execution. A full
 //! mailbox rejects a command before the owner sees it. Shutdown seals all
 //! clones and places its barrier after every accepted command, including when
-//! every data slot is occupied. No producer task waits in an unbounded queue.
+//! every data slot is occupied. Terminal transitions have their own bounded
+//! admission quota, but never overtake earlier commands. No producer task waits
+//! in an unbounded queue. Queue/apply timings are observations, not durability proofs.
 
 use std::collections::VecDeque;
 use std::sync::Arc;
@@ -15,8 +17,18 @@ use std::time::UNIX_EPOCH;
 use serde::Serialize;
 use tokio::sync::mpsc;
 
+use crate::actor_latency::LatencyWindow;
+pub use crate::actor_latency::NativeLatencySummary;
+
 pub const DEFAULT_QUEUE_CAPACITY: usize = 256;
 const MAX_QUEUE_CAPACITY: usize = 65_536;
+pub const DEFAULT_TERMINAL_CAPACITY: usize = 64;
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum AdmissionClass {
+    Ordinary,
+    Terminal,
+}
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub(crate) enum SendError {
@@ -28,6 +40,17 @@ pub(crate) enum SendError {
 pub struct NativeWriterQueueMetrics {
     pub capacity: usize,
     pub depth: usize,
+    pub ordinary_capacity: usize,
+    pub ordinary_depth: usize,
+    pub terminal_capacity: usize,
+    pub terminal_depth: usize,
+    pub rejected_terminal_full: u64,
+    pub ordinary_queue_wait: NativeLatencySummary,
+    pub terminal_queue_wait: NativeLatencySummary,
+    pub ordinary_apply: NativeLatencySummary,
+    pub terminal_apply: NativeLatencySummary,
+    pub active_millis: u64,
+    pub successful_replies_lost: u64,
     pub high_water: usize,
     pub rejected_full: u64,
     pub accepting: bool,
@@ -37,7 +60,15 @@ pub struct NativeWriterQueueMetrics {
 
 struct State {
     capacity: usize,
-    enqueued: VecDeque<Instant>,
+    terminal_capacity: usize,
+    ordinary_depth: usize,
+    terminal_depth: usize,
+    rejected_terminal_full: u64,
+    enqueued: VecDeque<(Instant, AdmissionClass)>,
+    queue_wait: [LatencyWindow; 2],
+    apply: [LatencyWindow; 2],
+    active: Option<(Instant, AdmissionClass)>,
+    successful_replies_lost: u64,
     high_water: usize,
     rejected_full: u64,
     accepting: bool,
@@ -46,7 +77,7 @@ struct State {
 
 struct Envelope<T> {
     command: T,
-    data: bool,
+    class: Option<AdmissionClass>,
 }
 
 pub(crate) struct Sender<T> {
@@ -68,15 +99,32 @@ pub(crate) struct Receiver<T> {
     state: Arc<Mutex<State>>,
 }
 
+#[cfg(test)]
 pub(crate) fn channel<T>(capacity: usize) -> Option<(Sender<T>, Receiver<T>)> {
-    if !(1..=MAX_QUEUE_CAPACITY).contains(&capacity) {
+    channel_with_terminal_capacity(capacity, DEFAULT_TERMINAL_CAPACITY.min(capacity))
+}
+
+pub(crate) fn channel_with_terminal_capacity<T>(
+    capacity: usize,
+    terminal_capacity: usize,
+) -> Option<(Sender<T>, Receiver<T>)> {
+    let total = capacity.checked_add(terminal_capacity)?;
+    if capacity == 0 || terminal_capacity == 0 || total > MAX_QUEUE_CAPACITY {
         return None;
     }
     // One additional slot belongs exclusively to the shutdown barrier.
-    let (sender, receiver) = mpsc::channel(capacity + 1);
+    let (sender, receiver) = mpsc::channel(total + 1);
     let state = Arc::new(Mutex::new(State {
         capacity,
+        terminal_capacity,
+        ordinary_depth: 0,
+        terminal_depth: 0,
+        rejected_terminal_full: 0,
         enqueued: VecDeque::new(),
+        queue_wait: Default::default(),
+        apply: Default::default(),
+        active: None,
+        successful_replies_lost: 0,
         high_water: 0,
         rejected_full: 0,
         accepting: true,
@@ -96,21 +144,44 @@ pub(crate) fn channel<T>(capacity: usize) -> Option<(Sender<T>, Receiver<T>)> {
 
 impl<T> Sender<T> {
     pub(crate) fn send(&self, command: T) -> Result<(), SendError> {
+        self.send_class(command, AdmissionClass::Ordinary)
+    }
+
+    pub(crate) fn send_terminal(&self, command: T) -> Result<(), SendError> {
+        self.send_class(command, AdmissionClass::Terminal)
+    }
+
+    fn send_class(&self, command: T, class: AdmissionClass) -> Result<(), SendError> {
         let mut state = self.state.lock().map_err(|_| SendError::Closed)?;
         if !state.accepting || self.inner.is_closed() {
             return Err(SendError::Closed);
         }
-        if state.enqueued.len() >= state.capacity {
+        let full = match class {
+            AdmissionClass::Ordinary => state.ordinary_depth >= state.capacity,
+            AdmissionClass::Terminal => state.terminal_depth >= state.terminal_capacity,
+        };
+        if full {
             state.rejected_full = state.rejected_full.saturating_add(1);
+            if class == AdmissionClass::Terminal {
+                state.rejected_terminal_full = state.rejected_terminal_full.saturating_add(1);
+            }
             return Err(SendError::Full);
         }
+        let enqueued = Instant::now();
         self.inner
-            .try_send(Envelope { command, data: true })
+            .try_send(Envelope {
+                command,
+                class: Some(class),
+            })
             .map_err(|error| match error {
                 mpsc::error::TrySendError::Full(_) => SendError::Full,
                 mpsc::error::TrySendError::Closed(_) => SendError::Closed,
             })?;
-        state.enqueued.push_back(Instant::now());
+        state.enqueued.push_back((enqueued, class));
+        match class {
+            AdmissionClass::Ordinary => state.ordinary_depth += 1,
+            AdmissionClass::Terminal => state.terminal_depth += 1,
+        }
         state.high_water = state.high_water.max(state.enqueued.len());
         state.last_enqueue_unix_ms = SystemTime::now()
             .duration_since(UNIX_EPOCH)
@@ -128,15 +199,33 @@ impl<T> Sender<T> {
         self.inner
             .try_send(Envelope {
                 command,
-                data: false,
+                class: None,
             })
             .map_err(|_| SendError::Closed)
     }
 
     pub(crate) fn metrics(&self) -> Result<NativeWriterQueueMetrics, SendError> {
         let state = self.state.lock().map_err(|_| SendError::Closed)?;
-        Ok(NativeWriterQueueMetrics {
-            capacity: state.capacity,
+        let queue_wait = state.queue_wait.clone();
+        let apply = state.apply.clone();
+        let mut metrics = NativeWriterQueueMetrics {
+            capacity: state.capacity + state.terminal_capacity,
+            ordinary_capacity: state.capacity,
+            ordinary_depth: state.ordinary_depth,
+            terminal_capacity: state.terminal_capacity,
+            terminal_depth: state.terminal_depth,
+            rejected_terminal_full: state.rejected_terminal_full,
+            ordinary_queue_wait: Default::default(),
+            terminal_queue_wait: Default::default(),
+            ordinary_apply: Default::default(),
+            terminal_apply: Default::default(),
+            active_millis: state
+                .active
+                .map(|(instant, _)| {
+                    u64::try_from(instant.elapsed().as_millis()).unwrap_or(u64::MAX)
+                })
+                .unwrap_or(0),
+            successful_replies_lost: state.successful_replies_lost,
             depth: state.enqueued.len(),
             high_water: state.high_water,
             rejected_full: state.rejected_full,
@@ -144,20 +233,61 @@ impl<T> Sender<T> {
             oldest_queued_millis: state
                 .enqueued
                 .front()
-                .map(|instant| u64::try_from(instant.elapsed().as_millis()).unwrap_or(u64::MAX))
+                .map(|(instant, _)| {
+                    u64::try_from(instant.elapsed().as_millis()).unwrap_or(u64::MAX)
+                })
                 .unwrap_or(0),
             last_enqueue_unix_ms: state.last_enqueue_unix_ms,
-        })
+        };
+        // Sort bounded timing windows outside the admission gate.
+        drop(state);
+        metrics.ordinary_queue_wait = queue_wait[0].summary();
+        metrics.terminal_queue_wait = queue_wait[1].summary();
+        metrics.ordinary_apply = apply[0].summary();
+        metrics.terminal_apply = apply[1].summary();
+        Ok(metrics)
     }
 }
 
 impl<T> Receiver<T> {
     pub(crate) fn blocking_recv(&mut self) -> Option<T> {
         let envelope = self.inner.blocking_recv()?;
-        if envelope.data {
-            let _ = self.state.lock().ok()?.enqueued.pop_front();
+        if let Some(class) = envelope.class {
+            let mut state = self.state.lock().ok()?;
+            let (enqueued, queued_class) = state.enqueued.pop_front()?;
+            if queued_class != class {
+                state.accepting = false;
+                return None;
+            }
+            let index = match class {
+                AdmissionClass::Ordinary => {
+                    state.ordinary_depth -= 1;
+                    0
+                }
+                AdmissionClass::Terminal => {
+                    state.terminal_depth -= 1;
+                    1
+                }
+            };
+            state.queue_wait[index].observe(enqueued.elapsed());
+            state.active = Some((Instant::now(), class));
         }
         Some(envelope.command)
+    }
+
+    pub(crate) fn finish_command(&self, successful_reply_lost: bool) {
+        if let Ok(mut state) = self.state.lock() {
+            if let Some((started, class)) = state.active.take() {
+                let index = match class {
+                    AdmissionClass::Ordinary => 0,
+                    AdmissionClass::Terminal => 1,
+                };
+                state.apply[index].observe(started.elapsed());
+            }
+            if successful_reply_lost {
+                state.successful_replies_lost = state.successful_replies_lost.saturating_add(1);
+            }
+        }
     }
 }
 
@@ -221,3 +351,7 @@ mod tests {
         assert_eq!(metrics.rejected_full, 0);
     }
 }
+
+#[cfg(test)]
+#[path = "actor_mailbox_boundary_tests.rs"]
+mod boundary_tests;

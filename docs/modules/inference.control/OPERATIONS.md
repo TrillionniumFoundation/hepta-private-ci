@@ -247,3 +247,16 @@ A candidate is repository-qualified only when the final exact source head has:
 
 Those facts still do not grant independent acceptance, target-host activation,
 promotion, or release.
+
+## 12. Admitted-response uncertainty and writer capacity
+
+Use [WRITER_BOUNDARIES.md](WRITER_BOUNDARIES.md) when tuning the current owner.
+An `AcceptedDeadlineExceeded` or `AcceptedReplyLost` result requires observing
+that exact request; it is not a safe retry or cancellation receipt. The writer
+may still commit. Preserve the journal and its lifecycle lock, and use existing
+signed terminal reconciliation for a potentially dispatched effect.
+
+For scrape-heavy callers, request a serialized `metrics` refresh at a bounded
+cadence and read `published_metrics` between refreshes. Preserve observation age
+and do not treat stale counts as admission/authorization. Keep real-provider,
+storage-fault and target-host qualification separate from pilot FIFO timings.

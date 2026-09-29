@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "module": "inference.control",
   "generatedFrom": "docs/modules/inference.control/CURRENT_STATE_SOURCE.json",
-  "sourceManifestSha256": "526ef48c2a098b1aec20a84d2df18b32fe6af119ec467fe5b245166c07324474",
+  "sourceManifestSha256": "e00cc65d34b5a41db20e5d10c8e41a64ebe8c1e020c93699131e1198ae5c4e7d",
   "provenance": {
     "baselineCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
     "baselineTree": "a22fd0074c45ae6f3cef2092cd6e273bf9c26c30",
@@ -25,7 +25,12 @@
       "scripts/hepta-inference-control-current-state.py",
       "scripts/hepta-inference-control-ownership.py",
       "docs/modules/inference.control/OPERATIONS.md",
-      "docs/modules/inference.control/SLO_ALERTS.json"
+      "docs/modules/inference.control/SLO_ALERTS.json",
+      "scripts/hepta_inference_capacity.py",
+      "scripts/test_hepta_inference_capacity.py",
+      "scripts/test_hepta_inference_current_state.py",
+      "docs/modules/inference.control/WRITER_BOUNDARIES.md",
+      "scripts/hepta_inference_boundary_native.py"
     ],
     "productionEffectOwner": "codex-hepta-infer-worker-host::native_app_server::AppServerModelDriver",
     "durableWriterOwner": "codex-hepta-infer-core::durable_control::DurableInferenceControl",
@@ -59,8 +64,8 @@
       "nativeSymbol": "verify_execution_plan",
       "sourcePath": "codex-rs/hepta-infer-core/src/control_contracts.rs",
       "tests": [
-        "four_independent_authorities_bind_one_exact_execution",
-        "key_rotation_window_and_revocation_are_enforced"
+        "codex-rs/hepta-infer-core/src/control_contracts.rs::four_independent_authorities_bind_one_exact_execution",
+        "codex-rs/hepta-infer-core/src/control_contracts.rs::key_rotation_window_and_revocation_are_enforced"
       ]
     },
     {
@@ -69,8 +74,8 @@
       "nativeSymbol": "verify_execution_plan_for_recovery",
       "sourcePath": "codex-rs/hepta-infer-core/src/recovery_contracts.rs",
       "tests": [
-        "fresh_rotated_terminal_receipt_releases_after_dispatch_lease_expiry",
-        "fresh_rotated_dual_control_retirement_releases_after_lease_expiry"
+        "codex-rs/hepta-infer-core/tests/recovery_after_expiry.rs::fresh_rotated_terminal_receipt_releases_after_dispatch_lease_expiry",
+        "codex-rs/hepta-infer-core/tests/recovery_after_expiry.rs::fresh_rotated_dual_control_retirement_releases_after_lease_expiry"
       ]
     },
     {
@@ -79,7 +84,7 @@
       "nativeSymbol": "DurableInferenceControl::bind_native_execution",
       "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs",
       "tests": [
-        "authorized_settlement_never_persists_raw_output"
+        "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::authorized_settlement_never_persists_raw_output"
       ]
     },
     {
@@ -88,7 +93,7 @@
       "nativeSymbol": "DurableInferenceControl::dispatch_native_with_pre_effect_abort",
       "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs",
       "tests": [
-        "recovered_dispatch_is_not_replayed"
+        "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::signed_reconciliation_releases_indeterminate_without_blind_replay"
       ]
     },
     {
@@ -97,7 +102,7 @@
       "nativeSymbol": "DurableInferenceControl::settle_native_authorized",
       "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_control_b.rs",
       "tests": [
-        "authorized_settlement_never_persists_raw_output"
+        "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::authorized_settlement_never_persists_raw_output"
       ]
     },
     {
@@ -106,7 +111,7 @@
       "nativeSymbol": "DurableInferenceControl::reconcile_native_recovery",
       "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_recovery.rs",
       "tests": [
-        "fresh_rotated_terminal_receipt_releases_after_dispatch_lease_expiry"
+        "codex-rs/hepta-infer-core/tests/recovery_after_expiry.rs::fresh_rotated_terminal_receipt_releases_after_dispatch_lease_expiry"
       ]
     },
     {
@@ -115,7 +120,7 @@
       "nativeSymbol": "DurableInferenceControl::retire_native_indeterminate_recovery",
       "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_recovery.rs",
       "tests": [
-        "fresh_rotated_dual_control_retirement_releases_after_lease_expiry"
+        "codex-rs/hepta-infer-core/tests/recovery_after_expiry.rs::fresh_rotated_dual_control_retirement_releases_after_lease_expiry"
       ]
     },
     {
@@ -124,10 +129,10 @@
       "nativeSymbol": "DurableInferenceControl::compact_native_journal_with_failpoint",
       "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_control_b.rs",
       "tests": [
-        "compaction_preserves_indeterminate_capacity_and_exact_state",
-        "every_compaction_failpoint_reopens_a_complete_generation",
-        "checkpoint_tampering_is_rejected_on_reopen",
-        "post_compaction_multi_generation_curve"
+        "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::compaction_preserves_indeterminate_capacity_and_exact_state",
+        "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::every_compaction_failpoint_reopens_a_complete_generation",
+        "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::checkpoint_tampering_is_rejected_on_reopen",
+        "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::post_compaction_multi_generation_curve"
       ]
     },
     {
@@ -136,8 +141,8 @@
       "nativeSymbol": "sigkill_at_every_maintenance_boundary_recovers_one_complete_generation",
       "sourcePath": "codex-rs/hepta-infer-core/tests/process_crash_recovery.rs",
       "tests": [
-        "sigkill_at_every_maintenance_boundary_recovers_one_complete_generation",
-        "an_incomplete_torn_tail_is_rejected_instead_of_replayed_or_truncated"
+        "codex-rs/hepta-infer-core/tests/process_crash_recovery.rs::sigkill_at_every_maintenance_boundary_recovers_one_complete_generation",
+        "codex-rs/hepta-infer-core/tests/process_crash_recovery.rs::an_incomplete_torn_tail_is_rejected_instead_of_replayed_or_truncated"
       ]
     },
     {
@@ -146,7 +151,7 @@
       "nativeSymbol": "AppServerModelDriver::run_authorized",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
       "tests": [
-        "native App Server mock product matrix"
+        "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs::success_requires_both_matching_completion_and_final_ready_owner"
       ]
     },
     {
@@ -155,16 +160,17 @@
       "nativeSymbol": "NativeJournalWriterActor",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/control_actor.rs",
       "tests": [
-        "one_writer_owns_the_journal_and_effect_capability_is_one_shot"
+        "codex-rs/hepta-infer-worker-host/src/control_actor_compat_tests.rs::one_writer_owns_the_journal_and_effect_capability_is_one_shot"
       ]
     },
     {
       "operation": "external_encrypted_output",
-      "state": "product_composed",
+      "state": "product_composed_vault_target_qualification_pending",
       "nativeSymbol": "UnixOutputProtector::protect",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/unix_output_protector.rs",
       "tests": [
-        "UID-bound vault adapter qualification pending exact-head CI"
+        "codex-rs/hepta-infer-worker-host/src/unix_output_protector_boundary_tests.rs::vault_uid_socket_and_parent_permissions_fail_closed",
+        "codex-rs/hepta-infer-worker-host/src/unix_output_protector_boundary_tests.rs::vault_config_rejects_symlinks_hardlinks_and_oversize_files"
       ]
     },
     {
@@ -173,7 +179,7 @@
       "nativeSymbol": "NativeReconcilerActor::new",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-recovery.rs",
       "tests": [
-        "recovery_after_expiry integration matrix"
+        "codex-rs/hepta-infer-core/tests/recovery_after_expiry.rs::fresh_rotated_terminal_receipt_releases_after_dispatch_lease_expiry"
       ]
     },
     {
@@ -182,7 +188,7 @@
       "nativeSymbol": "control.compact()",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-maintenance.rs",
       "tests": [
-        "checkpoint archive and metrics matrix"
+        "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::compaction_preserves_indeterminate_capacity_and_exact_state"
       ]
     },
     {
@@ -191,7 +197,7 @@
       "nativeSymbol": "DurableInferenceControl::native_metrics",
       "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_control_b.rs",
       "tests": [
-        "compaction_preserves_indeterminate_capacity_and_exact_state"
+        "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::compaction_preserves_indeterminate_capacity_and_exact_state"
       ]
     },
     {
@@ -200,7 +206,40 @@
       "nativeSymbol": "metricSource",
       "sourcePath": "docs/modules/inference.control/SLO_ALERTS.json",
       "tests": [
-        "current-state source path and generated-projection checks"
+        "scripts/test_hepta_inference_current_state.py"
+      ]
+    },
+    {
+      "operation": "bounded_terminal_admission_and_fifo_fairness",
+      "state": "source_implemented_execution_pending",
+      "nativeSymbol": "send_terminal",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/actor_mailbox.rs",
+      "tests": [
+        "codex-rs/hepta-infer-worker-host/src/actor_mailbox_boundary_tests.rs::terminal_reserve_preserves_fifo_and_shutdown_when_every_quota_is_full",
+        "codex-rs/hepta-infer-worker-host/src/actor_mailbox_boundary_tests.rs::mixed_fifo_contention_curve",
+        "codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs::real_writer_mixed_query_terminal_contention_curve"
+      ]
+    },
+    {
+      "operation": "accepted_response_loss_and_post_commit_observation",
+      "state": "source_implemented_execution_pending",
+      "nativeSymbol": "receive_value",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/control_actor.rs",
+      "tests": [
+        "codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs::accepted_deadline_does_not_cancel_commit_or_license_duplicate_dispatch",
+        "codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs::lost_terminal_reply_remains_durable_and_survives_restart",
+        "codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs::signed_post_effect_terminal_reply_loss_keeps_exact_durable_result",
+        "codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs::caller_cancellation_after_admission_cannot_erase_the_owner_command",
+        "codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs::shutdown_deadline_retains_lock_until_the_real_owner_exits"
+      ]
+    },
+    {
+      "operation": "immutable_observational_metrics",
+      "state": "source_implemented_execution_pending",
+      "nativeSymbol": "published_metrics",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/control_actor.rs",
+      "tests": [
+        "codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs::published_metrics_are_immutable_stale_and_do_not_queue_reads"
       ]
     }
   ],
@@ -228,7 +267,9 @@
     "obtain green exact-source-head and deterministic base-merge receipts for the final commit",
     "retain native-host process-kill, disk-fault, torn-write, vault and App Server command records as CI artifacts",
     "complete signed output-vault deletion confirmation rather than treating a maintenance receipt as deletion proof",
-    "export runtime metrics to the selected telemetry backend and qualify alert delivery"
+    "export runtime metrics to the selected telemetry backend and qualify alert delivery",
+    "qualify host-selected mailbox, response and shutdown limits under real provider and storage contention",
+    "deliver last-published and queue metrics to the selected telemetry backend; cached observations are not authority"
   ],
   "externalEvidenceGates": [
     "independent semantic and security review",

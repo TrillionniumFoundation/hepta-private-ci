@@ -2,6 +2,7 @@ use std::fs;
 use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
+use std::time::Duration;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -14,6 +15,7 @@ use codex_hepta_infer_core::recovery_contracts::verify_recovery_reconciliation_r
 use codex_hepta_infer_core::recovery_contracts::verify_recovery_retirement;
 use codex_hepta_infer_worker_host::NativeJournalWriterActor;
 use codex_hepta_infer_worker_host::NativeReconcilerActor;
+use codex_hepta_infer_worker_host::NativeWriterLimits;
 use serde::Deserialize;
 use serde::de::DeserializeOwned;
 
@@ -46,6 +48,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         Some(value) => return Err(format!("unsupported recovery operation: {value}").into()),
     };
     let mut journal = None;
+    let mut writer_limits = NativeWriterLimits::default();
     let mut trust_store = None;
     let mut execution_bundle = None;
     let mut evidence = None;
@@ -56,6 +59,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         }
         let value = args.next().ok_or("missing argument value")?;
         match flag.as_str() {
+            "--writer-ordinary-capacity" => {
+                writer_limits.ordinary_queue_capacity = value.parse()?
+            }
+            "--writer-terminal-capacity" => {
+                writer_limits.terminal_queue_capacity = value.parse()?
+            }
+            "--writer-reply-timeout-ms" => {
+                writer_limits.reply_timeout = Duration::from_millis(value.parse()?)
+            }
+            "--writer-shutdown-timeout-ms" => {
+                writer_limits.shutdown_timeout = Duration::from_millis(value.parse()?)
+            }
             "--journal" => journal = Some(PathBuf::from(value)),
             "--trust-store" => trust_store = Some(PathBuf::from(value)),
             "--execution-authority-bundle" => execution_bundle = Some(PathBuf::from(value)),
@@ -82,7 +97,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let request_id = recovery_plan.request_id().to_string();
     let now_unix_ms = unix_time_ms()?;
 
-    let actor = NativeJournalWriterActor::spawn(journal, JOURNAL_CAPACITY)?;
+    let actor =
+        NativeJournalWriterActor::spawn_with_limits(journal, JOURNAL_CAPACITY, writer_limits)?;
     let reconciler = NativeReconcilerActor::new(actor.handle());
     let operation_result: Result<_, Box<dyn std::error::Error + Send + Sync>> = async {
         match operation {
@@ -134,7 +150,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 
 fn print_help() {
     println!(
-        "hepta-infer-recovery <reconcile|retire> --journal ABSOLUTE_PATH --trust-store ABSOLUTE_JSON --execution-authority-bundle ABSOLUTE_JSON --evidence ABSOLUTE_JSON\n\nNo force-release mode exists. `reconcile` requires a fresh signed terminal/usage receipt. `retire` requires two distinct operator signatures over the exact request, dispatch digest and current record revision."
+        "hepta-infer-recovery <reconcile|retire> --journal ABSOLUTE_PATH --trust-store ABSOLUTE_JSON --execution-authority-bundle ABSOLUTE_JSON --evidence ABSOLUTE_JSON [--writer-ordinary-capacity N] [--writer-terminal-capacity N] [--writer-reply-timeout-ms N] [--writer-shutdown-timeout-ms N]\n\nNo force-release mode exists. `reconcile` requires a fresh signed terminal/usage receipt. `retire` requires two distinct operator signatures over the exact request, dispatch digest and current record revision."
     );
 }
 

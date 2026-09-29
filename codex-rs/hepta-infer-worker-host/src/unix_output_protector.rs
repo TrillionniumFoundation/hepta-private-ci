@@ -316,3 +316,7 @@ fn validate_vault_socket(path: &Path, vault_uid: u32) -> Result<()> {
     }
     Ok(())
 }
+
+#[cfg(all(test, unix))]
+#[path = "unix_output_protector_boundary_tests.rs"]
+mod boundary_tests;

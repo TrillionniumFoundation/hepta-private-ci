@@ -7,17 +7,23 @@
 
 #![forbid(unsafe_code)]
 
+mod actor_latency;
 mod actor_mailbox;
+mod actor_observation;
+mod actor_policy;
 pub mod control_actor;
 pub mod control_port;
 /// Model-manifest/grant state machine for native driver implementations.
 pub mod model_worker;
 
+pub use actor_latency::NativeLatencySummary;
 pub use control_actor::DispatchedNativeEffect;
 pub use control_actor::NativeControlActorError;
 pub use control_actor::NativeJournalWriterActor;
 pub use control_actor::NativeJournalWriterHandle;
+pub use control_actor::NativePublishedMetrics;
 pub use control_actor::NativeReconcilerActor;
+pub use control_actor::NativeWriterLimits;
 pub use control_actor::PreparedNativeEffect;
 pub use control_port::NativeControlPort;
 pub use control_port::NativeControlPortError;

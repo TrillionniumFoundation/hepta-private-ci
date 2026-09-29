@@ -11,6 +11,13 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
+use tokio::sync::watch;
+
+pub use crate::actor_observation::NativePublishedMetrics;
+pub use crate::actor_policy::NativeWriterLimits;
+#[path = "control_actor_commands.rs"]
+mod commands;
+use commands::Command;
 
 use async_trait::async_trait;
 use codex_hepta_infer_core::control_contracts::ProtectedOutput;
@@ -39,6 +46,10 @@ use crate::control_port::NativeControlPortResult;
 pub enum NativeControlActorError {
     Closed,
     Overloaded,
+    /// Admission succeeded. The owner may have committed; never blindly replay.
+    AcceptedReplyLost,
+    /// Only response waiting expired. The accepted owner command is not cancelled.
+    AcceptedDeadlineExceeded,
     LegacyDisabled,
     ShutdownDeadlineExceeded,
     Startup(String),
@@ -60,6 +71,7 @@ type ActorResult<T> = Result<T, NativeControlActorError>;
 pub struct NativeJournalWriterActor {
     handle: NativeJournalWriterHandle,
     join: Option<thread::JoinHandle<()>>,
+    shutdown_timeout: Duration,
 }
 
 /// Cloneable command port. Cloning this port does not clone or reopen the
@@ -67,6 +79,8 @@ pub struct NativeJournalWriterActor {
 #[derive(Clone)]
 pub struct NativeJournalWriterHandle {
     sender: actor_mailbox::Sender<Command>,
+    reply_timeout: Duration,
+    published: watch::Receiver<Option<Arc<NativePublishedMetrics>>>,
 }
 
 impl NativeJournalWriterActor {
@@ -79,8 +93,32 @@ impl NativeJournalWriterActor {
         capacity: usize,
         queue_capacity: usize,
     ) -> ActorResult<Self> {
-        let (sender, mut receiver) = actor_mailbox::channel::<Command>(queue_capacity)
-            .ok_or_else(|| NativeControlActorError::Startup("invalid mailbox capacity".to_string()))?;
+        Self::spawn_with_limits(
+            journal,
+            capacity,
+            NativeWriterLimits {
+                ordinary_queue_capacity: queue_capacity,
+                ..Default::default()
+            },
+        )
+    }
+
+    pub fn spawn_with_limits(
+        journal: PathBuf,
+        capacity: usize,
+        limits: NativeWriterLimits,
+    ) -> ActorResult<Self> {
+        if !limits.validate() {
+            return Err(NativeControlActorError::Startup(
+                "invalid writer deadline".to_string(),
+            ));
+        }
+        let (sender, mut receiver) = actor_mailbox::channel_with_terminal_capacity::<Command>(
+            limits.ordinary_queue_capacity,
+            limits.terminal_queue_capacity,
+        )
+        .ok_or_else(|| NativeControlActorError::Startup("invalid mailbox capacity".to_string()))?;
+        let (publisher, published) = watch::channel(None);
         let (startup_sender, startup_receiver) = std::sync::mpsc::sync_channel(1);
         let join = thread::Builder::new()
             .name("hepta-inference-journal-writer".to_string())
@@ -96,7 +134,9 @@ impl NativeJournalWriterActor {
                     }
                 };
                 while let Some(command) = receiver.blocking_recv() {
-                    if command.apply(&mut control) {
+                    let outcome = command.apply(&mut control, &publisher);
+                    receiver.finish_command(outcome.successful_reply_lost);
+                    if outcome.shutdown {
                         break;
                     }
                 }
@@ -104,8 +144,13 @@ impl NativeJournalWriterActor {
             .map_err(|error| NativeControlActorError::Startup(error.to_string()))?;
         match startup_receiver.recv() {
             Ok(Ok(())) => Ok(Self {
-                handle: NativeJournalWriterHandle { sender },
+                handle: NativeJournalWriterHandle {
+                    sender,
+                    reply_timeout: limits.reply_timeout,
+                    published,
+                },
                 join: Some(join),
+                shutdown_timeout: limits.shutdown_timeout,
             }),
             Ok(Err(error)) => {
                 let _ = join.join();
@@ -123,18 +168,20 @@ impl NativeJournalWriterActor {
     }
 
     pub async fn shutdown(mut self) -> ActorResult<()> {
+        let deadline = tokio::time::Instant::now() + self.shutdown_timeout;
         let (reply, response) = oneshot::channel();
         self.handle
             .sender
             .seal_and_send(Command::Shutdown { reply })
             .map_err(|_| NativeControlActorError::Closed)?;
-        tokio::time::timeout(Duration::from_secs(30), response)
+        tokio::time::timeout_at(deadline, response)
             .await
             .map_err(|_| NativeControlActorError::ShutdownDeadlineExceeded)?
             .map_err(|_| NativeControlActorError::Closed)?;
         if let Some(join) = self.join.take() {
-            tokio::task::spawn_blocking(move || join.join())
+            tokio::time::timeout_at(deadline, tokio::task::spawn_blocking(move || join.join()))
                 .await
+                .map_err(|_| NativeControlActorError::ShutdownDeadlineExceeded)?
                 .map_err(|error| NativeControlActorError::Join(error.to_string()))?
                 .map_err(|_| {
                     NativeControlActorError::Join("journal writer panicked".to_string())
@@ -150,13 +197,18 @@ impl Drop for NativeJournalWriterActor {
         // A blocked filesystem call is not forcibly interrupted or reported as
         // stopped: the lock stays held until the actual writer thread exits.
         let (reply, _response) = oneshot::channel();
-        let _ = self.handle.sender.seal_and_send(Command::Shutdown { reply });
+        let _ = self
+            .handle
+            .sender
+            .seal_and_send(Command::Shutdown { reply });
     }
 }
 
 impl NativeJournalWriterHandle {
     pub fn queue_metrics(&self) -> ActorResult<NativeWriterQueueMetrics> {
-        self.sender.metrics().map_err(|_| NativeControlActorError::Closed)
+        self.sender
+            .metrics()
+            .map_err(|_| NativeControlActorError::Closed)
     }
 
     pub async fn reserve(
@@ -170,7 +222,7 @@ impl NativeJournalWriterHandle {
             maximum_in_flight,
             reply,
         })?;
-        receive(response).await
+        self.receive(response).await
     }
 
     pub async fn bind_execution(
@@ -186,7 +238,7 @@ impl NativeJournalWriterHandle {
             now_unix_ms,
             reply,
         })?;
-        receive(response).await
+        self.receive(response).await
     }
 
     pub async fn prepare_dispatch_raw(
@@ -203,7 +255,7 @@ impl NativeJournalWriterHandle {
             dispatch,
             reply,
         })?;
-        receive(response).await
+        self.receive(response).await
     }
 
     pub async fn prepare_authorized_dispatch_raw(
@@ -221,7 +273,7 @@ impl NativeJournalWriterHandle {
             now_unix_ms,
             reply,
         })?;
-        receive(response).await
+        self.receive(response).await
     }
 
     pub async fn prepare_dispatch(
@@ -238,7 +290,7 @@ impl NativeJournalWriterHandle {
             dispatch,
             reply,
         })?;
-        let (record, abort_token) = receive(response).await?;
+        let (record, abort_token) = self.receive(response).await?;
         Ok(PreparedNativeEffect {
             writer: self.clone(),
             request_id,
@@ -262,7 +314,7 @@ impl NativeJournalWriterHandle {
             now_unix_ms,
             reply,
         })?;
-        let (record, abort_token) = receive(response).await?;
+        let (record, abort_token) = self.receive(response).await?;
         Ok(PreparedNativeEffect {
             writer: self.clone(),
             request_id,
@@ -282,7 +334,7 @@ impl NativeJournalWriterHandle {
             reason,
             reply,
         })?;
-        receive(response).await
+        self.receive(response).await
     }
 
     pub async fn started(
@@ -296,7 +348,7 @@ impl NativeJournalWriterHandle {
             turn_id,
             reply,
         })?;
-        receive(response).await
+        self.receive(response).await
     }
 
     pub async fn reject_before_start(
@@ -310,13 +362,13 @@ impl NativeJournalWriterHandle {
             rejection,
             reply,
         })?;
-        receive(response).await
+        self.receive(response).await
     }
 
     pub async fn cancel(&self, request_id: String) -> ActorResult<NativeRunRecord> {
         let (reply, response) = oneshot::channel();
         self.send(Command::Cancel { request_id, reply })?;
-        receive(response).await
+        self.receive(response).await
     }
 
     pub async fn stop_before_dispatch(
@@ -330,7 +382,7 @@ impl NativeJournalWriterHandle {
             reason,
             reply,
         })?;
-        receive(response).await
+        self.receive(response).await
     }
 
     pub async fn settle_legacy(
@@ -347,7 +399,7 @@ impl NativeJournalWriterHandle {
             output,
             reply,
         })?;
-        receive(response).await
+        self.receive(response).await
     }
 
     pub async fn settle_authorized(
@@ -367,29 +419,48 @@ impl NativeJournalWriterHandle {
             protected_output,
             reply,
         })?;
-        receive(response).await
+        self.receive(response).await
     }
 
     pub async fn record(&self, request_id: String) -> ActorResult<Option<NativeRunRecord>> {
         let (reply, response) = oneshot::channel();
         self.send(Command::Record { request_id, reply })?;
-        response.await.map_err(|_| NativeControlActorError::Closed)
+        self.receive_value(response).await
     }
 
     pub async fn metrics(&self, now_unix_ms: u64) -> ActorResult<NativeControlMetrics> {
         let (reply, response) = oneshot::channel();
         self.send(Command::Metrics { now_unix_ms, reply })?;
-        response.await.map_err(|_| NativeControlActorError::Closed)
+        self.receive_value(response).await
     }
 
     pub async fn compact(&self) -> ActorResult<NativeMaintenanceReceipt> {
         let (reply, response) = oneshot::channel();
         self.send(Command::Compact { reply })?;
-        receive(response).await
+        self.receive(response).await
+    }
+
+    /// A potentially stale observation; no writer command or journal read.
+    /// Use `metrics` to explicitly refresh; use `record` for serialized state.
+    pub fn published_metrics(&self) -> Option<Arc<NativePublishedMetrics>> {
+        self.published.borrow().clone()
+    }
+
+    async fn receive_value<T>(&self, response: oneshot::Receiver<T>) -> ActorResult<T> {
+        receive_value(response, self.reply_timeout).await
+    }
+
+    async fn receive<T>(&self, response: oneshot::Receiver<ActorResult<T>>) -> ActorResult<T> {
+        self.receive_value(response).await?
     }
 
     fn send(&self, command: Command) -> ActorResult<()> {
-        self.sender.send(command).map_err(|error| match error {
+        let result = if command.is_terminal_transition() {
+            self.sender.send_terminal(command)
+        } else {
+            self.sender.send(command)
+        };
+        result.map_err(|error| match error {
             actor_mailbox::SendError::Full => NativeControlActorError::Overloaded,
             actor_mailbox::SendError::Closed => NativeControlActorError::Closed,
         })
@@ -434,7 +505,9 @@ impl NativeControlPort for NativeJournalWriterHandle {
             reply,
         })
         .map_err(NativeControlPortError::Actor)?;
-        receive(response).await.map_err(NativeControlPortError::Actor)
+        self.receive(response)
+            .await
+            .map_err(NativeControlPortError::Actor)
     }
 
     async fn dispatch_native_authorized_with_pre_effect_abort(
@@ -568,7 +641,7 @@ impl PreparedNativeEffect {
             reason,
             reply,
         })?;
-        receive(response).await
+        self.writer.receive(response).await
     }
 
     /// Consume the local no-effect proof immediately before sending the
@@ -647,7 +720,7 @@ impl NativeReconcilerActor {
             verified,
             reply,
         })?;
-        receive(response).await
+        self.writer.receive(response).await
     }
 
     pub async fn retire(
@@ -663,249 +736,21 @@ impl NativeReconcilerActor {
             verified,
             reply,
         })?;
-        receive(response).await
+        self.writer.receive(response).await
     }
 }
 
-enum Command {
-    Reserve {
-        request: NativeRequest,
-        maximum_in_flight: usize,
-        reply: oneshot::Sender<ActorResult<NativeRunRecord>>,
-    },
-    BindExecution {
-        request_id: String,
-        plan: Arc<VerifiedExecutionPlan>,
-        now_unix_ms: u64,
-        reply: oneshot::Sender<ActorResult<NativeRunRecord>>,
-    },
-    PrepareDispatch {
-        request_id: String,
-        dispatch: NativeDispatch,
-        reply: oneshot::Sender<ActorResult<(NativeRunRecord, NativePreEffectAbortToken)>>,
-    },
-    PrepareAuthorizedDispatch {
-        request_id: String,
-        dispatch: NativeDispatch,
-        plan: Arc<VerifiedExecutionPlan>,
-        now_unix_ms: u64,
-        reply: oneshot::Sender<ActorResult<(NativeRunRecord, NativePreEffectAbortToken)>>,
-    },
-    AbortBeforeEffect {
-        token: NativePreEffectAbortToken,
-        reason: String,
-        reply: oneshot::Sender<ActorResult<NativeRunRecord>>,
-    },
-    Started {
-        request_id: String,
-        turn_id: String,
-        reply: oneshot::Sender<ActorResult<NativeRunRecord>>,
-    },
-    Cancel {
-        request_id: String,
-        reply: oneshot::Sender<ActorResult<NativeRunRecord>>,
-    },
-    StopBeforeDispatch {
-        request_id: String,
-        reason: String,
-        reply: oneshot::Sender<ActorResult<NativeRunRecord>>,
-    },
-    RejectBeforeStart {
-        request_id: String,
-        rejection: NativeDispatchRejection,
-        reply: oneshot::Sender<ActorResult<NativeRunRecord>>,
-    },
-    SettleLegacy {
-        request_id: String,
-        output: NativeRunOutput,
-        reply: oneshot::Sender<ActorResult<NativeRunRecord>>,
-    },
-    SettleAuthorized {
-        request_id: String,
-        plan: Arc<VerifiedExecutionPlan>,
-        now_unix_ms: u64,
-        output: NativeRunOutput,
-        protected_output: Option<ProtectedOutput>,
-        reply: oneshot::Sender<ActorResult<NativeRunRecord>>,
-    },
-    ReconcileRecovery {
-        request_id: String,
-        plan: Arc<RecoveryExecutionPlan>,
-        verified: Arc<VerifiedRecoveryReconciliationReceipt>,
-        reply: oneshot::Sender<ActorResult<NativeRunRecord>>,
-    },
-    RetireRecovery {
-        request_id: String,
-        plan: Arc<RecoveryExecutionPlan>,
-        verified: Arc<VerifiedRecoveryRetirement>,
-        reply: oneshot::Sender<ActorResult<NativeRunRecord>>,
-    },
-    Record {
-        request_id: String,
-        reply: oneshot::Sender<Option<NativeRunRecord>>,
-    },
-    Metrics {
-        now_unix_ms: u64,
-        reply: oneshot::Sender<NativeControlMetrics>,
-    },
-    Compact {
-        reply: oneshot::Sender<ActorResult<NativeMaintenanceReceipt>>,
-    },
-    Shutdown {
-        reply: oneshot::Sender<()>,
-    },
-}
-
-impl Command {
-    /// Returns true when the actor must terminate.
-    fn apply(self, control: &mut DurableInferenceControl) -> bool {
-        match self {
-            Self::Reserve {
-                request,
-                maximum_in_flight,
-                reply,
-            } => send_result(reply, control.reserve_native(request, maximum_in_flight)),
-            Self::BindExecution {
-                request_id,
-                plan,
-                now_unix_ms,
-                reply,
-            } => send_result(
-                reply,
-                control.bind_native_execution(&request_id, &plan, now_unix_ms),
-            ),
-            Self::PrepareDispatch {
-                request_id,
-                dispatch,
-                reply,
-            } => {
-                if !cfg!(test)
-                    && control
-                        .native_record(&request_id)
-                        .and_then(|record| record.execution_binding.as_ref())
-                        .is_none()
-                {
-                    let _ = reply.send(Err(NativeControlActorError::LegacyDisabled));
-                } else {
-                    send_result(
-                        reply,
-                        control.dispatch_native_with_pre_effect_abort(&request_id, dispatch),
-                    );
-                }
-            }
-            Self::PrepareAuthorizedDispatch {
-                request_id,
-                dispatch,
-                plan,
-                now_unix_ms,
-                reply,
-            } => send_result(
-                reply,
-                control.dispatch_native_authorized_with_pre_effect_abort(
-                    &request_id,
-                    dispatch,
-                    &plan,
-                    now_unix_ms,
-                ),
-            ),
-            Self::AbortBeforeEffect {
-                token,
-                reason,
-                reply,
-            } => send_result(reply, control.abort_native_before_effect(token, reason)),
-            Self::Started {
-                request_id,
-                turn_id,
-                reply,
-            } => send_result(reply, control.native_started(&request_id, turn_id)),
-            Self::Cancel { request_id, reply } => {
-                send_result(reply, control.cancel_native(&request_id))
-            }
-            Self::StopBeforeDispatch {
-                request_id,
-                reason,
-                reply,
-            } => send_result(
-                reply,
-                control.stop_native_before_dispatch(&request_id, reason),
-            ),
-            Self::RejectBeforeStart {
-                request_id,
-                rejection,
-                reply,
-            } => send_result(
-                reply,
-                control.reject_native_before_start(&request_id, rejection),
-            ),
-            Self::SettleLegacy {
-                request_id,
-                output,
-                reply,
-            } => send_result(reply, control.settle_native(&request_id, output)),
-            Self::SettleAuthorized {
-                request_id,
-                plan,
-                now_unix_ms,
-                output,
-                protected_output,
-                reply,
-            } => send_result(
-                reply,
-                control.settle_native_authorized(
-                    &request_id,
-                    &plan,
-                    now_unix_ms,
-                    output,
-                    protected_output,
-                ),
-            ),
-            Self::ReconcileRecovery {
-                request_id,
-                plan,
-                verified,
-                reply,
-            } => send_result(
-                reply,
-                control.reconcile_native_recovery(&request_id, &plan, &verified),
-            ),
-            Self::RetireRecovery {
-                request_id,
-                plan,
-                verified,
-                reply,
-            } => send_result(
-                reply,
-                control.retire_native_indeterminate_recovery(&request_id, &plan, &verified),
-            ),
-            Self::Record { request_id, reply } => {
-                let _ = reply.send(control.native_record(&request_id).cloned());
-            }
-            Self::Metrics { now_unix_ms, reply } => {
-                let _ = reply.send(control.native_metrics(now_unix_ms));
-            }
-            Self::Compact { reply } => send_result(reply, control.compact_native_journal()),
-            Self::Shutdown { reply } => {
-                let _ = reply.send(());
-                return true;
-            }
-        }
-        false
-    }
-}
-
-fn send_result<T>(
-    reply: oneshot::Sender<ActorResult<T>>,
-    result: Result<T, codex_hepta_infer_core::durable_control::Error>,
-) {
-    let _ = reply.send(result.map_err(|error| NativeControlActorError::Control(error.to_string())));
-}
-
-async fn receive<T>(response: oneshot::Receiver<ActorResult<T>>) -> ActorResult<T> {
-    response
+async fn receive_value<T>(response: oneshot::Receiver<T>, timeout: Duration) -> ActorResult<T> {
+    tokio::time::timeout(timeout, response)
         .await
-        .map_err(|_| NativeControlActorError::Closed)?
+        .map_err(|_| NativeControlActorError::AcceptedDeadlineExceeded)?
+        .map_err(|_| NativeControlActorError::AcceptedReplyLost)
 }
 
 #[cfg(test)]
 #[path = "control_actor_compat_tests.rs"]
 mod compatibility_tests;
+
+#[cfg(test)]
+#[path = "control_actor_boundary_tests.rs"]
+mod boundary_tests;
