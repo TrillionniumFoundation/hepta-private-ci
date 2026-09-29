@@ -5,6 +5,8 @@ import {
 
 import { captureConfirmation, assertConfirmation, retainedTarget } from "./confirmation.js";
 import { ScopedRecoveryStore } from "./recovery-store.js";
+import { TerminalCleanupQueue } from "./terminal-cleanup.js";
+import { createKeyedList, setText } from "./keyed-list.js";
 
 function requiredElement(document, id) {
   const element = document.getElementById(id);
@@ -98,25 +100,35 @@ export function createControlConsole({
   let pendingAction = null;
   let dialogTrigger = null;
   let recoveryStore = null;
+  let cleanupQueue = null;
+  let cleanupError = null;
   let recoveryReady = false;
   let recoveryError = null;
   let refreshing = false;
   let targetInitialized = false;
   let targetInventory = null;
   const recoveryButtons = new Map();
+  const recoveringIds = new Set();
+  const moduleList = createKeyedList(elements.modules);
+  const pendingList = createKeyedList(elements.pending);
+  const completedList = createKeyedList(elements.completed);
+  const emptyKey = Symbol("empty presentation row");
   const lifecycle = new AbortController();
 
   function announce(message) {
+    if (destroyed) return;
     elements.live.textContent = message;
   }
 
   function showError(error) {
+    if (destroyed) return;
     elements.error.hidden = false;
     elements.error.textContent = visibleError(error);
     announce(elements.error.textContent);
   }
 
   function appendError(error) {
+    if (destroyed) return;
     const message = visibleError(error);
     if (elements.error.hidden || elements.error.textContent.length === 0) {
       showError(error);
@@ -127,8 +139,9 @@ export function createControlConsole({
   }
 
   function clearError() {
-    elements.error.hidden = recoveryError === null;
-    elements.error.textContent = recoveryError ? visibleError(recoveryError) : "";
+    const error = recoveryError ?? cleanupError;
+    elements.error.hidden = error === null;
+    elements.error.textContent = error ? visibleError(error) : "";
   }
 
   function reportStorageFailure(cause, operation) {
@@ -145,15 +158,25 @@ export function createControlConsole({
     );
   }
 
-  function persistRecovery() {
-    if (!recoveryStore) return false;
+  async function persistRecovery() {
+    if (!recoveryStore || !cleanupQueue || destroyed) return false;
     try {
-      // Prepared identities were committed before dispatch. Never replace a
-      // shared whole-ledger value with this tab's partial view.
-      for (const operation of client.readView().completed) recoveryStore.complete(operation);
-      return true;
-    } catch (error) {
-      reportStorageFailure(error, "cleaned up");
+      // Never replace the shared ledger with this tab's partial view. Cleanup
+      // is serialized, exact-identity deduplicated, and observed to settlement.
+      const settled = await cleanupQueue.sync(client.readView().completed, { signal: lifecycle.signal });
+      if (!destroyed && settled && cleanupError) {
+        const oldMessage = visibleError(cleanupError);
+        cleanupError = null;
+        if (elements.error.textContent === oldMessage) clearError();
+      }
+      return settled;
+    } catch (cause) {
+      if (!destroyed) {
+        cleanupError = new UiControlError(UI_CONTROL_ERROR_CODES.STORAGE,
+          "Local recovery cleanup failed; retained records require lookup, never mutation replay.",
+          { retryable: true, details: { operation: "terminal cleanup" }, cause });
+        showError(cleanupError);
+      }
       return false;
     }
   }
@@ -181,6 +204,7 @@ export function createControlConsole({
         return store.prepare(record, options);
       });
       recoveryStore = store;
+      cleanupQueue = new TerminalCleanupQueue((operation, options) => store.complete(operation, options));
       recoveryReady = true;
       recoveryError = null;
       // An unscoped predecessor cannot be safely assigned to a new principal.
@@ -198,6 +222,7 @@ export function createControlConsole({
   }
 
   function restoreFocus() {
+    if (destroyed) return;
     if (dialogTrigger && dialogTrigger.isConnected !== false && !dialogTrigger.disabled) {
       dialogTrigger.focus();
     } else {
@@ -208,7 +233,6 @@ export function createControlConsole({
   }
 
   function renderModules(view) {
-    elements.modules.replaceChildren();
     const modules = view.snapshot?.modules ?? [];
     if (view.snapshot) {
       const ids = modules.map(module => module.id);
@@ -231,114 +255,91 @@ export function createControlConsole({
       elements.target.value = selected;
       if (ids.length > 0) targetInitialized = true;
     }
-    if (!view.snapshot || view.snapshot.modules.length === 0) {
-      const row = document.createElement("tr");
-      const cell = document.createElement("td");
-      cell.colSpan = 4;
-      cell.textContent = view.stale ? "No current runtime snapshot." : "No runtime modules reported.";
-      row.append(cell);
-      elements.modules.append(row);
-      return;
-    }
-    for (const module of view.snapshot.modules) {
-      const row = document.createElement("tr");
-      for (const value of [
-        module.id,
-        module.status,
-        module.revision,
-        redactDigest(module.semanticDigest),
-      ]) {
-        const cell = document.createElement("td");
-        cell.textContent = String(value);
-        row.append(cell);
-      }
-      elements.modules.append(row);
-    }
+    moduleList(modules.length ? modules : [null], module => module?.id ?? emptyKey,
+      module => {
+        const node = document.createElement("tr");
+        const cells = Array.from({ length: module ? 4 : 1 }, () => document.createElement("td"));
+        if (!module) cells[0].colSpan = 4;
+        node.append(...cells);
+        return { node, cells };
+      },
+      ({ cells }, module) => {
+        const values = module
+          ? [module.id, module.status, module.revision, redactDigest(module.semanticDigest)]
+          : [view.stale ? "No current runtime snapshot." : "No runtime modules reported."];
+        values.forEach((value, index) => setText(cells[index], value));
+      });
   }
 
   function renderPending(view) {
     const focusedId = [...recoveryButtons].find(([, button]) => button === document.activeElement)?.[0];
     recoveryButtons.clear();
-    elements.pending.replaceChildren();
-    if (view.pending.length === 0) {
-      const item = document.createElement("li");
-      item.textContent = "No pending operations.";
-      elements.pending.append(item);
-      if (focusedId) { elements.live.setAttribute?.("tabindex", "-1"); elements.live.focus(); }
-      return;
-    }
-    for (const operation of view.pending) {
-      const item = document.createElement("li");
-      const label = document.createElement("span");
-      label.textContent = [
-        redactIdentifier(operation.operationId),
-        operation.state,
-        redactIdentifier(operation.auditTraceId) || "audit pending",
-        `generation ${operation.generation}`,
-        `revision ${operation.displayedRevision}`,
-        `digest ${redactDigest(operation.semanticDigest)}`,
-      ].join(" · ");
-      item.append(label);
-      if (operation.state === "indeterminate") {
-        const recover = document.createElement("button");
-        recover.type = "button";
-        recover.textContent = "Recover operation";
-        recover.setAttribute(
-          "aria-label",
-          `Recover operation ${redactIdentifier(operation.operationId)}`,
-        );
-        recover.disabled = destroyed || !view.connected;
-        recoveryButtons.set(operation.operationId, recover);
-        recover.addEventListener("click", async () => {
-          clearError();
-          recover.disabled = true;
-          try {
-            const result = await client.recoverOperation(operation.operationId, { signal: lifecycle.signal });
-            announce(`Recovered ${redactIdentifier(result.operationId)}: ${result.state}.`);
-            persistRecovery();
-            render();
-          } catch (error) {
-            showError(error);
-          } finally {
-            recover.disabled = destroyed || !client.readView().connected;
+    pendingList(view.pending.length ? view.pending : [null], operation => operation?.operationId ?? emptyKey,
+      () => {
+        const node = document.createElement("li");
+        const label = document.createElement("span");
+        node.append(label);
+        return { node, label, recover: null };
+      },
+      (record, operation) => {
+        const { node, label } = record;
+        setText(label, operation ? [
+          redactIdentifier(operation.operationId), operation.state,
+          redactIdentifier(operation.auditTraceId) || "audit pending",
+          `generation ${operation.generation}`, `revision ${operation.displayedRevision}`,
+          `digest ${redactDigest(operation.semanticDigest)}`,
+        ].join(" · ") : "No pending operations.");
+        if (operation?.state === "indeterminate") {
+          const id = operation.operationId;
+          if (!record.recover) {
+            const recover = document.createElement("button");
+            recover.type = "button";
+            recover.textContent = "Recover operation";
+            recover.setAttribute("aria-label", `Recover operation ${redactIdentifier(id)}`);
+            recover.addEventListener("click", async () => {
+              if (destroyed || recoveringIds.has(id) || !client.readView().connected) return;
+              clearError();
+              recoveringIds.add(id);
+              recover.disabled = true;
+              try {
+                const result = await client.recoverOperation(id, { signal: lifecycle.signal });
+                announce(`Recovered ${redactIdentifier(result.operationId)}: ${result.state}.`);
+                await persistRecovery();
+              } catch (error) {
+                showError(error);
+              } finally {
+                recoveringIds.delete(id);
+                if (!destroyed) render();
+              }
+            });
+            node.append(text(document, " "), recover);
+            record.recover = recover;
           }
-        });
-        item.append(text(document, " "), recover);
-      }
-      elements.pending.append(item);
-    }
+          record.recover.disabled = destroyed || !view.connected || recoveringIds.has(id);
+          recoveryButtons.set(id, record.recover);
+        } else if (record.recover) {
+          node.replaceChildren(label);
+          record.recover = null;
+        }
+      });
     if (focusedId) {
       const replacement = recoveryButtons.get(focusedId);
-      if (replacement && !replacement.disabled) replacement.focus();
-      else { elements.live.setAttribute?.("tabindex", "-1"); elements.live.focus(); }
+      if (replacement && !replacement.disabled) {
+        if (document.activeElement !== replacement) replacement.focus();
+      } else { elements.live.setAttribute?.("tabindex", "-1"); elements.live.focus(); }
     }
   }
 
   function renderCompleted(view) {
-    elements.completed.replaceChildren();
-    if (view.completed.length === 0) {
-      const item = document.createElement("li");
-      item.textContent = "No terminal operations observed in this session.";
-      elements.completed.append(item);
-      return;
-    }
-    for (const operation of view.completed) {
-      const item = document.createElement("li");
-      item.textContent = [
-        redactIdentifier(operation.operationId),
-        operation.terminalStatus ?? "terminal",
-        operation.auditTraceId
-          ? redactIdentifier(operation.auditTraceId)
-          : "audit unavailable",
-        `generation ${operation.generation}`,
-        `revision ${operation.displayedRevision}`,
+    completedList(view.completed.length ? view.completed : [null], operation => operation?.operationId ?? emptyKey,
+      () => ({ node: document.createElement("li") }),
+      ({ node }, operation) => setText(node, operation ? [
+        redactIdentifier(operation.operationId), operation.terminalStatus ?? "terminal",
+        operation.auditTraceId ? redactIdentifier(operation.auditTraceId) : "audit unavailable",
+        `generation ${operation.generation}`, `revision ${operation.displayedRevision}`,
         `digest ${redactDigest(operation.semanticDigest)}`,
-        operation.outcomeDigest
-          ? `outcome ${redactDigest(operation.outcomeDigest)}`
-          : "outcome unavailable",
-      ].join(" · ");
-      elements.completed.append(item);
-    }
+        operation.outcomeDigest ? `outcome ${redactDigest(operation.outcomeDigest)}` : "outcome unavailable",
+      ].join(" · ") : "No terminal operations observed in this session."));
   }
 
   function render() {
@@ -451,7 +452,7 @@ export function createControlConsole({
     } catch (error) {
       showError(error);
     } finally {
-      persistRecovery();
+      await persistRecovery();
       inFlight = false;
       elements.confirm.disabled = false;
       if (elements.dialog.open) elements.dialog.close();
@@ -469,8 +470,8 @@ export function createControlConsole({
     try {
       await client.refreshView({ signal: lifecycle.signal });
       await client.recoverPending({ limit: 32, concurrency: 4, signal: lifecycle.signal });
-      persistRecovery();
-      announce(`Runtime view refreshed at ${formatTime(Date.now())}.`);
+      await persistRecovery();
+      if (!cleanupError) announce(`Runtime view refreshed at ${formatTime(Date.now())}.`);
     } catch (error) {
       failure = error;
       if (!destroyed) showError(error);
@@ -546,7 +547,7 @@ export function createControlConsole({
         }, pollIntervalMs);
       }
       started = true;
-      announce("ui.control console connected.");
+      announce(cleanupError ? visibleError(cleanupError) : "ui.control console connected.");
       render();
     } catch (error) {
       if (!destroyed) showError(error);
@@ -589,7 +590,7 @@ export function createControlConsole({
       timer = null;
       unsubscribe();
       sessionProvider.stop();
-      persistRecovery();
+      await cleanupQueue?.drain();
       try {
         await client.close();
       } finally {
