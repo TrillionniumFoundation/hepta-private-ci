@@ -42,6 +42,21 @@ jobs:
                   raise SystemExit(f"{path}: expected {count} occurrence(s), found {actual}: {old!r}")
               target.write_text(text.replace(old, new, count))
 
+          def replace_or_accept(path: str, old: str, new: str, count: int = 1) -> None:
+              target = Path(path)
+              text = target.read_text()
+              old_count = text.count(old)
+              new_count = text.count(new)
+              if old_count == count and new_count == 0:
+                  target.write_text(text.replace(old, new, count))
+                  return
+              if old_count == 0 and new_count == count:
+                  return
+              raise SystemExit(
+                  f"{path}: expected either {count} old or {count} new occurrence(s); "
+                  f"found old={old_count}, new={new_count}"
+              )
+
           replace(
               "codex-rs/hepta-learning-artifacts/src/owner/capability_validation.rs",
               "use std::str::FromStr;\n",
@@ -67,7 +82,7 @@ jobs:
               '", "--retries", "0", "--no-fail-fast"],',
               '", "--retries", "0"],',
           )
-          replace(
+          replace_or_accept(
               ".github/workflows/hepta-lane-e-gap-closure.yml",
               "cargo-llvm-cov@0.9.1",
               "cargo-llvm-cov@0.9.0",
