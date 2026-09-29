@@ -1,12 +1,7 @@
-# Trigger normal-source materialization for the reviewed runtime/resource closure.
+# One-shot conversion of reviewed, content-addressed authoring inputs into normal source.
 name: One-shot learning plasticity source materializer
 
 on:
-  push:
-    branches:
-      - feat/learning-plasticity-product-closure-20260928
-    paths:
-      - ".github/workflows/learning-plasticity-source-materialize.yml"
   pull_request:
     branches:
       - main
@@ -29,7 +24,8 @@ env:
 jobs:
   materialize:
     name: Materialize reviewed runtime closure into normal source
-    runs-on: macos-26-arm64
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, linux, x64, rog]
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -37,8 +33,9 @@ jobs:
           ref: ${{ env.MATERIALIZE_SHA }}
           fetch-depth: 0
           persist-credentials: true
+          clean: true
 
-      - name: Bind exact candidate and authenticate every reviewed part
+      - name: Bind exact candidate and authenticate reviewed inputs
         shell: bash
         run: |
           set -euo pipefail
@@ -61,19 +58,15 @@ jobs:
           cat scripts/.learning_plasticity_phase_timing.part{00..03} \
             > scripts/materialize_learning_plasticity_phase_timing.py
           python3 -m py_compile scripts/materialize_learning_plasticity_phase_timing.py
-          python3 - <<'PY'
-          import hashlib
-          from pathlib import Path
 
-          expected = "22c0752ebc0f8abaa64fea5cae1c08c21d59c38e2311e95dd9e12ecd4793aba9"
-          actual = hashlib.sha256(
-              Path("scripts/materialize_learning_plasticity_phase_timing.py").read_bytes()
-          ).hexdigest()
-          if actual != expected:
-              raise SystemExit(f"phase timing patch: expected {expected}, observed {actual}")
-          PY
+          test "$(git hash-object .authoring/learning-plasticity-finalize-source.patch.gz.b64.part00)" = "f7fbe294b5161bc980f1541711559052a73e3d86"
+          test "$(git hash-object .authoring/learning-plasticity-finalize-source.patch.gz.b64.part01)" = "a4a4672b60ca40a4a74ec045a18d2a29bbdffda4"
+          test "$(git hash-object .authoring/learning-plasticity-finalize-source.patch.gz.b64.part02)" = "84adc7988aeb7a83a1ca6e2d4a47f70f0009a698"
+          test "$(git hash-object .authoring/learning-plasticity-finalize-source.patch.gz.b64.part03)" = "5b5b301dce83fb16fc4cb2a35307bec3580d0d2c"
+          test "$(git hash-object .authoring/learning-plasticity-finalize-source.patch.gz.b64.part04)" = "87a95d53c47fa231e4814b8660ff639ace056697"
+          test "$(git hash-object .authoring/learning-plasticity-finalize-source.patch.gz.b64.part05)" = "920a0503eaf039e509cf017b2a4c141fc8be98d2"
 
-      - name: Materialize exact source, recovery contract, and detailed phase telemetry
+      - name: Materialize exact ordinary source and final-use hardening
         shell: bash
         run: |
           set -euo pipefail
@@ -93,19 +86,30 @@ jobs:
                   raise SystemExit(f"{name}: expected {digest}, observed {actual}")
           PY
           python3 scripts/materialize_learning_plasticity_phase_timing.py
+
+          cat .authoring/learning-plasticity-finalize-source.patch.gz.b64.part{00..05} \
+            > /tmp/learning-plasticity-finalize-source.patch.gz.b64
+          python3 - <<'PY'
+          import base64
+          import gzip
+          import hashlib
+          from pathlib import Path
+
+          encoded = Path("/tmp/learning-plasticity-finalize-source.patch.gz.b64").read_bytes()
+          if hashlib.sha256(encoded).hexdigest() != "2664e72baa6d2865197ad10ba5a7f21912b2221e99e62b775b75d493459a1d83":
+              raise SystemExit("finalizer base64 digest mismatch")
+          patch = gzip.decompress(base64.b64decode(encoded))
+          if hashlib.sha256(patch).hexdigest() != "60d2f26f4fccd81bb92df7473afb16b4150abf19c6ff56d4f19a51917ff1b284":
+              raise SystemExit("finalizer patch digest mismatch")
+          Path("/tmp/learning-plasticity-finalize-source.patch").write_bytes(patch)
+          PY
+          git apply --check /tmp/learning-plasticity-finalize-source.patch
+          git apply /tmp/learning-plasticity-finalize-source.patch
           python3 -m py_compile scripts/qualify_learning_plasticity.py
           python3 scripts/test_learning_plasticity_grammar_contract.py
           git diff --check
 
-      - name: Verify development documents and implementation maps
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 scripts/hepta-docs.py verify
-          python3 scripts/hepta-module-docs.py refresh-derived --check
-          python3 scripts/hepta-implementation-maps.py verify
-
-      - name: Format and compile the authored intelligence and Agentd source
+      - name: Format and compile intelligence and Agentd source
         working-directory: codex-rs
         shell: bash
         run: |
@@ -120,7 +124,7 @@ jobs:
             -p codex-hepta-intelligence \
             -p codex-hepta-agentd
 
-      - name: Exercise product, resource, lifecycle, replay, and process recovery regressions
+      - name: Exercise product, resource, lifecycle, replay and process recovery
         working-directory: codex-rs
         shell: bash
         run: |
@@ -137,12 +141,14 @@ jobs:
 
       - name: Enforce strict intelligence and Agentd lint
         working-directory: codex-rs
+        shell: bash
         run: |
+          set -euo pipefail
           cargo clippy --locked --no-deps --all-targets \
             -p codex-hepta-intelligence \
             -p codex-hepta-agentd -- -D warnings
 
-      - name: Publish normal source and remove every authoring-only path
+      - name: Commit normal source and remove authoring-only paths
         shell: bash
         run: |
           set -euo pipefail
@@ -150,26 +156,79 @@ jobs:
             > .github/workflows/learning-plasticity-exact-qualification.yml
           rm -f \
             scripts/materialize_learning_plasticity_runtime_closure.py \
-            scripts/materialize_learning_plasticity_phase_timing.py
+            scripts/materialize_learning_plasticity_phase_timing.py \
+            /tmp/learning-plasticity-finalize-source.patch.gz.b64 \
+            /tmp/learning-plasticity-finalize-source.patch
           find scripts -type d -name __pycache__ -prune -exec rm -rf {} +
-          git rm scripts/.learning_plasticity_runtime_materializer.part{00..05}
-          git rm scripts/.learning_plasticity_phase_timing.part{00..03}
-          git rm .github/workflows/learning-plasticity-runtime-materialize.yml
-          git rm .github/workflows/learning-plasticity-source-materialize.yml
-          git add \
-            .github/workflows/learning-plasticity-exact-qualification.yml \
-            codex-rs/hepta-intelligence/src/lib.rs \
-            codex-rs/hepta-intelligence/src/plasticity_product.rs \
-            codex-rs/hepta-intelligence/src/topology_product.rs \
-            codex-rs/hepta-agentd/src/lib.rs \
-            codex-rs/hepta-agentd/src/plasticity_host.rs \
-            codex-rs/hepta-agentd/src/plasticity_runtime.rs \
-            codex-rs/hepta-agentd/src/topology_plasticity_host.rs \
-            docs/modules/learning.plasticity/RUNTIME_RESOURCE_RECOVERY.md \
-            docs/modules/learning.plasticity/DEVELOPER_QUICKSTART.md \
-            scripts/qualify_learning_plasticity.py
+          git rm -f \
+            .authoring/learning-plasticity-source.patch.gz.b64.part00 \
+            .authoring/learning-plasticity-source.patch.gz.b64.part01 \
+            .authoring/learning-plasticity-finalize.patch.gz.b64.part00 \
+            .authoring/learning-plasticity-finalize.patch.gz.b64.part01 \
+            .authoring/learning-plasticity-finalize.patch.gz.b64.part02 \
+            .authoring/learning-plasticity-finalize.patch.gz.b64.part03 \
+            .authoring/learning-plasticity-finalize-source.patch.gz.b64.part00 \
+            .authoring/learning-plasticity-finalize-source.patch.gz.b64.part01 \
+            .authoring/learning-plasticity-finalize-source.patch.gz.b64.part02 \
+            .authoring/learning-plasticity-finalize-source.patch.gz.b64.part03 \
+            .authoring/learning-plasticity-finalize-source.patch.gz.b64.part04 \
+            .authoring/learning-plasticity-finalize-source.patch.gz.b64.part05 \
+            scripts/.learning_plasticity_runtime_materializer.part00 \
+            scripts/.learning_plasticity_runtime_materializer.part01 \
+            scripts/.learning_plasticity_runtime_materializer.part02 \
+            scripts/.learning_plasticity_runtime_materializer.part03 \
+            scripts/.learning_plasticity_runtime_materializer.part04 \
+            scripts/.learning_plasticity_runtime_materializer.part05 \
+            scripts/.learning_plasticity_phase_timing.part00 \
+            scripts/.learning_plasticity_phase_timing.part01 \
+            scripts/.learning_plasticity_phase_timing.part02 \
+            scripts/.learning_plasticity_phase_timing.part03 \
+            .github/workflows/learning-plasticity-runtime-materialize.yml \
+            .github/workflows/learning-plasticity-source-materialize.yml
+          git add -A
           git diff --cached --check
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "feat(plasticity): bound runtime resources and phase telemetry"
+          git commit -m "feat(plasticity): bound resources, final use and phase telemetry"
+
+      - name: Rebind implementation maps to committed ordinary source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py migrate \
+            --module intelligence.control \
+            --module learning.plasticity \
+            --module kernel.operations \
+            --module runtime.supervisor \
+            --module runtime.agentd
+          git add docs/modules/*/IMPLEMENTATION_MAP.json
+          git diff --cached --check
+          git commit -m "docs(plasticity): bind ordinary-source implementation maps"
+
+          python3 scripts/hepta-implementation-maps.py sync-plasticity-status
+          git add \
+            docs/modules/learning.plasticity/CURRENT_IMPLEMENTATION.md \
+            docs/modules/learning.plasticity/CURRENT_STATE.json
+          if ! git diff --cached --quiet; then
+            git diff --cached --check
+            git commit -m "docs(plasticity): refresh ordinary-source current state"
+          fi
+
+      - name: Verify clean exact-head documentation and implementation maps
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain)"
+          python3 scripts/hepta-docs.py verify
+          python3 scripts/hepta-module-docs.py refresh-derived --check
+          python3 scripts/hepta-implementation-maps.py verify
+          python3 -m unittest discover -v -s scripts -p 'test_hepta_implementation_maps.py'
+          git diff --check
+          test -z "$(git status --porcelain)"
+
+      - name: Push qualified ordinary source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git merge-base "$MATERIALIZE_SHA" HEAD)" = "$MATERIALIZE_SHA"
           git push origin "HEAD:${MATERIALIZE_BRANCH}"
