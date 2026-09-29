@@ -103,10 +103,21 @@ The discovery regression uses the existing product collector and does not add a
 test-only executor. Existing real SQLite grant/revoke and Memory extension
 physical-send tests remain in the canonical matrix.
 
-The logical capacity probe now uses 16 peers, 1,024 replay rows per peer and
-1,024 attempts per peer: 16,384 replay rows and 16,384 attempts. Its attestation
-validator binds those exact workload counts. Measured durations are diagnostics,
-not target-host SLOs; the receipt must come from actual execution.
+The logical capacity probe uses 16 peers, 1,024 replay rows per peer and 1,024
+attempts per peer: 16,384 replay rows and 16,384 attempts. It drains both the live
+replay index and a cloned mixed durable replay/attempt state only through the
+public 64-row bounded cleanup APIs. The retained metrics bind total removed rows,
+batch count and maximum observed batch size; attestation rejects an oversized
+batch, a skipped row or a drain-all substitute. Measured durations remain
+diagnostics, not target-host SLOs, and the receipt must come from actual
+execution.
+
+Test and logical-capacity nonce fixtures are deterministic only so regressions
+are reproducible. They are derived from domain-separated labels and identities,
+not repeated byte constants. Production frame creation remains exclusively on
+`FederationNonceV1::generate()` and its operating-system CSPRNG. This separation
+removes static-analysis ambiguity without introducing a test nonce path into the
+product API.
 
 ## Remaining deployment acceptance
 
@@ -119,7 +130,6 @@ credential generations, backend configuration and fault observations (replay,
 identity mismatch, response loss, crash/restart, cancellation, rotation,
 revocation, clock anomalies and capacity backpressure). Logical-host tests and
 fresh source receipts alone cannot set these deployment gates to true.
-
 
 ## Owner maintenance progress under repeated admission failure
 
@@ -138,6 +148,7 @@ state cloning, and full snapshot persistence still have bounded O(n) costs; the
 partition pressure, a failed maintenance write, progress through multiple
 quanta, replay retention, restart, and clock rollback.
 
-The public crate root now also exports the already implemented configured
-transport-context issuer, verifier, and key-size constant. This repairs product
-consumer compilation without introducing a bare trusted-context constructor.
+The public crate root exports the bounded live and durable cleanup constants in
+addition to the configured transport-context issuer, verifier and key-size
+constant. This lets qualification exercise the exact owner contract without
+introducing a bare trusted-context constructor.

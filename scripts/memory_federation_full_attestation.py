@@ -80,6 +80,7 @@ base.COMMANDS = (
 ROOT_STATE = pathlib.Path("docs/modules/memory.federation/CAPABILITY_STATE.json")
 WIRE_LOCK = pathlib.Path("codex-rs/hepta-memory-federation-wire/Cargo.lock")
 METRICS_NAME = "capacity.json"
+CAPACITY_CLEANUP_BATCH = 64
 ORIGINAL_EMIT = base.emit_payload
 ORIGINAL_VERIFY = base._verify_payload
 ORIGINAL_SELF_TEST = base.self_test
@@ -143,11 +144,17 @@ def require_metrics(value):
         "liveFillNanos",
         "livePartitionRejections",
         "liveCleanupRemoved",
+        "liveCleanupBatches",
+        "liveCleanupMaximumBatch",
         "liveCleanupNanos",
         "durableReplayEntries",
         "durableReplayPartitionRejections",
         "durableAttemptEntries",
         "durableAttemptPartitionRejections",
+        "durableCleanupRemoved",
+        "durableCleanupBatches",
+        "durableCleanupMaximumBatch",
+        "durableCleanupNanos",
         "cancellationCount",
         "cancellationTotalNanos",
         "cancellationAverageNanos",
@@ -157,6 +164,13 @@ def require_metrics(value):
     )
     if any(type(value.get(name)) is not int or value[name] < 0 for name in integers):
         raise base.AttestationError("capacity-metrics integer field is invalid")
+    expected_durable_cleanup = value["durableReplayEntries"] + value["durableAttemptEntries"]
+    expected_live_batches = (
+        value["liveCleanupRemoved"] + CAPACITY_CLEANUP_BATCH - 1
+    ) // CAPACITY_CLEANUP_BATCH
+    expected_durable_batches = (
+        value["durableCleanupRemoved"] + CAPACITY_CLEANUP_BATCH - 1
+    ) // CAPACITY_CLEANUP_BATCH
     if not (
         value["peerCount"] > 0
         and value["liveReplayEntries"] > 0
@@ -164,6 +178,11 @@ def require_metrics(value):
         and value["durableAttemptEntries"] > 0
         and value["cancellationCount"] == value["durableAttemptEntries"]
         and value["liveCleanupRemoved"] == value["liveReplayEntries"]
+        and value["liveCleanupBatches"] == expected_live_batches
+        and 0 < value["liveCleanupMaximumBatch"] <= CAPACITY_CLEANUP_BATCH
+        and value["durableCleanupRemoved"] == expected_durable_cleanup
+        and value["durableCleanupBatches"] == expected_durable_batches
+        and 0 < value["durableCleanupMaximumBatch"] <= CAPACITY_CLEANUP_BATCH
         and value["livePartitionRejections"] == value["peerCount"]
         and value["durableReplayPartitionRejections"] == value["peerCount"]
         and value["durableAttemptPartitionRejections"] == value["peerCount"]
@@ -171,9 +190,16 @@ def require_metrics(value):
     ):
         raise base.AttestationError("capacity-metrics invariant mismatch")
     # Bind the actual checked-in diagnostic workload, not a one-entry fixture.
-    if (value["peerCount"] != 16 or value["liveReplayEntries"] != 16_384 or
-            value["durableReplayEntries"] != 16_384 or value["durableAttemptEntries"] != 16_384 or
-            value["cancellationAverageNanos"] != value["cancellationTotalNanos"] // value["cancellationCount"]):
+    if (
+        value["peerCount"] != 16
+        or value["liveReplayEntries"] != 16_384
+        or value["durableReplayEntries"] != 16_384
+        or value["durableAttemptEntries"] != 16_384
+        or value["liveCleanupMaximumBatch"] != CAPACITY_CLEANUP_BATCH
+        or value["durableCleanupMaximumBatch"] != CAPACITY_CLEANUP_BATCH
+        or value["cancellationAverageNanos"]
+        != value["cancellationTotalNanos"] // value["cancellationCount"]
+    ):
         raise base.AttestationError("capacity-metrics workload or average mismatch")
     return value
 
@@ -322,11 +348,17 @@ def _self_test_metrics():
         "liveFillNanos": 1,
         "livePartitionRejections": 16,
         "liveCleanupRemoved": 16384,
+        "liveCleanupBatches": 256,
+        "liveCleanupMaximumBatch": 64,
         "liveCleanupNanos": 1,
         "durableReplayEntries": 16384,
         "durableReplayPartitionRejections": 16,
         "durableAttemptEntries": 16384,
         "durableAttemptPartitionRejections": 16,
+        "durableCleanupRemoved": 32768,
+        "durableCleanupBatches": 512,
+        "durableCleanupMaximumBatch": 64,
+        "durableCleanupNanos": 1,
         "cancellationCount": 16384,
         "cancellationTotalNanos": 16384,
         "cancellationAverageNanos": 1,
@@ -347,6 +379,14 @@ def self_test(args):
         pass
     else:
         raise base.AttestationError("self-test accepted invalid capacity metrics")
+    tampered = dict(metrics)
+    tampered["liveCleanupMaximumBatch"] += 1
+    try:
+        require_metrics(tampered)
+    except base.AttestationError:
+        pass
+    else:
+        raise base.AttestationError("self-test accepted an oversized cleanup batch")
 
     previous_runner_temp = os.environ.get("RUNNER_TEMP")
     with tempfile.TemporaryDirectory(prefix="memory-federation-capacity-self-test-") as directory:

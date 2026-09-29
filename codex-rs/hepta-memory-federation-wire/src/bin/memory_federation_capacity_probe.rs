@@ -5,7 +5,8 @@ use std::path::PathBuf;
 use std::time::{Duration, Instant};
 
 use codex_hepta_memory_federation_wire::{
-    DurableFederationStateV1, FEDERATION_NONCE_BYTES, FederationCancelMessageV1,
+    DurableFederationStateV1, FEDERATION_NONCE_BYTES, FEDERATION_RECOVERY_CLEANUP_BATCH,
+    FEDERATION_REPLAY_CLEANUP_BATCH, FederationCancelMessageV1,
     FederationCancellationReasonV1, FederationRecoveryError, FederationRecoveryLimitsV1,
     ReplayCacheV1, ReplayError,
 };
@@ -28,11 +29,17 @@ struct Metrics {
     live_fill_nanos: u64,
     live_partition_rejections: usize,
     live_cleanup_removed: usize,
+    live_cleanup_batches: usize,
+    live_cleanup_maximum_batch: usize,
     live_cleanup_nanos: u64,
     durable_replay_entries: usize,
     durable_replay_partition_rejections: usize,
     durable_attempt_entries: usize,
     durable_attempt_partition_rejections: usize,
+    durable_cleanup_removed: usize,
+    durable_cleanup_batches: usize,
+    durable_cleanup_maximum_batch: usize,
+    durable_cleanup_nanos: u64,
     cancellation_count: usize,
     cancellation_total_nanos: u64,
     cancellation_average_nanos: u64,
@@ -91,10 +98,25 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     }
     let cleanup_started = Instant::now();
-    let live_cleanup_removed = live.purge_expired(EXPIRES)?;
+    let mut live_cleanup_removed = 0;
+    let mut live_cleanup_batches = 0;
+    let mut live_cleanup_maximum_batch = 0;
+    loop {
+        let removed =
+            live.purge_expired_bounded(EXPIRES, FEDERATION_REPLAY_CLEANUP_BATCH)?;
+        if removed == 0 {
+            break;
+        }
+        live_cleanup_removed += removed;
+        live_cleanup_batches += 1;
+        live_cleanup_maximum_batch = live_cleanup_maximum_batch.max(removed);
+    }
     let live_cleanup_nanos = nanos(cleanup_started.elapsed());
-    if live_cleanup_removed != live_replay_entries || !live.is_empty() {
-        return Err("live replay cleanup mismatch".into());
+    if live_cleanup_removed != live_replay_entries
+        || !live.is_empty()
+        || live_cleanup_maximum_batch > FEDERATION_REPLAY_CLEANUP_BATCH
+    {
+        return Err("live replay bounded cleanup mismatch".into());
     }
 
     let limits = FederationRecoveryLimitsV1 {
@@ -174,6 +196,30 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     }
 
+    let durable_cleanup_started = Instant::now();
+    let mut durable_cleanup = durable.clone();
+    let mut durable_cleanup_removed = 0;
+    let mut durable_cleanup_batches = 0;
+    let mut durable_cleanup_maximum_batch = 0;
+    loop {
+        let removed = durable_cleanup
+            .purge_expired_bounded(EXPIRES, FEDERATION_RECOVERY_CLEANUP_BATCH)?;
+        if removed == 0 {
+            break;
+        }
+        durable_cleanup_removed += removed;
+        durable_cleanup_batches += 1;
+        durable_cleanup_maximum_batch = durable_cleanup_maximum_batch.max(removed);
+    }
+    let durable_cleanup_nanos = nanos(durable_cleanup_started.elapsed());
+    if durable_cleanup_removed != durable_replay_entries + durable_attempt_entries
+        || durable_cleanup.replay_len() != 0
+        || durable_cleanup.attempt_len() != 0
+        || durable_cleanup_maximum_batch > FEDERATION_RECOVERY_CLEANUP_BATCH
+    {
+        return Err("durable bounded cleanup mismatch".into());
+    }
+
     let cancellation_started = Instant::now();
     for (peer_id, query_id, binding, peer, slot) in &attempts {
         durable.observe_cancel(
@@ -212,11 +258,17 @@ fn main() -> Result<(), Box<dyn Error>> {
         live_fill_nanos,
         live_partition_rejections,
         live_cleanup_removed,
+        live_cleanup_batches,
+        live_cleanup_maximum_batch,
         live_cleanup_nanos,
         durable_replay_entries,
         durable_replay_partition_rejections,
         durable_attempt_entries,
         durable_attempt_partition_rejections,
+        durable_cleanup_removed,
+        durable_cleanup_batches,
+        durable_cleanup_maximum_batch,
+        durable_cleanup_nanos,
         cancellation_count,
         cancellation_total_nanos,
         cancellation_average_nanos,
@@ -248,11 +300,11 @@ fn digest(value: &str) -> Digest32 {
 }
 
 fn nonce(peer: usize, slot: usize) -> [u8; FEDERATION_NONCE_BYTES] {
-    let mut value = [0_u8; FEDERATION_NONCE_BYTES];
-    value[..8].copy_from_slice(&u64::try_from(peer).unwrap_or(u64::MAX).to_be_bytes());
-    value[8..16].copy_from_slice(&u64::try_from(slot).unwrap_or(u64::MAX).to_be_bytes());
-    value[31] = 1;
-    value
+    let mut bytes = Vec::new();
+    bytes.extend_from_slice(b"hepta.memory-federation.capacity-probe-nonce.v1");
+    bytes.extend_from_slice(&u64::try_from(peer).unwrap_or(u64::MAX).to_be_bytes());
+    bytes.extend_from_slice(&u64::try_from(slot).unwrap_or(u64::MAX).to_be_bytes());
+    *Digest32::of_bytes(&bytes).as_array()
 }
 
 fn nanos(duration: Duration) -> u64 {

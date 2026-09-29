@@ -4,9 +4,21 @@ fn id(value: &str) -> StableId {
     StableId::new(value.to_string()).expect("stable identity")
 }
 
+fn nonce(peer: &str, slot: u64) -> [u8; 32] {
+    let mut bytes = Vec::new();
+    bytes.extend_from_slice(b"hepta.memory-federation.replay-index-test-nonce.v1");
+    bytes.extend_from_slice(
+        &u32::try_from(peer.len())
+            .expect("test peer length")
+            .to_be_bytes(),
+    );
+    bytes.extend_from_slice(peer.as_bytes());
+    bytes.extend_from_slice(&slot.to_be_bytes());
+    *Digest32::of_bytes(&bytes).as_array()
+}
+
 fn admit(cache: &mut ReplayCacheV1, peer: &str, slot: u64, expiry: u64, now: u64) {
-    let mut nonce = [1; 32];
-    nonce[..8].copy_from_slice(&slot.to_be_bytes());
+    let nonce = nonce(peer, slot);
     cache
         .admit(
             FederationReplayKeyV1 {
@@ -99,7 +111,7 @@ fn architecture_capacity_keeps_all_unexpired_nonces() {
         }
     }
     assert_eq!(cache.len(), MAX_FEDERATION_REPLAY_ENTRIES);
-    let nonce = [9; 32];
+    let nonce = nonce("extra", u64::MAX);
     assert!(matches!(
         cache.admit(
             FederationReplayKeyV1 {

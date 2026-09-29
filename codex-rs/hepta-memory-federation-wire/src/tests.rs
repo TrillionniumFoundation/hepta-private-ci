@@ -14,6 +14,18 @@ fn digest(value: &[u8]) -> Digest32 {
     Digest32::of_bytes(value)
 }
 
+fn nonce(label: &str) -> [u8; FEDERATION_NONCE_BYTES] {
+    let mut bytes = Vec::new();
+    bytes.extend_from_slice(b"hepta.memory-federation.test-nonce.v1");
+    bytes.extend_from_slice(
+        &u32::try_from(label.len())
+            .expect("test nonce label length")
+            .to_be_bytes(),
+    );
+    bytes.extend_from_slice(label.as_bytes());
+    *Digest32::of_bytes(&bytes).as_array()
+}
+
 fn credential(
     sender: &str,
     receiver: &str,
@@ -74,7 +86,7 @@ fn registered_codec_round_trips_and_peer_verification_succeeds() {
     registry
         .enroll(credential("peer-a", "peer-b", "key-a-b", 1, 7))
         .expect("enroll");
-    let frame = seal_query(&registry, 1, [3; FEDERATION_NONCE_BYTES]);
+    let frame = seal_query(&registry, 1, nonce("codec-round-trip"));
     let (schemas, codec) = registered_codec_v1().expect("registered codec");
     let encoded = encode_registered_frame_v1(&schemas, &codec, &frame).expect("encode");
     let decoded = decode_registered_frame_v1(&schemas, &codec, &encoded).expect("decode");
@@ -94,7 +106,7 @@ fn payload_drift_and_replay_are_rejected() {
     registry
         .enroll(credential("peer-a", "peer-b", "key-a-b", 1, 8))
         .expect("enroll");
-    let frame = seal_query(&registry, 1, [4; FEDERATION_NONCE_BYTES]);
+    let frame = seal_query(&registry, 1, nonce("payload-drift"));
     let mut tampered = frame.clone();
     let FederationWireMessageV1::Query(query) = &mut tampered.message else {
         panic!("query")
@@ -121,7 +133,7 @@ fn rotation_and_revocation_fence_old_generation() {
     registry
         .enroll(credential("peer-a", "peer-b", "key-a-b", 1, 9))
         .expect("enroll");
-    let old = seal_query(&registry, 1, [5; FEDERATION_NONCE_BYTES]);
+    let old = seal_query(&registry, 1, nonce("old-generation"));
     registry
         .rotate(credential("peer-a", "peer-b", "key-a-b", 2, 10))
         .expect("rotate");
@@ -132,7 +144,7 @@ fn rotation_and_revocation_fence_old_generation() {
             CredentialError::Revoked
         ))
     ));
-    let current = seal_query(&registry, 2, [6; FEDERATION_NONCE_BYTES]);
+    let current = seal_query(&registry, 2, nonce("current-generation"));
     current
         .verify(&id("peer-b"), NOW + 1, &registry, &mut replay)
         .expect("new generation");
@@ -154,7 +166,7 @@ fn seal_query_for_revoked_test() -> AuthenticatedFederationFrameV1 {
         &credential,
         NOW,
         NOW + 10_000,
-        FederationNonceV1::from_bytes([7; FEDERATION_NONCE_BYTES]),
+        FederationNonceV1::from_bytes(nonce("revoked-generation")),
         query(),
     )
     .expect("seal")
@@ -223,7 +235,7 @@ fn cancellation_ack_is_authenticated_and_schema_bound() {
         credential,
         NOW,
         NOW + 10_000,
-        FederationNonceV1::from_bytes([12; FEDERATION_NONCE_BYTES]),
+        FederationNonceV1::from_bytes(nonce("cancel-ack")),
         ack.clone(),
     )
     .expect("seal");
@@ -240,6 +252,7 @@ fn cancellation_ack_is_authenticated_and_schema_bound() {
 #[test]
 fn overload_fails_closed_without_evicting_unexpired_nonce() {
     let mut cache = ReplayCacheV1::new(1).expect("cache");
+    let first_nonce = nonce("capacity-first");
     cache
         .admit(
             FederationReplayKeyV1 {
@@ -247,12 +260,13 @@ fn overload_fails_closed_without_evicting_unexpired_nonce() {
                 receiver_peer_id: &id("peer-b"),
                 key_id: &id("key-a-b"),
                 generation: 1,
-                nonce: &[1; FEDERATION_NONCE_BYTES],
+                nonce: &first_nonce,
             },
             NOW + 100,
             NOW,
         )
         .expect("first");
+    let second_nonce = nonce("capacity-second");
     assert!(matches!(
         cache.admit(
             FederationReplayKeyV1 {
@@ -260,7 +274,7 @@ fn overload_fails_closed_without_evicting_unexpired_nonce() {
                 receiver_peer_id: &id("peer-b"),
                 key_id: &id("key-a-b"),
                 generation: 1,
-                nonce: &[2; FEDERATION_NONCE_BYTES]
+                nonce: &second_nonce
             },
             NOW + 100,
             NOW
@@ -273,6 +287,7 @@ fn overload_fails_closed_without_evicting_unexpired_nonce() {
 #[test]
 fn replay_cache_rejects_clock_regression_after_expiry_cleanup() {
     let mut cache = ReplayCacheV1::new(4).expect("cache");
+    let expired_nonce = nonce("clock-regression-expired");
     cache
         .admit(
             FederationReplayKeyV1 {
@@ -280,12 +295,13 @@ fn replay_cache_rejects_clock_regression_after_expiry_cleanup() {
                 receiver_peer_id: &id("peer-b"),
                 key_id: &id("key-a-b"),
                 generation: 1,
-                nonce: &[21; FEDERATION_NONCE_BYTES],
+                nonce: &expired_nonce,
             },
             NOW + 10,
             NOW,
         )
         .expect("first admission");
+    let future_nonce = nonce("clock-regression-future");
     cache
         .admit(
             FederationReplayKeyV1 {
@@ -293,7 +309,7 @@ fn replay_cache_rejects_clock_regression_after_expiry_cleanup() {
                 receiver_peer_id: &id("peer-b"),
                 key_id: &id("key-c-b"),
                 generation: 1,
-                nonce: &[22; FEDERATION_NONCE_BYTES],
+                nonce: &future_nonce,
             },
             NOW + 1_000,
             NOW + 20,
@@ -307,7 +323,7 @@ fn replay_cache_rejects_clock_regression_after_expiry_cleanup() {
                 receiver_peer_id: &id("peer-b"),
                 key_id: &id("key-a-b"),
                 generation: 1,
-                nonce: &[21; FEDERATION_NONCE_BYTES]
+                nonce: &expired_nonce
             },
             NOW + 10,
             NOW + 5
@@ -319,7 +335,8 @@ fn replay_cache_rejects_clock_regression_after_expiry_cleanup() {
 #[test]
 fn one_directional_credential_cannot_exhaust_the_shared_replay_cache() {
     let mut cache = ReplayCacheV1::with_limits(4, 2).expect("partitioned cache");
-    for byte in [31_u8, 32_u8] {
+    for label in ["partition-a-1", "partition-a-2"] {
+        let partition_nonce = nonce(label);
         cache
             .admit(
                 FederationReplayKeyV1 {
@@ -327,13 +344,14 @@ fn one_directional_credential_cannot_exhaust_the_shared_replay_cache() {
                     receiver_peer_id: &id("peer-b"),
                     key_id: &id("key-a-b"),
                     generation: 1,
-                    nonce: &[byte; FEDERATION_NONCE_BYTES],
+                    nonce: &partition_nonce,
                 },
                 NOW + 100,
                 NOW,
             )
             .expect("credential partition admission");
     }
+    let overflow_nonce = nonce("partition-a-overflow");
     assert!(matches!(
         cache.admit(
             FederationReplayKeyV1 {
@@ -341,13 +359,14 @@ fn one_directional_credential_cannot_exhaust_the_shared_replay_cache() {
                 receiver_peer_id: &id("peer-b"),
                 key_id: &id("key-a-b"),
                 generation: 1,
-                nonce: &[33; FEDERATION_NONCE_BYTES]
+                nonce: &overflow_nonce
             },
             NOW + 100,
             NOW
         ),
         Err(ReplayError::CredentialCapacityExhausted)
     ));
+    let independent_nonce = nonce("partition-b-independent");
     cache
         .admit(
             FederationReplayKeyV1 {
@@ -355,7 +374,7 @@ fn one_directional_credential_cannot_exhaust_the_shared_replay_cache() {
                 receiver_peer_id: &id("peer-b"),
                 key_id: &id("key-c-b"),
                 generation: 1,
-                nonce: &[34; FEDERATION_NONCE_BYTES],
+                nonce: &independent_nonce,
             },
             NOW + 100,
             NOW,
@@ -370,7 +389,7 @@ fn two_logical_hosts_cover_partition_timeout_and_revoke_during_io() {
     host_b_trust
         .enroll(credential("peer-a", "peer-b", "key-a-b", 1, 13))
         .expect("enroll");
-    let outbound = seal_query(&host_b_trust, 1, [14; FEDERATION_NONCE_BYTES]);
+    let outbound = seal_query(&host_b_trust, 1, nonce("in-flight-revoke"));
 
     // A partition produces no terminal delivery. The protocol does not turn
     // absence into an empty success; the caller's bounded transport reports a

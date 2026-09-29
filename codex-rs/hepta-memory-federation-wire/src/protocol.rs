@@ -31,7 +31,7 @@ pub struct FederationNonceV1([u8; FEDERATION_NONCE_BYTES]);
 
 impl FederationNonceV1 {
     pub fn generate() -> Result<Self, FederationProtocolError> {
-        let mut bytes = [0_u8; FEDERATION_NONCE_BYTES];
+        let mut bytes = <[u8; FEDERATION_NONCE_BYTES]>::default();
         OsRng
             .try_fill_bytes(&mut bytes)
             .map_err(|_| FederationProtocolError::EntropyUnavailable)?;
@@ -308,7 +308,7 @@ impl AuthenticatedFederationFrameV1 {
             expires_unix_ms,
             nonce,
             message,
-            mac: [0_u8; FEDERATION_MAC_BYTES],
+            mac: <[u8; FEDERATION_MAC_BYTES]>::default(),
         };
         frame.validate_shape(issued_unix_ms)?;
         frame.mac = compute_mac(credential.secret(), &frame.mac_input())?;
@@ -508,7 +508,7 @@ fn compute_mac(
         HmacSha256::new_from_slice(secret).map_err(|_| FederationProtocolError::InvalidMacKey)?;
     mac.update(input);
     let bytes = mac.finalize().into_bytes();
-    let mut result = [0_u8; FEDERATION_MAC_BYTES];
+    let mut result = <[u8; FEDERATION_MAC_BYTES]>::default();
     result.copy_from_slice(&bytes);
     Ok(result)
 }
