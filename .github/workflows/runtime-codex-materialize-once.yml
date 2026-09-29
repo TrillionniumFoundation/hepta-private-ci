@@ -1,0 +1,63 @@
+name: runtime.codex materialize once
+
+on:
+  push:
+    branches:
+      - codex/runtime-codex-full-convergence-20260929
+    paths:
+      - .github/workflows/runtime-codex-materialize-once.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-codex-materialize-once
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+          persist-credentials: true
+      - name: Materialize the exact candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          test -z "$(git status --porcelain=v1)"
+          python3 scripts/runtime-codex-maintainer.py
+          python3 scripts/runtime-codex-maintainer-followup.py
+          python3 scripts/runtime-codex-durability-migration.py
+          python3 scripts/runtime-codex-durability-fixup.py
+          python3 scripts/runtime-codex-quarantine-migration.py
+          python3 scripts/runtime-codex-deadline-migration.py
+          python3 scripts/runtime-codex-cleanup-migration.py
+          python3 scripts/runtime-codex-storage-fixup.py
+          python3 scripts/runtime-codex-process-crash-migration.py
+          python3 scripts/runtime-codex-qualification-fixup.py
+          python3 scripts/runtime-codex-finalize-map.py
+          python3 scripts/runtime-codex-finalize-map-followup.py
+          (
+            cd codex-rs
+            cargo fmt --all
+          )
+          git diff --check
+      - name: Commit exactly the materialized source
+        shell: bash
+        env:
+          BRANCH: codex/runtime-codex-full-convergence-20260929
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/runtime-codex-materialize-once.yml
+          git config user.name 'runtime.codex exact-head materializer'
+          git config user.email 'runtime-codex-materializer@invalid'
+          git add -A
+          git commit -m 'fix(runtime.codex): materialize durable convergence candidate'
+          git push \
+            --force-with-lease="refs/heads/${BRANCH}:${GITHUB_SHA}" \
+            origin "HEAD:refs/heads/${BRANCH}"
