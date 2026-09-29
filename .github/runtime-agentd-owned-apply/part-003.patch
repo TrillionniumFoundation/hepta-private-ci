@@ -1,0 +1,144 @@
+warnings
++      - name: Record merge candidate identity
++        shell: bash
++        run: |
++          python3 - <<'PY'
++          import json, os, subprocess
++          from pathlib import Path
++          payload = {
++              'schema': 'hepta.runtime-agentd-merge-receipt.v1',
++              'source_sha': os.environ['SOURCE_SHA'],
++              'base_sha': os.environ['BASE_SHA'],
++              'merge_sha': os.environ['MERGE_SHA'],
++              'merge_tree': subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip(),
++              'result': 'success',
++              'production_activation': False,
++          }
++          Path(os.environ['RUNNER_TEMP'], 'agentd-merge-receipt.json').write_text(
++              json.dumps(payload, indent=2, sort_keys=True) + '\n')
++          PY
++      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
++        if: ${{ always() }}
++        with:
++          name: agentd-merge-${{ github.run_id }}-${{ github.run_attempt }}
++          path: ${{ runner.temp }}/agentd-merge-receipt.json
++          if-no-files-found: error
++          retention-days: 14
++
++  qualification-result:
++    name: Agentd prospective merge required
++    if: ${{ always() }}
++    needs: [scope, merge-candidate]
++    runs-on: ubuntu-24.04
++    timeout-minutes: 15
++    steps:
++      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
++        if: needs.scope.outputs.applicable == 'true'
++        with:
++          name: agentd-merge-${{ github.run_id }}-${{ github.run_attempt }}
++          path: ${{ runner.temp }}/agentd-merge-evidence
++      - name: Verify merge identity and result
++        if: needs.scope.outputs.applicable == 'true'
++        env:
++          SCOPE_RESULT: ${{ needs.scope.result }}
++          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
++          BASE_SHA: ${{ github.event.pull_request.base.sha }}
++          MERGE_SHA: ${{ github.sha }}
++          MERGE_RESULT: ${{ needs.merge-candidate.result }}
++        run: |
++          set -euo pipefail
++          test "$SCOPE_RESULT" = success
++          test "$MERGE_RESULT" = success
++          python3 - <<'PY'
++          import json, os
++          from pathlib import Path
++          path = Path(os.environ['RUNNER_TEMP'], 'agentd-merge-evidence', 'agentd-merge-receipt.json')
++          data = json.loads(path.read_text())
++          assert data == {
++              'schema': 'hepta.runtime-agentd-merge-receipt.v1',
++              'source_sha': os.environ['SOURCE_SHA'],
++              'base_sha': os.environ['BASE_SHA'],
++              'merge_sha': os.environ['MERGE_SHA'],
++              'merge_tree': data['merge_tree'],
++              'result': 'success',
++              'production_activation': False,
++          }
++          assert len(data['merge_tree']) == 40
++          PY
++      - name: Require irrelevant merge job to remain skipped
++        if: needs.scope.result == 'success' && needs.scope.outputs.applicable != 'true'
++        env:
++          MERGE_RESULT: ${{ needs.merge-candidate.result }}
++        run: test "$MERGE_RESULT" = skipped
++      - name: Reject failed scope selection
++        if: needs.scope.result != 'success'
++        run: exit 1
+diff --git a/.github/workflows/runtime-agentd-format-repair.yml b/.github/workflows/runtime-agentd-format-repair.yml
+index f8a92c9cf4ebaa148a10fa8742614d199b5caff7..d41ff66d70ee711d5cfe4911ed589519793001e1 100644
+--- a/.github/workflows/runtime-agentd-format-repair.yml
++++ b/.github/workflows/runtime-agentd-format-repair.yml
+@@ -4,6 +4,10 @@ on:
+   push:
+     branches:
+       - work/runtime-agentd-production-closure-20260928
++    paths:
++      - 'codex-rs/hepta-agentd/**'
++      - 'qualification/runtime-agentd-core/**'
++      - '.github/workflows/runtime-agentd-format-repair.yml'
+   pull_request:
+     paths:
+       - 'codex-rs/hepta-agentd/**'
+@@ -14,7 +18,7 @@ permissions:
+ 
+ concurrency:
+   group: runtime-agentd-format-${{ github.event.pull_request.number || github.ref }}
+-  cancel-in-progress: false
++  cancel-in-progress: true
+ 
+ jobs:
+   format:
+diff --git a/.github/workflows/runtime-agentd-source-capsule.yml b/.github/workflows/runtime-agentd-source-capsule.yml
+index d72f5278a16bc54b3097e53b49b601f6cb18a06b..ad03c5386bb6800e2fe520d010bfa3e1690a89f7 100644
+--- a/.github/workflows/runtime-agentd-source-capsule.yml
++++ b/.github/workflows/runtime-agentd-source-capsule.yml
+@@ -4,15 +4,29 @@ on:
+   push:
+     branches:
+       - work/runtime-agentd-production-closure-20260928
++    paths:
++      - 'codex-rs/hepta-agentd/**'
++      - 'docs/modules/runtime.agentd/**'
++      - 'qualification/runtime-agentd-core/**'
++      - 'scripts/qualification/*agentd*'
++      - '.github/workflows/hepta-agentd-*.yml'
++      - '.github/workflows/runtime-agentd-*.yml'
+   pull_request:
+     paths:
+       - 'codex-rs/hepta-agentd/**'
+       - 'docs/modules/runtime.agentd/**'
+-      - '.github/workflows/runtime-agentd-source-capsule.yml'
++      - 'qualification/runtime-agentd-core/**'
++      - 'scripts/qualification/*agentd*'
++      - '.github/workflows/hepta-agentd-*.yml'
++      - '.github/workflows/runtime-agentd-*.yml'
+ 
+ permissions:
+   contents: read
+ 
++concurrency:
++  group: runtime-agentd-source-capsule-${{ github.event.pull_request.number || github.ref }}
++  cancel-in-progress: true
++
+ jobs:
+   source:
+     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+@@ -40,7 +54,7 @@ jobs:
+           (cd "$out" && sha256sum source.tar.gz source.commit HEAD_SHA HEAD_TREE > SHA256SUMS)
+       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+         with:
+-          name: agentd-source-${{ github.run_id }}-${{ github.run_attempt }}
++          name: agentd-source-capsule-${{ github.run_id }}-${{ github.run_attempt }}
+           path: ${{ runner.temp }}/agentd-source
+           if-no-files-found: error
+           retention-days: 14
+diff --git a/.github/workfl
