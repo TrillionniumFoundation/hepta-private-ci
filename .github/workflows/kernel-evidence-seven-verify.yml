@@ -1,0 +1,61 @@
+name: Kernel evidence seven exact verification
+
+on:
+  push:
+    branches:
+      - codex/kernel-evidence-remaining-seven-20260929
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kernel-evidence-seven-verify
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 120
+    steps:
+      - name: Check out exact pushed object
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v7.2.1
+        with:
+          version: "0.11.3"
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # cargo-nextest 0.9.103
+        with:
+          tool: cargo-nextest@0.9.103
+      - name: Formatting
+        run: just fmt-check
+      - name: Evidence package
+        run: just test --locked -p codex-hepta-evidence
+      - name: Agentd product surfaces
+        run: >-
+          just test --locked -p codex-hepta-agentd --lib
+          --test kernel_evidence_product
+          --test kernel_evidence_profile
+          --test kernel_evidence_paging_product
+          --test kernel_evidence_publication_cli
+      - name: Evidence doctests
+        run: cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-evidence --doc
+      - name: Strict Clippy
+        run: >-
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked
+          -p codex-hepta-evidence -p codex-hepta-agentd --all-targets -- -D warnings
+      - name: Product build
+        run: cargo build --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-agentd --bin codex-hepta-agentd
+      - name: Assert source unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain)"
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
