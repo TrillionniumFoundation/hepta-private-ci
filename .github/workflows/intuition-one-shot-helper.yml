@@ -1,0 +1,165 @@
+name: intuition.policy fresh isolated authoring
+
+on:
+  pull_request:
+    branches: [codex/intuition-policy-authoring-base-20260929]
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: intuition-fresh-authoring-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  TARGET_BRANCH: codex/intuition-policy-final-use-recovery-20260929
+  CLEAN_PARENT: 696447e733e22e425cd05691d98f4fe0ef63f759
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  apply-verify-publish:
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'codex/intuition-policy-authoring-head-20260929'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      AUTHORING_HEAD: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - name: Check out exact immutable carrier
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.AUTHORING_HEAD }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Reconstruct and apply reviewed source patch
+        shell: bash
+        run: |
+          exec > >(tee "$RUNNER_TEMP/intuition-authoring.log") 2>&1
+          set -euxo pipefail
+          test "$(git rev-parse HEAD)" = "$AUTHORING_HEAD"
+          ready=.github/intuition-authoring-patch/READY
+          base="$(sed -n 's/^base=//p' "$ready" | tr -d '\r')"
+          part_000="$(sed -n 's/^part-000=//p' "$ready" | tr -d '\r')"
+          part_001="$(sed -n 's/^part-001=//p' "$ready" | tr -d '\r')"
+          part_002="$(sed -n 's/^part-002=//p' "$ready" | tr -d '\r')"
+          test "$base" = "$CLEAN_PARENT"
+          test "$part_000" = "ff90ec4b0bb594c6659c0805f7683e625f423d46"
+          test "$part_001" = "8ef03a50ccef25591918ed67fb42506bcfdd21f1"
+          test "$part_002" = "627e323cc4086e712a04ffa58b02e7723415e64c"
+          for object in "$base" "$part_000" "$part_001" "$part_002"; do
+            git cat-file -e "$object"
+          done
+          PART_000="$part_000" PART_001="$part_001" PART_002="$part_002" python - <<'PY'
+          import base64
+          import hashlib
+          import os
+          import pathlib
+          import subprocess
+
+          encoded = b''.join(
+              b''.join(subprocess.check_output(['git', 'cat-file', 'blob', os.environ[name]]).split())
+              for name in ('PART_000', 'PART_001', 'PART_002')
+          )
+          patch = base64.b64decode(encoded, validate=True)
+          path = pathlib.Path('.git/intuition-source.patch')
+          path.write_bytes(patch)
+          digest = hashlib.sha256(patch).hexdigest()
+          pathlib.Path('.git/intuition-source.patch.sha256').write_text(
+              f'{digest}  {path.name}\n', encoding='utf-8'
+          )
+          print(f'encoded={len(encoded)} patch={len(patch)} sha256={digest}')
+          PY
+          git diff --quiet
+          git apply --check .git/intuition-source.patch
+          git apply --index .git/intuition-source.patch
+          rm -rf .github/intuition-authoring-patch
+          rm -f .github/workflows/intuition-source-export.yml
+
+      - name: Preserve reconstructed patch evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/intuition-authoring-evidence"
+          mkdir -p "$output"
+          cp .git/intuition-source.patch "$output/source.patch"
+          cp .git/intuition-source.patch.sha256 "$output/source.patch.sha256"
+          cp "$RUNNER_TEMP/intuition-authoring.log" "$output/authoring.log"
+          git diff --cached --binary > "$output/applied.patch"
+
+      - name: Upload reconstructed patch evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intuition-authoring-evidence-${{ env.AUTHORING_HEAD }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/intuition-authoring-evidence/
+          if-no-files-found: error
+          retention-days: 3
+
+      - name: Set up repository CI dependencies
+        uses: ./.github/actions/setup-ci
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt,clippy
+
+      - name: Format and verify focused source
+        shell: bash
+        run: |
+          set -euo pipefail
+          (cd codex-rs && cargo fmt --all)
+          python scripts/intuition_legacy_consumers.py
+          python -m unittest discover -s scripts/tests -p 'test_intuition*.py' -v
+          cd codex-rs
+          cargo test --locked -p codex-hepta-intuition
+          cargo test --locked -p codex-hepta-intelligence intuition
+          cargo test --locked -p codex-hepta-agentd --test intuition_policy_final_use_v4
+          cargo test --locked -p codex-hepta-agentd --test intuition_policy_commit_boundary
+          cargo test --locked -p codex-hepta-agentd --lib intuition_policy
+          cargo clippy --locked -p codex-hepta-agentd --lib --tests -- -D warnings
+          cargo fmt --all -- --check
+          cd ..
+          git diff --check
+          test -z "$(find . -type d -name __pycache__ -print -quit)"
+
+      - name: Publish one clean source commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "OpenAI source authoring"
+          git config user.email "assistant@openai.invalid"
+          git add -A
+          tree="$(git write-tree)"
+          commit="$(printf '%s\n\n%s\n' \
+            'fix(intuition): revalidate authority at final use' \
+            'Preserve the sole ledger owner while moving fresh time, generation, and three-party qualification checks under its serialization boundary. Add typed boundary domains, stage telemetry, legacy-consumer drift checks, and separate safety/effectiveness/operator acceptance states.' \
+            | git commit-tree "$tree" -p "$CLEAN_PARENT")"
+          git push --force-with-lease="refs/heads/$TARGET_BRANCH:$AUTHORING_HEAD" \
+            origin "$commit:refs/heads/$TARGET_BRANCH"
+          echo "published=$commit"
+
+      - name: Retain failure diagnostics
+        if: failure()
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/intuition-authoring-failure"
+          mkdir -p "$output"
+          git status --short > "$output/status.txt"
+          git diff --binary > "$output/worktree.patch"
+          git diff --cached --binary > "$output/index.patch"
+          cp "$RUNNER_TEMP/intuition-authoring.log" "$output/authoring.log" 2>/dev/null || true
+          cp .git/intuition-source.patch "$output/source.patch" 2>/dev/null || true
+          cp .git/intuition-source.patch.sha256 "$output/source.patch.sha256" 2>/dev/null || true
+
+      - name: Upload failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intuition-authoring-failure-${{ env.AUTHORING_HEAD }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/intuition-authoring-failure/
+          if-no-files-found: warn
+          retention-days: 3
