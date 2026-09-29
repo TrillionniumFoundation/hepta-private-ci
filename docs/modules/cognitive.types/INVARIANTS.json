@@ -3,7 +3,7 @@
   "module": "cognitive.types",
   "scope": "reviewed contract, consumer, and execution obligations; not an exhaustive API inventory",
   "statusAuthority": "docs/modules/cognitive.types/IMPLEMENTATION_MAP.json",
-  "executionAuthority": "immutable external receipts produced by qualification/cognitive-types-v1/run_qualification.py",
+  "executionAuthority": "immutable external receipts produced by the fixed-candidate qualification and depth workflows",
   "invariants": [
     {
       "id": "CTYPE-IDENTITY",
@@ -168,18 +168,22 @@
     },
     {
       "id": "CTYPE-CAPACITY",
-      "obligation": "Bounded serialization and maximum span/key-count timing preserve historical canonical bytes; allocation and global byte-ceiling claims need separate measurements.",
+      "obligation": "Bounded serialization, byte-boundary CPU/RSS/DHAT observations and maximum span/key-count timing preserve historical canonical bytes; observations are candidate- and host-specific and do not create product thresholds.",
       "source": [
         "codex-rs/hepta-cognitive-types/src/bounded.rs",
         "codex-rs/hepta-cognitive-types/src/wire.rs"
       ],
       "tests": [
         "codex-rs/hepta-cognitive-types/src/codec_tests.rs",
-        "qualification/cognitive-types-v1/quality_checks.py"
+        "qualification/cognitive-types-v1/quality_checks.py",
+        "qualification/cognitive-types-v1/resource_profile.py",
+        "qualification/cognitive-types-v1/resource_workloads.py",
+        "qualification/cognitive-types-v1/test_resource_profile.py"
       ],
       "checks": [
         "package-tests",
-        "differential-quality"
+        "differential-quality",
+        "byte-boundary-resource-profile"
       ],
       "qualificationGroup": "native"
     },
@@ -189,7 +193,8 @@
       "source": [
         "qualification/cognitive-types-v1/run_qualification.py",
         "qualification/cognitive-types-v1/run_mutations.py",
-        ".github/workflows/cognitive-types-qualification.yml"
+        ".github/workflows/cognitive-types-qualification.yml",
+        ".github/workflows/cognitive-types-depth-evidence.yml"
       ],
       "tests": [
         "qualification/cognitive-types-v1/test_run_qualification.py",
@@ -198,9 +203,40 @@
       "checks": [
         "python-regressions",
         "targeted-source-mutations",
-        "clean-tree"
+        "clean-tree",
+        "fixed-candidate-consumer-depth",
+        "fixed-candidate-owner-depth",
+        "decoder-fuzz-campaign"
       ],
       "qualificationGroup": "native"
+    },
+    {
+      "id": "CTYPE-DEPTH-EVIDENCE",
+      "obligation": "Each registered consumer and existing final-use owner path executes independently on the exact source and pull-request merge candidates, and the 16-contract decoder target runs an actual bounded campaign; passing evidence still does not retire compatibility or grant release authority.",
+      "source": [
+        ".github/workflows/cognitive-types-depth-evidence.yml",
+        "docs/modules/cognitive.types/DEPTH_EVIDENCE_20260929.md"
+      ],
+      "tests": [
+        "codex-rs/hepta-cognitive-read/src/authoritative_tests.rs",
+        "codex-rs/hepta-cognitive-store/src/v2_tests.rs",
+        "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs",
+        "codex-rs/hepta-compact-engine/src/qualified_tests.rs",
+        "codex-rs/hepta-intelligence/src/canonical_tests.rs",
+        "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs",
+        "codex-rs/hepta-agentd/src/intelligence_product_canonical_recall_tests.rs",
+        "codex-rs/hepta-memory/src/shared_experience_tests.rs",
+        "codex-rs/hepta-cognitive-types/fuzz/fuzz_targets/decode_contracts.rs"
+      ],
+      "checks": [
+        "per-consumer-all-targets",
+        "per-consumer-package-tests",
+        "per-consumer-strict-clippy",
+        "existing-owner-final-use-paths",
+        "actual-decoder-fuzz-campaign",
+        "clean-tree"
+      ],
+      "qualificationGroup": "depth-evidence"
     }
   ]
 }
