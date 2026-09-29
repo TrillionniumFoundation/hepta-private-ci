@@ -1,0 +1,146 @@
+name: Kernel evidence seven source applicator
+
+on:
+  push:
+    branches:
+      - codex/kernel-evidence-remaining-seven-20260929
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kernel-evidence-seven-apply
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    if: ${{ !contains(github.event.head_commit.message, '[kernel-evidence-seven-applied]') }}
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: codex/kernel-evidence-remaining-seven-20260929
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: ./.github/actions/setup-ci
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v7.2.1
+        with:
+          version: "0.11.3"
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          toolchain: 1.95.0
+          components: rustfmt
+      - name: Apply direct fixes and canonical formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          prompt = Path('codex-rs/ext/hepta-prompt/src/lib.rs')
+          text = prompt.read_text(encoding='utf-8')
+          text = text.replace('use tokio::sync::Mutex;\n', 'use tokio::sync::OnceCell;\n', 1)
+          text = text.replace(
+              '    resolved: Mutex<Option<ResolvedAttachment>>,\n',
+              '    resolved: OnceCell<ResolvedAttachment>,\n',
+              1,
+          )
+          pattern = re.compile(
+              r'        let state = turn_store\.get_or_init\(PromptRuntimeTurnState::default\);\n'
+              r'        let mut resolved = state\.resolved\.lock\(\)\.await;\n.*?'
+              r'        value\n',
+              re.S,
+          )
+          replacement = '''        let state = turn_store.get_or_init(PromptRuntimeTurnState::default);
+          let host = self.host.clone();
+          state
+              .resolved
+              .get_or_init(move || async move {
+                  match host
+                      .prepare(PromptRuntimePrepareRequest {
+                          thread_id,
+                          turn_id,
+                          model_context_window,
+                      })
+                      .await
+                  {
+                      Ok(Some(attachment)) => match attachment.validate() {
+                          Ok(()) => ResolvedAttachment::Ready(attachment),
+                          Err(error) => ResolvedAttachment::Failed(PromptRuntimeHostError::new(
+                              "prompt_runtime_attachment_invalid",
+                              error.to_string(),
+                          )),
+                      },
+                      Ok(None) => ResolvedAttachment::None,
+                      Err(error) => ResolvedAttachment::Failed(error),
+                  }
+              })
+              .await
+              .clone()
+          '''
+          text, count = pattern.subn(replacement, text, count=1)
+          if count != 1:
+              raise SystemExit(f'prompt resolve replacement count: {count}')
+          marker = 'impl PromptRuntimeAttemptLease {\n'
+          alias = '''type PromptRuntimeTerminalMapping = (
+              PromptRuntimeTerminalOutcomeV1,
+              Option<String>,
+              Option<bool>,
+              Option<PromptDeliveryObservationV1>,
+          );
+
+          impl PromptRuntimeAttemptLease {
+          '''
+          if 'type PromptRuntimeTerminalMapping' not in text:
+              if text.count(marker) != 1:
+                  raise SystemExit('prompt terminal impl marker is not unique')
+              text = text.replace(marker, alias, 1)
+          signature = re.compile(
+              r'    fn map_terminal\(\n        &self,\n        terminal: ModelProviderTerminal,\n'
+              r'    \) -> Result<\n        \(\n            PromptRuntimeTerminalOutcomeV1,\n'
+              r'            Option<String>,\n            Option<bool>,\n'
+              r'            Option<PromptDeliveryObservationV1>,\n        \),\n'
+              r'        PromptRuntimeError,\n    > \{',
+          )
+          text, count = signature.subn(
+              '    fn map_terminal(\n        &self,\n        terminal: ModelProviderTerminal,\n'
+              '    ) -> Result<PromptRuntimeTerminalMapping, PromptRuntimeError> {',
+              text,
+              count=1,
+          )
+          if count != 1:
+              raise SystemExit(f'prompt terminal signature replacement count: {count}')
+          prompt.write_text(text, encoding='utf-8')
+
+          ndu = Path('codex-rs/hepta-ndu/src/lib.rs')
+          text = ndu.read_text(encoding='utf-8')
+          old = 'pub use evaluator::evaluate_candidates;\n'
+          new = '''#[allow(
+              deprecated,
+              reason = "retain the registered legacy Rust export; new callers use evaluate_candidates_with_policy"
+          )]
+          pub use evaluator::evaluate_candidates;
+          '''
+          if new not in text:
+              if text.count(old) != 1:
+                  raise SystemExit('NDU legacy export marker is not unique')
+              text = text.replace(old, new, 1)
+          ndu.write_text(text, encoding='utf-8')
+          PY
+          uv run --frozen --project scripts ruff format scripts
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all
+          git diff --check
+      - name: Commit and push canonical source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Kernel evidence convergence worker'
+          git config user.email 'noreply@github.com'
+          git add scripts codex-rs/ext/hepta-prompt/src/lib.rs codex-rs/hepta-ndu/src/lib.rs
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m 'fix(kernel.evidence): close strict qualification blockers [kernel-evidence-seven-applied]'
+          git push origin HEAD:codex/kernel-evidence-remaining-seven-20260929
