@@ -25,7 +25,9 @@ jobs:
           fetch-depth: 0
 
       - name: Apply bounded integration patch
-        run: python3 .github/scripts/apply_runtime_supervisor_qualification_closure.py
+        run: |
+          python3 .github/scripts/apply_runtime_supervisor_qualification_closure.py
+          python3 .github/scripts/fix_runtime_supervisor_qualification_closure.py
 
       - name: Format Rust sources
         working-directory: codex-rs
@@ -60,6 +62,7 @@ jobs:
           BRANCH: codex/runtime-supervisor-qualification-closure-20260929
         run: |
           rm .github/scripts/apply_runtime_supervisor_qualification_closure.py
+          rm .github/scripts/fix_runtime_supervisor_qualification_closure.py
           rm .github/workflows/runtime-supervisor-qualification-closure.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
