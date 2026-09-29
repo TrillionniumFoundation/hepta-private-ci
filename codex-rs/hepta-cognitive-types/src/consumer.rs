@@ -182,26 +182,11 @@ impl CanonicalConsumerBindingV1 {
         ContractDigestProfileV1::FrozenCanonicalJsonV1
     }
 
-    pub fn compute_binding_sha256(
-        &self,
-    ) -> Result<ContractDigestV1, CanonicalConsumerBindingError> {
-        let mut bytes = CONSUMER_BINDING_DOMAIN.to_vec();
-        push_text(&mut bytes, self.operation_id.as_str())?;
-        bytes.push(self.consumer.code());
-        bytes.push(self.payload_kind.code());
-        bytes.extend_from_slice(self.canonical_payload_sha256.digest().as_array());
-        bytes.extend_from_slice(self.source_identity_sha256.digest().as_array());
-        bytes.extend_from_slice(self.source_snapshot_sha256.digest().as_array());
-        match self.compatibility_payload_sha256 {
-            Some(value) => {
-                bytes.push(1);
-                bytes.extend_from_slice(value.digest().as_array());
-            }
-            None => bytes.push(0),
-        }
-        bytes.push(self.migration_posture.code());
-        bytes.push(u8::from(self.currentness_revalidation_required));
-        digest(Digest32::of_bytes(&bytes))
+    /// Hash the exact current fields without allocating a concatenated payload.
+    /// This recomputes the frozen digest; it does not establish source freshness
+    /// or replace the registry and owner checks performed at a current use.
+    pub fn compute_binding_sha256(&self) -> Result<ContractDigestV1, CanonicalConsumerBindingError> {
+        digest_encoding::compute_binding_sha256_v1(self)
     }
 }
 
@@ -383,13 +368,6 @@ fn digest(value: Digest32) -> Result<ContractDigestV1, CanonicalConsumerBindingE
     ContractDigestV1::from_digest(value).map_err(|_| CanonicalConsumerBindingError::ZeroDigest)
 }
 
-fn push_text(bytes: &mut Vec<u8>, value: &str) -> Result<(), CanonicalConsumerBindingError> {
-    let len = u32::try_from(value.len()).map_err(|_| CanonicalConsumerBindingError::Arithmetic)?;
-    bytes.extend_from_slice(&len.to_be_bytes());
-    bytes.extend_from_slice(value.as_bytes());
-    Ok(())
-}
-
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum CanonicalConsumerBindingError {
     CanonicalContract(String),
@@ -423,3 +401,5 @@ impl StdError for CanonicalConsumerBindingError {}
 
 #[path = "consumer_error.rs"]
 mod error_mapping;
+#[path = "consumer_digest.rs"]
+mod digest_encoding;
