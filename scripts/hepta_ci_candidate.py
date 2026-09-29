@@ -4,6 +4,11 @@
 Identical trees may share native execution only inside a workflow whose final
 fan-in also requires source-head success. This plan is not a test-pass receipt.
 A different prospective tree must execute its own applicable tests.
+
+The generic tree-check output is only for checks whose content inputs are the
+same tree. Do not reuse time-, host-, credential- or history-dependent acceptance.
+The document workflow uses the same event/base and preserves source ancestry;
+exact merge identity is independently validated here even when content is reused.
 """
 
 import argparse
@@ -20,7 +25,12 @@ def git(*args: str) -> str:
 
 
 def candidate_plan(
-    *, source: str, tested: str, lane: str, base: str | None = None
+    *,
+    source: str,
+    tested: str,
+    lane: str,
+    base: str | None = None,
+    source_head_result: str | None = None,
 ) -> dict:
     merge_lane = lane in {"base-merge", "synthetic-merge"}
     if lane != "source-head" and not merge_lane:
@@ -66,12 +76,16 @@ def candidate_plan(
                 "tested merge tree differs from the recomputed base/source merge tree"
             )
     identical = source_tree == tested_tree
+    if merge_lane and identical and source_head_result is not None:
+        if source_head_result != "success":
+            raise ValueError("tree reuse requires successful source-head execution")
     return {
         "schema_version": 1,
         "lane": lane,
         "source_sha": source,
         "tested_sha": tested,
         "base_sha": base,
+        "source_head_result": source_head_result,
         "source_tree": source_tree,
         "tested_tree": tested_tree,
         "native_execution_required": lane == "source-head" or not identical,
@@ -85,16 +99,25 @@ def main() -> None:
     parser.add_argument("--tested", required=True)
     parser.add_argument("--base")
     parser.add_argument("--lane", required=True)
+    parser.add_argument(
+        "--source-head-result",
+        help="Result from the same workflow source-head dependency",
+    )
     parser.add_argument("--github-output", type=Path)
     args = parser.parse_args()
     plan = candidate_plan(
-        source=args.source, tested=args.tested, lane=args.lane, base=args.base
+        source=args.source,
+        tested=args.tested,
+        lane=args.lane,
+        base=args.base,
+        source_head_result=args.source_head_result,
     )
     print(json.dumps(plan, sort_keys=True))
     if args.github_output:
         with args.github_output.open("a", encoding="utf-8") as stream:
             stream.write(
                 f"run_native={str(plan['native_execution_required']).lower()}\n"
+                f"run_tree_checks={str(plan['native_execution_required']).lower()}\n"
             )
 
 

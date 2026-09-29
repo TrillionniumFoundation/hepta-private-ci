@@ -67,6 +67,43 @@ class CandidatePlanTests(unittest.TestCase):
         self.assertEqual(plan["source_tree"], plan["tested_tree"])
         self.assertNotEqual(plan["source_sha"], plan["tested_sha"])
 
+    def test_document_tree_reuse_requires_success_from_the_source_dependency(self):
+        merge = self.merge()
+        for result in ("failure", "cancelled", "skipped", "", "unknown"):
+            with (
+                self.subTest(result=result),
+                self.assertRaisesRegex(ValueError, "source-head"),
+            ):
+                candidate_plan(
+                    source=self.source,
+                    tested=merge,
+                    base=self.base,
+                    lane="base-merge",
+                    source_head_result=result,
+                )
+        plan = candidate_plan(
+            source=self.source,
+            tested=merge,
+            base=self.base,
+            lane="base-merge",
+            source_head_result="success",
+        )
+        self.assertFalse(plan["native_execution_required"])
+        self.assertEqual(plan["source_head_result"], "success")
+        self.assertTrue(plan["requires_source_head_success"])
+
+    def test_source_success_does_not_reuse_a_different_document_tree(self):
+        merge = self.merge(changed=True)
+        plan = candidate_plan(
+            source=self.source,
+            tested=merge,
+            base=self.base,
+            lane="base-merge",
+            source_head_result="success",
+        )
+        self.assertTrue(plan["native_execution_required"])
+        self.assertFalse(plan["requires_source_head_success"])
+
     def test_synthetic_merge_alias_has_same_exact_tree_semantics(self):
         merge = self.merge()
         plan = candidate_plan(
