@@ -22,7 +22,7 @@ Migrations are append-only after merge. Editing a released migration is
 prohibited. Every migration has a stable filename, bytes digest and ordered
 aggregate schema digest.
 
-## Migration 0006: incremental frontier
+## Migrations 0006 and 0007: incremental frontier
 
 `0006_incremental_frontier.sql` is a coordinated-compatible storage upgrade for
 the current binary and a downgrade boundary for predecessor binaries. It adds:
@@ -32,12 +32,21 @@ the current binary and a downgrade boundary for predecessor binaries. It adds:
 - immutable/pending-delete guards;
 - same-transaction canonical change triggers for every authority domain.
 
-The first current-binary open seeds the accumulator from the exact legacy v1
-full-state digest. Therefore the external checkpoint does not change merely
-because the representation was upgraded. Later roots are a versioned
-domain-separated hash chain over committed changes. A predecessor binary does
-not understand that chain and must not open the migrated store unless an
-explicit backward-compatibility qualification exists.
+`0007_frontier_integrity.sql` adds database-level promotion invariants:
+
+- the accumulator singleton identity is immutable and cannot be deleted;
+- a seeded clean accumulator cannot change independently of the checkpoint;
+- the one-time clean seed is accepted only when it equals the current local
+  checkpoint and has no uncovered journal events;
+- the dirty bit cannot clear until the accumulator root equals the checkpoint
+  and every event is covered.
+
+The first frontier evaluation after migration seeds the accumulator from the
+exact legacy v1 full-state digest. Therefore the external checkpoint does not
+change merely because the representation was upgraded. Later roots are a
+versioned domain-separated hash chain over committed changes. A predecessor
+binary does not understand that chain and must not open the migrated store
+unless an explicit backward-compatibility qualification exists.
 
 Migration-time rows are covered by the seed and pruned only after the seed root
 and applied ID commit together. Existing databases with a newer external
@@ -47,10 +56,10 @@ witness still fail closed.
 
 | Binary | Store | Result |
 | --- | --- | --- |
-| current | predecessor through 0005 | migrate through 0006, seed legacy root, verify, open |
-| current | current 0006 | verify accumulator/journal/schema, open |
+| current | predecessor through 0005 | migrate through 0007, seed legacy root at first frontier evaluation, verify, open |
+| current | current 0006/0007 | verify accumulator/journal/guards/schema, open |
 | current | newer unknown | fail closed |
-| predecessor | current 0006 | unsupported; restore a matched pre-0006 pair |
+| predecessor | current 0006/0007 | unsupported; restore a matched pre-0006 pair |
 | any | schema drift with unchanged ledger | fail closed |
 
 ## Rollback
@@ -65,7 +74,7 @@ Restoring only the database or only the witness is invalid.
 The exact-head receipt records ordered migration-file SHA-256 values, aggregate
 schema digest, candidate commit/tree, Cargo lock digest and test-artifact
 digest. Schema qualification exercises clean migration, reopen, drift
-injection, integrity failure, incremental seed/fold/prune behavior and
-predecessor restore.
+injection, integrity failure, incremental seed/fold/prune behavior, direct SQL
+promotion bypass and predecessor restore.
 
 See `INCREMENTAL_FRONTIER.md`, `RECOVERY.md` and `ADMINISTRATION.md`.

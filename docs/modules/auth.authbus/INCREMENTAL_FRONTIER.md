@@ -4,9 +4,11 @@
 
 Migration `0006_incremental_frontier.sql` replaces history-sized checkpoint
 recomputation on the normal mutation path with a bounded, transactionally
-recorded change journal and a persisted hash accumulator. It does not create a
-second authority store. SQLite policy, issuer, trusted-time, quota, reservation,
-settlement and archive rows remain the only authoritative facts.
+recorded change journal and a persisted hash accumulator. Migration
+`0007_frontier_integrity.sql` protects the accumulator/checkpoint relationship at
+the SQLite boundary. Neither migration creates a second authority store. SQLite
+policy, issuer, trusted-time, quota, reservation, settlement and archive rows
+remain the only authoritative facts.
 
 An existing database is seeded once from the exact ordered
 `hepta.authbus.authority-frontier.v1` snapshot. This preserves the checkpoint
@@ -37,6 +39,11 @@ trusted-time, policy, policy-history, policy-archive, quota, reservation,
 reservation-archive and issuer mutation. Pending rows cannot be updated or
 deleted, including by a direct SQL caller. History/archive tables retain their
 separate immutable triggers.
+
+The accumulator singleton identity cannot be changed or deleted. Once seeded, a
+clean accumulator cannot move independently of the local checkpoint. Clearing
+the dirty bit is rejected unless the accumulator root equals the local
+checkpoint and every journal row is already covered by the applied sequence.
 
 ## Hash transition
 
@@ -69,15 +76,17 @@ to an unbounded scan.
 
 ## Seed and compatibility
 
-The first call after migration performs one complete ordered v1 snapshot under
-`BEGIN IMMEDIATE`, stores that exact digest as the accumulator root, advances
-past any migration-time journal rows, and prunes those covered rows. The
-external witness therefore does not change merely because the binary learned
-the new accumulator representation.
+The first frontier evaluation after migration performs one complete ordered v1
+snapshot under `BEGIN IMMEDIATE`, stores that exact digest as the accumulator
+root, advances past any migration-time journal rows, and prunes those covered
+rows. For a clean predecessor database this transition is accepted by SQLite
+only when the seed equals the existing local checkpoint. The external witness
+therefore does not change merely because the binary learned the new accumulator
+representation.
 
-A predecessor binary must not open a database after migration `0006` unless an
-explicit downgrade contract has been qualified. Application rollback uses a
-matched pre-migration database and witness pair.
+A predecessor binary must not open a database after migrations `0006`/`0007`
+unless an explicit downgrade contract has been qualified. Application rollback
+uses a matched pre-migration database and witness pair.
 
 ## Crash and rollback behavior
 
@@ -90,6 +99,8 @@ matched pre-migration database and witness pair.
 | external publish commits before local promotion | external is exactly one generation ahead | verify the durable accumulator root and promote locally |
 | old database restored with newer witness | old accumulator/root cannot match newer witness | `RollbackDetected` |
 | pending journal tampered or deleted | immutable/delete trigger or sequence/content validation fails | isolate the store |
+| clean accumulator changed directly | SQLite clean-root guard aborts the write | isolate and preserve evidence |
+| dirty bit cleared before exact promotion | SQLite dirty-clear guard aborts the write | complete reconciliation |
 
 ## Verification
 
@@ -101,6 +112,10 @@ matched pre-migration database and witness pair.
 - pending rows survive close/reopen and fold idempotently;
 - pending rows cannot be deleted before accumulation;
 - a newer external witness still rejects a real old-database restore.
+
+`tests/frontier_integrity.rs` directly attempts clean-root divergence, premature
+dirty clearing and accumulator deletion through SQLite and requires every bypass
+to fail.
 
 The exact-head receipt binds the ordered migration digest, Rust source and test
 logs. Target-host power-loss qualification remains a separate activation gate.
