@@ -1,0 +1,192 @@
+name: memory federation indexed followup 20260929
+on:
+  push:
+    branches: [ops/memory-federation-source-review-20260929]
+    paths: [.github/workflows/memory-federation-indexed-followup-20260929.yml]
+permissions:
+  contents: read
+jobs:
+  author:
+    runs-on: ubuntu-slim
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    outputs:
+      candidate: ${{ steps.publish.outputs.candidate }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: d3c0aed52200abd44122bdbbe0f9a66a67f4b4ec
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Apply exact reviewed export and observation changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = d3c0aed52200abd44122bdbbe0f9a66a67f4b4ec
+          python3 - <<'PY'
+          from pathlib import Path
+          def replace(path, old, new):
+              p = Path(path)
+              text = p.read_text()
+              assert text.count(old) == 1, path
+              p.write_text(text.replace(old, new))
+          path = 'codex-rs/hepta-memory-federation-wire/src/lib.rs'
+          replace(path, 'pub use product::FederationAuthenticatedTransportV1;', 'pub use product::FEDERATION_TRANSPORT_CONTEXT_KEY_BYTES;\npub use product::FederationAuthenticatedTransportV1;')
+          replace(path, 'pub use product::FederationWireTransportV2;', 'pub use product::FederationTransportContextIssuerV1;\npub use product::FederationTransportContextVerifierV1;\npub use product::FederationWireTransportV2;')
+          replace('scripts/prepare_memory_federation_observation.py', 'set(verifier.tracked_source_paths(row)) | set(row["observedSourcePaths"])', 'set(verifier.tracked_source_paths(row)) | set(row["observedSourcePaths"]) | set(NEW_EVIDENCE)')
+          PY
+          git diff --check
+          git config user.name 'Hepta Memory Federation Development'
+          git config user.email 'hepta-memory-federation-dev@users.noreply.github.com'
+          git add codex-rs/hepta-memory-federation-wire/src/lib.rs scripts/prepare_memory_federation_observation.py
+          git commit -m 'fix(memory.federation): expose configured context capabilities and bind new evidence paths'
+          python3 scripts/prepare_memory_federation_observation.py --source-sha "$(git rev-parse HEAD)" --base-sha a126987b84737dbc2ee2592442a314117bddb4a2 --candidate-branch feat/memory-federation-full-closure-20260927 --write
+          test "$(git diff --name-only)" = docs/modules/memory.federation/IMPLEMENTATION_MAP.json
+          git add docs/modules/memory.federation/IMPLEMENTATION_MAP.json
+          git commit -m 'docs(memory.federation): rebind exported context candidate before read-only execution'
+          python3 scripts/verify_memory_federation_status.py verify
+          python3 scripts/verify_memory_federation_implementation.py --expected-sha "$(git rev-parse HEAD)" --expected-tree "$(git rev-parse HEAD^{tree})"
+      - name: Publish source without force
+        id: publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain --untracked-files=no)"
+          AUTH="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $AUTH" push origin HEAD:refs/heads/work/memory-federation-indexed-admission-20260929
+          echo "candidate=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+  verify:
+    name: read-only ${{ matrix.mode }}
+    needs: author
+    runs-on: ubuntu-slim
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [wire, source-head, deterministic-merge]
+    env:
+      SOURCE_SHA: ${{ needs.author.outputs.candidate }}
+      BASE_SHA: a126987b84737dbc2ee2592442a314117bddb4a2
+      MODE: ${{ matrix.mode }}
+      CARGO_TARGET_DIR: ${{ runner.temp }}/federation-target
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.author.outputs.candidate }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify source and current base
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git fetch --no-tags origin main
+          test "$(git rev-parse refs/remotes/origin/main)" = "$BASE_SHA"
+      - name: Construct existing deterministic merge
+        if: ${{ matrix.mode == 'deterministic-merge' }}
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: a126987b84737dbc2ee2592442a314117bddb4a2
+          source-sha: ${{ needs.author.outputs.candidate }}
+          pr-number: '1083'
+          author-name: Hepta Memory Federation CI
+          author-email: hepta-memory-federation-ci@users.noreply.github.com
+          message: Memory federation synthetic merge
+      - name: Resolve tested identity
+        id: tested
+        run: |
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "tree=$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
+      - name: Install pinned toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v rustup >/dev/null; then
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain 1.95.0
+          fi
+          export PATH="$HOME/.cargo/bin:$PATH"
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
+          rustup default 1.95.0
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+      - name: Self-test receipt entrypoints
+        run: python3 scripts/memory_federation_full_attestation.py self-test
+      - name: Execute unchanged canonical matrix
+        if: ${{ matrix.mode != 'wire' }}
+        id: matrix
+        run: bash scripts/run_memory_federation_qualification.sh
+      - name: Execute wire diagnostic suite
+        if: ${{ matrix.mode == 'wire' }}
+        env:
+          TESTED_SHA: ${{ steps.tested.outputs.sha }}
+          TESTED_TREE: ${{ steps.tested.outputs.tree }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/focused"
+          exec > >(tee "$RUNNER_TEMP/focused/execution.log") 2>&1
+          python3 scripts/memory_federation_execution_guard.py capture --state "$RUNNER_TEMP/focused/guard.json" --expected-sha "$TESTED_SHA" --expected-tree "$TESTED_TREE"
+          python3 -m unittest discover -s scripts -p 'test_memory_federation_*py'
+          cargo fmt --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml -- --check
+          cargo test --locked --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml --lib
+          cargo test --locked --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml --doc
+          cargo clippy --locked --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml --all-targets -- -D warnings
+          cargo run --locked --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml --bin memory_federation_capacity_probe -- "$RUNNER_TEMP/focused/capacity.json"
+          python3 - "$RUNNER_TEMP/focused/capacity.json" <<'PY'
+          import json, pathlib, sys
+          sys.path.insert(0, 'scripts')
+          from memory_federation_full_attestation import require_metrics
+          require_metrics(json.loads(pathlib.Path(sys.argv[1]).read_text()))
+          PY
+          python3 scripts/memory_federation_execution_guard.py verify --state "$RUNNER_TEMP/focused/guard.json" --expected-sha "$TESTED_SHA" --expected-tree "$TESTED_TREE"
+      - name: Emit and verify canonical payload
+        if: ${{ always() && matrix.mode != 'wire' && steps.tested.outputs.sha != '' }}
+        env:
+          TESTED_SHA: ${{ steps.tested.outputs.sha }}
+          TESTED_TREE: ${{ steps.tested.outputs.tree }}
+          OUTCOME: ${{ steps.matrix.outcome }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          CONCLUSION=failure
+          if test "$OUTCOME" = success; then CONCLUSION=success; fi
+          ARGS=()
+          if test "$MODE" = deterministic-merge; then ARGS+=(--base-sha "$BASE_SHA" --merge-sha "$TESTED_SHA" --merge-tree "$TESTED_TREE"); fi
+          python3 scripts/memory_federation_full_attestation.py emit-payload --output "$RUNNER_TEMP/payload" --lane "$MODE" --conclusion "$CONCLUSION" --source-sha "$SOURCE_SHA" --tested-sha "$TESTED_SHA" --tested-tree "$TESTED_TREE" "${ARGS[@]}"
+          python3 scripts/memory_federation_full_attestation.py verify "$RUNNER_TEMP/payload/attestation.json"
+      - name: Upload retained evidence
+        if: ${{ always() }}
+        id: payload
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-federation-followup-${{ matrix.mode }}-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/payload
+            ${{ runner.temp }}/focused
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 30
+      - name: Bind actual artifact digest
+        if: ${{ always() && matrix.mode != 'wire' && steps.payload.outputs.artifact-id != '' }}
+        env:
+          OUTCOME: ${{ steps.matrix.outcome }}
+          ARTIFACT_ID: ${{ steps.payload.outputs.artifact-id }}
+          ARTIFACT_DIGEST: ${{ steps.payload.outputs.artifact-digest }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          CONCLUSION=failure
+          if test "$OUTCOME" = success; then CONCLUSION=success; fi
+          mkdir -p "$RUNNER_TEMP/envelope"
+          python3 scripts/memory_federation_full_attestation.py emit-envelope --output "$RUNNER_TEMP/envelope/envelope.json" --payload "$RUNNER_TEMP/payload/attestation.json" --lane "$MODE" --conclusion "$CONCLUSION" --artifact-name "memory-federation-followup-${MODE}-${GITHUB_RUN_ID}" --artifact-id "$ARTIFACT_ID" --artifact-digest "$ARTIFACT_DIGEST"
+          python3 scripts/memory_federation_full_attestation.py verify "$RUNNER_TEMP/envelope/envelope.json" --payload "$RUNNER_TEMP/payload/attestation.json"
+      - name: Upload canonical envelope
+        if: ${{ always() && matrix.mode != 'wire' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-federation-followup-${{ matrix.mode }}-envelope-${{ github.run_id }}
+          path: ${{ runner.temp }}/envelope
+          if-no-files-found: error
+          retention-days: 30
