@@ -1,6 +1,11 @@
 name: Automation TaskFlow export exact convergence patch
 
 on:
+  push:
+    branches:
+      - work/automation-taskflow-full-closure-2026-09-27
+    paths:
+      - .github/workflows/automation-taskflow-export-final-patch.yml
   workflow_dispatch:
 
 permissions:
