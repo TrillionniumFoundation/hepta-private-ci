@@ -3,43 +3,22 @@ name: Inference worker authoritative qualification
 on:
   push:
     branches:
-      - main
       - codex/inference-worker-authoritative-20260929
     paths:
-      - "codex-rs/hepta-infer-core/**"
-      - "codex-rs/hepta-infer-worker-host/**"
-      - "codex-rs/hepta-agentd/**"
-      - "codex-rs/Cargo.lock"
-      - "scripts/hepta_ci_exec.py"
-      - "scripts/inference_worker_command_receipt.py"
-      - "scripts/run_inference_worker_qualification_lane.sh"
-      - "scripts/test_inference_worker_command_receipt.py"
-      - ".github/actions/hepta-synthetic-merge/**"
-      - ".github/workflows/inference-worker-authoritative-qualification.yml"
-  pull_request:
-    paths:
-      - "codex-rs/hepta-infer-core/**"
-      - "codex-rs/hepta-infer-worker-host/**"
-      - "codex-rs/hepta-agentd/**"
-      - "codex-rs/Cargo.lock"
-      - "scripts/hepta_ci_exec.py"
-      - "scripts/inference_worker_command_receipt.py"
-      - "scripts/run_inference_worker_qualification_lane.sh"
-      - "scripts/test_inference_worker_command_receipt.py"
-      - ".github/actions/hepta-synthetic-merge/**"
-      - ".github/workflows/inference-worker-authoritative-qualification.yml"
-  workflow_dispatch:
+      - .github/materialization/inference-worker-runtime-closure/**
+      - .github/workflows/inference-worker-runtime-closure-materialize.yml
+      - .github/workflows/inference-worker-authoritative-qualification.yml
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
-  group: inference-worker-authoritative-qualification-${{ github.ref }}
+  group: inference-worker-runtime-closure-materialize
   cancel-in-progress: true
 
 env:
-  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-  PYTHONDONTWRITEBYTECODE: "1"
+  SOURCE_SHA: ${{ github.sha }}
+  BRANCH_NAME: codex/inference-worker-authoritative-20260929
   CARGO_INCREMENTAL: "0"
   CARGO_BUILD_JOBS: "2"
   CARGO_PROFILE_TEST_DEBUG: "0"
@@ -47,66 +26,63 @@ env:
   RUST_BACKTRACE: "1"
 
 jobs:
-  receipt_generator:
-    name: Qualification receipt generator
+  materialize:
+    name: Materialize durable usage, interrupts, and event-sequence proof
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 120
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - name: Check out exact setup commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
-          persist-credentials: false
-      - name: Bind exact source candidate
-        run: test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-      - name: Exercise command and aggregate receipt semantics
-        run: python3 -m unittest -v scripts/test_inference_worker_command_receipt.py
-      - name: Assert unchanged source
-        if: always()
-        run: |
-          set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          git diff --check
-          git diff --exit-code
-          test -z "$(git status --porcelain --untracked-files=no)"
+          persist-credentials: true
 
-  qualification:
-    name: source-head + base-merge / ${{ matrix.package }}
-    runs-on: ubuntu-24.04
-    timeout-minutes: 180
-    strategy:
-      fail-fast: false
-      matrix:
-        package:
-          - codex-hepta-infer-core
-          - codex-hepta-infer-worker-host
-          - codex-hepta-agentd
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        with:
-          ref: ${{ env.SOURCE_SHA }}
-          fetch-depth: 0
-          persist-credentials: false
-
-      - name: Resolve current target base
-        id: base
-        env:
-          BASE_REF: ${{ github.base_ref || github.event.repository.default_branch }}
+      - name: Bind exact input head
         shell: bash
         run: |
           set -euo pipefail
-          base_sha="$(git rev-parse "refs/remotes/origin/${BASE_REF}^{commit}")"
-          [[ "$base_sha" =~ ^[0-9a-f]{40}$ ]]
-          git cat-file -e "$base_sha^{commit}"
-          printf 'sha=%s\n' "$base_sha" >> "$GITHUB_OUTPUT"
-          printf 'BASE_SHA=%s\n' "$base_sha" >> "$GITHUB_ENV"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --quiet
+          git diff --cached --quiet
 
-      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
-        with:
-          tool: nextest@0.9.103
+      - name: Apply reviewed runtime closure patch
+        run: python3 .github/materialization/inference-worker-runtime-closure/apply.py
 
-      - name: Verify workspace graph
-        run: python3 scripts/hepta_workspace.py
+      - name: Format exact Rust surfaces
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustfmt --edition 2024 \
+            codex-rs/hepta-infer-core/src/native_control.rs \
+            codex-rs/hepta-infer-core/src/native_control_tests.rs \
+            codex-rs/hepta-infer-worker-host/src/experimental_local.rs \
+            codex-rs/hepta-infer-worker-host/src/experimental_local/driver.rs \
+            codex-rs/hepta-infer-worker-host/src/experimental_local/durable.rs \
+            codex-rs/hepta-infer-worker-host/src/experimental_local_tests.rs \
+            codex-rs/hepta-infer-worker-host/src/native_recovery.rs \
+            codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs
+          git diff --check
+
+      - name: Refresh generated document projection
+        run: python3 scripts/hepta-module-docs.py refresh-derived
+
+      - name: Prepare native build prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+
+      - name: Install DotSlash
+        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+
+      - name: Expose DotSlash for integration tests
+        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
 
       - name: Resolve verified sandboxed V8 artifacts
         env:
@@ -114,136 +90,70 @@ jobs:
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
 
-      - name: Run exact source-head lane
-        id: source
-        continue-on-error: true
-        env:
-          PACKAGE: ${{ matrix.package }}
-        shell: bash
+      - name: Test durable inference core
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-infer-core
+
+      - name: Test authoritative worker including local profile
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-infer-worker-host --features experimental-local-model
+
+      - name: Exercise real Agentd App Server event sequence
+        working-directory: codex-rs
         run: |
-          scripts/run_inference_worker_qualification_lane.sh \
-            "$PACKAGE" source-head "$SOURCE_SHA" "$BASE_SHA" "$SOURCE_SHA" \
-            "$RUNNER_TEMP/inference-worker-command-records/source-head"
+          cargo test --locked -p codex-hepta-infer-worker-host \
+            --features experimental-local-model \
+            real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone \
+            -- --nocapture --test-threads=1
 
-      - name: Restore exact source before synthetic merge
-        if: always()
+      - name: Check all targets
+        working-directory: codex-rs
         run: |
-          set -euo pipefail
-          git checkout --detach "$SOURCE_SHA"
-          git reset --hard "$SOURCE_SHA"
-          git clean -fdx
+          cargo check --locked -p codex-hepta-infer-core --all-targets
+          cargo check --locked -p codex-hepta-infer-worker-host \
+            --features experimental-local-model --all-targets
 
-      - name: Construct deterministic synthetic merge
-        id: merge
-        if: always()
-        uses: ./.github/actions/hepta-synthetic-merge
-        with:
-          base-sha: ${{ steps.base.outputs.sha }}
-          source-sha: ${{ env.SOURCE_SHA }}
-          pr-number: "0"
-          author-name: Hepta inference worker qualification
-          author-email: hepta-inference-worker-ci@users.noreply.github.com
-          message: Synthetic inference.worker qualification merge
-
-      - name: Run exact base-merge lane
-        id: merge_lane
-        if: always()
-        continue-on-error: true
-        env:
-          PACKAGE: ${{ matrix.package }}
-          MERGE_SHA: ${{ steps.merge.outputs.sha }}
-        shell: bash
+      - name: Strict Clippy
+        working-directory: codex-rs
         run: |
-          scripts/run_inference_worker_qualification_lane.sh \
-            "$PACKAGE" base-merge "$SOURCE_SHA" "$BASE_SHA" "$MERGE_SHA" \
-            "$RUNNER_TEMP/inference-worker-command-records/base-merge"
+          cargo clippy --locked -p codex-hepta-infer-core \
+            --all-targets --no-deps -- -D warnings
+          cargo clippy --locked -p codex-hepta-infer-worker-host \
+            --features experimental-local-model \
+            --all-targets --no-deps -- -D warnings
 
-      - name: Retain exact command receipts
-        if: always()
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
-        with:
-          name: inference-worker-command-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.package }}
-          path: ${{ runner.temp }}/inference-worker-command-records/**
-          if-no-files-found: error
-          retention-days: 30
-
-      - name: Require both exact lanes
-        if: always()
-        env:
-          SOURCE_RESULT: ${{ steps.source.outcome }}
-          MERGE_RESULT: ${{ steps.merge_lane.outcome }}
-        run: |
-          set -euo pipefail
-          test "$SOURCE_RESULT" = success
-          test "$MERGE_RESULT" = success
-
-  aggregate:
-    name: Exact inference.worker qualification aggregate
-    if: always()
-    needs:
-      - receipt_generator
-      - qualification
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        with:
-          ref: ${{ env.SOURCE_SHA }}
-          fetch-depth: 0
-          persist-credentials: false
-
-      - name: Resolve current target base
-        env:
-          BASE_REF: ${{ github.base_ref || github.event.repository.default_branch }}
+      - name: Verify source and documentation projections
         shell: bash
         run: |
           set -euo pipefail
-          base_sha="$(git rev-parse "refs/remotes/origin/${BASE_REF}^{commit}")"
-          [[ "$base_sha" =~ ^[0-9a-f]{40}$ ]]
-          printf 'BASE_SHA=%s\n' "$base_sha" >> "$GITHUB_ENV"
+          python3 scripts/hepta-module-docs.py refresh-derived --check
+          python3 scripts/hepta_module_registry.py --strict
+          python3 scripts/hepta-implementation-maps.py verify
+          python3 -m unittest discover -v -s scripts/tests \
+            -p 'test_inference_worker_*.py'
+          git diff --check
 
-      - name: Download all command receipts
-        id: download
-        if: always()
-        continue-on-error: true
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
-        with:
-          pattern: inference-worker-command-${{ github.run_id }}-${{ github.run_attempt }}-*
-          path: ${{ runner.temp }}/inference-worker-command-receipts
-          merge-multiple: false
-
-      - name: Build exact aggregate
-        if: always()
-        env:
-          GENERATOR_RESULT: ${{ needs.receipt_generator.result }}
-          MATRIX_RESULT: ${{ needs.qualification.result }}
-          DOWNLOAD_RESULT: ${{ steps.download.outcome }}
+      - name: Restore qualification workflow and remove one-shot materializers
         shell: bash
         run: |
           set -euo pipefail
-          aggregate_result=0
-          python3 scripts/inference_worker_command_receipt.py aggregate \
-            --receipt-dir "$RUNNER_TEMP/inference-worker-command-receipts" \
-            --source-sha "$SOURCE_SHA" \
-            --base-sha "$BASE_SHA" \
-            --expected-lane source-head \
-            --expected-lane base-merge \
-            --expected-package codex-hepta-infer-core \
-            --expected-package codex-hepta-infer-worker-host \
-            --expected-package codex-hepta-agentd \
-            --output "$RUNNER_TEMP/inference-worker-qualification-aggregate.json" \
-            || aggregate_result=$?
-          test -f "$RUNNER_TEMP/inference-worker-qualification-aggregate.json"
-          test "$GENERATOR_RESULT" = success
-          test "$MATRIX_RESULT" = success
-          test "$DOWNLOAD_RESULT" = success
-          test "$aggregate_result" -eq 0
+          git show "$SOURCE_SHA^:.github/workflows/inference-worker-authoritative-qualification.yml" \
+            > .github/workflows/inference-worker-authoritative-qualification.yml
+          rm -rf .github/materialization/inference-worker-runtime-closure
+          rm -f .github/workflows/inference-worker-runtime-closure-materialize.yml
+          rm -rf .github/materialization/inference-worker-stage1
+          rm -rf .github/materialization/inference-worker-stage2
+          rm -f .github/workflows/inference-worker-authoritative-materialize.yml
+          git diff --check
 
-      - name: Retain aggregate receipt
-        if: always()
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
-        with:
-          name: inference-worker-qualification-aggregate-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/inference-worker-qualification-aggregate.json
-          if-no-files-found: error
-          retention-days: 30
+      - name: Commit and push verified closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          remote_head="$(git ls-remote origin "refs/heads/$BRANCH_NAME" | awk '{print $1}')"
+          test "$remote_head" = "$SOURCE_SHA"
+          git config user.name hepta-inference-materializer
+          git config user.email hepta-inference-materializer@users.noreply.github.com
+          git add -A
+          git commit -m 'inference.worker: persist usage age and interrupt hung local runs'
+          git push origin "HEAD:$BRANCH_NAME"
