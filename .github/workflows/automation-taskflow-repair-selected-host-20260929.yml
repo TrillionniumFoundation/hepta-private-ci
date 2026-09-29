@@ -1,0 +1,118 @@
+name: Automation TaskFlow selected-host exact repair
+
+on:
+  push:
+    branches:
+      - work/automation-taskflow-full-closure-2026-09-27
+    paths:
+      - .github/workflows/automation-taskflow-repair-selected-host-20260929.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: automation-taskflow-selected-host-exact-repair
+  cancel-in-progress: true
+
+jobs:
+  repair:
+    runs-on: [self-hosted, hepta-automation-selected-host]
+    timeout-minutes: 90
+    env:
+      TARGET_BRANCH: work/automation-taskflow-full-closure-2026-09-27
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out exact trigger head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: work/automation-taskflow-full-closure-2026-09-27
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Refuse concurrent-head overwrite
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          remote="$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | awk '{print $1}')"
+          test "$remote" = "$GITHUB_SHA"
+
+      - name: Prepare CI environment
+        uses: ./.github/actions/setup-ci
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: "1.95.0"
+          components: clippy,rustfmt
+
+      - name: Apply and compile exact source repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          CODEX_REPO_ROOT="$GITHUB_WORKSPACE" PYTHONPATH=scripts python3 scripts/hepta_ci_v8.py
+          python3 -m py_compile scripts/automation_taskflow_ci_blocker_repair_20260929.py
+          python3 scripts/automation_taskflow_ci_blocker_repair_20260929.py
+          (
+            cd codex-rs
+            cargo fmt -p codex-hepta-automation
+            cargo fmt -p codex-hepta-automation -- --check
+            cargo check --locked -p codex-hepta-automation --all-targets
+          )
+          python3 -m py_compile scripts/automation_taskflow_contract.py
+          git diff --check
+
+      - name: Commit ordinary repair and remove temporary writers
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "hepta-automation-convergence"
+          git config user.email "hepta-automation-convergence@users.noreply.github.com"
+          git add \
+            codex-rs/hepta-automation/src/taskflow_bounded.rs \
+            scripts/automation_taskflow_contract.py \
+            .github/workflows/automation-taskflow-focused.yml
+          git rm \
+            .github/workflows/automation-taskflow-converge-20260927.yml \
+            .github/workflows/automation-taskflow-repair-selected-host-20260929.yml \
+            scripts/automation_taskflow_ci_blocker_repair_20260929.py
+          git diff --cached --check
+          git commit --no-verify -m "fix(automation): close focused qualification blockers"
+
+      - name: Refresh and verify exact source declarations
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py migrate --module automation.taskflow
+          if ! git diff --quiet; then
+            git add docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json
+            git commit -m "docs(automation): refresh repaired source navigation"
+          fi
+          python3 scripts/automation_taskflow_contract.py observe
+          python3 scripts/automation_taskflow_contract.py render
+          git diff --check
+          if ! git diff --quiet; then
+            git add -u docs/modules/automation.taskflow
+            git commit -m "docs(automation): bind repaired schema-22 source objects"
+          fi
+          candidate_sha="$(git rev-parse HEAD)"
+          candidate_tree="$(git rev-parse HEAD^{tree})"
+          python3 scripts/automation_taskflow_contract.py self-test
+          python3 -m unittest -v \
+            scripts/test_automation_taskflow_contract.py \
+            scripts/test_automation_taskflow_commands.py \
+            scripts/test_automation_recovery_sweeps.py
+          python3 scripts/hepta-implementation-maps.py verify \
+            --expected-sha "$candidate_sha" \
+            --expected-tree "$candidate_tree"
+          git diff --exit-code
+          git diff --cached --exit-code
+
+      - name: Fast-forward exact repaired candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin "$TARGET_BRANCH"
+          test "$(git rev-parse FETCH_HEAD)" = "$GITHUB_SHA"
+          git push origin "HEAD:$TARGET_BRANCH"
