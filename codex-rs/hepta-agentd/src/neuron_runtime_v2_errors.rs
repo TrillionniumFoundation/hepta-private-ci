@@ -1,4 +1,4 @@
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub enum AgentdNeuronLifecycleStateV2 {
     Starting,
     Serving,
@@ -59,6 +59,8 @@ struct AgentdNeuronGenerationControllerStateV2 {
     lifecycle: AgentdNeuronLifecycleStateV2,
     active: AgentdNeuronHandleV2,
     retained: BTreeMap<u64, AgentdNeuronHandleV2>,
+    reload_target_generation: Option<u64>,
+    state_path: Option<PathBuf>,
 }
 
 /// Explicit daemon lifecycle and generation handoff controller. Historical

@@ -8,6 +8,12 @@
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
+use std::fs::File;
+use std::fs::OpenOptions;
+use std::io;
+use std::io::Write;
+use std::path::Path;
+use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::sync::MutexGuard;
@@ -36,6 +42,7 @@ use codex_hepta_neuron::NeuronRuntimeV2Error;
 use codex_hepta_neuron::NeuronTickInputV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
+use serde::Deserialize;
 use serde::Serialize;
 
 include!("neuron_runtime_v2_base.rs");
@@ -43,5 +50,6 @@ include!("neuron_runtime_v2_shared.rs");
 include!("neuron_runtime_v2_owner_handle.rs");
 include!("neuron_runtime_v2_operational.rs");
 include!("neuron_runtime_v2_errors.rs");
+include!("neuron_runtime_v2_durable_state.rs");
 include!("neuron_runtime_v2_controller.rs");
 include!("neuron_runtime_v2_modules.rs");

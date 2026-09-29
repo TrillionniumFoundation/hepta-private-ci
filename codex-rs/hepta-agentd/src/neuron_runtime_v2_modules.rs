@@ -23,3 +23,7 @@ mod tests;
 #[cfg(test)]
 #[path = "neuron_runtime_v2_control_tests.rs"]
 mod control_tests;
+
+#[cfg(test)]
+#[path = "neuron_runtime_v2_durable_state_tests.rs"]
+mod durable_state_tests;
