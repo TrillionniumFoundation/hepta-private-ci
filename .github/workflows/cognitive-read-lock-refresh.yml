@@ -41,7 +41,7 @@ jobs:
     # Source authoring remains on a GitHub-hosted runner. The repository's
     # self-hosted target machines are not exposed to branch-authored code, and
     # qualification/target-host acceptance remain separate workflows.
-    runs-on: macos-14
+    runs-on: macos-15
     timeout-minutes: 45
     permissions:
       contents: write
@@ -82,7 +82,7 @@ jobs:
             echo "Authored input: $GITHUB_SHA"
             echo "Prepared head: $(git rev-parse HEAD)"
             echo 'Selected owner integration and the durable read-request handoff are authored only through existing owners.'
-            echo 'Preparation verifies idempotent source shape, formats reviewed paths, repairs the scoped direct lock dependency and refreshes the immutable map.'
+            echo 'Preparation verifies exact source shape, formats reviewed paths and refreshes the immutable map without replaying selected-cut edits.'
             echo 'No package, product, acceptance, activation or release pass is claimed.'
           } >> "$GITHUB_STEP_SUMMARY"
 
