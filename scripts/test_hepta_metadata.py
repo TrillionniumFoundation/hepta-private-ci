@@ -10,6 +10,7 @@ from hepta_metadata import (
     authority_fixture,
     has_deny_all_authority,
     has_schema_version,
+    has_object_keys,
 )
 
 
@@ -45,6 +46,19 @@ class SharedMetadataTests(unittest.TestCase):
                 self.assertFalse(
                     has_schema_version({"schemaVersion": value}, int(value))
                 )
+
+    def test_object_keys_ignore_order_without_accepting_missing_or_extra_fields(self):
+        expected = ["owner", "schema", "digest"]
+        self.assertTrue(has_object_keys(dict.fromkeys(reversed(expected)), expected))
+        for value in (
+            None,
+            expected,
+            {},
+            {"owner": 1, "schema": 2},
+            dict.fromkeys([*expected, "unexpected"]),
+        ):
+            with self.subTest(value=value):
+                self.assertFalse(has_object_keys(value, expected))
 
     def test_global_gate_rejects_nonboolean_denial(self):
         module = self.global_verifier()

@@ -59,3 +59,12 @@ def has_schema_version(value: object, expected: int) -> bool:
         and type(value.get("schemaVersion")) is int
         and value["schemaVersion"] == expected
     )
+
+
+def has_object_keys(value: object, expected: list[str]) -> bool:
+    """Validate an exact JSON object shape, not its serialization key order.
+
+    Values, collection ordering and content identities remain the owning
+    verifier's responsibility. JSON loaders must still reject duplicate keys.
+    """
+    return isinstance(value, dict) and value.keys() == set(expected)

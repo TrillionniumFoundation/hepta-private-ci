@@ -1,10 +1,13 @@
 """Behavioral coverage for changing module sets through existing consumers."""
 
 import copy
+import contextlib
+import io
 import importlib.util
 import json
 from pathlib import Path
 import unittest
+from unittest import mock
 
 from hepta_module_catalog import (
     covers_module_ids,
@@ -101,6 +104,55 @@ class ModuleCatalogTests(unittest.TestCase):
             organs, self.modules[:-1], refs
         )
         self.assertNotIn(removed, registered)
+
+    def test_cns_verifier_accepts_reordered_objects_not_unknown_fields(self):
+        original_load = self.cns.load
+
+        def load(path):
+            value = original_load(path)
+            if path == self.cns.ARCH_PATH:
+                for key in ("organs", "qualificationReferences"):
+                    value[key] = [
+                        dict(reversed(list(row.items()))) for row in value[key]
+                    ]
+            return value
+
+        with mock.patch.object(self.cns, "load", side_effect=load):
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(self.cns.verify(), 0)
+
+        for key in ("organs", "qualificationReferences"):
+            for extra in (False, True):
+                with self.subTest(key=key, extra=extra):
+
+                    def invalid_load(path):
+                        value = load(path)
+                        if path == self.cns.ARCH_PATH:
+                            row = value[key][0]
+                            if extra:
+                                row["unexpected_field"] = False
+                            else:
+                                del row[
+                                    "scope"
+                                    if key == "qualificationReferences"
+                                    else "function"
+                                ]
+                        return value
+
+                    with mock.patch.object(self.cns, "load", side_effect=invalid_load):
+                        with self.assertRaises(SystemExit):
+                            self.cns.verify()
+
+    def test_reordered_qualification_reference_cannot_claim_production_scope(self):
+        refs = [
+            dict(reversed(list(row.items())))
+            for row in self.architecture["qualificationReferences"]
+        ]
+        refs[0]["scope"] = "production"
+        with self.assertRaisesRegex(SystemExit, "qualification reference posture"):
+            self.cns.validate_module_bindings(
+                self.architecture["organs"], self.modules, refs
+            )
 
     def test_actual_cns_consumer_rejects_dangling_and_unbound_changes(self):
         organs, refs = (

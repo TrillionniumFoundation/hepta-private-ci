@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Any
 
 try:
+    from scripts.hepta_metadata import has_object_keys
     from scripts.hepta_metadata import (
         AUTHORITY_KEYS,
         has_schema_version,
@@ -23,6 +24,7 @@ try:
 except ModuleNotFoundError as error:
     if error.name != "scripts":
         raise
+    from hepta_metadata import has_object_keys
     from hepta_metadata import (
         AUTHORITY_KEYS,
         has_schema_version,
@@ -516,7 +518,11 @@ def validate_paper_sources(papers: dict[str, Any]) -> int:
         "unsupportedPaperAttributionMayRemainInClaimsUsed": False,
         "paperReferenceMayAdvanceRuntimeClaim": False,
     }
-    need(policy == expected_policy, "paper source lock policy closure")
+    need(
+        has_object_keys(policy, list(expected_policy))
+        and all(policy[key] is expected for key, expected in expected_policy.items()),
+        "paper source lock policy closure",
+    )
     rules = papers.get("rules")
     for key in (
         "claimAnchorDigestRequired",
@@ -544,11 +550,12 @@ def validate_paper_sources(papers: dict[str, Any]) -> int:
 
     for row in rows:
         paper_id = row["id"]
-        need(list(row) == PAPER_ROW_KEYS, paper_id + " paper key closure/order")
+        need(has_object_keys(row, PAPER_ROW_KEYS), paper_id + " paper key closure")
         lock = row.get("sourceLock")
         need(isinstance(lock, dict), paper_id + " source lock")
         need(
-            list(lock) == SOURCE_LOCK_KEYS, paper_id + " source-lock key closure/order"
+            has_object_keys(lock, SOURCE_LOCK_KEYS),
+            paper_id + " source-lock key closure",
         )
         expected_lock = EXPECTED_SOURCE_LOCKS[paper_id]
         for key, expected in expected_lock.items():
@@ -660,7 +667,7 @@ def validate_paper_sources(papers: dict[str, Any]) -> int:
         for anchor in claim_anchors:
             claim = anchor["claim"]
             need(
-                list(anchor) == CLAIM_ANCHOR_KEYS,
+                has_object_keys(anchor, CLAIM_ANCHOR_KEYS),
                 paper_id + " claim-anchor key closure " + claim,
             )
             need(
@@ -669,7 +676,7 @@ def validate_paper_sources(papers: dict[str, Any]) -> int:
             )
             locator = anchor.get("locator")
             need(
-                isinstance(locator, dict) and list(locator) == LOCATOR_KEYS,
+                has_object_keys(locator, LOCATOR_KEYS),
                 paper_id + " locator closure " + claim,
             )
             need(
@@ -745,7 +752,7 @@ def validate_paper_sources(papers: dict[str, Any]) -> int:
         for anchor in nonclaim_anchors:
             nonclaim = anchor["nonClaim"]
             need(
-                list(anchor) == NONCLAIM_ANCHOR_KEYS,
+                has_object_keys(anchor, NONCLAIM_ANCHOR_KEYS),
                 paper_id + " nonclaim-anchor key closure " + nonclaim,
             )
             need(
@@ -790,7 +797,7 @@ def validate_paper_sources(papers: dict[str, Any]) -> int:
                 )
                 locator = anchor.get("locator")
                 need(
-                    isinstance(locator, dict) and list(locator) == LOCATOR_KEYS,
+                    has_object_keys(locator, LOCATOR_KEYS),
                     paper_id + " sourced nonclaim locator",
                 )
                 need(

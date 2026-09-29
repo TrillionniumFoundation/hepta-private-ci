@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Any
 
 try:
+    from scripts.hepta_metadata import has_object_keys
     from scripts.hepta_metadata import (
         AUTHORITY_KEYS,
         has_schema_version,
@@ -22,6 +23,7 @@ try:
 except ModuleNotFoundError as error:
     if error.name != "scripts":
         raise
+    from hepta_metadata import has_object_keys
     from hepta_metadata import (
         AUTHORITY_KEYS,
         has_schema_version,
@@ -207,8 +209,8 @@ def validate_module_bindings(
     refs: dict[str, dict[str, Any]] = {}
     for row in qualification_references:
         need(
-            isinstance(row, dict) and list(row) == QUALIFICATION_REFERENCE_KEYS,
-            "qualification reference key closure/order",
+            has_object_keys(row, QUALIFICATION_REFERENCE_KEYS),
+            "qualification reference key closure",
         )
         identity = row["id"]
         need(
@@ -336,7 +338,7 @@ def verify() -> int:
     by_id = {x["id"]: x for x in organs}
     edges = []
     for row in organs:
-        need(list(row) == ORGAN_KEYS, row["id"] + " key closure/order")
+        need(has_object_keys(row, ORGAN_KEYS), row["id"] + " key closure")
         need(
             row["moduleBindings"] and row["function"] and row["anatomicalRole"],
             row["id"] + " identity",

@@ -147,5 +147,77 @@ class AlgorithmSemanticTests(unittest.TestCase):
                 DOCS.receipt_verify(str(output), "head")
 
 
+class PaperObjectSemanticsTests(unittest.TestCase):
+    @staticmethod
+    def papers():
+        return DOCS.load(DOCS.PAPER_PATH)
+
+    def test_nested_paper_object_reordering_preserves_source_lock_validation(self):
+        def reorder(value):
+            if isinstance(value, dict):
+                return {
+                    key: reorder(item) for key, item in reversed(list(value.items()))
+                }
+            if isinstance(value, list):
+                return [reorder(item) for item in value]
+            return value
+
+        self.assertEqual(DOCS.validate_paper_sources(reorder(self.papers())), 4)
+
+    def test_paper_shapes_still_reject_unknown_and_missing_fields(self):
+        for path in (
+            (),
+            ("sourceLock",),
+            ("claimAnchors", 0),
+            ("claimAnchors", 0, "locator"),
+            ("nonClaimAnchors", 0),
+        ):
+            for unknown in (False, True):
+                with self.subTest(path=path, unknown=unknown):
+                    papers = self.papers()
+                    row = papers["papers"][0]
+                    for key in path:
+                        row = row[key]
+                    if unknown:
+                        row["unexpected_field"] = False
+                    else:
+                        # Keep identity fields so rejection tests the shape itself.
+                        del row[
+                            next(
+                                key
+                                for key in reversed(list(row))
+                                if key not in {"id", "claim", "nonClaim"}
+                            )
+                        ]
+                    with self.assertRaises(SystemExit):
+                        DOCS.validate_paper_sources(papers)
+
+    def test_source_lock_policy_requires_literal_booleans_not_numeric_aliases(self):
+        for key, expected in self.papers()["sourceLockPolicy"].items():
+            for invalid in (int(expected), float(expected), None, str(expected)):
+                with self.subTest(key=key, invalid=invalid):
+                    papers = self.papers()
+                    papers["sourceLockPolicy"][key] = invalid
+                    with self.assertRaisesRegex(SystemExit, "source lock policy"):
+                        DOCS.validate_paper_sources(papers)
+
+    def test_reordered_source_record_still_rejects_content_and_locator_substitution(
+        self,
+    ):
+        for kind in ("content", "claim", "locator"):
+            with self.subTest(kind=kind):
+                papers = self.papers()
+                row = papers["papers"][0]
+                row["sourceLock"] = dict(reversed(list(row["sourceLock"].items())))
+                if kind == "content":
+                    row["sourceLock"]["contentDigest"] = "0" * 64
+                elif kind == "claim":
+                    row["claimAnchors"][0]["sourceTextDigest"] = "0" * 64
+                else:
+                    row["claimAnchors"][0]["locator"]["sentenceIndex"] = 99
+                with self.assertRaises(SystemExit):
+                    DOCS.validate_paper_sources(papers)
+
+
 if __name__ == "__main__":
     unittest.main()
