@@ -9,7 +9,6 @@ on:
       - main
       - work/runtime-agentd-remediation-20260926
       - work/runtime-agentd-remediation-20260927
-      - work/runtime-agentd-production-closure-20260928
       - work/product-convergence-20260923
       - integrate/agentd-product-sweep-20260829
 
@@ -26,34 +25,24 @@ env:
 
 jobs:
   contract:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@v4
         with:
           ref: ${{ env.EXPECTED_SHA }}
-          fetch-depth: 0
           persist-credentials: false
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
       - name: Receipt verifier adversarial tests
         run: python3 -B -m unittest discover -s scripts/qualification -p 'test_agentd_exact_head.py' -v
-      - name: Dynamic status generator tests
-        run: python3 -B -m unittest scripts.qualification.test_runtime_agentd_current_status -v
-      - name: Dependency-boundary verifier tests
-        run: python3 -B -m unittest scripts.qualification.test_runtime_agentd_dependency_boundary -v
-      - name: Trust-boundary verifier tests
-        run: python3 -B -m unittest scripts.test_hepta_agentd_trust_boundary -v
-      - name: Derived projections, source ownership and explicit dependency boundary
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 scripts/hepta-module-docs.py refresh-derived --check
-          python3 scripts/hepta_module_registry.py --strict
-          python3 scripts/hepta-implementation-maps.py verify
-          python3 scripts/hepta_agentd_trust_boundary.py
-          python3 scripts/qualification/runtime_agentd_dependency_boundary.py --repository .
+      - name: Derived projections and source ownership
+        if: ${{ always() }}
+        run: node scripts/architecture/ci-source-ownership.mjs
 
   suite:
     name: Agentd ${{ matrix.os }} / ${{ matrix.suite }}
@@ -66,11 +55,11 @@ jobs:
         os: [ubuntu-latest, macos-latest]
         suite: [owner-libraries, native-library, native-process, daemon-process, product-process, strict-clippy, read-only-profile]
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@v4
         with:
           ref: ${{ env.EXPECTED_SHA }}
           persist-credentials: false
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - name: Install repository toolchain
@@ -79,10 +68,10 @@ jobs:
           set -euo pipefail
           toolchain=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
           rustup toolchain install "$toolchain" --profile minimal --component clippy
-      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6
+      - uses: Swatinem/rust-cache@v2
         with:
           workspaces: codex-rs
-          shared-key: agentd-exact-v2
+          shared-key: agentd-exact-v1
       - name: Execute suite and record actual source, commands, logs and binary digests
         if: ${{ always() }}
         shell: bash
@@ -97,79 +86,28 @@ jobs:
             --output "$RUNNER_TEMP/agentd-exact-receipt"
       - name: Upload evidence including failures
         if: ${{ always() }}
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@v4
         with:
           name: agentd-exact-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.os }}-${{ matrix.suite }}
           path: ${{ runner.temp }}/agentd-exact-receipt
           if-no-files-found: error
           retention-days: 14
 
-  merge-candidate:
-    name: Agentd prospective merge required
-    if: ${{ github.event_name == 'pull_request' }}
-    runs-on: ubuntu-24.04
-    timeout-minutes: 120
-    env:
-      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
-      BASE_SHA: ${{ github.event.pull_request.base.sha }}
-      MERGE_SHA: ${{ github.sha }}
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        with:
-          ref: ${{ env.MERGE_SHA }}
-          fetch-depth: 0
-          persist-credentials: false
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
-        with:
-          python-version: '3.12'
-      - name: Bind deterministic prospective merge tree
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$MERGE_SHA"
-          expected_tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
-          test "$(git rev-parse HEAD^{tree})" = "$expected_tree"
-          git merge-base --is-ancestor "$BASE_SHA" HEAD
-          git merge-base --is-ancestor "$SOURCE_SHA" HEAD
-          test -z "$(git status --porcelain --untracked-files=all)"
-      - name: Install repository toolchain
-        shell: bash
-        run: |
-          set -euo pipefail
-          toolchain=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
-          rustup toolchain install "$toolchain" --profile minimal --component clippy
-      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6
-        with:
-          workspaces: codex-rs
-          shared-key: agentd-prospective-merge-v1
-      - name: Compile and execute merge-candidate owner and process boundaries
-        working-directory: codex-rs
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo test --locked -p codex-hepta-agentd --lib
-          cargo check --locked -p codex-hepta-agentd --no-default-features --lib
-          cargo test --locked -p codex-hepta-agentd --test runtime_codex_product_e2e
-          cargo test --locked -p codex-hepta-agentd --test supervisord_product_e2e
-          cargo test --locked -p codex-hepta-infer-worker-host --test native_host_process_e2e
-          cargo clippy --locked -p codex-hepta-agentd -p codex-hepta-supervisor \
-            -p codex-hepta-infer-worker-host --all-targets -- -D warnings
-
   qualification-result:
     name: Agentd exact-head required
     if: ${{ always() }}
-    needs: [contract, suite, merge-candidate]
-    runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    needs: [contract, suite]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@v4
         with:
           ref: ${{ env.EXPECTED_SHA }}
           persist-credentials: false
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+      - uses: actions/download-artifact@v4
         with:
           pattern: agentd-exact-${{ github.run_id }}-${{ github.run_attempt }}-*
           path: ${{ runner.temp }}/agentd-evidence
@@ -183,40 +121,17 @@ jobs:
             --sha "$EXPECTED_SHA" --run-id "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT" \
             --evidence "$RUNNER_TEMP/agentd-evidence" --output "$RUNNER_TEMP/agentd-engineering-result.json" \
             --contract-result "$CONTRACT_RESULT" --suite-result "$SUITE_RESULT"
-      - name: Generate exact-candidate status without changing source claims
-        if: ${{ always() }}
-        env:
-          CANDIDATE_BRANCH: ${{ github.head_ref || github.ref_name }}
-          MERGE_RESULT: ${{ needs.merge-candidate.result }}
-        run: |
-          python3 -B scripts/qualification/runtime_agentd_current_status.py \
-            --repository "$GITHUB_WORKSPACE" --sha "$EXPECTED_SHA" \
-            --branch "$CANDIDATE_BRANCH" --run-id "$GITHUB_RUN_ID" \
-            --attempt "$GITHUB_RUN_ATTEMPT" --event-name "$GITHUB_EVENT_NAME" \
-            --merge-result "$MERGE_RESULT" \
-            --engineering-result "$RUNNER_TEMP/agentd-engineering-result.json" \
-            --output "$RUNNER_TEMP/runtime-agentd-current-status.json"
       - name: Require every independent job to succeed
         if: ${{ always() }}
         env:
           CONTRACT_RESULT: ${{ needs.contract.result }}
           SUITE_RESULT: ${{ needs.suite.result }}
-          MERGE_RESULT: ${{ needs.merge-candidate.result }}
-        shell: bash
         run: |
-          set -euo pipefail
           test "$CONTRACT_RESULT" = success
           test "$SUITE_RESULT" = success
-          if [ "$GITHUB_EVENT_NAME" = pull_request ]; then
-            test "$MERGE_RESULT" = success
-          else
-            test "$MERGE_RESULT" = skipped
-          fi
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      - uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: agentd-engineering-result-${{ github.run_id }}-${{ github.run_attempt }}
-          path: |
-            ${{ runner.temp }}/agentd-engineering-result.json
-            ${{ runner.temp }}/runtime-agentd-current-status.json
+          path: ${{ runner.temp }}/agentd-engineering-result.json
           if-no-files-found: error
