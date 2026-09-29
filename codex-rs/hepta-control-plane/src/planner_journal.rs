@@ -134,6 +134,36 @@ mod hardening_tests {
     }
 
     #[test]
+    fn reopen_rejects_a_structurally_valid_illegal_transition() {
+        let sequence = 1_u64;
+        let identity = digest("operation");
+        let missing_decision = digest("missing-decision");
+        let predecessor = Digest32::ZERO;
+
+        let mut digest_input = b"hepta.control.planner-journal-entry.v1".to_vec();
+        digest_input.extend_from_slice(&sequence.to_be_bytes());
+        digest_input.push(2); // PlannerJournalKindV1::SelectedPlan
+        digest_input.extend_from_slice(identity.as_array());
+        digest_input.extend_from_slice(missing_decision.as_array());
+        digest_input.extend_from_slice(predecessor.as_array());
+        let entry_digest = Digest32::of_bytes(&digest_input);
+
+        let mut bytes = b"HCPJNL01".to_vec();
+        bytes.extend_from_slice(&1_u32.to_be_bytes());
+        bytes.extend_from_slice(&sequence.to_be_bytes());
+        bytes.push(2); // PlannerJournalKindV1::SelectedPlan
+        bytes.extend_from_slice(identity.as_array());
+        bytes.extend_from_slice(missing_decision.as_array());
+        bytes.extend_from_slice(predecessor.as_array());
+        bytes.extend_from_slice(entry_digest.as_array());
+
+        assert_eq!(
+            PlannerJournalV1::reopen(&bytes),
+            Err(PlannerJournalError::DecisionNotRecorded)
+        );
+    }
+
+    #[test]
     fn exact_retry_survives_later_revocation() {
         let mut journal = PlannerJournalV1::new();
         let decision = digest("decision");

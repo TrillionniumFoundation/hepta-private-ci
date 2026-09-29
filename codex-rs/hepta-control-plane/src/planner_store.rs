@@ -241,10 +241,11 @@ impl PlannerStoreV1 {
         result: Result<T, PlannerStoreError>,
         boundary: MutationBoundary,
     ) -> Result<T, PlannerStoreError> {
-        if let Err(error) = &result {
-            if mutation_may_be_uncertain(error, boundary) {
-                self.recovery_required = true;
-            }
+        if result
+            .as_ref()
+            .is_err_and(|error| mutation_may_be_uncertain(error, boundary))
+        {
+            self.recovery_required = true;
         }
         result
     }
@@ -435,22 +436,20 @@ fn mutation_may_be_uncertain(error: &PlannerStoreError, boundary: MutationBounda
         // than necessary, but never permits a potentially divergent handle to
         // continue.
         PlannerStoreError::Io(_) => true,
-        PlannerStoreError::Failpoint(point) => match (boundary, point) {
+        PlannerStoreError::Failpoint(point) => matches!(
+            (boundary, point),
             (
                 MutationBoundary::Append,
                 PlannerStoreFailpointV1::AfterFrameWriteBeforeSync
-                | PlannerStoreFailpointV1::AfterLogSyncBeforePublish,
-            )
-            | (
+                    | PlannerStoreFailpointV1::AfterLogSyncBeforePublish,
+            ) | (
                 MutationBoundary::Checkpoint,
                 PlannerStoreFailpointV1::AfterCheckpointRenameBeforeDirectorySync,
-            )
-            | (
+            ) | (
                 MutationBoundary::Compaction,
                 PlannerStoreFailpointV1::AfterCompactionRenameBeforeDirectorySync,
-            ) => true,
-            _ => false,
-        },
+            )
+        ),
         _ => false,
     }
 }

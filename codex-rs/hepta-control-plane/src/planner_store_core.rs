@@ -228,6 +228,7 @@ impl PlannerStoreV1 {
         let log_path = root.join(LOG_NAME);
         let mut log = OpenOptions::new()
             .create(true)
+            .truncate(false)
             .read(true)
             .write(true)
             .open(log_path)?;

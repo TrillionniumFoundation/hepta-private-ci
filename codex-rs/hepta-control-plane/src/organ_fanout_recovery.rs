@@ -350,7 +350,9 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 }
 
 fn push_usize(bytes: &mut Vec<u8>, value: usize) {
-    let value = u64::try_from(value).expect("bounded organ values fit into u64");
+    let Ok(value) = u64::try_from(value) else {
+        unreachable!("usize width is statically bounded by u64")
+    };
     bytes.extend_from_slice(&value.to_be_bytes());
 }
 

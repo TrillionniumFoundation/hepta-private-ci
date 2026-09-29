@@ -277,12 +277,8 @@ impl PlannerJournalV1 {
                 predecessor_entry_digest,
                 entry_digest,
             };
-            let replayed = decoded.append_with_validation(
-                kind,
-                identity_digest,
-                payload_digest,
-                false,
-            )?;
+            let replayed =
+                decoded.append_with_validation(kind, identity_digest, payload_digest, false)?;
             if replayed != parsed {
                 return Err(PlannerJournalError::CorruptEntryDigest);
             }
@@ -290,11 +286,8 @@ impl PlannerJournalV1 {
 
         let mut validated = Self::new();
         for entry in decoded.entries {
-            let replayed = validated.append(
-                entry.kind,
-                entry.identity_digest,
-                entry.payload_digest,
-            )?;
+            let replayed =
+                validated.append(entry.kind, entry.identity_digest, entry.payload_digest)?;
             if replayed != entry {
                 return Err(PlannerJournalError::CorruptEntryDigest);
             }
