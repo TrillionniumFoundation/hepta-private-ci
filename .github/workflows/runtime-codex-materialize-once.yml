@@ -16,6 +16,7 @@ on:
       - scripts/runtime-codex-storage-fixup.py
       - scripts/runtime-codex-terminal-outbox-migration.py
       - scripts/runtime-codex-product-executor-migration.py
+      - scripts/runtime-codex-product-executor-hardening.py
       - scripts/runtime-codex-process-crash-migration.py
       - scripts/runtime-codex-qualification-fixup.py
       - scripts/runtime-codex-final-closure.py
@@ -59,6 +60,7 @@ jobs:
             scripts/runtime-codex-storage-fixup.py
             scripts/runtime-codex-terminal-outbox-migration.py
             scripts/runtime-codex-product-executor-migration.py
+            scripts/runtime-codex-product-executor-hardening.py
             scripts/runtime-codex-process-crash-migration.py
             scripts/runtime-codex-qualification-fixup.py
             scripts/runtime-codex-final-closure.py
