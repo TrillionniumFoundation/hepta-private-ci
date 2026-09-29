@@ -131,6 +131,15 @@ impl NduProjectionJournalV1 {
         subject_digest: Digest32,
         projection_digest: Digest32,
     ) -> Result<NduProjectionEntryV1, NduProjectionJournalError> {
+        if let Some(replay) = self.replay_identity(
+            NduProjectionKindV1::SelectedProjection,
+            operation_identity_digest,
+            objective_digest,
+            subject_digest,
+            projection_digest,
+        )? {
+            return Ok(replay);
+        }
         if !self.projection_recorded(objective_digest, subject_digest, projection_digest) {
             return Err(NduProjectionJournalError::ProjectionNotRecorded);
         }
@@ -153,6 +162,15 @@ impl NduProjectionJournalV1 {
         subject_digest: Digest32,
         projection_digest: Digest32,
     ) -> Result<NduProjectionEntryV1, NduProjectionJournalError> {
+        if let Some(replay) = self.replay_identity(
+            NduProjectionKindV1::Revocation,
+            revocation_identity_digest,
+            objective_digest,
+            subject_digest,
+            projection_digest,
+        )? {
+            return Ok(replay);
+        }
         if !self.projection_recorded(objective_digest, subject_digest, projection_digest) {
             return Err(NduProjectionJournalError::ProjectionNotRecorded);
         }
@@ -190,6 +208,34 @@ impl NduProjectionJournalV1 {
             }
         }
         selected.filter(|digest| !revoked.contains(digest))
+    }
+
+    fn replay_identity(
+        &self,
+        kind: NduProjectionKindV1,
+        identity_digest: Digest32,
+        objective_digest: Digest32,
+        subject_digest: Digest32,
+        payload_digest: Digest32,
+    ) -> Result<Option<NduProjectionEntryV1>, NduProjectionJournalError> {
+        let Some((existing_kind, existing_objective, existing_subject, existing_payload)) =
+            self.identities.get(&identity_digest)
+        else {
+            return Ok(None);
+        };
+        if *existing_kind != kind
+            || *existing_objective != objective_digest
+            || *existing_subject != subject_digest
+            || *existing_payload != payload_digest
+        {
+            return Err(NduProjectionJournalError::IdentityConflict);
+        }
+        self.entries
+            .iter()
+            .find(|entry| entry.identity_digest == identity_digest)
+            .cloned()
+            .map(Some)
+            .ok_or(NduProjectionJournalError::CorruptEntryDigest)
     }
 
     fn projection_recorded(
@@ -235,22 +281,14 @@ impl NduProjectionJournalV1 {
         {
             return Err(NduProjectionJournalError::EmptyDigest);
         }
-        if let Some((existing_kind, existing_objective, existing_subject, existing_payload)) =
-            self.identities.get(&identity_digest)
-        {
-            if *existing_kind == kind
-                && *existing_objective == objective_digest
-                && *existing_subject == subject_digest
-                && *existing_payload == payload_digest
-            {
-                return self
-                    .entries
-                    .iter()
-                    .find(|entry| entry.identity_digest == identity_digest)
-                    .cloned()
-                    .ok_or(NduProjectionJournalError::CorruptEntryDigest);
-            }
-            return Err(NduProjectionJournalError::IdentityConflict);
+        if let Some(replay) = self.replay_identity(
+            kind,
+            identity_digest,
+            objective_digest,
+            subject_digest,
+            payload_digest,
+        )? {
+            return Ok(replay);
         }
         if self.entries.len() >= MAX_RECORDS {
             return Err(NduProjectionJournalError::RecordLimitExceeded);
