@@ -1,0 +1,71 @@
+name: Runtime supervisor per-Agent concurrency materializer
+
+on:
+  push:
+    branches:
+      - codex/runtime-supervisor-agent-concurrency-closure-20260929
+    paths:
+      - .github/runtime-supervisor-agent-concurrency-materialize.py
+      - .github/workflows/runtime-supervisor-agent-concurrency-materialize.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-supervisor-agent-concurrency-materializer
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    if: github.event.head_commit.message == 'chore(runtime.supervisor): stage per-Agent concurrency materializer'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Install native prerequisites
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+      - name: Install exact Rust toolchain
+        run: |
+          set -euo pipefail
+          channel="$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')"
+          rustup toolchain install "$channel" --profile minimal --component clippy,rustfmt
+          echo "RUSTUP_TOOLCHAIN=$channel" >> "$GITHUB_ENV"
+      - name: Apply exact source transformation
+        run: |
+          set -euo pipefail
+          python3 .github/runtime-supervisor-agent-concurrency-materialize.py
+          rm .github/runtime-supervisor-agent-concurrency-materialize.py
+          rm .github/workflows/runtime-supervisor-agent-concurrency-materialize.yml
+      - name: Format and validate supervisor source
+        env:
+          CARGO_INCREMENTAL: "0"
+          CARGO_BUILD_JOBS: "2"
+          CARGO_PROFILE_TEST_DEBUG: "0"
+          CARGO_PROFILE_DEV_DEBUG: "0"
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all
+          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor --lib
+          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor --lib --features production-authority
+          cargo clippy --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor --all-targets --all-features -- -D warnings
+          git diff --check
+      - name: Commit verified materialization
+        run: |
+          set -euo pipefail
+          git config user.name "Hepta Runtime Supervisor CI"
+          git config user.email "hepta-runtime-supervisor-ci@users.noreply.github.com"
+          git add -A
+          test -n "$(git status --porcelain)"
+          git commit -m "feat(runtime.supervisor): shard lifecycle ownership per agent"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
