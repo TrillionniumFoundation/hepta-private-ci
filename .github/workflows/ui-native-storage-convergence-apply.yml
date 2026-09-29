@@ -2,7 +2,7 @@ name: ui.native storage convergence applicator
 
 on:
   push:
-    branches: [work/ui-native-storage-performance-convergence-20260929]
+    branches: [work/ui-native-storage-materialize-20260930]
     paths:
       - .ci/ui-native-storage-convergence/source.patch.gz.b64.part-*
       - .github/workflows/ui-native-storage-convergence-apply.yml
@@ -12,7 +12,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: ui-native-storage-convergence-${{ github.ref }}
+  group: ui-native-storage-materialize-${{ github.ref }}
   cancel-in-progress: true
 
 env:
@@ -40,11 +40,14 @@ jobs:
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           test -z "$(git status --porcelain)"
           test "$(git rev-parse HEAD:apps/hepta-native/src/journal.rs)" = ac6c9f632b42f9ae2e08743fa9895fb7a00802f2
-          test "$(git rev-parse HEAD:apps/hepta-native/src/retirement.rs)" = e6fb24deaf401c86e39aa46af9a2822fb8c1528c
-          test "$(git rev-parse HEAD:apps/hepta-native/src/lib.rs)" = a4e51f61d647362f9130a7f2e9e15e85173429ed
+          test "$(git rev-parse HEAD:apps/hepta-native/src/retirement.rs)" = e6fb1a1ab5b7b0ad680343847ccf0f54a42eea28
+          test "$(git rev-parse HEAD:apps/hepta-native/src/lib.rs)" = a4e3a22330b3d2c63f5bbbc1ee2cb46f6ea26303
           test "$(git rev-parse HEAD:apps/hepta-native/src/retirement_tests.rs)" = 3504d9625b9a6faae3b2085b23137e14728e0794
-          test "$(git rev-parse HEAD:apps/hepta-native/tests/journal_regressions.rs)" = 14ff218ac060889a7b8a3c548d492552b97ba170
-          test "$(git cat-file -e HEAD:apps/hepta-native/src/journal_wal.rs 2>/dev/null; echo $?)" = 1
+          test "$(git rev-parse HEAD:apps/hepta-native/tests/journal_regressions.rs)" = 14ff801e573c163b6c818253b403826e63df0f74
+          if git cat-file -e HEAD:apps/hepta-native/src/journal_wal.rs 2>/dev/null; then
+            echo 'journal_wal.rs unexpectedly exists at the reviewed baseline' >&2
+            exit 1
+          fi
           printf '%s  %s\n' 62658624ca52529925407d9ae88a4b6cfe02a89a5c98e0c5e8aa564808380db6 .ci/ui-native-storage-convergence/source.patch.gz.b64.part-00 | sha256sum --check --strict
           printf '%s  %s\n' 32104a7e73e15d0ef11f9699c0e7782296b7f7899a08cc874c78edeaba34b369 .ci/ui-native-storage-convergence/source.patch.gz.b64.part-01 | sha256sum --check --strict
           printf '%s  %s\n' dd538639be7a57a3c4a2c3d7886a5541e87692cd54df66ca2a64e1676e077446 .ci/ui-native-storage-convergence/source.patch.gz.b64.part-02 | sha256sum --check --strict
@@ -125,6 +128,5 @@ jobs:
           git config user.email 'hepta-native-storage-bot@users.noreply.github.com'
           git commit -m 'perf(ui.native): add bounded journal WAL and disk retirement index' \
             -m 'Preserve the single journal owner, Prepared/Invoking durability order, final-use boundary, immutable terminal observations, and fail-closed unknown outcomes while replacing routine full-snapshot writes with a checksummed fsynced WAL, adding an exact active-operation index, and replacing resident retirement identity maps with a rebuildable content-addressed prefix index. Includes corruption, orphan-tail, checkpoint, migration, and index-rebuild regressions.'
-          python3 apps/hepta-native/tools/prepare_current_source.py
           test -z "$(git status --porcelain)"
           git push origin "HEAD:refs/heads/${GITHUB_REF_NAME}"
