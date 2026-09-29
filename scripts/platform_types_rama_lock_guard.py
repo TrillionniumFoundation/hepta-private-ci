@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
-"""Reject incoherent Rama prerelease selections in platform.types qualification."""
+"""Reject incoherent Rama selections in platform.types qualification.
+
+The product-facing network-proxy manifest pins the public prerelease crates it
+uses directly.  The published 0.3.0-alpha.4 graph intentionally depends on the
+stable 0.3.0 support crates (`rama-error`, `rama-macros`, and `rama-utils`).
+Treating every `rama-*` package as if it shared one version rejects the upstream
+release that Cargo actually resolves, so the lock check models the complete
+published graph instead of a prefix-wide version assumption.
+"""
 
 from __future__ import annotations
 
@@ -10,19 +18,47 @@ from pathlib import Path
 from typing import Any
 
 EXPECTED_VERSION = "0.3.0-alpha.4"
-REQUIRED_PACKAGES = (
+SUPPORT_VERSION = "0.3.0"
+
+# Only these packages are declared by codex-network-proxy. They must remain
+# exact constraints so a future Cargo resolution cannot silently move the
+# product boundary to another prerelease.
+DIRECT_MANIFEST_PACKAGES = (
     "rama-core",
-    "rama-error",
     "rama-http",
     "rama-http-backend",
-    "rama-macros",
     "rama-net",
     "rama-socks5",
     "rama-tcp",
     "rama-tls-rustls",
     "rama-unix",
-    "rama-utils",
 )
+
+# Exact package versions selected by the published 0.3.0-alpha.4 dependency
+# graph. Support crates are stable 0.3.0 releases by upstream design; accepting
+# any other `rama-*` package or version is fail-closed.
+LOCK_EXPECTED_VERSIONS = {
+    "rama-core": EXPECTED_VERSION,
+    "rama-dns": EXPECTED_VERSION,
+    "rama-error": SUPPORT_VERSION,
+    "rama-http": EXPECTED_VERSION,
+    "rama-http-backend": EXPECTED_VERSION,
+    "rama-http-core": EXPECTED_VERSION,
+    "rama-http-headers": EXPECTED_VERSION,
+    "rama-http-types": EXPECTED_VERSION,
+    "rama-macros": SUPPORT_VERSION,
+    "rama-net": EXPECTED_VERSION,
+    "rama-socks5": EXPECTED_VERSION,
+    "rama-tcp": EXPECTED_VERSION,
+    "rama-tls-rustls": EXPECTED_VERSION,
+    "rama-udp": EXPECTED_VERSION,
+    "rama-unix": EXPECTED_VERSION,
+    "rama-utils": SUPPORT_VERSION,
+}
+
+# Compatibility alias for scripts that historically imported this name. It now
+# denotes the complete lock graph, not the set of direct manifest constraints.
+REQUIRED_PACKAGES = tuple(LOCK_EXPECTED_VERSIONS)
 
 
 class RamaLockError(RuntimeError):
@@ -71,7 +107,8 @@ def validate(manifest_path: Path, lock_path: Path) -> None:
     declared = _dependency_versions(manifest)
     errors: list[str] = []
     exact = f"={EXPECTED_VERSION}"
-    for package in REQUIRED_PACKAGES:
+
+    for package in DIRECT_MANIFEST_PACKAGES:
         versions = declared.get(package, set())
         if versions != {exact}:
             errors.append(
@@ -90,12 +127,21 @@ def validate(manifest_path: Path, lock_path: Path) -> None:
             version = row.get("version")
             if isinstance(name, str) and isinstance(version, str):
                 selected.setdefault(name, set()).add(version)
-        for package in REQUIRED_PACKAGES:
+
+        for package, expected_version in LOCK_EXPECTED_VERSIONS.items():
             versions = selected.get(package, set())
-            if versions != {EXPECTED_VERSION}:
+            if versions != {expected_version}:
                 errors.append(
-                    f"lock {package} must select only {EXPECTED_VERSION}; found {sorted(versions)}"
+                    f"lock {package} must select only {expected_version}; found {sorted(versions)}"
                 )
+
+        unexpected = sorted(
+            package
+            for package in selected
+            if package.startswith("rama-") and package not in LOCK_EXPECTED_VERSIONS
+        )
+        if unexpected:
+            errors.append(f"lock contains unreviewed Rama packages: {unexpected}")
 
     if errors:
         raise RamaLockError("; ".join(errors))
@@ -117,7 +163,8 @@ def main() -> int:
         return 1
     print(
         "platform.types Rama lock guard: coherent "
-        f"({len(REQUIRED_PACKAGES)} packages at {EXPECTED_VERSION})"
+        f"({len(DIRECT_MANIFEST_PACKAGES)} exact direct pins; "
+        f"{len(LOCK_EXPECTED_VERSIONS)} reviewed lock packages)"
     )
     return 0
 
