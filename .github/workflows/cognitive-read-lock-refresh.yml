@@ -7,11 +7,21 @@ on:
     paths:
       - .github/workflows/cognitive-read-lock-refresh.yml
       - scripts/prepare-cognitive-read-source.py
+      - scripts/prepare-cognitive-read-durable-handoff.py
       - scripts/apply-cognitive-read-selected-cut.py
+      - scripts/apply-cognitive-read-durable-handoff.py
+      - scripts/cognitive_read_delivery_gates.py
       - codex-rs/hepta-memory/src/lane_c_snapshot.rs
       - codex-rs/hepta-memory/src/lane_c_selected_snapshot.rs
+      - codex-rs/hepta-agentd/src/client.rs
+      - codex-rs/hepta-agentd/src/lib.rs
       - codex-rs/hepta-agentd/src/cognitive_context.rs
       - codex-rs/hepta-agentd/src/cognitive_context_final_use.rs
+      - codex-rs/hepta-agentd/src/cognitive_retrieval_delivery_tests.rs
+      - codex-rs/hepta-infer-core/src/native_control.rs
+      - codex-rs/hepta-infer-core/src/cognitive_delivery.rs
+      - codex-rs/hepta-infer-worker-host/src/native_app_server.rs
+      - codex-rs/hepta-infer-worker-host/src/native_run_control.rs
   workflow_dispatch:
 
 # This is an explicitly scoped SOURCE AUTHORING job, not qualification.
@@ -29,7 +39,7 @@ jobs:
   prepare:
     if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/work/cognitive-read-production-convergence-20260927'
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 45
     permissions:
       contents: write
     env:
@@ -53,7 +63,7 @@ jobs:
           test "$(git ls-remote origin "refs/heads/$SOURCE_BRANCH" | cut -f1)" = "$GITHUB_SHA"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          python3 scripts/prepare-cognitive-read-source.py --expected-sha "$GITHUB_SHA"
+          python3 scripts/prepare-cognitive-read-durable-handoff.py --expected-sha "$GITHUB_SHA"
           cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
           test -z "$(git status --porcelain --untracked-files=no)"
           mkdir -p "$RUNNER_TEMP/cognitive-read-preparation"
@@ -68,8 +78,8 @@ jobs:
             echo '## Source preparation, not qualification'
             echo "Authored input: $GITHUB_SHA"
             echo "Prepared head: $(git rev-parse HEAD)"
-            echo 'Selected owner integration is already present in ordinary Rust source.'
-            echo 'Preparation verifies its idempotent source shape, formats reviewed paths, repairs the scoped direct lock dependency and refreshes the immutable map.'
+            echo 'Selected owner integration and the durable read-request handoff are authored only through existing owners.'
+            echo 'Preparation verifies idempotent source shape, formats reviewed paths, repairs the scoped direct lock dependency and refreshes the immutable map.'
             echo 'No package, product, acceptance, activation or release pass is claimed.'
           } >> "$GITHUB_STEP_SUMMARY"
 
