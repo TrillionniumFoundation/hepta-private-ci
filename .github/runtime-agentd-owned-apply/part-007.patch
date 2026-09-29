@@ -1,0 +1,150 @@
+}
++}
++
++impl fmt::Display for RuntimeCodexCallerActionV1 {
++    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
++        formatter.write_str(self.as_str())
++    }
++}
+diff --git a/codex-rs/hepta-agentd/src/runtime_codex_policy_tests.rs b/codex-rs/hepta-agentd/src/runtime_codex_policy_tests.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..df33ec46051b97dcb059bd79ee3596c37bcbf858
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/runtime_codex_policy_tests.rs
+@@ -0,0 +1,72 @@
++use super::runtime_codex_policy::RuntimeCodexCallerActionV1;
++use super::runtime_codex_policy::RuntimeCodexFailureClassV1;
++
++#[test]
++fn failure_policy_is_stable_and_never_requests_blind_immediate_retry() {
++    let cases = [
++        (
++            RuntimeCodexFailureClassV1::AdmissionClosed,
++            RuntimeCodexCallerActionV1::ExitProcess,
++        ),
++        (
++            RuntimeCodexFailureClassV1::StartupReconciliation,
++            RuntimeCodexCallerActionV1::RetryLater,
++        ),
++        (
++            RuntimeCodexFailureClassV1::QueueCapacity,
++            RuntimeCodexCallerActionV1::RetryLater,
++        ),
++        (
++            RuntimeCodexFailureClassV1::CurrentTrustExpired,
++            RuntimeCodexCallerActionV1::RetrySameIdentity,
++        ),
++        (
++            RuntimeCodexFailureClassV1::GenerationFenced,
++            RuntimeCodexCallerActionV1::ExitProcess,
++        ),
++        (
++            RuntimeCodexFailureClassV1::DurableIdentityConflict,
++            RuntimeCodexCallerActionV1::OperatorRequired,
++        ),
++        (
++            RuntimeCodexFailureClassV1::PreparedUnfenced,
++            RuntimeCodexCallerActionV1::RetrySameIdentity,
++        ),
++        (
++            RuntimeCodexFailureClassV1::FencedUnresolved,
++            RuntimeCodexCallerActionV1::ReconcileOnly,
++        ),
++        (
++            RuntimeCodexFailureClassV1::PersistenceOutcomeUnknown,
++            RuntimeCodexCallerActionV1::ReconcileOnly,
++        ),
++        (
++            RuntimeCodexFailureClassV1::TerminalWitnessConflict,
++            RuntimeCodexCallerActionV1::OperatorRequired,
++        ),
++        (
++            RuntimeCodexFailureClassV1::ShutdownRecoveryRequired,
++            RuntimeCodexCallerActionV1::ReconcileOnly,
++        ),
++        (
++            RuntimeCodexFailureClassV1::OwnerFailed,
++            RuntimeCodexCallerActionV1::ExitProcess,
++        ),
++    ];
++
++    for (failure, action) in cases {
++        assert_eq!(failure.caller_action(), action);
++        assert!(!failure.permits_immediate_retry());
++        assert!(!failure.as_str().is_empty());
++        assert!(!action.as_str().is_empty());
++    }
++}
++
++#[test]
++fn queue_capacity_is_the_only_non_readiness_blocking_failure() {
++    let capacity = RuntimeCodexFailureClassV1::QueueCapacity;
++    let unresolved = RuntimeCodexFailureClassV1::FencedUnresolved;
++    assert!(!capacity.blocks_readiness());
++    assert!(unresolved.blocks_readiness());
++    assert!(unresolved.requires_reconciliation());
++}
+diff --git a/codex-rs/hepta-agentd/src/runtime_codex_supervisor.rs b/codex-rs/hepta-agentd/src/runtime_codex_supervisor.rs
+index 094e18af3e7bd328d8849a414c6b2e77768c8edc..4b571d9b2181250c7916affb1d828988d72fbb2a 100644
+--- a/codex-rs/hepta-agentd/src/runtime_codex_supervisor.rs
++++ b/codex-rs/hepta-agentd/src/runtime_codex_supervisor.rs
+@@ -15,12 +15,14 @@ use tokio::task::JoinSet;
+ use tokio::time::{MissedTickBehavior, interval};
+ use tokio_util::sync::CancellationToken;
+ 
+-use super::super::persistence::archive_terminal_operations;
+ use super::super::{
+     ProcessRuntimeCodexExecutorV1, RuntimeCodexExecutionInputV1, RuntimeCodexExecutorV1,
+     RuntimeCodexOwnerV1,
+ };
+ use crate::canonical_runtime_bootstrap::CanonicalRuntimeInstallationTokenV1;
++use super::maintenance::BoundedMaintenanceIoV1;
++use crate::runtime_codex_policy::RuntimeCodexCallerActionV1;
++use crate::runtime_codex_policy::RuntimeCodexFailureClassV1;
+ use crate::{AgentdError, AgentdIdentity, PreparedAgentdIntelligenceRunV1, RunPhase, RunReceipt};
+ 
+ #[path = "runtime_codex_supervisor_worker.rs"]
+@@ -98,6 +100,14 @@ pub struct RuntimeCodexSupervisorSnapshotV1 {
+     pub rejected_capacity: usize,
+     pub rejected_input: usize,
+     pub rejected_identity: usize,
++    pub last_dispatch_wait_ms: Option<u64>,
++    pub maximum_dispatch_wait_ms: Option<u64>,
++    pub maintenance_io_queue_wait_ms: Option<u64>,
++    pub maintenance_io_duration_ms: Option<u64>,
++    pub maintenance_io_active: usize,
++    pub maintenance_io_completed_after_cancel: usize,
++    pub admission_failure: Option<RuntimeCodexFailureClassV1>,
++    pub recommended_action: Option<RuntimeCodexCallerActionV1>,
+     pub admission_blocker: Option<String>,
+ }
+ 
+@@ -121,6 +131,8 @@ struct Installation {
+     receiver: std::sync::Mutex<Option<mpsc::Receiver<Job>>>,
+     admission: std::sync::Mutex<AdmissionState>,
+     active: std::sync::Mutex<BTreeMap<String, ActiveJob>>,
++    execution_slots: Arc<Semaphore>,
++    maintenance_io: BoundedMaintenanceIoV1,
+     started: AtomicBool,
+     ready: AtomicBool,
+     degraded: AtomicBool,
+@@ -146,8 +158,9 @@ struct Installation {
+     rejected_capacity: AtomicUsize,
+     rejected_input: AtomicUsize,
+     rejected_identity: AtomicUsize,
+-    terminal_failure: std::sync::Mutex<Option<String>>,
+-    maximum_concurrent_jobs: usize,
++    last_dispatch_wait_ms: AtomicU64,
++    maximum_dispatch_wait_ms: AtomicU64,
++    terminal_failure: std::sync::Mutex<Option<RuntimeCodexFailureClassV1>>,
+     recovery_interval: Duration,
+ }
+ 
+@@ -247,16 +260,18 @@ impl RuntimeCodexScheduleReservationV1 {
+             self.installed
+                 .rejected_closed
+                 .fetch_add(1, Ordering::AcqRel);
+-            return Err(AgentdError::Protocol(
+-                "runtime.codex supervisor closed after capacity reservation".to_string(),
++            return Err(AgentdError::runtime_codex(
++                RuntimeCodexFailureClassV1::AdmissionClosed,
