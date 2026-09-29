@@ -282,7 +282,9 @@ def validate_manual_workflow(text: str, maximum_minutes: int) -> None:
                 raise ValueError("matrix include/exclude must be static objects")
         # Upper bound: exclusions do not buy extra budget. Include-only rows may
         # add jobs; metadata-only includes on existing axes cannot add a new job.
-        combinations += sum(not axes or bool(set(row) & set(axes)) for row in includes)
+        combinations += sum(
+            not axes or bool(excludes) or bool(set(row) & set(axes)) for row in includes
+        )
         if not 1 <= combinations <= 16:
             raise ValueError("manual diagnostic exceeds expanded job budget")
         return combinations

@@ -262,6 +262,11 @@ class RepositorySurfaceTests(unittest.TestCase):
             {"version": [str(i) for i in range(17)]},
             {"include": [{"item": str(i)} for i in range(17)]},
             {"version": ["${{ inputs.version }}"]},
+            {
+                "version": ["a"],
+                "exclude": [{"version": "a"}],
+                "include": [{"note": str(i)} for i in range(17)],
+            },
             {"version": []},
         ):
             job["strategy"] = {"matrix": matrix}
