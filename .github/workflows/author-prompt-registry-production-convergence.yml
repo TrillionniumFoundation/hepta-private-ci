@@ -13,7 +13,7 @@ permissions:
 
 concurrency:
   group: author-prompt-registry-production-convergence
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 env:
   TARGET_BRANCH: codex/prompt-registry-production-convergence-20260929
@@ -21,6 +21,9 @@ env:
 jobs:
   author-output-gate:
     runs-on: ubuntu-slim
+    timeout-minutes: 15
+    outputs:
+      authored_sha: ${{ steps.publish.outputs.authored_sha }}
     steps:
       - name: Checkout authoring source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -40,26 +43,28 @@ jobs:
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
           toolchain: 1.95.0
+          components: rustfmt
 
       - name: Apply output-gate source changes
-        run: python3 authoring/scripts/author_prompt_registry_output_gate.py target
-
-      - name: Format and validate focused workspace
-        working-directory: target/codex-rs
         run: |
           set -euo pipefail
-          cargo fmt --all
-          cargo check --locked -p codex-extension-api -p codex-core --all-targets
-          cargo test --locked -p codex-core model_provider_policy --lib -- --test-threads=1
+          if grep -q 'pub struct ModelProviderOutputBatch' \
+            target/codex-rs/ext/extension-api/src/contributors/model_provider_policy.rs; then
+            echo 'Output-gate source already present; preserving the existing implementation.'
+          else
+            python3 authoring/scripts/author_prompt_registry_output_gate.py target
+          fi
 
-      - name: Verify patch hygiene
+      - name: Format and verify patch hygiene
         working-directory: target
         run: |
           set -euo pipefail
+          (cd codex-rs && cargo fmt --all)
           git diff --check
           git status --short
 
       - name: Publish source commit
+        id: publish
         working-directory: target
         run: |
           set -euo pipefail
@@ -72,9 +77,42 @@ jobs:
             codex-rs/core/src/model_provider_policy/response_terminal.rs \
             codex-rs/codex-api/src/common.rs \
             codex-rs/core/src/client.rs
-          if git diff --cached --quiet; then
-            echo "No source changes to publish"
-            exit 0
+          if ! git diff --cached --quiet; then
+            git commit -m "prompt.registry: fence provider output before consumer release"
+            git push origin HEAD:refs/heads/${TARGET_BRANCH}
           fi
-          git commit -m "prompt.registry: fence provider output before consumer release"
-          git push origin HEAD:refs/heads/${TARGET_BRANCH}
+          echo "authored_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  validate-output-gate:
+    needs: author-output-gate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout exact authored source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.author-output-gate.outputs.authored_sha }}
+          fetch-depth: 0
+
+      - name: Install repository Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+
+      - name: Prepare native dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+
+      - name: Validate exact authored output gate
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo fmt --all -- --check
+          cargo check --locked -p codex-extension-api --all-targets
+          cargo check --locked -p codex-core --lib
+          cargo test --locked -p codex-core model_provider_policy --lib -- --test-threads=1
+          cargo clippy --locked -p codex-extension-api -p codex-core --lib --no-deps -- -D warnings
