@@ -13,17 +13,17 @@ permissions:
 
 concurrency:
   group: cognitive-types-remediation-bootstrap
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   remediate:
-    runs-on: ubuntu-24.04
+    runs-on: macos-15
     timeout-minutes: 120
     steps:
       - name: Check out the exact branch head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: codex/cognitive-types-full-closure-20260927
+          ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: true
 
