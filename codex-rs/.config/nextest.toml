@@ -103,15 +103,16 @@ test-group = 'hepta_durable_capacity'
 slow-timeout = { period = "30s", terminate-after = 20 }
 retries = 0
 
-# Each product-lifecycle case launches real processes and durable writers on
-# the same runner filesystem. Bound contention BETWEEN independent fixtures;
-# the soak still drives its own four concurrent request streams. This changes
-# neither workload size, per-request deadlines, retries, nor test watchdogs.
+# Agentd and worker-host tests open real SQLite owners and App Server processes,
+# including library fixtures. Bound contention BETWEEN these independent product
+# fixtures on the shared runner disk, not just the named evolution experiments.
+# The tests retain their own concurrent requests, 256 writer rotations, per-use
+# deadlines, retries and watchdogs. Pure control-plane tests remain parallel.
 [test-groups.hepta_product_lifecycle]
 max-threads = 1
 
 [[profile.default.overrides]]
-filter = 'package(codex-hepta-agentd) & test(automation_evolution::)'
+filter = 'package(codex-hepta-agentd) | package(codex-hepta-infer-worker-host)'
 test-group = 'hepta_product_lifecycle'
 
 # This single experiment starts and restarts the real product repeatedly. Keep
