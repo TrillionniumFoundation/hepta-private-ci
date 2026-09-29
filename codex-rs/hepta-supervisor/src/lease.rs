@@ -2,7 +2,6 @@
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::ErrorKind;
-use std::io::Write;
 use std::path::Path;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
@@ -112,21 +111,22 @@ pub(crate) fn write_lease(run_root: &Path, lease: &ProcessLease) -> Result<(), S
         .write(true)
         .create_new(true)
         .open(&temp_path)?;
-    file.write_all(&bytes)?;
-    file.sync_all()?;
-    match std::fs::hard_link(&temp_path, &final_path) {
-        Ok(()) => {}
-        Err(error) if error.kind() == ErrorKind::AlreadyExists => {
-            let _ = std::fs::remove_file(&temp_path);
-            return Err(SupervisorError::UnresolvedLease(lease.agent_id.clone()));
+    let result = (|| {
+        crate::durability::write_all(&mut file, &bytes, "process_lease")?;
+        crate::durability::sync_all(&file, "process_lease")?;
+        drop(file);
+        crate::durability::check("process_lease", "hard_link")?;
+        match std::fs::hard_link(&temp_path, &final_path) {
+            Ok(()) => {}
+            Err(error) if error.kind() == ErrorKind::AlreadyExists => {
+                return Err(SupervisorError::UnresolvedLease(lease.agent_id.clone()));
+            }
+            Err(error) => return Err(error.into()),
         }
-        Err(error) => {
-            let _ = std::fs::remove_file(&temp_path);
-            return Err(error.into());
-        }
-    }
+        sync_directory(run_root, "process_lease")
+    })();
     let _ = std::fs::remove_file(temp_path);
-    sync_directory(run_root)
+    result
 }
 
 pub(crate) fn remove_lease(
@@ -142,7 +142,7 @@ pub(crate) fn remove_lease(
         ));
     }
     std::fs::remove_file(lease_path(run_root))?;
-    sync_directory(run_root)
+    sync_directory(run_root, "process_lease")
 }
 
 fn lease_path(run_root: &Path) -> std::path::PathBuf {
@@ -206,21 +206,22 @@ pub(crate) fn write_matrix_lease(
         .write(true)
         .create_new(true)
         .open(&temp_path)?;
-    file.write_all(&bytes)?;
-    file.sync_all()?;
-    match std::fs::hard_link(&temp_path, path) {
-        Ok(()) => {}
-        Err(error) if error.kind() == ErrorKind::AlreadyExists => {
-            let _ = std::fs::remove_file(&temp_path);
-            return Err(SupervisorError::UnresolvedLease(lease.agent_id.clone()));
+    let result = (|| {
+        crate::durability::write_all(&mut file, &bytes, "matrix_process_lease")?;
+        crate::durability::sync_all(&file, "matrix_process_lease")?;
+        drop(file);
+        crate::durability::check("matrix_process_lease", "hard_link")?;
+        match std::fs::hard_link(&temp_path, path) {
+            Ok(()) => {}
+            Err(error) if error.kind() == ErrorKind::AlreadyExists => {
+                return Err(SupervisorError::UnresolvedLease(lease.agent_id.clone()));
+            }
+            Err(error) => return Err(error.into()),
         }
-        Err(error) => {
-            let _ = std::fs::remove_file(&temp_path);
-            return Err(error.into());
-        }
-    }
+        sync_directory(parent, "matrix_process_lease")
+    })();
     let _ = std::fs::remove_file(temp_path);
-    sync_directory(parent)
+    result
 }
 
 pub(crate) fn remove_matrix_lease(
@@ -239,16 +240,17 @@ pub(crate) fn remove_matrix_lease(
     let parent = path.parent().ok_or_else(|| {
         SupervisorError::CorruptLease("Matrix lease path has no parent".to_string())
     })?;
-    sync_directory(parent)
+    sync_directory(parent, "matrix_process_lease")
 }
 
 #[cfg(unix)]
-fn sync_directory(path: &Path) -> Result<(), SupervisorError> {
+fn sync_directory(path: &Path, component: &str) -> Result<(), SupervisorError> {
+    crate::durability::check(component, "directory_sync")?;
     File::open(path)?.sync_all()?;
     Ok(())
 }
 
 #[cfg(not(unix))]
-fn sync_directory(_path: &Path) -> Result<(), SupervisorError> {
+fn sync_directory(_path: &Path, _component: &str) -> Result<(), SupervisorError> {
     Ok(())
 }
