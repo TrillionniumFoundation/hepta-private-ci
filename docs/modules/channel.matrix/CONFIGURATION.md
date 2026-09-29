@@ -36,7 +36,15 @@ The real key array is exactly 32 bytes. The file must be an absolute canonical r
 
 ### `final-use-revocations.json`
 
-Contains `FinalUseRevocations { authority_epoch, revision, revoked_grant_ids }`. Updates are monotonic. Rollback, duplicate revision with drift, or epoch regression fails closed. The file is re-read immediately before physical send entry.
+Contains `FinalUseRevocations { authority_epoch, revision, revoked_grant_ids }`.
+Updates are monotonic. Qualified publishers create a fresh private, single-linked
+file and atomically rename it over the canonical path; freshness does not rely
+on observing an in-place rewrite. Every final preflight reopens and validates
+the exact path/file identity. An unchanged, previously accepted identity skips
+only the bounded byte read and JSON decode; any identity change is read and
+revalidated before the monotonic authority update. Rollback, duplicate revision
+with drift, epoch regression, unsafe replacement and change-during-read all fail
+closed.
 
 ### `final-use-authority-state/`
 
