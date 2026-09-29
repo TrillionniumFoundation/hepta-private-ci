@@ -2,9 +2,9 @@
 name: One-shot learning plasticity source materializer
 
 on:
-  pull_request:
+  push:
     branches:
-      - main
+      - feat/learning-plasticity-product-closure-20260928
     paths:
       - ".github/workflows/learning-plasticity-source-materialize.yml"
   workflow_dispatch:
@@ -25,7 +25,7 @@ jobs:
   materialize:
     name: Materialize reviewed runtime closure into normal source
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: [self-hosted, linux, x64, rog]
+    runs-on: ubuntu-24.04
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
