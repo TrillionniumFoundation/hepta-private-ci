@@ -131,16 +131,32 @@ returns one stable target slot for every admitted route and distinguishes
 `Delivered`, `DeliveredOutputUnavailable`, `Failed`, and `NotAttempted`.
 
 A transparent recording adapter observes only the exact synchronous handler
-result. When an earlier target succeeds and a later target fails, the receipt
-retains the successful target identity, input port, and exact output digest;
-the failed target retains its fault identity and the unattempted suffix remains
+result. The canonical recovery projection binds generation, source, output
+port, payload digest and the complete ordered admitted route set to one
+domain-separated fanout identity. Every route receives a derived delivery
+identity. When an earlier target succeeds and a later target fails, the receipt
+retains the successful target identity, input port and exact output digest; the
+failed target retains its fault identity and the unattempted suffix remains
 explicit. Existing `dispatch_once` behavior and dispatch order are unchanged.
+
+`OrganFanoutReceiptV1::evidence_digest` canonically binds that route identity,
+all per-target dispositions, outputs and fault codes, and the exact supported
+dispatch-error boundary. This digest is not self-authenticating: the product
+owner must retain it independently from the receipt. Given that retained value,
+`OrganFanoutReceiptV1::continuation` rejects receipt drift and then validates the
+delivered prefix, failure boundary and unattempted suffix. A valid incomplete
+receipt yields a `DENY_ALL` cursor for only the first incomplete route plus a
+digest of the exact delivered prefix. A delivered target whose output evidence
+is unavailable fails closed; it is never converted into a retry cursor that
+could duplicate a completed handler call.
 
 The host retains generation fencing, input/output limits, quarantine, startup
 cleanup, and migration rollback semantics. Blocking handlers, external plugins,
 model calls, and effectful work require a separate bounded owner and cannot be
-admitted by implementing the read-only trait alone. Product-level fanout retry
-and downstream target idempotency remain composition work.
+admitted by implementing the read-only trait alone. The continuation does not
+perform a retry or prove downstream idempotency. A named product retry owner and
+the downstream target must consume this evidence under their own durable
+idempotency protocol.
 
 ## 7. Canonical state and implementation mapping
 
@@ -203,7 +219,8 @@ The candidate deliberately does not assert completion of:
   configured retention ceiling;
 - long-running overload, fair pending-reconciliation scheduling, and product
   backpressure evidence;
-- product fanout idempotency for partially delivered organ routes;
+- a named product retry owner and downstream idempotency protocol consuming the
+  validated continuation for partially delivered organ routes;
 - independent semantic acceptance, operator approval, canary, rollback
   rehearsal, activation, promotion, and release.
 
