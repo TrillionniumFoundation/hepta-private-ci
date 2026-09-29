@@ -82,7 +82,8 @@ def input_snapshot() -> dict[str, str]:
     paths = git("ls-files", "--", "codex-rs/hepta-prompt-registry", "codex-rs/hepta-prompt-optimizer",
                 "codex-rs/hepta-agentd/src/prompt*", "codex-rs/ext/hepta-prompt",
                 "codex-rs/Cargo.toml", "codex-rs/Cargo.lock", "codex-rs/rust-toolchain.toml",
-                "docs/modules/prompt.registry", "scripts/hepta-prompt-registry-*").splitlines()
+                "docs/modules/prompt.registry", "scripts/hepta-prompt-registry-*",
+                ".github/workflows/hepta-prompt-registry-*").splitlines()
     return {path: hashlib.sha256((ROOT / path).read_bytes()).hexdigest() for path in paths}
 
 
@@ -113,6 +114,17 @@ def main() -> None:
         "testedTree": git("rev-parse", "HEAD^{tree}"),
         "runId": os.environ.get("GITHUB_RUN_ID"), "runAttempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
         "runner": {"system": platform.platform(), "machine": platform.machine()},
+        "targetTriple": next(
+            (line.split(":", 1)[1].strip() for line in subprocess.check_output(
+                ["rustc", "--version", "--verbose"], text=True
+            ).splitlines() if line.startswith("host:")),
+            "unknown",
+        ),
+        "requester": os.environ.get("GITHUB_ACTOR", "local"),
+        "qualificationWorkflowBlobSha": git(
+            "hash-object", ".github/workflows/hepta-prompt-registry-qualification.yml"
+        ),
+        "cargoLockSha256": hashlib.sha256((CARGO / "Cargo.lock").read_bytes()).hexdigest(),
         "checks": [], "allRequiredChecksPassed": False, "qualified": False,
         "productionReady": False, "productActivated": False, "accepted": False, "released": False,
         "sourceFiles": {},
@@ -151,6 +163,7 @@ def main() -> None:
         ("clean-before", ["git", "diff", "--exit-code", "HEAD"], ROOT, 30, [], 0),
         ("harness-tests", ["python3", "scripts/hepta-prompt-registry-harness-tests.py"], ROOT, 60, [], 0),
         ("map", ["python3", "scripts/hepta-prompt-registry-map.py", "--check"], ROOT, 60, [], 0),
+        ("doc-truth", ["python3", "scripts/hepta-prompt-registry-doc-truth.py", "--check"], ROOT, 60, [], 0),
         ("toolchain", ["rustc", "--version", "--verbose"], ROOT, 30, [], 0),
         ("source-graph", ["cargo", "metadata", "--locked", "--no-deps", "--format-version", "1"], CARGO, 90, [], 0),
     ]

@@ -1,5 +1,20 @@
 # prompt.registry qualification status
 
+<!-- BEGIN GENERATED QUALIFICATION FACTS -->
+
+| Generated fact | Value |
+| --- | --- |
+| activePersistentSchemas | 4, 5 |
+| sourceImplemented | true |
+| sourceComposed | true |
+| productExecutionProved | false |
+| closedWorldPublicFunctions | false |
+| productActivated | false |
+| independentlyAccepted | false |
+| productionReady | false |
+| released | false |
+
+<!-- END GENERATED QUALIFICATION FACTS -->
 ## Current candidate
 
 This delivery candidate is implemented in checked-in Rust source. No source

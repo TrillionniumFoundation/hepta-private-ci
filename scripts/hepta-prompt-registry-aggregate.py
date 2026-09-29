@@ -8,7 +8,7 @@ from pathlib import Path
 import re
 
 LANES = {(profile, lane) for profile in ('core', 'product') for lane in ('exact-head', 'base-merge')}
-COMMON = {'clean-before', 'harness-tests', 'map', 'toolchain', 'source-graph', 'format', 'all-targets', 'lint', 'clean-after'}
+COMMON = {'clean-before', 'harness-tests', 'map', 'doc-truth', 'toolchain', 'source-graph', 'format', 'all-targets', 'lint', 'clean-after'}
 REQUIRED = {'core': COMMON | {'registry-inventory', 'registry', 'operational-profiles'},
             'product': COMMON | {'agentd-inventory', 'extension-inventory', 'optimizer', 'extension', 'agentd', 'pipeline-profile'}}
 
@@ -54,10 +54,38 @@ def aggregate(root: Path, source: str, base: str, run: str, attempt: str) -> dic
         core, product = (receipts[(p, lane)] for p in ('core', 'product'))
         if any(core[name] != product[name] for name in ('testedSha', 'testedTree', 'sourceFiles')):
             raise ValueError('core and product tested different source')
-    return {'schema': 'hepta.prompt-registry.qualification-summary.v1', 'sourceSha': source,
+    common_receipts = list(receipts.values())
+    workflow_shas = {r.get('qualificationWorkflowBlobSha') for r in common_receipts}
+    lock_shas = {r.get('cargoLockSha256') for r in common_receipts}
+    requesters = {r.get('requester') for r in common_receipts}
+    if len(workflow_shas) != 1 or None in workflow_shas:
+        raise ValueError('qualification workflow identity mismatch')
+    if len(lock_shas) != 1 or None in lock_shas:
+        raise ValueError('dependency lock identity mismatch')
+    if len(requesters) != 1 or None in requesters:
+        raise ValueError('qualification requester identity mismatch')
+    lane_evidence = {}
+    for key, receipt in receipts.items():
+        directory = next(path.parent for path in root.glob('*/receipt.json')
+                         if json.loads(path.read_text()).get('profile') == key[0]
+                         and json.loads(path.read_text()).get('lane') == key[1])
+        digest = hashlib.sha256()
+        for evidence in sorted(p for p in directory.rglob('*') if p.is_file() and not p.is_symlink()):
+            digest.update(str(evidence.relative_to(directory)).encode())
+            digest.update(b'\0')
+            digest.update(evidence.read_bytes())
+            digest.update(b'\0')
+        lane_evidence['/'.join(key)] = digest.hexdigest()
+    return {'schema': 'hepta.prompt-registry.qualification-summary.v2', 'sourceSha': source,
             'baseSha': base, 'runId': run, 'runAttempt': attempt, 'sourceQualified': True,
+            'productExecutionProved': True, 'closedWorldPublicFunctions': True,
             'productActivated': False, 'accepted': False, 'released': False,
-            'receiptSha256': digests,
+            'acceptanceRequired': True, 'requester': next(iter(requesters)),
+            'qualificationWorkflowBlobSha': next(iter(workflow_shas)),
+            'cargoLockSha256': next(iter(lock_shas)),
+            'targetTriples': sorted({r.get('targetTriple') for r in common_receipts}),
+            'runnerIdentities': sorted({json.dumps(r.get('runner'), sort_keys=True) for r in common_receipts}),
+            'receiptSha256': digests, 'laneEvidenceSha256': lane_evidence,
             'tested': {lane: {'sha': receipts[('core', lane)]['testedSha'], 'tree': receipts[('core', lane)]['testedTree']}
                        for lane in ('exact-head', 'base-merge')}}
 

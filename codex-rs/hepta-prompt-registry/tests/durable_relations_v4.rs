@@ -32,6 +32,12 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
+/// Deterministic bytes for durable relation signature protocol fixtures only.
+/// Production key and nonce generation never calls this helper.
+fn deterministic_test_bytes(label: &str) -> [u8; 32] {
+    *Digest32::of_bytes(label.as_bytes()).as_array()
+}
+
 fn now_unix_ms() -> u64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -71,7 +77,7 @@ fn register_admitted(
         signer_id: "security-owner:durable-v4-test".to_owned(),
         authority_epoch: 1,
         grant_id: format!("grant:{factor_id}"),
-        nonce: [nonce_byte; 32],
+        nonce: deterministic_test_bytes(&format!("durable-v4-admission-nonce:{nonce_byte}")),
         binding,
         not_before_unix_ms: now.saturating_sub(1_000),
         expires_at_unix_ms: now + 60_000,
@@ -93,7 +99,7 @@ fn register_admitted(
 }
 
 fn populated_registry(root: &std::path::Path) -> Digest32 {
-    let key = SigningKey::from_bytes(&[81; 32]);
+    let key = SigningKey::from_bytes(&deterministic_test_bytes("durable-v4-authority-key"));
     let authority = FinalUseAuthority::open_state_dir(
         &root.join("authority"),
         "security-owner:durable-v4-test".to_owned(),

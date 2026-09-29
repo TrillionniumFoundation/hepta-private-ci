@@ -34,6 +34,12 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
+/// Deterministic bytes for Agentd prompt-runtime signature protocol fixtures only.
+/// Production key and nonce generation never calls this helper.
+fn deterministic_test_bytes(label: &str) -> [u8; 32] {
+    *Digest32::of_bytes(label.as_bytes()).as_array()
+}
+
 fn attachment() -> PromptRuntimeAttachmentV1 {
     PromptRuntimeAttachmentV1::new(
         id("compilation:agentd-prompt"),
@@ -777,7 +783,7 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
             signer_id: "review-authority:agentd-prompt".to_owned(),
             authority_epoch: 1,
             grant_id: "grant:agentd-prompt-revoke".to_owned(),
-            nonce: [64; 32],
+            nonce: deterministic_test_bytes("agentd-prompt-revoke-nonce"),
             binding,
             not_before_unix_ms: wall_now.saturating_sub(1000),
             expires_at_unix_ms: wall_now + 30_000,
