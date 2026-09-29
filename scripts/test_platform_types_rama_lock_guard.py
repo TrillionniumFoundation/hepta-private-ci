@@ -1,4 +1,4 @@
-"""Regression tests for exact Rama prerelease graph enforcement."""
+"""Regression tests for the exact published Rama dependency graph."""
 
 from __future__ import annotations
 
@@ -7,41 +7,56 @@ import unittest
 from pathlib import Path
 
 from platform_types_rama_lock_guard import (
+    DIRECT_MANIFEST_PACKAGES,
     EXPECTED_VERSION,
-    REQUIRED_PACKAGES,
+    LOCK_EXPECTED_VERSIONS,
+    SUPPORT_VERSION,
     RamaLockError,
     validate,
 )
 
 
-def manifest_text(*, stable_error: bool = False, omit_utils: bool = False) -> str:
+def manifest_text(*, omit: str | None = None, override: dict[str, str] | None = None) -> str:
     rows = ["[dependencies]"]
-    for package in REQUIRED_PACKAGES:
-        if package == "rama-unix":
+    override = override or {}
+    for package in DIRECT_MANIFEST_PACKAGES:
+        if package == "rama-unix" or package == omit:
             continue
-        if omit_utils and package == "rama-utils":
-            continue
-        version = "0.3.0" if stable_error and package == "rama-error" else EXPECTED_VERSION
+        version = override.get(package, EXPECTED_VERSION)
         rows.append(f'{package} = "={version}"')
     rows.extend(
         [
             "",
             "[target.'cfg(target_family = \"unix\")'.dependencies]",
-            f'rama-unix = "={EXPECTED_VERSION}"',
         ]
     )
+    if omit != "rama-unix":
+        version = override.get("rama-unix", EXPECTED_VERSION)
+        rows.append(f'rama-unix = "={version}"')
     return "\n".join(rows) + "\n"
 
 
-def lock_text(*, stable_error: bool = False) -> str:
+def lock_text(
+    *, override: dict[str, str] | None = None, unexpected: str | None = None
+) -> str:
     rows = ["version = 4", ""]
-    for package in REQUIRED_PACKAGES:
-        version = "0.3.0" if stable_error and package == "rama-error" else EXPECTED_VERSION
+    override = override or {}
+    for package, expected in LOCK_EXPECTED_VERSIONS.items():
+        version = override.get(package, expected)
         rows.extend(
             [
                 "[[package]]",
                 f'name = "{package}"',
                 f'version = "{version}"',
+                "",
+            ]
+        )
+    if unexpected is not None:
+        rows.extend(
+            [
+                "[[package]]",
+                f'name = "{unexpected}"',
+                'version = "0.3.0"',
                 "",
             ]
         )
@@ -58,16 +73,39 @@ class RamaLockGuardTests(unittest.TestCase):
             lock_path.write_text(lock, encoding="utf-8")
             validate(manifest_path, lock_path)
 
-    def test_coherent_exact_prerelease_graph_passes(self):
+    def test_published_mixed_release_graph_passes(self):
+        self.assertEqual(LOCK_EXPECTED_VERSIONS["rama-error"], SUPPORT_VERSION)
+        self.assertEqual(LOCK_EXPECTED_VERSIONS["rama-core"], EXPECTED_VERSION)
         self.validate_fixture(manifest_text(), lock_text())
 
-    def test_stable_support_crate_is_rejected(self):
+    def test_prerelease_support_crate_is_rejected(self):
         with self.assertRaises(RamaLockError):
-            self.validate_fixture(manifest_text(), lock_text(stable_error=True))
+            self.validate_fixture(
+                manifest_text(), lock_text(override={"rama-error": EXPECTED_VERSION})
+            )
+
+    def test_stable_product_crate_is_rejected(self):
+        with self.assertRaises(RamaLockError):
+            self.validate_fixture(
+                manifest_text(), lock_text(override={"rama-core": SUPPORT_VERSION})
+            )
 
     def test_missing_direct_constraint_is_rejected(self):
         with self.assertRaises(RamaLockError):
-            self.validate_fixture(manifest_text(omit_utils=True), lock_text())
+            self.validate_fixture(manifest_text(omit="rama-net"), lock_text())
+
+    def test_nonexact_direct_constraint_is_rejected(self):
+        with self.assertRaises(RamaLockError):
+            self.validate_fixture(
+                manifest_text(override={"rama-core": EXPECTED_VERSION.lstrip("=")}),
+                lock_text(),
+            )
+
+    def test_unreviewed_rama_package_is_rejected(self):
+        with self.assertRaises(RamaLockError):
+            self.validate_fixture(
+                manifest_text(), lock_text(unexpected="rama-unreviewed")
+            )
 
 
 if __name__ == "__main__":
