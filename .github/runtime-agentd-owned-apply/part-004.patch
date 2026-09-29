@@ -1,0 +1,146 @@
+ows/runtime-agentd-trust-boundary.yml b/.github/workflows/runtime-agentd-trust-boundary.yml
+index 9312271f4a75351124cab4e09c127bfc6a9abaa4..8139aae8fd75f8f5df05f814706c4a1a83f10c88 100644
+--- a/.github/workflows/runtime-agentd-trust-boundary.yml
++++ b/.github/workflows/runtime-agentd-trust-boundary.yml
+@@ -4,6 +4,10 @@ on:
+   push:
+     branches:
+       - main
++    paths:
++      - 'codex-rs/hepta-agentd/src/**'
++      - 'scripts/hepta_agentd_trust_boundary.py'
++      - '.github/workflows/runtime-agentd-trust-boundary.yml'
+   pull_request:
+     paths:
+       - codex-rs/hepta-agentd/src/**
+diff --git a/codex-rs/hepta-agentd/DEPENDENCY_BOUNDARY.json b/codex-rs/hepta-agentd/DEPENDENCY_BOUNDARY.json
+index 4f66e4cfc48eefe814e78d1e69691ad79231486c..e4b584b51cd82803f999d3c012a258c260568547 100644
+--- a/codex-rs/hepta-agentd/DEPENDENCY_BOUNDARY.json
++++ b/codex-rs/hepta-agentd/DEPENDENCY_BOUNDARY.json
+@@ -5,6 +5,7 @@
+   "deputy": "runtime-control",
+   "status": {
+     "defaultFeatureReadOnly": true,
++    "corePolicyBuildEstablished": true,
+     "coreOnlyBuildEstablished": false,
+     "productAdaptersOptionalized": false
+   },
+@@ -95,6 +96,8 @@
+       "durable_history_change",
+       "second_execution_spine",
+       "core_profile_claim_without_compilation_evidence"
+-    ]
++    ],
++    "corePolicyQualification": "qualification/runtime-agentd-core/Cargo.toml",
++    "corePolicySource": "codex-rs/hepta-agentd/src/runtime_codex_policy.rs"
+   }
+ }
+diff --git a/codex-rs/hepta-agentd/src/error.rs b/codex-rs/hepta-agentd/src/error.rs
+index 0b9af5ae72588e0a63feb2b51b59eae90e647cba..775187340bccedf7881f0e55be40beb1c948d71a 100644
+--- a/codex-rs/hepta-agentd/src/error.rs
++++ b/codex-rs/hepta-agentd/src/error.rs
+@@ -9,6 +9,8 @@ use codex_hepta_fleet::FleetRegistryError;
+ use codex_hepta_memory::ProductionCognitiveMutationError;
+ use codex_hepta_memory::ProductionWriterError;
+ 
++use crate::runtime_codex_policy::RuntimeCodexFailureClassV1;
++
+ #[derive(Debug, thiserror::Error)]
+ pub enum AgentdError {
+     #[error("invalid agentd configuration: {0}")]
+@@ -19,6 +21,11 @@ pub enum AgentdError {
+     CognitiveWriteRuntimeUnavailable,
+     #[error("agentd protocol error: {0}")]
+     Protocol(String),
++    #[error("runtime.codex {class}: {detail}")]
++    RuntimeCodex {
++        class: RuntimeCodexFailureClassV1,
++        detail: String,
++    },
+     #[error("automation observation temporarily unavailable: {0}")]
+     AutomationObservationUnavailable(String),
+     #[error("agentd control overloaded; retry after {retry_after_ms} ms")]
+@@ -39,6 +46,28 @@ pub enum AgentdError {
+     CognitiveStore(#[from] DurableCognitiveStoreError),
+ }
+ 
++impl AgentdError {
++    pub(crate) fn runtime_codex(
++        class: RuntimeCodexFailureClassV1,
++        detail: impl Into<String>,
++    ) -> Self {
++        Self::RuntimeCodex {
++            class,
++            detail: detail.into(),
++        }
++    }
++
++    pub const fn runtime_codex_failure_class(
++        &self,
++    ) -> Option<RuntimeCodexFailureClassV1> {
++        match self {
++            Self::RuntimeCodex { class, .. } => Some(*class),
++            Self::GenerationFenced(_) => Some(RuntimeCodexFailureClassV1::GenerationFenced),
++            _ => None,
++        }
++    }
++}
++
+ #[derive(Debug)]
+ struct AgentdIoContext {
+     operation: &'static str,
+diff --git a/codex-rs/hepta-agentd/src/lib.rs b/codex-rs/hepta-agentd/src/lib.rs
+index 4b7879d817b1e0664ec3846d1f798196778c614c..2dc381c4d76cb2c9a564b68b21f9849d4703a20c 100644
+--- a/codex-rs/hepta-agentd/src/lib.rs
++++ b/codex-rs/hepta-agentd/src/lib.rs
+@@ -49,6 +49,10 @@ mod qualification_writer;
+ mod run_start_authority;
+ mod runtime;
+ mod runtime_codex_executor;
++mod runtime_codex_policy;
++#[cfg(test)]
++#[path = "runtime_codex_policy_tests.rs"]
++mod runtime_codex_policy_tests;
+ mod runtime_executable;
+ mod runtime_tasks;
+ mod self_iteration_coordinator;
+@@ -265,6 +269,8 @@ pub use runtime_codex_executor::RuntimeCodexReconcileFuture;
+ pub use runtime_codex_executor::RuntimeCodexReconcileReportV1;
+ pub use runtime_codex_executor::RuntimeCodexSupervisorHandleV1;
+ pub use runtime_codex_executor::RuntimeCodexSupervisorSnapshotV1;
++pub use runtime_codex_policy::RuntimeCodexCallerActionV1;
++pub use runtime_codex_policy::RuntimeCodexFailureClassV1;
+ pub use runtime_executable::RuntimeExecutableIdentity;
+ pub use runtime_executable::RuntimeExecutableOrigin;
+ pub use runtime_tasks::RuntimeTaskFailure;
+diff --git a/codex-rs/hepta-agentd/src/runtime_codex_executor_persistence.rs b/codex-rs/hepta-agentd/src/runtime_codex_executor_persistence.rs
+index 8a34c0850a41304c5db57114d25856ccfb63b931..c7bce1bfcfbd023b2c0122b42f0ee00e58b67fa1 100644
+--- a/codex-rs/hepta-agentd/src/runtime_codex_executor_persistence.rs
++++ b/codex-rs/hepta-agentd/src/runtime_codex_executor_persistence.rs
+@@ -26,6 +26,7 @@ use super::ProcessRuntimeCodexExecutorV1;
+ use super::RuntimeCodexExecutionInputV1;
+ use super::RuntimeCodexExecutionReceiptV1;
+ use super::RuntimeCodexOwnerV1;
++use crate::runtime_codex_policy::RuntimeCodexFailureClassV1;
+ use crate::AgentdError;
+ 
+ pub(super) const MANIFEST_FILE: &str = "manifest.json";
+@@ -113,9 +114,9 @@ pub(super) fn prepare_operation(
+ 
+     if archived_directory.exists() {
+         if directory.exists() {
+-            return Err(AgentdError::Protocol(
+-                "runtime.codex operation exists in both active and terminal archive roots"
+-                    .to_string(),
++            return Err(AgentdError::runtime_codex(
++                RuntimeCodexFailureClassV1::DurableIdentityConflict,
++                "runtime.codex operation exists in both active and terminal archive roots",
+             ));
+         }
+         let paths = OperationPaths::for_directory(&archived_directory);
+@@ -132,9 +133,9 @@ pub(super) fn prepare_operation(
+         return Ok(PreparedOperation { paths, manifest });
+     }
+     if witness.exists() && !directory.exists() {
+-        return Err(AgentdError::Protocol(
+-            "runtime.codex terminal
