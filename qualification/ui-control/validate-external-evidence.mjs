@@ -7,6 +7,7 @@ import {
   deploymentSubject,
   safeFailure,
   sha256,
+  validateAssuranceChain,
   validateDeploymentSecurityReceipt,
   validateIndependentAcceptance,
   validateIndependentSecurityReview,
@@ -144,8 +145,20 @@ try {
     Object.entries(evidenceDigests).filter(([key]) => key !== "productionApproval"),
   );
   validateProductionApproval(productionApproval, expected, approvalBoundDigests);
+  const assuranceChain = validateAssuranceChain({
+    deploymentSecurityReceipt: deploymentSecurity,
+    realBackendReceipt: realBackend,
+    independentAcceptanceReceipt: independentAcceptance,
+    independentSecurityReceipt: independentSecurity,
+    operationalExerciseReceipt: operationalExercise,
+    productionApprovalReceipt: productionApproval,
+  });
   ledger.accept(stage);
-  const claims = ledger.claims();
+  const claims = {
+    ...ledger.claims(),
+    independentAssurancePrincipals: assuranceChain.reviewerSeparationVerified,
+    evidenceChronologyBound: assuranceChain.evidenceChronologyBound,
+  };
   assertEvidence(
     claims.productionDeploymentApproved === true && claims.releaseAuthorized === true,
     "UI_CONTROL_RELEASE_PREREQUISITES",
@@ -162,6 +175,7 @@ try {
     backendDeploymentDigest,
     evidenceDigests,
     stageResults: ledger.snapshot(),
+    assuranceChain,
     claims,
   });
 } catch (error) {

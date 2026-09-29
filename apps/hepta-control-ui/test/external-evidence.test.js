@@ -2,6 +2,7 @@ import "./deployment-asset-invariants.test.js";
 import "./deployment-security-invariants.test.js";
 import "./candidate-build-artifact.test.js";
 import "./external-evidence-validation.test.js";
+import "./external-evidence-assurance.test.js";
 import "./external-evidence-stage-ledger.test.js";
 import "./external-evidence-bundle-failure.test.js";
 import "./external-evidence-bundle-acceptance.test.js";
