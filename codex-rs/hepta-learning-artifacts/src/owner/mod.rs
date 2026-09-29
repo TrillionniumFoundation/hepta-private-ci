@@ -34,6 +34,7 @@ pub use measurement::MeasuredLearningArtifactOwnerHostV1;
 pub use publication_coordination::ArtifactOwnerCommandError;
 pub use publication_coordination::ArtifactOwnerCommandResultV1;
 pub use publication_coordination::ArtifactOwnerMetricsV1;
+pub use publication_coordination::ArtifactOwnerOperationalMetricsV1;
 pub use publication_coordination::LearningArtifactReferenceHostV1;
 pub use recovery::ArtifactOwnerRuntimePhaseV1;
 pub use recovery::ArtifactOwnerRuntimeStatusV1;
