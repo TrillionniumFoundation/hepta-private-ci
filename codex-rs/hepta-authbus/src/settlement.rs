@@ -14,11 +14,11 @@ pub enum SettlementStatus {
     Rejected,
 }
 
-pub struct SettlementIssuerRegistration {
-    pub issuer_id: StableId,
-    pub key_epoch: Generation,
-    pub verifying_key: VerifyingKey,
-    pub revoked: bool,
+pub(crate) struct SettlementIssuerRegistration {
+    pub(crate) issuer_id: StableId,
+    pub(crate) key_epoch: Generation,
+    pub(crate) verifying_key: VerifyingKey,
+    pub(crate) revoked: bool,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
