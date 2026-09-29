@@ -99,39 +99,68 @@ impl ObjectiveRuntimeHost {
         })
     }
 
-    pub(crate) fn reconcile(
+    /// Recover every still-current durable objective publication once App
+    /// Server and the configured canonical profile are ready.
+    ///
+    /// Records are cloned while the journal mutex is held and all owner/model
+    /// work happens after the guard is released. Only the exact current
+    /// generation, fence, deadline and authentication are eligible; recovery
+    /// never reinterprets an old generation as a new authority grant. The same
+    /// ContextAttached and physical execution path used by live ObjectiveStart
+    /// is reused, so native dispatch reconciliation remains responsible for
+    /// suppressing an unsafe redispatch after an unknown acknowledgement.
+    pub(crate) async fn reconcile(
         &self,
         agentd: &AgentdState,
         current_generation: u64,
         now_ms: u64,
     ) -> Result<(), AgentdError> {
-        // Startup attaches the durable service before App Server readiness.
-        // Runtime projection is deferred until the daemon owner admits runs.
         if !agentd.automation_admission_ready()? {
             return Ok(());
         }
         let trust = authbus_ingress::attached(agentd)?.trust(agentd)?;
-        let state = self.state.lock().map_err(|_| {
-            AgentdError::Protocol("objective runtime mutex is poisoned".to_string())
-        })?;
         let fence = objective_fence(agentd.identity(), current_generation);
-        for record in state.journal.records().map_err(store_error)? {
-            if record.snapshot.generation != current_generation
-                || record.snapshot.fence_digest != fence
-                || record.disposition != RunStartObjectiveDispositionV1::Compiled
-                || record.admission.deadline_unix_micros.div_ceil(1_000) <= now_ms
-            {
+        let records = {
+            let state = self.state.lock().map_err(|_| {
+                AgentdError::Protocol("objective runtime mutex is poisoned".to_string())
+            })?;
+            state
+                .journal
+                .records()
+                .map_err(store_error)?
+                .into_iter()
+                .filter(|record| {
+                    record.snapshot.generation == current_generation
+                        && record.snapshot.fence_digest == fence
+                        && record.disposition == RunStartObjectiveDispositionV1::Compiled
+                        && record.admission.deadline_unix_micros.div_ceil(1_000) > now_ms
+                })
+                .cloned()
+                .collect::<Vec<_>>()
+        };
+
+        for record in records {
+            if !authentication_is_current(&record, &trust, agentd.identity(), now_ms)? {
                 continue;
             }
-            if authentication_is_current(record, &trust, agentd.identity(), now_ms)? {
-                if agentd.canonical_intelligence_enabled() {
-                    // A RunStart publication predates the seven-owner handoff.
-                    // Until that exact handoff is durably recovered, startup
-                    // must wait for the authenticated ObjectiveStart retry
-                    // rather than silently entering the compatibility path.
-                    continue;
+            if agentd.canonical_intelligence_enabled() {
+                let admitted = agentd
+                    .start_canonical_intelligence(&record)
+                    .await?
+                    .ok_or_else(|| {
+                        AgentdError::Protocol(
+                            "canonical profile disappeared during objective recovery".to_string(),
+                        )
+                    })?;
+                match admitted {
+                    ready @ crate::AgentdIntelligenceAdmittedOutcomeV1::Ready { .. } => {
+                        let _ = agentd.complete_canonical_intelligence(ready).await?;
+                    }
+                    crate::AgentdIntelligenceAdmittedOutcomeV1::Abstained
+                    | crate::AgentdIntelligenceAdmittedOutcomeV1::SlowPath => {}
                 }
-                agentd.start_current_run_start(&state.journal, &record.snapshot.run_id)?;
+            } else {
+                agentd.start_current_run_start_record(&record)?;
             }
         }
         Ok(())

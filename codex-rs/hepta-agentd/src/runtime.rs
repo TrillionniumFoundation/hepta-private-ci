@@ -177,12 +177,6 @@ pub async fn run(
         let host = Arc::new(crate::objective_runtime::ObjectiveRuntimeHost::open(
             &identity, &path,
         )?);
-        let current_generation = state.current_generation()?;
-        host.reconcile(
-            &state,
-            current_generation,
-            crate::authbus_ingress::now_ms()?,
-        )?;
         state
             .objective_runtime
             .set(host)
@@ -471,7 +465,8 @@ async fn monitor_runtime(
                             &state,
                             state.current_generation()?,
                             crate::authbus_ingress::now_ms()?,
-                        )?;
+                        )
+                        .await?;
                     }
                     app_server_ready = true;
                 }
