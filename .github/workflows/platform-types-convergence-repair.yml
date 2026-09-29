@@ -1,27 +1,26 @@
-name: platform.types one-shot exact-candidate repair
+name: platform.types legacy closure verification
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - codex/platform-types-production-convergence-20260925
-    paths:
-      - .github/workflows/platform-types-convergence-repair.yml
+    inputs:
+      candidate_ref:
+        description: Exact source ref to verify without modifying the repository
+        required: true
+        type: string
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: platform-types-one-shot-exact-candidate-repair
-  cancel-in-progress: false
+  group: platform-types-legacy-closure-${{ inputs.candidate_ref }}
+  cancel-in-progress: true
 
 jobs:
-  repair:
-    name: Repair source, lock, and evidence
-    runs-on: ubuntu-22.04
+  verify:
+    name: Verify the retained closure entrypoint is read-only
+    runs-on: ubuntu-24.04
     timeout-minutes: 120
     env:
-      BRANCH: codex/platform-types-production-convergence-20260925
       RUSTUP_TOOLCHAIN: "1.96.0"
       PYTHONPATH: scripts
       CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
@@ -32,46 +31,28 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ inputs.candidate_ref }}
           fetch-depth: 0
-          persist-credentials: true
+          persist-credentials: false
 
       - name: Install pinned native toolchain
         uses: dtolnay/rust-toolchain@1.96.0
         with:
           components: rustfmt, clippy
 
-      - name: Apply guarded source and documentation patch
+      - name: Verify retained compatibility entrypoints are non-mutating
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          before="$(git status --porcelain --untracked-files=all)"
           python3 scripts/platform_types_prepare_stable_rama.py
-          cargo fmt --manifest-path codex-rs/Cargo.toml --all
+          if python3 scripts/platform_types_apply_closure_repair.py; then
+            echo "retired mutating closure script unexpectedly succeeded" >&2
+            exit 1
+          fi
+          after="$(git status --porcelain --untracked-files=all)"
+          test "$before" = "$after"
 
-      - name: Regenerate coherent Rama lock graph
-        run: |
-          set -euo pipefail
-          original_lock="$(mktemp)"
-          cp codex-rs/Cargo.lock "$original_lock"
-          converged=false
-          for attempt in 1 2 3 4 5; do
-            echo "Cargo lock convergence attempt ${attempt}/5"
-            cp "$original_lock" codex-rs/Cargo.lock
-            if cargo update --manifest-path codex-rs/Cargo.toml \
-                 --package rama-core@0.3.0-alpha.4 --precise 0.3.0 \
-              && cargo metadata --manifest-path codex-rs/Cargo.toml \
-                 --locked --no-deps >/dev/null; then
-              converged=true
-              break
-            fi
-            cp "$original_lock" codex-rs/Cargo.lock
-            if [ "$attempt" -lt 5 ]; then
-              sleep "$((attempt * 15))"
-            fi
-          done
-          test "$converged" = true
-
-      - name: Verify focused repairs before publishing
+      - name: Verify focused platform.types closure
         run: |
           set -euo pipefail
           python3 scripts/platform_types_rama_lock_guard.py
@@ -88,20 +69,16 @@ jobs:
           cargo clippy --locked --manifest-path codex-rs/Cargo.toml \
             -p codex-hepta-types -p codex-hepta-wire -p codex-network-proxy \
             --all-targets -- -D warnings
-          cargo run --release --locked --manifest-path codex-rs/Cargo.toml \
-            -p codex-hepta-types --bin platform-types-registry-bench -- \
-            50000 /tmp/platform-types-registry-benchmark.json
-          python3 -c 'import json,pathlib; value=json.loads(pathlib.Path("/tmp/platform-types-registry-benchmark.json").read_text()); assert value["schema"] == "hepta.platform-types.registry-lookup-benchmark.v1"; assert [row["entryCount"] for row in value["cases"]] == [8,256]'
-          git diff --check
 
-      - name: Commit after exact-head race check
+      - name: Exercise the bounded registry workload matrix
         run: |
           set -euo pipefail
-          git fetch origin "$BRANCH"
-          test "$(git rev-parse "refs/remotes/origin/$BRANCH")" = "$GITHUB_SHA"
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          test -n "$(git status --porcelain)"
-          git commit -m "fix(platform.types): close exact-candidate qualification gaps"
-          git push origin "HEAD:$BRANCH"
+          cargo run --release --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-types --bin platform-types-registry-bench -- \
+            50000 "$RUNNER_TEMP/platform-types-registry-benchmark.json"
+          python3 -c 'import json,pathlib,os; value=json.loads(pathlib.Path(os.environ["RUNNER_TEMP"], "platform-types-registry-benchmark.json").read_text()); assert value["schema"] == "hepta.platform-types.registry-lookup-benchmark.v1"; assert [row["entryCount"] for row in value["cases"]] == [8,256]'
+
+      - name: Prove verification left the source tree unchanged
+        run: |
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=all)"
