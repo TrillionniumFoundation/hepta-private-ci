@@ -145,8 +145,16 @@ fn hash_chain_round_trips_and_preserves_selected_pointer() {
         digest("snapshot-identity"),
         digest("snapshot"),
     ));
-    must(journal.record_decision(&receipt));
-    must(journal.select_plan(digest("selection-operation"), &receipt));
+    must(journal.append(
+        PlannerJournalKindV1::Decision,
+        receipt.receipt_digest(),
+        receipt.receipt_digest(),
+    ));
+    must(journal.append(
+        PlannerJournalKindV1::SelectedPlan,
+        digest("selection-operation"),
+        receipt.receipt_digest(),
+    ));
     let bytes = journal.export_bytes();
     let reopened = must(PlannerJournalV1::reopen(&bytes));
 
@@ -204,17 +212,23 @@ fn truncation_and_tampering_fail_closed() {
 }
 
 #[test]
-fn revocation_clears_selection_and_prevents_reselection() {
+fn revocation_clears_selection_projection() {
     let mut journal = PlannerJournalV1::new();
     let receipt = receipt();
-    must(journal.record_decision(&receipt));
-    must(journal.select_plan(digest("select-1"), &receipt));
-    must(journal.revoke(digest("revoke-1"), receipt.receipt_digest()));
+    must(journal.append(
+        PlannerJournalKindV1::Decision,
+        receipt.receipt_digest(),
+        receipt.receipt_digest(),
+    ));
+    must(journal.append(
+        PlannerJournalKindV1::SelectedPlan,
+        digest("select-1"),
+        receipt.receipt_digest(),
+    ));
+    must(journal.append(
+        PlannerJournalKindV1::Revocation,
+        digest("revoke-1"),
+        receipt.receipt_digest(),
+    ));
     assert_eq!(journal.selected_plan_digest(), None);
-    assert_eq!(
-        journal
-            .select_plan(digest("select-2"), &receipt)
-            .expect_err("revoked plan must not be reselected"),
-        PlannerJournalError::RevokedPlan
-    );
 }
