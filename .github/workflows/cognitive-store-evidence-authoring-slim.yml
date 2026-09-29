@@ -1,0 +1,158 @@
+name: Cognitive store isolated evidence authoring
+
+on:
+  push:
+    branches:
+      - codex/cognitive-store-evidence-authoring-20260929
+    paths:
+      - .github/workflows/cognitive-store-evidence-authoring-slim.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cognitive-store-isolated-evidence-authoring
+  cancel-in-progress: false
+
+jobs:
+  author:
+    runs-on: ubuntu-slim
+    timeout-minutes: 60
+    env:
+      BASE_COMMIT: f5f30176a0ca879bdac0f7c383d6104f525c4d0c
+      TARGET_PARENT: 98cd17a0b5ea1207c71acb22b39c1959106f7f1f
+      TARGET_BRANCH: codex/cognitive-store-full-closure-20260927
+      TRANSIENT_WORKFLOW: .github/workflows/cognitive-store-evidence-authoring-slim.yml
+      PATCH_GZIP_SHA256: 7f4ca7e08734cbf7cc1ac7b88367d91c36efd0e3855126c5a56af11038fd56c4
+      PATCH_BASE64_BYTES: "22788"
+      PATCH_BLOBS: >-
+        51531a22ff67b70cde01b8ec1665d1c5238e9832
+        32d392e29191a91f2bdbafd36de3cf6c7f79d579
+        97e777d4da8cd77417dd77951f3c0fffee6e0197
+        acbb8acee6017395ee5e8bdb09dd6671c17beac9
+        3794bc961a487b7dbf34c6ae61a7a810d5955ef2
+        a2e88685da8a89e4a822125b7aa3e0ea2b021e70
+      X64_WORKFLOW: .github/workflows/cognitive-store-reviewed-evidence.yml
+      ARM_WORKFLOW: .github/workflows/cognitive-store-reviewed-evidence-arm.yml
+      LABEL_WORKFLOW: .github/workflows/cognitive-store-reviewed-evidence-self-hosted.yml
+      GROUP_WORKFLOW: .github/workflows/cognitive-store-reviewed-evidence-runner-group.yml
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Authenticate and apply reviewed patch
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$TARGET_PARENT"
+          mapfile -t changed < <(git diff-tree --no-commit-id --name-only -r HEAD)
+          test "${#changed[@]}" -eq 1
+          test "${changed[0]}" = "$TRANSIENT_WORKFLOW"
+          python3 - <<'PY'
+          import base64, gzip, hashlib, json, os, pathlib, urllib.request
+          encoded = bytearray()
+          for blob in os.environ["PATCH_BLOBS"].split():
+              request = urllib.request.Request(
+                  f"https://api.github.com/repos/{os.environ['GITHUB_REPOSITORY']}/git/blobs/{blob}",
+                  headers={
+                      "Authorization": f"Bearer {os.environ['GH_TOKEN']}",
+                      "Accept": "application/vnd.github+json",
+                      "X-GitHub-Api-Version": "2022-11-28",
+                  },
+              )
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  payload = json.load(response)
+              encoded.extend(base64.b64decode(payload["content"]))
+          if len(encoded) != int(os.environ["PATCH_BASE64_BYTES"]):
+              raise SystemExit("reviewed patch encoded length mismatch")
+          archive = base64.b64decode(encoded, validate=True)
+          if hashlib.sha256(archive).hexdigest() != os.environ["PATCH_GZIP_SHA256"]:
+              raise SystemExit("reviewed patch gzip digest mismatch")
+          pathlib.Path(os.environ["RUNNER_TEMP"], "cognitive-evidence.patch").write_bytes(gzip.decompress(archive))
+          PY
+          git apply --check "$RUNNER_TEMP/cognitive-evidence.patch"
+          git apply "$RUNNER_TEMP/cognitive-evidence.patch"
+          git rm "$TRANSIENT_WORKFLOW" "$X64_WORKFLOW" "$ARM_WORKFLOW" "$LABEL_WORKFLOW" "$GROUP_WORKFLOW"
+
+      - name: Execute focused fail-closed regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONDONTWRITEBYTECODE=1
+          python3 tools/cognitive-store-host-bootstrap/prepare_archive_env.py
+          PY="$RUNNER_TEMP/cognitive-archive-venv/bin/python"
+          "$PY" -m py_compile \
+            tools/cognitive-store-host-bootstrap/acceptance_governance.py \
+            tools/cognitive-store-host-bootstrap/host_qualification.py \
+            tools/cognitive-store-host-bootstrap/lifecycle.py \
+            tools/cognitive-store-host-bootstrap/retention_readiness.py
+          "$PY" tools/cognitive-store-host-bootstrap/test_acceptance_governance.py -v
+          "$PY" tools/cognitive-store-host-bootstrap/test_host_qualification.py -v
+          "$PY" tools/cognitive-store-host-bootstrap/test_retention_readiness.py -v
+          "$PY" tools/cognitive-store-host-bootstrap/test_lifecycle.py -v
+          "$PY" tools/cognitive-store-host-bootstrap/test_lifecycle_final_use.py -v
+          "$PY" scripts/cognitive_store_status.py --check
+          "$PY" scripts/test_cognitive_plan_binding.py -v
+          "$PY" scripts/test_cognitive_qualification_manifest.py -v
+          "$PY" scripts/test_cognitive_store_map.py -v
+          find . -type d -name __pycache__ -prune -exec rm -rf '{}' +
+          git diff --check
+          for path in "$TRANSIENT_WORKFLOW" "$X64_WORKFLOW" "$ARM_WORKFLOW" "$LABEL_WORKFLOW" "$GROUP_WORKFLOW"; do
+            test ! -e "$path"
+          done
+
+      - name: Create source and map-only commits and fast-forward target
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Tomasrgbsf"
+          git config user.email "tomasbraynt@gmail.com"
+          git add -A
+          SOURCE_TREE="$(git write-tree)"
+          SOURCE_MESSAGE="$RUNNER_TEMP/source-message.txt"
+          cat > "$SOURCE_MESSAGE" <<'EOF'
+          cognitive.store: require complete independent evidence identities
+
+          Bind acceptance to the exact committed qualification command and artifact inventory. Require globally distinct host-step, retention-owner, lifecycle-owner, and independent-review evidence identities so one observation cannot be replayed across obligations.
+
+          Preserve the single SQLite owner, atomic semantic provenance, reconcile-first ambiguity handling, and false target-host, pruning, erasure, activation, and release claims.
+
+          Signed-off-by: OpenAI <noreply@openai.com>
+          EOF
+          SOURCE_COMMIT="$(git commit-tree "$SOURCE_TREE" -p "$TARGET_PARENT" < "$SOURCE_MESSAGE")"
+          git reset --hard "$SOURCE_COMMIT"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          python3 scripts/cognitive_store_map_generate.py \
+            --source-commit "$SOURCE_COMMIT" \
+            > "$RUNNER_TEMP/IMPLEMENTATION_MAP.generated.json"
+          mv "$RUNNER_TEMP/IMPLEMENTATION_MAP.generated.json" \
+            docs/modules/cognitive.store/IMPLEMENTATION_MAP.json
+          git add docs/modules/cognitive.store/IMPLEMENTATION_MAP.json
+          MAP_TREE="$(git write-tree)"
+          MAP_MESSAGE="$RUNNER_TEMP/map-message.txt"
+          cat > "$MAP_MESSAGE" <<'EOF'
+          docs(cognitive-store): refresh independent evidence bindings
+
+          Bind the reviewed source snapshot and exact Git objects. This map-only commit does not advance execution, target-host, erasure, acceptance, activation, or release claims.
+
+          Signed-off-by: OpenAI <noreply@openai.com>
+          EOF
+          MAP_COMMIT="$(git commit-tree "$MAP_TREE" -p "$SOURCE_COMMIT" < "$MAP_MESSAGE")"
+          git reset --hard "$MAP_COMMIT"
+          mapfile -t map_paths < <(git diff-tree --no-commit-id --name-only -r HEAD)
+          test "${#map_paths[@]}" -eq 1
+          test "${map_paths[0]}" = "docs/modules/cognitive.store/IMPLEMENTATION_MAP.json"
+          python3 scripts/cognitive_store_map_verify.py \
+            --expected-sha "$MAP_COMMIT" \
+            --expected-tree "$MAP_TREE"
+          python3 scripts/cognitive_store_status.py --check
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          git fetch origin "$TARGET_BRANCH"
+          test "$(git rev-parse FETCH_HEAD)" = "$TARGET_PARENT"
+          git push origin "$MAP_COMMIT:refs/heads/$TARGET_BRANCH"
+          printf 'source_commit=%s\nsource_tree=%s\nmap_commit=%s\nmap_tree=%s\n' \
+            "$SOURCE_COMMIT" "$SOURCE_TREE" "$MAP_COMMIT" "$MAP_TREE"
