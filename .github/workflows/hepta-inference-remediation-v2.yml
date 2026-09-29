@@ -6,6 +6,7 @@ on:
       - codex/inference-control-v2-closure-20260927
     paths:
       - '.github/workflows/hepta-inference-remediation-v2.yml'
+      - '.github/remediation/inference-control-remediation.patch.gz'
   workflow_dispatch:
 
 permissions:
@@ -18,7 +19,7 @@ concurrency:
 
 env:
   PATCH_PATH: .github/remediation/inference-control-remediation.patch.gz
-  PATCH_SHA256: c2599a124d0e1574aaebaadf3ce0313d4f906a9e9f9f1472c10491fa83100f57
+  PATCH_SHA256: 049de18e2f9fcd8591416cf1a09364f33acd66b46c9238b547b23d0cfc0ddfda
   TEMP_WORKFLOW: .github/workflows/hepta-inference-remediation-v2.yml
   WORKFLOW_PATH: .github/workflows/hepta-inference-source-export.yml
   RESTORE_COMMIT: a80f50a552d2608f238a9e934bf6fade66876912
@@ -54,9 +55,9 @@ jobs:
           test "$(git hash-object "$RESTORE_COMMIT:$WORKFLOW_PATH")" = "$RESTORE_BLOB" 2>/dev/null || \
             test "$(git show "$RESTORE_COMMIT:$WORKFLOW_PATH" | git hash-object --stdin)" = "$RESTORE_BLOB"
           mkdir -p "$RUNNER_TEMP/inference-remediation-v2/logs"
-          printf 'transport_sha=%s\ntransport_tree=%s\ntransport_parent=%s\n' \
+          printf 'transport_sha=%s\ntransport_tree=%s\ntransport_parent=%s\npatch_sha256=%s\n' \
             "$GITHUB_SHA" "$(git rev-parse HEAD^{tree})" "$(git rev-parse HEAD^)" \
-            > "$RUNNER_TEMP/inference-remediation-v2/transport.txt"
+            "$PATCH_SHA256" > "$RUNNER_TEMP/inference-remediation-v2/transport.txt"
 
       - uses: dtolnay/rust-toolchain@5d458579430fc14a04a08a1e7d3694f545e91ce6
         with:
@@ -71,27 +72,6 @@ jobs:
           gzip -dc "$PATCH_PATH" > "$evidence/remediation.patch"
           git apply --check --whitespace=error-all "$evidence/remediation.patch"
           git apply --index --whitespace=error-all "$evidence/remediation.patch"
-
-          # The first exact native qualification reached compilation and exposed
-          # one concrete test type mismatch. Repair only that exact assertion and
-          # fail closed if the reviewed source has drifted.
-          python3 - <<'PY'
-          from pathlib import Path
-
-          path = Path("codex-rs/hepta-infer-core/tests/output_retention.rs")
-          source = path.read_text(encoding="utf-8")
-          old = 'assert_eq!(retained.ciphertext_digest.as_deref(), Some(&"c".repeat(64)));'
-          new = (
-              'let expected_ciphertext_digest = "c".repeat(64);\n'
-              '    assert_eq!(\n'
-              '        retained.ciphertext_digest.as_deref(),\n'
-              '        Some(expected_ciphertext_digest.as_str())\n'
-              '    );'
-          )
-          if source.count(old) != 1:
-              raise SystemExit("expected exact output-retention assertion was not found once")
-          path.write_text(source.replace(old, new), encoding="utf-8")
-          PY
 
           git rm -f "$PATCH_PATH"
           git show "$RESTORE_COMMIT:$WORKFLOW_PATH" > "$WORKFLOW_PATH"
