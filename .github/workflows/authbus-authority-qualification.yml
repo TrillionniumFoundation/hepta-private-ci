@@ -63,10 +63,6 @@ jobs:
         with:
           components: rustfmt, clippy
 
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: codex-rs
-
       - name: Closed-world API inventory
         run: python3 scripts/check-authbus-closed-world.py --check
 
@@ -151,10 +147,6 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
-
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: codex-rs
 
       - name: Closed-world API inventory
         run: python3 scripts/check-authbus-closed-world.py --check
