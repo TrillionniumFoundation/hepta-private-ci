@@ -9,6 +9,7 @@
 //! reopened ad hoc by the transport.
 
 mod bootstrap;
+mod capability_store;
 mod capability_validation;
 mod durable_contract;
 mod durable_host;
@@ -24,6 +25,7 @@ pub use bootstrap::ArtifactOwnerBootstrapConfigV1;
 pub use bootstrap::ArtifactOwnerBootstrapV1;
 pub use bootstrap::ArtifactOwnerConfigError;
 pub use bootstrap::ArtifactOwnerRuntimeConfigV1;
+pub use capability_store::CapabilityOwnerDurableStoreV1 as FsOwnerDurableStoreV1;
 pub use capability_validation::ArtifactOwnerActionV1;
 pub use capability_validation::ArtifactOwnerCapabilityError;
 pub use capability_validation::ArtifactOwnerClientGrantV1;
@@ -72,7 +74,6 @@ pub use registry_commands::ArtifactManifestCommandV1;
 pub use registry_commands::ArtifactOwnerCommandDecodeError;
 pub use registry_commands::InstallWithdrawalSnapshotCommandV1;
 pub use registry_commands::PublishArtifactCommandV1;
-pub use transaction::FsOwnerDurableStoreV1;
 pub use transaction::OwnerDurableStoreV1;
 pub use transaction::OwnerJournalError;
 pub use transaction::OwnerRequestDispositionV1;
