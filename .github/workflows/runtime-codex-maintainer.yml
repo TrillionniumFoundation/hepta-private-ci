@@ -12,31 +12,119 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: runtime-codex-maintainer
+  cancel-in-progress: true
+
 env:
   CARGO_INCREMENTAL: "0"
+  LOG_DIR: qualification/runtime-codex-maintainer
 
 jobs:
-  source-snapshot:
+  converge:
     runs-on: ubuntu-24.04
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
           ref: codex/runtime-codex-full-convergence-20260929
           persist-credentials: true
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: clippy
+      - uses: ./.github/actions/setup-rusty-v8
+        with:
+          target: x86_64-unknown-linux-gnu
       - name: Bind source
         run: |
           set -euo pipefail
           git rev-parse HEAD
           git rev-parse 'HEAD^{tree}'
-      - name: Archive source
+          git archive --format=zip --output=runtime-codex-source-before.zip HEAD
+      - name: Apply protocol convergence
         run: |
           set -euo pipefail
-          git archive --format=zip --output=runtime-codex-source.zip HEAD
-      - name: Upload source snapshot
+          python3 -m py_compile scripts/runtime-codex-maintainer.py
+          python3 scripts/runtime-codex-maintainer.py
+          cd codex-rs
+          cargo fmt --all
+      - name: Verify convergence candidate
+        id: verify
+        shell: bash
+        run: |
+          set +e
+          mkdir -p "$LOG_DIR"
+          cd codex-rs
+
+          cargo check \
+            -p codex-hepta-agent-protocol \
+            -p codex-hepta-infer-core \
+            -p codex-hepta-codex-adapter \
+            -p codex-hepta-agentd \
+            -p codex-hepta-infer-worker-host \
+            --all-targets 2>&1 | tee "../$LOG_DIR/check.log"
+          check_status=${PIPESTATUS[0]}
+
+          cargo test -p codex-hepta-agent-protocol 2>&1 | tee "../$LOG_DIR/agent-protocol.log"
+          protocol_status=${PIPESTATUS[0]}
+          cargo test -p codex-hepta-infer-core 2>&1 | tee "../$LOG_DIR/infer-core.log"
+          core_status=${PIPESTATUS[0]}
+          cargo test -p codex-hepta-agentd --lib lane_b_runtime 2>&1 | tee "../$LOG_DIR/agentd-owner.log"
+          agentd_status=${PIPESTATUS[0]}
+          cargo test -p codex-hepta-infer-worker-host 2>&1 | tee "../$LOG_DIR/worker-host.log"
+          worker_status=${PIPESTATUS[0]}
+
+          cargo clippy \
+            -p codex-hepta-agent-protocol \
+            -p codex-hepta-infer-core \
+            -p codex-hepta-codex-adapter \
+            -p codex-hepta-agentd \
+            -p codex-hepta-infer-worker-host \
+            --all-targets --no-deps -- -D warnings 2>&1 | tee "../$LOG_DIR/clippy.log"
+          clippy_status=${PIPESTATUS[0]}
+
+          cd ..
+          printf 'check=%s\nprotocol=%s\ncore=%s\nagentd=%s\nworker=%s\nclippy=%s\n' \
+            "$check_status" "$protocol_status" "$core_status" "$agentd_status" \
+            "$worker_status" "$clippy_status" | tee "$LOG_DIR/status.txt"
+          exit 0
+      - name: Commit convergence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'runtime.codex maintainer'
+          git config user.email 'runtime-codex-maintainer@invalid'
+          git add \
+            .github/workflows/runtime-codex-qualification.yml \
+            codex-rs/hepta-infer-worker-host/src/native_execution.rs \
+            codex-rs/hepta-infer-worker-host/src/native_app_server.rs \
+            codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs \
+            codex-rs/hepta-infer-worker-host/src/final_use_authorizer_tests.rs \
+            codex-rs/hepta-infer-worker-host/src/runtime_codex_quarantine.rs \
+            codex-rs/hepta-infer-worker-host/tests/runtime_codex_crash_matrix.rs
+          if ! git diff --cached --quiet; then
+            git commit -m 'fix(runtime.codex): converge bound dispatch and abort protocol'
+            git push origin HEAD:codex/runtime-codex-full-convergence-20260929
+          fi
+          git archive --format=zip --output=runtime-codex-source-after.zip HEAD
+      - name: Upload maintainer evidence
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: runtime-codex-source-${{ github.sha }}
-          path: runtime-codex-source.zip
-          if-no-files-found: error
+          name: runtime-codex-maintainer-${{ github.run_id }}
+          path: |
+            qualification/runtime-codex-maintainer/
+            runtime-codex-source-before.zip
+            runtime-codex-source-after.zip
+          if-no-files-found: warn
           retention-days: 3
+      - name: Enforce verification
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f "$LOG_DIR/status.txt"
+          ! grep -Eq '=[1-9][0-9]*$' "$LOG_DIR/status.txt"
