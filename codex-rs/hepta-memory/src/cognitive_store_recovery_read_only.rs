@@ -38,6 +38,16 @@ impl RecoveredCognitiveReadOnly {
 }
 
 impl CognitiveStore {
+    /// Gracefully close the shared SQLite pool while this handle still retains
+    /// the ordinary-store recovery fence. Recovery callers should use this
+    /// consuming boundary instead of relying on `Drop`, because closing SQLite
+    /// connections can require asynchronous work. Any remaining cloned store
+    /// handle continues to retain the shared fence and therefore still blocks
+    /// exclusive recovery.
+    pub async fn close(self) {
+        self.pool.close().await;
+    }
+
     /// Admit a Unix cold database as a read-only historical image, without
     /// opening the source path in SQLite or modifying source files.
     ///
