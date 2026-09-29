@@ -5,6 +5,9 @@ on:
     paths:
       - "codex-rs/hepta-wire/**"
       - "scripts/platform_wire_managed_fleet_profile.py"
+      - "scripts/platform_wire_fleet_contract.py"
+      - "scripts/platform_wire_performance_gate.py"
+      - "scripts/platform_wire_receipt_subject.py"
       - "docs/modules/platform.wire/IMPLEMENTATION_MAP.json"
       - ".github/workflows/platform-wire-benchmark.yml"
   push:
@@ -13,6 +16,9 @@ on:
     paths:
       - "codex-rs/hepta-wire/**"
       - "scripts/platform_wire_managed_fleet_profile.py"
+      - "scripts/platform_wire_fleet_contract.py"
+      - "scripts/platform_wire_performance_gate.py"
+      - "scripts/platform_wire_receipt_subject.py"
       - "docs/modules/platform.wire/IMPLEMENTATION_MAP.json"
       - ".github/workflows/platform-wire-benchmark.yml"
   schedule:
@@ -44,6 +50,7 @@ concurrency:
 
 env:
   CARGO_INCREMENTAL: "0"
+  PYTHONDONTWRITEBYTECODE: "1"
   SOURCE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
 
 jobs:
@@ -69,6 +76,10 @@ jobs:
 
       - name: Resolve bounded workload
         id: workload
+        env:
+          INPUT_NEAR: ${{ inputs.near_limit_iterations }}
+          INPUT_LONG: ${{ inputs.long_connection_frames }}
+          INPUT_FLEET: ${{ inputs.fleet_rounds }}
         shell: bash
         run: |
           set -euo pipefail
@@ -77,17 +88,20 @@ jobs:
             long=1000
             fleet=8
           elif [[ "$GITHUB_EVENT_NAME" == workflow_dispatch ]]; then
-            near='${{ inputs.near_limit_iterations }}'
-            long='${{ inputs.long_connection_frames }}'
-            fleet='${{ inputs.fleet_rounds }}'
+            near="$INPUT_NEAR"
+            long="$INPUT_LONG"
+            fleet="$INPUT_FLEET"
           else
             near=32
             long=10000
             fleet=32
           fi
-          [[ "$near" =~ ^[0-9]+$ ]]
-          [[ "$long" =~ ^[0-9]+$ ]]
-          [[ "$fleet" =~ ^[0-9]+$ ]]
+          [[ "$near" =~ ^[0-9]{1,3}$ ]]
+          [[ "$long" =~ ^[0-9]{1,6}$ ]]
+          [[ "$fleet" =~ ^[0-9]{1,3}$ ]]
+          near=$((10#$near))
+          long=$((10#$long))
+          fleet=$((10#$fleet))
           if (( near < 1 || near > 256 )); then
             echo "near-limit iterations must be within 1..256" >&2
             exit 2
@@ -103,6 +117,15 @@ jobs:
           echo "near=$near" >> "$GITHUB_OUTPUT"
           echo "long=$long" >> "$GITHUB_OUTPUT"
           echo "fleet=$fleet" >> "$GITHUB_OUTPUT"
+
+      - name: Install the repository-pinned measurement toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          toolchain="$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')"
+          rustup toolchain install "$toolchain" --profile minimal
+          printf 'RUSTUP_TOOLCHAIN=%s\n' "$toolchain" >> "$GITHUB_ENV"
+          python3 scripts/platform_wire_performance_gate.py --self-test
 
       - name: Build and run release throughput and managed-fleet probes
         shell: bash
@@ -128,6 +151,9 @@ jobs:
             -- "${{ steps.workload.outputs.fleet }}" \
             | tee .hepta-evidence/platform-wire-managed-fleet-metrics.json
           python3 scripts/platform_wire_managed_fleet_profile.py \
+            --input .hepta-evidence/platform-wire-managed-fleet-metrics.json \
+            --rounds "${{ steps.workload.outputs.fleet }}"
+          python3 scripts/platform_wire_fleet_contract.py \
             --input .hepta-evidence/platform-wire-managed-fleet-metrics.json \
             --rounds "${{ steps.workload.outputs.fleet }}"
 
@@ -192,6 +218,7 @@ jobs:
           PY
 
       - name: Retain measurement evidence
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: platform-wire-throughput-${{ env.SOURCE_SHA }}-${{ github.run_id }}

@@ -2,6 +2,10 @@
 
 This document is the entry point for the **current executable** `platform.wire` contract. The broader target architecture remains in `docs/modules/platform.wire/TECHNICAL.md`; production security and evidence rules are normative in [`SECURITY_AND_QUALIFICATION.md`](../../modules/platform.wire/SECURITY_AND_QUALIFICATION.md).
 
+## 2026-09-29 validation convergence follow-up
+
+See [`PRODUCTION_VALIDATION_20260929.md`](../../modules/platform.wire/PRODUCTION_VALIDATION_20260929.md) for the generation-test and fleet-validator fixes, real-emitter contract tests, per-record idle reclamation, current-source receipt selection, protected-host failure evidence, and the five-path paired-measurement intake. Core, integrated exact/merge, protected-host, paired performance, and independent acceptance remain distinct evidence scopes. A matching historical receipt set does not qualify the current checkout. No deployed authenticated ingress, gRPC threshold result, independent acceptance or release is asserted without its actual evidence.
+
 ## 2026-09-29 resource-contract update
 
 The current managed ingress owner is `ManagedRecordStream`, constructed by `ManagedAuthenticatedWireSession::into_record_stream`. Its normal `feed` delegates to `feed_with_budget`; the shared, non-Clone `RecordStreamBudget` charges accepted source bytes, full-record authentication attempts and full serialized-frame work, including failed attempts. The existing plain/offline reader has bounded read-call and Interrupted accounting. See [`FRAME_AND_IO_BUDGETS_20260929.md`](../../modules/platform.wire/FRAME_AND_IO_BUDGETS_20260929.md) and [`BUDGET_AND_STAGING_20260929.md`](../../modules/platform.wire/BUDGET_AND_STAGING_20260929.md).
@@ -21,11 +25,11 @@ Idle staging bounds and serialized-frame work budgets do not independently bound
 | HPTN version/capability negotiation | implemented | `NEGOTIATION_V1.md`; effective capabilities are restricted to the selected version |
 | Session-bound decode | implemented | `WireSessionDecoder` and `NegotiatedStreamingDecoder` reject a different version before body admission |
 | Multi-version offline frame dispatch | implemented | `src/frame.rs`; deliberately not a live-session API |
-| Canonical fixed-header parser | implemented | `src/frame_header.rs`; shared by one-shot and streaming decode |
+| Canonical fixed-header parser | implemented | `FrameHeader`; shared by one-shot and streaming decode |
 | Frozen schema/policy registry | implemented | bounded producer/role/capability policies and deterministic snapshot digest in `src/registry.rs` |
 | Envelope-coupled typed payload API | implemented | `WireSession::{encode_typed_envelope,decode_typed_envelope}` |
 | Bounded streaming decode | implemented | header-first admission, byte and frame-work budgets, valid-prefix/error batches and terminal poison state |
-| Managed record idle retention | implemented source, current receipt required | same `ManagedRecordStream` feed path, configurable idle ceiling, non-destructive pressure API and ten retention regressions |
+| Managed record idle retention | implemented source, current receipt required | same `ManagedRecordStream` feed path, configurable idle ceiling, non-destructive pressure API and eleven retention regressions |
 | Authenticated transcript/session | implemented source | ordered HPTN offers, selected posture, registry snapshot and authenticated channel binding in `src/secure_session.rs` |
 | Direction-separated HPTM records | implemented source | initiator/responder key derivation, independent directional sequences and reflection rejection in `src/directional_session.rs` |
 | Property testing and fuzz target | implemented source evidence | `src/property_tests.rs`, `fuzz/fuzz_targets/decode_frames.rs` |

@@ -11,9 +11,11 @@ on:
       - 'docs/modules/platform.wire/**'
       - 'docs/modules/MODULES.json'
       - 'scripts/*wire*'
+      - 'scripts/tests/test_platform_wire_*.py'
       - 'scripts/*lane_a*'
       - 'scripts/hepta_ci_exec.py'
       - '.github/workflows/platform-wire-core.yml'
+      - '.github/workflows/platform-wire-target-host.yml'
       - '.github/workflows/lane-a-foundation.yml'
       - '.github/actions/hepta-synthetic-merge/**'
   workflow_dispatch:
@@ -125,6 +127,9 @@ jobs:
           record path-drift 0 python3 scripts/generate_lane_a_workflow_paths.py check
           record lane-truth 0 python3 scripts/verify_lane_a_foundation.py verify
           record status-drift 0 python3 scripts/platform_wire_status.py check-doc
+          record target-evidence-tests 16 python3 -m unittest discover -s scripts/tests -p test_platform_wire_target_qualification.py
+          record receipt-subject-tests 10 python3 -m unittest discover -s scripts/tests -p test_platform_wire_receipt_subject.py
+          record performance-gate-tests 8 python3 scripts/platform_wire_performance_gate.py --self-test
           record wire-core 102 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-wire --all-targets
           record wire-resource-tests 6 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-wire --test managed_stream_resources
           record wire-consumer-contracts 5 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-wire --test managed_consumer_contracts

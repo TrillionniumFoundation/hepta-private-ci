@@ -18,7 +18,7 @@ The baseline already has consuming EOF checks, terminal failure retirement, exac
 
 `Vec::clear()` removes buffered bytes but retains allocation capacity. A fragmented large record can therefore leave a large allocation behind after successful delivery, even when `buffered_bytes()` is zero. Single-call work limits do not bound this across many idle connections.
 
-The stream now defaults its idle retention ceiling to `min(max_feed_bytes, max_record_bytes)` (64 KiB under default limits). At the end of every nonterminal `feed_with_budget` call, an empty record buffer whose capacity exceeds that ceiling is dropped. Smaller allocations stay available for reuse. Complete contiguous records retain the existing direct-authentication path; no staging allocation is introduced there.
+The stream now defaults its idle retention ceiling to `min(max_feed_bytes, max_record_bytes)` (64 KiB under default limits). At each successfully authenticated record boundary, before staging a following prefix, and at the end of every nonterminal `feed_with_budget` call, an empty record buffer whose capacity exceeds that ceiling is dropped. Smaller allocations stay available for reuse. Complete contiguous records retain the existing direct-authentication path; no staging allocation is introduced there.
 
 An incomplete prefix or body is never reclaimed to satisfy the idle limit. The already-consumed prefix remains owned by the same stream until completion or normal retirement. A call ending with another incomplete record is not an idle boundary. A large-record allocation can thus remain until that record completes; this rule is an idle-capacity ceiling, not an active-buffer or process-RSS ceiling.
 
@@ -51,3 +51,7 @@ Use the existing managed-record release profile to compare small repeated frames
 The five-path package-size ratio <= 0.70 and p99 ratio <= 0.80 against reference gRPC remain unchanged. This capacity fix does not replace those gates or target-host evidence. Real authenticated ingress, peer identity/exporter/key-domain provisioning, reconnect/restart, mixed-version operations, protected target-host execution, independent reviewer acceptance and operations/release receipts remain separate requirements. RustOK, Ready, handoff, activation and release are not granted by this change.
 
 See also `TECHNICAL.md`, `FRAME_AND_IO_BUDGETS_20260929.md`, `BUDGET_AND_STAGING_20260929.md`, `SECURITY_AND_QUALIFICATION.md` and `../../lane-a-foundation/platform.wire/CURRENT_IMPLEMENTATION.md`.
+
+## Follow-up: record-boundary reclamation
+
+The follow-up in `PRODUCTION_VALIDATION_20260929.md` prevents a short next-record prefix in the same feed from pinning the completed large record's allocation. Reclamation occurs only after successful authentication and delivery, while the staging buffer is empty. The existing ten regressions remain; an additional regression covers 1-, 49-, 50- and 51-byte following fragments, exact suffix continuation and unchanged replay rejection. No partial record is dropped to satisfy an idle limit.
