@@ -1,35 +1,24 @@
 # `platform.types` protocol and qualification contract
 
-This document defines the current executable claim boundary. The typed
-normative catalog is
-`codex-rs/hepta-types/src/protocol_catalog_v2.rs`; exact-candidate JSON and
-Markdown projections are generated during qualification. Target architecture
-prose cannot override the versioned protocol source.
+The typed normative catalog is `codex-rs/hepta-types/src/protocol_catalog_v2.rs`.
+Qualification generates exact-candidate JSON/Markdown projections. This document
+specifies current protocol boundaries, not a successful qualification receipt.
 
 ## 1. Sources of truth and precedence
 
-The precedence order is:
-
-1. frozen versioned native protocol implementation and Rust typed catalog;
-2. executable schemas, strict codecs and shared golden vectors;
-3. exact-candidate rustdoc, Git provenance and qualification receipts;
-4. explanatory module prose.
-
-The legacy public ownership projection is generated from exact top-level
-`pub use` statements at
-`docs/modules/platform.types/PUBLIC_API_INVENTORY_V1.json`. Complete Rust API
-compatibility is derived from rustdoc JSON, including public modules, types,
-methods, fields, variants and signatures. The implementation map remains a rich
-ownership/source/test projection; exact byte identity is supplied by candidate
-Git blob/tree provenance rather than self-referential committed SHAs.
+Use frozen versioned native contracts and the Rust catalog, executable schemas
+and strict codecs, same-candidate Git/rustdoc/execution evidence, and then module
+prose, in that order. The legacy exact top-level `pub use` inventory is a narrow
+ownership projection; rustdoc supplies complete API comparison. Implementation
+maps provide ownership/source/test navigation. Exact Git blob/tree provenance
+binds current source rather than a self-referential committed head identifier.
 
 ## 2. Prompt semantic identity and migration
 
-`PromptDeliveryObservationV1` is frozen under its historical custom,
-domain-separated length-framed SHA-256 commitment. That digest is not HPTC and
-must never be reinterpreted in place.
+`PromptDeliveryObservationV1` keeps its historical custom, domain-separated,
+length-framed SHA-256 commitment. It is not HPTC and is never relabeled in place.
 
-`PromptDeliveryObservationV2` is a new protocol identity:
+Prompt V2 is a distinct private-field protocol:
 
 ```text
 HPTC(
@@ -45,14 +34,22 @@ HPTC(
 )
 ```
 
-Optional values use zero-or-one canonical arrays, making presence explicit.
-`from_v1` computes the exact frozen V1 digest and places it in
-`legacy_v1_digest`; it does not transform or relabel the old bytes. V2 fields
-are private and construction is validated.
+Optional reason/witness values use zero-or-one arrays. Token positions use an
+empty array for absence or a nonempty strictly increasing array for presence;
+`Some(empty)` is invalid. V2 now admits at most 4096 positions to fit that single
+frozen HPTC container. Earlier 4097..=8192 V2 values could pass construction but
+not native digest generation and are now rejected at admission. The schema,
+compiled catalog, Python/Node oracles and actual Rust codec share this bound.
+Previously computable V2 commitments are unchanged.
+
+`from_v1` computes the exact historical V1 digest and carries it as a witness.
+V1 retains its 8192-position bound. A V1 observation larger than V2 capacity
+remains readable V1 and V2 migration rejects without truncation or mutation.
+A larger HPTC representation requires its own versioned protocol.
 
 ## 3. Runtime topology commitment
 
-The V1 candidate semantic digest is:
+The V1 candidate commitment is:
 
 ```text
 HPTC(
@@ -70,115 +67,107 @@ HPTC(
 )
 ```
 
-Each delta is independently reduced to HPTC over candidate/evidence digests,
-module ID, operation, predecessor digest and related-module IDs. The stored
-candidate digest is derived and excluded from its own preimage.
-
-`deltas` and `related_module_ids` are set-valued protocol fields represented by
-strictly increasing `StableId` order. Duplicate, self-referential and
-non-canonical sequences reject. Product JSON decoding returns a validated
-wrapper only after native shape checks and digest recomputation.
+Each delta is independently committed over its candidate/evidence/predecessor
+digests, module ID, operation and related IDs. The stored candidate digest is
+derived and excluded from its own preimage. Delta/related-module sets must use
+strictly increasing `StableId` order; duplicates, self references and
+non-canonical order reject. Product decoding returns a validated wrapper after
+native structure and digest checks. This is not selection authority.
 
 ## 4. Manifest transport and product admission
 
-The three manifest protocols use strict JSON transport and HPTC semantic
-commitments. JSON bytes, member order and whitespace are not semantic evidence.
-`platform.wire` owns their Rust transport codecs; each decoder applies raw
-resource limits, duplicate/unknown-field rejection and canonical integer
-parsing before reconstructing the private-field native contract through its
-validated constructor.
+The three manifests use strict JSON transport and HPTC semantic commitments.
+Member order and JSON whitespace are not identity. Native validation is necessary
+but does not establish product permission. Existing admission functions bind:
 
-Native validation is necessary but not sufficient for product use. Current
-owner boundaries additionally bind:
+- random stream: exact root-seed digest, NDU namespace, generator/version,
+  episode, decision and counter span;
+- external system: system/class, host identity and witness equality;
+- sensor: sensor/class, hardware/adapter, calibration generation, clock domain
+  and failure policy.
 
-- random stream: NDU namespace, generator/version, episode, decision and counter
-  window;
-- external system: Supervisor system identity/class, host identity and exact
-  authorization witness;
-- sensor calibration: Supervisor sensor identity/class, hardware/adapter,
-  calibration generation, clock domain and failure policy.
-
-Owner receipts are private-field, deny-only evidence. They do not execute the
-systems represented by a manifest.
+Private-field owner receipts remain deny-only evidence. They do not execute a
+system, prove counter non-reuse, authenticate a witness's current permission, or
+check calibration against a trusted current time. Those final-use responsibilities
+remain with the existing product owners, not `platform.types`.
 
 ## 5. Registry-bound numeric evidence
 
-V1 proves deterministic arithmetic plus content-addressed registry admission.
-It remains readable compatibility evidence but does not claim an explicit
-monotonic generation.
+`rescale_signal` returns pure arithmetic evidence. The historical
+`rescale_signal_registered` additionally checks the supplied registry while
+retaining that original pure-receipt return type. Explicit V1 registry evidence
+comes from `rescale_signal_registered_receipt_v1`; it binds registry content,
+not an explicit monotonic generation.
 
-V2 adds `RegistrySnapshotIdentityV1 { generation, registry_digest }` and binds:
+V2 adds a private `RegistrySnapshotIdentityV1 { generation, registry_digest }`
+binding and commits source/target profile-definition digests, the normalization
+definition, canonical conversion receipt digest and V2 admission digest.
+`verify` reconstructs the complete receipt but does not prove currentness.
+`verify_for_snapshot` additionally requires equality with the independently
+owner-pinned generation/digest and verifies the supplied registry against it
+before recomputation. An old-generation or wrong-registry receipt cannot satisfy
+that pin. The owner authenticates and advances the pin separately.
 
-- exact registry generation and digest;
-- source profile definition digest;
-- target profile definition digest;
-- normalization definition digest;
-- canonical base conversion receipt digest;
-- derived V2 admission digest.
+V2 construction now reuses already-resolved immutable definitions and the same
+checked converter without creating an unused V1 admission hash. Verification is
+not cached. The ordinary NDU numeric owner currently consumes V1 registered
+receipts with its configured content digest; availability of the V2 library API
+must not be described as completed V2 product-owner integration.
 
-The V2 receipt fields are private. `verify` reconstructs conversion and
-admission from the source signal, target schema and supplied registry and
-requires complete receipt equality, but deliberately treats the generation in
-the receipt as self-contained integrity evidence rather than freshness.
+## 6. Strict transport and resource limits
 
-An owner that requires anti-rollback pins its current
-`RegistrySnapshotIdentityV1` independently and calls `verify_for_snapshot`.
-That verifier first proves the supplied registry bytes match the pinned digest,
-then requires exact generation/digest equality with the receipt before
-recomputing the full conversion. A valid receipt from an older generation or a
-different registry digest therefore fails closed. Authentication, publication
-and advancement of the pinned current snapshot remain product-owner
-responsibilities.
+All five product codecs enforce 64 KiB raw input and depth 16. Struct decoders
+reject unknown/duplicate/missing fields. i64/u64 decimal strings have 20-byte
+ceilings and native range checks; nullable Prompt fields are still required.
+Digest strings are bounded to 64 hexadecimal bytes.
 
-## 6. Strict transport limits
+The frozen HPTC V1 profile remains 256 KiB, 4096 items per container and depth 16.
+The native buffered and incremental SHA-256 APIs share all encoding, ordering,
+validation and limit logic. Digest-only operation does not materialize the whole
+preimage; failed encoding never publishes a partial digest.
 
-`platform.wire` owns product codecs for Prompt V2, Topology V1,
-`RandomStreamManifestV1`, `ExternalSystemManifestV1` and
-`SensorCalibrationManifestV1`. Before Serde deserialization every codec
-enforces a 64 KiB raw-input bound and maximum nesting depth 16. Derived structs
-deny unknown and duplicate fields. Unsigned and signed 64-bit values use
-canonical base-10 strings, with 20-byte transport ceilings and native range
-checks. Missing nullable Prompt fields reject rather than silently defaulting.
+Bounded String/Vec owned constructors normalize capacity only above their declared
+maximum, after validation. Borrowed constructors validate before copying; prior
+caller allocations and allocator/RSS overhead are outside logical value bounds.
 
-Python, Node and Rust consume the manifest and Prompt/Topology conformance
-vectors and independently recompute the HPTC semantic commitment. Raw invalid
-vectors and Rust codec tests cover duplicate keys, unknown fields, excess depth
-and overlong precision-sensitive integers.
+## 7. API, provenance and semantic verification
 
-## 7. Public API, provenance and semver
+Rustdoc JSON compares the PR base and candidate public API. Numeric rustdoc IDs
+are normalized to stable references; genuine removals/signature/field/variant
+changes reject while additive exports are reported separately. Git provenance
+binds current tracked source, schemas, owner callsites, documentation, verifiers
+and workflows to exact HEAD blobs and root trees.
 
-Qualification generates rustdoc JSON for the PR base and candidate. The crate
-root is excluded from fingerprinting so additive exports do not mutate every
-existing item. Removal or signature/field/variant mutation of an existing public
-item fails closed; additive items are reported separately.
+Existing golden vectors remain frozen. Capacity regressions cover 4096, 4097,
+8192 and 8193 positions, native V1 migration and product-wire roundtrip. Schema
+qualification checks compiled Prompt capacity and integer width in addition to
+structural catalog parity. All five product fuzz decoders assert successful
+admission implies hashability and exact semantic-preserving encode/decode.
+Coverage-guided fuzz remains bounded testing, not exhaustive protocol proof.
 
-Git provenance enumerates the tracked source, schema, documentation, verifier
-and workflow surface. Each working file must hash to the exact HEAD blob, and
-root trees plus candidate SHA/tree are written into evidence. The old
-observation-base convention is not accepted as a substitute for exact blob
-identity.
+## 8. Candidate qualification, resources and review
 
-## 8. Qualification identities, review and receipts
+`source-head` and deterministic `synthetic-merge` receipts are distinct. Each
+requires same-candidate truth/catalog/consumer checks, provenance, rustdoc API,
+MSRV, native tests/strict lint, pinned Miri, bounded fuzz and document bundle.
+Failure diagnostics do not become successful receipts. The 24 independent
+consumer checks must all pass; successful empty test selections reject.
 
-`source-head` and deterministic `synthetic-merge` are distinct candidate
-classes. Their receipts are non-interchangeable. Diagnostics are retained for
-failed candidates but never promoted to successful qualification.
+Both deep truth pipelines additionally execute the actual resource probe and
+allocation gate. It covers 16 cases, 17 samples of 64 operations each, with paired
+buffered/streaming hash order alternation. Every pair must reduce requested
+allocation bytes without increasing calls; immutable lookups must remain
+allocation-free. Raw data/report hashes are retained through the committed truth
+log. Time distributions are diagnostic by default. Optional latency regression
+comparison requires matched environment/harness and an explicit finite ratio.
+The precise allocation and sample-average timing definitions are in
+`OPTIMIZATION_CLOSURE_20260929.md`; neither mode grants target-host acceptance.
 
-An authoritative receipt requires all outcomes from the same candidate job:
-truth/catalog/consumer checks, provenance, rustdoc API compatibility, MSRV,
-native tests and lint, pinned Miri, bounded coverage-guided fuzz, and candidate
-document bundle generation.
-
-Merge acceptance is a separate gate. The independent-review workflow requires
-a decisive `APPROVED` review bound to the exact current head SHA from a
-repository owner, member or collaborator who is neither the PR author nor an
-author or committer of any candidate commit. Stale approvals, bots, public
-outsiders, dismissed reviews and current changes-requested states fail closed.
-The retained review record is governance evidence, not a source qualification
-receipt.
-
-No receipt or review grants deployment, production activation, operator
-acceptance, promotion or release.
+Merge acceptance separately requires an eligible formal `APPROVED` review bound
+to the final current head, excluding candidate authors/committers, bots, stale or
+dismissed approvals and decisive changes-requested states. No receipt or review
+supplies deployment, authenticated registry publication, operator acceptance,
+promotion or release authority.
 
 ## 9. Reproduction
 
@@ -190,10 +179,10 @@ node codex-rs/hepta-types/conformance/verify_manifest_vectors.mjs
 python3 codex-rs/hepta-types/conformance/verify_platform_wire_vectors.py
 node codex-rs/hepta-types/conformance/verify_platform_wire_vectors.mjs
 bash scripts/run_platform_types_consumer_qualification.sh
+bash scripts/run_platform_types_resource_qualification.sh /tmp/platform-types-resources
 python3 scripts/test_platform_types_independent_review.py
 ```
 
-Any protocol field, semantic type, schema, validation rule, codec, public API or
-candidate identity change requires regenerated candidate evidence and both
-source-head and synthetic-merge qualification. Any new candidate commit also
-invalidates a prior review approval for merge-gate purposes.
+Changes to protocol rules, schemas, codecs, public API or candidate identity
+require regenerated evidence and fresh source/merge qualification. New commits
+invalidate older head-bound independent review for merge-gate purposes.

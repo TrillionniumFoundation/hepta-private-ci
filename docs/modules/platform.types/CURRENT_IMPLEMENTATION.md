@@ -1,155 +1,143 @@
 # `platform.types` current implementation
 
-This file is the stable module-level entrypoint for the current executable
-state. The detailed source map and integration guide remains
-`docs/lane-a-foundation/platform.types/CURRENT_IMPLEMENTATION.md`; this file
-makes the normative precedence, completion vocabulary, identity semantics and
-qualification boundary explicit in the module documentation tree.
+This is the stable module-level entrypoint for executable state. Read
+`TECHNICAL.md`, `PROTOCOL_AND_QUALIFICATION_V1.md` and
+`OPTIMIZATION_CLOSURE_20260929.md` together. The detailed source map remains
+`docs/lane-a-foundation/platform.types/CURRENT_IMPLEMENTATION.md`.
 
 ## 1. Normative precedence
 
-When sources disagree, interpret the module in this order:
+When sources disagree, use this order:
 
-1. native Rust contracts in `codex-rs/hepta-types/src/` and the typed protocol
-   catalog in `protocol_catalog_v2.rs`;
-2. strict product codecs in `codex-rs/hepta-wire`, executable schemas and
+1. native Rust contracts in `codex-rs/hepta-types/src/` and typed
+   `protocol_catalog_v2.rs`;
+2. strict product codecs in `platform.wire`, executable schemas and
    cross-language conformance vectors;
-3. exact-candidate provenance, rustdoc/API, test, lint, Miri, fuzz and document
-   evidence produced by the qualification workflows;
-4. this current-state entrypoint and
-   `TECHNICAL_CURRENT_AMENDMENT_V2.md`;
-5. historical architecture and generated registry projections.
+3. same-candidate provenance, rustdoc/API, test, lint, Miri, fuzz and document
+   evidence;
+4. current technical prose and amendments;
+5. historical architecture and generated inventory projections.
 
-Historical prose is retained for compatibility and design context. It cannot
-override current native constructors, exact schema bytes or candidate-bound
-execution evidence.
+Historical prose cannot override native constructors or candidate-bound bytes.
+Prompt V1 is frozen custom length-framed SHA-256, not HPTC. Prompt V2 uses HPTC
+schema 2. HPTC V1 itself is unchanged.
 
 ## 2. Completion vocabulary
-
-`platform.types` does not compress all completion states into one Boolean.
-The following claims are independent:
 
 | State | Current source claim |
 | --- | --- |
 | specification defined | yes |
-| native source implemented | yes |
-| strict product codecs implemented | yes |
-| named owner callsites composed in source | yes |
-| exact source-head qualification | derived per final candidate; no failure diagnostic substitutes for a receipt |
-| deterministic synthetic-merge qualification | derived separately per final candidate |
-| eligible independent approval | separate governance gate |
+| native source implemented | yes, with final candidate execution still required |
+| five strict product codecs implemented | yes |
+| named owner admission source present | capability-specific; see Section 4 |
+| exact source-head qualification | determined by retained final-head receipts |
+| deterministic synthetic-merge qualification | determined separately |
+| eligible independent approval | separate current-head governance gate |
 | authenticated registry publication | not owned by this module |
 | deployed activation, promotion and release | not claimed |
 
-A candidate is not complete merely because its source exists or an artifact was
-uploaded. The exact source head and its deterministic synthetic merge must each
-produce their own retained successful receipt. Independent review and product
-release remain separate.
+An uploaded artifact, author statement or old green run is not a current pass.
+The final head and synthetic merge must each pass every required outcome.
 
-## 3. Registry identity and freshness
+## 3. Registry identity, immutable reuse and resource bounds
 
-`ContractRegistryV1` content identity is the versioned canonical
-`Digest32` commitment over the sorted definition and numeric-profile digests.
-It is not an FNV checksum and is not a signature. The immutable registry
-computes that commitment once after validation and reuses it. Exact
-kind/identifier/version and numeric-profile lookups reuse canonical sort order
-through binary search. Digest lookup uses a bounded immutable projection built
-once from the already-validated entries and sorted by `(kind, digest, canonical
-entry index)`, avoiding a repeated linear scan without introducing mutable or
-authoritative state. The index has at most `MAX_REGISTRY_ENTRIES_V1` entries,
-and its construction and lookup costs remain covered by the same-candidate
-registry benchmark.
+`ContractRegistryV1` computes a versioned canonical SHA-256 `Digest32` once over
+validated, sorted definitions/profiles. Identity/profile lookup uses binary
+search. Digest lookup uses a bounded immutable `(kind, digest, entry index)`
+projection. This is not an FNV checksum, signature, mutable registry service or
+freshness cache.
 
-These optimizations reuse immutable structural work only. They do not cache any
-of the following:
+V2 numeric admission now reuses those already-resolved definitions and calls
+the same checked pure converter directly. It no longer repeats the registry
+lookups or computes an unused V1 admission digest. Both schema validations,
+shape/unit/normalization equality, numeric bounds, rounding and overflow checks
+remain. `verify` still recomputes the complete receipt; `verify_for_snapshot`
+still compares an independently pinned generation/digest before recomputation.
+No authorization, freshness, final-use or deployment result is cached.
 
-- whether a registry generation is still current;
-- whether a caller is authorized;
-- whether a receipt is acceptable at final use;
-- whether deployment or promotion has been approved.
+The canonical buffered and digest-only APIs share one encoder. Only the sink
+differs: `Vec<u8>` versus incremental SHA-256. Framing, ordering, resource
+ceilings, validation and error behavior are shared; errors discard a partial
+hash instead of publishing a prefix digest. Sorting scratch allocations remain.
 
-`RegisteredNumericConversionReceiptV2::verify` proves self-contained receipt
-integrity. A generation-sensitive product owner independently pins
-`RegistrySnapshotIdentityV1` and calls `verify_for_snapshot`; authentication,
-publication and advancement of that pinned snapshot remain external owner
-responsibilities.
+Owned bounded String/Vec inputs whose capacity exceeds their declared maximum
+are normalized through boxed storage after validation. Within-bound allocations
+are reused. Borrowed `try_from_str`/`try_from_slice` validate before allocation;
+legacy owned constructors cannot undo allocation performed by `Into<String>` or
+by the caller. Capacity bounds do not mean allocator overhead or physical RSS
+is bounded by the same number.
 
 ## 4. Product composition boundary
 
-The current source composition follows existing owners rather than a parallel
-demonstration path:
-
-| Product owner | Native boundary | Final-use responsibility |
+| Existing owner | Current native boundary | Responsibility not supplied by the type |
 | --- | --- | --- |
-| Codex/Agentd and Learning Ledger | frozen Prompt V1 compatibility path | durable consumer policy and execution authority |
-| Runtime Supervisor | validated topology candidate | topology admission and effect-boundary authority |
-| NDU numeric owner | registered numeric V2 receipt | independently pinned current registry snapshot |
-| NDU random-stream owner | random-stream manifest | exact seed, namespace, generator, episode, decision and counter window |
-| Runtime Supervisor external-system owner | external-system manifest | host identity and authorization witness |
-| Runtime Supervisor sensor owner | sensor-calibration manifest | hardware/adapter, generation, clock domain and failure policy |
+| Codex/Agentd and Learning Ledger | frozen Prompt V1 compatibility | durable policy and actual execution |
+| Runtime Supervisor | validated topology candidate | selection and effect-boundary authority |
+| NDU numeric owner | V1 registered receipt and configured immutable registry digest | authenticated provisioning and any generation-sensitive V2 migration |
+| NDU random-stream admission | manifest bound to seed, namespace, generator, episode, decision and span | actual random execution and counter consumption |
+| Supervisor external-system admission | system/class, host identity and witness equality | current witness authorization and observation freshness |
+| Supervisor sensor admission | sensor/class, hardware, generation, clock and failure policy | trusted-clock validity at final use |
 
-All source-level admission receipts remain
-`NonAuthorizingPosture::DENY_ALL`. Source composition proves that the existing
-product path performs the checks; it does not grant deployment, external
-execution, write, promotion or release authority.
+The `RegisteredNumericConversionReceiptV2` API and its owner-pinned verifier
+exist in `platform.types`; this does not prove that the ordinary NDU V1 owner
+already uses V2. Earlier prose that conflated these states is superseded here.
+All admission receipts remain `NonAuthorizingPosture::DENY_ALL`.
 
-## 5. Qualification contract
+## 5. Prompt capacity and migration
 
-The deep workflow resolves a requested source ref once, records the resolved
-source and base identities, and checks out those frozen identities in both
-lanes. Manual `candidate_ref` resolution is fail-closed; it is not silently
-replaced by the default branch. Acceptance uses an explicitly pinned Rust/MSRV
-toolchain, while compatibility with later stable toolchains is a separate
-signal. Environment evidence records the compiler, Cargo, runner image,
-architecture and workflow identity.
+Prompt V2 admits at most 4096 strictly increasing token positions, matching its
+single frozen HPTC array. The old 4097..=8192 V2 acceptance interval had no
+computable native semantic digest and is now rejected at construction and wire
+ingress with `TokenPositionLimitExceeded`. This is an explicit acceptance
+correction, not a reinterpretation of previously computable digests.
 
-Qualification keeps these outcomes separate:
+Prompt V1 retains 8192 positions and its historical commitment. `from_v1`
+preserves the exact V1 witness when the value fits V2; larger V1 observations
+remain V1 and migration rejects without truncation or mutation. Supporting a
+larger HPTC-backed representation requires a separately versioned protocol.
+Schema, compiled catalog, Python/Node capacity tests and the real Rust wire test
+share the 4096 limit and frozen boundary digest.
 
-- schema/catalog parity;
-- source truth and generated-projection drift;
-- exact Git provenance;
-- complete rustdoc public-API compatibility;
-- declared-MSRV checks;
-- native tests and strict Clippy;
-- pinned Miri;
-- bounded coverage-guided fuzzing;
-- source-head and synthetic-merge document bundles.
+## 6. Qualification and performance evidence
 
-A failed step produces diagnostics only. A qualification receipt is emitted
-only when every required outcome succeeds for the same exact candidate.
-Uploaded logs, historical green runs and a successful artifact-upload step are
-not receipts.
+Deep qualification resolves the requested source/base once, freezes their
+identities, and uses pinned Rust 1.96.0 and pinned nightly qualification tools.
+It keeps schema/catalog parity, semantic capacity, provenance, full rustdoc API,
+MSRV, native tests/strict lint, Miri, coverage fuzz and document bundles distinct.
+The consumer matrix still runs all 24 checks; successful but empty Rust test
+selections cannot qualify. Consumer logs are retained under each deep candidate.
 
-The Rama dependency guard models one coherent reviewed prerelease graph. Every
-Rama product and support crate selected by `codex-network-proxy`, including
-`rama-error`, `rama-macros` and `rama-utils`, is fixed to exact
-`0.3.0-alpha.4`. This explicit support-crate pin is necessary because Cargo's
-ordinary prerelease range may otherwise advance those dependencies to stable
-`0.3.0`, whose API is not source-compatible with `rama-core 0.3.0-alpha.4`.
-Mixed releases, unreviewed Rama packages and version drift fail closed.
+All five product fuzz decoders now assert that successful admission implies a
+computable digest and semantic-preserving encode/decode roundtrip. This remains
+bounded fuzz evidence, not exhaustive equivalence proof.
 
-## 6. Public API evidence
+The new resource probe measures 16 cases with 17 samples of 64 operations. It
+records allocation/reallocation call traffic and requested bytes for canonical
+hashing, registry construction/lookups and numeric conversion/pinned verification.
+Paired buffered/streaming hash samples alternate order. Every paired sample must
+reduce requested allocation bytes without increasing allocation calls; immutable
+lookups must allocate zero bytes. Timing distributions are diagnostic by default.
+An optional cross-commit latency gate requires identical environment and harness
+fingerprints plus an explicit ratio; it does not prove host isolation or target
+acceptance. Raw sample/report hashes are bound through the mandatory truth log.
 
-The committed exact-`pub use` inventory is a narrow ownership projection. Full
-compatibility is derived from rustdoc JSON. Rustdoc numeric item identifiers,
-including `Visibility::Restricted.parent` and tuple-variant payload IDs, are
-normalized to stable structural references before comparison. This prevents
-unrelated additive items from renumbering an unchanged private/restricted child
-and creating a false breaking change. Actual public removals, kind changes,
-field/variant changes, signature changes, payload changes or changes to the
-referenced restricted parent still fail closed.
+The legacy registry benchmark and its null host threshold remain unchanged.
+No measured speedup or allocation result is claimed until the real executable
+runs on the exact candidate. Synthetic verifier tests are not performance data.
 
-## 7. Current non-claims
+The Rama guard retains the exact reviewed `0.3.0-alpha.4` graph, including
+support crates. No dependency, lockfile or toolchain change is part of this
+optimization sequence.
 
-The following remain outside the module's source claim:
+## 7. Public API and remaining non-claims
 
-- authenticated publication and rotation of registry snapshots;
-- migration of every historical Prompt producer and durable consumer to V2;
-- deployed random execution, host inventory collection or physical sensor
-  drivers;
-- target-host soak, operator canary acceptance, promotion and release;
-- an eligible independent approval for any future exact head merely because an
-  approval existed for an older head.
+The committed `pub use` inventory is a narrow ownership projection, not the
+complete API. Rustdoc JSON supplies full compatibility evidence; stable
+structural references avoid incidental rustdoc numeric-ID renumbering.
 
-Exact current candidate status belongs to GitHub checks and retained receipts,
-not to self-referential commit identifiers embedded in prose.
+Remaining independent obligations include successful final-head and merge
+receipts, eligible current-head review, authenticated registry publication and
+rotation, full historical Prompt migration where desired, real product-owner
+final-use checks, target-host measurements/soak, operator acceptance, promotion
+and release. Exact status belongs to GitHub and retained receipts, not a
+self-referential SHA or completion Boolean in committed prose.
