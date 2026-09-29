@@ -74,6 +74,24 @@ groups:
         annotations:
           summary: learning.artifacts retention observation is missing
           description: Pinned and pending-erasure byte values must remain unknown until a digest-bound owning-system observation is restored.
+      - alert: HeptaLearningArtifactOwnerQuarantineObservationMissing
+        expr: hepta_learning_artifact_owner_quarantine_items_known == 0
+        for: 10m
+        labels:
+          severity: warning
+          module: learning.artifacts
+        annotations:
+          summary: learning.artifacts quarantine observation is missing
+          description: Quarantine size remains unknown until a fresh digest-bound owning-system observation is supplied.
+      - alert: HeptaLearningArtifactOwnerQuarantineNonEmpty
+        expr: hepta_learning_artifact_owner_quarantine_items > 0
+        for: 0m
+        labels:
+          severity: critical
+          module: learning.artifacts
+        annotations:
+          summary: learning.artifacts quarantine is non-empty
+          description: Keep affected artifacts unavailable and reconcile the owning-system quarantine before promotion.
       - alert: HeptaLearningArtifactOwnerPendingErasureHigh
         expr: hepta_learning_artifact_owner_pending_physical_erasure_bytes > 10737418240
         for: 30m
