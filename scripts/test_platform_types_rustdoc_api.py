@@ -5,7 +5,7 @@ from __future__ import annotations
 import copy
 import unittest
 
-from platform_types_rustdoc_api import _Normalizer, diff
+from scripts.platform_types_rustdoc_api import _Normalizer, diff
 
 
 def document(offset: int = 0, *, add_function: bool = False) -> dict:

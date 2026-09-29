@@ -9,22 +9,23 @@ import sys
 
 # Deliberately anchored: a quoted diagnostic is not a completed test suite.
 SUMMARY = re.compile(
-    r"^test result: (ok|FAILED)\. (\d+) passed; (\d+) failed; (\d+) ignored;"
-    r"(?: (\d+) measured; (\d+) filtered out; finished in .+)?$",
+    r"^test result: (?P<state>ok|FAILED)\. (?P<passed>\d+) passed; "
+    r"(?P<failed>\d+) failed; (?P<ignored>\d+) ignored;"
+    r"(?: (?P<measured>\d+) measured; (?P<filtered>\d+) filtered out; finished in .+)?$",
     re.MULTILINE,
 )
 
 
 def executed_tests(text: str) -> int:
-    summaries = SUMMARY.findall(text)
+    summaries = list(SUMMARY.finditer(text))
     if not summaries or any(
-        state != "ok" or int(failed) != 0
-        for state, _, failed, _, _, _ in summaries
+        match.group("state") != "ok" or int(match.group("failed")) != 0
+        for match in summaries
     ):
         raise ValueError("missing or failed libtest execution summary")
     # Zero-test auxiliary binary targets are valid in an all-targets run, but
     # cannot substitute for at least one actually passed test in the command.
-    passed = sum(int(passed) for _, passed, _, _, _ in summaries)
+    passed = sum(int(match.group("passed")) for match in summaries)
     if passed == 0:
         raise ValueError("zero executed tests cannot qualify")
     return passed

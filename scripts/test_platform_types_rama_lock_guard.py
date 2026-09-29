@@ -6,7 +6,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from platform_types_rama_lock_guard import (
+from scripts.platform_types_rama_lock_guard import (
     DIRECT_MANIFEST_PACKAGES,
     EXPECTED_VERSION,
     LOCK_EXPECTED_VERSIONS,
