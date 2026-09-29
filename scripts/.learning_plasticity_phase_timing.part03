@@ -1,4 +1,6 @@
-rable mutation remain serialized by the unique owner.
+e owner must not add a second writer merely to hide a slow
+fsync or evidence source. Read-only/static work may occur before queue insertion;
+final use and durable mutation remain serialized by the unique owner.
 '''
     new = '''`PlasticityRuntimeTimingV1` records the complete queue-to-terminal path:
 
