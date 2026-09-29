@@ -1,0 +1,83 @@
+name: Apply learning.operator V4 source convergence
+
+on:
+  push:
+    branches: [codex/learning-operator-full-convergence-20260926]
+    paths:
+      - '.github/workflows/learning-operator-source-apply.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: learning-operator-final-qualification-convergence
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: macos-15
+    timeout-minutes: 90
+    env:
+      TARGET_BRANCH: codex/learning-operator-full-convergence-20260926
+      CARGO_BUILD_JOBS: 2
+      CARGO_PROFILE_DEV_DEBUG: 0
+      CARGO_PROFILE_TEST_DEBUG: 0
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/learning-operator-full-convergence-20260926
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt,clippy
+      - name: Apply the idempotent V4/type-state/budget/RCU convergence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/learning_operator_remaining_convergence.py
+          python3 -m py_compile \
+            scripts/learning_operator_remaining_convergence.py \
+            scripts/hepta-learning-operator-contract.py \
+            scripts/hepta-learning-operator-receipt.py \
+            scripts/hepta-implementation-maps.py
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all
+          python3 scripts/hepta-learning-operator-contract.py verify
+          git diff --check
+      - name: Compile and test the exact source candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo check --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-bellman-operator \
+            -p codex-hepta-learning-artifacts \
+            -p codex-hepta-agentd
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-learning-ledger dataset_receipt_v4 -- --nocapture
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-bellman-operator sensor_core_v2::tests -- --nocapture
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-bellman-operator tabular_v2::tests -- --nocapture
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-bellman-operator world_model_v2::tests -- --nocapture
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-agentd --lib \
+            immutable_candidate_supports_concurrent_current_reads_and_metrics -- --nocapture
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
+      - name: Publish one source commit and retire this applier
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "OpenAI"
+          git config user.email "openai@users.noreply.github.com"
+          git rm -f .github/workflows/learning-operator-source-apply.yml
+          git add -A
+          git commit \
+            -m "feat(learning.operator): close V4 bounded production path" \
+            -m "Apply the opaque V4 type-state ingress, V2 complete pin/loader boundary, budgeted sensor/tabular/world-model implementations, concurrent immutable final-use validation, RCU reload, telemetry, migration policy, and operations runbooks without granting activation or release." \
+            -m "Signed-off-by: OpenAI <openai@users.noreply.github.com>"
+          git push origin HEAD:"$TARGET_BRANCH"
