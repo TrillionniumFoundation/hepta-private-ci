@@ -65,8 +65,12 @@ identity with changed semantics is a conflict.
 
 Verification and recovery use explicit read transactions. Snapshot V2 reads the
 migration set, store identity, authenticated qualification commitment and
-AuthBus replay frontier from the same SQLite snapshot. Qualification scanning is
-paged and bounded rather than fetched unboundedly.
+AuthBus replay frontier from the same SQLite snapshot. Recovery and production
+provenance scans use keyset pages. Before canonical startup reconstruction
+materializes rows, operational preflight enforces at most 1,000,000 rows, at
+most 512 MiB of canonical envelope bytes, the 256 KiB per-envelope limit and
+the fixed 64-byte AuthBus signature width. An oversized but syntactically valid
+database therefore fails closed before the full decoder allocates its result.
 
 ## Recovery and trust acceptance
 
