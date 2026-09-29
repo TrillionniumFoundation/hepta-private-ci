@@ -497,11 +497,13 @@ fn io_error(error: std::io::Error) -> EvidenceError {
     EvidenceError::Unavailable(error.to_string())
 }
 
-// No feature flag enables these adapters for downstream crates. Integration
-// tests compile the ordinary library and therefore exercise the sealed API.
-#[cfg(test)]
+// Product builds never enable this adapter. It exists only for this crate's
+// unit tests and downstream integration tests that explicitly opt into the
+// non-default `test-support` feature. Ordinary and release builds retain the
+// sealed owner-registry-only API.
+#[cfg(any(test, feature = "test-support"))]
 impl sealed::Sealed for IssuerRegistration {}
-#[cfg(test)]
+#[cfg(any(test, feature = "test-support"))]
 impl EvidenceIssuerView for IssuerRegistration {
     fn registration(&self) -> &IssuerRegistration {
         self
@@ -524,9 +526,9 @@ impl EvidenceIssuerView for IssuerRegistration {
     }
 }
 
-#[cfg(test)]
+#[cfg(any(test, feature = "test-support"))]
 impl sealed::Sealed for [EvidenceIssuerTrustBindingV1] {}
-#[cfg(test)]
+#[cfg(any(test, feature = "test-support"))]
 impl EvidenceTrustSnapshotView for [EvidenceIssuerTrustBindingV1] {
     fn evidence_bindings(&self) -> &[EvidenceIssuerTrustBindingV1] {
         self
@@ -537,9 +539,9 @@ impl EvidenceTrustSnapshotView for [EvidenceIssuerTrustBindingV1] {
     }
 }
 
-#[cfg(test)]
+#[cfg(any(test, feature = "test-support"))]
 impl<const N: usize> sealed::Sealed for [EvidenceIssuerTrustBindingV1; N] {}
-#[cfg(test)]
+#[cfg(any(test, feature = "test-support"))]
 impl<const N: usize> EvidenceTrustSnapshotView for [EvidenceIssuerTrustBindingV1; N] {
     fn evidence_bindings(&self) -> &[EvidenceIssuerTrustBindingV1] {
         self
@@ -550,9 +552,9 @@ impl<const N: usize> EvidenceTrustSnapshotView for [EvidenceIssuerTrustBindingV1
     }
 }
 
-#[cfg(test)]
+#[cfg(any(test, feature = "test-support"))]
 impl sealed::Sealed for Vec<EvidenceIssuerTrustBindingV1> {}
-#[cfg(test)]
+#[cfg(any(test, feature = "test-support"))]
 impl EvidenceTrustSnapshotView for Vec<EvidenceIssuerTrustBindingV1> {
     fn evidence_bindings(&self) -> &[EvidenceIssuerTrustBindingV1] {
         self
