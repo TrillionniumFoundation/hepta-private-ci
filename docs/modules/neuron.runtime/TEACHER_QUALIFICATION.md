@@ -50,6 +50,41 @@ behavior only. A missing response, local exit, timeout or process kill never pro
 that a remotely dispatched request was not executed. Use the same operation/run
 identity for reconciliation; do not switch providers/models or retry blindly.
 
+## Native Codex nonce observation profile
+
+`teacher_native_observation.py` separately validates retained native CLI JSONL.
+It never calls Codex, reads an auth file, executes a tool, retries a request or
+imports Gateway identities. The narrow profile requires exactly one thread and
+one completed turn, bounded typed usage counters, valid item lifecycles, exactly
+one nonce-only agent message, the same nonce in the final-message file, and an
+observed local exit code zero. It admits closed reasoning events without copying
+reasoning text into its report. Tool activity, extra messages, unknown events,
+contradictory fields, duplicate JSON, truncation and post-terminal events reject.
+Unsupported events mean this profile cannot validate the observation; they are
+not evidence of provider rejection or permission to retry.
+
+The report retains thread identity and input/validator hashes, not raw prompts,
+reasoning, diagnostics or credentials. An already observed completed turn remains
+visible when the local exit is missing or nonzero. This grants neither retry nor
+proof of remote nonexecution. The requested model is explicitly caller context:
+actual provider/model stay null; provider qualification, tool isolation, training
+rights, dataset admission and activation stay false even after a successful nonce.
+A lack of observed tool calls cannot prove that tool execution was impossible.
+
+The CLI creates a new private report exclusively and never overwrites a previous
+observation. Each input is bounded to 256 KiB and the event stream to 256 entries.
+Validating an older event stream with a newer validator is a new validation of
+historical input, not a fresh provider call or evidence from a newer execution SHA.
+This package-local diagnostic profile is not a new public wire schema or owner.
+
+```sh
+python3 -m unittest -v test_teacher_native_observation
+python3 teacher_native_observation.py --events /restricted/events.jsonl \
+  --final /restricted/final.txt --diagnostics /restricted/stderr.txt \
+  --requested-model gpt-6-luna --nonce NONSECRET_NONCE --exit-code 0 \
+  --output /restricted/new-native-observation.json
+```
+
 ## Actual provider qualification experiment
 
 Use the existing authorized local account without copying its credentials. Bind

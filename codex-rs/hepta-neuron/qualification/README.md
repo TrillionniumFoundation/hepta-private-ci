@@ -520,3 +520,16 @@ algorithm and runtime predicate, not independent calibration trust. The current
 [teacher qualification contract](../../../docs/modules/neuron.runtime/TEACHER_QUALIFICATION.md)
 defines typed Gateway diagnostics, native-transport identity, execution isolation
 and separate account-specific training-data admission.
+
+## Native teacher observation is separate from Gateway parsing
+
+`teacher_native_observation.py` validates one retained native Codex nonce turn,
+including its item lifecycle, terminal event, final message and local exit. It
+never calls the provider and never treats a requested model as served identity.
+The emitted report is bounded, private, immutable, hash-bound and non-authorizing;
+truncated/error/tool-bearing/extra-message streams cannot pass the nonce profile.
+See the [teacher qualification contract](../../../docs/modules/neuron.runtime/TEACHER_QUALIFICATION.md)
+for the exact profile and distinction between historical revalidation and a new
+provider execution. Run `python3 -m unittest -v test_teacher_native_observation`.
+Successful parsing does not prove isolation, provider entitlement, training rights,
+independent acceptance or readiness to admit a teacher dataset.
