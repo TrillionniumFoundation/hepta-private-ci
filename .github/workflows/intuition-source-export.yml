@@ -29,13 +29,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          base="$(sed -n 's/^base=//p' .github/intuition-authoring-patch/READY)"
-          expected="$(sed -n 's/^sha256=//p' .github/intuition-authoring-patch/READY)"
+          ready=.github/intuition-authoring-patch/READY
+          base="$(sed -n 's/^base=//p' "$ready")"
+          part_000="$(sed -n 's/^part-000=//p' "$ready")"
+          part_001="$(sed -n 's/^part-001=//p' "$ready")"
+          part_002="$(sed -n 's/^part-002=//p' "$ready")"
           test "$base" = "696447e733e22e425cd05691d98f4fe0ef63f759"
+          test "$part_000" = "ff90ec4b0bb594c6659c0805f7683e625f423d46"
+          test "$part_001" = "8ef03a50ccef25591918ed67fb42506bcfdd21f1"
+          test "$part_002" = "627e323cc4086e712a04ffa58b02e7723415e64c"
           git cat-file -e "$base^{commit}"
+          test "$(git hash-object .github/intuition-authoring-patch/part-000.b64)" = "$part_000"
+          test "$(git hash-object .github/intuition-authoring-patch/part-001.b64)" = "$part_001"
+          test "$(git hash-object .github/intuition-authoring-patch/part-002.b64)" = "$part_002"
           cat .github/intuition-authoring-patch/part-*.b64 | base64 --decode > "$RUNNER_TEMP/intuition-source.patch"
-          actual="$(sha256sum "$RUNNER_TEMP/intuition-source.patch" | awk '{print $1}')"
-          test "$actual" = "$expected"
+          sha256sum "$RUNNER_TEMP/intuition-source.patch" | tee "$RUNNER_TEMP/intuition-source.patch.sha256"
           git diff --quiet
           git apply --check "$RUNNER_TEMP/intuition-source.patch"
           git apply --index "$RUNNER_TEMP/intuition-source.patch"
@@ -104,6 +112,7 @@ jobs:
           git diff --binary > "$output/worktree.patch"
           git diff --cached --binary > "$output/index.patch"
           cp "$RUNNER_TEMP/intuition-source.patch" "$output/source.patch" 2>/dev/null || true
+          cp "$RUNNER_TEMP/intuition-source.patch.sha256" "$output/source.patch.sha256" 2>/dev/null || true
       - name: Upload failure diagnostics
         if: failure()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
