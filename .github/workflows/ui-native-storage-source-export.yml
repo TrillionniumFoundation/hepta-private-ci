@@ -1,0 +1,51 @@
+name: ui.native storage source export
+
+on:
+  push:
+    branches: [work/ui-native-storage-performance-convergence-20260929]
+    paths:
+      - .github/workflows/ui-native-storage-source-export.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ui-native-storage-source-export-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Export exact ui.native source and verification surfaces
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          mkdir -p export
+          git archive --format=tar HEAD -- \
+            apps/hepta-native \
+            docs/modules/ui.native \
+            scripts/hepta_ui_native_aggregate.py \
+            scripts/hepta_ui_native_evidence.py \
+            scripts/hepta_ui_native_product_evidence.py \
+            scripts/test_hepta_ui_native_aggregate.py \
+            scripts/test_hepta_ui_native_evidence.py \
+            scripts/test_hepta_ui_native_source.py \
+            .github/workflows/hepta-ui-native-remediation.yml \
+            .github/workflows/hepta-ui-native-qualified-integration.yml \
+            | gzip -n > export/ui-native-source.tar.gz
+          git rev-parse HEAD HEAD^{tree} > export/identity.txt
+          sha256sum export/ui-native-source.tar.gz > export/ui-native-source.sha256
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ui-native-storage-source-${{ github.sha }}
+          path: export
+          if-no-files-found: error
+          retention-days: 3
