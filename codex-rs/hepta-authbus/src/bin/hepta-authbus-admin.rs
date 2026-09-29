@@ -182,13 +182,11 @@ impl Options {
         let checkpoint_out = optional_path(&mut values, "--checkpoint-out")?;
         let manifest = optional_path(&mut values, "--manifest")?;
         if !values.is_empty() {
-            return Err(
-                format!(
-                    "unknown options: {}",
-                    values.keys().cloned().collect::<Vec<_>>().join(", ")
-                )
-                .into(),
-            );
+            return Err(format!(
+                "unknown options: {}",
+                values.keys().cloned().collect::<Vec<_>>().join(", ")
+            )
+            .into());
         }
 
         match command {
@@ -231,10 +229,7 @@ fn take(values: &mut BTreeMap<String, String>, name: &str) -> Result<String> {
         .ok_or_else(|| format!("missing required option {name}").into())
 }
 
-fn optional_path(
-    values: &mut BTreeMap<String, String>,
-    name: &str,
-) -> Result<Option<PathBuf>> {
+fn optional_path(values: &mut BTreeMap<String, String>, name: &str) -> Result<Option<PathBuf>> {
     values.remove(name).map(absolute).transpose()
 }
 
@@ -438,7 +433,10 @@ fn read_checkpoint(path: &Path) -> Result<CheckpointDocument> {
         || checkpoint.owner_id.len() > MAX_OWNER_ID_BYTES
         || checkpoint.generation == 0
         || checkpoint.digest.len() != 64
-        || !checkpoint.digest.bytes().all(|byte| byte.is_ascii_hexdigit())
+        || !checkpoint
+            .digest
+            .bytes()
+            .all(|byte| byte.is_ascii_hexdigit())
     {
         return Err("invalid checkpoint document".into());
     }
@@ -483,10 +481,7 @@ fn validate_existing_private_path(path: &Path) -> Result<()> {
 }
 
 fn canonical_parent(path: &Path) -> Result<PathBuf> {
-    Ok(path
-        .parent()
-        .ok_or("path has no parent")?
-        .canonicalize()?)
+    Ok(path.parent().ok_or("path has no parent")?.canonicalize()?)
 }
 
 #[cfg(unix)]
@@ -646,8 +641,7 @@ mod tests {
             &checkpoint_backup_root,
             &manifest_root,
         ] {
-            std::fs::set_permissions(root.path(), std::fs::Permissions::from_mode(0o700))
-                .unwrap();
+            std::fs::set_permissions(root.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
         }
 
         let database = database_root.path().join("authority.sqlite");

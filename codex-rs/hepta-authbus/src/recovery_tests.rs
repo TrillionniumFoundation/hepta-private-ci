@@ -62,7 +62,10 @@ async fn incremental_frontier_seeds_once_then_folds_and_prunes_changes() {
         .fetch_one(&store.pool)
         .await
         .unwrap();
-    assert!(pending >= 3, "time, policy head and history must be journaled");
+    assert!(
+        pending >= 3,
+        "time, policy head and history must be journaled"
+    );
 
     let folded = store.authority_frontier_digest().await.unwrap();
     assert_ne!(folded, seeded);

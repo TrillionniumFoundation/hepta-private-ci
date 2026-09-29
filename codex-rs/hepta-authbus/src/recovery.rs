@@ -481,13 +481,7 @@ async fn full_authority_frontier_digest_tx(
     )
     .await?;
     append_rows(tx, &mut bytes, "reservation", RESERVATION_FRONTIER_SQL).await?;
-    append_rows(
-        tx,
-        &mut bytes,
-        "reservation_archive",
-        ARCHIVE_FRONTIER_SQL,
-    )
-    .await?;
+    append_rows(tx, &mut bytes, "reservation_archive", ARCHIVE_FRONTIER_SQL).await?;
     append_rows(
         tx,
         &mut bytes,
