@@ -1,0 +1,181 @@
+ leased owner, a provider effect boundary,
++durable acknowledgement and destination reconciliation. Treating every error as
++"retry" can duplicate a physical effect. Treating every error as terminal can
++strand a safe pre-dispatch operation. Callers therefore need one typed recovery
++answer derived from the authoritative durable state and error, rather than local
++string matching.
++
++## Decision
++
++`kernel.operations` is the state authority. Its existing durable identity,
++operation state, outbox lease and `DispatchEffect` remain the canonical model.
++The public `DurableFailureClass` and `RecoveryDisposition` projections provide
++the only generic caller actions:
++
++| Disposition | Meaning |
++|---|---|
++| `Reject` | The request, authority, identity or terminal state forbids reuse. |
++| `RetrySameIdentity` | The provider is known not to have been entered; retry only the same durable identity. |
++| `RetryAfterCapacity` | No effect was admitted; retry after bounded capacity becomes available. |
++| `ReconcileOnly` | The durable commit or provider outcome may be unknown; observe the same identity before any new effect. |
++| `ReplaceOwner` | The caller is fenced; only a successor generation may resume. |
++| `RepairClockOrStore` | Clock rollback or corruption requires operator repair, not request-level retry. |
++
++`Prepared` and `DispatchEffect::NotDispatched` are the only generic states that
++project to `RetrySameIdentity`. `Dispatching`, `Dispatched`, `Indeterminate`, an
++unavailable durable store, a lost lease and an invalid transition project to
++`ReconcileOnly`. This intentionally keeps provider-entered and durable-result-
++unknown cases out of ordinary retry loops.
++
++Durable Unix time is supplied through `DurableOperationClock`. Every writer
++samples it only after acquiring SQLite `BEGIN IMMEDIATE`; writer serialization
++therefore orders timestamp observations. Rollback against durable state still
++fails closed and is never clamped to an invented time.
++
++## Consequences
++
++- Product callers switch on typed dispositions, not error text.
++- Adding a new durable error requires an explicit recovery classification.
++- A request timeout does not imply that the underlying effect did not enter.
++- A successor generation adopts or reconciles the same identity; it does not
++  manufacture a replacement operation.
++- Monotonic elapsed-time budgets remain separate from persisted Unix time.
++
++## Verification
++
++`recovery_disposition_is_effect_boundary_aware` checks the retry/reconcile
++boundary. `writer_samples_clock_after_immediate_transaction_admission` holds a
++real SQLite writer lock and proves that a blocked writer samples the injected
++clock only after admission. The independent qualification lane also executes the
++multi-writer durable-store suite on source-head and synthetic-merge checkouts.
+diff --git a/docs/modules/intelligence.control/COMPATIBILITY.md b/docs/modules/intelligence.control/COMPATIBILITY.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..b52a60d765a2e8963be7f074557945b63b495601
+--- /dev/null
++++ b/docs/modules/intelligence.control/COMPATIBILITY.md
+@@ -0,0 +1,46 @@
++# intelligence.control compatibility and migration contract
++
++Parent: [TECHNICAL.md](TECHNICAL.md). This document defines source and persisted
++state compatibility; it does not authorize product activation.
++
++## Public source compatibility
++
++The canonical product path is the authenticated `ObjectiveStart` route with a
++host-owned invocation provider and, when physically composed, one
++`AgentdIntelligenceExecutionHostV1`. Compatibility/shadow entrypoints may remain
++for migration but cannot advertise canonical capability or bypass currentness,
++permission, lease, provider-entry or learning acknowledgement checks.
++
++New public APIs must preserve the existing operation identity and effect-boundary
++semantics. Renames require a deprecation window or an atomic update of every
++tracked caller. Consumer compilation is part of the exact-head qualification.
++
++## Durable compatibility
++
++SQLite migrations are append-only and versioned. Existing semantic digests,
++operation IDs, terminal evidence, outbox fences, attempt counts and tombstones
++must remain readable after upgrade. A migration may not reinterpret
++`Dispatching`, `Dispatched` or `Indeterminate` as safe-to-retry. Unknown enum or
++schema values fail as corruption rather than falling back to a permissive state.
++
++`DurableOperationClock` changes clock ownership, not the persisted timestamp
++format. Values remain Unix milliseconds and rollback remains fail-closed.
++
++## Upgrade procedure
++
++1. Freeze an exact candidate and retain a backup plus its digest.
++2. Run migrations and quick/invariant checks on an isolated copy.
++3. Reopen old pending, leased, indeterminate and terminal fixtures.
++4. Verify same-identity replay, stale-owner fencing, destination-first recovery
++   and tombstone non-resurrection.
++5. Execute source-head and synthetic-merge qualification with the final lockfile.
++6. Roll forward only after independent acceptance; otherwise restore the intact
++   backup and keep admission closed.
++
++## Versioning policy
++
++Wire and persisted schema changes require explicit version fields, migration
++tests and a compatibility note here. Evidence and status schemas may advance
++independently, but a verifier must reject an unknown schema rather than treating
++it as a pass. Acceptance receipts bind their verifier and workflow SHA, so a
++verifier change invalidates previous candidate acceptance.
+diff --git a/docs/modules/intelligence.control/IMPLEMENTATION_MAP.json b/docs/modules/intelligence.control/IMPLEMENTATION_MAP.json
+index 5c8b2ae8bde00b943bcd495051434fa50f544a93..7773e1bcf30203c59a633b3707a3f7e802a30875 100644
+--- a/docs/modules/intelligence.control/IMPLEMENTATION_MAP.json
++++ b/docs/modules/intelligence.control/IMPLEMENTATION_MAP.json
+@@ -24,7 +24,7 @@
+     "codex-rs/hepta-infer-worker-host"
+   ],
+   "statusMatrix": {
+-    "documentationDepthClosed": false,
++    "documentationDepthClosed": true,
+     "sourceImplementation": true,
+     "routeCallsitePresent": true,
+     "providerImplementationPresent": true,
+@@ -296,6 +296,22 @@
+         "pub fn validate(&self)",
+         "admitted_exercise"
+       ]
++    },
++    {
++      "sourcePath": "codex-rs/hepta-operations/src/durable_store.rs",
++      "symbols": [
++        "pub trait DurableOperationClock",
++        "pub async fn open_with_clock",
++        "let now = self.now_millis()?"
++      ]
++    },
++    {
++      "sourcePath": "codex-rs/hepta-operations/src/durable_model.rs",
++      "symbols": [
++        "pub enum DurableFailureClass",
++        "pub enum RecoveryDisposition",
++        "pub const fn recovery_disposition"
++      ]
+     }
+   ],
+   "canonicalOperations": [
+@@ -412,5 +428,10 @@
+     "Qualify forced containment of hung learning I/O, Supervisor replacement and separately retained host-root backup/write-side replacement.",
+     "Execute all current source-head and synthetic-merge native/mapping/Bazel gates; no historical local result is a final SHA pass.",
+     "Measure target-host latency/RSS/saturation/recovery and independent task quality, then obtain independent acceptance."
+-  ]
++  ],
++  "architectureDecisions": [
++    "docs/modules/intelligence.control/ADR-001-DURABLE-OPERATION-RECOVERY.md"
++  ],
++  "operationsRunbook": "docs/modules/intelligence.control/OPERATIONS_RUNBOOK.md",
++  "compatibilityGuide": "docs/modules/intelligence.control/COMPATIBILITY.md"
+ }
+diff --git a/docs/modules/intelligence.control/OPERATIONS_RUNBOOK.md b/docs/modules/intelligence.control/OPERATIONS_RUNBOOK.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..0e15b0c77194886aef07c5e040dd6a32ebe7ec22
+--- /dev/null
++++ b/docs/modules/intelligence.control/OPERATIONS_RUNBOOK.md
+@@ -0,0 +1,67 @@
++# intelligence.control operations runbook
++
++Parent: [TECHNICAL.md](TECHNICAL.md). This runbook is an operator decision tree;
++it is not an activation receipt.
++
++## 1. Identify the exact candidate
++
++Record the immutable source SHA, workflow SHA, dependency lock digest, target
++triple, source-head command-record manifest and synthetic-merge SHA. Ignore a
++cached status in tracked documentation: tracked maps deliberately contain
++`CI_EXACT_HEAD` and `pending`. A passing execution projection must be generated
++from the unchanged checkout and retained as a workflow artifact.
++
++Any source or qualification-workflow change invalidates the prior acceptance
++receipt. Re-run source-head, current-main and deterministic synthetic-merge
++lanes; do not transplant logs from an older head.
++
++## 2. Triage by typed recovery disposition
++
++| Signal | Operator action |
++|---|---|
++| `Reject` | Return the stable typed error; do not retry or rewrite identity. |
++| `RetrySameIdentity` | Retry only under the same operation identity and current lease. |
++| `RetryAfterCapacity` | Apply bounded backoff; expose queue age and capacity metrics. |
++| `ReconcileOnly` 

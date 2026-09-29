@@ -1,0 +1,235 @@
+w = self.now_millis()?;
+         ensure_clock_not_behind(&mut tx, now).await?;
+         let operation = load_operation_tx(&mut tx, scope_id, operation_id)
+             .await?
+@@ -1110,7 +1145,7 @@ impl DurableOperationStore {
+     }
+ 
+     pub async fn backlog_metrics(&self) -> Result<OperationBacklogMetrics, DurableOperationError> {
+-        let now = now_millis()?;
++        let now = self.now_millis()?;
+         let active_operations: i64 = sqlx::query_scalar(
+             "SELECT COUNT(*) FROM operation_ledger WHERE terminal_at_ms IS NULL",
+         )
+@@ -1167,12 +1202,12 @@ impl DurableOperationStore {
+         // so a larger unsigned cutoff is equivalent to its greatest value.
+         // Keep checked conversion for identities, revisions and stored times.
+         let before = i64::try_from(terminal_before_unix_ms).unwrap_or(i64::MAX);
+-        let now = now_millis()?;
+         let mut tx = self
+             .pool
+             .begin_with("BEGIN IMMEDIATE")
+             .await
+             .map_err(sqlx_error)?;
++        let now = self.now_millis()?;
+         let rows = sqlx::query(
+             "SELECT l.scope_id, l.operation_id, l.semantic_digest, l.destination,
+                     l.payload_digest, l.terminal_outcome, l.terminal_evidence_digest
+@@ -1256,12 +1291,12 @@ impl DurableOperationStore {
+     }
+ 
+     pub async fn recover_expired_leases(&self) -> Result<(), DurableOperationError> {
+-        let now = now_millis()?;
+         let mut tx = self
+             .pool
+             .begin_with("BEGIN IMMEDIATE")
+             .await
+             .map_err(sqlx_error)?;
++        let now = self.now_millis()?;
+         ensure_clock_not_behind(&mut tx, now).await?;
+         recover_expired_leases_tx(&mut tx, now).await?;
+         tx.commit().await.map_err(sqlx_error)
+diff --git a/codex-rs/hepta-operations/src/durable_store_tests.rs b/codex-rs/hepta-operations/src/durable_store_tests.rs
+index 2c86ce7ad93337f8c5452a696e12ed0a3854940e..05a5213b31fff2d46d6699cd69e687ccf82ed260 100644
+--- a/codex-rs/hepta-operations/src/durable_store_tests.rs
++++ b/codex-rs/hepta-operations/src/durable_store_tests.rs
+@@ -1,6 +1,9 @@
+ use super::*;
+ 
+ use std::collections::BTreeSet;
++use std::sync::Arc;
++use std::sync::atomic::AtomicI64;
++use std::sync::atomic::Ordering;
+ use std::time::Duration;
+ 
+ use codex_hepta_contracts::FinalUseGrant;
+@@ -31,6 +34,114 @@ fn intent(payload: &[u8]) -> OperationIntentV1 {
+     }
+ }
+ 
++#[derive(Clone)]
++struct ManualClock {
++    now: Arc<AtomicI64>,
++}
++
++impl ManualClock {
++    fn new(now: i64) -> Self {
++        Self {
++            now: Arc::new(AtomicI64::new(now)),
++        }
++    }
++
++    fn set(&self, now: i64) {
++        self.now.store(now, Ordering::SeqCst);
++    }
++}
++
++impl DurableOperationClock for ManualClock {
++    fn now_unix_millis(&self) -> Result<i64, DurableOperationError> {
++        Ok(self.now.load(Ordering::SeqCst))
++    }
++}
++
++#[test]
++fn recovery_disposition_is_effect_boundary_aware() {
++    assert_eq!(
++        DurableOperationError::Conflict(stable_id("operation:conflict"))
++            .recovery_disposition(),
++        RecoveryDisposition::Reject
++    );
++    assert_eq!(
++        DurableOperationError::Unavailable("commit acknowledgement lost".to_owned())
++            .failure_class(),
++        DurableFailureClass::OutcomeUnknown
++    );
++    assert_eq!(
++        DurableOperationError::Unavailable("commit acknowledgement lost".to_owned())
++            .recovery_disposition(),
++        RecoveryDisposition::ReconcileOnly
++    );
++    assert_eq!(
++        DurableOperationState::Prepared.recovery_disposition(),
++        RecoveryDisposition::RetrySameIdentity
++    );
++    assert_eq!(
++        DurableOperationState::Indeterminate.recovery_disposition(),
++        RecoveryDisposition::ReconcileOnly
++    );
++    let not_dispatched = DispatchEffect::NotDispatched {
++        value: (),
++        reason_digest: Digest32::of_bytes(b"provider-not-entered"),
++        retry_after: Duration::from_millis(1),
++    };
++    let unknown = DispatchEffect::Indeterminate {
++        value: (),
++        reason_digest: Digest32::of_bytes(b"provider-outcome-unknown"),
++    };
++    assert_eq!(
++        not_dispatched.recovery_disposition(),
++        RecoveryDisposition::RetrySameIdentity
++    );
++    assert_eq!(
++        unknown.recovery_disposition(),
++        RecoveryDisposition::ReconcileOnly
++    );
++}
++
++#[tokio::test]
++async fn writer_samples_clock_after_immediate_transaction_admission() {
++    let directory = tempfile::tempdir().expect("tempdir");
++    let path = directory.path().join("operations.sqlite3");
++    let clock = ManualClock::new(2_000);
++    let store = DurableOperationStore::open_with_clock(&path, Arc::new(clock.clone()))
++        .await
++        .expect("open");
++    store
++        .prepare_intent(&intent(b"seed"))
++        .await
++        .expect("seed durable timestamp");
++
++    let mut blocker = store
++        .pool
++        .begin_with("BEGIN IMMEDIATE")
++        .await
++        .expect("hold writer admission");
++    sqlx::query("SELECT 1")
++        .execute(&mut *blocker)
++        .await
++        .expect("activate writer transaction");
++
++    clock.set(1_000);
++    let mut blocked_intent = intent(b"blocked");
++    blocked_intent.operation_id = stable_id("operation:test:blocked-writer");
++    let blocked_store = store.clone();
++    let task = tokio::spawn(async move { blocked_store.prepare_intent(&blocked_intent).await });
++    tokio::time::sleep(Duration::from_millis(50)).await;
++    clock.set(3_000);
++    blocker.commit().await.expect("release writer admission");
++
++    let prepared = tokio::time::timeout(Duration::from_secs(2), task)
++        .await
++        .expect("blocked writer completed")
++        .expect("writer task")
++        .expect("prepare after admission");
++    assert_eq!(prepared.record.created_at_unix_ms, 3_000);
++    assert_eq!(prepared.record.updated_at_unix_ms, 3_000);
++}
++
+ #[tokio::test]
+ async fn prepare_is_atomic_and_survives_reopen() {
+     let directory = tempfile::tempdir().expect("tempdir");
+diff --git a/codex-rs/hepta-operations/src/lib.rs b/codex-rs/hepta-operations/src/lib.rs
+index 982fd011dc92cc276a956f16ce2d15646ea01340..4c705508b73179945aec3b011c92d595e12c4117 100644
+--- a/codex-rs/hepta-operations/src/lib.rs
++++ b/codex-rs/hepta-operations/src/lib.rs
+@@ -31,6 +31,7 @@ pub use durable_model::DestinationApplyReceipt;
+ pub use durable_model::DestinationOperationIdentity;
+ pub use durable_model::DispatchClaim;
+ pub use durable_model::DispatchEffect;
++pub use durable_model::DurableFailureClass;
+ pub use durable_model::DurableOperationError;
+ pub use durable_model::DurableOperationRecord;
+ pub use durable_model::DurableOperationState;
+@@ -45,8 +46,11 @@ pub use durable_model::OutboxStatusV1;
+ pub use durable_model::PrepareDisposition;
+ pub use durable_model::PreparedIntent;
+ pub use durable_model::ReconciliationReceiptV1;
++pub use durable_model::RecoveryDisposition;
+ pub use durable_store::AuthorizedDispatch;
++pub use durable_store::DurableOperationClock;
+ pub use durable_store::DurableOperationStore;
++pub use durable_store::SystemDurableOperationClock;
+ pub use error::OperationError;
+ pub use ledger::MAX_MODEL_OPERATION_RECORDS;
+ pub use ledger::OperationLedger;
+diff --git a/codex-rs/hepta-prompt-registry/src/durable.rs b/codex-rs/hepta-prompt-registry/src/durable.rs
+index 3664b6c697a2af1f38befe00d899d3ed4754e5ee..ca0f0a528836ae4fead3ca4d940f6e63045c2f92 100644
+--- a/codex-rs/hepta-prompt-registry/src/durable.rs
++++ b/codex-rs/hepta-prompt-registry/src/durable.rs
+@@ -189,10 +189,6 @@ impl DurablePromptRegistry {
+         })
+     }
+ 
+-    #[expect(
+-        clippy::too_many_arguments,
+-        reason = "Keep the established final-use API and explicit operation-bound fields compatible"
+-    )]
+     pub fn register_realization_payload_final_use_v2(
+         &mut self,
+         authority: &FinalUseAuthority,
+@@ -300,10 +296,6 @@ impl DurablePromptRegistry {
+             .map_err(DurableRegistryError::Admission)?
+     }
+ 
+-    #[expect(
+-        clippy::too_many_arguments,
+-        reason = "Keep the established final-use API and explicit operation-bound fields compatible"
+-    )]
+     pub fn revoke_factor_final_use(
+         &mut self,
+         authority: &FinalUseAuthority,
+diff --git a/docs/modules/intelligence.control/ADR-001-DURABLE-OPERATION-RECOVERY.md b/docs/modules/intelligence.control/ADR-001-DURABLE-OPERATION-RECOVERY.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..27dd038a3bb660b17fafb0fd41f27e4a326b365e
+--- /dev/null
++++ b/docs/modules/intelligence.control/ADR-001-DURABLE-OPERATION-RECOVERY.md
+@@ -0,0 +1,58 @@
++# ADR-001: durable operation state and recovery dispositions
++
++- **Status:** accepted for source implementation
++- **Scope:** `intelligence.control` product integration through `kernel.operations`
++- **Decision owners:** `intelligence-platform`, `qualification-plane`
++
++## Context
++
++The product route crosses admission, a

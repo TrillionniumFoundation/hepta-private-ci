@@ -1,0 +1,47 @@
+name: intelligence.control apply reviewed closure patch
+
+on:
+  push:
+    branches:
+      - codex/intelligence-control-product-closure-20260926
+    paths:
+      - .github/intelligence-control-closure.patch.part-00
+      - .github/intelligence-control-closure.patch.part-01
+      - .github/intelligence-control-closure.patch.part-02
+      - .github/intelligence-control-closure.patch.part-03
+      - .github/intelligence-control-closure.patch.part-04
+      - .github/workflows/intelligence-control-apply-closure.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 2
+      - name: Verify, apply and remove transport
+        shell: bash
+        env:
+          EXPECTED_PARENT: 64580d8bcb0785567569d55f7993a26daf2ac4df
+          EXPECTED_PATCH_SHA256: 851c60e292318b61cbee37e753c0bcdc5f93388cf1757b2a4edf7e95245c4f92
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
+          cat .github/intelligence-control-closure.patch.part-* > "$RUNNER_TEMP/intelligence-control-closure.patch"
+          printf '%s  %s\n' "$EXPECTED_PATCH_SHA256" "$RUNNER_TEMP/intelligence-control-closure.patch" | sha256sum --check --strict
+          git apply --check "$RUNNER_TEMP/intelligence-control-closure.patch"
+          git apply --index "$RUNNER_TEMP/intelligence-control-closure.patch"
+          git rm -f .github/intelligence-control-closure.patch.part-* \
+            .github/workflows/intelligence-control-apply-closure.yml
+          git diff --cached --check
+          python3 scripts/hepta-intelligence-control-status.py --check-tracked
+          python3 scripts/hepta-intelligence-control-status-tests.py
+          python3 scripts/hepta-intelligence-acceptance.py --check
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git commit -m "fix(intelligence-control): close qualification and recovery gaps"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
