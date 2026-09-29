@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import pathlib
+import sys
 import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -11,6 +12,7 @@ SPEC = importlib.util.spec_from_file_location(
 )
 assert SPEC is not None and SPEC.loader is not None
 EXPORTER = importlib.util.module_from_spec(SPEC)
+sys.modules[SPEC.name] = EXPORTER
 SPEC.loader.exec_module(EXPORTER)
 
 
