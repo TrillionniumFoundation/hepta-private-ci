@@ -1,0 +1,33 @@
+name: memory federation fixed review source export slim
+on:
+  push:
+    branches: [ops/memory-federation-source-review-20260929]
+    paths: [.github/workflows/memory-federation-source-review-export-slim.yml]
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-slim
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: b1740debc187fb1a7661c9c4cf0bdd0e9ca3065f
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Export immutable tracked source only
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = b1740debc187fb1a7661c9c4cf0bdd0e9ca3065f
+          mkdir -p "$RUNNER_TEMP/federation-review-source"
+          git archive --format=tar HEAD | gzip -1 > "$RUNNER_TEMP/federation-review-source/source.tar.gz"
+          git show -s --format=fuller HEAD > "$RUNNER_TEMP/federation-review-source/identity.txt"
+          sha256sum "$RUNNER_TEMP/federation-review-source/source.tar.gz"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-federation-fixed-review-source
+          path: ${{ runner.temp }}/federation-review-source
+          retention-days: 7
+          compression-level: 0
+          if-no-files-found: error
