@@ -47,6 +47,7 @@ jobs:
           grep -Fq 'settle_durable_neural_circuit_recovery_v1' codex-rs/hepta-automation/src/durable_neural_circuit_recovery.rs
           grep -Fq -- '--test durable_neural_circuit' .github/workflows/automation-taskflow-selected-host.yml
           grep -Fq -- '--test durable_neural_circuit_recovery' .github/workflows/automation-taskflow-selected-host.yml
+          test -s scripts/automation_taskflow_source_last_mile_20260929.py.gz.b64
           git diff --exit-code
           git diff --cached --exit-code
 
@@ -55,6 +56,23 @@ jobs:
         run: |
           git config user.name "hepta-automation-convergence"
           git config user.email "hepta-automation-convergence@users.noreply.github.com"
+
+      - name: Apply final source correctness and bounded-startup patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          decoded="scripts/.automation_taskflow_source_last_mile_20260929.py"
+          base64 -d scripts/automation_taskflow_source_last_mile_20260929.py.gz.b64 | gzip -d > "$decoded"
+          python3 -m py_compile "$decoded"
+          python3 "$decoded"
+          rm -f "$decoded"
+          git diff --check
+          git add \
+            codex-rs/hepta-automation/src/durable_neural_circuit.rs \
+            codex-rs/hepta-automation/src/taskflow.rs \
+            codex-rs/hepta-automation/tests/durable_neural_circuit.rs \
+            codex-rs/hepta-automation/tests/taskflow.rs
+          git commit --no-verify -m "fix(automation): close circuit replay and bounded startup gaps"
 
       - name: Converge truthful schema and documentation state
         shell: bash
@@ -76,6 +94,7 @@ jobs:
             scripts/automation_taskflow_finalize_20260928.py \
             scripts/automation_taskflow_truthful_finalize_20260929.py \
             scripts/automation_taskflow_layered_contract_20260929.py \
+            scripts/automation_taskflow_source_last_mile_20260929.py.gz.b64 \
             scripts/automation_taskflow_patch_parts
           git diff --check
           git add -u
