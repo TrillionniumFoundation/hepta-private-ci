@@ -11,7 +11,7 @@ import {
   validateDeploymentSecurityReceipt,
   validateIndependentAcceptance,
   validateIndependentSecurityReview,
-  validateOperationalExercise,
+  validateOperationalExerciseWithRolloutFence,
   validateProductionApproval,
   validateRealBackendReceipt,
   validateRepositoryQualificationReceipt,
@@ -135,7 +135,9 @@ try {
   stage = "operational-exercise";
   ledger.begin(stage);
   const operationalExercise = await readEvidence("UI_CONTROL_OPERATIONAL_EXERCISE_RECEIPT", "operationalExercise");
-  validateOperationalExercise(operationalExercise, expected);
+  validateOperationalExerciseWithRolloutFence(operationalExercise, expected, {
+    browserBuildManifestSha256: sourceSummary.browserBuildManifestSha256,
+  });
   ledger.accept(stage);
 
   stage = "production-approval";

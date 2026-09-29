@@ -63,6 +63,8 @@ Old browser code does not maintain the directory. A production rollout must ther
 4. restore mutation permission only after the new page reports a healthy scoped directory and backend lookup path;
 5. retain the old records until authoritative lookup resolves every indeterminate identity.
 
+The externally accepted operational receipt must include the exact `mixed-version-mutation-fence` case. That case binds the exercise to the source-head browser build manifest and records that old mutation sessions were revoked or drained, cached HTML was invalidated, no legacy mutation session remained active, a stale client mutation received `401` or `403`, and the backend ledger contained no operation created by that rejected attempt. A checklist or top-level success boolean cannot replace these fields or their retained raw-evidence digest.
+
 Do not delete the directory to “retry migration,” and do not clear local storage to regain availability. Either action can hide an identity that may already have crossed the transport boundary.
 
 ## Diagnostics

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "hepta.ui-control.operational-exercise-receipt.v1",
-  "title": "ui.control rollback, disaster-recovery, monitoring, redaction, and rotation exercise",
+  "title": "ui.control rollback, recovery, monitoring, redaction, rotation, and mixed-version mutation-fence exercise",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -23,26 +23,57 @@
     "executedAt": { "type": "string", "format": "date-time" },
     "cases": {
       "type": "array",
-      "minItems": 5,
-      "maxItems": 32,
+      "minItems": 6,
+      "maxItems": 6,
       "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": ["id", "status", "rawEvidenceDigest"],
-        "properties": {
-          "id": {
-            "enum": [
-              "rollback",
-              "disaster-recovery",
-              "alert-routing",
-              "log-redaction",
-              "credential-rotation"
-            ]
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "status", "rawEvidenceDigest"],
+            "properties": {
+              "id": {
+                "enum": [
+                  "rollback",
+                  "disaster-recovery",
+                  "alert-routing",
+                  "log-redaction",
+                  "credential-rotation"
+                ]
+              },
+              "status": { "enum": ["passed", "failed"] },
+              "notes": { "type": "string", "maxLength": 4096 },
+              "rawEvidenceDigest": { "$ref": "#/$defs/sha256" }
+            }
           },
-          "status": { "enum": ["passed", "failed"] },
-          "notes": { "type": "string", "maxLength": 4096 },
-          "rawEvidenceDigest": { "$ref": "#/$defs/sha256" }
-        }
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "status",
+              "oldMutationSessionsRevoked",
+              "cachedHtmlInvalidated",
+              "activeLegacyMutationSessions",
+              "staleClientMutationStatus",
+              "staleClientOperationCreated",
+              "freshClientBuildManifestSha256",
+              "rawEvidenceDigest"
+            ],
+            "properties": {
+              "id": { "const": "mixed-version-mutation-fence" },
+              "status": { "enum": ["passed", "failed"] },
+              "oldMutationSessionsRevoked": { "const": true },
+              "cachedHtmlInvalidated": { "const": true },
+              "activeLegacyMutationSessions": { "const": 0 },
+              "staleClientMutationStatus": { "enum": [401, 403] },
+              "staleClientOperationCreated": { "const": false },
+              "freshClientBuildManifestSha256": { "$ref": "#/$defs/sha256" },
+              "notes": { "type": "string", "maxLength": 4096 },
+              "rawEvidenceDigest": { "$ref": "#/$defs/sha256" }
+            }
+          }
+        ]
       }
     },
     "rawEvidenceDigest": { "$ref": "#/$defs/sha256" }

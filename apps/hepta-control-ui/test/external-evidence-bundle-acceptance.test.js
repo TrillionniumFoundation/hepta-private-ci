@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 import {
   INDEPENDENT_SECURITY_CONTROLS,
   REQUIRED_DEPLOYMENT_SECURITY_CHECKS,
+  REQUIRED_OPERATIONAL_EXERCISE_CASES,
   REQUIRED_REAL_BACKEND_CASES,
   deploymentSubject,
   sha256,
@@ -192,8 +193,22 @@ test("bundle validation accepts one exact, mutually bound evidence set on main",
     const operationsReceipt = writeReceipt("operations.json", {
       schema: "hepta.ui-control.operational-exercise-receipt.v1",
       ...common,
-      cases: ["rollback", "disaster-recovery", "alert-routing", "log-redaction", "credential-rotation"]
-        .map(id => ({ id, status: "passed", rawEvidenceDigest: evidenceRaw })),
+      cases: [
+        ...REQUIRED_OPERATIONAL_EXERCISE_CASES
+          .filter(id => id !== "mixed-version-mutation-fence")
+          .map(id => ({ id, status: "passed", rawEvidenceDigest: evidenceRaw })),
+        {
+          id: "mixed-version-mutation-fence",
+          status: "passed",
+          oldMutationSessionsRevoked: true,
+          cachedHtmlInvalidated: true,
+          activeLegacyMutationSessions: 0,
+          staleClientMutationStatus: 403,
+          staleClientOperationCreated: false,
+          freshClientBuildManifestSha256: manifestDigest,
+          rawEvidenceDigest: evidenceRaw,
+        },
+      ],
     });
     const approvalEvidenceDigests = {
       sourceHead: sourceReceipt.digest,
