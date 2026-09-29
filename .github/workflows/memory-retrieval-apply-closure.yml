@@ -8,6 +8,13 @@ on:
       - .github/patches/memory-retrieval-phase1a.patch
       - .github/patches/memory-retrieval-phase1b.patch
       - .github/workflows/memory-retrieval-apply-closure.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/patches/memory-retrieval-phase1a.patch
+      - .github/patches/memory-retrieval-phase1b.patch
+      - .github/workflows/memory-retrieval-apply-closure.yml
 
 permissions:
   contents: write
