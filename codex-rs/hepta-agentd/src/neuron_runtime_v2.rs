@@ -8,6 +8,7 @@
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
+#[cfg(unix)]
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::io;
@@ -52,4 +53,5 @@ include!("neuron_runtime_v2_operational.rs");
 include!("neuron_runtime_v2_errors.rs");
 include!("neuron_runtime_v2_durable_state.rs");
 include!("neuron_runtime_v2_controller.rs");
+include!("neuron_runtime_v2_failed_recovery.rs");
 include!("neuron_runtime_v2_modules.rs");
