@@ -11,6 +11,9 @@ from scripts.hepta_ci_risk import classify
 from scripts.hepta_ci_risk import project
 from scripts.hepta_ci_scope import GROUPS
 from scripts.hepta_ci_scope import generated_package_groups
+from scripts.hepta_repository_surface import load_policy
+from scripts.hepta_workflow_commands import load_workflow
+from scripts.hepta_workflow_commands import workflow_expression_references
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -30,22 +33,39 @@ class CiRiskTests(unittest.TestCase):
         self.assertEqual(classify(self.scope(effects=True, native=True)), "effect")
         self.assertEqual(classify(self.scope(full_repo=True)), "effect")
 
-    def test_execution_policy_keeps_ordinary_feedback_bounded(self):
+    def test_execution_policy_uses_reviewed_cost_budgets(self):
+        policy = load_policy(ROOT)
         ordinary = project(self.scope(inference=True, native=True))
         self.assertEqual(ordinary["lanes"], ["source-head"])
         self.assertFalse(ordinary["require_exact_source"])
-        self.assertEqual(ordinary["ordinary_feedback_target_minutes"], 10)
-        self.assertEqual(ordinary["scoped_timeout_minutes"], 15)
-        self.assertEqual(ordinary["architecture_timeout_minutes"], 15)
+        self.assertEqual(
+            ordinary["ordinary_feedback_target_minutes"],
+            policy["ordinaryFeedbackTargetMinutes"],
+        )
+        self.assertEqual(
+            ordinary["scoped_timeout_minutes"],
+            policy["ordinaryWorkflowTimeoutMinutes"],
+        )
+        self.assertEqual(
+            ordinary["architecture_timeout_minutes"],
+            policy["ordinaryWorkflowTimeoutMinutes"],
+        )
 
         stateful = project(self.scope(lifecycle=True, native=True))
         self.assertEqual(stateful["lanes"], ["source-head", "base-merge"])
         self.assertFalse(stateful["require_exact_source"])
-        self.assertEqual(stateful["scoped_timeout_minutes"], 40)
-        self.assertEqual(stateful["architecture_timeout_minutes"], 60)
+        self.assertEqual(
+            stateful["scoped_timeout_minutes"],
+            policy["statefulWorkflowTimeoutMinutes"],
+        )
+        self.assertEqual(
+            stateful["architecture_timeout_minutes"],
+            policy["architectureDeepTimeoutMinutes"],
+        )
 
     def test_source_risk_does_not_imply_independent_acceptance_evidence(self):
         scope = self.scope(effects=True, lifecycle=True, native=True)
+        deep_budget = load_policy(ROOT)["architectureDeepTimeoutMinutes"]
         for risk in ("stateful", "effect", "release"):
             with self.subTest(risk=risk):
                 report = project(scope, change_risk=risk, reasons=["changed owner"])
@@ -54,9 +74,10 @@ class CiRiskTests(unittest.TestCase):
                 self.assertEqual(report["lanes"], ["source-head", "base-merge"])
                 self.assertEqual(report["scope"], scope)
                 self.assertFalse(report["require_exact_source"])
-                self.assertEqual(report["architecture_timeout_minutes"], 60)
+                self.assertEqual(report["architecture_timeout_minutes"], deep_budget)
 
     def test_explicit_qualification_keeps_deep_checks_for_every_risk(self):
+        deep_budget = load_policy(ROOT)["architectureDeepTimeoutMinutes"]
         for risk in ("ordinary", "stateful", "effect", "release"):
             with self.subTest(risk=risk):
                 report = project(
@@ -64,7 +85,7 @@ class CiRiskTests(unittest.TestCase):
                 )
                 self.assertTrue(report["require_exact_source"])
                 self.assertEqual(report["lanes"], ["source-head", "base-merge"])
-                self.assertEqual(report["architecture_timeout_minutes"], 60)
+                self.assertEqual(report["architecture_timeout_minutes"], deep_budget)
 
     def test_invalid_policy_inputs_fail_instead_of_disabling_checks(self):
         for value in (None, 0, 1, "false", "true", [], {}):
@@ -74,37 +95,68 @@ class CiRiskTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "unknown CI change risk"):
             project(self.scope(), change_risk="unsupported")
 
-    def test_required_workflows_consume_risk_projection(self):
-        architecture = (
-            ROOT / ".github/workflows/hepta-architecture-convergence.yml"
-        ).read_text(encoding="utf-8")
-        blocking = (ROOT / ".github/workflows/blocking-ci.yml").read_text(
-            encoding="utf-8"
+    def test_required_workflows_consume_risk_projection_structurally(self):
+        architecture = load_workflow(
+            (ROOT / ".github/workflows/hepta-architecture-convergence.yml").read_text()
+        )
+        blocking = load_workflow(
+            (ROOT / ".github/workflows/blocking-ci.yml").read_text()
         )
 
-        self.assertIn("lane: ${{ fromJSON(needs.plan.outputs.lanes) }}", architecture)
-        self.assertNotIn(
-            "github.event_name == 'pull_request' && '[\"source-head\",\"base-merge\"]'",
-            architecture,
+        plan = architecture["jobs"]["plan"]
+        qualification = architecture["jobs"]["qualification"]
+        self.assertEqual(
+            workflow_expression_references(plan["outputs"]["lanes"]),
+            {"steps.risk.outputs.lanes"},
         )
-        self.assertIn("RISK: ${{ needs.plan.outputs.risk }}", architecture)
-        self.assertIn("run_native=false", architecture)
+        self.assertEqual(
+            workflow_expression_references(plan["outputs"]["risk"]),
+            {"steps.risk.outputs.risk"},
+        )
+        self.assertEqual(
+            workflow_expression_references(plan["outputs"]["timeout_minutes"]),
+            {"steps.risk.outputs.timeout_minutes"},
+        )
+        self.assertIn("plan", self._needs(qualification))
+        self.assertEqual(
+            workflow_expression_references(qualification["strategy"]["matrix"]["lane"]),
+            {"needs.plan.outputs.lanes"},
+        )
+        self.assertEqual(
+            workflow_expression_references(qualification["timeout-minutes"]),
+            {"needs.plan.outputs.timeout_minutes"},
+        )
+        execution = next(
+            step for step in qualification["steps"] if step.get("id") == "execution"
+        )
         self.assertIn(
-            "timeout-minutes: ${{ fromJSON(needs.plan.outputs.timeout_minutes) }}",
-            architecture,
+            "needs.plan.outputs.risk",
+            workflow_expression_references(execution.get("env", {})),
         )
-        self.assertIn(".architecture_timeout_minutes", architecture)
 
-        self.assertIn(
-            "scoped_timeout_minutes: ${{ steps.scope.outputs.scoped_timeout_minutes }}",
-            blocking,
+        scope = blocking["jobs"]["scope"]
+        scoped = blocking["jobs"]["hepta-scoped"]
+        self.assertEqual(
+            workflow_expression_references(scope["outputs"]["scoped_timeout_minutes"]),
+            {"steps.scope.outputs.scoped_timeout_minutes"},
         )
-        scoped = blocking.split("  hepta-scoped:", 1)[1].split("  lightweight:", 1)[0]
-        self.assertIn(
-            "timeout-minutes: ${{ fromJSON(needs.scope.outputs.scoped_timeout_minutes) }}",
-            scoped,
+        self.assertIn("scope", self._needs(scoped))
+        self.assertEqual(
+            workflow_expression_references(scoped["timeout-minutes"]),
+            {"needs.scope.outputs.scoped_timeout_minutes"},
         )
-        self.assertNotIn("timeout-minutes: 40", scoped)
+        self.assertTrue(
+            {
+                "needs.scope.outputs.native",
+                "needs.scope.outputs.full_repo",
+            }
+            <= workflow_expression_references(scoped["if"], implicit=True)
+        )
+
+    @staticmethod
+    def _needs(job: dict) -> set[str]:
+        value = job.get("needs", [])
+        return {value} if isinstance(value, str) else set(value)
 
     def test_package_groups_are_loaded_only_from_generated_matrix(self):
         with tempfile.TemporaryDirectory() as directory:

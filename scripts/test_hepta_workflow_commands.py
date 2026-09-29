@@ -11,6 +11,8 @@ from hepta_workflow_commands import (
     verify_synthetic_merge,
     verify_owner_self_tests,
     workflow_commands,
+    workflow_expression_references,
+    workflow_literal_collection_values,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -36,11 +38,62 @@ steps:
             ],
         )
 
+    def test_expression_references_follow_data_flow_not_labels_or_quoted_text(self):
+        value = {
+            "timeout": "${{ fromJSON(needs.plan.outputs.timeout_minutes) }}",
+            "nested": [
+                "plain needs.fake.output",
+                "${{ env.FLAG == 'needs.quoted.output' && steps.scope.outputs.native }}",
+                "${{ matrix.lane }}",
+            ],
+        }
+        self.assertEqual(
+            workflow_expression_references(value),
+            {
+                "needs.plan.outputs.timeout_minutes",
+                "env.FLAG",
+                "steps.scope.outputs.native",
+                "matrix.lane",
+            },
+        )
+        self.assertEqual(
+            workflow_expression_references("needs.plan.outputs.lanes"), set()
+        )
+        self.assertEqual(
+            workflow_expression_references(
+                "needs.plan.outputs.lanes == 'ignored.literal'", implicit=True
+            ),
+            {"needs.plan.outputs.lanes"},
+        )
+
+    def test_literal_collection_values_accept_yaml_lists_and_json_expressions(self):
+        self.assertEqual(
+            workflow_literal_collection_values(["source-head", "base-merge"]),
+            {"source-head", "base-merge"},
+        )
+        self.assertEqual(
+            workflow_literal_collection_values(
+                "${{ fromJSON(github.event_name == 'pull_request' && "
+                '\'["source-head","base-merge"]\' || '
+                "'[\"source-head\"]') }}"
+            ),
+            {"source-head", "base-merge"},
+        )
+        self.assertEqual(
+            workflow_literal_collection_values("${{ fromJSON(inputs.dynamic) }}"),
+            set(),
+        )
+
     def test_owner_self_test_is_executable_and_not_required_twice(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             workflow = root / "owner.yml"
-            registry = [{"validator": "python3 scripts/owner.py verify", "workflow": "owner.yml"}]
+            registry = [
+                {
+                    "validator": "python3 scripts/owner.py verify",
+                    "workflow": "owner.yml",
+                }
+            ]
             workflow.write_text("steps:\n  - run: python3 scripts/owner.py self-test\n")
             verify_owner_self_tests(registry, root)
             for line in (
@@ -48,14 +101,19 @@ steps:
                 "echo python3 scripts/owner.py self-test",
                 "python3 scripts/owner.py verify",
             ):
-                with self.subTest(line=line), self.assertRaisesRegex(ValueError, "must invoke"):
+                with (
+                    self.subTest(line=line),
+                    self.assertRaisesRegex(ValueError, "must invoke"),
+                ):
                     workflow.write_text(f"steps:\n  - run: |\n      {line}\n")
                     verify_owner_self_tests(registry, root)
 
     def test_real_subordinate_workflows_own_their_self_tests(self):
         import json
 
-        registry = json.loads((ROOT / "docs/governance/DOCUMENT_SYSTEM.json").read_text())
+        registry = json.loads(
+            (ROOT / "docs/governance/DOCUMENT_SYSTEM.json").read_text()
+        )
         verify_owner_self_tests(registry["subordinateRegistries"], ROOT)
 
     def test_real_workflow_resolves_composite_action(self):

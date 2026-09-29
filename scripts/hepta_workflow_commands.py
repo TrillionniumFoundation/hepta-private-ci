@@ -5,8 +5,22 @@ supported. Remote actions are opaque. Runtime conditions are not evaluated here.
 """
 
 from pathlib import Path
+import json
 import re
 import shlex
+
+
+def run_scalar_commands(scalar: str) -> list[list[str]]:
+    """Tokenize executable lines from one already-parsed ``run`` scalar."""
+    commands: list[list[str]] = []
+    for line in scalar.replace(chr(92) + "\n", " ").splitlines():
+        try:
+            tokens = shlex.split(line, comments=True)
+        except ValueError:
+            continue
+        if tokens:
+            commands.append(tokens)
+    return commands
 
 
 def workflow_commands(text: str) -> list[list[str]]:
@@ -33,13 +47,7 @@ def workflow_commands(text: str) -> list[list[str]]:
                 block.append(line.strip())
                 index += 1
             scalar = (" " if scalar.startswith(">") else "\n").join(block)
-        for line in scalar.replace("\\\n", " ").splitlines():
-            try:
-                tokens = shlex.split(line, comments=True)
-            except ValueError:
-                continue
-            if tokens:
-                commands.append(tokens)
+        commands.extend(run_scalar_commands(scalar))
     return commands
 
 
@@ -191,6 +199,73 @@ def workflow_events(document: dict) -> set[str]:
             raise ValueError("duplicate workflow event")
         return set(value)
     raise ValueError("invalid workflow event declaration")
+
+
+def workflow_expression_references(
+    value: object, *, implicit: bool = False
+) -> set[str]:
+    """Return data-flow references from GitHub expressions in parsed YAML.
+
+    Plain prose, labels, shell text outside ``${{ ... }}``, and quoted literals
+    are ignored.  This checks declared workflow wiring, not expression truth.
+    """
+    references: set[str] = set()
+    roots = "needs|steps|matrix|github|inputs|env|vars|runner|strategy|job"
+
+    def visit(item: object) -> None:
+        if isinstance(item, dict):
+            for child in item.values():
+                visit(child)
+        elif isinstance(item, list):
+            for child in item:
+                visit(child)
+        elif isinstance(item, str):
+            expressions = re.findall(r"\$\{\{(.*?)\}\}", item, flags=re.S)
+            if implicit and not expressions:
+                expressions = [item]
+            for expression in expressions:
+                expression = re.sub(r"'(?:[^']|'')*'", "''", expression)
+                expression = re.sub(r'"(?:[^"\\]|\\.)*"', '""', expression)
+                references.update(
+                    re.findall(
+                        rf"(?<![\w.])(?:{roots})(?:\.[A-Za-z0-9_-]+)*",
+                        expression,
+                    )
+                )
+
+    visit(value)
+    return references
+
+
+def workflow_literal_collection_values(value: object) -> set[str]:
+    """Collect static string members from a list or JSON literals in expressions.
+
+    This supports direct YAML sequences and ``fromJSON`` expressions without
+    requiring one exact whitespace, quoting, or conditional spelling.
+    """
+    values: set[str] = set()
+    if isinstance(value, list):
+        if all(isinstance(item, str) and "${{" not in item for item in value):
+            return set(value)
+        return set()
+    if not isinstance(value, str):
+        return set()
+    for match in re.finditer(r"'(?:[^']|'')*'|\"(?:[^\"\\]|\\.)*\"", value):
+        token = match.group(0)
+        try:
+            decoded = (
+                token[1:-1].replace("''", "'")
+                if token.startswith("'")
+                else json.loads(token)
+            )
+            candidate = json.loads(decoded)
+        except (TypeError, ValueError, json.JSONDecodeError):
+            continue
+        if isinstance(candidate, list) and all(
+            isinstance(item, str) for item in candidate
+        ):
+            values.update(candidate)
+    return values
 
 
 def validate_manual_workflow(text: str, maximum_minutes: int) -> None:

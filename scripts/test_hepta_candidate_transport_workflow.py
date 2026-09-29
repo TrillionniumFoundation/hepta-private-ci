@@ -2,62 +2,134 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 import itertools
 import os
+from pathlib import Path
 import subprocess
 import unittest
 
+from scripts.hepta_workflow_commands import declared_commands
+from scripts.hepta_workflow_commands import load_workflow
+from scripts.hepta_workflow_commands import run_scalar_commands
+from scripts.hepta_workflow_commands import workflow_events
+from scripts.hepta_workflow_commands import workflow_expression_references
+
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW = ROOT / ".github/workflows/hepta-architecture-convergence.yml"
+ACTIVATION = ROOT / ".github/workflows/hepta-self-iteration-activation.yml"
+
+
+def command_lines(step: dict) -> list[str]:
+    return [" ".join(command) for command in run_scalar_commands(step.get("run", ""))]
+
+
+def step_with_command(job: dict, needle: str) -> tuple[int, dict]:
+    matches = [
+        (index, step)
+        for index, step in enumerate(job.get("steps", []))
+        if any(needle in line for line in command_lines(step))
+    ]
+    if len(matches) != 1:
+        raise AssertionError(
+            f"expected one step containing {needle!r}, found {len(matches)}"
+        )
+    return matches[0]
+
+
+def contains_key(value: object, key: str) -> bool:
+    if isinstance(value, dict):
+        return key in value or any(contains_key(item, key) for item in value.values())
+    if isinstance(value, list):
+        return any(contains_key(item, key) for item in value)
+    return False
 
 
 class CandidateTransportWorkflowTests(unittest.TestCase):
+    def architecture(self) -> dict:
+        return load_workflow(WORKFLOW.read_text(encoding="utf-8"))
+
     def test_ordinary_qualification_uses_local_contract_tests_only(self):
-        workflow = WORKFLOW.read_text(encoding="utf-8")
-        marker = "      - name: Verify candidate transport stays proposal-only\n"
-        self.assertIn(marker, workflow)
-        block = workflow.split(marker, 1)[1].split("      - name:", 1)[0]
-        self.assertIn("scripts.test_hepta_candidate_transport_workflow", block)
-        self.assertIn("--minimum-tests 1", block)
-        self.assertNotIn("GH_TOKEN", block)
-        self.assertNotIn("observe_write_transport_denial", block)
-        self.assertNotIn("git-receive-pack", block)
-        self.assertNotIn("gh api", block)
+        qualification = self.architecture()["jobs"]["qualification"]
+        _, step = step_with_command(
+            qualification, "scripts.test_hepta_candidate_transport_workflow"
+        )
+        lines = command_lines(step)
+        self.assertTrue(
+            any(
+                "python3 -m unittest -v scripts.test_hepta_candidate_transport_workflow"
+                in line
+                for line in lines
+            )
+        )
+        self.assertTrue(any("--minimum-tests 1" in line for line in lines))
+        self.assertNotIn("GH_TOKEN", step.get("env", {}))
+        forbidden = ("observe_write_transport_denial", "git-receive-pack", "gh api")
+        self.assertFalse(any(token in line for token in forbidden for line in lines))
 
     def test_external_repository_observation_remains_activation_only(self):
-        workflow = WORKFLOW.read_text(encoding="utf-8")
-        self.assertNotIn("probe-write-denial", workflow)
-        self.assertNotIn("service=git-receive-pack", workflow)
-        activation = ROOT / ".github/workflows/hepta-self-iteration-activation.yml"
-        self.assertTrue(activation.is_file())
-        activation_text = activation.read_text(encoding="utf-8")
-        self.assertIn("repository", activation_text.lower())
-        self.assertIn("activation", activation_text.lower())
+        architecture_commands = [
+            " ".join(command)
+            for command in declared_commands(WORKFLOW.read_text(), ROOT)
+        ]
+        self.assertFalse(
+            any(
+                token in line
+                for token in ("--probe-write-denial", "git-receive-pack")
+                for line in architecture_commands
+            )
+        )
+
+        activation = load_workflow(ACTIVATION.read_text(encoding="utf-8"))
+        self.assertEqual(
+            workflow_events(activation), {"workflow_call", "workflow_dispatch"}
+        )
+        self.assertTrue(
+            all(
+                value in {"read", "none"}
+                for value in activation["permissions"].values()
+            )
+        )
+        job = activation["jobs"]["repository-control"]
+        _, step = step_with_command(job, "scripts/hepta_repository_controls.py")
+        lines = command_lines(step)
+        self.assertTrue(any("--probe-write-denial" in line for line in lines))
+        self.assertIn(
+            "github.token", workflow_expression_references(step.get("env", {}))
+        )
 
     def test_native_and_lifecycle_work_precedes_transport_contract(self):
-        workflow = WORKFLOW.read_text(encoding="utf-8")
-        probe = workflow.index(
-            "      - name: Verify candidate transport stays proposal-only"
+        job = self.architecture()["jobs"]["qualification"]
+        transport, _ = step_with_command(
+            job, "scripts.test_hepta_candidate_transport_workflow"
         )
-        for name in (
-            "Inference owner regressions and streaming digest",
-            "Module lifecycle generations and migration rollback",
-            "Selected-artifact adoption and explicit rollback",
+        for needle in (
+            "-p codex-hepta-infer-core",
+            "repeated_read_only_add_replace_retire_preserves_dispatch_and_generation_fences",
+            "new_generation_candidate_changes_behavior_and_explicit_predecessor_reload_restores_it",
         ):
-            self.assertLess(workflow.index("      - name: " + name), probe)
+            with self.subTest(needle=needle):
+                index, _ = step_with_command(job, needle)
+                self.assertLess(index, transport)
 
     def test_required_fan_in_still_rejects_every_unsuccessful_lane(self):
-        workflow = WORKFLOW.read_text(encoding="utf-8")
-        required = workflow.split("  required:\n", 1)[1]
-        self.assertIn("needs: [plan, qualification]", required)
-        self.assertIn("PLAN_RESULT: ${{ needs.plan.result }}", required)
-        self.assertIn(
-            "QUALIFICATION_RESULT: ${{ needs.qualification.result }}", required
+        required = self.architecture()["jobs"]["required"]
+        needs = required["needs"]
+        self.assertEqual(
+            set(needs if isinstance(needs, list) else [needs]),
+            {"plan", "qualification"},
         )
-        self.assertNotIn("continue-on-error", required)
-        script = required.split("        run: |\n", 1)[1]
-        script = "\n".join(line[10:] for line in script.splitlines() if line.strip())
+        refs = workflow_expression_references(required.get("steps", []))
+        self.assertTrue(
+            {
+                "needs.plan.result",
+                "needs.qualification.result",
+                "needs.plan.outputs.risk",
+                "needs.plan.outputs.lanes",
+            }
+            <= refs
+        )
+        self.assertFalse(contains_key(required, "continue-on-error"))
+        script = required["steps"][0]["run"]
         states = (
             "success",
             "failure",
