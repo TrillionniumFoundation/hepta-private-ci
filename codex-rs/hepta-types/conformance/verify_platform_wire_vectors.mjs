@@ -13,6 +13,7 @@ const STABLE_ID = /^[A-Za-z0-9._:-]+$/;
 const DIGEST = /^[0-9a-f]{64}$/;
 const U64 = /^(0|[1-9][0-9]*)$/;
 const U64_MAX = (1n << 64n) - 1n;
+const MAX_HPTC_ITEMS = 4096;
 const PROMPT_KEYS = [
   "kind", "compilation_id", "provider_request_digest", "delivered",
   "rejected_reason", "observed_token_positions", "truncation_observed", "legacy_v1_digest",
@@ -77,6 +78,7 @@ function encodeValue(kind, value) {
     const raw = Buffer.from(value); return Buffer.concat([Buffer.from([8]), u16(raw.length), raw]);
   }
   if (kind === "array") {
+    assert(value.length <= MAX_HPTC_ITEMS, "HPTC: too many items");
     return Buffer.concat([
       Buffer.from([9]), u32(value.length), ...value.map(([itemKind, item]) => encodeValue(itemKind, item)),
     ]);
@@ -86,11 +88,13 @@ function encodeValue(kind, value) {
 function hptc(typeId, schemaVersion, fields) {
   const typeRaw = Buffer.from(typeId);
   const entries = Object.entries(fields).sort(([left], [right]) => Buffer.from(left).compare(Buffer.from(right)));
+  assert(entries.length <= MAX_HPTC_ITEMS, "HPTC: too many fields");
   const encoded = Buffer.concat([
     Buffer.from("HPTC"), u16(1), u16(DOMAIN.length), DOMAIN,
     u16(typeRaw.length), typeRaw, u32(schemaVersion), u32(entries.length),
     ...entries.map(([name, value]) => Buffer.concat([label(name), encodeValue(...value)])),
   ]);
+  assert(encoded.length <= 262144, "HPTC: too large");
   return crypto.createHash("sha256").update(encoded).digest("hex");
 }
 function promptDigest(input) {
@@ -107,7 +111,7 @@ function promptDigest(input) {
   assert(value.delivered !== (reason !== null), "prompt: disposition");
   let positions = value.observed_token_positions;
   if (positions !== null) {
-    assert(Array.isArray(positions) && positions.length >= 1 && positions.length <= 8192, "prompt: positions");
+    assert(Array.isArray(positions) && positions.length >= 1 && positions.length <= MAX_HPTC_ITEMS, "prompt: positions");
     for (const item of positions) assert(Number.isInteger(item) && item >= 0 && item <= 0xFFFF_FFFF, "prompt: positions");
     for (let index = 1; index < positions.length; index += 1) assert(positions[index - 1] < positions[index], "prompt: positions order");
   }
@@ -213,6 +217,25 @@ function verifyRawInvalid(vector) {
   }
   throw new Error(`${vector.id}: unknown expected error`);
 }
+function verifyPromptCapacity() {
+  for (const count of [1, 4095, 4096, 4097, 8192, 8193]) {
+    const value = {
+      kind: "prompt_delivery_observation_v2", compilation_id: "compilation-1",
+      provider_request_digest: "11".repeat(32), delivered: true, rejected_reason: null,
+      observed_token_positions: Array.from({length: count}, (_, index) => index),
+      truncation_observed: false, legacy_v1_digest: null,
+    };
+    let result = null;
+    try { result = promptDigest(value); } catch (error) {
+      assert(count > 4096, `accepted boundary rejected: ${count}: ${error}`);
+    }
+    assert((result !== null) === (count <= 4096), `capacity mismatch: ${count}`);
+    if (count === 4096) assert(result === "c499a4a2479291376878d2f3a506d342c7f96b3eaa0fea3d206aafcbaf5a4e36", "frozen capacity digest changed");
+  }
+  let rejected = false;
+  try { encodeValue("array", Array.from({length: 4097}, () => ["u64", 0n])); } catch { rejected = true; }
+  assert(rejected, "generic HPTC array bound bypassed");
+}
 for (const vector of VECTORS.validVectors) {
   const actual = vector.protocol === "PromptDeliveryObservationV2"
     ? promptDigest(vector.json)
@@ -220,4 +243,5 @@ for (const vector of VECTORS.validVectors) {
   assert(actual === vector.expectedHptcSha256, `${vector.id}: digest mismatch ${actual}`);
 }
 for (const vector of VECTORS.rawInvalidVectors) verifyRawInvalid(vector);
-console.log(`platform.types prompt/topology JavaScript conformance: ok (${VECTORS.validVectors.length} valid, ${VECTORS.rawInvalidVectors.length} raw invalid)`);
+verifyPromptCapacity();
+console.log(`platform.types prompt/topology JavaScript conformance: ok (${VECTORS.validVectors.length} valid, ${VECTORS.rawInvalidVectors.length} raw invalid, 6 capacity boundaries)`);

@@ -15,7 +15,11 @@ use crate::PromptDeliveryObservationV1;
 use crate::StableId;
 use crate::canonical_digest_v1;
 
-pub const MAX_PROMPT_V2_TOKEN_POSITIONS: usize = 8_192;
+/// V2 commits all positions as one array in frozen HPTC V1. Earlier V2
+/// constructors admitted 4097..=8192 positions that could never be committed.
+/// Reject that unsupported range at admission; do not truncate or change HPTC.
+/// V1 keeps its independent 8192-position compatibility bound.
+pub const MAX_PROMPT_V2_TOKEN_POSITIONS: usize = crate::MAX_CANONICAL_CONTAINER_ITEMS_V1;
 pub const MAX_PROMPT_V2_REJECTION_REASON_BYTES: usize = 64;
 
 #[derive(Clone, Debug, Eq, PartialEq)]

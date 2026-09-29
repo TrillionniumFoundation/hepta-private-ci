@@ -16,6 +16,7 @@ STABLE_ID = re.compile(r"^[A-Za-z0-9._:-]+$")
 DIGEST = re.compile(r"^[0-9a-f]{64}$")
 U64 = re.compile(r"^(0|[1-9][0-9]*)$")
 U64_MAX = (1 << 64) - 1
+MAX_HPTC_ITEMS = 4096
 
 PROMPT_KEYS = {
     "kind", "compilation_id", "provider_request_digest", "delivered",
@@ -97,6 +98,8 @@ def encode_value(kind: str, value: Any) -> bytes:
         raw = value.encode()
         return b"\x08" + u16(len(raw)) + raw
     if kind == "array":
+        if len(value) > MAX_HPTC_ITEMS:
+            raise ValueError("HPTC: too many items")
         return b"\x09" + u32(len(value)) + b"".join(
             encode_value(item_kind, item) for item_kind, item in value
         )
@@ -106,11 +109,15 @@ def encode_value(kind: str, value: Any) -> bytes:
 def hptc(type_id: str, schema_version: int, fields: dict[str, tuple[str, Any]]) -> str:
     type_raw = type_id.encode()
     entries = sorted(fields.items(), key=lambda item: item[0].encode())
+    if len(entries) > MAX_HPTC_ITEMS:
+        raise ValueError("HPTC: too many fields")
     encoded = (
         b"HPTC" + u16(1) + u16(len(DOMAIN)) + DOMAIN
         + u16(len(type_raw)) + type_raw + u32(schema_version) + u32(len(entries))
         + b"".join(label(name) + encode_value(*value) for name, value in entries)
     )
+    if len(encoded) > 262144:
+        raise ValueError("HPTC: too large")
     return hashlib.sha256(encoded).hexdigest()
 
 
@@ -133,7 +140,7 @@ def prompt_digest(value: Any) -> str:
         raise ValueError("prompt: disposition")
     positions = value["observed_token_positions"]
     if positions is not None:
-        if not isinstance(positions, list) or not 1 <= len(positions) <= 8192:
+        if not isinstance(positions, list) or not 1 <= len(positions) <= MAX_HPTC_ITEMS:
             raise ValueError("prompt: positions")
         if any(isinstance(item, bool) or not isinstance(item, int) or not 0 <= item <= 0xFFFF_FFFF for item in positions):
             raise ValueError("prompt: positions")
@@ -305,6 +312,37 @@ def verify_raw_invalid(vector: dict[str, Any]) -> None:
             ) from error
 
 
+def verify_prompt_capacity() -> None:
+    """Keep the protocol and the generic HPTC encoder within the same bound."""
+    for count in (1, 4095, 4096, 4097, 8192, 8193):
+        value = {
+            "kind": "prompt_delivery_observation_v2",
+            "compilation_id": "compilation-1",
+            "provider_request_digest": "11" * 32,
+            "delivered": True,
+            "rejected_reason": None,
+            "observed_token_positions": list(range(count)),
+            "truncation_observed": False,
+            "legacy_v1_digest": None,
+        }
+        try:
+            result = prompt_digest(value)
+        except ValueError:
+            if count <= 4096:
+                raise AssertionError(f"accepted boundary rejected: {count}")
+        else:
+            if count > 4096:
+                raise AssertionError(f"unhashable V2 boundary accepted: {count}")
+            if count == 4096 and result != "c499a4a2479291376878d2f3a506d342c7f96b3eaa0fea3d206aafcbaf5a4e36":
+                raise AssertionError("frozen 4096-position commitment changed")
+    try:
+        encode_value("array", [("u64", 0)] * 4097)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("generic HPTC array bound bypassed")
+
+
 def main() -> int:
     document = json.loads(VECTOR_PATH.read_text(encoding="utf-8"))
     for vector in document["validVectors"]:
@@ -321,10 +359,11 @@ def main() -> int:
             )
     for vector in document["rawInvalidVectors"]:
         verify_raw_invalid(vector)
+    verify_prompt_capacity()
     print(
         "platform.types prompt/topology Python conformance: ok "
         f"({len(document['validVectors'])} valid, "
-        f"{len(document['rawInvalidVectors'])} raw invalid)"
+        f"{len(document['rawInvalidVectors'])} raw invalid, 6 capacity boundaries)"
     )
     return 0
 
