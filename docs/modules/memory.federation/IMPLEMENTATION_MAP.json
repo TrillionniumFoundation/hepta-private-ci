@@ -1,1 +1,506 @@
-{"schema":"hepta.module-implementation-map.v3","schemaVersion":3,"sourceBase":{"commit":"9baa9ddd33e05fc3f9e92519365fa3de1816bcb2","tree":"03771262908dc2bdccc6c4e83ac7db324f41c65e"},"laneId":"LANE-C-MEMORY","module":"memory.federation","owner":"cognitive-platform","deputy":"security-authority","technicalGuide":"docs/modules/memory.federation/TECHNICAL.md","statusSource":"docs/modules/memory.federation/CAPABILITY_STATE.json","declaredRoots":["codex-rs/hepta-memory-federation"],"resolvedRoots":["codex-rs/hepta-memory-federation"],"sourceRootPresent":true,"productionImplementation":false,"productCallerState":"composed_candidate_pending_execution","productionWriterState":"not_applicable_read_only","operations":[{"operation":"execute_once","nativeSymbol":"execute_once","sourcePath":"codex-rs/hepta-memory-federation/src/v2.rs","state":"source_hardened_candidate_pending_execution","authority":"none","tests":["codex-rs/hepta-memory-federation/src/v2_tests.rs","codex-rs/hepta-memory/src/cognitive_runtime_tests.rs"],"sourcePathExists":true,"designOperation":"execute_once","mappingClass":"owner_native","delegatedCallees":["codex-rs/hepta-memory/src/cognitive_runtime.rs","codex-rs/hepta-agentd/src/runtime.rs","codex-rs/ext/hepta-memory/src/cognitive/federation.rs"]},{"operation":"observe_cancellation","nativeSymbol":"observe_cancellation","sourcePath":"codex-rs/hepta-memory-federation/src/v2.rs","state":"source_hardened_candidate_pending_execution","authority":"none","tests":["codex-rs/hepta-memory-federation/src/v2_tests.rs"],"sourcePathExists":true,"designOperation":"observe_cancellation","mappingClass":"owner_native","delegatedCallees":[]}],"repositoryControlledGaps":["Run the exact current head and deterministic current-base merge through the retained guarded qualification matrix before changing productExecutionProved.","Keep tracked standalone and workspace lockfiles unchanged while obtaining final exact-head and deterministic-merge execution receipts.","Select and compose the authenticated transport, secure credential provider and crash-safe recovery-store backend through the source host boundary without widening the read-only contract.","Produce target-host latency, capacity, backpressure, replay-pressure, cancellation-tail and restart-recovery evidence."],"externalEvidenceGates":["selected mutually authenticated transport and local/remote channel identity binding","secure frame and per-host transport-context credential enrollment, storage, rotation, revocation and recovery","deployment-specific durable attempt and replay recovery policy","two independently provisioned real-host fault qualification","target-host latency, capacity, backpressure and cancellation-tail evidence","independent semantic and security acceptance","operator acceptance, canary, promotion and release authority"],"claimBoundary":{"nativeSourceMappingComplete":true,"sourceRootPresent":true,"productionImplementation":false,"productExecutionProved":false,"independentAcceptance":false,"activation":false,"release":false,"implementedOperationMappingComplete":true},"sourceRoot":["codex-rs/hepta-memory-federation"],"headAttestation":{"candidateBranch":"feat/memory-federation-full-closure-20260927","baseCommit":"a126987b84737dbc2ee2592442a314117bddb4a2","candidateHead":"9baa9ddd33e05fc3f9e92519365fa3de1816bcb2","candidateTree":"03771262908dc2bdccc6c4e83ac7db324f41c65e","headMeaning":"canonical_v2 bounded_discovery_reserved_read_budget deterministic_peer_selection final_use_revalidation private_verified_frame monotonic_partitioned_replay authenticated_transport_identity durable_replay_attempt_recovery restart_surviving_cancellation owner_cut_witness scoped_canonical_map_verification pre_post_execution_guard canonical_capability_status retained_logical_capacity_metrics terminal_request_credential_currentness issuing_host_token_binding actual_command_execution locked_input_revalidation ordered_merge_parents authenticated_product_body_bridge atomic_product_preflight retry_safe_client_inbound_commit v4_combined_attachment_partial_peer_evidence single_pr_qualification_owner_required_fanin issuer_attested_transport_context_before_packet_replay local_owner_bound_transport_context stale_public_constructor_regression_removed context_self_encoded_attestation_payload nonblocking_owner_backpressure interrupted_qualification_failure_evidence bounded_cleanup_batch_receipt domain_separated_fixture_nonces module_scoped_strict_clippy_dependency_boundary","status":"pending_exact_current_head_and_merge_candidate_execution","scope":["remote_response_field_binding","cross_query_response_replay_protection","authority_lifetime_ceiling","preflight_live_authority_fence","post_io_authority_revalidation","interruptible_single_attempt_transport","explicit_product_coverage","agentd_product_runtime_composition","legacy_product_path_retirement_boundary","bounded_final_model_input_revalidation","exact_scope_same_snapshot_owner_data_frontier","prefix_sensitive_item_order_binding","partial_empty_preservation","conservative_top_k_completeness","product_v2_only_attachment_api_guard","legacy_v1_default_surface_retirement","one_peer_engine_multi_peer_product_orchestrator_ownership","discovery_half_budget_reserves_admitted_read_time","fast_owner_survives_permanently_pending_owner","private_verified_frame_compile_fail_contract","replay_clock_high_water_mark","per_credential_replay_capacity_isolation","transport_peer_identity_matches_frame_sender","durable_verified_replay_before_query_exposure","durable_pending_intent_before_read_handler","restart_surviving_cancel_fences_late_terminal","handler_supplied_authenticated_owner_cut","per_peer_durable_replay_attempt_isolation","retained_logical_capacity_recovery_metrics","module_scoped_reuse_of_canonical_implementation_verifier","execution_guard_binds_sha_tree_source_and_commands_before_after","canonical_status_projection_and_receipt_binding","exact_head_and_full_synthetic_merge_same_suite","machine_readable_payload_and_artifact_digest_envelope","terminal_request_credential_revocation_rotation_expiry_fence","cross_host_admission_token_reuse_rejection","retained_actual_command_exit_status_and_raw_logs","complete_workspace_build_input_manifest","tracked_lockfile_byte_identity","workflow_run_attempt_and_job_binding","ordered_base_then_source_merge_parents","exact_capacity_workload_and_execution_binding","build_outputs_outside_source_and_receipt_artifact","canonical_v2_authenticated_product_body_bridge","product_body_preflight_before_replay_or_terminal_commit","retry_safe_client_inbound_atomic_recovery","v4_combined_attachment_partial_peer_evidence","single_pr_qualification_owner_required_fanin","transport_context_private_construction_contract","transport_context_hmac_local_owner_peer_profile_channel_lifetime_key_generation_binding","untrusted_transport_context_rejected_before_replay_or_attempt_commit","wrong_local_host_transport_context_rejected_without_consuming_replay","product_atomicity_tests_use_current_issuer_verifier_contract","transport_context_attestation_payload_self_encoded","preparation_contention_without_admission_or_dispatch","post_exchange_contention_preserves_pending_intent","poisoned_owner_not_temporary_backpressure","interrupted_zero_exit_not_success","same_process_group_descendant_cleanup","bounded_cleanup_batch_count_and_maximum_evidence","domain_separated_non_product_nonce_fixtures","module_scoped_strict_clippy_dependency_boundary"],"productCallsites":["codex-rs/hepta-agentd/src/runtime.rs","codex-rs/hepta-memory/src/cognitive_runtime.rs","codex-rs/ext/hepta-memory/src/cognitive/federation.rs","codex-rs/app-server/src/lib.rs"],"evidencePaths":[".github/workflows/blocking-ci.yml",".github/workflows/memory-federation-slim-smoke.yml",".github/workflows/memory-federation-v2-final-verify.yml","codex-rs/ext/hepta-memory/src/cognitive/federation.rs","codex-rs/hepta-memory-federation-wire","codex-rs/hepta-memory-federation-wire/Cargo.toml","codex-rs/hepta-memory-federation-wire/src/attempt.rs","codex-rs/hepta-memory-federation-wire/src/bin/memory_federation_capacity_probe.rs","codex-rs/hepta-memory-federation-wire/src/codec.rs","codex-rs/hepta-memory-federation-wire/src/credential.rs","codex-rs/hepta-memory-federation-wire/src/host.rs","codex-rs/hepta-memory-federation-wire/src/host_tests.rs","codex-rs/hepta-memory-federation-wire/src/product/bridge.rs","codex-rs/hepta-memory-federation-wire/src/product/context.rs","codex-rs/hepta-memory-federation-wire/src/product/transport.rs","codex-rs/hepta-memory-federation-wire/src/product/transport_contention_tests.rs","codex-rs/hepta-memory-federation-wire/src/product_tests/adapter.rs","codex-rs/hepta-memory-federation-wire/src/product_tests/mod.rs","codex-rs/hepta-memory-federation-wire/src/protocol.rs","codex-rs/hepta-memory-federation-wire/src/recovery.rs","codex-rs/hepta-memory-federation-wire/src/replay.rs","codex-rs/hepta-memory-federation/src/legacy_v1.rs","codex-rs/hepta-memory-federation/src/lib.rs","codex-rs/hepta-memory-federation/src/v2.rs","codex-rs/hepta-memory-federation/src/v2_tests.rs","codex-rs/hepta-memory/src/cognitive_runtime.rs","codex-rs/hepta-memory/src/cognitive_runtime_tests.rs","docs/modules/memory.federation/CAPABILITY_STATE.json","docs/modules/memory.federation/DEPLOYMENT_PROFILE.json","docs/modules/memory.federation/INDEXED_ADMISSION.md","docs/modules/memory.federation/OWNER_BACKPRESSURE_AND_INTERRUPTION.md","docs/modules/memory.federation/PRODUCT_BRIDGE_V1.md","docs/modules/memory.federation/TECHNICAL.md","docs/modules/memory.federation/TRANSPORT_FINAL_USE.md","docs/modules/memory.federation/V2_HARDENING.md","docs/modules/memory.federation/WIRE_IMPLEMENTATION_MAP.json","docs/modules/memory.federation/WIRE_V1.md","qualification/memory-federation/FULL_CLOSURE.md","qualification/module-execution-dossiers/detail/memory.federation.md","scripts/memory_federation_attestation.py","scripts/memory_federation_execution_guard.py","scripts/memory_federation_execution_receipt.py","scripts/memory_federation_full_attestation.py","scripts/prepare_memory_federation_observation.py","scripts/run_memory_federation_qualification.sh","scripts/test_memory_federation_entrypoints.py","scripts/test_memory_federation_execution_receipt.py","scripts/verify_memory_federation_implementation.py","scripts/verify_memory_federation_status.py"],"note":"Author-only observation of committed module-scoped strict-Clippy candidate 9baa9ddd33e05fc3f9e92519365fa3de1816bcb2. The selected memory.federation V2, memory, extension, Agentd, app-server and standalone wire targets still run with -D warnings; --no-deps prevents unrelated transitive workspace-owner lint debt from deciding this module qualification. The same locked graph remains exercised by the retained check and test commands. Exact-head and deterministic-merge qualification, independent acceptance, activation, promotion and release remain separate; this map-only rebind grants none of them.","metadataOnlyPaths":["docs/modules/memory.federation/IMPLEMENTATION_MAP.json"]},"sourceIdentityPolicy":"candidate_or_exact_observation_v1","observedAtHead":{"commit":"9baa9ddd33e05fc3f9e92519365fa3de1816bcb2","tree":"03771262908dc2bdccc6c4e83ac7db324f41c65e"},"observedSourcePaths":[".github/workflows/blocking-ci.yml",".github/workflows/memory-federation-slim-smoke.yml",".github/workflows/memory-federation-v2-final-verify.yml","codex-rs/Cargo.lock","codex-rs/Cargo.toml","codex-rs/ext/hepta-memory/src/cognitive/federation.rs","codex-rs/hepta-agentd/src/runtime.rs","codex-rs/hepta-memory-federation","codex-rs/hepta-memory-federation-wire","codex-rs/hepta-memory-federation-wire/Cargo.toml","codex-rs/hepta-memory-federation-wire/src/attempt.rs","codex-rs/hepta-memory-federation-wire/src/bin/memory_federation_capacity_probe.rs","codex-rs/hepta-memory-federation-wire/src/codec.rs","codex-rs/hepta-memory-federation-wire/src/credential.rs","codex-rs/hepta-memory-federation-wire/src/host.rs","codex-rs/hepta-memory-federation-wire/src/host_tests.rs","codex-rs/hepta-memory-federation-wire/src/product/bridge.rs","codex-rs/hepta-memory-federation-wire/src/product/context.rs","codex-rs/hepta-memory-federation-wire/src/product/transport.rs","codex-rs/hepta-memory-federation-wire/src/product/transport_contention_tests.rs","codex-rs/hepta-memory-federation-wire/src/product_tests/adapter.rs","codex-rs/hepta-memory-federation-wire/src/product_tests/mod.rs","codex-rs/hepta-memory-federation-wire/src/protocol.rs","codex-rs/hepta-memory-federation-wire/src/recovery.rs","codex-rs/hepta-memory-federation-wire/src/replay.rs","codex-rs/hepta-memory-federation/src/legacy_v1.rs","codex-rs/hepta-memory-federation/src/lib.rs","codex-rs/hepta-memory-federation/src/v2.rs","codex-rs/hepta-memory-federation/src/v2_tests.rs","codex-rs/hepta-memory/src/cognitive_runtime.rs","codex-rs/hepta-memory/src/cognitive_runtime_tests.rs","docs/modules/memory.federation/CAPABILITY_STATE.json","docs/modules/memory.federation/DEPLOYMENT_PROFILE.json","docs/modules/memory.federation/INDEXED_ADMISSION.md","docs/modules/memory.federation/OWNER_BACKPRESSURE_AND_INTERRUPTION.md","docs/modules/memory.federation/PRODUCT_BRIDGE_V1.md","docs/modules/memory.federation/TECHNICAL.md","docs/modules/memory.federation/TRANSPORT_FINAL_USE.md","docs/modules/memory.federation/V2_HARDENING.md","docs/modules/memory.federation/WIRE_IMPLEMENTATION_MAP.json","docs/modules/memory.federation/WIRE_V1.md","qualification/memory-federation/FULL_CLOSURE.md","qualification/module-execution-dossiers/detail/memory.federation.md","scripts/memory_federation_attestation.py","scripts/memory_federation_execution_guard.py","scripts/memory_federation_execution_receipt.py","scripts/memory_federation_full_attestation.py","scripts/prepare_memory_federation_observation.py","scripts/run_memory_federation_qualification.sh","scripts/test_memory_federation_entrypoints.py","scripts/test_memory_federation_execution_receipt.py","scripts/verify_memory_federation_implementation.py","scripts/verify_memory_federation_status.py"],"productCallers":[{"sourcePath":"codex-rs/hepta-agentd/src/runtime.rs","nativeSymbol":"attach_federation_after_generation_fence","state":"local_registered_owner_composition_not_cross_host_authentication"},{"sourcePath":"codex-rs/ext/hepta-memory/src/cognitive/federation.rs","nativeSymbol":"CombinedCognitiveEphemeralContributor","state":"final_use_revalidated_local_owner_federation"}],"sourceObjects":[{"path":".github/workflows/blocking-ci.yml","object":"52efd785dc1c102992cfd6a801fbcb24383dad75"},{"path":".github/workflows/memory-federation-slim-smoke.yml","object":"febf3e60bacfa47ff2e9b647499c696c95c96ce3"},{"path":".github/workflows/memory-federation-v2-final-verify.yml","object":"bdf002a9bcdfea827705e95b89d0a40e9f6cc988"},{"path":"codex-rs/Cargo.lock","object":"cd6650b68a815d69038166b7de50c2857f358641"},{"path":"codex-rs/Cargo.toml","object":"3bad9efdcb5ed9a5e4590a280bd1aba8058c021a"},{"path":"codex-rs/ext/hepta-memory/src/cognitive/federation.rs","object":"d4761f139acd790da73e564f86f27615994a3c2c"},{"path":"codex-rs/hepta-agentd/src/runtime.rs","object":"b3d9131f5b07c7f3d1f61c82657512985e7033ad"},{"path":"codex-rs/hepta-memory-federation","object":"3f38382e5b9d093ec691eca88256114fe23ca260"},{"path":"codex-rs/hepta-memory-federation-wire","object":"e20793ff1c51e281e1a6046b7e50ad573b98ee7a"},{"path":"codex-rs/hepta-memory-federation-wire/Cargo.toml","object":"ded5620b9867612fc5cffc1c95b41c673c598ba3"},{"path":"codex-rs/hepta-memory-federation-wire/src/attempt.rs","object":"caecf8008f6aa2dec8f34361103d52e6f7cedbbd"},{"path":"codex-rs/hepta-memory-federation-wire/src/bin/memory_federation_capacity_probe.rs","object":"c2692539492eb01a6a5e11bb87d72ec611d25bd3"},{"path":"codex-rs/hepta-memory-federation-wire/src/codec.rs","object":"ede91168f098e2a71bcd59bbf9c6b3b9cbc763af"},{"path":"codex-rs/hepta-memory-federation-wire/src/credential.rs","object":"3d4580d085f0c3733963592b71c03a3f399f2bcc"},{"path":"codex-rs/hepta-memory-federation-wire/src/host.rs","object":"ee50a3fc72c785521840eb7c1160bb9f02173489"},{"path":"codex-rs/hepta-memory-federation-wire/src/host_tests.rs","object":"1a264642cd9e0376d669dd1f11447e3b47b61b2b"},{"path":"codex-rs/hepta-memory-federation-wire/src/product/bridge.rs","object":"0ebb2e549cf8494f967c3ab67cbaf098b0951988"},{"path":"codex-rs/hepta-memory-federation-wire/src/product/context.rs","object":"2f8ea46dc72a58ccf3560ffdc66a94d348ee7e9e"},{"path":"codex-rs/hepta-memory-federation-wire/src/product/transport.rs","object":"a5949204096b6726f11933d03890154bbdbf6e5d"},{"path":"codex-rs/hepta-memory-federation-wire/src/product/transport_contention_tests.rs","object":"b27ea9b499a2fae7e670e01b943f2834da161935"},{"path":"codex-rs/hepta-memory-federation-wire/src/product_tests/adapter.rs","object":"3f30df5e3c0bc2887aba4b6890330cf056d439bf"},{"path":"codex-rs/hepta-memory-federation-wire/src/product_tests/mod.rs","object":"5564a9cbdc341df81d2e498a22aa4f49bcf9c3d8"},{"path":"codex-rs/hepta-memory-federation-wire/src/protocol.rs","object":"039ea1d1661e0f8cb047e4f322a80ff1295f4c6d"},{"path":"codex-rs/hepta-memory-federation-wire/src/recovery.rs","object":"f28ccd0742e3ed720bf6b383f0eb0abea4d64dc6"},{"path":"codex-rs/hepta-memory-federation-wire/src/replay.rs","object":"b5964c235ae6c160e6afd4dc9ee84cbeb7b90b64"},{"path":"codex-rs/hepta-memory-federation/src/legacy_v1.rs","object":"920aaf8da472afecc41bc1bed04d736c808940db"},{"path":"codex-rs/hepta-memory-federation/src/lib.rs","object":"82a44bc1126b677c804e00bdf98e2afbc98c006c"},{"path":"codex-rs/hepta-memory-federation/src/v2.rs","object":"cdc64c3f00838c613a88b325ae6817f6566bdc22"},{"path":"codex-rs/hepta-memory-federation/src/v2_tests.rs","object":"040cc8abbd8414e4df9127ffd17069c4cec12c95"},{"path":"codex-rs/hepta-memory/src/cognitive_runtime.rs","object":"3b7835cb455945c5e8f3cb2cf28dc5683082eddd"},{"path":"codex-rs/hepta-memory/src/cognitive_runtime_tests.rs","object":"7f397fe3e35205bae51ef95c4475315559c2b0ea"},{"path":"docs/modules/memory.federation/CAPABILITY_STATE.json","object":"5e69e3bebb82955c1f372b6541d332b5e28131c1"},{"path":"docs/modules/memory.federation/DEPLOYMENT_PROFILE.json","object":"a5ed56a595a5804e62c3c9b877d4788a3f60565d"},{"path":"docs/modules/memory.federation/INDEXED_ADMISSION.md","object":"b030f337d3f42f66438846c840f1efea038711d1"},{"path":"docs/modules/memory.federation/OWNER_BACKPRESSURE_AND_INTERRUPTION.md","object":"5ff14c46fc3ec30dbff942fafce4adb0be408b56"},{"path":"docs/modules/memory.federation/PRODUCT_BRIDGE_V1.md","object":"35781882311c7028291d55191f200014bf603d10"},{"path":"docs/modules/memory.federation/TECHNICAL.md","object":"85cd4337107cab5b0061d0080dba22bf2be5e695"},{"path":"docs/modules/memory.federation/TRANSPORT_FINAL_USE.md","object":"eac171aa8f8d7ceb4ed4d00598b91a1ca5c8cafa"},{"path":"docs/modules/memory.federation/V2_HARDENING.md","object":"3515c72ad768cbb3b6b9e0bdf364d9fc3f643580"},{"path":"docs/modules/memory.federation/WIRE_IMPLEMENTATION_MAP.json","object":"a023ce813a6185f68a1805d9b9e58576d803ea16"},{"path":"docs/modules/memory.federation/WIRE_V1.md","object":"039ad341aa74f987c100348b9d809ba30ce19495"},{"path":"qualification/memory-federation/FULL_CLOSURE.md","object":"2fb6ebbd6d0bf2577f2051a50769bac36c9b7c39"},{"path":"qualification/module-execution-dossiers/detail/memory.federation.md","object":"b1ad61774fcfdf6dbeace6276a365e0eda0f47f7"},{"path":"scripts/memory_federation_attestation.py","object":"e9adfb5de6def786edab2d914fb29494f5bdec3f"},{"path":"scripts/memory_federation_execution_guard.py","object":"e1d1783df4ca270581d46bc027fcdb5bcd6f8044"},{"path":"scripts/memory_federation_execution_receipt.py","object":"e19bb7158d3bcca82f4d579b40cceb3f350ca841"},{"path":"scripts/memory_federation_full_attestation.py","object":"b0f69ea6606a15b8212cf07647e11a704cc2b54b"},{"path":"scripts/prepare_memory_federation_observation.py","object":"8cabf7f20420da84696505feee0e45f9fb3d65d8"},{"path":"scripts/run_memory_federation_qualification.sh","object":"cbfac9b931307b0a9ba04e9f14deb6e6e3e9233d"},{"path":"scripts/test_memory_federation_entrypoints.py","object":"8cfc69df4f2aee37740b35bd38c1887d0348f23a"},{"path":"scripts/test_memory_federation_execution_receipt.py","object":"a293b0c0d1fe03e13bd8cbb0ba7de147afeca6e8"},{"path":"scripts/verify_memory_federation_implementation.py","object":"3e422282807adcca2da29c2557be05efff854e2a"},{"path":"scripts/verify_memory_federation_status.py","object":"7ed43ffa0df3bda09601c63b61cf9edfe9d13c36"}]}
+{
+  "schema": "hepta.module-implementation-map.v3",
+  "schemaVersion": 3,
+  "sourceBase": {
+    "commit": "67fbbbf9800859156d3dae663e67edce9845f90b",
+    "tree": "67417264a68ab40a99945a1990d79143a7d51dd8"
+  },
+  "laneId": "LANE-C-MEMORY",
+  "module": "memory.federation",
+  "owner": "cognitive-platform",
+  "deputy": "security-authority",
+  "technicalGuide": "docs/modules/memory.federation/TECHNICAL.md",
+  "statusSource": "docs/modules/memory.federation/CAPABILITY_STATE.json",
+  "declaredRoots": [
+    "codex-rs/hepta-memory-federation"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-memory-federation"
+  ],
+  "sourceRootPresent": true,
+  "productionImplementation": false,
+  "productCallerState": "composed_candidate_pending_execution",
+  "productionWriterState": "not_applicable_read_only",
+  "operations": [
+    {
+      "operation": "execute_once",
+      "nativeSymbol": "execute_once",
+      "sourcePath": "codex-rs/hepta-memory-federation/src/v2.rs",
+      "state": "source_hardened_candidate_pending_execution",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-memory-federation/src/v2_tests.rs",
+        "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "execute_once",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-memory/src/cognitive_runtime.rs",
+        "codex-rs/hepta-agentd/src/runtime.rs",
+        "codex-rs/ext/hepta-memory/src/cognitive/federation.rs"
+      ]
+    },
+    {
+      "operation": "observe_cancellation",
+      "nativeSymbol": "observe_cancellation",
+      "sourcePath": "codex-rs/hepta-memory-federation/src/v2.rs",
+      "state": "source_hardened_candidate_pending_execution",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-memory-federation/src/v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "observe_cancellation",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    }
+  ],
+  "repositoryControlledGaps": [
+    "Run the exact current head and deterministic current-base merge through the retained guarded qualification matrix before changing productExecutionProved.",
+    "Keep tracked standalone and workspace lockfiles unchanged while obtaining final exact-head and deterministic-merge execution receipts.",
+    "Select and compose the authenticated transport, secure credential provider and crash-safe recovery-store backend through the source host boundary without widening the read-only contract.",
+    "Produce target-host latency, capacity, backpressure, replay-pressure, cancellation-tail and restart-recovery evidence."
+  ],
+  "externalEvidenceGates": [
+    "selected mutually authenticated transport and local/remote channel identity binding",
+    "secure frame and per-host transport-context credential enrollment, storage, rotation, revocation and recovery",
+    "deployment-specific durable attempt and replay recovery policy",
+    "two independently provisioned real-host fault qualification",
+    "target-host latency, capacity, backpressure and cancellation-tail evidence",
+    "independent semantic and security acceptance",
+    "operator acceptance, canary, promotion and release authority"
+  ],
+  "claimBoundary": {
+    "nativeSourceMappingComplete": true,
+    "sourceRootPresent": true,
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false,
+    "implementedOperationMappingComplete": true
+  },
+  "sourceRoot": [
+    "codex-rs/hepta-memory-federation"
+  ],
+  "headAttestation": {
+    "candidateBranch": "feat/memory-federation-full-closure-20260927",
+    "baseCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
+    "candidateHead": "67fbbbf9800859156d3dae663e67edce9845f90b",
+    "candidateTree": "67417264a68ab40a99945a1990d79143a7d51dd8",
+    "headMeaning": "canonical_v2 bounded_discovery_reserved_read_budget deterministic_peer_selection final_use_revalidation private_verified_frame monotonic_partitioned_replay authenticated_transport_identity durable_replay_attempt_recovery restart_surviving_cancellation owner_cut_witness scoped_canonical_map_verification pre_post_execution_guard canonical_capability_status retained_logical_capacity_metrics terminal_request_credential_currentness issuing_host_token_binding actual_command_execution locked_input_revalidation ordered_merge_parents authenticated_product_body_bridge atomic_product_preflight retry_safe_client_inbound_commit v4_combined_attachment_partial_peer_evidence single_pr_qualification_owner_required_fanin issuer_attested_transport_context_before_packet_replay local_owner_bound_transport_context stale_public_constructor_regression_removed context_self_encoded_attestation_payload nonblocking_owner_backpressure interrupted_qualification_failure_evidence bounded_cleanup_batch_receipt domain_separated_fixture_nonces module_scoped_strict_clippy_dependency_boundary",
+    "status": "pending_exact_current_head_and_merge_candidate_execution",
+    "scope": [
+      "remote_response_field_binding",
+      "cross_query_response_replay_protection",
+      "authority_lifetime_ceiling",
+      "preflight_live_authority_fence",
+      "post_io_authority_revalidation",
+      "interruptible_single_attempt_transport",
+      "explicit_product_coverage",
+      "agentd_product_runtime_composition",
+      "legacy_product_path_retirement_boundary",
+      "bounded_final_model_input_revalidation",
+      "exact_scope_same_snapshot_owner_data_frontier",
+      "prefix_sensitive_item_order_binding",
+      "partial_empty_preservation",
+      "conservative_top_k_completeness",
+      "product_v2_only_attachment_api_guard",
+      "legacy_v1_default_surface_retirement",
+      "one_peer_engine_multi_peer_product_orchestrator_ownership",
+      "discovery_half_budget_reserves_admitted_read_time",
+      "fast_owner_survives_permanently_pending_owner",
+      "private_verified_frame_compile_fail_contract",
+      "replay_clock_high_water_mark",
+      "per_credential_replay_capacity_isolation",
+      "transport_peer_identity_matches_frame_sender",
+      "durable_verified_replay_before_query_exposure",
+      "durable_pending_intent_before_read_handler",
+      "restart_surviving_cancel_fences_late_terminal",
+      "handler_supplied_authenticated_owner_cut",
+      "per_peer_durable_replay_attempt_isolation",
+      "retained_logical_capacity_recovery_metrics",
+      "module_scoped_reuse_of_canonical_implementation_verifier",
+      "execution_guard_binds_sha_tree_source_and_commands_before_after",
+      "canonical_status_projection_and_receipt_binding",
+      "exact_head_and_full_synthetic_merge_same_suite",
+      "machine_readable_payload_and_artifact_digest_envelope",
+      "terminal_request_credential_revocation_rotation_expiry_fence",
+      "cross_host_admission_token_reuse_rejection",
+      "retained_actual_command_exit_status_and_raw_logs",
+      "complete_workspace_build_input_manifest",
+      "tracked_lockfile_byte_identity",
+      "workflow_run_attempt_and_job_binding",
+      "ordered_base_then_source_merge_parents",
+      "exact_capacity_workload_and_execution_binding",
+      "build_outputs_outside_source_and_receipt_artifact",
+      "canonical_v2_authenticated_product_body_bridge",
+      "product_body_preflight_before_replay_or_terminal_commit",
+      "retry_safe_client_inbound_atomic_recovery",
+      "v4_combined_attachment_partial_peer_evidence",
+      "single_pr_qualification_owner_required_fanin",
+      "transport_context_private_construction_contract",
+      "transport_context_hmac_local_owner_peer_profile_channel_lifetime_key_generation_binding",
+      "untrusted_transport_context_rejected_before_replay_or_attempt_commit",
+      "wrong_local_host_transport_context_rejected_without_consuming_replay",
+      "product_atomicity_tests_use_current_issuer_verifier_contract",
+      "transport_context_attestation_payload_self_encoded",
+      "preparation_contention_without_admission_or_dispatch",
+      "post_exchange_contention_preserves_pending_intent",
+      "poisoned_owner_not_temporary_backpressure",
+      "interrupted_zero_exit_not_success",
+      "same_process_group_descendant_cleanup",
+      "bounded_cleanup_batch_count_and_maximum_evidence",
+      "domain_separated_non_product_nonce_fixtures",
+      "module_scoped_strict_clippy_dependency_boundary"
+    ],
+    "productCallsites": [
+      "codex-rs/hepta-agentd/src/runtime.rs",
+      "codex-rs/hepta-memory/src/cognitive_runtime.rs",
+      "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+      "codex-rs/app-server/src/lib.rs"
+    ],
+    "evidencePaths": [
+      ".github/workflows/blocking-ci.yml",
+      ".github/workflows/memory-federation-slim-smoke.yml",
+      ".github/workflows/memory-federation-v2-final-verify.yml",
+      "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+      "codex-rs/hepta-memory-federation-wire",
+      "codex-rs/hepta-memory-federation-wire/Cargo.toml",
+      "codex-rs/hepta-memory-federation-wire/src/attempt.rs",
+      "codex-rs/hepta-memory-federation-wire/src/bin/memory_federation_capacity_probe.rs",
+      "codex-rs/hepta-memory-federation-wire/src/codec.rs",
+      "codex-rs/hepta-memory-federation-wire/src/credential.rs",
+      "codex-rs/hepta-memory-federation-wire/src/host.rs",
+      "codex-rs/hepta-memory-federation-wire/src/host_tests.rs",
+      "codex-rs/hepta-memory-federation-wire/src/product/bridge.rs",
+      "codex-rs/hepta-memory-federation-wire/src/product/context.rs",
+      "codex-rs/hepta-memory-federation-wire/src/product/transport.rs",
+      "codex-rs/hepta-memory-federation-wire/src/product/transport_contention_tests.rs",
+      "codex-rs/hepta-memory-federation-wire/src/product_tests/adapter.rs",
+      "codex-rs/hepta-memory-federation-wire/src/product_tests/mod.rs",
+      "codex-rs/hepta-memory-federation-wire/src/protocol.rs",
+      "codex-rs/hepta-memory-federation-wire/src/recovery.rs",
+      "codex-rs/hepta-memory-federation-wire/src/replay.rs",
+      "codex-rs/hepta-memory-federation/src/legacy_v1.rs",
+      "codex-rs/hepta-memory-federation/src/lib.rs",
+      "codex-rs/hepta-memory-federation/src/v2.rs",
+      "codex-rs/hepta-memory-federation/src/v2_tests.rs",
+      "codex-rs/hepta-memory/src/cognitive_runtime.rs",
+      "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs",
+      "docs/modules/memory.federation/CAPABILITY_STATE.json",
+      "docs/modules/memory.federation/DEPLOYMENT_PROFILE.json",
+      "docs/modules/memory.federation/INDEXED_ADMISSION.md",
+      "docs/modules/memory.federation/OWNER_BACKPRESSURE_AND_INTERRUPTION.md",
+      "docs/modules/memory.federation/PRODUCT_BRIDGE_V1.md",
+      "docs/modules/memory.federation/TECHNICAL.md",
+      "docs/modules/memory.federation/TRANSPORT_FINAL_USE.md",
+      "docs/modules/memory.federation/V2_HARDENING.md",
+      "docs/modules/memory.federation/WIRE_IMPLEMENTATION_MAP.json",
+      "docs/modules/memory.federation/WIRE_V1.md",
+      "qualification/memory-federation/FULL_CLOSURE.md",
+      "qualification/module-execution-dossiers/detail/memory.federation.md",
+      "scripts/memory_federation_attestation.py",
+      "scripts/memory_federation_execution_guard.py",
+      "scripts/memory_federation_execution_receipt.py",
+      "scripts/memory_federation_full_attestation.py",
+      "scripts/prepare_memory_federation_observation.py",
+      "scripts/run_memory_federation_qualification.sh",
+      "scripts/test_memory_federation_entrypoints.py",
+      "scripts/test_memory_federation_execution_receipt.py",
+      "scripts/verify_memory_federation_implementation.py",
+      "scripts/verify_memory_federation_status.py"
+    ],
+    "note": "Author-only observation of committed diagnostic-failure-receipt candidate 67fbbbf9800859156d3dae663e67edce9845f90b. The existing always-run attestation handoff now has a real nonzero-command regression proving that frozen failure evidence verifies diagnostically and cannot be relabeled as success. Canonical V2 execution, authority revalidation, indexed admission, bounded cleanup and product ownership are unchanged. Exact-head and deterministic-merge qualification, independent acceptance, activation, promotion and release remain separate; this map-only rebind grants none of them.",
+    "metadataOnlyPaths": [
+      "docs/modules/memory.federation/IMPLEMENTATION_MAP.json"
+    ]
+  },
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "observedAtHead": {
+    "commit": "67fbbbf9800859156d3dae663e67edce9845f90b",
+    "tree": "67417264a68ab40a99945a1990d79143a7d51dd8"
+  },
+  "observedSourcePaths": [
+    ".github/workflows/blocking-ci.yml",
+    ".github/workflows/memory-federation-slim-smoke.yml",
+    ".github/workflows/memory-federation-v2-final-verify.yml",
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+    "codex-rs/hepta-agentd/src/runtime.rs",
+    "codex-rs/hepta-memory-federation",
+    "codex-rs/hepta-memory-federation-wire",
+    "codex-rs/hepta-memory-federation-wire/Cargo.toml",
+    "codex-rs/hepta-memory-federation-wire/src/attempt.rs",
+    "codex-rs/hepta-memory-federation-wire/src/bin/memory_federation_capacity_probe.rs",
+    "codex-rs/hepta-memory-federation-wire/src/codec.rs",
+    "codex-rs/hepta-memory-federation-wire/src/credential.rs",
+    "codex-rs/hepta-memory-federation-wire/src/host.rs",
+    "codex-rs/hepta-memory-federation-wire/src/host_tests.rs",
+    "codex-rs/hepta-memory-federation-wire/src/product/bridge.rs",
+    "codex-rs/hepta-memory-federation-wire/src/product/context.rs",
+    "codex-rs/hepta-memory-federation-wire/src/product/transport.rs",
+    "codex-rs/hepta-memory-federation-wire/src/product/transport_contention_tests.rs",
+    "codex-rs/hepta-memory-federation-wire/src/product_tests/adapter.rs",
+    "codex-rs/hepta-memory-federation-wire/src/product_tests/mod.rs",
+    "codex-rs/hepta-memory-federation-wire/src/protocol.rs",
+    "codex-rs/hepta-memory-federation-wire/src/recovery.rs",
+    "codex-rs/hepta-memory-federation-wire/src/replay.rs",
+    "codex-rs/hepta-memory-federation/src/legacy_v1.rs",
+    "codex-rs/hepta-memory-federation/src/lib.rs",
+    "codex-rs/hepta-memory-federation/src/v2.rs",
+    "codex-rs/hepta-memory-federation/src/v2_tests.rs",
+    "codex-rs/hepta-memory/src/cognitive_runtime.rs",
+    "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs",
+    "docs/modules/memory.federation/CAPABILITY_STATE.json",
+    "docs/modules/memory.federation/DEPLOYMENT_PROFILE.json",
+    "docs/modules/memory.federation/INDEXED_ADMISSION.md",
+    "docs/modules/memory.federation/OWNER_BACKPRESSURE_AND_INTERRUPTION.md",
+    "docs/modules/memory.federation/PRODUCT_BRIDGE_V1.md",
+    "docs/modules/memory.federation/TECHNICAL.md",
+    "docs/modules/memory.federation/TRANSPORT_FINAL_USE.md",
+    "docs/modules/memory.federation/V2_HARDENING.md",
+    "docs/modules/memory.federation/WIRE_IMPLEMENTATION_MAP.json",
+    "docs/modules/memory.federation/WIRE_V1.md",
+    "qualification/memory-federation/FULL_CLOSURE.md",
+    "qualification/module-execution-dossiers/detail/memory.federation.md",
+    "scripts/memory_federation_attestation.py",
+    "scripts/memory_federation_execution_guard.py",
+    "scripts/memory_federation_execution_receipt.py",
+    "scripts/memory_federation_full_attestation.py",
+    "scripts/prepare_memory_federation_observation.py",
+    "scripts/run_memory_federation_qualification.sh",
+    "scripts/test_memory_federation_entrypoints.py",
+    "scripts/test_memory_federation_execution_receipt.py",
+    "scripts/verify_memory_federation_implementation.py",
+    "scripts/verify_memory_federation_status.py"
+  ],
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime.rs",
+      "nativeSymbol": "attach_federation_after_generation_fence",
+      "state": "local_registered_owner_composition_not_cross_host_authentication"
+    },
+    {
+      "sourcePath": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+      "nativeSymbol": "CombinedCognitiveEphemeralContributor",
+      "state": "final_use_revalidated_local_owner_federation"
+    }
+  ],
+  "sourceObjects": [
+    {
+      "path": ".github/workflows/blocking-ci.yml",
+      "object": "52efd785dc1c102992cfd6a801fbcb24383dad75"
+    },
+    {
+      "path": ".github/workflows/memory-federation-slim-smoke.yml",
+      "object": "febf3e60bacfa47ff2e9b647499c696c95c96ce3"
+    },
+    {
+      "path": ".github/workflows/memory-federation-v2-final-verify.yml",
+      "object": "bdf002a9bcdfea827705e95b89d0a40e9f6cc988"
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "object": "cd6650b68a815d69038166b7de50c2857f358641"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "object": "3bad9efdcb5ed9a5e4590a280bd1aba8058c021a"
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+      "object": "d4761f139acd790da73e564f86f27615994a3c2c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "object": "b3d9131f5b07c7f3d1f61c82657512985e7033ad"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation",
+      "object": "3f38382e5b9d093ec691eca88256114fe23ca260"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation-wire",
+      "object": "e20793ff1c51e281e1a6046b7e50ad573b98ee7a"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation-wire/Cargo.toml",
+      "object": "ded5620b9867612fc5cffc1c95b41c673c598ba3"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation-wire/src/attempt.rs",
+      "object": "caecf8008f6aa2dec8f34361103d52e6f7cedbbd"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation-wire/src/bin/memory_federation_capacity_probe.rs",
+      "object": "c2692539492eb01a6a5e11bb87d72ec611d25bd3"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation-wire/src/codec.rs",
+      "object": "ede91168f098e2a71bcd59bbf9c6b3b9cbc763af"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation-wire/src/credential.rs",
+      "object": "3d4580d085f0c3733963592b71c03a3f399f2bcc"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation-wire/src/host.rs",
+      "object": "ee50a3fc72c785521840eb7c1160bb9f02173489"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation-wire/src/host_tests.rs",
+      "object": "1a264642cd9e0376d669dd1f11447e3b47b61b2b"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation-wire/src/product/bridge.rs",
+      "object": "0ebb2e549cf8494f967c3ab67cbaf098b0951988"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation-wire/src/product/context.rs",
+      "object": "2f8ea46dc72a58ccf3560ffdc66a94d348ee7e9e"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation-wire/src/product/transport.rs",
+      "object": "a5949204096b6726f11933d03890154bbdbf6e5d"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation-wire/src/product/transport_contention_tests.rs",
+      "object": "b27ea9b499a2fae7e670e01b943f2834da161935"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation-wire/src/product_tests/adapter.rs",
+      "object": "3f30df5e3c0bc2887aba4b6890330cf056d439bf"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation-wire/src/product_tests/mod.rs",
+      "object": "5564a9cbdc341df81d2e498a22aa4f49bcf9c3d8"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation-wire/src/protocol.rs",
+      "object": "039ea1d1661e0f8cb047e4f322a80ff1295f4c6d"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation-wire/src/recovery.rs",
+      "object": "f28ccd0742e3ed720bf6b383f0eb0abea4d64dc6"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation-wire/src/replay.rs",
+      "object": "b5964c235ae6c160e6afd4dc9ee84cbeb7b90b64"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation/src/legacy_v1.rs",
+      "object": "920aaf8da472afecc41bc1bed04d736c808940db"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation/src/lib.rs",
+      "object": "82a44bc1126b677c804e00bdf98e2afbc98c006c"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation/src/v2.rs",
+      "object": "cdc64c3f00838c613a88b325ae6817f6566bdc22"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation/src/v2_tests.rs",
+      "object": "040cc8abbd8414e4df9127ffd17069c4cec12c95"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_runtime.rs",
+      "object": "3b7835cb455945c5e8f3cb2cf28dc5683082eddd"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs",
+      "object": "7f397fe3e35205bae51ef95c4475315559c2b0ea"
+    },
+    {
+      "path": "docs/modules/memory.federation/CAPABILITY_STATE.json",
+      "object": "5e69e3bebb82955c1f372b6541d332b5e28131c1"
+    },
+    {
+      "path": "docs/modules/memory.federation/DEPLOYMENT_PROFILE.json",
+      "object": "a5ed56a595a5804e62c3c9b877d4788a3f60565d"
+    },
+    {
+      "path": "docs/modules/memory.federation/INDEXED_ADMISSION.md",
+      "object": "b030f337d3f42f66438846c840f1efea038711d1"
+    },
+    {
+      "path": "docs/modules/memory.federation/OWNER_BACKPRESSURE_AND_INTERRUPTION.md",
+      "object": "5ff14c46fc3ec30dbff942fafce4adb0be408b56"
+    },
+    {
+      "path": "docs/modules/memory.federation/PRODUCT_BRIDGE_V1.md",
+      "object": "35781882311c7028291d55191f200014bf603d10"
+    },
+    {
+      "path": "docs/modules/memory.federation/TECHNICAL.md",
+      "object": "85cd4337107cab5b0061d0080dba22bf2be5e695"
+    },
+    {
+      "path": "docs/modules/memory.federation/TRANSPORT_FINAL_USE.md",
+      "object": "eac171aa8f8d7ceb4ed4d00598b91a1ca5c8cafa"
+    },
+    {
+      "path": "docs/modules/memory.federation/V2_HARDENING.md",
+      "object": "3515c72ad768cbb3b6b9e0bdf364d9fc3f643580"
+    },
+    {
+      "path": "docs/modules/memory.federation/WIRE_IMPLEMENTATION_MAP.json",
+      "object": "a023ce813a6185f68a1805d9b9e58576d803ea16"
+    },
+    {
+      "path": "docs/modules/memory.federation/WIRE_V1.md",
+      "object": "039ad341aa74f987c100348b9d809ba30ce19495"
+    },
+    {
+      "path": "qualification/memory-federation/FULL_CLOSURE.md",
+      "object": "2fb6ebbd6d0bf2577f2051a50769bac36c9b7c39"
+    },
+    {
+      "path": "qualification/module-execution-dossiers/detail/memory.federation.md",
+      "object": "b1ad61774fcfdf6dbeace6276a365e0eda0f47f7"
+    },
+    {
+      "path": "scripts/memory_federation_attestation.py",
+      "object": "e9adfb5de6def786edab2d914fb29494f5bdec3f"
+    },
+    {
+      "path": "scripts/memory_federation_execution_guard.py",
+      "object": "e1d1783df4ca270581d46bc027fcdb5bcd6f8044"
+    },
+    {
+      "path": "scripts/memory_federation_execution_receipt.py",
+      "object": "e19bb7158d3bcca82f4d579b40cceb3f350ca841"
+    },
+    {
+      "path": "scripts/memory_federation_full_attestation.py",
+      "object": "b0f69ea6606a15b8212cf07647e11a704cc2b54b"
+    },
+    {
+      "path": "scripts/prepare_memory_federation_observation.py",
+      "object": "8cabf7f20420da84696505feee0e45f9fb3d65d8"
+    },
+    {
+      "path": "scripts/run_memory_federation_qualification.sh",
+      "object": "cbfac9b931307b0a9ba04e9f14deb6e6e3e9233d"
+    },
+    {
+      "path": "scripts/test_memory_federation_entrypoints.py",
+      "object": "1882b091dec015a27173909cc2300776b48a6425"
+    },
+    {
+      "path": "scripts/test_memory_federation_execution_receipt.py",
+      "object": "a293b0c0d1fe03e13bd8cbb0ba7de147afeca6e8"
+    },
+    {
+      "path": "scripts/verify_memory_federation_implementation.py",
+      "object": "3e422282807adcca2da29c2557be05efff854e2a"
+    },
+    {
+      "path": "scripts/verify_memory_federation_status.py",
+      "object": "7ed43ffa0df3bda09601c63b61cf9edfe9d13c36"
+    }
+  ]
+}
