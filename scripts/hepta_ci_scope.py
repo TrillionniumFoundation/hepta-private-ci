@@ -62,7 +62,7 @@ FILE_GROUPS = {
     "codex-rs/hepta-supervisor/src/module_runtime.rs": {"lifecycle"},
     "codex-rs/hepta-supervisor/src/module_runtime_safety_tests.rs": {"lifecycle"},
     "codex-rs/hepta-fleet/src/module_catalog.rs": {"lifecycle"},
-    "codex-rs/hepta-plasticity/src/topology_v3.rs": {"learning", "lifecycle"},
+    "codex-rs/hepta-plasticity/src/topology_v2.rs": {"learning", "lifecycle"},
     "codex-rs/hepta-plasticity/src/durable_topology_registry.rs": {"learning", "lifecycle"},
 }
 
