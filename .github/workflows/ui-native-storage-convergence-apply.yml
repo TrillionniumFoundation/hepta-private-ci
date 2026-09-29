@@ -1,0 +1,130 @@
+name: ui.native storage convergence applicator
+
+on:
+  push:
+    branches: [work/ui-native-storage-performance-convergence-20260929]
+    paths:
+      - .ci/ui-native-storage-convergence/source.patch.gz.b64.part-*
+      - .github/workflows/ui-native-storage-convergence-apply.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ui-native-storage-convergence-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_TERM_COLOR: always
+
+jobs:
+  apply-test-publish:
+    runs-on: ubuntu-slim
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify exact baseline and reconstruct reviewed patch
+        env:
+          B64_SHA256: 6628d0d676556969594f22e556bc46061643201b6568387e3c145574ad9db0c7
+          GZIP_SHA256: 54a77b10a1fa3291301b58e7d33d3e75929576a896035106d388053ed89ae5a0
+          PATCH_SHA256: 6afd8c3f3a1224007dfa3b8aa35bd43cf4cc8af1094271e376013d6874924104
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain)"
+          test "$(git rev-parse HEAD:apps/hepta-native/src/journal.rs)" = ac6c9f632b42f9ae2e08743fa9895fb7a00802f2
+          test "$(git rev-parse HEAD:apps/hepta-native/src/retirement.rs)" = e6fb24deaf401c86e39aa46af9a2822fb8c1528c
+          test "$(git rev-parse HEAD:apps/hepta-native/src/lib.rs)" = a4e51f61d647362f9130a7f2e9e15e85173429ed
+          test "$(git rev-parse HEAD:apps/hepta-native/src/retirement_tests.rs)" = 3504d9625b9a6faae3b2085b23137e14728e0794
+          test "$(git rev-parse HEAD:apps/hepta-native/tests/journal_regressions.rs)" = 14ff218ac060889a7b8a3c548d492552b97ba170
+          test "$(git cat-file -e HEAD:apps/hepta-native/src/journal_wal.rs 2>/dev/null; echo $?)" = 1
+          printf '%s  %s\n' 62658624ca52529925407d9ae88a4b6cfe02a89a5c98e0c5e8aa564808380db6 .ci/ui-native-storage-convergence/source.patch.gz.b64.part-00 | sha256sum --check --strict
+          printf '%s  %s\n' 32104a7e73e15d0ef11f9699c0e7782296b7f7899a08cc874c78edeaba34b369 .ci/ui-native-storage-convergence/source.patch.gz.b64.part-01 | sha256sum --check --strict
+          printf '%s  %s\n' dd538639be7a57a3c4a2c3d7886a5541e87692cd54df66ca2a64e1676e077446 .ci/ui-native-storage-convergence/source.patch.gz.b64.part-02 | sha256sum --check --strict
+          printf '%s  %s\n' 36a9b1f9b644ba67b3828b1267838dc4f3b0b6b9d374b0753d7c9a4173bcb1bf .ci/ui-native-storage-convergence/source.patch.gz.b64.part-03 | sha256sum --check --strict
+          printf '%s  %s\n' 2c0c826630a5d60cc1347148f04ae5ebcb62c30ed4deba8986054fb897e97530 .ci/ui-native-storage-convergence/source.patch.gz.b64.part-04 | sha256sum --check --strict
+          printf '%s  %s\n' b523c5cb59a73d31a8a4990e4c72d8fa807c9c0cfd6bbadb379a544b59749638 .ci/ui-native-storage-convergence/source.patch.gz.b64.part-05 | sha256sum --check --strict
+          printf '%s  %s\n' 8f4baa8211ca6aef991c810cbaa32a9126d43836e89c8cc356cf4d0171f13d5f .ci/ui-native-storage-convergence/source.patch.gz.b64.part-06 | sha256sum --check --strict
+          cat .ci/ui-native-storage-convergence/source.patch.gz.b64.part-* > /tmp/source.patch.gz.b64
+          printf '%s  %s\n' "$B64_SHA256" /tmp/source.patch.gz.b64 | sha256sum --check --strict
+          base64 --decode /tmp/source.patch.gz.b64 > /tmp/source.patch.gz
+          printf '%s  %s\n' "$GZIP_SHA256" /tmp/source.patch.gz | sha256sum --check --strict
+          gzip --decompress --stdout /tmp/source.patch.gz > /tmp/source.patch
+          printf '%s  %s\n' "$PATCH_SHA256" /tmp/source.patch | sha256sum --check --strict
+          git apply --check --whitespace=error-all /tmp/source.patch
+          git apply --index --whitespace=error-all /tmp/source.patch
+
+      - name: Install native build dependencies and pinned Rust
+        run: |
+          set -euo pipefail
+          if command -v sudo >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y \
+              libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev \
+              libxkbcommon-dev libxkbcommon-x11-dev libwayland-dev \
+              libgl1-mesa-dev libssl-dev pkg-config
+          fi
+          if ! command -v rustup >/dev/null 2>&1; then
+            command -v curl >/dev/null
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain 1.95.0
+            source "$HOME/.cargo/env"
+          fi
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
+
+      - name: Format and verify the exact source scope
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml
+          git add -- \
+            apps/hepta-native/src/journal.rs \
+            apps/hepta-native/src/journal_wal.rs \
+            apps/hepta-native/src/lib.rs \
+            apps/hepta-native/src/retirement.rs \
+            apps/hepta-native/src/retirement_tests.rs \
+            apps/hepta-native/tests/journal_regressions.rs
+          git diff --cached --check
+          python3 - <<'PYTHON'
+          import subprocess
+          expected = {
+              'apps/hepta-native/src/journal.rs',
+              'apps/hepta-native/src/journal_wal.rs',
+              'apps/hepta-native/src/lib.rs',
+              'apps/hepta-native/src/retirement.rs',
+              'apps/hepta-native/src/retirement_tests.rs',
+              'apps/hepta-native/tests/journal_regressions.rs',
+          }
+          observed = set(subprocess.check_output(
+              ['git', 'diff', '--cached', '--name-only'], text=True
+          ).splitlines())
+          if observed != expected:
+              raise SystemExit(f'unexpected source scope: {sorted(observed ^ expected)}')
+          PYTHON
+
+      - name: Strict lint and complete native tests
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 clippy \
+            --manifest-path apps/hepta-native/Cargo.toml \
+            --locked --all-targets --all-features -- -D warnings
+          cargo +1.95.0 test \
+            --manifest-path apps/hepta-native/Cargo.toml \
+            --locked --all-targets
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest scripts.test_hepta_ui_native_source -v
+
+      - name: Commit and publish only tested source
+        run: |
+          set -euo pipefail
+          git config user.name 'hepta-native-storage-bot'
+          git config user.email 'hepta-native-storage-bot@users.noreply.github.com'
+          git commit -m 'perf(ui.native): add bounded journal WAL and disk retirement index' \
+            -m 'Preserve the single journal owner, Prepared/Invoking durability order, final-use boundary, immutable terminal observations, and fail-closed unknown outcomes while replacing routine full-snapshot writes with a checksummed fsynced WAL, adding an exact active-operation index, and replacing resident retirement identity maps with a rebuildable content-addressed prefix index. Includes corruption, orphan-tail, checkpoint, migration, and index-rebuild regressions.'
+          python3 apps/hepta-native/tools/prepare_current_source.py
+          test -z "$(git status --porcelain)"
+          git push origin "HEAD:refs/heads/${GITHUB_REF_NAME}"
