@@ -205,6 +205,41 @@ struct ModeRoutedContext {
     policy: DeliveryPolicy,
 }
 
+impl ModeRoutedContext {
+    fn bind_acquired_context(
+        &self,
+        owner: &AgentId,
+        acquired: (RetrievalExecutionContextV1, Digest32, Option<u64>),
+    ) -> Result<(RetrievalExecutionContextV1, Digest32, Option<u64>), String> {
+        if let Some(error) = &self.policy.validation_error {
+            return Err(error.clone());
+        }
+        let (context, state, deadline) = acquired;
+        if state.is_zero() {
+            return Err("retrieval mode cannot bind an empty lifecycle identity".to_string());
+        }
+        let delivers = delivers_hnmf_with_policy(self.mode, owner, &self.policy);
+        if !delivers
+            && matches!(
+                self.mode,
+                CognitiveRetrievalMode::HnmfShadow | CognitiveRetrievalMode::HnmfCanary
+            )
+        {
+            validate_shadow_budget(&context, &self.policy)?;
+        }
+        let mut bytes = MODE_DOMAIN.to_vec();
+        bytes.push(match self.mode {
+            CognitiveRetrievalMode::Compatibility => 0,
+            CognitiveRetrievalMode::HnmfShadow => 1,
+            CognitiveRetrievalMode::HnmfCanary => 2,
+            CognitiveRetrievalMode::HnmfRequired => 3,
+        });
+        bytes.extend_from_slice(self.policy.digest().as_array());
+        bytes.extend_from_slice(state.as_array());
+        Ok((context, Digest32::of_bytes(&bytes), deadline))
+    }
+}
+
 impl CurrentMemoryRetrievalContext for ModeRoutedContext {
     fn delivers_hnmf(&self, owner: &AgentId) -> bool {
         delivers_hnmf_with_policy(self.mode, owner, &self.policy)
@@ -247,6 +282,23 @@ impl CurrentMemoryRetrievalContext for ModeRoutedContext {
             .map(|(context, _, _)| context)
     }
 
+    fn acquire_context_before(
+        &self,
+        owner: &AgentId,
+        body_generation: u64,
+        deadline: std::time::Instant,
+    ) -> Result<(RetrievalExecutionContextV1, Digest32, Option<u64>), String> {
+        crate::check_retrieval_deadline(deadline)?;
+        if let Some(error) = &self.policy.validation_error {
+            return Err(error.clone());
+        }
+        let acquired = self
+            .reader
+            .acquire_context_before(owner, body_generation, deadline)?;
+        crate::check_retrieval_deadline(deadline)?;
+        self.bind_acquired_context(owner, acquired)
+    }
+
     fn acquire_context(
         &self,
         owner: &AgentId,
@@ -255,29 +307,8 @@ impl CurrentMemoryRetrievalContext for ModeRoutedContext {
         if let Some(error) = &self.policy.validation_error {
             return Err(error.clone());
         }
-        let (context, state, deadline) = self.reader.acquire_context(owner, body_generation)?;
-        if state.is_zero() {
-            return Err("retrieval mode cannot bind an empty lifecycle identity".to_string());
-        }
-        let delivers = delivers_hnmf_with_policy(self.mode, owner, &self.policy);
-        if !delivers
-            && matches!(
-                self.mode,
-                CognitiveRetrievalMode::HnmfShadow | CognitiveRetrievalMode::HnmfCanary
-            )
-        {
-            validate_shadow_budget(&context, &self.policy)?;
-        }
-        let mut bytes = MODE_DOMAIN.to_vec();
-        bytes.push(match self.mode {
-            CognitiveRetrievalMode::Compatibility => 0,
-            CognitiveRetrievalMode::HnmfShadow => 1,
-            CognitiveRetrievalMode::HnmfCanary => 2,
-            CognitiveRetrievalMode::HnmfRequired => 3,
-        });
-        bytes.extend_from_slice(self.policy.digest().as_array());
-        bytes.extend_from_slice(state.as_array());
-        Ok((context, Digest32::of_bytes(&bytes), deadline))
+        let acquired = self.reader.acquire_context(owner, body_generation)?;
+        self.bind_acquired_context(owner, acquired)
     }
 }
 
@@ -405,5 +436,78 @@ mod tests {
             &owner,
             &policy
         ));
+    }
+
+    struct DeadlineOnlyReader {
+        called: Arc<std::sync::atomic::AtomicBool>,
+    }
+
+    impl CurrentMemoryRetrievalContext for DeadlineOnlyReader {
+        fn current(
+            &self,
+            _owner: &AgentId,
+            _body_generation: u64,
+        ) -> Result<RetrievalExecutionContextV1, String> {
+            Err("undeadlined current path used".to_string())
+        }
+
+        fn acquire_context(
+            &self,
+            _owner: &AgentId,
+            _body_generation: u64,
+        ) -> Result<(RetrievalExecutionContextV1, Digest32, Option<u64>), String> {
+            Err("undeadlined acquire path used".to_string())
+        }
+
+        fn acquire_context_before(
+            &self,
+            _owner: &AgentId,
+            _body_generation: u64,
+            _deadline: std::time::Instant,
+        ) -> Result<(RetrievalExecutionContextV1, Digest32, Option<u64>), String> {
+            self.called
+                .store(true, std::sync::atomic::Ordering::Release);
+            Err("deadline-aware path reached".to_string())
+        }
+    }
+
+    #[test]
+    fn mode_router_forwards_the_same_absolute_deadline() {
+        let called = Arc::new(std::sync::atomic::AtomicBool::new(false));
+        let routed = route(
+            CognitiveRetrievalMode::HnmfRequired,
+            Arc::new(DeadlineOnlyReader {
+                called: Arc::clone(&called),
+            }),
+        );
+        let error = routed
+            .acquire_context_before(
+                &owner("00000000-0000-4000-8000-000000000003"),
+                1,
+                std::time::Instant::now() + std::time::Duration::from_secs(1),
+            )
+            .expect_err("provider error should be preserved");
+        assert_eq!(error, "deadline-aware path reached");
+        assert!(called.load(std::sync::atomic::Ordering::Acquire));
+    }
+
+    #[test]
+    fn expired_deadline_is_rejected_before_provider_io() {
+        let called = Arc::new(std::sync::atomic::AtomicBool::new(false));
+        let routed = route(
+            CognitiveRetrievalMode::HnmfRequired,
+            Arc::new(DeadlineOnlyReader {
+                called: Arc::clone(&called),
+            }),
+        );
+        let error = routed
+            .acquire_context_before(
+                &owner("00000000-0000-4000-8000-000000000004"),
+                1,
+                std::time::Instant::now(),
+            )
+            .expect_err("expired deadline must fail");
+        assert_eq!(error, "retrieval provider request deadline exceeded");
+        assert!(!called.load(std::sync::atomic::Ordering::Acquire));
     }
 }
