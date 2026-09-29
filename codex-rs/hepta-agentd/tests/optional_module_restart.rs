@@ -60,9 +60,10 @@ async fn apply(store: &AutomationStore, request: Request) {
     let intent = automation_task_operation_intent(
         store.owner_agent_id(),
         &request.draft,
-        Generation::new(1).expect("stable original operation generation"),
+        Generation::new(1)
+            .unwrap_or_else(|error| panic!("stable original operation generation: {error:?}")),
     )
-    .expect("exact task intent");
+    .unwrap_or_else(|error| panic!("exact task intent: {error:?}"));
     let result = store
         .create_task_from_operation(&intent, &request.draft)
         .await;
@@ -71,11 +72,15 @@ async fn apply(store: &AutomationStore, request: Request) {
             let _ = request.reply.send(result);
         }
         Fault::PanicAfterCommit => {
-            result.expect("effect must commit before injected task panic");
+            result.unwrap_or_else(|error| {
+                panic!("effect must commit before injected task panic: {error:?}")
+            });
             panic!("optional module panic after durable commit, before acknowledgement");
         }
         Fault::ProcessLossAfterCommit => {
-            result.expect("effect must commit before injected process loss");
+            result.unwrap_or_else(|error| {
+                panic!("effect must commit before injected process loss: {error:?}")
+            });
             // Exit without running Rust destructors. The next process must use
             // owner reconciliation/dedupe, not replay the mutation as new work.
             std::process::exit(CRASH_EXIT);
@@ -118,7 +123,7 @@ fn attach_timer(
         },
         || Ok(()), // Unpublish the local route, not writer or effect acceptance.
     )
-    .expect("same public host extension point");
+    .unwrap_or_else(|error| panic!("same public host extension point: {error:?}"));
     send
 }
 
@@ -134,10 +139,10 @@ async fn ask(
         reply,
     })
     .await
-    .expect("admission");
+    .unwrap_or_else(|error| panic!("admission: {error:?}"));
     timeout(Duration::from_secs(10), result)
         .await
-        .expect("bounded reply")
+        .unwrap_or_else(|error| panic!("bounded reply: {error:?}"))
 }
 
 async fn prove_siblings(clients: &[mpsc::Sender<CoreRequest>]) {
@@ -146,31 +151,39 @@ async fn prove_siblings(clients: &[mpsc::Sender<CoreRequest>]) {
         client
             .send((index as u64, reply))
             .await
-            .expect("core admission");
+            .unwrap_or_else(|error| panic!("core admission: {error:?}"));
         let value = timeout(Duration::from_secs(2), response)
             .await
-            .expect("core live")
-            .expect("core reply");
+            .unwrap_or_else(|error| panic!("core live: {error:?}"))
+            .unwrap_or_else(|error| panic!("core reply: {error:?}"));
         assert_eq!(value, index as u64 + 1);
     }
 }
 
 fn load_draft(root: &Path, file: &str) -> AutomationTaskDraft {
-    let bytes = std::fs::read(root.join(file)).expect("draft file");
-    serde_json::from_slice(&bytes).expect("draft JSON")
+    let bytes =
+        std::fs::read(root.join(file)).unwrap_or_else(|error| panic!("draft file: {error:?}"));
+    serde_json::from_slice(&bytes).unwrap_or_else(|error| panic!("draft JSON: {error:?}"))
 }
 
 async fn worker(root: &Path, stage: &str) {
-    let fleet = HeptaFleetRoot::parse(root.join("fleet")).expect("fleet");
-    let layout = fleet.layout().agent(&AgentId::parse(AGENT).expect("agent"));
+    let fleet = HeptaFleetRoot::parse(root.join("fleet"))
+        .unwrap_or_else(|error| panic!("fleet: {error:?}"));
+    let layout = fleet
+        .layout()
+        .agent(&AgentId::parse(AGENT).unwrap_or_else(|error| panic!("agent: {error:?}")));
     let store = AutomationStore::open(&layout)
         .await
-        .expect("real SQLite reopen");
+        .unwrap_or_else(|error| panic!("real SQLite reopen: {error:?}"));
     let first = load_draft(root, "first.json");
     let second = load_draft(root, "second.json");
-    let initial = store.timer_status().await.expect("durable epoch");
+    let initial = store
+        .timer_status()
+        .await
+        .unwrap_or_else(|error| panic!("durable epoch: {error:?}"));
     let stop = CancellationToken::new();
-    let mut host = RuntimeTasks::new(stop.clone(), Duration::from_secs(2)).expect("host");
+    let mut host = RuntimeTasks::new(stop.clone(), Duration::from_secs(2))
+        .unwrap_or_else(|error| panic!("host: {error:?}"));
     let mut core = Vec::new();
     for index in 0..40 {
         let (send, mut receive) = mpsc::channel::<CoreRequest>(2);
@@ -186,7 +199,7 @@ async fn worker(root: &Path, stage: &str) {
                 }
             }
         })
-        .expect("required service");
+        .unwrap_or_else(|error| panic!("required service: {error:?}"));
         core.push(send);
     }
     let quarantines = Arc::new(AtomicUsize::new(0));
@@ -203,15 +216,15 @@ async fn worker(root: &Path, stage: &str) {
             );
             timeout(Duration::from_secs(10), host.observe_next())
                 .await
-                .expect("observe panic")
-                .expect("isolated");
+                .unwrap_or_else(|error| panic!("observe panic: {error:?}"))
+                .unwrap_or_else(|error| panic!("isolated: {error:?}"));
             assert_eq!(quarantines.load(Ordering::SeqCst), 1);
             assert_eq!(host.active_count(), 40);
             assert!(!stop.is_cancelled());
             let tasks = store
                 .list_tasks(10)
                 .await
-                .expect("committed despite ACK loss");
+                .unwrap_or_else(|error| panic!("committed despite ACK loss: {error:?}"));
             assert_eq!(tasks.len(), 1);
         }
         "crash" => {
@@ -222,33 +235,45 @@ async fn worker(root: &Path, stage: &str) {
             for draft in [first.clone(), second.clone()] {
                 let receipt = ask(&client, draft, Fault::None)
                     .await
-                    .expect("reply")
-                    .expect("reconcile committed task");
+                    .unwrap_or_else(|error| panic!("reply: {error:?}"))
+                    .unwrap_or_else(|error| panic!("reconcile committed task: {error:?}"));
                 assert_eq!(
                     receipt.disposition,
                     DestinationApplyDisposition::AlreadyApplied
                 );
             }
-            assert!(store.quiesce_timer().await.expect("quiesce").can_handoff());
+            assert!(
+                store
+                    .quiesce_timer()
+                    .await
+                    .unwrap_or_else(|error| panic!("quiesce: {error:?}"))
+                    .can_handoff()
+            );
             host.retire_optional(&name)
                 .await
-                .expect("drain optional task");
+                .unwrap_or_else(|error| panic!("drain optional task: {error:?}"));
             assert!(client.is_closed());
-            let next = store.handoff_timer().await.expect("durable writer handoff");
+            let next = store
+                .handoff_timer()
+                .await
+                .unwrap_or_else(|error| panic!("durable writer handoff: {error:?}"));
             assert_eq!(
-                next.timer_status().await.expect("next status").writer_epoch,
+                next.timer_status()
+                    .await
+                    .unwrap_or_else(|error| panic!("next status: {error:?}"))
+                    .writer_epoch,
                 initial.writer_epoch + 1
             );
             next.resume_timer()
                 .await
-                .expect("publish compatible successor");
+                .unwrap_or_else(|error| panic!("publish compatible successor: {error:?}"));
             let fresh = new_draft("stale writer cannot create a new effect");
             let intent = automation_task_operation_intent(
                 store.owner_agent_id(),
                 &fresh,
-                Generation::new(1).expect("original generation"),
+                Generation::new(1).unwrap_or_else(|error| panic!("original generation: {error:?}")),
             )
-            .expect("intent");
+            .unwrap_or_else(|error| panic!("intent: {error:?}"));
             assert_eq!(
                 store.create_task_from_operation(&intent, &fresh).await,
                 Err(AutomationError::TimerFenced)
@@ -262,8 +287,8 @@ async fn worker(root: &Path, stage: &str) {
             );
             let replay = ask(&successor, first.clone(), Fault::None)
                 .await
-                .expect("successor response")
-                .expect("replay");
+                .unwrap_or_else(|error| panic!("successor response: {error:?}"))
+                .unwrap_or_else(|error| panic!("replay: {error:?}"));
             assert_eq!(
                 replay.disposition,
                 DestinationApplyDisposition::AlreadyApplied
@@ -271,18 +296,21 @@ async fn worker(root: &Path, stage: &str) {
             assert_eq!(
                 next.list_tasks(10)
                     .await
-                    .expect("no duplicate effects")
+                    .unwrap_or_else(|error| panic!("no duplicate effects: {error:?}"))
                     .len(),
                 2
             );
             host.retire_optional(&next_name)
                 .await
-                .expect("close local route");
+                .unwrap_or_else(|error| panic!("close local route: {error:?}"));
             next.close().await;
         }
         "crash-quiesced" => {
             assert_eq!(initial.phase, TimerPhase::Active);
-            let draining = store.quiesce_timer().await.expect("durable quiesce");
+            let draining = store
+                .quiesce_timer()
+                .await
+                .unwrap_or_else(|error| panic!("durable quiesce: {error:?}"));
             assert!(draining.can_handoff());
             assert_eq!(draining.writer_epoch, initial.writer_epoch);
             // No handoff, resume or normal host cleanup occurs after this cut.
@@ -290,24 +318,33 @@ async fn worker(root: &Path, stage: &str) {
         }
         "crash-cutover" => {
             assert_eq!(initial.phase, TimerPhase::Active);
-            assert!(store.quiesce_timer().await.expect("quiesce").can_handoff());
+            assert!(
+                store
+                    .quiesce_timer()
+                    .await
+                    .unwrap_or_else(|error| panic!("quiesce: {error:?}"))
+                    .can_handoff()
+            );
             host.retire_optional(&name)
                 .await
-                .expect("old route drained");
+                .unwrap_or_else(|error| panic!("old route drained: {error:?}"));
             let next = store
                 .handoff_timer()
                 .await
-                .expect("committed successor epoch");
-            let cutover = next.timer_status().await.expect("successor state");
+                .unwrap_or_else(|error| panic!("committed successor epoch: {error:?}"));
+            let cutover = next
+                .timer_status()
+                .await
+                .unwrap_or_else(|error| panic!("successor state: {error:?}"));
             assert_eq!(cutover.phase, TimerPhase::Draining);
             assert_eq!(cutover.writer_epoch, initial.writer_epoch + 1);
             let fresh = new_draft("fenced even before successor publication");
             let intent = automation_task_operation_intent(
                 store.owner_agent_id(),
                 &fresh,
-                Generation::new(1).expect("original generation"),
+                Generation::new(1).unwrap_or_else(|error| panic!("original generation: {error:?}")),
             )
-            .expect("intent");
+            .unwrap_or_else(|error| panic!("intent: {error:?}"));
             assert_eq!(
                 store.create_task_from_operation(&intent, &fresh).await,
                 Err(AutomationError::TimerFenced)
@@ -326,21 +363,25 @@ async fn worker(root: &Path, stage: &str) {
                     Fault::None
                 )
                 .await
-                .expect("draining service responded")
+                .unwrap_or_else(|error| panic!("draining service responded: {error:?}"))
                 .is_err()
             );
             assert!(
                 store
                     .claim_due(40_000, initial.writer_epoch, 1_000)
                     .await
-                    .expect("bounded scheduler read while draining")
+                    .unwrap_or_else(|error| panic!(
+                        "bounded scheduler read while draining: {error:?}"
+                    ))
                     .is_none()
             );
             for draft in [first.clone(), second.clone()] {
                 let receipt = ask(&client, draft, Fault::None)
                     .await
-                    .expect("recovery reply")
-                    .expect("historical committed receipt remains readable");
+                    .unwrap_or_else(|error| panic!("recovery reply: {error:?}"))
+                    .unwrap_or_else(|error| {
+                        panic!("historical committed receipt remains readable: {error:?}")
+                    });
                 assert_eq!(
                     receipt.disposition,
                     DestinationApplyDisposition::AlreadyApplied
@@ -350,7 +391,7 @@ async fn worker(root: &Path, stage: &str) {
                 store
                     .list_tasks(10)
                     .await
-                    .expect("exact retained tasks")
+                    .unwrap_or_else(|error| panic!("exact retained tasks: {error:?}"))
                     .len(),
                 2
             );
@@ -359,21 +400,29 @@ async fn worker(root: &Path, stage: &str) {
             let resumed = store
                 .resume_timer()
                 .await
-                .expect("explicit compatible resume");
+                .unwrap_or_else(|error| panic!("explicit compatible resume: {error:?}"));
             assert_eq!(resumed.phase, TimerPhase::Active);
             assert_eq!(resumed.writer_epoch, initial.writer_epoch);
             host.retire_optional(&name)
                 .await
-                .expect("close recovered local route");
+                .unwrap_or_else(|error| panic!("close recovered local route: {error:?}"));
         }
         "retire" => {
-            assert!(store.quiesce_timer().await.expect("quiesce").can_handoff());
-            host.retire_optional(&name).await.expect("drain route");
+            assert!(
+                store
+                    .quiesce_timer()
+                    .await
+                    .unwrap_or_else(|error| panic!("quiesce: {error:?}"))
+                    .can_handoff()
+            );
+            host.retire_optional(&name)
+                .await
+                .unwrap_or_else(|error| panic!("drain route: {error:?}"));
             assert_eq!(
                 store
                     .retire_timer()
                     .await
-                    .expect("durable retirement")
+                    .unwrap_or_else(|error| panic!("durable retirement: {error:?}"))
                     .phase,
                 TimerPhase::Retired
             );
@@ -383,7 +432,7 @@ async fn worker(root: &Path, stage: &str) {
             assert_eq!(
                 ask(&client, new_draft("must not resurrect"), Fault::None)
                     .await
-                    .expect("reply"),
+                    .unwrap_or_else(|error| panic!("reply: {error:?}")),
                 Err(AutomationError::TimerFenced)
             );
             assert_eq!(
@@ -392,15 +441,15 @@ async fn worker(root: &Path, stage: &str) {
             );
             let replay = ask(&client, first.clone(), Fault::None)
                 .await
-                .expect("historical reply")
-                .expect("read-only receipt");
+                .unwrap_or_else(|error| panic!("historical reply: {error:?}"))
+                .unwrap_or_else(|error| panic!("read-only receipt: {error:?}"));
             assert_eq!(
                 replay.disposition,
                 DestinationApplyDisposition::AlreadyApplied
             );
             host.retire_optional(&name)
                 .await
-                .expect("unpublish fixture route");
+                .unwrap_or_else(|error| panic!("unpublish fixture route: {error:?}"));
         }
         _ => panic!("unknown subprocess stage"),
     }
@@ -409,8 +458,15 @@ async fn worker(root: &Path, stage: &str) {
         !stop.is_cancelled(),
         "optional lifecycle must not kill the required host"
     );
-    let final_status = store.timer_status().await.expect("current durable state");
-    let count = store.list_tasks(10).await.expect("task count").len();
+    let final_status = store
+        .timer_status()
+        .await
+        .unwrap_or_else(|error| panic!("current durable state: {error:?}"));
+    let count = store
+        .list_tasks(10)
+        .await
+        .unwrap_or_else(|error| panic!("task count: {error:?}"))
+        .len();
     host.shutdown().await;
     store.close().await;
     let report = serde_json::json!({
@@ -422,9 +478,9 @@ async fn worker(root: &Path, stage: &str) {
     });
     std::fs::write(
         root.join("report.json"),
-        serde_json::to_vec(&report).expect("report JSON"),
+        serde_json::to_vec(&report).unwrap_or_else(|error| panic!("report JSON: {error:?}")),
     )
-    .expect("report file");
+    .unwrap_or_else(|error| panic!("report file: {error:?}"));
 }
 
 fn new_draft(prompt: &str) -> AutomationTaskDraft {
@@ -440,13 +496,14 @@ fn new_draft(prompt: &str) -> AutomationTaskDraft {
 #[test]
 #[ignore = "subprocess entrypoint; invoked by the parent regression with exact arguments"]
 fn optional_module_process_entrypoint() {
-    let root = std::env::var_os(ROOT_ENV).expect("parent's isolated root");
-    let stage = std::env::var(STAGE_ENV).expect("parent's stage");
+    let root = std::env::var_os(ROOT_ENV).unwrap_or_else(|| panic!("missing parent isolated root"));
+    let stage =
+        std::env::var(STAGE_ENV).unwrap_or_else(|error| panic!("parent's stage: {error:?}"));
     tokio::runtime::Builder::new_multi_thread()
         .worker_threads(2)
         .enable_all()
         .build()
-        .expect("runtime")
+        .unwrap_or_else(|error| panic!("runtime: {error:?}"))
         .block_on(worker(Path::new(&root), &stage));
 }
 
@@ -466,29 +523,40 @@ impl Drop for ChildGuard {
 fn run_process(root: &Path, stage: &str, exit: i32) -> Option<serde_json::Value> {
     let report = root.join("report.json");
     if report.exists() {
-        std::fs::remove_file(&report).expect("remove stale report");
+        std::fs::remove_file(&report)
+            .unwrap_or_else(|error| panic!("remove stale report: {error:?}"));
     }
     let log = root.join(format!("{stage}.log"));
-    let output = File::create(&log).expect("log");
+    let output = File::create(&log).unwrap_or_else(|error| panic!("log: {error:?}"));
     let mut child = ChildGuard(
-        Command::new(std::env::current_exe().expect("test executable"))
-            .args([
-                "--ignored",
-                "--exact",
-                "optional_module_process_entrypoint",
-                "--nocapture",
-            ])
-            .env(ROOT_ENV, root)
-            .env(STAGE_ENV, stage)
-            .stdin(Stdio::null())
-            .stdout(Stdio::from(output.try_clone().expect("stdout")))
-            .stderr(Stdio::from(output))
-            .spawn()
-            .expect("real subprocess"),
+        Command::new(
+            std::env::current_exe().unwrap_or_else(|error| panic!("test executable: {error:?}")),
+        )
+        .args([
+            "--ignored",
+            "--exact",
+            "optional_module_process_entrypoint",
+            "--nocapture",
+        ])
+        .env(ROOT_ENV, root)
+        .env(STAGE_ENV, stage)
+        .stdin(Stdio::null())
+        .stdout(Stdio::from(
+            output
+                .try_clone()
+                .unwrap_or_else(|error| panic!("stdout: {error:?}")),
+        ))
+        .stderr(Stdio::from(output))
+        .spawn()
+        .unwrap_or_else(|error| panic!("real subprocess: {error:?}")),
     );
     let deadline = Instant::now() + Duration::from_secs(60);
     let status = loop {
-        if let Some(status) = child.0.try_wait().expect("wait") {
+        if let Some(status) = child
+            .0
+            .try_wait()
+            .unwrap_or_else(|error| panic!("wait: {error:?}"))
+        {
             break status;
         }
         if Instant::now() >= deadline {
@@ -497,15 +565,17 @@ fn run_process(root: &Path, stage: &str, exit: i32) -> Option<serde_json::Value>
         std::thread::sleep(Duration::from_millis(20));
     };
     if status.code() != Some(exit) {
-        let bytes = std::fs::read(&log).expect("failure log");
+        let bytes = std::fs::read(&log).unwrap_or_else(|error| panic!("failure log: {error:?}"));
         panic!(
             "{stage}: {status}; {}",
             String::from_utf8_lossy(&bytes[..bytes.len().min(64 * 1024)])
         );
     }
     if exit == 0 {
-        let bytes = std::fs::read(&report).expect("new stage report");
-        let value: serde_json::Value = serde_json::from_slice(&bytes).expect("report");
+        let bytes =
+            std::fs::read(&report).unwrap_or_else(|error| panic!("new stage report: {error:?}"));
+        let value: serde_json::Value =
+            serde_json::from_slice(&bytes).unwrap_or_else(|error| panic!("report: {error:?}"));
         assert_eq!(value["stage"], stage);
         assert_eq!(value["required_services_responded"], 40);
         Some(value)
@@ -520,50 +590,65 @@ fn run_process(root: &Path, stage: &str, exit: i32) -> Option<serde_json::Value>
 
 #[test]
 fn forty_first_service_survives_faults_replacement_retirement_and_real_process_restart() {
-    let directory = tempfile::tempdir().expect("isolated owner");
-    let root = directory.path().canonicalize().expect("canonical root");
-    let fleet = HeptaFleetRoot::parse(root.join("fleet")).expect("fleet");
-    let registry = FleetRegistry::initialize(fleet.clone()).expect("registry");
+    let directory = tempfile::tempdir().unwrap_or_else(|error| panic!("isolated owner: {error:?}"));
+    let root = directory
+        .path()
+        .canonicalize()
+        .unwrap_or_else(|error| panic!("canonical root: {error:?}"));
+    let fleet = HeptaFleetRoot::parse(root.join("fleet"))
+        .unwrap_or_else(|error| panic!("fleet: {error:?}"));
+    let registry = FleetRegistry::initialize(fleet.clone())
+        .unwrap_or_else(|error| panic!("registry: {error:?}"));
     let workspace = root.join("workspace");
-    std::fs::create_dir(&workspace).expect("workspace");
+    std::fs::create_dir(&workspace).unwrap_or_else(|error| panic!("workspace: {error:?}"));
     let manifest = AgentManifest::new(
-        AgentId::parse(AGENT).expect("agent"),
-        WorkspaceBinding::new(workspace, &fleet).expect("binding"),
+        AgentId::parse(AGENT).unwrap_or_else(|error| panic!("agent: {error:?}")),
+        WorkspaceBinding::new(workspace, &fleet)
+            .unwrap_or_else(|error| panic!("binding: {error:?}")),
         ResourceBudget::local_default(),
     )
-    .expect("manifest");
-    registry.register(manifest).expect("registered owner");
+    .unwrap_or_else(|error| panic!("manifest: {error:?}"));
+    registry
+        .register(manifest)
+        .unwrap_or_else(|error| panic!("registered owner: {error:?}"));
     for (file, prompt) in [
         ("first.json", "before optional failure"),
         ("second.json", "before process loss"),
     ] {
         std::fs::write(
             root.join(file),
-            serde_json::to_vec(&new_draft(prompt)).expect("draft JSON"),
+            serde_json::to_vec(&new_draft(prompt))
+                .unwrap_or_else(|error| panic!("draft JSON: {error:?}")),
         )
-        .expect("draft file");
+        .unwrap_or_else(|error| panic!("draft file: {error:?}"));
     }
-    let isolated = run_process(&root, "isolate", 0).expect("isolated");
+    let isolated =
+        run_process(&root, "isolate", 0).unwrap_or_else(|| panic!("missing isolated report"));
     assert_eq!(isolated["task_count"], 1);
     assert!(run_process(&root, "crash", CRASH_EXIT).is_none());
     for epoch in 2..=5 {
-        let result = run_process(&root, "replace", 0).expect("replaced");
+        let result =
+            run_process(&root, "replace", 0).unwrap_or_else(|| panic!("missing replaced report"));
         assert_eq!(result["writer_epoch"], epoch);
         assert_eq!(result["task_count"], 2);
     }
     assert!(run_process(&root, "crash-quiesced", CRASH_EXIT).is_none());
-    let recovered = run_process(&root, "recover-draining", 0).expect("recover quiesce");
+    let recovered = run_process(&root, "recover-draining", 0)
+        .unwrap_or_else(|| panic!("missing recover quiesce report"));
     assert_eq!(recovered["writer_epoch"], 5);
     assert_eq!(recovered["task_count"], 2);
     for epoch in 6..=9 {
         assert!(run_process(&root, "crash-cutover", CRASH_EXIT).is_none());
-        let recovered = run_process(&root, "recover-draining", 0).expect("recover cutover");
+        let recovered = run_process(&root, "recover-draining", 0)
+            .unwrap_or_else(|| panic!("missing recover cutover report"));
         assert_eq!(recovered["writer_epoch"], epoch);
         assert_eq!(recovered["task_count"], 2);
     }
-    let retired = run_process(&root, "retire", 0).expect("retired");
+    let retired =
+        run_process(&root, "retire", 0).unwrap_or_else(|| panic!("missing retired report"));
     assert_eq!(retired["writer_epoch"], 10);
-    let recovered = run_process(&root, "reopen-retired", 0).expect("recovered retirement");
+    let recovered = run_process(&root, "reopen-retired", 0)
+        .unwrap_or_else(|| panic!("missing recovered retirement report"));
     assert_eq!(recovered["writer_epoch"], 10);
     assert_eq!(recovered["task_count"], 2);
     assert_eq!(recovered["retired"], true);

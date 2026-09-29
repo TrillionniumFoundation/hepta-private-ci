@@ -5,6 +5,8 @@ from __future__ import annotations
 import copy
 import importlib.util
 import json
+import os
+import tempfile
 from pathlib import Path
 import unittest
 from unittest.mock import patch
@@ -195,8 +197,8 @@ class MeasurementTests(unittest.TestCase):
     def test_fixture_counts_and_isolated_resources_are_bound(self) -> None:
         with patch.object(
             measure,
-            "run_isolated_command",
-            return_value=(self.ordinary_output(self.ordinary), resources()),
+            "run_native_fixture",
+            return_value=(self.ordinary_output(self.ordinary), resources(), {"test": "ordinary"}),
         ):
             with self.assertRaises(SystemExit):
                 measure.run_fixture("test", self.ordinary["path"], 4)
@@ -205,8 +207,8 @@ class MeasurementTests(unittest.TestCase):
             self.assertEqual(measured["harnessWallNanoseconds"], 40)
         with patch.object(
             measure,
-            "run_isolated_command",
-            return_value=(self.product_output(self.product), resources()),
+            "run_native_fixture",
+            return_value=(self.product_output(self.product), resources(), {"test": "product"}),
         ):
             with self.assertRaises(SystemExit):
                 measure.run_product_fixture(4, 2)
@@ -232,6 +234,68 @@ class MeasurementTests(unittest.TestCase):
         value["wallNanoseconds"] = 0
         with self.assertRaises(SystemExit):
             measure.process_resource_observation(value)
+
+    def test_native_test_selection_is_exact_and_unambiguous(self) -> None:
+        self.assertEqual(measure.select_exact_test("mod::work: test\nother: test", "work"), "mod::work")
+        for listing in ("other: test", "a::work: test\nb::work: test", "work: benchmark"):
+            with self.subTest(listing=listing), self.assertRaises(SystemExit):
+                measure.select_exact_test(listing, "work")
+
+    def test_native_artifact_identity_rejects_drift_missing_and_symlink(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "test-executable"
+            path.write_bytes(b"fixture-executable-bytes-not-a-Rust-qualification")
+            path.chmod(0o700)
+            identity = measure.file_identity(path)
+            measure.verify_native_artifacts([identity])
+            path.write_bytes(b"changed")
+            with self.assertRaises(SystemExit):
+                measure.verify_native_artifacts([identity])
+            link = Path(directory) / "substitution"
+            link.symlink_to(path)
+            with self.assertRaises(SystemExit):
+                measure.file_identity(link)
+            path.unlink()
+            with self.assertRaises(SystemExit):
+                measure.verify_native_artifacts([identity])
+
+    def test_cargo_artifact_must_be_the_requested_crate_and_test_target(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "hepta-objective/src/lib.rs"
+            source.parent.mkdir(parents=True)
+            source.write_text("// fixture\n")
+            executable = root / "test-executable"
+            executable.write_bytes(b"test-only artifact fixture")
+            executable.chmod(0o700)
+            row = {"reason": "compiler-artifact", "executable": str(executable),
+                   "target": {"name": "codex_hepta_objective", "kind": ["lib"], "src_path": str(source)},
+                   "profile": {"test": True}}
+            with patch.object(measure, "CARGO_ROOT", root):
+                selected, artifacts = measure.select_native_artifacts(json.dumps(row), "codex-hepta-objective", "codex_hepta_objective", "lib")
+                self.assertEqual(selected["path"], str(executable))
+                self.assertEqual(artifacts, [selected])
+                for changed in ([], [row, row], [{**row, "profile": {"test": False}}]):
+                    with self.subTest(changed=changed), self.assertRaises(SystemExit):
+                        measure.select_native_artifacts("\n".join(map(json.dumps, changed)), "codex-hepta-objective", "codex_hepta_objective", "lib")
+                row["target"]["src_path"] = str(root / "wrong-crate/lib.rs")
+                with self.assertRaises(SystemExit):
+                    measure.select_native_artifacts(json.dumps(row), "codex-hepta-objective", "codex_hepta_objective", "lib")
+
+    def test_resource_sampler_executes_prebuilt_binary_not_cargo(self) -> None:
+        native = {"executable": "/fixture/test", "artifacts": []}
+        with patch.object(measure, "build_native_fixture", return_value=native), \
+             patch.object(measure, "verify_native_artifacts") as verify, \
+             patch.object(measure, "command", return_value="module::test: test\n"), \
+             patch.object(measure, "run_isolated_command", return_value=("result", resources())) as run:
+            output, observed, binding = measure.run_native_fixture("package", None, "test", {})
+            self.assertEqual(run.call_args.args[:2], ("/fixture/test", "module::test"))
+            self.assertNotIn("cargo", run.call_args.args)
+            self.assertIn("--exact", run.call_args.args)
+            self.assertEqual(verify.call_count, 3)
+            self.assertEqual((output, observed), ("result", resources()))
+            self.assertTrue(binding["artifactsUnchangedAfterExecution"])
+            self.assertEqual(binding["exitCode"], 0)
 
     def test_filesystem_identity_uses_longest_mount_and_marks_memory_storage(self) -> None:
         # Keep this synthetic mount namespace independent of host aliases such as

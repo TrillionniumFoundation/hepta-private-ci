@@ -255,8 +255,7 @@ fn authoritative_admission_preserves_sub_millisecond_deadline() {
     source.deadline = Some("2026-09-08T10:05:00.000001Z".to_owned());
     let context = context(&profile, &source);
 
-    let admitted =
-        admit_validated_objective_v1(&source, &validated, &context).expect("admitted");
+    let admitted = admit_validated_objective_v1(&source, &validated, &context).expect("admitted");
     let deadline = admitted
         .receipt()
         .deadline_unix_micros

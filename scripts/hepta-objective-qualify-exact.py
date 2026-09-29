@@ -85,6 +85,8 @@ def commands() -> list[tuple[str, list[str]]]:
         ("agentd-objective", ["cargo", "test", "--locked", "-p", PACKAGES[3], "--lib", "objective_runtime"]),
         ("agentd-checkpoint", ["cargo", "test", "--locked", "-p", PACKAGES[3], "--lib", "objective_run_start_checkpoint"]),
         ("agentd-product-e2e", ["cargo", "test", "--locked", "-p", PACKAGES[3], "--test", "objective_product_e2e", "--", "--nocapture"]),
+        ("agentd-shutdown-outcomes", ["cargo", "test", "--locked", "-p", PACKAGES[3], "--test", "runtime_shutdown_outcomes"]),
+        ("agentd-optional-restart", ["cargo", "test", "--locked", "-p", PACKAGES[3], "--test", "optional_module_restart"]),
         # The objective, destination owner and product daemon retain strict
         # all-target linting. hepta-intelligence is linted as production library
         # code here while its objective publication tests run explicitly above;

@@ -44,6 +44,10 @@ fn record(
             supplied_source_digest: digest(&format!("supplied:{run_id}")),
             intent_digest: digest("intent"),
             admitted_source_digest: digest(&format!("source:{run_id}")),
+            objective_admission_proof: Some(fixture_admission_proof(
+                digest("profile"),
+                digest(&format!("source:{run_id}")),
+            )),
             observed_at_unix_micros: 1_000_000,
             deadline_unix_micros: 100_000_000,
             authority: codex_hepta_types::AuthorityPosture::DENY_ALL,
@@ -546,4 +550,62 @@ fn exact_conflict_replay_retains_terminal_outcome_without_recompilation() {
         ObjectiveReplayPublication::Run { .. } => panic!("conflict resurrected as a run"),
     }
     assert_eq!(state.journal.head_digest(), head);
+}
+
+// Historical integrity evidence for the owner-store fixture, not an opaque
+// compiler admission capability. Production obtains these bytes from the compiler.
+fn fixture_admission_proof(
+    profile: codex_hepta_types::Digest32,
+    source: codex_hepta_types::Digest32,
+) -> codex_hepta_learning_ledger::RunStartAdmissionProofV1 {
+    let mut bytes = b"hepta.objective.admission-proof.v1".to_vec();
+    for identity in [
+        codex_hepta_types::Digest32::of_bytes(b"fixture-envelope"),
+        profile,
+        codex_hepta_types::Digest32::of_bytes(b"fixture-context"),
+        codex_hepta_types::Digest32::of_bytes(b"fixture-compiler-contract"),
+        source,
+    ] {
+        bytes.extend_from_slice(identity.as_array());
+    }
+    let digest = codex_hepta_types::Digest32::of_bytes(&bytes);
+    codex_hepta_learning_ledger::RunStartAdmissionProofV1::from_canonical_bytes(&bytes, digest)
+        .unwrap_or_else(|error| panic!("fixture proof: {error:?}"))
+}
+
+#[test]
+fn legacy_or_cross_bound_admission_proof_never_enters_runtime() {
+    let mut coordinator = AgentRunCoordinator::compose_runtime(RuntimeComposition {
+        agent_id: "agent.test".to_string(),
+        supervisor_generation: 3,
+        agentd_generation: 3,
+        configuration_digest: digest("config").to_string(),
+        ports_digest: digest("ports").to_string(),
+        max_active_runs: 16,
+    })
+    .expect("coordinator");
+    let mut missing = record(
+        "run.missing-proof",
+        12,
+        RunStartObjectiveDispositionV1::Compiled,
+    );
+    missing.admission.objective_admission_proof = None;
+    assert!(
+        coordinator
+            .start_revalidated_run_start(1, &missing)
+            .is_err()
+    );
+    assert!(coordinator.run("run.missing-proof").is_none());
+    let mut mismatched = record(
+        "run.mismatched-proof",
+        13,
+        RunStartObjectiveDispositionV1::Compiled,
+    );
+    mismatched.admission.admitted_source_digest = digest("substitution");
+    assert!(
+        coordinator
+            .start_revalidated_run_start(1, &mismatched)
+            .is_err()
+    );
+    assert!(coordinator.run("run.mismatched-proof").is_none());
 }

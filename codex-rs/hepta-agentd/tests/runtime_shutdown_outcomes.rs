@@ -13,7 +13,8 @@ use tokio::sync::oneshot;
 use tokio_util::sync::CancellationToken;
 
 fn host(cancellation: CancellationToken) -> RuntimeTasks {
-    RuntimeTasks::new(cancellation, Duration::from_millis(50)).expect("host")
+    RuntimeTasks::new(cancellation, Duration::from_millis(50))
+        .unwrap_or_else(|error| panic!("host: {error:?}"))
 }
 
 #[tokio::test]
@@ -22,17 +23,24 @@ async fn already_ready_shutdown_cannot_hide_unobserved_required_failure() {
     let (finished, done) = oneshot::channel();
     tasks
         .spawn_required("runtime.core", async move {
-            finished.send(()).expect("completion receiver");
+            finished
+                .send(())
+                .unwrap_or_else(|error| panic!("completion receiver: {error:?}"));
             Err(AgentdError::GenerationFenced("generation lost".to_string()))
         })
-        .expect("spawn");
-    done.await.expect("task ran");
+        .unwrap_or_else(|error| panic!("spawn: {error:?}"));
+    done.await
+        .unwrap_or_else(|error| panic!("task ran: {error:?}"));
     // run_until deliberately prioritizes this ready signal. Its cleanup must
     // nevertheless observe the queued task result, not drop it through join_next.
     assert!(tasks.run_until(async { Ok(()) }).await.is_err());
     assert_eq!(tasks.active_count(), 0);
     assert_eq!(
-        tasks.failures().back().expect("diagnostic").name,
+        tasks
+            .failures()
+            .back()
+            .unwrap_or_else(|| panic!("missing diagnostic"))
+            .name,
         "runtime.core"
     );
     assert!(tasks.run_until(async { Ok(()) }).await.is_err());
@@ -50,7 +58,7 @@ async fn owner_failure_after_cancellation_is_not_a_successful_shutdown() {
                 "drain fence lost".to_string(),
             ))
         })
-        .expect("spawn");
+        .unwrap_or_else(|error| panic!("spawn: {error:?}"));
     assert!(tasks.run_until(async { Ok(()) }).await.is_err());
     assert_eq!(tasks.active_count(), 0);
 }
@@ -76,7 +84,7 @@ async fn optional_shared_fence_during_shutdown_still_stops_the_host() {
                 Ok(())
             },
         )
-        .expect("spawn");
+        .unwrap_or_else(|error| panic!("spawn: {error:?}"));
     assert!(tasks.run_until(async { Ok(()) }).await.is_err());
     assert_eq!(quarantines.load(Ordering::SeqCst), 0);
 }
@@ -102,11 +110,11 @@ async fn optional_failure_during_shutdown_is_quarantined_exactly_once() {
                 Ok(())
             },
         )
-        .expect("spawn");
+        .unwrap_or_else(|error| panic!("spawn: {error:?}"));
     tasks
         .run_until(async { Ok(()) })
         .await
-        .expect("isolated stop");
+        .unwrap_or_else(|error| panic!("isolated stop: {error:?}"));
     tasks.shutdown().await;
     assert_eq!(quarantines.load(Ordering::SeqCst), 1);
     assert_eq!(tasks.failures().len(), 1);
@@ -126,7 +134,7 @@ async fn quarantine_rejection_during_shutdown_is_latched() {
             },
             || Err(AgentdError::Protocol("route fencing failed".to_string())),
         )
-        .expect("spawn");
+        .unwrap_or_else(|error| panic!("spawn: {error:?}"));
     assert!(tasks.run_until(async { Ok(()) }).await.is_err());
     assert!(tasks.run_until(async { Ok(()) }).await.is_err());
 }
@@ -141,7 +149,7 @@ async fn required_panic_during_cleanup_is_not_discarded() {
             worker_stop.cancelled().await;
             panic!("injected owner cleanup panic");
         })
-        .expect("spawn");
+        .unwrap_or_else(|error| panic!("spawn: {error:?}"));
     assert!(tasks.run_until(async { Ok(()) }).await.is_err());
     assert_eq!(tasks.active_count(), 0);
 }
@@ -158,7 +166,9 @@ async fn unfinished_retirement_callback_is_checked_during_final_cleanup() {
                 "feature.41",
                 |stop| async move {
                     stop.cancelled().await;
-                    released.await.expect("release drain");
+                    released
+                        .await
+                        .unwrap_or_else(|error| panic!("release drain: {error:?}"));
                     Ok(())
                 },
                 || Ok(()),
@@ -168,10 +178,12 @@ async fn unfinished_retirement_callback_is_checked_during_final_cleanup() {
                     Err(AgentdError::Protocol("unreconciled effects".to_string()))
                 },
             )
-            .expect("spawn");
+            .unwrap_or_else(|error| panic!("spawn: {error:?}"));
         assert!(tasks.retire_optional("feature.41").await.is_err());
         assert_eq!(callbacks.load(Ordering::SeqCst), 0);
-        release.send(()).expect("release service");
+        release
+            .send(())
+            .unwrap_or_else(|error| panic!("release service: {error:?}"));
         assert!(tasks.run_until(async { Ok(()) }).await.is_err());
         assert_eq!(callbacks.load(Ordering::SeqCst), 1);
         assert!(tasks.retire_optional("feature.41").await.is_err());
@@ -198,8 +210,11 @@ async fn normal_host_stop_is_not_permanent_module_retirement() {
                 Ok(())
             },
         )
-        .expect("spawn");
-    tasks.run_until(async { Ok(()) }).await.expect("clean stop");
+        .unwrap_or_else(|error| panic!("spawn: {error:?}"));
+    tasks
+        .run_until(async { Ok(()) })
+        .await
+        .unwrap_or_else(|error| panic!("clean stop: {error:?}"));
     assert_eq!(callbacks.load(Ordering::SeqCst), 0);
     assert!(tasks.retire_optional("feature.41").await.is_err());
 }
@@ -219,7 +234,7 @@ async fn forced_abort_never_publishes_retirement_acknowledgement() {
                 Ok(())
             },
         )
-        .expect("spawn");
+        .unwrap_or_else(|error| panic!("spawn: {error:?}"));
     assert!(tasks.retire_optional("feature.41").await.is_err());
     assert!(
         tasks.run_until(async { Ok(()) }).await.is_err(),

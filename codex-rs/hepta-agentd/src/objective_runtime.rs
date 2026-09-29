@@ -135,6 +135,7 @@ impl ObjectiveRuntimeHost {
             {
                 continue;
             }
+            require_current_admission_proof(&record.admission, &self.profile)?;
             if authentication_is_current(record, &trust, agentd.identity(), now_ms)? {
                 if agentd.canonical_intelligence_enabled() {
                     // A RunStart publication predates the seven-owner handoff.
@@ -235,6 +236,12 @@ impl ObjectiveRuntimeHost {
                     record,
                 }) => (publication, *record),
                 Some(ObjectiveReplayPublication::Conflict { conflict_digest }) => {
+                    let retained = state
+                        .journal
+                        .get_conflict(&run_id)
+                        .map_err(store_error)?
+                        .ok_or_else(|| invalid("objective conflict proof is unavailable"))?;
+                    require_current_admission_proof(&retained.admission, &self.profile)?;
                     return Ok(ObjectiveStartResult::Conflict {
                         run_id: request.body.run_id,
                         conflict_digest: conflict_digest.to_string(),
@@ -326,6 +333,7 @@ impl ObjectiveRuntimeHost {
             }
         };
 
+        require_current_admission_proof(&record.admission, &self.profile)?;
         authbus_ingress::require_ready(agentd)?;
         let current = authbus.trust(agentd)?;
         if deadline_is_expired(
@@ -380,6 +388,31 @@ impl ObjectiveRuntimeHost {
             idempotent: publication.disposition == RunStartAppendDisposition::IdempotentReplay,
         }))
     }
+}
+
+// Historical proof integrity is not current authorization. This owner still
+// validates live AuthBus trust, deadline, generation and final-use fence.
+fn require_current_admission_proof(
+    admission: &codex_hepta_learning_ledger::RunStartAdmissionBindingV1,
+    profile: &ValidatedAdmissionProfileV1,
+) -> Result<(), AgentdError> {
+    let proof = admission
+        .objective_admission_proof
+        .as_ref()
+        .ok_or_else(|| invalid("legacy objective admission requires an authorized new revision"))?;
+    let key = profile.reuse_key();
+    if admission.profile_id != profile.profile().profile_id
+        || admission.profile_revision != key.profile_revision
+        || admission.profile_digest != key.profile_digest
+        || proof.profile_digest() != key.profile_digest
+        || proof.admitted_source_digest() != admission.admitted_source_digest
+        || proof.compiler_contract_digest() != key.compiler_contract_digest
+    {
+        return Err(invalid(
+            "durable objective proof does not match the current compiler profile",
+        ));
+    }
+    Ok(())
 }
 
 fn objective_execution_binding(

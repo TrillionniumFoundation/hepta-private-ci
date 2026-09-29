@@ -209,11 +209,50 @@ def valid_resource_observation(value: Any) -> bool:
     return value["wallNanoseconds"] > 0
 
 
+def validate_native_fixture(value: Any, source_commit: str, source_tree: str) -> None:
+    if not isinstance(value, dict) or value.get("schema") != "hepta.objective-native-fixture.v1":
+        raise ValueError("missing native fixture artifact identity")
+    if value.get("sourceCommit") != source_commit or value.get("sourceTree") != source_tree:
+        raise ValueError("native fixture candidate identity mismatch")
+    if (type(value.get("exitCode")) is not int or value["exitCode"] != 0
+        or value.get("artifactsUnchangedAfterExecution") is not True
+        or value.get("buildCostsExcludedFromFixtureResources") is not True
+        or value.get("nativeFfiQualificationProved") is not False):
+        raise ValueError("native fixture execution boundary is incomplete")
+    for field in ("cargoArtifactMessagesSha256", "testListSha256", "executionOutputSha256"):
+        if not isinstance(value.get(field), str) or not LOG_SHA.fullmatch(value[field]):
+            raise ValueError("native fixture log identity is invalid")
+    artifacts = value.get("artifacts")
+    if not isinstance(artifacts, list) or not artifacts:
+        raise ValueError("native fixture lacks executable artifacts")
+    paths = set()
+    for artifact in artifacts:
+        if not isinstance(artifact, dict):
+            raise ValueError("invalid native artifact")
+        path = artifact.get("path")
+        if not isinstance(path, str) or not path or path in paths:
+            raise ValueError("native artifact path is missing or ambiguous")
+        if (not isinstance(artifact.get("sha256"), str)
+            or not LOG_SHA.fullmatch(artifact["sha256"])
+            or type(artifact.get("sizeBytes")) is not int or artifact["sizeBytes"] <= 0):
+            raise ValueError("invalid native artifact content identity")
+        paths.add(path)
+    executable, test = value.get("executable"), value.get("testName")
+    if executable not in paths or not isinstance(test, str) or not test:
+        raise ValueError("selected native executable or test is not bound")
+    expected = [executable, test, "--ignored", "--exact", "--nocapture", "--test-threads=1"]
+    if value.get("executionCommand") != expected:
+        raise ValueError("resource sample must execute the exact prebuilt native test")
+    build = value.get("buildCommand")
+    if not isinstance(build, list) or build[:2] != ["cargo", "test"] or "--no-run" not in build:
+        raise ValueError("native fixture build must be separate from execution")
+
+
 def target_projection(
     path: Path, source_commit: str, source_tree: str
 ) -> dict[str, Any]:
     receipt = load(path)
-    if receipt.get("schema") != "hepta.objective-target-host-evidence.v1":
+    if receipt.get("schema") != "hepta.objective-target-host-evidence.v2":
         raise ValueError("unexpected target-measurement schema")
     if (
         receipt.get("sourceCommit") != source_commit
@@ -238,11 +277,16 @@ def target_projection(
         for item in by_path.values()
     ):
         raise ValueError("target measurement lacks isolated fixture resources")
+    for item in by_path.values():
+        validate_native_fixture(item.get("nativeFixture"), source_commit, source_tree)
     interpretation = receipt.get("interpretation")
     if (
         not isinstance(interpretation, dict)
         or interpretation.get("fixtureResourcesIsolatedByFreshHelperProcess") is not True
         or interpretation.get("memoryIsNotPerInternalPhaseAllocation") is not True
+        or interpretation.get("buildCostsExcludedFromFixtureResources") is not True
+        or interpretation.get("nativeArtifactsBoundBeforeAndAfterExecution") is not True
+        or interpretation.get("nativeFfiQualificationProved") is not False
         or interpretation.get("dynamicAuthorizationCachingAllowed") is not False
         or interpretation.get("atomicAppendCheckpointHandoffBoundaryPreserved") is not True
     ):
@@ -257,7 +301,10 @@ def target_projection(
         "measurementObserved": True,
         "measurementCount": len(measurements),
         "workloadPaths": sorted(expected_paths),
-        "resourceObservation": "isolated_fixture_process_tree",
+        "resourceObservation": "prebuilt_native_fixture_os_waited_child_counters",
+        "nativeArtifactsBound": True,
+        "nativeFfiQualificationProved": False,
+        "buildCostsExcludedFromFixtureResources": True,
         "selectedDeploymentHostAccepted": False,
         "storageQualificationProved": False,
     }

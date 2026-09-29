@@ -228,6 +228,16 @@ impl AgentRunCoordinator {
         now_ms: u64,
         record: &RunStartRecordV1,
     ) -> Result<RunReceipt, AgentRunError> {
+        let proof = record.admission.objective_admission_proof.as_ref().ok_or(
+            AgentRunError::InvalidRunStart("durable objective admission proof"),
+        )?;
+        if proof.profile_digest() != record.admission.profile_digest
+            || proof.admitted_source_digest() != record.admission.admitted_source_digest
+        {
+            return Err(AgentRunError::InvalidRunStart(
+                "objective admission proof binding",
+            ));
+        }
         if record.objective_function_v1_digest.is_zero()
             || record.objective_function_v1_bytes.is_empty()
         {

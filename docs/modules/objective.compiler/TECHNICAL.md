@@ -98,7 +98,7 @@ None.
 
 ### Current source change and evidence boundary
 
-The ordinary source path identified in [DELIVERY_EVIDENCE.md](DELIVERY_EVIDENCE.md) keeps the existing Agentd/intelligence/destination-journal ownership chain. Agentd now freezes one `ValidatedAdmissionProfileV1` at host open and reuses only its static validation, indexes, exact digest, revision and compiler-contract identity. Every request still rechecks authenticated source identity, principal scope, intent/schema/normalization digests, freshness and deadline; final use still rechecks trust, generation and fence. The Rust regression tests and measurement harnesses are source artifacts, not execution receipts. Versioned durable admission-proof recovery, selected deployment-host acceptance and independent acceptance remain outstanding. Canonical accepted/activated/released state is not changed by this guide.
+The ordinary source path identified in [DELIVERY_EVIDENCE.md](DELIVERY_EVIDENCE.md) keeps the existing Agentd/intelligence/destination-journal ownership chain. Agentd now freezes one `ValidatedAdmissionProfileV1` at host open and reuses only its static validation, indexes, exact digest, revision and compiler-contract identity. Every request still rechecks authenticated source identity, principal scope, intent/schema/normalization digests, freshness and deadline; final use still rechecks trust, generation and fence. The Rust regression tests and measurement harnesses are source artifacts, not execution receipts. Versioned durable admission-proof recovery is implemented on the existing RunStart owner path (see the lifecycle contract below). Exact-candidate execution, selected deployment-host acceptance and independent acceptance remain receipt-bound gates. Canonical accepted/activated/released state is not changed by this guide.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -168,7 +168,7 @@ Critical protocol schemas:
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
-`ObjectiveFunction` has two deliberately separate identities. `ObjectiveFunction::semantic_digest` is the compact owner-native compiler identity used by `RunStartSnapshotV1.objectiveDigest`; the product facade now uses `encode_proof_bearing_objective_function_v1` on the opaque result of `compile_authoritative_objective_v1`. The encoder rebinds the complete source-envelope and frozen-profile identity, retains native/source/receipt validation and materializes the registered canonical JSON `ObjectiveFunctionV1` with its separate protocol-wire digest without a second native compilation. `encode_authenticated_objective_function_v1` remains the compatibility entrypoint for separate receipts and independently repeats authenticated admission and compilation. The crate-private encoder is not a caller-controlled bypass. `decode_objective_function_v1` validates exact canonical bytes plus semantic uniqueness, ordering, intrinsic-abstain, allowed/forbidden disjointness and soft-weight bounds. The durable run-start v2 record binds both byte strings and both digests, and Agentd refuses legacy records without canonical protocol identity at final use. For a compiled compatibility-path run, `ObjectiveStart` also returns an optional `ObjectiveRunExecutionBinding` copied from the daemon-owned durable record. The binding contains only the exact request/objective/body/artifact/authority/generation/fence/deadline identity needed by a trusted execution owner to attach independently produced context; it grants no effect authority. Test sources cover source/profile/context drift, duplicate or reordered wire identities, unknown/non-canonical JSON, native/protocol digest separation, maximum bounds and durable revalidation. Their execution remains exact-candidate evidence. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+`ObjectiveFunction` has two deliberately separate identities. `ObjectiveFunction::semantic_digest` is the compact owner-native compiler identity used by `RunStartSnapshotV1.objectiveDigest`; the product facade now uses `encode_proof_bearing_objective_function_v1` on the opaque result of `compile_authoritative_objective_v1`. The encoder rebinds the complete source-envelope and frozen-profile identity, retains native/source/receipt validation and materializes the registered canonical JSON `ObjectiveFunctionV1` with its separate protocol-wire digest without a second native compilation. `encode_authenticated_objective_function_v1` remains the compatibility entrypoint for separate receipts and independently repeats authenticated admission and compilation. The crate-private encoder is not a caller-controlled bypass. `decode_objective_function_v1` validates exact canonical bytes plus semantic uniqueness, ordering, intrinsic-abstain, allowed/forbidden disjointness and soft-weight bounds. New durable run-start V3 records bind both byte strings and both digests plus the complete canonical admission proof. V1/V2 records remain readable without proof synthesis, but Agentd refuses them at final use; current profile/revision/compiler-contract and live authorization are separately checked. For a compiled compatibility-path run, `ObjectiveStart` also returns an optional `ObjectiveRunExecutionBinding` copied from the daemon-owned durable record. The binding contains only the exact request/objective/body/artifact/authority/generation/fence/deadline identity needed by a trusted execution owner to attach independently produced context; it grants no effect authority. Test sources cover source/profile/context drift, duplicate or reordered wire identities, unknown/non-canonical JSON, native/protocol digest separation, maximum bounds and durable revalidation. Their execution remains exact-candidate evidence. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
 
 ## 6. Data authority, persistence and migrations
 
@@ -371,3 +371,38 @@ Compacted summary count/length validation precedes allocation. The authoritative
 protocol and retained-index capacity boundary are specified in
 `../../readiness/OBJECTIVE_COMPILER_EXECUTION.md`; neither a passing local test
 nor filesystem metadata grants target-host acceptance or activation.
+
+## Admission-proof persistence and recovery contract (2026-09-29)
+
+`ObjectiveAdmissionProofV1` remains privately constructed by authoritative
+admission. Its read-only `canonical_bytes()` export uses the same encoding
+helper as proof issuance: domain `hepta.objective.admission-proof.v1`, followed
+by five 32-byte digests in source-envelope, profile, authenticated context,
+compiler-contract and admitted-source order. The canonical proof has 192 bytes;
+its digest is SHA-256 of exactly those bytes. Export does not re-admit, re-solve,
+cache authorization or create a constructor for the opaque compiler proof.
+
+The intelligence facade places that evidence in the existing RunStart
+transaction as `RunStartAdmissionProofV1`. This historical integrity wrapper
+has private bytes and rejects unknown versions, zero component identities,
+wrong length, trailing bytes and digest drift. It is deliberately not the
+opaque compiler capability and cannot be converted into one. New run-record
+V3 and conflict-record V2 payloads contain the proof digest and canonical bytes
+immediately after `admitted_source_digest`; their normal frame digest, predecessor
+chain, external checkpoint and publication acknowledgement bind the added
+224 bytes. Profile and admitted-source identities must also match the enclosing
+admission. There is no additional proof database or independent proof authority.
+
+Old run V1/V2 and conflict V1 payloads decode with an absent proof. Re-encoding
+preserves their version and byte identity. New append validation rejects an
+absent proof; it does not retrofit old evidence. Inspection/replay-frontier
+recovery remains possible, but runtime admission requires a proof, the current
+profile and compiler contract, and all existing live trust/deadline/generation/
+fence checks. An authorized new revision or request is required for migration;
+recovery never manufactures one. Exact retries use the original durable proof,
+not a proof recomputed with a later clock. Expired compacted payloads are not
+reconstructed from summary indexes; surviving payloads retain their exact
+proof and record identities.
+
+Regression coverage is indexed in `CLOSEOUT_20260929.md`. Test source is not a
+passing execution receipt; all acceptance and activation claims remain external.

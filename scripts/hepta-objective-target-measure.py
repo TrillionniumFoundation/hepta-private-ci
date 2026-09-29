@@ -11,6 +11,7 @@ process-tree RSS peak is an allocation measurement for an individual phase.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import platform
@@ -28,7 +29,7 @@ CARGO_ROOT = ROOT / "codex-rs"
 PREFIX = "OBJECTIVE_MEASUREMENT="
 PRODUCT_PREFIX = "OBJECTIVE_PRODUCT_MEASUREMENT="
 RESOURCE_PREFIX = "OBJECTIVE_PROCESS_RESOURCE="
-SCHEMA = "hepta.objective-target-host-evidence.v1"
+SCHEMA = "hepta.objective-target-host-evidence.v2"
 PRODUCT_SCHEMA = "hepta.objective-product-target-measurement.v1"
 RESOURCE_SCHEMA = "hepta.objective-command-resource-observation.v1"
 
@@ -75,8 +76,8 @@ def _resource_payload(usage: resource.struct_rusage, wall_ns: int) -> dict[str, 
     return {
         "schema": RESOURCE_SCHEMA,
         "scope": (
-            "one isolated fixture command process tree; peak RSS includes the "
-            "test executable and descendants, not per-phase allocations"
+            "one isolated native fixture command; OS-reported waited-child peak RSS, "
+            "not simultaneous process-tree sum, build cost or per-phase allocation"
         ),
         "peakResidentSetBytes": _peak_rss_bytes(usage.ru_maxrss),
         "userCpuNanoseconds": max(0, int(usage.ru_utime * 1_000_000_000)),
@@ -320,26 +321,121 @@ def attach_resources(
     return measurement
 
 
+def file_identity(path: Path) -> dict[str, Any]:
+    """Hash an actual executable; caller-supplied names never establish identity."""
+    if path.is_symlink() or not path.is_file() or not os.access(path, os.X_OK):
+        fail(f"native artifact is not a regular executable: {path}")
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for block in iter(lambda: stream.read(1_048_576), b""):
+            digest.update(block)
+    return {
+        "path": str(path.resolve()),
+        "sha256": digest.hexdigest(),
+        "sizeBytes": path.stat().st_size,
+    }
+
+
+def select_native_artifacts(
+    output: str, package: str, target_name: str, target_kind: str
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """Use Cargo's exact artifact messages, never a target-directory glob."""
+    selected: list[dict[str, Any]] = []
+    artifacts: dict[str, dict[str, Any]] = {}
+    crate_root = (CARGO_ROOT / package.removeprefix("codex-")).resolve()
+    for line in output.splitlines():
+        try:
+            row = json.loads(line)
+        except ValueError:
+            continue  # Cargo's combined output also contains progress text.
+        if not isinstance(row, dict) or row.get("reason") != "compiler-artifact":
+            continue
+        target = row.get("target", {})
+        source = target.get("src_path") if isinstance(target, dict) else None
+        executable = row.get("executable")
+        if not source or not executable or not Path(source).resolve().is_relative_to(crate_root):
+            continue
+        item = file_identity(Path(executable))
+        item["targetName"] = target.get("name")
+        item["targetKind"] = target.get("kind")
+        artifacts[item["path"]] = item
+        if (
+            target.get("name") == target_name
+            and target_kind in target.get("kind", [])
+            and row.get("profile", {}).get("test") is True
+        ):
+            selected.append(item)
+    if len(selected) != 1:
+        fail(f"expected one Cargo test executable for {package}/{target_name}, found {len(selected)}")
+    return selected[0], sorted(artifacts.values(), key=lambda item: item["path"])
+
+
+def verify_native_artifacts(artifacts: list[dict[str, Any]]) -> None:
+    for expected in artifacts:
+        current = file_identity(Path(expected["path"]))
+        if any(current[key] != expected[key] for key in ("path", "sha256", "sizeBytes")):
+            fail("native artifact changed between build and measurement")
+
+
+def build_native_fixture(package: str, target: str | None) -> dict[str, Any]:
+    """Build before resource sampling and bind every emitted package executable."""
+    argv = ["cargo", "test", "--locked", "--release", "-p", package]
+    argv.extend(["--test", target] if target else ["--lib"])
+    argv.extend(["--no-run", "--message-format=json"])
+    output = command(*argv, cwd=CARGO_ROOT)
+    selected, artifacts = select_native_artifacts(
+        output, package, target or package.replace("-", "_"), "test" if target else "lib"
+    )
+    return {
+        "schema": "hepta.objective-native-fixture.v1",
+        "sourceCommit": git("rev-parse", "HEAD"),
+        "sourceTree": git("rev-parse", "HEAD^{tree}"),
+        "buildCommand": argv,
+        "cargoArtifactMessagesSha256": hashlib.sha256(output.encode()).hexdigest(),
+        "executable": selected["path"],
+        "artifacts": artifacts,
+        "buildCostsExcludedFromFixtureResources": True,
+        "nativeFfiQualificationProved": False,
+    }
+
+
+def select_exact_test(output: str, requested: str) -> str:
+    tests = [line.removesuffix(": test") for line in output.splitlines() if line.endswith(": test")]
+    matches = [name for name in tests if name == requested or name.endswith("::" + requested)]
+    if len(matches) != 1:
+        fail(f"expected one exact native test for {requested}, found {len(matches)}")
+    return matches[0]
+
+
+def run_native_fixture(
+    package: str, target: str | None, test_name: str, env: dict[str, str]
+) -> tuple[str, dict[str, Any], dict[str, Any]]:
+    native = build_native_fixture(package, target)
+    verify_native_artifacts(native["artifacts"])
+    listed = command(native["executable"], "--list", "--format", "terse", cwd=CARGO_ROOT, env=env)
+    exact = select_exact_test(listed, test_name)
+    verify_native_artifacts(native["artifacts"])
+    argv = [native["executable"], exact, "--ignored", "--exact", "--nocapture", "--test-threads=1"]
+    output, observation = run_isolated_command(*argv, cwd=CARGO_ROOT, env=env)
+    verify_native_artifacts(native["artifacts"])
+    native.update({
+        "testName": exact,
+        "testListSha256": hashlib.sha256(listed.encode()).hexdigest(),
+        "executionCommand": argv,
+        "executionOutputSha256": hashlib.sha256(output.encode()).hexdigest(),
+        "exitCode": 0,
+        "artifactsUnchangedAfterExecution": True,
+    })
+    return output, observation, native
+
+
 def run_product_fixture(samples: int, execution_samples: int) -> dict[str, Any]:
     env = os.environ.copy()
     env["HEPTA_OBJECTIVE_PRODUCT_MEASUREMENT_SAMPLES"] = str(samples)
     env["HEPTA_OBJECTIVE_PRODUCT_EXECUTION_SAMPLES"] = str(execution_samples)
-    output, observation = run_isolated_command(
-        "cargo",
-        "test",
-        "--locked",
-        "--release",
-        "-p",
-        "codex-hepta-agentd",
-        "--test",
-        "objective_product_e2e",
-        "measurement_signed_objective_daemon_round_trip",
-        "--",
-        "--ignored",
-        "--exact",
-        "--nocapture",
-        cwd=CARGO_ROOT,
-        env=env,
+    output, observation, native = run_native_fixture(
+        "codex-hepta-agentd", "objective_product_e2e",
+        "measurement_signed_objective_daemon_round_trip", env,
     )
     measurement = parse_product_measurement(output)
     if (
@@ -347,29 +443,20 @@ def run_product_fixture(samples: int, execution_samples: int) -> dict[str, Any]:
         or measurement["executionSamples"] != execution_samples
     ):
         fail("product fixture sample count differs from requested measurement")
+    measurement["nativeFixture"] = native
     return attach_resources(measurement, observation)
 
 
 def run_fixture(test_name: str, expected_path: str, samples: int) -> dict[str, Any]:
     env = os.environ.copy()
     env["HEPTA_OBJECTIVE_MEASUREMENT_SAMPLES"] = str(samples)
-    output, observation = run_isolated_command(
-        "cargo",
-        "test",
-        "--locked",
-        "--release",
-        "-p",
-        "codex-hepta-objective",
-        test_name,
-        "--",
-        "--ignored",
-        "--nocapture",
-        cwd=CARGO_ROOT,
-        env=env,
+    output, observation, native = run_native_fixture(
+        "codex-hepta-objective", None, test_name, env,
     )
     measurement = parse_measurement(output, expected_path)
     if measurement["samples"] != samples:
         fail("fixture sample count differs from requested measurement")
+    measurement["nativeFixture"] = native
     return attach_resources(measurement, observation)
 
 
@@ -506,6 +593,11 @@ def measure(args: argparse.Namespace) -> int:
     )
     product = run_product_fixture(args.product_samples, args.execution_samples)
 
+    for measurement in (ordinary, conflict, product):
+        native = measurement["nativeFixture"]
+        if native["sourceCommit"] != source_sha or native["sourceTree"] != source_tree:
+            fail("native build source differs from measured source")
+
     if (
         git("rev-parse", "HEAD") != source_sha
         or git("rev-parse", "HEAD^{tree}") != source_tree
@@ -537,6 +629,9 @@ def measure(args: argparse.Namespace) -> int:
         "interpretation": {
             "ordinaryAndConflictAreSeparate": True,
             "phaseLatencyMeasuredInsideFixture": True,
+            "buildCostsExcludedFromFixtureResources": True,
+            "nativeArtifactsBoundBeforeAndAfterExecution": True,
+            "nativeFfiQualificationProved": False,
             "fixtureResourcesIsolatedByFreshHelperProcess": True,
             "memoryIsNotPerInternalPhaseAllocation": True,
             "productIncludesSignedIngressSocketFsyncAndRestart": True,

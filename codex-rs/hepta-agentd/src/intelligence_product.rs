@@ -85,7 +85,7 @@ use codex_hepta_objective::CompileDisposition;
 use codex_hepta_objective::ObjectiveAdmissionContextV1;
 use codex_hepta_objective::ObjectiveAdmissionProfileV1;
 use codex_hepta_objective::ObjectiveSourceEnvelopeV1;
-use codex_hepta_objective::admit_and_compile_objective_v1;
+use codex_hepta_objective::preflight_validate_objective_v1;
 use codex_hepta_prompt_optimizer::OptimizationRequest;
 use codex_hepta_prompt_optimizer::optimize;
 use codex_hepta_types::AuthorityPosture;
@@ -354,8 +354,12 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
             "objective context",
         )?;
         let started = Instant::now();
-        let outcome = admit_and_compile_objective_v1(&envelope, &profile, &context)
-            .map_err(|_| Self::reject(input.stage, "objective admission"))?;
+        // This stage checks the existing publication; it does not publish a new
+        // RunStart or manufacture effect authority from a compiler proof.
+        let (outcome, _admission_proof) =
+            preflight_validate_objective_v1(&envelope, &profile, &context)
+                .map_err(|_| Self::reject(input.stage, "objective preflight"))?
+                .into_parts();
         Self::within_budget(input, started)?;
         if outcome.receipt.authority.grants_any() {
             return Err(Self::reject(input.stage, "objective authority"));

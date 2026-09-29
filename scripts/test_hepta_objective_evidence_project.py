@@ -80,6 +80,22 @@ def resources() -> dict:
     }
 
 
+def native_fixture() -> dict:
+    return {
+        "schema": "hepta.objective-native-fixture.v1",
+        "sourceCommit": SOURCE, "sourceTree": TREE,
+        "exitCode": 0, "artifactsUnchangedAfterExecution": True,
+        "buildCostsExcludedFromFixtureResources": True,
+        "nativeFfiQualificationProved": False,
+        "cargoArtifactMessagesSha256": LOG, "testListSha256": LOG,
+        "executionOutputSha256": LOG,
+        "artifacts": [{"path": "/fixture/test", "sha256": LOG, "sizeBytes": 42}],
+        "executable": "/fixture/test", "testName": "module::measurement",
+        "executionCommand": ["/fixture/test", "module::measurement", "--ignored", "--exact", "--nocapture", "--test-threads=1"],
+        "buildCommand": ["cargo", "test", "--locked", "--release", "--no-run"],
+    }
+
+
 def target_receipt() -> dict:
     paths = (
         "ordinary_authenticated_admission_compile",
@@ -87,7 +103,7 @@ def target_receipt() -> dict:
         "signed_objective_daemon_round_trip",
     )
     return {
-        "schema": "hepta.objective-target-host-evidence.v1",
+        "schema": "hepta.objective-target-host-evidence.v2",
         "sourceCommit": SOURCE,
         "sourceTree": TREE,
         "workflowRunId": "18",
@@ -96,10 +112,13 @@ def target_receipt() -> dict:
         "workflowRef": "workflow@refs/heads/test",
         "hostProfileId": "ci-host",
         "measurements": [
-            {"path": path, "fixtureProcessResources": resources()} for path in paths
+            {"path": path, "fixtureProcessResources": resources(), "nativeFixture": native_fixture()} for path in paths
         ],
         "interpretation": {
             "fixtureResourcesIsolatedByFreshHelperProcess": True,
+            "buildCostsExcludedFromFixtureResources": True,
+            "nativeArtifactsBoundBeforeAndAfterExecution": True,
+            "nativeFfiQualificationProved": False,
             "memoryIsNotPerInternalPhaseAllocation": True,
             "dynamicAuthorizationCachingAllowed": False,
             "atomicAppendCheckpointHandoffBoundaryPreserved": True,
@@ -244,6 +263,30 @@ class EvidenceProjectionTest(unittest.TestCase):
         completed, value, _ = self.run_projection(None, target)
         self.assertNotEqual(completed.returncode, 0)
         self.assertIsNone(value)
+
+    def test_native_evidence_rejects_wrong_source_missing_digest_and_build_in_sample(self) -> None:
+        for field, invalid in (
+            ("sourceCommit", "9" * 40), ("sourceTree", "9" * 40),
+            ("exitCode", True), ("exitCode", 1), ("artifacts", []),
+            ("executionOutputSha256", "missing"), ("artifactsUnchangedAfterExecution", False),
+            ("buildCostsExcludedFromFixtureResources", False), ("nativeFfiQualificationProved", True),
+            ("executionCommand", ["cargo", "test"]), ("buildCommand", ["cargo", "test"]),
+        ):
+            target = target_receipt()
+            target["measurements"][0]["nativeFixture"][field] = invalid
+            completed, value, _ = self.run_projection(None, target)
+            with self.subTest(field=field, invalid=invalid):
+                self.assertNotEqual(completed.returncode, 0)
+                self.assertIsNone(value)
+        for legacy in (True, False):
+            target = target_receipt()
+            if legacy:
+                target["schema"] = "hepta.objective-target-host-evidence.v1"
+            else:
+                del target["measurements"][0]["nativeFixture"]
+            completed, value, _ = self.run_projection(None, target)
+            self.assertNotEqual(completed.returncode, 0)
+            self.assertIsNone(value)
 
     def test_current_state_truth_cannot_promote_release(self) -> None:
         state = copy.deepcopy(current_state())

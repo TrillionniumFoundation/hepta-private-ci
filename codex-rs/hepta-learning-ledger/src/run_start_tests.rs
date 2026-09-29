@@ -49,6 +49,10 @@ fn record(run_id: &str, objective: &[u8]) -> RunStartRecordV1 {
             supplied_source_digest: digest("supplied-source"),
             intent_digest: digest("intent"),
             admitted_source_digest: digest("admitted-source"),
+            objective_admission_proof: Some(fixture_admission_proof(
+                digest("profile"),
+                digest("admitted-source"),
+            )),
             observed_at_unix_micros: 1_000_000,
             deadline_unix_micros: 2_000_000,
             authority: AuthorityPosture::DENY_ALL,
@@ -92,6 +96,10 @@ fn conflict_record(run_id: &str, receipt: &[u8]) -> RunStartConflictRecordV1 {
             supplied_source_digest: digest("supplied-source"),
             intent_digest: digest("intent"),
             admitted_source_digest: digest("admitted-source"),
+            objective_admission_proof: Some(fixture_admission_proof(
+                digest("profile"),
+                digest("admitted-source"),
+            )),
             observed_at_unix_micros: 1_000_000,
             deadline_unix_micros: 2_000_000,
             authority: AuthorityPosture::DENY_ALL,
@@ -417,3 +425,27 @@ fn semantic_or_protocol_drift_after_reopen_conflicts() {
         Err(RunStartStoreError::Conflict)
     );
 }
+
+// Historical integrity evidence for the owner-store fixture, not an opaque
+// compiler admission capability. Production obtains these bytes from the compiler.
+fn fixture_admission_proof(
+    profile: codex_hepta_types::Digest32,
+    source: codex_hepta_types::Digest32,
+) -> crate::RunStartAdmissionProofV1 {
+    let mut bytes = b"hepta.objective.admission-proof.v1".to_vec();
+    for identity in [
+        codex_hepta_types::Digest32::of_bytes(b"fixture-envelope"),
+        profile,
+        codex_hepta_types::Digest32::of_bytes(b"fixture-context"),
+        codex_hepta_types::Digest32::of_bytes(b"fixture-compiler-contract"),
+        source,
+    ] {
+        bytes.extend_from_slice(identity.as_array());
+    }
+    let digest = codex_hepta_types::Digest32::of_bytes(&bytes);
+    crate::RunStartAdmissionProofV1::from_canonical_bytes(&bytes, digest)
+        .unwrap_or_else(|error| panic!("fixture proof: {error:?}"))
+}
+
+#[path = "run_start_proof_recovery_tests.rs"]
+mod proof_recovery;

@@ -21,14 +21,20 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+#[path = "run_start_proof.rs"]
+mod proof;
+pub use proof::RunStartAdmissionProofV1;
+
 const MAGIC_V1: &[u8; 8] = b"HEPTRS01";
 const MAGIC_V2: &[u8; 8] = b"HEPTRS02";
 const HEADER_V1: usize = 72;
 const HEADER_V2: usize = 112;
 const FRAME_OVERHEAD: usize = 112;
 const RECORD_DOMAIN_V1: &[u8] = b"hepta.run-start-record.v1";
-const RECORD_DOMAIN: &[u8] = b"hepta.run-start-record.v2";
-const CONFLICT_RECORD_DOMAIN: &[u8] = b"hepta.run-start-conflict.v1";
+const RECORD_DOMAIN_V2: &[u8] = b"hepta.run-start-record.v2";
+const RECORD_DOMAIN: &[u8] = b"hepta.run-start-record.v3";
+const CONFLICT_RECORD_DOMAIN_V1: &[u8] = b"hepta.run-start-conflict.v1";
+const CONFLICT_RECORD_DOMAIN: &[u8] = b"hepta.run-start-conflict.v2";
 const CHAIN_DOMAIN: &[u8] = b"hepta.run-start-chain.v1";
 const MAX_RECORDS: usize = 4096;
 const MAX_OBJECTIVE_SEMANTIC_BYTES: usize = 256 * 1024;
@@ -76,6 +82,9 @@ pub struct RunStartAdmissionBindingV1 {
     pub supplied_source_digest: Digest32,
     pub intent_digest: Digest32,
     pub admitted_source_digest: Digest32,
+    /// Present for new V3 run / V2 conflict records. Legacy records retain None
+    /// for inspection; recovery must not synthesize or upgrade a missing proof.
+    pub objective_admission_proof: Option<RunStartAdmissionProofV1>,
     pub observed_at_unix_micros: u64,
     pub deadline_unix_micros: u64,
     pub authority: AuthorityPosture,
@@ -720,14 +729,31 @@ impl RunStartJournal for DurableRunStartJournal {
     }
 }
 
+fn validate_admission_proof(
+    admission: &RunStartAdmissionBindingV1,
+    required: bool,
+) -> Result<(), RunStartStoreError> {
+    match (&admission.objective_admission_proof, required) {
+        (Some(proof), true) => {
+            proof.validate_binding(admission.profile_digest, admission.admitted_source_digest)
+        }
+        (None, false) => Ok(()),
+        _ => Err(RunStartStoreError::InvalidSnapshot(
+            "objectiveAdmissionProof",
+        )),
+    }
+}
+
 fn validate_record(record: &RunStartRecordV1) -> Result<(), RunStartStoreError> {
-    validate_record_compat(record, true)
+    validate_record_compat(record, true, true)
 }
 
 fn validate_record_compat(
     record: &RunStartRecordV1,
     require_protocol: bool,
+    require_admission_proof: bool,
 ) -> Result<(), RunStartStoreError> {
+    validate_admission_proof(&record.admission, require_admission_proof)?;
     if record.authentication.key_epoch == 0
         || record.authentication.sequence == 0
         || record.authentication.expires_at_ms == 0
@@ -804,6 +830,14 @@ fn validate_record_compat(
 }
 
 fn validate_conflict_record(record: &RunStartConflictRecordV1) -> Result<(), RunStartStoreError> {
+    validate_conflict_record_compat(record, true)
+}
+
+fn validate_conflict_record_compat(
+    record: &RunStartConflictRecordV1,
+    require_admission_proof: bool,
+) -> Result<(), RunStartStoreError> {
+    validate_admission_proof(&record.admission, require_admission_proof)?;
     if record.authentication.key_epoch == 0
         || record.authentication.sequence == 0
         || record.authentication.expires_at_ms == 0
@@ -855,7 +889,16 @@ fn validate_conflict_record(record: &RunStartConflictRecordV1) -> Result<(), Run
 
 fn encode_record(record: &RunStartRecordV1) -> Vec<u8> {
     let snapshot = &record.snapshot;
-    let mut bytes = RECORD_DOMAIN.to_vec();
+    // Preserve historical byte identities when retained frames are re-encoded
+    // during compaction. Only append validation can admit a new V3 record.
+    let domain = if record.admission.objective_admission_proof.is_some() {
+        RECORD_DOMAIN
+    } else if !record.objective_function_v1_bytes.is_empty() {
+        RECORD_DOMAIN_V2
+    } else {
+        RECORD_DOMAIN_V1
+    };
+    let mut bytes = domain.to_vec();
     push_id(&mut bytes, &record.authentication.issuer_id);
     push_u64(&mut bytes, record.authentication.key_epoch);
     push_id(&mut bytes, &record.authentication.message_id);
@@ -870,6 +913,10 @@ fn encode_record(record: &RunStartRecordV1) -> Vec<u8> {
     push_digest(&mut bytes, record.admission.supplied_source_digest);
     push_digest(&mut bytes, record.admission.intent_digest);
     push_digest(&mut bytes, record.admission.admitted_source_digest);
+    if let Some(proof) = &record.admission.objective_admission_proof {
+        push_digest(&mut bytes, proof.digest());
+        bytes.extend_from_slice(proof.canonical_bytes());
+    }
     push_u64(&mut bytes, record.admission.observed_at_unix_micros);
     push_u64(&mut bytes, record.admission.deadline_unix_micros);
     push_authority(&mut bytes, record.admission.authority);
@@ -893,14 +940,21 @@ fn encode_record(record: &RunStartRecordV1) -> Vec<u8> {
     push_digest(&mut bytes, record.runtime_body_digest);
     push_len(&mut bytes, record.objective_semantic_bytes.len());
     bytes.extend_from_slice(&record.objective_semantic_bytes);
-    push_digest(&mut bytes, record.objective_function_v1_digest);
-    push_len(&mut bytes, record.objective_function_v1_bytes.len());
-    bytes.extend_from_slice(&record.objective_function_v1_bytes);
+    if !record.objective_function_v1_bytes.is_empty() {
+        push_digest(&mut bytes, record.objective_function_v1_digest);
+        push_len(&mut bytes, record.objective_function_v1_bytes.len());
+        bytes.extend_from_slice(&record.objective_function_v1_bytes);
+    }
     bytes
 }
 
 fn encode_conflict_record(record: &RunStartConflictRecordV1) -> Vec<u8> {
-    let mut bytes = CONFLICT_RECORD_DOMAIN.to_vec();
+    let domain = if record.admission.objective_admission_proof.is_some() {
+        CONFLICT_RECORD_DOMAIN
+    } else {
+        CONFLICT_RECORD_DOMAIN_V1
+    };
+    let mut bytes = domain.to_vec();
     push_id(&mut bytes, &record.authentication.issuer_id);
     push_u64(&mut bytes, record.authentication.key_epoch);
     push_id(&mut bytes, &record.authentication.message_id);
@@ -915,6 +969,10 @@ fn encode_conflict_record(record: &RunStartConflictRecordV1) -> Vec<u8> {
     push_digest(&mut bytes, record.admission.supplied_source_digest);
     push_digest(&mut bytes, record.admission.intent_digest);
     push_digest(&mut bytes, record.admission.admitted_source_digest);
+    if let Some(proof) = &record.admission.objective_admission_proof {
+        push_digest(&mut bytes, proof.digest());
+        bytes.extend_from_slice(proof.canonical_bytes());
+    }
     push_u64(&mut bytes, record.admission.observed_at_unix_micros);
     push_u64(&mut bytes, record.admission.deadline_unix_micros);
     push_authority(&mut bytes, record.admission.authority);
@@ -933,14 +991,29 @@ fn encode_outcome_record(record: &StoredRunStartRecord) -> Vec<u8> {
     }
 }
 
+fn decode_admission_proof(
+    reader: &mut Reader<'_>,
+    required: bool,
+) -> Result<Option<RunStartAdmissionProofV1>, RunStartStoreError> {
+    if !required {
+        return Ok(None);
+    }
+    let digest = reader.digest()?;
+    let bytes = reader.bytes(proof::CANONICAL_BYTES)?;
+    RunStartAdmissionProofV1::from_canonical_bytes(bytes, digest).map(Some)
+}
+
 fn decode_record(input: &[u8]) -> Result<RunStartRecordV1, RunStartStoreError> {
-    let (input, require_protocol) = if let Some(value) = input.strip_prefix(RECORD_DOMAIN) {
-        (value, true)
-    } else if let Some(value) = input.strip_prefix(RECORD_DOMAIN_V1) {
-        (value, false)
-    } else {
-        return Err(RunStartStoreError::Corrupt);
-    };
+    let (input, require_protocol, require_admission_proof) =
+        if let Some(value) = input.strip_prefix(RECORD_DOMAIN) {
+            (value, true, true)
+        } else if let Some(value) = input.strip_prefix(RECORD_DOMAIN_V2) {
+            (value, true, false)
+        } else if let Some(value) = input.strip_prefix(RECORD_DOMAIN_V1) {
+            (value, false, false)
+        } else {
+            return Err(RunStartStoreError::Corrupt);
+        };
     let mut reader = Reader(input);
     let authentication = RunStartAuthenticationV1 {
         issuer_id: reader.id()?,
@@ -962,6 +1035,7 @@ fn decode_record(input: &[u8]) -> Result<RunStartRecordV1, RunStartStoreError> {
         supplied_source_digest: reader.digest()?,
         intent_digest: reader.digest()?,
         admitted_source_digest: reader.digest()?,
+        objective_admission_proof: decode_admission_proof(&mut reader, require_admission_proof)?,
         observed_at_unix_micros: reader.u64()?,
         deadline_unix_micros: reader.u64()?,
         authority: reader.authority()?,
@@ -1011,16 +1085,23 @@ fn decode_record(input: &[u8]) -> Result<RunStartRecordV1, RunStartStoreError> {
         objective_function_v1_digest,
         objective_function_v1_bytes,
     };
-    if !reader.0.is_empty() || validate_record_compat(&record, require_protocol).is_err() {
+    if !reader.0.is_empty()
+        || validate_record_compat(&record, require_protocol, require_admission_proof).is_err()
+    {
         return Err(RunStartStoreError::Corrupt);
     }
     Ok(record)
 }
 
 fn decode_conflict_record(input: &[u8]) -> Result<RunStartConflictRecordV1, RunStartStoreError> {
-    let input = input
-        .strip_prefix(CONFLICT_RECORD_DOMAIN)
-        .ok_or(RunStartStoreError::Corrupt)?;
+    let (input, require_admission_proof) =
+        if let Some(value) = input.strip_prefix(CONFLICT_RECORD_DOMAIN) {
+            (value, true)
+        } else if let Some(value) = input.strip_prefix(CONFLICT_RECORD_DOMAIN_V1) {
+            (value, false)
+        } else {
+            return Err(RunStartStoreError::Corrupt);
+        };
     let mut reader = Reader(input);
     let authentication = RunStartAuthenticationV1 {
         issuer_id: reader.id()?,
@@ -1042,6 +1123,7 @@ fn decode_conflict_record(input: &[u8]) -> Result<RunStartConflictRecordV1, RunS
         supplied_source_digest: reader.digest()?,
         intent_digest: reader.digest()?,
         admitted_source_digest: reader.digest()?,
+        objective_admission_proof: decode_admission_proof(&mut reader, require_admission_proof)?,
         observed_at_unix_micros: reader.u64()?,
         deadline_unix_micros: reader.u64()?,
         authority: reader.authority()?,
@@ -1060,17 +1142,22 @@ fn decode_conflict_record(input: &[u8]) -> Result<RunStartConflictRecordV1, RunS
             reader.bytes(length)?.to_vec()
         },
     };
-    if !reader.0.is_empty() || validate_conflict_record(&record).is_err() {
+    if !reader.0.is_empty()
+        || validate_conflict_record_compat(&record, require_admission_proof).is_err()
+    {
         return Err(RunStartStoreError::Corrupt);
     }
     Ok(record)
 }
 
 fn decode_outcome_record(input: &[u8]) -> Result<StoredRunStartRecord, RunStartStoreError> {
-    if input.starts_with(RECORD_DOMAIN) || input.starts_with(RECORD_DOMAIN_V1) {
+    if input.starts_with(RECORD_DOMAIN)
+        || input.starts_with(RECORD_DOMAIN_V2)
+        || input.starts_with(RECORD_DOMAIN_V1)
+    {
         return decode_record(input).map(|record| StoredRunStartRecord::Run(Box::new(record)));
     }
-    if input.starts_with(CONFLICT_RECORD_DOMAIN) {
+    if input.starts_with(CONFLICT_RECORD_DOMAIN) || input.starts_with(CONFLICT_RECORD_DOMAIN_V1) {
         return decode_conflict_record(input)
             .map(|record| StoredRunStartRecord::Conflict(Box::new(record)));
     }

@@ -127,6 +127,7 @@ pub use run_start::DurableRunStartJournal;
 pub use run_start::DurableRunStartStore;
 pub use run_start::MAX_RUN_START_SEGMENTS;
 pub use run_start::RunStartAdmissionBindingV1;
+pub use run_start::RunStartAdmissionProofV1;
 pub use run_start::RunStartAnchor;
 pub use run_start::RunStartAppendDisposition;
 pub use run_start::RunStartAppendReceipt;

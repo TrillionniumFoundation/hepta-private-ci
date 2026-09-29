@@ -98,11 +98,14 @@ The protocol-wire digest is intentionally **not** the native
 `ObjectiveFunction::semantic_digest`. The native digest identifies the compact compiler
 semantics used by `RunStartSnapshotV1.objectiveDigest`; the protocol digest identifies the
 registered JSON transport including explicit evidence requirements, legal/forbidden actions,
-resource endowment and deadline. The durable run-start v2 record binds both identities.
-Legacy v1 records may be decoded for migration/recovery inspection but cannot be admitted
-to Agentd runtime final use without the canonical protocol identity. The façade's returned
-admission-proof digest is distinct from durable proof persistence; the latter requires its
-own versioned storage/recovery closure and is not established by an in-memory proof alone.
+resource endowment and deadline. The durable run-start v3 record binds both identities
+and the complete versioned admission-proof evidence. Historical v1/v2 records retain
+their original byte identities when decoded for migration/recovery inspection; they do
+not acquire a fabricated proof. Agentd runtime admission requires the canonical protocol
+identity, the persisted proof and the current frozen-profile/compiler-contract binding.
+The façade persists this evidence in the same destination-owner transaction before
+returning its proof digest; decoding it does not reconstruct an opaque compiler capability
+or replace current authentication and final-use checks.
 
 ## Feasibility determinism
 
@@ -118,3 +121,22 @@ See [DELIVERY_EVIDENCE.md](DELIVERY_EVIDENCE.md) for the read-only source/merge 
 recorder, interpretation of missing or failed commands, and the remaining independent
 and selected-target-host gates. No source declaration in this matrix grants acceptance,
 activation, promotion or release.
+
+## 2026-09-29 bounded Source V1 closure
+
+Source V1 continues to use exact signed Q32 raw values, not Float/Decimal or
+set-valued operands. The new regression cross-product checks `eq/lte/gte` at
+`i64::MIN`, -1, 0, 1 and `i64::MAX` through authoritative admission, native
+constraints, proof-bound protocol encoding, strict canonical decoding and the
+real intelligence-to-RunStart publication facade. Negative facade tests ensure
+`ne/lt/gt/in/not_in` publish neither a run nor a partial proof. This completes
+coverage of the existing scalar contract rather than silently broadening V1.
+
+Source-envelope proof framing now has one crate-owned implementation shared by
+issuance and proof projection. The seven-owner preflight uses the validated
+admission entrypoint. The separate authenticated-recompilation encoder remains
+an independent parity/reference and compatibility check for callers holding
+separate receipts; it is not substituted into the ordinary single-compilation
+publication path. Broader typed semantics still require an explicit new source
+contract, lowering, verifier and versioned evidence; their absence does not
+justify implicit coercion of V1 inputs.

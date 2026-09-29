@@ -360,3 +360,79 @@ fn proof_projection_rejects_conflict_but_preserves_explicit_abstain() {
     );
     assert!(encode_proof_bearing_objective_function_v1(&abstain, &source, &frozen).is_ok());
 }
+
+#[test]
+fn q32_boundaries_preserve_exact_scalar_semantics_through_product_projection() {
+    for (comparator, relation, wire_relation) in [
+        (
+            ObjectiveConstraintComparatorV1::Equal,
+            crate::ConstraintRelation::Equal,
+            "eq",
+        ),
+        (
+            ObjectiveConstraintComparatorV1::LessThanOrEqual,
+            crate::ConstraintRelation::AtMost,
+            "lte",
+        ),
+        (
+            ObjectiveConstraintComparatorV1::GreaterThanOrEqual,
+            crate::ConstraintRelation::AtLeast,
+            "gte",
+        ),
+    ] {
+        for bound in [i64::MIN, -1, 0, 1, i64::MAX] {
+            let raw = profile();
+            let frozen = ValidatedAdmissionProfileV1::from_profile(&raw).expect("frozen profile");
+            let mut input = source();
+            input.structured_intent.constraints[0].comparator = comparator;
+            input.structured_intent.constraints[0].bound_q32 = bound;
+            input.intent_digest = canonical_objective_intent_digest_v1(&input).expect("intent");
+            let current = context(&raw, &input);
+            let compiled =
+                compile_authoritative_objective_v1(&input, &frozen, &current).expect("admission");
+            let native = compiled
+                .outcome()
+                .compile_result
+                .as_ref()
+                .expect("feasible");
+            let constraint = native
+                .objective
+                .constraints
+                .iter()
+                .find(|value| value.id.as_str() == "latency.ceiling")
+                .expect("constraint retained");
+            assert_eq!(
+                (constraint.relation, constraint.bound.raw()),
+                (relation, bound)
+            );
+            let projected = encode_proof_bearing_objective_function_v1(&compiled, &input, &frozen)
+                .expect("proof projection");
+            let reference = encode_authenticated_objective_function_v1(
+                native,
+                &input,
+                &raw,
+                &current,
+                &compiled.outcome().receipt,
+            )
+            .expect("independent reference");
+            assert_eq!(projected, reference);
+            let decoded = crate::decode_objective_function_v1(projected.canonical_bytes())
+                .expect("strict canonical protocol validator");
+            assert_eq!(decoded.protocol_digest(), projected.protocol_digest());
+            let wire: serde_json::Value =
+                serde_json::from_slice(projected.canonical_bytes()).expect("wire");
+            let constraints = wire["hardConstraints"].as_array().expect("constraints");
+            let field = constraints
+                .iter()
+                .find(|value| value["id"] == "latency.ceiling")
+                .expect("wire field");
+            assert_eq!(field["boundQ32"].as_i64(), Some(bound));
+            assert_eq!(field["relation"].as_str(), Some(wire_relation));
+            assert_eq!(
+                Digest32::of_bytes(&compiled.proof().canonical_bytes()),
+                compiled.proof().proof_digest()
+            );
+            assert!(!compiled.outcome().receipt.authority.grants_any());
+        }
+    }
+}

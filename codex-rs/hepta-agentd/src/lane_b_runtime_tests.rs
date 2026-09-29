@@ -422,6 +422,10 @@ fn revalidated_durable_run_start_uses_admitted_source_identity_and_exact_fence()
             supplied_source_digest: d("supplied-source"),
             intent_digest: d("intent"),
             admitted_source_digest: d("admitted-source"),
+            objective_admission_proof: Some(fixture_admission_proof(
+                d("profile"),
+                d("admitted-source"),
+            )),
             observed_at_unix_micros: 100_000,
             deadline_unix_micros: 10_000_001,
             authority: AuthorityPosture::DENY_ALL,
@@ -484,6 +488,10 @@ fn revalidated_durable_explicit_abstain_never_enters_runtime_admission() {
             supplied_source_digest: d("supplied-source"),
             intent_digest: d("intent"),
             admitted_source_digest: d("admitted-source"),
+            objective_admission_proof: Some(fixture_admission_proof(
+                d("profile"),
+                d("admitted-source"),
+            )),
             observed_at_unix_micros: 100_000,
             deadline_unix_micros: 10_000_001,
             authority: AuthorityPosture::DENY_ALL,
@@ -512,4 +520,25 @@ fn revalidated_durable_explicit_abstain_never_enters_runtime_admission() {
         Err(AgentRunError::InvalidRunStart("objective disposition"))
     );
     assert_eq!(coordinator.run("run.abstain"), None);
+}
+
+// Historical integrity evidence for the owner-store fixture, not an opaque
+// compiler admission capability. Production obtains these bytes from the compiler.
+fn fixture_admission_proof(
+    profile: codex_hepta_types::Digest32,
+    source: codex_hepta_types::Digest32,
+) -> codex_hepta_learning_ledger::RunStartAdmissionProofV1 {
+    let mut bytes = b"hepta.objective.admission-proof.v1".to_vec();
+    for identity in [
+        codex_hepta_types::Digest32::of_bytes(b"fixture-envelope"),
+        profile,
+        codex_hepta_types::Digest32::of_bytes(b"fixture-context"),
+        codex_hepta_types::Digest32::of_bytes(b"fixture-compiler-contract"),
+        source,
+    ] {
+        bytes.extend_from_slice(identity.as_array());
+    }
+    let digest = codex_hepta_types::Digest32::of_bytes(&bytes);
+    codex_hepta_learning_ledger::RunStartAdmissionProofV1::from_canonical_bytes(&bytes, digest)
+        .unwrap_or_else(|error| panic!("fixture proof: {error:?}"))
 }

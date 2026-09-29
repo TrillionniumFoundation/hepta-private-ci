@@ -275,6 +275,20 @@ impl ObjectiveAdmissionProofV1 {
     pub const fn proof_digest(&self) -> Digest32 {
         self.proof_digest
     }
+
+    /// Frozen V1 integrity bytes for the destination-owned RunStart journal.
+    /// Returning bytes does not expose a constructor for this opaque proof and
+    /// does not grant source authentication, publication or effect authority.
+    #[must_use]
+    pub fn canonical_bytes(&self) -> Vec<u8> {
+        canonical_admission_proof_bytes([
+            self.source_envelope_digest,
+            self.profile_digest,
+            self.authentication_context_digest,
+            self.compiler_contract_digest,
+            self.admitted_source_digest,
+        ])
+    }
 }
 
 /// Opaque admission capability consumed exactly once by native compilation.
@@ -369,21 +383,17 @@ fn admission_proof(
     context: &ObjectiveAdmissionContextV1,
     admitted: &AdmittedObjectiveV1,
 ) -> Result<ObjectiveAdmissionProofV1, ObjectiveAdmissionError> {
-    let source_envelope_digest = source_envelope_digest(envelope)?;
+    let source_envelope_digest = source_envelope_proof_digest(envelope)?;
     let authentication_context_digest = authentication_context_digest(context);
     let compiler_contract_digest = Digest32::of_bytes(COMPILER_CONTRACT_V1);
     let admitted_source_digest = admitted.receipt().admitted_source_digest;
-    let mut bytes = b"hepta.objective.admission-proof.v1".to_vec();
-    for digest in [
+    let proof_digest = Digest32::of_bytes(&canonical_admission_proof_bytes([
         source_envelope_digest,
         profile.profile_digest(),
         authentication_context_digest,
         compiler_contract_digest,
         admitted_source_digest,
-    ] {
-        bytes.extend_from_slice(digest.as_array());
-    }
-    let proof_digest = Digest32::of_bytes(&bytes);
+    ]));
     Ok(ObjectiveAdmissionProofV1 {
         source_envelope_digest,
         profile_digest: profile.profile_digest(),
@@ -394,7 +404,17 @@ fn admission_proof(
     })
 }
 
-fn source_envelope_digest(
+// One encoding owner for proof construction and durable projection. Neither
+// caller performs another admission or native solve to export these bytes.
+fn canonical_admission_proof_bytes(digests: [Digest32; 5]) -> Vec<u8> {
+    let mut bytes = b"hepta.objective.admission-proof.v1".to_vec();
+    for digest in digests {
+        bytes.extend_from_slice(digest.as_array());
+    }
+    bytes
+}
+
+pub(crate) fn source_envelope_proof_digest(
     envelope: &ObjectiveSourceEnvelopeV1,
 ) -> Result<Digest32, ObjectiveAdmissionError> {
     let intent_digest = canonical_objective_intent_digest_v1(envelope)?;

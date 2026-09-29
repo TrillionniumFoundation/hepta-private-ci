@@ -136,9 +136,35 @@ authorized evidence exists.
 | Target-host measurement observed | Bounded workloads and resources were recorded on the named host | Selected deployment-host approval |
 | Independent acceptance and operator approval | Separate evidence issued by the appropriate owners | Automatic release authority |
 
-Consolidation of proof framing into one owner helper, versioned durable
-admission-proof persistence/recovery, complete migration of planned typed
-semantics into the product source protocol, selected deployment-host destructive
+Proof framing and durable admission-proof persistence/recovery now have source
+implementations and focused regressions. Broadening Source V1 beyond its Q32
+contract remains a versioned feature decision. Selected deployment-host destructive
 crash/backpressure qualification and independent acceptance remain separate
 work. Missing observations stay missing; source optimizations are not measured
 performance results until their corresponding artifacts exist.
+
+## V2 native-artifact measurement evidence
+
+`hepta.objective-target-host-evidence.v2` separates `cargo test --no-run` from
+resource sampling. The recorder selects exactly one libtest executable from
+Cargo's compiler-artifact messages, hashes the emitted package executables,
+resolves exactly one test name from `--list`, and samples a direct `--exact`
+invocation. It verifies executable hashes before listing, before execution and
+after execution; the receipt binds build command, source commit/tree, artifact
+content identities, test list, exact invocation and output digest. No target
+folder glob or caller-supplied pass flag can select an alternative binary.
+
+Each fixture still uses a fresh resource helper. RSS means the OS-reported
+waited-child high-water value, not the sum of simultaneous process RSS and not
+per-phase allocation. Builds, hashing and discovery are outside that resource
+sample. Phase timing remains inside the real fixture; durable append, checkpoint
+and handoff remain atomic. These artifacts do not prove an unrelated FFI or a
+selected deployment target. Older V1 measurements remain historical evidence,
+but are not accepted by the V2 native-artifact projection. Missing binding,
+source mismatch, changed artifacts, failed execution and build-in-sample output
+fail closed. Selected-host policy/storage/destructive acceptance remains external.
+
+The release source guard now recognizes the canonical V2 static manifest and
+rejects manual dynamic claims or true release flags in it. This removes the
+schema mismatch that blocked selected-host setup without waiving any receipt
+kind, distinct-issuer check, resource policy, review, canary or release approval.

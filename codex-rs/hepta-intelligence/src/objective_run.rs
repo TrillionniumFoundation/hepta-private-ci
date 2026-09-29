@@ -11,6 +11,7 @@ use std::error::Error;
 use std::fmt;
 
 use codex_hepta_learning_ledger::RunStartAdmissionBindingV1;
+use codex_hepta_learning_ledger::RunStartAdmissionProofV1;
 use codex_hepta_learning_ledger::RunStartAppendReceipt;
 use codex_hepta_learning_ledger::RunStartAuthenticationV1;
 use codex_hepta_learning_ledger::RunStartConflictRecordV1;
@@ -158,6 +159,10 @@ pub fn compile_and_publish_validated_objective_run_v1(
         supplied_source_digest: receipt.supplied_source_digest,
         intent_digest: receipt.intent_digest,
         admitted_source_digest: receipt.admitted_source_digest,
+        objective_admission_proof: Some(RunStartAdmissionProofV1::from_canonical_bytes(
+            &admission_proof.canonical_bytes(),
+            admission_proof.proof_digest(),
+        )?),
         observed_at_unix_micros: receipt.observed_at_unix_micros,
         deadline_unix_micros,
         authority: receipt.authority,

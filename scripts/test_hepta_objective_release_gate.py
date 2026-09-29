@@ -19,10 +19,14 @@ class ReleaseGateTests(unittest.TestCase):
     def setUp(self):
         self.policy = json.loads(POLICY.read_text(encoding="utf-8"))
         self.state = {
-            "schema": "hepta.objective-compiler-current-state.v1",
-            "schemaVersion": 1,
+            "schema": "hepta.objective-compiler-current-state.v2",
+            "schemaVersion": 2,
             "module": "objective.compiler",
             "implementationState": {},
+            "evidenceProjection": {
+                "schema": "hepta.objective-evidence-projection.v2",
+                "manualPassFieldsForbidden": True,
+            },
             "truth": dict(self.policy["sourceTruthBeforeRelease"]),
             "requiredChecks": ["x"],
             "externalGates": ["y"],
@@ -176,6 +180,26 @@ class ReleaseGateTests(unittest.TestCase):
         self.state["truth"] = dict(self.policy["releaseTruthAfterAllReceipts"])
         with self.assertRaises(gate.GateError):
             gate.source_verify(self.state, self.policy)
+
+    def test_current_repository_v2_state_is_accepted_without_promoting_truth(self):
+        actual = gate.load_json(gate.STATE_PATH)
+        gate.source_verify(actual, self.policy)
+        self.assertTrue(all(value is False for value in actual["truth"].values()))
+
+    def test_old_state_or_manual_dynamic_claims_fail_closed(self):
+        self.state["schema"] = "hepta.objective-compiler-current-state.v1"
+        self.state["schemaVersion"] = 1
+        with self.assertRaises(gate.GateError):
+            gate.validate_state(self.state, self.policy)
+        self.state["schema"] = "hepta.objective-compiler-current-state.v2"
+        self.state["schemaVersion"] = 2
+        self.state["implementationState"]["checksPassed"] = True
+        with self.assertRaises(gate.GateError):
+            gate.validate_state(self.state, self.policy)
+        self.state["implementationState"] = {}
+        self.state["evidenceProjection"]["manualPassFieldsForbidden"] = False
+        with self.assertRaises(gate.GateError):
+            gate.validate_state(self.state, self.policy)
 
     def test_missing_receipt_never_grants_release(self):
         _, filenames = self.write_receipts()

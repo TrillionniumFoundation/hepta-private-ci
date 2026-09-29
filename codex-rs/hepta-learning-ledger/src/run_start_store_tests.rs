@@ -61,6 +61,10 @@ fn record(run_id: &str, sequence: u64) -> RunStartRecordV1 {
             supplied_source_digest: digest("source"),
             intent_digest: digest(&format!("intent-{sequence}")),
             admitted_source_digest: digest(&format!("admitted-{sequence}")),
+            objective_admission_proof: Some(fixture_admission_proof(
+                digest("profile"),
+                digest(&format!("admitted-{sequence}")),
+            )),
             observed_at_unix_micros: 1_000,
             deadline_unix_micros: 20_000 + sequence,
             authority: AuthorityPosture::DENY_ALL,
@@ -339,6 +343,10 @@ fn expired_prefix_compacts_to_checkpoint_bound_replay_index() {
     assert_eq!(must(reopened.index_entries()).len(), 3);
     assert_eq!(must(reopened.records()).len(), 2);
     assert!(must(reopened.get(&id("run.compact.1"))).is_none());
+    let retained =
+        must(reopened.get(&id("run.compact.2"))).unwrap_or_else(|| panic!("retained publication"));
+    assert_eq!(retained, &record("run.compact.2", 2));
+    assert!(retained.admission.objective_admission_proof.is_some());
 }
 
 #[test]
@@ -725,4 +733,25 @@ fn compacted_count_must_fit_authenticated_payload_before_allocation() {
     must(fs::write(&path, original));
     let reopened = must(fixture.open(1, checkpoint));
     assert!(must(reopened.index_entry(&id("run.count.1"))).is_some());
+}
+
+// Historical integrity evidence for the owner-store fixture, not an opaque
+// compiler admission capability. Production obtains these bytes from the compiler.
+fn fixture_admission_proof(
+    profile: codex_hepta_types::Digest32,
+    source: codex_hepta_types::Digest32,
+) -> crate::RunStartAdmissionProofV1 {
+    let mut bytes = b"hepta.objective.admission-proof.v1".to_vec();
+    for identity in [
+        codex_hepta_types::Digest32::of_bytes(b"fixture-envelope"),
+        profile,
+        codex_hepta_types::Digest32::of_bytes(b"fixture-context"),
+        codex_hepta_types::Digest32::of_bytes(b"fixture-compiler-contract"),
+        source,
+    ] {
+        bytes.extend_from_slice(identity.as_array());
+    }
+    let digest = codex_hepta_types::Digest32::of_bytes(&bytes);
+    crate::RunStartAdmissionProofV1::from_canonical_bytes(&bytes, digest)
+        .unwrap_or_else(|error| panic!("fixture proof: {error:?}"))
 }

@@ -183,20 +183,29 @@ def validate_policy(policy: dict[str, Any]) -> list[dict[str, Any]]:
 
 def validate_state(state: dict[str, Any], policy: dict[str, Any]) -> None:
     if (
-        state.get("schema") != "hepta.objective-compiler-current-state.v1"
-        or state.get("schemaVersion") != 1
+        state.get("schema") != "hepta.objective-compiler-current-state.v2"
+        or state.get("schemaVersion") != 2
         or state.get("module") != "objective.compiler"
     ):
         raise GateError("invalid objective.compiler current-state identity")
     truth = state.get("truth")
     if not isinstance(truth, dict):
         raise GateError("current-state truth must be an object")
-    allowed = {
-        tuple(sorted(policy["sourceTruthBeforeRelease"].items())),
-        tuple(sorted(policy["releaseTruthAfterAllReceipts"].items())),
-    }
-    if tuple(sorted(truth.items())) not in allowed:
-        raise GateError("current-state truth is neither pre-release nor fully released")
+    if set(truth) != set(policy["sourceTruthBeforeRelease"]) or any(
+        value is not False for value in truth.values()
+    ):
+        raise GateError("static source state cannot grant release or execution qualification")
+    projection = state.get("evidenceProjection")
+    if (not isinstance(projection, dict)
+        or projection.get("schema") != "hepta.objective-evidence-projection.v2"
+        or projection.get("manualPassFieldsForbidden") is not True):
+        raise GateError("current-state requires externally projected execution evidence")
+    implementation = state.get("implementationState")
+    if not isinstance(implementation, dict) or any(key in implementation for key in (
+        "currentHeadQualification", "syntheticMergeQualification", "targetHostQualification",
+        "checksPassed", "measurementObserved",
+    )):
+        raise GateError("current-state cannot contain manual dynamic qualification claims")
 
 
 def validate_payload(kind: str, payload: dict[str, Any]) -> None:
