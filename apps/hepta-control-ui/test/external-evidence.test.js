@@ -8,3 +8,4 @@ import "./external-evidence-bundle-acceptance.test.js";
 import "./real-backend-invariants.test.js";
 import "./external-preflight.test.js";
 import "./external-workflow-security.test.js";
+import "./external-workflow-observation.test.js";
