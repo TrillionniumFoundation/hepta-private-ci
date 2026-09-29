@@ -1,4 +1,4 @@
-name: runtime.codex materialize once
+name: runtime.codex materialize export
 
 on:
   push:
@@ -6,50 +6,37 @@ on:
       - codex/runtime-codex-final-convergence-20260929-r3
     paths:
       - .github/workflows/runtime-codex-materialize-once.yml
-      - scripts/runtime-codex-maintainer.py
-      - scripts/runtime-codex-maintainer-followup.py
-      - scripts/runtime-codex-durability-migration.py
-      - scripts/runtime-codex-durability-fixup.py
-      - scripts/runtime-codex-quarantine-migration.py
-      - scripts/runtime-codex-deadline-migration.py
-      - scripts/runtime-codex-cleanup-migration.py
-      - scripts/runtime-codex-storage-fixup.py
-      - scripts/runtime-codex-terminal-outbox-migration.py
-      - scripts/runtime-codex-product-executor-migration.py
-      - scripts/runtime-codex-product-executor-hardening.py
-      - scripts/runtime-codex-structured-sequence-migration.py
-      - scripts/runtime-codex-process-crash-migration.py
-      - scripts/runtime-codex-qualification-fixup.py
-      - scripts/runtime-codex-final-closure.py
-      - scripts/runtime-codex-finalize-map.py
-      - scripts/runtime-codex-finalize-map-followup.py
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: runtime-codex-materialize-once-${{ github.ref }}
+  group: runtime-codex-materialize-export-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  materialize:
+  materialize-export:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
           ref: ${{ github.sha }}
-          persist-credentials: true
+          persist-credentials: false
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
           components: rustfmt
-      - name: Materialize the exact source candidate
+      - name: Materialize immutable source and map projection
+        id: materialize
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
           test -z "$(git status --porcelain=v1)"
+          git config user.name 'runtime.codex exact-head materializer'
+          git config user.email 'runtime-codex-materializer@invalid'
+
           scripts=(
             scripts/runtime-codex-maintainer.py
             scripts/runtime-codex-maintainer-followup.py
@@ -79,25 +66,15 @@ jobs:
             cargo fmt --all
           )
           git diff --check
-          git status --short
-      - name: Commit immutable source and map-only projection
-        shell: bash
-        env:
-          WORK_BRANCH: codex/runtime-codex-final-convergence-20260929-r3
-          TARGET_BRANCH: codex/runtime-codex-full-convergence-20260929
-          TARGET_EXPECTED_SHA: ${{ github.sha }}
-        run: |
-          set -euo pipefail
-          git config user.name 'runtime.codex exact-head materializer'
-          git config user.email 'runtime-codex-materializer@invalid'
 
           git rm .github/workflows/runtime-codex-materialize-once.yml
           git add -A
           git diff --cached --check
           git commit -m 'fix(runtime.codex): materialize durable convergence source'
-
           source_commit="$(git rev-parse HEAD)"
           source_tree="$(git rev-parse 'HEAD^{tree}')"
+          git archive --format=tar.gz --output=/tmp/runtime-codex-source-tree.tar.gz "$source_commit"
+
           RUNTIME_CODEX_SOURCE_COMMIT="$source_commit" \
           RUNTIME_CODEX_SOURCE_TREE="$source_tree" \
             python3 scripts/runtime-codex-finalize-map.py
@@ -110,10 +87,42 @@ jobs:
             git diff --cached --check
             git commit -m 'docs(runtime.codex): bind immutable convergence source'
           fi
+          final_commit="$(git rev-parse HEAD)"
+          final_tree="$(git rev-parse 'HEAD^{tree}')"
 
-          git push \
-            --force-with-lease="refs/heads/${WORK_BRANCH}:${GITHUB_SHA}" \
-            --force-with-lease="refs/heads/${TARGET_BRANCH}:${TARGET_EXPECTED_SHA}" \
-            origin \
-            "HEAD:refs/heads/${WORK_BRANCH}" \
-            "HEAD:refs/heads/${TARGET_BRANCH}"
+          git archive --format=tar.gz --output=/tmp/runtime-codex-final-tree.tar.gz "$final_commit"
+          git diff --binary "${GITHUB_SHA}" "$source_commit" > /tmp/runtime-codex-source.diff
+          git diff --binary "$source_commit" "$final_commit" > /tmp/runtime-codex-map.diff
+          git diff --name-status "${GITHUB_SHA}" "$source_commit" > /tmp/runtime-codex-source-files.txt
+          git diff --name-status "$source_commit" "$final_commit" > /tmp/runtime-codex-map-files.txt
+          python3 - <<'PY'
+          import json, os, subprocess
+          def git(*args):
+              return subprocess.check_output(["git", *args], text=True).strip()
+          source = git("rev-parse", "HEAD~1") if git("rev-list", "--count", "HEAD") else ""
+          final = git("rev-parse", "HEAD")
+          payload = {
+              "input_commit": os.environ["GITHUB_SHA"],
+              "source_commit": source,
+              "source_tree": git("rev-parse", f"{source}^{{tree}}"),
+              "final_commit": final,
+              "final_tree": git("rev-parse", "HEAD^{tree}"),
+          }
+          with open("/tmp/runtime-codex-materialization.json", "w", encoding="utf-8") as handle:
+              json.dump(payload, handle, indent=2, sort_keys=True)
+              handle.write("\n")
+          PY
+          mkdir -p /tmp/runtime-codex-materialized
+          cp /tmp/runtime-codex-* /tmp/runtime-codex-materialized/
+          echo "source_commit=${source_commit}" >> "$GITHUB_OUTPUT"
+          echo "source_tree=${source_tree}" >> "$GITHUB_OUTPUT"
+          echo "final_commit=${final_commit}" >> "$GITHUB_OUTPUT"
+          echo "final_tree=${final_tree}" >> "$GITHUB_OUTPUT"
+      - name: Upload immutable materialization
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-codex-materialized-${{ github.run_id }}
+          path: /tmp/runtime-codex-materialized
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
