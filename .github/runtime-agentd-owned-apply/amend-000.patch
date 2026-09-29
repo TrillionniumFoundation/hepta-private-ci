@@ -1,0 +1,51 @@
+diff --git a/.github/workflows/hepta-agentd-exact-head.yml b/.github/workflows/hepta-agentd-exact-head.yml
+index f72660344e9d77032da53348385e3c6c2b9f8e7b..df1fbbc81292a121958a098c6cfb7d1511084d6d 100644
+--- a/.github/workflows/hepta-agentd-exact-head.yml
++++ b/.github/workflows/hepta-agentd-exact-head.yml
+@@ -4,20 +4,6 @@ on:
+   workflow_call:
+   workflow_dispatch:
+   pull_request:
+-    paths:
+-      - 'codex-rs/**'
+-      - 'docs/delivery/PATH_OWNERSHIP.json'
+-      - 'docs/modules/runtime.agentd/**'
+-      - 'qualification/module-execution-dossiers/detail/runtime.agentd.md'
+-      - 'qualification/runtime-agentd-core/**'
+-      - 'scripts/hepta*agentd*'
+-      - 'scripts/hepta-module-docs.py'
+-      - 'scripts/hepta-implementation-maps.py'
+-      - 'scripts/hepta_module_registry.py'
+-      - 'scripts/qualification/*agentd*'
+-      - '.github/workflows/hepta-agentd-exact-head.yml'
+-      - '.github/workflows/hepta-agentd-prospective-merge.yml'
+-      - '.github/workflows/runtime-agentd-*.yml'
+   push:
+     branches:
+       - main
+diff --git a/.github/workflows/hepta-agentd-prospective-merge.yml b/.github/workflows/hepta-agentd-prospective-merge.yml
+index 724c32f266aebded5dce5603db83ee17cc835c6e..476057afc8bb5983dc84486e35ae9663d368abf9 100644
+--- a/.github/workflows/hepta-agentd-prospective-merge.yml
++++ b/.github/workflows/hepta-agentd-prospective-merge.yml
+@@ -2,21 +2,6 @@ name: Agentd prospective-merge engineering
+ 
+ on:
+   pull_request:
+-    paths:
+-      - 'codex-rs/**'
+-      - 'docs/delivery/PATH_OWNERSHIP.json'
+-      - 'docs/modules/runtime.agentd/**'
+-      - 'qualification/module-execution-dossiers/detail/runtime.agentd.md'
+-      - 'qualification/runtime-agentd-core/**'
+-      - 'scripts/hepta*agentd*'
+-      - 'scripts/hepta-module-docs.py'
+-      - 'scripts/hepta-implementation-maps.py'
+-      - 'scripts/hepta_module_registry.py'
+-      - 'scripts/qualification/*agentd*'
+-      - '.github/workflows/hepta-agentd-exact-head.yml'
+-      - '.github/workflows/hepta-agentd-prospective-merge.yml'
+-      - '.github/workflows/runtime-agentd-*.yml'
+-
+ permissions:
+   contents: read
+ 
