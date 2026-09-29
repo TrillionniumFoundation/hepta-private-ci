@@ -70,4 +70,6 @@ Old mutation-capable sessions are revoked or drained, cached HTML is invalidated
 
 Raw logs, screenshots, recordings, traces, credentials, tokens, and signatures stay in the protected evidence store. Tracked receipts contain only bounded metadata and SHA-256 digests. A repository validator verifies structure, exact subject binding, chronology, principal separation, and digest relationships; it does not manufacture external observations or cryptographically bless a self-supplied signer.
 
+Receipt status is schema-exact rather than interchangeable: real-backend support evidence, independent acceptance, independent security, and operational evidence must carry `passed`; only the production approval receipt may carry `approved`. The runtime validator rejects status substitution even when every other common field is well formed.
+
 A missing field, failed observation, stale candidate, mismatched deployment, reused authority, premature approval, or absent prerequisite leaves the bundle failed. No workflow or maintainer should edit `productionDeploymentApproved` or `releaseAuthorized` directly.

@@ -78,7 +78,15 @@ export function safeFailure(error, stage) {
 export function validateCommonReceipt(receipt, schema, expected, now, maxAgeMs) {
   assertEvidence(receipt && typeof receipt === "object" && !Array.isArray(receipt), "UI_CONTROL_EXTERNAL_RECEIPT", "external receipt must be an object");
   assertEvidence(receipt.schema === schema, "UI_CONTROL_EXTERNAL_SCHEMA", `expected ${schema}`);
-  assertEvidence(receipt.status === "passed" || receipt.status === "approved", "UI_CONTROL_EXTERNAL_STATUS", `${schema} is not accepted`);
+  const acceptedStatus =
+    schema === "hepta.ui-control.production-approval-receipt.v1"
+      ? "approved"
+      : "passed";
+  assertEvidence(
+    receipt.status === acceptedStatus,
+    "UI_CONTROL_EXTERNAL_STATUS",
+    `${schema} must have status ${acceptedStatus}`,
+  );
   exactSha(receipt.candidateCommit, "candidateCommit", SHA1);
   exactSha(receipt.candidateTree, "candidateTree", SHA1);
   exactSha(receipt.backendDeploymentDigest, "backendDeploymentDigest", SHA256);
