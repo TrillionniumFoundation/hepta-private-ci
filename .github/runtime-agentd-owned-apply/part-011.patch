@@ -1,0 +1,82 @@
+red,
++                format!("runtime.codex {operation} failed to join: {error}"),
++            )
++        })?
++    }
++}
++
++fn nonzero_metric(metric: &AtomicU64) -> Option<u64> {
++    let value = metric.load(Ordering::Acquire);
++    (value != 0).then_some(value)
++}
++
++fn duration_millis(duration: std::time::Duration) -> u64 {
++    u64::try_from(duration.as_millis()).unwrap_or(u64::MAX)
++}
+diff --git a/codex-rs/hepta-agentd/src/state.rs b/codex-rs/hepta-agentd/src/state.rs
+index d7f6605ca2a9a2596a5d3d964b5ec3c7336a0dd4..d213215dea33ee52f1e05a5d7a8a5c170c56af8d 100644
+--- a/codex-rs/hepta-agentd/src/state.rs
++++ b/codex-rs/hepta-agentd/src/state.rs
+@@ -815,6 +815,7 @@ impl AgentdState {
+     /// Revalidate a durable run-start record against the current owner trust,
+     /// current Fleet generation and exact Agentd fence, then project it into
+     /// the sole daemon-owned run coordinator.
++    #[cfg(test)]
+     pub(crate) fn start_current_run_start(
+         &self,
+         journal: &DurableRunStartJournal,
+diff --git a/codex-rs/hepta-agentd/src/state_isolation_tests.rs b/codex-rs/hepta-agentd/src/state_isolation_tests.rs
+index bac0aeded80d33b1bc1bf234f19552c9f1c86777..9f996ee84bb74c2a41fc0317fab473a4ef235f21 100644
+--- a/codex-rs/hepta-agentd/src/state_isolation_tests.rs
++++ b/codex-rs/hepta-agentd/src/state_isolation_tests.rs
+@@ -157,7 +157,7 @@ async fn configured_intelligence_runner_is_not_advertised_without_daemon_ingress
+ }
+ 
+ #[tokio::test]
+-async fn canonical_intelligence_is_advertised_only_with_runner_and_host_provider() {
++async fn canonical_intelligence_is_not_advertised_without_ready_runtime_codex_owner() {
+     let (temp, _registry, state) = fixture().expect("runtime fixture");
+     let signer = ed25519_dalek::SigningKey::from_bytes(&[42; 32]);
+     let runner = crate::AgentdIntelligenceProductRunnerV1::new(
+@@ -182,7 +182,8 @@ async fn canonical_intelligence_is_advertised_only_with_runner_and_host_provider
+     let AgentdPayload::Capabilities(capabilities) = response.payload else {
+         panic!("capabilities payload");
+     };
+-    assert!(capabilities.capabilities.iter().any(|capability| {
++    assert!(!state.canonical_intelligence_configured());
++    assert!(!capabilities.capabilities.iter().any(|capability| {
+         capability.id == crate::AGENTD_CAPABILITY_CANONICAL_INTELLIGENCE_V1
+             && capability.major == 1
+             && capability.minor == 0
+diff --git a/codex-rs/hepta-infer-worker-host/tests/native_host_process_e2e.rs b/codex-rs/hepta-infer-worker-host/tests/native_host_process_e2e.rs
+index d3674403afa31900077fe601d1f967a1937b4f48..7af434eb7e45b713327a7253fce22a0e9609797f 100644
+--- a/codex-rs/hepta-infer-worker-host/tests/native_host_process_e2e.rs
++++ b/codex-rs/hepta-infer-worker-host/tests/native_host_process_e2e.rs
+@@ -7,10 +7,10 @@ fn native_worker_help_executes_the_real_binary_without_state() {
+         .output()
+         .expect("execute native worker help");
+     assert!(output.status.success(), "{output:?}");
++    assert!(output.stderr.is_empty(), "{output:?}");
+     let stdout = String::from_utf8(output.stdout).expect("UTF-8 help output");
+     assert!(stdout.contains("--profile native-app-server"));
+     assert!(stdout.contains("--resume"));
+-    assert!(output.stderr.is_empty(), "{output:?}");
+ }
+ 
+ #[test]
+diff --git a/docs/modules/runtime.agentd/REMEDIATION_EXECUTION_20260927.md b/docs/modules/runtime.agentd/REMEDIATION_EXECUTION_20260927.md
+index d3dcee9ffdd44057015210ade9ac2ce36a2dd2d0..c220c2784a5e14df15b7e452e277536ec47d4d3a 100644
+--- a/docs/modules/runtime.agentd/REMEDIATION_EXECUTION_20260927.md
++++ b/docs/modules/runtime.agentd/REMEDIATION_EXECUTION_20260927.md
+@@ -186,3 +186,15 @@ Periodic reconciliation and terminal archival now run in a separately joined mai
+ `DEPENDENCY_BOUNDARY.json` and its verifier classify the exact Cargo dependency inventory. They intentionally record `coreOnlyBuildEstablished=false` and `productAdaptersOptionalized=false`: an empty default feature set is not relabelled as core/product separation. The migration ratchet forbids changing durable history, authority semantics or the sole execution spine merely to make dependencies optional.
+ 
+ The exact-candidate workflow now uses immutable action revisions, real package and process-test names, current repository-owned projection checks, dependency/trust-boundary tests and a separate deterministic prospective-merge compile/test/lint job. The one-shot patch carrier and self-mutating apply workflow are removed after their source delta is integrated. None of these source changes claims target-host qualification, release provenance, independent acceptance, activation, promotion or release. Those gates remain false until the final exact candidate produces successful retained evidence.
++
++## 2026-09-29 qualification, core-policy and maintenance-I/O convergence
++
++The source-head and prospective-merge qualifications are now independent workflows with dedicated concurrency groups and disjoint `agentd-source-*` and `agentd-merge-*` artifact namespaces. A repository-owned selector derives the runtime.agentd path and its transitive local Cargo dependency closure before the expensive matrix runs. Scope failure is itself fatal; it cannot be converted into a not-applicable result. Formatting remains a read-only check and no bot-authored formatting commit is part of the candidate.
++
++The dependency ratchet now has one genuine zero-product-dependency compilation target: `qualification/runtime-agentd-core` includes the exact stable caller-policy source from Agentd. This closes only the narrow policy seam. `coreOnlyBuildEstablished` and `productAdaptersOptionalized` deliberately remain false because the full crate still carries broad unconditional product dependencies.
++
++Runtime maintenance now reserves execution opportunity ahead of queued fresh work, preventing continuous admission from starving reconciliation. Terminal archival executes through a one-slot blocking-I/O 
