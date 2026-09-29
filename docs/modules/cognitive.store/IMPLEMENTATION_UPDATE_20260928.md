@@ -180,3 +180,9 @@ Cargo target hard links. Durable 256/16,384 performance profiles now use optimiz
 binaries, and the bounded 16,384-record command windows reflect the measured workload
 rather than treating a debug-process kill as a latency result. These changes still do
 not establish target-host qualification, independent acceptance, activation or release.
+
+## Follow-on: selected-host and retention readiness contracts
+
+The repository now includes two additional read-only evidence verifiers. `host_qualification.py` authenticates the complete selected-host ceremony—exact-source bootstrap, publication-fault indeterminacy, canary, crash/restart, witness-gap reconciliation, revocation, fresh-generation rollback and both recovery profiles—against independently pinned plan/trust digests. `retention_readiness.py` authenticates ordered immutable-segment owner receipts and an unpublished successor rebuild that preserves the exact cut, head set, tombstone/source/fact/KG frontiers and all rebuild checks.
+
+Neither tool performs the observed effects. A complete host report does not set target-host qualification, SLO acceptance, activation or release. A complete retention report does not publish a successor, prune hot history, erase a predecessor or prove physical erasure. These contracts make missing, pending, mismatched or stale evidence executable failures without fabricating the remaining external operations.

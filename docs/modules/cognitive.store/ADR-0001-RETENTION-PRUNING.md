@@ -50,3 +50,9 @@ Logical forget, hot pruning, cold-segment deletion, backup expiry, derived-artif
 - retention policy owner and hold interface;
 - deletion propagation to backups, projections and derived artifacts;
 - maximum-growth and recovery-time qualification on the selected host.
+
+## Repository readiness contract
+
+`retention_readiness.py` now defines and verifies the signed checkpoint plan, ordered segment-owner receipts and unpublished successor-rebuild receipt described above. It requires the exact source/schema/cut/head set/frontiers, chained immutable segment manifests, current policy/hold/pending-operation digests and successful rebuild oracles. A complete report is only `retention_ready`; it keeps publication, pruning, predecessor erasure and physical-erasure claims false.
+
+This contract closes the evidence schema and negative validation layer. It does not satisfy the remaining activation requirements: the hot schema/read migration, deterministic native rebuild, segment-aware historical reads and recovery, selected-host fault qualification, governed pointer publication and actual per-owner deletion are still required before any history leaves the authoritative hot generation.

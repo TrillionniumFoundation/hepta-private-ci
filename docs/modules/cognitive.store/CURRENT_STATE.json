@@ -334,6 +334,34 @@
         "publication-observation-tests.json"
       ],
       "scope": "Real encrypted codec and filesystem; native checker mocked in protocol tests; no replay, hot pruning or erasure authority"
+    },
+    {
+      "id": "CS-HOST-001",
+      "invariant": "Selected-host receipts bind the exact source, host, filesystem, cut and independent executor",
+      "sources": [
+        "tools/cognitive-store-host-bootstrap/host_qualification.py"
+      ],
+      "tests": [
+        "tools/cognitive-store-host-bootstrap/test_host_qualification.py"
+      ],
+      "records": [
+        "host-qualification-tests.json"
+      ],
+      "scope": "Real Ed25519 fixture receipts and final-use trust checks; actual selected-host execution and acceptance remain external"
+    },
+    {
+      "id": "CS-RET-001",
+      "invariant": "Retention readiness requires a complete chained segment set and an unpublished same-cut successor",
+      "sources": [
+        "tools/cognitive-store-host-bootstrap/retention_readiness.py"
+      ],
+      "tests": [
+        "tools/cognitive-store-host-bootstrap/test_retention_readiness.py"
+      ],
+      "records": [
+        "retention-readiness-tests.json"
+      ],
+      "scope": "Signed readiness evidence only; checkpoint-aware schema/read migration, publication, pruning and erasure remain unclaimed"
     }
   ],
   "externalEvidence": [

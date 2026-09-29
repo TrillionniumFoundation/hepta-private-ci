@@ -68,3 +68,5 @@ If recovery may have published the active pointer but durability is uncertain, p
 Retain receipts for signed-file identity checks, deployed source identity, exact recovery, pre/post-lease cuts, canary/reopen, rotation, restart reconciliation, live revocation, rollback successor, pointer fault injection and the SLO profiles. Source tests do not substitute for the selected host/filesystem/device profile.
 
 The [current implementation note](IMPLEMENTATION_UPDATE_20260928.md) describes the normal read capability, release recovery measurements and read-only storage-owner lifecycle reconciliation. Owner attestations do not by themselves prove independent physical erasure or production acceptance.
+
+The signed selected-host evidence contract and required dispositions are executable in [HOST_QUALIFICATION.md](HOST_QUALIFICATION.md) and `tools/cognitive-store-host-bootstrap/host_qualification.py`. Its complete result authenticates the owner receipt set but deliberately leaves host qualification, SLO acceptance, activation and release decisions false pending independent review.

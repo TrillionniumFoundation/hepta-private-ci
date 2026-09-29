@@ -19,6 +19,8 @@ The [September 28 implementation note](IMPLEMENTATION_UPDATE_20260928.md) descri
 | Writable recovery | Source implemented with final live authority check; exact-candidate and target-host evidence still required |
 | Signed host bootstrap | Source implemented with external current-cut, live authority state, signer trust, token files and independently supplied deployed source identity |
 | Lifecycle completion | Authenticated per-owner receipts; not an erasure provider or an independent physical-erasure proof |
+| Selected-host evidence | Exact source/host/cut-bound owner receipts; repository verification does not self-qualify the host |
+| Retention readiness | Chained immutable segments plus an unpublished same-cut successor receipt; no hot rows are deleted |
 | Product execution proved | No, until the dedicated source-head and deterministic base-merge workflow is terminal-success |
 | Production activated/released | No |
 
@@ -49,7 +51,9 @@ No second database, dual writer or shadow authority is permitted.
 - [PRODUCTION_CLOSURE.md](PRODUCTION_CLOSURE.md): canonical product boundary and claim vocabulary.
 - [IMPLEMENTATION_MAP.json](IMPLEMENTATION_MAP.json): machine-readable source mapping and open gates.
 - [BOOTSTRAP_RUNBOOK.md](BOOTSTRAP_RUNBOOK.md): current-cut, authority, rotation, canary, restart and rollback ceremony.
+- [HOST_QUALIFICATION.md](HOST_QUALIFICATION.md): exact source/host/cut-bound selected-host receipt contract without self-activation.
 - [ADR-0001-RETENTION-PRUNING.md](ADR-0001-RETENTION-PRUNING.md): ancestry-safe retention and pruning decision.
+- [RETENTION_READINESS.md](RETENTION_READINESS.md): chained segment and unpublished same-cut rebuild evidence required before pruning publication.
 - [ARCHIVE_RUNBOOK.md](ARCHIVE_RUNBOOK.md): encrypted cold-generation transfer and native restored-cut verification.
 - [ARCHIVE_OBSERVATION.md](ARCHIVE_OBSERVATION.md): signed observation after response loss or publication ambiguity, without replay or adoption.
 - [DATA_LIFECYCLE.md](DATA_LIFECYCLE.md): authoritative, rebuildable, backup and derived-data lifecycle.
@@ -62,7 +66,7 @@ No second database, dual writer or shadow authority is permitted.
 
 ## Source qualification
 
-The dedicated workflow is `.github/workflows/cognitive-store-qualification.yml`. It freezes source/base once for both `source-head` and deterministic `base-merge` lanes. The committed plan retains package, bootstrap, crash/reopen, 256/16,384-record and strict-Clippy checks. Its 47 commands also cover typed product recovery, real child exit between semantic commit and witness publication, normal Agentd feature compilation, normal-host read pages, external-consumer API probes, map/evidence regressions, generated-state drift, correction/tombstone history, release descriptor recovery, storage-owner signatures, encrypted archive/restore, and read-only publication observation. Five added records exercise descriptor publication, final lifecycle trust and exact-candidate recovery-report validation without accepting an SLO or weakening an existing gate.
+The dedicated workflow is `.github/workflows/cognitive-store-qualification.yml`. It freezes source/base once for both `source-head` and deterministic `base-merge` lanes. The committed plan retains package, bootstrap, crash/reopen, 256/16,384-record and strict-Clippy checks. Its 49 commands also cover typed product recovery, real child exit between semantic commit and witness publication, normal Agentd feature compilation, normal-host read pages, external-consumer API probes, map/evidence regressions, generated-state drift, correction/tombstone history, release descriptor recovery, storage-owner signatures, encrypted archive/restore, read-only publication observation, selected-host receipt validation, and retention-checkpoint readiness. Five added records exercise descriptor publication, final lifecycle trust and exact-candidate recovery-report validation without accepting an SLO or weakening an existing gate.
 
 Each command records its own result rather than inheriting the status of an earlier step. The runner validates the entire committed plan before dispatch. The manifest independently checks the resolved command, working directory, workload and limits, and recounts tests from the retained log. Five further records cover these bindings, the three shared-runner regression suites and final-use observation staging. Native preparation failure produces explicit `infrastructure_invalid` non-execution records. A v2 qualification manifest is emitted even when checks fail or are missing; only a complete terminal-success manifest bound to the exact tested commit/tree establishes execution. Artifact upload is not a qualification pass.
 
