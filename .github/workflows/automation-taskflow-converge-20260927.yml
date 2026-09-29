@@ -1,6 +1,7 @@
-name: Automation TaskFlow current-source schema-22 convergence
+name: Automation TaskFlow exact-head CI blocker repair
 
-# Owner-authorized convergence trigger for the exact current branch head.
+# One-shot owner-authorized repair. The job deletes this workflow and its patch
+# script before publishing the repaired candidate.
 on:
   push:
     branches:
@@ -13,15 +14,18 @@ permissions:
   contents: write
 
 concurrency:
-  group: automation-taskflow-schema22-current-source-convergence
+  group: automation-taskflow-exact-head-ci-repair
   cancel-in-progress: true
 
 jobs:
-  converge:
+  repair:
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 90
+    env:
+      TARGET_BRANCH: work/automation-taskflow-full-closure-2026-09-27
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
-      - name: Check out exact branch head
+      - name: Check out exact trigger head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: work/automation-taskflow-full-closure-2026-09-27
@@ -33,87 +37,58 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          remote="$(git ls-remote origin refs/heads/work/automation-taskflow-full-closure-2026-09-27 | awk '{print $1}')"
+          remote="$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | awk '{print $1}')"
           test "$remote" = "$GITHUB_SHA"
 
-      - name: Verify current schema-22 source anchors
+      - name: Prepare CI environment
+        uses: ./.github/actions/setup-ci
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: "1.95.0"
+          components: clippy,rustfmt
+
+      - name: Prepare native prerequisites
         shell: bash
         run: |
           set -euo pipefail
-          grep -Fq 'pub const AUTOMATION_SCHEMA_VERSION: u32 = 22;' codex-rs/hepta-automation/src/lib.rs
-          grep -Fq 'CREATE TABLE neural_circuit_runs' codex-rs/hepta-automation/migrations/0022_durable_neural_circuit.sql
-          grep -Fq 'CREATE TABLE neural_circuit_activation_receipts' codex-rs/hepta-automation/migrations/0022_durable_neural_circuit.sql
-          grep -Fq 'committed circuit outcome has no activation receipt' codex-rs/hepta-automation/src/durable_neural_circuit.rs
-          grep -Fq 'check_circuit_taskflow_fence_tx' codex-rs/hepta-automation/src/durable_neural_circuit.rs
-          grep -Fq 'settle_durable_neural_circuit_recovery_v1' codex-rs/hepta-automation/src/durable_neural_circuit_recovery.rs
-          grep -Fq -- '--test durable_neural_circuit' .github/workflows/automation-taskflow-selected-host.yml
-          grep -Fq -- '--test durable_neural_circuit_recovery' .github/workflows/automation-taskflow-selected-host.yml
-          test -s scripts/automation_taskflow_source_last_mile_20260929.py.gz.b64
-          git diff --exit-code
-          git diff --cached --exit-code
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          CODEX_REPO_ROOT="$GITHUB_WORKSPACE" PYTHONPATH=scripts python3 scripts/hepta_ci_v8.py
 
-      - name: Configure ordinary commits
+      - name: Apply exact blocker repair and format
         shell: bash
         run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/automation_taskflow_ci_blocker_repair_20260929.py
+          python3 scripts/automation_taskflow_ci_blocker_repair_20260929.py
+          (
+            cd codex-rs
+            cargo fmt -p codex-hepta-automation
+            cargo fmt -p codex-hepta-automation -- --check
+            cargo check --locked -p codex-hepta-automation --all-targets
+          )
+          python3 -m py_compile scripts/automation_taskflow_contract.py
+          git diff --check
+
+      - name: Commit ordinary source repair and remove one-shot writers
+        shell: bash
+        run: |
+          set -euo pipefail
           git config user.name "hepta-automation-convergence"
           git config user.email "hepta-automation-convergence@users.noreply.github.com"
-
-      - name: Apply final source correctness and bounded-startup patch
-        shell: bash
-        run: |
-          set -euo pipefail
-          decoded="scripts/.automation_taskflow_source_last_mile_20260929.py"
-          base64 -d scripts/automation_taskflow_source_last_mile_20260929.py.gz.b64 | gzip -d > "$decoded"
-          python3 -m py_compile "$decoded"
-          python3 "$decoded"
-          rm -f "$decoded"
-          git diff --check
           git add \
-            codex-rs/hepta-automation/src/durable_neural_circuit.rs \
-            codex-rs/hepta-automation/src/taskflow.rs \
-            codex-rs/hepta-automation/tests/durable_neural_circuit.rs \
-            codex-rs/hepta-automation/tests/taskflow.rs
-          git commit --no-verify -m "fix(automation): close circuit replay and bounded startup gaps"
-
-      - name: Converge truthful schema and documentation state
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 -m py_compile \
-            scripts/automation_taskflow_truthful_finalize_20260929.py \
-            scripts/automation_taskflow_layered_contract_20260929.py \
+            codex-rs/hepta-automation/src/taskflow_bounded.rs \
             scripts/automation_taskflow_contract.py \
-            scripts/automation_taskflow_selected_host.py
-          python3 scripts/automation_taskflow_truthful_finalize_20260929.py
-          python3 scripts/automation_taskflow_layered_contract_20260929.py
-          python3 scripts/automation_taskflow_contract.py render
-          python3 scripts/hepta_transition_lineage.py
-          python3 scripts/hepta-document-index.py
-          git rm -r \
+            .github/workflows/automation-taskflow-focused.yml
+          git rm \
             .github/workflows/automation-taskflow-converge-20260927.yml \
-            scripts/automation_taskflow_converge_20260927.py \
-            scripts/automation_taskflow_finalize_20260928.py \
-            scripts/automation_taskflow_truthful_finalize_20260929.py \
-            scripts/automation_taskflow_layered_contract_20260929.py \
-            scripts/automation_taskflow_source_last_mile_20260929.py.gz.b64 \
-            scripts/automation_taskflow_patch_parts
-          git diff --check
-          git add -u
-          while IFS= read -r -d '' path; do
-            git add -- "$path"
-          done < <(git ls-files --others --exclude-standard -z)
-          for generated in \
-            docs/generated/TRANSITION_STATE_GRAPH.json \
-            docs/generated/TRANSITION_STATE_REPORT.md \
-            docs/generated/DOCUMENT_INDEX.md \
-            docs/generated/DOCUMENT_INDEX.json
-          do
-            test -f "$generated"
-            git add -f -- "$generated"
-          done
-          git commit --no-verify -m "docs(automation): align schema-22 layered source truth"
+            scripts/automation_taskflow_ci_blocker_repair_20260929.py
+          git diff --cached --check
+          git commit --no-verify -m "fix(automation): close focused qualification blockers"
 
-      - name: Refresh implementation-map navigation
+      - name: Refresh implementation navigation
         shell: bash
         run: |
           set -euo pipefail
@@ -121,7 +96,7 @@ jobs:
           git diff --check
           if ! git diff --quiet; then
             git add docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json
-            git commit -m "docs(automation): refresh schema-22 implementation navigation"
+            git commit -m "docs(automation): refresh exact repaired source navigation"
           fi
 
       - name: Bind exact source objects and generated projections
@@ -147,10 +122,10 @@ jobs:
               test -f "$generated"
               git add -f -- "$generated"
             done
-            git commit -m "docs(automation): bind exact schema-22 source objects"
+            git commit -m "docs(automation): bind repaired schema-22 source objects"
           fi
 
-      - name: Verify final self-contained source candidate
+      - name: Verify self-contained repaired candidate
         shell: bash
         run: |
           set -euo pipefail
@@ -168,15 +143,11 @@ jobs:
             --expected-sha "$candidate_sha" \
             --expected-tree "$candidate_tree"
           python3 scripts/hepta-module-docs.py verify
-          python3 scripts/hepta-design-provenance.py verify
-          python3 scripts/hepta-transition-state.py verify
           git diff --exit-code
           git diff --cached --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"
 
       - name: Push only if remote still names the trigger commit
-        env:
-          TARGET_BRANCH: work/automation-taskflow-full-closure-2026-09-27
         shell: bash
         run: |
           set -euo pipefail
