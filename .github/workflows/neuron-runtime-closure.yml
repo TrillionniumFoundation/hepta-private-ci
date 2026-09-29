@@ -78,6 +78,7 @@ jobs:
           fi
           git rev-parse HEAD HEAD^{tree}
           printf 'source=%s\nbase=%s\nlane=%s\n' "$SOURCE_SHA" "$BASE_SHA" '${{ matrix.lane }}'
+          test -z "$(git status --porcelain --untracked-files=all)"
 
       - name: Install pinned repository test tools
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
@@ -145,7 +146,7 @@ jobs:
 
           git diff --check
           git diff --exit-code
-          test -z "$(git status --porcelain --untracked-files=no)"
+          test -z "$(git status --porcelain --untracked-files=all)"
 
       - name: Retain exact validation evidence
         if: always()
@@ -168,7 +169,7 @@ jobs:
           set -euo pipefail
           git diff --check
           git diff --exit-code
-          test -z "$(git status --porcelain --untracked-files=no)"
+          test -z "$(git status --porcelain --untracked-files=all)"
 
   qualification-result:
     name: Neuron runtime closure result
