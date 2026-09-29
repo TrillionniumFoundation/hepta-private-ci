@@ -1,4 +1,4 @@
-name: Prompt registry closeout source
+name: Prompt registry source snapshot
 on:
   push:
     branches:
@@ -6,82 +6,31 @@ on:
     paths:
       - .github/workflows/prompt-registry-closeout-source.yml
 permissions:
-  contents: write
+  contents: read
 concurrency:
-  group: prompt-registry-closeout-source
-  cancel-in-progress: false
+  group: prompt-registry-source-snapshot
+  cancel-in-progress: true
 jobs:
-  apply:
+  snapshot:
     runs-on: ubuntu-slim
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: codex/prompt-registry-production-closeout-20260929
           fetch-depth: 0
-      - name: Bind remote starting point
-        run: echo "CLOSEOUT_BASE_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
-        with:
-          toolchain: 1.95.0
-          components: rustfmt
-      - name: Apply assertion-bound source and documentation edits
+          persist-credentials: false
+      - name: Export exact tracked source
         run: |
           set -euo pipefail
-          python3 scripts/apply-prompt-registry-production-closeout.py
-          # Workflow definitions are committed separately through the GitHub API.
-          git restore --source=HEAD -- .github/workflows
-          rm -f .github/workflows/hepta-prompt-registry-independent-acceptance.yml
-      - name: Format and validate candidate source
-        run: |
-          set -euo pipefail
-          cd codex-rs
-          cargo fmt -p codex-hepta-agentd -p codex-hepta-prompt-registry -p codex-hepta-intelligence
-          cd ..
-          python3 scripts/hepta-prompt-registry-doc-truth.py --check
-          python3 -m py_compile \
-            scripts/hepta-prompt-registry-doc-truth.py \
-            scripts/hepta-prompt-registry-accept.py \
-            scripts/hepta-prompt-registry-aggregate.py \
-            scripts/hepta-prompt-registry-qualify.py
-          git diff --check
-          test ! -e scripts/apply-prompt-registry-production-closeout.py
-      - name: Commit exact source candidate locally
-        run: |
-          set -euo pipefail
-          git config user.name 'Prompt registry closeout automation'
-          git config user.email 'prompt-registry-closeout@users.noreply.github.com'
-          git add -A
-          git diff --cached --quiet && exit 1
-          git commit -m 'feat(prompt.registry): close qualification and acceptance evidence gaps'
-          echo "CLOSEOUT_SOURCE_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
-      - name: Generate and commit source-bound map
-        run: |
-          set -euo pipefail
-          python3 scripts/hepta-prompt-registry-map.py --write
-          python3 scripts/hepta-prompt-registry-doc-truth.py --write
-          python3 scripts/hepta-prompt-registry-doc-truth.py --check
-          git diff --check
-          git add docs/modules/prompt.registry/IMPLEMENTATION_MAP.json \
-                  docs/modules/prompt.registry/QUALIFICATION_FACTS.json \
-                  docs/modules/prompt.registry/QUALIFICATION_STATUS.md
-          git commit -m 'docs(prompt.registry): bind map and generated qualification truth'
-      - name: Retain exact recovery package before publication
-        run: |
-          set -euo pipefail
-          out="$RUNNER_TEMP/prompt-registry-closeout"
+          out="$RUNNER_TEMP/prompt-registry-source"
           mkdir -p "$out"
-          git format-patch --stdout "$CLOSEOUT_BASE_SHA"..HEAD > "$out/commits.mbox"
-          git diff --binary "$CLOSEOUT_BASE_SHA"..HEAD > "$out/combined.patch"
-          git diff --name-status "$CLOSEOUT_BASE_SHA"..HEAD > "$out/manifest.tsv"
-          git show -s --format='%H %T %P %s' "$CLOSEOUT_SOURCE_SHA" > "$out/source-identity.txt"
-          git show -s --format='%H %T %P %s' HEAD > "$out/map-identity.txt"
-          git archive --format=tar.gz --output="$out/final-files.tar.gz" HEAD \
-            $(git diff --name-only --diff-filter=ACMR "$CLOSEOUT_BASE_SHA"..HEAD)
+          git rev-parse HEAD > "$out/source-sha.txt"
+          git rev-parse HEAD^{tree} > "$out/source-tree.txt"
+          git archive --format=tar.gz --output="$out/hepta-private-ci.tar.gz" HEAD
+          sha256sum "$out/hepta-private-ci.tar.gz" > "$out/hepta-private-ci.tar.gz.sha256"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: prompt-registry-closeout-recovery-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/prompt-registry-closeout
+          name: prompt-registry-source-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/prompt-registry-source
           if-no-files-found: error
-          retention-days: 30
-      - name: Push source and map commits
-        run: git push origin HEAD:codex/prompt-registry-production-closeout-20260929
+          retention-days: 7
