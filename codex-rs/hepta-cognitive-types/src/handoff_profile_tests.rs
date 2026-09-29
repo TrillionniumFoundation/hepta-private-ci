@@ -111,3 +111,99 @@ fn public_wire_json_violation_does_not_echo_input_text() {
             .contains(marker)
     );
 }
+
+// Equality can lawfully be coarser than serialization. This wrapper remains
+// reflexive, symmetric and transitive but does not establish wire identity.
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+#[serde(transparent)]
+struct CoarseHandoffEquality<T>(T);
+
+impl<T> PartialEq for CoarseHandoffEquality<T> {
+    fn eq(&self, _other: &Self) -> bool {
+        true
+    }
+}
+
+impl<T> Eq for CoarseHandoffEquality<T> {}
+
+impl<T: crate::wire::CognitiveContractV1> crate::wire::CognitiveContractV1
+    for CoarseHandoffEquality<T>
+{
+    const CONTRACT_ID: &'static str = T::CONTRACT_ID;
+    const SCHEMA_ID: &'static str = T::SCHEMA_ID;
+    const MAX_ENCODED_BYTES: usize = T::MAX_ENCODED_BYTES;
+
+    fn validate_contract(&self) -> Result<(), crate::hnmf::HnmfContractError> {
+        self.0.validate_contract()
+    }
+}
+
+fn assert_handoff_checks_digest_despite_coarse_equality<
+    T: crate::wire::CognitiveContractV1 + std::fmt::Debug,
+>(
+    binding: &crate::consumer::CanonicalConsumerBindingV1,
+    original: T,
+    different: T,
+) {
+    use crate::contract::ContractErrorCodeV1;
+    use crate::contract::Validated;
+    use crate::handoff::CanonicalParityV1;
+
+    assert_ne!(original, different);
+    let observed = CoarseHandoffEquality(original);
+    let expected = Validated::new(CoarseHandoffEquality(different)).expect("valid projection");
+    assert_eq!(expected.as_inner(), &observed, "coarse equality fixture");
+    let wire = encode_wire_v1(&observed).expect("original canonical wire");
+    let handoff = binding
+        .compare_canonical_projection_v1(&expected, &wire)
+        .expect("mismatch remains inspectable evidence");
+    assert_ne!(
+        handoff.expected_semantic_digest(),
+        handoff.observed_semantic_digest()
+    );
+    assert_eq!(handoff.parity(), CanonicalParityV1::Mismatch);
+    let error = handoff
+        .require_match_for_current_binding(binding)
+        .expect_err("coarse equality cannot release different canonical output");
+    assert_eq!(error.code, ContractErrorCodeV1::DigestMismatch);
+    assert_eq!(error.field_path, "handoff.semanticProjection");
+
+    let expected = Validated::new(observed).expect("matching projection");
+    let matching = binding
+        .compare_canonical_projection_v1(&expected, &wire)
+        .expect("fresh matching comparison");
+    assert_eq!(matching.parity(), CanonicalParityV1::Matched);
+    matching
+        .require_match_for_current_binding(binding)
+        .expect("rejection does not poison a subsequent valid call");
+    assert_ne!(matching.receipt_digest(), handoff.receipt_digest());
+}
+
+#[test]
+fn all_five_consumer_families_require_actual_output_digest_parity() {
+    use crate::consumer::CanonicalConsumerV1;
+
+    for consumer in CanonicalConsumerV1::ALL {
+        match consumer {
+            CanonicalConsumerV1::CognitiveRead
+            | CanonicalConsumerV1::CognitiveStore
+            | CanonicalConsumerV1::CompactEngine => {
+                let binding = test_consumer_binding(consumer, "op:digest", "source", "cut");
+                let original = event();
+                let mut value = serde_json::to_value(&original).expect("event JSON");
+                value["semanticKeys"] = serde_json::json!(["different-semantic-projection"]);
+                let different = serde_json::from_value(value).expect("different event");
+                assert_handoff_checks_digest_despite_coarse_equality(&binding, original, different);
+            }
+            CanonicalConsumerV1::MemoryRetrieval | CanonicalConsumerV1::IntelligenceControl => {
+                let binding = test_recall_consumer_binding(consumer, "op:digest", "source", "cut");
+                let original = recall_packet();
+                let mut value = serde_json::to_value(&original).expect("recall JSON");
+                let confidence = value["confidencePpm"].as_u64().expect("confidence");
+                value["confidencePpm"] = serde_json::json!(if confidence == 0 { 1 } else { 0 });
+                let different = serde_json::from_value(value).expect("different recall");
+                assert_handoff_checks_digest_despite_coarse_equality(&binding, original, different);
+            }
+        }
+    }
+}

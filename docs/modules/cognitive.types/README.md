@@ -13,3 +13,5 @@ The existing [IMPLEMENTATION_MAP.json](IMPLEMENTATION_MAP.json) is the status au
 The [execution dossier](../../../qualification/module-execution-dossiers/detail/cognitive.types.md) and [HNMF specification](../../hnmf/TECHNICAL.md) retain their separate design and ownership scopes. A path, token, test declaration, or green historical run cannot establish current-candidate execution, authenticated consumer cutover, acceptance, activation, or release.
 
 The [checked decoder and complete evidence inventory supplement](CHECKED_DECODE_EVIDENCE_20260929.md) covers registered handoff profiles, same-decode digest reuse, payload-free JSON violations, bounded auxiliary-file integrity, and mutation-build separation under check-plan version 2. Its local Python evidence is explicitly not Rust or product-cutover qualification.
+
+The [strict probe and output-parity supplement](PROBE_PARITY_HARDENING_20260929.md) records typed report comparison, bounded probe execution, exact performance-observation validation and the handoff's actual output-digest check. Its scoped local execution results do not promote native qualification or authenticated consumer cutover.

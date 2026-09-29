@@ -15,7 +15,9 @@ import importlib.util
 import json
 from pathlib import Path
 import statistics
-import subprocess
+import re
+
+from probe_execution import invoke_probe
 
 ALGORITHM = b"canonical-json-utf8-sorted-keys-integer-only-preserve-unicode-v1"
 MAX_EVENT_SPANS = 32
@@ -210,45 +212,43 @@ def maximal_memory_event(golden):
 
 
 def invoke(argv, wire, expected=None):
-    try:
-        process = subprocess.run(argv, input=wire, capture_output=True, timeout=60, check=False)
-        report = json.loads(process.stdout)
-    except (OSError, subprocess.TimeoutExpired, ValueError) as error:
-        return {"passed": False, "status": "infrastructure_invalid", "error": str(error), "argv": argv}
-    passed = process.returncode == 2 and report.get("outcome") == "rejected" if expected is None else (
-        process.returncode == 0 and all(report.get(key) == value for key, value in expected.items()))
-    return {"passed": passed, "status": "passed" if passed else "failed", "argv": argv,
-            "exit_code": process.returncode, "report": report,
-            "stdout_sha256": hashlib.sha256(process.stdout).hexdigest(),
-            "stderr_sha256": hashlib.sha256(process.stderr).hexdigest(),
-            "stderr": process.stderr.decode(errors="replace")[-4000:]}
+    return invoke_probe(argv, wire, expected)
 
 
 def performance_summary(samples):
+    invalid = {"measurementValid": False, "error": "incomplete or invalid performance observations"}
+    if type(samples) is not list or len(samples) != PERFORMANCE_SAMPLES:
+        return invalid
     elapsed = []
     encoded_bytes = None
-    for sample in samples:
-        report = sample.get("report", {})
-        try:
-            duration = int(report["elapsed_ns"])
-            repeat = int(report["repeat"])
-            size = int(report["encoded_bytes"])
-        except (KeyError, TypeError, ValueError):
-            return {
-                "measurementValid": False,
-                "error": "probe omitted a numeric performance field",
-            }
-        if duration <= 0 or repeat != PERFORMANCE_REPEATS or size <= 0:
-            return {
-                "measurementValid": False,
-                "error": "probe returned an invalid duration, repeat count or encoded size",
-            }
-        if encoded_bytes is not None and size != encoded_bytes:
-            return {
-                "measurementValid": False,
-                "error": "encoded size drifted across identical samples",
-            }
-        encoded_bytes = size
+    observed_identity = None
+    for index, sample in enumerate(samples, 1):
+        if (type(sample) is not dict or sample.get("passed") is not True
+                or sample.get("status") != "passed" or type(sample.get("exit_code")) is not int
+                or sample["exit_code"] != 0 or type(sample.get("sample")) is not int
+                or sample["sample"] != index or sample.get("implementation") != "rust"
+                or sample.get("case") != "event:maximum-declared-collection-counts"):
+            return invalid
+        report = sample.get("report")
+        if type(report) is not dict or report.get("outcome") != "accepted" or report.get("contract") != "MemoryEventV1":
+            return invalid
+        duration, repeat, size = (report.get(key) for key in ("elapsed_ns", "repeat", "encoded_bytes"))
+        # The existing Rust probe encodes its u128 nanoseconds as a decimal
+        # string. Preserve that explicit profile; do not coerce arbitrary JSON.
+        if (type(duration) is not str or re.fullmatch(r"[1-9][0-9]{0,38}", duration) is None
+                or type(repeat) is not int or type(size) is not int
+                or repeat != PERFORMANCE_REPEATS or size <= 0):
+            return invalid
+        duration = int(duration)
+        if duration >= 2**128:
+            return invalid
+        identity = tuple(report.get(key) for key in ("wire_sha256", "frozen_sha256", "bound_sha256"))
+        if (any(type(value) is not str or re.fullmatch(r"[0-9a-f]{64}", value) is None for value in identity)
+                or sample.get("wire_sha256") != identity[0]
+                or (observed_identity is not None and observed_identity != identity)
+                or (encoded_bytes is not None and size != encoded_bytes)):
+            return invalid
+        observed_identity, encoded_bytes = identity, size
         elapsed.append(duration)
     per_round_trip = [duration / PERFORMANCE_REPEATS for duration in elapsed]
     return {
@@ -335,7 +335,7 @@ def main():
         "results": results,
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(receipt, indent=2, ensure_ascii=False) + "\n")
+    args.output.write_text(json.dumps(receipt, indent=2, ensure_ascii=False, allow_nan=False) + "\n")
     print(json.dumps({key: value for key, value in receipt.items() if key != "results"}))
     return 0 if passed else 1
 

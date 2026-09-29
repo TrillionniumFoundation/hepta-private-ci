@@ -86,7 +86,12 @@ impl CanonicalConsumerBindingV1 {
         }
         let expected_semantic_digest = canonical_contract_digest_bound_v1(expected.as_inner())
             .map_err(|error| error.violation())?;
-        let parity = if expected.as_inner() == payload.as_inner() {
+        // A lawful generic Eq implementation may ignore serialized fields.
+        // Matching typed values must also have the same independently computed
+        // schema-bound output digest. Neither result is currentness authority.
+        let parity = if expected_semantic_digest == observed_semantic_digest
+            && expected.as_inner() == payload.as_inner()
+        {
             CanonicalParityV1::Matched
         } else {
             CanonicalParityV1::Mismatch
