@@ -88,7 +88,8 @@
         "A poisoned handle rejects authoritative checkpoint verification and dispatch-state inspection; its retained in-memory records are diagnostic only.",
         "Generic append rejects execution-reserved dispatch-claim, terminal and reconciliation records; only the crate-local typed execution state machine can write their canonical envelopes.",
         "Recovery projection first requires an exact durable claim, then validates ordered initial-terminal and reconciliation transitions; receipt-before-claim, grant drift, duplicate initial terminals and conclusive replacement fail closed.",
-        "Compaction preserves all non-snapshot semantic evidence and its preceding snapshot; independent anchor ownership and two-process target-host recovery remain external gates."
+        "Compaction preserves all non-snapshot semantic evidence and its preceding snapshot; independent anchor ownership and selected-target-host recovery remain external gates.",
+        "Repository source includes child-process lock-owner termination, abort-after-sync reopen and restore-under-live-owner regressions; these are source cases, not target-host pass receipts."
       ]
     },
     "authorityExecutionLoop": {
@@ -107,7 +108,8 @@
         "Conclusive receipts are returned unchanged, unresolved claims reconcile by stable operation identity with the original grant, and public reconciliation requires an existing durable claim.",
         "PlannerStore terminal sinks verify the canonical receipt digest, exact durable claim and original grant, and reject replacement of a conclusive terminal result.",
         "Reopen reconstructs the same claim-to-observation state machine rather than trusting structurally valid execution records in isolation.",
-        "Authority failure after claim persists an explicit not-dispatched terminal receipt instead of leaving a false unknown-effect state."
+        "Authority failure after claim persists an explicit not-dispatched terminal receipt instead of leaving a false unknown-effect state.",
+        "A bounded DENY_ALL pending-dispatch page exposes unresolved claims in round-robin claim-sequence order without granting redispatch; the product recovery controller and exact request resolver remain external composition work."
       ]
     },
     "organHost": {
