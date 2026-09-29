@@ -11,16 +11,7 @@ permissions:
 jobs:
   apply:
     if: github.actor != 'github-actions[bot]'
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - runner_name: rog
-            runner: [self-hosted, linux, x64, rog]
-          - runner_name: pocket4
-            runner: [self-hosted, linux, x64, pocket4]
-    name: apply / ${{ matrix.runner_name }}
-    runs-on: ${{ matrix.runner }}
+    runs-on: self-hosted
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -36,20 +27,35 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          cat > "$RUNNER_TEMP/patch-sha256" <<'EOF'
-          fe8d7b9e3d6135fe4e8d90726591193d58f86a179ae30faa4dc12e9ac3c78de8  .github/runtime-agentd-closure/part-00.patch
-          8b44f2204adb32c0922bebd90c8d8e5ca2659bc861d0cd24136dcad717eca7ed  .github/runtime-agentd-closure/part-01.patch
-          3ddc221eb064101d06541ca2e783462b6856c64876486c4a2fcb04f907149b7d  .github/runtime-agentd-closure/part-02.patch
-          8ca3d0a3470ae6409e70abe8e49904293c04f704dc96ac2edf0d1ee3bc4bf7ee  .github/runtime-agentd-closure/part-03.patch
-          2ef69aa7679ce11aa81b1b632a12692d5c1588fd8fd5e4939309a83c9855e567  .github/runtime-agentd-closure/part-04.patch
-          ac3409289e83d595df3372915b723c7d5789f207583ccec4539b45b6bed40f9f  .github/runtime-agentd-closure/part-05.patch
-          df46fe426710454daf92bd5e88b2106512a980709375dcd56e75583a0b2c3753  .github/runtime-agentd-closure/part-06.patch
-          EOF
-          sha256sum -c "$RUNNER_TEMP/patch-sha256"
-          cat .github/runtime-agentd-closure/part-*.patch > "$RUNNER_TEMP/runtime-agentd-final.patch"
-          echo '744a745f707cb1741ea84c0c8125b64791e8b81a5ce42dcdf87284b65d2332d4  '"$RUNNER_TEMP/runtime-agentd-final.patch" | sha256sum -c -
-          git apply --check --whitespace=error "$RUNNER_TEMP/runtime-agentd-final.patch"
-          git apply --whitespace=error "$RUNNER_TEMP/runtime-agentd-final.patch"
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib
+
+          expected = {
+              '.github/runtime-agentd-closure/part-00.patch': 'fe8d7b9e3d6135fe4e8d90726591193d58f86a179ae30faa4dc12e9ac3c78de8',
+              '.github/runtime-agentd-closure/part-01.patch': '8b44f2204adb32c0922bebd90c8d8e5ca2659bc861d0cd24136dcad717eca7ed',
+              '.github/runtime-agentd-closure/part-02.patch': '3ddc221eb064101d06541ca2e783462b6856c64876486c4a2fcb04f907149b7d',
+              '.github/runtime-agentd-closure/part-03.patch': '8ca3d0a3470ae6409e70abe8e49904293c04f704dc96ac2edf0d1ee3bc4bf7ee',
+              '.github/runtime-agentd-closure/part-04.patch': '2ef69aa7679ce11aa81b1b632a12692d5c1588fd8fd5e4939309a83c9855e567',
+              '.github/runtime-agentd-closure/part-05.patch': 'ac3409289e83d595df3372915b723c7d5789f207583ccec4539b45b6bed40f9f',
+              '.github/runtime-agentd-closure/part-06.patch': 'df46fe426710454daf92bd5e88b2106512a980709375dcd56e75583a0b2c3753',
+          }
+          parts = []
+          for path, digest in expected.items():
+              data = Path(path).read_bytes()
+              observed = hashlib.sha256(data).hexdigest()
+              if observed != digest:
+                  raise SystemExit(f'{path}: expected {digest}, observed {observed}')
+              parts.append(data)
+          combined = b''.join(parts)
+          observed = hashlib.sha256(combined).hexdigest()
+          expected_combined = '744a745f707cb1741ea84c0c8125b64791e8b81a5ce42dcdf87284b65d2332d4'
+          if observed != expected_combined:
+              raise SystemExit(f'combined patch: expected {expected_combined}, observed {observed}')
+          Path('/tmp/runtime-agentd-final.patch').write_bytes(combined)
+          PY
+          git apply --check --whitespace=error /tmp/runtime-agentd-final.patch
+          git apply --whitespace=error /tmp/runtime-agentd-final.patch
           rm -rf .github/runtime-agentd-closure
           rm .github/workflows/runtime-agentd-apply-closure.yml
       - name: Verify the candidate before publication
