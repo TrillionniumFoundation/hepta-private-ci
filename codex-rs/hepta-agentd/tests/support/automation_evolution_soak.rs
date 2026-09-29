@@ -82,7 +82,7 @@ async fn normal_product_bounded_evolution_under_concurrent_load() -> Result<()> 
     for round in 0..rounds {
         let round_started = Instant::now();
         stage = format!("round {round}: thread creation");
-        eprintln!("product evolution stage: {stage}");
+        eprintln!("product evolution stage: {stage}; elapsed_us={}", experiment_started.elapsed().as_micros());
         let mut product = ProductClient::connect(&agent, &control).await?;
         let mut threads = Vec::new();
         let mut drafts = Vec::new();
@@ -98,7 +98,7 @@ async fn normal_product_bounded_evolution_under_concurrent_load() -> Result<()> 
         let [a, b, c, d]: [AutomationTaskDraft; WIDTH] = drafts.try_into()
             .map_err(|_| anyhow::anyhow!("invalid experiment width"))?;
         stage = format!("round {round}: concurrent task creation");
-        eprintln!("product evolution stage: {stage}");
+        eprintln!("product evolution stage: {stage}; elapsed_us={}", experiment_started.elapsed().as_micros());
         let wave_started = Instant::now();
         let (a, b, c, d) = tokio::try_join!(
             control.automation_create(a), control.automation_create(b),
@@ -106,7 +106,7 @@ async fn normal_product_bounded_evolution_under_concurrent_load() -> Result<()> 
         )?;
         let tasks = [a, b, c, d];
         stage = format!("round {round}: terminal observation");
-        eprintln!("product evolution stage: {stage}");
+        eprintln!("product evolution stage: {stage}; elapsed_us={}", experiment_started.elapsed().as_micros());
         let deadline = Instant::now() + Duration::from_secs(30);
         loop {
             let mut completed = Vec::new();
@@ -137,7 +137,7 @@ async fn normal_product_bounded_evolution_under_concurrent_load() -> Result<()> 
         }
         wave_latencies.push(wave_started.elapsed().as_micros());
         stage = format!("round {round}: settled task listing");
-        eprintln!("product evolution stage: {stage}");
+        eprintln!("product evolution stage: {stage}; elapsed_us={}", experiment_started.elapsed().as_micros());
         let visible = control.automation_list(u16::try_from(rounds * WIDTH * 2)?).await?;
         for task in &tasks {
             ensure!(visible.iter().any(|row| row.task_id == task.task_id
@@ -145,7 +145,7 @@ async fn normal_product_bounded_evolution_under_concurrent_load() -> Result<()> 
                 "product terminal lacks its settled timer occurrence");
         }
         stage = format!("round {round}: future task cancellation");
-        eprintln!("product evolution stage: {stage}");
+        eprintln!("product evolution stage: {stage}; elapsed_us={}", experiment_started.elapsed().as_micros());
         for thread in &threads {
             let future = control.automation_create(AutomationTaskDraft::new(
                 thread.clone(), "cancel before effect", AutomationSchedule::Once,
@@ -161,7 +161,7 @@ async fn normal_product_bounded_evolution_under_concurrent_load() -> Result<()> 
         let generation = agent_generation(&fleet, &agent.agent_id)?;
         let old_process = health.process_id;
         stage = format!("round {round}: process restart");
-        eprintln!("product evolution stage: {stage}");
+        eprintln!("product evolution stage: {stage}; elapsed_us={}", experiment_started.elapsed().as_micros());
         let restart_started = Instant::now();
         fleet.supervisor.restart(&agent.agent_id, Instant::now())?;
         let (fresh_control, fresh_health) = fleet.wait_new_spawn(&agent, generation).await?;
@@ -171,7 +171,7 @@ async fn normal_product_bounded_evolution_under_concurrent_load() -> Result<()> 
         control = fresh_control;
         health = fresh_health;
         stage = format!("round {round}: recovered terminal history");
-        eprintln!("product evolution stage: {stage}");
+        eprintln!("product evolution stage: {stage}; elapsed_us={}", experiment_started.elapsed().as_micros());
         let history_started = Instant::now();
         let mut recovered = ProductClient::connect(&agent, &control).await?;
         // Check EVERY prior terminal after EVERY restart. Bound observation
@@ -227,7 +227,7 @@ async fn normal_product_bounded_evolution_under_concurrent_load() -> Result<()> 
     ensure!(verified_history_reads == WIDTH * rounds * (rounds + 1) / 2,
         "history verification omitted a terminal or a restart");
     stage = "retirement and old database restore".to_string();
-        eprintln!("product evolution stage: {stage}");
+        eprintln!("product evolution stage: {stage}; elapsed_us={}", experiment_started.elapsed().as_micros());
     let generation = agent_generation(&fleet, &agent.agent_id)?;
     stop_process(&mut fleet, &agent).await?;
     let owner = AutomationStore::open(&agent.layout).await?;
