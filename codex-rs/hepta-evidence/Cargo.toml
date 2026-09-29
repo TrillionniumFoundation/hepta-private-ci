@@ -9,6 +9,12 @@ name = "codex_hepta_evidence"
 path = "src/lib.rs"
 doctest = true
 
+[features]
+default = []
+# Enables raw issuer/binding adapters only for downstream integration tests.
+# Product and release builds never enable this non-default feature.
+test-support = []
+
 [lints]
 workspace = true
 
