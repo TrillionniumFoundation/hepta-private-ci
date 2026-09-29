@@ -4,12 +4,12 @@
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "mappingSourceIdentityMode": "path_only",
   "sourceBase": {
-    "commit": "a6191e88ef96a2755d57d2034dc9780f6f75163e",
-    "tree": "ffec5f0d153e6239571399a19806060dc4f4fb56"
+    "commit": "6c7d1b4b75074955f06dbec83c9952bf1c1b75fc",
+    "tree": "a635754072206e46150a4c3d89608e281649a178"
   },
   "observedAtHead": {
-    "commit": "a6191e88ef96a2755d57d2034dc9780f6f75163e",
-    "tree": "ffec5f0d153e6239571399a19806060dc4f4fb56"
+    "commit": "6c7d1b4b75074955f06dbec83c9952bf1c1b75fc",
+    "tree": "a635754072206e46150a4c3d89608e281649a178"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -208,14 +208,16 @@
       "state": "incremental_frontier_and_rollback_recovery_source_implemented",
       "authority": "maintenance_port_single_owner",
       "tests": [
-        "codex-rs/hepta-authbus/src/recovery_tests.rs"
+        "codex-rs/hepta-authbus/src/recovery_tests.rs",
+        "codex-rs/hepta-authbus/tests/frontier_integrity.rs"
       ],
       "sourcePathExists": true,
       "mappingClass": "owner_native",
       "delegatedCallees": [
         "codex-rs/hepta-authbus/migrations/0004_recovery_retention.sql",
         "codex-rs/hepta-authbus/migrations/0005_immutable_history.sql",
-        "codex-rs/hepta-authbus/migrations/0006_incremental_frontier.sql"
+        "codex-rs/hepta-authbus/migrations/0006_incremental_frontier.sql",
+        "codex-rs/hepta-authbus/migrations/0007_frontier_integrity.sql"
       ]
     },
     {
