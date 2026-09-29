@@ -1,0 +1,77 @@
+ In `codex-rs`, run `just test -p codex-hepta-agentd`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.agentd.md) separately labels target acceptance designs.
+ 
++The exact-head qualification runner obtains every process fixture from Cargo JSON compiler-artifact events, including the real `codex-app-server` binary required by native final-use tests. It snapshots those bytes under an isolated target subdirectory before tests run, exports all current and legacy fixture variables to the same snapshot, and rehashes the snapshot after each suite. Cargo may rebuild its ordinary target paths without creating a false mutation result; an in-place change to the tested snapshot still fails qualification.
++
+ [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
+ 
+ ## 13. Implementation sequence and work packages
+@@ -467,7 +469,7 @@
+ | `attach_context` | `pub fn attach_context(` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` | `codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs` |
+ 
+ - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
+-- Exact module-local source/test provenance is recorded as `currentSourceEvidence` and is verified by the Agentd process qualification workflow; the legacy repository-wide `sourceBase` remains a separate common baseline until the repository-wide migration.
++- The map binds current source paths by Git object identity. Exact candidate commit/tree, workflow, run and prospective-merge results are generated as retained `runtime-agentd-current-status.json` artifacts; they are not written into the tracked map, which would create a self-reference. The legacy repository-wide `sourceBase` remains a separate provenance baseline.
+ - Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
+ - Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+ 
+--- a/docs/modules/runtime.agentd/REMEDIATION_EXECUTION_20260927.md
++++ b/docs/modules/runtime.agentd/REMEDIATION_EXECUTION_20260927.md
+@@ -186,3 +186,10 @@
+ `DEPENDENCY_BOUNDARY.json` and its verifier classify the exact Cargo dependency inventory. They intentionally record `coreOnlyBuildEstablished=false` and `productAdaptersOptionalized=false`: an empty default feature set is not relabelled as core/product separation. The migration ratchet forbids changing durable history, authority semantics or the sole execution spine merely to make dependencies optional.
+ 
+ The exact-candidate workflow now uses immutable action revisions, real package and process-test names, current repository-owned projection checks, dependency/trust-boundary tests and a separate deterministic prospective-merge compile/test/lint job. The one-shot patch carrier and self-mutating apply workflow are removed after their source delta is integrated. None of these source changes claims target-host qualification, release provenance, independent acceptance, activation, promotion or release. Those gates remain false until the final exact candidate produces successful retained evidence.
++## 2026-09-29 exact-candidate repair addendum
++
++The first retained exact-head run on the instance-owned candidate exposed real source and qualification failures rather than a product acceptance result: an obsolete capability test still treated runner/provider presence as readiness; the native-process regression borrowed a partially moved `Output`; strict Clippy stopped in the Neuron migration owner; the native library omitted the required exact `codex-app-server` fixture; and Cargo relinking ordinary target paths produced false fixture-mutation reports even when daemon and product process tests passed. The contract job also called a source-ownership script no longer present in the repository.
++
++The repair keeps the all-or-none runtime contract. Capability advertisement now remains absent until the runtime.codex owner is attached and recovery-ready. The process regression is fixed without changing semantics. Strict Agentd Clippy is explicitly module-scoped with `--no-deps`; dependency-owner lint findings remain owned by their own qualification lanes instead of creating an undeclared cross-owner source edit. The exact-head runner now builds `codex-app-server`, snapshots all compiler-artifact executables under an isolated target subtree, binds `HEPTA_TEST_CODEX_EXE` and every legacy/current alias to those same bytes, and rehashes the snapshots after testing. The workflow again uses immutable action revisions, repository-owned registry/map/trust/dependency checks and a deterministic prospective-merge lane.
++
++This addendum records remediation intent and local Python verifier results only. The commit containing it must still obtain successful Linux, macOS and prospective-merge execution receipts. Target-host fault/load evidence, release provenance, independent acceptance, activation, promotion and release remain false.
+--- a/docs/modules/runtime.agentd/IMPLEMENTATION_MAP.json
++++ b/docs/modules/runtime.agentd/IMPLEMENTATION_MAP.json
+@@ -26,7 +26,9 @@
+       "sourcePathExists": true,
+       "buildTarget": "codex-hepta-agentd",
+       "delegatedCallees": [],
+-      "tests": [],
++      "tests": [
++        "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs"
++      ],
+       "sourceSemantics": "Constructs the sole generation-fenced, Fleet-budget-bounded Agentd run coordinator."
+     },
+     {
+@@ -38,7 +40,9 @@
+       "sourcePathExists": true,
+       "buildTarget": "codex-hepta-agentd",
+       "delegatedCallees": [],
+-      "tests": [],
++      "tests": [
++        "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs"
++      ],
+       "sourceSemantics": "Admits an immutable run tuple with idempotent identity and bounded capacity; it does not itself execute a Codex turn."
+     },
+     {
+@@ -50,7 +54,9 @@
+       "sourcePathExists": true,
+       "buildTarget": "codex-hepta-agentd",
+       "delegatedCallees": [],
+-      "tests": [],
++      "tests": [
++        "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs"
++      ],
+       "sourceSemantics": "Binds the complete immutable run tuple to one context and compilation receipt before dispatch."
+     },
+     {
+@@ -62,7 +68,9 @@
+       "sourcePathExists": true,
+       "buildTarget": "codex-hepta-agentd",
+       "delegatedCallees": [],
+-      "tests": [],
++      "tests": [
++        "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs"
++      ],
+       "sourceSemantics": "Distinguishes pre-dispatch local cancellation from post-dispatch cancellation that requires physical reconciliation."
+     },
+     {
+@@ -74,7 +82,9 @@
+       "sourcePathExists": true,
