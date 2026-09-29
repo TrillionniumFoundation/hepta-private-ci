@@ -46,18 +46,25 @@ jobs:
           from pathlib import Path
 
           root = Path.cwd()
-          bundle = Path(os.environ["RUNNER_TEMP"]) / "control-runtime-rustfmt" / "files"
-          paths = (Path(os.environ["RUNNER_TEMP"]) / "control-runtime-rustfmt" / "paths.txt").read_text().splitlines()
+          bundle_root = Path(os.environ["RUNNER_TEMP"]) / "control-runtime-rustfmt"
+          files = bundle_root / "files"
+          paths = (bundle_root / "paths.txt").read_text().splitlines()
           for value in paths:
               source = root / value
               if not source.is_file():
                   raise SystemExit(f"formatted path is not a file: {value}")
-              destination = bundle / value
+              destination = files / value
               destination.parent.mkdir(parents=True, exist_ok=True)
               shutil.copy2(source, destination)
+
+          status = "changes\n" if paths else "clean\n"
+          (bundle_root / "format-status.txt").write_text(status)
           PY
-          test -s "$bundle/rustfmt.patch"
-          test -s "$bundle/paths.txt"
+          test -f "$bundle/rustfmt.patch"
+          test -f "$bundle/paths.txt"
+          test -s "$bundle/source-head.txt"
+          test -s "$bundle/rustfmt-version.txt"
+          test -s "$bundle/format-status.txt"
 
       - name: Upload canonical formatting bundle
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
