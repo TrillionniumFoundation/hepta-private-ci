@@ -19,6 +19,8 @@ on:
       - scripts/hepta-objective-target-measure.py
       - scripts/test_hepta_objective_target_measure.py
       - scripts/hepta-objective-evidence-project.py
+      - scripts/hepta-objective-release-gate.py
+      - scripts/test_hepta_objective_release_gate.py
       - scripts/test_hepta_objective_evidence_project.py
       - .github/workflows/hepta-objective-exact-execution.yml
       - .github/workflows/hepta-objective-target-measurement.yml
@@ -83,9 +85,11 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta-objective-current-state.py verify
+          python3 scripts/hepta-objective-release-gate.py verify-source
           python3 -m unittest -v scripts.test_hepta_objective_qualify_exact
           python3 -m unittest -v scripts.test_hepta_objective_target_measure
           python3 -m unittest -v scripts.test_hepta_objective_evidence_project
+          python3 -m unittest -v scripts.test_hepta_objective_release_gate
       - name: Qualify source and deterministic merge without source writes
         shell: bash
         run: |

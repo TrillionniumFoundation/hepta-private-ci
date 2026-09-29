@@ -1,6 +1,8 @@
 //! Proof lifecycle on the existing owner journal, including frozen legacy bytes.
 use super::*;
 
+use pretty_assertions::assert_eq;
+
 fn stored(record: RunStartRecordV1, sequence: u64, predecessor: Digest32) -> StoredRunStart {
     let record_digest = Digest32::of_bytes(&encode_record(&record));
     StoredRunStart {
