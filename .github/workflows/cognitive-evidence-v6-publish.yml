@@ -1,0 +1,145 @@
+name: Cognitive evidence v6 publisher
+
+on:
+  push:
+    branches:
+      - codex/cognitive-evidence-v6-publish-20260929
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cognitive-evidence-v6-publisher
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      BASE_SHA: caaac6b3a37e84bdbd3ec2bbc1d5907b3439086e
+      TARGET_BRANCH: codex/cognitive-store-full-closure-20260927
+      TEMP_BRANCH: codex/cognitive-evidence-v6-publish-20260929
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Apply reviewed evidence-binding patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin "$TARGET_BRANCH"
+          test "$(git rev-parse "refs/remotes/origin/$TARGET_BRANCH")" = "$BASE_SHA"
+          cat .cognitive-evidence-v6.part1 \
+              .cognitive-evidence-v6.part2 \
+              .cognitive-evidence-v6.part3 \
+              .cognitive-evidence-v6.part4 \
+            | base64 --decode | gzip -dc > "$RUNNER_TEMP/cognitive-evidence-v6.patch"
+          echo '441410656e178c413ce0b29ea64c3ecc2408ce0d4950e0a4a893850aea7fcbed  '"$RUNNER_TEMP/cognitive-evidence-v6.patch" | sha256sum --check --strict
+          git apply --check "$RUNNER_TEMP/cognitive-evidence-v6.patch"
+          git apply "$RUNNER_TEMP/cognitive-evidence-v6.patch"
+          python3 - <<'PY'
+          from pathlib import Path
+          for name in (
+              'docs/modules/cognitive.store/HOST_QUALIFICATION.md',
+              'docs/modules/cognitive.store/QUALIFICATION_AND_OBSERVATION_BINDING.md',
+          ):
+              path = Path(name)
+              path.write_text(path.read_text(encoding='utf-8').rstrip('\n') + '\n', encoding='utf-8')
+          PY
+          rm -f \
+            .cognitive-evidence-v6.part1 \
+            .cognitive-evidence-v6.part2 \
+            .cognitive-evidence-v6.part3 \
+            .cognitive-evidence-v6.part4 \
+            .github/workflows/cognitive-evidence-v6-publish.yml
+
+      - name: Prepare pinned Python dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/cognitive-store-host-bootstrap/prepare_archive_env.py
+
+      - name: Verify evidence and governance closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/cognitive-archive-venv/bin/python"
+          python3 -m py_compile \
+            scripts/cognitive_qualification_manifest.py \
+            scripts/cognitive_store_plan.py \
+            scripts/test_cognitive_plan_binding.py
+          "$PY" -m py_compile \
+            tools/cognitive-store-host-bootstrap/acceptance_governance.py \
+            tools/cognitive-store-host-bootstrap/host_qualification.py \
+            tools/cognitive-store-host-bootstrap/retention_readiness.py \
+            tools/cognitive-store-host-bootstrap/test_acceptance_governance.py
+          PYTHONDONTWRITEBYTECODE=1 python3 scripts/test_cognitive_qualification_manifest.py -q
+          PYTHONDONTWRITEBYTECODE=1 python3 scripts/test_cognitive_plan_binding.py -q
+          PYTHONDONTWRITEBYTECODE=1 python3 scripts/test_cognitive_store_map.py -q
+          PYTHONDONTWRITEBYTECODE=1 "$PY" tools/cognitive-store-host-bootstrap/test_lifecycle.py -q
+          PYTHONDONTWRITEBYTECODE=1 "$PY" tools/cognitive-store-host-bootstrap/test_lifecycle_final_use.py -q
+          PYTHONDONTWRITEBYTECODE=1 "$PY" tools/cognitive-store-host-bootstrap/test_host_qualification.py -q
+          PYTHONDONTWRITEBYTECODE=1 "$PY" tools/cognitive-store-host-bootstrap/test_retention_readiness.py -q
+          PYTHONDONTWRITEBYTECODE=1 "$PY" tools/cognitive-store-host-bootstrap/test_acceptance_governance.py -q
+          python3 scripts/cognitive_store_status.py --check
+          find . -type d -name __pycache__ -prune -exec rm -rf {} +
+          find . -type f -name '*.pyc' -delete
+          git diff --check
+
+      - name: Create exact source and map commits
+        id: commits
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Hepta Cognitive Authoring'
+          git config user.email 'hepta-cognitive-authoring@users.noreply.github.com'
+          git add -A
+          git diff --cached --check
+          SOURCE_TREE="$(git write-tree)"
+          export GIT_AUTHOR_NAME='Hepta Cognitive Authoring'
+          export GIT_AUTHOR_EMAIL='hepta-cognitive-authoring@users.noreply.github.com'
+          export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+          export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+          SOURCE_COMMIT="$(printf '%s\n\n%s\n\n%s\n\n%s\n' \
+            'cognitive.store: bind qualification plans and evidence identities' \
+            'Bind exact qualification manifests to the complete committed plan and each raw plan entry; carry verified host, retention and lifecycle evidence identities into independent acceptance; and reject cross-domain evidence reuse while preserving the single owner and no-effect claim boundaries.' \
+            'No target-host, erasure, acceptance, activation, promotion or release claim is advanced.' \
+            'Signed-off-by: OpenAI <noreply@openai.com>' \
+            | git commit-tree "$SOURCE_TREE" -p "$BASE_SHA")"
+          git reset --hard "$SOURCE_COMMIT"
+          python3 scripts/cognitive_store_map_generate.py \
+            --source-commit "$SOURCE_COMMIT" \
+            > "$RUNNER_TEMP/IMPLEMENTATION_MAP.generated.json"
+          mv "$RUNNER_TEMP/IMPLEMENTATION_MAP.generated.json" \
+            docs/modules/cognitive.store/IMPLEMENTATION_MAP.json
+          git add docs/modules/cognitive.store/IMPLEMENTATION_MAP.json
+          git diff --cached --check
+          MAP_TREE="$(git write-tree)"
+          MAP_COMMIT="$(printf '%s\n\n%s\n\n%s\n' \
+            'docs(cognitive-store): refresh evidence v6 source bindings' \
+            'Bind the reviewed evidence-v6 source snapshot and exact Git objects. This map-only commit does not advance execution, target-host, erasure, acceptance, activation, promotion or release claims.' \
+            'Signed-off-by: OpenAI <noreply@openai.com>' \
+            | git commit-tree "$MAP_TREE" -p "$SOURCE_COMMIT")"
+          git reset --hard "$MAP_COMMIT"
+          python3 scripts/cognitive_store_map_verify.py \
+            --expected-sha "$MAP_COMMIT" \
+            --expected-tree "$(git rev-parse HEAD^{tree})"
+          python3 scripts/cognitive_store_status.py --check
+          printf 'source_commit=%s\nmap_commit=%s\n' "$SOURCE_COMMIT" "$MAP_COMMIT" >> "$GITHUB_OUTPUT"
+
+      - name: Publish clean commits to the convergence branch
+        shell: bash
+        env:
+          SOURCE_COMMIT: ${{ steps.commits.outputs.source_commit }}
+          MAP_COMMIT: ${{ steps.commits.outputs.map_commit }}
+        run: |
+          set -euo pipefail
+          test "$(git merge-base "$BASE_SHA" "$MAP_COMMIT")" = "$BASE_SHA"
+          git push origin "$MAP_COMMIT:refs/heads/$TARGET_BRANCH"
+          git push --force-with-lease="refs/heads/$TEMP_BRANCH:$GITHUB_SHA" \
+            origin "$MAP_COMMIT:refs/heads/$TEMP_BRANCH"
+          printf 'published source=%s map=%s\n' "$SOURCE_COMMIT" "$MAP_COMMIT"
