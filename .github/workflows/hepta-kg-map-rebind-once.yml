@@ -29,7 +29,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          test "$(cat .github/kg-map-rebind.request)" = "$GITHUB_SHA"
+          test "$(cat .github/kg-map-rebind.request)" = "$(git rev-parse HEAD^)"
           git diff --exit-code
           git diff --cached --exit-code
 
