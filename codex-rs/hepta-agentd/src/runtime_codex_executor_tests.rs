@@ -275,7 +275,10 @@ async fn witness_without_archive_blocks_identity_resurrection() {
         )
         .await
         .expect_err("witness without archive must block redispatch");
-    assert!(error.to_string().contains("witness exists without"), "{error}");
+    assert!(
+        error.to_string().contains("witness exists without"),
+        "{error}"
+    );
     assert_eq!(std::fs::read(&fixture.counter).expect("counter"), b"x");
     assert!(!fixture.resume_counter.exists());
 }
@@ -299,8 +302,9 @@ printf '%s\n' '__TERMINAL_JSON__'
         input_digest,
     )
     .expect("durable manifest");
-    assert!(!persistence::dispatch_is_fenced(&prepared.paths, &prepared.manifest)
-        .expect("fence state"));
+    assert!(
+        !persistence::dispatch_is_fenced(&prepared.paths, &prepared.manifest).expect("fence state")
+    );
 
     let report = fixture
         .executor
@@ -315,11 +319,7 @@ printf '%s\n' '__TERMINAL_JSON__'
 
     let receipt = fixture
         .executor
-        .execute(
-            fixture.owner.clone(),
-            exact_input,
-            CancellationToken::new(),
-        )
+        .execute(fixture.owner.clone(), exact_input, CancellationToken::new())
         .await
         .expect("matching authenticated retry may finish first dispatch");
     assert!(receipt.succeeded());
@@ -416,11 +416,7 @@ printf '%s\n' '__TERMINAL_JSON__'
 
     let error = fixture
         .executor
-        .execute(
-            fixture.owner.clone(),
-            exact_input,
-            CancellationToken::new(),
-        )
+        .execute(fixture.owner.clone(), exact_input, CancellationToken::new())
         .await
         .expect_err("corrupt fence must fail closed");
     assert!(error.to_string().contains("dispatch fence"), "{error}");
@@ -475,4 +471,66 @@ fn execution_input_redacts_prompt_from_debug_output() {
     let debug = format!("{input:?}");
     assert!(!debug.contains("super-secret-prompt"));
     assert!(debug.contains("prompt_bytes"));
+}
+
+#[cfg(unix)]
+#[test]
+fn supervisor_installation_is_scoped_to_an_explicit_handle() {
+    let first = successful_fixture();
+    let second = successful_fixture();
+    let first_handle = Arc::new(first.executor)
+        .install_agentd_supervisor(2, |_identity, _record, _prepared, _receipt| {
+            Ok(input("first-handle"))
+        })
+        .expect("first explicit supervisor handle");
+    let second_handle = Arc::new(second.executor)
+        .install_agentd_supervisor(2, |_identity, _record, _prepared, _receipt| {
+            Ok(input("second-handle"))
+        })
+        .expect("second explicit supervisor handle");
+
+    let first_before = first_handle.snapshot().expect("first snapshot");
+    let second_before = second_handle.snapshot().expect("second snapshot");
+    assert!(!first_before.closed);
+    assert!(!second_before.closed);
+
+    first_handle.cancel_runs().expect("close first handle");
+    let first_after = first_handle.snapshot().expect("first closed snapshot");
+    let second_after = second_handle
+        .snapshot()
+        .expect("second independent snapshot");
+    assert!(first_after.closed);
+    assert!(!second_after.closed);
+}
+
+#[cfg(unix)]
+#[test]
+fn operation_directory_scan_pages_without_collecting_the_whole_root() {
+    let fixture = successful_fixture();
+    let total = MAX_RECONCILE_OPERATIONS + 7;
+    for index in 0..total {
+        let path = fixture
+            .executor
+            .journal_root()
+            .join(format!("{index:064x}"));
+        std::fs::create_dir(path).expect("operation directory");
+    }
+
+    let first = persistence::list_operation_directory_batch(
+        fixture.executor.journal_root(),
+        None,
+        MAX_RECONCILE_OPERATIONS,
+    )
+    .expect("first bounded batch");
+    assert_eq!(first.directories.len(), MAX_RECONCILE_OPERATIONS);
+    let cursor = first.next_after.expect("continuation cursor");
+
+    let second = persistence::list_operation_directory_batch(
+        fixture.executor.journal_root(),
+        Some(&cursor),
+        MAX_RECONCILE_OPERATIONS,
+    )
+    .expect("second bounded batch");
+    assert_eq!(second.directories.len(), 7);
+    assert!(second.next_after.is_none());
 }

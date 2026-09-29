@@ -21,6 +21,7 @@ use std::pin::Pin;
 use std::sync::Arc;
 use std::sync::Mutex as StdMutex;
 use std::time::Duration;
+use std::time::Instant;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
@@ -41,7 +42,8 @@ mod process;
 
 pub(crate) use process::RuntimeCodexInputProviderV1;
 pub(crate) use process::RuntimeCodexScheduleReservationV1;
-pub(crate) use process::RuntimeCodexSupervisorSnapshotV1;
+pub use process::RuntimeCodexSupervisorHandleV1;
+pub use process::RuntimeCodexSupervisorSnapshotV1;
 
 const JOB_SCHEMA_VERSION: u32 = 1;
 const MAX_EXECUTABLE_BYTES: u64 = 2 * 1024 * 1024 * 1024;
@@ -56,21 +58,11 @@ const MAX_EXECUTION_TIMEOUT: Duration = Duration::from_secs(3_600);
 const MIN_INTERRUPT_GRACE: Duration = Duration::from_millis(100);
 const MAX_INTERRUPT_GRACE: Duration = Duration::from_secs(30);
 
-pub type RuntimeCodexExecutionFuture<'a> = Pin<
-    Box<
-        dyn Future<Output = Result<RuntimeCodexExecutionReceiptV1, AgentdError>>
-            + Send
-            + 'a,
-    >,
->;
+pub type RuntimeCodexExecutionFuture<'a> =
+    Pin<Box<dyn Future<Output = Result<RuntimeCodexExecutionReceiptV1, AgentdError>> + Send + 'a>>;
 
-pub type RuntimeCodexReconcileFuture<'a> = Pin<
-    Box<
-        dyn Future<Output = Result<RuntimeCodexReconcileReportV1, AgentdError>>
-            + Send
-            + 'a,
-    >,
->;
+pub type RuntimeCodexReconcileFuture<'a> =
+    Pin<Box<dyn Future<Output = Result<RuntimeCodexReconcileReportV1, AgentdError>> + Send + 'a>>;
 
 /// Minimal immutable owner identity required by the process boundary.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -90,8 +82,7 @@ impl RuntimeCodexOwnerV1 {
     ) -> Result<Self, AgentdError> {
         if generation == 0 || !agentd_socket.is_absolute() || !home_root.is_absolute() {
             return Err(AgentdError::Invalid(
-                "runtime.codex owner requires a non-zero generation and absolute paths"
-                    .to_string(),
+                "runtime.codex owner requires a non-zero generation and absolute paths".to_string(),
             ));
         }
         Ok(Self {
@@ -295,6 +286,15 @@ pub struct RuntimeCodexReconcileReportV1 {
     pub fenced_unresolved: usize,
     /// Compatibility aggregate retained for callers and older evidence readers.
     pub unresolved: usize,
+    /// Cumulative wait for per-run serialization during this bounded recovery
+    /// pass. This separates owner lock contention from physical reconciliation.
+    pub lock_wait_ms: u64,
+    /// Operational age based on the journal directory observation time. This is
+    /// diagnostic only and is never used as an execution or replay authority.
+    pub oldest_prepared_unfenced_ms: Option<u64>,
+    /// Oldest dispatch-fenced operation that still lacks terminal owner evidence.
+    /// The value is diagnostic and does not weaken the no-redispatch rule.
+    pub oldest_fenced_unresolved_ms: Option<u64>,
 }
 
 pub trait RuntimeCodexExecutorV1: Send + Sync {
@@ -338,7 +338,10 @@ impl fmt::Debug for ProcessRuntimeCodexExecutorV1 {
                 "final_use_authority_config",
                 &self.final_use_authority_config,
             )
-            .field("final_use_authority_digest", &self.final_use_authority_digest)
+            .field(
+                "final_use_authority_digest",
+                &self.final_use_authority_digest,
+            )
             .field("journal_root", &self.journal_root)
             .field("maximum_in_flight", &self.maximum_in_flight)
             .field("interrupt_grace", &self.interrupt_grace)
@@ -450,10 +453,7 @@ impl ProcessRuntimeCodexExecutorV1 {
                 ..receipt
             });
         }
-        let fresh_input = if persistence::dispatch_is_fenced(
-            &prepared.paths,
-            &prepared.manifest,
-        )? {
+        let fresh_input = if persistence::dispatch_is_fenced(&prepared.paths, &prepared.manifest)? {
             None
         } else {
             Some(&input)
@@ -467,11 +467,7 @@ impl ProcessRuntimeCodexExecutorV1 {
             cancellation,
         )
         .await?;
-        persistence::write_receipt(
-            &prepared.paths.receipt,
-            &prepared.manifest,
-            &receipt,
-        )?;
+        persistence::write_receipt(&prepared.paths.receipt, &prepared.manifest, &receipt)?;
         Ok(receipt)
     }
 
@@ -497,86 +493,123 @@ impl ProcessRuntimeCodexExecutorV1 {
     ) -> Result<RuntimeCodexReconcileReportV1, AgentdError> {
         persistence::validate_owner(self, &owner)?;
         persistence::revalidate_external_files(self)?;
-        let directories = persistence::list_operation_directories(&self.journal_root)?;
         let mut report = RuntimeCodexReconcileReportV1::default();
-        for directory in directories {
+        let mut after = None;
+        loop {
             if cancellation.is_cancelled() {
                 break;
             }
-            report.scanned = report
-                .scanned
-                .checked_add(1)
-                .ok_or_else(|| AgentdError::Protocol("recovery counter overflow".to_string()))?;
-            let paths = persistence::OperationPaths::for_directory(&directory);
-            let manifest = persistence::read_manifest(&paths.manifest)?;
-            persistence::validate_manifest_owner(
-                &manifest,
-                &owner,
-                self.worker_artifact_digest,
+            let batch = persistence::list_operation_directory_batch(
+                &self.journal_root,
+                after.as_deref(),
+                MAX_RECONCILE_OPERATIONS,
             )?;
-            let run_id = manifest.run_id.clone();
-            let operation_lock = self.operation_lock_for(&run_id)?;
-            let guard = operation_lock.lock().await;
-            let result = async {
-                if persistence::read_receipt_if_present(&paths.receipt, &manifest)?.is_some() {
-                    report.already_terminal = report
-                        .already_terminal
-                        .checked_add(1)
-                        .ok_or_else(|| {
-                            AgentdError::Protocol("recovery counter overflow".to_string())
-                        })?;
-                    return Ok(());
-                }
-                if !persistence::dispatch_is_fenced(&paths, &manifest)? {
-                    report.prepared_unfenced = report
-                        .prepared_unfenced
-                        .checked_add(1)
-                        .ok_or_else(|| {
-                            AgentdError::Protocol("recovery counter overflow".to_string())
-                        })?;
-                    report.unresolved = report.unresolved.checked_add(1).ok_or_else(|| {
-                        AgentdError::Protocol("recovery counter overflow".to_string())
-                    })?;
-                    return Ok(());
-                }
-                match process::spawn_worker(
-                    self,
-                    &owner,
-                    &manifest,
-                    &paths,
-                    None,
-                    cancellation.child_token(),
-                )
-                .await
-                {
-                    Ok(receipt) => {
-                        persistence::write_receipt(&paths.receipt, &manifest, &receipt)?;
-                        report.reconciled_terminal = report
-                            .reconciled_terminal
-                            .checked_add(1)
-                            .ok_or_else(|| {
-                                AgentdError::Protocol("recovery counter overflow".to_string())
-                            })?;
-                    }
-                    Err(_) => {
-                        report.fenced_unresolved = report
-                            .fenced_unresolved
-                            .checked_add(1)
-                            .ok_or_else(|| {
-                                AgentdError::Protocol("recovery counter overflow".to_string())
-                            })?;
-                        report.unresolved =
-                            report.unresolved.checked_add(1).ok_or_else(|| {
-                                AgentdError::Protocol("recovery counter overflow".to_string())
-                            })?;
-                    }
-                }
-                Ok(())
+            if batch.directories.is_empty() {
+                break;
             }
-            .await;
-            drop(guard);
-            self.release_operation_lock(&run_id, &operation_lock)?;
-            result?;
+            let persistence::OperationDirectoryBatch {
+                directories,
+                next_after,
+            } = batch;
+            for directory in directories {
+                if cancellation.is_cancelled() {
+                    return Ok(report);
+                }
+                report.scanned = report.scanned.checked_add(1).ok_or_else(|| {
+                    AgentdError::Protocol("recovery counter overflow".to_string())
+                })?;
+                let paths = persistence::OperationPaths::for_directory(&directory);
+                let manifest = persistence::read_manifest(&paths.manifest)?;
+                persistence::validate_manifest_owner(
+                    &manifest,
+                    &owner,
+                    self.worker_artifact_digest,
+                )?;
+                let run_id = manifest.run_id.clone();
+                let operation_lock = self.operation_lock_for(&run_id)?;
+                let lock_wait_started = Instant::now();
+                let guard = tokio::select! {
+                    _ = cancellation.cancelled() => {
+                        self.release_operation_lock(&run_id, &operation_lock)?;
+                        return Ok(report);
+                    }
+                    guard = operation_lock.lock() => guard,
+                };
+                report.lock_wait_ms = report.lock_wait_ms.saturating_add(
+                    u64::try_from(lock_wait_started.elapsed().as_millis()).unwrap_or(u64::MAX),
+                );
+                let result: Result<(), AgentdError> = async {
+                    if persistence::read_receipt_if_present(&paths.receipt, &manifest)?.is_some() {
+                        report.already_terminal =
+                            report.already_terminal.checked_add(1).ok_or_else(|| {
+                                AgentdError::Protocol("recovery counter overflow".to_string())
+                            })?;
+                        return Ok(());
+                    }
+                    if !persistence::dispatch_is_fenced(&paths, &manifest)? {
+                        report.prepared_unfenced =
+                            report.prepared_unfenced.checked_add(1).ok_or_else(|| {
+                                AgentdError::Protocol("recovery counter overflow".to_string())
+                            })?;
+                        report.unresolved = report.unresolved.checked_add(1).ok_or_else(|| {
+                            AgentdError::Protocol("recovery counter overflow".to_string())
+                        })?;
+                        let age = persistence::operation_observed_age_ms(&paths.directory)?;
+                        report.oldest_prepared_unfenced_ms = Some(
+                            report
+                                .oldest_prepared_unfenced_ms
+                                .map_or(age, |oldest| oldest.max(age)),
+                        );
+                        return Ok(());
+                    }
+                    match process::spawn_worker(
+                        self,
+                        &owner,
+                        &manifest,
+                        &paths,
+                        None,
+                        cancellation.child_token(),
+                    )
+                    .await
+                    {
+                        Ok(receipt) => {
+                            persistence::write_receipt(&paths.receipt, &manifest, &receipt)?;
+                            report.reconciled_terminal =
+                                report.reconciled_terminal.checked_add(1).ok_or_else(|| {
+                                    AgentdError::Protocol("recovery counter overflow".to_string())
+                                })?;
+                        }
+                        Err(_) => {
+                            report.fenced_unresolved =
+                                report.fenced_unresolved.checked_add(1).ok_or_else(|| {
+                                    AgentdError::Protocol("recovery counter overflow".to_string())
+                                })?;
+                            report.unresolved =
+                                report.unresolved.checked_add(1).ok_or_else(|| {
+                                    AgentdError::Protocol("recovery counter overflow".to_string())
+                                })?;
+                            let age = persistence::operation_observed_age_ms(&paths.directory)?;
+                            report.oldest_fenced_unresolved_ms = Some(
+                                report
+                                    .oldest_fenced_unresolved_ms
+                                    .map_or(age, |oldest| oldest.max(age)),
+                            );
+                        }
+                    }
+                    Ok(())
+                }
+                .await;
+                drop(guard);
+                self.release_operation_lock(&run_id, &operation_lock)?;
+                result?;
+            }
+            match next_after {
+                Some(cursor) => {
+                    after = Some(cursor);
+                    tokio::task::yield_now().await;
+                }
+                None => break,
+            }
         }
         Ok(report)
     }

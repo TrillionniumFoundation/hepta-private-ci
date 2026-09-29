@@ -95,6 +95,7 @@ pub struct AgentdConfig {
     intelligence_product_runner: Option<std::sync::Arc<crate::AgentdIntelligenceProductRunnerV1>>,
     intelligence_invocation_provider:
         Option<std::sync::Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>>,
+    runtime_codex_supervisor: Option<crate::RuntimeCodexSupervisorHandleV1>,
 }
 
 impl AgentdConfig {
@@ -219,6 +220,7 @@ impl AgentdConfig {
             intuition_policy_host: None,
             intelligence_product_runner: None,
             intelligence_invocation_provider: None,
+            runtime_codex_supervisor: None,
         })
     }
 
@@ -583,6 +585,33 @@ impl AgentdConfig {
         &self,
     ) -> Option<std::sync::Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>> {
         self.intelligence_invocation_provider.clone()
+    }
+
+    /// Attach the one explicit physical runtime.codex owner built by the typed
+    /// canonical bootstrap. This handle is inert until `runtime::run` places it
+    /// under the daemon's sole required `RuntimeTasks` owner.
+    pub(crate) fn with_runtime_codex_supervisor(
+        mut self,
+        supervisor: crate::RuntimeCodexSupervisorHandleV1,
+    ) -> Result<Self, AgentdError> {
+        if self.runtime_codex_supervisor.is_some() {
+            return Err(AgentdError::Invalid(
+                "runtime.codex supervisor already configured".to_string(),
+            ));
+        }
+        if !supervisor.is_canonical() {
+            return Err(AgentdError::Invalid(
+                "canonical Agentd requires a canonical runtime.codex supervisor".to_string(),
+            ));
+        }
+        self.runtime_codex_supervisor = Some(supervisor);
+        Ok(self)
+    }
+
+    pub(crate) fn take_runtime_codex_supervisor(
+        &mut self,
+    ) -> Option<crate::RuntimeCodexSupervisorHandleV1> {
+        self.runtime_codex_supervisor.take()
     }
 
     /// Reject a partially requested canonical profile before daemon services or

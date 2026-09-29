@@ -1,0 +1,36 @@
+name: Runtime Agentd formatting verification
+
+on:
+  push:
+    branches:
+      - work/runtime-agentd-production-closure-20260928
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-agentd/**'
+      - '.github/workflows/runtime-agentd-format-repair.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: runtime-agentd-format-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  format:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install exact Rust formatter
+        shell: bash
+        run: |
+          set -euo pipefail
+          toolchain=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
+          rustup toolchain install "$toolchain" --profile minimal --component rustfmt
+      - name: Verify without mutating the candidate
+        working-directory: codex-rs
+        run: cargo fmt --manifest-path Cargo.toml --package codex-hepta-agentd -- --check

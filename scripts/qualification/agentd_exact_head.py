@@ -24,24 +24,23 @@ SCHEMA = 1
 OSES = ("ubuntu-latest", "macos-latest")
 SUITES = ("owner-libraries", "native-library", "native-process", "daemon-process",
           "product-process", "strict-clippy", "read-only-profile")
-PACKAGES = ("codex-cli", "codex-hepta-heptad", "codex-hepta-agentd",
-            "codex-hepta-fleet-supervisor", "codex-hepta-infer-worker-host")
+PACKAGES = ("codex-cli", "codex-hepta-agentd", "codex-hepta-supervisor",
+            "codex-hepta-infer-worker-host")
 COMMANDS = {
     "owner-libraries": [["test", "-p", "codex-hepta-agentd", "--lib"],
-                        ["test", "-p", "codex-hepta-fleet-supervisor", "--lib"]],
+                        ["test", "-p", "codex-hepta-supervisor", "--lib"]],
     "native-library": [["test", "-p", "codex-hepta-infer-worker-host", "--lib"]],
     "native-process": [["test", "-p", "codex-hepta-infer-worker-host", "--test", "native_host_process_e2e"]],
-    "daemon-process": [["test", "-p", "codex-hepta-agentd", "--test", "daemon_process_e2e"]],
+    "daemon-process": [["test", "-p", "codex-hepta-agentd", "--test", "supervisord_product_e2e"]],
     "product-process": [["test", "-p", "codex-hepta-agentd", "--test", "runtime_codex_product_e2e"]],
-    "strict-clippy": [["clippy", "-p", "codex-hepta-agentd", "-p", "codex-hepta-fleet-supervisor",
+    "strict-clippy": [["clippy", "-p", "codex-hepta-agentd", "-p", "codex-hepta-supervisor",
                        "-p", "codex-hepta-infer-worker-host", "--all-targets", "--", "-D", "warnings"]],
     "read-only-profile": [["test", "-p", "codex-hepta-agentd", "--no-default-features", "--lib"]],
 }
 ALIASES = {
     "CODEX": ("codex",),
-    "HEPTAD": ("hepta-heptad", "codex-hepta-heptad"),
-    "AGENTD": ("hepta-agentd", "codex-hepta-agentd"),
-    "FLEET": ("hepta-fleet", "codex-hepta-fleet"),
+    "AGENTD": ("codex-hepta-agentd",),
+    "SUPERVISOR": ("hepta-supervisord",),
     "INFER_WORKER": ("hepta-infer-worker",),
 }
 

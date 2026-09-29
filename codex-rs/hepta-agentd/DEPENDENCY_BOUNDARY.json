@@ -1,0 +1,100 @@
+{
+  "schema": "hepta.runtime-agentd-dependency-boundary.v1",
+  "module": "runtime.agentd",
+  "owner": "agent-runtime",
+  "deputy": "runtime-control",
+  "status": {
+    "defaultFeatureReadOnly": true,
+    "coreOnlyBuildEstablished": false,
+    "productAdaptersOptionalized": false
+  },
+  "categories": {
+    "core_runtime": [
+      "codex-hepta-agent-protocol",
+      "codex-hepta-contracts",
+      "codex-hepta-fleet",
+      "codex-hepta-paths",
+      "codex-hepta-types",
+      "codex-uds"
+    ],
+    "platform_support": [
+      "anyhow",
+      "codex-arg0",
+      "codex-config",
+      "codex-features",
+      "codex-utils-absolute-path",
+      "codex-utils-cli",
+      "codex-utils-home-dir",
+      "ed25519-dalek",
+      "http",
+      "libc",
+      "serde",
+      "serde_json",
+      "sha2",
+      "thiserror",
+      "tokio",
+      "tokio-util"
+    ],
+    "product_adapters": [
+      "codex-app-server",
+      "codex-app-server-client",
+      "codex-app-server-protocol",
+      "codex-hepta-authbus",
+      "codex-hepta-automation",
+      "codex-hepta-bellman-operator",
+      "codex-hepta-codex-adapter",
+      "codex-hepta-cognitive-read",
+      "codex-hepta-cognitive-store",
+      "codex-hepta-cognitive-types",
+      "codex-hepta-context-compiler",
+      "codex-hepta-control-plane",
+      "codex-hepta-evidence",
+      "codex-hepta-infer-core",
+      "codex-hepta-intelligence",
+      "codex-hepta-intelligence-eval",
+      "codex-hepta-intuition",
+      "codex-hepta-learning-artifacts",
+      "codex-hepta-learning-ledger",
+      "codex-hepta-memory",
+      "codex-hepta-memory-extension",
+      "codex-hepta-memory-retrieval",
+      "codex-hepta-ndu",
+      "codex-hepta-neuron",
+      "codex-hepta-objective",
+      "codex-hepta-plasticity",
+      "codex-hepta-prompt-optimizer",
+      "codex-hepta-prompt-registry",
+      "codex-model-provider",
+      "codex-protocol",
+      "codex-state"
+    ],
+    "development_only": [
+      "app_test_support",
+      "codex-hepta-context-compiler",
+      "codex-hepta-infer-worker-host",
+      "codex-hepta-learning-ledger",
+      "codex-hepta-operations",
+      "codex-hepta-supervisor",
+      "codex-utils-cargo-bin",
+      "core_test_support",
+      "sqlx",
+      "tempfile",
+      "wiremock"
+    ]
+  },
+  "migration": {
+    "targetFeature": "product-adapters",
+    "sequence": [
+      "freeze_dependency_inventory",
+      "move_product_entrypoints_behind_explicit_feature",
+      "make_product_dependencies_optional_without_changing_owner_semantics",
+      "qualify_core_only_and_named_product_profiles_independently"
+    ],
+    "stopConditions": [
+      "authority_semantics_change",
+      "durable_history_change",
+      "second_execution_spine",
+      "core_profile_claim_without_compilation_evidence"
+    ]
+  }
+}

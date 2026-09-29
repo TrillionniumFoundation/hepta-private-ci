@@ -22,7 +22,6 @@ use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::AgentdState;
 use crate::CognitiveRetrievalMode;
-use crate::ProcessRuntimeCodexExecutorV1;
 use crate::RuntimeTasks;
 use crate::app_runtime::run_app_server;
 use crate::automation::spawn_automation_service;
@@ -90,11 +89,11 @@ pub async fn run(
     let intuition_policy_host = config.intuition_policy_host();
     let intelligence_product = config.intelligence_product_runner();
     let intelligence_invocation = config.intelligence_invocation_provider();
-    let runtime_codex_installed = ProcessRuntimeCodexExecutorV1::agentd_supervisor_installed();
+    let runtime_codex = config.take_runtime_codex_supervisor();
     require_intelligence_composition(
         intelligence_product.is_some(),
         intelligence_invocation.is_some(),
-        runtime_codex_installed,
+        runtime_codex.is_some(),
     )?;
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
@@ -137,6 +136,9 @@ pub async fn run(
         state.intelligence_invocation.set(provider).map_err(|_| {
             AgentdError::Invalid("intelligence invocation provider already attached".to_string())
         })?;
+    }
+    if let Some(supervisor) = runtime_codex.as_ref() {
+        state.attach_runtime_codex_supervisor(supervisor.clone())?;
     }
     if let Some(current) = retrieval_context {
         state
@@ -278,13 +280,10 @@ pub async fn run(
             )?;
         }
         tasks.spawn_required("control-server", control.run())?;
-        if runtime_codex_installed {
+        if let Some(supervisor) = runtime_codex {
             tasks.spawn_required(
                 "runtime-codex-supervisor",
-                ProcessRuntimeCodexExecutorV1::run_installed_agentd_supervisor(
-                    identity.clone(),
-                    cancellation.clone(),
-                ),
+                supervisor.run(identity.clone(), cancellation.clone()),
             )?;
         }
         let app_identity = identity.clone();
@@ -341,7 +340,7 @@ pub async fn run(
     }
     .await;
     if let Err(error) = startup {
-        let _ = ProcessRuntimeCodexExecutorV1::cancel_installed_runs();
+        let _ = state.cancel_runtime_codex_runs();
         tasks.shutdown().await;
         return Err(error);
     }
@@ -488,14 +487,14 @@ async fn monitor_runtime(
     let mut app_server_ready = false;
     loop {
         if state.is_fenced()? {
-            let _ = ProcessRuntimeCodexExecutorV1::cancel_installed_runs();
+            let _ = state.cancel_runtime_codex_runs();
             return Err(AgentdError::GenerationFenced(
                 "agentd runtime was fenced by an owner or generation violation".to_string(),
             ));
         }
         if let Err(error) = state.refresh_generation() {
             state.mark_fenced();
-            let _ = ProcessRuntimeCodexExecutorV1::cancel_installed_runs();
+            let _ = state.cancel_runtime_codex_runs();
             return Err(error);
         }
         // runtime.codex recovery runs in an independent required task. Refresh
@@ -523,7 +522,7 @@ async fn monitor_runtime(
                 }
                 Err(error @ AgentdError::GenerationFenced(_)) => {
                     state.mark_fenced();
-                    let _ = ProcessRuntimeCodexExecutorV1::cancel_installed_runs();
+                    let _ = state.cancel_runtime_codex_runs();
                     return Err(error);
                 }
                 Err(_not_ready) => {}
@@ -566,7 +565,6 @@ async fn probe_app_server(identity: &AgentdIdentity) -> Result<(), AgentdError> 
 
 async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdError> {
     state.mark_draining()?;
-    ProcessRuntimeCodexExecutorV1::cancel_installed_runs()?;
     let drain_deadline = Instant::now() + RUN_DRAIN_GRACE;
     loop {
         state.expire_run_deadlines()?;

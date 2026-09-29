@@ -49,10 +49,16 @@ impl CanonicalRuntimeInstallationTokenV1 {
 /// Non-serializable proof that one exact sparse invocation was checked against
 /// the current durable Neuron owner frontier. Its fields are private and there
 /// is no public constructor; request bytes and external trait implementations
-/// cannot manufacture a successful seal.
+/// cannot manufacture a successful seal. The seal is consumed exactly once by
+/// the canonical Neuron stage and supplies the owner-validated output digest.
 pub struct AgentdNeuronInvocationSealV1 {
     owner_binding_digest: Digest32,
     invocation_digest: Digest32,
+    raw_input_binding_digest: Digest32,
+    objective_digest: Digest32,
+    ndu_digest: Digest32,
+    body_digest: Digest32,
+    checkpoint_after: Digest32,
 }
 
 impl std::fmt::Debug for AgentdNeuronInvocationSealV1 {
@@ -61,6 +67,7 @@ impl std::fmt::Debug for AgentdNeuronInvocationSealV1 {
             .debug_struct("AgentdNeuronInvocationSealV1")
             .field("owner_binding_digest", &self.owner_binding_digest)
             .field("invocation_digest", &self.invocation_digest)
+            .field("checkpoint_after", &self.checkpoint_after)
             .finish_non_exhaustive()
     }
 }
@@ -73,6 +80,81 @@ impl AgentdNeuronInvocationSealV1 {
     pub fn invocation_digest(&self) -> Digest32 {
         self.invocation_digest
     }
+
+    /// Consume the one-shot owner proof and return the output selected by the
+    /// durable Neuron owner. Raw values are re-bound here only to prevent a
+    /// provider from swapping the tuple after sealing; the canonical stage does
+    /// not execute an independent second sparse transition.
+    pub(crate) fn consume(
+        self,
+        config: &SparseConfig,
+        tick: &SparseTick,
+        previous: Option<&SparseCheckpoint>,
+        expected_objective_digest: Digest32,
+        expected_ndu_digest: Digest32,
+    ) -> Result<Digest32, AgentdError> {
+        if self.objective_digest != expected_objective_digest
+            || self.ndu_digest != expected_ndu_digest
+            || tick.objective_digest != expected_objective_digest
+            || tick.ndu_digest != expected_ndu_digest
+            || self.body_digest != tick.body_digest
+        {
+            return Err(AgentdError::GenerationFenced(
+                "sealed Neuron invocation no longer matches the canonical stage binding"
+                    .to_string(),
+            ));
+        }
+        let observed = neuron_input_binding_digest(config, tick, previous)?;
+        if observed != self.raw_input_binding_digest || self.checkpoint_after.is_zero() {
+            return Err(AgentdError::GenerationFenced(
+                "sealed Neuron invocation input changed before canonical consumption".to_string(),
+            ));
+        }
+        Ok(self.checkpoint_after)
+    }
+}
+
+fn neuron_input_binding_digest(
+    config: &SparseConfig,
+    tick: &SparseTick,
+    previous: Option<&SparseCheckpoint>,
+) -> Result<Digest32, AgentdError> {
+    let config_digest = config.digest().map_err(|error| {
+        AgentdError::Invalid(format!(
+            "canonical Neuron configuration cannot be bound: {error}"
+        ))
+    })?;
+    let predecessor = previous.map_or(Digest32::ZERO, SparseCheckpoint::digest);
+    let drive_len = u64::try_from(tick.drive_q24.len()).map_err(|_| {
+        AgentdError::Protocol("canonical Neuron drive length exceeds u64".to_string())
+    })?;
+    let prediction_len = u64::try_from(tick.prediction_q24.len()).map_err(|_| {
+        AgentdError::Protocol("canonical Neuron prediction length exceeds u64".to_string())
+    })?;
+
+    let mut encoded = b"hepta.runtime-agentd.neuron-raw-input.v1\0".to_vec();
+    for digest in [
+        config_digest,
+        predecessor,
+        tick.scope_digest,
+        tick.objective_digest,
+        tick.ndu_digest,
+        tick.body_digest,
+        tick.input_digest,
+    ] {
+        encoded.extend_from_slice(digest.as_array());
+    }
+    encoded.extend_from_slice(&tick.sequence.to_be_bytes());
+    encoded.extend_from_slice(&tick.monotonic_micros.to_be_bytes());
+    encoded.extend_from_slice(&drive_len.to_be_bytes());
+    for value in &tick.drive_q24 {
+        encoded.extend_from_slice(&value.to_be_bytes());
+    }
+    encoded.extend_from_slice(&prediction_len.to_be_bytes());
+    for value in &tick.prediction_q24 {
+        encoded.extend_from_slice(&value.to_be_bytes());
+    }
+    Ok(Digest32::of_bytes(&encoded))
 }
 
 /// Current durable Neuron owner required by the canonical Agentd profile.
@@ -123,7 +205,9 @@ where
             ));
         }
         let runtime_digest = owner.runtime().configuration_digest().map_err(|error| {
-            AgentdError::Protocol(format!("Neuron runtime configuration is unavailable: {error}"))
+            AgentdError::Protocol(format!(
+                "Neuron runtime configuration is unavailable: {error}"
+            ))
         })?;
         let binding_digest = Digest32::of_parts(&[
             b"hepta.runtime-agentd.bound-neuron-owner.v1\0",
@@ -154,12 +238,10 @@ where
     }
 
     fn validate_agentd_identity(&self, identity: &AgentdIdentity) -> Result<(), AgentdError> {
-        if identity.agent_id != self.agent_id
-            || identity.spawn_generation != self.agentd_generation
+        if identity.agent_id != self.agent_id || identity.spawn_generation != self.agentd_generation
         {
             return Err(AgentdError::GenerationFenced(
-                "canonical Neuron owner does not match the Agentd identity/generation"
-                    .to_string(),
+                "canonical Neuron owner does not match the Agentd identity/generation".to_string(),
             ));
         }
         Ok(())
@@ -202,7 +284,8 @@ where
         })?;
         match (current, previous) {
             (None, None) => {}
-            (Some(anchor), Some(checkpoint)) if anchor.checkpoint_digest == checkpoint.digest() => {}
+            (Some(anchor), Some(checkpoint)) if anchor.checkpoint_digest == checkpoint.digest() => {
+            }
             _ => {
                 return Err(AgentdError::GenerationFenced(
                     "canonical sparse invocation does not start from the current Neuron frontier"
@@ -210,6 +293,7 @@ where
                 ));
             }
         }
+        let raw_input_binding_digest = neuron_input_binding_digest(config, tick, previous)?;
         let (next, receipt) = sparse_tick(config, tick, previous).map_err(|error| {
             AgentdError::Invalid(format!("canonical Neuron invocation was rejected: {error}"))
         })?;
@@ -235,6 +319,11 @@ where
         Ok(AgentdNeuronInvocationSealV1 {
             owner_binding_digest: self.binding_digest,
             invocation_digest,
+            raw_input_binding_digest,
+            objective_digest: tick.objective_digest,
+            ndu_digest: tick.ndu_digest,
+            body_digest: tick.body_digest,
+            checkpoint_after: receipt.checkpoint_after,
         })
     }
 }
@@ -250,7 +339,12 @@ impl AgentdIntelligenceInvocationProviderV1 for NeuronSealedInvocationProviderV1
         identity: &AgentdIdentity,
         record: &RunStartRecordV1,
     ) -> Result<AgentdIntelligenceInvocationV1, AgentdError> {
-        let invocation = self.inner.build(identity, record)?;
+        let mut invocation = self.inner.build(identity, record)?;
+        if invocation.inputs.neuron_seal.is_some() {
+            return Err(AgentdError::Protocol(
+                "canonical invocation provider attempted to supply its own Neuron seal".to_string(),
+            ));
+        }
         let seal = self.neuron.seal(
             identity,
             record,
@@ -265,6 +359,7 @@ impl AgentdIntelligenceInvocationProviderV1 for NeuronSealedInvocationProviderV1
                 "canonical Neuron owner returned a mismatched invocation seal".to_string(),
             ));
         }
+        invocation.inputs.neuron_seal = Some(seal);
         Ok(invocation)
     }
 }
@@ -337,10 +432,10 @@ impl AgentdCanonicalRuntimeBootstrapV1 {
         self.neuron.binding_digest()
     }
 
-    /// Consume the complete profile. The runner/provider pair is first applied
-    /// to the still-local `AgentdConfig`; only after every config precondition
-    /// succeeds is the process-global executor installed. No fallible step
-    /// follows that installation.
+    /// Consume the complete profile. All owners remain inside the returned
+    /// `AgentdConfig`; installation has no process-global side effect. The
+    /// daemon later moves the supervisor handle into its sole `RuntimeTasks`
+    /// owner after every fallible store, trust and socket open succeeds.
     pub fn install(self, config: AgentdConfig) -> Result<AgentdConfig, AgentdError> {
         self.neuron.validate_agentd_identity(config.identity())?;
         if self.final_use_authority_digest != self.executor.final_use_authority_digest() {
@@ -353,10 +448,8 @@ impl AgentdCanonicalRuntimeBootstrapV1 {
                 inner: self.invocation,
                 neuron: self.neuron,
             });
-        let configured = config
-            .with_intelligence_product_runner(self.runner)?
-            .with_intelligence_invocation_provider(provider)?;
-        self.executor
+        let supervisor = self
+            .executor
             .install_agentd_canonical_supervisor_with_limits(
                 self.queue_capacity,
                 self.maximum_concurrent_jobs,
@@ -364,6 +457,9 @@ impl AgentdCanonicalRuntimeBootstrapV1 {
                 self.input_provider,
                 CanonicalRuntimeInstallationTokenV1::new(),
             )?;
-        Ok(configured)
+        config
+            .with_intelligence_product_runner(self.runner)?
+            .with_intelligence_invocation_provider(provider)?
+            .with_runtime_codex_supervisor(supervisor)
     }
 }

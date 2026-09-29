@@ -167,7 +167,8 @@ class ReceiptTests(unittest.TestCase):
         result = q.fixture_environment(log, env)
         self.assertEqual(set(result), set(q.ALIASES))
         self.assertEqual(env["CODEX_EXE_PATH"], env["HEPTA_CODEX_BIN"])
-        self.assertEqual(env["CARGO_BIN_EXE_hepta-agentd"], env["CARGO_BIN_EXE_codex-hepta-agentd"])
+        self.assertEqual(env["AGENTD_EXE_PATH"], env["HEPTA_AGENTD_BIN"])
+        self.assertEqual(env["SUPERVISOR_EXE_PATH"], env["HEPTA_SUPERVISOR_BIN"])
         log.write_text("{}\n")
         with self.assertRaisesRegex(ValueError, "missing"):
             q.fixture_environment(log, {})
