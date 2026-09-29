@@ -17,7 +17,11 @@ concurrency:
 
 jobs:
   export:
-    runs-on: [self-hosted, linux, x64, rog]
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [rog, pocket4]
+    runs-on: [self-hosted, linux, x64, ${{ matrix.runner }}]
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -28,7 +32,7 @@ jobs:
 
       - name: Verify immutable capsule and apply without publishing
         env:
-          EXPECTED_PARENT: cae1533fae4f18192505007a0cac2ae2d1b2a427
+          EXPECTED_PARENT: 27809a0ad68193d346d94913949af4c108498412
           PATCH_BLOB_SHA: cf8d5267cbcde61455849e24be9eac9d1a8d14f3
           PATCH_GZIP_SHA256: 292f9f99997e3d1078cc296819f225cd2100b5fd023c74b53e0bed9912b39252
           PATCH_SHA256: b863bb348b91e038f711b5a155a383aaa342ee6beacb1cd168901f82159dd74a
@@ -91,7 +95,7 @@ jobs:
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: ui-native-wal-index-source-${{ github.sha }}-attempt-${{ github.run_attempt }}
+          name: ui-native-wal-index-source-${{ matrix.runner }}-${{ github.sha }}-attempt-${{ github.run_attempt }}
           path: |
             source-bundle
             source-evidence
