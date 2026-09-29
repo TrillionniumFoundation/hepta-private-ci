@@ -1,0 +1,40 @@
+name: AuthBus authoring format
+
+on:
+  push:
+    branches:
+      - auth-authbus-boundary-convergence-20260928
+
+permissions:
+  contents: write
+
+concurrency:
+  group: authbus-authoring-format-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  format:
+    if: github.event.head_commit.message != 'style(auth.authbus): apply canonical formatting'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - name: Format AuthBus source
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --all --manifest-path codex-rs/Cargo.toml
+          git add -- codex-rs/hepta-authbus
+          if git diff --cached --quiet; then
+            echo 'AuthBus source is already formatted.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -s -m 'style(auth.authbus): apply canonical formatting'
+          git push origin HEAD:${{ github.ref_name }}
