@@ -11,6 +11,10 @@ use sqlx::sqlite::SqlitePoolOptions;
 use crate::AuthBusAuthorityError;
 use crate::authority_store::storage;
 
+#[expect(
+    clippy::disallowed_methods,
+    reason = "bounded transient schema reference is not an authoritative owner pool"
+)]
 pub(crate) async fn verify_schema(
     pool: &SqlitePool,
     migrator: &Migrator,
