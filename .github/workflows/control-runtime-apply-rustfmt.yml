@@ -1,4 +1,4 @@
-name: control.runtime verified rustfmt application
+name: control.runtime verified source publication
 
 on:
   pull_request:
@@ -13,11 +13,11 @@ permissions:
   pull-requests: read
 
 concurrency:
-  group: control-runtime-apply-rustfmt-${{ github.event.pull_request.number }}
+  group: control-runtime-publish-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 env:
-  EXPECTED_BOOTSTRAP_PARENT: 875f1b6ad7d6f9cf7867de91ef48c3d4fdee25f1
+  EXPECTED_BOOTSTRAP_PARENT: c27675f7efbdde0f6b29ca5fcbf84196260f29ff
   EXPECTED_ARTIFACT_SOURCE: 23474f7cf1103b92e1a978106081c5bd71c85c81
   EXPECTED_ARTIFACT_ID: '11010773885'
   EXPECTED_ARCHIVE_SHA256: b18843cb9d9aa519bf0d27518b2ee7eec05fecde89e86289e94ba895e34eeff6
@@ -28,7 +28,7 @@ env:
   CARGO_PROFILE_DEV_DEBUG: '0'
 
 jobs:
-  apply-and-verify:
+  verify-and-publish:
     if: >-
       github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
       github.event.pull_request.head.ref == 'codex/control-runtime-convergence-v1'
@@ -38,19 +38,27 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 4
+          fetch-depth: 0
           persist-credentials: true
 
-      - name: Verify the one-file bootstrap lineage
+      - name: Verify exact bootstrap lineage and scope
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD^)" = "$EXPECTED_BOOTSTRAP_PARENT"
           git merge-base --is-ancestor "$EXPECTED_ARTIFACT_SOURCE" HEAD
-          test "$(git diff --name-only "$EXPECTED_ARTIFACT_SOURCE"..HEAD)" = ".github/workflows/control-runtime-apply-rustfmt.yml"
           test "$(git ls-remote origin "refs/heads/$EXPECTED_BRANCH" | awk '{print $1}')" = "$(git rev-parse HEAD)"
+          cat > "$RUNNER_TEMP/expected-bootstrap-paths.txt" <<'EOF'
+          .github/workflows/control-runtime-apply-rustfmt.yml
+          codex-rs/hepta-control-plane/src/planner_journal_core.rs
+          codex-rs/hepta-control-plane/src/planner_journal_tests.rs
+          codex-rs/hepta-control-plane/src/planner_store_tests.rs
+          EOF
+          LC_ALL=C sort -o "$RUNNER_TEMP/expected-bootstrap-paths.txt" "$RUNNER_TEMP/expected-bootstrap-paths.txt"
+          git diff --name-only "$EXPECTED_ARTIFACT_SOURCE"..HEAD | LC_ALL=C sort > "$RUNNER_TEMP/actual-bootstrap-paths.txt"
+          diff -u "$RUNNER_TEMP/expected-bootstrap-paths.txt" "$RUNNER_TEMP/actual-bootstrap-paths.txt"
 
-      - name: Download and verify the exact formatting artifact
+      - name: Download and verify exact rustfmt artifact
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -94,120 +102,10 @@ jobs:
           LC_ALL=C sort "$bundle/paths.txt" > "$RUNNER_TEMP/actual-rustfmt-paths.txt"
           diff -u "$RUNNER_TEMP/expected-rustfmt-paths.txt" "$RUNNER_TEMP/actual-rustfmt-paths.txt"
           rsync -a "$bundle/files/" "$GITHUB_WORKSPACE/"
-          LC_ALL=C git diff --name-only | sort > "$RUNNER_TEMP/applied-rustfmt-paths.txt"
+          git diff --name-only | LC_ALL=C sort > "$RUNNER_TEMP/applied-rustfmt-paths.txt"
           diff -u "$RUNNER_TEMP/expected-rustfmt-paths.txt" "$RUNNER_TEMP/applied-rustfmt-paths.txt"
 
-      - name: Align internal tests with public owner boundaries
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-
-          store_tests_path = Path("codex-rs/hepta-control-plane/src/planner_store_tests.rs")
-          store_tests = store_tests_path.read_text(encoding="utf-8")
-          store_tests = store_tests.replace(
-              "fn complete_envelopes_reopen_under_one_writer_and_anchor() {",
-              "fn complete_envelopes_reopen_and_verify_anchor() {",
-              1,
-          )
-          obsolete_lock_assertion = """    let locked = must_err(PlannerStoreV1::open(
-              directory.path(),
-              PlannerStoreConfigV1::default(),
-          ));
-          assert!(matches!(locked, PlannerStoreError::Locked));
-          drop(store);
-          """
-          if store_tests.count(obsolete_lock_assertion) != 1:
-              raise SystemExit("obsolete core lock assertion was not found exactly once")
-          store_tests = store_tests.replace(obsolete_lock_assertion, "    drop(store);\n", 1)
-          store_tests_path.write_text(store_tests, encoding="utf-8")
-
-          journal_core_path = Path("codex-rs/hepta-control-plane/src/planner_journal_core.rs")
-          journal_core = journal_core_path.read_text(encoding="utf-8")
-          for obsolete_import in (
-              "use crate::FeasiblePlanReceiptV1;\n",
-              "use crate::GlobalStateSnapshotV1;\n",
-          ):
-              if obsolete_import not in journal_core:
-                  raise SystemExit(f"missing obsolete journal-core import: {obsolete_import!r}")
-              journal_core = journal_core.replace(obsolete_import, "", 1)
-          typed_start = journal_core.index("    pub fn record_snapshot(\n")
-          projection_start = journal_core.index(
-              "    #[must_use]\n    pub fn selected_plan_digest",
-              typed_start,
-          )
-          journal_core = journal_core[:typed_start] + journal_core[projection_start:]
-          journal_core_path.write_text(journal_core, encoding="utf-8")
-
-          journal_tests_path = Path("codex-rs/hepta-control-plane/src/planner_journal_tests.rs")
-          journal_tests = journal_tests_path.read_text(encoding="utf-8")
-          typed_decision = """    must(journal.record_decision(&receipt));
-              must(journal.select_plan(digest("selection-operation"), &receipt));
-          """
-          raw_decision = """    must(journal.append(
-              PlannerJournalKindV1::Decision,
-              receipt.receipt_digest(),
-              receipt.receipt_digest(),
-          ));
-              must(journal.append(
-              PlannerJournalKindV1::SelectedPlan,
-              digest("selection-operation"),
-              receipt.receipt_digest(),
-          ));
-          """
-          if journal_tests.count(typed_decision) != 1:
-              raise SystemExit("typed journal test setup was not found exactly once")
-          journal_tests = journal_tests.replace(typed_decision, raw_decision, 1)
-          obsolete_revocation_test = """#[test]
-          fn revocation_clears_selection_and_prevents_reselection() {
-              let mut journal = PlannerJournalV1::new();
-              let receipt = receipt();
-              must(journal.record_decision(&receipt));
-              must(journal.select_plan(digest("select-1"), &receipt));
-              must(journal.revoke(digest("revoke-1"), receipt.receipt_digest()));
-              assert_eq!(journal.selected_plan_digest(), None);
-              assert_eq!(
-                  journal
-                      .select_plan(digest("select-2"), &receipt)
-                      .expect_err("revoked plan must not be reselected"),
-                  PlannerJournalError::RevokedPlan
-              );
-          }
-          """
-          raw_revocation_test = """#[test]
-          fn revocation_clears_selection_projection() {
-              let mut journal = PlannerJournalV1::new();
-              let receipt = receipt();
-              must(journal.append(
-                  PlannerJournalKindV1::Decision,
-                  receipt.receipt_digest(),
-                  receipt.receipt_digest(),
-              ));
-              must(journal.append(
-                  PlannerJournalKindV1::SelectedPlan,
-                  digest("select-1"),
-                  receipt.receipt_digest(),
-              ));
-              must(journal.append(
-                  PlannerJournalKindV1::Revocation,
-                  digest("revoke-1"),
-                  receipt.receipt_digest(),
-              ));
-              assert_eq!(journal.selected_plan_digest(), None);
-          }
-          """
-          if journal_tests.count(obsolete_revocation_test) != 1:
-              raise SystemExit("obsolete core revocation test was not found exactly once")
-          journal_tests = journal_tests.replace(
-              obsolete_revocation_test,
-              raw_revocation_test,
-              1,
-          )
-          journal_tests_path.write_text(journal_tests, encoding="utf-8")
-          PY
-
-      - name: Synchronize the implementation map and restore read-only qualification
+      - name: Synchronize canonical state mapping
         shell: bash
         run: |
           set -euo pipefail
@@ -215,6 +113,7 @@ jobs:
           from __future__ import annotations
 
           import json
+          import textwrap
           from pathlib import Path
 
           map_path = Path("docs/modules/control.runtime/IMPLEMENTATION_MAP.json")
@@ -271,8 +170,7 @@ jobs:
               (
                   index
                   for index, operation in enumerate(operations)
-                  if operation.get("operation")
-                  == "OrganHostV1::dispatch_once_with_receipt"
+                  if operation.get("operation") == "OrganHostV1::dispatch_once_with_receipt"
               ),
               len(operations),
           )
@@ -304,78 +202,77 @@ jobs:
               validator = validator.replace(anchor, anchor + operation_line, 1)
           validator_path.write_text(validator, encoding="utf-8")
 
-          workflow = """name: control.runtime crash and recovery regression
+          workflow = textwrap.dedent(
+              """\
+              name: control.runtime crash and recovery regression
 
-          on:
-            pull_request:
-              branches: [main]
-              paths:
-                - 'codex-rs/hepta-control-plane/**'
-                - 'docs/modules/control.runtime/**'
-                - 'docs/readiness/CONTROL_RUNTIME_*.md'
-                - 'scripts/control_runtime_validate_state.py'
-                - '.github/workflows/control-runtime-crash-recovery.yml'
-            workflow_dispatch:
+              on:
+                pull_request:
+                  branches: [main]
+                  paths:
+                    - 'codex-rs/hepta-control-plane/**'
+                    - 'docs/modules/control.runtime/**'
+                    - 'docs/readiness/CONTROL_RUNTIME_*.md'
+                    - 'scripts/control_runtime_validate_state.py'
+                    - '.github/workflows/control-runtime-crash-recovery.yml'
+                workflow_dispatch:
 
-          permissions:
-            contents: read
+              permissions:
+                contents: read
 
-          concurrency:
-            group: control-runtime-crash-recovery-__GROUP_EXPRESSION__
-            cancel-in-progress: true
+              concurrency:
+                group: control-runtime-crash-recovery-__GROUP_EXPRESSION__
+                cancel-in-progress: true
 
-          env:
-            CARGO_INCREMENTAL: '0'
-            CARGO_BUILD_JOBS: '2'
-            CARGO_PROFILE_TEST_DEBUG: '0'
-            CARGO_PROFILE_DEV_DEBUG: '0'
+              env:
+                CARGO_INCREMENTAL: '0'
+                CARGO_BUILD_JOBS: '2'
+                CARGO_PROFILE_TEST_DEBUG: '0'
+                CARGO_PROFILE_DEV_DEBUG: '0'
 
-          jobs:
-            source-and-process-recovery:
-              strategy:
-                fail-fast: false
-                matrix:
-                  os: [ubuntu-24.04, macos-14]
-              runs-on: __MATRIX_OS_EXPRESSION__
-              timeout-minutes: 45
-              steps:
-                - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-                  with:
-                    persist-credentials: false
+              jobs:
+                source-and-process-recovery:
+                  strategy:
+                    fail-fast: false
+                    matrix:
+                      os: [ubuntu-24.04, macos-14]
+                  runs-on: __MATRIX_OS_EXPRESSION__
+                  timeout-minutes: 60
+                  steps:
+                    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+                      with:
+                        persist-credentials: false
 
-                - name: Install Linux native prerequisites
-                  if: runner.os == 'Linux'
-                  run: |
-                    sudo apt-get update
-                    sudo apt-get install -y build-essential pkg-config libcap-dev
+                    - name: Install Linux native prerequisites
+                      if: runner.os == 'Linux'
+                      run: |
+                        sudo apt-get update
+                        sudo apt-get install -y build-essential pkg-config libcap-dev
 
-                - name: Canonical state validation
-                  run: python3 scripts/control_runtime_validate_state.py --output "$RUNNER_TEMP/control-runtime-state.json"
+                    - name: Canonical state validation
+                      run: python3 scripts/control_runtime_validate_state.py --output "$RUNNER_TEMP/control-runtime-state.json"
 
-                - name: Formatting
-                  working-directory: codex-rs
-                  run: cargo fmt -p codex-hepta-control-plane -- --check
+                    - name: Formatting
+                      working-directory: codex-rs
+                      run: cargo fmt -p codex-hepta-control-plane -- --check
 
-                - name: Pending reconciliation inventory regressions
-                  working-directory: codex-rs
-                  run: cargo test --locked -p codex-hepta-control-plane pending_dispatch_inventory
+                    - name: Full control-plane regression suite
+                      working-directory: codex-rs
+                      run: cargo test --locked -p codex-hepta-control-plane
 
-                - name: Abnormal process and restore regressions
-                  working-directory: codex-rs
-                  run: cargo test --locked -p codex-hepta-control-plane --test planner_store_process_recovery -- --nocapture
+                    - name: Abnormal process and restore regressions
+                      working-directory: codex-rs
+                      run: cargo test --locked -p codex-hepta-control-plane --test planner_store_process_recovery -- --nocapture
 
-                - name: All-target compilation
-                  working-directory: codex-rs
-                  run: cargo check --locked --all-targets -p codex-hepta-control-plane
+                    - name: All-target compilation
+                      working-directory: codex-rs
+                      run: cargo check --locked --all-targets -p codex-hepta-control-plane
 
-                - name: Strict lint
-                  working-directory: codex-rs
-                  run: cargo clippy --locked --all-targets -p codex-hepta-control-plane -- -D warnings
-          """
-          workflow = "\n".join(
-              line[10:] if line.startswith("          ") else line
-              for line in workflow.splitlines()
-          ) + "\n"
+                    - name: Strict lint
+                      working-directory: codex-rs
+                      run: cargo clippy --locked --all-targets -p codex-hepta-control-plane -- -D warnings
+              """
+          )
           expression_open = "$" + "{{"
           workflow = workflow.replace(
               "__GROUP_EXPRESSION__",
@@ -391,7 +288,7 @@ jobs:
           Path(".github/workflows/control-runtime-apply-rustfmt.yml").unlink()
           PY
 
-      - name: Validate source, recovery tests and strict package gates
+      - name: Validate exact source candidate
         shell: bash
         run: |
           set -euo pipefail
@@ -403,7 +300,7 @@ jobs:
           cargo check --locked --all-targets -p codex-hepta-control-plane
           cargo clippy --locked --all-targets -p codex-hepta-control-plane -- -D warnings
 
-      - name: Commit and push only the verified source
+      - name: Commit and push only fully verified source
         shell: bash
         run: |
           set -euo pipefail
