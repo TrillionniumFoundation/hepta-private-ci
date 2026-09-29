@@ -1,0 +1,205 @@
+{
+  "schema": "hepta.module-implementation-map-unified.v1",
+  "module": "utility.ndu",
+  "extends": [
+    "docs/modules/utility.ndu/IMPLEMENTATION_MAP.json",
+    "docs/modules/utility.ndu/IMPLEMENTATION_MAP_EXTENSIONS.json"
+  ],
+  "currentSourceEvidence": {
+    "baselineMainCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
+    "branch": "work/utility-ndu-unified-candidate-20260930",
+    "sourceBinding": "pending_exact_typed_overlay_path_object_manifest_v1",
+    "qualificationBinding": "No parent qualification is inherited; exact-head and deterministic synthetic-merge receipts must be regenerated.",
+    "productionActivation": false
+  },
+  "sourceObjectOverrides": [],
+  "operations": [
+    {
+      "operation": "NduImmutableLocatorV2",
+      "nativeSymbol": "codex_hepta_ndu::NduImmutableLocatorV2",
+      "sourcePath": "codex-rs/hepta-ndu/src/authenticity/locator.rs",
+      "sourcePathExists": true,
+      "authority": "none",
+      "state": "source_implemented_scheme_allowlisted_content_or_version_bound_locator_v2",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/authenticity/locator.rs",
+          "symbol": "content_addressed_and_versioned_locators_are_canonical"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/authenticity/locator.rs",
+          "symbol": "mutable_or_digest_drifting_locators_fail_closed"
+        }
+      ]
+    },
+    {
+      "operation": "NduSignedHierarchyProofV2",
+      "nativeSymbol": "codex_hepta_ndu::NduSignedHierarchyProofV2",
+      "sourcePath": "codex-rs/hepta-ndu/src/authenticity/signature.rs",
+      "sourcePathExists": true,
+      "authority": "deny_all",
+      "state": "source_implemented_ed25519_trusted_time_revocation_bound_hierarchy_v2",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/authenticity/signature.rs",
+          "symbol": "signed_hierarchy_requires_current_time_and_revocation_frontier"
+        }
+      ]
+    },
+    {
+      "operation": "NduAuthenticatedProjectionArtifactV3",
+      "nativeSymbol": "codex_hepta_ndu::NduAuthenticatedProjectionArtifactV3",
+      "sourcePath": "codex-rs/hepta-ndu/src/authenticity/signature.rs",
+      "sourcePathExists": true,
+      "authority": "deny_all",
+      "state": "source_implemented_ed25519_immutable_locator_bound_artifact_v3",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/authenticity/signature.rs",
+          "symbol": "authenticated_artifact_binds_content_address_and_signature"
+        }
+      ]
+    },
+    {
+      "operation": "NduProjectionCatalogV2",
+      "nativeSymbol": "codex_hepta_ndu::NduProjectionCatalogV2",
+      "sourcePath": "codex-rs/hepta-ndu/src/hardening.rs",
+      "sourcePathExists": true,
+      "authority": "none",
+      "state": "source_implemented_action_kind_scoped_replay_first_catalog_v2",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/hardening.rs",
+          "symbol": "projection_kind_scopes_selection_and_revocation"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/hardening.rs",
+          "symbol": "catalog_replay_precedes_current_revocation_state"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/hardening.rs",
+          "symbol": "v1_migration_requires_durable_artifact_resolution"
+        }
+      ]
+    },
+    {
+      "operation": "migrate_iteration_receipt_v1",
+      "nativeSymbol": "codex_hepta_ndu::migrate_iteration_receipt_v1",
+      "sourcePath": "codex-rs/hepta-ndu/src/evidence_v2/iteration.rs",
+      "sourcePathExists": true,
+      "authority": "deny_all",
+      "state": "source_implemented_v1_compatible_canonical_v2_iteration_migration",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/evidence_v2/iteration.rs",
+          "symbol": "v1_validation_and_v2_migration_recompute_every_field"
+        }
+      ]
+    },
+    {
+      "operation": "migrate_z_q24_receipt_v1",
+      "nativeSymbol": "codex_hepta_ndu::migrate_z_q24_receipt_v1",
+      "sourcePath": "codex-rs/hepta-ndu/src/evidence_v2/z.rs",
+      "sourcePathExists": true,
+      "authority": "deny_all",
+      "state": "source_implemented_source_input_bound_canonical_v2_z_migration",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/evidence_v2/z.rs",
+          "symbol": "v2_keeps_source_and_rejects_mutated_legacy_fields"
+        }
+      ]
+    },
+    {
+      "operation": "NduHistoricalReplayReceiptV2",
+      "nativeSymbol": "codex_hepta_ndu::NduHistoricalReplayReceiptV2",
+      "sourcePath": "codex-rs/hepta-ndu/src/current_use.rs",
+      "sourcePathExists": true,
+      "authority": "deny_all",
+      "state": "source_implemented_historical_terminal_evidence_separate_from_current_use",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/current_use.rs",
+          "symbol": "historical_replay_does_not_grant_current_use_after_revocation"
+        }
+      ]
+    },
+    {
+      "operation": "NduProductionCompositionV1",
+      "nativeSymbol": "codex_hepta_ndu::NduProductionCompositionV1",
+      "sourcePath": "codex-rs/hepta-ndu/src/production_composition.rs",
+      "sourcePathExists": true,
+      "authority": "deny_all",
+      "state": "source_implemented_closed_role_adapter_identity_policy_binding_v1",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/production_composition.rs",
+          "symbol": "composition_requires_every_concrete_role_and_identity"
+        }
+      ]
+    },
+    {
+      "operation": "evaluate_fbsde_rollback_v1",
+      "nativeSymbol": "codex_hepta_ndu::evaluate_fbsde_rollback_v1",
+      "sourcePath": "codex-rs/hepta-ndu/src/fbsde_evidence.rs",
+      "sourcePathExists": true,
+      "authority": "deny_all",
+      "state": "source_implemented_deterministic_runtime_rollback_trigger_v1",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/fbsde_evidence.rs",
+          "symbol": "rollback_trigger_is_deterministic_and_fail_closed"
+        }
+      ]
+    },
+    {
+      "operation": "v1_public_source_surface_remains_compatible",
+      "nativeSymbol": "v1_public_source_surface_remains_compatible",
+      "sourcePath": "codex-rs/hepta-ndu/tests/public_api_compat.rs",
+      "sourcePathExists": true,
+      "authority": "none",
+      "state": "qualification_only_external_crate_v1_source_compatibility",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/tests/public_api_compat.rs",
+          "symbol": "v1_public_source_surface_remains_compatible"
+        },
+        {
+          "path": "scripts/test_hepta_ndu_public_api_compat.py",
+          "symbol": "test_repository_baseline_passes"
+        }
+      ]
+    }
+  ],
+  "supportingSources": [
+    ".github/workflows/hepta-ndu-public-api.yml",
+    "codex-rs/hepta-ndu/Cargo.toml",
+    "codex-rs/hepta-ndu/src/authenticity/mod.rs",
+    "codex-rs/hepta-ndu/src/current_use.rs",
+    "codex-rs/hepta-ndu/src/evidence_v2/mod.rs",
+    "codex-rs/hepta-ndu/src/fbsde_evidence.rs",
+    "codex-rs/hepta-ndu/src/fbsde_training/api.rs",
+    "codex-rs/hepta-ndu/src/fbsde_training/codec.rs",
+    "codex-rs/hepta-ndu/src/fbsde_training/math.rs",
+    "codex-rs/hepta-ndu/src/fbsde_training/mod.rs",
+    "codex-rs/hepta-ndu/src/fbsde_training/tests.rs",
+    "codex-rs/hepta-ndu/src/fbsde_training/types.rs",
+    "codex-rs/hepta-ndu/src/fbsde_training/validation.rs",
+    "codex-rs/hepta-ndu/src/hardening.rs",
+    "codex-rs/hepta-ndu/src/lib.rs",
+    "codex-rs/hepta-ndu/tests/public_api_compat.rs",
+    "docs/modules/utility.ndu/PRODUCTION_HARDENING.md",
+    "docs/modules/utility.ndu/PUBLIC_API_BASELINE_V1.json",
+    "docs/modules/utility.ndu/STATUS.md",
+    "scripts/hepta-ndu-public-api-compat.py",
+    "scripts/test_hepta_ndu_public_api_compat.py"
+  ],
+  "claimBoundary": {
+    "sourceCandidate": true,
+    "exactHeadQualification": false,
+    "syntheticMergeQualification": false,
+    "targetHostProductionEvidence": false,
+    "productionActivation": false,
+    "releaseAuthority": false
+  }
+}
