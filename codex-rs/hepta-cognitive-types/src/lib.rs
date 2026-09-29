@@ -141,7 +141,7 @@ impl MemoryRecord {
             if citation.source_digest.is_zero() {
                 return Err(Error::EmptyDigest("citation"));
             }
-            if !seen.insert(citation.source_id.clone()) {
+            if !seen.insert(&citation.source_id) {
                 return Err(Error::DuplicateCitation(citation.source_id.to_string()));
             }
         }
@@ -154,8 +154,10 @@ impl MemoryRecord {
     /// The digest is not source authentication or freshness evidence.
     #[must_use]
     pub fn record_digest(&self) -> Digest32 {
-        let mut citations = self.citations.clone();
-        citations.sort();
+        // Borrow identities for this call only; preserve the full Citation order.
+        // Equal citations encode identical bytes, so stable sorting is unnecessary.
+        let mut citations = self.citations.iter().collect::<Vec<_>>();
+        citations.sort_unstable();
         let mut bytes = Vec::new();
         bytes.extend_from_slice(b"hepta.cognitive.record.v1");
         push_id(&mut bytes, &self.record_id);
@@ -209,7 +211,7 @@ fn validate_records(records: &[MemoryRecord]) -> Result<(), Error> {
     let mut identities = BTreeSet::new();
     for record in records {
         record.validate()?;
-        if !identities.insert((record.record_id.clone(), record.revision)) {
+        if !identities.insert((&record.record_id, record.revision)) {
             return Err(Error::DuplicateRecord(record.record_id.to_string()));
         }
     }
@@ -268,3 +270,7 @@ mod hardening_tests;
 
 #[cfg(test)]
 mod shared_experience_tests;
+
+#[cfg(test)]
+#[path = "record_digest_reuse_tests.rs"]
+mod record_digest_reuse_tests;
