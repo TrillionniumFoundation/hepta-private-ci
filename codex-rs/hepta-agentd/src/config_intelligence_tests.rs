@@ -88,6 +88,30 @@ async fn half_configured_canonical_daemon_refuses_start_without_publishing_socke
 }
 
 #[test]
+fn durable_abstain_profile_installs_one_complete_pair_without_opening_owner_files() {
+    let temp = tempfile::tempdir().expect("fixture");
+    let authority = temp.path().join("authority-not-opened.json");
+    let key = ed25519_dalek::SigningKey::from_bytes(&[51; 32]);
+    let configured = crate::compose_durable_abstain_intelligence_profile_v1(
+        config(temp.path()),
+        authority.clone(),
+        crate::IntelligenceAuthorityVerifierV1 {
+            signer_id: "configuration-fixture".to_string(),
+            verifying_key: key.verifying_key().to_bytes(),
+        },
+    )
+    .expect("complete conservative profile")
+    .with_objective_profile_file(temp.path().join("objective"))
+    .with_authbus_trust_file(temp.path().join("trust"))
+    .with_authbus_checkpoint_file(temp.path().join("checkpoint"));
+    assert!(configured.require_intelligence_composition().is_ok());
+    assert!(!authority.exists());
+    assert!(!temp.path().join("objective").exists());
+    assert!(!temp.path().join("trust").exists());
+    assert!(!temp.path().join("checkpoint").exists());
+}
+
+#[test]
 fn canonical_pair_requires_all_authenticated_ingress_configuration() {
     let temp = tempfile::tempdir().expect("fixture");
     let base = config(temp.path());

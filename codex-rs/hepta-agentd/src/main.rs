@@ -2,12 +2,12 @@ use std::path::PathBuf;
 
 use codex_hepta_agent_components::types::Digest32;
 use codex_hepta_agentd::AgentdConfig;
-use codex_hepta_agentd::AgentdIntelligenceProductRunnerV1;
+use codex_hepta_agentd::CanonicalIntelligenceProviderProfileV1;
 use codex_hepta_agentd::IntelligenceAuthorityVerifierV1;
+use codex_hepta_agentd::compose_durable_abstain_intelligence_profile_v1;
 use codex_hepta_agentd::load_plasticity_process_bootstrap_v1;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use std::ffi::OsString;
-use std::sync::Arc;
 
 fn main() -> anyhow::Result<()> {
     let mut config = AgentdConfig::from_process_environment()?;
@@ -20,6 +20,7 @@ fn main() -> anyhow::Result<()> {
         let mut intelligence_authority_file = None;
         let mut intelligence_authority_signer = None;
         let mut intelligence_authority_verifying_key = None;
+        let mut canonical_intelligence_provider_profile = None;
         let mut plasticity_bootstrap_descriptor: Option<PathBuf> = None;
         let mut plasticity_bootstrap_descriptor_digest: Option<Digest32> = None;
         let mut objective_profile = None;
@@ -74,6 +75,19 @@ fn main() -> anyhow::Result<()> {
                     "duplicate --intelligence-authority-verifying-key"
                 );
                 intelligence_authority_verifying_key = Some(parse_verifying_key_hex(path)?);
+            } else if flag == "--canonical-intelligence-provider-profile" {
+                anyhow::ensure!(
+                    canonical_intelligence_provider_profile.is_none(),
+                    "duplicate --canonical-intelligence-provider-profile"
+                );
+                let value = path.into_string().map_err(|_| {
+                    anyhow::anyhow!("canonical intelligence provider profile must be UTF-8")
+                })?;
+                canonical_intelligence_provider_profile = Some(
+                    value
+                        .parse::<CanonicalIntelligenceProviderProfileV1>()
+                        .map_err(anyhow::Error::from)?,
+                );
             } else if flag == "--objective-profile-file" {
                 anyhow::ensure!(
                     objective_profile.is_none(),
@@ -115,22 +129,33 @@ fn main() -> anyhow::Result<()> {
             intelligence_authority_file,
             intelligence_authority_signer,
             intelligence_authority_verifying_key,
+            canonical_intelligence_provider_profile,
         ) {
-            (None, None, None) => {}
-            (Some(path), Some(signer_id), Some(verifying_key)) => {
-                let runner = AgentdIntelligenceProductRunnerV1::new(
+            (None, None, None, None) => {}
+            (
+                Some(path),
+                Some(signer_id),
+                Some(verifying_key),
+                Some(CanonicalIntelligenceProviderProfileV1::DurableSafeAbstainV1),
+            ) => {
+                config = compose_durable_abstain_intelligence_profile_v1(
+                    config,
                     path,
                     IntelligenceAuthorityVerifierV1 {
                         signer_id,
                         verifying_key,
                     },
                 )?;
-                config = config.with_intelligence_product_runner(Arc::new(runner))?;
+            }
+            (Some(_), Some(_), Some(_), None) => {
+                anyhow::bail!(
+                    "canonical intelligence authority requires --canonical-intelligence-provider-profile durable-safe-abstain-v1"
+                );
             }
             _ => {
-                return Err(anyhow::anyhow!(
-                    "--intelligence-authority-file, --intelligence-authority-signer and --intelligence-authority-verifying-key must be supplied together"
-                ));
+                anyhow::bail!(
+                    "--intelligence-authority-file, --intelligence-authority-signer, --intelligence-authority-verifying-key and --canonical-intelligence-provider-profile must be supplied together"
+                );
             }
         }
         anyhow::ensure!(
