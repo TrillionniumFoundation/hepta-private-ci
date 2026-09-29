@@ -7,6 +7,8 @@ on:
 permissions:
   contents: write
 
+# This one-shot lane is intentionally push-triggered after the workflow exists
+# on the branch, so the self-hosted runner evaluates the exact current HEAD.
 concurrency:
   group: kernel-evidence-native-closure-pocket4-once
   cancel-in-progress: true
