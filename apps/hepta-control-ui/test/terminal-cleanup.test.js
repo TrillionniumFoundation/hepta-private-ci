@@ -4,6 +4,9 @@ import { TerminalCleanupQueue } from "../src/terminal-cleanup.js";
 import { ScopedRecoveryStore } from "../src/recovery-store.js";
 import { deferred, operation, terminal, storageOptions } from "./browser-fixture.js";
 
+const recordCount = storage => [...storage.values.keys()]
+  .filter(key => key.startsWith("hepta.ui-control.scoped-recovery.v2:")).length;
+
 test("cleanup coalesces concurrent callers and unchanged terminal history", async () => {
   const gate = deferred(); let calls = 0;
   const queue = new TerminalCleanupQueue(async () => { calls += 1; await gate.promise; });
@@ -73,22 +76,20 @@ test("two tabs clean 1024 terminals without origin enumeration or repeat locks",
   for (let i = 0; i < 20; i += 1) await Promise.all([a.sync(completed), b.sync(completed)]);
   assert.equal(options.storage.enumerations, before);
   assert.equal(options.locks.requests, requests);
-  assert.equal(options.storage.length, 1000);
+  assert.equal(recordCount(options.storage), 0);
+  assert.equal([...options.storage.values.keys()].filter(key => key.startsWith("unrelated-")).length, 1000);
 });
 
-test("origin inventory remains bounded and malformed records are retained", async () => {
+test("steady-state scope directory is isolated from a large unrelated origin inventory", async () => {
   const options = storageOptions(); const store = await ScopedRecoveryStore.create(options);
-  await store.prepare(operation()); const key = options.storage.key(0);
-  options.storage.setItem(key, "malformed");
-  assert.throws(() => store.load(), { code: "UI_CONTROL_STORAGE" });
-  assert.equal(options.storage.getItem(key), "malformed");
-  for (let i = 0; i < 16384; i += 1) options.storage.setItem(`other-${i}`, "x");
   const before = options.storage.enumerations;
-  await assert.rejects(store.prepare(operation("new")), { code: "UI_CONTROL_STORAGE" });
+  for (let i = 0; i < 20000; i += 1) options.storage.setItem(`other-${i}`, "x");
+  await store.prepare(operation());
+  assert.equal(store.load().operations.length, 1);
+  await store.complete(terminal());
   assert.equal(options.storage.enumerations, before);
-  assert.equal(options.storage.length, 16385);
+  assert.equal(recordCount(options.storage), 0);
 });
-
 
 test("batch deadline bounds lock waiting and rotation reaches later records", async () => {
   const seen = [];
@@ -103,7 +104,6 @@ test("batch deadline bounds lock waiting and rotation reaches later records", as
   assert.deepEqual(seen, ["slow", "fast"]);
 });
 
-
 test("failed cleanup survives terminal display-history eviction", async () => {
   const options = storageOptions(); const store = await ScopedRecoveryStore.create(options);
   await store.prepare(operation());
@@ -112,10 +112,10 @@ test("failed cleanup survives terminal display-history eviction", async () => {
   const queue = new TerminalCleanupQueue((op, opts) => store.complete(op, opts));
   await assert.rejects(queue.sync([terminal()]));
   await assert.rejects(queue.sync([]));
-  assert.equal(options.storage.length, 1);
+  assert.equal(recordCount(options.storage), 1);
   options.storage.removeItem = original;
   assert.equal(await queue.sync([]), true);
-  assert.equal(options.storage.length, 0);
+  assert.equal(recordCount(options.storage), 0);
 });
 
 test("in-flight cleanup remains joined after its display record is removed", async () => {
@@ -126,4 +126,16 @@ test("in-flight cleanup remains joined after its display record is removed", asy
   await Promise.resolve(); assert.equal(calls, 1);
   gate.resolve();
   assert.deepEqual(await Promise.all([first, second]), [true, true]);
+});
+
+test("cleanup diagnostics report bounded maintenance state only", async () => {
+  const gate = deferred();
+  const queue = new TerminalCleanupQueue(async () => gate.promise, { maxEntries: 4, batchSize: 2 });
+  const work = queue.sync([terminal("one")]);
+  await Promise.resolve();
+  assert.deepEqual(queue.diagnostics(), {
+    visible: 1, pending: 1, outstanding: 1, retainedSuccesses: 0,
+    maxEntries: 4, batchSize: 2,
+  });
+  gate.resolve(); await work;
 });

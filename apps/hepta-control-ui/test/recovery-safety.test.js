@@ -42,6 +42,8 @@ const config = (storage = new Storage(), locks = new Locks()) => ({
   storage, locks, endpoint: "https://console.test/api/ui-control/v1/",
   identityId: "operator-1", protocolVersion: "hepta.ui-control.v1",
 });
+const recordCount = storage => [...storage.values.keys()]
+  .filter(key => key.startsWith("hepta.ui-control.scoped-recovery.v2:")).length;
 
 test("confirmation rejects generation rollover at the same displayed revision", () => {
   const before = view(); const consent = captureConfirmation(before, op());
@@ -75,8 +77,6 @@ test("target selection survives refresh and removal never picks a different targ
 test("prepared record survives loss of the entire client before any response", async () => {
   const options = config(); let store = await ScopedRecoveryStore.create(options);
   await store.prepare(op());
-  // Discard the writer while its network response would still be unresolved.
-  // This is a persistence unit test, not a substitute for browser crash E2E.
   store = null;
   const reopened = await ScopedRecoveryStore.create(options);
   assert.equal(reopened.load().operations[0].operationId, "op-1");
@@ -95,14 +95,16 @@ test("different tabs cannot overwrite each other's operation records", async () 
 test("terminal cleanup retains a conflicting later identity", async () => {
   const options = config(); const store = await ScopedRecoveryStore.create(options);
   await store.prepare(op());
-  const key = options.storage.key(0); const stored = JSON.parse(options.storage.getItem(key));
+  const key = [...options.storage.values.keys()]
+    .find(value => value.startsWith("hepta.ui-control.scoped-recovery.v2:"));
+  const stored = JSON.parse(options.storage.getItem(key));
   stored.operation.semanticDigest = "d".repeat(64);
   options.storage.setItem(key, JSON.stringify(stored));
   await assert.rejects(
     store.complete({ ...op(), state: "terminal", terminalStatus: "succeeded" }),
     { code: C.STORAGE },
   );
-  assert.equal(options.storage.length, 1);
+  assert.equal(recordCount(options.storage), 1);
 });
 
 test("concurrent same identity across tabs is admitted once and the loser must lookup", async () => {
@@ -130,8 +132,8 @@ test("recovery is isolated by actual endpoint, principal, protocol and namespace
 
 test("denied storage and unavailable locks fail before dispatch", async () => {
   const options = config(); options.storage.setItem = () => { throw new Error("denied"); };
-  const store = await ScopedRecoveryStore.create(options);
-  await assert.rejects(store.prepare(op()), error => error.code === C.STORAGE && error.details.requestDispatched === false);
+  await assert.rejects(ScopedRecoveryStore.create(options), error =>
+    error.code === C.STORAGE && error.details.requestDispatched === false);
   await assert.rejects(ScopedRecoveryStore.create({ ...options, locks: null }), { code: C.STORAGE });
 });
 
@@ -145,9 +147,11 @@ test("cross-tab capacity is checked under the admission lock", async () => {
 
 test("corrupt recovery is retained for diagnosis, never cleared or adopted", async () => {
   const options = config(); const store = await ScopedRecoveryStore.create(options); await store.prepare(op());
-  options.storage.setItem(options.storage.key(0), "not json");
+  const key = [...options.storage.values.keys()]
+    .find(value => value.startsWith("hepta.ui-control.scoped-recovery.v2:"));
+  options.storage.setItem(key, "not json");
   assert.throws(() => store.load(), { code: C.STORAGE });
-  assert.equal(options.storage.length, 1);
+  assert.equal(recordCount(options.storage), 1);
 });
 
 test("round-robin recovery reaches the tail while pending entries are backed off", async () => {

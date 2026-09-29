@@ -4,6 +4,9 @@ import { createControlConsole } from "../src/browser-app.js";
 import { ScopedRecoveryStore } from "../src/recovery-store.js";
 import { fixture, operation, terminal, deferred } from "./browser-fixture.js";
 
+const recordCount = storage => [...storage.values.keys()]
+  .filter(key => key.startsWith("hepta.ui-control.scoped-recovery.v2:")).length;
+
 for (const failure of ["lock", "removal"]) {
   test(`browser shows asynchronous ${failure} failure and retains the original record`, async t => {
     const f = fixture(); const store = await ScopedRecoveryStore.create(f.options);
@@ -15,10 +18,10 @@ for (const failure of ["lock", "removal"]) {
     await app.start();
     const error = f.document.getElementById("error-status");
     assert.equal(error.hidden, false); assert.match(error.textContent, /UI_CONTROL_STORAGE/);
-    assert.equal(f.options.storage.length, 1); assert.equal(f.counters.mutations, 0);
+    assert.equal(recordCount(f.options.storage), 1); assert.equal(f.counters.mutations, 0);
     f.options.locks.reject = false; f.options.storage.removeItem = originalRemove;
     await f.document.getElementById("refresh-view").fire();
-    assert.equal(f.options.storage.length, 0); assert.equal(error.hidden, true);
+    assert.equal(recordCount(f.options.storage), 0); assert.equal(error.hidden, true);
     const requests = f.options.locks.requests;
     await f.document.getElementById("refresh-view").fire();
     assert.equal(f.options.locks.requests, requests);
@@ -95,10 +98,9 @@ test("destroy aborts queued cleanup and suppresses late error announcements", as
     return callback();
   };
   const app = createControlConsole(f.config); const starting = app.start();
-  // Register rejection before cancellation; no unhandled start promise.
   const rejected = assert.rejects(starting, { code: "UI_CONTROL_ABORTED" });
   await gate.promise; const before = f.document.getElementById("error-status").textContent;
   await app.destroy(); await rejected;
   assert.equal(f.document.getElementById("error-status").textContent, before);
-  assert.equal(f.options.storage.length, 1); assert.equal(f.counters.close, 1);
+  assert.equal(recordCount(f.options.storage), 1); assert.equal(f.counters.close, 1);
 });

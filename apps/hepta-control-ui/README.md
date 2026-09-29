@@ -28,7 +28,7 @@ npm run build --prefix apps/hepta-control-ui
 npm run test:e2e --prefix apps/hepta-control-ui
 ```
 
-The browser E2E suite runs Chromium, Firefox, and WebKit. It covers keyboard/focus behavior, duplicate activation, stale revision typing, accepted-response-loss recovery, terminal backend observations, unavailable local recovery storage, and axe-core. Unit tests additionally qualify concurrent reservation, session identity and permission-revision fencing, fail-closed revoke/close, and full-response-body timeout behavior.
+The browser E2E suite runs Chromium, Firefox, and WebKit. It covers keyboard/focus behavior, duplicate activation, stale revision typing, accepted-response-loss recovery, terminal backend observations, unavailable local recovery storage, and axe-core. Unit tests additionally qualify concurrent reservation, session identity and permission-revision fencing, fail-closed revoke/close, full-response-body timeout behavior, crash-consistent scope-directory transitions, and steady-state storage isolation from unrelated origin keys.
 
 ## Terminal maintenance ownership and lifecycle
 
@@ -42,6 +42,8 @@ Each scheduling pass admits at most 32 tasks, with one removal in flight and a 5
 
 On disposal, the console aborts pending maintenance, drains the existing queue, and closes the client. Late error/live-region notifications are suppressed. Cancellation does not undo a removal already completed under the store's lock. A fresh console restores retained identities and queries the backend rather than replaying requests.
 
+`TerminalCleanupQueue.diagnostics()` reports only bounded local maintenance counts: visible, pending, outstanding and retained-success entries plus configured limits. It exposes no operation identity and does not participate in cleanup or authority decisions.
+
 ## Incremental presentation without cached authority
 
 `src/keyed-list.js` keeps module rows by module ID and pending/completed rows by exact operation ID. Full correlation identifiers remain in private JavaScript maps, never added to DOM attributes. Membership/order changes reuse surviving nodes; unchanged membership/order performs no list replacement. Text is written only when its displayed value changes. Removed rows and their retained presentation records are pruned.
@@ -52,10 +54,13 @@ Every render still reads the current view and evaluates permissions, connected/s
 
 ## Maintenance regression matrix
 
-The focused Node tests use the production controller, queue, and unchanged scoped store with instrumented DOM/storage/lock adapters. They measure work counts, not production-machine latency. Run them directly with:
+The focused Node tests use the production controller, queue, and scoped store with instrumented DOM/storage/lock adapters. They measure work counts, not production-machine latency. Run them directly with:
 
 ```bash
-node --test apps/hepta-control-ui/test/browser-maintenance.test.js apps/hepta-control-ui/test/terminal-cleanup.test.js
+node --test \
+  apps/hepta-control-ui/test/browser-maintenance.test.js \
+  apps/hepta-control-ui/test/terminal-cleanup.test.js \
+  apps/hepta-control-ui/test/recovery-directory.test.js
 ```
 
 They also run in the default `npm test` command, in both exact-head and deterministic synthetic-merge qualification.
@@ -67,17 +72,26 @@ They also run in the default `npm test` command, in both exact-head and determin
 | History eviction | Failed cleanup remains retryable after the terminal disappears from presentation; an already in-flight cleanup is still joined rather than duplicated or forgotten. |
 | Fairness and bounds | Over-capacity inventories schedule no deletion; a batch deadline aborts lock waiting; rotation reaches the next record. |
 | Long-lived presentation | 2,048 modules plus 1,024 pending and 1,024 terminal records, followed by 100 unchanged renders, allocate no further list nodes or list replacements; a changed cell retains its row. |
-| Shared storage | Two store instances clean 1,024 terminal records in bounded passes while preserving 1,000 unrelated origin keys; repeated unchanged passes acquire no further cleanup locks or inventory enumerations. |
+| Scoped storage | One bounded legacy scan builds the scope directory; later load, prepare and cleanup do not enumerate unrelated origin keys, including with 20,000 unrelated keys present. |
+| Interrupted transitions | Pre-ready records are repaired without becoming dispatch authority; post-ready uncertainty remains query-only; failed removal returns conservatively to a retryable ready record. |
 | Authorization | Permission-revision changes disable controls and invalidate an existing confirmation even when the same module row is reused. |
-| Corruption/capacity | Malformed records remain intact; oversized origin inventory fails closed before unbounded enumeration or a new admission. |
+| Corruption/capacity | Malformed records and directories remain intact; migration and per-scope capacity fail closed; an existing exact record remains ambiguous even if directory repair fails. |
 
 `e2e/maintenance.spec.mjs` adds product-path checks in all three browser engines: 512 module rows with a real MutationObserver and axe, ordinary polling with reason-focus retention, and terminal cleanup under native Web Lock contention or failed storage deletion. The terminal fault tests retain the original recovery key, require a visible alert, release the fault, and verify the backend still contains only the original single mutation. The tests use the existing qualification server; they do not create a second application executor or supply production evidence.
 
-## Storage capacity and incident handling
+## Scoped storage directory and incident handling
 
-This revision does not replace or relax the scoped recovery store. Its 16,384-key origin-wide enumeration budget, 1,024 default per-scope capacity, 8,192-byte record bound, read-back verification, and corruption retention still apply. Admission continues to check current capacity under the shared lock; no cached inventory authorizes a write. Origin-wide storage contention remains a deployment capacity concern. Unchanged completed-history refreshes now avoid repeat cleanup calls; this is not a claim that all storage enumeration has been eliminated.
+The store retains the existing exact per-operation record schema and adds one authenticated-scope directory with schema `hepta.ui-control.scoped-recovery-directory.v1`. The directory is local maintenance metadata only. It contains sorted operation IDs and `reserving`, `ready`, or `removing` states; it never contains credentials, permission decisions, runtime terminal facts, or authority.
 
-When recovery storage fails, preserve the original scope and operation identities. Do not clear local storage and re-submit an uncertain action. Diagnose lock availability, origin quota, corrupt records, and scope binding separately, then reconcile through the authoritative backend. A future transactional/indexed storage migration must account for legacy records, interruption, mixed-version tabs, and exact scope before changing the store schema.
+For a new operation, the store writes and reads back `reserving`, the exact operation record, and then `ready` under the existing scope Web Lock. Only after `prepare()` returns may the client continue toward dispatch. An interrupted `reserving` transition is removed under the lock because the admission handoff did not complete. A `ready` record is always resolved by backend lookup, including when the final directory write succeeded but its caller did not observe success. Terminal cleanup uses `removing` so a failed deletion retains or restores an exact retryable record.
+
+When no directory exists, initialization performs one origin-wide scan capped at 16,384 keys and validates only records from the exact scope. A verified all-ready directory then permits reopen, load, admission and cleanup without enumerating unrelated origin keys. The default scope capacity remains 1,024, the hard maximum remains 4,096, each record remains capped at 8,192 bytes, and the directory is capped at 1 MiB.
+
+`ScopedRecoveryStore.diagnostics()` exposes only bounded counts and migration work, without operation IDs or secrets. Storage failures include a stable `details.storageReason` for redacted telemetry. Preserve the directory and all records on failure; never clear local storage and never submit a replacement for an unresolved operation identity.
+
+Old pages do not maintain the new directory. Deployment must revoke or drain old mutation-capable sessions, invalidate cached HTML, and force every long-lived tab to load the exact qualified assets before mutation permission is restored. Mixed-version mutation is not an accepted rollout state.
+
+The full state machine, migration rules, reason categories, and incident procedure are documented in [`RECOVERY_STORAGE.md`](../../docs/modules/ui.control/RECOVERY_STORAGE.md).
 
 ## External execution readiness
 
@@ -95,5 +109,6 @@ Follow the existing operations runbook for real-backend uniqueness, cross-princi
 - [`THREAT_MODEL.md`](../../docs/modules/ui.control/THREAT_MODEL.md)
 - [`SERVER_IDEMPOTENCY.md`](../../docs/modules/ui.control/SERVER_IDEMPOTENCY.md)
 - [`OPERATIONS.md`](../../docs/modules/ui.control/OPERATIONS.md)
+- [`RECOVERY_STORAGE.md`](../../docs/modules/ui.control/RECOVERY_STORAGE.md)
 
 `projectRuntimeFromLocalCanonicalJson` and `buildLocalOperationProposalFromCanonicalJson` remain strict local qualification helpers. They are not production configuration loaders and accept only exact bounded canonical JSON.

@@ -43,8 +43,6 @@ export class TerminalCleanupQueue {
       const key = JSON.stringify(fields.map(field => snapshot[field]));
       visible.set(key, snapshot);
     }
-    // A terminal that leaves presentation history must not lose its failed
-    // local cleanup. Retain its exact snapshot until verified removal succeeds.
     const selected = new Map([...this.#outstanding, ...visible]);
     if (selected.size > this.#limit) {
       throw new RangeError("outstanding terminal cleanup exceeds its bound");
@@ -61,8 +59,6 @@ export class TerminalCleanupQueue {
     else signal?.addEventListener("abort", abort, { once: true });
     const timer = setTimeout(() => deadline.abort(new Error("terminal cleanup batch deadline")), this.#deadlineMs);
     try {
-      // Rotate across the whole displayed inventory, including failed entries.
-      // A slow lock cannot repeatedly starve every operation behind it.
       let scanned = 0;
       while (scanned < entries.length && this.#pending.size < this.#batchSize) {
         this.#cursor %= entries.length;
@@ -73,8 +69,6 @@ export class TerminalCleanupQueue {
         const task = this.#tail.then(async () => {
           deadline.signal.throwIfAborted();
           await this.#complete(operation, { signal: deadline.signal });
-          // false means the exact record was already absent. This local memo
-          // never participates in admission or runtime-success decisions.
           this.#outstanding.delete(key);
           if (this.#visible.has(key)) this.#done.add(key);
         });
@@ -98,6 +92,17 @@ export class TerminalCleanupQueue {
       clearTimeout(timer);
       signal?.removeEventListener("abort", abort);
     }
+  }
+
+  diagnostics() {
+    return Object.freeze({
+      visible: this.#visible.size,
+      pending: this.#pending.size,
+      outstanding: this.#outstanding.size,
+      retainedSuccesses: this.#done.size,
+      maxEntries: this.#limit,
+      batchSize: this.#batchSize,
+    });
   }
 
   drain() {
