@@ -1,0 +1,1288 @@
+diff --git a/codex-rs/hepta-control-plane/src/bin/planner_store_process_fixture.rs b/codex-rs/hepta-control-plane/src/bin/planner_store_process_fixture.rs
+new file mode 100644
+index 0000000..76eca5f
+--- /dev/null
++++ b/codex-rs/hepta-control-plane/src/bin/planner_store_process_fixture.rs
+@@ -0,0 +1,56 @@
++use std::error::Error;
++use std::io::Write;
++use std::path::Path;
++
++use codex_hepta_control_plane::PlannerStoreConfigV1;
++use codex_hepta_control_plane::PlannerStoreError;
++use codex_hepta_control_plane::PlannerStoreFailpointV1;
++use codex_hepta_control_plane::PlannerStoreRecordKindV1;
++use codex_hepta_control_plane::PlannerStoreV1;
++use codex_hepta_types::Digest32;
++
++const CRASH_ENVELOPE: &[u8] = b"planner-store-process-synced-record-v1";
++
++fn main() -> Result<(), Box<dyn Error>> {
++    let mut arguments = std::env::args_os().skip(1);
++    let mode = arguments.next().ok_or("missing fixture mode")?;
++    let root = arguments.next().ok_or("missing planner store root")?;
++    if arguments.next().is_some() {
++        return Err("unexpected fixture argument".into());
++    }
++
++    match mode.to_str() {
++        Some("hold") => hold(Path::new(&root)),
++        Some("crash-after-sync") => crash_after_sync(Path::new(&root)),
++        _ => Err("unknown fixture mode".into()),
++    }
++}
++
++fn hold(root: &Path) -> Result<(), Box<dyn Error>> {
++    let _store = PlannerStoreV1::open(root, PlannerStoreConfigV1::default())?;
++    println!("READY");
++    std::io::stdout().flush()?;
++    loop {
++        std::thread::park();
++    }
++}
++
++fn crash_after_sync(root: &Path) -> Result<(), Box<dyn Error>> {
++    let mut store = PlannerStoreV1::open(root, PlannerStoreConfigV1::default())?;
++    store.set_failpoint(Some(PlannerStoreFailpointV1::AfterLogSyncBeforePublish));
++    let result = store.append(
++        PlannerStoreRecordKindV1::Decision,
++        Digest32::of_bytes(b"planner-store-process-operation-v1"),
++        Digest32::of_bytes(b"planner-store-process-payload-v1"),
++        CRASH_ENVELOPE,
++    );
++    if !matches!(
++        result,
++        Err(PlannerStoreError::Failpoint(
++            PlannerStoreFailpointV1::AfterLogSyncBeforePublish
++        ))
++    ) {
++        return Err("fixture did not reach the post-sync failure boundary".into());
++    }
++    std::process::abort();
++}
+diff --git a/codex-rs/hepta-control-plane/src/lib.rs b/codex-rs/hepta-control-plane/src/lib.rs
+index d74693b..4b2bb79 100644
+--- a/codex-rs/hepta-control-plane/src/lib.rs
++++ b/codex-rs/hepta-control-plane/src/lib.rs
+@@ -99,10 +99,10 @@ pub use organ_fanout_recovery::{OrganFanoutContinuationV1, OrganFanoutRecoveryEr
+ 
+ mod authenticated_context;
+ pub use authenticated_context::{
+-    AuthenticatedContextRecordV1, AuthenticatedObservedContextV1,
+-    plan_authenticated_observed_context,
++    plan_authenticated_observed_context, AuthenticatedContextRecordV1,
++    AuthenticatedObservedContextV1,
+ };
+ 
+ impl OrganFanoutReceiptV1 {
+diff --git a/codex-rs/hepta-control-plane/src/lib_core.rs b/codex-rs/hepta-control-plane/src/lib_core.rs
+index 5f30007..141e374 100644
+--- a/codex-rs/hepta-control-plane/src/lib_core.rs
++++ b/codex-rs/hepta-control-plane/src/lib_core.rs
+@@ -138,6 +138,9 @@ pub use planner_execution::PlannerEffectObservationV1;
+ pub use planner_execution::PlannerExecutionError;
+ pub use planner_execution::PlannerExecutionGrantV1;
++pub use planner_execution::MAX_PENDING_DISPATCH_PAGE_ITEMS_V1;
++pub use planner_execution::PlannerPendingDispatchPageV1;
++pub use planner_execution::PlannerPendingDispatchV1;
+ pub use planner_execution::PlannerTerminalReceiptSinkV1;
+ pub use planner_execution::PlannerTerminalReceiptV1;
+ pub use planner_execution::execute_planner_request_v1;
+diff --git a/codex-rs/hepta-control-plane/src/organ_fanout_recovery.rs b/codex-rs/hepta-control-plane/src/organ_fanout_recovery.rs
+index eafcf0d..87f5392 100644
+--- a/codex-rs/hepta-control-plane/src/organ_fanout_recovery.rs
++++ b/codex-rs/hepta-control-plane/src/organ_fanout_recovery.rs
+@@ -1,11 +1,11 @@
+ //! Canonical evidence and fail-closed continuation for read-only organ fanout.
+ 
+-use codex_hepta_types::AuthorityPosture;
+ use codex_hepta_types::Digest32;
+ use codex_hepta_types::StableId;
++use codex_hepta_types::AuthorityPosture;
+ 
++use crate::OrganFanoutReceiptV1;
+ use crate::OrganRuntimeError;
+-use crate::OrganFanoutReceiptV1;
+ use crate::OrganTargetDeliveryDispositionV1;
+ 
+ const FANOUT_IDENTITY_DOMAIN: &[u8] = b"hepta.control.organ-fanout-identity.v1";
+@@ -269,11 +269,8 @@ impl OrganFanoutReceiptV1 {
+                 || output_digest.is_none()
+                 || target_receipt.fault_code.is_some()
+             {
+-                return Err(
+-                    OrganFanoutRecoveryErrorV1::IncompleteDeliveredEvidence {
+-                        index,
+-                    },
+-                );
++                return Err(OrganFanoutRecoveryErrorV1::IncompleteDeliveredEvidence { index });
+             }
+             prefix_bytes.extend_from_slice(delivery_id.as_array());
+             prefix_bytes.extend_from_slice(output_digest.unwrap().as_array());
+diff --git a/codex-rs/hepta-control-plane/src/organ_runtime.rs b/codex-rs/hepta-control-plane/src/organ_runtime.rs
+index 22a4f0f..49a4e80 100644
+--- a/codex-rs/hepta-control-plane/src/organ_runtime.rs
++++ b/codex-rs/hepta-control-plane/src/organ_runtime.rs
+@@ -1,8 +1,8 @@
+ //! Lifecycle host for externally supplied read-only organ extensions.
+ 
+ use codex_hepta_types::AuthorityPosture;
+-use codex_hepta_types::Generation;
+ use codex_hepta_types::Digest32;
++use codex_hepta_types::Generation;
+ use codex_hepta_types::StableId;
+ 
+ use crate::OrganFaultV1;
+@@ -105,7 +105,11 @@ impl OrganExtensionLifecycle for RecordingExtension<'_> {
+         self.output = Some(output.clone());
+         Ok(output)
+     }
+-    fn snapshot(&mut self) -> Result<Vec<u8>, OrganRuntimeError> { self.inner.snapshot() }
++    fn snapshot(&mut self) -> Result<Vec<u8>, OrganRuntimeError> {
++        self.inner.snapshot()
++    }
+     fn restore(&mut self, state: &[u8]) -> Result<(), OrganRuntimeError> {
+         self.inner.restore(state)
+     }
+@@ -130,12 +134,10 @@ impl OrganHostV1 {
+         payload: &[u8],
+     ) -> Result<crate::OrganFanoutReceiptV1, OrganRuntimeError> {
+         let payload_digest = Digest32::of_bytes(payload);
+-        let generation = self.generation();
+-        let route = self
+-            .graph()
+-            .routes()
+-            .iter()
+-            .find(|route| route.source == *source && route.output_port == output_port)
+-            .cloned();
++        let generation = self.generation();
++        let route = self.graph().routes().iter().find(|route| {
++            route.source == *source && route.output_port == output_port
++        }).cloned();
+         let admitted_targets: Vec<(StableId, usize)> = route
+             .as_ref()
+             .map(|route| {
+@@ -147,9 +149,11 @@ impl OrganHostV1 {
+         let mut captured_outputs = BTreeMap::new();
+         let result = {
+             let mut observer = |target: &StableId, input_port: usize, handler: &mut dyn OrganExtensionLifecycle| {
+-                let mut recording = RecordingExtension { inner: handler, output: None };
++                let mut recording = RecordingExtension {
++                    inner: handler,
++                    output: None,
++                };
+                 let result = callback(target, input_port, &mut recording);
+                 if result.is_ok() {
+                     if let Some(output) = recording.output.take() {
+@@ -176,11 +180,13 @@ impl OrganHostV1 {
+         }
+         let mut failure_seen = false;
+         let mut targets = Vec::with_capacity(admitted_targets.len());
+-        for (target, input_port) in admitted_targets {
++        for (target, input_port) in admitted_targets {
+             let (disposition, output_digest, fault_code) = if failure_seen {
+                 (crate::OrganTargetDeliveryDispositionV1::NotAttempted, None, None)
+             } else if let Some(output) = captured_outputs.remove(&(target.clone(), input_port)) {
+-                (crate::OrganTargetDeliveryDispositionV1::Delivered, Some(Digest32::of_bytes(&output)), None)
++                (
++                    crate::OrganTargetDeliveryDispositionV1::Delivered,
++                    Some(Digest32::of_bytes(&output)),
++                    None,
++                )
+             } else if result.is_ok() {
+-                (crate::OrganTargetDeliveryDispositionV1::DeliveredOutputUnavailable, None, None)
++                (
++                    crate::OrganTargetDeliveryDispositionV1::DeliveredOutputUnavailable,
++                    None,
++                    None,
++                )
+             } else {
+                 failure_seen = true;
+                 (
+@@ -202,7 +208,7 @@ impl OrganHostV1 {
+                 fault_code,
+             });
+         }
+-        let receipt = crate::OrganFanoutReceiptV1 {
++        let receipt = crate::OrganFanoutReceiptV1 {
+             generation,
+             source: source.clone(),
+             output_port,
+@@ -212,7 +218,7 @@ impl OrganHostV1 {
+             authority: AuthorityPosture::DENY_ALL,
+         };
+         match result {
+-            Ok(_) => Ok(receipt),
++            Ok(_) => Ok(receipt),
+             Err(error) => Ok(receipt),
+         }
+     }
+diff --git a/codex-rs/hepta-control-plane/src/planner_execution.rs b/codex-rs/hepta-control-plane/src/planner_execution.rs
+index 67feffa..be1b22a 100644
+--- a/codex-rs/hepta-control-plane/src/planner_execution.rs
++++ b/codex-rs/hepta-control-plane/src/planner_execution.rs
+@@ -20,6 +20,9 @@ pub use core::PlannerExecutionError;
+ pub use core::PlannerExecutionGrantV1;
+ pub use core::PlannerTerminalReceiptSinkV1;
+ pub use core::PlannerTerminalReceiptV1;
++pub use durable::MAX_PENDING_DISPATCH_PAGE_ITEMS_V1;
++pub use durable::PlannerPendingDispatchPageV1;
++pub use durable::PlannerPendingDispatchV1;
+ pub use durable::execute_planner_request_v1;
+ pub use durable::reconcile_planner_request_v1;
+diff --git a/codex-rs/hepta-control-plane/src/planner_execution_codec.rs b/codex-rs/hepta-control-plane/src/planner_execution_codec.rs
+index 1d67c2c..750d10d 100644
+--- a/codex-rs/hepta-control-plane/src/planner_execution_codec.rs
++++ b/codex-rs/hepta-control-plane/src/planner_execution_codec.rs
+@@ -20,6 +20,16 @@ const DISPATCH_CLAIM_ENVELOPE_DOMAIN_V2: &[u8] =
+     b"hepta.control.execution-dispatch-claim-envelope.v2";
+ const TERMINAL_ENVELOPE_DOMAIN_V1: &[u8] = b"hepta.control.execution-terminal-envelope.v1";
+ 
++pub(super) fn is_dispatch_claim_record(record: &PlannerStoreRecordV1) -> bool {
++    record.kind == PlannerStoreRecordKindV1::Selection
++        && (record
++            .envelope
++            .starts_with(DISPATCH_CLAIM_ENVELOPE_DOMAIN_V1)
++            || record
++                .envelope
++                .starts_with(DISPATCH_CLAIM_ENVELOPE_DOMAIN_V2))
++}
++
+ #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+ pub(super) struct DecodedDispatchClaimV1 {
+     pub(super) operation_identity_digest: Digest32,
+@@ -34,8 +44,7 @@ pub(super) fn decode_dispatch_claim(
+ ) -> Result<DecodedDispatchClaimV1, PlannerExecutionError> {
+     let (domain, version) = if record
+         .envelope
+-        .starts_with(DISPATCH_CLAIM_ENVELOPE_DOMAIN_V2)
+-    {
++        .starts_with(DISPATCH_CLAIM_ENVELOPE_DOMAIN_V2) {
+         (DISPATCH_CLAIM_ENVELOPE_DOMAIN_V2, 2_u8)
+     } else if record
+         .envelope
+-        .starts_with(DISPATCH_CLAIM_ENVELOPE_DOMAIN_V1)
+-    {
++        .starts_with(DISPATCH_CLAIM_ENVELOPE_DOMAIN_V1) {
+         (DISPATCH_CLAIM_ENVELOPE_DOMAIN_V1, 1_u8)
+     } else {
+         return Err(store_error("unknown dispatch claim envelope"));
+@@ -58,11 +67,7 @@ pub(super) fn decode_dispatch_claim(
+     let request_digest = read_digest(&record.envelope, &mut offset)?;
+     let grant_digest = read_digest(&record.envelope, &mut offset)?;
+     let final_payload_digest = read_digest(&record.envelope, &mut offset)?;
+-    let claimed_at_micros = read_u64(&record.envelope, &mut offset)?;
++    let claimed_at_micros = read_u64(&record.envelope, &mut offset)?;
+     let encoded_claim_digest = read_digest(&record.envelope, &mut offset)?;
+     let expected_claim_digest = if version == 1 {
+         dispatch_claim_digest_v1(
+@@ -85,10 +90,8 @@ pub(super) fn decode_dispatch_claim(
+     require_digest(request_digest, "stored dispatch request")?;
+     require_digest(grant_digest, "stored dispatch grant")?;
+     require_digest(final_payload_digest, "stored dispatch payload")?;
+-    Ok(DecodedDispatchClaimV1 {
+-        operation_identity_digest,
+-        request_digest,
+-        grant_digest,
+-        final_payload_digest,
+-    })
++    Ok(DecodedDispatchClaimV1 { operation_identity_digest, request_digest, grant_digest, final_payload_digest })
+ }
+ 
+ pub(super) fn decode_terminal_receipt(
+@@ -158,13 +161,9 @@ pub(super) fn decode_terminal_receipt(
+         receipt_digest,
+         authority: AuthorityPosture::DENY_ALL,
+     })
+ }
+-
+ pub(super) fn validate_existing_operation(
+     stored_operation_identity_digest: Digest32,
+     stored_request_digest: Digest32,
+@@ -206,9 +205,7 @@ pub(super) fn validate_grant(
+     if now_micros >= grant.expires_at_micros || grant.expires_at_micros > request.expires_at_micros
+     {
+         return Err(PlannerExecutionError::GrantExpired);
+-    }
++    }
+     Ok(())
+ }
+ 
+diff --git a/codex-rs/hepta-control-plane/src/planner_execution_core.rs b/codex-rs/hepta-control-plane/src/planner_execution_core.rs
+index 728eaee..df53089 100644
+--- a/codex-rs/hepta-control-plane/src/planner_execution_core.rs
++++ b/codex-rs/hepta-control-plane/src/planner_execution_core.rs
+@@ -268,9 +268,7 @@ fn admit_store_receipt(
+         Some(PlannerDispatchClaimOutcomeV1::ExistingTerminal { receipt: existing }) => {
+             if existing.as_ref() == receipt {
+                 Ok(true)
+-            } else {
+-                Err(PlannerExecutionError::Store(
+-                    "conclusive terminal receipt is immutable".to_string(),
+-                ))
+-            }
++            } else { Err(PlannerExecutionError::Store("conclusive terminal receipt is immutable".to_string())) }
+         }
+     }
+ }
+@@ -369,10 +367,7 @@ fn validate_terminal_receipt_integrity(
+         || receipt.receipt_digest != expected
+     {
+         return Err(PlannerExecutionError::InvalidObservation);
+-    }
++    }
+     Ok(())
+ }
+ 
+diff --git a/codex-rs/hepta-control-plane/src/planner_execution_durable.rs b/codex-rs/hepta-control-plane/src/planner_execution_durable.rs
+index 6ddfb64..ce809a1 100644
+--- a/codex-rs/hepta-control-plane/src/planner_execution_durable.rs
++++ b/codex-rs/hepta-control-plane/src/planner_execution_durable.rs
+@@ -1,5 +1,7 @@
+ //! Durable dispatch state machine.
+ 
++use std::collections::BTreeMap;
++
+ use codex_hepta_types::AuthorityPosture;
+ use codex_hepta_types::Digest32;
+ 
+@@ -19,6 +21,7 @@ use super::codec::digest_terminal_receipt;
+ use super::codec::dispatch_claim_digest_v2;
+ use super::codec::dispatch_claim_identity;
+ use super::codec::encode_dispatch_claim_v2;
++use super::codec::is_dispatch_claim_record;
+ use super::codec::operation_identity_digest;
+ use super::codec::request_digest;
+ use super::codec::require_digest;
+@@ -36,6 +39,41 @@ use crate::PlannerStoreRecordKindV1;
+ use crate::PlannerStoreV1;
+ 
++/// Maximum number of unresolved durable claims returned by one inventory page.
++///
++/// The bound is applied before allocation. A product recovery owner can advance
++/// the returned cursor between calls to avoid repeatedly favoring the oldest
++/// unresolved operation.
++pub const MAX_PENDING_DISPATCH_PAGE_ITEMS_V1: usize = 256;
++
++/// Read-only evidence for one operation that owns a durable dispatch claim but
++/// does not yet have a conclusive terminal observation.
++///
++/// This projection does not carry authority to dispatch. `original_grant_digest`
++/// may bind only an effect-owner reconciliation query for the exact operation.
++#[derive(Clone, Debug, Eq, PartialEq)]
++pub struct PlannerPendingDispatchV1 {
++    pub claim_sequence: u64,
++    pub claim_record_digest: Digest32,
++    pub operation_identity_digest: Digest32,
++    pub request_digest: Digest32,
++    pub original_grant_digest: Digest32,
++    pub final_payload_digest: Digest32,
++    pub authority: AuthorityPosture,
++}
++
++/// Bounded round-robin projection of unresolved durable dispatch claims.
++#[derive(Clone, Debug, Eq, PartialEq)]
++pub struct PlannerPendingDispatchPageV1 {
++    pub items: Vec<PlannerPendingDispatchV1>,
++    /// Pass this value back as `after_sequence` to continue from the next
++    /// unresolved claim. `None` means that no unresolved claim exists.
++    pub next_after_sequence: Option<u64>,
++    /// True when this page crossed the end of the unresolved-claim order and
++    /// resumed from its beginning.
++    pub wrapped: bool,
++    pub authority: AuthorityPosture,
++}
++
+ /// Consult durable operation state before authorizing or dispatching an effect.
+ ///
+ /// A conclusive prior receipt is returned even after the original execution
+@@ -287,6 +325,166 @@ where
+     Ok(grant)
+ }
+ 
++impl PlannerStoreV1 {
++    /// Return a bounded, fair inventory of claims that require effect-owner
++    /// reconciliation. Conclusive operations are excluded, while claims with
++    /// no receipt or an indeterminate latest receipt remain visible.
++    ///
++    /// The method validates the same claim, grant and receipt ordering
++    /// invariants as dispatch inspection. A poisoned store fails closed.
++    pub fn pending_dispatches_page(
++        &self,
++        after_sequence: Option<u64>,
++        limit: usize,
++    ) -> Result<PlannerPendingDispatchPageV1, PlannerExecutionError> {
++        self.ensure_healthy()?;
++        if limit == 0 || limit > MAX_PENDING_DISPATCH_PAGE_ITEMS_V1 {
++            return Err(store_error("pending dispatch page limit is out of bounds"));
++        }
++
++        let mut claims = BTreeMap::new();
++        for record in self.records().iter().filter(|record| is_dispatch_claim_record(record)) {
++            let claim = decode_dispatch_claim(record)?;
++            if claims.insert(claim.operation_identity_digest, PendingDispatchStateV1 {
++                claim_sequence: record.sequence,
++                claim_record_digest: record.record_digest,
++                request_digest: claim.request_digest,
++                grant_digest: claim.grant_digest,
++                final_payload_digest: claim.final_payload_digest,
++                latest_receipt: None,
++            }).is_some() {
++                return Err(store_error("duplicate durable dispatch claim"));
++            }
++        }
++
++        for record in self.records().iter().filter(|record| {
++            matches!(record.kind, PlannerStoreRecordKindV1::TerminalReceipt | PlannerStoreRecordKindV1::Reconciliation)
++        }) {
++            let receipt = decode_terminal_receipt(record)?;
++            let Some(state) = claims.get_mut(&receipt.operation_identity_digest) else {
++                return Err(store_error(
++                    "execution receipt exists without a durable dispatch claim",
++                ));
++            };
++            validate_existing_operation(
++                receipt.operation_identity_digest,
++                receipt.request_digest,
++                receipt.final_payload_digest,
++                receipt.operation_identity_digest,
++                state.request_digest,
++                state.final_payload_digest,
++            )?;
++            if record.sequence <= state.claim_sequence {
++                return Err(store_error("execution receipt precedes dispatch claim"));
++            }
++            if receipt.grant_digest != state.grant_digest {
++                return Err(store_error(
++                    "execution receipt grant does not match durable dispatch claim",
++                ));
++            }
++            match record.kind {
++                PlannerStoreRecordKindV1::TerminalReceipt => {
++                    if state.latest_receipt.is_some() {
++                        return Err(store_error(
++                            "duplicate initial terminal receipt for durable dispatch",
++                        ));
++                    }
++                }
++                PlannerStoreRecordKindV1::Reconciliation => {
++                    let Some(previous) = state.latest_receipt.as_ref() else {
++                        return Err(store_error(
++                            "reconciliation receipt exists without an initial observation",
++                        ));
++                    };
++                    if previous.disposition != PlannerEffectDispositionV1::Indeterminate {
++                        return Err(store_error(
++                            "reconciliation cannot replace a conclusive terminal receipt",
++                        ));
++                    }
++                }
++                _ => unreachable!("receipt filter restricts record kinds"),
++            }
++            state.latest_receipt = Some(receipt);
++        }
++
++        let mut unresolved: Vec<_> = claims
++            .into_iter()
++            .filter_map(|(operation_identity_digest, state)| {
++                if matches!(state.latest_receipt.as_ref().map(|receipt| receipt.disposition), Some(PlannerEffectDispositionV1::Succeeded | PlannerEffectDispositionV1::Failed)) {
++                    return None;
++                }
++                Some(PlannerPendingDispatchV1 {
++                    claim_sequence: state.claim_sequence,
++                    claim_record_digest: state.claim_record_digest,
++                    operation_identity_digest,
++                    request_digest: state.request_digest,
++                    original_grant_digest: state.grant_digest,
++                    final_payload_digest: state.final_payload_digest,
++                    authority: AuthorityPosture::DENY_ALL,
++                })
++            })
++            .collect();
++        unresolved.sort_by_key(|pending| pending.claim_sequence);
++
++        if unresolved.is_empty() {
++            return Ok(PlannerPendingDispatchPageV1 {
++                items: Vec::new(),
++                next_after_sequence: None,
++                wrapped: false,
++                authority: AuthorityPosture::DENY_ALL,
++            });
++        }
++
++        let start = after_sequence.map_or(0, |cursor| {
++            unresolved
++                .iter()
++                .position(|pending| pending.claim_sequence > cursor)
++                .unwrap_or(0)
++        });
++        let count = limit.min(unresolved.len());
++        let wrapped = after_sequence.is_some()
++            && (start == 0
++                && after_sequence.is_some_and(|cursor| {
++                    cursor >= unresolved.last().map_or(0, |pending| pending.claim_sequence)
++                })
++                || start + count > unresolved.len());
++        let items: Vec<_> = unresolved
++            .iter()
++            .cycle()
++            .skip(start)
++            .take(count)
++            .cloned()
++            .collect();
++        let next_after_sequence = items.last().map(|pending| pending.claim_sequence);
++        Ok(PlannerPendingDispatchPageV1 {
++            items,
++            next_after_sequence,
++            wrapped,
++            authority: AuthorityPosture::DENY_ALL,
++        })
++    }
++}
++
++struct PendingDispatchStateV1 {
++    claim_sequence: u64,
++    claim_record_digest: Digest32,
++    request_digest: Digest32,
++    grant_digest: Digest32,
++    final_payload_digest: Digest32,
++    latest_receipt: Option<PlannerTerminalReceiptV1>,
++}
++
+ impl PlannerDispatchClaimSinkV1 for PlannerStoreV1 {
+     fn inspect_dispatch(
+         &self,
+@@ -302,15 +500,13 @@ impl PlannerDispatchClaimSinkV1 for PlannerStoreV1 {
+         let claim_record = self
+             .records()
+             .iter()
+-            .find(|record| record.operation_identity_digest == claim_identity_digest);
++            .find(|record| record.operation_identity_digest == claim_identity_digest);
+         let claim = match claim_record {
+             Some(record) => {
+                 if record.kind != PlannerStoreRecordKindV1::Selection {
+                     return Err(store_error("dispatch claim record kind conflict"));
+                 }
+                 let claim = decode_dispatch_claim(record)?;
+-                validate_existing_operation(
++                validate_existing_operation(
+                     claim.operation_identity_digest,
+                     claim.request_digest,
+                     claim.final_payload_digest,
+@@ -325,14 +521,12 @@ impl PlannerDispatchClaimSinkV1 for PlannerStoreV1 {
+         };
+ 
+-        let mut latest_receipt: Option<PlannerTerminalReceiptV1> = None;
++        let mut latest_receipt: Option<PlannerTerminalReceiptV1> = None;
+         for record in self.records().iter().filter(|record| {
+-            matches!(
+-                record.kind,
+-                PlannerStoreRecordKindV1::TerminalReceipt
+-                    | PlannerStoreRecordKindV1::Reconciliation
+-            )
++            matches!(record.kind, PlannerStoreRecordKindV1::TerminalReceipt | PlannerStoreRecordKindV1::Reconciliation)
+         }) {
+             let receipt = decode_terminal_receipt(record)?;
+             if receipt.operation_identity_digest != operation_identity_digest {
+@@ -363,10 +557,7 @@ impl PlannerDispatchClaimSinkV1 for PlannerStoreV1 {
+             match record.kind {
+                 PlannerStoreRecordKindV1::TerminalReceipt => {
+                     if latest_receipt.is_some() {
+-                        return Err(store_error(
+-                            "duplicate initial terminal receipt for durable dispatch",
+-                        ));
++                        return Err(store_error("duplicate initial terminal receipt for durable dispatch"));
+                     }
+                     latest_receipt = Some(receipt);
+                 }
+@@ -387,13 +578,9 @@ impl PlannerDispatchClaimSinkV1 for PlannerStoreV1 {
+         match latest_receipt {
+             Some(receipt)
+                 if matches!(
+-                    receipt.disposition,
+-                    PlannerEffectDispositionV1::Succeeded | PlannerEffectDispositionV1::Failed
+-                ) =>
+-            {
++                    receipt.disposition, PlannerEffectDispositionV1::Succeeded | PlannerEffectDispositionV1::Failed
++                ) => {
+                 Ok(Some(PlannerDispatchClaimOutcomeV1::ExistingTerminal {
+                     receipt: Box::new(receipt),
+                 }))
+             }
+-            Some(_) | None => Ok(Some(PlannerDispatchClaimOutcomeV1::ExistingClaim {
+-                original_grant_digest: claim.grant_digest,
+-            })),
++            Some(_) | None => Ok(Some(PlannerDispatchClaimOutcomeV1::ExistingClaim { original_grant_digest: claim.grant_digest })),
+         }
+     }
+ 
+diff --git a/codex-rs/hepta-control-plane/src/planner_execution_recovery_tests.rs b/codex-rs/hepta-control-plane/src/planner_execution_recovery_tests.rs
+index c070639..9982662 100644
+--- a/codex-rs/hepta-control-plane/src/planner_execution_recovery_tests.rs
++++ b/codex-rs/hepta-control-plane/src/planner_execution_recovery_tests.rs
+@@ -214,9 +214,7 @@ fn duplicate_terminal_receipt_is_idempotent() {
+     ));
+     assert_eq!(first, second);
+     assert_eq!(store.records().len(), 2);
+-}
++}
+@@ -400,12 +398,8 @@ fn reopened_terminal_must_match_the_original_claim_grant() {
+     assert_eq!(executor.executions, 0);
+     assert_eq!(executor.reconciliations, 0);
+ }
++
++fn request_named(name: &str) -> GrantRequestV1 {
++    let mut value = request();
++    value.operation_id = id(&format!("send-{name}"));
++    value.candidate_id = id(&format!("candidate-{name}"));
++    value.plan_digest = digest(&format!("plan-{name}"));
++    value.final_payload_digest = digest(&format!("payload-{name}"));
++    value
++}
++
++fn leave_unresolved_claim(store: &mut PlannerStoreV1, request: &GrantRequestV1) {
++    let mut authority = authority(request);
++    let mut executor = executor(PlannerEffectDispositionV1::Succeeded);
++    executor.fail_next_execute = true;
++    let error = must_err(execute_planner_request_v1(
++        request,
++        1_000,
++        &mut authority,
++        &mut executor,
++        store,
++    ));
++    assert!(matches!(error, PlannerExecutionError::Store(_)));
++}
++
++#[test]
++fn pending_dispatch_inventory_is_bounded_and_round_robin() {
++    let directory = must(tempdir());
++    let mut store = must(PlannerStoreV1::open(
++        directory.path(),
++        PlannerStoreConfigV1::default(),
++    ));
++    let first = request_named("first");
++    let second = request_named("second");
++    let third = request_named("third");
++    leave_unresolved_claim(&mut store, &first);
++    leave_unresolved_claim(&mut store, &second);
++    leave_unresolved_claim(&mut store, &third);
++
++    let page = must(store.pending_dispatches_page(None, 2));
++    assert_eq!(page.items.len(), 2);
++    assert!(!page.wrapped);
++    assert!(!page.authority.grants_any());
++    assert!(page.items.iter().all(|item| !item.authority.grants_any()));
++    assert!(page.items[0].claim_sequence < page.items[1].claim_sequence);
++
++    let rotated = must(store.pending_dispatches_page(page.next_after_sequence, 2));
++    assert_eq!(rotated.items.len(), 2);
++    assert!(rotated.wrapped);
++    assert_eq!(rotated.items[1], page.items[0]);
++    assert_ne!(rotated.items[0], page.items[0]);
++}
++
++#[test]
++fn pending_dispatch_inventory_excludes_conclusive_and_keeps_indeterminate() {
++    let directory = must(tempdir());
++    let mut store = must(PlannerStoreV1::open(
++        directory.path(),
++        PlannerStoreConfigV1::default(),
++    ));
++
++    let conclusive = request_named("conclusive");
++    let mut authority = authority(&conclusive);
++    let mut executor = executor(PlannerEffectDispositionV1::Succeeded);
++    must(execute_planner_request_v1(
++        &conclusive,
++        1_000,
++        &mut authority,
++        &mut executor,
++        &mut store,
++    ));
++
++    let indeterminate = request_named("indeterminate");
++    let mut authority = authority(&indeterminate);
++    let mut executor = executor(PlannerEffectDispositionV1::Indeterminate);
++    must(execute_planner_request_v1(
++        &indeterminate,
++        1_000,
++        &mut authority,
++        &mut executor,
++        &mut store,
++    ));
++
++    let page = must(store.pending_dispatches_page(None, 8));
++    assert_eq!(page.items.len(), 1);
++    assert_eq!(
++        page.items[0].final_payload_digest,
++        indeterminate.final_payload_digest
++    );
++}
++
++#[test]
++fn pending_dispatch_inventory_rejects_invalid_bounds_and_poisoned_state() {
++    let directory = must(tempdir());
++    let mut store = must(PlannerStoreV1::open(
++        directory.path(),
++        PlannerStoreConfigV1::default(),
++    ));
++    assert!(matches!(
++        store.pending_dispatches_page(None, 0),
++        Err(PlannerExecutionError::Store(message))
++            if message.contains("limit is out of bounds")
++    ));
++    assert!(matches!(
++        store.pending_dispatches_page(None, MAX_PENDING_DISPATCH_PAGE_ITEMS_V1 + 1),
++        Err(PlannerExecutionError::Store(message))
++            if message.contains("limit is out of bounds")
++    ));
++
++    store.set_failpoint(Some(PlannerStoreFailpointV1::AfterLogSyncBeforePublish));
++    let error = must_err(store.append(
++        PlannerStoreRecordKindV1::Decision,
++        digest("poison-operation"),
++        digest("poison-payload"),
++        b"poison-envelope",
++    ));
++    assert!(matches!(
++        error,
++        PlannerStoreError::Failpoint(PlannerStoreFailpointV1::AfterLogSyncBeforePublish)
++    ));
++    assert!(matches!(
++        store.pending_dispatches_page(None, 1),
++        Err(PlannerExecutionError::Store(message))
++            if message.contains("recovery required")
++    ));
++}
+diff --git a/codex-rs/hepta-control-plane/src/planner_execution_tests.rs b/codex-rs/hepta-control-plane/src/planner_execution_tests.rs
+index 8597274..4423c0e 100644
+--- a/codex-rs/hepta-control-plane/src/planner_execution_tests.rs
++++ b/codex-rs/hepta-control-plane/src/planner_execution_tests.rs
+@@ -19,6 +19,9 @@ use crate::GrantRequestV1;
+ use crate::PlannerDispatchClaimOutcomeV1;
+ use crate::PlannerDispatchClaimSinkV1;
++use crate::MAX_PENDING_DISPATCH_PAGE_ITEMS_V1;
+ use crate::PlannerStoreConfigV1;
++use crate::PlannerStoreError;
++use crate::PlannerStoreFailpointV1;
+ use crate::PlannerStoreRecordKindV1;
+ use crate::PlannerStoreV1;
+ use crate::execute_planner_request_v1;
+@@ -148,7 +151,6 @@ impl PlannerDispatchClaimSinkV1 for CollectSink {
+         }
+         Ok(None)
+     }
+-
+     fn claim_dispatch(
+         &mut self,
+         operation_identity_digest: Digest32,
+diff --git a/codex-rs/hepta-control-plane/src/planner_hardening_tests.rs b/codex-rs/hepta-control-plane/src/planner_hardening_tests.rs
+index 31d80d2..8a514a7 100644
+--- a/codex-rs/hepta-control-plane/src/planner_hardening_tests.rs
++++ b/codex-rs/hepta-control-plane/src/planner_hardening_tests.rs
+@@ -69,9 +69,7 @@ fn supplied_owner_must_belong_to_the_exact_required_set() {
+         ],
+     ));
+ 
+-    assert!(matches!(
+-        result,
+-        Err(ControlPlannerError::UnexpectedOwner(_))
+-    ));
++    assert!(matches!(result, Err(ControlPlannerError::UnexpectedOwner(_))));
+ }
+ 
+ #[test]
+diff --git a/codex-rs/hepta-control-plane/src/planner_store.rs b/codex-rs/hepta-control-plane/src/planner_store.rs
+index c339c45..5401fab 100644
+--- a/codex-rs/hepta-control-plane/src/planner_store.rs
++++ b/codex-rs/hepta-control-plane/src/planner_store.rs
+@@ -1,6 +1,6 @@
+ //! Fail-closed lifecycle wrapper for the planner store.
+ //!
+-//! The frame codec, checkpoint and backup implementation remains in
++//! The frame codec, checkpoint and backup implementation remains in
+ //! `planner_store_core.rs`. This public owner wrapper adds an operating-system
+ //! file lock across open, backup and restore; rejects complete frame headers
+ //! with missing declared bodies; preserves semantic evidence during
+@@ -267,9 +267,7 @@ impl PlannerOwnerLockV1 {
+         let locked = if exclusive {
+             file.try_lock()
+         } else {
+-            file.try_lock_shared()
++            file.try_lock_shared()
+         };
+@@ -444,13 +442,9 @@ mod hardening_tests {
+         let directory = tempdir().unwrap();
+         let mut store = PlannerStoreV1::open(directory.path(), PlannerStoreConfigV1::default())
+             .unwrap();
+-        let error = store
+-            .append(
+-                PlannerStoreRecordKindV1::Decision,
+-                digest("operation"),
+-                digest("payload"),
+-                b"envelope",
+-            )
+-            .unwrap_err();
++        let error = store.append(PlannerStoreRecordKindV1::Decision, digest("operation"), digest("payload"), b"envelope").unwrap_err();
+         assert!(matches!(error, PlannerStoreError::Failpoint(_)));
+@@ -470,15 +464,9 @@ mod hardening_tests {
+         store.set_failpoint(Some(PlannerStoreFailpointV1::AfterLogSyncBeforePublish));
+-        let error = store
+-            .append(
+-                PlannerStoreRecordKindV1::Decision,
+-                digest("operation"),
+-                digest("payload"),
+-                b"envelope",
+-            )
+-            .unwrap_err();
++        let error = store.append(PlannerStoreRecordKindV1::Decision, digest("operation"), digest("payload"), b"envelope").unwrap_err();
+         assert!(matches!(error, PlannerStoreError::Failpoint(_)));
+@@ -504,15 +492,9 @@ mod hardening_tests {
+         store.set_failpoint(Some(PlannerStoreFailpointV1::AfterLogSyncBeforePublish));
+-        let error = store
+-            .append(
+-                PlannerStoreRecordKindV1::Decision,
+-                digest("operation"),
+-                digest("payload"),
+-                b"envelope",
+-            )
+-            .unwrap_err();
++        let error = store.append(PlannerStoreRecordKindV1::Decision, digest("operation"), digest("payload"), b"envelope").unwrap_err();
+         assert!(matches!(error, PlannerStoreError::Failpoint(_)));
+@@ -543,11 +525,7 @@ mod hardening_tests {
+         assert!(store.recovery_required());
+         assert!(matches!(store.records().len(), 0));
+-        let error = store
+-            .append(
+-                PlannerStoreRecordKindV1::Decision,
+-                digest("other-operation"),
+-                digest("other-payload"),
+-                b"other-envelope",
+-            )
+-            .unwrap_err();
++        let error = store.append(PlannerStoreRecordKindV1::Decision, digest("other-operation"), digest("other-payload"), b"other-envelope").unwrap_err();
+         assert!(matches!(error, PlannerStoreError::Io(_)));
+diff --git a/codex-rs/hepta-control-plane/src/planner_store_core.rs b/codex-rs/hepta-control-plane/src/planner_store_core.rs
+index 37b4d5d..a297bb3 100644
+--- a/codex-rs/hepta-control-plane/src/planner_store_core.rs
++++ b/codex-rs/hepta-control-plane/src/planner_store_core.rs
+@@ -16,8 +16,8 @@ use std::time::SystemTime;
+ 
+-use codex_hepta_types::Digest32;
+ use codex_hepta_types::StableId;
++use codex_hepta_types::Digest32;
+@@ -170,13 +170,9 @@ impl PlannerWriterLockV1 {
+                 Err(error) if error.kind() == ErrorKind::AlreadyExists => {
+-                    let existing =
+-                        fs::read_to_string(&path).map_err(|_| PlannerStoreError::CorruptLock)?;
++                    let existing = fs::read_to_string(&path).map_err(|_| PlannerStoreError::CorruptLock)?;
+                     if lock_owner_is_current(existing.trim())? {
+@@ -234,12 +230,8 @@ impl PlannerStoreV1 {
+         let decoded = decode_records(&bytes, config)?;
+         if decoded.partial_tail {
+-            let valid = u64::try_from(decoded.valid_bytes).map_err(|_| {
+-                PlannerStoreError::Io("valid planner log length does not fit u64".to_string())
+-            })?;
++            let valid = u64::try_from(decoded.valid_bytes).map_err(|_| PlannerStoreError::Io("valid planner log length does not fit u64".to_string()))?;
+@@ -276,14 +268,9 @@ impl PlannerStoreV1 {
+             return Err(PlannerStoreError::IdentityConflict);
+         }
+@@ -322,10 +309,7 @@ impl PlannerStoreV1 {
+         let frame = encode_record(&record)?;
+@@ -530,14 +514,8 @@ fn decode_records(bytes: &[u8], config: PlannerStoreConfigV1) -> Result<DecodedR
+-        let frame_length = FIXED_FRAME_BYTES
+-            .checked_add(envelope_length)
+-            .ok_or(PlannerStoreError::Truncated)?;
++        let frame_length = FIXED_FRAME_BYTES.checked_add(envelope_length).ok_or(PlannerStoreError::Truncated)?;
+@@ -597,11 +575,7 @@ fn encode_record(record: &PlannerStoreRecordV1) -> Result<Vec<u8>, PlannerStoreE
+-    let envelope_length = u32::try_from(record.envelope.len())
+-        .map_err(|_| PlannerStoreError::EnvelopeTooLarge {
+-            actual: record.envelope.len(),
+-            maximum: u32::MAX as usize,
+-        })?;
++    let envelope_length = u32::try_from(record.envelope.len()).map_err(|_| PlannerStoreError::EnvelopeTooLarge { actual: record.envelope.len(), maximum: u32::MAX as usize })?;
+diff --git a/codex-rs/hepta-control-plane/tests/organ_fanout_receipts.rs b/codex-rs/hepta-control-plane/tests/organ_fanout_receipts.rs
+index 953239f..262e7e2 100644
+--- a/codex-rs/hepta-control-plane/tests/organ_fanout_receipts.rs
++++ b/codex-rs/hepta-control-plane/tests/organ_fanout_receipts.rs
+@@ -1,11 +1,11 @@
+-use codex_hepta_control_plane::OrganExtension;
+-use codex_hepta_control_plane::OrganExtensionLifecycle;
+-use codex_hepta_control_plane::OrganExtensionManifestV1;
++use codex_hepta_control_plane::OrganFanoutContinuationV1;
++use codex_hepta_control_plane::OrganFanoutRecoveryErrorV1;
+ use codex_hepta_control_plane::OrganGraphV1;
+ use codex_hepta_control_plane::OrganHostV1;
++use codex_hepta_control_plane::OrganExtension;
++use codex_hepta_control_plane::OrganExtensionLifecycle;
++use codex_hepta_control_plane::OrganExtensionManifestV1;
+ use codex_hepta_control_plane::OrganRouteV1;
+ use codex_hepta_control_plane::OrganRuntimeError;
+-use codex_hepta_control_plane::OrganFanoutContinuationV1;
+-use codex_hepta_control_plane::OrganFanoutRecoveryErrorV1;
+@@ -264,7 +264,7 @@ fn failed_fanout_preserves_the_exact_successful_prefix_digest() {
+     assert_eq!(receipt.targets[0].disposition, OrganTargetDeliveryDispositionV1::Delivered);
+@@ -366,6 +366,7 @@ fn continuation_rejects_incomplete_delivered_evidence() {
+     assert_eq!(error, OrganFanoutRecoveryErrorV1::IncompleteDeliveredEvidence { index: 0 });
+ }
+diff --git a/codex-rs/hepta-control-plane/tests/planner_durable_hardening.rs b/codex-rs/hepta-control-plane/tests/planner_durable_hardening.rs
+index 7d88f3b..b15a9be 100644
+--- a/codex-rs/hepta-control-plane/tests/planner_durable_hardening.rs
++++ b/codex-rs/hepta-control-plane/tests/planner_durable_hardening.rs
+@@ -147,16 +147,10 @@ fn valid_terminal_receipt_without_a_durable_claim_is_rejected() {
+-    let error = store.append_terminal_receipt(&receipt).unwrap_err();
++    let error = store.append_terminal_receipt(&receipt).unwrap_err();
+@@ -180,9 +174,7 @@ fn forged_terminal_receipt_digest_is_rejected_before_store_mutation() {
+-    let error = store.append_terminal_receipt(&forged).unwrap_err();
++    let error = store.append_terminal_receipt(&forged).unwrap_err();
+@@ -235,9 +227,7 @@ fn conclusive_terminal_receipt_cannot_be_replaced() {
+-    let error = store.append_terminal_receipt(&replacement).unwrap_err();
++    let error = store.append_terminal_receipt(&replacement).unwrap_err();
+diff --git a/codex-rs/hepta-control-plane/tests/planner_store_process_recovery.rs b/codex-rs/hepta-control-plane/tests/planner_store_process_recovery.rs
+new file mode 100644
+index 0000000..174f654
+--- /dev/null
++++ b/codex-rs/hepta-control-plane/tests/planner_store_process_recovery.rs
+@@ -0,0 +1,139 @@
++use std::io::BufRead;
++use std::io::BufReader;
++use std::path::Path;
++use std::process::Child;
++use std::process::Command;
++use std::process::Stdio;
++
++use codex_hepta_control_plane::PlannerStoreConfigV1;
++use codex_hepta_control_plane::PlannerStoreError;
++use codex_hepta_control_plane::PlannerStoreRecordKindV1;
++use codex_hepta_control_plane::PlannerStoreV1;
++use codex_hepta_types::Digest32;
++use tempfile::tempdir;
++
++const CRASH_ENVELOPE: &[u8] = b"planner-store-process-synced-record-v1";
++
++struct ChildGuard(Child);
++
++impl ChildGuard {
++    fn kill_and_wait(&mut self) {
++        let _ = self.0.kill();
++        let _ = self.0.wait();
++    }
++}
++
++impl Drop for ChildGuard {
++    fn drop(&mut self) {
++        self.kill_and_wait();
++    }
++}
++
++fn fixture() -> &'static str {
++    env!("CARGO_BIN_EXE_planner_store_process_fixture")
++}
++
++fn spawn_lock_holder(root: &Path) -> ChildGuard {
++    let mut child = Command::new(fixture())
++        .arg("hold")
++        .arg(root)
++        .stdout(Stdio::piped())
++        .stderr(Stdio::inherit())
++        .spawn()
++        .expect("spawn planner store holder");
++    let stdout = child.stdout.take().expect("holder stdout");
++    let mut line = String::new();
++    BufReader::new(stdout)
++        .read_line(&mut line)
++        .expect("read holder readiness");
++    assert_eq!(line.trim(), "READY");
++    ChildGuard(child)
++}
++
++#[test]
++fn operating_system_lock_is_reclaimed_after_abnormal_owner_exit() {
++    let directory = tempdir().expect("temporary store");
++    let mut holder = spawn_lock_holder(directory.path());
++    assert!(matches!(
++        PlannerStoreV1::open(directory.path(), PlannerStoreConfigV1::default()),
++        Err(PlannerStoreError::Locked)
++    ));
++
++    holder.kill_and_wait();
++    let reopened = PlannerStoreV1::open(directory.path(), PlannerStoreConfigV1::default())
++        .expect("reopen after killed owner");
++    assert!(reopened.records().is_empty());
++}
++
++#[test]
++fn synced_frame_survives_abort_without_drop_or_in_memory_publish() {
++    let directory = tempdir().expect("temporary store");
++    let status = Command::new(fixture())
++        .arg("crash-after-sync")
++        .arg(directory.path())
++        .stdout(Stdio::null())
++        .stderr(Stdio::null())
++        .status()
++        .expect("run crash fixture");
++    assert!(!status.success());
++
++    let reopened = PlannerStoreV1::open(directory.path(), PlannerStoreConfigV1::default())
++        .expect("reopen synced frame");
++    assert_eq!(reopened.records().len(), 1);
++    let record = &reopened.records()[0];
++    assert_eq!(record.kind, PlannerStoreRecordKindV1::Decision);
++    assert_eq!(
++        record.operation_identity_digest,
++        Digest32::of_bytes(b"planner-store-process-operation-v1")
++    );
++    assert_eq!(
++        record.payload_digest,
++        Digest32::of_bytes(b"planner-store-process-payload-v1")
++    );
++    assert_eq!(record.envelope, CRASH_ENVELOPE);
++}
++
++#[test]
++fn restore_holds_the_destination_owner_boundary_for_the_whole_replacement() {
++    let source = tempdir().expect("source store");
++    let backup = tempdir().expect("backup store");
++    let destination = tempdir().expect("destination store");
++    let anchor = Digest32::of_bytes(b"planner-store-process-anchor-v1");
++
++    let mut source_store =
++        PlannerStoreV1::open(source.path(), PlannerStoreConfigV1::default())
++            .expect("open source store");
++    source_store
++        .append(
++            PlannerStoreRecordKindV1::Decision,
++            Digest32::of_bytes(b"restore-operation-v1"),
++            Digest32::of_bytes(b"restore-payload-v1"),
++            b"restore-envelope-v1",
++        )
++        .expect("append source record");
++    source_store.checkpoint(anchor).expect("checkpoint source");
++    source_store.backup_to(backup.path()).expect("backup source");
++    drop(source_store);
++
++    let mut holder = spawn_lock_holder(destination.path());
++    assert!(matches!(
++        PlannerStoreV1::restore_from_backup(
++            backup.path(),
++            destination.path(),
++            PlannerStoreConfigV1::default(),
++        ),
++        Err(PlannerStoreError::Locked)
++    ));
++    holder.kill_and_wait();
++
++    let restored = PlannerStoreV1::restore_from_backup(
++        backup.path(),
++        destination.path(),
++        PlannerStoreConfigV1::default(),
++    )
++    .expect("restore after destination owner exits");
++    assert_eq!(restored.records().len(), 1);
++    restored
++        .verify_checkpoint(anchor)
++        .expect("verify restored checkpoint");
++}
+diff --git a/docs/modules/control.runtime/CURRENT_STATE.json b/docs/modules/control.runtime/CURRENT_STATE.json
+index 6f6fa8f..b013e42 100644
+--- a/docs/modules/control.runtime/CURRENT_STATE.json
++++ b/docs/modules/control.runtime/CURRENT_STATE.json
+@@ -72,7 +72,8 @@
+         "Generic append rejects execution-reserved dispatch-claim, terminal and reconciliation records; only the crate-local typed execution state machine can write their canonical envelopes.",
+         "Recovery projection first requires an exact durable claim, then validates ordered initial-terminal and reconciliation transitions; receipt-before-claim, grant drift, duplicate initial terminals and conclusive replacement fail closed.",
+-        "Compaction preserves all non-snapshot semantic evidence and its preceding snapshot; independent anchor ownership and two-process target-host recovery remain external gates."
++        "Compaction preserves all non-snapshot semantic evidence and its preceding snapshot; independent anchor ownership and two-process target-host recovery remain external gates.",
++        "Repository source includes child-process lock-owner termination, abort-after-sync reopen, and restore-under-live-owner regressions; selected-target-host recovery remains an external evidence gate."
+       ]
+@@ -94,7 +95,8 @@
+         "PlannerStore terminal sinks verify the canonical receipt digest, exact durable claim and original grant, and reject replacement of a conclusive terminal result.",
+         "Reopen reconstructs the same claim-to-observation state machine rather than trusting structurally valid execution records in isolation.",
+-        "Authority failure after claim persists an explicit not-dispatched terminal receipt instead of leaving a false unknown-effect state."
++        "Authority failure after claim persists an explicit not-dispatched terminal receipt instead of leaving a false unknown-effect state.",
++        "A bounded DENY_ALL pending-dispatch page exposes unresolved claims in round-robin claim-sequence order without granting redispatch; the product recovery controller and exact request resolver remain external composition work."
+       ]
+diff --git a/docs/modules/control.runtime/IMPLEMENTATION_MAP.json b/docs/modules/control.runtime/IMPLEMENTATION_MAP.json
+index 2475952..d658d15 100644
+--- a/docs/modules/control.runtime/IMPLEMENTATION_MAP.json
++++ b/docs/modules/control.runtime/IMPLEMENTATION_MAP.json
+@@ -291,9 +291,10 @@
+         "checkpoint and backup verification",
+         "RecoveryRequired handle state after uncertain mutation",
+-        "closed recovery projection for typed execution records"
++        "closed recovery projection for typed execution records",
++        "bounded process-level abnormal-exit and owner-lock recovery evidence source"
+       ],
+@@ -302,7 +303,7 @@
+       "state": "source_candidate_not_product_activated",
+       "authority": "none",
+-      "nonClaim": "independent anchor owner, two-process target-host recovery and production writer are not established",
++      "nonClaim": "independent anchor owner, selected-target-host recovery receipt and production writer are not established",
+@@ -333,6 +334,18 @@
+           "path": "codex-rs/hepta-control-plane/src/planner_store_tests.rs",
+           "symbol": "crash_after_frame_write_reopens_idempotently"
++        },
++        {
++          "path": "codex-rs/hepta-control-plane/tests/planner_store_process_recovery.rs",
++          "symbol": "operating_system_lock_is_reclaimed_after_abnormal_owner_exit"
++        },
++        {
++          "path": "codex-rs/hepta-control-plane/tests/planner_store_process_recovery.rs",
++          "symbol": "synced_frame_survives_abort_without_drop_or_in_memory_publish"
++        },
++        {
++          "path": "codex-rs/hepta-control-plane/tests/planner_store_process_recovery.rs",
++          "symbol": "restore_holds_the_destination_owner_boundary_for_the_whole_replacement"
+         }
+@@ -429,6 +442,45 @@
+       "sourcePathExists": true
+     },
++    {
++      "operation": "PlannerStoreV1::pending_dispatches_page",
++      "nativeSymbol": "codex_hepta_control_plane::PlannerStoreV1::pending_dispatches_page",
++      "sourcePath": "codex-rs/hepta-control-plane/src/planner_execution_durable.rs",
++      "inputs": [
++        "optional prior claim-sequence cursor",
++        "bounded page limit"
++      ],
++      "outputs": [
++        "DENY_ALL page of unresolved durable claims",
++        "next round-robin claim-sequence cursor"
++      ],
++      "state": "source_candidate_guarded_public_entry_uncomposed",
++      "authority": "deny_all",
++      "nonClaim": "inventory does not resolve requests, reconcile effects, grant redispatch or prove product backpressure",
++      "tests": [
++        {
++          "path": "codex-rs/hepta-control-plane/src/planner_execution_recovery_tests.rs",
++          "symbol": "pending_dispatch_inventory_is_bounded_and_round_robin"
++        },
++        {
++          "path": "codex-rs/hepta-control-plane/src/planner_execution_recovery_tests.rs",
++          "symbol": "pending_dispatch_inventory_excludes_conclusive_and_keeps_indeterminate"
++        },
++        {
++          "path": "codex-rs/hepta-control-plane/src/planner_execution_recovery_tests.rs",
++          "symbol": "pending_dispatch_inventory_rejects_invalid_bounds_and_poisoned_state"
++        }
++      ],
++      "designOperation": "pending_dispatch_recovery_inventory",
++      "mappingClass": "owner_native",
++      "delegatedCallees": [
++        "PlannerDispatchClaimSinkV1::inspect_dispatch semantics"
++      ],
++      "sourcePathExists": true
++    },
+@@ -501,7 +553,9 @@
+     "PlannerStoreRecordV1",
+     "PlannerTerminalReceiptV1",
+-    "OrganFanoutReceiptV1"
++    "OrganFanoutReceiptV1",
++    "PlannerPendingDispatchV1",
++    "PlannerPendingDispatchPageV1"
+   ],
+@@ -515,6 +569,7 @@
+     "independentAcceptanceState": "not_established",
+     "activationState": "not_established",
+-    "releaseState": "not_established"
++    "releaseState": "not_established",
++    "pendingDispatchInventory": "candidate_implemented_not_product_composed"
+@@ -552,8 +607,8 @@
+     "Complete exact-head and deterministic synthetic-merge qualification for the current pull-request head.",
+-    "Compose the dispatch-claim boundary through the named production authority and effect owners without adding a parallel executor.",
+-    "Run two-process abnormal-exit, storage-fault, stale-lock, backup rollback and semantic-compaction recovery on the named target host.",
++    "Compose the dispatch-claim boundary through the named production authority, exact request resolver and effect owners without adding a parallel executor.",
++    "Run the repository process-recovery matrix plus disk-full, filesystem-loss, backup rollback, semantic-compaction and sustained-overload qualification on the named target host.",
+     "Keep target-host recovery and externally governed acceptance gates false until their independent evidence exists."
+diff --git a/docs/modules/control.runtime/TECHNICAL.md b/docs/modules/control.runtime/TECHNICAL.md
+index 3a4eb16..b04dc34 100644
+--- a/docs/modules/control.runtime/TECHNICAL.md
++++ b/docs/modules/control.runtime/TECHNICAL.md
+@@ -163,6 +163,20 @@ Treat continue/deeper-subcircuit/reread/stop as admitted choices under the same
+ 
++## 7.1 Durable pending-reconciliation inventory
++
++The guarded store entry `PlannerStoreV1::pending_dispatches_page` returns at
++most 256 unresolved claim projections and no execution capability. It validates
++claim/receipt ordering, original-grant binding and conclusive immutability, then
++rotates by claim sequence so a bounded product recovery owner can avoid oldest-
++claim starvation. A poisoned store cannot produce this authoritative view.
++
++Repository regressions launch a separate store-owner process, kill it without a
++normal destructor, abort after log sync but before in-memory publication, and
++verify that restore cannot replace a destination held by a live owner. These are
++source-level qualification cases; selected-target-host recovery remains false
++until an independently retained run receipt exists.
++
+ ## 8. Failure semantics, recovery and rollback
+diff --git a/docs/readiness/CONTROL_RUNTIME_CONVERGENCE.md b/docs/readiness/CONTROL_RUNTIME_CONVERGENCE.md
+index d51843a..49209d8 100644
+--- a/docs/readiness/CONTROL_RUNTIME_CONVERGENCE.md
++++ b/docs/readiness/CONTROL_RUNTIME_CONVERGENCE.md
+@@ -123,6 +123,17 @@ terminal receipt without appending a later contradictory observation.
+ 
++`PlannerStoreV1::pending_dispatches_page` provides the missing bounded recovery
++inventory without becoming a recovery executor. It validates the durable claim
++and receipt state machine in one read-only pass, excludes conclusive operations,
++keeps no-receipt and indeterminate claims, and returns at most 256 DENY_ALL
++entries. Its claim-sequence cursor rotates across the unresolved set, so a named
++product controller can make progress without repeatedly favoring the oldest
++claim. The projection carries the original grant and exact claim-record digest
++only for reconciliation; it never permits redispatch. Exact request resolution,
++backpressure and effect-owner invocation remain product-owner responsibilities.
++
+@@ -202,8 +213,10 @@ Source tests include request-time and owner-age rejection, effect-free abstain,
+-rejection, immutable conclusive receipts, authority revocation before executor
+-invocation, process reopen, reconciliation without redispatch, and exact
+-successful-prefix organ output evidence.
++rejection, immutable conclusive receipts, authority revocation before executor
++invocation, bounded round-robin pending inventory, actual child-process owner
++termination, abort after durable log sync without `Drop`, restore exclusion while
++a destination owner is live, process reopen, reconciliation without redispatch,
++and exact successful-prefix organ output evidence.
+@@ -216,11 +229,11 @@ The candidate deliberately does not assert completion of:
+-- two-process kill/restart, disk-full, filesystem-loss, stale-owner, and restore
+-  qualification on the selected target host;
++- selected-target-host execution of the repository child-process kill/restart and
++  restore matrix, plus disk-full, filesystem-loss and backup-rollback evidence;
+@@ -220,8 +233,8 @@ The candidate deliberately does not assert completion of:
+-- long-running overload, fair pending-reconciliation scheduling, and product
+-  backpressure evidence;
++- a named product recovery controller and exact request resolver consuming the
++  bounded round-robin inventory, plus sustained overload and backpressure evidence;
+diff --git a/docs/readiness/CONTROL_RUNTIME_EXECUTION.md b/docs/readiness/CONTROL_RUNTIME_EXECUTION.md
+index 5987427..1413aee 100644
+--- a/docs/readiness/CONTROL_RUNTIME_EXECUTION.md
++++ b/docs/readiness/CONTROL_RUNTIME_EXECUTION.md
+@@ -218,6 +218,13 @@ A failure before finalization leaves no plan receipt. A failure after durable de
+ 
++The durable execution owner exposes unresolved claims only through a bounded
++DENY_ALL page. The cursor is the last returned claim sequence and the next page
++rotates through the unresolved set; conclusive success or failure is omitted,
++while missing and indeterminate observations remain visible. Inventory does not
++resolve the original request or invoke reconciliation. A named product controller
++must recover the exact request and call the existing effect owner under bounded
++backpressure; it may never convert an inventory entry into redispatch.
++
+@@ -245,6 +252,7 @@ Pilot bounds are:
+ | journal records per bounded file | 4096 |
++| pending dispatches per recovery page | 256 |
+@@ -264,6 +272,9 @@ Target metrics include snapshot age, stale/missing owner counts, candidate and r
+ - `RCP-15`: the NDU evaluation policy and resource profile are frozen before evaluation and bound through the final receipt.
++- `RCP-16`: pending dispatch inventory is bounded, round-robin, excludes conclusive operations and fails closed on a poisoned store.
++- `RCP-17`: an operating-system owner lock is reclaimed after abnormal process exit, while restore refuses a live destination owner.
++- `RCP-18`: a complete frame synced before an abort reopens exactly once without relying on `Drop`.
+@@ -285,6 +296,8 @@ Produced owner-local types:
+ - `PlannerJournalEntryV1`
++- `PlannerPendingDispatchPageV1`
++- `PlannerPendingDispatchV1`
+diff --git a/scripts/control_runtime_validate_state.py b/scripts/control_runtime_validate_state.py
+index bb14b88..11a56ed 100755
+--- a/scripts/control_runtime_validate_state.py
++++ b/scripts/control_runtime_validate_state.py
+@@ -38,6 +38,7 @@ REQUIRED_OPERATIONS = {
+     "execute_planner_request_v1",
+     "reconcile_planner_request_v1",
++    "PlannerStoreV1::pending_dispatches_page",
+     "OrganHostV1::dispatch_once_with_receipt",
+ }
