@@ -20,15 +20,42 @@ test.beforeEach(async ({ request }) => {
 });
 
 test("large product table reuses nodes across refresh and preserves reason focus", async ({ page }) => {
-  let change = false;
-  await page.route("**/api/ui-control/v1/view", async route => {
-    const response = await route.fetch(); const data = await response.json();
-    const base = data.modules[0];
-    data.modules = Array.from({ length: 512 }, (_, i) => ({ ...base, id: `runtime.scale${i}` }));
-    if (change) { data.revision += 1; data.modules[100].revision += 1; }
-    await route.fulfill({ response, json: data });
-  });
   await load(page);
+
+  // Capture one authenticated product response before interception. The stress
+  // fixture is then completely local and cannot retain a route.fetch response
+  // across Firefox navigation or test teardown.
+  const seedResponse = await page.context().request.get("/api/ui-control/v1/view");
+  expect(seedResponse.ok()).toBeTruthy();
+  const seed = await seedResponse.json();
+  await seedResponse.dispose();
+  expect(seed.modules.length).toBeGreaterThan(0);
+
+  const base = seed.modules[0];
+  const largeModules = Array.from({ length: 512 }, (_, i) => ({
+    ...base,
+    id: `runtime.scale${i}`,
+  }));
+  let change = false;
+  let interceptedViews = 0;
+  const viewRoute = "**/api/ui-control/v1/view";
+  await page.route(viewRoute, async route => {
+    interceptedViews += 1;
+    const modules = largeModules.map(module => ({ ...module }));
+    if (change) modules[100].revision += 1;
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        ...seed,
+        revision: seed.revision + (change ? 1 : 0),
+        modules,
+      }),
+    });
+  });
+  await refresh(page);
+  await expect(page.locator("#modules-body").locator(":scope > *")).toHaveCount(512);
+
   const observation = await page.evaluateHandle(() => {
     const containers = ["modules-body", "pending-list", "completed-list"].map(id => document.getElementById(id));
     const state = { rows: [...containers[0].children], mutations: 0 };
@@ -36,17 +63,20 @@ test("large product table reuses nodes across refresh and preserves reason focus
     containers.forEach(element => state.observer.observe(element, { childList: true, subtree: true, characterData: true }));
     return state;
   });
+  const viewsBeforeSteadyRefresh = interceptedViews;
   for (let i = 0; i < 5; i += 1) await refresh(page);
+  expect(interceptedViews).toBeGreaterThanOrEqual(viewsBeforeSteadyRefresh + 5);
   expect(await observation.evaluate(state => state.mutations)).toBe(0);
   await page.getByLabel("Reason", { exact: true }).fill("Keep keyboard focus on the reason.");
   await page.getByLabel("Reason", { exact: true }).focus();
   change = true;
   // Let the ordinary product poller observe the revision; do not call a test-only renderer.
-  await expect(page.locator("#revision-state")).toHaveText("12");
+  await expect(page.locator("#revision-state")).toHaveText(String(seed.revision + 1));
   await expect(page.getByLabel("Reason", { exact: true })).toBeFocused();
   expect(await observation.evaluate(state => state.rows.every((row, i) => row === document.getElementById("modules-body").children[i]))).toBe(true);
   await observation.evaluate(state => state.observer.disconnect());
   await observation.dispose();
+  await page.unroute(viewRoute);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
 
