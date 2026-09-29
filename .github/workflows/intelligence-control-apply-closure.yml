@@ -17,12 +17,14 @@ permissions:
 
 jobs:
   apply:
-    runs-on: ubuntu-latest
+    # This transport is architecture-neutral. Use the hosted ARM pool so a
+    # saturated x64 queue cannot delay the one-shot, SHA-guarded application.
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
         with:
-          fetch-depth: 4
+          fetch-depth: 5
       - name: Verify, apply and remove transport
         shell: bash
         env:
@@ -30,7 +32,7 @@ jobs:
           EXPECTED_PATCH_SHA256: 851c60e292318b61cbee37e753c0bcdc5f93388cf1757b2a4edf7e95245c4f92
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD~3)" = "$EXPECTED_SOURCE_PARENT"
+          test "$(git rev-parse HEAD~4)" = "$EXPECTED_SOURCE_PARENT"
           cat .github/intelligence-control-closure.patch.part-* > "$RUNNER_TEMP/intelligence-control-closure.patch"
           printf '%s  %s\n' "$EXPECTED_PATCH_SHA256" "$RUNNER_TEMP/intelligence-control-closure.patch" | sha256sum --check --strict
           git apply --check "$RUNNER_TEMP/intelligence-control-closure.patch"
