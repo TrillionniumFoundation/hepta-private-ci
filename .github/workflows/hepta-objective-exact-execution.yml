@@ -44,9 +44,12 @@ env:
   # parent validation exercise the intended boundary rather than host aliases.
   TMPDIR: /private/tmp
 
+# Branch pushes are a moving development signal: only the newest branch head is
+# useful. Manual dispatches bind immutable source/base identities and are never
+# cancelled by a later development push or a different manual candidate.
 concurrency:
-  group: objective-exact-${{ inputs.source_commit || github.sha }}-${{ inputs.merge_base || github.sha }}
-  cancel-in-progress: false
+  group: ${{ github.event_name == 'workflow_dispatch' && format('objective-exact-manual-{0}-{1}', inputs.source_commit, inputs.merge_base) || format('objective-exact-push-{0}', github.ref) }}
+  cancel-in-progress: ${{ github.event_name == 'push' }}
 
 jobs:
   qualify:

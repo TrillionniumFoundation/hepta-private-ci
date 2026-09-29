@@ -35,9 +35,11 @@ env:
   # on macOS rather than inheriting the /var alias exposed by the hosted runner.
   TMPDIR: /private/tmp
 
+# Keep only the newest moving branch measurement. A manual immutable candidate is
+# retained independently so later pushes cannot erase or cancel its evidence.
 concurrency:
-  group: objective-target-measurement-${{ inputs.source_commit || github.sha }}
-  cancel-in-progress: false
+  group: ${{ github.event_name == 'workflow_dispatch' && format('objective-target-manual-{0}', inputs.source_commit) || format('objective-target-push-{0}', github.ref) }}
+  cancel-in-progress: ${{ github.event_name == 'push' }}
 
 jobs:
   measure:
