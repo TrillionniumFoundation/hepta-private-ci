@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "d7866e53a38c63667937ebcbc9022aef7ee35739",
-    "tree": "4ff292b3d74e3b30312c287392cdf38173b0ab62"
+    "commit": "373fa912423e76407f6e84a265296cef83164f12",
+    "tree": "690bac922a8949f1fcccb3231c18ce4ebd3c75df"
   },
   "mappingSourceIdentityMode": "path_only",
   "exactSourceEvidenceMode": "lane_a_runtime_wiring_only_no_product_execution_claim",
@@ -267,7 +267,7 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Obtain successful formatting, all-target compilation, package tests, strict Clippy, caller closure and generated-state checks for this exact source and deterministic merge candidate; no native check is self-certified.",
+    "Obtain successful exact-candidate formatting, all-target compilation, package tests, strict Clippy and two-product-process recovery after the clock/evidence changes in REMEDIATION_20260929.md; Python parser success is not native execution.",
     "Wire selected real production trust providers into normal Agentd and Fleet bootstrap without falling back to local compatibility trust.",
     "Execute normal two-process cold-start recovery and preserve nonce, pending revocation, attempt identity and provider-owned terminal evidence.",
     "Execute the complete 55-row target-host matrix, eight fault cuts, reserve observation and history-sensitive diagnostics through a selected real driver; the collector self-test is synthetic only.",
@@ -357,6 +357,14 @@
         "synthetic-merge"
       ],
       "state": "read_only_native_product_owner_task_source_benchmark_capacity_self_test_and_post_main_exact_head_execution_pending"
+    },
+    {
+      "id": "kernel-authority-evidence-integrity",
+      "path": ".github/workflows/kernel-authority-evidence-gate.yml",
+      "modes": [
+        "exact-head"
+      ],
+      "state": "parser_and_source_integrity_only_not_native_or_production_acceptance"
     }
   ]
 }

@@ -4,12 +4,12 @@
   "generatedFrom": "qualification/kernel-authority/status_manifest.json",
   "generatedBy": "qualification/kernel-authority/generate_status.py",
   "sourceBase": {
-    "commit": "d7866e53a38c63667937ebcbc9022aef7ee35739",
-    "tree": "4ff292b3d74e3b30312c287392cdf38173b0ab62"
+    "commit": "373fa912423e76407f6e84a265296cef83164f12",
+    "tree": "690bac922a8949f1fcccb3231c18ce4ebd3c75df"
   },
   "module": "kernel.authority",
   "laneId": "LANE-A-FOUNDATION",
-  "status": "source-hardened-native-validation-pending",
+  "status": "clock-evidence-hardened-native-validation-pending",
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
@@ -51,6 +51,14 @@
         "synthetic-merge"
       ],
       "state": "read_only_native_product_owner_task_source_benchmark_capacity_self_test_and_post_main_exact_head_execution_pending"
+    },
+    {
+      "id": "kernel-authority-evidence-integrity",
+      "path": ".github/workflows/kernel-authority-evidence-gate.yml",
+      "modes": [
+        "exact-head"
+      ],
+      "state": "parser_and_source_integrity_only_not_native_or_production_acceptance"
     }
   ],
   "externalEvidenceGates": [
