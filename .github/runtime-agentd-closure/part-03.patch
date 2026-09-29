@@ -1,0 +1,162 @@
+       "buildTarget": "codex-hepta-agentd",
+       "delegatedCallees": [],
+-      "tests": [],
++      "tests": [
++        "codex-rs/hepta-agentd/src/state_isolation_tests.rs"
++      ],
+       "sourceSemantics": "Exposes the bounded run.lifecycle/1.1 control surface through the real Agentd control dispatch."
+     },
+     {
+@@ -86,7 +96,9 @@
+       "sourcePathExists": true,
+       "buildTarget": "codex-hepta-agentd",
+       "delegatedCallees": [],
+-      "tests": [],
++      "tests": [
++        "codex-rs/hepta-agentd/src/state_isolation_tests.rs"
++      ],
+       "sourceSemantics": "Mints a non-cloneable current-trust witness only after Fleet, AuthBus, expiry, objective projection and owner-fence revalidation."
+     },
+     {
+@@ -98,7 +110,10 @@
+       "sourcePathExists": true,
+       "buildTarget": "codex-hepta-agentd",
+       "delegatedCallees": [],
+-      "tests": [],
++      "tests": [
++        "codex-rs/hepta-agentd/src/runtime_composition_tests.rs",
++        "codex-rs/hepta-agentd/tests/runtime_codex_product_e2e.rs"
++      ],
+       "sourceSemantics": "Installs runner, authoritative owner provider, durable Neuron owner, runtime.codex executor and final-use authority as one all-or-none typed product profile."
+     },
+     {
+@@ -110,7 +125,9 @@
+       "sourcePathExists": true,
+       "buildTarget": "codex-hepta-agentd",
+       "delegatedCallees": [],
+-      "tests": [],
++      "tests": [
++        "codex-rs/hepta-agentd/src/intelligence_invocation_owner_tests.rs"
++      ],
+       "sourceSemantics": "Reads the request and seven owner inputs under the exact durable RunStart identity without granting execution authority."
+     },
+     {
+@@ -122,7 +139,9 @@
+       "sourcePathExists": true,
+       "buildTarget": "codex-hepta-agentd",
+       "delegatedCallees": [],
+-      "tests": [],
++      "tests": [
++        "codex-rs/hepta-agentd/src/neuron_runtime_tests.rs"
++      ],
+       "sourceSemantics": "Owns one long-lived NeuronRuntime and its inference.control port; the canonical bootstrap seals sparse input against this durable frontier."
+     },
+     {
+@@ -134,7 +153,10 @@
+       "sourcePathExists": true,
+       "buildTarget": "codex-hepta-agentd",
+       "delegatedCallees": [],
+-      "tests": [],
++      "tests": [
++        "codex-rs/hepta-agentd/src/runtime_codex_executor_tests.rs",
++        "codex-rs/hepta-agentd/tests/runtime_codex_product_e2e.rs"
++      ],
+       "sourceSemantics": "Owns exact worker invocation, immutable operation identity, bounded I/O, per-run serialization and reconcile-only recovery after dispatch fencing."
+     },
+     {
+@@ -146,7 +168,10 @@
+       "sourcePathExists": true,
+       "buildTarget": "codex-hepta-agentd",
+       "delegatedCallees": [],
+-      "tests": [],
++      "tests": [
++        "codex-rs/hepta-agentd/src/runtime_codex_executor_tests.rs",
++        "codex-rs/hepta-agentd/tests/runtime_codex_product_e2e.rs"
++      ],
+       "sourceSemantics": "Runs bounded concurrent jobs with queue reservation, per-run cancellation, periodic reconciliation, degraded status and structured joining."
+     },
+     {
+@@ -158,7 +183,10 @@
+       "sourcePathExists": true,
+       "buildTarget": "codex-hepta-agentd",
+       "delegatedCallees": [],
+-      "tests": [],
++      "tests": [
++        "codex-rs/hepta-agentd/src/runtime_tests.rs",
++        "codex-rs/hepta-agentd/tests/supervisord_product_e2e.rs"
++      ],
+       "sourceSemantics": "Registers the installed runtime.codex owner as a required RuntimeTasks component and keeps it under the daemon lifetime fence."
+     },
+     {
+@@ -170,7 +198,9 @@
+       "sourcePathExists": true,
+       "buildTarget": "codex-hepta-agentd",
+       "delegatedCallees": [],
+-      "tests": [],
++      "tests": [
++        "codex-rs/hepta-agentd/src/runtime_codex_executor_tests.rs"
++      ],
+       "sourceSemantics": "Moves bounded terminal operations out of the active recovery set only after publishing an independently synced no-replay witness."
+     },
+     {
+@@ -182,7 +212,9 @@
+       "sourcePathExists": true,
+       "buildTarget": "codex-hepta-agentd",
+       "delegatedCallees": [],
+-      "tests": [],
++      "tests": [
++        "codex-rs/hepta-agentd/src/shared_terminal_cell.rs"
++      ],
+       "sourceSemantics": "Provides the bounded same-host shared Replay training candidate path; it is not ordinary-daemon activation."
+     },
+     {
+@@ -194,7 +226,9 @@
+       "sourcePathExists": true,
+       "buildTarget": "codex-hepta-agentd",
+       "delegatedCallees": [],
+-      "tests": [],
++      "tests": [
++        "codex-rs/hepta-agentd/src/shared_terminal_cell.rs"
++      ],
+       "sourceSemantics": "Loads a selected artifact only after live owner, selection, Memory and ledger checks."
+     },
+     {
+@@ -206,7 +240,9 @@
+       "sourcePathExists": true,
+       "buildTarget": "codex-hepta-agentd",
+       "delegatedCallees": [],
+-      "tests": [],
++      "tests": [
++        "codex-rs/hepta-agentd/src/shared_terminal_cell.rs"
++      ],
+       "sourceSemantics": "Uses the loaded bounded candidate under current owner and expiry checks without granting effects."
+     },
+     {
+@@ -218,15 +254,16 @@
+       "sourcePathExists": true,
+       "buildTarget": "codex-hepta-agentd",
+       "delegatedCallees": [],
+-      "tests": [],
++      "tests": [
++        "codex-rs/hepta-agentd/src/shared_terminal_cell.rs"
++      ],
+       "sourceSemantics": "Restores an owner-persisted selected descriptor and bounded recovery bundle without retraining."
+     }
+   ],
+   "repositoryControlledGaps": [
+-    "Ship and qualify an ordinary repository daemon profile that constructs AgentdCanonicalRuntimeBootstrapV1 from protected host configuration; the typed source seam remains embedding-selected.",
+-    "Run a complete authenticated ObjectiveStart -> current trust -> seven-owner preparation -> reserved runtime.codex dispatch -> physical App Server turn -> terminal coordinator observation E2E, including cancellation and crash cuts.",
+-    "Separate the lifecycle core from unconditional product-domain adapter dependencies and retain compatibility only through explicit profiles.",
+-    "Define and qualify long-horizon terminal archive retention, witness backup, capacity telemetry and operator recovery for unresolved operations."
++    "Obtain successful exact-source and deterministic prospective-merge execution receipts for the same final candidate.",
++    "Compose the protected ordinary product profile from real owner configuration without introducing a second execution spine.",
++    "Retain a runnable rollback profile and prove process-level crash/restart/no-redispatch behavior."
+   ],
+   "externalEvidenceGates": [
+     "authenticated exact-head and prospective-merge Linux/macOS qualification receipts",
+@@ -265,24 +302,47 @@
+     "codex-rs/hepta-agentd"
+   ],
+   "currentSourceEvidence": {
+-    "commit": "d9ab32f94f135338fb4fef64b3af7c19595451fa",
+-    "tree": "3f24cf156447518eb08500b87109f433f49dfbd1",
