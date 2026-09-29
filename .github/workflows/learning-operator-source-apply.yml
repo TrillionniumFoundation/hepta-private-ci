@@ -1,7 +1,7 @@
-name: Apply learning.operator V4 source convergence
+name: Diagnose learning.operator V4 source convergence
 
-# Authoritative dispatch: apply the idempotent V4/type-state/budget/RCU convergence
-# from parent e3678c8f4cd74460940d3d3f766d347e48da1918, then remove this one-shot workflow.
+# Read-only diagnostic rerun for the frozen convergence wrapper. The authoritative
+# Ubuntu writer remains the only workflow allowed to publish the source/evidence head.
 
 on:
   push:
@@ -11,19 +11,18 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   actions: read
 
 concurrency:
-  group: learning-operator-source-apply-windows-v3
-  cancel-in-progress: false
+  group: learning-operator-source-diagnostics-windows-v4
+  cancel-in-progress: true
 
 jobs:
-  apply:
+  diagnose:
     runs-on: windows-2025
     timeout-minutes: 90
     env:
-      TARGET_BRANCH: codex/learning-operator-full-convergence-20260926
       CARGO_BUILD_JOBS: 2
       CARGO_PROFILE_DEV_DEBUG: 0
       CARGO_PROFILE_TEST_DEBUG: 0
@@ -32,7 +31,7 @@ jobs:
         with:
           ref: codex/learning-operator-full-convergence-20260926
           fetch-depth: 0
-          persist-credentials: true
+          persist-credentials: false
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.13'
@@ -40,7 +39,7 @@ jobs:
         with:
           toolchain: 1.95.0
           components: rustfmt,clippy
-      - name: Apply the idempotent V4/type-state/budget/RCU convergence
+      - name: Apply and verify the deterministic convergence in the runner worktree
         id: converge
         continue-on-error: true
         shell: bash
@@ -70,7 +69,7 @@ jobs:
         if: steps.converge.outcome == 'failure'
         shell: bash
         run: exit 1
-      - name: Compile and test the exact source candidate
+      - name: Compile and test the exact transformed worktree
         shell: bash
         run: |
           set -euo pipefail
@@ -91,16 +90,4 @@ jobs:
             -p codex-hepta-agentd --lib \
             immutable_candidate_supports_concurrent_current_reads_and_metrics -- --nocapture
           cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
-      - name: Publish one source commit and retire this applier
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name "OpenAI"
-          git config user.email "openai@users.noreply.github.com"
-          git rm -f .github/workflows/learning-operator-source-apply.yml
-          git add -A
-          git commit \
-            -m "feat(learning.operator): close V4 bounded production path" \
-            -m "Apply the opaque V4 type-state ingress, V2 complete pin/loader boundary, budgeted sensor/tabular/world-model implementations, concurrent immutable final-use validation, RCU reload, telemetry, migration policy, and operations runbooks without granting activation or release." \
-            -m "Signed-off-by: OpenAI <openai@users.noreply.github.com>"
-          git push origin HEAD:"$TARGET_BRANCH"
+          git diff --check
