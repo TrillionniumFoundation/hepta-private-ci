@@ -3,6 +3,7 @@
 
 use std::collections::BTreeMap;
 use std::fmt;
+use std::future::Future;
 use std::time::Duration;
 
 use codex_hepta_authbus::AuthBusAuthorityError;
@@ -131,6 +132,8 @@ pub enum BaoAuthBusError {
     Control(#[from] AuthBusAuthorityError),
     #[error("AuthBus evidence producer failed: {0}")]
     Evidence(&'static str),
+    #[error("durable Bao owner failed: {0}")]
+    DurableOwner(#[from] crate::SqliteBaoOwnerErrorV1),
     #[error("provider outcome is indeterminate; reservation remains held")]
     Indeterminate {
         reservation_id: StableId,
@@ -142,6 +145,11 @@ pub enum BaoAuthBusError {
         receipt: Option<BaoSecretReceipt>,
         control_error: String,
     },
+}
+
+pub(crate) enum BaoGuardedDeliveryError<Preparation, Consumer> {
+    Preparation(Preparation),
+    Consumer(Consumer),
 }
 
 pub struct BaoClient {
@@ -450,6 +458,48 @@ impl BaoClient {
         prepare_delivery: impl FnOnce(&BaoSecretReceipt) -> Result<(), E>,
         consumer: impl FnOnce(&[u8], &BaoSecretReceipt) -> Result<(), E>,
     ) -> Result<Result<BaoSecretReceipt, E>, BaoClientError> {
+        match self
+            .consume_kv_v2_guarded_async(
+                authority,
+                grant,
+                request,
+                |receipt| std::future::ready(prepare_delivery(receipt)),
+                consumer,
+            )
+            .await?
+        {
+            Ok(receipt) => Ok(Ok(receipt)),
+            Err(BaoGuardedDeliveryError::Preparation(error))
+            | Err(BaoGuardedDeliveryError::Consumer(error)) => Ok(Err(error)),
+        }
+    }
+
+    /// Async durable preparation variant used by the SQLite product owner. The
+    /// preparation future completes before the final live-authority check and
+    /// before any secret byte enters the registered consumer.
+    pub(crate) async fn consume_kv_v2_guarded_async<
+        PreparationError,
+        ConsumerError,
+        Prepare,
+        PrepareFuture,
+    >(
+        &self,
+        authority: &FinalUseAuthority,
+        grant: &SignedFinalUseGrant,
+        request: &BaoReadRequest,
+        prepare_delivery: Prepare,
+        consumer: impl FnOnce(&[u8], &BaoSecretReceipt) -> Result<(), ConsumerError>,
+    ) -> Result<
+        Result<
+            BaoSecretReceipt,
+            BaoGuardedDeliveryError<PreparationError, ConsumerError>,
+        >,
+        BaoClientError,
+    >
+    where
+        Prepare: FnOnce(&BaoSecretReceipt) -> PrepareFuture,
+        PrepareFuture: Future<Output = Result<(), PreparationError>>,
+    {
         let binding = self.binding(request)?;
         let mut url = self.origin.clone();
         {
@@ -529,8 +579,8 @@ impl BaoClient {
         crate::saga_crash::cut("provider_response.after");
         #[cfg(all(test, unix))]
         crate::saga_crash::cut("delivery_preparation.before");
-        if let Err(error) = prepare_delivery(&receipt) {
-            return Ok(Err(error));
+        if let Err(error) = prepare_delivery(&receipt).await {
+            return Ok(Err(BaoGuardedDeliveryError::Preparation(error)));
         }
         #[cfg(all(test, unix))]
         crate::saga_crash::cut("delivery_preparation.after");
@@ -546,7 +596,7 @@ impl BaoClient {
         .map_err(BaoClientError::Authority)?
         {
             Ok(()) => Ok(Ok(receipt)),
-            Err(error) => Ok(Err(error)),
+            Err(error) => Ok(Err(BaoGuardedDeliveryError::Consumer(error))),
         }
     }
 }

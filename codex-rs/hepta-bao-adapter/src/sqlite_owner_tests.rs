@@ -712,6 +712,93 @@ async fn reconciliation_claims_are_cross_process_fenced_expiring_and_observable(
 }
 
 #[tokio::test]
+async fn forward_execution_claim_excludes_recovery_until_release_or_expiry() {
+    let (_directory, path) = private_database();
+    let owner = SqliteBaoOwnerV1::open(&path, None).await.unwrap();
+    let forward = owner
+        .claim_consumption_for_execution(
+            consumption("operation:forward-lease"),
+            1_000,
+            "worker:forward",
+            100,
+        )
+        .await
+        .unwrap();
+    assert!(forward.claim.inserted);
+    let execution = forward.execution.as_ref().unwrap();
+    assert_eq!(execution.claim_generation, 1);
+    assert_eq!(execution.attempt_count, 0);
+    assert!(
+        owner
+            .claim_due_reconciliation("worker:recovery", 1_050, 100, 8)
+            .await
+            .unwrap()
+            .is_empty()
+    );
+    assert!(matches!(
+        owner
+            .claim_reconciliation_operation(
+                "worker:recovery",
+                "operation:forward-lease",
+                1_050,
+                100,
+            )
+            .await,
+        Err(SqliteBaoOwnerErrorV1::WriterBusy)
+    ));
+
+    let retry = owner
+        .claim_consumption_for_execution(
+            consumption("operation:forward-lease"),
+            1_050,
+            "worker:second-forward",
+            100,
+        )
+        .await
+        .unwrap();
+    assert!(!retry.claim.inserted);
+    assert!(retry.execution.is_none());
+
+    owner
+        .release_reconciliation_claim(
+            "worker:forward",
+            "operation:forward-lease",
+            execution.claim_generation,
+        )
+        .await
+        .unwrap();
+    let recovery = owner
+        .claim_reconciliation_operation(
+            "worker:recovery",
+            "operation:forward-lease",
+            1_060,
+            100,
+        )
+        .await
+        .unwrap();
+    assert_eq!(recovery.claim_generation, 2);
+    owner
+        .release_reconciliation_claim(
+            "worker:recovery",
+            "operation:forward-lease",
+            recovery.claim_generation,
+        )
+        .await
+        .unwrap();
+
+    let expired = owner
+        .claim_reconciliation_operation(
+            "worker:after-expiry",
+            "operation:forward-lease",
+            1_200,
+            100,
+        )
+        .await
+        .unwrap();
+    assert_eq!(expired.claim_generation, 3);
+}
+
+#[tokio::test]
 async fn checkpoint_publication_is_cas_bound_and_failure_fences_the_writer() {
     let (_directory, path) = private_database();
     let owner = SqliteBaoOwnerV1::open(&path, None).await.unwrap();

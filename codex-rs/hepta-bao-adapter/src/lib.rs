@@ -31,7 +31,12 @@ pub use final_use_host::BaoOperationLatencyMetricsV1;
 pub use final_use_host::BaoOperationMetricsV1;
 pub use final_use_host::BaoProductErrorClassV1;
 pub use final_use_host::BaoProductHostError;
+pub use final_use_host::BaoRecoveryBatchReportV1;
+pub use final_use_host::BaoRecoveryWorkerMetricsV1;
+pub use final_use_host::BaoSqliteProductRuntimeConfigV1;
 pub use final_use_host::RegisteredBaoConsumer;
+pub use final_use_host::SqliteBaoProductRuntimeMetricsV1;
+pub use final_use_host::SqliteBaoProductRuntimeV1;
 pub use final_use_host::{
     BaoConsumerObservationV1, BaoConsumerObserverCallback, BaoOperationConsumerCallback,
 };
@@ -86,6 +91,7 @@ pub use sqlite_owner::SqliteBaoOwnerMetricsV1;
 pub use sqlite_owner::SqliteBaoOwnerRuntimeMetricsV1;
 pub use sqlite_owner::SqliteBaoOwnerV1;
 pub use sqlite_owner::SqliteConsumptionClaimV1;
+pub use sqlite_owner::SqliteConsumptionExecutionClaimV1;
 pub use sqlite_owner::SqliteConsumptionRecordV1;
 pub use sqlite_owner::SqliteLeaseOperationRecordV1;
 pub use sqlite_owner::SqliteReconciliationClaimV1;

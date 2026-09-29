@@ -98,6 +98,16 @@ pub struct SqliteReconciliationClaimV1 {
     pub record: SqliteConsumptionRecordV1,
     pub claim_generation: u64,
     pub claim_until_unix_ms: u64,
+    pub attempt_count: u64,
+}
+
+/// A newly inserted product operation plus the same-transaction execution
+/// lease that prevents a recovery worker from sealing or cancelling it while
+/// the forward path is still active. Exact retries never acquire this lease.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct SqliteConsumptionExecutionClaimV1 {
+    pub claim: SqliteConsumptionClaimV1,
+    pub execution: Option<SqliteReconciliationClaimV1>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -580,9 +590,45 @@ impl SqliteBaoOwnerV1 {
 
     pub async fn claim_consumption(
         &self,
-        mut operation: BaoConsumptionOperationV1,
+        operation: BaoConsumptionOperationV1,
         now_unix_ms: u64,
     ) -> Result<SqliteConsumptionClaimV1, SqliteBaoOwnerErrorV1> {
+        Ok(self
+            .claim_consumption_inner(operation, now_unix_ms, None)
+            .await?
+            .claim)
+    }
+
+    /// Atomically insert a new operation and lease its reconciliation row to
+    /// the forward executor. This closes the gap in which a recovery worker
+    /// could observe `Claimed` and seal non-admission before the original
+    /// forward task reaches AuthBus. Exact retries return the historical row
+    /// without an execution lease and must enter reconciliation instead.
+    pub async fn claim_consumption_for_execution(
+        &self,
+        operation: BaoConsumptionOperationV1,
+        now_unix_ms: u64,
+        execution_owner: &str,
+        lease_ms: u64,
+    ) -> Result<SqliteConsumptionExecutionClaimV1, SqliteBaoOwnerErrorV1> {
+        validate_identifier(execution_owner)?;
+        if lease_ms == 0 || lease_ms > MAX_RECOVERY_LEASE_MS {
+            return Err(SqliteBaoOwnerErrorV1::InvalidInput);
+        }
+        self.claim_consumption_inner(
+            operation,
+            now_unix_ms,
+            Some((execution_owner, lease_ms)),
+        )
+        .await
+    }
+
+    async fn claim_consumption_inner(
+        &self,
+        mut operation: BaoConsumptionOperationV1,
+        now_unix_ms: u64,
+        execution: Option<(&str, u64)>,
+    ) -> Result<SqliteConsumptionExecutionClaimV1, SqliteBaoOwnerErrorV1> {
         self.ensure_writable()?;
         validate_consumption_input(&operation)?;
         if operation.state != BaoConsumptionStateV1::Claimed
@@ -593,14 +639,24 @@ impl SqliteBaoOwnerV1 {
         {
             return Err(SqliteBaoOwnerErrorV1::InvalidInput);
         }
+        let claim_until_unix_ms = execution
+            .map(|(_, lease_ms)| {
+                now_unix_ms
+                    .checked_add(lease_ms)
+                    .ok_or(SqliteBaoOwnerErrorV1::CapacityExceeded)
+            })
+            .transpose()?;
         let mut tx = self.begin().await?;
         advance_time(&mut tx, now_unix_ms).await?;
         if let Some(existing) = load_consumption_any_tx(&mut tx, &operation.operation_id).await? {
             if existing.operation.same_identity(&operation) {
                 tx.rollback().await.map_err(storage)?;
-                return Ok(SqliteConsumptionClaimV1 {
-                    record: existing,
-                    inserted: false,
+                return Ok(SqliteConsumptionExecutionClaimV1 {
+                    claim: SqliteConsumptionClaimV1 {
+                        record: existing,
+                        inserted: false,
+                    },
+                    execution: None,
                 });
             }
             return Err(SqliteBaoOwnerErrorV1::OperationConflict);
@@ -659,16 +715,52 @@ impl SqliteBaoOwnerV1 {
             now_unix_ms,
         )
         .await?;
+        let record = SqliteConsumptionRecordV1 {
+            operation,
+            revision,
+            created_at_unix_ms: now_unix_ms,
+            updated_at_unix_ms: now_unix_ms,
+        };
+        let execution_claim = if let Some((execution_owner, _)) = execution {
+            let claim_generation = 1_u64;
+            let changed = sqlx::query(
+                "UPDATE bao_reconciliation_queue
+                 SET claim_owner = ?, claim_until_unix_ms = ?, claim_generation = ?
+                 WHERE operation_id = ? AND claim_owner IS NULL",
+            )
+            .bind(execution_owner)
+            .bind(u64_bytes(
+                claim_until_unix_ms.ok_or(SqliteBaoOwnerErrorV1::InvalidInput)?,
+            )
+            .as_slice())
+            .bind(u64_bytes(claim_generation).as_slice())
+            .bind(&record.operation.operation_id)
+            .execute(&mut *tx)
+            .await
+            .map_err(map_write_error)?
+            .rows_affected();
+            if changed != 1 {
+                return Err(SqliteBaoOwnerErrorV1::WriterBusy);
+            }
+            Some(SqliteReconciliationClaimV1 {
+                worker_id: execution_owner.to_owned(),
+                record: record.clone(),
+                claim_generation,
+                claim_until_unix_ms: claim_until_unix_ms
+                    .ok_or(SqliteBaoOwnerErrorV1::InvalidInput)?,
+                attempt_count: 0,
+            })
+        } else {
+            None
+        };
         write_meta(&mut tx, revision, now_unix_ms).await?;
         self.commit(tx).await?;
-        Ok(SqliteConsumptionClaimV1 {
-            record: SqliteConsumptionRecordV1 {
-                operation,
-                revision,
-                created_at_unix_ms: now_unix_ms,
-                updated_at_unix_ms: now_unix_ms,
+        Ok(SqliteConsumptionExecutionClaimV1 {
+            claim: SqliteConsumptionClaimV1 {
+                record,
+                inserted: true,
             },
-            inserted: true,
+            execution: execution_claim,
         })
     }
 
@@ -1430,6 +1522,79 @@ impl SqliteBaoOwnerV1 {
         Ok(rows)
     }
 
+    /// Lease one named recovery operation. This is used by explicit operator
+    /// reconciliation; batch workers should use `claim_due_reconciliation`.
+    pub async fn claim_reconciliation_operation(
+        &self,
+        worker_id: &str,
+        operation_id: &str,
+        now_unix_ms: u64,
+        lease_ms: u64,
+    ) -> Result<SqliteReconciliationClaimV1, SqliteBaoOwnerErrorV1> {
+        self.ensure_writable()?;
+        validate_identifier(worker_id)?;
+        validate_identifier(operation_id)?;
+        if now_unix_ms == 0 || lease_ms == 0 || lease_ms > MAX_RECOVERY_LEASE_MS {
+            return Err(SqliteBaoOwnerErrorV1::InvalidInput);
+        }
+        let claim_until_unix_ms = now_unix_ms
+            .checked_add(lease_ms)
+            .ok_or(SqliteBaoOwnerErrorV1::CapacityExceeded)?;
+        let mut tx = self.begin().await?;
+        advance_time(&mut tx, now_unix_ms).await?;
+        let record = load_consumption_current_tx(&mut tx, operation_id)
+            .await?
+            .ok_or(SqliteBaoOwnerErrorV1::OperationNotFound)?;
+        if record.operation.state.is_terminal() {
+            return Err(SqliteBaoOwnerErrorV1::InvalidTransition);
+        }
+        let claim_row = sqlx::query(
+            "SELECT claim_generation, attempt_count
+             FROM bao_reconciliation_queue WHERE operation_id = ?",
+        )
+        .bind(operation_id)
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(storage)?;
+        let claim_generation = fixed_u64_allow_zero(
+            &claim_row
+                .try_get::<Vec<u8>, _>("claim_generation")
+                .map_err(storage)?,
+        )?
+            .checked_add(1)
+            .ok_or(SqliteBaoOwnerErrorV1::CapacityExceeded)?;
+        let changed = sqlx::query(
+            "UPDATE bao_reconciliation_queue
+             SET claim_owner = ?, claim_until_unix_ms = ?, claim_generation = ?
+             WHERE operation_id = ?
+               AND (claim_owner IS NULL OR claim_until_unix_ms <= ?)",
+        )
+        .bind(worker_id)
+        .bind(u64_bytes(claim_until_unix_ms).as_slice())
+        .bind(u64_bytes(claim_generation).as_slice())
+        .bind(operation_id)
+        .bind(u64_bytes(now_unix_ms).as_slice())
+        .execute(&mut *tx)
+        .await
+        .map_err(map_write_error)?
+        .rows_affected();
+        if changed != 1 {
+            return Err(SqliteBaoOwnerErrorV1::WriterBusy);
+        }
+        self.commit(tx).await?;
+        Ok(SqliteReconciliationClaimV1 {
+            worker_id: worker_id.to_owned(),
+            record,
+            claim_generation,
+            claim_until_unix_ms,
+            attempt_count: fixed_u64_allow_zero(
+                &claim_row
+                    .try_get::<Vec<u8>, _>("attempt_count")
+                    .map_err(storage)?,
+            )?,
+        })
+    }
+
     /// Atomically lease a fair, bounded batch of due recovery work. Claims are
     /// operational coordination state and expire automatically after a worker
     /// crash; they do not enter the authoritative checkpoint digest.
@@ -1469,14 +1634,19 @@ impl SqliteBaoOwnerV1 {
         .map_err(storage)?;
         let mut claims = Vec::with_capacity(ids.len());
         for operation_id in ids {
-            let generation_bytes: Vec<u8> = sqlx::query_scalar(
-                "SELECT claim_generation FROM bao_reconciliation_queue WHERE operation_id = ?",
+            let claim_row = sqlx::query(
+                "SELECT claim_generation, attempt_count
+                 FROM bao_reconciliation_queue WHERE operation_id = ?",
             )
             .bind(&operation_id)
             .fetch_one(&mut *tx)
             .await
             .map_err(storage)?;
-            let claim_generation = fixed_u64_allow_zero(&generation_bytes)?
+            let claim_generation = fixed_u64_allow_zero(
+                &claim_row
+                    .try_get::<Vec<u8>, _>("claim_generation")
+                    .map_err(storage)?,
+            )?
                 .checked_add(1)
                 .ok_or(SqliteBaoOwnerErrorV1::CapacityExceeded)?;
             let changed = sqlx::query(
@@ -1507,6 +1677,11 @@ impl SqliteBaoOwnerV1 {
                 record,
                 claim_generation,
                 claim_until_unix_ms,
+                attempt_count: fixed_u64_allow_zero(
+                    &claim_row
+                        .try_get::<Vec<u8>, _>("attempt_count")
+                        .map_err(storage)?,
+                )?,
             });
         }
         self.commit(tx).await?;

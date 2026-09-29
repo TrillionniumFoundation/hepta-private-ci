@@ -42,6 +42,13 @@ use crate::{
     DurableLeaseRegistryV1, LeaseRegistryErrorV1,
 };
 
+#[path = "sqlite_product_runtime.rs"]
+mod sqlite_product_runtime;
+pub use sqlite_product_runtime::{
+    BaoRecoveryBatchReportV1, BaoRecoveryWorkerMetricsV1, BaoSqliteProductRuntimeConfigV1,
+    SqliteBaoProductRuntimeMetricsV1, SqliteBaoProductRuntimeV1,
+};
+
 /// Independently approved operation inputs; dependencies remain host-owned.
 #[derive(Clone, Copy)]
 pub struct BaoApprovedReadV1<'a> {
@@ -578,67 +585,98 @@ impl BaoFinalUseHost {
                 evidence,
                 crate::authbus_saga::BaoAuthBusSagaHooks {
                     reserved: |reservation: &QuotaReservation| {
-                        registry
-                            .lock()
-                            .map_err(|_| BaoAuthBusError::Evidence("durable owner unavailable"))?
-                            .mark_consumption_reserved(
-                                operation_id,
-                                reservation.reservation_id.as_str().to_owned(),
-                            )
-                            .map_err(|_| {
-                                BaoAuthBusError::Evidence("durable reservation commit failed")
-                            })
+                        let result = match registry.lock() {
+                            Ok(mut owner) => owner
+                                .mark_consumption_reserved(
+                                    operation_id,
+                                    reservation.reservation_id.as_str().to_owned(),
+                                )
+                                .map_err(|_| {
+                                    BaoAuthBusError::Evidence(
+                                        "durable reservation commit failed",
+                                    )
+                                }),
+                            Err(_) => Err(BaoAuthBusError::Evidence(
+                                "durable owner unavailable",
+                            )),
+                        };
+                        std::future::ready(result)
                     },
                     dispatch_fenced: |reservation: &QuotaReservation| {
-                        registry
-                            .lock()
-                            .map_err(|_| BaoAuthBusError::Evidence("durable owner unavailable"))?
-                            .mark_consumption_dispatch_fenced(
-                                operation_id,
-                                reservation.reservation_id.as_str(),
-                            )
-                            .map_err(|_| {
-                                BaoAuthBusError::Evidence("durable dispatch fence commit failed")
-                            })
+                        let result = match registry.lock() {
+                            Ok(mut owner) => owner
+                                .mark_consumption_dispatch_fenced(
+                                    operation_id,
+                                    reservation.reservation_id.as_str(),
+                                )
+                                .map_err(|_| {
+                                    BaoAuthBusError::Evidence(
+                                        "durable dispatch fence commit failed",
+                                    )
+                                }),
+                            Err(_) => Err(BaoAuthBusError::Evidence(
+                                "durable owner unavailable",
+                            )),
+                        };
+                        std::future::ready(result)
                     },
                     provider_terminal: |error: BaoClientError, terminal: Digest32| {
-                        let code =
-                            provider_failure_code(error).ok_or(BaoAuthBusError::Evidence(
+                        let result = provider_failure_code(error)
+                            .ok_or(BaoAuthBusError::Evidence(
                                 "nonterminal provider error classified terminal",
-                            ))?;
-                        registry
-                            .lock()
-                            .map_err(|_| BaoAuthBusError::Evidence("durable owner unavailable"))?
-                            .record_provider_failure(
-                                operation_id,
-                                code,
-                                terminal.into_array(),
-                                admission.amount,
-                            )
-                            .map_err(|_| {
-                                BaoAuthBusError::Evidence("durable provider terminal commit failed")
-                            })
+                            ))
+                            .and_then(|code| match registry.lock() {
+                                Ok(mut owner) => owner
+                                    .record_provider_failure(
+                                        operation_id,
+                                        code,
+                                        terminal.into_array(),
+                                        admission.amount,
+                                    )
+                                    .map_err(|_| {
+                                        BaoAuthBusError::Evidence(
+                                            "durable provider terminal commit failed",
+                                        )
+                                    }),
+                                Err(_) => Err(BaoAuthBusError::Evidence(
+                                    "durable owner unavailable",
+                                )),
+                            });
+                        std::future::ready(result)
                     },
                     prepare_delivery: |receipt: &BaoSecretReceipt| {
-                        registry
-                            .lock()
-                            .map_err(|_| ())?
-                            .enter_consumption(operation_id, receipt.clone())
-                            .map_err(|_| ())
+                        let result = match registry.lock() {
+                            Ok(mut owner) => owner
+                                .enter_consumption(operation_id, receipt.clone())
+                                .map_err(|_| {
+                                    BaoAuthBusError::Evidence(
+                                        "durable delivery preparation failed",
+                                    )
+                                }),
+                            Err(_) => Err(BaoAuthBusError::Evidence(
+                                "durable owner unavailable",
+                            )),
+                        };
+                        std::future::ready(result)
                     },
                     consumer: |secret: &[u8], _receipt: &BaoSecretReceipt| {
                         self.ensure_revocation_fresh().map_err(|_| ())?;
-                        let result = callback(operation_id, semantic_sha256, secret);
-                        #[cfg(all(test, unix))]
-                        crate::saga_crash::cut("consumer_ack.before");
-                        registry
-                            .lock()
-                            .map_err(|_| ())?
-                            .observe_consumption(operation_id, result.is_ok())
-                            .map_err(|_| ())?;
-                        #[cfg(all(test, unix))]
-                        crate::saga_crash::cut("consumer_ack.after");
-                        result
+                        callback(operation_id, semantic_sha256, secret)
+                    },
+                    consumer_succeeded: |_receipt: &BaoSecretReceipt| {
+                        let result = match registry.lock() {
+                            Ok(mut owner) => owner
+                                .observe_consumption(operation_id, true)
+                                .map_err(|_| {
+                                    BaoAuthBusError::Evidence(
+                                        "durable consumer observation commit failed",
+                                    )
+                                }),
+                            Err(_) => Err(BaoAuthBusError::Evidence(
+                                "durable owner unavailable",
+                            )),
+                        };
+                        std::future::ready(result)
                     },
                 },
             )
@@ -1162,6 +1200,7 @@ fn consumer_id(value: &str) -> bool {
 pub enum BaoFinalUseHostError {
     InvalidConsumerId,
     InvalidConsumerConfiguration,
+    InvalidRuntimeConfiguration,
     DuplicateConsumer,
     EmptyConsumerRegistry,
     UnregisteredConsumer,
@@ -1199,6 +1238,7 @@ pub enum BaoProductHostError {
     Host(BaoFinalUseHostError),
     AuthBus(BaoAuthBusError),
     Store(LeaseRegistryErrorV1),
+    SqliteStore(crate::SqliteBaoOwnerErrorV1),
     ConsumerProfileRequired,
     OutcomePending(BaoConsumptionOperationV1),
     TerminalFailure(BaoConsumptionOperationV1),
@@ -1211,6 +1251,7 @@ impl BaoProductHostError {
             Self::ConsumerProfileRequired
             | Self::Host(BaoFinalUseHostError::InvalidConsumerId)
             | Self::Host(BaoFinalUseHostError::InvalidConsumerConfiguration)
+            | Self::Host(BaoFinalUseHostError::InvalidRuntimeConfiguration)
             | Self::Host(BaoFinalUseHostError::UnregisteredConsumer)
             | Self::Host(BaoFinalUseHostError::Client(BaoClientError::InvalidRequest)) => {
                 BaoProductErrorClassV1::AdmissionRejected
@@ -1236,6 +1277,8 @@ impl BaoProductHostError {
                 BaoProductErrorClassV1::CommitIndeterminate
             }
             Self::Store(_) => BaoProductErrorClassV1::DurableOwnerFailure,
+            Self::SqliteStore(error) => sqlite_owner_error_class(error),
+            Self::AuthBus(BaoAuthBusError::DurableOwner(error)) => sqlite_owner_error_class(error),
             Self::AuthBus(BaoAuthBusError::Indeterminate { .. }) => {
                 BaoProductErrorClassV1::AwaitingOriginalEvidence
             }
@@ -1247,12 +1290,36 @@ impl BaoProductHostError {
     }
 }
 
+fn sqlite_owner_error_class(error: &crate::SqliteBaoOwnerErrorV1) -> BaoProductErrorClassV1 {
+    use crate::SqliteBaoOwnerErrorV1 as Error;
+    match error {
+        Error::OperationConflict | Error::ObservationMismatch => {
+            BaoProductErrorClassV1::IdentityConflict
+        }
+        Error::CapacityExceeded => BaoProductErrorClassV1::CapacityRejected,
+        Error::WriterBusy | Error::RevisionConflict => BaoProductErrorClassV1::OwnerBusy,
+        Error::CommitIndeterminate(_) => BaoProductErrorClassV1::CommitIndeterminate,
+        Error::InvalidInput
+        | Error::OperationNotFound
+        | Error::InvalidTransition
+        | Error::ExternalCheckpointUnavailable
+        | Error::MigrationConflict
+        | Error::CorruptState(_)
+        | Error::RollbackDetected
+        | Error::Fenced
+        | Error::UnsupportedPlatform
+        | Error::UnsafeStorage(_)
+        | Error::Storage(_) => BaoProductErrorClassV1::DurableOwnerFailure,
+    }
+}
+
 impl fmt::Display for BaoProductHostError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Host(error) => write!(formatter, "host admission failed: {error}"),
             Self::AuthBus(error) => write!(formatter, "AuthBus product path failed: {error}"),
-            Self::Store(error) => write!(formatter, "durable operation failed: {error}"),
+            Self::Store(error) => write!(formatter, "durable reference operation failed: {error}"),
+            Self::SqliteStore(error) => write!(formatter, "durable SQLite operation failed: {error}"),
             Self::ConsumerProfileRequired => {
                 formatter.write_str("matching operation-aware consumer profile required")
             }

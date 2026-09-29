@@ -4,6 +4,8 @@
 //! the registered product host uses this sequence so local state never claims a
 //! reservation or dispatch fence before AuthBus has committed it.
 
+use std::future::Future;
+
 use codex_hepta_authbus::AuthBusAuthorityHost;
 use codex_hepta_authbus::QuotaReservation;
 use codex_hepta_authbus::ReservationRequest;
@@ -17,6 +19,7 @@ use crate::BaoAuthorizedReadV1;
 use crate::BaoClient;
 use crate::BaoClientError;
 use crate::BaoSecretReceipt;
+use crate::https_consumer::BaoGuardedDeliveryError;
 
 pub(crate) struct BaoAuthBusSagaHooks<
     Reserved,
@@ -24,21 +27,29 @@ pub(crate) struct BaoAuthBusSagaHooks<
     ProviderTerminal,
     PrepareDelivery,
     Consumer,
+    ConsumerSucceeded,
 > {
     pub(crate) reserved: Reserved,
     pub(crate) dispatch_fenced: DispatchFenced,
     pub(crate) provider_terminal: ProviderTerminal,
     pub(crate) prepare_delivery: PrepareDelivery,
     pub(crate) consumer: Consumer,
+    pub(crate) consumer_succeeded: ConsumerSucceeded,
 }
 
 pub(crate) async fn consume_kv_v2_with_authbus_saga<
     E,
     Reserved,
+    ReservedFuture,
     DispatchFenced,
+    DispatchFencedFuture,
     ProviderTerminal,
+    ProviderTerminalFuture,
     PrepareDelivery,
+    PrepareDeliveryFuture,
     Consumer,
+    ConsumerSucceeded,
+    ConsumerSucceededFuture,
 >(
     client: &BaoClient,
     authbus: &AuthBusAuthorityHost,
@@ -50,15 +61,22 @@ pub(crate) async fn consume_kv_v2_with_authbus_saga<
         ProviderTerminal,
         PrepareDelivery,
         Consumer,
+        ConsumerSucceeded,
     >,
 ) -> Result<BaoSecretReceipt, BaoAuthBusError>
 where
     E: BaoAuthBusEvidenceProvider,
-    Reserved: FnMut(&QuotaReservation) -> Result<(), BaoAuthBusError>,
-    DispatchFenced: FnMut(&QuotaReservation) -> Result<(), BaoAuthBusError>,
-    ProviderTerminal: FnOnce(BaoClientError, Digest32) -> Result<(), BaoAuthBusError>,
-    PrepareDelivery: FnOnce(&BaoSecretReceipt) -> Result<(), ()>,
+    Reserved: FnMut(&QuotaReservation) -> ReservedFuture,
+    ReservedFuture: Future<Output = Result<(), BaoAuthBusError>>,
+    DispatchFenced: FnMut(&QuotaReservation) -> DispatchFencedFuture,
+    DispatchFencedFuture: Future<Output = Result<(), BaoAuthBusError>>,
+    ProviderTerminal: FnOnce(BaoClientError, Digest32) -> ProviderTerminalFuture,
+    ProviderTerminalFuture: Future<Output = Result<(), BaoAuthBusError>>,
+    PrepareDelivery: FnOnce(&BaoSecretReceipt) -> PrepareDeliveryFuture,
+    PrepareDeliveryFuture: Future<Output = Result<(), BaoAuthBusError>>,
     Consumer: FnOnce(&[u8], &BaoSecretReceipt) -> Result<(), ()>,
+    ConsumerSucceeded: FnOnce(&BaoSecretReceipt) -> ConsumerSucceededFuture,
+    ConsumerSucceededFuture: Future<Output = Result<(), BaoAuthBusError>>,
 {
     let BaoAuthBusSagaHooks {
         mut reserved,
@@ -66,6 +84,7 @@ where
         provider_terminal,
         prepare_delivery,
         consumer,
+        consumer_succeeded,
     } = hooks;
     let BaoAuthorizedReadV1 {
         admission,
@@ -126,7 +145,7 @@ where
     crate::saga_crash::cut("reserve.after");
     #[cfg(all(test, unix))]
     crate::saga_crash::cut("reservation_bind.before");
-    reserved(&reservation)?;
+    reserved(&reservation).await?;
     #[cfg(all(test, unix))]
     crate::saga_crash::cut("reservation_bind.after");
 
@@ -147,20 +166,32 @@ where
     crate::saga_crash::cut("dispatch_fence.after");
     #[cfg(all(test, unix))]
     crate::saga_crash::cut("local_fence.before");
-    dispatch_fenced(&dispatched)?;
+    dispatch_fenced(&dispatched).await?;
     #[cfg(all(test, unix))]
     crate::saga_crash::cut("local_fence.after");
 
-    let provider = client
-        .consume_kv_v2_guarded(authority, grant, request, prepare_delivery, consumer)
+    let provider = match client
+        .consume_kv_v2_guarded_async(authority, grant, request, prepare_delivery, consumer)
         .await
-        .and_then(|result| result.map_err(|()| BaoClientError::ConsumerIndeterminate));
+    {
+        Err(error) => Err(error),
+        Ok(Ok(receipt)) => Ok(receipt),
+        Ok(Err(BaoGuardedDeliveryError::Preparation(error))) => return Err(error),
+        Ok(Err(BaoGuardedDeliveryError::Consumer(()))) => {
+            Err(BaoClientError::ConsumerIndeterminate)
+        }
+    };
     match provider {
         Ok(receipt) => {
-            let terminal = Digest32::of_bytes(
-                &serde_json::to_vec(&receipt)
-                    .map_err(|_| BaoAuthBusError::Evidence("receipt encoding failed"))?,
-            );
+            #[cfg(all(test, unix))]
+            crate::saga_crash::cut("consumer_ack.before");
+            consumer_succeeded(&receipt).await?;
+            #[cfg(all(test, unix))]
+            crate::saga_crash::cut("consumer_ack.after");
+            let terminal = receipt
+                .evidence_digest()
+                .map(Digest32::from_array)
+                .map_err(|_| BaoAuthBusError::Evidence("receipt encoding failed"))?;
             crate::https_consumer::settle_observed(
                 authbus,
                 evidence,
@@ -192,7 +223,7 @@ where
         Err(error) => {
             let terminal =
                 Digest32::of_bytes(format!("hepta.bao.terminal.v4:{error:?}").as_bytes());
-            provider_terminal(error, terminal)?;
+            provider_terminal(error, terminal).await?;
             match crate::https_consumer::settle_observed(
                 authbus,
                 evidence,
