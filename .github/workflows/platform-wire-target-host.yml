@@ -33,8 +33,14 @@ jobs:
     env:
       CARGO_INCREMENTAL: "0"
       CARGO_NET_OFFLINE: "true"
+      PYTHONDONTWRITEBYTECODE: "1"
       EXPECTED_SOURCE_SHA: ${{ inputs.expected_source_sha }}
+      SOURCE_SHA: ${{ github.sha }}
+      TESTED_SHA: ${{ github.sha }}
+      HEPTA_CI_LANE: source-head
       HOST_PROFILE: ${{ inputs.host_profile }}
+      RECORDS: ${{ runner.temp }}/platform-wire-target-${{ github.run_id }}-${{ github.run_attempt }}/evidence
+      CARGO_TARGET_DIR: ${{ runner.temp }}/platform-wire-target-${{ github.run_id }}-${{ github.run_attempt }}/build
     steps:
       - name: Check out dispatched exact source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -43,221 +49,68 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
 
-      - name: Bind runner-local build directory
+      - name: Verify trusted subject and pre-provisioned pinned toolchain
+        id: setup
         shell: bash
         run: |
           set -euo pipefail
-          target_dir="$RUNNER_TEMP/platform-wire-target-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-          printf 'CARGO_TARGET_DIR=%s\n' "$target_dir" >> "$GITHUB_ENV"
-
-      - name: Verify trusted subject and pre-provisioned toolchain
-        shell: bash
-        run: |
-          set -euo pipefail
+          mkdir -p "$RECORDS"
           [[ "$EXPECTED_SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
           test "$EXPECTED_SOURCE_SHA" = "$GITHUB_SHA"
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           test "$HOST_PROFILE" = "hepta-target-host"
-          command -v cargo
-          command -v rustc
+          command -v rustup
           command -v python3
           command -v node
           test -x /usr/bin/time
-          cargo --version
-          rustc --version
-          python3 --version
-          node --version
+          toolchain="$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')"
+          # No bootstrap or network fetch on the protected host.
+          rustup run "$toolchain" rustc --version --verbose
+          rustup run "$toolchain" cargo --version
+          printf 'RUSTUP_TOOLCHAIN=%s\n' "$toolchain" >> "$GITHUB_ENV"
           git diff --check
-          test -z "$(git status --porcelain --untracked-files=no)"
+          test -z "$(git status --porcelain --untracked-files=all)"
 
-      - name: Verify source and generated lifecycle document
+      - name: Run identity-bound native and release-profile commands
+        id: execution
         shell: bash
         run: |
           set -euo pipefail
-          python3 scripts/platform_wire_status.py self-test
-          python3 scripts/platform_wire_status.py check-doc
-          python3 scripts/platform_wire_managed_fleet_profile.py --self-test
+          python3 scripts/platform_wire_target_qualification.py run \
+            --records "$RECORDS" --source-sha "$SOURCE_SHA"
 
-      - name: Run target-host native qualification and managed resource profiles
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p .hepta-evidence
-          cargo test --locked --offline --manifest-path codex-rs/Cargo.toml \
-            -p codex-hepta-wire --all-targets
-          cargo test --locked --offline --manifest-path codex-rs/Cargo.toml \
-            -p codex-hepta-wire --test managed_consumer_contracts
-          cargo test --locked --offline --manifest-path codex-rs/Cargo.toml \
-            -p codex-hepta-context-compiler --lib wire::tests
-          cargo test --locked --offline --manifest-path codex-rs/Cargo.toml \
-            -p codex-hepta-codex-adapter --lib wire::tests
-          cargo test --locked --offline --manifest-path codex-rs/Cargo.toml \
-            -p codex-hepta-shadow-qualification --test cross_runtime_wire_session
-          cargo clippy --locked --offline --manifest-path codex-rs/Cargo.toml \
-            -p codex-hepta-wire -p codex-hepta-codex-adapter \
-            --all-targets --no-deps -- -D warnings
-          cargo build --release --locked --offline --manifest-path codex-rs/Cargo.toml \
-            -p codex-hepta-wire \
-            --example managed_record_profile \
-            --example managed_fleet_profile
-          LC_ALL=C /usr/bin/time -v \
-            -o .hepta-evidence/platform-wire-target-host-managed-profile.time \
-            "$CARGO_TARGET_DIR/release/examples/managed_record_profile" 512 \
-            > .hepta-evidence/platform-wire-target-host-managed-profile.json
-          python3 scripts/platform_wire_managed_profile.py \
-            --input .hepta-evidence/platform-wire-target-host-managed-profile.json \
-            --iterations 512
-          LC_ALL=C /usr/bin/time -v \
-            -o .hepta-evidence/platform-wire-target-host-managed-fleet-profile.time \
-            "$CARGO_TARGET_DIR/release/examples/managed_fleet_profile" 64 \
-            > .hepta-evidence/platform-wire-target-host-managed-fleet-profile.json
-          python3 scripts/platform_wire_managed_fleet_profile.py \
-            --input .hepta-evidence/platform-wire-target-host-managed-fleet-profile.json \
-            --rounds 64
-
-      - name: Write source-bound target-host receipt
+      - name: Retain source-bound outcome even after failure
+        if: always()
         env:
-          RUNNER_NAME_VALUE: ${{ runner.name }}
-          RUNNER_OS_VALUE: ${{ runner.os }}
-          RUNNER_ARCH_VALUE: ${{ runner.arch }}
-          WORKFLOW_NAME_VALUE: ${{ github.workflow }}
-          WORKFLOW_REF_VALUE: ${{ github.workflow_ref }}
+          SETUP_OUTCOME: ${{ steps.setup.outcome }}
+          EXECUTION_OUTCOME: ${{ steps.execution.outcome }}
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p .hepta-evidence
-          generated_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          python3 - \
-            "$GITHUB_SHA" \
-            "$HOST_PROFILE" \
-            "$RUNNER_NAME_VALUE" \
-            "$RUNNER_OS_VALUE" \
-            "$RUNNER_ARCH_VALUE" \
-            "$WORKFLOW_NAME_VALUE" \
-            "$WORKFLOW_REF_VALUE" \
-            "$GITHUB_RUN_ID" \
-            "$GITHUB_RUN_ATTEMPT" \
-            "$GITHUB_EVENT_NAME" \
-            "$generated_at" \
-            > .hepta-evidence/platform-wire-target-host.json <<'PY'
-          import hashlib
-          import json
-          import re
-          import sys
-          from pathlib import Path
-
-          (
-              source_sha,
-              profile,
-              runner_name,
-              runner_os,
-              runner_arch,
-              workflow,
-              workflow_ref,
-              run_id,
-              run_attempt,
-              event,
-              generated_at,
-          ) = sys.argv[1:]
-
-          def sha256(path):
-              return hashlib.sha256(path.read_bytes()).hexdigest()
-
-          def maximum_rss(path):
-              text = path.read_text(encoding="utf-8", errors="strict")
-              match = re.search(
-                  r"^\s*Maximum resident set size \(kbytes\):\s*([0-9]+)\s*$",
-                  text,
-                  re.MULTILINE,
-              )
-              if match is None or int(match.group(1)) <= 0:
-                  raise SystemExit(f"target-host maximum RSS observation is missing: {path}")
-              return int(match.group(1))
-
-          profile_path = Path(
-              ".hepta-evidence/platform-wire-target-host-managed-profile.json"
-          )
-          profile_time_path = Path(
-              ".hepta-evidence/platform-wire-target-host-managed-profile.time"
-          )
-          fleet_path = Path(
-              ".hepta-evidence/platform-wire-target-host-managed-fleet-profile.json"
-          )
-          fleet_time_path = Path(
-              ".hepta-evidence/platform-wire-target-host-managed-fleet-profile.time"
-          )
-          measurements = json.loads(profile_path.read_text(encoding="utf-8"))
-          fleet = json.loads(fleet_path.read_text(encoding="utf-8"))
-          scenario_count = len(measurements.get("scenarios", []))
-          fleet_scenario_count = len(fleet.get("scenarios", []))
-          if measurements.get("profile") != "release" or scenario_count != 9:
-              raise SystemExit("managed target-host profile was not release-complete")
-          if fleet.get("profile") != "release" or fleet_scenario_count != 6:
-              raise SystemExit("managed fleet target-host profile was not release-complete")
-          print(json.dumps({
-              "schema": "hepta.platform-wire.receipt.v2",
-              "kind": "platform-wire-target-host",
-              "source_sha": source_sha,
-              "tested_sha": source_sha,
-              "status": "passed",
-              "workflow": workflow,
-              "workflow_ref": workflow_ref,
-              "run_id": int(run_id),
-              "run_attempt": int(run_attempt),
-              "event": event,
-              "generated_at": generated_at,
-              "environment": "platform-wire-target-host",
-              "host_profile": profile,
-              "runner_name": runner_name,
-              "runner_os": runner_os,
-              "runner_arch": runner_arch,
-              "managed_profile": {
-                  "schema": measurements.get("schema"),
-                  "iterations_per_scenario": 512,
-                  "scenario_count": scenario_count,
-                  "report_sha256": sha256(profile_path),
-                  "resource_report_sha256": sha256(profile_time_path),
-                  "maximum_resident_set_size_kib": maximum_rss(profile_time_path),
-                  "scope": "release in-process managed HPTM owner on selected target host",
-                  "authenticated_network_ingress": False,
-                  "allocator_calls_measured": False,
-                  "queue_wait_measured": False,
-              },
-              "managed_fleet_profile": {
-                  "schema": fleet.get("schema"),
-                  "rounds_per_scenario": 64,
-                  "scenario_count": fleet_scenario_count,
-                  "report_sha256": sha256(fleet_path),
-                  "resource_report_sha256": sha256(fleet_time_path),
-                  "maximum_resident_set_size_kib": maximum_rss(fleet_time_path),
-                  "scope": "release in-process public managed HPTM owners on selected target host",
-                  "authenticated_network_ingress": False,
-                  "allocator_calls_measured": False,
-                  "transport_queue_wait_measured": False,
-                  "multi_process_pressure_measured": False,
-              },
-          }, sort_keys=True, indent=2))
-          PY
+          python3 scripts/platform_wire_target_qualification.py receipt \
+            --records "$RECORDS" --source-sha "$SOURCE_SHA" \
+            --setup-outcome "$SETUP_OUTCOME" --execution-outcome "$EXECUTION_OUTCOME"
           python3 scripts/platform_wire_status.py validate-receipt \
-            --path .hepta-evidence/platform-wire-target-host.json \
-            --kind platform-wire-target-host
+            --path "$RECORDS/platform-wire-target-host.json" --kind platform-wire-target-host
           python3 scripts/platform_wire_status.py render \
-            --target-host .hepta-evidence/platform-wire-target-host.json \
-            --format json \
-            --output .hepta-evidence/platform-wire-target-host-status.json
+            --target-host "$RECORDS/platform-wire-target-host.json" --format json \
+            --output "$RECORDS/platform-wire-target-host-status.json"
 
-      - name: Retain target-host evidence
+      - name: Retain target-host evidence and failed command logs
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: platform-wire-target-host-${{ github.sha }}-${{ github.run_id }}
-          path: |
-            .hepta-evidence/platform-wire-target-host*.json
-            .hepta-evidence/platform-wire-target-host*.time
-          include-hidden-files: true
+          path: ${{ env.RECORDS }}/
           if-no-files-found: error
           retention-days: 180
 
-      - name: Remove target-host build products
+      - name: Remove only this run's target-host build products
         if: always()
         shell: bash
-        run: rm -rf -- "$CARGO_TARGET_DIR"
+        run: |
+          set -euo pipefail
+          expected="$RUNNER_TEMP/platform-wire-target-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT/build"
+          test "$CARGO_TARGET_DIR" = "$expected"
+          test ! -L "$CARGO_TARGET_DIR"
+          rm -rf -- "$CARGO_TARGET_DIR"
