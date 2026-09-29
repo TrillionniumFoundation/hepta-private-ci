@@ -28,7 +28,8 @@ jobs:
       - name: Validate and apply immutable patch
         shell: bash
         run: |
-          set -euo pipefail
+          exec > >(tee "$RUNNER_TEMP/intuition-authoring-validate.log") 2>&1
+          set -euxo pipefail
           ready=.github/intuition-authoring-patch/READY
           base="$(sed -n 's/^base=//p' "$ready" | tr -d '\r')"
           part_000="$(sed -n 's/^part-000=//p' "$ready" | tr -d '\r')"
@@ -38,10 +39,10 @@ jobs:
           test "$part_000" = "ff90ec4b0bb594c6659c0805f7683e625f423d46"
           test "$part_001" = "8ef03a50ccef25591918ed67fb42506bcfdd21f1"
           test "$part_002" = "627e323cc4086e712a04ffa58b02e7723415e64c"
-          git cat-file -e "$base^{commit}"
-          git cat-file -e "$part_000^{blob}"
-          git cat-file -e "$part_001^{blob}"
-          git cat-file -e "$part_002^{blob}"
+          test "$(git cat-file -t "$base")" = commit
+          test "$(git cat-file -t "$part_000")" = blob
+          test "$(git cat-file -t "$part_001")" = blob
+          test "$(git cat-file -t "$part_002")" = blob
           PART_000="$part_000" PART_001="$part_001" PART_002="$part_002" python - <<'PY'
           import base64
           import hashlib
@@ -49,10 +50,13 @@ jobs:
           import pathlib
           import subprocess
 
-          encoded = b''.join(
-              subprocess.check_output(['git', 'cat-file', 'blob', os.environ[name]])
-              for name in ('PART_000', 'PART_001', 'PART_002')
-          )
+          chunks = []
+          for name in ('PART_000', 'PART_001', 'PART_002'):
+              raw = subprocess.check_output(['git', 'cat-file', 'blob', os.environ[name]])
+              compact = b''.join(raw.split())
+              print(f'{name}: raw={len(raw)} compact={len(compact)}')
+              chunks.append(compact)
+          encoded = b''.join(chunks)
           patch = base64.b64decode(encoded, validate=True)
           target = pathlib.Path('.git/intuition-source.patch')
           target.write_bytes(patch)
@@ -60,7 +64,7 @@ jobs:
           pathlib.Path('.git/intuition-source.patch.sha256').write_text(
               f'{digest}  {target.name}\n', encoding='utf-8'
           )
-          print(digest)
+          print(f'encoded={len(encoded)} patch={len(patch)} sha256={digest}')
           PY
           git diff --quiet
           git apply --check .git/intuition-source.patch
@@ -88,6 +92,7 @@ jobs:
             scripts/tests
           cp .git/intuition-source.patch "$output/source.patch"
           cp .git/intuition-source.patch.sha256 "$output/source.patch.sha256"
+          cp "$RUNNER_TEMP/intuition-authoring-validate.log" "$output/validate.log"
           git diff --cached --binary > "$output/applied.patch"
       - name: Upload patched source snapshot
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -158,6 +163,7 @@ jobs:
           git status --short > "$output/status.txt"
           git diff --binary > "$output/worktree.patch"
           git diff --cached --binary > "$output/index.patch"
+          cp "$RUNNER_TEMP/intuition-authoring-validate.log" "$output/validate.log" 2>/dev/null || true
           cp .git/intuition-source.patch "$output/source.patch" 2>/dev/null || true
           cp .git/intuition-source.patch.sha256 "$output/source.patch.sha256" 2>/dev/null || true
       - name: Upload failure diagnostics
