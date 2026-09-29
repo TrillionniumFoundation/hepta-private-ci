@@ -191,3 +191,5 @@ jobs:
           python3 scripts/hepta-lane-e-closure.py verify
           git diff --exit-code
           git push origin HEAD:"$TARGET_BRANCH"
+
+# one-shot trigger: 2026-09-29 qualification freeze
