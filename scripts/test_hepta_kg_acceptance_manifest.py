@@ -42,9 +42,12 @@ class AcceptanceManifestTests(unittest.TestCase):
             "codex-rs/hepta-prompt-optimizer/src/lib.rs": "pub fn optimize() {}\n",
             "codex-rs/hepta-prompt-registry/src/lib.rs": "pub fn registry() {}\n",
             "docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json": "{}\n",
+            "docs/modules/knowledge.graph/CURRENT_STATUS.json": "{}\n",
+            "docs/modules/knowledge.graph/CURRENT_STATUS.md": "# status\n",
             "docs/modules/knowledge.graph/TECHNICAL.md": "# technical\n",
             "scripts/hepta_kg_acceptance_manifest.py": SCRIPT.read_text(encoding="utf-8"),
             "scripts/hepta_kg_qualification_lane.sh": "#!/bin/sh\n",
+            "scripts/hepta_kg_status.py": "#!/usr/bin/env python3\n",
         }
         for relative, content in files.items():
             path = self.root / relative
@@ -62,6 +65,48 @@ class AcceptanceManifestTests(unittest.TestCase):
     def tearDown(self) -> None:
         self.temporary.cleanup()
 
+    def receipt_rows(self, candidate: dict) -> list[dict]:
+        base = "3" * 40
+        common = {
+            "sourceCommit": candidate["commit"],
+            "baseCommit": base,
+            "sourceWorkflowBlob": candidate["workflowBlob"],
+            "sourceHarnessBlob": candidate["qualificationHarnessBlob"],
+            "executedHarnessSha256": candidate["qualificationHarnessSha256"],
+            "cargoLockSha256": candidate["cargoLockSha256"],
+            "schemaSha256": candidate["schemaSha256"],
+            "allRequiredPassed": True,
+        }
+        return [
+            {
+                **common,
+                "lane": "source-head",
+                "testedCommit": candidate["commit"],
+                "testedTree": candidate["tree"],
+                "testedParents": [],
+                "testedWorkflowBlob": candidate["workflowBlob"],
+                "receiptSha256": "a" * 64,
+            },
+            {
+                **common,
+                "lane": "main-head",
+                "testedCommit": base,
+                "testedTree": "4" * 40,
+                "testedParents": [],
+                "testedWorkflowBlob": "5" * 40,
+                "receiptSha256": "b" * 64,
+            },
+            {
+                **common,
+                "lane": "base-merge",
+                "testedCommit": "1" * 40,
+                "testedTree": "2" * 40,
+                "testedParents": [base, candidate["commit"]],
+                "testedWorkflowBlob": "6" * 40,
+                "receiptSha256": "c" * 64,
+            },
+        ]
+
     def test_request_is_pending_and_fail_closed(self) -> None:
         request = self.module.issue_request(self.root, [])
         self.assertEqual(request["acceptance"]["status"], "pending_independent_signature")
@@ -73,6 +118,7 @@ class AcceptanceManifestTests(unittest.TestCase):
                 ["git", "-C", str(self.root), "rev-parse", "HEAD"], text=True
             ).strip(),
         )
+        self.assertIn("qualificationHarnessSha256", request["candidate"])
 
     def test_any_tracked_change_invalidates_candidate(self) -> None:
         before = self.module.candidate_fingerprint(self.root)
@@ -85,29 +131,23 @@ class AcceptanceManifestTests(unittest.TestCase):
         self.assertNotEqual(before["cargoLockSha256"], after["cargoLockSha256"])
         self.assertNotEqual(before["sourceManifestSha256"], after["sourceManifestSha256"])
 
+    def test_mixed_harness_receipt_is_rejected(self) -> None:
+        candidate = self.module.candidate_fingerprint(self.root)
+        manifest = {"qualificationReceipts": self.receipt_rows(candidate)}
+        manifest["qualificationReceipts"][1]["executedHarnessSha256"] = "0" * 64
+        with self.assertRaisesRegex(
+            self.module.AcceptanceError,
+            "executed a different qualification harness",
+        ):
+            self.module.require_lane_receipts(manifest, candidate)
+
     @unittest.skipUnless(shutil.which("ssh-keygen"), "ssh-keygen is required")
     def test_independent_signature_verifies_exact_candidate(self) -> None:
         candidate = self.module.candidate_fingerprint(self.root)
-        receipts = []
-        for lane in ("source-head", "main-head", "base-merge"):
-            receipts.append(
-                {
-                    "lane": lane,
-                    "testedCommit": candidate["commit"] if lane != "base-merge" else "1" * 40,
-                    "testedTree": candidate["tree"] if lane != "base-merge" else "2" * 40,
-                    "sourceCommit": candidate["commit"],
-                    "baseCommit": "3" * 40,
-                    "workflowBlob": candidate["workflowBlob"],
-                    "cargoLockSha256": candidate["cargoLockSha256"],
-                    "schemaSha256": candidate["schemaSha256"],
-                    "allRequiredPassed": True,
-                    "receiptSha256": lane * 8,
-                }
-            )
         manifest = {
             "schema": self.module.SCHEMA,
             "candidate": candidate,
-            "qualificationReceipts": receipts,
+            "qualificationReceipts": self.receipt_rows(candidate),
             "acceptance": {
                 "status": "accepted",
                 "signerIdentity": "independent-operator",
