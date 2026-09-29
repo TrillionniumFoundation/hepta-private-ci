@@ -1,9 +1,9 @@
 name: Cognitive read qualification
 
 on:
-  push:
+  pull_request:
     branches:
-      - work/cognitive-read-production-convergence-20260927
+      - main
     paths:
       - .github/workflows/cognitive-read-qualification.yml
 
@@ -11,25 +11,26 @@ permissions:
   contents: write
 
 concurrency:
-  group: cognitive-read-maintenance-closure
+  group: cognitive-read-maintenance-closure-${{ github.event.pull_request.number }}
   cancel-in-progress: false
 
 env:
   RUST_MIN_STACK: "8388608"
-  EXPECTED_PARENT: 80002e0b8171e691e4ea33c7088c2e4d09baeded
+  EXPECTED_PARENT: ccab896269842b483f568db6d988500180dabe6c
   RESTORE_COMMIT: c20035266afa1cd08570b021632ba71dcb7766b7
   TARGET_BRANCH: work/cognitive-read-production-convergence-20260927
 
 jobs:
   maintenance-closure:
     name: Repair exact candidate blockers
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'work/cognitive-read-production-convergence-20260927'
     runs-on: ubuntu-24.04
     timeout-minutes: 180
     steps:
       - name: Check out exact maintenance input
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
           persist-credentials: true
 
@@ -40,7 +41,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$GITHUB_REF_NAME" = "$TARGET_BRANCH"
+          test "$GITHUB_HEAD_REF" = "$TARGET_BRANCH"
           test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
           test "$(git diff --name-only "$EXPECTED_PARENT" HEAD)" = ".github/workflows/cognitive-read-qualification.yml"
 
