@@ -56,14 +56,17 @@ replace_once(
 )
 
 # AuthBus is a real Agentd dependency of the all-features TaskFlow qualification.
-# Route its durable owner pool through the canonical codex-state SQLite shim
-# instead of weakening the strict lint command or adding an allow.
+# Route its durable owner and transient schema-reference pools through the
+# canonical codex-state SQLite shim instead of weakening strict lint or adding an
+# allow. The reference lives in a private temporary directory beside the owner,
+# contains no authority data, and is removed only after its pool is closed.
 replace_once(
     "codex-rs/hepta-authbus/Cargo.toml",
     "[dependencies]\ncodex-hepta-types = { path = \"../hepta-types\" }\n",
     "[dependencies]\ncodex-hepta-types = { path = \"../hepta-types\" }\n"
     "codex-state = { workspace = true }\n"
-    "codex-utils-absolute-path = { workspace = true }\n",
+    "codex-utils-absolute-path = { workspace = true }\n"
+    "tempfile = { workspace = true }\n",
 )
 replace_once(
     "codex-rs/hepta-authbus/src/authority_store.rs",
@@ -104,51 +107,66 @@ replace_once(
     "                \"authority database parent must be an absolute path\",\n"
     "            )\n"
     "        })?;\n"
-    "        let pool = SqliteConfig::from_sqlite_home(sqlite_home)\n"
+    "        let sqlite = SqliteConfig::from_sqlite_home(sqlite_home);\n"
+    "        let pool = sqlite\n"
     "            .open_durable_evidence_pool(path)\n"
     "            .await\n"
     "            .map_err(storage)?;\n",
 )
+replace_once(
+    "codex-rs/hepta-authbus/src/authority_store.rs",
+    "        if let Err(error) = crate::authority_schema::verify_schema(&pool, &MIGRATOR).await {\n"
+    "            pool.close().await;\n"
+    "            return Err(error);\n"
+    "        }\n",
+    "        let reference_dir = tempfile::tempdir_in(parent).map_err(storage)?;\n"
+    "        let reference_path = reference_dir\n"
+    "            .path()\n"
+    "            .join(\"compiled-authority-schema.sqlite3\");\n"
+    "        if let Err(error) = crate::authority_schema::verify_schema(\n"
+    "            &pool,\n"
+    "            &MIGRATOR,\n"
+    "            &sqlite,\n"
+    "            &reference_path,\n"
+    "        )\n"
+    "        .await\n"
+    "        {\n"
+    "            pool.close().await;\n"
+    "            return Err(error);\n"
+    "        }\n"
+    "        drop(reference_dir);\n",
+)
 
-# Schema comparison needs only one transient in-memory connection, not another
-# durable pool. Pool construction remains centralized while the reference stays
-# authority-free and process-local.
 replace_once(
     "codex-rs/hepta-authbus/src/authority_schema.rs",
     "use sqlx::SqlitePool;\nuse sqlx::migrate::Migrator;\n"
     "use sqlx::sqlite::SqlitePoolOptions;\n",
-    "use sqlx::Connection;\nuse sqlx::SqliteConnection;\nuse sqlx::SqlitePool;\n"
+    "use std::path::Path;\n\n"
+    "use codex_state::SqliteConfig;\n"
+    "use sqlx::SqlitePool;\n"
     "use sqlx::migrate::Migrator;\n",
 )
 replace_once(
     "codex-rs/hepta-authbus/src/authority_schema.rs",
+    "pub(crate) async fn verify_schema(\n"
+    "    pool: &SqlitePool,\n"
+    "    migrator: &Migrator,\n"
+    ") -> Result<(), AuthBusAuthorityError> {\n"
     "    let reference = SqlitePoolOptions::new()\n"
     "        .max_connections(1)\n"
     "        .connect(\"sqlite::memory:\")\n"
     "        .await\n"
     "        .map_err(storage)?;\n",
-    "    let mut reference = SqliteConnection::connect(\"sqlite::memory:\")\n"
+    "pub(crate) async fn verify_schema(\n"
+    "    pool: &SqlitePool,\n"
+    "    migrator: &Migrator,\n"
+    "    sqlite: &SqliteConfig,\n"
+    "    reference_path: &Path,\n"
+    ") -> Result<(), AuthBusAuthorityError> {\n"
+    "    let reference = sqlite\n"
+    "        .open_read_write_pool(reference_path)\n"
     "        .await\n"
     "        .map_err(storage)?;\n",
-)
-replace_all(
-    "codex-rs/hepta-authbus/src/authority_schema.rs",
-    "migrator.run(&reference)",
-    "migrator.run(&mut reference)",
-    1,
-)
-replace_all(
-    "codex-rs/hepta-authbus/src/authority_schema.rs",
-    ".fetch_all(&reference)",
-    ".fetch_all(&mut reference)",
-    1,
-)
-replace_once(
-    "codex-rs/hepta-authbus/src/authority_schema.rs",
-    "    reference.close().await;\n    result\n",
-    "    let close = reference.close().await.map_err(storage);\n"
-    "    result?;\n"
-    "    close\n",
 )
 
 for relative in [
