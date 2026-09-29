@@ -102,6 +102,9 @@ tokio-util = { workspace = true }
 libc = { workspace = true }
 
 [dev-dependencies]
+# Integration tests deliberately opt into the non-default raw test adapters;
+# normal Agentd and release builds continue to use sealed verified trust only.
+codex-hepta-evidence = { workspace = true, features = ["test-support"] }
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = ["qualification-legacy-write"] }
 codex-hepta-operations = { workspace = true }
 codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
