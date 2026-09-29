@@ -1,0 +1,37 @@
+name: ui.native WAL patch text export
+
+on:
+  push:
+    branches: [work/ui-native-full-convergence-20260929]
+    paths:
+      - .github/workflows/ui-native-wal-index-export-text.yml
+      - .ci/ui-native-wal-index/source.patch.gz
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-slim
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Verify and decode reviewed capsule
+        env:
+          PATCH_BLOB_SHA: cf8d5267cbcde61455849e24be9eac9d1a8d14f3
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD:.ci/ui-native-wal-index/source.patch.gz)" = "$PATCH_BLOB_SHA"
+          mkdir -p "$RUNNER_TEMP/ui-native-wal-index-text"
+          gzip -dc .ci/ui-native-wal-index/source.patch.gz > "$RUNNER_TEMP/ui-native-wal-index-text/source.patch"
+          sha256sum .ci/ui-native-wal-index/source.patch.gz "$RUNNER_TEMP/ui-native-wal-index-text/source.patch" > "$RUNNER_TEMP/ui-native-wal-index-text/sha256.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ui-native-wal-index-text-${{ github.sha }}
+          path: ${{ runner.temp }}/ui-native-wal-index-text
+          if-no-files-found: error
+          retention-days: 3
