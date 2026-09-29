@@ -26,7 +26,7 @@ env:
 jobs:
   verify-and-publish:
     if: github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -80,6 +80,10 @@ jobs:
             libgl1-mesa-dev libssl-dev desktop-file-utils \
             xvfb xauth dbus-x11 gnome-keyring xdotool x11-utils \
             python3-cryptography fonts-noto-cjk
+          if ! command -v rustup >/dev/null 2>&1; then
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain 1.95.0
+            source "$HOME/.cargo/env"
+          fi
           rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
 
       - name: Format and freeze the source candidate
