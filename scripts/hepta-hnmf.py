@@ -11,6 +11,7 @@ from typing import Any
 
 try:
     from scripts.hepta_metadata import (
+        AUTHORITY_KEYS as AUTHORITY_KEYS,
         has_schema_version,
         has_registry_ids,
         has_deny_all_authority,
@@ -19,6 +20,7 @@ except ModuleNotFoundError as error:
     if error.name != "scripts":
         raise
     from hepta_metadata import (
+        AUTHORITY_KEYS as AUTHORITY_KEYS,
         has_schema_version,
         has_registry_ids,
         has_deny_all_authority,
