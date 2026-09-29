@@ -24,7 +24,10 @@ impl SegmentedFileEvidenceFrontierBackend {
         }
         let cursor = ChainCursor {
             next_audit_sequence: metadata.first_audit_sequence,
-            previous_generation: metadata.first_generation.checked_sub(1),
+            previous_generation: metadata
+                .first_generation
+                .checked_sub(1)
+                .filter(|generation| *generation > 0),
             previous_record_sha256: metadata.previous_record_sha256.clone(),
         };
         let records = parse_records(
