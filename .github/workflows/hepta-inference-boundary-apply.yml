@@ -68,9 +68,30 @@ jobs:
           hunks.sort(key=lambda value: int(re.search(r'^@@ -(\d+)', value).group(1)))
           section = (header + ''.join(hunks)).rstrip('\n')
           patch = patch[:section_start] + section + patch[section_end:]
+          old_native = '\n'.join([
+              '@@ -1,2 +1,3 @@',
+              "     modules = ['actor_latency', 'actor_mailbox', 'actor_policy', 'actor_observation',",
+              "-               'control_actor', 'control_port', 'output_protection', 'unix_output_protector']",
+              "+               'actor_record_observation', 'control_actor', 'control_port',",
+              "+               'output_protection', 'unix_output_protector']",
+              '',
+          ])
+          new_native = '\n'.join([
+              '@@ -50,5 +50,6 @@',
+              "     (output / 'core').mkdir()",
+              "     (output / 'core/Cargo.toml').write_text(core_manifest)",
+              "     modules = ['actor_latency', 'actor_mailbox', 'actor_policy', 'actor_observation',",
+              "-               'control_actor', 'control_port', 'output_protection', 'unix_output_protector']",
+              "+               'actor_record_observation', 'control_actor', 'control_port',",
+              "+               'output_protection', 'unix_output_protector']",
+              r'''     wrapper = '#![forbid(unsafe_code)]\n' + ''.join(f'#[path = {path(host / "src" / (name + ".rs"))}]\npub mod {name};\n' for name in modules)''',
+              '',
+          ])
+          assert patch.count(old_native) == 1
+          patch = patch.replace(old_native, new_native)
           raw = patch.encode('utf-8')
-          assert len(raw) == 47066
-          assert hashlib.sha256(raw).hexdigest() == '31b498d7b24122ac458b12aac854458adeacf0bdef2e1750d7fe0418a9d4bee8'
+          assert len(raw) == 47303
+          assert hashlib.sha256(raw).hexdigest() == '97d74806bbcf6d773adebdcea02f17ab2f05e03a7562e3a7e0fb17236f864d6b'
           Path(os.environ['RUNNER_TEMP'], 'inference-boundary.patch').write_bytes(raw)
           PY
           git fetch origin "$DESTINATION"
@@ -157,7 +178,7 @@ jobs:
           set -euo pipefail
           candidate="$(git rev-parse HEAD)"
           set +e
-          output="$(git push origin "HEAD:refs/heads/$DESTINATION" 2>&1)"
+          output="$(git push origin "HEAD:refs/heads/$DERLINATION" 2>&1)"
           status=$?
           set -e
           printf '%s\n' "$output" | tee "$RUNNER_TEMP/inference-boundary-push.log"
