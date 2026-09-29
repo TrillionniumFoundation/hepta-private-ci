@@ -8,6 +8,7 @@
 mod admin;
 mod admission_v3;
 mod closure_v2;
+mod current_use;
 mod dataset_revocation;
 mod durability;
 mod durable_snapshots;
@@ -56,6 +57,8 @@ pub use closure_v2::WithdrawalAppendDispositionV1;
 pub use closure_v2::validate_artifact_lifecycle_transition;
 pub use closure_v2::validate_artifact_manifest_v2;
 pub use closure_v2::validate_registry_head_witness;
+pub use current_use::CurrentArtifactUseError;
+pub use current_use::VerifiedCurrentArtifactUseV1;
 pub use dataset_revocation::DatasetRevocationError;
 pub use dataset_revocation::DatasetRevocationRequest;
 pub use dataset_revocation::DatasetRevocationSummary;
