@@ -29,15 +29,17 @@ pub enum PropositionPolarityV2 {
 /// migration, but their values are now structured claims rather than opaque
 /// hashes. Old opaque groups cannot be upgraded by guessing a polarity.
 ///
-/// The fields are private so callers cannot construct or later mutate a
-/// proposition/generation pair independently. Owners that already maintain a
-/// canonical proposition digest use [`Self::new`]; callers holding canonical
-/// value bytes use [`Self::from_canonical_value`], which derives the digest.
+/// The fields are hidden from downstream crates so callers cannot construct or
+/// later mutate a proposition/generation pair independently. Owners that
+/// already maintain a canonical proposition digest use [`Self::new`]; callers
+/// holding canonical value bytes use [`Self::from_canonical_value`], which
+/// derives the digest. Crate-private visibility is retained only for invariant
+/// corruption tests.
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub struct ContradictionEvidenceV2 {
-    proposition_digest: Digest32,
-    generation_vector_digest: Digest32,
-    polarity: PropositionPolarityV2,
+    pub(crate) proposition_digest: Digest32,
+    pub(crate) generation_vector_digest: Digest32,
+    pub(crate) polarity: PropositionPolarityV2,
 }
 
 impl ContradictionEvidenceV2 {
