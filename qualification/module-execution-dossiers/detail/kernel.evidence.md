@@ -251,9 +251,9 @@ This block is generated from
 override these facts. Workflow receipts may prove the current candidate, but
 cannot self-issue independent acceptance, deployment, canary or release.
 
-- Source anchor commit: `d01b9571d74a2b25b0517f7aa2584ada7b9887ea`
-- Source anchor tree: `3863e415078027f8c6a85deed2aa8f0b0d57c8cd`
-- Canonical status SHA-256: `453a82332547fdffaedec0e593ddfdc974164b8f8e5aa771928f3323fc74dc19`
+- Source anchor commit: `9108f9b1b2c73d6defb6b536d87ce76834eb5abb`
+- Source anchor tree: `2606b7df789e1f50a22465998cd607060636782c`
+- Canonical status SHA-256: `848dce603e2d5e78561730ede309a115f822e918d786e772a132b23add62577f`
 - Workflow run ID: `none`
 - Retained artifact digest: `none`
 
