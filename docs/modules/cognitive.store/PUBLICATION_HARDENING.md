@@ -20,6 +20,12 @@ The ordinary `lifecycle.py` CLI calls `reconcile_files`. It authenticates the re
 
 The result is a last-observed report, not an atomic transaction spanning independent files. `owner_attested_complete` remains an authenticated set of owner assertions, not an independently performed physical erase. `authorized_effects`, `physical_erasure_independently_proved` and `target_host_qualified` remain false. Missing or indeterminate owner obligations remain incomplete; no new authority, signer key, provider or eraser is introduced.
 
+### Signed-file and signature-verifier identity
+
+Every lifecycle plan, trust bundle and receipt set is now opened relative to a retained descriptor for each parent directory component. Intermediate symlinks are rejected, the leaf remains single-link and non-group/world-writable, and both the retained leaf and the current parent pathname are rechecked before parsed bytes are used. Renaming the original parent and replacing it with a same-name directory therefore fails instead of redirecting final-use verification.
+
+Ed25519 verification no longer resolves `openssl` from caller-controlled `PATH`. The tool admits only a root-owned, executable, non-group/world-writable system OpenSSL path, invokes it through an absolute path with a minimal environment, and rechecks the executable identity after use. This is host verifier admission, not a claim that repository code governs the system package or independently attests the selected host.
+
 ## Release recovery measurement admission
 
 `scripts/cognitive_store_recovery_report.py` validates the existing recovery example's artifact against independently supplied source commit, tested commit, tested tree and required record count. The qualification plan validates both 256 and 16,384-record release profiles after their measurement commands. At least three complete iterations, exact-cut preservation, all expected 512-head pages, bounded integer timings, initial/final verifier observations, resource samples and Linux RSS are required.
@@ -32,12 +38,13 @@ The validator rejects duplicate JSON fields, nonfinite/floating values, missing 
 |---|---:|---|
 | `test_archive.py` | 45 | Existing real crypto/filesystem protocol regressions; named native-owner mock, plus negative executable admission cases |
 | `test_archive_publication.py` | 21 | Normal archive/restore path, directory descriptors, file identity, no-replace publication, retained ambiguous output and conservative scratch cleanup |
+| `test_lifecycle.py` | 35 | Real Ed25519/OpenSSL signatures, all storage classes, pinned parent paths, PATH-injection rejection and bounded signed inputs |
 | `test_lifecycle_final_use.py` | 12 | Real Ed25519/OpenSSL signatures, complete ordinary CLI invocation, final trust/input changes and incomplete receipt sets |
 | `scripts/test_cognitive_store_recovery_report.py` | 21 | Synthetic measurement fixtures testing the validator; not performance measurements |
 
 Four publication regressions fail against the exact pre-change archive blob `9371893ca8ca748f5ee818dca8154be411d4f3b2` and pass against the changed implementation: changed restore bytes after native checking; changed bytes during reauthorization; redirected output parent; redirected archive name before manifest publication. No regression bypass or test-only publisher was added. The existing concurrent-destination test was adapted to directory-relative syscall arguments while retaining its no-overwrite assertion.
 
-These 99 local tests are not exact-head/base-merge Rust execution, native owner acceptance, independent deployment qualification, destructive pruning or physical erasure. The committed plan retains all 37 prior commands and adds five independent records: publication-boundary tests, lifecycle-final-use tests, report-validator tests and two release-report validators. Source-head and deterministic base-merge must each establish their own terminal results. Qualification remains read-only and never applies a patch or pushes a fix.
+These 134 local tests are not exact-head/base-merge Rust execution, native owner acceptance, independent deployment qualification, destructive pruning or physical erasure. The committed plan retains all independent records for publication-boundary tests, lifecycle verification/final-use tests, report-validator tests and both release-report validators. Source-head and deterministic base-merge must each establish their own terminal results. Qualification remains read-only and never applies a patch or pushes a fix.
 
 ## Remaining work
 

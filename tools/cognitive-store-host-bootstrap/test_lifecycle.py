@@ -2,11 +2,13 @@
 """Real Ed25519 verification against isolated fixture keys; no storage deletion."""
 from copy import deepcopy
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 import lifecycle as module
 
@@ -117,6 +119,17 @@ class LifecycleTests(unittest.TestCase):
         self.receipts[0]["signature_hex"] = "0" * 128
         with self.assertRaises(ValueError):
             self.run_reconcile()
+
+    def test_path_injected_openssl_cannot_bless_tampered_signature(self):
+        fake = self.root / "fake-bin"
+        fake.mkdir(exist_ok=True)
+        executable = fake / "openssl"
+        executable.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+        executable.chmod(0o755)
+        self.receipts[0]["signature_hex"] = "0" * 128
+        with mock.patch.dict(os.environ, {"PATH": str(fake)}, clear=False):
+            with self.assertRaisesRegex(ValueError, "signature verification"):
+                self.run_reconcile()
 
     def test_unsigned_field_drift_rejects(self):
         self.receipts[0]["payload"]["status"] = "pending"
@@ -256,8 +269,48 @@ class LifecycleTests(unittest.TestCase):
             path.write_text('{}')
             alias = Path(temporary) / "alias"
             alias.symlink_to(path)
-            with self.assertRaises(ValueError):
+            with self.assertRaises((OSError, ValueError)):
                 module.load_bounded(alias)
+
+    def test_intermediate_symlink_rejects(self):
+        with tempfile.TemporaryDirectory(dir=self.root) as temporary:
+            root = Path(temporary).resolve()
+            real = root / "real"
+            real.mkdir()
+            source = real / "source"
+            source.write_text('{}')
+            source.chmod(0o600)
+            alias = root / "alias"
+            alias.symlink_to(real, target_is_directory=True)
+            with self.assertRaises((OSError, ValueError)):
+                module.load_bounded(alias / "source")
+
+    def test_parent_replacement_during_read_rejects(self):
+        with tempfile.TemporaryDirectory(dir=self.root) as temporary:
+            root = Path(temporary).resolve()
+            parent = root / "input"
+            parent.mkdir()
+            source = parent / "source"
+            source.write_text('{}')
+            source.chmod(0o600)
+            retained = root / "retained-input"
+            replaced = False
+            real_stat = module.os.stat
+
+            def replace_before_parent_recheck(path, *args, **kwargs):
+                nonlocal replaced
+                if not replaced and path == source.name and kwargs.get("dir_fd") is not None:
+                    replaced = True
+                    parent.rename(retained)
+                    parent.mkdir()
+                    replacement = parent / source.name
+                    replacement.write_text('{}')
+                    replacement.chmod(0o600)
+                return real_stat(path, *args, **kwargs)
+
+            with mock.patch.object(module.os, "stat", side_effect=replace_before_parent_recheck):
+                with self.assertRaisesRegex(ValueError, "parent directory"):
+                    module.load_bounded(source)
 
 
 if __name__ == "__main__":

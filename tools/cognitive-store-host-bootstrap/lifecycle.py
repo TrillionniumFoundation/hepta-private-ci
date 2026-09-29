@@ -19,6 +19,8 @@ import tempfile
 import time
 import uuid
 
+from archive_publication import inode, open_directory
+
 CLASSES = frozenset({"active_sqlite", "wal_journal", "retired_generations", "backups",
                      "cold_segments", "caches", "exports", "derived_artifacts", "trained_parameters"})
 DOMAIN = b"hepta.cognitive.lifecycle-observation.v1\0"
@@ -26,6 +28,7 @@ ID = re.compile(r"[A-Za-z0-9._:-]{1,128}\Z")
 HEX = re.compile(r"[0-9a-f]{64}\Z")
 MAX_OBLIGATIONS = 128
 MAX_INPUT_BYTES = 256 * 1024
+OPENSSL_CANDIDATES = (Path("/usr/bin/openssl"), Path("/bin/openssl"))
 
 
 def require(condition: bool, message: str) -> None:
@@ -61,6 +64,31 @@ def signing_bytes(envelope: dict) -> bytes:
     return DOMAIN + canonical({key: envelope[key] for key in ("payload", "signer_id", "key_epoch")})
 
 
+def executable_identity(metadata: os.stat_result) -> tuple[int, ...]:
+    return (metadata.st_dev, metadata.st_ino, metadata.st_mode, metadata.st_uid,
+            metadata.st_size, metadata.st_mtime_ns, metadata.st_ctime_ns)
+
+
+def trusted_openssl() -> tuple[Path, tuple[int, ...]]:
+    """Resolve a root-owned system verifier without consulting caller PATH.
+
+    Signer trust authenticates the Ed25519 key, not the executable used to
+    check it. The host therefore admits only a fixed, non-group/world-writable
+    system OpenSSL path and rechecks its identity after every verification.
+    """
+    for candidate in OPENSSL_CANDIDATES:
+        try:
+            resolved = candidate.resolve(strict=True)
+            metadata = resolved.stat(follow_symlinks=False)
+        except OSError:
+            continue
+        if (stat.S_ISREG(metadata.st_mode) and metadata.st_uid == 0
+                and not metadata.st_mode & 0o022
+                and metadata.st_mode & 0o111):
+            return resolved, executable_identity(metadata)
+    raise ValueError("trusted system OpenSSL verifier is unavailable")
+
+
 def verify_signature(envelope: dict, signer: dict) -> dict:
     exact(envelope, {"payload", "signer_id", "key_epoch", "signature_hex"})
     identifier(envelope["signer_id"])
@@ -75,17 +103,25 @@ def verify_signature(envelope: dict, signer: dict) -> dict:
     require(len(data) <= MAX_INPUT_BYTES, "signed input exceeds bounds")
     # RFC 8410 SubjectPublicKeyInfo for the externally installed Ed25519 key.
     der = bytes.fromhex("302a300506032b6570032100" + signer["public_key_hex"])
+    openssl, openssl_before = trusted_openssl()
     with tempfile.TemporaryDirectory(prefix="cognitive-lifecycle-verify-") as temporary:
         root = Path(temporary)
         (root / "key.der").write_bytes(der)
         (root / "payload").write_bytes(data)
         (root / "signature").write_bytes(bytes.fromhex(signature))
         result = subprocess.run(
-            ["openssl", "pkeyutl", "-verify", "-pubin", "-keyform", "DER",
+            [str(openssl), "pkeyutl", "-verify", "-pubin", "-keyform", "DER",
              "-inkey", str(root / "key.der"), "-rawin", "-in", str(root / "payload"),
              "-sigfile", str(root / "signature")],
-            capture_output=True, timeout=10, check=False,
+            capture_output=True, timeout=10, check=False, close_fds=True,
+            env={"PATH": "/usr/bin:/bin", "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8"},
         )
+    try:
+        openssl_after = openssl.stat(follow_symlinks=False)
+    except OSError as error:
+        raise ValueError("trusted OpenSSL verifier changed during use") from error
+    require(executable_identity(openssl_after) == openssl_before,
+            "trusted OpenSSL verifier changed during use")
     require(result.returncode == 0, "owner signature verification failed or verifier unavailable")
     return envelope["payload"]
 
@@ -205,28 +241,42 @@ def file_identity(metadata: os.stat_result) -> tuple[int, ...]:
 
 def load_bounded(path: Path) -> object:
     # O_NONBLOCK must precede fstat: opening a substituted FIFO otherwise waits
-    # indefinitely before its type can be rejected. Do not silently omit the
-    # descriptor primitives on unsupported hosts.
+    # indefinitely before its type can be rejected. Every parent component is
+    # retained without following symlinks, so a same-name replacement cannot
+    # redirect the second identity check to another directory.
     require(os.name == "posix" and all(hasattr(os, flag) for flag in
-            ("O_NOFOLLOW", "O_NONBLOCK", "O_CLOEXEC")),
+            ("O_NOFOLLOW", "O_NONBLOCK", "O_CLOEXEC", "O_DIRECTORY")),
             "signed-file admission requires the POSIX descriptor profile")
-    require(path.is_absolute() and path.resolve(strict=True) == path, "input path must be canonical")
-    descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_CLOEXEC)
-    with os.fdopen(descriptor, "rb") as stream:
-        before = os.fstat(stream.fileno())
-        require(stat.S_ISREG(before.st_mode) and before.st_nlink == 1, "input must be a single-link regular file")
-        require(not before.st_mode & 0o022, "signed input is group/world writable")
-        require(before.st_size <= MAX_INPUT_BYTES, "input exceeds byte budget")
-        content = stream.read(MAX_INPUT_BYTES + 1)
-        after = os.fstat(stream.fileno())
-        # A valid old signature on a retained descriptor is insufficient when
-        # the live trust pathname was replaced while that descriptor was read.
-        current = path.stat(follow_symlinks=False)
-        require(path.resolve(strict=True) == path and
-                file_identity(before) == file_identity(after) == file_identity(current),
-                "input or its current pathname changed during read")
+    require(path.is_absolute() and ".." not in path.parts and
+            path.name not in {"", ".", ".."}, "input path must be absolute and normalized")
+    parent_descriptor = open_directory(path.parent)
+    try:
+        parent_before = os.fstat(parent_descriptor)
+        descriptor = os.open(path.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK |
+                             os.O_CLOEXEC, dir_fd=parent_descriptor)
+        with os.fdopen(descriptor, "rb") as stream:
+            before = os.fstat(stream.fileno())
+            require(stat.S_ISREG(before.st_mode) and before.st_nlink == 1,
+                    "input must be a single-link regular file")
+            require(not before.st_mode & 0o022, "signed input is group/world writable")
+            require(before.st_size <= MAX_INPUT_BYTES, "input exceeds byte budget")
+            content = stream.read(MAX_INPUT_BYTES + 1)
+            after = os.fstat(stream.fileno())
+            current = os.stat(path.name, dir_fd=parent_descriptor, follow_symlinks=False)
+            require(file_identity(before) == file_identity(after) == file_identity(current),
+                    "input or its retained pathname changed during read")
+        current_parent = open_directory(path.parent)
+        try:
+            require(inode(parent_before) == inode(os.fstat(parent_descriptor)) ==
+                    inode(os.fstat(current_parent)),
+                    "input parent directory changed during read")
+        finally:
+            os.close(current_parent)
+    finally:
+        os.close(parent_descriptor)
     require(len(content) <= MAX_INPUT_BYTES, "input exceeds byte budget")
-    return json.loads(content, object_pairs_hook=no_duplicates, parse_float=no_float, parse_constant=no_float)
+    return json.loads(content, object_pairs_hook=no_duplicates, parse_float=no_float,
+                      parse_constant=no_float)
 
 
 def reconcile_files(plan_path: Path, receipts_path: Path, trust_path: Path,
