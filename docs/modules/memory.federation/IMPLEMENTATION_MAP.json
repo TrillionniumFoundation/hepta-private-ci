@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "1c6706b18692ba9626998c608239cc9315a83921",
-    "tree": "5db1f2f2803c533e17ce683654648071de61d421"
+    "commit": "05c57742bc05cf9a5aef704c46c7c4838d15f8a5",
+    "tree": "d87ee8ab683d5f6b1ba49415ca05da58e93a9631"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.federation",
@@ -87,8 +87,8 @@
   "headAttestation": {
     "candidateBranch": "feat/memory-federation-full-closure-20260927",
     "baseCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
-    "candidateHead": "1c6706b18692ba9626998c608239cc9315a83921",
-    "candidateTree": "5db1f2f2803c533e17ce683654648071de61d421",
+    "candidateHead": "05c57742bc05cf9a5aef704c46c7c4838d15f8a5",
+    "candidateTree": "d87ee8ab683d5f6b1ba49415ca05da58e93a9631",
     "headMeaning": "canonical_v2 bounded_discovery_reserved_read_budget deterministic_peer_selection final_use_revalidation private_verified_frame monotonic_partitioned_replay authenticated_transport_identity durable_replay_attempt_recovery restart_surviving_cancellation owner_cut_witness scoped_canonical_map_verification pre_post_execution_guard canonical_capability_status retained_logical_capacity_metrics terminal_request_credential_currentness issuing_host_token_binding actual_command_execution locked_input_revalidation ordered_merge_parents authenticated_product_body_bridge atomic_product_preflight retry_safe_client_inbound_commit v4_combined_attachment_partial_peer_evidence single_pr_qualification_owner_required_fanin issuer_attested_transport_context_before_packet_replay local_owner_bound_transport_context stale_public_constructor_regression_removed context_self_encoded_attestation_payload",
     "status": "pending_exact_current_head_and_merge_candidate_execution",
     "scope": [
@@ -166,7 +166,10 @@
       "codex-rs/hepta-memory-federation-wire/src/credential.rs",
       "codex-rs/hepta-memory-federation-wire/src/host.rs",
       "codex-rs/hepta-memory-federation-wire/src/host_tests.rs",
+      "codex-rs/hepta-memory-federation-wire/src/product/bridge.rs",
       "codex-rs/hepta-memory-federation-wire/src/product/context.rs",
+      "codex-rs/hepta-memory-federation-wire/src/product/transport.rs",
+      "codex-rs/hepta-memory-federation-wire/src/product_tests/adapter.rs",
       "codex-rs/hepta-memory-federation-wire/src/product_tests/mod.rs",
       "codex-rs/hepta-memory-federation-wire/src/protocol.rs",
       "codex-rs/hepta-memory-federation-wire/src/recovery.rs",
@@ -182,6 +185,7 @@
       "docs/modules/memory.federation/INDEXED_ADMISSION.md",
       "docs/modules/memory.federation/PRODUCT_BRIDGE_V1.md",
       "docs/modules/memory.federation/TECHNICAL.md",
+      "docs/modules/memory.federation/TRANSPORT_FINAL_USE.md",
       "docs/modules/memory.federation/V2_HARDENING.md",
       "docs/modules/memory.federation/WIRE_IMPLEMENTATION_MAP.json",
       "docs/modules/memory.federation/WIRE_V1.md",
@@ -198,15 +202,15 @@
       "scripts/verify_memory_federation_implementation.py",
       "scripts/verify_memory_federation_status.py"
     ],
-    "note": "Author-only observation of a committed source/tests/docs candidate. Authentication precedes staged state, derived expiry indexes preserve canonical snapshots, and the CLI/guard share one attestation module instance. This map-only rebind grants no execution, independent acceptance or activation claim. A fresh read-only exact-head and deterministic-current-base qualification is required.",
+    "note": "Author-only observation of the committed request-bound transport and final-use candidate. Local timestamps are refreshed after owner-lock acquisition, durable preparation and terminal persistence; response query/body preflight precedes replay and terminal mutation. Bounded maintenance uses the existing client owner. Eight adapter regressions and both source/merge workflow lanes are included. Local YAML and 11 shell-block syntax checks passed; Rust execution and real-host qualification are not claimed. This map-only rebind grants no execution, independent acceptance, activation or release authority.",
     "metadataOnlyPaths": [
       "docs/modules/memory.federation/IMPLEMENTATION_MAP.json"
     ]
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "1c6706b18692ba9626998c608239cc9315a83921",
-    "tree": "5db1f2f2803c533e17ce683654648071de61d421"
+    "commit": "05c57742bc05cf9a5aef704c46c7c4838d15f8a5",
+    "tree": "d87ee8ab683d5f6b1ba49415ca05da58e93a9631"
   },
   "observedSourcePaths": [
     ".github/workflows/blocking-ci.yml",
@@ -225,7 +229,10 @@
     "codex-rs/hepta-memory-federation-wire/src/credential.rs",
     "codex-rs/hepta-memory-federation-wire/src/host.rs",
     "codex-rs/hepta-memory-federation-wire/src/host_tests.rs",
+    "codex-rs/hepta-memory-federation-wire/src/product/bridge.rs",
     "codex-rs/hepta-memory-federation-wire/src/product/context.rs",
+    "codex-rs/hepta-memory-federation-wire/src/product/transport.rs",
+    "codex-rs/hepta-memory-federation-wire/src/product_tests/adapter.rs",
     "codex-rs/hepta-memory-federation-wire/src/product_tests/mod.rs",
     "codex-rs/hepta-memory-federation-wire/src/protocol.rs",
     "codex-rs/hepta-memory-federation-wire/src/recovery.rs",
@@ -241,6 +248,7 @@
     "docs/modules/memory.federation/INDEXED_ADMISSION.md",
     "docs/modules/memory.federation/PRODUCT_BRIDGE_V1.md",
     "docs/modules/memory.federation/TECHNICAL.md",
+    "docs/modules/memory.federation/TRANSPORT_FINAL_USE.md",
     "docs/modules/memory.federation/V2_HARDENING.md",
     "docs/modules/memory.federation/WIRE_IMPLEMENTATION_MAP.json",
     "docs/modules/memory.federation/WIRE_V1.md",
@@ -280,7 +288,7 @@
     },
     {
       "path": ".github/workflows/memory-federation-v2-final-verify.yml",
-      "object": "f4808523a71fcd9f8d6e1ebd882b6ef562ee9048"
+      "object": "bdf002a9bcdfea827705e95b89d0a40e9f6cc988"
     },
     {
       "path": "codex-rs/Cargo.lock",
@@ -304,7 +312,7 @@
     },
     {
       "path": "codex-rs/hepta-memory-federation-wire",
-      "object": "c2de297c3b5e868c73e68935ed6a080ed8255532"
+      "object": "b96bb4766e838ea618bd812d411f67549cd3fd38"
     },
     {
       "path": "codex-rs/hepta-memory-federation-wire/Cargo.toml",
@@ -335,8 +343,20 @@
       "object": "1a264642cd9e0376d669dd1f11447e3b47b61b2b"
     },
     {
+      "path": "codex-rs/hepta-memory-federation-wire/src/product/bridge.rs",
+      "object": "0ebb2e549cf8494f967c3ab67cbaf098b0951988"
+    },
+    {
       "path": "codex-rs/hepta-memory-federation-wire/src/product/context.rs",
       "object": "2f8ea46dc72a58ccf3560ffdc66a94d348ee7e9e"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation-wire/src/product/transport.rs",
+      "object": "f7a87fa06978b43118fc0c080a5a79a50f3178ed"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation-wire/src/product_tests/adapter.rs",
+      "object": "3f30df5e3c0bc2887aba4b6890330cf056d439bf"
     },
     {
       "path": "codex-rs/hepta-memory-federation-wire/src/product_tests/mod.rs",
@@ -397,6 +417,10 @@
     {
       "path": "docs/modules/memory.federation/TECHNICAL.md",
       "object": "85cd4337107cab5b0061d0080dba22bf2be5e695"
+    },
+    {
+      "path": "docs/modules/memory.federation/TRANSPORT_FINAL_USE.md",
+      "object": "eac171aa8f8d7ceb4ed4d00598b91a1ca5c8cafa"
     },
     {
       "path": "docs/modules/memory.federation/V2_HARDENING.md",
