@@ -284,12 +284,7 @@ pub fn canonical_contract_digest_v1<T: CognitiveContractV1>(
     value: &T,
 ) -> Result<Digest32, CognitiveWireError> {
     let payload = encode_payload_canonical_v1(value)?;
-    Ok(Digest32::of_parts(&[
-        DIGEST_DOMAIN_V1,
-        T::CONTRACT_ID.as_bytes(),
-        b"\0",
-        payload.as_slice(),
-    ]))
+    Ok(frozen_digest_from_checked_payload::<T>(&payload))
 }
 
 /// Strong digest profile for authoritative consumers. In addition to the
@@ -299,13 +294,42 @@ pub fn canonical_contract_digest_bound_v1<T: CognitiveContractV1>(
     value: &T,
 ) -> Result<Digest32, CognitiveWireError> {
     let payload = encode_payload_canonical_v1(value)?;
+    Ok(bound_digest_from_checked_payload::<T>(&payload))
+}
+
+/// Compute (frozen V1, schema-bound V1) from one checked canonical payload.
+/// Bytes are local to this call: no owner identity, currentness or authorization
+/// conclusion is cached. Callers must still recheck the current owner binding.
+/// The independent expected projection must not be replaced by this payload.
+pub(crate) fn canonical_contract_digests_v1<T: CognitiveContractV1>(
+    value: &T,
+) -> Result<(Digest32, Digest32), CognitiveWireError> {
+    let payload = encode_payload_canonical_v1(value)?;
+    Ok((
+        frozen_digest_from_checked_payload::<T>(&payload),
+        bound_digest_from_checked_payload::<T>(&payload),
+    ))
+}
+
+// Private byte-level helpers are only called after the bounded, validating
+// canonical encoder above. Do not expose unchecked byte-to-proof constructors.
+fn frozen_digest_from_checked_payload<T: CognitiveContractV1>(payload: &[u8]) -> Digest32 {
+    Digest32::of_parts(&[
+        DIGEST_DOMAIN_V1,
+        T::CONTRACT_ID.as_bytes(),
+        b"\0",
+        payload,
+    ])
+}
+
+fn bound_digest_from_checked_payload<T: CognitiveContractV1>(payload: &[u8]) -> Digest32 {
     let mut bytes = BOUND_DIGEST_DOMAIN_V1.to_vec();
     push_digest_component_v1(&mut bytes, T::SCHEMA_ID.as_bytes());
     bytes.extend_from_slice(&COGNITIVE_WIRE_VERSION_V1.to_be_bytes());
     push_digest_component_v1(&mut bytes, T::CONTRACT_ID.as_bytes());
     push_digest_component_v1(&mut bytes, CANONICALIZATION_ALGORITHM_V1.as_bytes());
-    push_digest_component_v1(&mut bytes, &payload);
-    Ok(Digest32::of_bytes(&bytes))
+    push_digest_component_v1(&mut bytes, payload);
+    Digest32::of_bytes(&bytes)
 }
 
 fn push_digest_component_v1(bytes: &mut Vec<u8>, component: &[u8]) {
@@ -492,6 +516,56 @@ impl ContractDigestProfileV1 {
         match self {
             Self::FrozenCanonicalJsonV1 => canonical_contract_digest_v1(value),
             Self::SchemaBoundV1 => canonical_contract_digest_bound_v1(value),
+        }
+    }
+}
+
+#[cfg(test)]
+mod digest_reuse_tests {
+    use std::cell::Cell;
+
+    use super::*;
+
+    thread_local! {
+        static SERIALIZATIONS: Cell<usize> = const { Cell::new(0) };
+    }
+
+    #[derive(Clone, Debug, Deserialize, Eq, PartialEq)]
+    #[serde(transparent)]
+    struct DigestReuseProbe(u64);
+
+    impl Serialize for DigestReuseProbe {
+        fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+            SERIALIZATIONS.with(|count| count.set(count.get() + 1));
+            self.0.serialize(serializer)
+        }
+    }
+
+    impl CognitiveContractV1 for DigestReuseProbe {
+        const CONTRACT_ID: &'static str = "DigestReuseProbeV1";
+        const SCHEMA_ID: &'static str = "hepta.test.digest-reuse.v1";
+        const MAX_ENCODED_BYTES: usize = 64;
+
+        fn validate_contract(&self) -> Result<(), HnmfContractError> {
+            Ok(())
+        }
+    }
+
+    #[test]
+    fn paired_digests_preserve_profiles_and_halve_payload_serializations() {
+        for value in [0, 1, u64::MAX] {
+            let payload = DigestReuseProbe(value);
+            SERIALIZATIONS.with(|count| count.set(0));
+            let frozen = canonical_contract_digest_v1(&payload).expect("frozen profile");
+            let bound = canonical_contract_digest_bound_v1(&payload).expect("bound profile");
+            let separate_work = SERIALIZATIONS.with(Cell::get);
+            SERIALIZATIONS.with(|count| count.set(0));
+            let pair = canonical_contract_digests_v1(&payload).expect("paired profiles");
+            let paired_work = SERIALIZATIONS.with(Cell::get);
+            assert_eq!(pair, (frozen, bound));
+            assert_ne!(pair.0, pair.1);
+            assert!(paired_work > 0);
+            assert_eq!(separate_work, paired_work * 2);
         }
     }
 }
