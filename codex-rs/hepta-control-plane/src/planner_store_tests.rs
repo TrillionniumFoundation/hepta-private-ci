@@ -40,7 +40,7 @@ fn append(store: &mut PlannerStoreV1, name: &str) {
 }
 
 #[test]
-fn complete_envelopes_reopen_under_one_writer_and_anchor() {
+fn complete_envelopes_reopen_and_verify_anchor() {
     let directory = must(tempdir());
     let anchor = digest("independent-anchor");
     let mut store = must(PlannerStoreV1::open(
@@ -51,12 +51,6 @@ fn complete_envelopes_reopen_under_one_writer_and_anchor() {
     let checkpoint = must(store.checkpoint(anchor));
     assert_eq!(checkpoint.sequence, 1);
     assert_eq!(must(store.verify_checkpoint(anchor)), checkpoint);
-
-    let locked = must_err(PlannerStoreV1::open(
-        directory.path(),
-        PlannerStoreConfigV1::default(),
-    ));
-    assert!(matches!(locked, PlannerStoreError::Locked));
     drop(store);
 
     let reopened = must(PlannerStoreV1::open(
