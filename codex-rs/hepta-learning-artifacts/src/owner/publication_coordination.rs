@@ -14,6 +14,8 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 use crate::ArtifactOwnerVerifierV1;
+use crate::LearningArtifactOwnerErrorCodeV1;
+use crate::LearningArtifactOwnerOperationalStateV1;
 use crate::LearningArtifactOwnerService;
 use crate::LearningArtifactOwnerServiceError;
 use crate::LearningArtifactPublishRequestV1;
@@ -58,9 +60,18 @@ pub struct ArtifactOwnerMetricsV1 {
     pub publications_succeeded: u64,
     pub publications_failed: u64,
     pub recovery_publications_succeeded: u64,
+    pub recovery_reconciliation_failures: u64,
     pub withdrawal_frontiers_installed: u64,
     pub authz_reloads: u64,
     pub backups_succeeded: u64,
+    pub durable_drain_requests: u64,
+    pub identity_conflicts: u64,
+    pub identity_missing: u64,
+    pub stale_owner_rejections: u64,
+    pub withdrawal_frontier_conflicts: u64,
+    pub withdrawal_durability_unknown: u64,
+    pub persistence_unknown: u64,
+    pub capacity_rejections: u64,
     pub command_failures: u64,
 }
 
@@ -74,8 +85,13 @@ impl ArtifactOwnerMetricsV1 {
                 "\"authenticationFailures\":{},\"exactReplays\":{},",
                 "\"replayConflicts\":{},\"publicationsSucceeded\":{},",
                 "\"publicationsFailed\":{},\"recoveryPublicationsSucceeded\":{},",
+                "\"recoveryReconciliationFailures\":{},",
                 "\"withdrawalFrontiersInstalled\":{},\"authzReloads\":{},",
-                "\"backupsSucceeded\":{},\"commandFailures\":{}}}"
+                "\"backupsSucceeded\":{},\"durableDrainRequests\":{},",
+                "\"identityConflicts\":{},\"identityMissing\":{},",
+                "\"staleOwnerRejections\":{},\"withdrawalFrontierConflicts\":{},",
+                "\"withdrawalDurabilityUnknown\":{},\"persistenceUnknown\":{},",
+                "\"capacityRejections\":{},\"commandFailures\":{}}}"
             ),
             self.requests_received,
             self.requests_authenticated,
@@ -85,12 +101,73 @@ impl ArtifactOwnerMetricsV1 {
             self.publications_succeeded,
             self.publications_failed,
             self.recovery_publications_succeeded,
+            self.recovery_reconciliation_failures,
             self.withdrawal_frontiers_installed,
             self.authz_reloads,
             self.backups_succeeded,
+            self.durable_drain_requests,
+            self.identity_conflicts,
+            self.identity_missing,
+            self.stale_owner_rejections,
+            self.withdrawal_frontier_conflicts,
+            self.withdrawal_durability_unknown,
+            self.persistence_unknown,
+            self.capacity_rejections,
             self.command_failures,
         )
     }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ArtifactOwnerOperationalMetricsV1 {
+    pub counters: ArtifactOwnerMetricsV1,
+    pub state: LearningArtifactOwnerOperationalStateV1,
+    pub resource_accounting_complete: bool,
+}
+
+impl ArtifactOwnerOperationalMetricsV1 {
+    #[must_use]
+    pub fn response_json(&self) -> String {
+        let recovery_operation = self.state.recovery_operation_id.as_ref().map_or_else(
+            || "null".to_owned(),
+            |operation| format!("\"{}\"", operation.as_str()),
+        );
+        let recovery_age = optional_u64_json(self.state.recovery_observed_age_seconds);
+        let drain_age = optional_u64_json(self.state.drain_observed_age_seconds);
+        format!(
+            concat!(
+                "{{\"schema\":\"hepta.learning-artifactd.metrics.v2\",",
+                "\"counters\":{},",
+                "\"registryHeadDigest\":\"{}\",\"registryRecords\":{},",
+                "\"withdrawalHeadDigest\":\"{}\",\"withdrawalRecords\":{},",
+                "\"pendingRecoveryOperationId\":{},",
+                "\"oldestPendingAttemptAgeSeconds\":{},",
+                "\"draining\":{},\"durableDrain\":{},",
+                "\"drainAgeSeconds\":{},",
+                "\"withdrawalFrontierDurable\":{},",
+                "\"requestIdentityPersistenceUnknown\":{},",
+                "\"resourceAccountingComplete\":{},",
+                "\"pinnedBytes\":null,\"pendingPhysicalEraseBytes\":null}}"
+            ),
+            self.counters.response_json(),
+            self.state.registry_head_digest,
+            self.state.registry_records,
+            self.state.withdrawal_head_digest,
+            self.state.withdrawal_records,
+            recovery_operation,
+            recovery_age,
+            self.state.draining,
+            self.state.durable_drain,
+            drain_age,
+            self.state.withdrawal_frontier_durable,
+            self.state.request_identity_persistence_unknown,
+            self.resource_accounting_complete,
+        )
+    }
+}
+
+fn optional_u64_json(value: Option<u64>) -> String {
+    value.map_or_else(|| "null".to_owned(), |value| value.to_string())
 }
 
 #[derive(Debug, Default)]
@@ -103,9 +180,18 @@ struct ArtifactOwnerMetricCountersV1 {
     publications_succeeded: AtomicU64,
     publications_failed: AtomicU64,
     recovery_publications_succeeded: AtomicU64,
+    recovery_reconciliation_failures: AtomicU64,
     withdrawal_frontiers_installed: AtomicU64,
     authz_reloads: AtomicU64,
     backups_succeeded: AtomicU64,
+    durable_drain_requests: AtomicU64,
+    identity_conflicts: AtomicU64,
+    identity_missing: AtomicU64,
+    stale_owner_rejections: AtomicU64,
+    withdrawal_frontier_conflicts: AtomicU64,
+    withdrawal_durability_unknown: AtomicU64,
+    persistence_unknown: AtomicU64,
+    capacity_rejections: AtomicU64,
     command_failures: AtomicU64,
 }
 
@@ -122,13 +208,50 @@ impl ArtifactOwnerMetricCountersV1 {
             recovery_publications_succeeded: self
                 .recovery_publications_succeeded
                 .load(Ordering::Relaxed),
+            recovery_reconciliation_failures: self
+                .recovery_reconciliation_failures
+                .load(Ordering::Relaxed),
             withdrawal_frontiers_installed: self
                 .withdrawal_frontiers_installed
                 .load(Ordering::Relaxed),
             authz_reloads: self.authz_reloads.load(Ordering::Relaxed),
             backups_succeeded: self.backups_succeeded.load(Ordering::Relaxed),
+            durable_drain_requests: self.durable_drain_requests.load(Ordering::Relaxed),
+            identity_conflicts: self.identity_conflicts.load(Ordering::Relaxed),
+            identity_missing: self.identity_missing.load(Ordering::Relaxed),
+            stale_owner_rejections: self.stale_owner_rejections.load(Ordering::Relaxed),
+            withdrawal_frontier_conflicts: self
+                .withdrawal_frontier_conflicts
+                .load(Ordering::Relaxed),
+            withdrawal_durability_unknown: self
+                .withdrawal_durability_unknown
+                .load(Ordering::Relaxed),
+            persistence_unknown: self.persistence_unknown.load(Ordering::Relaxed),
+            capacity_rejections: self.capacity_rejections.load(Ordering::Relaxed),
             command_failures: self.command_failures.load(Ordering::Relaxed),
         }
+    }
+
+    fn record_service_error(&self, error: &LearningArtifactOwnerServiceError) {
+        let counter = match error.code() {
+            LearningArtifactOwnerErrorCodeV1::IdentityConflict => &self.identity_conflicts,
+            LearningArtifactOwnerErrorCodeV1::IdentityMissing => &self.identity_missing,
+            LearningArtifactOwnerErrorCodeV1::StaleOwner => &self.stale_owner_rejections,
+            LearningArtifactOwnerErrorCodeV1::WithdrawalFrontierConflict => {
+                &self.withdrawal_frontier_conflicts
+            }
+            LearningArtifactOwnerErrorCodeV1::WithdrawalDurabilityUnknown => {
+                &self.withdrawal_durability_unknown
+            }
+            LearningArtifactOwnerErrorCodeV1::PersistenceUnknown => &self.persistence_unknown,
+            LearningArtifactOwnerErrorCodeV1::CapacityExhausted => &self.capacity_rejections,
+            LearningArtifactOwnerErrorCodeV1::RecoveryRequired
+            | LearningArtifactOwnerErrorCodeV1::Draining
+            | LearningArtifactOwnerErrorCodeV1::InvalidRequest
+            | LearningArtifactOwnerErrorCodeV1::CorruptState
+            | LearningArtifactOwnerErrorCodeV1::Internal => return,
+        };
+        counter.fetch_add(1, Ordering::Relaxed);
     }
 }
 
@@ -198,9 +321,12 @@ impl LearningArtifactReferenceHostV1 {
         };
         let phase = if service.recovery_required().is_some() {
             ArtifactOwnerRuntimePhaseV1::Recovering
+        } else if service.durable_drain_requested() {
+            ArtifactOwnerRuntimePhaseV1::Draining
         } else {
             ArtifactOwnerRuntimePhaseV1::Ready
         };
+        let shutdown_requested = phase == ArtifactOwnerRuntimePhaseV1::Draining;
         let value = Self {
             service: Mutex::new(service),
             keyrings: RwLock::new(vec![bootstrap.keyring]),
@@ -212,7 +338,7 @@ impl LearningArtifactReferenceHostV1 {
             started_at,
             trust_digest,
             metrics: ArtifactOwnerMetricCountersV1::default(),
-            shutdown_requested: AtomicBool::new(false),
+            shutdown_requested: AtomicBool::new(shutdown_requested),
         };
         value.persist_status(started_at, "startup recovery complete or explicitly fenced")?;
         Ok(value)
@@ -267,6 +393,9 @@ impl LearningArtifactReferenceHostV1 {
             Ok(value) => (value.response, "success", value.should_shutdown),
             Err(error) => {
                 self.metrics.command_failures.fetch_add(1, Ordering::Relaxed);
+                if let ArtifactOwnerCommandError::Service(service_error) = &error {
+                    self.metrics.record_service_error(service_error);
+                }
                 (
                     error_response(error.code(), &error.to_string()).into_bytes(),
                     "error",
@@ -312,6 +441,22 @@ impl LearningArtifactReferenceHostV1 {
     #[must_use]
     pub fn metrics(&self) -> ArtifactOwnerMetricsV1 {
         self.metrics.snapshot()
+    }
+
+    pub fn operational_metrics(
+        &self,
+        now: u64,
+    ) -> Result<ArtifactOwnerOperationalMetricsV1, ArtifactOwnerCommandError> {
+        let state = self
+            .service
+            .lock()
+            .map_err(|_| ArtifactOwnerCommandError::Poisoned)?
+            .operational_state(now);
+        Ok(ArtifactOwnerOperationalMetricsV1 {
+            counters: self.metrics(),
+            state,
+            resource_accounting_complete: false,
+        })
     }
 
     pub fn status(
@@ -407,7 +552,7 @@ impl LearningArtifactReferenceHostV1 {
             ArtifactOwnerActionV1::Metrics => {
                 require_empty_payload(&request.payload)?;
                 Ok(ExecutionResultV1::json(
-                    self.metrics().response_json(),
+                    self.operational_metrics(now)?.response_json(),
                     false,
                 ))
             }
@@ -431,15 +576,22 @@ impl LearningArtifactReferenceHostV1 {
             }
             ArtifactOwnerActionV1::Shutdown => {
                 require_empty_payload(&request.payload)?;
+                self.service
+                    .lock()
+                    .map_err(|_| ArtifactOwnerCommandError::Poisoned)?
+                    .begin_drain_durable_at(now)?;
+                self.metrics
+                    .durable_drain_requests
+                    .fetch_add(1, Ordering::Relaxed);
                 *self
                     .phase
                     .lock()
                     .map_err(|_| ArtifactOwnerCommandError::Poisoned)? =
                     ArtifactOwnerRuntimePhaseV1::Draining;
                 self.shutdown_requested.store(true, Ordering::Release);
-                self.persist_status(now, "authenticated graceful shutdown requested")?;
+                self.persist_status(now, "authenticated durable shutdown requested")?;
                 Ok(ExecutionResultV1::json(
-                    "{\"schema\":\"hepta.learning-artifactd.shutdown.v1\",\"accepted\":true}"
+                    "{\"schema\":\"hepta.learning-artifactd.shutdown.v1\",\"accepted\":true,\"durable\":true}"
                         .to_owned(),
                     true,
                 ))
@@ -471,9 +623,7 @@ impl LearningArtifactReferenceHostV1 {
             .service
             .lock()
             .map_err(|_| ArtifactOwnerCommandError::Poisoned)?;
-        if recovery
-            && service.recovery_required() != Some(&command.operation_id)
-        {
+        if recovery && service.recovery_required() != Some(&command.operation_id) {
             return Err(ArtifactOwnerCommandError::RecoveryOperationMismatch);
         }
         let admission = admit_manifest_at_withdrawal_head_v3(
@@ -534,13 +684,21 @@ impl LearningArtifactReferenceHostV1 {
                 self.metrics
                     .publications_failed
                     .fetch_add(1, Ordering::Relaxed);
+                if recovery {
+                    self.metrics
+                        .recovery_reconciliation_failures
+                        .fetch_add(1, Ordering::Relaxed);
+                }
                 if requires_recovery {
                     *self
                         .phase
                         .lock()
                         .map_err(|_| ArtifactOwnerCommandError::Poisoned)? =
                         ArtifactOwnerRuntimePhaseV1::Recovering;
-                    self.persist_status(now, "publication failed after a durable phase; exact recovery required")?;
+                    self.persist_status(
+                        now,
+                        "publication failed after a durable phase; exact recovery required",
+                    )?;
                 }
                 Err(ArtifactOwnerCommandError::Service(error))
             }
@@ -663,11 +821,12 @@ fn backup_response(receipt: &ArtifactOwnerBackupReceiptV1) -> String {
 }
 
 fn response_requests_shutdown(response: &[u8]) -> bool {
-    response.windows(b"\"accepted\":true".len()).any(|window| {
-        window == b"\"accepted\":true"
-    }) && response.windows(b"shutdown.v1".len()).any(|window| {
-        window == b"shutdown.v1"
-    })
+    response
+        .windows(b"\"accepted\":true".len())
+        .any(|window| window == b"\"accepted\":true")
+        && response
+            .windows(b"shutdown.v1".len())
+            .any(|window| window == b"shutdown.v1")
 }
 
 fn error_response(code: &str, detail: &str) -> String {
@@ -727,7 +886,7 @@ impl ArtifactOwnerCommandError {
             Self::Journal(OwnerJournalError::ReplayConflict) => "replay_conflict",
             Self::Journal(_) => "request_journal",
             Self::Decode(_) => "invalid_command",
-            Self::Service(_) => "owner_service",
+            Self::Service(error) => error.code().as_str(),
             Self::Admission(_) => "admission",
             Self::Storage(_) => "storage",
             Self::Reconciliation(_) => "reconciliation",
@@ -837,5 +996,50 @@ impl From<ArtifactOwnerStatusError> for ArtifactOwnerCommandError {
 impl From<std::io::Error> for ArtifactOwnerCommandError {
     fn from(value: std::io::Error) -> Self {
         Self::Io(value)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn operational_metrics_expose_actionable_state_without_false_resource_zeroes() {
+        let metrics = ArtifactOwnerOperationalMetricsV1 {
+            counters: ArtifactOwnerMetricsV1 {
+                identity_conflicts: 2,
+                persistence_unknown: 1,
+                ..ArtifactOwnerMetricsV1::default()
+            },
+            state: LearningArtifactOwnerOperationalStateV1 {
+                registry_head_digest: Digest32::ZERO,
+                registry_records: 3,
+                withdrawal_head_digest: Digest32::of_bytes(b"withdrawal"),
+                withdrawal_records: 4,
+                recovery_operation_id: Some(
+                    StableId::new("pending-operation".to_owned()).expect("fixture id"),
+                ),
+                recovery_observed_age_seconds: Some(11),
+                draining: true,
+                durable_drain: true,
+                drain_observed_age_seconds: Some(7),
+                withdrawal_frontier_durable: true,
+                request_identity_persistence_unknown: false,
+            },
+            resource_accounting_complete: false,
+        };
+        let json = metrics.response_json();
+        assert!(json.contains("\"oldestPendingAttemptAgeSeconds\":11"));
+        assert!(json.contains("\"identityConflicts\":2"));
+        assert!(json.contains("\"pinnedBytes\":null"));
+        assert!(json.contains("\"pendingPhysicalEraseBytes\":null"));
+    }
+
+    #[test]
+    fn service_errors_keep_their_stable_transport_code() {
+        let error = ArtifactOwnerCommandError::Service(
+            LearningArtifactOwnerServiceError::PersistenceUnknown,
+        );
+        assert_eq!(error.code(), "persistence_unknown");
     }
 }
