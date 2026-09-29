@@ -16,18 +16,22 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
+use crate::KnowledgeCancellationV2;
 use crate::KnowledgeEdgeIdentityV2;
 use crate::KnowledgeEdgeV2;
 use crate::KnowledgeGenerationV2;
 use crate::KnowledgeNodeV2;
+use crate::KnowledgeOperationGuardV2;
+use crate::KnowledgePhysicalLimitsV2;
+use crate::KnowledgePhysicalQueryErrorV2;
+use crate::KnowledgePhysicalQueryObservationV2;
+use crate::KnowledgePhysicalQueryViewV2;
+use crate::KnowledgePhysicalUsageV2;
 use crate::KnowledgeProjectionInputV2;
-use crate::KnowledgeQueryAdmissionErrorV2;
 use crate::KnowledgeRelationKindV2;
 use crate::KnowledgeRelationQueryV2;
-use crate::KnowledgeRelationQueryWorkV2;
 use crate::KnowledgeRelationResultV2;
 use crate::KnowledgeSupportV2;
-use crate::VerifiedKnowledgeGenerationV2;
 use crate::build_complete_generation;
 
 const PROMPT_FACTOR_PROFILE_DOMAIN: &[u8] = b"hepta.knowledge.prompt-factor-profile.v1";
@@ -40,7 +44,7 @@ pub struct PromptFactorProjectionV1 {
     registry_revision: u64,
     registry_snapshot_digest: Digest32,
     source_digest: Digest32,
-    verified_generation: Arc<VerifiedKnowledgeGenerationV2>,
+    physical_query_view: Arc<KnowledgePhysicalQueryViewV2>,
     authority: AuthorityPosture,
 }
 
@@ -50,6 +54,7 @@ impl PartialEq for PromptFactorProjectionV1 {
             && self.registry_snapshot_digest == other.registry_snapshot_digest
             && self.source_digest == other.source_digest
             && self.generation() == other.generation()
+            && self.generation_usage() == other.generation_usage()
             && self.authority == other.authority
     }
 }
@@ -74,23 +79,48 @@ impl PromptFactorProjectionV1 {
 
     #[must_use]
     pub fn generation(&self) -> &KnowledgeGenerationV2 {
-        self.verified_generation.generation()
+        self.physical_query_view.generation()
     }
 
-    /// Executes the public bounded query contract against the immutable view
-    /// built when this owner projection was sealed. Structural validation and
-    /// indexes are reused; any temporal visibility cut is still evaluated by
-    /// the indexed query on every call.
+    #[must_use]
+    pub fn generation_usage(&self) -> KnowledgePhysicalUsageV2 {
+        self.physical_query_view.generation_usage()
+    }
+
+    /// Executes the public physically bounded query contract with no caller
+    /// cancellation source. Product owners that own a deadline or cancellation
+    /// token use [`Self::query_relations_external_guarded`].
     pub fn query_relations_external(
         &self,
         query: KnowledgeRelationQueryV2,
         maximum_support_work: Option<u64>,
     ) -> Result<
-        (KnowledgeRelationResultV2, KnowledgeRelationQueryWorkV2),
-        KnowledgeQueryAdmissionErrorV2,
+        (
+            KnowledgeRelationResultV2,
+            KnowledgePhysicalQueryObservationV2,
+        ),
+        KnowledgePhysicalQueryErrorV2,
     > {
-        self.verified_generation
-            .query_relations_external(query, maximum_support_work)
+        let guard = KnowledgeOperationGuardV2::unbounded(KnowledgeCancellationV2::default());
+        self.query_relations_external_guarded(query, maximum_support_work, &guard)
+    }
+
+    /// Executes the same immutable indexed query while enforcing the caller's
+    /// absolute deadline/cancellation boundary and physical output byte limit.
+    pub fn query_relations_external_guarded(
+        &self,
+        query: KnowledgeRelationQueryV2,
+        maximum_support_work: Option<u64>,
+        guard: &KnowledgeOperationGuardV2,
+    ) -> Result<
+        (
+            KnowledgeRelationResultV2,
+            KnowledgePhysicalQueryObservationV2,
+        ),
+        KnowledgePhysicalQueryErrorV2,
+    > {
+        self.physical_query_view
+            .query_relations_external(query, maximum_support_work, guard)
     }
 
     #[must_use]
@@ -99,18 +129,20 @@ impl PromptFactorProjectionV1 {
     }
 
     pub fn validate(&self) -> Result<(), PromptFactorProjectionErrorV1> {
+        let usage = self.generation_usage();
         if self.registry_revision == 0
             || self.registry_snapshot_digest.is_zero()
             || self.source_digest.is_zero()
             || self.generation().source_snapshot_digest != self.source_digest
             || self.generation().generation_digest.is_zero()
+            || usage.canonical_bytes == 0
             || self.authority.grants_any()
         {
             return Err(PromptFactorProjectionErrorV1::InvalidProjection);
         }
-        // The verified view is created only by `VerifiedKnowledgeGenerationV2::new`
-        // and is immutable behind `Arc`; repeating full structural validation on
-        // every optimizer call would discard the purpose of the sealed view.
+        // The physical view is created only by `KnowledgePhysicalQueryViewV2::new`
+        // and is immutable behind `Arc`; repeating full validation and index
+        // construction on every optimizer call would discard the sealed view.
         Ok(())
     }
 }
@@ -207,14 +239,17 @@ pub fn build_prompt_factor_projection_v1(
         },
     )
     .map_err(|error| PromptFactorProjectionErrorV1::Kernel(error.to_string()))?;
-    let verified_generation = VerifiedKnowledgeGenerationV2::new(projected)
-        .map_err(|error| PromptFactorProjectionErrorV1::Kernel(error.to_string()))?;
+    let physical_query_view = KnowledgePhysicalQueryViewV2::new(
+        projected,
+        KnowledgePhysicalLimitsV2::default(),
+    )
+    .map_err(|error| PromptFactorProjectionErrorV1::Kernel(error.to_string()))?;
 
     let result = PromptFactorProjectionV1 {
         registry_revision: source.registry_revision().get(),
         registry_snapshot_digest: source.registry_snapshot_digest(),
         source_digest: source.source_digest(),
-        verified_generation: Arc::new(verified_generation),
+        physical_query_view: Arc::new(physical_query_view),
         authority: AuthorityPosture::DENY_ALL,
     };
     result.validate()?;
@@ -254,3 +289,7 @@ impl fmt::Display for PromptFactorProjectionErrorV1 {
 }
 
 impl StdError for PromptFactorProjectionErrorV1 {}
+
+#[cfg(test)]
+#[path = "prompt_factor_tests.rs"]
+mod tests;
