@@ -39,6 +39,7 @@
     "physicalTerminalBindingPresent": true,
     "observabilityPresent": true,
     "hardTimeoutProcessFencePresent": true,
+    "hardTimeoutRequiredForCanonicalProfile": true,
     "sourceTestsPresent": true,
     "nativeBuildVerified": false,
     "exactHeadExecuted": false,
@@ -117,7 +118,9 @@
         "spawn_owner_work_with_budget",
         "WorkerCompletionV1::supervise",
         "validate_canonical_outcome_v1",
-        "request_digest: run_identity.request_digest.to_string()"
+        "request_digest: run_identity.request_digest.to_string()",
+        "canonical_profile_ready",
+        "self.hard_timeout_process_exit_grace.is_some()"
       ]
     },
     {
@@ -420,12 +423,12 @@
     "advertisedOnlyWhenRunnerAndProviderPresent": true,
     "capabilityProfileDigestDomain": "hepta.agentd.intelligence-capability-profile.v2",
     "defaultCliAdvertises": false,
-    "advertisedOnlyWhenRunnerProviderAndRollbackGuardPresent": true
+    "advertisedOnlyWhenRunnerProviderRollbackGuardAndHardTimeoutPresent": true
   },
   "openAcceptanceGaps": [
     "Qualify live authenticated owner/evidence sources and complete selected-action/context semantics; default CLI remains uncomposed.",
     "Execute actual authenticated ObjectiveStart through native provider and signed terminal Outcome across all crash and ACK-loss cuts.",
-    "Qualify forced containment of hung learning I/O, Supervisor replacement and separately retained host-root backup/write-side replacement.",
+    "Qualify Supervisor replacement after hard-timeout exit 70 and separately retained host-root backup/write-side replacement.",
     "Execute all current source-head and synthetic-merge native/mapping/Bazel gates; no historical local result is a final SHA pass.",
     "Measure target-host latency/RSS/saturation/recovery and independent task quality, then obtain independent acceptance."
   ],
