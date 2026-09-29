@@ -248,11 +248,12 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
     tick_interval: Duration,
 ) -> Result<(), AgentdError> {
     let mut retry_budget = DispatchRetryBudget::default();
+    let mut ticks = scheduler_ticks(tick_interval)?;
     loop {
         tokio::select! {
             biased;
             _ = cancellation.cancelled() => return Ok(()),
-            _ = tokio::time::sleep(tick_interval) => {}
+            _ = ticks.tick() => {}
         }
         if !state.automation_is_available()? {
             return wait_for_cancellation(&cancellation).await;
@@ -299,6 +300,23 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
             }
         }
     }
+}
+
+/// Keep one bounded recovery/dispatch step per cadence without adding another
+/// full idle period after its I/O. Overrun skips missed slots instead of issuing
+/// a burst of catch-up dispatches. The first tick still waits a full period.
+fn scheduler_ticks(period: Duration) -> Result<tokio::time::Interval, AgentdError> {
+    if period.is_zero() {
+        return Err(AgentdError::Invalid(
+            "automation tick interval must be non-zero".to_string(),
+        ));
+    }
+    let first = tokio::time::Instant::now()
+        .checked_add(period)
+        .ok_or_else(|| AgentdError::Invalid("automation tick deadline overflow".to_string()))?;
+    let mut ticks = tokio::time::interval_at(first, period);
+    ticks.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Skip);
+    Ok(ticks)
 }
 
 /// Applies the scheduler's fail-stop policy to one tick. A durable unknown

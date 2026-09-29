@@ -430,3 +430,48 @@ async fn production_constructor_never_resumes_a_draining_owner() {
 
 #[path = "automation_factory_tests.rs"]
 mod factory_tests;
+
+#[tokio::test]
+async fn scheduler_cadence_waits_before_first_tick_without_busy_polling() {
+    let period = Duration::from_secs(3_600);
+    let mut ticks = super::scheduler_ticks(period).expect("bounded cadence");
+    assert_eq!(ticks.period(), period);
+    assert_eq!(
+        ticks.missed_tick_behavior(),
+        tokio::time::MissedTickBehavior::Skip
+    );
+    let pending = std::future::poll_fn(|context| {
+        std::task::Poll::Ready(ticks.poll_tick(context).is_pending())
+    })
+    .await;
+    assert!(pending, "startup must not dispatch an immediate extra tick");
+}
+
+#[tokio::test]
+async fn scheduler_cadence_skips_overrun_without_catch_up_dispatch_burst() {
+    let period = Duration::from_secs(3_600);
+    let mut ticks = super::scheduler_ticks(period).expect("bounded cadence");
+    // Move only this test timer's schedule, not the runtime clock or owner
+    // generation. The returned deadline is deterministic despite host load.
+    let overdue = tokio::time::Instant::now() - period * 3;
+    ticks.reset_at(overdue);
+    assert_eq!(ticks.tick().await, overdue);
+    let pending = std::future::poll_fn(|context| {
+        std::task::Poll::Ready(ticks.poll_tick(context).is_pending())
+    })
+    .await;
+    assert!(
+        pending,
+        "missed ticks must not become an immediate dispatch burst"
+    );
+}
+
+#[tokio::test]
+async fn scheduler_cadence_rejects_zero_and_overflow_instead_of_panicking() {
+    for period in [Duration::ZERO, Duration::MAX] {
+        assert!(matches!(
+            super::scheduler_ticks(period),
+            Err(crate::AgentdError::Invalid(_))
+        ));
+    }
+}
