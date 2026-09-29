@@ -11,6 +11,7 @@ pub mod product;
 mod semantics;
 mod v2;
 mod vector_owner;
+pub mod vector_publication;
 mod work;
 pub use work::RecallInterruptionV1;
 pub use work::RecallWorkControlV1;
@@ -207,9 +208,6 @@ fn retrieve_request(request: &RetrievalRequest) -> Result<RetrievalReceipt, Erro
             .record
             .validate()
             .map_err(|error| Error::InvalidRecord(error.to_string()))?;
-        // Retrieval candidates must already be current, live records. Reject
-        // the entire request rather than silently changing its candidate set
-        // or counting deleted records as ordinary top-k omissions.
         if candidate.record.state == RecordState::Tombstone {
             return Err(Error::TombstoneRecord(
                 candidate.record.record_id.to_string(),
