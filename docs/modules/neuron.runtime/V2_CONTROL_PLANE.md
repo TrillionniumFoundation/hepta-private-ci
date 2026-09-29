@@ -15,6 +15,15 @@ those bytes.
 | Terminal truth query | `query_operation` / `query_input_operation` | No | No | No; status is not authority |
 | Result-use authorization | `query_result_guarded` | No | No | Yes, only after the live guard |
 
+Terminal truth queries, exact-operation recovery and result-use authorization
+first reconcile the local generation store and ordered index only. An independent
+witness outage must not hide a result already committed to `HPTNGS02`, prevent an
+exact provider query for an already fenced operation, or turn that result into a
+negative terminal record. `query_operation` exposes whether the witness has
+acknowledged the commit. Startup, new-work execution, sealing and explicit full
+`reconcile()` remain strict: they require the external witness frontier to close
+and fail closed while it is unavailable or inconsistent.
+
 A host must not translate every error into “call `tick_guarded` again.” In
 particular, `OutcomeUnknown` requires exact-operation recovery; `Failed` is a
 terminal negative result; `Committed` requires a separate current-use check;
@@ -47,6 +56,13 @@ The ordinary recovery path has deliberately narrow powers:
 8. A dispatched operation whose durable provider reports `NotStarted` remains
    recoverable under the same key and returns `OutcomeUnknown`; a later
    `tick_guarded` call must obtain live admission before resuming it.
+
+If witness publication fails after an observed result is locally committed, the
+recovery call may return a witness error while `query_operation` reports
+`Committed { witness_acknowledged: false }`. This is not permission to bypass the
+live result-use guard. It is the durable distinction between local terminal truth
+and external anti-rollback acknowledgement; full reconciliation, daemon start
+and generation seal continue to require the latter.
 
 The quiesce-only closure path has the same restrictions, but it may convert a
 proven-unexecuted reservation or authoritative provider `NotStarted` result into
@@ -212,6 +228,12 @@ Linux ARM and macOS lanes use the same ownership boundary.
 A workflow run is evidence only for the exact source SHA and exact integration
 base shown in that run. Patch application, source rewriting and validation are
 not combined in the same job.
+
+The Neuron suite includes witness-isolation regressions. They require exact
+provider reconciliation to remain reachable during witness read outages, require
+locally durable committed truth to remain queryable after witness publication
+failure, and simultaneously require explicit full reconciliation to stay
+fail-closed until the witness recovers.
 
 ## 8. Remaining external qualification boundary
 
