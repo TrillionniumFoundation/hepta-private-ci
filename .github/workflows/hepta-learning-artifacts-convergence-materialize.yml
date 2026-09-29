@@ -1,0 +1,223 @@
+name: Materialize learning.artifacts convergence
+
+on:
+  push:
+    branches:
+      - codex/learning-artifacts-production-convergence-20260929
+
+permissions:
+  contents: write
+
+concurrency:
+  group: learning-artifacts-convergence-materialize
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    if: ${{ !contains(github.event.head_commit.message, '[artifact-materialized]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+      - name: Apply reviewed convergence corrections
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import json
+
+          def replace(path: str, old: str, new: str, count: int = 1) -> None:
+              target = Path(path)
+              text = target.read_text()
+              actual = text.count(old)
+              if actual != count:
+                  raise SystemExit(f"{path}: expected {count} occurrence(s), found {actual}: {old!r}")
+              target.write_text(text.replace(old, new, count))
+
+          replace(
+              "codex-rs/hepta-learning-artifacts/src/owner/capability_validation.rs",
+              "use std::str::FromStr;\n",
+              "",
+          )
+          replace(
+              "codex-rs/hepta-learning-artifacts/src/owner/publication_coordination.rs",
+              "use codex_hepta_types::StableId;\n",
+              "",
+          )
+          replace(
+              "codex-rs/hepta-learning-artifacts/src/owner/bootstrap.rs",
+              "ArtifactOwnerConfigError::InvalidValue(prefix)",
+              "ArtifactOwnerConfigError::InvalidEntry(prefix.to_owned())",
+          )
+          crash = Path("codex-rs/hepta-learning-artifacts/src/owner/service_crash_tests.rs")
+          crash_text = crash.read_text()
+          if crash_text.count("assert_eq!") != 4:
+              raise SystemExit("unexpected service crash assert_eq count")
+          crash.write_text(crash_text.replace("assert_eq!", "::std::assert_eq!"))
+          replace(
+              "scripts/hepta_artifact_qualification.py",
+              '", "--retries", "0", "--no-fail-fast"],',
+              '", "--retries", "0"],',
+          )
+          replace(
+              ".github/workflows/hepta-lane-e-gap-closure.yml",
+              "cargo-llvm-cov@0.9.1",
+              "cargo-llvm-cov@0.9.0",
+          )
+
+          service = Path("codex-rs/hepta-learning-artifacts/src/owner_service.rs")
+          service_text = service.read_text()
+          import_marker = "use codex_hepta_types::Digest32;\n"
+          if "use codex_hepta_types::AuthorityPosture;" not in service_text:
+              service_text = service_text.replace(
+                  import_marker,
+                  "use codex_hepta_types::AuthorityPosture;\n" + import_marker,
+                  1,
+              )
+          impl_marker = "impl LearningArtifactOwnerService {\n"
+          method = (
+              "impl LearningArtifactOwnerService {\n"
+              "    /// The artifact owner never grants selection, activation, promotion or release.\n"
+              "    #[must_use]\n"
+              "    pub const fn authority_posture_v1() -> AuthorityPosture {\n"
+              "        AuthorityPosture::DENY_ALL\n"
+              "    }\n\n"
+          )
+          if "pub const fn authority_posture_v1" not in service_text:
+              if service_text.count(impl_marker) != 1:
+                  raise SystemExit("unexpected owner service impl count")
+              service_text = service_text.replace(impl_marker, method, 1)
+          service.write_text(service_text)
+
+          trace_path = Path("qualification/lane-e/TEST_TRACEABILITY.json")
+          trace = json.loads(trace_path.read_text())
+          changed = 0
+          for case in trace.get("cases", []):
+              for test in case.get("tests", []):
+                  if test.get("function") == "named_owner_service_publishes_retries_and_reopens_from_current_head":
+                      test["source"] = "codex-rs/hepta-learning-artifacts/src/owner_service_tests.rs"
+                      changed += 1
+          if changed != 1:
+              raise SystemExit(f"expected one owner service traceability row, found {changed}")
+          trace_path.write_text(json.dumps(trace, indent=2) + "\n")
+
+          map_path = Path("docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json")
+          mapping = json.loads(map_path.read_text())
+          operations = {row["operation"] for row in mapping["operations"]}
+          additions = [
+              {
+                  "operation": "classify_owner_failure",
+                  "nativeSymbol": "ArtifactOwnerErrorClassificationV1::failure_class_v1",
+                  "sourcePath": "codex-rs/hepta-learning-artifacts/src/observability.rs",
+                  "state": "source_implemented",
+                  "authority": "none",
+                  "tests": [
+                      "codex-rs/hepta-learning-artifacts/src/observability.rs::stable_failure_classes_do_not_collapse_retry_semantics"
+                  ],
+                  "sourcePathExists": True,
+                  "designOperation": "classify_owner_failure",
+                  "mappingClass": "owner_native",
+                  "delegatedCallees": [],
+                  "sourceBlob": "0" * 40,
+              },
+              {
+                  "operation": "record_owner_stage_latency",
+                  "nativeSymbol": "ArtifactOwnerStageRecorderV1::measure",
+                  "sourcePath": "codex-rs/hepta-learning-artifacts/src/observability.rs",
+                  "state": "source_implemented",
+                  "authority": "none",
+                  "tests": [
+                      "codex-rs/hepta-learning-artifacts/src/observability.rs::stage_histogram_is_bounded_and_non_cumulative"
+                  ],
+                  "sourcePathExists": True,
+                  "designOperation": "record_owner_stage_latency",
+                  "mappingClass": "owner_native",
+                  "delegatedCallees": [],
+                  "sourceBlob": "0" * 40,
+              },
+              {
+                  "operation": "account_pinned_candidate",
+                  "nativeSymbol": "load_accounted_pinned_candidate_v1",
+                  "sourcePath": "codex-rs/hepta-learning-artifacts/src/pin_accounting.rs",
+                  "state": "source_implemented",
+                  "authority": "none",
+                  "tests": [
+                      "codex-rs/hepta-learning-artifacts/src/pin_accounting.rs::pins_and_pending_erasure_are_released_by_drop"
+                  ],
+                  "sourcePathExists": True,
+                  "designOperation": "account_pinned_candidate",
+                  "mappingClass": "owner_native",
+                  "delegatedCallees": [],
+                  "sourceBlob": "0" * 40,
+              },
+          ]
+          for row in additions:
+              if row["operation"] not in operations:
+                  mapping["operations"].append(row)
+          mapping["currentNativeState"] = (
+              "immutable registry/storage, scoped withdrawal, V3 admission, ordered publication, "
+              "durable drain and withdrawal floors, exact request identity, authenticated reference host, "
+              "stable owner failure/retry classification, bounded stage measurement and explicit process-local "
+              "pin/pending-erasure accounting are source implemented; activation, live withdrawal projection, "
+              "physical erasure, target-host durability and independently governed selection/release remain separate"
+          )
+          mapping["repositoryControlledGaps"] = [
+              "Execute exact-source and ordered-parent synthetic-merge native qualification on the final convergence head.",
+              "Complete live withdrawal projection to CURRENT, quarantine/retention reconciliation and physical-erasure acknowledgement without treating process-local pin accounting as deletion proof.",
+              "Complete narrow owner/storage injection plus concurrency/model/fuzz/capacity/migration qualification and target-host stage baselines."
+          ]
+          requirements = mapping.setdefault("hostIntegrationRequirements", [])
+          for value in [
+              "Export bounded stage histograms and stable failure classes without converting persistence-unknown outcomes into retryable success.",
+              "Treat process-local pin and pending-erasure bytes as observations only; physical erasure requires independent storage, backup and fleet quiescence evidence."
+          ]:
+              if value not in requirements:
+                  requirements.append(value)
+          map_path.write_text(json.dumps(mapping, indent=2) + "\n")
+          PY
+      - name: Format and seal the reviewed source
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-artifacts
+          git add \
+            codex-rs/hepta-learning-artifacts \
+            scripts/hepta_artifact_qualification.py \
+            .github/workflows/hepta-lane-e-gap-closure.yml \
+            qualification/lane-e/TEST_TRACEABILITY.json \
+            docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json
+          python3 scripts/hepta_artifact_source_binding.py \
+            --tree "$(git write-tree)" \
+            --include codex-rs/hepta-learning-artifacts/Cargo.toml \
+            --include codex-rs/hepta-learning-artifacts/src/lib.rs \
+            --include codex-rs/hepta-learning-artifacts/src/observability.rs \
+            --include codex-rs/hepta-learning-artifacts/src/pin_accounting.rs \
+            --include qualification/lane-e/TEST_TRACEABILITY.json \
+            --include .github/workflows/hepta-lane-e-gap-closure.yml \
+            --write
+          git add docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json
+      - name: Verify materialized source
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-artifacts -- --check
+          cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-learning-artifacts --all-targets
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-learning-artifacts --all-targets -- -D warnings
+          python3 -m unittest discover -s scripts -p 'test_hepta_artifact_*.py' -v
+          python3 scripts/hepta_artifact_source_binding.py
+      - name: Commit materialized source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Artifact convergence materializer'
+          git config user.email 'artifact-convergence@users.noreply.github.com'
+          git commit -m 'learning.artifacts: materialize formatted convergence source and seals [artifact-materialized]'
+          git push origin HEAD:codex/learning-artifacts-production-convergence-20260929
