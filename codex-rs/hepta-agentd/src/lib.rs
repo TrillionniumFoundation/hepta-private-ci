@@ -263,6 +263,8 @@ pub use runtime_codex_executor::RuntimeCodexExecutorV1;
 pub use runtime_codex_executor::RuntimeCodexOwnerV1;
 pub use runtime_codex_executor::RuntimeCodexReconcileFuture;
 pub use runtime_codex_executor::RuntimeCodexReconcileReportV1;
+pub use runtime_codex_executor::RuntimeCodexSupervisorHandleV1;
+pub use runtime_codex_executor::RuntimeCodexSupervisorSnapshotV1;
 pub use runtime_executable::RuntimeExecutableIdentity;
 pub use runtime_executable::RuntimeExecutableOrigin;
 pub use runtime_tasks::RuntimeTaskFailure;

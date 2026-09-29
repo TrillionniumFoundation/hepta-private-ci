@@ -21,9 +21,11 @@ use crate::AgentdError;
 use crate::AgentdEventKind;
 use crate::AgentdIdentity;
 use crate::EventBuffer;
-use crate::ProcessRuntimeCodexExecutorV1;
 use crate::RunReceipt;
+use crate::RuntimeCodexSupervisorHandleV1;
+use crate::RuntimeCodexSupervisorSnapshotV1;
 use crate::RuntimeComposition;
+use crate::runtime_codex_executor::RuntimeCodexScheduleReservationV1;
 
 #[path = "state_control.rs"]
 mod control;
@@ -46,6 +48,7 @@ pub(crate) struct AgentdState {
         std::sync::OnceLock<Arc<crate::automation_effect_host::AgentdAutomationEffectHost>>,
     pub(crate) objective_runtime:
         std::sync::OnceLock<Arc<crate::objective_runtime::ObjectiveRuntimeHost>>,
+    runtime_codex: std::sync::OnceLock<RuntimeCodexSupervisorHandleV1>,
     plasticity_runtime: std::sync::OnceLock<
         crate::plasticity_learning_producer::AgentdLearningPlasticityProducerV1,
     >,
@@ -143,6 +146,7 @@ impl AgentdState {
             evidence: std::sync::OnceLock::new(),
             automation_effect: std::sync::OnceLock::new(),
             objective_runtime: std::sync::OnceLock::new(),
+            runtime_codex: std::sync::OnceLock::new(),
             cognitive_ranker: std::sync::OnceLock::new(),
             production_operations: std::sync::OnceLock::new(),
             cognitive_retrieval_context: std::sync::OnceLock::new(),
@@ -168,6 +172,83 @@ impl AgentdState {
             app_server_drain: AppServerDrainHandle::new(),
             prompt_pipeline,
         })
+    }
+
+    pub(crate) fn attach_runtime_codex_supervisor(
+        &self,
+        supervisor: RuntimeCodexSupervisorHandleV1,
+    ) -> Result<(), AgentdError> {
+        if !supervisor.is_canonical() {
+            return Err(AgentdError::Invalid(
+                "Agentd refuses a compatibility runtime.codex supervisor".to_string(),
+            ));
+        }
+        self.runtime_codex.set(supervisor).map_err(|_| {
+            AgentdError::Protocol("runtime.codex supervisor already attached".to_string())
+        })
+    }
+
+    pub(crate) fn runtime_codex_snapshot(
+        &self,
+    ) -> Result<Option<RuntimeCodexSupervisorSnapshotV1>, AgentdError> {
+        self.runtime_codex
+            .get()
+            .map(RuntimeCodexSupervisorHandleV1::snapshot)
+            .transpose()
+    }
+
+    pub(crate) fn reserve_runtime_codex_run(
+        &self,
+    ) -> Result<RuntimeCodexScheduleReservationV1, AgentdError> {
+        self.runtime_codex
+            .get()
+            .ok_or_else(|| {
+                AgentdError::Invalid(
+                    "canonical intelligence has no attached runtime.codex owner".to_string(),
+                )
+            })?
+            .reserve_canonical_run()
+    }
+
+    pub(crate) fn cancel_runtime_codex_runs(&self) -> Result<(), AgentdError> {
+        match self.runtime_codex.get() {
+            Some(supervisor) => supervisor.cancel_runs(),
+            None => Ok(()),
+        }
+    }
+
+    /// Roll back a coordinator record that has not crossed the physical
+    /// dispatch boundary. This owner-local path deliberately avoids routing
+    /// through the async control dispatcher, whose ObjectiveStart arm can lead
+    /// back into canonical admission and create an infinitely sized future.
+    pub(crate) fn cancel_pre_dispatch_runtime_codex_run(
+        &self,
+        receipt: &RunReceipt,
+    ) -> Result<RunReceipt, AgentdError> {
+        if receipt.idempotent {
+            return Ok(receipt.clone());
+        }
+        let (disposition, cancelled) = self
+            .runs
+            .lock()
+            .map_err(poisoned_state)?
+            .cancel_run(
+                crate::authbus_ingress::now_ms()?,
+                &receipt.run_id,
+                receipt.revision,
+                "runtime_codex_schedule_rejected",
+            )
+            .map_err(run_error)?;
+        if disposition != crate::CancellationDisposition::CancelledBeforeDispatch
+            || cancelled.phase != crate::RunPhase::Cancelled
+            || !cancelled.terminal_observed
+        {
+            return Err(AgentdError::Protocol(format!(
+                "runtime.codex schedule rollback remained {:?}",
+                cancelled.phase
+            )));
+        }
+        Ok(cancelled)
     }
 
     pub(crate) fn attach_plasticity_runtime(
@@ -399,7 +480,7 @@ impl AgentdState {
             }
         }
         if entered_draining {
-            ProcessRuntimeCodexExecutorV1::cancel_installed_runs()?;
+            self.cancel_runtime_codex_runs()?;
         }
         self.refresh_runtime_codex_readiness()
     }
@@ -468,7 +549,7 @@ impl AgentdState {
             runtime.required_ports_ready = false;
             runtime.admission_open = false;
         }
-        ProcessRuntimeCodexExecutorV1::cancel_installed_runs()?;
+        self.cancel_runtime_codex_runs()?;
         self.app_server_drain.request_drain();
         self.events
             .lock()
@@ -539,7 +620,7 @@ impl AgentdState {
             runtime.admission_open = false;
             runtime.fenced = true;
         }
-        let _ = ProcessRuntimeCodexExecutorV1::cancel_installed_runs();
+        let _ = self.cancel_runtime_codex_runs();
         if let Ok(mut events) = self.events.lock() {
             events.push(AgentdEventKind::GenerationFenced);
         }
@@ -595,14 +676,16 @@ impl AgentdState {
     }
 
     pub(crate) fn canonical_intelligence_configured(&self) -> bool {
-        self.intelligence_product.get().is_some() && self.intelligence_invocation.get().is_some()
+        self.intelligence_product.get().is_some()
+            && self.intelligence_invocation.get().is_some()
+            && self.runtime_codex.get().is_some()
     }
 
     pub(crate) fn canonical_intelligence_enabled(&self) -> bool {
         if !self.canonical_intelligence_configured() {
             return false;
         }
-        ProcessRuntimeCodexExecutorV1::agentd_supervisor_snapshot()
+        self.runtime_codex_snapshot()
             .ok()
             .flatten()
             .is_some_and(|snapshot| snapshot.ready && !snapshot.closed)
@@ -613,7 +696,7 @@ impl AgentdState {
     /// work until startup recovery has resolved every dispatch-fenced unknown.
     pub(crate) fn refresh_runtime_codex_readiness(&self) -> Result<(), AgentdError> {
         let required_ports_ready = if self.canonical_intelligence_configured() {
-            ProcessRuntimeCodexExecutorV1::agentd_supervisor_snapshot()?
+            self.runtime_codex_snapshot()?
                 .is_some_and(|snapshot| snapshot.ready && !snapshot.closed)
         } else {
             true

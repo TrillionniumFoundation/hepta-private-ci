@@ -17,10 +17,13 @@ arguments to its Agentd command:
 
 ```text
 --authbus-trust-file /absolute/canonical/agent/home/authbus-trust.json
+--authbus-checkpoint-file /absolute/canonical/agent/home/authbus-replay-checkpoint.json
 ```
 
-The file must be a direct child of the canonical Agent home. Set the home to
-Unix mode `0700` and the file to `0600`, with the same filesystem owner. The
+Both files must be direct children of the canonical Agent home. Set the home to
+Unix mode `0700` and each file to `0600`, with the same filesystem owner. The
+checkpoint is the externally retained replay frontier; trust without that
+checkpoint, or a checkpoint without trust, is rejected before services open. The
 loader rejects links, foreign file ownership, group/other permissions, files
 over 16 KiB, and file identity changes detected during reading. This profile
 requires Unix ownership checks. Without explicit configuration, signed ingress

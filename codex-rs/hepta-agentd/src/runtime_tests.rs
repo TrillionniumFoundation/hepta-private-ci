@@ -1071,12 +1071,17 @@ async fn generation_monitor_honors_host_cancellation_during_readiness_probe()
 
 #[test]
 fn incomplete_intelligence_composition_is_rejected_before_startup() {
-    for (runner, provider) in [(true, false), (false, true)] {
+    for (runner, provider, runtime_codex) in [
+        (true, false, false),
+        (false, true, false),
+        (true, true, false),
+        (false, false, true),
+    ] {
         assert!(matches!(
-            super::require_intelligence_composition(runner, provider),
+            super::require_intelligence_composition(runner, provider, runtime_codex),
             Err(crate::AgentdError::Invalid(_))
         ));
     }
-    assert!(super::require_intelligence_composition(false, false).is_ok());
-    assert!(super::require_intelligence_composition(true, true).is_ok());
+    assert!(super::require_intelligence_composition(false, false, false).is_ok());
+    assert!(super::require_intelligence_composition(true, true, true).is_ok());
 }

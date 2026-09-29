@@ -119,15 +119,42 @@ fn neuron_input_binding_digest(
     tick: &SparseTick,
     previous: Option<&SparseCheckpoint>,
 ) -> Result<Digest32, AgentdError> {
-    let encoded = serde_json::to_vec(&(config, tick, previous))?;
-    let encoded_len = u64::try_from(encoded.len()).map_err(|_| {
-        AgentdError::Protocol("canonical Neuron input length exceeds u64".to_string())
+    let config_digest = config.digest().map_err(|error| {
+        AgentdError::Invalid(format!(
+            "canonical Neuron configuration cannot be bound: {error}"
+        ))
     })?;
-    Ok(Digest32::of_parts(&[
-        b"hepta.runtime-agentd.neuron-raw-input.v1\0",
-        &encoded_len.to_be_bytes(),
-        &encoded,
-    ]))
+    let predecessor = previous.map_or(Digest32::ZERO, SparseCheckpoint::digest);
+    let drive_len = u64::try_from(tick.drive_q24.len()).map_err(|_| {
+        AgentdError::Protocol("canonical Neuron drive length exceeds u64".to_string())
+    })?;
+    let prediction_len = u64::try_from(tick.prediction_q24.len()).map_err(|_| {
+        AgentdError::Protocol("canonical Neuron prediction length exceeds u64".to_string())
+    })?;
+
+    let mut encoded = b"hepta.runtime-agentd.neuron-raw-input.v1\0".to_vec();
+    for digest in [
+        config_digest,
+        predecessor,
+        tick.scope_digest,
+        tick.objective_digest,
+        tick.ndu_digest,
+        tick.body_digest,
+        tick.input_digest,
+    ] {
+        encoded.extend_from_slice(digest.as_array());
+    }
+    encoded.extend_from_slice(&tick.sequence.to_be_bytes());
+    encoded.extend_from_slice(&tick.monotonic_micros.to_be_bytes());
+    encoded.extend_from_slice(&drive_len.to_be_bytes());
+    for value in &tick.drive_q24 {
+        encoded.extend_from_slice(&value.to_be_bytes());
+    }
+    encoded.extend_from_slice(&prediction_len.to_be_bytes());
+    for value in &tick.prediction_q24 {
+        encoded.extend_from_slice(&value.to_be_bytes());
+    }
+    Ok(Digest32::of_bytes(&encoded))
 }
 
 /// Current durable Neuron owner required by the canonical Agentd profile.
@@ -405,10 +432,10 @@ impl AgentdCanonicalRuntimeBootstrapV1 {
         self.neuron.binding_digest()
     }
 
-    /// Consume the complete profile. The runner/provider pair is first applied
-    /// to the still-local `AgentdConfig`; only after every config precondition
-    /// succeeds is the process-global executor installed. No fallible step
-    /// follows that installation.
+    /// Consume the complete profile. All owners remain inside the returned
+    /// `AgentdConfig`; installation has no process-global side effect. The
+    /// daemon later moves the supervisor handle into its sole `RuntimeTasks`
+    /// owner after every fallible store, trust and socket open succeeds.
     pub fn install(self, config: AgentdConfig) -> Result<AgentdConfig, AgentdError> {
         self.neuron.validate_agentd_identity(config.identity())?;
         if self.final_use_authority_digest != self.executor.final_use_authority_digest() {
@@ -421,10 +448,8 @@ impl AgentdCanonicalRuntimeBootstrapV1 {
                 inner: self.invocation,
                 neuron: self.neuron,
             });
-        let configured = config
-            .with_intelligence_product_runner(self.runner)?
-            .with_intelligence_invocation_provider(provider)?;
-        self.executor
+        let supervisor = self
+            .executor
             .install_agentd_canonical_supervisor_with_limits(
                 self.queue_capacity,
                 self.maximum_concurrent_jobs,
@@ -432,6 +457,9 @@ impl AgentdCanonicalRuntimeBootstrapV1 {
                 self.input_provider,
                 CanonicalRuntimeInstallationTokenV1::new(),
             )?;
-        Ok(configured)
+        config
+            .with_intelligence_product_runner(self.runner)?
+            .with_intelligence_invocation_provider(provider)?
+            .with_runtime_codex_supervisor(supervisor)
     }
 }

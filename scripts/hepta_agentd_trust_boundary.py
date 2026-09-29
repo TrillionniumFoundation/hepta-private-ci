@@ -34,7 +34,7 @@ RULES = (
     ),
     BoundaryRule(
         "RunSnapshot::from_revalidated_run_start(",
-        frozenset({"lane_b_runtime.rs"}),
+        frozenset({"lane_b_runtime.rs", "intelligence_run_start.rs", "state.rs"}),
     ),
     BoundaryRule(
         "authentication_is_current(",
@@ -48,7 +48,17 @@ class BoundaryError(ValueError):
 
 
 def rust_sources(root: Path = SOURCE_ROOT) -> list[Path]:
-    return sorted(path for path in root.rglob("*.rs") if path.is_file())
+    # Test modules exercise owner-internal primitives deliberately. They are not
+    # linked into a production Agentd binary and must not be confused with new
+    # admission callsites. Production files that contain local #[cfg(test)]
+    # blocks remain in scope, so adding a bypass to ordinary source still fails.
+    return sorted(
+        path
+        for path in root.rglob("*.rs")
+        if path.is_file()
+        and not path.name.endswith("_tests.rs")
+        and "tests" not in path.relative_to(root).parts
+    )
 
 
 def relative(path: Path, root: Path = SOURCE_ROOT) -> str:

@@ -8,13 +8,9 @@
 use codex_hepta_learning_ledger::RunStartRecordV1;
 use codex_hepta_types::Digest32;
 
-use crate::AgentRunPhase;
 use crate::AgentdError;
 use crate::AgentdIntelligenceAdmittedOutcomeV1;
-use crate::AgentdMethod;
-use crate::AgentdPayload;
 use crate::AgentdState;
-use crate::ProcessRuntimeCodexExecutorV1;
 use crate::RunReceipt;
 use crate::authbus_ingress;
 use crate::objective_runtime::authentication_is_current;
@@ -80,7 +76,7 @@ impl VerifiedRunStartV1<'_> {
     pub(crate) async fn admit(self) -> Result<VerifiedRunAdmissionV1, AgentdError> {
         let verified = self.reverify()?;
         let reservation = if verified.agentd.canonical_intelligence_enabled() {
-            Some(ProcessRuntimeCodexExecutorV1::reserve_canonical_run()?)
+            Some(verified.agentd.reserve_runtime_codex_run()?)
         } else {
             None
         };
@@ -113,8 +109,7 @@ impl VerifiedRunStartV1<'_> {
                             cancel_canonical_run_after_schedule_rejection(
                                 verified.agentd,
                                 run_receipt,
-                            )
-                            .await?;
+                            )?;
                             return Err(AgentdError::Protocol(
                                 "new canonical run collided with an existing runtime.codex job"
                                     .to_string(),
@@ -124,8 +119,7 @@ impl VerifiedRunStartV1<'_> {
                             cancel_canonical_run_after_schedule_rejection(
                                 verified.agentd,
                                 run_receipt,
-                            )
-                            .await?;
+                            )?;
                             return Err(error);
                         }
                     }
@@ -150,42 +144,13 @@ impl VerifiedRunStartV1<'_> {
 /// Roll back a pre-dispatch coordinator record through the in-process typed
 /// dispatch. This deliberately does not open Agentd's own UDS or depend on a
 /// connection permit while recovering from queue/scheduling pressure.
-async fn cancel_canonical_run_after_schedule_rejection(
+fn cancel_canonical_run_after_schedule_rejection(
     agentd: &AgentdState,
     receipt: &RunReceipt,
 ) -> Result<(), AgentdError> {
-    if receipt.idempotent {
-        return Ok(());
-    }
-    let response = agentd
-        .response(
-            0,
-            agentd.identity().spawn_generation,
-            AgentdMethod::RunCancel {
-                run_id: receipt.run_id.clone(),
-                expected_revision: receipt.revision,
-                reason: "runtime_codex_schedule_rejected".to_string(),
-            },
-        )
-        .await?;
-    match response.payload {
-        AgentdPayload::RunCancellation(cancelled)
-            if cancelled.receipt.phase == AgentRunPhase::Cancelled
-                && cancelled.receipt.terminal_observed =>
-        {
-            Ok(())
-        }
-        AgentdPayload::RunCancellation(cancelled) => Err(AgentdError::Protocol(format!(
-            "runtime.codex schedule rollback remained {:?}",
-            cancelled.receipt.phase
-        ))),
-        AgentdPayload::Error { code, message } => Err(AgentdError::Protocol(format!(
-            "runtime.codex schedule rollback rejected ({code}): {message}"
-        ))),
-        _ => Err(AgentdError::Protocol(
-            "runtime.codex schedule rollback returned the wrong response".to_string(),
-        )),
-    }
+    agentd
+        .cancel_pre_dispatch_runtime_codex_run(receipt)
+        .map(|_| ())
 }
 
 pub(crate) fn verify_current_run_start<'a>(

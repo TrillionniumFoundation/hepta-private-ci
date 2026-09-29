@@ -54,6 +54,19 @@ class RuntimeAgentdCurrentStatusTests(unittest.TestCase):
             observed = MODULE._engineering_result(path, sha, "9", 2)
             self.assertFalse(observed["passed"])
 
+    def test_pull_request_requires_successful_prospective_merge(self) -> None:
+        passed = MODULE._prospective_merge_result("pull_request", "success")
+        failed = MODULE._prospective_merge_result("pull_request", "failure")
+        self.assertTrue(passed["required"])
+        self.assertTrue(passed["passed"])
+        self.assertFalse(failed["passed"])
+
+    def test_push_does_not_manufacture_merge_evidence(self) -> None:
+        observed = MODULE._prospective_merge_result("push", "skipped")
+        self.assertFalse(observed["required"])
+        self.assertTrue(observed["passed"])
+        self.assertEqual(observed["reason"], "not_required_for_event")
+
     def test_duplicate_json_keys_are_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "duplicate.json"

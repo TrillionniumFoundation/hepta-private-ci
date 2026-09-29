@@ -15,6 +15,10 @@ impl AnchorWitnessStore for StubWitness {
         Ok(None)
     }
 
+    fn admit_new_anchor(&self, _expected: Option<JournalAnchor>) -> Result<(), WitnessStoreError> {
+        Ok(())
+    }
+
     fn compare_and_swap(
         &mut self,
         _expected: Option<JournalAnchor>,

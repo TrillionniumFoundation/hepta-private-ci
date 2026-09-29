@@ -5,4 +5,5 @@ mod supervisor;
 
 pub use supervisor::RuntimeCodexInputProviderV1;
 pub(crate) use supervisor::RuntimeCodexScheduleReservationV1;
+pub use supervisor::RuntimeCodexSupervisorHandleV1;
 pub use supervisor::RuntimeCodexSupervisorSnapshotV1;

@@ -176,3 +176,13 @@ compatibility requires recovery review, not an automatic binary downgrade.
 Activation requires separately authenticated target-host and independent
 security acceptance tied to the exact deployable artifact digest. This change
 provides neither a production signer nor a way around that gate.
+
+## 2026-09-28 instance-ownership and bounded-maintenance addendum
+
+The active convergence line replaces the process-global runtime.codex installation slot with an explicit supervisor handle owned by the typed bootstrap, `AgentdConfig`, `AgentdState` and the required `RuntimeTasks` future. A handle is fail-stop after owner start, but separate handles do not share process state. All fallible trust, store and socket initialization precedes task ownership. This narrows lifecycle ownership without introducing a plugin registry or second supervisor.
+
+Periodic reconciliation and terminal archival now run in a separately joined maintenance owner. Per-run lock waits observe cancellation, active directories are traversed through bounded deterministic cursor pages, archival remains witness-before-rename with directory synchronization, and shutdown accounts for reserved, queued, already-dequeued and running work before joining maintenance. Operational snapshots distinguish reservation, queue and running counts; queue and unresolved ages; recovery duration/lock wait; pending archive; persistence/shutdown failures; and admission rejection causes.
+
+`DEPENDENCY_BOUNDARY.json` and its verifier classify the exact Cargo dependency inventory. They intentionally record `coreOnlyBuildEstablished=false` and `productAdaptersOptionalized=false`: an empty default feature set is not relabelled as core/product separation. The migration ratchet forbids changing durable history, authority semantics or the sole execution spine merely to make dependencies optional.
+
+The exact-candidate workflow now uses immutable action revisions, real package and process-test names, current repository-owned projection checks, dependency/trust-boundary tests and a separate deterministic prospective-merge compile/test/lint job. The one-shot patch carrier and self-mutating apply workflow are removed after their source delta is integrated. None of these source changes claims target-host qualification, release provenance, independent acceptance, activation, promotion or release. Those gates remain false until the final exact candidate produces successful retained evidence.

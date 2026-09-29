@@ -1,7 +1,6 @@
 use std::collections::BTreeMap;
 use std::str::FromStr;
 use std::sync::Arc;
-use std::sync::OnceLock;
 use std::sync::atomic::{AtomicBool, AtomicU64, AtomicUsize, Ordering};
 use std::time::{Duration, Instant};
 
@@ -85,8 +84,20 @@ pub struct RuntimeCodexSupervisorSnapshotV1 {
     pub recovery_in_progress: bool,
     pub recovery_runs: usize,
     pub recovery_failures: usize,
-    pub last_recovery_ms: Option<u64>,
+    pub persistence_failures: usize,
+    pub shutdown_failures: usize,
+    pub last_recovery_scanned: usize,
+    pub last_recovery_duration_ms: Option<u64>,
+    pub last_recovery_lock_wait_ms: u64,
+    pub oldest_prepared_unfenced_ms: Option<u64>,
+    pub oldest_fenced_unresolved_ms: Option<u64>,
+    pub terminal_pending_archive: usize,
     pub archived_terminal: usize,
+    pub rejected_closed: usize,
+    pub rejected_not_ready: usize,
+    pub rejected_capacity: usize,
+    pub rejected_input: usize,
+    pub rejected_identity: usize,
     pub admission_blocker: Option<String>,
 }
 
@@ -121,8 +132,20 @@ struct Installation {
     recovery_in_progress: AtomicBool,
     recovery_runs: AtomicUsize,
     recovery_failures: AtomicUsize,
-    last_recovery_ms: AtomicU64,
+    persistence_failures: AtomicUsize,
+    shutdown_failures: AtomicUsize,
+    last_recovery_scanned: AtomicUsize,
+    last_recovery_duration_ms: AtomicU64,
+    last_recovery_lock_wait_ms: AtomicU64,
+    oldest_prepared_unfenced_ms: AtomicU64,
+    oldest_fenced_unresolved_ms: AtomicU64,
+    terminal_pending_archive: AtomicUsize,
     archived_terminal: AtomicUsize,
+    rejected_closed: AtomicUsize,
+    rejected_not_ready: AtomicUsize,
+    rejected_capacity: AtomicUsize,
+    rejected_input: AtomicUsize,
+    rejected_identity: AtomicUsize,
     terminal_failure: std::sync::Mutex<Option<String>>,
     maximum_concurrent_jobs: usize,
     recovery_interval: Duration,
@@ -162,13 +185,14 @@ pub(crate) struct RuntimeCodexScheduleReservationV1 {
     counted: bool,
 }
 
-/// Agentd is a one-runtime-per-process binary. The process-global slot is a
-/// deliberate fail-stop boundary, not a restartable service registry: after an
-/// owner starts or fails, this process must exit and a new process generation
-/// must construct a fresh slot. The explicit started/closed checks below make
-/// that contract executable and prevent tests or embeddings from silently
-/// reusing a failed owner.
-static INSTALLATION: OnceLock<Arc<Installation>> = OnceLock::new();
+/// Explicit owner handle for one runtime.codex supervisor instance. The
+/// installation remains inert until `run` is placed under Agentd's required
+/// `RuntimeTasks` owner. Clones refer to the same instance and cannot start a
+/// second owner because `started` is monotone.
+#[derive(Clone)]
+pub struct RuntimeCodexSupervisorHandleV1 {
+    installed: Arc<Installation>,
+}
 
 impl Drop for RuntimeCodexScheduleReservationV1 {
     fn drop(&mut self) {
@@ -197,11 +221,21 @@ impl RuntimeCodexScheduleReservationV1 {
         // Owner input construction can be comparatively slow. It intentionally
         // runs outside the admission lock, then every mutable readiness fact is
         // rechecked at the single final commit boundary below.
-        let input = self
+        let input = match self
             .installed
             .provider
-            .build(identity, record, prepared, receipt)?;
-        validate_input(record, prepared, receipt, &input)?;
+            .build(identity, record, prepared, receipt)
+        {
+            Ok(input) => input,
+            Err(error) => {
+                self.installed.rejected_input.fetch_add(1, Ordering::AcqRel);
+                return Err(error);
+            }
+        };
+        if let Err(error) = validate_input(record, prepared, receipt, &input) {
+            self.installed.rejected_input.fetch_add(1, Ordering::AcqRel);
+            return Err(error);
+        }
         let digest = input.digest()?;
         let run_id = input.run_id().to_string();
         let cancellation = CancellationToken::new();
@@ -210,11 +244,17 @@ impl RuntimeCodexScheduleReservationV1 {
             AgentdError::Protocol("runtime.codex admission gate is poisoned".to_string())
         })?;
         if admission.closed || self.installed.closed.load(Ordering::Acquire) {
+            self.installed
+                .rejected_closed
+                .fetch_add(1, Ordering::AcqRel);
             return Err(AgentdError::Protocol(
                 "runtime.codex supervisor closed after capacity reservation".to_string(),
             ));
         }
         if !self.installed.ready.load(Ordering::Acquire) {
+            self.installed
+                .rejected_not_ready
+                .fetch_add(1, Ordering::AcqRel);
             return Err(AgentdError::Protocol(
                 "runtime.codex supervisor lost readiness after capacity reservation".to_string(),
             ));
@@ -227,6 +267,9 @@ impl RuntimeCodexScheduleReservationV1 {
             match active.get(&run_id) {
                 Some(existing) if existing.digest == digest => return Ok(false),
                 Some(_) => {
+                    self.installed
+                        .rejected_identity
+                        .fetch_add(1, Ordering::AcqRel);
                     return Err(AgentdError::Protocol(
                         "runtime.codex run identity has queued semantic drift".to_string(),
                     ));
@@ -275,7 +318,7 @@ impl ProcessRuntimeCodexExecutorV1 {
         self: Arc<Self>,
         queue_capacity: usize,
         provider: F,
-    ) -> Result<(), AgentdError>
+    ) -> Result<RuntimeCodexSupervisorHandleV1, AgentdError>
     where
         F: Fn(
                 &AgentdIdentity,
@@ -304,7 +347,7 @@ impl ProcessRuntimeCodexExecutorV1 {
         maximum_concurrent_jobs: usize,
         recovery_interval: Duration,
         provider: Arc<dyn RuntimeCodexInputProviderV1>,
-    ) -> Result<(), AgentdError> {
+    ) -> Result<RuntimeCodexSupervisorHandleV1, AgentdError> {
         self.install_agentd_supervisor_profile(
             queue_capacity,
             maximum_concurrent_jobs,
@@ -323,7 +366,7 @@ impl ProcessRuntimeCodexExecutorV1 {
         recovery_interval: Duration,
         provider: Arc<dyn RuntimeCodexInputProviderV1>,
         _token: CanonicalRuntimeInstallationTokenV1,
-    ) -> Result<(), AgentdError> {
+    ) -> Result<RuntimeCodexSupervisorHandleV1, AgentdError> {
         self.install_agentd_supervisor_profile(
             queue_capacity,
             maximum_concurrent_jobs,
@@ -340,7 +383,7 @@ impl ProcessRuntimeCodexExecutorV1 {
         recovery_interval: Duration,
         provider: Arc<dyn RuntimeCodexInputProviderV1>,
         profile: RuntimeCodexInstallationProfileV1,
-    ) -> Result<(), AgentdError> {
+    ) -> Result<RuntimeCodexSupervisorHandleV1, AgentdError> {
         if !(1..=MAX_QUEUE_CAPACITY).contains(&queue_capacity)
             || !(1..=MAX_CONCURRENT_JOBS).contains(&maximum_concurrent_jobs)
             || maximum_concurrent_jobs > self.maximum_in_flight()
@@ -352,8 +395,8 @@ impl ProcessRuntimeCodexExecutorV1 {
             ));
         }
         let (sender, receiver) = mpsc::channel(queue_capacity);
-        INSTALLATION
-            .set(Arc::new(Installation {
+        Ok(RuntimeCodexSupervisorHandleV1 {
+            installed: Arc::new(Installation {
                 profile,
                 executor: self,
                 provider,
@@ -372,35 +415,35 @@ impl ProcessRuntimeCodexExecutorV1 {
                 recovery_in_progress: AtomicBool::new(false),
                 recovery_runs: AtomicUsize::new(0),
                 recovery_failures: AtomicUsize::new(0),
-                last_recovery_ms: AtomicU64::new(0),
+                persistence_failures: AtomicUsize::new(0),
+                shutdown_failures: AtomicUsize::new(0),
+                last_recovery_scanned: AtomicUsize::new(0),
+                last_recovery_duration_ms: AtomicU64::new(0),
+                last_recovery_lock_wait_ms: AtomicU64::new(0),
+                oldest_prepared_unfenced_ms: AtomicU64::new(0),
+                oldest_fenced_unresolved_ms: AtomicU64::new(0),
+                terminal_pending_archive: AtomicUsize::new(0),
                 archived_terminal: AtomicUsize::new(0),
+                rejected_closed: AtomicUsize::new(0),
+                rejected_not_ready: AtomicUsize::new(0),
+                rejected_capacity: AtomicUsize::new(0),
+                rejected_input: AtomicUsize::new(0),
+                rejected_identity: AtomicUsize::new(0),
                 terminal_failure: std::sync::Mutex::new(None),
                 maximum_concurrent_jobs,
                 recovery_interval,
-            }))
-            .map_err(|_| {
-                AgentdError::Invalid(
-                    "runtime.codex supervisor was installed more than once; restart the process \
-                     after any installation or owner failure"
-                        .to_string(),
-                )
-            })
+            }),
+        })
+    }
+}
+
+impl RuntimeCodexSupervisorHandleV1 {
+    pub(crate) fn is_canonical(&self) -> bool {
+        self.installed.profile.is_canonical()
     }
 
-    pub(crate) fn agentd_supervisor_installed() -> bool {
-        INSTALLATION
-            .get()
-            .is_some_and(|installed| installed.profile.is_canonical())
-    }
-
-    pub(crate) fn agentd_supervisor_snapshot()
-    -> Result<Option<RuntimeCodexSupervisorSnapshotV1>, AgentdError> {
-        let Some(installed) = INSTALLATION
-            .get()
-            .filter(|installed| installed.profile.is_canonical())
-        else {
-            return Ok(None);
-        };
+    pub fn snapshot(&self) -> Result<RuntimeCodexSupervisorSnapshotV1, AgentdError> {
+        let installed = &self.installed;
         let active = installed.active.lock().map_err(|_| {
             AgentdError::Protocol("runtime.codex active registry is poisoned".to_string())
         })?;
@@ -427,22 +470,20 @@ impl ProcessRuntimeCodexExecutorV1 {
         let admission_blocker = terminal_failure.or_else(|| {
             if closed {
                 Some("closed".to_string())
-            } else if recovery_in_progress {
-                Some("recovery_in_progress".to_string())
-            } else if fenced_unresolved != 0 {
+            } else if !ready && recovery_in_progress {
+                Some("startup_reconciliation".to_string())
+            } else if !ready && fenced_unresolved != 0 {
                 Some("fenced_unresolved".to_string())
             } else if !ready {
-                Some("startup_reconciliation".to_string())
+                Some("not_ready".to_string())
             } else if installed.sender.capacity() == 0 {
                 Some("queue_capacity".to_string())
-            } else if unresolved != 0 {
-                Some("degraded_reconciliation".to_string())
             } else {
                 None
             }
         });
-        let last_recovery_ms = installed.last_recovery_ms.load(Ordering::Acquire);
-        Ok(Some(RuntimeCodexSupervisorSnapshotV1 {
+        let last_recovery_duration_ms = installed.last_recovery_duration_ms.load(Ordering::Acquire);
+        Ok(RuntimeCodexSupervisorSnapshotV1 {
             ready,
             degraded: installed.degraded.load(Ordering::Acquire),
             closed,
@@ -457,19 +498,40 @@ impl ProcessRuntimeCodexExecutorV1 {
             recovery_in_progress,
             recovery_runs: installed.recovery_runs.load(Ordering::Acquire),
             recovery_failures: installed.recovery_failures.load(Ordering::Acquire),
-            last_recovery_ms: (last_recovery_ms != 0).then_some(last_recovery_ms),
+            persistence_failures: installed.persistence_failures.load(Ordering::Acquire),
+            shutdown_failures: installed.shutdown_failures.load(Ordering::Acquire),
+            last_recovery_scanned: installed.last_recovery_scanned.load(Ordering::Acquire),
+            last_recovery_duration_ms: (last_recovery_duration_ms != 0)
+                .then_some(last_recovery_duration_ms),
+            last_recovery_lock_wait_ms: installed
+                .last_recovery_lock_wait_ms
+                .load(Ordering::Acquire),
+            oldest_prepared_unfenced_ms: (installed.prepared_unfenced.load(Ordering::Acquire) != 0)
+                .then(|| {
+                    installed
+                        .oldest_prepared_unfenced_ms
+                        .load(Ordering::Acquire)
+                }),
+            oldest_fenced_unresolved_ms: (fenced_unresolved != 0).then(|| {
+                installed
+                    .oldest_fenced_unresolved_ms
+                    .load(Ordering::Acquire)
+            }),
+            terminal_pending_archive: installed.terminal_pending_archive.load(Ordering::Acquire),
             archived_terminal: installed.archived_terminal.load(Ordering::Acquire),
+            rejected_closed: installed.rejected_closed.load(Ordering::Acquire),
+            rejected_not_ready: installed.rejected_not_ready.load(Ordering::Acquire),
+            rejected_capacity: installed.rejected_capacity.load(Ordering::Acquire),
+            rejected_input: installed.rejected_input.load(Ordering::Acquire),
+            rejected_identity: installed.rejected_identity.load(Ordering::Acquire),
             admission_blocker,
-        }))
+        })
     }
 
-    pub(crate) fn reserve_canonical_run() -> Result<RuntimeCodexScheduleReservationV1, AgentdError>
-    {
-        let installed = Arc::clone(INSTALLATION.get().ok_or_else(|| {
-            AgentdError::Invalid(
-                "canonical intelligence has no installed runtime.codex supervisor".to_string(),
-            )
-        })?);
+    pub(crate) fn reserve_canonical_run(
+        &self,
+    ) -> Result<RuntimeCodexScheduleReservationV1, AgentdError> {
+        let installed = Arc::clone(&self.installed);
         if !installed.profile.is_canonical() {
             return Err(AgentdError::Invalid(
                 "canonical intelligence requires the typed runtime bootstrap".to_string(),
@@ -479,24 +541,26 @@ impl ProcessRuntimeCodexExecutorV1 {
             AgentdError::Protocol("runtime.codex admission gate is poisoned".to_string())
         })?;
         if admission.closed || installed.closed.load(Ordering::Acquire) {
+            installed.rejected_closed.fetch_add(1, Ordering::AcqRel);
             return Err(AgentdError::Protocol(
                 "runtime.codex supervisor is closed".to_string(),
             ));
         }
         if !installed.ready.load(Ordering::Acquire) {
+            installed.rejected_not_ready.fetch_add(1, Ordering::AcqRel);
             return Err(AgentdError::Protocol(
                 "runtime.codex supervisor recovery is not ready".to_string(),
             ));
         }
-        let permit = installed
-            .sender
-            .clone()
-            .try_reserve_owned()
-            .map_err(|error| {
-                AgentdError::Protocol(format!(
+        let permit = match installed.sender.clone().try_reserve_owned() {
+            Ok(permit) => permit,
+            Err(error) => {
+                installed.rejected_capacity.fetch_add(1, Ordering::AcqRel);
+                return Err(AgentdError::Protocol(format!(
                     "runtime.codex supervisor has no reserved queue capacity: {error}"
-                ))
-            })?;
+                )));
+            }
+        };
         installed.reserved.fetch_add(1, Ordering::AcqRel);
         drop(admission);
         Ok(RuntimeCodexScheduleReservationV1 {
@@ -506,35 +570,17 @@ impl ProcessRuntimeCodexExecutorV1 {
         })
     }
 
-    pub(crate) fn schedule_canonical_run(
-        identity: &AgentdIdentity,
-        record: &RunStartRecordV1,
-        prepared: &PreparedAgentdIntelligenceRunV1,
-        receipt: &RunReceipt,
-    ) -> Result<bool, AgentdError> {
-        Self::reserve_canonical_run()?.schedule(identity, record, prepared, receipt)
+    pub(crate) fn cancel_runs(&self) -> Result<(), AgentdError> {
+        close_admission(&self.installed)?;
+        cancel_active(&self.installed)
     }
 
-    pub(crate) fn cancel_installed_runs() -> Result<(), AgentdError> {
-        let Some(installed) = INSTALLATION
-            .get()
-            .filter(|installed| installed.profile.is_canonical())
-        else {
-            return Ok(());
-        };
-        close_admission(installed)?;
-        cancel_active(installed)
-    }
-
-    pub(crate) async fn run_installed_agentd_supervisor(
+    pub(crate) async fn run(
+        self,
         identity: AgentdIdentity,
         lifetime: CancellationToken,
     ) -> Result<(), AgentdError> {
-        let installed = Arc::clone(INSTALLATION.get().ok_or_else(|| {
-            AgentdError::Invalid(
-                "runtime.codex supervisor owner started without installation".to_string(),
-            )
-        })?);
+        let installed = Arc::clone(&self.installed);
         if !installed.profile.is_canonical() {
             return Err(AgentdError::Invalid(
                 "Agentd refuses a compatibility runtime.codex installation".to_string(),
@@ -592,7 +638,9 @@ impl ProcessRuntimeCodexExecutorV1 {
             if pending.is_some() {
                 match Arc::clone(&concurrency).try_acquire_owned() {
                     Ok(permit) => {
-                        let job = pending.take().expect("pending job checked above");
+                        let Some(job) = pending.take() else {
+                            continue;
+                        };
                         let run_id = job.input.run_id().to_string();
                         let digest = match job.input.digest() {
                             Ok(digest) => digest,
@@ -611,14 +659,8 @@ impl ProcessRuntimeCodexExecutorV1 {
                         let job_lifetime = lifetime.clone();
                         jobs.spawn(async move {
                             let _permit = permit;
-                            let outcome = run_job(
-                                executor,
-                                job_owner,
-                                job_identity,
-                                job,
-                                job_lifetime,
-                            )
-                            .await;
+                            let outcome =
+                                run_job(executor, job_owner, job_identity, job, job_lifetime).await;
                             (run_id, digest, outcome)
                         });
                     }
@@ -741,19 +783,24 @@ async fn perform_maintenance_once(
             ))
         })??;
         publish_recovery_status(&installed, &report);
-        installed
-            .archived_terminal
-            .fetch_add(archived, Ordering::AcqRel);
+        record_archived(&installed, archived);
         Ok(())
     }
     .await;
-    installed.recovery_in_progress.store(false, Ordering::Release);
+    installed
+        .recovery_in_progress
+        .store(false, Ordering::Release);
     installed.recovery_runs.fetch_add(1, Ordering::AcqRel);
     installed
-        .last_recovery_ms
+        .last_recovery_duration_ms
         .store(duration_millis(started.elapsed()), Ordering::Release);
-    if result.is_err() {
+    if let Err(error) = &result {
         installed.recovery_failures.fetch_add(1, Ordering::AcqRel);
+        if matches!(error, AgentdError::Io(_) | AgentdError::Json(_)) {
+            installed
+                .persistence_failures
+                .fetch_add(1, Ordering::AcqRel);
+        }
         installed.ready.store(false, Ordering::Release);
         installed.degraded.store(true, Ordering::Release);
     }
@@ -792,18 +839,10 @@ async fn cleanup_supervisor(
     if let Some(cancel) = maintenance_cancel {
         cancel.cancel();
     }
-    if let Some(maintenance) = maintenance {
-        let result = maintenance.await.map_err(|error| {
-            AgentdError::Protocol(format!(
-                "runtime.codex maintenance task failed during shutdown: {error}"
-            ))
-        });
-        match result {
-            Ok(result) => record_result(&mut first_error, result),
-            Err(error) => record_error(&mut first_error, error),
-        }
-    }
 
+    // Jobs may own per-operation locks that recovery is waiting to observe.
+    // Join them before awaiting the cancelled maintenance owner so shutdown
+    // cannot deadlock on its own recovery lock order.
     while let Some(joined) = jobs.join_next().await {
         match joined {
             Ok((run_id, digest, outcome)) => {
@@ -816,6 +855,18 @@ async fn cleanup_supervisor(
                     "runtime.codex supervised job failed during shutdown: {error}"
                 )),
             ),
+        }
+    }
+
+    if let Some(maintenance) = maintenance {
+        let result = maintenance.await.map_err(|error| {
+            AgentdError::Protocol(format!(
+                "runtime.codex maintenance task failed during shutdown: {error}"
+            ))
+        });
+        match result {
+            Ok(result) => record_result(&mut first_error, result),
+            Err(error) => record_error(&mut first_error, error),
         }
     }
 
@@ -833,16 +884,17 @@ async fn cleanup_supervisor(
     });
     match archived {
         Ok(Ok(count)) => {
-            installed
-                .archived_terminal
-                .fetch_add(count, Ordering::AcqRel);
+            record_archived(installed, count);
         }
         Ok(Err(error)) => record_error(&mut first_error, error),
         Err(error) => record_error(&mut first_error, error),
     }
 
     match first_error {
-        Some(error) => Err(error),
+        Some(error) => {
+            installed.shutdown_failures.fetch_add(1, Ordering::AcqRel);
+            Err(error)
+        }
         None => Ok(()),
     }
 }
@@ -924,8 +976,7 @@ fn close_admission(installed: &Installation) -> Result<(), AgentdError> {
 fn claim_single_start(started: &AtomicBool) -> Result<(), AgentdError> {
     if started.swap(true, Ordering::AcqRel) {
         return Err(AgentdError::Invalid(
-            "runtime.codex supervisor is fail-stop and cannot be restarted in the same process"
-                .to_string(),
+            "runtime.codex supervisor instance is fail-stop and cannot be restarted".to_string(),
         ));
     }
     Ok(())
@@ -944,6 +995,26 @@ fn publish_recovery_status(
     installed
         .fenced_unresolved
         .store(report.fenced_unresolved, Ordering::Release);
+    installed
+        .last_recovery_scanned
+        .store(report.scanned, Ordering::Release);
+    installed
+        .last_recovery_lock_wait_ms
+        .store(report.lock_wait_ms, Ordering::Release);
+    installed.oldest_prepared_unfenced_ms.store(
+        report.oldest_prepared_unfenced_ms.unwrap_or(0),
+        Ordering::Release,
+    );
+    installed.oldest_fenced_unresolved_ms.store(
+        report.oldest_fenced_unresolved_ms.unwrap_or(0),
+        Ordering::Release,
+    );
+    installed.terminal_pending_archive.store(
+        report
+            .already_terminal
+            .saturating_add(report.reconciled_terminal),
+        Ordering::Release,
+    );
     installed
         .degraded
         .store(report.unresolved != 0, Ordering::Release);
@@ -1030,6 +1101,17 @@ fn remove_active(
     Ok(())
 }
 
+fn record_archived(installed: &Installation, count: usize) {
+    installed
+        .archived_terminal
+        .fetch_add(count, Ordering::AcqRel);
+    let _ = installed.terminal_pending_archive.fetch_update(
+        Ordering::AcqRel,
+        Ordering::Acquire,
+        |pending| Some(pending.saturating_sub(count)),
+    );
+}
+
 fn duration_millis(duration: Duration) -> u64 {
     u64::try_from(duration.as_millis()).unwrap_or(u64::MAX)
 }
@@ -1048,7 +1130,7 @@ mod installation_profile_tests {
     }
 
     #[test]
-    fn owner_is_fail_stop_inside_one_process() {
+    fn owner_handle_is_fail_stop_after_start() {
         let started = AtomicBool::new(false);
         claim_single_start(&started).expect("first owner start");
         let error = claim_single_start(&started).expect_err("second owner start must fail");

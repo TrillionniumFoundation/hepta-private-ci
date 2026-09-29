@@ -110,6 +110,22 @@ def _engineering_result(path: Path | None, sha: str, run_id: str, attempt: int) 
     }
 
 
+def _prospective_merge_result(event_name: str, result: str) -> dict[str, Any]:
+    required = event_name == "pull_request"
+    if required:
+        passed = result == "success"
+        reason = "prospective_merge_passed" if passed else f"prospective_merge_{result or 'missing'}"
+    else:
+        passed = result in {"", "skipped", "success"}
+        reason = "not_required_for_event" if passed else f"unexpected_merge_result_{result}"
+    return {
+        "required": required,
+        "passed": passed,
+        "result": result or "missing",
+        "reason": reason,
+    }
+
+
 def generate(args: argparse.Namespace) -> int:
     root = args.repository.resolve()
     if not (root / ".git").exists():
@@ -137,6 +153,7 @@ def generate(args: argparse.Namespace) -> int:
             raise SystemExit(f"external claim {claim} must remain false in repository source")
 
     engineering = _engineering_result(args.engineering_result, args.sha, args.run_id, args.attempt)
+    prospective_merge = _prospective_merge_result(args.event_name, args.merge_result)
     generated_at = dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat()
     status = {
         "schema": SCHEMA,
@@ -158,8 +175,10 @@ def generate(args: argparse.Namespace) -> int:
             "claimBoundary": boundary,
         },
         "exactCandidateEngineering": engineering,
+        "prospectiveMerge": prospective_merge,
         "effectiveStatus": {
             "sourceCandidateQualified": engineering["passed"],
+            "prospectiveMergeQualified": prospective_merge["passed"],
             "productExecutionComplete": bool(boundary.get("productExecutionComplete", False)),
             "deploymentQualificationComplete": False,
             "independentAcceptanceComplete": False,
@@ -174,7 +193,7 @@ def generate(args: argparse.Namespace) -> int:
     args.output.parent.mkdir(parents=True, exist_ok=True)
     encoded = json.dumps(status, indent=2, sort_keys=True, ensure_ascii=False) + "\n"
     args.output.write_text(encoded, encoding="utf-8")
-    return 0 if engineering["passed"] else 1
+    return 0 if engineering["passed"] and prospective_merge["passed"] else 1
 
 
 def parser() -> argparse.ArgumentParser:
@@ -185,6 +204,8 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument("--run-id", required=True)
     result.add_argument("--attempt", type=int, required=True)
     result.add_argument("--engineering-result", type=Path)
+    result.add_argument("--event-name", choices=("pull_request", "push", "workflow_dispatch", "workflow_call"), required=True)
+    result.add_argument("--merge-result", choices=("success", "failure", "cancelled", "skipped", ""), required=True)
     result.add_argument("--output", type=Path, required=True)
     return result
 

@@ -1,3 +1,4 @@
+use std::collections::BTreeMap;
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::Read;
@@ -261,11 +262,31 @@ fn validate_dispatch_fence(
     Ok(())
 }
 
-pub(super) fn list_operation_directories(root: &Path) -> Result<Vec<PathBuf>, AgentdError> {
-    let mut entries = std::fs::read_dir(root)?.collect::<Result<Vec<_>, _>>()?;
-    entries.sort_by_key(std::fs::DirEntry::file_name);
-    let mut directories = Vec::new();
-    for entry in entries {
+pub(super) struct OperationDirectoryBatch {
+    pub(super) directories: Vec<PathBuf>,
+    pub(super) next_after: Option<String>,
+}
+
+/// Return the next deterministic, bounded slice of active operation
+/// directories. The filesystem iterator is never collected wholesale. Entries
+/// outside the retained slice are still validated so malformed state cannot be
+/// hidden beyond a cursor or capacity boundary.
+pub(super) fn list_operation_directory_batch(
+    root: &Path,
+    after: Option<&str>,
+    maximum: usize,
+) -> Result<OperationDirectoryBatch, AgentdError> {
+    if maximum == 0 || maximum > MAX_RECONCILE_OPERATIONS {
+        return Err(AgentdError::Invalid(
+            "runtime.codex recovery batch is outside the bounded range".to_string(),
+        ));
+    }
+    let retained = maximum.checked_add(1).ok_or_else(|| {
+        AgentdError::Protocol("runtime.codex recovery batch overflow".to_string())
+    })?;
+    let mut selected = BTreeMap::<String, PathBuf>::new();
+    for entry in std::fs::read_dir(root)? {
+        let entry = entry?;
         let name = entry.file_name();
         let name = name.to_str().ok_or_else(|| {
             AgentdError::Protocol("runtime.codex journal entry is not UTF-8".to_string())
@@ -281,15 +302,44 @@ pub(super) fn list_operation_directories(root: &Path) -> Result<Vec<PathBuf>, Ag
                 entry.path().display()
             )));
         }
-        directories.push(entry.path());
+        if after.is_some_and(|cursor| name <= cursor) {
+            continue;
+        }
+        selected.insert(name.to_string(), entry.path());
+        if selected.len() > retained {
+            selected.pop_last();
+        }
     }
-    if directories.len() > MAX_RECONCILE_OPERATIONS {
+    let has_more = selected.len() > maximum;
+    if has_more {
+        selected.pop_last();
+    }
+    let directories = selected.into_values().collect::<Vec<_>>();
+    let next_after = if has_more {
+        directories
+            .last()
+            .and_then(|path| path.file_name())
+            .and_then(std::ffi::OsStr::to_str)
+            .map(str::to_owned)
+    } else {
+        None
+    };
+    Ok(OperationDirectoryBatch {
+        directories,
+        next_after,
+    })
+}
+
+/// Compatibility helper for focused tests and callers that require one complete
+/// bounded set. Production recovery and archive maintenance use cursor batches.
+pub(super) fn list_operation_directories(root: &Path) -> Result<Vec<PathBuf>, AgentdError> {
+    let batch = list_operation_directory_batch(root, None, MAX_RECONCILE_OPERATIONS)?;
+    if batch.next_after.is_some() {
         return Err(AgentdError::Protocol(format!(
-            "runtime.codex recovery found {} active operations, exceeding the bounded scan of {MAX_RECONCILE_OPERATIONS}",
-            directories.len()
+            "runtime.codex recovery exceeds one bounded batch of {MAX_RECONCILE_OPERATIONS} operations"
         )));
     }
-    Ok(directories)
+    Ok(batch.directories)
 }
 
 /// Move a bounded number of terminal operations out of the active recovery
@@ -311,51 +361,70 @@ pub(super) fn archive_terminal_operations(
     require_canonical_directory(&archive, "runtime.codex terminal archive")?;
     require_canonical_directory(&witnesses, "runtime.codex terminal witness root")?;
     let mut archived = 0_usize;
-    for directory in list_operation_directories(root)? {
-        if archived == maximum {
+    let mut after = None;
+    loop {
+        let batch =
+            list_operation_directory_batch(root, after.as_deref(), MAX_RECONCILE_OPERATIONS)?;
+        if batch.directories.is_empty() {
             break;
         }
-        let paths = OperationPaths::for_directory(&directory);
-        let manifest = read_manifest(&paths.manifest)?;
-        validate_manifest_owner(&manifest, owner, worker_digest)?;
-        let Some(receipt) = read_receipt_if_present(&paths.receipt, &manifest)? else {
-            continue;
-        };
-        let key = operation_key(&manifest.run_id);
-        let expected_directory = root.join(&key);
-        if directory != expected_directory {
-            return Err(AgentdError::Protocol(
-                "runtime.codex active operation directory does not match its run identity"
-                    .to_string(),
-            ));
-        }
-        let destination = archive.join(&key);
-        if destination.exists() {
-            return Err(AgentdError::Protocol(
-                "runtime.codex terminal archive destination already exists".to_string(),
-            ));
-        }
-        let witness = witness_path(root, &key);
-        let expected_witness = terminal_witness(&manifest, &receipt)?;
-        match write_new_json(&witness, &expected_witness) {
-            Ok(()) => sync_directory(&witnesses)?,
-            Err(AgentdError::Io(error)) if error.kind() == std::io::ErrorKind::AlreadyExists => {
-                let observed: RuntimeCodexTerminalWitnessV1 =
-                    read_bounded_json(&witness, 16 * 1024)?;
-                if observed != expected_witness {
-                    return Err(AgentdError::Protocol(
-                        "runtime.codex terminal witness conflicts with active receipt".to_string(),
-                    ));
-                }
+        let OperationDirectoryBatch {
+            directories,
+            next_after,
+        } = batch;
+        for directory in directories {
+            if archived == maximum {
+                return Ok(archived);
             }
-            Err(error) => return Err(error),
+            let paths = OperationPaths::for_directory(&directory);
+            let manifest = read_manifest(&paths.manifest)?;
+            validate_manifest_owner(&manifest, owner, worker_digest)?;
+            let Some(receipt) = read_receipt_if_present(&paths.receipt, &manifest)? else {
+                continue;
+            };
+            let key = operation_key(&manifest.run_id);
+            let expected_directory = root.join(&key);
+            if directory != expected_directory {
+                return Err(AgentdError::Protocol(
+                    "runtime.codex active operation directory does not match its run identity"
+                        .to_string(),
+                ));
+            }
+            let destination = archive.join(&key);
+            if destination.exists() {
+                return Err(AgentdError::Protocol(
+                    "runtime.codex terminal archive destination already exists".to_string(),
+                ));
+            }
+            let witness = witness_path(root, &key);
+            let expected_witness = terminal_witness(&manifest, &receipt)?;
+            match write_new_json(&witness, &expected_witness) {
+                Ok(()) => sync_directory(&witnesses)?,
+                Err(AgentdError::Io(error))
+                    if error.kind() == std::io::ErrorKind::AlreadyExists =>
+                {
+                    let observed: RuntimeCodexTerminalWitnessV1 =
+                        read_bounded_json(&witness, 16 * 1024)?;
+                    if observed != expected_witness {
+                        return Err(AgentdError::Protocol(
+                            "runtime.codex terminal witness conflicts with active receipt"
+                                .to_string(),
+                        ));
+                    }
+                }
+                Err(error) => return Err(error),
+            }
+            std::fs::rename(&directory, &destination)?;
+            sync_directory(&archive)?;
+            sync_directory(root)?;
+            archived = archived.checked_add(1).ok_or_else(|| {
+                AgentdError::Protocol("runtime.codex archive counter overflow".to_string())
+            })?;
         }
-        std::fs::rename(&directory, &destination)?;
-        sync_directory(&archive)?;
-        sync_directory(root)?;
-        archived = archived.checked_add(1).ok_or_else(|| {
-            AgentdError::Protocol("runtime.codex archive counter overflow".to_string())
-        })?;
+        match next_after {
+            Some(cursor) => after = Some(cursor),
+            None => break,
+        }
     }
     Ok(archived)
 }
@@ -622,6 +691,17 @@ pub(super) fn unix_time_ms() -> Result<u64, AgentdError> {
         .as_millis();
     u64::try_from(millis)
         .map_err(|_| AgentdError::Protocol("system clock exceeds u64 milliseconds".to_string()))
+}
+
+/// Return a best-effort operational age for diagnostics. Filesystem metadata is
+/// not an execution identity and is never consulted for replay or terminality.
+pub(super) fn operation_observed_age_ms(path: &Path) -> Result<u64, AgentdError> {
+    let modified = std::fs::metadata(path)?.modified()?;
+    let age = SystemTime::now()
+        .duration_since(modified)
+        .unwrap_or_default()
+        .as_millis();
+    Ok(u64::try_from(age).unwrap_or(u64::MAX))
 }
 
 fn remaining_timeout_ms(deadline_ms: u64) -> Result<u64, AgentdError> {

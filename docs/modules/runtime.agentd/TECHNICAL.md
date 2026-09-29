@@ -88,6 +88,10 @@ The default daemon in `codex-rs/hepta-agentd/src/runtime.rs` supervises its task
 
 Typed owner attachments in `AgentdState` remain explicit fields. `RuntimeTasks` does not load plugins, issue authority, select topology, migrate a schema or hand off a durable writer. The typed runtime catalog and the standalone Supervisor module-lifecycle source are not evidence that default Agentd implements arbitrary live topology replacement. Canonical intelligence is now routed through the existing authenticated `ObjectiveStart` control ingress only when both the bounded runner and a host-owned seven-owner invocation provider are installed. That all-or-none profile advertises `intelligence.canonical_v1`. Default daemon startup now rejects a lone runner/provider before opening services, and a complete pair also requires explicit Objective profile, AuthBus trust and replay checkpoint. The final ingress rejects a half-attached pair rather than falling back. Only a profile with neither component remains compatibility mode; unsigned evaluation input remains rejected.
 
+The physical `runtime.codex` owner is an explicit `RuntimeCodexSupervisorHandleV1`, not a process-global installation slot. The typed bootstrap places one inert handle in `AgentdConfig`; `runtime::run` attaches the same instance to `AgentdState` and moves its owner future into the required `RuntimeTasks` set only after fallible trust, store and control-socket initialization succeeds. One handle is fail-stop after its owner starts, while independent embeddings and tests may construct separate handles in the same process without sharing admission, queue, failure or recovery state. This is instance ownership, not dynamic plugin loading or a second supervisor.
+
+Periodic recovery and terminal archival run in a separately joined required maintenance task. They cannot monopolize queue admission or job completion handling. The task uses cancellation-aware per-run lock acquisition, bounded cursor batches and blocking-file maintenance outside the async scheduler. Shutdown closes the admission gate, accounts for reserved and already-dequeued work, joins physical jobs, then joins maintenance and performs a final archive pass while retaining the first observed error.
+
 Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
 
 ### Multiscale DecisionCell integration target
@@ -246,6 +250,10 @@ Projection domains rebuild from declared sources and publish complete generation
 
 The run map is intentionally ephemeral and is not a second durable execution ledger. After process loss an external durable execution owner may supply the exact prior snapshot/revision/context/receipt identity through the recovery method; Agentd rehydrates it only as `Indeterminate`. No restart path may infer completion or redispatch from an absent local record.
 
+Canonical scheduling reserves bounded queue capacity before owner preparation mutates the coordinator. Slow input construction occurs outside the admission mutex; the final send rechecks the same instance's closed/readiness state and active semantic identity under the admission boundary. Shutdown linearizes against that gate, so a permit acquired before closure cannot become an unowned successful admission. A schedule rejection rolls back only the exact pre-dispatch coordinator revision through the owner-local state method and never recurses through the asynchronous Objective ingress.
+
+Recovery scans active operation directories through deterministic bounded cursor pages. Per-run execution and reconciliation retain keyed serialization, but lock waits are cancellation-aware. Terminal archival preserves the existing witness-before-rename, directory-sync and no-replay order; paging changes memory and scheduling behavior only, not durable identity or fsync semantics.
+
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
 ### Durable run-start projection
@@ -272,14 +280,18 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
+`codex-rs/hepta-agentd/DEPENDENCY_BOUNDARY.json` classifies the exact Cargo dependency inventory as core runtime, platform support, product adapters or development-only dependencies. `scripts/qualification/runtime_agentd_dependency_boundary.py` fails on inventory drift, relabelling a product adapter as core, implicit production-writer activation or an unsupported claim that adapters are already optional. The current truthful state is: default features are read/reconcile-only, but a core-only Cargo profile and optional `product-adapters` feature are **not yet established**. Any later split must retain the same owner and execution semantics and obtain independent compilation evidence for core-only and named-product profiles.
+
 The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.agentd.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-agentd/src/production_writer_host.rs](../../../codex-rs/hepta-agentd/src/production_writer_host.rs) and the linked implementation components.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-codex-hepta-agentd starts from AgentdConfig::from_process_environment; the optional --authbus-trust-file is protected host configuration. `HEPTA_COGNITIVE_RETRIEVAL_MODE` is a strict product-profile selector: absent/`compatibility` selects the compatibility path, `hnmf-required` selects HNMF-required mode, and any other value is rejected. The ordinary binary does not mint a `CurrentMemoryRetrievalContext`, so HNMF-required startup without an externally composed current context fails closed. The supervisor supplies the owner identity/generation and existing memory store. Stop new admissions before owner drain; an App Server interruption acknowledgement alone is not terminal task completion.
+codex-hepta-agentd starts from AgentdConfig::from_process_environment; `--authbus-trust-file` and `--authbus-checkpoint-file` are paired protected-host configuration and either one without the other is rejected. `HEPTA_COGNITIVE_RETRIEVAL_MODE` is a strict product-profile selector: absent/`compatibility` selects the compatibility path, `hnmf-required` selects HNMF-required mode, and any other value is rejected. The ordinary binary does not mint a `CurrentMemoryRetrievalContext`, so HNMF-required startup without an externally composed current context fails closed. The supervisor supplies the owner identity/generation and existing memory store. Stop new admissions before owner drain; an App Server interruption acknowledgement alone is not terminal task completion.
 The local control capability endpoint advertises the additive run lifecycle surface. SIGINT, SIGTERM, and supervisor Draining close run admission before teardown; terminal observation remains possible during the bounded drain/reconciliation window. An App Server interruption acknowledgement alone is never terminal task completion.
+
+The runtime.codex snapshot is intended to answer operational questions directly. It distinguishes reserved, queued and running work; oldest queued age; recovery-in-progress, scan count, duration and lock-wait time; prepared-unfenced and dispatch-fenced unresolved counts and ages; terminal records pending archive; archive progress; persistence and shutdown failures; and admission rejection counts for closed, not-ready, capacity, input and identity causes. `admission_blocker` is a compact current explanation, not a replacement for those counters or durable owner inspection.
 
 Current operating and state-format references:
 
@@ -297,6 +309,9 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs](../../../codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs) covers complete frozen-tuple binding, post-admission deadlines, reasoned cancellation, drain and explicit indeterminate recovery.
 - [codex-rs/hepta-agentd/src/state_isolation_tests.rs](../../../codex-rs/hepta-agentd/src/state_isolation_tests.rs) exercises the lifecycle methods through the real daemon control dispatch and verifies capability advertisement and terminal reconciliation during drain.
 - [codex-rs/hepta-agentd/src/runtime_tests.rs](../../../codex-rs/hepta-agentd/src/runtime_tests.rs) verifies that bounded shutdown keeps reconciliation live until terminal observation.
+- [codex-rs/hepta-agentd/src/runtime_codex_executor_tests.rs](../../../codex-rs/hepta-agentd/src/runtime_codex_executor_tests.rs) verifies independent supervisor instances, exact duplicate/no-redispatch behavior, terminal witnesses, cancellation-aware recovery and bounded directory paging.
+- [codex-rs/hepta-infer-worker-host/tests/native_host_process_e2e.rs](../../../codex-rs/hepta-infer-worker-host/tests/native_host_process_e2e.rs) invokes the actual worker binary and verifies fail-closed startup without a protected product profile.
+- `scripts/qualification/test_runtime_agentd_dependency_boundary.py` and `scripts/test_hepta_agentd_trust_boundary.py` ratchet dependency and RunStart authority boundaries.
 - [codex-rs/hepta-agentd/src/cognitive_context_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_tests.rs); named case: `context_reads_real_owner_content_and_removes_committed_tombstones`.
 - [codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs](../../../codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs); named case: `lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt`.
 

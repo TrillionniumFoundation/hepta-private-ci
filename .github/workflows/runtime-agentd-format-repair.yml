@@ -1,128 +1,36 @@
-name: Runtime Agentd source export
+name: Runtime Agentd formatting verification
 
-# This temporary exporter applies one reviewed, content-addressed source tree,
-# formats it with the pinned repository toolchain, verifies the source contracts,
-# and uploads the exact staged patch. A repository connector with workflow-write
-# authority publishes that verified tree; the Actions token is deliberately read-only.
 on:
   push:
     branches:
       - work/runtime-agentd-production-closure-20260928
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-agentd/**'
+      - '.github/workflows/runtime-agentd-format-repair.yml'
 
 permissions:
   contents: read
 
 concurrency:
-  group: runtime-agentd-export-${{ github.ref }}
-  cancel-in-progress: true
+  group: runtime-agentd-format-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  export:
-    if: github.actor != 'github-actions[bot]'
-    runs-on: ubuntu-slim
-    timeout-minutes: 15
-    env:
-      BASE_SHA: 3f6b49355947c3cddaaa89198cbf17b66d46c2fa
-      PATCH_SHA256: 60b54679710d460f3be18a74a7760d034fbf281afa387f9107fbda1212d617eb
-      PATCH_GLOB: .github/runtime-agentd-source.patch.b64.part*
-      CARGO_INCREMENTAL: '0'
-      CARGO_PROFILE_TEST_DEBUG: '0'
-      CARGO_PROFILE_DEV_DEBUG: '0'
+  format:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
     steps:
-      - name: Checkout immutable carrier
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
-          fetch-depth: 128
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
-
-      - name: Verify scope and apply the exact patch
+      - name: Install exact Rust formatter
         shell: bash
         run: |
           set -euo pipefail
-          git merge-base --is-ancestor "$BASE_SHA" HEAD
-          unexpected=$(git diff --name-only "$BASE_SHA" HEAD | grep -Ev '^(\.github/runtime-agentd-source\.patch\.b64\.part[0-9]+|\.github/workflows/runtime-agentd-apply-instance-patch\.yml|\.github/workflows/runtime-agentd-format-repair\.yml)$' || true)
-          test -z "$unexpected"
-          cat $PATCH_GLOB | tr -d '\n' | base64 -d > "$RUNNER_TEMP/runtime-agentd-source.patch.gz"
-          printf '%s  %s\n' "$PATCH_SHA256" "$RUNNER_TEMP/runtime-agentd-source.patch.gz" | sha256sum -c -
-          gzip -dc "$RUNNER_TEMP/runtime-agentd-source.patch.gz" > "$RUNNER_TEMP/runtime-agentd-source.patch"
-          git apply --check "$RUNNER_TEMP/runtime-agentd-source.patch"
-          git apply "$RUNNER_TEMP/runtime-agentd-source.patch"
-          python3 -c 'from pathlib import Path; p=Path("codex-rs/hepta-agentd/src/neuron_runtime_tests.rs"); t=p.read_text(encoding="utf-8"); n="\n    fn compare_and_swap(\n"; r="\n    fn admit_new_anchor(\n        &self,\n        _expected: Option<JournalAnchor>,\n    ) -> Result<(), WitnessStoreError> {\n        Ok(())\n    }\n\n    fn compare_and_swap(\n"; assert t.count(n) == 1, "expected exactly one StubWitness insertion point"; p.write_text(t.replace(n, r, 1), encoding="utf-8")'
-          rm .github/runtime-agentd-instance.patch.gz
-          rm .github/runtime-agentd-source.patch.b64.part*
-          rm .github/workflows/runtime-agentd-apply-instance-patch.yml
-          git show "$BASE_SHA:.github/workflows/runtime-agentd-format-repair.yml" > .github/workflows/runtime-agentd-format-repair.yml
-          git diff --check
-
-      - name: Install pinned Rust toolchain
-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
-        with:
-          toolchain: 1.95.0
-          components: rustfmt, rust-src
-
-      - name: Format changed Rust packages
+          toolchain=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
+          rustup toolchain install "$toolchain" --profile minimal --component rustfmt
+      - name: Verify without mutating the candidate
         working-directory: codex-rs
-        run: cargo fmt --manifest-path Cargo.toml --package codex-hepta-agentd --package codex-hepta-infer-worker-host
-
-      - name: Verify source, authority and dependency contracts
-        shell: bash
-        run: |
-          set -euo pipefail
-          git diff --check
-          python3 -B -m unittest discover -s scripts/qualification -p 'test_agentd_exact_head.py' -v
-          python3 -B -m unittest scripts.qualification.test_runtime_agentd_current_status -v
-          python3 -B -m unittest scripts.qualification.test_runtime_agentd_dependency_boundary -v
-          python3 -B -m unittest scripts.test_hepta_agentd_trust_boundary -v
-          python3 -B scripts/qualification/runtime_agentd_dependency_boundary.py --repository .
-          python3 -B scripts/hepta_agentd_trust_boundary.py
-          cargo metadata --locked --manifest-path codex-rs/Cargo.toml --format-version 1 --no-deps > "$RUNNER_TEMP/cargo-metadata.json"
-
-      - name: Verify instance ownership and bounded maintenance source
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-          supervisor = Path("codex-rs/hepta-agentd/src/runtime_codex_supervisor.rs").read_text(encoding="utf-8")
-          runtime = Path("codex-rs/hepta-agentd/src/runtime.rs").read_text(encoding="utf-8")
-          persistence = Path("codex-rs/hepta-agentd/src/runtime_codex_executor_persistence.rs").read_text(encoding="utf-8")
-          assert "static INSTALLATION" not in supervisor, "process-global runtime.codex installation remains"
-          assert "OnceLock" not in supervisor, "runtime.codex supervisor still owns a process-global OnceLock"
-          assert "pub struct RuntimeCodexSupervisorHandleV1" in supervisor
-          assert "run_installed_agentd_supervisor" not in supervisor
-          assert "runtime-codex-supervisor" in runtime
-          assert "supervisor.run(identity.clone(), cancellation.clone())" in runtime
-          assert "archive_terminal_operations" in persistence
-          assert "MAX_RECONCILE_OPERATIONS" in persistence
-          print("PASS_RUNTIME_AGENTD_INSTANCE_OWNERSHIP_AND_BOUNDED_MAINTENANCE")
-          PY
-
-      - name: Export exact staged source patch
-        shell: bash
-        run: |
-          set -euo pipefail
-          git diff --check
-          test -z "$(find .github -maxdepth 1 -name 'runtime-agentd-source.patch.b64.part*' -print -quit)"
-          test ! -e .github/runtime-agentd-instance.patch.gz
-          test ! -e .github/workflows/runtime-agentd-apply-instance-patch.yml
-          git add -A
-          git diff --cached --binary --full-index > "$RUNNER_TEMP/runtime-agentd-published.patch"
-          git diff --cached --name-status > "$RUNNER_TEMP/runtime-agentd-published-files.txt"
-          git write-tree > "$RUNNER_TEMP/runtime-agentd-published-tree.txt"
-          git rev-parse HEAD > "$RUNNER_TEMP/runtime-agentd-carrier-head.txt"
-          sha256sum "$RUNNER_TEMP/runtime-agentd-published.patch" > "$RUNNER_TEMP/runtime-agentd-published.patch.sha256"
-          test -s "$RUNNER_TEMP/runtime-agentd-published.patch"
-
-      - name: Upload connector-ready verified source
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: runtime-agentd-source-export-${{ github.run_id }}-${{ github.run_attempt }}
-          path: |
-            ${{ runner.temp }}/runtime-agentd-published.patch
-            ${{ runner.temp }}/runtime-agentd-published-files.txt
-            ${{ runner.temp }}/runtime-agentd-published-tree.txt
-            ${{ runner.temp }}/runtime-agentd-carrier-head.txt
-            ${{ runner.temp }}/runtime-agentd-published.patch.sha256
-          if-no-files-found: error
-          retention-days: 14
+        run: cargo fmt --manifest-path Cargo.toml --package codex-hepta-agentd -- --check
