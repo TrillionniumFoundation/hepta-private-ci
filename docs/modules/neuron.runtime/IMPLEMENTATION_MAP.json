@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "2aa19ac28c27a64db70aabcc7fb7b026ece71d53",
-    "tree": "273d1a5321b1ad5ec9f5222cf2c71e686850d175"
+    "commit": "05bd9524aba117119650f771deabc9e50b279f6c",
+    "tree": "28dbc1c09b125659ad28f0f1de4c524e0e311fae"
   },
   "laneId": "LANE-F-ADAPTIVE-POLICY",
   "module": "neuron.runtime",
@@ -159,7 +159,8 @@
       "tests": [
         "codex-rs/hepta-neuron/src/runtime_v2_closure_tests.rs",
         "scripts/neuron/test_measurements.py",
-        "scripts/neuron/test_qualification_scope.py"
+        "scripts/neuron/test_qualification_scope.py",
+        "codex-rs/hepta-neuron/qualification/test_bakeoff_panel.py"
       ],
       "sourcePathExists": true,
       "designOperation": "qualification_surfaces",
@@ -174,6 +175,11 @@
           "path": ".github/workflows/neuron-runtime-closure.yml",
           "symbol": "Neuron runtime closure qualification",
           "role": "exact_source_and_synthetic_merge_validation"
+        },
+        {
+          "path": "codex-rs/hepta-neuron/qualification/bakeoff_panel.py",
+          "symbol": "run_panel",
+          "role": "isolated_complete_backend_execution_panel_with_retained_failures_not_selection"
         }
       ]
     },
