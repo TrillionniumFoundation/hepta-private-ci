@@ -72,7 +72,7 @@ pub struct MemorySummarizeOutput {
     pub memory_summary: String,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub enum ResponseEvent {
     Created,
     SafetyBuffering(SafetyBuffering),
@@ -122,7 +122,7 @@ pub enum ResponseEvent {
     ModelsEtag(String),
 }
 
-#[derive(Debug, Clone, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]
 pub struct SafetyBuffering {
     pub use_cases: Vec<String>,
     pub reasons: Vec<String>,

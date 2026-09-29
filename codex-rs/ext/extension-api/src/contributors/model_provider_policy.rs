@@ -151,10 +151,62 @@ pub enum ModelProviderTerminal {
     },
 }
 
+/// Secret-free identity of one provider event immediately before Core exposes
+/// it to a downstream response-stream consumer.
+///
+/// The digest is over the versioned, canonical event representation. Raw model
+/// output never crosses the extension boundary. `sequence` is strictly
+/// monotonic for one physical attempt, including events a policy drops.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ModelProviderOutputBatch {
+    pub sequence: u64,
+    pub event_sha256: ModelProviderSha256Digest,
+    pub encoded_bytes: u64,
+}
+
+impl ModelProviderOutputBatch {
+    pub fn validate(&self) -> Result<(), ModelProviderPolicyError> {
+        if self.sequence == 0 || self.encoded_bytes == 0 {
+            return Err(ModelProviderPolicyError::new(
+                "model_provider_output_batch_invalid",
+                "provider output batches require non-zero sequence and encoded size",
+            ));
+        }
+        Ok(())
+    }
+}
+
+/// Per-event release decision. A drop is a truthful local-output fact; it does
+/// not claim that the provider request was cancelled or that earlier bytes were
+/// unobserved.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum ModelProviderOutputDecision {
+    Allow,
+    Drop {
+        reason_code: String,
+        message: String,
+    },
+}
+
 /// Opaque, single-use capability for completing one admitted provider attempt.
 ///
 /// The consuming receiver ensures the host cannot finish the same lease twice.
 pub trait ModelProviderAttemptLease: Send {
+    /// Revalidate one exact event before it becomes observable outside Core.
+    ///
+    /// The default preserves compatibility for policies that do not own an
+    /// output-currentness contract. Security-sensitive contributors override
+    /// this method and fail closed.
+    fn authorize_output<'a>(
+        &'a mut self,
+        batch: ModelProviderOutputBatch,
+    ) -> ModelProviderPolicyFuture<'a, ModelProviderOutputDecision> {
+        Box::pin(async move {
+            batch.validate()?;
+            Ok(ModelProviderOutputDecision::Allow)
+        })
+    }
+
     fn finish(
         self: Box<Self>,
         terminal: ModelProviderTerminal,
