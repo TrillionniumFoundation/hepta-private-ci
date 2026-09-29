@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   converge:
-    runs-on: [self-hosted, linux, x64, rog]
+    runs-on: [self-hosted, linux, x64, pocket4]
     timeout-minutes: 45
     steps:
       - name: Check out exact branch head
