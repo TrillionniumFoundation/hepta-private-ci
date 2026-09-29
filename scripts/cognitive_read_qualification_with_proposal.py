@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Run immutable qualification and attach a non-authoritative repair sidecar.
 
-The qualification gates remain read-only over the exact checked-out commit.  A
+The qualification gates remain read-only over the exact checked-out commit. A
 separate detached worktree may generate a patch proposal for operator review;
 that sidecar is explicitly excluded from qualification, acceptance, activation
 and release claims.
@@ -45,8 +45,17 @@ def emit(root: Path, evidence: Path, candidate: str, kind: str, output: Path) ->
     return passed
 
 
-qualification.base.emit = emit
+def main() -> None:
+    # Older candidate sources install the full-suite overrides at import time.
+    # Newer repaired sources expose an explicit installer so unit-test imports
+    # remain isolated. Support both without allowing the wrapper to fall back to
+    # the smaller base suite after a repair proposal is applied.
+    install = getattr(qualification, "install_base_overrides", None)
+    if install is not None:
+        install()
+    qualification.base.emit = emit
+    qualification.base.main()
 
 
 if __name__ == "__main__":
-    qualification.base.main()
+    main()
