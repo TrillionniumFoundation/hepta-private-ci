@@ -1,8 +1,10 @@
-//! Exact-ID materialization through the existing owner page implementation.
+//! Exact-ID materialization through the existing durable owner.
 //! This is a read-only value, not another store, authorization cache or lease.
 
 #[path = "cognitive_read_compact_product.rs"]
 mod compact_product;
+#[path = "lane_c_scope_witness.rs"]
+mod witness;
 
 use std::collections::BTreeSet;
 
@@ -18,7 +20,6 @@ use sqlx::sqlite::SqliteRow;
 
 use super::CognitiveOwnerFrontiers;
 use super::DurableCognitiveSnapshot;
-use super::MAX_LANE_C_SNAPSHOT_PAGE_HEADS;
 use super::corrupt;
 use super::push_stable_id;
 use crate::CognitiveAccess;
@@ -111,9 +112,10 @@ impl DurableCognitiveSelectionSnapshot {
 }
 
 impl CognitiveStore {
-    /// Read the requested heads through the same bounded page/ancestry code.
-    /// Whole-scope historical row counts are witnesses, not materialization
-    /// ceilings. A complete selected ancestry/citation overflow still errors.
+    /// Read exact current heads through one indexed owner scope witness and
+    /// complete selected ancestry. Whole-scope history is not materialized or
+    /// rescanned. The witness and selected rows come from the same SQLite read
+    /// transaction and remain authority-free.
     pub async fn lane_c_snapshot_ids(
         &self,
         access: &CognitiveAccess,
@@ -123,31 +125,7 @@ impl CognitiveStore {
     ) -> Result<DurableCognitiveSelectionSnapshot, CognitiveStoreError> {
         self.authorize(access, scope)?;
         let ids = checked_ids(record_ids)?;
-        let page = self
-            .lane_c_snapshot_page_inner(
-                access,
-                scope,
-                now_unix_seconds,
-                MAX_LANE_C_SNAPSHOT_PAGE_HEADS as u32,
-                /*after*/ None,
-                Some(&ids),
-            )
-            .await?;
-        if !page.complete || page.after.is_some() || page.next.is_some() {
-            return Err(corrupt("exact-ID owner materialization was incomplete"));
-        }
-        let snapshot =
-            build_snapshot(generation(&page.frontiers)?, page.records).map_err(corrupt)?;
-        Ok(DurableCognitiveSelectionSnapshot {
-            owner: DurableCognitiveSnapshot {
-                scope_id: page.scope_id,
-                frontiers: page.frontiers,
-                snapshot,
-                observed_at_unix_seconds: page.observed_at_unix_seconds,
-            },
-            record_ids: ids,
-            owner_state_digest: page.owner_state_digest,
-        })
+        witness::load_selection(self, scope, now_unix_seconds, &ids).await
     }
 
     pub async fn revalidate_lane_c_selection(
@@ -202,9 +180,9 @@ fn generation(frontiers: &CognitiveOwnerFrontiers) -> Result<Generation, Cogniti
     .map_err(corrupt)
 }
 
-/// Supplement the existing ID/revision head digest with current eligibility.
-/// The legacy page digest stays unchanged. Exact cuts additionally bind this
-/// witness, so even an unselected head's expiry or metadata drift invalidates it.
+/// Supplement the legacy page path's ID/revision head digest with current
+/// eligibility. General paged reads retain this scan-based compatibility path;
+/// request-hot exact-ID reads use the indexed owner witness above.
 pub(super) fn advance_head_state(
     prior: Digest32,
     row: &SqliteRow,
