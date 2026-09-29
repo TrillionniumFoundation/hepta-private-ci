@@ -1,0 +1,85 @@
+--- a/codex-rs/hepta-compact-engine/src/durable.rs
++++ b/codex-rs/hepta-compact-engine/src/durable.rs
+@@ -1024,9 +1024,14 @@
+     .await?;
+     match active {
+         None => {
+-            if bundle.generation != 1 || bundle.predecessor_checkpoint_digest.is_some() {
++            // The local durable lineage may start from any positive generation
++            // already proven by the authoritative Lane C snapshot. Requiring
++            // generation one here contradicts the kernel contract when this
++            // owner materializes a later externally retained generation. The
++            // local root still must not invent a predecessor.
++            if bundle.generation == 0 || bundle.predecessor_checkpoint_digest.is_some() {
+                 return Err(conflict(
+-                    "first durable checkpoint must be generation one with no predecessor",
++                    "first durable checkpoint must be a positive generation with no predecessor",
+                 ));
+             }
+             sqlx::query(
+--- a/codex-rs/hepta-compact-engine/src/product_e2e_tests.rs
++++ b/codex-rs/hepta-compact-engine/src/product_e2e_tests.rs
+@@ -479,7 +479,7 @@
+     let temp = TempDir::new().expect("temp dir");
+     let url = database_url(&temp);
+ 
+-    let first = sealed_publication(&fixture, &["memory:e2e:a"], 1, 1, None, "first");
++    let first = sealed_publication(&fixture, &["memory:e2e:a"], 1, 2, None, "first");
+     let first_checkpoint = first.candidate().checkpoint().checkpoint_digest;
+     let coordinator = MemoryCheckpointCoordinatorV2::open(
+         &url,
+@@ -517,7 +517,7 @@
+         .await
+         .expect("recover first checkpoint")
+         .expect("first checkpoint exists");
+-    assert_eq!(recovered.generation(), 1);
++    assert_eq!(recovered.generation(), 2);
+     assert_eq!(recovered.checkpoint_digest(), first_checkpoint);
+     recovered
+         .publication()
+@@ -530,7 +530,7 @@
+         &fixture,
+         &["memory:e2e:a", "memory:e2e:b"],
+         2,
+-        2,
++        3,
+         Some(first_checkpoint),
+         "second",
+     );
+@@ -544,7 +544,7 @@
+         .await
+         .expect("recover latest checkpoint")
+         .expect("latest checkpoint exists");
+-    assert_eq!(latest.generation(), 2);
++    assert_eq!(latest.generation(), 3);
+     assert_eq!(latest.checkpoint_digest(), second_checkpoint);
+     assert_eq!(
+         latest
+--- a/codex-rs/hepta-memory/src/cognitive_store_recovery.rs
++++ b/codex-rs/hepta-memory/src/cognitive_store_recovery.rs
+@@ -93,6 +93,14 @@
+ }
+ 
+ impl CognitiveStore {
++    /// Close every pooled SQLite connection before releasing the filesystem
++    /// recovery fence. Exact-cut recovery callers must use this instead of
++    /// relying on asynchronous pool drop, because WAL/SHM teardown can race
++    /// descriptor-bound identity capture.
++    pub async fn close(self) {
++        self.pool.close().await;
++    }
++
+     /// Capture one coherent bounded owner cut. The host retains/authenticates it
+     /// independently; this method does not publish an acknowledgement witness.
+     pub async fn recovery_anchor(&self) -> Result<CognitiveRecoveryAnchor, CognitiveStoreError> {
+--- a/codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs
++++ b/codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs
+@@ -143,7 +143,7 @@
+ 
+     let store = DurableCognitiveStore::open(&config.identity().layout).await?;
+     let expected = store.recovery_anchor().await?;
+-    drop(store);
++    store.close().await;
+ 
+     let authority = ProductionAuthorityLease::from_verified_parts(
+         owner.clone(),
