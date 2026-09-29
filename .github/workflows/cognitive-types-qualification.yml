@@ -115,10 +115,49 @@ jobs:
     if: ${{ always() }}
     needs: [resolve, qualify]
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
     steps:
-      - env:
+      - id: checkout
+        if: ${{ needs.resolve.result == 'success' }}
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.resolve.outputs.source }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Download this attempt's separate fixed-source artifacts
+        if: ${{ always() && steps.checkout.outcome == 'success' }}
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: cognitive-types-*-${{ needs.resolve.outputs.source }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cognitive-types-matrix
+          merge-multiple: false
+      - name: Verify identities, complete command plans and exact log bytes
+        id: evidence
+        if: ${{ always() && steps.checkout.outcome == 'success' }}
+        env:
+          SOURCE_SHA: ${{ needs.resolve.outputs.source }}
+          BASE_SHA: ${{ needs.resolve.outputs.base }}
+        run: |
+          python3 qualification/cognitive-types-v1/verify_receipts.py \
+            --source "$SOURCE_SHA" --base "$BASE_SHA" \
+            --evidence "$RUNNER_TEMP/cognitive-types-matrix" \
+            --output "$RUNNER_TEMP/cognitive-types-verified/matrix.json"
+      - name: Require both execution success and verified evidence
+        if: ${{ always() }}
+        env:
           IDENTITY_RESULT: ${{ needs.resolve.result }}
           MATRIX_RESULT: ${{ needs.qualify.result }}
+          EVIDENCE_RESULT: ${{ steps.evidence.outcome }}
         run: |
+          set -euo pipefail
           test "$IDENTITY_RESULT" = success
           test "$MATRIX_RESULT" = success
+          test "$EVIDENCE_RESULT" = success
+      - name: Preserve the aggregate decision, including refusals
+        if: ${{ always() && steps.checkout.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cognitive-types-verified-${{ needs.resolve.outputs.source }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cognitive-types-verified
+          if-no-files-found: error
+          retention-days: 30

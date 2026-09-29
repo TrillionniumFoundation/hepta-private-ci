@@ -15,6 +15,7 @@ import sys
 import time
 
 SHA = re.compile(r"[0-9a-f]{40}")
+CHECK_PLAN_VERSION = 1
 GROUPS = {
     "native": ["codex-hepta-cognitive-types"],
     "consumers": ["codex-hepta-cognitive-read", "codex-hepta-cognitive-store",
@@ -28,14 +29,13 @@ def git(root: Path, *args: str, env: dict[str, str] | None = None) -> str:
     return subprocess.check_output(["git", *args], cwd=root, env=env, text=True).strip()
 
 
-def prepare_candidate(root: Path, source: str, base: str, kind: str) -> dict:
+def resolve_candidate(root: Path, source: str, base: str, kind: str) -> dict:
+    """Resolve immutable identities without checking out or changing source files."""
     if not SHA.fullmatch(source) or not SHA.fullmatch(base):
         raise ValueError("source and base must be full immutable commit SHAs")
     for commit in (source, base):
         if git(root, "rev-parse", commit + "^{commit}") != commit:
             raise ValueError("commit identity mismatch")
-    if git(root, "status", "--porcelain", "--untracked-files=all"):
-        raise ValueError("candidate preparation requires a clean worktree")
     identity = {
         "source_commit": source, "source_tree": git(root, "rev-parse", source + "^{tree}"),
         "base_commit": base, "base_tree": git(root, "rev-parse", base + "^{tree}"),
@@ -59,14 +59,40 @@ def prepare_candidate(root: Path, source: str, base: str, kind: str) -> dict:
                         "-m", "Deterministic cognitive.types qualification merge", env=env)
     else:
         raise ValueError("unknown candidate kind")
-    git(root, "checkout", "--detach", candidate)
-    actual = git(root, "rev-parse", "HEAD")
-    parents = git(root, "show", "-s", "--format=%P", "HEAD").split()
-    if actual != candidate or (kind == "synthetic-merge" and parents != [base, source]):
-        raise ValueError("candidate commit or ordered parents drifted")
-    identity.update(candidate_commit=actual, candidate_tree=git(root, "rev-parse", "HEAD^{tree}"),
+    parents = git(root, "show", "-s", "--format=%P", candidate).split()
+    if kind == "synthetic-merge" and parents != [base, source]:
+        raise ValueError("candidate ordered parents drifted")
+    identity.update(candidate_commit=candidate,
+                    candidate_tree=git(root, "rev-parse", candidate + "^{tree}"),
                     parents=parents, identity_valid=True)
     return identity
+
+
+def prepare_candidate(root: Path, source: str, base: str, kind: str) -> dict:
+    if git(root, "status", "--porcelain", "--untracked-files=all"):
+        raise ValueError("candidate preparation requires a clean worktree")
+    identity = resolve_candidate(root, source, base, kind)
+    git(root, "checkout", "--detach", identity["candidate_commit"])
+    if (git(root, "rev-parse", "HEAD") != identity["candidate_commit"]
+            or git(root, "rev-parse", "HEAD^{tree}") != identity["candidate_tree"]):
+        raise ValueError("checked-out candidate identity drifted")
+    return identity
+
+
+def file_sha256(path: Path) -> str:
+    """Hash complete logs with bounded memory, without changing their bytes."""
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def log_tail(path: Path) -> str:
+    with path.open("rb") as stream:
+        stream.seek(0, os.SEEK_END)
+        stream.seek(max(0, stream.tell() - 32_000))
+        return stream.read(32_000).decode("utf-8", errors="replace")[-8000:]
 
 
 def run_check(name: str, argv: list[str], cwd: Path, output: Path, timeout: int = 1800) -> dict:
@@ -97,10 +123,10 @@ def run_check(name: str, argv: list[str], cwd: Path, output: Path, timeout: int 
             error = f"{type(exc).__name__}: {exc}"
             stream.write((error + "\n").encode())
             status = "infrastructure_invalid"
-    digest = hashlib.sha256(log.read_bytes()).hexdigest()
+    digest = file_sha256(log)
     print(f"{name}: {status} (exit={code}; log_sha256={digest})", flush=True)
     if status != "passed":
-        print(log.read_text(errors="replace")[-8000:], flush=True)
+        print(log_tail(log), flush=True)
     return {"name": name, "argv": argv, "cwd": str(cwd), "exit_code": code,
             "status": status, "started_unix_ns": started, "finished_unix_ns": time.time_ns(),
             "log": log.name, "log_sha256": digest, "error": error}
@@ -142,8 +168,20 @@ def command_plan(root: Path, group: str, output: Path) -> list[tuple[str, list[s
 
 def finish_receipt(receipt: dict, output: Path) -> bool:
     checks = receipt.get("checks", [])
-    passed = bool(checks) and receipt.get("identity_valid") is True and all(
-        check["status"] == "passed" for check in checks)
+    group = receipt.get("group")
+    expected = ([name for name, _, _ in command_plan(Path("/candidate"), group, Path("/evidence"))]
+                + ["clean-tree"]) if group in GROUPS else []
+    # A nonempty passing prefix is not a complete qualification. Require the
+    # exact reviewed plan, one outcome per command, and the final clean cut.
+    passed = (bool(expected) and receipt.get("identity_valid") is True
+              and receipt.get("check_plan_version") == CHECK_PLAN_VERSION
+              and isinstance(checks, list)
+              and all(isinstance(check, dict) for check in checks)
+              and [check.get("name") for check in checks] == expected
+              and all(check.get("status") == "passed"
+                      and type(check.get("exit_code")) is int and check["exit_code"] == 0
+                      and check.get("error") is None for check in checks)
+              and checks[-1].get("porcelain") == "")
     receipt["qualification_passed"] = passed
     receipt["product_acceptance"] = False
     receipt["activation"] = False
@@ -168,6 +206,9 @@ def main() -> int:
     if output == root or root in output.parents:
         parser.error("receipts must be outside the source worktree")
     receipt = {"schema": "hepta.cognitive-types.readonly-execution.v1", "group": args.group,
+               "check_plan_version": CHECK_PLAN_VERSION,
+               "source_worktree": str(root), "evidence_directory": str(output),
+               "python_executable": sys.executable,
                "workflow_sha": os.environ.get("GITHUB_WORKFLOW_SHA"),
                "workflow_ref": os.environ.get("GITHUB_WORKFLOW_REF"),
                "run_id": os.environ.get("GITHUB_RUN_ID"),

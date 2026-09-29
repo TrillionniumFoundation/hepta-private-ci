@@ -261,20 +261,15 @@ pub fn bind_memory_event_consumer_v1(
     compatibility_payload_sha256: Option<Digest32>,
     migration_posture: CanonicalMigrationPostureV1,
 ) -> Result<CanonicalConsumerBindingV1, CanonicalConsumerBindingError> {
-    let payload = canonical_contract_digest_v1(event)
-        .map_err(|error| CanonicalConsumerBindingError::CanonicalContract(error.to_string()))?;
-    CanonicalConsumerBindingV1::seal(CanonicalConsumerBindingV1 {
+    bind_consumer_v1(
         operation_id,
         consumer,
-        payload_kind: CanonicalPayloadKindV1::MemoryEvent,
-        canonical_payload_sha256: digest(payload)?,
-        source_identity_sha256: digest(source_identity_sha256)?,
-        source_snapshot_sha256: digest(source_snapshot_sha256)?,
-        compatibility_payload_sha256: compatibility_payload_sha256.map(digest).transpose()?,
+        event,
+        source_identity_sha256,
+        source_snapshot_sha256,
+        compatibility_payload_sha256,
         migration_posture,
-        currentness_revalidation_required: true,
-        binding_sha256: digest(payload)?,
-    })
+    )
 }
 
 pub fn bind_recall_packet_consumer_v1(
@@ -286,20 +281,15 @@ pub fn bind_recall_packet_consumer_v1(
     compatibility_payload_sha256: Option<Digest32>,
     migration_posture: CanonicalMigrationPostureV1,
 ) -> Result<CanonicalConsumerBindingV1, CanonicalConsumerBindingError> {
-    let payload = canonical_contract_digest_v1(packet)
-        .map_err(|error| CanonicalConsumerBindingError::CanonicalContract(error.to_string()))?;
-    CanonicalConsumerBindingV1::seal(CanonicalConsumerBindingV1 {
+    bind_consumer_v1(
         operation_id,
         consumer,
-        payload_kind: CanonicalPayloadKindV1::RecallPacket,
-        canonical_payload_sha256: digest(payload)?,
-        source_identity_sha256: digest(source_identity_sha256)?,
-        source_snapshot_sha256: digest(source_snapshot_sha256)?,
-        compatibility_payload_sha256: compatibility_payload_sha256.map(digest).transpose()?,
+        packet,
+        source_identity_sha256,
+        source_snapshot_sha256,
+        compatibility_payload_sha256,
         migration_posture,
-        currentness_revalidation_required: true,
-        binding_sha256: digest(payload)?,
-    })
+    )
 }
 
 pub fn bind_forget_receipt_consumer_v1(
@@ -311,19 +301,60 @@ pub fn bind_forget_receipt_consumer_v1(
     compatibility_payload_sha256: Option<Digest32>,
     migration_posture: CanonicalMigrationPostureV1,
 ) -> Result<CanonicalConsumerBindingV1, CanonicalConsumerBindingError> {
-    let payload = canonical_contract_digest_v1(receipt)
+    bind_consumer_v1(
+        operation_id,
+        consumer,
+        receipt,
+        source_identity_sha256,
+        source_snapshot_sha256,
+        compatibility_payload_sha256,
+        migration_posture,
+    )
+}
+
+// Private family mapping keeps the three public constructors on one checked
+// field-construction path. It is not a new wire contract or consumer registry.
+trait ConsumerPayloadV1: crate::wire::CognitiveContractV1 {
+    const KIND: CanonicalPayloadKindV1;
+}
+
+impl ConsumerPayloadV1 for MemoryEventV1 {
+    const KIND: CanonicalPayloadKindV1 = CanonicalPayloadKindV1::MemoryEvent;
+}
+
+impl ConsumerPayloadV1 for RecallPacketV1 {
+    const KIND: CanonicalPayloadKindV1 = CanonicalPayloadKindV1::RecallPacket;
+}
+
+impl ConsumerPayloadV1 for ForgetPropagationReceiptV1 {
+    const KIND: CanonicalPayloadKindV1 = CanonicalPayloadKindV1::ForgetPropagationReceipt;
+}
+
+fn bind_consumer_v1<T: ConsumerPayloadV1>(
+    operation_id: ContractIdV1,
+    consumer: CanonicalConsumerV1,
+    value: &T,
+    source_identity_sha256: Digest32,
+    source_snapshot_sha256: Digest32,
+    compatibility_payload_sha256: Option<Digest32>,
+    migration_posture: CanonicalMigrationPostureV1,
+) -> Result<CanonicalConsumerBindingV1, CanonicalConsumerBindingError> {
+    // Retain the existing validation order and frozen digest profile. Only
+    // immutable per-call work is reused; current migration checks still run.
+    let payload = canonical_contract_digest_v1(value)
         .map_err(|error| CanonicalConsumerBindingError::CanonicalContract(error.to_string()))?;
+    let canonical_payload_sha256 = digest(payload)?;
     CanonicalConsumerBindingV1::seal(CanonicalConsumerBindingV1 {
         operation_id,
         consumer,
-        payload_kind: CanonicalPayloadKindV1::ForgetPropagationReceipt,
-        canonical_payload_sha256: digest(payload)?,
+        payload_kind: T::KIND,
+        canonical_payload_sha256,
         source_identity_sha256: digest(source_identity_sha256)?,
         source_snapshot_sha256: digest(source_snapshot_sha256)?,
         compatibility_payload_sha256: compatibility_payload_sha256.map(digest).transpose()?,
         migration_posture,
         currentness_revalidation_required: true,
-        binding_sha256: digest(payload)?,
+        binding_sha256: canonical_payload_sha256,
     })
 }
 
@@ -389,3 +420,6 @@ impl fmt::Display for CanonicalConsumerBindingError {
 }
 
 impl StdError for CanonicalConsumerBindingError {}
+
+#[path = "consumer_error.rs"]
+mod error_mapping;

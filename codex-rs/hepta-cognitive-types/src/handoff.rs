@@ -155,11 +155,7 @@ impl<T> CanonicalHandoffV1<T> {
 }
 
 fn binding_error(error: crate::consumer::CanonicalConsumerBindingError) -> ContractViolationV1 {
-    violation(
-        ContractErrorCodeV1::StateConflict,
-        "binding",
-        &error.to_string(),
-    )
+    error.violation()
 }
 
 fn violation(code: ContractErrorCodeV1, path: &str, message: &str) -> ContractViolationV1 {
