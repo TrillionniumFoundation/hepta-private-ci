@@ -1,9 +1,48 @@
+use std::fs::OpenOptions;
 use std::io;
 use std::path::Path;
+
+/// Write and synchronize one same-directory staging file, then publish it.
+/// Any pre-publication failure removes the staging file. A directory-sync
+/// failure remains an ambiguous durable outcome by design: the destination is
+/// already valid, but the caller must not report success without the sync.
+pub(crate) fn write_atomic(
+    staging: &Path,
+    destination: &Path,
+    bytes: &[u8],
+    component: &str,
+) -> io::Result<()> {
+    let mut options = OpenOptions::new();
+    options.write(true).create_new(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.mode(0o600);
+    }
+    let mut file = options.open(staging)?;
+    let result = (|| {
+        crate::durability::write_all(&mut file, bytes, component)?;
+        crate::durability::sync_all(&file, component)?;
+        drop(file);
+        publish_at(staging, destination, component)
+    })();
+    if result.is_err() && staging.exists() {
+        let _ = std::fs::remove_file(staging);
+    }
+    result
+}
 
 /// Replace one already-synchronized staging file within the same directory.
 /// Unix synchronizes the parent directory; Windows uses write-through replace.
 pub(crate) fn publish(staging: &Path, destination: &Path) -> io::Result<()> {
+    publish_at(staging, destination, "durable_publish")
+}
+
+pub(crate) fn publish_at(
+    staging: &Path,
+    destination: &Path,
+    component: &str,
+) -> io::Result<()> {
     let parent = staging.parent().ok_or_else(|| {
         io::Error::new(io::ErrorKind::InvalidInput, "durable staging has no parent")
     })?;
@@ -13,11 +52,16 @@ pub(crate) fn publish(staging: &Path, destination: &Path) -> io::Result<()> {
             "durable replacement must remain in the staging directory",
         ));
     }
-    publish_same_directory(staging, destination)
+    publish_same_directory(staging, destination, component)
 }
 
 #[cfg(unix)]
-fn publish_same_directory(staging: &Path, destination: &Path) -> io::Result<()> {
+fn publish_same_directory(
+    staging: &Path,
+    destination: &Path,
+    component: &str,
+) -> io::Result<()> {
+    crate::durability::check(component, "rename")?;
     std::fs::rename(staging, destination)?;
     let parent = destination.parent().ok_or_else(|| {
         io::Error::new(
@@ -25,15 +69,21 @@ fn publish_same_directory(staging: &Path, destination: &Path) -> io::Result<()> 
             "durable destination has no parent",
         )
     })?;
+    crate::durability::check(component, "directory_sync")?;
     std::fs::File::open(parent)?.sync_all()
 }
 
 #[cfg(windows)]
-fn publish_same_directory(staging: &Path, destination: &Path) -> io::Result<()> {
+fn publish_same_directory(
+    staging: &Path,
+    destination: &Path,
+    component: &str,
+) -> io::Result<()> {
     use windows_sys::Win32::Storage::FileSystem::MOVEFILE_REPLACE_EXISTING;
     use windows_sys::Win32::Storage::FileSystem::MOVEFILE_WRITE_THROUGH;
     use windows_sys::Win32::Storage::FileSystem::MoveFileExW;
 
+    crate::durability::check(component, "rename")?;
     let parent = staging.parent().ok_or_else(|| {
         io::Error::new(io::ErrorKind::InvalidInput, "durable staging has no parent")
     })?;
@@ -91,9 +141,35 @@ fn wide_path(path: &Path) -> io::Result<Vec<u16>> {
 }
 
 #[cfg(not(any(unix, windows)))]
-fn publish_same_directory(_staging: &Path, _destination: &Path) -> io::Result<()> {
+fn publish_same_directory(
+    _staging: &Path,
+    _destination: &Path,
+    _component: &str,
+) -> io::Result<()> {
     Err(io::Error::new(
         io::ErrorKind::Unsupported,
         "durable publication is unsupported on this platform",
     ))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn rename_failure_preserves_previous_destination() {
+        let dir = tempfile::tempdir().expect("temporary directory");
+        let destination = dir.path().join("state.json");
+        std::fs::write(&destination, b"old").expect("old state");
+        let staging = dir.path().join(".state.tmp");
+        crate::durability::with_qualification_fault(
+            "test_publish.rename",
+            io::ErrorKind::Other,
+            || {
+                assert!(write_atomic(&staging, &destination, b"new", "test_publish").is_err());
+            },
+        );
+        assert_eq!(std::fs::read(destination).expect("read old state"), b"old");
+        assert!(!staging.exists());
+    }
 }
