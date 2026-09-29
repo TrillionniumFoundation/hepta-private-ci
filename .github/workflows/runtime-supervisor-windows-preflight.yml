@@ -29,6 +29,7 @@ jobs:
         shell: pwsh
         run: |
           python .github/scripts/runtime_supervisor_source.py
+          python .github/scripts/runtime_supervisor_pre_integration.py
           python .github/scripts/runtime_supervisor_integration.py
           python .github/scripts/runtime_supervisor_fixups.py
 
