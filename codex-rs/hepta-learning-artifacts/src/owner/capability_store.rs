@@ -5,9 +5,12 @@
 //! from an ambient absolute `PathBuf`. New files are created with `EXCL`, synced,
 //! and followed by an fsync of the already-open containing directory.
 
+#[cfg(not(unix))]
 use std::fmt;
+#[cfg(not(unix))]
 use std::path::Path;
 
+#[cfg(not(unix))]
 use super::transaction::FsOwnerDurableStoreV1 as LexicalFsOwnerDurableStoreV1;
 use super::transaction::OwnerDurableStoreV1;
 use super::transaction::OwnerJournalError;
@@ -20,7 +23,6 @@ mod unix {
     use std::io;
     use std::io::Read;
     use std::io::Write;
-    use std::marker::PhantomData;
     use std::os::fd::AsFd;
     use std::os::fd::BorrowedFd;
     use std::os::fd::OwnedFd;
@@ -38,14 +40,12 @@ mod unix {
     use crate::HostDurabilityError;
     use crate::provision_private_root_v1;
 
-    use super::LexicalFsOwnerDurableStoreV1;
     use super::OwnerDurableStoreV1;
     use super::OwnerJournalError;
 
     pub struct CapabilityOwnerDurableStoreV1 {
         root_path: PathBuf,
         root: OwnedFd,
-        _legacy_type_anchor: PhantomData<fn() -> LexicalFsOwnerDurableStoreV1>,
     }
 
     impl std::fmt::Debug for CapabilityOwnerDurableStoreV1 {
@@ -67,11 +67,7 @@ mod unix {
                 Mode::empty(),
             )
             .map_err(errno_to_io)?;
-            let value = Self {
-                root_path,
-                root,
-                _legacy_type_anchor: PhantomData,
-            };
+            let value = Self { root_path, root };
             for relative in [
                 "host",
                 "host/requests",
@@ -259,6 +255,37 @@ mod unix {
 
     fn errno_to_io(error: rustix::io::Errno) -> io::Error {
         io::Error::from_raw_os_error(error.raw_os_error())
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use std::os::unix::fs::symlink;
+
+        use super::*;
+        use crate::owner::transaction::OwnerDurableStoreV1;
+        use crate::test_support::TestDir;
+
+        #[test]
+        fn retained_root_rejects_symlink_ancestors_and_duplicate_final_files() {
+            let directory = TestDir::new();
+            let store = CapabilityOwnerDurableStoreV1::open(directory.0.join("store"))
+                .expect("capability store");
+            store
+                .write_new(Path::new("host/requests/first.req"), b"first")
+                .expect("first create-only write");
+            assert!(store
+                .write_new(Path::new("host/requests/first.req"), b"changed")
+                .is_err());
+
+            let outside = directory.0.join("outside");
+            std::fs::create_dir(&outside).expect("outside directory");
+            symlink(&outside, directory.0.join("store/host/link")).expect("symlink");
+            assert!(matches!(
+                store.write_new(Path::new("host/link/escape.req"), b"escape"),
+                Err(OwnerJournalError::InvalidPath)
+            ));
+            assert!(!outside.join("escape.req").exists());
+        }
     }
 }
 
