@@ -1,0 +1,54 @@
+name: runtime-supervisor-docs
+
+on:
+  push:
+    branches:
+      - work/runtime-supervisor-qualification-20260929
+    paths:
+      - codex-rs/hepta-supervisor/**
+      - qualification/runtime-supervisor/lock-qualification-source.json
+      - qualification/runtime-supervisor/fault-matrix-source.json
+
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-supervisor-docs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  bind-documentation:
+    if: contains(github.event.head_commit.message, 'feat(runtime.supervisor): qualify contention recovery and authority')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          ref: work/runtime-supervisor-qualification-20260929
+
+      - name: Rebind runtime supervisor documentation
+        run: python3 .github/scripts/runtime_supervisor_docs.py
+
+      - name: Validate module documentation and JSON
+        run: |
+          python3 scripts/hepta-module-docs.py
+          python3 -m json.tool docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json >/dev/null
+          python3 -m json.tool qualification/runtime-supervisor/lock-qualification-source.json >/dev/null
+          python3 -m json.tool qualification/runtime-supervisor/fault-matrix-source.json >/dev/null
+          git diff --check
+
+      - name: Commit documentation truth boundary
+        run: |
+          git config user.name "runtime-supervisor-docs"
+          git config user.email "runtime-supervisor-docs@users.noreply.github.com"
+          git add \
+            docs/modules/runtime.supervisor/TECHNICAL.md \
+            docs/modules/runtime.supervisor/RECOVERY_AND_QUALIFICATION.md \
+            docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json \
+            qualification/module-execution-dossiers/detail/runtime.supervisor.md \
+            qualification/runtime-supervisor/README.md
+          git commit -m "docs(runtime.supervisor): bind contention and recovery qualification" \
+            -m "Document the per-Agent tick interleaving, operation-scoped lock metrics, executable crash cuts, external authority distribution seam and actionable recovery diagnostics without claiming target-host or deployment evidence." \
+            -m "Signed-off-by: runtime-supervisor-docs <runtime-supervisor-docs@users.noreply.github.com>"
+          git push origin HEAD:work/runtime-supervisor-qualification-20260929
