@@ -28,7 +28,9 @@ def event_block(path: Path) -> str:
 
 
 class HeptaCiConsolidationTests(unittest.TestCase):
-    def test_only_two_aggregate_workflows_automatically_run_for_pull_requests(self) -> None:
+    def test_only_two_aggregate_workflows_automatically_run_for_pull_requests(
+        self,
+    ) -> None:
         candidates: set[Path] = set()
         for pattern in DEEP_PATTERNS:
             candidates.update(WORKFLOWS.glob(pattern))
@@ -51,17 +53,26 @@ class HeptaCiConsolidationTests(unittest.TestCase):
             self.assertIn("workflow_call:", block, path.name)
             self.assertIn("workflow_dispatch:", block, path.name)
 
-    def test_exact_source_evidence_is_risk_gated(self) -> None:
+    def test_exact_source_evidence_is_explicit_and_separate_from_native_risk(
+        self,
+    ) -> None:
         blocking = (WORKFLOWS / "blocking-ci.yml").read_text(encoding="utf-8")
         contract = (WORKFLOWS / "hepta-contract-gate.yml").read_text(encoding="utf-8")
-        module_docs = (ROOT / "scripts/hepta-module-docs.py").read_text(encoding="utf-8")
+        module_docs = (ROOT / "scripts/hepta-module-docs.py").read_text(
+            encoding="utf-8"
+        )
         risk = (ROOT / "scripts/hepta_ci_risk.py").read_text(encoding="utf-8")
         self.assertIn("require_exact_source:", blocking)
         self.assertIn("needs.scope.outputs.require_exact_source == 'true'", blocking)
         self.assertIn('return "ordinary"', risk)
         self.assertIn('return "effect"', risk)
         self.assertIn('ordinary = risk == "ordinary"', risk)
-        self.assertIn('"require_exact_source": not ordinary', risk)
+        self.assertIn("qualification_requested=args.qualification", risk)
+        self.assertNotIn("--qualification", blocking)
+        manual = contract.split("  workflow_dispatch:", 1)[1].split("permissions:", 1)[
+            0
+        ]
+        self.assertIn("default: true", manual)
         self.assertIn("if: ${{ inputs.require_exact_source }}", contract)
         self.assertNotIn("scripts/hepta-implementation-maps.py", module_docs)
 
@@ -82,9 +93,9 @@ class HeptaCiConsolidationTests(unittest.TestCase):
 
     def test_aggregators_use_stable_required_job_names(self) -> None:
         blocking = (WORKFLOWS / "blocking-ci.yml").read_text(encoding="utf-8")
-        architecture = (
-            WORKFLOWS / "hepta-architecture-convergence.yml"
-        ).read_text(encoding="utf-8")
+        architecture = (WORKFLOWS / "hepta-architecture-convergence.yml").read_text(
+            encoding="utf-8"
+        )
         self.assertIn("name: CI required", blocking)
         self.assertIn("name: Architecture required", architecture)
 

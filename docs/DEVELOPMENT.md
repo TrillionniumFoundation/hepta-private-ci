@@ -38,6 +38,11 @@ envelope, production host binding or deployment approval merely to implement,
 test or merge authorized repository changes. Those records apply when their
 runtime, independent-evaluation or deployment boundary is actually exercised.
 Repository merge does not itself activate that boundary.
+Source-change risk still selects stateful/effect tests and exact merge-candidate
+checks. It does not request historical implementation maps or independent
+acceptance dossiers. The existing contract qualification entry requests those
+explicitly (`require_exact_source=true`); `hepta_ci_risk.py --qualification`
+produces the corresponding deep execution plan without granting any authority.
 The document verifier reports changed shared-path lease requests without
 self-attesting them. Protected-branch review remains required for integration.
 An explicit `verify --require-path-lease-attestation` checks the separate

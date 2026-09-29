@@ -40,15 +40,22 @@ def project(
     *,
     change_risk: str | None = None,
     reasons: list[str] | None = None,
+    qualification_requested: bool = False,
 ) -> dict[str, object]:
     risk = change_risk if change_risk is not None else classify(scope)
+    if risk not in {"ordinary", "stateful", "effect", "release"}:
+        raise ValueError("unknown CI change risk")
+    if type(qualification_requested) is not bool:
+        raise ValueError("qualification request must be boolean")
     policy = load_policy()
-    ordinary = risk == "ordinary"
+    ordinary = risk == "ordinary" and not qualification_requested
     return {
         "risk": risk,
         "risk_reasons": reasons or [],
         "lanes": ["source-head"] if ordinary else ["source-head", "base-merge"],
-        "require_exact_source": not ordinary,
+        # Change risk selects real source/merge tests, not release evidence.
+        # Independent maps and dossiers belong to an explicit qualification run.
+        "require_exact_source": qualification_requested,
         "ordinary_feedback_target_minutes": policy["ordinaryFeedbackTargetMinutes"],
         "scoped_timeout_minutes": (
             policy["ordinaryWorkflowTimeoutMinutes"]
@@ -69,6 +76,11 @@ def main() -> None:
     parser.add_argument("--base")
     parser.add_argument("--head", required=True)
     parser.add_argument("--full", action="store_true")
+    parser.add_argument(
+        "--qualification",
+        action="store_true",
+        help="include existing exact-source qualification; grants no activation authority",
+    )
     parser.add_argument("--github-output")
     args = parser.parse_args()
     if not args.full and not args.base:
@@ -80,7 +92,7 @@ def main() -> None:
         input_scope = include_input_scope(scope, paths, args.base, args.head)
         scope = include_module_scope(input_scope, paths, args.base, args.head)
     if args.full:
-        result = project(scope)
+        result = project(scope, qualification_requested=args.qualification)
     else:
         try:
             from scripts.hepta_ci_modules import assess_changes
@@ -95,7 +107,12 @@ def main() -> None:
         if input_scope != raw:
             from_rank = {"ordinary": 0, "stateful": 1, "effect": 2, "release": 3}
             risk = max((risk, classify(scope)), key=from_rank.get)
-        result = project(scope, change_risk=risk, reasons=reasons)
+        result = project(
+            scope,
+            change_risk=risk,
+            reasons=reasons,
+            qualification_requested=args.qualification,
+        )
     if args.github_output:
         with open(args.github_output, "a", encoding="utf-8") as target:
             target.write(f"risk={result['risk']}\n")

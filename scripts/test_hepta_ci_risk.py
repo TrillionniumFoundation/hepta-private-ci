@@ -40,9 +40,39 @@ class CiRiskTests(unittest.TestCase):
 
         stateful = project(self.scope(lifecycle=True, native=True))
         self.assertEqual(stateful["lanes"], ["source-head", "base-merge"])
-        self.assertTrue(stateful["require_exact_source"])
+        self.assertFalse(stateful["require_exact_source"])
         self.assertEqual(stateful["scoped_timeout_minutes"], 40)
         self.assertEqual(stateful["architecture_timeout_minutes"], 60)
+
+    def test_source_risk_does_not_imply_independent_acceptance_evidence(self):
+        scope = self.scope(effects=True, lifecycle=True, native=True)
+        for risk in ("stateful", "effect", "release"):
+            with self.subTest(risk=risk):
+                report = project(scope, change_risk=risk, reasons=["changed owner"])
+                self.assertEqual(report["risk"], risk)
+                self.assertEqual(report["risk_reasons"], ["changed owner"])
+                self.assertEqual(report["lanes"], ["source-head", "base-merge"])
+                self.assertEqual(report["scope"], scope)
+                self.assertFalse(report["require_exact_source"])
+                self.assertEqual(report["architecture_timeout_minutes"], 60)
+
+    def test_explicit_qualification_keeps_deep_checks_for_every_risk(self):
+        for risk in ("ordinary", "stateful", "effect", "release"):
+            with self.subTest(risk=risk):
+                report = project(
+                    self.scope(), change_risk=risk, qualification_requested=True
+                )
+                self.assertTrue(report["require_exact_source"])
+                self.assertEqual(report["lanes"], ["source-head", "base-merge"])
+                self.assertEqual(report["architecture_timeout_minutes"], 60)
+
+    def test_invalid_policy_inputs_fail_instead_of_disabling_checks(self):
+        for value in (None, 0, 1, "false", "true", [], {}):
+            with self.subTest(value=value):
+                with self.assertRaisesRegex(ValueError, "must be boolean"):
+                    project(self.scope(), qualification_requested=value)
+        with self.assertRaisesRegex(ValueError, "unknown CI change risk"):
+            project(self.scope(), change_risk="unsupported")
 
     def test_required_workflows_consume_risk_projection(self):
         architecture = (
@@ -356,6 +386,56 @@ class ExactModuleRiskTests(unittest.TestCase):
         self.assertEqual(report["risk"], "ordinary")
         self.assertEqual(report["lanes"], ["source-head"])
         self.assertFalse(report["scope"]["native"])
+
+    def test_qualification_cli_preserves_exact_scope_and_github_outputs(self):
+        self.replace(self.manifest, 'state = "stateless"', 'state = "stateful"')
+        base = self.commit()
+        self.put(self.source, "pub fn value() -> u32 { 2 }\n")
+        head = self.commit()
+        reports = []
+        for qualification in (False, True):
+            output = self.root / (
+                "qualification-output" if qualification else "source-output"
+            )
+            command = [
+                sys.executable,
+                "-m",
+                "scripts.hepta_ci_risk",
+                "--base",
+                base,
+                "--head",
+                head,
+                "--github-output",
+                str(output),
+            ]
+            if qualification:
+                command.append("--qualification")
+            result = subprocess.run(
+                command,
+                cwd=self.root,
+                env={
+                    **os.environ,
+                    "PYTHONPATH": str(ROOT),
+                    "PYTHONDONTWRITEBYTECODE": "1",
+                },
+                text=True,
+                capture_output=True,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            report = json.loads(result.stdout)
+            reports.append(report)
+            self.assertEqual(report["risk"], "stateful")
+            self.assertEqual(report["lanes"], ["source-head", "base-merge"])
+            self.assertIs(report["require_exact_source"], qualification)
+            exported = dict(
+                line.split("=", 1) for line in output.read_text().splitlines()
+            )
+            self.assertEqual(
+                exported["require_exact_source"], str(qualification).lower()
+            )
+            self.assertEqual(json.loads(exported["lanes"]), report["lanes"])
+        self.assertEqual(reports[0]["scope"], reports[1]["scope"])
+        self.assertEqual(reports[0]["risk_reasons"], reports[1]["risk_reasons"])
 
     def test_canonical_catalog_cannot_fall_back_to_empty_legacy_projection(self):
         self.put(
