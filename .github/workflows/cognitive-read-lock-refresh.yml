@@ -6,6 +6,7 @@ on:
       - work/cognitive-read-production-convergence-20260927
     paths:
       - .github/workflows/cognitive-read-lock-refresh.yml
+      - scripts/repair-cognitive-read-qualification.py
       - scripts/prepare-cognitive-read-source.py
       - scripts/prepare-cognitive-read-durable-handoff.py
       - scripts/apply-cognitive-read-selected-cut.py
@@ -66,7 +67,9 @@ jobs:
           test "$(git ls-remote origin "refs/heads/$SOURCE_BRANCH" | cut -f1)" = "$GITHUB_SHA"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          python3 scripts/prepare-cognitive-read-durable-handoff.py --expected-sha "$GITHUB_SHA"
+          python3 scripts/repair-cognitive-read-qualification.py --expected-sha "$GITHUB_SHA"
+          repaired_head="$(git rev-parse HEAD)"
+          python3 scripts/prepare-cognitive-read-durable-handoff.py --expected-sha "$repaired_head"
           cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
           test -z "$(git status --porcelain --untracked-files=no)"
           mkdir -p "$RUNNER_TEMP/cognitive-read-preparation"
@@ -81,8 +84,8 @@ jobs:
             echo '## Source preparation, not qualification'
             echo "Authored input: $GITHUB_SHA"
             echo "Prepared head: $(git rev-parse HEAD)"
-            echo 'Selected owner integration and the durable read-request handoff are authored only through existing owners.'
-            echo 'Preparation verifies exact source shape, formats reviewed paths and refreshes the immutable map without replaying selected-cut edits.'
+            echo 'Deterministic qualification drift, the selected owner integration and durable read-request handoff are authored only through existing owners.'
+            echo 'Preparation verifies exact source shape, refreshes Cargo.lock through the ordinary workspace manifest, formats reviewed paths and refreshes the immutable map without replaying selected-cut edits.'
             echo 'No package, product, acceptance, activation or release pass is claimed.'
           } >> "$GITHUB_STEP_SUMMARY"
 
