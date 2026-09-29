@@ -1,9 +1,8 @@
-//! Closed-world state-machine wrapper for the deterministic planner journal.
+//! Closed-world typed facade for the deterministic planner journal.
 //!
-//! The byte codec and hash-chain implementation remain in
-//! `planner_journal_core.rs`. Every public mutation and every reopen crosses the
-//! same transition validator so a structurally valid byte stream cannot bypass
-//! the typed planner lifecycle.
+//! The codec, hash chain, identity rules, and lifecycle transition validation
+//! live in `planner_journal_core.rs`. The facade only adds typed convenience
+//! operations; it does not maintain a second state machine.
 
 #[path = "planner_journal_core.rs"]
 mod core;
@@ -98,20 +97,6 @@ impl PlannerJournalV1 {
         identity_digest: Digest32,
         payload_digest: Digest32,
     ) -> Result<PlannerJournalEntryV1, PlannerJournalError> {
-        if let Some(existing) = self
-            .entries()
-            .iter()
-            .find(|entry| entry.identity_digest == identity_digest)
-        {
-            // Preserve the core's exact-idempotency and conflict behavior. A
-            // retry of an already committed transition remains safe even when
-            // a later revocation changed the current projection.
-            if existing.kind == kind && existing.payload_digest == payload_digest {
-                return self.inner.append(kind, identity_digest, payload_digest);
-            }
-            return Err(PlannerJournalError::IdentityConflict);
-        }
-        validate_transition(self.entries(), kind, payload_digest)?;
         self.inner.append(kind, identity_digest, payload_digest)
     }
 
@@ -121,40 +106,10 @@ impl PlannerJournalV1 {
     }
 
     pub fn reopen(bytes: &[u8]) -> Result<Self, PlannerJournalError> {
-        let decoded = core::PlannerJournalV1::reopen(bytes)?;
-        let mut validated = Self::new();
-        for entry in decoded.entries() {
-            let replayed =
-                validated.append(entry.kind, entry.identity_digest, entry.payload_digest)?;
-            if replayed != *entry {
-                return Err(PlannerJournalError::CorruptEntryDigest);
-            }
-        }
-        Ok(validated)
+        Ok(Self {
+            inner: core::PlannerJournalV1::reopen(bytes)?,
+        })
     }
-}
-
-fn validate_transition(
-    entries: &[PlannerJournalEntryV1],
-    kind: PlannerJournalKindV1,
-    payload_digest: Digest32,
-) -> Result<(), PlannerJournalError> {
-    if kind != PlannerJournalKindV1::SelectedPlan {
-        return Ok(());
-    }
-    let decision_exists = entries.iter().any(|entry| {
-        entry.kind == PlannerJournalKindV1::Decision && entry.payload_digest == payload_digest
-    });
-    if !decision_exists {
-        return Err(PlannerJournalError::DecisionNotRecorded);
-    }
-    let revoked = entries.iter().any(|entry| {
-        entry.kind == PlannerJournalKindV1::Revocation && entry.payload_digest == payload_digest
-    });
-    if revoked {
-        return Err(PlannerJournalError::RevokedPlan);
-    }
-    Ok(())
 }
 
 #[cfg(test)]
@@ -174,22 +129,6 @@ mod hardening_tests {
                 digest("operation"),
                 digest("missing-decision"),
             ),
-            Err(PlannerJournalError::DecisionNotRecorded)
-        );
-    }
-
-    #[test]
-    fn reopen_rejects_a_structurally_valid_illegal_transition() {
-        let mut unchecked = core::PlannerJournalV1::new();
-        unchecked
-            .append(
-                PlannerJournalKindV1::SelectedPlan,
-                digest("operation"),
-                digest("missing-decision"),
-            )
-            .unwrap();
-        assert_eq!(
-            PlannerJournalV1::reopen(&unchecked.export_bytes()),
             Err(PlannerJournalError::DecisionNotRecorded)
         );
     }
