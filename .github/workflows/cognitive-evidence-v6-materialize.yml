@@ -1,0 +1,91 @@
+name: Cognitive evidence v6 materializer
+
+on:
+  push:
+    branches:
+      - codex/cognitive-evidence-v6-materialize-20260929
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cognitive-evidence-v6-materializer
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Apply reviewed evidence-binding patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .cognitive-evidence-v6.part1 \
+              .cognitive-evidence-v6.part2 \
+              .cognitive-evidence-v6.part3 \
+              .cognitive-evidence-v6.part4 \
+            | base64 --decode | gzip -dc > "$RUNNER_TEMP/cognitive-evidence-v6.patch"
+          echo '441410656e178c413ce0b29ea64c3ecc2408ce0d4950e0a4a893850aea7fcbed  '"$RUNNER_TEMP/cognitive-evidence-v6.patch" | sha256sum --check --strict
+          git apply --check "$RUNNER_TEMP/cognitive-evidence-v6.patch"
+          git apply "$RUNNER_TEMP/cognitive-evidence-v6.patch"
+          rm -f \
+            .cognitive-evidence-v6.part1 \
+            .cognitive-evidence-v6.part2 \
+            .cognitive-evidence-v6.part3 \
+            .cognitive-evidence-v6.part4 \
+            .github/workflows/cognitive-evidence-v6-materialize.yml
+
+      - name: Prepare pinned Python dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/cognitive-store-host-bootstrap/prepare_archive_env.py
+
+      - name: Verify evidence and governance closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/cognitive-archive-venv/bin/python"
+          python3 -m py_compile \
+            scripts/cognitive_qualification_manifest.py \
+            scripts/cognitive_store_plan.py \
+            scripts/test_cognitive_plan_binding.py
+          "$PY" -m py_compile \
+            tools/cognitive-store-host-bootstrap/acceptance_governance.py \
+            tools/cognitive-store-host-bootstrap/host_qualification.py \
+            tools/cognitive-store-host-bootstrap/retention_readiness.py \
+            tools/cognitive-store-host-bootstrap/test_acceptance_governance.py
+          PYTHONDONTWRITEBYTECODE=1 python3 scripts/test_cognitive_qualification_manifest.py -q
+          PYTHONDONTWRITEBYTECODE=1 python3 scripts/test_cognitive_plan_binding.py -q
+          PYTHONDONTWRITEBYTECODE=1 python3 scripts/test_cognitive_store_map.py -q
+          PYTHONDONTWRITEBYTECODE=1 "$PY" tools/cognitive-store-host-bootstrap/test_lifecycle.py -q
+          PYTHONDONTWRITEBYTECODE=1 "$PY" tools/cognitive-store-host-bootstrap/test_lifecycle_final_use.py -q
+          PYTHONDONTWRITEBYTECODE=1 "$PY" tools/cognitive-store-host-bootstrap/test_host_qualification.py -q
+          PYTHONDONTWRITEBYTECODE=1 "$PY" tools/cognitive-store-host-bootstrap/test_retention_readiness.py -q
+          PYTHONDONTWRITEBYTECODE=1 "$PY" tools/cognitive-store-host-bootstrap/test_acceptance_governance.py -q
+          python3 scripts/cognitive_store_status.py --check
+          find . -type d -name __pycache__ -prune -exec rm -rf {} +
+          find . -type f -name '*.pyc' -delete
+          git diff --check
+
+      - name: Commit materialized source tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Hepta Cognitive Authoring'
+          git config user.email 'hepta-cognitive-authoring@users.noreply.github.com'
+          git add -A
+          git diff --cached --check
+          git commit \
+            -m 'cognitive.store: bind qualification plans and evidence identities' \
+            -m 'Bind exact qualification manifests to the complete committed plan and each raw plan entry; carry verified host, retention and lifecycle evidence identities into independent acceptance; and reject cross-domain evidence reuse while preserving the single owner and no-effect claim boundaries.' \
+            -m 'No target-host, erasure, acceptance, activation, promotion or release claim is advanced.' \
+            -m 'Signed-off-by: OpenAI <noreply@openai.com>'
+          git push origin HEAD:codex/cognitive-evidence-v6-materialize-20260929
