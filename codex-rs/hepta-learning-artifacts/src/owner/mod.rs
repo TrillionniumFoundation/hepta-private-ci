@@ -59,6 +59,8 @@ pub use operational::ArtifactOwnerOperationalMetricsV1;
 pub use operational::ArtifactOwnerRetryDispositionV1;
 pub use operational::ArtifactRetentionObservationV1;
 pub use operational::InstrumentedLearningArtifactReferenceHostV1;
+pub use prometheus::ArtifactOwnerPrometheusErrorV1;
+pub use prometheus::ArtifactOwnerPrometheusObservationV1;
 pub use prometheus::ArtifactOwnerPrometheusSnapshotV1;
 pub use prometheus::render_artifact_owner_prometheus_v1;
 pub use publication_coordination::ArtifactOwnerCommandError;
