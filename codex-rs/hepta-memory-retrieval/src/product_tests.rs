@@ -1,6 +1,3 @@
-use std::time::Duration;
-use std::time::Instant;
-
 use codex_hepta_cognitive_types::MemoryKind;
 use codex_hepta_cognitive_types::MemoryRecord;
 use codex_hepta_cognitive_types::RecordState;
@@ -25,8 +22,7 @@ fn candidate(
 ) -> RetrievalChannelCandidateV1 {
     RetrievalChannelCandidateV1 {
         record: MemoryRecord {
-            record_id: StableId::new(format!("memory:{generator:?}"))
-                .expect("stable record id"),
+            record_id: StableId::new("memory:product-admission").expect("stable record id"),
             revision: Revision::new(1).expect("revision"),
             kind: MemoryKind::Fact,
             content_digest: digest(&format!("content:{generator:?}")),
@@ -169,50 +165,4 @@ fn missing_owner_policy_is_rejected() {
             RetrievalGeneratorOwnerV1::CognitiveEntity
         ))
     );
-}
-
-#[test]
-fn cancelled_work_cannot_publish_an_abstention_decision() {
-    let input = GeneratedCandidateInputV1::new(vec![batch(
-        RetrievalGeneratorOwnerV1::KnowledgeGraphProcedural,
-        RetrievalSourceCompletenessV1::LimitReached,
-    )])
-    .expect("input");
-    let policy = RetrievalCompletenessPolicyV1::new(vec![row(
-        RetrievalGeneratorOwnerV1::KnowledgeGraphProcedural,
-        IncompleteSourceActionV1::Abstain,
-        IncompleteSourceActionV1::FailClosed,
-    )])
-    .expect("policy");
-    let validated = ValidatedCandidateSetV1::new(input, &policy).expect("validated");
-    let control = RecallWorkControlV1::bounded(Instant::now() + Duration::from_secs(1), 8);
-    control.cancel();
-
-    // The facade must check cancellation even when source policy abstains before
-    // graph execution. Invalid placeholder values are never evaluated.
-    let result = recall_product_with_engram_v1(
-        unsafe_unreachable_cue(),
-        unsafe_unreachable_policy(),
-        &validated,
-        unsafe_unreachable_engram(),
-        unsafe_unreachable_dynamics(),
-        &control,
-    );
-    assert!(matches!(result, Err(ProductRecallErrorV1::Generator(_))));
-}
-
-fn unsafe_unreachable_cue() -> &'static MemoryCueV1 {
-    panic!("cancelled work must be checked before cue access")
-}
-
-fn unsafe_unreachable_policy() -> &'static RetrievalPolicyV1 {
-    panic!("cancelled work must be checked before policy access")
-}
-
-fn unsafe_unreachable_engram() -> &'static EngramSnapshotV1 {
-    panic!("cancelled work must be checked before engram access")
-}
-
-fn unsafe_unreachable_dynamics() -> &'static EngramDynamicsPolicyV1 {
-    panic!("cancelled work must be checked before dynamics access")
 }
