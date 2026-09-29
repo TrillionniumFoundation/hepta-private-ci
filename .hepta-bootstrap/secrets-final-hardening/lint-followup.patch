@@ -1,0 +1,46 @@
+--- a/codex-rs/hepta-bao-adapter/src/final_use_host.rs
++++ b/codex-rs/hepta-bao-adapter/src/final_use_host.rs
+@@ -575,7 +575,7 @@
+                 },
+                 evidence,
+                 crate::authbus_saga::BaoAuthBusSagaHooks {
+-                    reserved: |reservation| {
++                    reserved: |reservation: &QuotaReservation| {
+                         registry
+                             .lock()
+                             .map_err(|_| BaoAuthBusError::Evidence("durable owner unavailable"))?
+@@ -587,7 +587,7 @@
+                                 BaoAuthBusError::Evidence("durable reservation commit failed")
+                             })
+                     },
+-                    dispatch_fenced: |reservation| {
++                    dispatch_fenced: |reservation: &QuotaReservation| {
+                         registry
+                             .lock()
+                             .map_err(|_| BaoAuthBusError::Evidence("durable owner unavailable"))?
+@@ -599,7 +599,7 @@
+                                 BaoAuthBusError::Evidence("durable dispatch fence commit failed")
+                             })
+                     },
+-                    provider_terminal: |error, terminal| {
++                    provider_terminal: |error: BaoClientError, terminal: Digest32| {
+                         let code = provider_failure_code(error).ok_or(BaoAuthBusError::Evidence(
+                             "nonterminal provider error classified terminal",
+                         ))?;
+@@ -618,14 +618,14 @@
+                                 )
+                             })
+                     },
+-                    prepare_delivery: |receipt| {
++                    prepare_delivery: |receipt: &BaoSecretReceipt| {
+                         registry
+                             .lock()
+                             .map_err(|_| ())?
+                             .enter_consumption(operation_id, receipt.clone())
+                             .map_err(|_| ())
+                     },
+-                    consumer: |secret, _receipt| {
++                    consumer: |secret: &[u8], _receipt: &BaoSecretReceipt| {
+                         self.ensure_revocation_fresh().map_err(|_| ())?;
+                         let result = callback(operation_id, semantic_sha256, secret);
+                         #[cfg(all(test, unix))]
