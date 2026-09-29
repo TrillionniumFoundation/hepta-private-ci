@@ -1,0 +1,78 @@
+name: temporary memory federation authoring rog
+
+on:
+  push:
+    branches:
+      - tmp/memory-federation-authoring-rog-20260929
+
+permissions:
+  contents: write
+
+concurrency:
+  group: temporary-memory-federation-authoring-rog
+  cancel-in-progress: false
+
+jobs:
+  author:
+    runs-on: [self-hosted, linux, x64, rog]
+    timeout-minutes: 90
+    env:
+      TARGET_BRANCH: feat/memory-federation-full-closure-20260927
+      EXPECTED_HEAD: aee41125ce48fc1f264a9699339b2d8cffe0732b
+    steps:
+      - name: Check out trusted authoring recipe
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Extract frozen reviewed commands
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          source = Path('.github/workflows/tmp-memory-federation-authoring.yml').read_text().splitlines()
+          names = [
+              'Route durable SQLite opens through codex-state',
+              'Format and qualify dependency closure',
+              'Commit source candidate and rebind read-only map input',
+          ]
+          out = Path('/tmp/memory-federation-authoring')
+          out.mkdir(parents=True, exist_ok=True)
+          for index, name in enumerate(names):
+              marker = f'      - name: {name}'
+              start = source.index(marker)
+              run_line = next(i for i in range(start + 1, len(source)) if source[i].strip() == 'run: |')
+              body = []
+              for line in source[run_line + 1:]:
+                  if line and len(line) - len(line.lstrip()) <= 8:
+                      break
+                  body.append(line[10:] if line.startswith('          ') else '')
+              script = '#!/usr/bin/env bash\n' + '\n'.join(body) + '\n'
+              path = out / f'{index}.sh'
+              path.write_text(script)
+              path.chmod(0o700)
+          PY
+
+      - name: Check out exact target candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "$TARGET_BRANCH" main
+          git checkout -B "$TARGET_BRANCH" "origin/$TARGET_BRANCH"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+      - name: Apply reviewed source patch
+        shell: bash
+        run: /tmp/memory-federation-authoring/0.sh
+
+      - name: Qualify dependency closure
+        shell: bash
+        run: /tmp/memory-federation-authoring/1.sh
+
+      - name: Publish source and map-only observation commits
+        shell: bash
+        run: /tmp/memory-federation-authoring/2.sh
