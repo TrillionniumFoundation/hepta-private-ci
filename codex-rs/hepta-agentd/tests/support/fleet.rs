@@ -131,8 +131,16 @@ impl FleetHarness {
 
     #[allow(dead_code)]
     pub(crate) fn start(&mut self, agent: &AgentFixture) -> Result<()> {
-        let binary = agentd_binary()?;
-        let command = AgentCommand::new(binary, Vec::new())?;
+        self.start_with_arguments(agent, Vec::new())
+    }
+
+    /// Start the real product binary with explicit CLI configuration.
+    pub(crate) fn start_with_arguments(
+        &mut self,
+        agent: &AgentFixture,
+        arguments: Vec<std::ffi::OsString>,
+    ) -> Result<()> {
+        let command = AgentCommand::new(agentd_binary()?, arguments)?;
         self.supervisor
             .start(&agent.agent_id, command, Instant::now())?;
         self.started = true;
@@ -146,19 +154,15 @@ impl FleetHarness {
         trust_file: &Path,
         checkpoint_file: &Path,
     ) -> Result<()> {
-        let command = AgentCommand::new(
-            agentd_binary()?,
+        self.start_with_arguments(
+            agent,
             vec![
                 "--authbus-trust-file".into(),
                 trust_file.as_os_str().to_owned(),
                 "--authbus-checkpoint-file".into(),
                 checkpoint_file.as_os_str().to_owned(),
             ],
-        )?;
-        self.supervisor
-            .start(&agent.agent_id, command, Instant::now())?;
-        self.started = true;
-        Ok(())
+        )
     }
 
     #[allow(dead_code)]
@@ -167,17 +171,13 @@ impl FleetHarness {
         agent: &AgentFixture,
         trust_file: &Path,
     ) -> Result<()> {
-        let command = AgentCommand::new(
-            agentd_binary()?,
+        self.start_with_arguments(
+            agent,
             vec![
                 "--evidence-trust-file".into(),
                 trust_file.as_os_str().to_owned(),
             ],
-        )?;
-        self.supervisor
-            .start(&agent.agent_id, command, Instant::now())?;
-        self.started = true;
-        Ok(())
+        )
     }
 
     #[allow(dead_code)]
@@ -188,8 +188,8 @@ impl FleetHarness {
         recovery_frontier_file: &Path,
         recovery_frontier_trust_file: &Path,
     ) -> Result<()> {
-        let command = AgentCommand::new(
-            agentd_binary()?,
+        self.start_with_arguments(
+            agent,
             vec![
                 "--evidence-trust-file".into(),
                 evidence_trust_file.as_os_str().to_owned(),
@@ -198,11 +198,7 @@ impl FleetHarness {
                 "--evidence-recovery-frontier-trust-file".into(),
                 recovery_frontier_trust_file.as_os_str().to_owned(),
             ],
-        )?;
-        self.supervisor
-            .start(&agent.agent_id, command, Instant::now())?;
-        self.started = true;
-        Ok(())
+        )
     }
 
     #[allow(dead_code)]
@@ -212,19 +208,15 @@ impl FleetHarness {
         descriptor: &Path,
         descriptor_digest: &str,
     ) -> Result<()> {
-        let command = AgentCommand::new(
-            agentd_binary()?,
+        self.start_with_arguments(
+            agent,
             vec![
                 "--plasticity-bootstrap-descriptor".into(),
                 descriptor.as_os_str().to_owned(),
                 "--plasticity-bootstrap-descriptor-digest".into(),
                 descriptor_digest.into(),
             ],
-        )?;
-        self.supervisor
-            .start(&agent.agent_id, command, Instant::now())?;
-        self.started = true;
-        Ok(())
+        )
     }
 
     #[allow(dead_code)]

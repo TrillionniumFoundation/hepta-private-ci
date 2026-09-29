@@ -394,6 +394,24 @@ The default `runtime.rs` path registers long-lived components through the existi
 
 The configured product profile now routes authenticated `ObjectiveStart` through the canonical runner and a host-owned invocation provider, then freezes the exact prepared envelope into the existing Agentd run/context lifecycle. Bare/compatibility profiles do not install that provider, do not advertise `intelligence.canonical_v1`, and compatibility `RunStart` is never counted as canonical execution. Real provider dispatch, durable product Decision/Outcome recovery and target-host qualification remain separate boundaries.
 
+### Conservative canonical CLI profile
+
+`--canonical-intelligence-provider-profile durable-safe-abstain-v1` selects the
+concrete durable-RunStart provider together with its signed seven-owner authority
+file, signer and verification key. The normal CLI also requires the explicit
+Objective profile and AuthBus trust/checkpoint configuration. This profile
+returns `canonical_abstained`; it is not an action-selecting or learned policy.
+
+The ordinary binary/control-socket regression lives in
+`codex-rs/hepta-agentd/tests/support/canonical_objective_product.rs`, under the
+existing `authbus_text_product` target. Its independent test producer supplies
+signed input through `ObjectiveStart`, not internal owner objects. The checks
+cover canonical disposition, byte-stable durable retry, missing-owner rejection,
+repair followed by exact retry, tampered-input rejection and zero model sends.
+These checks establish the conservative product route only. Real learned action
+selection, durable Decision/Outcome recovery and long-run efficacy remain
+separate work; the test transport does not establish provider qualification.
+
 ## 17. Source implementation receipt
 
 This receipt records repository source bindings for the current documentation candidate. It is navigation evidence only; it does not claim product composition, deployment, or external effect authority.

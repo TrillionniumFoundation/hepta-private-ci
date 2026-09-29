@@ -39,6 +39,9 @@ use tokio::time::timeout;
 
 mod support;
 
+#[path = "support/canonical_objective_product.rs"]
+mod canonical_objective_product;
+
 use support::fleet::FleetHarness;
 use support::fleet::connect_app_server_with_experimental;
 
