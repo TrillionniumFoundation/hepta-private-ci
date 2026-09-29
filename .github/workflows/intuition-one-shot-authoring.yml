@@ -34,19 +34,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Detect pending immutable patch
-        id: pending
-        shell: bash
-        run: |
-          set -euo pipefail
-          if test -f .github/intuition-authoring-patch/READY; then
-            echo 'apply=true' >> "$GITHUB_OUTPUT"
-          else
-            echo 'apply=false' >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Validate and apply immutable source patch
-        if: steps.pending.outputs.apply == 'true'
+      - name: Validate, uniquely repair, and apply immutable source patch
         shell: bash
         run: |
           exec > >(tee "$RUNNER_TEMP/intuition-authoring-validate.log") 2>&1
@@ -71,31 +59,99 @@ jobs:
           import os
           import pathlib
           import subprocess
+          import tempfile
 
-          chunks = []
+          parts = []
           for name in ('PART_000', 'PART_001', 'PART_002'):
               raw = subprocess.check_output(['git', 'cat-file', 'blob', os.environ[name]])
               compact = b''.join(raw.split())
               print(f'{name}: raw={len(raw)} compact={len(compact)}')
-              chunks.append(compact)
-          encoded = b''.join(chunks)
-          patch = base64.b64decode(encoded, validate=True)
+              parts.append(compact)
+
+          def decode_applicable(encoded: bytes, label: str):
+              try:
+                  patch = base64.b64decode(encoded, validate=True)
+                  text = patch.decode('utf-8')
+              except (ValueError, UnicodeDecodeError) as error:
+                  return None
+              if not text.startswith('diff --git a/') or '\x00' in text or not text.endswith('\n'):
+                  return None
+              with tempfile.NamedTemporaryFile(prefix='intuition-', suffix='.patch', delete=False) as handle:
+                  handle.write(patch)
+                  candidate = handle.name
+              try:
+                  result = subprocess.run(
+                      ['git', 'apply', '--check', candidate],
+                      stdout=subprocess.PIPE,
+                      stderr=subprocess.PIPE,
+                      check=False,
+                  )
+              finally:
+                  pathlib.Path(candidate).unlink(missing_ok=True)
+              if result.returncode != 0:
+                  return None
+              print(f'applicable candidate {label}: bytes={len(patch)} sha256={hashlib.sha256(patch).hexdigest()}')
+              return patch
+
+          encoded = b''.join(parts)
+          applicable = []
+          direct = decode_applicable(encoded, 'direct') if len(encoded) % 4 == 0 else None
+          if direct is not None:
+              applicable.append(('direct', None, direct))
+
+          if len(encoded) % 4 == 1 and len(parts[1]) == 12001:
+              for index in range(len(parts[1])):
+                  repaired = parts[0] + parts[1][:index] + parts[1][index + 1:] + parts[2]
+                  try:
+                      patch = base64.b64decode(repaired, validate=True)
+                      text = patch.decode('utf-8')
+                  except (ValueError, UnicodeDecodeError):
+                      continue
+                  if not text.startswith('diff --git a/') or '\x00' in text or not text.endswith('\n'):
+                      continue
+                  with tempfile.NamedTemporaryFile(prefix='intuition-', suffix='.patch', delete=False) as handle:
+                      handle.write(patch)
+                      candidate = handle.name
+                  try:
+                      result = subprocess.run(
+                          ['git', 'apply', '--check', candidate],
+                          stdout=subprocess.PIPE,
+                          stderr=subprocess.PIPE,
+                          check=False,
+                      )
+                  finally:
+                      pathlib.Path(candidate).unlink(missing_ok=True)
+                  if result.returncode == 0:
+                      applicable.append((
+                          'part-001-single-byte-removal',
+                          index,
+                          patch,
+                      ))
+
+          if len(applicable) != 1:
+              raise SystemExit(f'expected exactly one applicable reconstruction, found {len(applicable)}')
+          method, index, patch = applicable[0]
+          removed = None if index is None else parts[1][index:index + 1]
           target = pathlib.Path('.git/intuition-source.patch')
           target.write_bytes(patch)
           digest = hashlib.sha256(patch).hexdigest()
           pathlib.Path('.git/intuition-source.patch.sha256').write_text(
               f'{digest}  {target.name}\n', encoding='utf-8'
           )
-          print(f'encoded={len(encoded)} patch={len(patch)} sha256={digest}')
+          pathlib.Path('.git/intuition-source.patch.recovery').write_text(
+              f'method={method}\nindex={index}\nremoved={removed!r}\nsha256={digest}\n',
+              encoding='utf-8',
+          )
+          print(f'selected method={method} index={index} removed={removed!r} bytes={len(patch)} sha256={digest}')
           PY
           git diff --quiet
           git apply --check .git/intuition-source.patch
           git apply --index .git/intuition-source.patch
           rm -rf .github/intuition-authoring-patch
           rm -f .github/workflows/intuition-source-export.yml
+          test -z "$(git diff --name-only "$CLEAN_PARENT" -- .github/intuition-authoring-patch .github/workflows/intuition-source-export.yml)"
 
       - name: Capture applied patch before execution
-        if: steps.pending.outputs.apply == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -103,11 +159,11 @@ jobs:
           mkdir -p "$output"
           cp .git/intuition-source.patch "$output/source.patch"
           cp .git/intuition-source.patch.sha256 "$output/source.patch.sha256"
+          cp .git/intuition-source.patch.recovery "$output/source.patch.recovery"
           cp "$RUNNER_TEMP/intuition-authoring-validate.log" "$output/validate.log"
           git diff --cached --binary > "$output/applied.patch"
 
       - name: Upload applied-patch evidence
-        if: steps.pending.outputs.apply == 'true'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: intuition-applied-patch-${{ env.AUTHORING_HEAD }}-${{ github.run_attempt }}
@@ -116,23 +172,19 @@ jobs:
           retention-days: 3
 
       - name: Set up repository CI dependencies
-        if: steps.pending.outputs.apply == 'true'
         uses: ./.github/actions/setup-ci
 
       - name: Install pinned Rust toolchain
-        if: steps.pending.outputs.apply == 'true'
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
           toolchain: 1.95.0
           components: rustfmt,clippy
 
       - name: Format exact Rust source
-        if: steps.pending.outputs.apply == 'true'
         working-directory: codex-rs
         run: cargo fmt --all
 
       - name: Verify source projections and legacy boundaries
-        if: steps.pending.outputs.apply == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -140,7 +192,6 @@ jobs:
           python -m unittest discover -s scripts/tests -p 'test_intuition*.py' -v
 
       - name: Run final-use and compatibility regressions
-        if: steps.pending.outputs.apply == 'true'
         working-directory: codex-rs
         shell: bash
         run: |
@@ -152,12 +203,10 @@ jobs:
           cargo test --locked -p codex-hepta-agentd --lib intuition_policy
 
       - name: Run strict lint on affected product package
-        if: steps.pending.outputs.apply == 'true'
         working-directory: codex-rs
         run: cargo clippy --locked -p codex-hepta-agentd --lib --tests -- -D warnings
 
       - name: Verify formatting and patch hygiene
-        if: steps.pending.outputs.apply == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -166,13 +215,13 @@ jobs:
           test -z "$(find . -type d -name __pycache__ -print -quit)"
 
       - name: Publish one clean source commit
-        if: steps.pending.outputs.apply == 'true'
         shell: bash
         run: |
           set -euo pipefail
           git config user.name "OpenAI source authoring"
           git config user.email "assistant@openai.invalid"
           git add -A
+          test -z "$(git diff --cached --name-only | grep -E '^\.github/(intuition-authoring-patch|workflows/intuition-source-export\.yml)$' || true)"
           tree="$(git write-tree)"
           commit="$(printf '%s\n\n%s\n' \
             'fix(intuition): revalidate authority at final use' \
@@ -183,7 +232,7 @@ jobs:
           printf '%s\n' "$commit"
 
       - name: Retain diagnostics on failure
-        if: failure() && steps.pending.outputs.apply == 'true'
+        if: failure()
         shell: bash
         run: |
           set -euo pipefail
@@ -195,9 +244,10 @@ jobs:
           cp "$RUNNER_TEMP/intuition-authoring-validate.log" "$output/validate.log" 2>/dev/null || true
           cp .git/intuition-source.patch "$output/source.patch" 2>/dev/null || true
           cp .git/intuition-source.patch.sha256 "$output/source.patch.sha256" 2>/dev/null || true
+          cp .git/intuition-source.patch.recovery "$output/source.patch.recovery" 2>/dev/null || true
 
       - name: Upload failure diagnostics
-        if: failure() && steps.pending.outputs.apply == 'true'
+        if: failure()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: intuition-authoring-failure-${{ env.AUTHORING_HEAD }}-${{ github.run_attempt }}
