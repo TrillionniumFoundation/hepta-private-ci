@@ -8,6 +8,8 @@ on:
       - .github/workflows/runtime-codex-maintainer.yml
       - scripts/runtime-codex-maintainer.py
       - scripts/runtime-codex-maintainer-followup.py
+      - scripts/runtime-codex-durability-migration.py
+      - scripts/runtime-codex-durability-fixup.py
   workflow_dispatch:
 
 permissions:
@@ -44,14 +46,18 @@ jobs:
           git rev-parse HEAD
           git rev-parse 'HEAD^{tree}'
           git archive --format=zip --output=runtime-codex-source-before.zip HEAD
-      - name: Apply protocol convergence and hardening
+      - name: Apply protocol convergence, hardening, and durable owner
         run: |
           set -euo pipefail
           python3 -m py_compile \
             scripts/runtime-codex-maintainer.py \
-            scripts/runtime-codex-maintainer-followup.py
+            scripts/runtime-codex-maintainer-followup.py \
+            scripts/runtime-codex-durability-migration.py \
+            scripts/runtime-codex-durability-fixup.py
           python3 scripts/runtime-codex-maintainer.py
           python3 scripts/runtime-codex-maintainer-followup.py
+          python3 scripts/runtime-codex-durability-migration.py
+          python3 scripts/runtime-codex-durability-fixup.py
           cd codex-rs
           cargo fmt --all
       - name: Verify convergence candidate
@@ -107,7 +113,7 @@ jobs:
             codex-rs/hepta-infer-worker-host \
             codex-rs/hepta-agentd
           if ! git diff --cached --quiet; then
-            git commit -m 'fix(runtime.codex): converge and harden bound execution'
+            git commit -m 'fix(runtime.codex): converge and durably fence bound execution'
             git push origin HEAD:codex/runtime-codex-full-convergence-20260929
           fi
           git archive --format=zip --output=runtime-codex-source-after.zip HEAD
