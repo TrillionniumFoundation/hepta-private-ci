@@ -1,0 +1,51 @@
+name: Automation TaskFlow export exact convergence patch
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: automation-taskflow-export-exact-convergence-patch
+  cancel-in-progress: true
+
+jobs:
+  export:
+    runs-on: ubuntu-slim
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact branch head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: work/automation-taskflow-full-closure-2026-09-27
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Materialize and verify canonical patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/automation-taskflow-final.patch"
+          cat scripts/automation_taskflow_patch_parts/part-*.b64 \
+            | tr -d '\r\n\t ' \
+            | base64 --decode \
+            | gzip --decompress --stdout > "$output"
+          test -s "$output"
+          test "$(sha256sum "$output" | awk '{print $1}')" = \
+            "b89fe79282a0d71f77198765809197102922613843686e3e0554df37db5c7461"
+          grep -Eq '^index [0-9a-f]+\.\.[0-9a-f]+' "$output"
+          git apply --check --3way "$output"
+          printf '%s\n' "$(git rev-parse HEAD)" > "$RUNNER_TEMP/source-sha.txt"
+          printf '%s\n' "$(git rev-parse HEAD^{tree})" > "$RUNNER_TEMP/source-tree.txt"
+
+      - name: Retain exact canonical patch
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: automation-taskflow-exact-convergence-patch-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/automation-taskflow-final.patch
+            ${{ runner.temp }}/source-sha.txt
+            ${{ runner.temp }}/source-tree.txt
+          if-no-files-found: error
+          retention-days: 7
