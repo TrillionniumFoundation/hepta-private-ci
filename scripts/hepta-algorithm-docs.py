@@ -887,10 +887,9 @@ def verify() -> int:
         "capability truth state",
     )
     need(registry.get("paperTraceabilityPath") == PAPER_PATH, "paper path")
-    need(
-        git("hash-object", PAPER_PATH) == registry.get("paperTraceabilityBlobSha"),
-        "paper traceability blob identity",
-    )
+    # Registry blob caches are presentation metadata, not another source owner.
+    # The source-lock verifier below still pins each paper's real content and
+    # claim anchors. Explicit receipts bind the actual current registry bytes.
 
     module_ids = [row.get("id") for row in modules.get("modules", [])]
     need(
@@ -1266,6 +1265,17 @@ def generate_status(check: bool) -> int:
     return 0
 
 
+def paper_source_lock_digest(papers: dict[str, Any]) -> str:
+    """Bind paper lock values while ignoring JSON object serialization order."""
+    return sha256_text(
+        json.dumps(
+            [row["sourceLock"] for row in papers["papers"]],
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+    )
+
+
 def receipt(expected_sha: str, output: str) -> int:
     verify()
     need(re.fullmatch(r"[0-9a-f]{40}", expected_sha) is not None, "expected SHA")
@@ -1278,14 +1288,8 @@ def receipt(expected_sha: str, output: str) -> int:
         "headSha": git("rev-parse", "HEAD"),
         "treeSha": git("rev-parse", "HEAD^{tree}"),
         "algorithmRegistryBlobSha": git("hash-object", REGISTRY_PATH),
-        "paperTraceabilityBlobSha": registry["paperTraceabilityBlobSha"],
-        "paperSourceLockSha256": sha256_text(
-            json.dumps(
-                [row["sourceLock"] for row in papers["papers"]],
-                sort_keys=True,
-                separators=(",", ":"),
-            )
-        ),
+        "paperTraceabilityBlobSha": git("hash-object", PAPER_PATH),
+        "paperSourceLockSha256": paper_source_lock_digest(papers),
         "specificationBlobShas": {
             row["id"]: git("hash-object", row["path"]) for row in registry["documents"]
         },
@@ -1332,6 +1336,15 @@ def receipt_verify(input_path: str, expected_sha: str) -> int:
         "receipt registry",
     )
     registry = load(REGISTRY_PATH)
+    papers = load(PAPER_PATH)
+    need(
+        value.get("paperTraceabilityBlobSha") == git("hash-object", PAPER_PATH),
+        "receipt paper registry identity",
+    )
+    need(
+        value.get("paperSourceLockSha256") == paper_source_lock_digest(papers),
+        "receipt paper source-lock identity",
+    )
     need(
         value.get("specificationBlobShas")
         == {

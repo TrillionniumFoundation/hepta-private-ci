@@ -148,6 +148,11 @@ The module registries expose two separate boolean facts for every module: `sourc
 
 ## 5B. Adaptive algorithm closed world
 
+The algorithm registry's historical `paperTraceabilityBlobSha` field is an optional
+presentation cache. Paper content locks and exact claim anchors remain mandatory.
+Explicit qualification receipts hash the actual paper-registry bytes and lock
+values at execution, and their verifier rejects stale or substituted identities.
+
 The implementation-level adaptive document set is globally governed, not an independent prose island. `docs/learning/ALGORITHM_SPECS.json` binds the six specification paths, paper claim anchors, canonical contracts and protocol schemas, data-authority domains, quantitative experiments, artifact lifecycle, work package `DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD`, and both read-only CI workflows.
 
 `python3 scripts/hepta-algorithm-docs.py verify` is necessary but cannot self-certify closure. `python3 scripts/hepta-docs.py verify` must load the algorithm registry, invoke the dedicated verifier, confirm every adaptive path is in `DOCUMENT_SYSTEM.json`, and confirm the package and Development/Activation/Evidence DAG edges. Both exact source and deterministic synthetic merge candidates must pass. Git and execution records bind actual specification bytes; ordinary prose edits do not refresh hand-maintained blob caches. Headings, ordering, stock declarations and keyword coverage are editorial advice, not semantic or implementation evidence. Temporary installers, split payloads, `contents: write`, branch pushes, and workflow-generated source mutations are forbidden in the final document tree.

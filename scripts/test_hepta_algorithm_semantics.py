@@ -1,6 +1,8 @@
 """Semantic guards survive editorial changes without cached prose identities."""
 
 import importlib.util
+import contextlib
+import io
 import json
 import tempfile
 import unittest
@@ -113,12 +115,15 @@ class AlgorithmSemanticTests(unittest.TestCase):
 
     def test_receipt_checks_actual_specification_bytes(self):
         registry = {"documents": [self.row]}
+        papers = {"papers": [{"sourceLock": {"contentDigest": "source-content"}}]}
         payload = {
             "schema": DOCS.RECEIPT_SCHEMA,
             "expectedSha": "head",
             "headSha": "head",
             "treeSha": "tree",
             "algorithmRegistryBlobSha": "registry",
+            "paperTraceabilityBlobSha": "actual-paper-registry",
+            "paperSourceLockSha256": DOCS.paper_source_lock_digest(papers),
             "specificationBlobShas": {self.row["id"]: "actual-spec"},
             "documentationGapState": "closed",
             "globalClosureState": "closed",
@@ -133,14 +138,28 @@ class AlgorithmSemanticTests(unittest.TestCase):
                 ("rev-parse", "HEAD"): "head",
                 ("rev-parse", "HEAD^{tree}"): "tree",
                 ("hash-object", DOCS.REGISTRY_PATH): "registry",
+                ("hash-object", DOCS.PAPER_PATH): "actual-paper-registry",
                 ("hash-object", self.row["path"]): "actual-spec",
             }[args]
 
         with (
-            mock.patch.object(DOCS, "load", return_value=registry),
+            mock.patch.object(
+                DOCS,
+                "load",
+                side_effect=lambda path: (
+                    registry if path == DOCS.REGISTRY_PATH else papers
+                ),
+            ),
             mock.patch.object(DOCS, "git", git),
         ):
             DOCS.receipt_verify(str(output), "head")
+            for key in ("paperTraceabilityBlobSha", "paperSourceLockSha256"):
+                for invalid in (None, "stale-cache", "0" * 64):
+                    candidate = {**payload, key: invalid}
+                    output.write_text(json.dumps(candidate))
+                    with self.subTest(key=key, invalid=invalid):
+                        with self.assertRaisesRegex(SystemExit, "receipt paper"):
+                            DOCS.receipt_verify(str(output), "head")
             payload["specificationBlobShas"][self.row["id"]] = self.row["blobSha"]
             output.write_text(json.dumps(payload))
             with self.assertRaisesRegex(SystemExit, "specification identity"):
@@ -151,6 +170,62 @@ class PaperObjectSemanticsTests(unittest.TestCase):
     @staticmethod
     def papers():
         return DOCS.load(DOCS.PAPER_PATH)
+
+    def test_complete_verifier_accepts_missing_or_stale_paper_registry_cache(self):
+        original_load = DOCS.load
+        for retain_cache in (False, True):
+
+            def load(path):
+                value = original_load(path)
+                if path == DOCS.REGISTRY_PATH:
+                    value.pop("paperTraceabilityBlobSha", None)
+                    if retain_cache:
+                        value["paperTraceabilityBlobSha"] = "old-presentation-cache"
+                if path == DOCS.PAPER_PATH:
+                    value["papers"] = [
+                        dict(reversed(list(row.items()))) for row in value["papers"]
+                    ]
+                return value
+
+            with self.subTest(retain_cache=retain_cache):
+                with mock.patch.object(DOCS, "load", side_effect=load):
+                    with contextlib.redirect_stdout(io.StringIO()):
+                        self.assertEqual(DOCS.verify(), 0)
+
+    def test_receipt_uses_actual_paper_bytes_not_optional_registry_cache(self):
+        registry = DOCS.load(DOCS.REGISTRY_PATH)
+        papers = self.papers()
+        registry["paperTraceabilityBlobSha"] = "stale-presentation-cache"
+        source = "1" * 40
+
+        def git(*args):
+            if args == ("rev-parse", "HEAD"):
+                return source
+            return "actual:" + args[-1]
+
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "receipt.json"
+            with (
+                mock.patch.object(DOCS, "verify", return_value=0),
+                mock.patch.object(DOCS, "git", side_effect=git),
+                mock.patch.object(
+                    DOCS,
+                    "load",
+                    side_effect=lambda path: (
+                        registry if path == DOCS.REGISTRY_PATH else papers
+                    ),
+                ),
+            ):
+                DOCS.receipt(source, str(output))
+                result = json.loads(output.read_text())
+                self.assertEqual(
+                    result["paperTraceabilityBlobSha"], "actual:" + DOCS.PAPER_PATH
+                )
+                self.assertEqual(
+                    result["paperSourceLockSha256"],
+                    DOCS.paper_source_lock_digest(papers),
+                )
+                DOCS.receipt_verify(str(output), source)
 
     def test_nested_paper_object_reordering_preserves_source_lock_validation(self):
         def reorder(value):
