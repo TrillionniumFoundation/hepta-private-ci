@@ -1,36 +1,34 @@
 name: Cognitive read qualification
 
 on:
-  pull_request:
+  push:
     branches:
-      - main
+      - work/cognitive-read-production-convergence-20260927
     paths:
       - .github/workflows/cognitive-read-qualification.yml
-      - .github/scripts/cognitive_read_maintenance_closure.sh
 
 permissions:
   contents: read
 
 concurrency:
-  group: cognitive-read-maintenance-artifact-${{ github.event.pull_request.number }}
+  group: cognitive-read-maintenance-artifact-push
   cancel-in-progress: true
 
 jobs:
   maintenance-artifact:
     name: Build exact maintenance artifact
-    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'work/cognitive-read-production-convergence-20260927'
     runs-on: windows-2025
     timeout-minutes: 180
     env:
       RUST_MIN_STACK: "8388608"
-      EXPECTED_PARENT: d4bd1a1f90882b889efccbf10509c58bf5e25c71
+      EXPECTED_PARENT: dc6420ff87b039b1d2928ec77fbb65edd4729090
       RESTORE_COMMIT: c20035266afa1cd08570b021632ba71dcb7766b7
       TARGET_BRANCH: work/cognitive-read-production-convergence-20260927
     steps:
-      - name: Check out exact PR head
+      - name: Check out exact branch head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: false
       - name: Prepare repository CI tools
@@ -38,13 +36,14 @@ jobs:
       - name: Build and verify bounded maintenance candidate
         shell: bash
         run: |
+          export GITHUB_HEAD_REF="$GITHUB_REF_NAME"
           export RUNNER_TEMP="$(cygpath -u "$RUNNER_TEMP")"
           bash .github/scripts/cognitive_read_maintenance_closure.sh
       - name: Retain exact maintenance artifact
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: cognitive-read-maintenance-${{ github.event.pull_request.head.sha }}-${{ github.run_id }}
+          name: cognitive-read-maintenance-${{ github.sha }}-${{ github.run_id }}
           path: ${{ runner.temp }}/cognitive-read-maintenance-artifact
           if-no-files-found: error
           retention-days: 30
