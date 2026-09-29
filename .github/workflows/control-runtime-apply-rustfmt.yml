@@ -1,4 +1,4 @@
-name: control.runtime one-shot convergence finalizer
+name: control.runtime verified final-tree builder
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pull-requests: read
 
 concurrency:
@@ -36,7 +36,7 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
-          persist-credentials: true
+          persist-credentials: false
 
       - name: Acquire exact target-branch lease
         shell: bash
@@ -120,7 +120,7 @@ jobs:
           cargo check --locked --all-targets -p codex-hepta-control-plane
           cargo clippy --locked --all-targets -p codex-hepta-control-plane -- -D warnings
 
-      - name: Commit and push only the verified fast-forward
+      - name: Package the verified final tree
         shell: bash
         run: |
           set -euo pipefail
@@ -129,7 +129,63 @@ jobs:
           git diff --cached --check
           remote_head="$(git ls-remote origin "refs/heads/$EXPECTED_BRANCH" | awk '{print $1}')"
           test "$remote_head" = "$CHECKED_HEAD"
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -s -m "feat(control.runtime): close bounded recovery loop"
-          git push origin "HEAD:refs/heads/$EXPECTED_BRANCH"
+          artifact="$RUNNER_TEMP/control-runtime-final-tree"
+          mkdir -p "$artifact/files"
+          export ARTIFACT_ROOT="$artifact"
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          import shutil
+          import subprocess
+          from pathlib import Path
+
+          artifact = Path(os.environ["ARTIFACT_ROOT"])
+          names = subprocess.check_output(
+              ["git", "diff", "--cached", "--name-only", "-z"]
+          ).split(b"\0")
+          deleted = set(
+              part.decode("utf-8")
+              for part in subprocess.check_output(
+                  ["git", "diff", "--cached", "--diff-filter=D", "--name-only", "-z"]
+              ).split(b"\0")
+              if part
+          )
+          manifest = []
+          for raw in names:
+              if not raw:
+                  continue
+              path = raw.decode("utf-8")
+              if path in deleted:
+                  manifest.append({"path": path, "status": "delete"})
+                  continue
+              source = Path(path)
+              destination = artifact / "files" / path
+              destination.parent.mkdir(parents=True, exist_ok=True)
+              shutil.copy2(source, destination)
+              payload = source.read_bytes()
+              manifest.append(
+                  {
+                      "path": path,
+                      "status": "upsert",
+                      "sha256": hashlib.sha256(payload).hexdigest(),
+                      "bytes": len(payload),
+                  }
+              )
+          (artifact / "manifest.json").write_text(
+              json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+          git diff --cached --binary > "$artifact/changes.patch"
+          git write-tree > "$artifact/tree.txt"
+          git rev-parse HEAD > "$artifact/base-commit.txt"
+          cp "$RUNNER_TEMP/control-runtime-state.json" "$artifact/state.json"
+
+      - name: Upload verified final tree
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: control-runtime-final-tree-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/control-runtime-final-tree
+          if-no-files-found: error
+          retention-days: 30
