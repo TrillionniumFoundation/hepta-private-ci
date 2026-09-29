@@ -192,7 +192,7 @@ try {
     evidenceDigests,
     stageResults: ledger.snapshot(),
     failure,
-    claims: ledger.claims(),
+    claims: ledger.failureClaims(),
   });
   process.exitCode = 1;
 }

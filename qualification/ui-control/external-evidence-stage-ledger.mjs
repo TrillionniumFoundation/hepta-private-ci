@@ -54,6 +54,7 @@ const FINAL_OUTCOMES = new Set(["passed", "failed", "not-required"]);
 const RELEASE_PREREQUISITES = Object.freeze(
   EXTERNAL_EVIDENCE_STAGE_ORDER.filter(stage => stage !== "production-approval"),
 );
+const NON_EVIDENCE_STAGES = new Set(["deployment-identity", "main-ancestry"]);
 
 function ledgerError(code, message) {
   const error = new Error(message);
@@ -129,6 +130,12 @@ export function createExternalEvidenceStageLedger() {
 
   const accept = stage => {
     const current = requireActive(stage);
+    if (!NON_EVIDENCE_STAGES.has(stage) && current.evidenceDigest === null) {
+      throw ledgerError(
+        "UI_CONTROL_EVIDENCE_LEDGER_DIGEST_REQUIRED",
+        `external-evidence stage cannot be accepted without an exact receipt digest: ${stage}`,
+      );
+    }
     results[stage] = {
       ...current,
       observedOutcome: "passed",
@@ -166,7 +173,7 @@ export function createExternalEvidenceStageLedger() {
     if (activeStage === stage) activeStage = null;
   };
 
-  const claims = () => {
+  const projectClaims = suppressRelease => {
     const projected = Object.fromEntries(
       EXTERNAL_EVIDENCE_CLAIM_ORDER.map(claim => [claim, false]),
     );
@@ -177,16 +184,28 @@ export function createExternalEvidenceStageLedger() {
     const releasePrerequisitesAccepted = RELEASE_PREREQUISITES.every(
       stage => results[stage].acceptedEvidence,
     );
-    if (!releasePrerequisitesAccepted) {
+    if (suppressRelease || !releasePrerequisitesAccepted) {
       projected.productionDeploymentApproved = false;
       projected.releaseAuthorized = false;
     }
     return projected;
   };
 
+  const claims = () => projectClaims(false);
+  const failureClaims = () => projectClaims(true);
+
   const snapshot = () => Object.fromEntries(
     EXTERNAL_EVIDENCE_STAGE_ORDER.map(stage => [stage, { ...results[stage] }]),
   );
 
-  return Object.freeze({ begin, attachEvidence, accept, skip, fail, claims, snapshot });
+  return Object.freeze({
+    begin,
+    attachEvidence,
+    accept,
+    skip,
+    fail,
+    claims,
+    failureClaims,
+    snapshot,
+  });
 }

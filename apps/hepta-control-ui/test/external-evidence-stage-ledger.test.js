@@ -90,3 +90,33 @@ test("production approval cannot authorize release while any prerequisite stage 
   assert.equal(claims.releaseAuthorized, false);
   assert.equal(ledger.snapshot()["production-approval"].acceptedEvidence, true);
 });
+
+test("evidence-bearing stages cannot be accepted without an exact digest", () => {
+  const ledger = createExternalEvidenceStageLedger();
+  ledger.begin("real-backend");
+  assert.throws(
+    () => ledger.accept("real-backend"),
+    error => error?.code === "UI_CONTROL_EVIDENCE_LEDGER_DIGEST_REQUIRED",
+  );
+  ledger.attachEvidence("real-backend", digest("b"));
+  ledger.accept("real-backend");
+  assert.equal(ledger.snapshot()["real-backend"].acceptedEvidence, true);
+});
+
+test("failed bundle projection suppresses release after every stage was accepted", () => {
+  const ledger = createExternalEvidenceStageLedger();
+  for (const [index, stage] of EXTERNAL_EVIDENCE_STAGE_ORDER.entries()) {
+    ledger.begin(stage);
+    if (!["deployment-identity", "main-ancestry"].includes(stage)) {
+      ledger.attachEvidence(stage, String(index).repeat(64));
+    }
+    ledger.accept(stage);
+  }
+
+  assert.equal(ledger.claims().productionDeploymentApproved, true);
+  assert.equal(ledger.claims().releaseAuthorized, true);
+  assert.equal(ledger.failureClaims().productionDeploymentApproved, false);
+  assert.equal(ledger.failureClaims().releaseAuthorized, false);
+  assert.equal(ledger.failureClaims().realBackendSemanticsQualified, true);
+  assert.equal(ledger.failureClaims().independentSecurityReviewPassed, true);
+});
