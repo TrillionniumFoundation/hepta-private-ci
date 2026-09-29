@@ -20,13 +20,29 @@ use codex_hepta_cognitive_types::hnmf_learning::*;
 use codex_hepta_cognitive_types::wire::CognitiveContractV1;
 use codex_hepta_cognitive_types::wire::encode_wire_v1;
 
+fn must<T, E: Debug>(result: Result<T, E>, context: &str) -> T {
+    match result {
+        Ok(value) => value,
+        Err(error) => panic!("{context}: {error:?}"),
+    }
+}
+
+fn must_err<T: Debug, E>(result: Result<T, E>, context: &str) -> E {
+    match result {
+        Err(error) => error,
+        Ok(value) => panic!("{context}: unexpected success: {value:?}"),
+    }
+}
+
 fn id(value: &str) -> ContractIdV1 {
-    ContractIdV1::new(value).expect("valid fixture identity")
+    must(ContractIdV1::new(value), "valid fixture identity")
 }
 
 fn digest(character: char) -> ContractDigestV1 {
-    ContractDigestV1::parse(&std::iter::repeat_n(character, 64).collect::<String>())
-        .expect("valid fixture digest")
+    must(
+        ContractDigestV1::parse(&std::iter::repeat_n(character, 64).collect::<String>()),
+        "valid fixture digest",
+    )
 }
 
 fn event() -> MemoryEventV1 {
@@ -169,7 +185,7 @@ fn binding_error_categories_are_exhaustive_and_payload_free() {
 }
 
 fn reseal(binding: &mut CanonicalConsumerBindingV1) {
-    binding.binding_sha256 = binding.compute_binding_sha256().expect("resealed binding");
+    binding.binding_sha256 = must(binding.compute_binding_sha256(), "resealed binding");
 }
 
 fn exercise_binding_refusals<T: CognitiveContractV1 + Debug>(
@@ -178,11 +194,12 @@ fn exercise_binding_refusals<T: CognitiveContractV1 + Debug>(
 ) {
     use ContractErrorCodeV1 as Code;
 
-    let expected = Validated::new(value).expect("valid expected projection");
-    let wire = encode_wire_v1(expected.as_inner()).expect("canonical input");
-    let handoff = binding
-        .compare_canonical_projection_v1(&expected, &wire)
-        .expect("baseline public handoff");
+    let expected = must(Validated::new(value), "valid expected projection");
+    let wire = must(encode_wire_v1(expected.as_inner()), "canonical input");
+    let handoff = must(
+        binding.compare_canonical_projection_v1(&expected, &wire),
+        "baseline public handoff",
+    );
     let mut cases = Vec::new();
 
     let mut invalid = binding.clone();
@@ -231,21 +248,24 @@ fn exercise_binding_refusals<T: CognitiveContractV1 + Debug>(
     cases.push((invalid, Code::StateConflict, "binding.migrationPosture"));
 
     for (invalid, code, path) in cases {
-        let before_decode = invalid
-            .compare_canonical_projection_v1(&expected, &wire)
-            .expect_err("invalid binding cannot enter the decoder");
-        let final_use = handoff
-            .require_match_for_current_binding(&invalid)
-            .expect_err("an old success cannot validate a new invalid binding");
+        let before_decode = must_err(
+            invalid.compare_canonical_projection_v1(&expected, &wire),
+            "invalid binding cannot enter the decoder",
+        );
+        let final_use = must_err(
+            handoff.require_match_for_current_binding(&invalid),
+            "an old success cannot validate a new invalid binding",
+        );
         for violation in [before_decode, final_use] {
             assert_eq!(violation.code, code);
             assert_eq!(violation.field_path, path);
         }
         assert_eq!(
-            handoff
-                .require_match_for_current_binding(&binding)
-                .expect("unchanged baseline remains usable")
-                .as_inner(),
+            must(
+                handoff.require_match_for_current_binding(&binding),
+                "unchanged baseline remains usable",
+            )
+            .as_inner(),
             expected.as_inner(),
         );
     }
@@ -253,10 +273,11 @@ fn exercise_binding_refusals<T: CognitiveContractV1 + Debug>(
     let mut changed = binding.clone();
     changed.operation_id = id("operation:different");
     reseal(&mut changed);
-    changed.validate().expect("structurally valid alternative");
-    let violation = handoff
-        .require_match_for_current_binding(&changed)
-        .expect_err("resealed operation substitution is still refused");
+    must(changed.validate(), "structurally valid alternative");
+    let violation = must_err(
+        handoff.require_match_for_current_binding(&changed),
+        "resealed operation substitution is still refused",
+    );
     assert_eq!(violation.code, Code::StateConflict);
     assert_eq!(violation.field_path, "handoff.currentBinding");
 }
@@ -267,14 +288,17 @@ fn exercise_wire_refusals<T: CognitiveContractV1 + Debug>(
 ) {
     use ContractErrorCodeV1 as Code;
 
-    let expected = Validated::new(value).expect("valid expected projection");
-    let wire = encode_wire_v1(expected.as_inner()).expect("canonical input");
-    let text = String::from_utf8(wire.clone()).expect("UTF-8 wire");
-    binding
-        .compare_canonical_projection_v1(&expected, &wire)
-        .expect("baseline public comparison")
-        .require_match_for_current_binding(&binding)
-        .expect("baseline final-use check");
+    let expected = must(Validated::new(value), "valid expected projection");
+    let wire = must(encode_wire_v1(expected.as_inner()), "canonical input");
+    let text = must(std::str::from_utf8(&wire), "UTF-8 wire").to_owned();
+    let baseline = must(
+        binding.compare_canonical_projection_v1(&expected, &wire),
+        "baseline public comparison",
+    );
+    must(
+        baseline.require_match_for_current_binding(&binding),
+        "baseline final-use check",
+    );
     let cases = [
         (format!("{text} ").into_bytes(), Code::NonCanonicalEncoding),
         (
@@ -295,15 +319,19 @@ fn exercise_wire_refusals<T: CognitiveContractV1 + Debug>(
     ];
     for (changed_wire, code) in cases {
         assert_ne!(changed_wire, wire);
-        let violation = binding
-            .compare_canonical_projection_v1(&expected, &changed_wire)
-            .expect_err("changed wire cannot reuse a prior successful payload");
+        let violation = must_err(
+            binding.compare_canonical_projection_v1(&expected, &changed_wire),
+            "changed wire cannot reuse a prior successful payload",
+        );
         assert_eq!(violation.code, code);
-        binding
-            .compare_canonical_projection_v1(&expected, &wire)
-            .expect("valid bytes still traverse the normal public path")
-            .require_match_for_current_binding(&binding)
-            .expect("unchanged binding still matches");
+        let unchanged = must(
+            binding.compare_canonical_projection_v1(&expected, &wire),
+            "valid bytes still traverse the normal public path",
+        );
+        must(
+            unchanged.require_match_for_current_binding(&binding),
+            "unchanged binding still matches",
+        );
     }
 }
 
@@ -317,30 +345,34 @@ fn each_consumer(
             | CanonicalConsumerV1::CognitiveStore
             | CanonicalConsumerV1::CompactEngine => {
                 let value = event();
-                let binding = bind_memory_event_consumer_v1(
-                    id("operation:errors"),
-                    consumer,
-                    &value,
-                    digest('5').digest(),
-                    digest('6').digest(),
-                    Some(digest('7').digest()),
-                    CanonicalMigrationPostureV1::CompatibilityBound,
-                )
-                .expect("event consumer binding");
+                let binding = must(
+                    bind_memory_event_consumer_v1(
+                        id("operation:errors"),
+                        consumer,
+                        &value,
+                        digest('5').digest(),
+                        digest('6').digest(),
+                        Some(digest('7').digest()),
+                        CanonicalMigrationPostureV1::CompatibilityBound,
+                    ),
+                    "event consumer binding",
+                );
                 exercise_events(value, binding);
             }
             CanonicalConsumerV1::MemoryRetrieval | CanonicalConsumerV1::IntelligenceControl => {
                 let value = recall();
-                let binding = bind_recall_packet_consumer_v1(
-                    id("operation:errors"),
-                    consumer,
-                    &value,
-                    digest('5').digest(),
-                    digest('6').digest(),
-                    Some(digest('7').digest()),
-                    CanonicalMigrationPostureV1::CompatibilityBound,
-                )
-                .expect("recall consumer binding");
+                let binding = must(
+                    bind_recall_packet_consumer_v1(
+                        id("operation:errors"),
+                        consumer,
+                        &value,
+                        digest('5').digest(),
+                        digest('6').digest(),
+                        Some(digest('7').digest()),
+                        CanonicalMigrationPostureV1::CompatibilityBound,
+                    ),
+                    "recall consumer binding",
+                );
                 exercise_recalls(value, binding);
             }
         }
