@@ -148,6 +148,37 @@ class RustdocApiTests(unittest.TestCase):
         self.assertEqual(first["items"], shifted["items"])
         self.assertEqual(first["snapshotSha256"], shifted["snapshotSha256"])
 
+    def test_restricted_visibility_parent_ids_normalize_structurally(self):
+        first_document = document(0)
+        shifted_document = document(100)
+        first_document["index"]["3"]["visibility"] = {
+            "restricted": {"parent": 1, "path": "crate::Foo"}
+        }
+        shifted_document["index"]["103"]["visibility"] = {
+            "restricted": {"parent": 101, "path": "crate::Foo"}
+        }
+        first = _Normalizer(first_document).snapshot()
+        shifted = _Normalizer(shifted_document).snapshot()
+        self.assertEqual(first["items"], shifted["items"])
+        self.assertEqual(first["snapshotSha256"], shifted["snapshotSha256"])
+
+    def test_restricted_visibility_parent_change_is_breaking(self):
+        base_document = document()
+        candidate_document = copy.deepcopy(base_document)
+        base_document["index"]["3"]["visibility"] = {
+            "restricted": {"parent": 1, "path": "crate::Foo"}
+        }
+        candidate_document["index"]["3"]["visibility"] = {
+            "restricted": {"parent": 4, "path": "crate::Bar"}
+        }
+        result = diff(
+            _Normalizer(base_document).snapshot(),
+            _Normalizer(candidate_document).snapshot(),
+        )
+        self.assertTrue(result["breaking"])
+        changed = {row["path"] for row in result["changed"]}
+        self.assertIn("codex_hepta_types::Foo", changed)
+
     def test_additive_public_path_does_not_mutate_existing_items(self):
         base = _Normalizer(document()).snapshot()
         candidate = _Normalizer(document(add_function=True)).snapshot()
