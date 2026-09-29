@@ -1,0 +1,58 @@
+{
+  "schema": "hepta.browser.servo-artifact-provenance-index.v1",
+  "schemaVersion": 1,
+  "module": "browser.servo",
+  "qualificationManifestSha256": "a5248106858767587c2524edb0b846b9e04cecfd478928f1a0638250100c6524",
+  "artifacts": [
+    {
+      "id": "exact_head_receipt",
+      "requiredFor": "repository_source_qualification",
+      "producer": ".github/workflows/hepta-browser-servo-qualification.yml",
+      "state": "runtime_generated_not_tracked"
+    },
+    {
+      "id": "synthetic_merge_receipt",
+      "requiredFor": "repository_source_qualification",
+      "producer": ".github/workflows/hepta-browser-servo-qualification.yml",
+      "state": "runtime_generated_not_tracked"
+    },
+    {
+      "id": "primary_worker",
+      "requiredFor": "deployment_qualification",
+      "producer": ".github/workflows/hepta-browser-servo-worker-dev.yml",
+      "state": "runtime_generated_not_tracked"
+    },
+    {
+      "id": "independent_worker",
+      "requiredFor": "deployment_qualification",
+      "producer": ".github/workflows/hepta-browser-servo-independent-rebuild.yml",
+      "state": "runtime_generated_not_tracked"
+    },
+    {
+      "id": "spdx_2_3_sbom",
+      "requiredFor": "deployment_qualification",
+      "producer": ".github/workflows/hepta-browser-servo-worker-dev.yml",
+      "state": "runtime_generated_not_tracked"
+    },
+    {
+      "id": "primary_and_independent_provenance",
+      "requiredFor": "deployment_qualification",
+      "producer": "GitHub artifact attestations",
+      "state": "main_only_runtime_generated_not_tracked"
+    },
+    {
+      "id": "trusted_target_receipt",
+      "requiredFor": "operator_acceptance",
+      "producer": ".github/workflows/hepta-browser-servo-deployment-qualification.yml",
+      "state": "runtime_generated_not_tracked"
+    }
+  ],
+  "identityRules": {
+    "exactSourceRequired": true,
+    "workerSha256Required": true,
+    "cargoLockSha256Required": true,
+    "sbomSha256Required": true,
+    "signerWorkflowIdentityRequired": true,
+    "trackedArtifactBytesForbidden": true
+  }
+}

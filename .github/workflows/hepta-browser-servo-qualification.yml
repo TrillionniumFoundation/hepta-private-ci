@@ -1,0 +1,167 @@
+name: Hepta Browser Servo qualification truth
+
+on:
+  pull_request:
+    paths:
+      - 'apps/hepta-browser/**'
+      - 'codex-rs/hepta-agentd/**'
+      - 'docs/modules/browser.servo/**'
+      - 'third_party/servo-patches/**'
+      - '.github/actions/hepta-synthetic-merge/**'
+      - '.github/workflows/hepta-browser-servo-qualification.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'apps/hepta-browser/**'
+      - 'codex-rs/hepta-agentd/**'
+      - 'docs/modules/browser.servo/**'
+      - 'third_party/servo-patches/**'
+      - '.github/actions/hepta-synthetic-merge/**'
+      - '.github/workflows/hepta-browser-servo-qualification.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: browser-servo-qualification-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.sha }}
+
+jobs:
+  module:
+    name: ${{ matrix.lane }} module qualification
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["exact-head","synthetic-merge"]' || '["exact-head"]') }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Construct deterministic synthetic merge
+        if: matrix.lane == 'synthetic-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: browser-servo-qualification
+          author-email: browser-servo-qualification@users.noreply.github.com
+          message: browser.servo qualification merge
+      - name: Bind effective source
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha="$(git rev-parse HEAD)"; tree="$(git rev-parse HEAD^{tree})"
+          if [ '${{ matrix.lane }}' = exact-head ]; then
+            test "$sha" = "$SOURCE_SHA"
+          else
+            test "$(git rev-list --parents -n1 HEAD | awk '{print $2}')" = "$BASE_SHA"
+            test "$(git rev-list --parents -n1 HEAD | awk '{print $3}')" = "$SOURCE_SHA"
+          fi
+          printf 'EFFECTIVE_SOURCE_SHA=%s\nEFFECTIVE_SOURCE_TREE=%s\n' "$sha" "$tree" >> "$GITHUB_ENV"
+      - name: Verify canonical truth and source registry
+        run: |
+          node apps/hepta-browser/scripts/qualification-state.mjs --check
+          npm --prefix apps/hepta-browser run verify:registry
+      - name: Run complete Browser suite
+        run: node --test apps/hepta-browser/test/*.test.js
+      - name: Verify Agentd formatting
+        run: cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-agentd -- --check
+      - name: Test Agentd Browser owners
+        working-directory: codex-rs
+        run: |
+          cargo test --locked -p codex-hepta-agentd browser_servo --lib
+          cargo test --locked -p codex-hepta-agentd --bin hepta-agentd-browser-service
+      - name: Check and lint Agentd Browser callers
+        working-directory: codex-rs
+        run: |
+          cargo check --locked -p codex-hepta-agentd --bin hepta-agentd-browser --bin hepta-agentd-browser-service
+          cargo clippy --locked -p codex-hepta-agentd --lib --bin hepta-agentd-browser --bin hepta-agentd-browser-service --no-deps -- -D warnings
+      - name: Check and test locked Servo worker
+        run: |
+          cargo check --locked --manifest-path apps/hepta-browser/servo-worker/Cargo.toml
+          cargo test --locked --manifest-path apps/hepta-browser/servo-worker/Cargo.toml
+      - name: Emit source-bound receipt
+        env:
+          QUALIFICATION_LANE: ${{ matrix.lane }}
+        run: |
+          mkdir -p qualification-evidence
+          node apps/hepta-browser/scripts/qualification-state.mjs --receipt qualification-evidence/receipt.json
+          git rev-parse HEAD HEAD^{tree} > qualification-evidence/source.txt
+          sha256sum qualification-evidence/receipt.json > qualification-evidence/receipt.sha256
+      - name: Preserve qualification receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: browser-servo-${{ matrix.lane }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: qualification-evidence
+          if-no-files-found: error
+          retention-days: 30
+      - name: Require unchanged source
+        if: always()
+        run: |
+          test "$(git rev-parse HEAD)" = "$EFFECTIVE_SOURCE_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$EFFECTIVE_SOURCE_TREE"
+          git diff --check && git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+  workspace:
+    name: ${{ matrix.lane }} full Rust workspace integration
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["exact-head","synthetic-merge"]' || '["exact-head"]') }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Construct deterministic synthetic merge
+        if: matrix.lane == 'synthetic-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: browser-servo-workspace
+          author-email: browser-servo-workspace@users.noreply.github.com
+          message: browser.servo workspace merge
+      - name: Bind effective source
+        run: |
+          echo "EFFECTIVE_SOURCE_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          echo "EFFECTIVE_SOURCE_TREE=$(git rev-parse HEAD^{tree})" >> "$GITHUB_ENV"
+      - name: Full locked workspace check
+        working-directory: codex-rs
+        run: cargo check --locked --workspace --all-targets
+      - name: Require unchanged source
+        if: always()
+        run: |
+          test "$(git rev-parse HEAD)" = "$EFFECTIVE_SOURCE_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$EFFECTIVE_SOURCE_TREE"
+          git diff --check && git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+  final-gate:
+    name: Exact-head and synthetic-merge terminal gate
+    needs: [module, workspace]
+    if: always()
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Reject failed, cancelled, or skipped prerequisites
+        env:
+          MODULE_RESULT: ${{ needs.module.result }}
+          WORKSPACE_RESULT: ${{ needs.workspace.result }}
+        run: |
+          test "$MODULE_RESULT" = success
+          test "$WORKSPACE_RESULT" = success

@@ -1,0 +1,56 @@
+{
+  "schema": "hepta.browser.servo-implementation-map.v2",
+  "schemaVersion": 2,
+  "module": "browser.servo",
+  "canonicalQualification": "docs/modules/browser.servo/QUALIFICATION.json",
+  "legacyCompatibilityView": "docs/modules/browser.servo/IMPLEMENTATION_MAP.json",
+  "sourceRoots": ["apps/hepta-browser", "codex-rs/hepta-agentd", "third_party/servo-patches"],
+  "owners": {
+    "runtime": "apps/hepta-browser/src/runtime.js",
+    "profileHost": "apps/hepta-browser/src/browser.js",
+    "persistentAgentd": "codex-rs/hepta-agentd/src/browser_servo_persistent.rs",
+    "servoWorker": "apps/hepta-browser/servo-worker/src/main.rs",
+    "durableJournal": "apps/hepta-browser/src/journal-v2.js",
+    "egress": "apps/hepta-browser/src/egress-broker.js"
+  },
+  "operations": [
+    {"rpc":"browser.open_profile","owner":"runtime","implementation":"BrowserProfileHost.openProfile","tests":["test/browser.test.js","test/runtime.test.js"]},
+    {"rpc":"browser.admit_effect_grant","owner":"persistentAgentd","implementation":"PersistentBrowserServoControl::admit_effect_grant","tests":["test/agentd-service.test.js"]},
+    {"rpc":"browser.observe_page","owner":"profileHost","implementation":"BrowserProfileHost.observePage","tests":["test/browser.test.js","test/observation-redactor.test.js"]},
+    {"rpc":"browser.navigate_or_act","owner":"persistentAgentd","implementation":"PersistentBrowserServoControl::navigate_or_act","tests":["test/action.test.js","test/effect-egress-gate.test.js"]},
+    {"rpc":"browser.reconcile_operation","owner":"runtime","implementation":"BrowserRuntime.reconcileOperation","tests":["test/runtime.test.js","test/journal-evidence.test.js"]},
+    {"rpc":"browser.reconcile_persisted_operation","owner":"runtime","implementation":"PersistedOperationReconciler.reconcile","tests":["test/persisted-reconciler.test.js"]},
+    {"rpc":"browser.close_profile","owner":"profileHost","implementation":"BrowserProfileHost.closeProfile","tests":["test/browser.test.js","test/worker-lifecycle.test.js"]}
+  ],
+  "invariants": [
+    "Compiler output and digests never grant execution authority.",
+    "Prepared intent is durable before worker dispatch.",
+    "Agentd performs final-use authority review at the irreversible boundary.",
+    "Unknown post-admission outcomes are never blindly replayed.",
+    "There is one product runtime/profile/journal path; tests do not own a parallel executor.",
+    "Cancelled or skipped required CI work cannot form qualification evidence."
+  ],
+  "claimBoundary": {
+    "sourceRootPresent": true,
+    "nativeSourceMappingComplete": true,
+    "repositoryControlledDocumentationGapsClosed": true,
+    "repositoryControlledMappingGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": false,
+    "productExecutionComplete": false,
+    "deploymentQualificationComplete": false,
+    "independentAcceptanceComplete": false,
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "promotion": false,
+    "release": false,
+    "implementedOperationMappingComplete": true
+  },
+  "sourceBinding": {
+    "mode": "runtime-exact-source",
+    "headShaEnvironment": "GITHUB_SHA",
+    "headTreeCommand": "git rev-parse HEAD^{tree}",
+    "syntheticMergeConstructor": ".github/actions/hepta-synthetic-merge/action.yml"
+  }
+}
