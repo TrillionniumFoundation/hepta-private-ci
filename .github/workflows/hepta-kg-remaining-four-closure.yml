@@ -14,17 +14,22 @@ concurrency:
 
 jobs:
   close:
-    name: close (${{ matrix.runner }})
+    name: close (${{ matrix.runner_name }})
     if: startsWith(github.event.head_commit.message, 'kg remaining-four closure')
     strategy:
       fail-fast: false
       matrix:
-        runner: [rog, pocket4]
-    runs-on:
-      - self-hosted
-      - linux
-      - x64
-      - ${{ matrix.runner }}
+        include:
+          - runner_name: rog
+            platform: linux
+            runs_on: '["self-hosted","linux","x64","rog"]'
+          - runner_name: pocket4
+            platform: linux
+            runs_on: '["self-hosted","linux","x64","pocket4"]'
+          - runner_name: macbook-pro
+            platform: macos
+            runs_on: '["self-hosted","macOS","ARM64","macbook"]'
+    runs-on: ${{ fromJSON(matrix.runs_on) }}
     timeout-minutes: 180
     env:
       CARGO_INCREMENTAL: "0"
@@ -44,14 +49,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$RUNNER_NAME" = "${{ matrix.runner }}"
+          test "$RUNNER_NAME" = "${{ matrix.runner_name }}"
           test "$GITHUB_EVENT_NAME" = "push"
           test "$GITHUB_REF_NAME" = "$BRANCH"
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           git diff --quiet
           git diff --cached --quiet
 
-      - name: Install native prerequisites
+      - name: Install Linux native prerequisites
+        if: matrix.platform == 'linux'
         shell: bash
         run: |
           set -euo pipefail
@@ -63,6 +69,17 @@ jobs:
           if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
             sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
           fi
+
+      - name: Verify macOS native prerequisites
+        if: matrix.platform == 'macos'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v protoc >/dev/null 2>&1; then
+            brew install protobuf
+          fi
+          command -v protoc
+          protoc --version
 
       - name: Apply fail-closed closure patch
         shell: bash
@@ -80,7 +97,8 @@ jobs:
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
 
-      - name: Test kernel, durable owner and real consumers
+      - name: Test Linux kernel, durable owner and real consumers
+        if: matrix.platform == 'linux'
         shell: bash
         run: |
           set -euo pipefail
@@ -89,6 +107,18 @@ jobs:
           cargo test --locked -p codex-hepta-prompt-optimizer -- --nocapture
           cargo test --locked -p codex-hepta-memory --lib cognitive_kg_oracle_tests:: -- --nocapture --test-threads=1
           cargo test --locked -p codex-hepta-agentd --test cognitive_product_e2e -- --nocapture --test-threads=1
+          cargo clippy --locked -p codex-hepta-kg -p codex-hepta-prompt-optimizer -p codex-hepta-memory -p codex-hepta-agentd --no-deps --all-targets -- -D warnings
+
+      - name: Test macOS authoring candidate
+        if: matrix.platform == 'macos'
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo test --locked -p codex-hepta-kg -- --nocapture
+          cargo test --locked -p codex-hepta-prompt-optimizer -- --nocapture
+          cargo test --locked -p codex-hepta-memory --lib cognitive_kg_oracle_tests:: -- --nocapture --test-threads=1
+          cargo check --locked -p codex-hepta-agentd --all-targets
           cargo clippy --locked -p codex-hepta-kg -p codex-hepta-prompt-optimizer -p codex-hepta-memory -p codex-hepta-agentd --no-deps --all-targets -- -D warnings
 
       - name: Commit tested source and documentation
