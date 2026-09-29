@@ -1,149 +1,72 @@
 {
-  "schema": "hepta.module-implementation-map.v3",
-  "schemaVersion": 3,
-  "sourceBase": {
-    "commit": "a0d911f50bddf35da7b3a8cd7e671373a3c128fb",
-    "tree": "49c8342e46b7d711bb97bd294b4e700915ed9b36"
-  },
-  "mappingScope": "explicit_implementation_anchor_not_current_checkout_qualification",
-  "laneId": "LANE-B-RUNTIME",
+  "schema": "hepta.module-implementation-map.v4",
+  "schemaVersion": 4,
   "module": "ui.native",
   "owner": "ui-platform",
   "deputy": "accessibility",
-  "sourceMaturity": "native_product_candidate",
-  "declaredRoots": ["apps/hepta-native"],
-  "resolvedRoots": ["apps/hepta-native"],
-  "sourceRoot": ["apps/hepta-native"],
-  "sourceRootPresent": true,
+  "implementationSourceSha": "0ef8638eaf7c4ae733ac2d10eba67d9308ef7e17",
+  "implementationSourceTree": "7f52a91a42a612dfd7472fa5514ab81626dc13f9",
+  "sourceMaturity": "implementation-candidate-qualification-blocked",
+  "declaredRoots": ["apps/hepta-native", "codex-rs/hepta-native-gateway", "codex-rs/hepta-private-state"],
   "technicalGuide": "docs/modules/ui.native/TECHNICAL.md",
-  "stateOwnerDisposition": "Rust shell owns local dispatch/update records; kernel.authority retains final-use authority. No additional execution owner or domain store is introduced.",
-  "terminalObserverDisposition": "Platform receipts establish terminal observations. UNKNOWN and closed observation remain distinct from success or non-execution.",
+  "developmentGuide": "apps/hepta-native/DEVELOPMENT.md",
+  "qualificationWorkflow": ".github/workflows/ui-native-qualification.yml",
+  "storageBudget": "apps/hepta-native/STORAGE_BUDGETS.json",
+  "stateOwnership": {
+    "runtimeOwner": "apps/hepta-native/src/runtime.rs::NativeShellRuntime",
+    "journalOwner": "apps/hepta-native/src/journal.rs::OperationJournal",
+    "authorityOwner": "codex-rs/hepta-contracts final-use authority",
+    "rule": "UI coordination, picker callbacks and retirement indexes never become execution authority"
+  },
   "operations": [
-    {
-      "designOperation": "connect_runtime",
-      "operation": "connect_runtime",
-      "mappingClass": "owner_boundary",
-      "ownerEntrypoint": {"role": "owner_entrypoint", "path": "apps/hepta-native/src/runtime.rs", "symbol": "pub fn connect_runtime(", "buildTarget": "hepta-native"},
-      "sourcePath": "apps/hepta-native/src/runtime.rs",
-      "nativeSymbol": "pub fn connect_runtime(",
-      "sourcePathExists": true,
-      "delegatedCallees": [
-        {"path": "apps/hepta-native/src/security.rs", "symbol": "SignedEndpointManifestV1::verify"},
-        {"path": "apps/hepta-native/src/session_store.rs", "symbol": "GatewayCredentialStore::load"},
-        {"path": "apps/hepta-native/src/backend.rs", "symbol": "LoopbackGatewayBackend::connect"},
-        {"path": "codex-rs/hepta-native-gateway/src/lib.rs", "symbol": "run_native_gateway"}
-      ],
-      "tests": [
-        {"path": "apps/hepta-native/tests/runtime.rs", "kind": "rust_integration", "command": "cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets"},
-        {"path": "apps/hepta-native/tests/backend.rs", "kind": "rust_integration", "command": "cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets"},
-        {"path": "apps/hepta-native/tests/remediation_regressions.rs", "kind": "rust_integration", "command": "cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets"}
-      ],
-      "sourceSemantics": "Signed protocol-v2 endpoint, keyring MAC request/response authentication, fresh session incarnation and pending-operation reconciliation. Read authentication does not issue final-use authority."
-    },
-    {
-      "designOperation": "render_runtime_view",
-      "operation": "render_runtime_view",
-      "mappingClass": "owner_boundary",
-      "ownerEntrypoint": {"role": "owner_entrypoint", "path": "apps/hepta-native/src/runtime.rs", "symbol": "pub fn refresh_runtime_view(", "buildTarget": "hepta-native"},
-      "sourcePath": "apps/hepta-native/src/runtime.rs",
-      "nativeSymbol": "pub fn refresh_runtime_view(",
-      "sourcePathExists": true,
-      "delegatedCallees": [
-        {"path": "apps/hepta-native/src/backend.rs", "symbol": "LoopbackGatewayBackend::runtime_status"},
-        {"path": "apps/hepta-native/src/ui.rs", "symbol": "HeptaNativeApp::refresh"},
-        {"path": "apps/hepta-native/src/ui/readiness.rs", "symbol": "ReadinessFrames::observe"},
-        {"path": "apps/hepta-native/src/ui/history_page.rs", "symbol": "history_page_range"}
-      ],
-      "tests": [
-        {"path": "apps/hepta-native/tests/runtime.rs", "kind": "rust_integration", "command": "cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets"},
-        {"path": "apps/hepta-native/src/ui_tests.rs", "kind": "rust_unit", "command": "cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml --locked --lib"},
-        {"path": "apps/hepta-native/src/ui/readiness.rs", "kind": "rust_unit", "command": "cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml --locked --lib"},
-        {"path": "apps/hepta-native/src/ui/history_page.rs", "kind": "rust_unit", "command": "cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml --locked --lib"}
-      ],
-      "sourceSemantics": "Refresh invalidates stale action context; status rendering is cached per refresh. A later GUI callback witnesses the same exact view before worker-side readiness persistence. History layout is paginated without deleting journal truth."
-    },
-    {
-      "designOperation": "request_platform_capability",
-      "operation": "request_platform_capability",
-      "mappingClass": "owner_boundary",
-      "ownerEntrypoint": {"role": "owner_entrypoint", "path": "apps/hepta-native/src/runtime.rs", "symbol": "pub fn request_platform_capability(", "buildTarget": "hepta-native"},
-      "sourcePath": "apps/hepta-native/src/runtime.rs",
-      "nativeSymbol": "pub fn request_platform_capability(",
-      "sourcePathExists": true,
-      "delegatedCallees": [
-        {"path": "apps/hepta-native/src/journal.rs", "symbol": "OperationJournal::upsert"},
-        {"path": "apps/hepta-native/src/retirement.rs", "symbol": "RetirementStore::append_records"},
-        {"path": "apps/hepta-native/src/security.rs", "symbol": "KernelFinalUseGate::with_platform_use"},
-        {"path": "codex-rs/hepta-contracts/src/final_use.rs", "symbol": "FinalUseAuthority::with_verified_effect"},
-        {"path": "apps/hepta-native/src/platform.rs", "symbol": "PlatformAdapter::invoke"}
-      ],
-      "tests": [
-        {"path": "apps/hepta-native/tests/runtime.rs", "kind": "rust_integration", "command": "cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets"},
-        {"path": "apps/hepta-native/tests/security_updater.rs", "kind": "rust_integration", "command": "cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets"},
-        {"path": "apps/hepta-native/src/retirement_claim_tests.rs", "kind": "rust_unit", "command": "cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml --locked --lib retirement::claim_tests"},
-        {"path": "apps/hepta-native/src/retirement_tests.rs", "kind": "rust_unit", "command": "cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml --locked --lib retirement"},
-        {"path": "codex-rs/hepta-contracts/tests/final_use_linearization.rs", "kind": "rust_integration", "command": "cargo +1.95.0 test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-contracts --all-targets --all-features"}
-      ],
-      "sourceSemantics": "Whole-batch retirement preflight prevents legacy identity-only tombstones acquiring uncommitted receipts. Exact archived duplicates preserve original receipts. Prepared/Invoking durability and current final-use fencing remain. Unknown effects are never blindly replayed; path-string effects stay disabled."
-    },
-    {
-      "designOperation": "apply_shell_update",
-      "operation": "apply_shell_update",
-      "mappingClass": "owner_boundary",
-      "ownerEntrypoint": {"role": "owner_entrypoint", "path": "apps/hepta-native/src/updater.rs", "symbol": "pub fn verify_and_stage(", "buildTarget": "hepta-native"},
-      "sourcePath": "apps/hepta-native/src/updater.rs",
-      "nativeSymbol": "pub fn verify_and_stage(",
-      "sourcePathExists": true,
-      "delegatedCallees": [
-        {"path": "apps/hepta-native/src/ui/update_views.rs", "symbol": "HeptaNativeApp::stage_update"},
-        {"path": "apps/hepta-native/src/ui/native_picker.rs", "symbol": "choose_file"},
-        {"path": "apps/hepta-native/src/ui/readiness.rs", "symbol": "RenderedViewWitness::verify_current"},
-        {"path": "apps/hepta-native/src/bin/hepta-native-updater.rs", "symbol": "main"},
-        {"path": "apps/hepta-native/src/private_state.rs", "symbol": "PrivateStateRoot::verify"}
-      ],
-      "tests": [
-        {"path": "apps/hepta-native/tests/security_updater.rs", "kind": "rust_integration", "command": "cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets"},
-        {"path": "apps/hepta-native/tests/private_state.rs", "kind": "rust_integration", "command": "cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets"},
-        {"path": "apps/hepta-native/src/ui/native_picker.rs", "kind": "rust_unit", "command": "cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml --locked --lib"},
-        {"path": "apps/hepta-native/src/ui/shutdown_tests.rs", "kind": "rust_unit", "command": "cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml --locked --lib"}
-      ],
-      "sourceSemantics": "Signed staging and predecessor-bound update owner retained. Concrete picker results are exact-ticket untrusted paths. Readiness writes use the owned worker and exact GUI/view witness. Failed cleanup cannot authorize activation."
-    }
+    {"operation": "connect_runtime", "entrypoint": "apps/hepta-native/src/runtime.rs::connect_runtime", "state": "implemented-unqualified"},
+    {"operation": "refresh_runtime_view", "entrypoint": "apps/hepta-native/src/runtime.rs::refresh_runtime_view", "state": "implemented-unqualified"},
+    {"operation": "request_platform_capability", "entrypoint": "apps/hepta-native/src/runtime.rs::request_platform_capability", "state": "clipboard-and-notification-candidate; open-and-reveal-fail-closed"},
+    {"operation": "reconcile_pending", "entrypoint": "apps/hepta-native/src/runtime.rs::reconcile_pending", "state": "implemented; unknown-result-replay-forbidden"},
+    {"operation": "verify_and_stage_update", "entrypoint": "apps/hepta-native/src/updater.rs::verify_and_stage", "state": "implemented-unqualified"}
+  ],
+  "storageProtocols": {
+    "journal": "hepta.native-operation-journal.v7",
+    "wal": "hepta.native-operation-wal.v1",
+    "retirementHead": "hepta.native-retirement.v3",
+    "retirementSegment": "hepta.native-retirement.v2",
+    "retirementIndex": "hepta.native-retirement-index.v1",
+    "retirementIndexBucket": "hepta.native-retirement-index-bucket.v1",
+    "authorityRule": "immutable retirement segments are authoritative; manifests, buckets and caches are rebuildable acceleration only"
+  },
+  "testSurfaces": [
+    "apps/hepta-native/src/*_tests.rs",
+    "apps/hepta-native/tests/*.rs",
+    "apps/hepta-native/tools/tests/test_package_security.py",
+    "scripts/test_hepta_ui_native_convergence.py",
+    "scripts/test_hepta_ui_native_package_security.py"
   ],
   "repositoryControlledGaps": [
-    "Fix and execute native formatting, compilation, tests and strict lint on the final exact candidate; test-source existence is not an executed pass.",
-    "Regenerate and verify global source, module-doc, projection and compiled-test inventories against the actual final checkout.",
-    "Implement and qualify a rebuildable retirement disk index, active-journal indexing/write-amplification reductions, and measured scale/resource budgets.",
-    "Implement verified resource capability handoff before enabling OpenPath/RevealPath.",
-    "Exercise native picker, installed upgrade/rollback and applicable platform-specific integrations on actual target hosts.",
-    "Retain complete same-candidate Linux/macOS/Windows exact-head and deterministic-merge acceptance bundles."
+    "measured storage-scale and crash-point qualification",
+    "persistent history paging",
+    "split picker/read/mutation lanes without a second state owner",
+    "verified resource capability handoff for OpenPath and RevealPath",
+    "xdg-desktop-portal primary picker",
+    "packaged Windows WinRT notification integration"
   ],
   "externalEvidenceGates": [
-    "Production signing custody, key rotation/revocation, Developer ID/notarization, Authenticode/AppUserModelID and Linux distribution ownership",
-    "Physical keyboard, screen-reader, Chinese IME, focus and mixed-DPI acceptance",
-    "Installed-artifact endurance, startup, RSS and end-to-end interaction performance",
-    "Independent acceptance, deployment selection, promotion and release approval"
+    "physical platform, accessibility and IME acceptance",
+    "installed-package update and rollback acceptance",
+    "signing, notarization, Authenticode, SBOM and provenance",
+    "independent promotion review"
   ],
   "claimBoundary": {
-    "nativeSourceMappingComplete": false,
-    "repositoryControlledDocumentationGapsClosed": false,
-    "repositoryControlledMappingGapsClosed": false,
+    "ordinarySourceCommitEstablished": true,
+    "selfMutatingQualificationRemoved": true,
     "repositoryControlledSourceBoundaryGapsClosed": false,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
-    "sourceRootPresent": true,
-    "productionImplementation": false,
-    "productExecutionProved": false,
-    "independentAcceptance": false,
-    "activation": false,
-    "release": false,
-    "implementedOperationMappingComplete": false
+    "productionQualified": false,
+    "deploymentQualified": false,
+    "releaseAuthorized": false
   },
-  "productionImplementation": false,
-  "productCallerState": "source_composed_current_native_qualification_not_established",
-  "productionWriterState": "not_established",
-  "productCallers": [{"sourcePath": "apps/hepta-native/src/main.rs", "nativeSymbol": "fn run(", "role": "desktop_product_bootstrap"}],
-  "sourceObjects": [{"path": "apps/hepta-native", "object": "13d7f46f871392552aeccccee8f5e03f1056a4b0"}],
-  "sourceObjectsDisposition": "Application tree at sourceBase only. Historical per-file objects are preserved in history/IMPLEMENTATION_MAP-before-supervised-readiness.json, not reused as current proof. Complete current-checkout source regeneration remains required."
+  "productionQualified": false,
+  "deploymentQualified": false,
+  "releaseAuthorized": false
 }

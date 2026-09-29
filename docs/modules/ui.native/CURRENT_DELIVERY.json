@@ -1,52 +1,61 @@
 {
-  "schema": "hepta.ui.native.delivery.v1",
+  "schema": "hepta.ui.native.delivery.v2",
   "canonicalBranch": "work/ui-native-qualified-integration-20260928",
-  "pullRequest": 1139,
-  "implementationAnchor": {
-    "commit": "a0d911f50bddf35da7b3a8cd7e671373a3c128fb",
-    "tree": "49c8342e46b7d711bb97bd294b4e700915ed9b36",
-    "applicationTree": "13d7f46f871392552aeccccee8f5e03f1056a4b0",
-    "role": "described_source_anchor_not_qualification"
+  "convergenceBranch": "work/ui-native-exact-convergence-20260930",
+  "implementationSourceSha": "0ef8638eaf7c4ae733ac2d10eba67d9308ef7e17",
+  "implementationSourceTree": "7f52a91a42a612dfd7472fa5514ab81626dc13f9",
+  "ordinarySourceHistory": {
+    "baseline": "9213ff850d3dd91f8734ec954e1e5981db3480fa",
+    "walIndex": "4bc29cf124dc5532d04349e478bc82f5d4959fd9",
+    "convergence": "0ef8638eaf7c4ae733ac2d10eba67d9308ef7e17"
   },
-  "fixedMergeBase": "a126987b84737dbc2ee2592442a314117bddb4a2",
-  "protocols": {"journalWriter": 6, "retirementWriter": 2, "nativeGateway": 2},
-  "sourceChanges": {
-    "mixedRetirementBatchPreflight": true,
-    "retirementClaimTestsMounted": true,
-    "temporarySourceWritersRetired": true,
-    "invalidPatchCapsuleRemoved": true,
-    "supervisedReadinessPersistence": true,
-    "laterGuiCallbackAndExactViewWitness": true,
-    "historyPageMaximumRows": 64,
-    "ticketedNativePickerAdapters": ["macos_osascript", "windows_open_file_dialog", "linux_optional_zenity"],
-    "connectionPresentationFollowsCurrentView": true
+  "implemented": {
+    "exactActiveOperationIndex": true,
+    "checksummedHashChainedFsyncedWal": true,
+    "boundedWalCheckpointing": true,
+    "partialTailRecovery": true,
+    "checkpointBoundRetirementDiskIndex": true,
+    "retirementChainRemainsAuthority": true,
+    "singleRuntimeAndJournalOwner": true,
+    "preparedBeforeFinalUseAndInvokingBeforeEffect": true,
+    "unknownEffectsNeverAutomaticallyReplay": true,
+    "ticketedNativePicker": true,
+    "fixedSystemNotificationLaunchers": true,
+    "clearedLauncherEnvironment": true,
+    "readOnlyQualificationWorkflow": true,
+    "selfMutatingUiNativeWorkflowsRemoved": 16,
+    "storageBudgetsDeclared": true
   },
-  "notImplemented": [
-    "rebuildable_authenticated_retirement_disk_index",
-    "constant_memory_retirement_lookup",
-    "active_journal_exact_lookup_index",
-    "active_journal_append_checkpoint_protocol",
-    "verified_resource_handle_handoff_for_open_reveal"
+  "repositoryBlocking": [
+    "executed exact-head and ordered-parent-merge qualification has not yet completed for the immutable candidate",
+    "4096-active and 1000000-retired measured performance artifacts are absent",
+    "process-kill, cold-restart, corruption and updater-rollback qualification bundles are absent",
+    "persistent history paging and split picker/read/mutation lanes remain unimplemented",
+    "verified OS resource capability handoff for OpenPath and RevealPath remains unavailable",
+    "xdg-desktop-portal primary picker integration remains unavailable",
+    "packaged Windows AppUserModelID and WinRT notification integration remains unavailable"
+  ],
+  "externalBlocking": [
+    "physical Windows, macOS, X11 and Wayland acceptance",
+    "multi-display, high-DPI, Chinese IME, screen-reader and keyboard-navigation acceptance",
+    "installed-package update, shutdown and crash-recovery acceptance",
+    "Developer ID/notarization, Authenticode, Linux distribution ownership, SBOM and provenance",
+    "independent reviewer promotion decision"
   ],
   "verification": {
-    "currentNativeCompilationPassed": false,
-    "currentNativeFormattingPassed": false,
-    "currentStrictClippyPassed": false,
-    "currentNativeTestsPassed": false,
-    "sixSubjectAcceptanceComplete": false,
-    "globalDerivedProjectionsVerified": false,
+    "workflow": ".github/workflows/ui-native-qualification.yml",
+    "sourceIdentityPassed": false,
+    "linuxExactHeadPassed": false,
+    "macosExactHeadPassed": false,
+    "windowsExactHeadPassed": false,
+    "linuxOrderedParentMergePassed": false,
+    "macosOrderedParentMergePassed": false,
+    "windowsOrderedParentMergePassed": false,
+    "strictClippyPassed": false,
+    "nativeTestsPassed": false,
+    "pythonContractTestsPassed": false,
     "millionRecordMeasurementsComplete": false,
-    "physicalPickerAcceptanceComplete": false,
-    "historicalFeedback": {
-      "commit": "6ff6cd07c25c9af4fd6d6f59348eb79fa1fec8c1",
-      "runId": 36450557375,
-      "pythonInfrastructure": "success",
-      "nativeFormatting": "failure",
-      "compiledTestDiscovery": "failure",
-      "nativeTests": "skipped",
-      "strictClippy": "skipped",
-      "notApplicableToLaterSource": true
-    }
+    "physicalPlatformAcceptanceComplete": false
   },
   "productionImplementation": false,
   "productionQualified": false,

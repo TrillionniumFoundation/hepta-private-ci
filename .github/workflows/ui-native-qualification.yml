@@ -8,6 +8,7 @@ on:
       - docs/modules/ui.native/**
       - scripts/check_hepta_ui_native_convergence.py
       - scripts/test_hepta_ui_native_convergence.py
+      - scripts/test_hepta_ui_native_package_security.py
       - .github/workflows/ui-native-qualification.yml
   push:
     branches: [work/ui-native-exact-convergence-20260930]
@@ -16,6 +17,7 @@ on:
       - docs/modules/ui.native/**
       - scripts/check_hepta_ui_native_convergence.py
       - scripts/test_hepta_ui_native_convergence.py
+      - scripts/test_hepta_ui_native_package_security.py
       - .github/workflows/ui-native-qualification.yml
   workflow_dispatch:
 
@@ -30,6 +32,8 @@ env:
   CARGO_INCREMENTAL: "0"
   CARGO_TERM_COLOR: always
   RUST_BACKTRACE: "1"
+  HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
 
 jobs:
   source-identity:
@@ -39,29 +43,43 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          fetch-depth: 2
+          ref: ${{ env.HEAD_SHA }}
+          fetch-depth: 0
           persist-credentials: false
       - name: Prove immutable checkout and convergence invariants
         shell: bash
         run: |
           set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$HEAD_SHA"
           test -z "$(git status --porcelain)"
-          git rev-parse HEAD 'HEAD^{tree}'
           git show --no-patch --format='parents=%P%ncommit=%H%ntree=%T%nsubject=%s' HEAD
           python3 scripts/check_hepta_ui_native_convergence.py \
             --emit "$RUNNER_TEMP/ui-native-source-evidence.json"
           cat "$RUNNER_TEMP/ui-native-source-evidence.json"
           test -z "$(git status --porcelain)"
 
-  linux-quality:
-    name: ui.native / Linux format, lint, tests
-    runs-on: ubuntu-24.04
+  head-platform:
+    name: ui.native / exact head / ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Linux
+            runner: ubuntu-24.04
+          - name: macOS
+            runner: macos-15
+          - name: Windows
+            runner: windows-latest
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
+          ref: ${{ env.HEAD_SHA }}
+          fetch-depth: 0
           persist-credentials: false
-      - name: Install native prerequisites
+      - name: Install Linux native prerequisites
+        if: runner.os == 'Linux'
         shell: bash
         run: |
           set -euo pipefail
@@ -84,34 +102,70 @@ jobs:
         run: cargo +1.95.0 clippy --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets --all-features -- -D warnings
       - name: Native Rust tests
         run: cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets
-      - name: Python contract and convergence tests
+      - name: Python contract tests
+        if: runner.os == 'Linux'
         env:
           PYTHONDONTWRITEBYTECODE: "1"
-        run: python3 -m unittest discover -s scripts -p 'test_hepta_ui_native*.py' -v
+        run: >-
+          python3 -m unittest
+          scripts.test_hepta_ui_native_convergence
+          scripts.test_hepta_ui_native_package_security
+          -v
       - name: Worktree remains immutable
         shell: bash
         run: test -z "$(git status --porcelain)"
 
-  cross-platform-check:
-    name: ui.native / ${{ matrix.name }} compile
+  merge-platform:
+    name: ui.native / ordered-parent merge / ${{ matrix.name }}
+    if: github.event_name == 'pull_request'
     strategy:
       fail-fast: false
       matrix:
         include:
+          - name: Linux
+            runner: ubuntu-24.04
           - name: macOS
             runner: macos-15
           - name: Windows
             runner: windows-latest
     runs-on: ${{ matrix.runner }}
-    timeout-minutes: 75
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
+          ref: ${{ env.BASE_SHA }}
+          fetch-depth: 0
           persist-credentials: false
+      - name: Materialize fixed ordered-parent merge
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$BASE_SHA"
+          test "$(git rev-parse HEAD)" = "$BASE_SHA"
+          git fetch --no-tags origin "$HEAD_SHA"
+          git -c user.name=ui-native-qualification \
+              -c user.email=ui-native-qualification@users.noreply.github.com \
+              merge --no-ff --no-commit "$HEAD_SHA"
+          printf 'ordered_parents=%s %s\nsynthetic_tree=%s\n' \
+            "$BASE_SHA" "$HEAD_SHA" "$(git write-tree)"
+      - name: Install Linux native prerequisites
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y \
+            libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev \
+            libxkbcommon-dev libxkbcommon-x11-dev libwayland-dev \
+            libgl1-mesa-dev libssl-dev desktop-file-utils \
+            xvfb xauth dbus-x11 gnome-keyring xdotool x11-utils \
+            python3-cryptography fonts-noto-cjk
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
         with:
           toolchain: 1.95.0
           components: rustfmt, clippy
+      - name: Rust formatting
+        run: cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml --check
       - name: All-target all-feature compilation
         run: cargo +1.95.0 check --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets --all-features
       - name: Strict Clippy
@@ -122,21 +176,26 @@ jobs:
   qualification-result:
     name: ui.native / qualification result
     if: always()
-    needs: [source-identity, linux-quality, cross-platform-check]
+    needs: [source-identity, head-platform, merge-platform]
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      - name: Require every exact-source subject
+      - name: Require every applicable exact-source subject
         shell: bash
         env:
+          EVENT_NAME: ${{ github.event_name }}
           SOURCE_RESULT: ${{ needs.source-identity.result }}
-          LINUX_RESULT: ${{ needs.linux-quality.result }}
-          CROSS_PLATFORM_RESULT: ${{ needs.cross-platform-check.result }}
-          SOURCE_SHA: ${{ github.sha }}
+          HEAD_RESULT: ${{ needs.head-platform.result }}
+          MERGE_RESULT: ${{ needs.merge-platform.result }}
+          SOURCE_SHA: ${{ env.HEAD_SHA }}
         run: |
           set -euo pipefail
-          printf 'source_sha=%s\nsource_identity=%s\nlinux=%s\ncross_platform=%s\n' \
-            "$SOURCE_SHA" "$SOURCE_RESULT" "$LINUX_RESULT" "$CROSS_PLATFORM_RESULT"
+          printf 'source_sha=%s\nsource_identity=%s\nexact_head=%s\nordered_parent_merge=%s\n' \
+            "$SOURCE_SHA" "$SOURCE_RESULT" "$HEAD_RESULT" "$MERGE_RESULT"
           test "$SOURCE_RESULT" = success
-          test "$LINUX_RESULT" = success
-          test "$CROSS_PLATFORM_RESULT" = success
+          test "$HEAD_RESULT" = success
+          if [[ "$EVENT_NAME" = pull_request ]]; then
+            test "$MERGE_RESULT" = success
+          else
+            test "$MERGE_RESULT" = skipped
+          fi

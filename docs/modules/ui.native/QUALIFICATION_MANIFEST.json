@@ -1,0 +1,34 @@
+{
+  "schema": "hepta.ui.native.qualification-manifest.v1",
+  "manifestStatus": "pending-executed-evidence",
+  "implementationSourceSha": "0ef8638eaf7c4ae733ac2d10eba67d9308ef7e17",
+  "implementationSourceTree": "7f52a91a42a612dfd7472fa5514ab81626dc13f9",
+  "orderedParents": {
+    "base": "9213ff850d3dd91f8734ec954e1e5981db3480fa",
+    "head": "pending-review-head"
+  },
+  "toolchain": {
+    "rust": "1.95.0",
+    "cargoLock": "apps/hepta-native/Cargo.lock",
+    "workflow": ".github/workflows/ui-native-qualification.yml"
+  },
+  "requiredSubjects": [
+    "linux-exact-head", "macos-exact-head", "windows-exact-head",
+    "linux-ordered-parent-merge", "macos-ordered-parent-merge", "windows-ordered-parent-merge",
+    "process-kill-and-cold-restart", "journal-wal-corruption", "updater-rollback",
+    "installed-package-e2e", "measured-coverage", "sustained-performance",
+    "physical-accessibility", "signed-release-provenance"
+  ],
+  "runIds": [],
+  "artifactDigests": {},
+  "coverage": null,
+  "performance": null,
+  "platformAcceptance": null,
+  "signing": null,
+  "sbom": null,
+  "provenance": null,
+  "rule": "A missing, skipped, cancelled, stale-SHA or mismatched-parent subject is failure. Promotion requires one immutable implementation source and independent review.",
+  "productionQualified": false,
+  "deploymentQualified": false,
+  "releaseAuthorized": false
+}

@@ -1,12 +1,25 @@
 {
-  "schema": "hepta.ui.native.candidate.v1",
+  "schema": "hepta.ui.native.candidate.v2",
   "canonicalBranch": "work/ui-native-qualified-integration-20260928",
-  "pinnedBase": "a126987b84737dbc2ee2592442a314117bddb4a2",
-  "continuedFrom": "c84e0c760563ff0f8e67ab2208baf57bbe44ae44",
-  "pullRequest": 1139,
-  "competingRefPolicy": "Other ui-native candidate refs are superseded for integration, not deleted. Their unmerged deltas are not claimed as absorbed.",
-  "supersededCandidates": ["work/ui-native-acceptance-repair-20260927", "work/ui-native-full-closure-20260927", "work/ui-native-verified-closure-20260927", "work/ui-native-remediation-20260927", "work/ui-native-integration-convergence-20260927"],
-  "qualificationSubjects": ["linux-head", "linux-merge", "macos-head", "macos-merge", "windows-head", "windows-merge"],
+  "convergenceBranch": "work/ui-native-exact-convergence-20260930",
+  "baselineCommit": "9213ff850d3dd91f8734ec954e1e5981db3480fa",
+  "walIndexSourceCommit": "4bc29cf124dc5532d04349e478bc82f5d4959fd9",
+  "implementationSourceSha": "0ef8638eaf7c4ae733ac2d10eba67d9308ef7e17",
+  "implementationSourceTree": "7f52a91a42a612dfd7472fa5514ab81626dc13f9",
+  "status": "implementation-candidate",
+  "qualificationStatus": "blocked-pending-executed-evidence",
+  "releaseStatus": "not-authorized",
+  "qualificationSubjects": [
+    "linux-exact-head",
+    "macos-exact-head",
+    "windows-exact-head",
+    "linux-ordered-parent-merge",
+    "macos-ordered-parent-merge",
+    "windows-ordered-parent-merge"
+  ],
+  "sourceMutationInCiAllowed": false,
+  "independentReviewerRequired": true,
   "productionQualified": false,
+  "deploymentQualified": false,
   "releaseAuthorized": false
 }

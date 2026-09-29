@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
-SHA256_RE = re.compile(r"^[0-9a-f]{40}$")
+SHA1_RE = re.compile(r"^[0-9a-f]{40}$")
 
 FORBIDDEN_WORKFLOWS = {
     "hepta-ui-native-acceptance-proposal.yml",
@@ -40,6 +40,20 @@ STATE_FILES = (
     "docs/modules/ui.native/CURRENT_DELIVERY.json",
     "docs/modules/ui.native/IMPLEMENTATION_MAP.json",
     "docs/modules/ui.native/QUALIFICATION_MANIFEST.json",
+)
+
+IMPLEMENTATION_PATHS = (
+    "apps/hepta-native/src",
+    "apps/hepta-native/tests",
+    "apps/hepta-native/Cargo.toml",
+    "apps/hepta-native/Cargo.lock",
+    "codex-rs/hepta-native-gateway",
+    "codex-rs/hepta-private-state",
+    "codex-rs/hepta-contracts/src/authority_lease.rs",
+    "codex-rs/hepta-contracts/src/final_use.rs",
+    "codex-rs/hepta-contracts/src/final_use_control.rs",
+    "codex-rs/hepta-contracts/src/final_use_store.rs",
+    "codex-rs/hepta-contracts/src/native_gateway.rs",
 )
 
 
@@ -77,6 +91,13 @@ def _git_value(*args: str) -> str | None:
         return None
 
 
+def _git_success(*args: str) -> bool:
+    return subprocess.run(
+        ["git", *args], cwd=ROOT, check=False, stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL
+    ).returncode == 0
+
+
 def check_repository() -> dict[str, Any]:
     workflows = ROOT / ".github" / "workflows"
     for name in FORBIDDEN_WORKFLOWS:
@@ -92,6 +113,8 @@ def check_repository() -> dict[str, Any]:
         _require(forbidden not in workflow, f"qualification workflow contains {forbidden!r}")
     _require("persist-credentials: false" in workflow, "checkout credentials are persisted")
     _require("cancel-in-progress: false" in workflow, "exact-source run may be cancelled")
+    _require("exact head" in workflow, "exact-head platform subjects are missing")
+    _require("ordered-parent merge" in workflow, "ordered-parent merge subjects are missing")
 
     ci_root = ROOT / ".ci"
     if ci_root.exists():
@@ -119,6 +142,8 @@ def check_repository() -> dict[str, Any]:
     budgets = _load_json("apps/hepta-native/STORAGE_BUDGETS.json")
     structural = budgets.get("structural")
     _require(isinstance(structural, dict), "storage structural budgets are missing")
+    _require(budgets.get("status") == "provisional-unqualified", "budgets claim qualification")
+    _require(budgets.get("measurements") is None, "unreviewed measurements are embedded")
     exact_constants = {
         "maxActiveRecords": "const MAX_OPERATION_RECORDS: usize = 4096;",
         "maxSnapshotBytes": "const MAX_JOURNAL_BYTES: u64 = 8 * 1024 * 1024;",
@@ -142,26 +167,48 @@ def check_repository() -> dict[str, Any]:
     _require("command.env_clear();" in platform, "launcher environment is not cleared")
 
     anchors: dict[str, str] = {}
+    trees: dict[str, str] = {}
     for relative in STATE_FILES:
         state = _load_json(relative)
         anchor = state.get("implementationSourceSha")
-        _require(isinstance(anchor, str) and SHA256_RE.fullmatch(anchor) is not None,
-                 f"{relative} lacks a valid implementationSourceSha")
+        tree = state.get("implementationSourceTree")
+        _require(
+            isinstance(anchor, str) and SHA1_RE.fullmatch(anchor) is not None,
+            f"{relative} lacks a valid implementationSourceSha",
+        )
+        _require(
+            isinstance(tree, str) and SHA1_RE.fullmatch(tree) is not None,
+            f"{relative} lacks a valid implementationSourceTree",
+        )
         anchors[relative] = anchor
+        trees[relative] = tree
         for key, value in _walk(state):
             if key in {"productionQualified", "deploymentQualified", "releaseAuthorized"}:
                 _require(value is False, f"{relative} falsely sets {key}={value!r}")
 
     unique_anchors = sorted(set(anchors.values()))
+    unique_trees = sorted(set(trees.values()))
     _require(len(unique_anchors) == 1, f"state anchors disagree: {anchors}")
+    _require(len(unique_trees) == 1, f"state trees disagree: {trees}")
+    implementation = unique_anchors[0]
+    implementation_tree = unique_trees[0]
+    _require(_git_success("cat-file", "-e", f"{implementation}^{{commit}}"),
+             "implementation source commit is unavailable")
+    _require(_git_value("rev-parse", f"{implementation}^{{tree}}") == implementation_tree,
+             "implementation source tree does not match its commit")
+    _require(
+        _git_success("diff", "--quiet", implementation, "HEAD", "--", *IMPLEMENTATION_PATHS),
+        "metadata continuation changes product implementation after the frozen source",
+    )
 
     head = _git_value("rev-parse", "HEAD")
     tree = _git_value("rev-parse", "HEAD^{tree}")
     parents = (_git_value("show", "-s", "--format=%P", "HEAD") or "").split()
-    evidence = {
+    return {
         "schema": "hepta.ui-native-source-evidence.v1",
         "status": "structural-pass",
-        "implementationSourceSha": unique_anchors[0],
+        "implementationSourceSha": implementation,
+        "implementationSourceTree": implementation_tree,
         "repositoryHead": head,
         "repositoryTree": tree,
         "orderedParents": parents,
@@ -174,7 +221,6 @@ def check_repository() -> dict[str, Any]:
             "release flags remain false pending independent review",
         ],
     }
-    return evidence
 
 
 def main() -> int:

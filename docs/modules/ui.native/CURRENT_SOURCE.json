@@ -1,8 +1,15 @@
 {
-  "schema": "hepta.ui.native.source-navigation.v1",
+  "schema": "hepta.ui.native.source-navigation.v2",
+  "implementationSourceSha": "0ef8638eaf7c4ae733ac2d10eba67d9308ef7e17",
+  "implementationSourceTree": "7f52a91a42a612dfd7472fa5514ab81626dc13f9",
   "authoritativeInventory": "apps/hepta-native/CURRENT_SOURCE.json",
-  "currentLedger": "docs/modules/ui.native/QUALIFIED-INTEGRATION-20260928.md",
-  "validationAuthority": "same-run same-attempt exact-head and pinned-main merge qualification receipts",
+  "deliveryState": "docs/modules/ui.native/CURRENT_DELIVERY.json",
+  "implementationMap": "docs/modules/ui.native/IMPLEMENTATION_MAP.json",
+  "qualificationManifest": "docs/modules/ui.native/QUALIFICATION_MANIFEST.json",
+  "reviewDiff": "docs/modules/ui.native/REVIEW_DIFF.md",
+  "validationAuthority": "read-only exact-head and fixed ordered-parent merge jobs on Linux, macOS and Windows",
   "qualificationClaim": false,
+  "productionQualified": false,
+  "deploymentQualified": false,
   "releaseAuthorized": false
 }

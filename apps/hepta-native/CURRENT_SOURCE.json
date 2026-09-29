@@ -1,9 +1,12 @@
 {
-  "schema": "hepta.ui.native.current-source.v3",
-  "baselineCommit": "7ddbfac88525196e7a4b31387ceae194958275f5",
-  "baselineRole": "initial_convergence_ancestor",
-  "historicalSourceCommit": "3198549d80d6c59887b82e2c50018ab818217c53",
+  "schema": "hepta.ui.native.current-source.v4",
   "canonicalBranch": "work/ui-native-qualified-integration-20260928",
+  "convergenceBranch": "work/ui-native-exact-convergence-20260930",
+  "baselineCommit": "9213ff850d3dd91f8734ec954e1e5981db3480fa",
+  "walIndexSourceCommit": "4bc29cf124dc5532d04349e478bc82f5d4959fd9",
+  "implementationSourceSha": "0ef8638eaf7c4ae733ac2d10eba67d9308ef7e17",
+  "implementationSourceTree": "7f52a91a42a612dfd7472fa5514ab81626dc13f9",
+  "implementationRole": "immutable ordinary source commit; later commits may change only qualification metadata and review navigation",
   "inventoryPolicy": {
     "trackedRoots": [
       "apps/hepta-native",
@@ -11,11 +14,7 @@
       "codex-rs/hepta-private-state"
     ],
     "integrationFiles": [
-      ".github/workflows/hepta-ui-native-current-source.yml",
-      ".github/workflows/hepta-ui-native-integrate-20260928.yml",
-      ".github/workflows/hepta-ui-native-qualified-integration.yml",
-      ".github/workflows/hepta-ui-native-remediation-format.yml",
-      ".github/workflows/hepta-ui-native-remediation.yml",
+      ".github/workflows/ui-native-qualification.yml",
       "CALLERS.toml",
       "codex-rs/Cargo.lock",
       "codex-rs/Cargo.toml",
@@ -31,25 +30,26 @@
       "codex-rs/hepta-contracts/src/native_gateway.rs",
       "codex-rs/hepta-contracts/src/native_gateway_tests.rs",
       "codex-rs/hepta-contracts/tests/final_use_linearization.rs",
-      "docs/modules/ui.native/ACCEPTANCE-REPAIR-20260927.md",
+      "docs/modules/ui.native/BRANCH_PROTECTION.md",
+      "docs/modules/ui.native/CURRENT_DELIVERY.json",
       "docs/modules/ui.native/CURRENT_SOURCE.json",
-      "docs/modules/ui.native/QUALIFIED-INTEGRATION-20260928.md",
-      "docs/modules/ui.native/REMEDIATION-20260927.md",
+      "docs/modules/ui.native/IMPLEMENTATION_MAP.json",
+      "docs/modules/ui.native/QUALIFICATION_MANIFEST.json",
+      "docs/modules/ui.native/REVIEW_DIFF.md",
       "docs/modules/ui.native/TECHNICAL.md",
-      "scripts/hepta_ui_native_aggregate.py",
-      "scripts/hepta_ui_native_evidence.py",
-      "scripts/hepta_ui_native_integrate_20260928.py",
-      "scripts/hepta_ui_native_product_evidence.py",
-      "scripts/test_hepta_ui_native_aggregate.py",
-      "scripts/test_hepta_ui_native_evidence.py",
-      "scripts/test_hepta_ui_native_source.py"
+      "scripts/check_hepta_ui_native_convergence.py",
+      "scripts/test_hepta_ui_native_convergence.py",
+      "scripts/test_hepta_ui_native_package_security.py"
     ],
-    "excluded": [
-      "apps/hepta-native/CURRENT_SOURCE.json"
+    "excludedFromSelfHash": [
+      "apps/hepta-native/CURRENT_SOURCE.json",
+      "docs/modules/ui.native/QUALIFICATION_MANIFEST.json"
     ],
     "digest": "sha256-canonical-path-map-at-verification"
   },
-  "identityBinding": "exact-git-commit-tree-plus-retained-sha256-inventory-log",
+  "identityBinding": "implementation commit and tree plus exact checked-out head and ordered-parent merge evidence",
+  "sourceMutationInCiAllowed": false,
   "productionQualified": false,
+  "deploymentQualified": false,
   "releaseAuthorized": false
 }

@@ -1,354 +1,277 @@
 # ui.native technical development guide
 
-**Plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0  
 **Module:** `ui.native`  
 **Owner / deputy:** `ui-platform` / `accessibility`  
-**Lane:** `LANE-B-RUNTIME`  
 **Canonical branch:** `work/ui-native-qualified-integration-20260928`  
-**Review:** PR #1139; this is a draft product candidate, not an accepted release.
+**Convergence branch:** `work/ui-native-exact-convergence-20260930`  
+**Immutable implementation source:** `0ef8638eaf7c4ae733ac2d10eba67d9308ef7e17`  
+**Implementation tree:** `7f52a91a42a612dfd7472fa5514ab81626dc13f9`
 
-This guide describes the implementation anchored at
-`a0d911f50bddf35da7b3a8cd7e671373a3c128fb`, source tree
-`49c8342e46b7d711bb97bd294b4e700915ed9b36`. Subsequent documentation or diagnostic
-commits do not prove execution of that implementation. Qualification must bind
-its actual final checkout, tree, workflow, dependency locks, runner and logs.
-The fixed synthetic-merge base is `a126987b84737dbc2ee2592442a314117bddb4a2`.
+This is an implementation candidate, not a production-qualified or
+release-authorized product. The ordinary source history is
+`9213ff850d3dd91f8734ec954e1e5981db3480fa` →
+`4bc29cf124dc5532d04349e478bc82f5d4959fd9` →
+`0ef8638eaf7c4ae733ac2d10eba67d9308ef7e17`. The middle commit contains the
+WAL/index implementation. The final implementation commit removes the
+self-mutating qualification graph and hardens platform launcher identity.
 
-Read [CURRENT_DELIVERY.json](CURRENT_DELIVERY.json) for the explicitly separated
-source, verification and open-work states. The earlier guides are preserved
-byte-for-byte under `history/`; their old candidate names, journal-v3 capacity
-statements and completion assertions are historical, not current contracts.
-The dated closure records likewise describe their own revisions. In a conflict,
-this guide states the present intended contract; a contradiction with actual
-source or an executed test is a defect, not permission to trust the document.
+Read `CURRENT_SOURCE.json`, `CURRENT_DELIVERY.json`,
+`IMPLEMENTATION_MAP.json`, `QUALIFICATION_MANIFEST.json` and
+`REVIEW_DIFF.md` together. Missing, cancelled, skipped, stale-SHA or
+mismatched-parent evidence is failure. A source file or unexecuted test is not a
+passing receipt.
 
 ## 1. Identity, mission and ownership
 
-The module supplies native desktop presentation and bounded local platform
-operations over existing runtime owners. It does not create another domain
-store, provider executor, release selector or authority issuer. Application
-configuration is fixed for a process generation; changing endpoint, trust or
-policy requires a new bootstrap rather than silently changing the authority of
-an already displayed confirmation.
+The module supplies native desktop presentation, authenticated runtime reads,
+bounded local platform operations, durable observations and signed-update
+coordination. It does not create a second domain store, provider executor,
+authority issuer, release selector or deployment owner.
 
-The native shell owns local presentation, its operation journal and update
-coordination metadata. The gateway owns authenticated read transport. The
-kernel final-use owner remains responsible for grants, nonce consumption,
-epochs, expiry and revocation. Local clipboard, notification and path policy
-are additional ceilings, not substitutes for that authority. Accessibility
-and release acceptance remain independently reviewed facts.
+The native process owns local presentation, one runtime instance, its operation
+journal and update coordination state. The gateway owns authenticated read
+transport. The kernel final-use owner retains grants, nonce consumption, epoch,
+expiry and revocation. Platform policy is an additional ceiling, never a
+replacement for authority. Accessibility and release acceptance remain
+independently reviewed facts.
 
 ## 2. Source binding and implementation status
 
-`apps/hepta-native` is the only Rust desktop application root. Its ordinary
-bootstrap is `src/main.rs`; the retired JavaScript intent prototype must not
-return as a second product entrypoint. A historical branch, patch capsule,
-source archive or passing result for another commit cannot establish delivery
-of the current candidate.
+`apps/hepta-native` is the standalone Rust application. The retired JavaScript
+prototype is not a product entry point. The implementation is bound to the
+commit and tree above. Later metadata commits are permitted only when the
+qualification checker proves that product implementation paths are byte-for-byte
+unchanged from the frozen source.
 
-`CURRENT_SOURCE.json` in the application defines the current-source inventory
-policy. Its v3 policy recomputes identity for a checkout; it is not a stored
-per-file pass receipt. Source maps identify an explicit source anchor and are
-not automatically current after a code change. This revision does not claim
-that all global generated projections, source-object maps or documentation
-metrics have been regenerated and verified. Those checks remain necessary.
+The only module qualification workflow is
+`.github/workflows/ui-native-qualification.yml`. It has read-only permissions,
+checks out explicit SHAs, retains an immutable worktree and never applies,
+commits or pushes source. Sixteen overlapping apply-once, materializer,
+source-export and derived qualification workflows were removed. Patch capsules
+are not source delivery.
 
-The whole-batch retirement repair and the GUI readiness/picker/pagination work
-are ordinary committed source. Current native formatting, compilation, strict
-lint and the six-subject acceptance set are not established as passed. A
-successful Python infrastructure job is not a successful Rust or GUI job.
+Current state is `implementation-candidate / qualification-blocked /
+release-not-authorized`. Journal v7, WAL v1, exact active lookup and retirement
+indexing are implemented. Complete crash, scale, physical-platform and signed
+release evidence is not established.
 
 ## 3. Boundary, responsibilities and non-goals
 
-Permitted local state includes window/focus information, exact dispatch facts,
-opaque session references and signed-update staging/recovery records. Runtime
-facts, model or memory mutations, private signing keys, credential issuance and
-release decisions remain with their respective owners.
+Permitted local state includes window/focus coordination, exact dispatch facts,
+opaque session references, operation receipts and update recovery records.
+Runtime truth, model or memory mutation, private signing keys, credential
+issuance and release decisions remain with existing owners.
 
-Missing authority, a stale authenticated view, changed request semantics,
-unsupported persistence, contradictory identity or an unknown effect result
-must not be repaired by executing anyway. A UI timeout does not prove that an
-admitted operation was cancelled. Closing observation ends local observation;
-it does not turn UNKNOWN into a terminal OS success or known non-execution.
+Missing authority, stale presentation, changed payload semantics, unsafe
+persistence, contradictory identity or unknown effect result fails closed. A UI
+timeout does not prove an admitted operation was cancelled. Closing observation
+ends local observation only; it does not transform UNKNOWN into success or known
+non-execution.
 
 ## 4. Internal architecture and component decomposition
 
-`main.rs` composes the signed endpoint, keyring, policy, journal, kernel gate,
-update manager and GUI. `backend.rs` and `native_http.rs` handle the authenticated
-loopback read path. `security.rs` adapts exact confirmations to the kernel
-final-use owner. `journal.rs`, `journal_storage.rs` and `retirement.rs` own local
-operation persistence; `private_state.rs` validates the private root.
+`main.rs` composes endpoint trust, keyring, policy, journal, final-use gate,
+updater and GUI. `backend.rs` and `native_http.rs` implement authenticated
+loopback reads. `security.rs` binds an exact displayed view and payload to the
+final-use owner.
 
-`ui.rs` owns the presentation and one supervised task slot. `ui/task_supervisor.rs`
-linearizes admission and cancellation. `ui/readiness.rs` binds a GUI callback
-witness to the authenticated view; `ui/history_page.rs` bounds visible history
-rows; `ui/native_picker.rs` runs the platform file dialog. Operations and updates
-remain in their existing `ui/operations_view.rs` and `ui/update_views.rs` paths.
+`journal.rs` owns the active state machine and exact
+`HashMap<OperationKey, usize>` lookup. `journal_storage.rs` owns snapshots and
+framed WAL persistence. `retirement.rs` owns immutable segments, archived
+receipts and a rebuildable disk index. `private_state.rs` rejects unsafe roots,
+redirects and permissions.
 
-`updater.rs`, `update_storage.rs` and `update_handoff.rs` implement signed staging,
-replacement coordination and readiness. `hepta-native-updater` is the separate
-replacement helper; `hepta-native-credential` provisions or deletes a selected
-system-keyring capability. Neither helper authorizes a release on its own.
+`ui.rs` owns presentation and the supervised mutation task.
+`ui/task_supervisor.rs` linearizes cancellation and owner admission.
+`ui/native_picker.rs` owns a platform dialog process and exact single-use ticket.
+The current UI still copies active history into presentation state; persistent
+history paging and a formal immutable read-snapshot lane remain open work.
 
 ## 5. Contracts, ports and compatibility
 
-The upstream module port remains `ModulePort::runtime.agentd::ui.native`.
-Native runtime reads require a verified signed endpoint manifest, an explicit
-loopback address and protocol 2. The product uses `keyring_mac_v2`; it does not
-fall back to exposing the shared keyring secret as a bearer token. Request
-proofs bind route, time window, nonce and server incarnation, and response
-proofs bind the request, status and body. See [GATEWAY_V2.md](GATEWAY_V2.md).
+The upstream port remains `ModulePort::runtime.agentd::ui.native`. Runtime reads
+require a verified endpoint manifest, explicit loopback address and protocol 2.
+Keyring-MAC proofs bind route, time, nonce, process incarnation, response status
+and body. Read authentication never grants an OS effect.
 
-Legacy bearer consumers are a separate compatibility surface, never an implicit
-native-product downgrade. Gateway read access does not provide OS-effect
-permission. Its existing bounded connection/request limits remain separate
-from native UI task admission. A successful health probe is not GUI readiness,
-and a GUI frame is not proof of physical display, keyboard or screen-reader
-acceptance.
+Legacy bearer consumers are a separate compatibility surface and cannot become
+an implicit native downgrade. A health response is not GUI readiness. A GUI
+callback is not physical display, keyboard, IME or screen-reader acceptance.
 
-## 6. Data authority, persistence and migrations
+## 6. Journal, WAL and checkpoint protocol
 
-The current writer uses journal v6 and segmented retirement v2. Journal readers
-recognize the explicit legacy schemas in source; migration must preserve every
-identity and cannot grant a reconstructed receipt to an identity-only legacy
-tombstone. The active journal still has a 4096-record and 8-MiB bound. The former
-32768-entry legacy retirement frontier is not the capacity contract for v6
-segmented retirement. Removing that fixed ceiling does not make memory, disk or
-startup work unlimited.
+The active writer uses `hepta.native-operation-journal.v7`. Every state-changing
+upsert appends one framed `hepta.native-operation-wal.v1` entry with monotonic
+sequence, previous-entry checksum, complete validated record and entry checksum.
+The frame has fixed magic, bounded length and payload SHA-256. The file is
+synchronized before memory changes.
 
-An operation key is interpreted with its endpoint and session incarnation. The
-record additionally binds subject, displayed revision, action, payload digest,
-final-use binding and grant digest. Reuse with different semantics is a conflict.
-Private roots and files must remain current-principal owned and non-redirected;
-a missing or unsafe store must not become a new empty replay registry.
+Checkpointing is bounded by WAL entry count and bytes:
 
-Retirement publishes full immutable records before the referencing segments,
-then publishes the retirement head before removing closed active records. The
-whole input batch is semantically validated before record writes. In particular,
-an already retired identity with no committed record reference cannot receive
-a new receipt, even when batched with a new identity. Exact previously archived
-receipts remain immutable and readable across restart.
+1. validate current records and retirement checkpoint;
+2. serialize a checksummed v7 snapshot with the WAL frontier;
+3. preserve the prior snapshot as forensic evidence, never automatic replay;
+4. atomically replace and synchronize the snapshot and parent directory;
+5. only then truncate and synchronize the WAL.
 
-The chain detects partial rollback and corruption; it is not an independent
-anti-rollback authority when every local file is restored together. Recovery
-must retain evidence and require the appropriate owner reconciliation rather
-than silently selecting an older apparently valid snapshot.
+Open validates the private root, snapshot, retirement checkpoint and full WAL
+chain under one lock. A final incomplete frame may be truncated to the last
+verified boundary. Bad magic, invalid length, checksum mismatch, sequence gap,
+previous-checksum mismatch, illegal transition or record conflict fails closed.
+A persistence error fences the owner; reopen and reconcile rather than retrying
+through the same object.
 
-## 7. Runtime, concurrency and transaction model
+## 7. Retirement authority and acceleration
 
-There is one runtime owner and one pending supervised UI worker. Runtime-bound
-work waits through the same cancellation-aware lock path, with a 30-second
-pre-admission wait limit. Taking the mutex is not admission. Only
-`TaskAdmission::begin()` resolves the cancellation/admission race. After entry,
-the worker remains owned until joined and must finish the owner's durable
-protocol; no timeout detaches it or starts a replacement effect.
+Immutable retirement segments and content-addressed archived receipts are the
+audit authority. `hepta.native-retirement.v3` publishes a checkpoint-bound
+`hepta.native-retirement-index.v1` manifest whose bounded buckets map exact
+identity digests to optional receipt digests. Manifest, buckets and cache are
+acceleration only.
 
-The effect sequence remains immutable input validation, durable Prepared,
-platform permission, kernel final-use claim, durable Invoking, current
-verified-use fence, final local policy, OS adapter and durable observation.
-Permission denial before dispatch can be recorded as rejection. Once the OS
-boundary may have been entered, errors must remain uncertain unless a trusted
-terminal observation establishes otherwise.
+A missing, stale or corrupt index may reject work or trigger deterministic
+rebuild, but it must never make a retired identity executable. Legacy chains are
+validated and rebuilt under the same owner. Segment and record publication
+precedes the indexed head. A regressed or unrelated checkpoint is rejected.
 
-The closing UI stops new work, invalidates actionable presentation and requests
-pre-admission cancellation when possible. The existing shutdown deadline blocks
-update activation if clean runtime closure is not established. It is not a
-promise that arbitrary filesystem or OS work can be killed within the deadline.
+The local chain detects partial rollback and corruption. It is not an external
+anti-rollback authority if every local file is restored consistently.
 
-## 8. GUI readiness, failure semantics and recovery
+## 8. Runtime, concurrency and transaction model
 
-Startup and update-readiness persistence now execute in a `Ready` task on the
-existing supervisor instead of in a paint callback. A first callback records
-the exact view identity in presentation memory. A later monotonic callback for
-the same view establishes that the earlier callback returned and produces the
-witness. No filesystem write or runtime-owner wait is required to produce it.
+There is one runtime and journal owner. Waiting for the mutex is not admission.
+`TaskAdmission::begin()` linearizes cancellation against owner entry. After
+admission, the worker remains owned and must finish the durable protocol;
+shutdown never detaches it or starts a replacement effect.
 
-After bounded owner-lock acquisition and admission, the worker revalidates the
-session ID/generation, runtime generation, displayed revision, content digest
-and module identity against the current owner view. Only then can it record
-startup or confirm the running update process. A changed view invalidates the
-witness. A pending-update read failure is propagated, not converted to absence.
-Readiness failure requests safe shutdown and denies update activation.
+The effect order is immutable validation → adapter confirmation resource →
+durable Prepared → local permission → final-use claim/current revalidation →
+durable Invoking → final policy and verified-use fence → OS adapter → durable
+terminal or Indeterminate observation.
 
-This witness is deliberately not a physical rendering or accessibility receipt.
-Regular initial signature/keyring/session bootstrap still occurs before the GUI
-is created. Its I/O must not be confused with the eliminated per-frame readiness
-I/O. Frame count exhaustion is a failure, not an identity reset.
+An exact duplicate is a read, not another effect. Reuse with changed endpoint,
+session, subject, revision, action, payload, binding or grant is a conflict.
+Once the OS boundary may have been crossed, errors remain uncertain unless an
+operation-bound trustworthy observation resolves them.
 
-## 9. Security, privacy and threat controls
+## 9. GUI readiness, shutdown and recovery
 
-The native client cannot mint grants. Signing keys never belong in UI state,
-repository fixtures intended for release, logs or session records. Runtime
-status and operation records should expose only the data required by their
-contracts; logs must not dump grant payloads, bearer material or signing secrets.
-A public-key fingerprint or CI artifact digest does not itself grant authority.
+Readiness persistence runs in the supervised owner rather than a paint callback.
+A first callback records exact view identity; a later callback for the same view
+creates a witness. The worker revalidates session, runtime generation, displayed
+revision, content digest and module identity before recording startup or
+confirming an update.
 
-Mutable path-string OpenPath and RevealPath remain disabled in the system
-adapter. Repeated canonicalization, an allowlisted directory or a file-picker
-string does not solve the final resource substitution window. Enable these
-operations only when a platform adapter consumes the already verified resource
-capability and the appropriate replacement-race tests and host checks pass.
+Shutdown blocks new work, invalidates actionable presentation and attempts
+pre-admission cancellation. Admitted work is joined. Update activation is denied
+when clean closure is not established. This is not a promise that arbitrary OS
+work can be forcibly cancelled within a UI deadline.
 
-Clipboard terminal success requires immediate exact readback equality. A
-mismatch or read failure is indeterminate. Notification launcher exit, including
-zero, does not establish external delivery. The current reconciliation adapter
-cannot manufacture an OS operation receipt; UNKNOWN remains UNKNOWN. Windows
-notification identity remains an explicit product integration requirement.
+Cold-restart qualification must exercise Prepared, Invoking, partial WAL,
+checkpoint replacement, WAL truncation, retirement publication, update handoff
+and rollback cut points. Source recovery logic is not a process-kill receipt.
 
-## 10. Native file input and cancellation
+## 10. Security and privacy controls
 
-Choose-file buttons for grants, update manifests and update packages now use
-concrete platform adapters: a static macOS choose-file invocation, a static
-Windows OpenFileDialog invocation and optional `/usr/bin/zenity` on Linux. A
-missing adapter is an explicit error. No user input is interpolated into shell
-commands, and no silent shell fallback is selected.
+The shell cannot mint grants. Signing keys, complete grants, shared keyring
+material and bearer-equivalent secrets must not enter UI state or logs.
+Diagnostics expose stable identity, phase, low-cardinality error and digests
+rather than raw payloads.
 
-The supervisor retains the exact single-use ticket created when the dialog
-opens. Switching screens, replacing the target or cancelling the intent makes
-old callbacks stale. A cancelled old dialog cannot cancel a newer ticket, and
-an old successful result cannot populate a new target. Focus is restored only
-after accepted delivery. Drag/drop retains the same target-binding protocol.
+`OpenPath` and `RevealPath` remain disabled. Canonicalization, an allowlisted
+root or a chooser string does not close the final name-substitution window. They
+may be enabled only by an adapter consuming an already verified OS resource
+capability without reopening a mutable name.
 
-The adapter bounds output to 16 KiB, accepts strict UTF-8 and one absolute path,
-and rejects multiple-path delimiters, NUL and relative paths. The dialog has a
-120-second observation budget. Child reaping and output-reader joining retain
-ownership even if an OS call blocks; they do not confer a hard end-to-end
-shutdown bound. Selected paths are reopened by the existing bounded regular-file
-reader. A chooser result is neither execution authority nor a resource handle.
-Physical dialog behavior on each platform is still unverified in this revision.
+Clipboard success requires exact immediate readback. Notification launcher exit
+never proves delivery. Windows notification remains disabled until packaged
+identity, AppUserModelID and WinRT integration exist. macOS and Linux helpers use
+fixed `/usr/bin` executables, clear the inherited environment and reintroduce
+only required locale/user/session variables.
 
-## 11. Performance, capacity and hot-path policy
+## 11. Native file input and cancellation
 
-Authenticated status JSON is rendered once per successful refresh, then reused
-across frames. Refresh start/failure invalidates that cache and the current-view
-indicator. The top bar no longer claims an authenticated current view solely
-because a prior connection succeeded. Cached text never substitutes for current
-runtime or final-use validation.
+Each grant, update manifest or package selection is armed with an exact target
+and monotonic ticket. A stale callback, screen change, cancellation or target
+replacement cannot populate another field. Drag/drop uses the same target
+binding. The selected path remains untrusted input and is reopened through the
+bounded regular-file reader.
 
-The operation view constructs at most 64 receipt rows per page. Navigation is
-clamped after history shrink and uses stable operation identity for controls.
-All active records remain owned by the journal; presentation pagination does
-not compact, delete or forget deduplication facts. This bounds layout work, not
-all runtime snapshot allocation: the existing active history is still copied
-into a presentation result.
+Current adapters are static macOS `osascript`, Windows OpenFileDialog and Linux
+`/usr/bin/zenity`. Output is bounded to 16 KiB, strict UTF-8 and one absolute
+path. Control delimiters, multiple paths and relative paths are rejected. Linux
+`xdg-desktop-portal` is still required as the primary sandbox/Wayland route;
+`zenity` may remain only as an explicit qualified compatibility route.
 
-Retirement membership and record references remain memory-resident, and startup
-still validates the entire chain. A rebuildable authenticated disk index and
-million-record measurements are NOT implemented by this revision. The active
-journal still performs vector lookup/clone and full snapshot writes. An exact
-lookup index, append/checkpoint format and write-amplification reduction remain
-open work, not a measured speedup. Any later optimization must preserve the
-same authoritative owner and pre-dispatch/terminal durability barriers.
+## 12. Performance, capacity and hot-path policy
 
-## 12. Observability and operations
+Blocking provisional budgets live in `apps/hepta-native/STORAGE_BUDGETS.json`:
+4096 active records, one million retired identities, bounded WAL/snapshot bytes,
+mutation p50/p95/p99, cold-start p95, peak RSS, deterministic index rebuild and
+write amplification.
 
-Expose distinct prepared-not-dispatched, awaiting trustworthy observation,
-terminal-observed and observation-closed-UNKNOWN states. Closing observation
-cannot be presented as effect cancellation. Report capacity pressure before
-operators are tempted to delete the journal. Archive through the owner only,
-and retain complete identity/receipt references needed to reject replay.
+The active index removes linear exact lookup. WAL avoids a full snapshot on each
+ordinary transition and checkpoints at bounded pressure. The retirement bucket
+index bounds ordinary exact lookup without becoming authority. UI pagination
+bounds drawing only; runtime-to-UI history copying remains proportional to
+active history and requires a generation-bound persistent page API.
 
-Startup diagnostics bind the authenticated endpoint and view. An explicit
-`--check-connection` exercises bootstrap without claiming GUI execution. Ordinary
-GUI startup records are additional observations, not independent acceptance.
-Safe diagnostics include source identity, low-cardinality failure family,
-operation identity, phase and digests; avoid raw payloads and secret material.
+Qualification records raw samples, fsync count, WAL and snapshot growth, host,
+filesystem, source, parents, command and artifact digest. Merely constructing a
+large fixture is not a performance pass.
 
-Keep current-head and synthetic-merge logs separate. If a transport-provided
-summary contradicts GitHub's primary job/step record, do not promote a pass.
-Preserve the discrepancy. An artifact rejected for digest mismatch remains
-rejected even when separate primary logs are retrieved for troubleshooting.
+## 13. Observability and operations
 
-## 13. Verification and qualification
+Operators see prepared-not-dispatched, awaiting observation,
+terminal-observed and observation-closed-UNKNOWN as distinct states. UNKNOWN is
+never rendered as cancellation or success. Journal pressure is reported before
+the active ceiling. Compaction executes through the owner and archives complete
+records before active removal.
 
-Use pinned Rust 1.95.0 and locked dependency resolution. Required native commands
-are in the developer guide. Test-source discovery is insufficient: the compiled
-`cargo test --lib -- --list` output must contain both retirement claim tests,
-then those tests and the full applicable suites must actually execute.
-`retirement_claim_tests.rs` is now mounted in the parent module explicitly.
+Exact-head and ordered-parent-merge evidence remains separate. Primary job
+results, run IDs, runner image, logs and artifact digests are retained. A summary
+cannot override failed, cancelled, skipped or missing primary evidence.
 
-The source-integrity workflow is read-only and may provide quicker Linux
-feedback. Its result is not the required six-subject qualification. Full
-acceptance still requires Linux/macOS/Windows exact-head and deterministic-merge
-checks, owner integration, strict formatting/lint, native tests, real binaries,
-packaged self/fault profiles and applicable installed-product exercises.
+## 14. Verification and qualification
 
-Run `36450557375` for source `6ff6cd07c25c9af4fd6d6f59348eb79fa1fec8c1`
-completed with Python infrastructure success but native formatting and compiled
-test discovery failure; full native tests and Clippy were skipped. That failed
-historical run proves nothing about subsequent GUI changes. No complete passing
-six-subject result is claimed here. Retain real outcomes, including failure,
-timeout, cancelled, skipped and missing jobs, without translating them to pass.
+Use Rust 1.95.0 and locked dependencies. The read-only workflow runs source
+identity, rustfmt, all-target/all-feature check, strict Clippy, all native Rust
+targets, Python convergence/package-security contracts and Linux/macOS/Windows
+exact-head subjects. Pull requests also run fixed ordered-parent merge subjects
+on all three platforms.
 
-## 14. Signed updates, activation and rollback
+Repository qualification additionally needs compiler-negative API tests,
+process-kill, cold restart, corruption, updater rollback, installed-package E2E,
+measured coverage and sustained scale. Physical acceptance covers Windows,
+macOS, X11, Wayland, multiple displays, high DPI, Chinese IME, screen readers,
+keyboard navigation, shutdown, update and crash recovery.
+
+`QUALIFICATION_MANIFEST.json` remains pending until every required subject is
+bound to the same immutable implementation source and accepted independently.
+
+## 15. Signed updates, packaging and release
 
 Signed manifests bind channel, target, package, predecessor, evidence, protocol,
-selector/generator identities and validity window. Staging and helper activation
-use the existing update owner locks. A GUI close request alone cannot activate:
-its admitted worker must be joined and runtime close confirmed without failure.
+selector/generator identities and validity. The helper re-verifies package and
+predecessor. `ActivatedUnconfirmed` cannot be cleared by static self-test or exit
+zero. Readiness requires the installed process, handoff, authenticated view and
+GUI witness. Unsafe recovery remains `RecoveryRequired`; rollback cannot replace
+an unrelated newer binary.
 
-The helper re-verifies the staged package and predecessor. ActivatedUnconfirmed
-must not be cleared by a static self-test or exit zero. Readiness requires the
-normal installed process, its handoff and authenticated view, with the GUI
-witness checked as described above. Unsafe or uncertain recovery remains
-RecoveryRequired. Rollback cannot overwrite an unrelated newer binary.
+Release qualification separately requires installed packages, Developer ID and
+notarization, Authenticode and packaged identity, Linux package ownership, key
+custody/rotation/revocation, SBOM and provenance. Source tests and unsigned
+archives do not satisfy these gates.
 
-Formal installed release upgrade/rollback, schema-compatible downgrade policy,
-production key rotation/revocation, Windows replacement and macOS signed bundle
-behavior still require actual implementation/host evidence where missing.
-Unsigned ZIP packages and source state machines are not signed installer
-qualification. The release contract is normative for independent promotion.
+## 16. Development workflow and remaining work
 
-## 15. Implementation sequence and remaining work packages
+All source changes are ordinary reviewable commits. Qualification is read-only.
+A formatter or repair proposal must be committed and the new exact source
+requalified. Required GitHub administration is recorded in
+`BRANCH_PROTECTION.md`; a checked-in contract does not enable a ruleset.
 
-First close current correctness and source delivery: execute the mounted
-retirement tests, fix current compiler/format/lint failures, refresh derived
-registries and validate exact source objects. Complete this before accepting
-performance or UI readiness claims for the final candidate.
-
-Next optimize storage under the existing journal owner. A derived disk index
-must be rebuildable from a verified chain and bound to its exact frontier.
-Missing, stale or corrupt index state must never be interpreted as an identity
-being unretired. Specify startup, rebuild, lookup and recovery budgets separately.
-Do not promise constant-time startup without an appropriate trusted checkpoint.
-
-For active-journal optimization, measure lookup, allocation, serialization,
-file/directory synchronization and full-operation latency separately. Preserve
-no-write exact duplicates and post-failure fencing. A new append/checkpoint
-format needs explicit migration and crash-cut coverage, not a hidden change to
-v6 byte interpretation. Retain a comparison against the unchanged snapshot path.
-
-Then exercise real chooser/focus behavior, implement verified resource handoff
-where supported, and qualify installation/update/recovery on target hosts.
-Accessibility, IME, DPI, endurance, production signing custody and independent
-release selection remain separate work packages and evidence gates.
-
-## 16. Development workflow and historical retirement
-
-All implementation changes must be normal reviewable commits on the named
-candidate. The three temporary write-enabled preparers have been replaced by
-read-only retirement notices, and the invalid patch capsule has been removed.
-Qualification must not silently patch, format, commit or push its tested source.
-A formatting proposal may be reviewed and committed separately, after which the
-new exact candidate must be tested again.
-
-Historical guides and implementation maps are preserved under `history/` for
-migration/audit context. Relative links inside those archived bytes refer to
-the original document location and may require consulting the anchored source.
-They are not alternative current entrypoints. Keep generated global module
-indexes synchronized through their normal generation commands; do not edit a
-successful receipt by hand to hide drift or the lack of an executed check.
-
-## 17. Definition of module completion
-
-Completion is layered: implementation exists; build module/test tree includes
-it; ordinary product calls use it; exact-head checks pass; deterministic merge
-checks pass; target-host behavior is accepted; independent release gates pass.
-No one Boolean or source map may stand for all of those states.
-
-This revision advances ordinary source implementation and documents remaining
-work. It does not establish production implementation, deployment qualification,
-independent acceptance, signing, promotion or release. All corresponding flags
-remain false until their own retained evidence and authorized decisions exist.
-No historical pass, source archive, GUI fixture or CI hash can authorize an OS
-effect or a production release.
+Remaining work is explicit: persistent history paging, split picker/read/mutation
+lanes without another state owner, verified resource handoff, portal-first Linux
+picker, packaged Windows notification, crash/scale harnesses, physical
+accessibility acceptance and signed release evidence. Until those gates close,
+`productionQualified`, `deploymentQualified` and `releaseAuthorized` stay false.
