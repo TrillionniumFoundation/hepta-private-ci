@@ -54,13 +54,8 @@ jobs:
           from pathlib import Path
           path = Path('.github/workflows/automation-taskflow-selected-host.yml')
           body = path.read_text(encoding='utf-8')
-          old = '''          cargo test -p codex-hepta-automation durable_neural_circuit -- --nocapture
-          cargo test -p codex-hepta-automation external_host_fence -- --nocapture
-'''
-          new = '''          cargo test -p codex-hepta-automation --test durable_neural_circuit -- --nocapture
-          cargo test -p codex-hepta-automation --test durable_neural_circuit_recovery -- --nocapture
-          cargo test -p codex-hepta-automation external_host_fence -- --nocapture
-'''
+          old = "          cargo test -p codex-hepta-automation durable_neural_circuit -- --nocapture\n          cargo test -p codex-hepta-automation external_host_fence -- --nocapture\n"
+          new = "          cargo test -p codex-hepta-automation --test durable_neural_circuit -- --nocapture\n          cargo test -p codex-hepta-automation --test durable_neural_circuit_recovery -- --nocapture\n          cargo test -p codex-hepta-automation external_host_fence -- --nocapture\n"
           if body.count(old) != 1:
               raise SystemExit('selected-host durable Circuit command anchor changed')
           path.write_text(body.replace(old, new, 1), encoding='utf-8')
@@ -106,5 +101,3 @@ jobs:
           git add -A
           git commit -m "fix(automation): fence durable circuit recovery and projection"
           git push origin HEAD:work/automation-taskflow-full-closure-2026-09-27
-
-# Triggered after the workflow file became visible to the Actions service.
