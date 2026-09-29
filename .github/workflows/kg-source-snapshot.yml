@@ -1,0 +1,43 @@
+name: knowledge.graph source snapshot
+
+on:
+  push:
+    branches: [work/kg-full-closure-20260929]
+    paths:
+      - ".github/workflows/kg-source-snapshot.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Pack exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          tar \
+            --exclude=.git \
+            --exclude=target \
+            --exclude=codex-rs/target \
+            -czf "$RUNNER_TEMP/hepta-private-ci-$GITHUB_SHA.tar.gz" .
+          sha256sum "$RUNNER_TEMP/hepta-private-ci-$GITHUB_SHA.tar.gz" \
+            > "$RUNNER_TEMP/hepta-private-ci-$GITHUB_SHA.tar.gz.sha256"
+      - name: Retain exact source snapshot
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: kg-source-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/hepta-private-ci-${{ github.sha }}.tar.gz
+            ${{ runner.temp }}/hepta-private-ci-${{ github.sha }}.tar.gz.sha256
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
