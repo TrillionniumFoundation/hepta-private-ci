@@ -750,11 +750,12 @@ impl MatrixDurableStore {
 }
 
 fn hex_sha256(value: [u8; 32]) -> String {
-    use std::fmt::Write as _;
+    const HEX: &[u8; 16] = b"0123456789abcdef";
 
-    let mut output = String::with_capacity(64);
+    let mut output = String::with_capacity(value.len() * 2);
     for byte in value {
-        write!(&mut output, "{byte:02x}").expect("writing to String cannot fail");
+        output.push(char::from(HEX[usize::from(byte >> 4)]));
+        output.push(char::from(HEX[usize::from(byte & 0x0f)]));
     }
     output
 }
