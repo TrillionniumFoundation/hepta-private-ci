@@ -1,0 +1,95 @@
+name: Learning operator remediation materializer
+
+on:
+  push:
+    branches: [codex/learning-operator-full-convergence-20260926]
+    paths:
+      - '.github/workflows/learning-operator-remediation.yml'
+      - 'scripts/learning_operator_failure_followup.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: learning-operator-remediation
+  cancel-in-progress: true
+
+jobs:
+  materialize:
+    runs-on: macos-15
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/learning-operator-full-convergence-20260926
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Install pinned Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
+          rustup override set 1.95.0
+      - name: Apply, verify, and commit typed owner recovery
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if grep -q 'pub enum OwnerDatasetFailureKindV1' \
+            codex-rs/hepta-bellman-operator/src/dataset_bound.rs; then
+            echo 'typed owner recovery already materialized'
+            exit 0
+          fi
+
+          python3 scripts/learning_operator_failure_followup.py
+
+          # Workflow definitions and one-shot materializers are source inputs,
+          # not generated module output. Keep the generated commits scoped to
+          # Rust source, tests, documentation, and implementation maps.
+          git checkout HEAD -- \
+            .github/workflows/learning-operator-remediation.yml \
+            scripts/learning_operator_failure_followup.py
+
+          cd codex-rs
+          cargo fmt -p codex-hepta-bellman-operator
+          cargo test --locked -p codex-hepta-bellman-operator \
+            owner_failure -- --nocapture
+          cargo clippy --locked --no-deps \
+            -p codex-hepta-bellman-operator --all-targets -- -D warnings
+          cd ..
+
+          git config user.name "OpenAI"
+          git config user.email "openai@users.noreply.github.com"
+          git add \
+            codex-rs/hepta-bellman-operator/src/admission.rs \
+            codex-rs/hepta-bellman-operator/src/dataset_bound.rs \
+            codex-rs/hepta-bellman-operator/src/lib.rs \
+            docs/modules/learning.operator/ADMISSION_CONTRACT.md \
+            docs/modules/learning.operator/DEVELOPER_GUIDE.md \
+            qualification/module-execution-dossiers/detail/learning.operator.md
+          git commit \
+            -m "feat(learning.operator): classify owner recovery" \
+            -m "Preserve owner evidence and dataset error variants, distinguish transient owner availability from stop-required integrity failures, and expose actionable admission recovery without weakening fit-time currentness checks." \
+            -m "Signed-off-by: OpenAI <openai@users.noreply.github.com>"
+
+          python3 scripts/hepta-implementation-maps.py migrate \
+            --module learning.operator \
+            --module learning.eval
+          git add \
+            docs/modules/learning.operator/IMPLEMENTATION_MAP.json \
+            docs/modules/learning.eval/IMPLEMENTATION_MAP.json
+          git commit \
+            -m "docs(learning): rebind owner recovery maps" \
+            -m "Bind the learning.operator and learning.eval implementation maps to the committed typed owner-recovery candidate without claiming execution or external acceptance." \
+            -m "Signed-off-by: OpenAI <openai@users.noreply.github.com>"
+
+          python3 scripts/hepta-implementation-dossiers.py verify
+          python3 scripts/hepta-lane-e-closure.py self-test
+          python3 scripts/hepta-lane-e-closure.py verify
+          python3 scripts/hepta-implementation-maps.py verify \
+            --expected-sha "$(git rev-parse HEAD)" \
+            --expected-tree "$(git rev-parse HEAD^{tree})"
+          git diff --exit-code
+
+          git push origin HEAD:codex/learning-operator-full-convergence-20260926

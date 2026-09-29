@@ -8,7 +8,12 @@ publish = false
 [lib]
 name = "codex_hepta_bellman_operator"
 path = "src/lib.rs"
-doctest = false
+doctest = true
+
+[features]
+default = []
+# In-process numerical fixtures only; never enable in product builds.
+qualification-unverified-input = []
 
 [lints]
 workspace = true

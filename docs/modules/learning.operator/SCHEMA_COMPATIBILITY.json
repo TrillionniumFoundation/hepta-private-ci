@@ -1,0 +1,66 @@
+{
+  "schema": "hepta.learning-operator-schema-compatibility.v1",
+  "schemaVersion": 1,
+  "module": "learning.operator",
+  "productionPath": {
+    "datasetReceipt": "DatasetSnapshotReceiptV4",
+    "tabularPin": "TabularPayloadPinV2",
+    "tabularLoader": "LoadedTabularOperatorV2",
+    "worldModelArtifact": "WorldModelArtifactV2",
+    "typeState": [
+      "RawRows",
+      "StructurallyValidated",
+      "SourceAuthenticated",
+      "CurrentAtUse",
+      "VerifiedTrainingInput",
+      "ImmutableCandidate",
+      "IndependentlyEvaluated",
+      "SelectedOrRollbackAuthorized",
+      "LoadedReadOnly"
+    ]
+  },
+  "versions": [
+    {
+      "version": "V1",
+      "status": "qualification_compatibility_only",
+      "datasetReceipt": "structural_or_legacy",
+      "payloadPin": "TabularPayloadPinV1",
+      "loader": "LoadedTabularOperatorV1",
+      "productionAllowed": false,
+      "migration": "Re-freeze under V4, independently evaluate, select, and load through V2."
+    },
+    {
+      "version": "V2",
+      "status": "structural_compatibility_and_complete_payload_pin",
+      "datasetReceipt": "DatasetSnapshotV2 compatibility",
+      "payloadPin": "TabularPayloadPinV2",
+      "loader": "LoadedTabularOperatorV2",
+      "productionAllowed": false,
+      "migration": "Retain complete pin; replace structural rows with V4 owner-authenticated input."
+    },
+    {
+      "version": "V3",
+      "status": "owner_authenticated_compatibility",
+      "datasetReceipt": "DatasetSnapshotReceiptV3",
+      "payloadPin": "TabularPayloadPinV2",
+      "loader": "LoadedTabularOperatorV2",
+      "productionAllowed": false,
+      "migration": "Issue additive V4 row commitment and validity envelope without rewriting V3."
+    },
+    {
+      "version": "V4",
+      "status": "production_qualification_path",
+      "datasetReceipt": "DatasetSnapshotReceiptV4",
+      "payloadPin": "TabularPayloadPinV2",
+      "loader": "LoadedTabularOperatorV2",
+      "productionAllowed": true,
+      "migration": "No downgrade. Rollback requires independently authorized immutable predecessor bytes."
+    }
+  ],
+  "externalEvidence": {
+    "independentAcceptanceRequired": true,
+    "targetHostBenchmarkRequired": true,
+    "futureWindowEfficacyRequired": true,
+    "repositoryMaySelfIssue": false
+  }
+}

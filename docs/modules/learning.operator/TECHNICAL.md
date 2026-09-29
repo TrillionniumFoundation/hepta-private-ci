@@ -16,6 +16,8 @@
 
 This stable document is the implementation guide for `learning.operator`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
 
+Canonical candidate-state, failure-scope, recovery-action, and V2/V3 capacity semantics are in [ADMISSION_CONTRACT.md](ADMISSION_CONTRACT.md).
+
 ## 1. Identity, mission and ownership
 
 Train bounded Bellman/operator candidates in qualification space without online production mutation.

@@ -106,11 +106,34 @@ impl PreparedSelfEvolutionSelectionV1 {
 pub struct VerifiedSelfEvolutionSelectionV1 {
     receipt: SelfEvolutionSelectionReceiptV1,
     selector: VerifiedLearningEvidenceV1,
+    participants: [VerifiedLearningEvidenceV1; 3],
     selector_evidence_digest: Digest32,
     selection_digest: Digest32,
 }
 
 impl VerifiedSelfEvolutionSelectionV1 {
+    /// Check current host-owned trust and every actor's validity at consumption.
+    /// The token is not a perpetual capability after key rotation or revocation.
+    pub fn revalidate(
+        &self,
+        verifier: &LearningEvidenceVerifierV1,
+        now: u64,
+    ) -> Result<(), SelfEvolutionSelectionError> {
+        if verifier.trust_digest() != self.receipt.evaluation_trust_digest {
+            return Err(SelfEvolutionSelectionError::BindingMismatch);
+        }
+        verifier.revalidate(&self.selector, now)?;
+        for participant in &self.participants {
+            verifier.revalidate(participant, now)?;
+        }
+        Ok(())
+    }
+
+    #[must_use]
+    pub fn authority_epoch(&self) -> u64 {
+        self.selector.principal().authority_epoch
+    }
+
     #[must_use]
     pub fn receipt(&self) -> &SelfEvolutionSelectionReceiptV1 {
         &self.receipt
@@ -143,6 +166,16 @@ pub struct VerifiedSelfEvolutionRollbackV1 {
 }
 
 impl VerifiedSelfEvolutionRollbackV1 {
+    pub fn revalidate(
+        &self,
+        verifier: &LearningEvidenceVerifierV1,
+        now: u64,
+    ) -> Result<(), SelfEvolutionSelectionError> {
+        self.selection.revalidate(verifier, now)?;
+        verifier.revalidate(&self.evaluator, now)?;
+        Ok(())
+    }
+
     #[must_use]
     pub fn selection(&self) -> &VerifiedSelfEvolutionSelectionV1 {
         &self.selection
@@ -337,6 +370,7 @@ pub fn admit_self_evolution_selection_v1(
     digest_bytes.extend_from_slice(&selector_evidence.signature);
     Ok(VerifiedSelfEvolutionSelectionV1 {
         receipt: prepared.receipt,
+        participants: [prepared.generator, prepared.evaluator, prepared.observer],
         selector,
         selector_evidence_digest,
         selection_digest: Digest32::of_bytes(&digest_bytes),
@@ -368,6 +402,7 @@ pub fn admit_self_evolution_rollback_v1(
     if verifier.trust_digest() != selection.receipt.evaluation_trust_digest {
         return Err(SelfEvolutionSelectionError::BindingMismatch);
     }
+    selection.revalidate(verifier, now)?;
     let payload = rollback_signing_payload_v1(selection, regression_evidence_digest)?;
     let evaluator = verifier.verify(
         LearningEvidenceRoleV1::Evaluator,
