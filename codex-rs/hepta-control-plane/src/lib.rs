@@ -91,6 +91,18 @@ pub struct PlannerPendingDispatchPageV1 {
     pub authority: codex_hepta_types::AuthorityPosture,
 }
 
+mod planner_execution_identity;
+pub use planner_execution_identity::{
+    planner_operation_identity_digest_v1, planner_request_digest_v1,
+};
+
+mod planner_reconciliation_controller;
+pub use planner_reconciliation_controller::{
+    PlannerPendingReconciliationBatchV1, PlannerPendingReconciliationDispositionV1,
+    PlannerPendingReconciliationResultV1, PlannerPendingRequestResolutionV1,
+    PlannerPendingRequestResolverV1, reconcile_pending_dispatches_v1,
+};
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum OrganTargetDeliveryDispositionV1 {
     Delivered,

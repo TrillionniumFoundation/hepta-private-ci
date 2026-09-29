@@ -1,0 +1,107 @@
+    "nativeSymbol": "codex_hepta_control_plane::reconcile_pending_dispatches_v1",
+    "sourcePath": "codex-rs/hepta-control-plane/src/planner_reconciliation_controller.rs",
+    "inputs": [
+        "healthy PlannerStoreV1 owner",
+        "round-robin cursor and bounded page limit",
+        "product-owned exact request resolver",
+        "effect-owner observation-only reconciliation port",
+    ],
+    "outputs": [
+        "bounded per-claim DENY_ALL reconciliation results",
+        "next round-robin cursor",
+    ],
+    "state": "source_candidate_boundary_uncomposed",
+    "authority": "deny_all",
+    "ownerBoundary": "the product owns exact request recovery and the effect owner owns observation; control.runtime verifies canonical request identity and never calls execute",
+    "nonClaim": "source presence does not compose a production resolver, effect owner, scheduler or activation path",
+    "tests": [
+        {
+            "path": "codex-rs/hepta-control-plane/src/planner_reconciliation_controller_tests.rs",
+            "symbol": "pending_reconciliation_controller_never_redispatches_and_closes_exact_claim",
+        },
+        {
+            "path": "codex-rs/hepta-control-plane/src/planner_reconciliation_controller_tests.rs",
+            "symbol": "pending_reconciliation_controller_rejects_resolver_identity_drift_before_effect_owner",
+        },
+    ],
+    "designOperation": "bounded_pending_dispatch_reconciliation",
+    "mappingClass": "owner_boundary",
+    "delegatedCallees": [
+        "PlannerStoreV1::pending_dispatches_page",
+        "planner_operation_identity_digest_v1",
+        "planner_request_digest_v1",
+        "reconcile_planner_request_v1",
+    ],
+    "sourcePathExists": True,
+}
+fanout_operation = {
+    "operation": "OrganFanoutReceiptV1::continuation",
+    "nativeSymbol": "codex_hepta_control_plane::OrganFanoutReceiptV1::continuation",
+    "sourcePath": "codex-rs/hepta-control-plane/src/organ_fanout_recovery.rs",
+    "inputs": [
+        "complete per-target fanout receipt",
+        "independently retained canonical evidence digest",
+    ],
+    "outputs": [
+        "DENY_ALL cursor for only the first incomplete route",
+        "fail-closed rejection for drift, contradictory boundaries or incomplete delivered evidence",
+    ],
+    "state": "source_candidate_boundary_uncomposed",
+    "authority": "deny_all",
+    "nonClaim": "the cursor is not retry authority and does not provide downstream idempotency, scheduling or backpressure",
+    "tests": [
+        {
+            "path": "codex-rs/hepta-control-plane/tests/organ_fanout_receipts.rs",
+            "symbol": "failed_fanout_preserves_the_exact_successful_prefix_digest",
+        },
+    ],
+    "designOperation": "organ_fanout_fail_closed_continuation",
+    "mappingClass": "owner_boundary",
+    "delegatedCallees": [
+        "OrganFanoutReceiptV1::evidence_digest",
+        "canonical per-delivery and delivered-prefix identity digests",
+    ],
+    "sourcePathExists": True,
+}
+
+replacements = {
+    value["operation"]: value
+    for value in (pending_operation, recovery_operation, fanout_operation)
+}
+operations[:] = [
+    operation
+    for operation in operations
+    if operation.get("operation") not in replacements
+]
+organ_index = next(
+    (
+        index
+        for index, operation in enumerate(operations)
+        if operation.get("operation") == "OrganHostV1::dispatch_once_with_receipt"
+    ),
+    len(operations),
+)
+operations[organ_index:organ_index] = [pending_operation, recovery_operation]
+organ_index = next(
+    index
+    for index, operation in enumerate(operations)
+    if operation.get("operation") == "OrganHostV1::dispatch_once_with_receipt"
+)
+operations.insert(organ_index + 1, fanout_operation)
+
+owner_types = implementation.get("ownerLocalTypes")
+if not isinstance(owner_types, list):
+    raise SystemExit("implementation map ownerLocalTypes must be a list")
+for name in (
+    "PlannerPendingDispatchV1",
+    "PlannerPendingDispatchPageV1",
+    "PlannerPendingRequestResolutionV1",
+    "PlannerPendingReconciliationResultV1",
+    "PlannerPendingReconciliationBatchV1",
+    "OrganFanoutContinuationV1",
+):
+    if name not in owner_types:
+        owner_types.append(name)
+
+completion = implementation.get("completion")
+if not isinstance(completion, dict):
