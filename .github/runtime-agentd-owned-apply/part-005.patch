@@ -1,0 +1,124 @@
+ witness exists without its archived operation; refusing redispatch"
+-                .to_string(),
++        return Err(AgentdError::runtime_codex(
++            RuntimeCodexFailureClassV1::PersistenceOutcomeUnknown,
++            "runtime.codex terminal witness exists without its archived operation; refusing redispatch",
+         ));
+     }
+ 
+@@ -185,8 +186,9 @@ fn validate_input_identity(
+         || manifest.deadline_ms != input.deadline_ms()
+         || manifest.input_digest != input_digest.to_string()
+     {
+-        return Err(AgentdError::Protocol(
+-            "runtime.codex operation identity already exists with semantic drift".to_string(),
++        return Err(AgentdError::runtime_codex(
++            RuntimeCodexFailureClassV1::DurableIdentityConflict,
++            "runtime.codex operation identity already exists with semantic drift",
+         ));
+     }
+     Ok(())
+@@ -406,9 +408,9 @@ pub(super) fn archive_terminal_operations(
+                     let observed: RuntimeCodexTerminalWitnessV1 =
+                         read_bounded_json(&witness, 16 * 1024)?;
+                     if observed != expected_witness {
+-                        return Err(AgentdError::Protocol(
+-                            "runtime.codex terminal witness conflicts with active receipt"
+-                                .to_string(),
++                        return Err(AgentdError::runtime_codex(
++                            RuntimeCodexFailureClassV1::TerminalWitnessConflict,
++                            "runtime.codex terminal witness conflicts with active receipt",
+                         ));
+                     }
+                 }
+@@ -456,8 +458,9 @@ fn validate_terminal_witness(
+     let observed: RuntimeCodexTerminalWitnessV1 = read_bounded_json(path, 16 * 1024)?;
+     let expected = terminal_witness(manifest, receipt)?;
+     if observed != expected {
+-        return Err(AgentdError::Protocol(
+-            "runtime.codex archived operation does not match its independent witness".to_string(),
++        return Err(AgentdError::runtime_codex(
++            RuntimeCodexFailureClassV1::TerminalWitnessConflict,
++            "runtime.codex archived operation does not match its independent witness",
+         ));
+     }
+     Ok(())
+@@ -493,9 +496,9 @@ pub(super) fn write_receipt(
+         if observed == *receipt {
+             return Ok(());
+         }
+-        return Err(AgentdError::Protocol(
+-            "runtime.codex terminal receipt is immutable and conflicts with an existing receipt"
+-                .to_string(),
++        return Err(AgentdError::runtime_codex(
++            RuntimeCodexFailureClassV1::DurableIdentityConflict,
++            "runtime.codex terminal receipt is immutable and conflicts with an existing receipt",
+         ));
+     }
+     match write_json_atomic(path, receipt) {
+@@ -509,8 +512,9 @@ pub(super) fn write_receipt(
+             if observed == *receipt {
+                 Ok(())
+             } else {
+-                Err(AgentdError::Protocol(
+-                    "runtime.codex terminal receipt conflicts with a concurrent writer".to_string(),
++                Err(AgentdError::runtime_codex(
++                    RuntimeCodexFailureClassV1::PersistenceOutcomeUnknown,
++                    "runtime.codex terminal receipt conflicts with a concurrent writer",
+                 ))
+             }
+         }
+diff --git a/codex-rs/hepta-agentd/src/runtime_codex_executor_process.rs b/codex-rs/hepta-agentd/src/runtime_codex_executor_process.rs
+index c193dae8549c0898078ee89ad7fb589e7de40114..c21b7ffbfccbb1a85f6b9ec923df54c0f15c3163 100644
+--- a/codex-rs/hepta-agentd/src/runtime_codex_executor_process.rs
++++ b/codex-rs/hepta-agentd/src/runtime_codex_executor_process.rs
+@@ -1,5 +1,7 @@
+ include!("runtime_codex_executor_process_base.rs");
+ 
++#[path = "runtime_codex_supervisor_maintenance.rs"]
++mod maintenance;
+ #[path = "runtime_codex_supervisor.rs"]
+ mod supervisor;
+ 
+diff --git a/codex-rs/hepta-agentd/src/runtime_codex_executor_process_base.rs b/codex-rs/hepta-agentd/src/runtime_codex_executor_process_base.rs
+index dc65def02c8e46787f26e42ed9394d200428d99d..0c65859cc89b197ce797e2189a72f14f132e35e1 100644
+--- a/codex-rs/hepta-agentd/src/runtime_codex_executor_process_base.rs
++++ b/codex-rs/hepta-agentd/src/runtime_codex_executor_process_base.rs
+@@ -26,6 +26,7 @@ use super::persistence::deadline_instant;
+ use super::persistence::dispatch_is_fenced;
+ use super::persistence::mark_dispatch_fenced;
+ use super::persistence::validate_manifest_owner;
++use crate::runtime_codex_policy::RuntimeCodexFailureClassV1;
+ use crate::AgentdError;
+ 
+ pub(super) async fn spawn_worker(
+@@ -98,9 +99,9 @@ pub(super) async fn spawn_worker(
+     }
+     if fresh_input.is_some() {
+         if dispatch_is_fenced(paths, manifest)? {
+-            return Err(AgentdError::Protocol(
+-                "runtime.codex operation was already dispatch-fenced; fresh dispatch is forbidden"
+-                    .to_string(),
++            return Err(AgentdError::runtime_codex(
++                RuntimeCodexFailureClassV1::FencedUnresolved,
++                "runtime.codex operation was already dispatch-fenced; fresh dispatch is forbidden",
+             ));
+         }
+         // This is the monotonic point of no blind redispatch. A crash after this
+@@ -108,8 +109,9 @@ pub(super) async fn spawn_worker(
+         // can only invoke the worker's reconcile-only `--resume` path.
+         mark_dispatch_fenced(paths, manifest)?;
+     } else if !dispatch_is_fenced(paths, manifest)? {
+-        return Err(AgentdError::Protocol(
+-            "runtime.codex resume requires an immutable dispatch fence".to_string(),
++        return Err(AgentdError::runtime_codex(
++            RuntimeCodexFailureClassV1::PreparedUnfenced,
++            "runtime.codex resume requires an immutable dispatch fence",
+         ));
+     }
+ 
+@@ -257,7 +259,7 @@ fn signal_interrupt(child: &mut Child) -> Result<(), AgentdError> {
+     child.start_kill().map_err(Into::into)
+ }
+ 
+-async fn r
