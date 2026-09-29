@@ -10,6 +10,7 @@ use crate::DatasetWithdrawalScopeV1;
 use crate::LearningArtifactManifestV2;
 use crate::ProvenanceModeV1;
 use crate::VerifiedCurrentArtifactUseV1;
+use crate::WithdrawalBoundArtifactAdmissionV3;
 use crate::admit_manifest_at_withdrawal_head_v3;
 use crate::test_support::FixtureValue;
 
@@ -141,16 +142,8 @@ fn substituted_complete_admission_closes_the_cached_consumer() {
     );
     let current_use = VerifiedCurrentArtifactUseV1::new(current, substituted);
     let mut candidate = RevalidatingCandidate::new(loaded(receipt, selected));
-    assert_eq!(
-        candidate.with_current_use(current_use, |_| panic!("substituted admission consumed")),
-        Err::<(), _>(PinnedCandidateLoadError::PinMismatch)
-    );
-    assert_eq!(
-        candidate.with_verified_registry(
-            receipt,
-            ArtifactRegistry::new(),
-            |_| panic!("closed consumer revived")
-        ),
-        Err::<(), _>(PinnedCandidateLoadError::Unavailable)
-    );
+    let rejected = candidate.with_current_use(current_use, |_| ());
+    assert_eq!(rejected, Err(PinnedCandidateLoadError::PinMismatch));
+    let closed = candidate.with_verified_registry(receipt, ArtifactRegistry::new(), |_| ());
+    assert_eq!(closed, Err(PinnedCandidateLoadError::Unavailable));
 }
