@@ -39,13 +39,35 @@ jobs:
           raw = lzma.decompress(base64.b64decode(''.join(p.read_text().strip() for p in chunks), validate=True))
           assert len(raw) == 46781
           assert hashlib.sha256(raw).hexdigest() == '8b93a084a722d79dd6f57b4a22d23cfbbae0e3c9d730e3a333d7f5a579817bc2'
+          patch = raw.decode('utf-8')
+          replacements = {
+              '@@ -201,3 +201,4 @@': '@@ -202,3 +202,4 @@',
+              '@@ -370,3 +370,4 @@': '@@ -371,3 +371,4 @@',
+              '@@ -89,3 +89,7 @@': '@@ -90,3 +90,7 @@',
+              '@@ -118,4 +118,43 @@': '@@ -124,4 +128,43 @@',
+          }
+          for before, after in replacements.items():
+              assert patch.count(before) == 1, before
+              patch = patch.replace(before, after)
+          for target in (
+              'scripts/hepta_inference_boundary_native.py',
+              'scripts/hepta_inference_capacity.py',
+              'scripts/test_hepta_inference_capacity.py',
+          ):
+              header = f'diff --git a/{target} b/{target}\n'
+              marker = f'--- a/{target}\n+++ b/{target}\n'
+              assert header not in patch and marker in patch, target
+              patch = patch.replace(marker, header + marker, 1)
+          raw = patch.encode('utf-8')
+          assert len(raw) == 47066
+          assert hashlib.sha256(raw).hexdigest() == 'b81eaf61648986516716ef961d20addf00e360c06def00ebe700433aaefd7ade'
           Path(os.environ['RUNNER_TEMP'], 'inference-boundary.patch').write_bytes(raw)
           PY
           git fetch origin "$DESTINATION"
           test "$(git rev-parse FETCH_HEAD)" = "$BASE"
           git checkout -B "$DESTINATION" "$BASE"
-          git apply --check --index "$RUNNER_TEMP/inference-boundary.patch"
-          git apply --index "$RUNNER_TEMP/inference-boundary.patch"
+          git apply --check --index --recount --verbose "$RUNNER_TEMP/inference-boundary.patch"
+          git apply --index --recount "$RUNNER_TEMP/inference-boundary.patch"
           python3 - <<'PY'
           import subprocess
           changed = subprocess.check_output(['git','diff','--cached','--name-only','-z']).decode().split('\0')
