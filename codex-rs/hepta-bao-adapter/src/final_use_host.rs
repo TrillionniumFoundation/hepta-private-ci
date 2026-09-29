@@ -592,13 +592,9 @@ impl BaoFinalUseHost {
                                     reservation.reservation_id.as_str().to_owned(),
                                 )
                                 .map_err(|_| {
-                                    BaoAuthBusError::Evidence(
-                                        "durable reservation commit failed",
-                                    )
+                                    BaoAuthBusError::Evidence("durable reservation commit failed")
                                 }),
-                            Err(_) => Err(BaoAuthBusError::Evidence(
-                                "durable owner unavailable",
-                            )),
+                            Err(_) => Err(BaoAuthBusError::Evidence("durable owner unavailable")),
                         };
                         std::future::ready(result)
                     },
@@ -614,9 +610,7 @@ impl BaoFinalUseHost {
                                         "durable dispatch fence commit failed",
                                     )
                                 }),
-                            Err(_) => Err(BaoAuthBusError::Evidence(
-                                "durable owner unavailable",
-                            )),
+                            Err(_) => Err(BaoAuthBusError::Evidence("durable owner unavailable")),
                         };
                         std::future::ready(result)
                     },
@@ -638,9 +632,9 @@ impl BaoFinalUseHost {
                                             "durable provider terminal commit failed",
                                         )
                                     }),
-                                Err(_) => Err(BaoAuthBusError::Evidence(
-                                    "durable owner unavailable",
-                                )),
+                                Err(_) => {
+                                    Err(BaoAuthBusError::Evidence("durable owner unavailable"))
+                                }
                             });
                         std::future::ready(result)
                     },
@@ -649,13 +643,9 @@ impl BaoFinalUseHost {
                             Ok(mut owner) => owner
                                 .enter_consumption(operation_id, receipt.clone())
                                 .map_err(|_| {
-                                    BaoAuthBusError::Evidence(
-                                        "durable delivery preparation failed",
-                                    )
+                                    BaoAuthBusError::Evidence("durable delivery preparation failed")
                                 }),
-                            Err(_) => Err(BaoAuthBusError::Evidence(
-                                "durable owner unavailable",
-                            )),
+                            Err(_) => Err(BaoAuthBusError::Evidence("durable owner unavailable")),
                         };
                         std::future::ready(result)
                     },
@@ -665,16 +655,14 @@ impl BaoFinalUseHost {
                     },
                     consumer_succeeded: |_receipt: &BaoSecretReceipt| {
                         let result = match registry.lock() {
-                            Ok(mut owner) => owner
-                                .observe_consumption(operation_id, true)
-                                .map_err(|_| {
+                            Ok(mut owner) => {
+                                owner.observe_consumption(operation_id, true).map_err(|_| {
                                     BaoAuthBusError::Evidence(
                                         "durable consumer observation commit failed",
                                     )
-                                }),
-                            Err(_) => Err(BaoAuthBusError::Evidence(
-                                "durable owner unavailable",
-                            )),
+                                })
+                            }
+                            Err(_) => Err(BaoAuthBusError::Evidence("durable owner unavailable")),
                         };
                         std::future::ready(result)
                     },
@@ -1319,7 +1307,9 @@ impl fmt::Display for BaoProductHostError {
             Self::Host(error) => write!(formatter, "host admission failed: {error}"),
             Self::AuthBus(error) => write!(formatter, "AuthBus product path failed: {error}"),
             Self::Store(error) => write!(formatter, "durable reference operation failed: {error}"),
-            Self::SqliteStore(error) => write!(formatter, "durable SQLite operation failed: {error}"),
+            Self::SqliteStore(error) => {
+                write!(formatter, "durable SQLite operation failed: {error}")
+            }
             Self::ConsumerProfileRequired => {
                 formatter.write_str("matching operation-aware consumer profile required")
             }

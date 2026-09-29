@@ -768,12 +768,7 @@ async fn forward_execution_claim_excludes_recovery_until_release_or_expiry() {
         .await
         .unwrap();
     let recovery = owner
-        .claim_reconciliation_operation(
-            "worker:recovery",
-            "operation:forward-lease",
-            1_060,
-            100,
-        )
+        .claim_reconciliation_operation("worker:recovery", "operation:forward-lease", 1_060, 100)
         .await
         .unwrap();
     assert_eq!(recovery.claim_generation, 2);

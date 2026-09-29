@@ -490,10 +490,7 @@ impl BaoClient {
         prepare_delivery: Prepare,
         consumer: impl FnOnce(&[u8], &BaoSecretReceipt) -> Result<(), ConsumerError>,
     ) -> Result<
-        Result<
-            BaoSecretReceipt,
-            BaoGuardedDeliveryError<PreparationError, ConsumerError>,
-        >,
+        Result<BaoSecretReceipt, BaoGuardedDeliveryError<PreparationError, ConsumerError>>,
         BaoClientError,
     >
     where

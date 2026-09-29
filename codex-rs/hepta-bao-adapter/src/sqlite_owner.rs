@@ -615,12 +615,8 @@ impl SqliteBaoOwnerV1 {
         if lease_ms == 0 || lease_ms > MAX_RECOVERY_LEASE_MS {
             return Err(SqliteBaoOwnerErrorV1::InvalidInput);
         }
-        self.claim_consumption_inner(
-            operation,
-            now_unix_ms,
-            Some((execution_owner, lease_ms)),
-        )
-        .await
+        self.claim_consumption_inner(operation, now_unix_ms, Some((execution_owner, lease_ms)))
+            .await
     }
 
     async fn claim_consumption_inner(
@@ -729,10 +725,10 @@ impl SqliteBaoOwnerV1 {
                  WHERE operation_id = ? AND claim_owner IS NULL",
             )
             .bind(execution_owner)
-            .bind(u64_bytes(
-                claim_until_unix_ms.ok_or(SqliteBaoOwnerErrorV1::InvalidInput)?,
+            .bind(
+                u64_bytes(claim_until_unix_ms.ok_or(SqliteBaoOwnerErrorV1::InvalidInput)?)
+                    .as_slice(),
             )
-            .as_slice())
             .bind(u64_bytes(claim_generation).as_slice())
             .bind(&record.operation.operation_id)
             .execute(&mut *tx)
@@ -1561,8 +1557,8 @@ impl SqliteBaoOwnerV1 {
                 .try_get::<Vec<u8>, _>("claim_generation")
                 .map_err(storage)?,
         )?
-            .checked_add(1)
-            .ok_or(SqliteBaoOwnerErrorV1::CapacityExceeded)?;
+        .checked_add(1)
+        .ok_or(SqliteBaoOwnerErrorV1::CapacityExceeded)?;
         let changed = sqlx::query(
             "UPDATE bao_reconciliation_queue
              SET claim_owner = ?, claim_until_unix_ms = ?, claim_generation = ?
@@ -1647,8 +1643,8 @@ impl SqliteBaoOwnerV1 {
                     .try_get::<Vec<u8>, _>("claim_generation")
                     .map_err(storage)?,
             )?
-                .checked_add(1)
-                .ok_or(SqliteBaoOwnerErrorV1::CapacityExceeded)?;
+            .checked_add(1)
+            .ok_or(SqliteBaoOwnerErrorV1::CapacityExceeded)?;
             let changed = sqlx::query(
                 "UPDATE bao_reconciliation_queue
                  SET claim_owner = ?, claim_until_unix_ms = ?, claim_generation = ?

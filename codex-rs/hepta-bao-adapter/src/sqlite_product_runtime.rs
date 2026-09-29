@@ -117,9 +117,7 @@ impl BaoRecoveryWorkerMetricsOwnerV1 {
         self.batches = self.batches.saturating_add(1);
         self.claimed = self.claimed.saturating_add(report.claimed);
         self.succeeded = self.succeeded.saturating_add(report.succeeded);
-        self.terminal_failed = self
-            .terminal_failed
-            .saturating_add(report.terminal_failed);
+        self.terminal_failed = self.terminal_failed.saturating_add(report.terminal_failed);
         self.rescheduled = self.rescheduled.saturating_add(report.rescheduled);
         for class in classes {
             match class {
@@ -334,9 +332,7 @@ impl SqliteBaoProductRuntimeV1 {
         Ok(report)
     }
 
-    pub async fn metrics(
-        &self,
-    ) -> Result<SqliteBaoProductRuntimeMetricsV1, BaoProductHostError> {
+    pub async fn metrics(&self) -> Result<SqliteBaoProductRuntimeMetricsV1, BaoProductHostError> {
         let now_unix_ms = self.host.product_now()?;
         let owner = self
             .owner
@@ -379,11 +375,12 @@ impl SqliteBaoProductRuntimeV1 {
             self.config.recovery_retry_max_ms,
             claim.attempt_count,
         );
-        let next_attempt_at_unix_ms = observed_at_unix_ms
-            .checked_add(delay)
-            .ok_or(BaoProductHostError::SqliteStore(
-                SqliteBaoOwnerErrorV1::CapacityExceeded,
-            ))?;
+        let next_attempt_at_unix_ms =
+            observed_at_unix_ms
+                .checked_add(delay)
+                .ok_or(BaoProductHostError::SqliteStore(
+                    SqliteBaoOwnerErrorV1::CapacityExceeded,
+                ))?;
         let error_sha256 = recovery_error_digest(error.class());
         self.owner
             .record_claimed_reconciliation_failure(
@@ -565,10 +562,7 @@ impl BaoFinalUseHost {
                                 &operation_id,
                                 current.revision,
                                 reservation.reservation_id.as_str().to_owned(),
-                                reservation_evidence(
-                                    b"hepta.bao.sqlite.reserved.v1",
-                                    &reservation,
-                                ),
+                                reservation_evidence(b"hepta.bao.sqlite.reserved.v1", &reservation),
                                 clock_now_for_saga(&clock)?,
                             )
                             .await?;
@@ -601,11 +595,10 @@ impl BaoFinalUseHost {
                     let clock = Arc::clone(&provider_clock);
                     let operation_id = provider_operation.clone();
                     async move {
-                        let code = provider_failure_code(error).ok_or(
-                            BaoAuthBusError::Evidence(
+                        let code =
+                            provider_failure_code(error).ok_or(BaoAuthBusError::Evidence(
                                 "nonterminal provider error classified terminal",
-                            ),
-                        )?;
+                            ))?;
                         let current = owner.consumption_result(&operation_id).await?;
                         owner
                             .mark_consumption_provider_failed(
@@ -812,9 +805,7 @@ impl BaoFinalUseHost {
             .consumers
             .get(&row.operation.consumer_id)
             .ok_or(BaoProductHostError::ConsumerProfileRequired)?;
-        if registration.configuration_sha256
-            != Some(row.operation.consumer_configuration_sha256)
-        {
+        if registration.configuration_sha256 != Some(row.operation.consumer_configuration_sha256) {
             return Err(BaoProductHostError::ConsumerProfileRequired);
         }
         let stable_operation = StableId::new(operation_id.to_owned()).map_err(|_| {
@@ -949,11 +940,7 @@ impl BaoFinalUseHost {
                         .map_err(|error| BaoProductHostError::AuthBus(error.into()))?
                 } else {
                     authbus
-                        .cancel_reservation(
-                            &reservation.reservation_id,
-                            reservation.revision,
-                            time,
-                        )
+                        .cancel_reservation(&reservation.reservation_id, reservation.revision, time)
                         .await
                         .map_err(|error| BaoProductHostError::AuthBus(error.into()))?
                 };
@@ -971,7 +958,9 @@ impl BaoFinalUseHost {
                     .map_err(BaoProductHostError::SqliteStore)?;
                 return Err(BaoProductHostError::TerminalFailure(terminal.operation));
             }
-            ReservationState::Cancelled | ReservationState::Expired | ReservationState::Released => {
+            ReservationState::Cancelled
+            | ReservationState::Expired
+            | ReservationState::Released => {
                 if matches!(
                     row.operation.state,
                     BaoConsumptionStateV1::Reserved | BaoConsumptionStateV1::DispatchAttempted
@@ -1013,11 +1002,7 @@ impl BaoFinalUseHost {
             match observer(operation_id, row.operation.semantic_sha256) {
                 Ok(BaoConsumerObservationV1::Succeeded) => {
                     row = owner
-                        .mark_consumption_succeeded(
-                            operation_id,
-                            row.revision,
-                            self.product_now()?,
-                        )
+                        .mark_consumption_succeeded(operation_id, row.revision, self.product_now()?)
                         .await
                         .map_err(BaoProductHostError::SqliteStore)?;
                 }
@@ -1043,11 +1028,13 @@ impl BaoFinalUseHost {
             | BaoConsumptionStateV1::ConsumerNotApplied => {
                 settle_sqlite_terminal_row(self, authbus, owner, row, reservation, evidence).await
             }
-            BaoConsumptionStateV1::Succeeded => row.operation.receipt.ok_or(
-                BaoProductHostError::SqliteStore(SqliteBaoOwnerErrorV1::CorruptState(
-                    "successful operation has no receipt",
-                )),
-            ),
+            BaoConsumptionStateV1::Succeeded => {
+                row.operation
+                    .receipt
+                    .ok_or(BaoProductHostError::SqliteStore(
+                        SqliteBaoOwnerErrorV1::CorruptState("successful operation has no receipt"),
+                    ))
+            }
             BaoConsumptionStateV1::Failed => {
                 Err(BaoProductHostError::TerminalFailure(row.operation))
             }
@@ -1075,11 +1062,11 @@ async fn settle_sqlite_terminal_row<E: BaoAuthBusEvidenceProvider>(
         }
         BaoConsumptionStateV1::ProviderFailed => (
             SettlementStatus::Completed,
-            row.operation.terminal_observed_cost.ok_or(
-                BaoProductHostError::SqliteStore(SqliteBaoOwnerErrorV1::CorruptState(
-                    "provider terminal cost is missing",
-                )),
-            )?,
+            row.operation
+                .terminal_observed_cost
+                .ok_or(BaoProductHostError::SqliteStore(
+                    SqliteBaoOwnerErrorV1::CorruptState("provider terminal cost is missing"),
+                ))?,
             false,
         ),
         BaoConsumptionStateV1::ConsumerNotApplied => (SettlementStatus::Rejected, 0, false),
@@ -1137,13 +1124,14 @@ async fn settle_sqlite_terminal_row<E: BaoAuthBusEvidenceProvider>(
         .await
         .map_err(BaoProductHostError::SqliteStore)?;
     if success {
-        terminal_row.operation.receipt.ok_or(BaoProductHostError::SqliteStore(
-            SqliteBaoOwnerErrorV1::CorruptState("successful operation has no receipt"),
-        ))
+        terminal_row
+            .operation
+            .receipt
+            .ok_or(BaoProductHostError::SqliteStore(
+                SqliteBaoOwnerErrorV1::CorruptState("successful operation has no receipt"),
+            ))
     } else {
-        Err(BaoProductHostError::TerminalFailure(
-            terminal_row.operation,
-        ))
+        Err(BaoProductHostError::TerminalFailure(terminal_row.operation))
     }
 }
 
@@ -1151,11 +1139,11 @@ fn historical_result(
     operation: BaoConsumptionOperationV1,
 ) -> Option<Result<BaoSecretReceipt, BaoProductHostError>> {
     match operation.state.recovery_action() {
-        BaoConsumptionRecoveryActionV1::ReturnHistoricalSuccess => Some(
-            operation.receipt.ok_or(BaoProductHostError::SqliteStore(
+        BaoConsumptionRecoveryActionV1::ReturnHistoricalSuccess => {
+            Some(operation.receipt.ok_or(BaoProductHostError::SqliteStore(
                 SqliteBaoOwnerErrorV1::CorruptState("successful operation has no receipt"),
-            )),
-        ),
+            )))
+        }
         BaoConsumptionRecoveryActionV1::ReturnHistoricalFailure => {
             Some(Err(BaoProductHostError::TerminalFailure(operation)))
         }
@@ -1240,9 +1228,7 @@ fn push_evidence_part(bytes: &mut Vec<u8>, part: &[u8]) {
     bytes.extend_from_slice(part);
 }
 
-fn clock_now_for_saga(
-    clock: &Arc<dyn AuthorityClock>,
-) -> Result<u64, BaoAuthBusError> {
+fn clock_now_for_saga(clock: &Arc<dyn AuthorityClock>) -> Result<u64, BaoAuthBusError> {
     clock
         .now_unix_ms()
         .map_err(|_| BaoAuthBusError::Evidence("product authority clock unavailable"))
@@ -1269,7 +1255,11 @@ mod tests {
 
     #[test]
     fn runtime_configuration_is_bounded_and_has_distinct_workers() {
-        assert!(BaoSqliteProductRuntimeConfigV1::default().validate().is_ok());
+        assert!(
+            BaoSqliteProductRuntimeConfigV1::default()
+                .validate()
+                .is_ok()
+        );
         let mut invalid = BaoSqliteProductRuntimeConfigV1::default();
         invalid.recovery_worker_id = invalid.forward_executor_id.clone();
         assert_eq!(
