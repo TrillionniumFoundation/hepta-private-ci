@@ -6,6 +6,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
+  INDEPENDENT_SECURITY_CONTROLS,
   REQUIRED_DEPLOYMENT_SECURITY_CHECKS,
   REQUIRED_REAL_BACKEND_CASES,
   deploymentSubject,
@@ -185,7 +186,7 @@ test("bundle validation accepts one exact, mutually bound evidence set on main",
       schema: "hepta.ui-control.independent-security-review-receipt.v1",
       ...common,
       reviewer: { identity: "Security reviewer", organization: "Independent lab", independentOfImplementationAuthor: true },
-      scope: ["tls", "csp", "csrf", "cors", "cookie", "identity", "session", "operation-ledger", "logging-redaction", "penetration-test"],
+      controls: INDEPENDENT_SECURITY_CONTROLS.map(id => ({ id, status: "passed", rawEvidenceDigest: evidenceRaw })),
       findings: { openCritical: 0, openHigh: 0, openMedium: 0, openLow: 1 },
     });
     const operationsReceipt = writeReceipt("operations.json", {

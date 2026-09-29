@@ -1,5 +1,6 @@
 import {
   CHAOS_CASES,
+  INDEPENDENT_SECURITY_CONTROLS,
   SHA1,
   SHA256,
   TERMINAL,
@@ -7,6 +8,7 @@ import {
   boundedText,
   exactSha,
   parseTimestamp,
+  sha256,
   validateCommonReceipt,
 } from "./external-evidence-primitives.mjs";
 
@@ -26,30 +28,67 @@ export function validateChaosEvidence(evidence, expected, options = {}) {
   boundedText(evidence.executor, "executor");
   assertEvidence(Array.isArray(evidence.cases) && evidence.cases.length === CHAOS_CASES.size, "UI_CONTROL_CHAOS_CASE_COUNT", "chaos evidence must contain exactly the required cases");
 
-  const ids = new Set();
-  const operationIds = new Set();
+  const casesById = new Map();
   for (const item of evidence.cases) {
     assertEvidence(item && typeof item === "object" && !Array.isArray(item), "UI_CONTROL_CHAOS_CASE", "chaos case must be an object");
     const policy = CHAOS_CASES.get(item.id);
     assertEvidence(policy, "UI_CONTROL_CHAOS_CASE_ID", `unexpected chaos case: ${item.id}`);
-    assertEvidence(!ids.has(item.id), "UI_CONTROL_CHAOS_DUPLICATE_CASE", `duplicate chaos case: ${item.id}`);
-    ids.add(item.id);
+    assertEvidence(!casesById.has(item.id), "UI_CONTROL_CHAOS_DUPLICATE_CASE", `duplicate chaos case: ${item.id}`);
+    casesById.set(item.id, item);
     assertEvidence(item.status === "passed", "UI_CONTROL_CHAOS_CASE_FAILED", `chaos case did not pass: ${item.id}`);
     boundedText(item.operationId, `${item.id}.operationId`, 192);
-    assertEvidence(!operationIds.has(item.operationId), "UI_CONTROL_CHAOS_OPERATION_REUSE", "chaos cases must use distinct operation IDs");
-    operationIds.add(item.operationId);
+    exactSha(item.semanticDigest, `${item.id}.semanticDigest`, SHA256);
+    exactSha(item.agentdInstanceDigest, `${item.id}.agentdInstanceDigest`, SHA256);
     exactSha(item.rawEvidenceDigest, `${item.id}.rawEvidenceDigest`, SHA256);
     assertEvidence(Number.isInteger(item.observedRecordCount), "UI_CONTROL_CHAOS_RECORD_COUNT", `${item.id} record count must be an integer`);
     assertEvidence(Number.isInteger(item.observedSideEffectCount), "UI_CONTROL_CHAOS_EFFECT_COUNT", `${item.id} side-effect count must be an integer`);
     assertEvidence(item.observedRecordCount === policy.records, "UI_CONTROL_CHAOS_RECORD_SEMANTICS", `${item.id} observed the wrong durable record count`);
     const allowedEffects = Array.isArray(policy.effects) ? policy.effects : [policy.effects];
     assertEvidence(allowedEffects.includes(item.observedSideEffectCount), "UI_CONTROL_CHAOS_EFFECT_SEMANTICS", `${item.id} observed an invalid side-effect count`);
+    if (policy.durableRecord) {
+      exactSha(item.durableRecordDigest, `${item.id}.durableRecordDigest`, SHA256);
+    } else {
+      assertEvidence(item.durableRecordDigest === null, "UI_CONTROL_CHAOS_RECORD_BINDING", `${item.id} must not claim a durable record identity`);
+    }
     if (policy.terminal) {
       assertEvidence(TERMINAL.has(item.terminalStatus), "UI_CONTROL_CHAOS_TERMINAL", `${item.id} did not retain a terminal observation`);
+    } else {
+      assertEvidence(item.terminalStatus === null, "UI_CONTROL_CHAOS_PREMATURE_TERMINAL", `${item.id} must be observed before a terminal result`);
     }
   }
-  assertEvidence(ids.size === CHAOS_CASES.size, "UI_CONTROL_CHAOS_REQUIRED_CASE", "one or more required chaos cases are missing");
-  return Object.freeze({ caseCount: ids.size, executedAt: evidence.executedAt, rawEvidenceDigest: evidence.rawEvidenceDigest });
+  assertEvidence(casesById.size === CHAOS_CASES.size, "UI_CONTROL_CHAOS_REQUIRED_CASE", "one or more required chaos cases are missing");
+
+  const beforeAdmission = casesById.get("crash-before-admission-commit");
+  const afterAdmission = casesById.get("crash-after-admission-before-dispatch");
+  const afterDispatch = casesById.get("crash-after-dispatch-before-terminal-observation");
+  const afterRestart = casesById.get("restart-reconciles-terminal-state");
+  const independentOperationIds = new Set([
+    beforeAdmission.operationId,
+    afterAdmission.operationId,
+    afterDispatch.operationId,
+  ]);
+  assertEvidence(independentOperationIds.size === 3, "UI_CONTROL_CHAOS_OPERATION_REUSE", "independent crash stages must not reuse an operation identity");
+  assertEvidence(afterRestart.operationId === afterDispatch.operationId, "UI_CONTROL_CHAOS_RECOVERY_OPERATION", "restart evidence must reconcile the exact operation interrupted after dispatch");
+  assertEvidence(afterRestart.semanticDigest === afterDispatch.semanticDigest, "UI_CONTROL_CHAOS_RECOVERY_SEMANTIC", "restart evidence changed the interrupted operation semantic digest");
+  assertEvidence(afterRestart.durableRecordDigest === afterDispatch.durableRecordDigest, "UI_CONTROL_CHAOS_RECOVERY_RECORD", "restart evidence did not observe the same durable operation record");
+  assertEvidence(afterRestart.agentdInstanceDigest !== afterDispatch.agentdInstanceDigest, "UI_CONTROL_CHAOS_RESTART_INSTANCE", "restart evidence did not cross an Agentd instance boundary");
+  assertEvidence(afterRestart.observedSideEffectCount >= afterDispatch.observedSideEffectCount, "UI_CONTROL_CHAOS_EFFECT_REGRESSION", "restart evidence regressed the observed side-effect count");
+  assertEvidence(afterRestart.observedSideEffectCount <= 1, "UI_CONTROL_CHAOS_DUPLICATE_EFFECT", "restart evidence observed a duplicate side effect");
+
+  return Object.freeze({
+    caseCount: casesById.size,
+    executedAt: evidence.executedAt,
+    rawEvidenceDigest: evidence.rawEvidenceDigest,
+    recoveryBinding: Object.freeze({
+      operationIdSha256: sha256(afterDispatch.operationId),
+      semanticDigest: afterDispatch.semanticDigest,
+      durableRecordDigest: afterDispatch.durableRecordDigest,
+      beforeAgentdInstanceDigest: afterDispatch.agentdInstanceDigest,
+      afterAgentdInstanceDigest: afterRestart.agentdInstanceDigest,
+      terminalStatus: afterRestart.terminalStatus,
+      observedSideEffectCount: afterRestart.observedSideEffectCount,
+    }),
+  });
 }
 
 export function validateAuthorityEvidence(receipt, expected, options = {}) {
@@ -131,8 +170,20 @@ export function validateIndependentSecurityReview(receipt, expected, options = {
   assertEvidence(receipt.reviewer?.independentOfImplementationAuthor === true, "UI_CONTROL_SECURITY_INDEPENDENCE", "security reviewer is not independent");
   boundedText(receipt.reviewer?.identity, "reviewer.identity");
   boundedText(receipt.reviewer?.organization, "reviewer.organization");
-  const requiredScope = ["tls", "csp", "csrf", "cors", "cookie", "identity", "session", "operation-ledger", "logging-redaction", "penetration-test"];
-  assertEvidence(Array.isArray(receipt.scope) && requiredScope.every(item => receipt.scope.includes(item)), "UI_CONTROL_SECURITY_SCOPE", "security review scope is incomplete");
+  assertEvidence(Array.isArray(receipt.controls) && receipt.controls.length === INDEPENDENT_SECURITY_CONTROLS.length, "UI_CONTROL_SECURITY_CONTROLS", "security review must contain exactly the required control observations");
+  const required = new Set(INDEPENDENT_SECURITY_CONTROLS);
+  const observed = new Set();
+  for (const item of receipt.controls) {
+    assertEvidence(item && typeof item === "object" && !Array.isArray(item), "UI_CONTROL_SECURITY_CONTROL", "security control observation must be an object");
+    assertEvidence(required.has(item.id), "UI_CONTROL_SECURITY_CONTROL_ID", `unexpected security control: ${item?.id ?? "unknown"}`);
+    assertEvidence(!observed.has(item.id), "UI_CONTROL_SECURITY_CONTROL_DUPLICATE", `duplicate security control: ${item.id}`);
+    assertEvidence(item.status === "passed", "UI_CONTROL_SECURITY_CONTROL_FAILED", `security control did not pass: ${item.id}`);
+    exactSha(item.rawEvidenceDigest, `${item.id}.rawEvidenceDigest`, SHA256);
+    if (item.notes !== undefined) boundedText(item.notes, `${item.id}.notes`, 4096);
+    observed.add(item.id);
+    required.delete(item.id);
+  }
+  assertEvidence(required.size === 0, "UI_CONTROL_SECURITY_SCOPE", `security review controls are incomplete: ${[...required].join(", ")}`);
   assertEvidence(receipt.findings?.openCritical === 0 && receipt.findings?.openHigh === 0, "UI_CONTROL_SECURITY_FINDINGS", "critical or high security findings remain open");
 }
 

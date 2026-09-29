@@ -5,6 +5,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
+  INDEPENDENT_SECURITY_CONTROLS,
   REQUIRED_DEPLOYMENT_SECURITY_CHECKS,
   REQUIRED_REAL_BACKEND_CASES,
   deploymentSubject,
@@ -44,10 +45,54 @@ function chaosEvidence() {
     executedAt,
     executor: "independent chaos runner",
     cases: [
-      { id: "crash-before-admission-commit", status: "passed", operationId: "op-1", observedRecordCount: 0, observedSideEffectCount: 0, terminalStatus: null, rawEvidenceDigest: raw },
-      { id: "crash-after-admission-before-dispatch", status: "passed", operationId: "op-2", observedRecordCount: 1, observedSideEffectCount: 0, terminalStatus: null, rawEvidenceDigest: raw },
-      { id: "crash-after-dispatch-before-terminal-observation", status: "passed", operationId: "op-3", observedRecordCount: 1, observedSideEffectCount: 1, terminalStatus: null, rawEvidenceDigest: raw },
-      { id: "restart-reconciles-terminal-state", status: "passed", operationId: "op-4", observedRecordCount: 1, observedSideEffectCount: 1, terminalStatus: "succeeded", rawEvidenceDigest: raw },
+      {
+        id: "crash-before-admission-commit",
+        status: "passed",
+        operationId: "op-1",
+        semanticDigest: "1".repeat(64),
+        durableRecordDigest: null,
+        agentdInstanceDigest: "2".repeat(64),
+        observedRecordCount: 0,
+        observedSideEffectCount: 0,
+        terminalStatus: null,
+        rawEvidenceDigest: raw,
+      },
+      {
+        id: "crash-after-admission-before-dispatch",
+        status: "passed",
+        operationId: "op-2",
+        semanticDigest: "3".repeat(64),
+        durableRecordDigest: "4".repeat(64),
+        agentdInstanceDigest: "5".repeat(64),
+        observedRecordCount: 1,
+        observedSideEffectCount: 0,
+        terminalStatus: null,
+        rawEvidenceDigest: raw,
+      },
+      {
+        id: "crash-after-dispatch-before-terminal-observation",
+        status: "passed",
+        operationId: "op-3",
+        semanticDigest: "6".repeat(64),
+        durableRecordDigest: "7".repeat(64),
+        agentdInstanceDigest: "8".repeat(64),
+        observedRecordCount: 1,
+        observedSideEffectCount: 1,
+        terminalStatus: null,
+        rawEvidenceDigest: raw,
+      },
+      {
+        id: "restart-reconciles-terminal-state",
+        status: "passed",
+        operationId: "op-3",
+        semanticDigest: "6".repeat(64),
+        durableRecordDigest: "7".repeat(64),
+        agentdInstanceDigest: "9".repeat(64),
+        observedRecordCount: 1,
+        observedSideEffectCount: 1,
+        terminalStatus: "succeeded",
+        rawEvidenceDigest: raw,
+      },
     ],
     rawEvidenceDigest: raw,
   };
@@ -138,14 +183,31 @@ test("deployment identity is stable and path-sensitive", () => {
   assert.equal(first.subject.basePath, "/console");
 });
 
-test("chaos evidence enforces exact crash semantics and identity", () => {
-  assert.equal(validateChaosEvidence(chaosEvidence(), expected, { now }).caseCount, 4);
+test("chaos evidence binds restart recovery to the exact durable operation and a new Agentd instance", () => {
+  const summary = validateChaosEvidence(chaosEvidence(), expected, { now });
+  assert.equal(summary.caseCount, 4);
+  assert.equal(summary.recoveryBinding.semanticDigest, "6".repeat(64));
+  assert.equal(summary.recoveryBinding.durableRecordDigest, "7".repeat(64));
+
   const wrong = chaosEvidence();
   wrong.cases[0].observedRecordCount = 1;
   assert.throws(() => validateChaosEvidence(wrong, expected, { now }), /wrong durable record count/u);
-  const reused = chaosEvidence();
-  reused.cases[1].operationId = reused.cases[0].operationId;
-  assert.throws(() => validateChaosEvidence(reused, expected, { now }), /distinct operation IDs/u);
+
+  const reusedIndependent = chaosEvidence();
+  reusedIndependent.cases[1].operationId = reusedIndependent.cases[0].operationId;
+  assert.throws(() => validateChaosEvidence(reusedIndependent, expected, { now }), /independent crash stages/u);
+
+  const changedRecoveryOperation = chaosEvidence();
+  changedRecoveryOperation.cases[3].operationId = "op-4";
+  assert.throws(() => validateChaosEvidence(changedRecoveryOperation, expected, { now }), /exact operation interrupted after dispatch/u);
+
+  const changedRecoveryRecord = chaosEvidence();
+  changedRecoveryRecord.cases[3].durableRecordDigest = "a".repeat(64);
+  assert.throws(() => validateChaosEvidence(changedRecoveryRecord, expected, { now }), /same durable operation record/u);
+
+  const noRestart = chaosEvidence();
+  noRestart.cases[3].agentdInstanceDigest = noRestart.cases[2].agentdInstanceDigest;
+  assert.throws(() => validateChaosEvidence(noRestart, expected, { now }), /Agentd instance boundary/u);
 });
 
 test("authority evidence closes permission-revision and revocation semantics", () => {
@@ -216,10 +278,17 @@ test("security, operations, and signed production approval remain separate gates
     executedAt,
     rawEvidenceDigest: raw,
     reviewer: { identity: "Security Reviewer", organization: "Independent Lab", independentOfImplementationAuthor: true },
-    scope: ["tls", "csp", "csrf", "cors", "cookie", "identity", "session", "operation-ledger", "logging-redaction", "penetration-test"],
+    controls: INDEPENDENT_SECURITY_CONTROLS.map(id => ({ id, status: "passed", rawEvidenceDigest: raw })),
     findings: { openCritical: 0, openHigh: 0, openMedium: 1, openLow: 2 },
   };
   assert.doesNotThrow(() => validateIndependentSecurityReview(security, expected, { now }));
+  const failedControl = structuredClone(security);
+  failedControl.controls.find(item => item.id === "browser-token-non-persistence").status = "failed";
+  assert.throws(() => validateIndependentSecurityReview(failedControl, expected, { now }), /browser-token-non-persistence/u);
+  const scopeOnly = structuredClone(security);
+  delete scopeOnly.controls;
+  scopeOnly.scope = [...INDEPENDENT_SECURITY_CONTROLS];
+  assert.throws(() => validateIndependentSecurityReview(scopeOnly, expected, { now }), /exactly the required control observations/u);
 
   const operations = {
     schema: "hepta.ui-control.operational-exercise-receipt.v1",

@@ -39,6 +39,9 @@
         "id",
         "status",
         "operationId",
+        "semanticDigest",
+        "durableRecordDigest",
+        "agentdInstanceDigest",
         "observedRecordCount",
         "observedSideEffectCount",
         "terminalStatus",
@@ -55,6 +58,14 @@
         },
         "status": { "enum": ["passed", "failed"] },
         "operationId": { "type": "string", "minLength": 1, "maxLength": 192 },
+        "semanticDigest": { "$ref": "#/$defs/sha256" },
+        "durableRecordDigest": {
+          "oneOf": [
+            { "$ref": "#/$defs/sha256" },
+            { "type": "null" }
+          ]
+        },
+        "agentdInstanceDigest": { "$ref": "#/$defs/sha256" },
         "observedRecordCount": { "type": "integer", "minimum": 0, "maximum": 1 },
         "observedSideEffectCount": { "type": "integer", "minimum": 0, "maximum": 1 },
         "terminalStatus": {
@@ -68,9 +79,10 @@
           "if": { "properties": { "id": { "const": "crash-before-admission-commit" } } },
           "then": {
             "properties": {
+              "durableRecordDigest": { "type": "null" },
               "observedRecordCount": { "const": 0 },
               "observedSideEffectCount": { "const": 0 },
-              "terminalStatus": { "const": null }
+              "terminalStatus": { "type": "null" }
             }
           }
         },
@@ -78,19 +90,28 @@
           "if": { "properties": { "id": { "const": "crash-after-admission-before-dispatch" } } },
           "then": {
             "properties": {
+              "durableRecordDigest": { "$ref": "#/$defs/sha256" },
               "observedRecordCount": { "const": 1 },
-              "observedSideEffectCount": { "const": 0 }
+              "observedSideEffectCount": { "const": 0 },
+              "terminalStatus": { "type": "null" }
             }
           }
         },
         {
           "if": { "properties": { "id": { "const": "crash-after-dispatch-before-terminal-observation" } } },
-          "then": { "properties": { "observedRecordCount": { "const": 1 } } }
+          "then": {
+            "properties": {
+              "durableRecordDigest": { "$ref": "#/$defs/sha256" },
+              "observedRecordCount": { "const": 1 },
+              "terminalStatus": { "type": "null" }
+            }
+          }
         },
         {
           "if": { "properties": { "id": { "const": "restart-reconciles-terminal-state" } } },
           "then": {
             "properties": {
+              "durableRecordDigest": { "$ref": "#/$defs/sha256" },
               "observedRecordCount": { "const": 1 },
               "terminalStatus": { "enum": ["succeeded", "failed", "rejected", "cancelled"] }
             }

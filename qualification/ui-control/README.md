@@ -85,12 +85,12 @@ The probe also validates two independently retained evidence documents before se
 - `AGENTD_CHAOS_EVIDENCE_SCHEMA.json` / `hepta.ui-control.agentd-chaos-evidence.v2`;
 - `AUTHORITY_EVIDENCE_SCHEMA.json` / `hepta.ui-control.authority-evidence-receipt.v1`.
 
-The chaos evidence must contain exactly four distinct operations with case-specific record and side-effect counts:
+The chaos evidence contains four ordered case observations but only three independent operation identities. The post-dispatch crash and restart-reconciliation observations must bind the same operation ID, semantic digest, and durable-record digest; they must identify different Agentd instances, and the restart observation may not regress or duplicate the side-effect count:
 
-- crash before admission commit: zero records and zero side effects;
-- crash after admission but before dispatch: one record and zero side effects;
-- crash after dispatch but before terminal observation: one record and at most one side effect;
-- restart reconciliation: one record, at most one side effect, and a retained terminal observation.
+- crash before admission commit: zero records, zero side effects, and no durable-record identity;
+- crash after admission but before dispatch: one bound durable record and zero side effects;
+- crash after dispatch but before terminal observation: one bound durable record, at most one side effect, and no premature terminal observation;
+- restart reconciliation of that exact same operation and durable record: a different Agentd instance, at most one cumulative side effect, and a retained terminal observation.
 
 The authority evidence must prove an advancing permission revision, a revoked mutation rejected without creating an operation, and a session switch that changes the session identity or advances its connection generation.
 
@@ -118,9 +118,11 @@ The remaining external schemas are intentionally separate:
 | Schema | Required evidence |
 |---|---|
 | `INDEPENDENT_ACCEPTANCE_SCHEMA.json` | Independent Chrome, Firefox, and Safari observations; keyboard-only coverage; at least two distinct screen-reader/assistive-technology observations |
-| `INDEPENDENT_SECURITY_REVIEW_SCHEMA.json` | Independent TLS, CSP, CSRF, CORS, cookie, identity, session, operation-ledger, log-redaction, and penetration review with no open critical or high finding |
+| `INDEPENDENT_SECURITY_REVIEW_SCHEMA.json` | Eleven explicit passing control observations, each with its own raw-evidence digest: TLS, CSP, CSRF, CORS, cookie policy, production identity provider, session handling, operation ledger, browser token non-persistence, logging redaction, and penetration testing; no open critical or high finding |
 | `OPERATIONAL_EXERCISE_SCHEMA.json` | Passed rollback, disaster-recovery, alert-routing, log-redaction, and credential-rotation exercises |
 | `PRODUCTION_APPROVAL_SCHEMA.json` | Deployment, release, and security authorities; retained signature metadata; expiry; exact digests of all prerequisite evidence |
+
+A scope declaration alone is not an accepted security review. Every required control needs an explicit `passed` observation and a bound raw-evidence digest. In particular, production IdP integration, browser token non-persistence, and logging redaction cannot be inferred from adjacent controls.
 
 These receipts must bind the same candidate commit, candidate tree, and backend deployment digest. Evidence has bounded freshness windows, and duplicate or incomplete cases fail closed.
 

@@ -4,10 +4,23 @@ export const SHA1 = /^[0-9a-f]{40}$/u;
 export const SHA256 = /^[0-9a-f]{64}$/u;
 export const TERMINAL = new Set(["succeeded", "failed", "rejected", "cancelled"]);
 export const CHAOS_CASES = new Map([
-  ["crash-before-admission-commit", { records: 0, effects: 0, terminal: false }],
-  ["crash-after-admission-before-dispatch", { records: 1, effects: 0, terminal: false }],
-  ["crash-after-dispatch-before-terminal-observation", { records: 1, effects: [0, 1], terminal: false }],
-  ["restart-reconciles-terminal-state", { records: 1, effects: [0, 1], terminal: true }],
+  ["crash-before-admission-commit", { records: 0, effects: 0, terminal: false, durableRecord: false }],
+  ["crash-after-admission-before-dispatch", { records: 1, effects: 0, terminal: false, durableRecord: true }],
+  ["crash-after-dispatch-before-terminal-observation", { records: 1, effects: [0, 1], terminal: false, durableRecord: true }],
+  ["restart-reconciles-terminal-state", { records: 1, effects: [0, 1], terminal: true, durableRecord: true }],
+]);
+export const INDEPENDENT_SECURITY_CONTROLS = Object.freeze([
+  "tls",
+  "csp",
+  "csrf",
+  "cors",
+  "cookie",
+  "production-identity-provider",
+  "session",
+  "operation-ledger",
+  "browser-token-non-persistence",
+  "logging-redaction",
+  "penetration-test",
 ]);
 
 export function assertEvidence(condition, code, message) {
