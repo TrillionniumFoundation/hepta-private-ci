@@ -1,0 +1,156 @@
+  if let Ok(mut failure) = installed.terminal_failure.lock()
+         && failure.is_none()
+     {
+-        *failure = Some("owner_failed".to_string());
++        *failure = Some(class);
+     }
+ }
+ 
+@@ -982,6 +1027,21 @@ fn claim_single_start(started: &AtomicBool) -> Result<(), AgentdError> {
+     Ok(())
+ }
+ 
++fn readiness_failure(installed: &Installation) -> RuntimeCodexFailureClassV1 {
++    if installed.recovery_in_progress.load(Ordering::Acquire) {
++        RuntimeCodexFailureClassV1::StartupReconciliation
++    } else if installed.fenced_unresolved.load(Ordering::Acquire) != 0 {
++        RuntimeCodexFailureClassV1::FencedUnresolved
++    } else {
++        RuntimeCodexFailureClassV1::StartupReconciliation
++    }
++}
++
++fn nonzero_metric(metric: &AtomicU64) -> Option<u64> {
++    let value = metric.load(Ordering::Acquire);
++    (value != 0).then_some(value)
++}
++
+ fn publish_recovery_status(
+     installed: &Installation,
+     report: &super::super::RuntimeCodexReconcileReportV1,
+@@ -1046,10 +1106,18 @@ fn mark_running(
+         AgentdError::Protocol("runtime.codex queued job disappeared before execution".to_string())
+     })?;
+     if observed.digest != digest {
+-        return Err(AgentdError::Protocol(
+-            "runtime.codex queued job changed identity before execution".to_string(),
++        return Err(AgentdError::runtime_codex(
++            RuntimeCodexFailureClassV1::DurableIdentityConflict,
++            "runtime.codex queued job changed identity before execution",
+         ));
+     }
++    let wait_ms = duration_millis(observed.queued_at.elapsed());
++    installed
++        .last_dispatch_wait_ms
++        .store(wait_ms, Ordering::Release);
++    installed
++        .maximum_dispatch_wait_ms
++        .fetch_max(wait_ms, Ordering::AcqRel);
+     observed.running = true;
+     Ok(())
+ }
+diff --git a/codex-rs/hepta-agentd/src/runtime_codex_supervisor_maintenance.rs b/codex-rs/hepta-agentd/src/runtime_codex_supervisor_maintenance.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..766650ea5d94a3d12535c62ea53d80e18747ea99
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/runtime_codex_supervisor_maintenance.rs
+@@ -0,0 +1,113 @@
++use std::sync::Arc;
++use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering};
++use std::time::Instant;
++
++use tokio::sync::Semaphore;
++use tokio_util::sync::CancellationToken;
++
++use super::super::persistence::archive_terminal_operations;
++use super::super::{ProcessRuntimeCodexExecutorV1, RuntimeCodexOwnerV1};
++use crate::runtime_codex_policy::RuntimeCodexFailureClassV1;
++use crate::AgentdError;
++
++const MAXIMUM_CONCURRENT_MAINTENANCE_IO: usize = 1;
++
++#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
++pub(super) struct MaintenanceIoSnapshotV1 {
++    pub(super) queue_wait_ms: Option<u64>,
++    pub(super) duration_ms: Option<u64>,
++    pub(super) active: usize,
++    pub(super) completed_after_cancel: usize,
++}
++
++/// A bounded blocking-I/O domain for runtime.codex maintenance.
++///
++/// The semaphore prevents an unbounded set of `spawn_blocking` calls from
++/// turning asynchronous maintenance isolation into blocking-pool saturation.
++/// Durable manifests, receipts, dispatch fences, and terminal witnesses remain
++/// the source of truth; this owner only schedules their existing file actions.
++pub(super) struct BoundedMaintenanceIoV1 {
++    slots: Arc<Semaphore>,
++    queue_wait_ms: AtomicU64,
++    duration_ms: AtomicU64,
++    active: AtomicUsize,
++    completed_after_cancel: AtomicUsize,
++}
++
++impl BoundedMaintenanceIoV1 {
++    pub(super) fn new() -> Self {
++        Self {
++            slots: Arc::new(Semaphore::new(MAXIMUM_CONCURRENT_MAINTENANCE_IO)),
++            queue_wait_ms: AtomicU64::new(0),
++            duration_ms: AtomicU64::new(0),
++            active: AtomicUsize::new(0),
++            completed_after_cancel: AtomicUsize::new(0),
++        }
++    }
++
++    pub(super) fn snapshot(&self) -> MaintenanceIoSnapshotV1 {
++        MaintenanceIoSnapshotV1 {
++            queue_wait_ms: nonzero_metric(&self.queue_wait_ms),
++            duration_ms: nonzero_metric(&self.duration_ms),
++            active: self.active.load(Ordering::Acquire),
++            completed_after_cancel: self.completed_after_cancel.load(Ordering::Acquire),
++        }
++    }
++
++    pub(super) async fn archive_terminal_batch(
++        &self,
++        executor: &ProcessRuntimeCodexExecutorV1,
++        owner: RuntimeCodexOwnerV1,
++        cancellation: &CancellationToken,
++        maximum: usize,
++        operation: &'static str,
++    ) -> Result<usize, AgentdError> {
++        let wait_started = Instant::now();
++        let permit = tokio::select! {
++            _ = cancellation.cancelled() => return Ok(0),
++            permit = Arc::clone(&self.slots).acquire_owned() => {
++                permit.map_err(|error| AgentdError::runtime_codex(
++                    RuntimeCodexFailureClassV1::OwnerFailed,
++                    format!("runtime.codex maintenance I/O gate closed: {error}"),
++                ))?
++            }
++        };
++        self.queue_wait_ms.store(
++            duration_millis(wait_started.elapsed()),
++            Ordering::Release,
++        );
++        self.active.fetch_add(1, Ordering::AcqRel);
++
++        let started = Instant::now();
++        let root = executor.journal_root().to_path_buf();
++        let worker_digest = executor.worker_artifact_digest();
++        let result = tokio::task::spawn_blocking(move || {
++            archive_terminal_operations(&root, &owner, worker_digest, maximum)
++        })
++        .await;
++
++        self.duration_ms
++            .store(duration_millis(started.elapsed()), Ordering::Release);
++        self.active.fetch_sub(1, Ordering::AcqRel);
++        if cancellation.is_cancelled() {
++            self.completed_after_cancel.fetch_add(1, Ordering::AcqRel);
++        }
++        drop(permit);
++
++        result.map_err(|error| {
++            AgentdError::runtime_codex(
++                RuntimeCodexFailureClassV1::ShutdownRecoveryRequi
