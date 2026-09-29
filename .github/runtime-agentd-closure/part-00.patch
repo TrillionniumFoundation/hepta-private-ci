@@ -1,0 +1,158 @@
+--- a/.github/workflows/hepta-agentd-exact-head.yml
++++ b/.github/workflows/hepta-agentd-exact-head.yml
+@@ -9,6 +9,7 @@
+       - main
+       - work/runtime-agentd-remediation-20260926
+       - work/runtime-agentd-remediation-20260927
++      - work/runtime-agentd-production-closure-20260928
+       - work/product-convergence-20260923
+       - integrate/agentd-product-sweep-20260829
+ 
+@@ -25,24 +26,34 @@
+ 
+ jobs:
+   contract:
+-    runs-on: ubuntu-latest
+-    timeout-minutes: 15
++    runs-on: ubuntu-24.04
++    timeout-minutes: 20
+     steps:
+-      - uses: actions/checkout@v4
++      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+         with:
+           ref: ${{ env.EXPECTED_SHA }}
++          fetch-depth: 0
+           persist-credentials: false
+-      - uses: actions/setup-python@v5
++      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+         with:
+           python-version: '3.12'
+-      - uses: actions/setup-node@v4
+-        with:
+-          node-version: '20'
+       - name: Receipt verifier adversarial tests
+         run: python3 -B -m unittest discover -s scripts/qualification -p 'test_agentd_exact_head.py' -v
+-      - name: Derived projections and source ownership
+-        if: ${{ always() }}
+-        run: node scripts/architecture/ci-source-ownership.mjs
++      - name: Dynamic status generator tests
++        run: python3 -B -m unittest scripts.qualification.test_runtime_agentd_current_status -v
++      - name: Dependency-boundary verifier tests
++        run: python3 -B -m unittest scripts.qualification.test_runtime_agentd_dependency_boundary -v
++      - name: Trust-boundary verifier tests
++        run: python3 -B -m unittest scripts.test_hepta_agentd_trust_boundary -v
++      - name: Derived projections, source ownership and explicit dependency boundary
++        shell: bash
++        run: |
++          set -euo pipefail
++          python3 scripts/hepta-module-docs.py refresh-derived --check
++          python3 scripts/hepta_module_registry.py --strict
++          python3 scripts/hepta-implementation-maps.py verify
++          python3 scripts/hepta_agentd_trust_boundary.py
++          python3 scripts/qualification/runtime_agentd_dependency_boundary.py --repository .
+ 
+   suite:
+     name: Agentd ${{ matrix.os }} / ${{ matrix.suite }}
+@@ -55,11 +66,11 @@
+         os: [ubuntu-latest, macos-latest]
+         suite: [owner-libraries, native-library, native-process, daemon-process, product-process, strict-clippy, read-only-profile]
+     steps:
+-      - uses: actions/checkout@v4
++      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+         with:
+           ref: ${{ env.EXPECTED_SHA }}
+           persist-credentials: false
+-      - uses: actions/setup-python@v5
++      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+         with:
+           python-version: '3.12'
+       - name: Install repository toolchain
+@@ -68,10 +79,10 @@
+           set -euo pipefail
+           toolchain=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
+           rustup toolchain install "$toolchain" --profile minimal --component clippy
+-      - uses: Swatinem/rust-cache@v2
++      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6
+         with:
+           workspaces: codex-rs
+-          shared-key: agentd-exact-v1
++          shared-key: agentd-exact-v3
+       - name: Execute suite and record actual source, commands, logs and binary digests
+         if: ${{ always() }}
+         shell: bash
+@@ -86,28 +97,79 @@
+             --output "$RUNNER_TEMP/agentd-exact-receipt"
+       - name: Upload evidence including failures
+         if: ${{ always() }}
+-        uses: actions/upload-artifact@v4
++        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+         with:
+           name: agentd-exact-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.os }}-${{ matrix.suite }}
+           path: ${{ runner.temp }}/agentd-exact-receipt
+           if-no-files-found: error
+           retention-days: 14
+ 
++  merge-candidate:
++    name: Agentd prospective merge required
++    if: ${{ github.event_name == 'pull_request' }}
++    runs-on: ubuntu-24.04
++    timeout-minutes: 120
++    env:
++      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
++      BASE_SHA: ${{ github.event.pull_request.base.sha }}
++      MERGE_SHA: ${{ github.sha }}
++    steps:
++      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
++        with:
++          ref: ${{ env.MERGE_SHA }}
++          fetch-depth: 0
++          persist-credentials: false
++      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
++        with:
++          python-version: '3.12'
++      - name: Bind deterministic prospective merge tree
++        shell: bash
++        run: |
++          set -euo pipefail
++          test "$(git rev-parse HEAD)" = "$MERGE_SHA"
++          expected_tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
++          test "$(git rev-parse HEAD^{tree})" = "$expected_tree"
++          git merge-base --is-ancestor "$BASE_SHA" HEAD
++          git merge-base --is-ancestor "$SOURCE_SHA" HEAD
++          test -z "$(git status --porcelain --untracked-files=all)"
++      - name: Install repository toolchain
++        shell: bash
++        run: |
++          set -euo pipefail
++          toolchain=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
++          rustup toolchain install "$toolchain" --profile minimal --component clippy
++      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6
++        with:
++          workspaces: codex-rs
++          shared-key: agentd-prospective-merge-v2
++      - name: Compile and execute merge-candidate owner and process boundaries
++        working-directory: codex-rs
++        shell: bash
++        run: |
++          set -euo pipefail
++          cargo test --locked -p codex-hepta-agentd --lib
++          cargo check --locked -p codex-hepta-agentd --no-default-features --lib
++          cargo test --locked -p codex-hepta-agentd --test runtime_codex_product_e2e
++          cargo test --locked -p codex-hepta-agentd --test supervisord_product_e2e
++          cargo test --locked -p codex-hepta-infer-worker-host --test native_host_process_e2e
++          cargo clippy --locked -p codex-hepta-agentd -p codex-hepta-supervisor \
++            -p codex-hepta-infer-worker-host --all-targets --no-deps -- -D warnings
++
+   qualification-result:
+     name: Agentd exact-head required
+     if: ${{ always() }}
+-    needs: [contract, suite]
+-    runs-on: ubuntu-latest
+-    timeout-minutes: 15
++    needs: [contract, suite, merge-candidate]
++    runs-on: ubuntu-24.04
++    timeout-minutes: 20
+     steps:
+-      - uses: actions/checkout@v4
++      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+         with:
