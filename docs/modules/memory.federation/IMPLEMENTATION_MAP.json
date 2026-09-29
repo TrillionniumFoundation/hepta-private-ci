@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "d8defc092f5b1aa83f68cf3991eb1891c6a872f5",
-    "tree": "472462496290eacfdfa219b6605cab732bdb63f7"
+    "commit": "2a66ec7a9e0d049948f85a394350bf101b8f18bd",
+    "tree": "b605b8bf04bc634997263381976ea77e73f32859"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.federation",
@@ -87,9 +87,9 @@
   "headAttestation": {
     "candidateBranch": "feat/memory-federation-full-closure-20260927",
     "baseCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
-    "candidateHead": "d8defc092f5b1aa83f68cf3991eb1891c6a872f5",
-    "candidateTree": "472462496290eacfdfa219b6605cab732bdb63f7",
-    "headMeaning": "canonical_v2 bounded_discovery_reserved_read_budget deterministic_peer_selection final_use_revalidation private_verified_frame monotonic_partitioned_replay authenticated_transport_identity durable_replay_attempt_recovery restart_surviving_cancellation owner_cut_witness scoped_canonical_map_verification pre_post_execution_guard canonical_capability_status retained_logical_capacity_metrics terminal_request_credential_currentness issuing_host_token_binding actual_command_execution locked_input_revalidation ordered_merge_parents authenticated_product_body_bridge atomic_product_preflight retry_safe_client_inbound_commit v4_combined_attachment_partial_peer_evidence single_pr_qualification_owner_required_fanin issuer_attested_transport_context_before_packet_replay local_owner_bound_transport_context stale_public_constructor_regression_removed context_self_encoded_attestation_payload nonblocking_owner_backpressure interrupted_qualification_failure_evidence",
+    "candidateHead": "2a66ec7a9e0d049948f85a394350bf101b8f18bd",
+    "candidateTree": "b605b8bf04bc634997263381976ea77e73f32859",
+    "headMeaning": "canonical_v2 bounded_discovery_reserved_read_budget deterministic_peer_selection final_use_revalidation private_verified_frame monotonic_partitioned_replay authenticated_transport_identity durable_replay_attempt_recovery restart_surviving_cancellation owner_cut_witness scoped_canonical_map_verification pre_post_execution_guard canonical_capability_status retained_logical_capacity_metrics terminal_request_credential_currentness issuing_host_token_binding actual_command_execution locked_input_revalidation ordered_merge_parents authenticated_product_body_bridge atomic_product_preflight retry_safe_client_inbound_commit v4_combined_attachment_partial_peer_evidence single_pr_qualification_owner_required_fanin issuer_attested_transport_context_before_packet_replay local_owner_bound_transport_context stale_public_constructor_regression_removed context_self_encoded_attestation_payload nonblocking_owner_backpressure interrupted_qualification_failure_evidence bounded_cleanup_batch_receipt domain_separated_fixture_nonces",
     "status": "pending_exact_current_head_and_merge_candidate_execution",
     "scope": [
       "remote_response_field_binding",
@@ -150,7 +150,9 @@
       "post_exchange_contention_preserves_pending_intent",
       "poisoned_owner_not_temporary_backpressure",
       "interrupted_zero_exit_not_success",
-      "same_process_group_descendant_cleanup"
+      "same_process_group_descendant_cleanup",
+      "bounded_cleanup_batch_count_and_maximum_evidence",
+      "domain_separated_non_product_nonce_fixtures"
     ],
     "productCallsites": [
       "codex-rs/hepta-agentd/src/runtime.rs",
@@ -209,15 +211,15 @@
       "scripts/verify_memory_federation_implementation.py",
       "scripts/verify_memory_federation_status.py"
     ],
-    "note": "Author-only observation of the committed V2 owner-backpressure and interrupted-recorder candidate. Preserves authentication-before-staging, indexed cleanup, discovery budget isolation and final-use authority checks. Ten new recorder subprocess regressions passed locally in isolation; the original recorder failed the external-SIGTERM case. Both edited Python files passed py_compile. Four Rust contention/drop/poison regressions are included but were not locally executed. Full exact-head and deterministic-merge qualification and real-host acceptance remain pending. This map-only rebind grants no execution, independent acceptance, activation or release authority.",
+    "note": "Author-only observation of committed bounded-cleanup receipt and domain-separated fixture-nonce candidate 2a66ec7a9e0d049948f85a394350bf101b8f18bd. It preserves the canonical V2 product path, discovery/read budget isolation, authentication-before-staging, current authority revalidation and immutable recovery commit boundary. Exact-head and deterministic-merge qualification, independent acceptance, activation and release remain separate; this map-only rebind grants none of them.",
     "metadataOnlyPaths": [
       "docs/modules/memory.federation/IMPLEMENTATION_MAP.json"
     ]
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "d8defc092f5b1aa83f68cf3991eb1891c6a872f5",
-    "tree": "472462496290eacfdfa219b6605cab732bdb63f7"
+    "commit": "2a66ec7a9e0d049948f85a394350bf101b8f18bd",
+    "tree": "b605b8bf04bc634997263381976ea77e73f32859"
   },
   "observedSourcePaths": [
     ".github/workflows/blocking-ci.yml",
@@ -321,7 +323,7 @@
     },
     {
       "path": "codex-rs/hepta-memory-federation-wire",
-      "object": "88376c0db8aeae78e65e83b674d3458c79416d51"
+      "object": "e20793ff1c51e281e1a6046b7e50ad573b98ee7a"
     },
     {
       "path": "codex-rs/hepta-memory-federation-wire/Cargo.toml",
@@ -333,7 +335,7 @@
     },
     {
       "path": "codex-rs/hepta-memory-federation-wire/src/bin/memory_federation_capacity_probe.rs",
-      "object": "72ab9d39249c9c85bbbc5d1dcaeae3d7d3dfbc3b"
+      "object": "c2692539492eb01a6a5e11bb87d72ec611d25bd3"
     },
     {
       "path": "codex-rs/hepta-memory-federation-wire/src/codec.rs",
@@ -377,7 +379,7 @@
     },
     {
       "path": "codex-rs/hepta-memory-federation-wire/src/protocol.rs",
-      "object": "4aa66184df40e5b5b64f48c32dcaca7634c7a043"
+      "object": "039ea1d1661e0f8cb047e4f322a80ff1295f4c6d"
     },
     {
       "path": "codex-rs/hepta-memory-federation-wire/src/recovery.rs",
@@ -421,7 +423,7 @@
     },
     {
       "path": "docs/modules/memory.federation/INDEXED_ADMISSION.md",
-      "object": "2cf1d00ff69b19ef8571eb833572db04a1b292d7"
+      "object": "b030f337d3f42f66438846c840f1efea038711d1"
     },
     {
       "path": "docs/modules/memory.federation/OWNER_BACKPRESSURE_AND_INTERRUPTION.md",
@@ -473,7 +475,7 @@
     },
     {
       "path": "scripts/memory_federation_full_attestation.py",
-      "object": "cd271cb07eb533be06ecbe883a639875b1c8113e"
+      "object": "092b6c8548f2c247e1ed83bbdcb8d2492447f94b"
     },
     {
       "path": "scripts/prepare_memory_federation_observation.py",
