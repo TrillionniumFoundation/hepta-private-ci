@@ -3,6 +3,11 @@ name: Kernel evidence publication formatting suggestions
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - '.github/workflows/kernel-evidence-publication-format.yml'
+      - 'codex-rs/hepta-agent-protocol/**'
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-evidence/**'
 
 permissions:
   contents: read
@@ -13,7 +18,10 @@ concurrency:
 
 jobs:
   format:
-    if: github.event.pull_request.head.ref == 'fix/kernel-evidence-production-closure'
+    # Formatting diagnostics follow the module paths, not one historical repair
+    # branch. This prevents the final integration candidate from silently
+    # inheriting formatter results from another head.
+    if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 20
     env:

@@ -3,6 +3,18 @@ name: Kernel evidence publication native diagnostics
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - '.github/actions/setup-ci/**'
+      - '.github/workflows/kernel-evidence-publication-native.yml'
+      - 'justfile'
+      - 'codex-rs/justfile'
+      - 'codex-rs/Cargo.lock'
+      - 'codex-rs/Cargo.toml'
+      - 'codex-rs/hepta-agent-protocol/**'
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-authbus/**'
+      - 'codex-rs/hepta-evidence/**'
+      - 'codex-rs/state/**'
 
 permissions:
   contents: read
@@ -13,7 +25,10 @@ concurrency:
 
 jobs:
   native:
-    if: github.event.pull_request.head.ref == 'fix/kernel-evidence-production-closure'
+    # Run on every same-repository candidate touching this product closure. A
+    # branch-name exception would allow the exact integration candidate to skip
+    # formatting, native tests, doctests, strict Clippy and the product build.
+    if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     strategy:

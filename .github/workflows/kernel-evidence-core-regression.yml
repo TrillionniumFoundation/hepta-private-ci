@@ -3,13 +3,21 @@ name: Kernel evidence bounded core regression
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - '.github/workflows/kernel-evidence-core-regression.yml'
+      - 'codex-rs/hepta-evidence/**'
+      - 'qualification/kernel-evidence/probes/**'
 
 permissions:
   contents: read
 
 jobs:
   bounded-core:
-    if: github.event.pull_request.head.ref == 'fix/kernel-evidence-production-closure'
+    # Exact-candidate diagnostics need the head object and repository-local
+    # actions. Fork pull requests remain covered by the read-only convergence
+    # workflow, while every same-repository kernel.evidence candidate runs here
+    # without relying on a privileged, hard-coded branch name.
+    if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     strategy:
