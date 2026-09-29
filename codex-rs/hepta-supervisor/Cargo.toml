@@ -12,7 +12,8 @@ doctest = true
 
 [features]
 default = []
-# Offline/shadow harness API; never enabled by a product dependency.
+# Offline/shadow harness API and deterministic durability fault points; never
+# enabled by a product dependency.
 qualification = []
 # Explicit build opt-in for externally authorized mutation; default daemons
 # remain lifecycle-only and keep signed mutation admission fail-closed.
@@ -26,6 +27,16 @@ test = false
 [[bin]]
 name = "hepta-supervisor-intent-recovery"
 path = "src/bin/hepta-supervisor-intent-recovery.rs"
+test = false
+
+[[bin]]
+name = "hepta-supervisor-authority-bundle"
+path = "src/bin/hepta-supervisor-authority-bundle.rs"
+test = false
+
+[[bin]]
+name = "hepta-supervisor-recovery-diagnose"
+path = "src/bin/hepta-supervisor-recovery-diagnose.rs"
 test = false
 
 [[bin]]
