@@ -94,7 +94,7 @@ STORE_FILES = [
 
 TRUSTED_FIELD_ASSIGNMENT = re.compile(
     r"\b(?:issuer|registration|message_issuer|settlement_issuer|trusted_issuer)\s*\.\s*"
-    r"(?:issuer_id|key_epoch|verifying_key|revoked)\s*="
+    r"(?:issuer_id|key_epoch|verifying_key|revoked)\s*=(?!=)"
 )
 
 
