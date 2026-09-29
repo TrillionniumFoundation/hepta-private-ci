@@ -24,7 +24,7 @@ jobs:
       - name: Check out exact isolated candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ci/automation-taskflow-schema22-finalize-20260929
+          ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: true
 
