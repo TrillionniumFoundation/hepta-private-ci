@@ -1,7 +1,7 @@
 name: AuthBus pinned remediation source
 on:
   push:
-    branches: [auth-authbus-hardening-final-20260928]
+    branches: [auth-authbus-boundary-convergence-20260928]
     paths: [.github/workflows/authbus-source-export.yml]
 permissions:
   contents: read
