@@ -25,8 +25,10 @@ Compatibility `start_run` is not canonical product admission.
 ## 2. Host configuration and the actual route
 
 `with_canonical_intelligence_profile` atomically installs runner and host-owned
-invocation provider. Request bytes cannot install factories, policy owners,
-model state or trust. Runner-only configuration advertises no canonical profile.
+invocation provider. The runner must already carry both the independently
+retained authority rollback guard and a nonzero process hard-timeout fence.
+Request bytes cannot install factories, policy owners, model state or trust.
+Runner-only or soft-timeout configuration advertises no canonical profile.
 
 The current daemon route is:
 
@@ -36,16 +38,17 @@ signed ObjectiveStart -> durable RunStart
 -> current RunStart/Fleet check -> bound run admission -> ContextAttached
 ```
 
-The ordinary CLI does not supply an authorized executable seven-owner factory.
-An embedding can now install `AgentdIntelligenceExecutionHostV1` with
-`with_intelligence_execution_host` after the guarded canonical profile. The
-normal authenticated ObjectiveStart invokes that host after ContextAttached.
-`NativeIntelligenceProductEmbeddingV1` is the concrete adapter over the existing
-native journal, App Server driver and learning host. It acknowledges the exact
-Decision (including its witness) before send, obtains the same run's physical
-terminal and asks existing independent evidence owners for the Outcome.
-The ordinary CLI installs none of these authority-bearing owner objects.
-Source wiring is not a real-process provider-E2E or activation receipt.
+The ordinary CLI does not supply an authorized executable seven-owner factory
+and rejects the legacy authority-only runner tuple. An embedding can install
+`AgentdIntelligenceExecutionHostV1` with `with_intelligence_execution_host` after
+the guarded canonical profile. The normal authenticated ObjectiveStart invokes
+that host after ContextAttached. `NativeIntelligenceProductEmbeddingV1` is the
+concrete adapter over the existing native journal, App Server driver and learning
+host. It acknowledges the exact Decision, including its witness, before send,
+obtains the same run's physical terminal and asks existing independent evidence
+owners for the Outcome. The ordinary CLI installs none of these authority-bearing
+owner objects. Source wiring is not a real-process provider-E2E or activation
+receipt.
 
 An actual embedding must obtain every input and signed evaluation from its
 existing authorized owner. No sample implementation may invent live observations,
@@ -128,8 +131,10 @@ and produce independently authenticated terminal learning evidence.
 Each cognition computation retains a slot through actual completion. A
 worker-owned completion guard starts an independent OS-thread watchdog before
 the work and joins it before releasing capacity. Dropping or aborting the request
-future cannot cancel supervision. Explicit cognition hard-timeout policy exits
-code 70 only after its configured grace.
+future cannot cancel supervision. The canonical product profile requires a
+nonzero cognition hard-timeout grace and exits code 70 if work survives that
+grace. Compatibility-only direct preparation may omit the hard fence, but cannot
+be advertised as `intelligence.canonical_v1`.
 
 Cognition and final currentness reads share the remaining monotonic budget.
 Durable operation Unix timestamps come from the injected
@@ -143,12 +148,12 @@ payload and `LedgerWriter` work runs outside Tokio control threads with four
 actual-worker permits and a 30-second caller budget. A dropped or timed-out
 receiver cannot release the live worker's permit.
 
-Every learning-I/O worker now also owns an independent OS-thread watchdog.
-Returning `IoIndeterminate` at the 30-second caller budget does not release the
-worker or infer destination failure. If that exact worker is still alive after
-the additional 30-second hard-timeout grace, the watchdog exits the fenced
-Agentd process with code 70. The durable operation remains unsettled; only the
-successor Supervisor generation may adopt it and perform destination-first exact
+Every learning-I/O worker also owns an independent OS-thread watchdog. Returning
+`IoIndeterminate` at the 30-second caller budget does not release the worker or
+infer destination failure. If that exact worker is still alive after the
+additional 30-second hard-timeout grace, the watchdog exits the fenced Agentd
+process with code 70. The durable operation remains unsettled; only the successor
+Supervisor generation may adopt it and perform destination-first exact
 reconciliation. A child-process regression proves that a real non-returning
 worker reaches the exit boundary. Target-host Supervisor replacement and
 generation-adoption measurements remain separate execution evidence.
@@ -178,10 +183,11 @@ requirements, not inferred from read-side unit tests.
 ## 9. Observability and exact qualification
 
 The profile digest uses `hepta.agentd.intelligence-capability-profile.v2`,
-length-prefixed variable fields and full timeout precision. It binds a
-configuration, not deployment authority. Telemetry includes actual worker,
-timeout, stage, currentness, advisory and run-dwell measurements; target-host
-latency/RSS and task-quality evidence remain absent until measured.
+length-prefixed variable fields, rollback identity and full timeout precision.
+It binds a configuration, not deployment authority. Telemetry includes actual
+worker, timeout, stage, currentness, advisory and run-dwell measurements;
+target-host latency/RSS/CPU, signature cost, hard-kill time and task-quality
+evidence remain absent until measured.
 
 The tracked implementation/test JSON files are reviewed declarations with
 `CI_EXACT_HEAD` and `pending`, not mutable cached CI facts. The status script
@@ -206,23 +212,26 @@ Execute the normal ObjectiveStart-to-provider-to-Outcome path across every
 process-loss and acknowledgement boundary on the exact candidate. Measure the
 Supervisor replacement and successor-generation adoption that follow exit 70,
 write-side root replacement/backup/orphan behavior, target-host latency, RSS,
-saturation and task-quality baselines. Independent semantic/security and
-operator acceptance remain separate. No missing observation is invented to
-satisfy these gates, and source/test presence is not execution evidence.
+CPU, signature verification cost, saturation, recovery, hard-kill time and task
+quality. Independent semantic/security and operator acceptance remain separate.
+No missing observation is invented to satisfy these gates, and source/test
+presence is not execution evidence.
 
 ## 11. Independent authority-manifest rollback floor
 
-The canonical runner requires a host-owned
-`IntelligenceAuthorityRollbackGuardV1` before runner/provider composition can be
-advertised or executed. The witness is retained outside the Agent home and run
-roots, holds a single-process lock, and durably records the greatest admitted
-authority epoch together with the exact signed-manifest digest. Lower epochs and
-same-epoch byte substitution fail closed after reopen. Signature verification
-still occurs on every use; the rollback record grants no authority and cannot
-replace current owner, key, epoch, or revocation checks.
+The canonical runner requires both a host-owned
+`IntelligenceAuthorityRollbackGuardV1` and a process hard-timeout fence before
+runner/provider composition can be advertised or executed. The witness is
+retained outside the Agent home and run roots, holds a single-process lock, and
+durably records the greatest admitted authority epoch together with the exact
+signed-manifest digest. Lower epochs and same-epoch byte substitution fail closed
+after reopen. Signature verification still occurs on every use; the rollback
+record grants no authority and cannot replace current owner, key, epoch, or
+revocation checks.
 
-This closes the repository-owned signed-backup replay primitive. Target-host
-backup separation, privileged host-root replacement, process-crash injection,
+This closes the repository-owned signed-backup replay primitive and product
+containment precondition in source. Target-host backup separation, privileged
+host-root replacement, process-crash injection, Supervisor replacement,
 independent security review and activation remain separate evidence gates.
 
 ## 12. Embedding assembly and outcome semantics
@@ -230,6 +239,9 @@ independent security review and activation remain separate evidence gates.
 The authorized application composes existing objects, in this order:
 
 ```rust,ignore
+let runner = runner
+    .with_authority_rollback_guard(rollback_guard)?
+    .with_hard_timeout_process_exit(hard_timeout_grace)?;
 let config = config.with_canonical_intelligence_profile(runner, authorized_factory)?;
 let product = NativeIntelligenceProductHostV1::new(driver, agentd_client, learning_host);
 let completion = NativeIntelligenceProductEmbeddingV1::new(
@@ -239,12 +251,12 @@ let completion = NativeIntelligenceProductEmbeddingV1::new(
 let config = config.with_intelligence_execution_host(Arc::new(completion))?;
 ```
 
-`runner` already carries the independently supplied evaluation trust and separate
-rollback guard. `authorized_factory` reads the actual seven owners;
-`independent_evidence_source` supplies signed Decision/Outcome support from the
-existing evidence owners. This example does not create keys or synthetic facts.
-The existing Agentd startup then owns this configuration; the facade owns no
-new store, execution kernel or source of learning truth.
+`runner` carries the independently supplied evaluation trust, separate rollback
+guard and process hard-timeout fence. `authorized_factory` reads the actual seven
+owners; `independent_evidence_source` supplies signed Decision/Outcome support
+from the existing evidence owners. This example does not create keys or synthetic
+facts. The existing Agentd startup then owns this configuration; the facade owns
+no new store, execution kernel or source of learning truth.
 
 `canonical_ready` means the prepared route has no execution host attached.
 `canonical_executed` means a real terminal observation and an acknowledged
