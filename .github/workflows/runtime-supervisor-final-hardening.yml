@@ -1,188 +1,367 @@
-name: runtime.supervisor final hardening
+name: runtime.supervisor full closure
 
 on:
   push:
     branches:
-      - codex/runtime-supervisor-final-hardening-20260928
+      - codex/runtime-supervisor-full-closure-20260929
+    paths:
+      - codex-rs/hepta-supervisor/**
+      - codex-rs/hepta-agentd/**
+      - codex-rs/hepta-daemon/**
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - codex-rs/rust-toolchain.toml
+      - docs/modules/runtime.supervisor/**
+      - scripts/hepta_supervisor_ci.py
+      - .github/workflows/runtime-supervisor-final-hardening.yml
+      - .github/runtime-supervisor-final-hardening.py
   pull_request:
     paths:
       - codex-rs/hepta-supervisor/**
+      - codex-rs/hepta-agentd/**
       - codex-rs/hepta-daemon/**
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - codex-rs/rust-toolchain.toml
       - docs/modules/runtime.supervisor/**
+      - scripts/hepta_supervisor_ci.py
       - .github/workflows/runtime-supervisor-final-hardening.yml
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: runtime-supervisor-final-hardening-${{ github.ref }}
+  group: runtime-supervisor-full-closure-${{ github.ref }}
   cancel-in-progress: true
 
 env:
-  RUST_TOOLCHAIN: 1.95.0
+  CARGO_INCREMENTAL: "0"
   CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: "1"
+  RUST_TOOLCHAIN: "1.95.0"
 
 jobs:
-  materialize:
-    name: Materialize and gate final hardening
-    runs-on: macos-15-intel
-    timeout-minutes: 90
+  linux-native:
+    name: Linux exact head, package and strict lint
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 100
     steps:
-      - name: Checkout exact candidate
+      - name: Checkout immutable candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
+          ref: ${{ github.sha }}
           fetch-depth: 0
-          persist-credentials: true
+          persist-credentials: false
 
-      - name: Detect patch payload
-        id: patch
+      - name: Install pinned toolchain and native prerequisites
         shell: bash
         run: |
           set -euo pipefail
-          if test -f .github/runtime-supervisor-final-hardening.py; then
-            echo 'present=true' >> "$GITHUB_OUTPUT"
-          else
-            echo 'present=false' >> "$GITHUB_OUTPUT"
-          fi
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends pkg-config libssl-dev protobuf-compiler
+          rustup toolchain install "$RUST_TOOLCHAIN" --profile minimal --component clippy,rustfmt
+          printf 'RUSTUP_TOOLCHAIN=%s\n' "$RUST_TOOLCHAIN" >> "$GITHUB_ENV"
 
-      - name: Install pinned Rust toolchain
-        if: steps.patch.outputs.present == 'true'
+      - name: Execute exact-candidate gates
         shell: bash
         run: |
           set -euo pipefail
-          rustup toolchain install "$RUST_TOOLCHAIN" --profile minimal --component rustfmt,clippy
-          rustup override set "$RUST_TOOLCHAIN"
+          log="$RUNNER_TEMP/runtime-supervisor-linux-native.log"
+          exec > >(tee "$log") 2>&1
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test ! -e .github/runtime-supervisor-final-hardening.py
+          test -z "$(git status --porcelain)"
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
+          cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor --all-targets
+          cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor --all-targets --all-features
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor --features qualification
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor --features production-authority
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor --all-features
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-agentd
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-daemon
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor --all-targets --all-features --no-deps -- -D warnings
+          test -z "$(git status --porcelain)"
 
-      - name: Apply source and documentation patch
-        if: steps.patch.outputs.present == 'true'
+      - name: Retain Linux evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-supervisor-linux-native-${{ github.sha }}
+          path: ${{ runner.temp }}/runtime-supervisor-linux-native.log
+          if-no-files-found: warn
+          retention-days: 30
+
+  fault-matrix:
+    name: Durable control and concurrency fault matrix
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 80
+    steps:
+      - name: Checkout immutable candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install pinned toolchain and native prerequisites
         shell: bash
         run: |
           set -euo pipefail
-          python3 .github/runtime-supervisor-final-hardening.py
-          cargo fmt --manifest-path codex-rs/Cargo.toml --all
-          git diff --check
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends pkg-config libssl-dev protobuf-compiler
+          rustup toolchain install "$RUST_TOOLCHAIN" --profile minimal
+          printf 'RUSTUP_TOOLCHAIN=%s\n' "$RUST_TOOLCHAIN" >> "$GITHUB_ENV"
 
-      - name: Run exact materialized gates
-        if: steps.patch.outputs.present == 'true'
+      - name: Execute crash, retry, fencing and quarantine fixtures
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p .runtime-supervisor-logs
-          run_gate() {
-            local name="$1"; shift
-            echo "::group::$name"
-            if "$@" >".runtime-supervisor-logs/${name}.log" 2>&1; then
-              tail -n 80 ".runtime-supervisor-logs/${name}.log" || true
-            else
-              status=$?
-              echo "gate failed: $name (exit $status)"
-              tail -n 240 ".runtime-supervisor-logs/${name}.log" || true
-              echo "::endgroup::"
-              exit "$status"
-            fi
-            echo "::endgroup::"
+          log="$RUNNER_TEMP/runtime-supervisor-fault-matrix.log"
+          exec > >(tee "$log") 2>&1
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor stop_retry_preserves_original_deadline_and_recovers_exact_target -- --nocapture
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor kill_supersedes_stop_only_for_same_process_and_absence_completes -- --nocapture
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor tampering_is_rejected -- --nocapture
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor oversized_intent_is_rejected_before_unbounded_allocation -- --nocapture
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor durable_restart -- --nocapture
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor restart_budget -- --nocapture
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor recovery -- --nocapture
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor control_failure_disposition -- --nocapture
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor --test rejected_adoption_quarantine -- --nocapture
+          test -z "$(git status --porcelain)"
+
+      - name: Retain fault-matrix evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-supervisor-fault-matrix-${{ github.sha }}
+          path: ${{ runner.temp }}/runtime-supervisor-fault-matrix.log
+          if-no-files-found: warn
+          retention-days: 30
+
+  macos-native:
+    name: macOS Intel exact head
+    runs-on: macos-15-intel
+    timeout-minutes: 100
+    steps:
+      - name: Checkout immutable candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install pinned toolchain and native prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          brew install protobuf
+          rustup toolchain install "$RUST_TOOLCHAIN" --profile minimal --component clippy,rustfmt
+          printf 'RUSTUP_TOOLCHAIN=%s\n' "$RUST_TOOLCHAIN" >> "$GITHUB_ENV"
+
+      - name: Execute macOS source-head gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          log="$RUNNER_TEMP/runtime-supervisor-macos-native.log"
+          exec > >(tee "$log") 2>&1
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test ! -e .github/runtime-supervisor-final-hardening.py
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
+          cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor --all-targets --all-features
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor --all-features
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor --all-targets --all-features --no-deps -- -D warnings
+          test -z "$(git status --porcelain)"
+
+      - name: Retain macOS evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-supervisor-macos-native-${{ github.sha }}
+          path: ${{ runner.temp }}/runtime-supervisor-macos-native.log
+          if-no-files-found: warn
+          retention-days: 30
+
+  host-evidence:
+    name: Linux ownership and 256-process evidence
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 25
+    steps:
+      - name: Checkout immutable candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Exercise process identity, group reaping and bounded load
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          import platform
+          import resource
+          import signal
+          import statistics
+          import subprocess
+          import time
+          from pathlib import Path
+
+          count = 256
+          processes = []
+          pidfds = []
+          spawn_us = []
+          reap_us = []
+          try:
+              for _ in range(count):
+                  started = time.perf_counter_ns()
+                  process = subprocess.Popen(["sleep", "60"], start_new_session=True)
+                  spawn_us.append((time.perf_counter_ns() - started) // 1000)
+                  processes.append(process)
+                  if hasattr(os, "pidfd_open"):
+                      pidfds.append(os.pidfd_open(process.pid, 0))
+              for process in processes:
+                  os.killpg(process.pid, signal.SIGTERM)
+              for process in processes:
+                  started = time.perf_counter_ns()
+                  process.wait(timeout=15)
+                  reap_us.append((time.perf_counter_ns() - started) // 1000)
+          finally:
+              for descriptor in pidfds:
+                  os.close(descriptor)
+              for process in processes:
+                  if process.poll() is None:
+                      os.killpg(process.pid, signal.SIGKILL)
+                      process.wait(timeout=15)
+
+          def percentile(values, ratio):
+              ordered = sorted(values)
+              index = max(0, min(len(ordered) - 1, (len(ordered) * ratio + 99) // 100 - 1))
+              return ordered[index]
+
+          controller_path = Path("/sys/fs/cgroup/cgroup.controllers")
+          controllers = controller_path.read_text(encoding="utf-8").split() if controller_path.is_file() else []
+          evidence = {
+              "schema_version": 2,
+              "tested_sha": os.environ["GITHUB_SHA"],
+              "platform": platform.platform(),
+              "machine": platform.machine(),
+              "process_count": count,
+              "pidfd_supported": hasattr(os, "pidfd_open"),
+              "pidfd_observed_count": len(pidfds),
+              "process_groups_reaped": sum(process.returncode is not None for process in processes),
+              "spawn_latency_us": {
+                  "p50": percentile(spawn_us, 50),
+                  "p95": percentile(spawn_us, 95),
+                  "p99": percentile(spawn_us, 99),
+                  "max": max(spawn_us),
+              },
+              "reap_latency_us": {
+                  "p50": percentile(reap_us, 50),
+                  "p95": percentile(reap_us, 95),
+                  "p99": percentile(reap_us, 99),
+                  "max": max(reap_us),
+              },
+              "cgroup_v2_controllers": controllers,
+              "rlimit_nofile": list(resource.getrlimit(resource.RLIMIT_NOFILE)),
+              "resource_enforcement": {
+                  "operation_timeout": "enforced",
+                  "memory_mb": "declared_only",
+                  "max_subprocesses": "declared_only",
+                  "network": "declared_only",
+              },
           }
-          run_gate fmt cargo fmt --manifest-path codex-rs/Cargo.toml --all --check
-          run_gate supervisor-default cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor
-          run_gate supervisor-qualification cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor --features qualification
-          run_gate supervisor-production-authority cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor --features production-authority
-          run_gate supervisor-all-features cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor --all-features
-          run_gate daemon cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-daemon
-          run_gate clippy cargo clippy --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor --all-targets --all-features -- -D warnings
+          output = Path(os.environ["RUNNER_TEMP"]) / "runtime-supervisor-host-evidence.json"
+          output.write_text(json.dumps(evidence, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          if evidence["pidfd_observed_count"] != count:
+              raise SystemExit("pidfd identity was not retained for every process")
+          if evidence["process_groups_reaped"] != count:
+              raise SystemExit("not every process group reached an observed terminal state")
+          PY
+          cat "$RUNNER_TEMP/runtime-supervisor-host-evidence.json"
 
-      - name: Commit only after gates pass
-        if: steps.patch.outputs.present == 'true' && github.event_name != 'pull_request'
+      - name: Retain host evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-supervisor-host-evidence-${{ github.sha }}
+          path: ${{ runner.temp }}/runtime-supervisor-host-evidence.json
+          if-no-files-found: error
+          retention-days: 30
+
+  document-truth:
+    name: Documentation and implementation-map truth
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    steps:
+      - name: Checkout immutable candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify closed-world claims
         shell: bash
         run: |
           set -euo pipefail
-          rm .github/runtime-supervisor-final-hardening.py
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path.cwd()
+          receipt = json.loads((root / "docs/modules/runtime.supervisor/PRODUCTION_CLOSURE.json").read_text(encoding="utf-8"))
+          assert receipt["schemaVersion"] == 2
+          assert receipt["module"] == "runtime.supervisor"
+          assert receipt["candidateBranch"] == "codex/runtime-supervisor-full-closure-20260929"
+          assert all(receipt["implemented"].values())
+          assert receipt["resourceEnforcement"] == {
+              "operationTimeout": "enforced",
+              "memoryMb": "declared_only",
+              "maxSubprocesses": "declared_only",
+              "network": "declared_only",
+          }
+          assert receipt["verificationWorkflow"] == ".github/workflows/runtime-supervisor-final-hardening.yml"
+          assert not (root / ".github/runtime-supervisor-final-hardening.py").exists()
+          lib = (root / "codex-rs/hepta-supervisor/src/lib.rs").read_text(encoding="utf-8")
+          control = (root / "codex-rs/hepta-supervisor/src/control.rs").read_text(encoding="utf-8")
+          recovery_metrics = (root / "codex-rs/hepta-supervisor/src/control_recovery_metrics.rs").read_text(encoding="utf-8")
+          assert "mod control_recovery_metrics;" in lib
+          assert "pub use control_recovery_metrics::control_recovery_snapshot;" in lib
+          assert "pub use control_latency::control_latency_snapshot;" in lib
+          assert "pub use error::ControlFailureDisposition;" in lib
+          assert "ControlLatencyStage::IntentPersistence" in control
+          assert "oldest_pending_age_ms" in recovery_metrics
+          assert "scanned_bytes" in recovery_metrics
+          PY
           git diff --check
-          git config user.name 'openai-runtime-supervisor'
-          git config user.email 'runtime-supervisor@users.noreply.github.com'
-          git add \
-            codex-rs/hepta-supervisor/src \
-            docs/modules/runtime.supervisor \
-            .github/workflows/runtime-supervisor-final-hardening.yml \
-            .github/runtime-supervisor-final-hardening.py
-          git commit -m 'feat(runtime.supervisor): close recovery diagnostics and evidence'
-          git push origin "HEAD:${GITHUB_REF_NAME}"
-
-  exact-head-linux:
-    needs: materialize
-    name: Exact head Linux
-    runs-on: ubuntu-24.04
-    timeout-minutes: 90
-    steps:
-      - name: Checkout exact head
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        with:
-          fetch-depth: 0
-      - name: Detect committed candidate
-        id: exact
-        shell: bash
-        run: |
-          set -euo pipefail
-          if test -f .github/runtime-supervisor-final-hardening.py; then
-            echo 'ready=false' >> "$GITHUB_OUTPUT"
-          else
-            echo 'ready=true' >> "$GITHUB_OUTPUT"
-          fi
-      - name: Install pinned Rust toolchain
-        if: steps.exact.outputs.ready == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          rustup toolchain install "$RUST_TOOLCHAIN" --profile minimal --component rustfmt,clippy
-          rustup override set "$RUST_TOOLCHAIN"
-      - name: Run exact-head Linux matrix
-        if: steps.exact.outputs.ready == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo fmt --manifest-path codex-rs/Cargo.toml --all --check
-          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor
-          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor --features qualification
-          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor --features production-authority
-          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor --all-features
-          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-daemon
-          cargo clippy --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor --all-targets --all-features -- -D warnings
           test -z "$(git status --porcelain)"
 
-  exact-head-macos:
-    needs: materialize
-    name: Exact head macOS Intel
-    runs-on: macos-15-intel
-    timeout-minutes: 90
+  closure-gate:
+    name: Full-closure exact-candidate gate
+    if: always()
+    needs:
+      - linux-native
+      - fault-matrix
+      - macos-native
+      - host-evidence
+      - document-truth
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 5
     steps:
-      - name: Checkout exact head
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        with:
-          fetch-depth: 0
-      - name: Detect committed candidate
-        id: exact
+      - name: Require every independent lane
         shell: bash
+        env:
+          LINUX_NATIVE: ${{ needs.linux-native.result }}
+          FAULT_MATRIX: ${{ needs.fault-matrix.result }}
+          MACOS_NATIVE: ${{ needs.macos-native.result }}
+          HOST_EVIDENCE: ${{ needs.host-evidence.result }}
+          DOCUMENT_TRUTH: ${{ needs.document-truth.result }}
         run: |
           set -euo pipefail
-          if test -f .github/runtime-supervisor-final-hardening.py; then
-            echo 'ready=false' >> "$GITHUB_OUTPUT"
-          else
-            echo 'ready=true' >> "$GITHUB_OUTPUT"
-          fi
-      - name: Install pinned Rust toolchain
-        if: steps.exact.outputs.ready == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          rustup toolchain install "$RUST_TOOLCHAIN" --profile minimal --component rustfmt,clippy
-          rustup override set "$RUST_TOOLCHAIN"
-      - name: Run exact-head macOS host matrix
-        if: steps.exact.outputs.ready == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo fmt --manifest-path codex-rs/Cargo.toml --all --check
-          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor
-          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor --all-features
-          cargo clippy --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor --all-targets --all-features -- -D warnings
-          test -z "$(git status --porcelain)"
+          for result in "$LINUX_NATIVE" "$FAULT_MATRIX" "$MACOS_NATIVE" "$HOST_EVIDENCE" "$DOCUMENT_TRUTH"; do
+            test "$result" = success
+          done
