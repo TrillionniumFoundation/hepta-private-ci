@@ -5,7 +5,7 @@
   "evidenceSemantics": {
     "observedOutcome": "A concrete check ran and emitted a pass or failure observation for one exact subject. A later failure does not erase an earlier observation.",
     "acceptedEvidence": "A receipt was validated against its exact candidate, tree, deployment, and authority rules. Accepted stage evidence is monotone within an evidence bundle.",
-    "overallAcceptance": "The bundle is accepted only when every required stage and the final production approval are accepted. A failed bundle may retain earlier accepted stage evidence without authorizing production or release."
+    "overallAcceptance": "The bundle is accepted only when every required stage, five distinct assurance principals, evidence-before-approval chronology, and the final production approval are accepted. A failed bundle may retain earlier accepted stage evidence without authorizing production or release."
   },
   "stages": {
     "designDefined": {
@@ -46,9 +46,9 @@
     },
     "productionDeploymentApproved": {
       "repositoryState": "external_authority_absent",
-      "observationAuthority": "deployment-security, independent accessibility, independent security, and operational exercise receipts",
-      "acceptanceAuthority": "non-expired production approval bound to all prerequisite evidence digests and an accepted external-evidence bundle",
-      "passAuthority": "deployment and release authority"
+      "observationAuthority": "deployment-security, real-backend, independent accessibility, independent security, operational exercise, and production approval receipts",
+      "acceptanceAuthority": "non-expired production approval bound to all prerequisite evidence digests, five distinct review and approval principals, evidence-before-approval chronology, and an accepted external-evidence bundle",
+      "passAuthority": "deployment, release, and security authorities after trusted assurance-chain validation"
     }
   },
   "immutableOrdering": [
@@ -68,6 +68,7 @@
     "independentSecurity": "hepta.ui-control.independent-security-review-receipt.v1",
     "operationalExercise": "hepta.ui-control.operational-exercise-receipt.v1",
     "productionApproval": "hepta.ui-control.production-approval-receipt.v1",
+    "assuranceChain": "hepta.ui-control.assurance-chain.v1",
     "externalEvidenceBundle": "hepta.ui-control.external-evidence-bundle.v1"
   }
 }
