@@ -1,25 +1,14 @@
 name: Apply memory retrieval closure patch
 
-# One-shot bootstrap. The job self-deletes this workflow and its patch payloads only after
-# the exact source, test, format, compile, and strict-Clippy gates all pass.
+# One-shot source carrier. The PR workflow executes from an isolated carrier branch,
+# verifies the exact current target SHA, and fast-forwards the target only after every
+# repository-controlled source gate passes. It never promotes production claims.
 on:
-  push:
+  pull_request:
     branches:
       - chatgpt/memory-retrieval-full-closure-20260929
     paths:
-      - .github/patches/memory-retrieval-phase1a.patch
-      - .github/patches/memory-retrieval-phase1b.patch
-      - .github/patches/memory-retrieval-phase2.patch
       - .github/workflows/memory-retrieval-apply-closure.yml
-      - codex-rs/hepta-memory-retrieval/src/lifecycle.rs
-      - docs/modules/memory.retrieval/FULL_CLOSURE.md
-      - qualification/memory-retrieval/product-composition.json
-      - qualification/memory-retrieval/quality-performance-policy.json
-      - qualification/memory-retrieval/production-qualification.json
-      - scripts/validate_memory_retrieval_closure.py
-  pull_request:
-    branches:
-      - main
     types:
       - opened
       - synchronize
@@ -29,51 +18,60 @@ permissions:
   contents: write
 
 concurrency:
-  group: memory-retrieval-closure-${{ github.ref }}
+  group: memory-retrieval-direct-apply-${{ github.event.pull_request.base.ref }}
   cancel-in-progress: true
+
+env:
+  TARGET_BRANCH: chatgpt/memory-retrieval-full-closure-20260929
+  TARGET_SHA: ${{ github.event.pull_request.base.sha }}
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
 
 jobs:
   apply-validate-commit:
-    if: github.actor != 'github-actions[bot]'
-    runs-on: ubuntu-24.04
-    timeout-minutes: 120
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-slim
+    timeout-minutes: 150
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - name: Check out exact unchanged target
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: chatgpt/memory-retrieval-full-closure-20260929
+          ref: ${{ env.TARGET_SHA }}
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Verify exact branch identity
+      - name: Verify exact target identity and patch transport
         shell: bash
         run: |
           set -euxo pipefail
-          test "$(git branch --show-current)" = "chatgpt/memory-retrieval-full-closure-20260929"
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
           test -z "$(git status --porcelain)"
-          git rev-parse HEAD
-          git rev-parse HEAD^{tree}
+          test -f .github/patches/memory-retrieval-phase1a.patch
+          test -f .github/patches/memory-retrieval-phase1b.patch
+          test -f .github/patches/memory-retrieval-phase2.patch
+          git apply --check --verbose --whitespace=error-all \
+            .github/patches/memory-retrieval-phase1a.patch
+          git apply --check --verbose --whitespace=error-all \
+            .github/patches/memory-retrieval-phase1b.patch
+          git apply --check --verbose --whitespace=error-all \
+            .github/patches/memory-retrieval-phase2.patch
 
-      - name: Preflight closure patches
+      - name: Apply exact reviewed source closure
         shell: bash
         run: |
           set -euxo pipefail
-          git apply --check --verbose .github/patches/memory-retrieval-phase1a.patch
-          git apply --check --verbose .github/patches/memory-retrieval-phase1b.patch
-          git apply --check --verbose .github/patches/memory-retrieval-phase2.patch
-
-      - name: Apply exact source-closure patches
-        shell: bash
-        run: |
-          set -euxo pipefail
-          git apply --index --verbose .github/patches/memory-retrieval-phase1a.patch
-          git apply --index --verbose .github/patches/memory-retrieval-phase1b.patch
-          git apply --index --verbose .github/patches/memory-retrieval-phase2.patch
+          git apply --index --verbose --whitespace=error-all \
+            .github/patches/memory-retrieval-phase1a.patch
+          git apply --index --verbose --whitespace=error-all \
+            .github/patches/memory-retrieval-phase1b.patch
+          git apply --index --verbose --whitespace=error-all \
+            .github/patches/memory-retrieval-phase2.patch
           python3 scripts/validate_memory_retrieval_closure.py \
-            --stamp-observation "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})"
+            --stamp-observation "$TARGET_SHA" "$(git rev-parse "$TARGET_SHA^{tree}")"
           git add -A
           git diff --cached --check
 
-      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+      - name: Install pinned Python formatter
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
         with:
           version: "0.8.22"
           enable-cache: false
@@ -83,9 +81,10 @@ jobs:
         run: |
           set -euxo pipefail
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends pkg-config libssl-dev protobuf-compiler
+          sudo apt-get install -y --no-install-recommends \
+            pkg-config libssl-dev protobuf-compiler
 
-      - name: Format and validate the complete repository
+      - name: Format and validate complete source closure
         shell: bash
         run: |
           set -euxo pipefail
@@ -95,29 +94,34 @@ jobs:
           python3 scripts/format.py --check
           python3 scripts/validate_memory_retrieval_closure.py
 
-      - name: Validate Cargo graph
-        shell: bash
+      - name: Validate locked Cargo graph
         working-directory: codex-rs
+        shell: bash
         run: cargo metadata --locked --no-deps --format-version 1 >/dev/null
 
-      - name: Test retrieval core and direct lifecycle mappings
-        shell: bash
+      - name: Test retrieval core and typed lifecycle
         working-directory: codex-rs
+        shell: bash
         run: cargo test --locked -p codex-hepta-memory-retrieval
 
       - name: Test durable memory migration
-        shell: bash
         working-directory: codex-rs
+        shell: bash
         run: cargo test --locked -p codex-hepta-memory
 
       - name: Compile Agentd product path
-        shell: bash
         working-directory: codex-rs
+        shell: bash
         run: cargo test --locked -p codex-hepta-agentd --no-run
 
-      - name: Run strict all-target Clippy
-        shell: bash
+      - name: Test operations durability
         working-directory: codex-rs
+        shell: bash
+        run: cargo test --locked -p codex-hepta-operations
+
+      - name: Run strict all-target Clippy
+        working-directory: codex-rs
+        shell: bash
         run: |
           cargo clippy --locked --all-targets \
             -p codex-hepta-memory-retrieval \
@@ -127,7 +131,7 @@ jobs:
             -p codex-hepta-operations \
             -- -D warnings
 
-      - name: Commit only after every source gate passes
+      - name: Commit verified source and remove one-shot transport
         shell: bash
         run: |
           set -euxo pipefail
@@ -138,7 +142,14 @@ jobs:
           git add -A
           git diff --cached --check
           test -n "$(git status --porcelain)"
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git config user.name memory-retrieval-source-bot
+          git config user.email memory-retrieval-source-bot@users.noreply.github.com
           git commit -m "fix(memory-retrieval): close exact-head source blockers"
-          git push origin HEAD:chatgpt/memory-retrieval-full-closure-20260929
+
+      - name: Fast-forward only the unchanged target branch
+        shell: bash
+        run: |
+          set -euxo pipefail
+          remote_head="$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | cut -f1)"
+          test "$remote_head" = "$TARGET_SHA"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
