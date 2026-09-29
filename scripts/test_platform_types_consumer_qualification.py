@@ -113,7 +113,7 @@ class ConsumerExecutionTests(unittest.TestCase):
             )
             env = dict(
                 os.environ,
-                PATH=str(tools) + os.path.sep + os.environ["PATH"],
+                PATH=str(tools) + os.pathsep + os.environ["PATH"],
                 HEPTA_TYPES_EVIDENCE_DIR=str(evidence),
                 TEST_COMMAND_LOG=str(work / "commands.log"),
                 TEST_FAILURE=failure,
