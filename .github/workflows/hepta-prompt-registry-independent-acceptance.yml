@@ -1,0 +1,56 @@
+name: Hepta prompt.registry independent acceptance
+on:
+  workflow_dispatch:
+    inputs:
+      qualification_run_id:
+        description: Successful four-lane qualification run ID
+        required: true
+        type: string
+      source_sha:
+        description: Exact qualified source SHA
+        required: true
+        type: string
+permissions:
+  contents: read
+  actions: read
+jobs:
+  accept:
+    environment: prompt-registry-independent-acceptance
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ inputs.source_sha }}
+          persist-credentials: false
+      - name: Download exact qualification summary
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ inputs.qualification_run_id }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/qualification"
+          gh run download "$RUN_ID" --repo "$GITHUB_REPOSITORY" \
+            --pattern "prompt-registry-summary-$SOURCE_SHA-*" \
+            --dir "$RUNNER_TEMP/qualification"
+          test "$(find "$RUNNER_TEMP/qualification" -name 'prompt-registry-summary.json' -type f | wc -l)" = 1
+      - name: Bind independent acceptance identity and immutable evidence
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          workflow_sha=$(git hash-object .github/workflows/hepta-prompt-registry-independent-acceptance.yml)
+          summary=$(find "$RUNNER_TEMP/qualification" -name 'prompt-registry-summary.json' -type f)
+          python3 scripts/hepta-prompt-registry-accept.py \
+            --summary "$summary" \
+            --acceptor "$GITHUB_ACTOR" \
+            --acceptance-run "$GITHUB_RUN_ID" \
+            --acceptance-workflow-sha "$workflow_sha" \
+            --output "$RUNNER_TEMP/prompt-registry-independent-acceptance.json"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-registry-independent-acceptance-${{ inputs.source_sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/prompt-registry-independent-acceptance.json
+          if-no-files-found: error
+          retention-days: 90
