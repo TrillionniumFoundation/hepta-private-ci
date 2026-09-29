@@ -1,0 +1,126 @@
+name: ui.native WAL and retirement-index source applicator
+
+on:
+  push:
+    branches: [work/ui-native-qualified-integration-20260928]
+    paths:
+      - .ci/ui-native-wal-index/source.patch.gz
+      - .github/workflows/ui-native-wal-index-apply-once.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ui-native-wal-index-source-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: "0"
+
+jobs:
+  apply-test-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - id: source
+        name: Verify immutable input and apply reviewed source patch
+        env:
+          EXPECTED_PARENT: 2fbff0ccd55234905ba890f42c45750ea9c1fbfd
+          PATCH_GZIP_SHA256: df46c164bcc53926e5ccc2c7bbe3eb2e0bc84dc5cb5b499d03cb1533bae241bd
+          PATCH_SHA256: 4cc209f814ccc0c40894b16127688bcea3eb375c7a6b5ca12e7e5e1a67b7eb89
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain)"
+          if [[ ! -f .ci/ui-native-wal-index/source.patch.gz ]]; then
+            echo 'one-shot source patch already consumed'
+            echo 'apply=false' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo 'apply=true' >> "$GITHUB_OUTPUT"
+          test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
+          printf '%s  %s\n' "$PATCH_GZIP_SHA256" .ci/ui-native-wal-index/source.patch.gz | sha256sum --check --strict
+          gzip -dc .ci/ui-native-wal-index/source.patch.gz > /tmp/ui-native-wal-index.patch
+          printf '%s  %s\n' "$PATCH_SHA256" /tmp/ui-native-wal-index.patch | sha256sum --check --strict
+          git apply --check --whitespace=error-all /tmp/ui-native-wal-index.patch
+          git apply --index --whitespace=error-all /tmp/ui-native-wal-index.patch
+
+      - name: Install pinned Rust and Linux native prerequisites
+        if: steps.source.outputs.apply == 'true'
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y \
+            libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev \
+            libxkbcommon-dev libxkbcommon-x11-dev libwayland-dev \
+            libgl1-mesa-dev libssl-dev desktop-file-utils \
+            xvfb xauth dbus-x11 gnome-keyring xdotool x11-utils \
+            python3-cryptography fonts-noto-cjk
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
+
+      - name: Format and create a local immutable source commit
+        if: steps.source.outputs.apply == 'true'
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml
+          git add apps/hepta-native
+          git rm .ci/ui-native-wal-index/source.patch.gz
+          git diff --cached --check
+          python3 - <<'PYTHON'
+          import subprocess
+          paths = subprocess.check_output(
+              ['git', 'diff', '--cached', '--name-only'], text=True, encoding='utf-8', errors='strict'
+          ).splitlines()
+          if not paths or any(
+              path != '.ci/ui-native-wal-index/source.patch.gz'
+              and not path.startswith('apps/hepta-native/')
+              for path in paths
+          ):
+              raise SystemExit(f'unexpected staged path set: {paths}')
+          PYTHON
+          git config user.name 'hepta-native-source-bot'
+          git config user.email 'hepta-native-source-bot@users.noreply.github.com'
+          git commit -m 'feat(ui.native): bound durable history lookup and journal writes' \
+            -m 'Add a content-addressed retirement disk index, exact active-operation index, checksummed fsynced WAL, bounded checkpointing, recovery tests, and the pending Rust formatting closure without weakening Prepared/Invoking durability or unknown-result replay fences.'
+
+      - name: Verify exact committed source
+        if: steps.source.outputs.apply == 'true'
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain)"
+          cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml --check
+          cargo +1.95.0 check --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets --all-features
+          cargo +1.95.0 clippy --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets --all-features -- -D warnings
+          cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s scripts -p 'test_hepta_ui_native*.py' -v
+
+      - name: Publish only the verified source commit
+        if: steps.source.outputs.apply == 'true'
+        run: |
+          set -euo pipefail
+          git push origin "HEAD:refs/heads/${GITHUB_REF_NAME}"
+
+      - name: Retain failure diagnostics without publishing source
+        if: failure()
+        run: |
+          set +e
+          mkdir -p source-diagnostics
+          git rev-parse HEAD HEAD^{tree} > source-diagnostics/identity.txt
+          git status --short > source-diagnostics/status.txt
+          git diff --binary HEAD^ > source-diagnostics/candidate.patch
+          sha256sum source-diagnostics/candidate.patch > source-diagnostics/candidate.patch.sha256
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: failure()
+        with:
+          name: ui-native-wal-index-failure-${{ github.sha }}-attempt-${{ github.run_attempt }}
+          path: source-diagnostics
+          if-no-files-found: error
+          retention-days: 7
