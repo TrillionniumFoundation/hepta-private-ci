@@ -1,0 +1,41 @@
+name: runtime-supervisor-windows-preflight
+
+on:
+  push:
+    branches:
+      - work/runtime-supervisor-qualification-20260929
+    paths:
+      - .github/workflows/runtime-supervisor-windows-preflight.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: runtime-supervisor-windows-preflight-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  preflight:
+    runs-on: windows-2025
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 1
+          ref: work/runtime-supervisor-qualification-20260929
+
+      - name: Materialize candidate
+        shell: pwsh
+        run: |
+          python .github/scripts/runtime_supervisor_source.py
+          python .github/scripts/runtime_supervisor_integration.py
+          python .github/scripts/runtime_supervisor_fixups.py
+
+      - name: Format and compile all targets
+        shell: pwsh
+        working-directory: codex-rs
+        run: |
+          cargo fmt -p codex-hepta-supervisor
+          cargo fmt -p codex-hepta-supervisor -- --check
+          cargo check -p codex-hepta-supervisor --all-targets --features "qualification production-authority"
