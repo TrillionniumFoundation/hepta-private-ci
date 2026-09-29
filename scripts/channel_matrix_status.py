@@ -163,10 +163,18 @@ def main() -> int:
     parser.add_argument("--directory", type=Path, required=True)
     parser.add_argument("--governance-policy", type=Path)
     args = parser.parse_args()
-    directory = args.directory.resolve(strict=True)
+    requested = args.directory
+    directory = requested.resolve(strict=True)
     root = Path(__file__).resolve().parents[1]
-    if directory.is_relative_to(root):
-        parser.error("generated status must stay outside the candidate checkout")
+    if (
+        requested.is_symlink()
+        or not directory.is_dir()
+        or directory != requested.absolute()
+        or directory.is_relative_to(root)
+    ):
+        parser.error(
+            "generated status directory must be canonical and outside the candidate checkout"
+        )
     try:
         row = summarize(directory, args.governance_policy)
         for name, payload in (
