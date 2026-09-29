@@ -1,0 +1,47 @@
+name: Kernel authority source export
+
+on:
+  push:
+    branches:
+      - work/kernel-authority-convergence-20260925
+    paths:
+      - '.github/workflows/kernel-authority-source-export.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kernel-authority-source-export-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  export:
+    name: Export exact source tree
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Verify and archive immutable tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain)"
+          git archive --format=tar.gz --output="$RUNNER_TEMP/hepta-private-ci-${GITHUB_SHA}.tar.gz" HEAD
+          sha256sum "$RUNNER_TEMP/hepta-private-ci-${GITHUB_SHA}.tar.gz" > "$RUNNER_TEMP/source.sha256"
+          git rev-parse HEAD 'HEAD^{tree}' > "$RUNNER_TEMP/source.identity"
+      - name: Upload exact source archive
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: kernel-authority-source-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/hepta-private-ci-${{ github.sha }}.tar.gz
+            ${{ runner.temp }}/source.sha256
+            ${{ runner.temp }}/source.identity
+          if-no-files-found: error
+          retention-days: 1
