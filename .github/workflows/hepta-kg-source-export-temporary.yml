@@ -1,0 +1,93 @@
+name: Hepta knowledge.graph exact-source export (temporary)
+
+on:
+  push:
+    branches:
+      - work/kg-abc-evidence-hardening-20260928
+    paths:
+      - .github/workflows/hepta-kg-source-export-temporary.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-kg-source-export-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind exported source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo "commit=$(git rev-parse HEAD)"
+            echo "tree=$(git rev-parse HEAD^{tree})"
+          } | tee kg-export-identity.txt
+          git diff --quiet
+          git diff --cached --quiet
+
+      - name: Upload exact candidate source
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: knowledge-graph-exact-source-${{ github.sha }}
+          path: |
+            kg-export-identity.txt
+            .github/kg-map-rebind.request
+            .github/workflows/hepta-kg-abc-execution.yml
+            .github/workflows/hepta-kg-map-rebind-once.yml
+            .github/workflows/hepta-kg-remaining-four-closure.yml
+            .github/workflows/hepta-knowledge-graph-qualification.yml
+            codex-rs/hepta-kg
+            codex-rs/hepta-memory/Cargo.toml
+            codex-rs/hepta-memory/migrations
+            codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs
+            codex-rs/hepta-memory/src/cognitive_kg_history_tests.rs
+            codex-rs/hepta-memory/src/cognitive_kg_oracle_tests.rs
+            codex-rs/hepta-memory/src/cognitive_kg_store.rs
+            codex-rs/hepta-memory/src/cognitive_model.rs
+            codex-rs/hepta-memory/src/cognitive_retrieval.rs
+            codex-rs/hepta-memory/src/cognitive_retrieval_observation.rs
+            codex-rs/hepta-memory/src/cognitive_store.rs
+            codex-rs/hepta-memory/src/cognitive_store_tests.rs
+            codex-rs/hepta-memory/src/lib.rs
+            codex-rs/hepta-memory/tests/kg_delivery_consistency.rs
+            codex-rs/hepta-prompt-registry/src/lib.rs
+            codex-rs/hepta-prompt-registry/src/lib_tests.rs
+            codex-rs/hepta-prompt-optimizer/src/graph.rs
+            codex-rs/hepta-prompt-optimizer/src/graph_tests.rs
+            codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs
+            codex-rs/hepta-fleet/src/release.rs
+            docs/modules/knowledge.graph
+            qualification/knowledge-graph
+            qualification/module-execution-dossiers/detail/knowledge.graph.md
+            scripts/hepta-knowledge-graph-budget-check.py
+            scripts/hepta-knowledge-graph-target-measure.py
+            scripts/hepta_knowledge_graph_map_verify.py
+            scripts/hepta_kg_acceptance_manifest.py
+            scripts/hepta_kg_contract_evidence.py
+            scripts/hepta_kg_current_candidate_runner.py
+            scripts/hepta_kg_documentation_sync.py
+            scripts/hepta_kg_evidence.py
+            scripts/hepta_kg_execution_audit.py
+            scripts/hepta_kg_legacy_guard.py
+            scripts/hepta_kg_qualification_lane.sh
+            scripts/hepta_kg_status.py
+            scripts/test_hepta_kg_acceptance_manifest.py
+            scripts/test_hepta_kg_contract_evidence.py
+            scripts/test_hepta_kg_execution_audit.py
+            scripts/test_hepta_kg_legacy_guard.py
+            scripts/test_hepta_kg_measurement.py
+            scripts/test_hepta_kg_status.py
+            scripts/test_hepta_knowledge_graph_budget.py
+          if-no-files-found: error
+          retention-days: 7
