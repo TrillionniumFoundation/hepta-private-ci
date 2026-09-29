@@ -42,11 +42,14 @@ retained. Three new tests establish the intended regression obligations:
 - `audit_projection_size_does_not_scale_with_untrusted_error_text` compares the
   projection of a short message with a one-MiB message.
 
-These obligations apply to the structured projection, not every possible use of
-the public error's `Display` implementation. The historical untyped
-`CanonicalContract(String)` variant is deliberately not parsed to invent a more
-specific machine-readable category. Consumers must use the structured audit
-projection rather than treating arbitrary diagnostic strings as trusted fields.
+The later closure increment routes `CanonicalConsumerBindingError::Display`
+through the same payload-free structured violation. Existing read, store,
+retrieval, compaction and intelligence-control adapters that retain historical
+`String` variants and call `to_string()` therefore receive the stable code,
+field path and redacted message rather than the owned historical diagnostic.
+The original enum field remains readable only to code that explicitly inspects
+or formats the full debug value; `Debug` is not an approved audit/logging
+surface. Historical text is never parsed to manufacture a more specific code.
 
 ## Frozen V1 digest framing
 
