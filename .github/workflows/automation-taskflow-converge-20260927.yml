@@ -1,10 +1,10 @@
-name: Automation TaskFlow current-source schema-22 convergence
+name: Automation TaskFlow current-source schema-22 convergence macOS
 
-# Owner-authorized convergence trigger for the exact current branch head.
+# Same reviewed convergence candidate on an isolated hosted macOS runner.
 on:
   push:
     branches:
-      - work/automation-taskflow-full-closure-2026-09-27
+      - ci/automation-taskflow-schema22-macos-20260929
     paths:
       - .github/workflows/automation-taskflow-converge-20260927.yml
   workflow_dispatch:
@@ -13,18 +13,18 @@ permissions:
   contents: write
 
 concurrency:
-  group: automation-taskflow-schema22-current-source-convergence
+  group: automation-taskflow-schema22-isolated-macos-20260929
   cancel-in-progress: true
 
 jobs:
   converge:
-    runs-on: ubuntu-24.04
+    runs-on: macos-15
     timeout-minutes: 45
     steps:
       - name: Check out exact branch head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: work/automation-taskflow-full-closure-2026-09-27
+          ref: ci/automation-taskflow-schema22-macos-20260929
           fetch-depth: 0
           persist-credentials: true
 
@@ -33,7 +33,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          remote="$(git ls-remote origin refs/heads/work/automation-taskflow-full-closure-2026-09-27 | awk '{print $1}')"
+          remote="$(git ls-remote origin refs/heads/ci/automation-taskflow-schema22-macos-20260929 | awk '{print $1}')"
           test "$remote" = "$GITHUB_SHA"
 
       - name: Verify current schema-22 source anchors
@@ -63,7 +63,13 @@ jobs:
         run: |
           set -euo pipefail
           decoded="scripts/.automation_taskflow_source_last_mile_20260929.py"
-          base64 -d scripts/automation_taskflow_source_last_mile_20260929.py.gz.b64 | gzip -d > "$decoded"
+          python3 - <<'PY'
+          import base64, gzip
+          from pathlib import Path
+          source = Path('scripts/automation_taskflow_source_last_mile_20260929.py.gz.b64')
+          target = Path('scripts/.automation_taskflow_source_last_mile_20260929.py')
+          target.write_bytes(gzip.decompress(base64.b64decode(source.read_bytes())))
+          PY
           python3 -m py_compile "$decoded"
           python3 "$decoded"
           rm -f "$decoded"
@@ -176,7 +182,7 @@ jobs:
 
       - name: Push only if remote still names the trigger commit
         env:
-          TARGET_BRANCH: work/automation-taskflow-full-closure-2026-09-27
+          TARGET_BRANCH: ci/automation-taskflow-schema22-macos-20260929
         shell: bash
         run: |
           set -euo pipefail
