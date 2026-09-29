@@ -38,6 +38,22 @@ except ImportError as error:  # pragma: no cover - executable location invariant
 def run_checks() -> dict[str, Any]:
     inventory = verify_inventory()
     generated_map = verify_map()
+    binding = generated_map.get("candidateBinding")
+    if not isinstance(binding, dict):
+        raise PropertyCheckError("generated implementation map lacks candidate binding")
+    for field in (
+        "commit",
+        "tree",
+        "publicApiInventorySha256",
+        "detailedImplementationMapSha256",
+    ):
+        if not isinstance(binding.get(field), str) or not binding[field]:
+            raise PropertyCheckError(
+                f"generated implementation map candidate binding lacks {field}"
+            )
+    if binding.get("policy") != "runtime_exact_git_candidate_v1":
+        raise PropertyCheckError("generated implementation map binding policy drift")
+
     oracle = load_oracle()
     vectors = read_object(VECTOR_PATH)
     valid_vectors = vectors.get("validVectors")
@@ -115,8 +131,12 @@ def run_checks() -> dict[str, Any]:
         if isinstance(replacement, str) and len(path) == 1 and path[0].endswith("_digest"):
             replacement = digest(f"{kind}:{'.'.join(path)}:{index}")
         elif isinstance(replacement, str) and path in {
-            ("manifest_id",), ("episode_id",), ("decision_id",), ("stream_id",),
-            ("system_id",), ("sensor_id",),
+            ("manifest_id",),
+            ("episode_id",),
+            ("decision_id",),
+            ("stream_id",),
+            ("system_id",),
+            ("sensor_id",),
         }:
             replacement = f"{replacement}.f{index}"
         set_path(candidate, path, replacement)
@@ -142,6 +162,14 @@ def run_checks() -> dict[str, Any]:
         "inventoryOperationCount": inventory["operationCount"],
         "generatedMapExportCount": generated_map["exportCount"],
         "generatedMapOperationCount": generated_map["operationCount"],
+        "generatedMapCandidateCommit": binding["commit"],
+        "generatedMapCandidateTree": binding["tree"],
+        "generatedMapPublicApiInventorySha256": binding[
+            "publicApiInventorySha256"
+        ],
+        "generatedMapDetailedImplementationMapSha256": binding[
+            "detailedImplementationMapSha256"
+        ],
         "validVectorCount": len(valid_vectors),
         "invalidVectorCount": len(invalid_vectors),
         "semanticMutationCount": mutation_count,

@@ -58,6 +58,39 @@ success, compiler-only success and tampered-count cases. They do not substitute
 a prearranged error exit for the behavior under test. These are runner/verifier
 regressions, not executions of the Rust consumer suites.
 
+## Exact implementation-map binding
+
+The committed implementation map remains a content and ownership document. It
+is not used as a self-referential final-head receipt. During each qualification
+attempt, `platform_types_implementation_map.py` derives the exact checked-out
+commit and tree and hashes both the committed public inventory and detailed map.
+The generated candidate artifact includes all four identities.
+
+The deterministic property report repeats the exact binding. Receipt generation
+then requires the generated artifact and property report to agree with each
+other, with the currently checked-out files and with the receipt's source-head or
+synthetic-merge candidate identity. A retained generated map from another commit,
+a changed detailed map, a changed public inventory or a changed candidate tree
+therefore fails closed before a receipt is emitted.
+
+This runtime binding is intentional: embedding a commit's own hash inside a file
+within that commit would change the hash again. Exact candidate identity belongs
+in generated candidate evidence and the qualification receipt, while committed
+maps remain reproducible source inputs.
+
+## Workflow checkout security
+
+Manual qualification runs select their source through GitHub's workflow-ref
+picker. `github.sha` is the executable checkout identity; free-form
+`candidate_ref` and `base_ref` inputs are not accepted. Pull-request runs use the
+immutable PR head and base SHAs supplied by the event, and push runs resolve the
+checked-out push SHA and the pre-push/base reference once.
+
+After the initial event-bound checkout, the binding job resolves full Git object
+IDs and both qualification lanes consume only those outputs. All checkouts keep
+credentials disabled and workflows retain read-only content permissions. A guard
+test rejects reintroduction of input-controlled executable refs.
+
 ## Existing qualification lanes
 
 The existing deep workflow runs the schema entrypoint separately for source-head
@@ -80,6 +113,8 @@ Reproduce the non-native guards from the repository root:
 python3 -m unittest discover -s scripts -p 'test_platform_types_consumer*.py' -v
 python3 -m unittest discover -s scripts -p test_platform_types_nonempty_tests.py -v
 python3 -m unittest discover -s scripts -p 'test_platform_types_resource*.py' -v
+python3 scripts/test_platform_types_implementation_map_binding.py
+python3 scripts/test_platform_types_workflow_security.py
 ```
 
 The resource tests contain synthetic measurements. Their success does not prove

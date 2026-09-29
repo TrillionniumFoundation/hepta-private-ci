@@ -21,17 +21,8 @@ on:
     branches: [main]
   workflow_dispatch:
     inputs:
-      candidate_ref:
-        description: Source ref to resolve once; no fallback on resolution failure
-        required: true
-        type: string
-      base_ref:
-        description: Base ref to resolve once for both qualification lanes
-        required: true
-        default: origin/main
-        type: string
       pr_number:
-        description: Positive PR number for synthetic-merge provenance
+        description: Positive PR number for deterministic synthetic-merge provenance
         required: true
         type: string
 
@@ -61,18 +52,22 @@ jobs:
       base_sha: ${{ steps.bind.outputs.base_sha }}
       base_tree: ${{ steps.bind.outputs.base_tree }}
     steps:
+      # Manual runs select the candidate through GitHub's workflow-ref picker.
+      # They do not accept a free-form checkout ref from workflow inputs.
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ inputs.candidate_ref || github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
           fetch-depth: 0
-      - name: Regression-test candidate binding against real Git objects
-        run: python3 -m unittest discover -s scripts -p 'test_platform_types_candidate_binding.py' -v
+      - name: Regression-test candidate and workflow binding
+        run: |
+          python3 -m unittest discover -s scripts -p 'test_platform_types_candidate_binding.py' -v
+          python3 scripts/test_platform_types_workflow_security.py
       - id: bind
         shell: bash
         env:
-          REQUESTED_SOURCE_REF: ${{ inputs.candidate_ref || github.event.pull_request.head.sha || github.sha }}
-          REQUESTED_BASE_REF: ${{ inputs.base_ref || github.event.pull_request.base.sha || github.event.before || 'origin/main' }}
+          REQUESTED_SOURCE_REF: ${{ github.event.pull_request.head.sha || github.sha }}
+          REQUESTED_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before || 'origin/main' }}
           REQUESTED_PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
           EVENT_NAME: ${{ github.event_name }}
         run: |

@@ -4,7 +4,10 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import re
+import subprocess
 import sys
 from collections import defaultdict
 from pathlib import Path
@@ -13,6 +16,8 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 DETAILED_PATH = ROOT / "docs/modules/platform.types/IMPLEMENTATION_MAP.json"
 INVENTORY_RELATIVE = "docs/modules/platform.types/PUBLIC_API_INVENTORY_V1.json"
+INVENTORY_PATH = ROOT / INVENTORY_RELATIVE
+SHA_RE = re.compile(r"[0-9a-f]{40}\Z")
 
 try:
     from platform_types_public_api import expected_inventory
@@ -34,7 +39,55 @@ def _read_object(path: Path) -> dict[str, Any]:
     return value
 
 
-def expected_map() -> dict[str, Any]:
+def _git(*arguments: str) -> str:
+    try:
+        result = subprocess.run(
+            ["git", *arguments],
+            cwd=ROOT,
+            check=False,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=30,
+        )
+    except (OSError, subprocess.SubprocessError) as error:
+        raise ImplementationMapError(f"git {' '.join(arguments)} failed: {error}") from error
+    if result.returncode:
+        raise ImplementationMapError(
+            f"git {' '.join(arguments)} failed: {result.stderr.strip()}"
+        )
+    return result.stdout.strip()
+
+
+def _sha256_file(path: Path) -> str:
+    try:
+        return hashlib.sha256(path.read_bytes()).hexdigest()
+    except OSError as error:
+        raise ImplementationMapError(f"cannot hash {path}: {error}") from error
+
+
+def _candidate_binding(expected_sha: str | None) -> dict[str, str]:
+    commit = _git("rev-parse", "HEAD")
+    tree = _git("rev-parse", "HEAD^{tree}")
+    if SHA_RE.fullmatch(commit) is None or SHA_RE.fullmatch(tree) is None:
+        raise ImplementationMapError("Git did not return exact SHA-1 candidate identity")
+    if expected_sha is not None:
+        if SHA_RE.fullmatch(expected_sha) is None:
+            raise ImplementationMapError("--expected-sha must be an exact 40-character commit")
+        if commit != expected_sha:
+            raise ImplementationMapError(
+                f"candidate commit mismatch: expected {expected_sha}, got {commit}"
+            )
+    return {
+        "policy": "runtime_exact_git_candidate_v1",
+        "commit": commit,
+        "tree": tree,
+        "publicApiInventorySha256": _sha256_file(INVENTORY_PATH),
+        "detailedImplementationMapSha256": _sha256_file(DETAILED_PATH),
+    }
+
+
+def expected_map(expected_sha: str | None = None) -> dict[str, Any]:
     inventory = expected_inventory()
     grouped: dict[str, dict[str, Any]] = defaultdict(
         lambda: {"sourcePaths": set(), "exports": []}
@@ -73,14 +126,17 @@ def expected_map() -> dict[str, Any]:
         "generatedFrom": [
             "codex-rs/hepta-types/src/lib.rs",
             INVENTORY_RELATIVE,
+            "docs/modules/platform.types/IMPLEMENTATION_MAP.json",
         ],
         "generationCommand": (
-            "python3 scripts/platform_types_implementation_map.py --output <candidate-artifact-path>"
+            "python3 scripts/platform_types_implementation_map.py "
+            "--expected-sha <candidate-sha> --output <candidate-artifact-path>"
         ),
         "coveragePolicy": (
             "every exact pub-use export is assigned to exactly one "
             "implementation operation and source path"
         ),
+        "candidateBinding": _candidate_binding(expected_sha),
         "exportCount": inventory["exportCount"],
         "operationCount": inventory["operationCount"],
         "operations": operations,
@@ -138,8 +194,8 @@ def _validate_detailed_map(generated: dict[str, Any]) -> None:
         )
 
 
-def verify_repository() -> dict[str, Any]:
-    expected = expected_map()
+def verify_repository(expected_sha: str | None = None) -> dict[str, Any]:
+    expected = expected_map(expected_sha)
     _validate_detailed_map(expected)
     return expected
 
@@ -155,22 +211,28 @@ def write_map(path: Path, value: dict[str, Any]) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
+        "--expected-sha",
+        help="require the generated artifact to bind this exact checked-out commit",
+    )
+    parser.add_argument(
         "--output",
         type=Path,
         help="write the exact generated projection to this candidate-artifact path",
     )
     args = parser.parse_args()
     try:
-        verified = verify_repository()
+        verified = verify_repository(args.expected_sha)
         if args.output is not None:
             write_map(args.output, verified)
     except ImplementationMapError as error:
         print(f"platform.types implementation map failed: {error}", file=sys.stderr)
         return 1
+    binding = verified["candidateBinding"]
     print(
         "platform.types implementation map: ok "
         f"({verified['exportCount']} exports, "
-        f"{verified['operationCount']} operations)"
+        f"{verified['operationCount']} operations, "
+        f"candidate {binding['commit']})"
     )
     return 0
 

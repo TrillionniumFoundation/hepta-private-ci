@@ -2,17 +2,12 @@ name: platform.types legacy closure verification
 
 on:
   workflow_dispatch:
-    inputs:
-      candidate_ref:
-        description: Exact source ref to verify without modifying the repository
-        required: true
-        type: string
 
 permissions:
   contents: read
 
 concurrency:
-  group: platform-types-legacy-closure-${{ inputs.candidate_ref }}
+  group: platform-types-legacy-closure-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -29,11 +24,21 @@ jobs:
       CARGO_HTTP_MULTIPLEXING: "false"
       CARGO_HTTP_LOW_SPEED_LIMIT: "1"
     steps:
+      # Manual runs select the candidate through GitHub's workflow-ref picker.
+      # No free-form workflow input is allowed to control executable checkout bytes.
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ inputs.candidate_ref }}
+          ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: false
+
+      - name: Verify exact dispatch checkout and workflow hardening
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python3 scripts/test_platform_types_workflow_security.py
 
       - name: Install pinned native toolchain
         uses: dtolnay/rust-toolchain@1.96.0
@@ -58,9 +63,10 @@ jobs:
           python3 scripts/platform_types_rama_lock_guard.py
           python3 -m unittest \
             scripts/test_platform_types_rama_lock_guard.py \
-            scripts/test_platform_types_rustdoc_api.py
+            scripts/test_platform_types_rustdoc_api.py \
+            scripts/test_platform_types_implementation_map_binding.py
           python3 scripts/platform_types_public_api.py
-          python3 scripts/platform_types_implementation_map.py
+          python3 scripts/platform_types_implementation_map.py --expected-sha "${{ github.sha }}"
           cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
           cargo check --locked --manifest-path codex-rs/Cargo.toml \
             -p codex-hepta-types -p codex-hepta-wire -p codex-network-proxy --all-targets
