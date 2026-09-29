@@ -1,0 +1,92 @@
+{
+  "schema": "hepta.neuron.runtime.requirement-test-matrix.v1",
+  "generatedFrom": "docs/modules/neuron.runtime/MODULE_SPEC.json",
+  "module": "neuron.runtime",
+  "requirements": [
+    {
+      "id": "NR-Q-001",
+      "statement": "Every required gate is bound to one source SHA and one integration base SHA.",
+      "tests": [
+        "scripts/neuron/test_readiness.py::ReadinessTests.test_aggregate_rejects_mixed_source_sha"
+      ],
+      "gates": [
+        "all"
+      ]
+    },
+    {
+      "id": "NR-Q-002",
+      "statement": "Evidence binds workflow run, target triple, runner fingerprint, test-set hash, Cargo.lock hash, documentation hash and implementation-map hash.",
+      "tests": [
+        "scripts/neuron/test_readiness.py::ReadinessTests.test_capture_contains_required_bindings"
+      ],
+      "gates": [
+        "all"
+      ]
+    },
+    {
+      "id": "NR-C-001",
+      "statement": "A crash at each durable execution boundary never creates a second physical model effect.",
+      "tests": [
+        "runtime_v2_process_closure_tests::real_process_recovery_preserves_one_physical_execution_at_each_durable_boundary"
+      ],
+      "gates": [
+        "all"
+      ]
+    },
+    {
+      "id": "NR-C-002",
+      "statement": "Unknown provider outcome is never converted to NotStarted without durable provider evidence.",
+      "tests": [
+        "runtime_v2_recovery_policy_tests",
+        "runtime_v2_process_closure_tests"
+      ],
+      "gates": [
+        "all"
+      ]
+    },
+    {
+      "id": "NR-C-003",
+      "statement": "Stale generations cannot commit after lifecycle handoff.",
+      "tests": [
+        "neuron_runtime_v2_control_tests",
+        "runtime_v2_lifecycle_tests"
+      ],
+      "gates": [
+        "all"
+      ]
+    },
+    {
+      "id": "NR-C-004",
+      "statement": "Durable control state and in-memory active generation converge deterministically or fail closed.",
+      "tests": [
+        "neuron_runtime_v2_durable_state_tests",
+        "neuron_runtime_v2_control_tests"
+      ],
+      "gates": [
+        "all"
+      ]
+    },
+    {
+      "id": "NR-A-001",
+      "statement": "Administrative truth queries are distinct from current-use guarded result access.",
+      "tests": [
+        "neuron_runtime_v2_control_tests",
+        "runtime_v2_tests"
+      ],
+      "gates": [
+        "all"
+      ]
+    },
+    {
+      "id": "NR-P-001",
+      "statement": "HOL evidence is collected before any lock topology change.",
+      "tests": [
+        "runtime_v2_diagnostic_measurements",
+        "scripts/neuron/test_measurements.py"
+      ],
+      "gates": [
+        "stable"
+      ]
+    }
+  ]
+}

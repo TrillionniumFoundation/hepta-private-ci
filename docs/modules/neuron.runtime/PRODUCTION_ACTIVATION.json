@@ -1,0 +1,24 @@
+{
+  "schema": "hepta.neuron.runtime.production-activation.v1",
+  "generatedFrom": "docs/modules/neuron.runtime/MODULE_SPEC.json",
+  "module": "neuron.runtime",
+  "productionActivation": false,
+  "release": false,
+  "reason": "Source implementation is not deployment authorization. Activation remains false until every same-candidate qualification gate, product execution, independent acceptance, canary, promotion and release authorization pass.",
+  "requiredQualificationGates": [
+    "linux-stable-source-head",
+    "linux-stable-synthetic-merge",
+    "linux-msrv-source-head",
+    "linux-msrv-synthetic-merge",
+    "linux-arm64-source-head",
+    "linux-arm64-synthetic-merge",
+    "macos-arm64-source-head",
+    "macos-arm64-synthetic-merge"
+  ],
+  "externalGates": [
+    "authenticated target-host product execution",
+    "calibration, OOD, retention and deletion non-resurrection acceptance",
+    "independent semantic and operator acceptance",
+    "canary, promotion and release authorization"
+  ]
+}
