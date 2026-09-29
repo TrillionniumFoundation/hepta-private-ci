@@ -125,10 +125,10 @@ test("unexpected storage errors remain private and preserve read-only diagnostic
 });
 
 test("local recovery storage denial prevents dispatch without wedging read-only diagnostics", async ({ page, request }) => {
-  await page.addInitScript(() => {
+  await loadConsole(page);
+  await page.evaluate(() => {
     Storage.prototype.setItem = function deniedStorageWrite() { throw new DOMException("storage denied", "SecurityError"); };
   });
-  await loadConsole(page);
   await page.getByLabel("Reason").fill("Do not dispatch when recovery cannot be persisted.");
   await page.getByRole("button", { name: "Request start" }).click();
   await page.getByRole("button", { name: "Submit request" }).click();
