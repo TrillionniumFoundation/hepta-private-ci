@@ -1,0 +1,42 @@
+name: Prompt registry production hardening source export
+
+on:
+  push:
+    branches: [ops/prompt-registry-production-hardening-author-20260929]
+    paths:
+      - .github/workflows/prompt-registry-production-hardening-export.yml
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-slim
+    timeout-minutes: 10
+    env:
+      TARGET_BRANCH: codex/prompt-registry-production-hardening-20260929
+      TARGET_SHA: 8e801ed8711107d08d4e4a279db41b28617d2d7a
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.TARGET_BRANCH }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind exact source and archive checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          git status --short
+          tar --exclude=.git -czf "$RUNNER_TEMP/prompt-registry-production-hardening-source.tar.gz" .
+          printf 'source_sha=%s\nsource_tree=%s\n' \
+            "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})" \
+            > "$RUNNER_TEMP/prompt-registry-production-hardening-source.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-registry-production-hardening-source-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/prompt-registry-production-hardening-source.tar.gz
+            ${{ runner.temp }}/prompt-registry-production-hardening-source.txt
+          if-no-files-found: error
+          retention-days: 7
