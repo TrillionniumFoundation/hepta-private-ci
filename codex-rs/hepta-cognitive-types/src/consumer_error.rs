@@ -168,6 +168,7 @@ mod tests {
             assert_eq!(borrowed.code, code);
             assert_eq!(borrowed.field_path, field_path);
             assert!(!borrowed.message.is_empty());
+            assert_eq!(error.to_string(), borrowed.to_string());
             assert_eq!(ContractViolationV1::from(error), borrowed);
         }
     }
@@ -188,7 +189,9 @@ mod tests {
         for message in messages {
             let error = CanonicalConsumerBindingError::CanonicalContract(message.into());
             assert_eq!(error.violation(), expected);
+            assert_eq!(error.to_string(), expected.to_string());
             assert!(!error.violation().to_string().contains(message));
+            assert!(!error.to_string().contains(message));
         }
     }
 
@@ -197,6 +200,7 @@ mod tests {
         let small = CanonicalConsumerBindingError::CanonicalContract("x".into());
         let large = CanonicalConsumerBindingError::CanonicalContract("x".repeat(1_048_576));
         assert_eq!(small.violation(), large.violation());
+        assert_eq!(small.to_string(), large.to_string());
     }
 }
 
