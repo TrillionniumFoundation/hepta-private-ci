@@ -1,0 +1,321 @@
+name: Prompt registry recovery invariant remediation
+on:
+  push:
+    branches: [ops/prompt-registry-author-closeout-20260928]
+    paths:
+      - '.github/workflows/prompt-registry-remediation-20260929.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: prompt-registry-recovery-remediation-20260929
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-slim
+    timeout-minutes: 30
+    env:
+      TARGET_BRANCH: codex/prompt-registry-verified-closeout-20260928
+      EXPECTED_TARGET: b6cdf7d069a84592c610d57f2685096bb1cf0859
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: b6cdf7d069a84592c610d57f2685096bb1cf0859
+          path: candidate
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt,clippy
+      - name: Patch historical relation recovery invariant and state-machine regressions
+        working-directory: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_TARGET"
+          test -z "$(git status --porcelain)"
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('codex-rs/hepta-prompt-registry/src/durable.rs')
+          source = path.read_text()
+
+          old = """    let mut replayed = BTreeMap::<StableId, Lifecycle>::new();
+              let mut last_event_revision = 0_u64;
+          """
+          new = """    let mut replayed = BTreeMap::<StableId, Lifecycle>::new();
+              // Relations are immutable audit records.  An endpoint may be retired or
+              // revoked after relation registration, so recovery must validate that the
+              // endpoint was admitted at relation-creation time rather than requiring it
+              // to remain admitted forever.  Current graph projection still filters on
+              // the materialized live lifecycle below the durable boundary.
+              let mut historically_admitted = BTreeSet::<StableId>::new();
+              let mut last_event_revision = 0_u64;
+          """
+          assert source.count(old) == 1, 'replay anchor changed'
+          source = source.replace(old, new, 1)
+
+          old = """                if event.to == Lifecycle::Revoked {
+                          latest_revocation_revision = latest_revocation_revision.max(event_revision);
+                      }
+                      event.to
+          """
+          new = """                if event.to != Lifecycle::Draft {
+                          historically_admitted.insert(event.factor_id.clone());
+                      }
+                      if event.to == Lifecycle::Revoked {
+                          latest_revocation_revision = latest_revocation_revision.max(event_revision);
+                      }
+                      event.to
+          """
+          assert source.count(old) == 1, 'imported lifecycle anchor changed'
+          source = source.replace(old, new, 1)
+
+          old = """                Lifecycle::Admitted
+                      }
+                      LifecycleEventKind::Retired => {
+          """
+          new = """                historically_admitted.insert(event.factor_id.clone());
+                          Lifecycle::Admitted
+                      }
+                      LifecycleEventKind::Retired => {
+          """
+          assert source.count(old) == 1, 'admission lifecycle anchor changed'
+          source = source.replace(old, new, 1)
+
+          old = """            || left.source != FactorSource::GovernedInternal
+                      || right.source != FactorSource::GovernedInternal
+                      || left.lifecycle != Lifecycle::Admitted
+                      || right.lifecycle != Lifecycle::Admitted
+                      || !seen_relation_semantics.insert((
+          """
+          new = """            || left.source != FactorSource::GovernedInternal
+                      || right.source != FactorSource::GovernedInternal
+                      || !historically_admitted.contains(&relation.left_factor_id)
+                      || !historically_admitted.contains(&relation.right_factor_id)
+                      || !seen_relation_semantics.insert((
+          """
+          assert source.count(old) == 1, 'relation validation anchor changed'
+          source = source.replace(old, new, 1)
+
+          tests = r'''
+
+              fn relation_reopen_factor(factor_id: &str) -> PromptFactor {
+                  PromptFactor {
+                      factor_id: id(factor_id),
+                      proposer_id: id("proposer:relation-reopen"),
+                      semantic_version: id("v1"),
+                      semantic_purpose: "relation lifecycle recovery invariant".to_owned(),
+                      authority_class: "registered_prompt_factor".to_owned(),
+                      eligible_objective_dimensions: vec![id("dimension:relation-recovery")],
+                      content_digest: digest(&format!("content:{factor_id}")),
+                      source: FactorSource::GovernedInternal,
+                      lifecycle: Lifecycle::Draft,
+                  }
+              }
+
+              fn reopen_exact(
+                  root: &Path,
+                  durable: DurablePromptRegistry,
+              ) -> DurablePromptRegistry {
+                  let expected_digest = durable
+                      .registry()
+                      .must("authoritative registry before reopen")
+                      .snapshot_digest();
+                  drop(durable);
+                  let reopened =
+                      DurablePromptRegistry::open_state_dir(root, 64).must("reopen committed state");
+                  assert_eq!(
+                      reopened
+                          .registry()
+                          .must("authoritative registry after reopen")
+                          .snapshot_digest(),
+                      expected_digest
+                  );
+                  reopened
+              }
+
+              fn exercise_relation_endpoint_transition(revoke: bool, transition_left: bool) {
+                  let temporary = tempfile::tempdir().must("tempdir");
+                  let root = temporary.path().join(if revoke {
+                      "relation-revoke-reopen"
+                  } else {
+                      "relation-retire-reopen"
+                  });
+                  let left = relation_reopen_factor("factor:relation-left");
+                  let right = relation_reopen_factor("factor:relation-right");
+                  let mut durable =
+                      DurablePromptRegistry::open_state_dir(&root, 64).must("open registry");
+
+                  durable
+                      .register_factor(left.clone())
+                      .must("register left factor");
+                  durable = reopen_exact(&root, durable);
+                  durable
+                      .register_factor(right.clone())
+                      .must("register right factor");
+                  durable = reopen_exact(&root, durable);
+
+                  durable
+                      .registry
+                      .admit_factor(
+                          &left.factor_id,
+                          &id("reviewer:relation-left"),
+                          digest("evidence:relation-left"),
+                      )
+                      .must("admit left factor");
+                  durable
+                      .store
+                      .persist(&durable.registry)
+                      .must("persist left admission");
+                  durable = reopen_exact(&root, durable);
+
+                  durable
+                      .registry
+                      .admit_factor(
+                          &right.factor_id,
+                          &id("reviewer:relation-right"),
+                          digest("evidence:relation-right"),
+                      )
+                      .must("admit right factor");
+                  durable
+                      .store
+                      .persist(&durable.registry)
+                      .must("persist right admission");
+                  durable = reopen_exact(&root, durable);
+
+                  durable
+                      .register_factor_relation(PromptFactorRelation {
+                          relation_id: id("relation:left-right-conflict"),
+                          left_factor_id: left.factor_id.clone(),
+                          right_factor_id: right.factor_id.clone(),
+                          kind: PromptFactorRelationKind::Conflicts,
+                          evidence_digest: digest("evidence:left-right-conflict"),
+                      })
+                      .must("register relation");
+                  durable = reopen_exact(&root, durable);
+                  assert_eq!(
+                      durable
+                          .registry()
+                          .must("registry with live relation")
+                          .factor_graph_source_v1()
+                          .relations()
+                          .len(),
+                      1
+                  );
+
+                  let endpoint = if transition_left {
+                      &left.factor_id
+                  } else {
+                      &right.factor_id
+                  };
+                  if revoke {
+                      durable
+                          .revoke_factor(
+                              endpoint,
+                              &id("revoker:relation-reopen"),
+                              digest("reason:relation-revoke"),
+                              50,
+                          )
+                          .must("revoke relation endpoint");
+                  } else {
+                      durable
+                          .retire_factor(
+                              endpoint,
+                              &id("retirer:relation-reopen"),
+                              digest("reason:relation-retire"),
+                          )
+                          .must("retire relation endpoint");
+                  }
+
+                  for _ in 0..3 {
+                      durable = reopen_exact(&root, durable);
+                      let registry = durable.registry().must("reopened registry");
+                      assert_eq!(registry.relations.len(), 1, "audit relation must be retained");
+                      assert!(
+                          registry.factor_graph_source_v1().relations().is_empty(),
+                          "inactive endpoint relation must never re-enter the live graph"
+                      );
+                      assert_eq!(
+                          registry.factor(endpoint).map(|factor| factor.lifecycle),
+                          Some(if revoke {
+                              Lifecycle::Revoked
+                          } else {
+                              Lifecycle::Retired
+                          })
+                      );
+                  }
+              }
+
+              #[test]
+              fn every_committed_relation_endpoint_transition_is_reopenable() {
+                  for revoke in [false, true] {
+                      for transition_left in [false, true] {
+                          exercise_relation_endpoint_transition(revoke, transition_left);
+                      }
+                  }
+              }
+          '''
+          assert tests.strip() not in source
+          closing = source.rfind('\n}')
+          assert closing > 0, 'tests module closing brace missing'
+          source = source[:closing] + tests + source[closing:]
+          path.write_text(source)
+          PY
+      - name: Format and verify prompt registry package
+        working-directory: candidate/codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt -p codex-hepta-prompt-registry
+          cargo test -p codex-hepta-prompt-registry every_committed_relation_endpoint_transition_is_reopenable -- --nocapture
+          cargo test -p codex-hepta-prompt-registry
+          cargo clippy -p codex-hepta-prompt-registry --all-targets --no-deps -- -D warnings
+          cargo fmt -p codex-hepta-prompt-registry -- --check
+      - name: Commit source and bind generated implementation map
+        working-directory: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add codex-rs/hepta-prompt-registry/src/durable.rs
+          test "$(git diff --cached --name-only)" = "codex-rs/hepta-prompt-registry/src/durable.rs"
+          git commit -m 'fix(prompt.registry): preserve historical relations across endpoint withdrawal'
+          python3 scripts/hepta-prompt-registry-map.py --write
+          git add docs/modules/prompt.registry/IMPLEMENTATION_MAP.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'docs(prompt.registry): bind map to recovery invariant fix'
+          fi
+          python3 scripts/hepta-prompt-registry-map.py --check
+          test -z "$(git status --porcelain)"
+      - name: Fast-forward dedicated candidate and dispatch read-only qualification
+        working-directory: candidate
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "+refs/heads/$TARGET_BRANCH:refs/remotes/origin/$TARGET_BRANCH"
+          test "$(git rev-parse "refs/remotes/origin/$TARGET_BRANCH")" = "$EXPECTED_TARGET"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          python3 - <<'PY'
+          import json, os, urllib.request
+          url = 'https://api.github.com/repos/' + os.environ['GITHUB_REPOSITORY'] + '/actions/workflows/hepta-prompt-registry-qualification.yml/dispatches'
+          req = urllib.request.Request(
+              url,
+              data=json.dumps({'ref': os.environ['TARGET_BRANCH']}).encode(),
+              headers={
+                  'Authorization': 'Bearer ' + os.environ['GH_TOKEN'],
+                  'Accept': 'application/vnd.github+json',
+                  'X-GitHub-Api-Version': '2022-11-28',
+              },
+              method='POST',
+          )
+          with urllib.request.urlopen(req, timeout=30) as response:
+              assert response.status == 204
+          PY
