@@ -1,6 +1,7 @@
 """Execution-path checks for local actions, and real Git merge behavior."""
 
 import os
+import json
 from pathlib import Path
 import subprocess
 import tempfile
@@ -46,6 +47,43 @@ steps:
                 ["echo", "cargo", "test"],
                 ["python3", "scripts/check.py", "verify"],
             ],
+        )
+
+    def test_equivalent_yaml_encodings_share_executable_meaning(self):
+        expected = [["python3", "scripts/check.py", "verify"]]
+        for text in (
+            'steps: [{run: "python3 scripts/check.py verify"}]',
+            '"steps": [{"run": "python3 scripts/check.py verify"}]',
+            "steps:\n  - run: &command >-\n      python3 scripts/check.py\n      verify\n",
+            'env: {run: "echo not-a-step"}\njobs: {check: {steps: [{run: "python3 scripts/check.py verify"}]}}',
+        ):
+            with self.subTest(text=text):
+                self.assertEqual(workflow_commands(text), expected)
+
+    def test_quoted_inline_composite_reference_resolves_without_source_spelling(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            action = root / "local action"
+            action.mkdir()
+            (action / "action.yaml").write_text(
+                'runs: {using: "composite", steps: [{"run": "python3 owner.py self-test"}]}'
+            )
+            text = 'steps: [{"uses": "./local action"}]'
+            self.assertEqual(
+                declared_commands(text, root), [["python3", "owner.py", "self-test"]]
+            )
+            with self.assertRaisesRegex(ValueError, "both run and use"):
+                declared_commands(
+                    'steps: [{run: "echo one", uses: "./local action"}]', root
+                )
+
+    def test_commands_in_environment_data_are_not_steps(self):
+        self.assertEqual(workflow_commands('env: {run: "git commit-tree forged"}'), [])
+        self.assertEqual(
+            workflow_commands(
+                'jobs: {job: {env: {run: "git commit-tree forged"}, steps: [{run: "echo actual"}]}}'
+            ),
+            [["echo", "actual"]],
         )
 
     def test_expression_references_follow_data_flow_not_labels_or_quoted_text(self):
@@ -175,14 +213,15 @@ jobs:
     def test_real_workflow_resolves_composite_action(self):
         text = (ROOT / ".github/workflows/hepta-development-docs.yml").read_text()
         verify_synthetic_merge(text, ROOT)
+        document = load_workflow(text)
+        for job in document["jobs"].values():
+            job["steps"] = [
+                step
+                for step in job.get("steps", [])
+                if step.get("uses") != "./.github/actions/hepta-synthetic-merge"
+            ]
         with self.assertRaisesRegex(ValueError, "missing executable"):
-            verify_synthetic_merge(
-                text.replace(
-                    "uses: ./.github/actions/hepta-synthetic-merge",
-                    "name: unused action",
-                ),
-                ROOT,
-            )
+            verify_synthetic_merge(json.dumps(document), ROOT)
 
     def test_comment_or_echo_cannot_stand_in_for_merge(self):
         for line in (

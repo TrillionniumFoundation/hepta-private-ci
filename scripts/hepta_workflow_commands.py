@@ -23,69 +23,77 @@ def run_scalar_commands(scalar: str) -> list[list[str]]:
     return commands
 
 
-def workflow_commands(text: str) -> list[list[str]]:
-    """Read executable run scalars used by this workflow, not comments or labels.
+def _executable_steps(document: dict) -> list[dict]:
+    """Read actual step slots, not matching keys in environment or input data."""
+    if "jobs" in document:
+        bodies = list(workflow_jobs(document).values())
+    elif "runs" in document:
+        bodies = [document["runs"]]
+    else:
+        # The same reader accepts a job/step fragment for focused owner tests.
+        bodies = [document]
+    result = []
+    for body in bodies:
+        if not isinstance(body, dict):
+            raise ValueError("workflow execution body must be an object")
+        steps = body.get("steps", [body] if "run" in body or "uses" in body else [])
+        if not isinstance(steps, list) or any(
+            not isinstance(step, dict) for step in steps
+        ):
+            raise ValueError("workflow steps must be objects")
+        for step in steps:
+            if "run" in step and "uses" in step:
+                raise ValueError("workflow step cannot both run and use an action")
+        result.extend(steps)
+    return result
 
-    This deliberately supports the workflow's plain, literal and folded run
-    forms. It does not interpret arbitrary shell/YAML programs as proof of tests.
+
+def workflow_commands(text: str) -> list[list[str]]:
+    """Read parsed run scalars, independent of YAML quoting, layout or anchors.
+
+    Shell tokenization describes declared commands; it is not execution evidence.
     """
-    lines = text.splitlines()
-    commands = []
-    index = 0
-    while index < len(lines):
-        match = re.fullmatch(r"(\s*)(?:-\s+)?run:\s*(.*)", lines[index])
-        index += 1
-        if not match:
-            continue
-        indent, scalar = match.groups()
-        if scalar in ("|", "|-", "|+", ">", ">-", ">+"):
-            block = []
-            while index < len(lines):
-                line = lines[index]
-                if line.strip() and len(line) - len(line.lstrip()) <= len(indent):
-                    break
-                block.append(line.strip())
-                index += 1
-            scalar = (" " if scalar.startswith(">") else "\n").join(block)
-        commands.extend(run_scalar_commands(scalar))
-    return commands
+    return [
+        command
+        for step in _executable_steps(load_workflow(text))
+        if "run" in step
+        for command in run_scalar_commands(workflow_run(step))
+    ]
 
 
 def declared_commands(
     text: str, root: Path, stack: tuple[Path, ...] = ()
 ) -> list[list[str]]:
-    """Expand local actions outside run scalars; reject cycles and path escapes."""
+    """Expand real local action steps with bounded nesting and exact containment."""
     if len(stack) >= 16:
         raise ValueError("local action nesting limit")
-    commands = workflow_commands(text)
-    lines = text.splitlines()
-    index = 0
-    while index < len(lines):
-        line = lines[index]
-        index += 1
-        run = re.fullmatch(r"(\s*)(?:-\s+)?run:\s*([|>][-+]?)", line)
-        if run:
-            while index < len(lines):
-                child = lines[index]
-                if child.strip() and len(child) - len(child.lstrip()) <= len(run[1]):
-                    break
-                index += 1
+    commands = []
+    for step in _executable_steps(load_workflow(text)):
+        if "run" in step:
+            commands.extend(run_scalar_commands(workflow_run(step)))
+        use = step.get("uses")
+        if use is None:
             continue
-        use = re.fullmatch(r"\s*(?:-\s+)?uses:\s*(\./[^\s#]+)\s*(?:#.*)?", line)
-        if not use:
-            continue
-        directory = (root / use[1]).resolve()
+        if not isinstance(use, str):
+            raise ValueError("action reference must be a string")
+        if not use.startswith("./"):
+            continue  # Remote actions remain opaque, not claimed as inspected.
+        directory = (root / use).resolve()
         if not directory.is_relative_to(root.resolve()):
             raise ValueError("local action outside repository")
-        candidates = [directory / name for name in ("action.yml", "action.yaml")]
-        present = [path for path in candidates if path.is_file()]
+        present = [
+            directory / name
+            for name in ("action.yml", "action.yaml")
+            if (directory / name).is_file()
+        ]
         if len(present) != 1:
             raise ValueError("local action missing or ambiguous")
         path = present[0].resolve()
         if not path.is_relative_to(root.resolve()) or path in stack:
             raise ValueError("local action cycle or path escape")
         action = path.read_text(encoding="utf-8")
-        if not re.search(r"^\s+using:\s*composite\s*$", action, re.M):
+        body = load_workflow(action).get("runs")
+        if not isinstance(body, dict) or body.get("using") != "composite":
             raise ValueError("unsupported local action execution profile")
         commands.extend(declared_commands(action, root, (*stack, path)))
     return commands
