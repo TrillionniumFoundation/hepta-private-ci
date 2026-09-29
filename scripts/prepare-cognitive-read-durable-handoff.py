@@ -2,18 +2,22 @@
 """Author the durable read-request handoff and refresh exact source bindings.
 
 This workflow helper is intentionally separate from read-only qualification.
-It performs ordinary, reviewable commits on the dedicated cognitive.read branch,
-then delegates immutable map refresh to the existing preparation script.
+It performs ordinary, reviewable commits on the dedicated cognitive.read branch.
+The selected-owner-cut source is verified in place rather than replayed; only
+this additive handoff is authored before the immutable implementation map is
+refreshed.
 """
 from __future__ import annotations
 
 import argparse
+import importlib.util
 from pathlib import Path
 import re
 import subprocess
+import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-BASE_PREPARER = "scripts/prepare-cognitive-read-source.py"
+BASE_PREPARER = ROOT / "scripts/prepare-cognitive-read-source.py"
 HANDOFF_APPLIER = "scripts/apply-cognitive-read-durable-handoff.py"
 DELIVERY_GUIDE = ROOT / "docs/modules/cognitive.read/DELIVERY_EVIDENCE.md"
 FINAL_USE_GUIDE = ROOT / "docs/modules/cognitive.read/FINAL_USE_CLOSURE.md"
@@ -29,6 +33,21 @@ SOURCE_PATHS = {
     "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
     "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
     "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+}
+
+SELECTED_CUT_MARKERS = {
+    "codex-rs/hepta-memory/src/lane_c_selected_snapshot.rs": (
+        "pub async fn lane_c_snapshot_ids(",
+        "pub async fn revalidate_lane_c_selection(",
+    ),
+    "codex-rs/hepta-agentd/src/cognitive_context.rs": (
+        ".lane_c_snapshot_ids(&access, &scope, now, &record_ids)",
+        "OwnerCutReadView::new(cut.owner_snapshot())",
+    ),
+    "codex-rs/hepta-agentd/src/cognitive_context_final_use.rs": (
+        ".lane_c_snapshot_ids(&access, &scope, now_seconds()?, &record_ids)",
+        ".revalidate_lane_c_selection(&access, &scope, &cut, now_seconds()?)",
+    ),
 }
 
 
@@ -49,6 +68,20 @@ def replace_once(path: Path, old: str, new: str) -> None:
     if body.count(old) != 1:
         raise ValueError(f"documentation shape drift: {path.relative_to(ROOT)}")
     path.write_text(body.replace(old, new, 1))
+
+
+def verify_selected_cut() -> None:
+    """Require the already reviewed selected-cut path without rewriting it."""
+    for name, markers in SELECTED_CUT_MARKERS.items():
+        path = ROOT / name
+        if not path.is_file():
+            raise ValueError(f"selected owner-cut source is absent: {name}")
+        body = path.read_text()
+        for marker in markers:
+            if body.count(marker) != 1:
+                raise ValueError(
+                    f"selected owner-cut marker is not unique in {name}: {marker}"
+                )
 
 
 def commit_source() -> None:
@@ -174,6 +207,21 @@ target-host measurements, independent review and controlled acceptance remain re
         )
 
 
+def refresh_map_only() -> None:
+    """Call the existing immutable-map writer without replaying old source edits."""
+    scripts = str(BASE_PREPARER.parent)
+    if scripts not in sys.path:
+        sys.path.insert(0, scripts)
+    spec = importlib.util.spec_from_file_location(
+        "cognitive_read_source_preparer", BASE_PREPARER
+    )
+    if spec is None or spec.loader is None:
+        raise ValueError("unable to load cognitive.read source preparer")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    module.refresh_map()
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--expected-sha", required=True)
@@ -185,19 +233,12 @@ def main() -> None:
     if git("status", "--porcelain"):
         raise ValueError("durable handoff preparation requires a clean checkout")
 
-    # First retain all existing selected-cut/lock preparation invariants.
-    run("python3", BASE_PREPARER, "--expected-sha", args.expected_sha)
-    if git("status", "--porcelain"):
-        raise ValueError("base preparation left an uncommitted worktree")
-
+    verify_selected_cut()
     commit_source()
     update_docs()
-
-    # Rebind every mapped source/document object to the final immutable parent.
-    current = git("rev-parse", "HEAD")
-    run("python3", BASE_PREPARER, "--expected-sha", current)
+    refresh_map_only()
     if git("status", "--porcelain"):
-        raise ValueError("final map refresh left an uncommitted worktree")
+        raise ValueError("durable handoff preparation left an uncommitted worktree")
     print(f"DURABLE_HANDOFF_PREPARED_HEAD={git('rev-parse', 'HEAD')}")
 
 
