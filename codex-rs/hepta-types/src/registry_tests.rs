@@ -31,15 +31,20 @@ fn immutable_registry_resolves_exact_definition_and_numeric_profile() {
         1,
         "row-major;i64;rank<=4;elements<=4096",
     );
+    let schema_id = schema.id().clone();
     let profile = NumericProfileDefinitionV1::canonical(NumericProfileV1::HnmfPpmTowardZero)
         .unwrap_or_else(|error| panic!("numeric profile fixture: {error}"));
     let normalization_digest = normalization.digest();
     let registry = ContractRegistryV1::new_with_numeric_profiles(
-        vec![schema, normalization.clone()],
+        vec![schema.clone(), normalization.clone()],
         vec![profile.clone()],
     )
     .unwrap_or_else(|error| panic!("registry fixture: {error}"));
 
+    assert_eq!(
+        registry.resolve(RegistryKindV1::Schema, &schema_id, 1),
+        Some(&schema)
+    );
     assert_eq!(
         registry.require_normalization(normalization_digest),
         Ok(&normalization)
@@ -78,8 +83,58 @@ fn registry_digest_is_insertion_order_independent_and_definition_sensitive() {
         .unwrap_or_else(|error| panic!("second fixture: {error}"));
     assert_eq!(first.registry_digest(), second.registry_digest());
 
+    let expected = first
+        .registry_digest()
+        .unwrap_or_else(|error| panic!("cached registry digest: {error}"));
+    for _ in 0..128 {
+        assert_eq!(first.registry_digest(), Ok(expected));
+    }
+
     let changed = definition(RegistryKindV1::Schema, "schema:a", 2, "field=a:u64");
     assert_ne!(changed.digest(), first.entries()[0].digest());
+}
+
+#[test]
+fn exact_identity_lookup_respects_kind_id_and_version_after_canonical_sorting() {
+    let schema_v2 = definition(RegistryKindV1::Schema, "schema:z", 2, "field=z:u64;v=2");
+    let schema_a = definition(RegistryKindV1::Schema, "schema:a", 1, "field=a:u64");
+    let schema_v1 = definition(RegistryKindV1::Schema, "schema:z", 1, "field=z:u64;v=1");
+    let normalization = definition(
+        RegistryKindV1::Normalization,
+        "normalization:z",
+        1,
+        "identity",
+    );
+    let schema_z_id = schema_v1.id().clone();
+    let normalization_z_id = normalization.id().clone();
+    let registry = ContractRegistryV1::new(vec![
+        schema_v2.clone(),
+        normalization.clone(),
+        schema_a,
+        schema_v1.clone(),
+    ])
+    .unwrap_or_else(|error| panic!("registry fixture: {error}"));
+
+    assert_eq!(
+        registry.resolve(RegistryKindV1::Schema, &schema_z_id, 1),
+        Some(&schema_v1)
+    );
+    assert_eq!(
+        registry.resolve(RegistryKindV1::Schema, &schema_z_id, 2),
+        Some(&schema_v2)
+    );
+    assert_eq!(
+        registry.resolve(RegistryKindV1::Normalization, &normalization_z_id, 1),
+        Some(&normalization)
+    );
+    assert_eq!(
+        registry.resolve(RegistryKindV1::Normalization, &schema_z_id, 1),
+        None
+    );
+    assert_eq!(
+        registry.resolve(RegistryKindV1::Schema, &schema_z_id, 3),
+        None
+    );
 }
 
 #[test]
