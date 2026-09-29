@@ -1,0 +1,60 @@
+name: runtime.supervisor qualification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-supervisor/**"
+      - "docs/modules/runtime.supervisor/**"
+      - "qualification/runtime-supervisor/**"
+      - ".github/workflows/runtime-supervisor-qualification.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "codex-rs/hepta-supervisor/**"
+      - "docs/modules/runtime.supervisor/**"
+      - "qualification/runtime-supervisor/**"
+      - ".github/workflows/runtime-supervisor-qualification.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  qualification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: codex-rs
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - name: Format
+        run: cargo fmt --all -- --check
+      - name: Default supervisor library
+        run: cargo test -p codex-hepta-supervisor --lib
+      - name: Product and qualification binaries
+        run: cargo check -p codex-hepta-supervisor --bins --features production-authority,qualification
+      - name: Durability and recovery qualification
+        run: cargo test -p codex-hepta-supervisor --features qualification --lib
+      - name: Authority distribution and SIGKILL
+        run: >-
+          cargo test -p codex-hepta-supervisor --features qualification
+          --test authority_distribution --test sigkill_crash_matrix -- --nocapture
+      - name: 256-instance HOL receipt
+        run: |
+          set -o pipefail
+          mkdir -p ../qualification/runtime-supervisor/receipts
+          cargo test -p codex-hepta-supervisor --features qualification \
+            --test supervisor_hol_qualification -- --nocapture 2>&1 \
+            | tee ../qualification/runtime-supervisor/receipts/hol-256.log
+      - name: Upload qualification receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: runtime-supervisor-qualification-${{ github.sha }}
+          path: qualification/runtime-supervisor/receipts/hol-256.log
+          if-no-files-found: warn
