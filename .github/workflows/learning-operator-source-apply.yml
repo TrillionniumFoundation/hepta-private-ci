@@ -16,7 +16,7 @@ permissions:
   actions: read
 
 concurrency:
-  group: learning-operator-source-diagnostics-windows-v5
+  group: learning-operator-source-diagnostics-windows-v6
   cancel-in-progress: true
 
 jobs:
@@ -76,28 +76,45 @@ jobs:
         shell: bash
         run: exit 1
       - name: Compile and test the exact transformed worktree
+        id: compile
+        continue-on-error: true
         shell: bash
         run: |
-          set -euo pipefail
-          cargo check --manifest-path codex-rs/Cargo.toml --locked \
-            -p codex-hepta-learning-ledger \
-            -p codex-hepta-bellman-operator \
-            -p codex-hepta-learning-artifacts \
-            -p codex-hepta-agentd
-          cargo test --manifest-path codex-rs/Cargo.toml --locked \
-            -p codex-hepta-learning-ledger dataset_receipt_v4 -- --nocapture
-          cargo test --manifest-path codex-rs/Cargo.toml --locked \
-            -p codex-hepta-bellman-operator sensor_core_v2::tests -- --nocapture
-          cargo test --manifest-path codex-rs/Cargo.toml --locked \
-            -p codex-hepta-bellman-operator tabular_v2::tests -- --nocapture
-          cargo test --manifest-path codex-rs/Cargo.toml --locked \
-            -p codex-hepta-bellman-operator world_model_v2::tests -- --nocapture
-          cargo test --manifest-path codex-rs/Cargo.toml --locked \
-            -p codex-hepta-agentd --lib \
-            immutable_candidate_supports_concurrent_current_reads_and_metrics -- --nocapture
-          cargo fmt --manifest-path codex-rs/Cargo.toml \
-            -p codex-hepta-learning-ledger \
-            -p codex-hepta-bellman-operator \
-            -p codex-hepta-learning-artifacts \
-            -p codex-hepta-agentd -- --check
-          git diff --check
+          set -o pipefail
+          (
+            set -euxo pipefail
+            cargo check --manifest-path codex-rs/Cargo.toml --locked \
+              -p codex-hepta-learning-ledger \
+              -p codex-hepta-bellman-operator \
+              -p codex-hepta-learning-artifacts \
+              -p codex-hepta-agentd
+            cargo test --manifest-path codex-rs/Cargo.toml --locked \
+              -p codex-hepta-learning-ledger dataset_receipt_v4 -- --nocapture
+            cargo test --manifest-path codex-rs/Cargo.toml --locked \
+              -p codex-hepta-bellman-operator sensor_core_v2::tests -- --nocapture
+            cargo test --manifest-path codex-rs/Cargo.toml --locked \
+              -p codex-hepta-bellman-operator tabular_v2::tests -- --nocapture
+            cargo test --manifest-path codex-rs/Cargo.toml --locked \
+              -p codex-hepta-bellman-operator world_model_v2::tests -- --nocapture
+            cargo test --manifest-path codex-rs/Cargo.toml --locked \
+              -p codex-hepta-agentd --lib \
+              immutable_candidate_supports_concurrent_current_reads_and_metrics -- --nocapture
+            cargo fmt --manifest-path codex-rs/Cargo.toml \
+              -p codex-hepta-learning-ledger \
+              -p codex-hepta-bellman-operator \
+              -p codex-hepta-learning-artifacts \
+              -p codex-hepta-agentd -- --check
+            git diff --check
+          ) 2>&1 | tee "$RUNNER_TEMP/learning-operator-compile.log"
+      - name: Retain compile and test diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-operator-compile-${{ github.sha }}
+          path: ${{ runner.temp }}/learning-operator-compile.log
+          if-no-files-found: error
+          retention-days: 7
+      - name: Stop after compile or test failure
+        if: steps.compile.outcome == 'failure'
+        shell: bash
+        run: exit 1
