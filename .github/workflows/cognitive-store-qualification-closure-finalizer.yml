@@ -1,0 +1,85 @@
+name: Cognitive store qualification closure finalizer
+
+on:
+  push:
+    branches:
+      - codex/cognitive-store-full-closure-20260927
+    paths:
+      - '.github/authoring/cognitive-store-qualification-closure.patch.b64.part-*'
+      - '.github/workflows/cognitive-store-qualification-closure-finalizer.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: cognitive-store-qualification-closure-finalizer
+  cancel-in-progress: false
+
+env:
+  EXPECTED_SOURCE_HEAD: f2374811d3926e47e8a25e0e3fbbf530c3004ce3
+  TARGET_BRANCH: codex/cognitive-store-full-closure-20260927
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  finalize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/cognitive-store-full-closure-20260927
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify bounded authoring head and apply reviewed closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.sha }}"
+          git merge-base --is-ancestor "$EXPECTED_SOURCE_HEAD" HEAD
+          mapfile -t changed < <(git diff --name-only "$EXPECTED_SOURCE_HEAD" HEAD | sort)
+          expected=(
+            ".github/authoring/cognitive-store-qualification-closure.patch.b64.part-00"
+            ".github/authoring/cognitive-store-qualification-closure.patch.b64.part-01"
+            ".github/authoring/cognitive-store-qualification-closure.patch.b64.part-02"
+            ".github/authoring/cognitive-store-qualification-closure.patch.b64.part-03"
+            ".github/authoring/cognitive-store-qualification-closure.patch.b64.part-04"
+            ".github/authoring/cognitive-store-qualification-closure.patch.b64.part-05"
+            ".github/authoring/cognitive-store-qualification-closure.patch.b64.part-06"
+            ".github/authoring/cognitive-store-qualification-closure.patch.b64.part-07"
+            ".github/workflows/cognitive-store-qualification-closure-finalizer.yml"
+          )
+          test "${changed[*]}" = "${expected[*]}"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          cat .github/authoring/cognitive-store-qualification-closure.patch.b64.part-* \
+            | base64 --decode | gzip --decompress \
+            > "$RUNNER_TEMP/cognitive-store-qualification-closure.patch"
+          git apply --check "$RUNNER_TEMP/cognitive-store-qualification-closure.patch"
+          git apply "$RUNNER_TEMP/cognitive-store-qualification-closure.patch"
+          git diff --check
+
+      - name: Prepare native prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config openssl python3-venv
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+
+      - name: Install DotSlash
+        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+
+      - name: Expose DotSlash
+        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+
+      - name: Validate, commit, bind and push
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: bash scripts/cognitive_store_qualification_closure.sh
