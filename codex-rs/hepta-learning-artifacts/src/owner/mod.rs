@@ -10,6 +10,7 @@
 
 mod bootstrap;
 mod capability_validation;
+mod durable_contract;
 mod durable_host;
 mod measurement;
 mod operational;
@@ -28,6 +29,15 @@ pub use capability_validation::ArtifactOwnerCapabilityError;
 pub use capability_validation::ArtifactOwnerClientGrantV1;
 pub use capability_validation::ArtifactOwnerKeyringV1;
 pub use capability_validation::SignedArtifactOwnerRequestV1;
+pub use durable_contract::DurableCommitReceiptV1;
+pub use durable_contract::DurableContractErrorV1;
+pub use durable_contract::DurableHeadReceiptV1;
+pub use durable_contract::DurablePublicationPhaseV1;
+pub use durable_contract::HeadAndRouteCommitReceiptV1;
+pub use durable_contract::MonotonicGenerationAnchorV1;
+pub use durable_contract::RouteCommitReceiptV1;
+pub use durable_contract::VerifiedWithdrawalFrontierV1;
+pub use durable_contract::VerifiedWriterFenceV1;
 pub use durable_host::DurableInstrumentedLearningArtifactReferenceHostV1;
 pub use measurement::ArtifactOwnerStageSampleV1;
 pub use measurement::ArtifactOwnerStageSummaryV1;
