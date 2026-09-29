@@ -1,7 +1,7 @@
 # automation.taskflow runtime SLO contract
 
 Current source and evidence states: [CURRENT_IMPLEMENTATION.md](CURRENT_IMPLEMENTATION.md).
-These schema-21 objectives do not weaken durable V1 correctness and are not
+These schema-22 objectives do not weaken durable V1 correctness and are not
 measurements of an activated deployment.
 
 | Signal | Default objective / bound | Breach or boundary |
@@ -41,9 +41,11 @@ Track oldest unresolved age, per-key revisit interval, ready-backlog age, skippe
 or settled keys, retry class, cancellation-to-last-new-claim delay, SQLite busy
 work and recovery query work. Keep business age separate from polling age.
 
-No unbounded-history startup or selected-host SLO claim follows from the bounded
-Python checkpoint inspector. Native occurrence/TaskFlow startup scans and actual
-long-retention product recovery require their own capacity measurements.
+Native occurrence and TaskFlow startup verification now materializes at most one
+fixed-size keyset page at a time while preserving a coherent TaskFlow snapshot.
+That source bound does not establish a selected-host SLO: total scan time still
+grows with retained history, and long-retention recovery, peak RSS, SQLite I/O,
+busy behavior and physical crash/power-loss outcomes require measured receipts.
 
 ## Error budgets
 
@@ -53,3 +55,11 @@ read-only recovery failures consume separate budgets; deterministic exponential
 backoff is currently implemented, not jitter. A failed recovery cycle admits no
 new work. Cancellation is checked before each new claim while already-started
 work retains its acknowledgment/uncertainty. Unresolved effects survive retirement.
+
+
+## Layered capacity evidence
+
+Retain definition, run and event counts, page size, one-snapshot confirmation,
+wall time, peak RSS, SQLite read/I/O work, reopen result and oldest unresolved age.
+A source-present page bound is separate from exact-head execution, selected-host
+capacity qualification and independent operational acceptance.

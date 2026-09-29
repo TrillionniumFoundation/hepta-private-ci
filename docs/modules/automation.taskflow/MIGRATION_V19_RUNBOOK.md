@@ -1,7 +1,7 @@
 # automation.taskflow migration, checkpoint and staged-restore runbook
 
 Current declarations: [CURRENT_IMPLEMENTATION.md](CURRENT_IMPLEMENTATION.md).
-The historical filename is retained; the current native owner schema is **21**.
+The historical filename is retained; the current native owner schema is **22**.
 This procedure does not authorize old-binary rollback or another active writer.
 
 ## 1. Retained migration topology
@@ -13,6 +13,7 @@ This procedure does not authorize old-binary rollback or another active writer.
 | 19 | `0019_converged_owner_schema.sql` | convergence of reviewed displaced histories |
 | 20 | `0020_recovery_sweeps.sql` | permanent frozen-frontier recovery cursors |
 | 21 | `0021_recovery_frontier_indexes.sql` | indexed sparse unknown frontier |
+| 22 | `0022_durable_neural_circuit.sql` | durable activation intents, reservations, receipts, choices and checkpoints |
 
 The original SQL/checksums at 17–20 are unchanged. `reconcile_legacy_migration_ids`
 recognizes only reviewed historical version/checksum pairs before the normal SQLx
@@ -36,7 +37,7 @@ approved rollback/retention policy permits removal; this tool never deletes it.
 
 Set explicit deployment values; do not infer expected owner/schema from an
 untrusted copied database. `SOURCE_SCHEMA` is the source's pre-migration schema,
-for example 19 or 21, not an instruction to rewrite it.
+for example 19, 21 or 22, not an instruction to rewrite it.
 
 ```sh
 set -eu
@@ -99,7 +100,7 @@ replace all native schema-object, occurrence, TaskFlow or final-use checks.
 
 After independent source fencing and the existing authorized controller's native
 handoff procedure, open the staged compatible database with the exact selected
-schema-21-capable native owner while admissions remain closed. Native SQLx must
+schema-22-capable native owner while admissions remain closed. Native SQLx must
 validate/reconcile only known histories, apply outstanding migrations and execute
 all owner/schema/replay checks before readiness. Reconcile historical unknown or
 admitted work before permitting fresh admission.
@@ -127,7 +128,7 @@ or unacknowledged effects never become retryable merely because restore failed.
 ## 7. Compatible rollback and required evidence
 
 Rollback is another compatible writer generation over the current history. Never
-open schema 21 with an older incompatible binary, lower metadata/epoch, delete
+open schema 22 with an older incompatible binary, lower metadata/epoch, delete
 migration or sweep rows, clear unknown dispatches or overwrite a live owner with
 an earlier checkpoint. Staged restore is not historical-state rollback authority.
 
@@ -138,3 +139,12 @@ fence evidence. Add actual native DST, restore, multi-scheduler and long-retenti
 capacity results before selected-host operational acceptance. The Python tests
 cover WAL snapshots, create-only restore, a child-process cut before the commit
 marker and 100,000 retained events; they are not native owner or power-loss proof.
+
+
+## 8. Bounded native startup audit
+
+The native opener verifies definitions, runs and each immutable event chain in
+fixed-size keyset pages. All TaskFlow pages share one read transaction, preserving
+a coherent snapshot while bounding materialized rows. This does not shorten the
+complete audit or waive corruption checks. Record retained counts, wall time, RSS,
+SQLite I/O/busy work and crash/reopen outcomes before operational acceptance.

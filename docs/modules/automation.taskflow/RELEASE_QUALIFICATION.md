@@ -1,7 +1,7 @@
 # automation.taskflow release qualification
 
 Canonical source declarations: [CURRENT_IMPLEMENTATION.md](CURRENT_IMPLEMENTATION.md).
-The current store schema is 21. V1 TaskFlow and provider identities are unchanged.
+The current store schema is 22. V1 TaskFlow and provider identities are unchanged.
 A source-present test, read-only gate definition or signed intent is not evidence
 that the exact candidate executed successfully.
 
@@ -26,12 +26,13 @@ release false. Developer `render`/`observe` commands are not CI repair steps.
 
 ## Remaining repository source/product work
 
-Durable Circuit ingress/activation, committed-choice replay, conserved budgets and
-Wait/Effect continuation must be connected to the existing TaskFlow owner and
-actual product ports. The cross-host manifest still needs authenticated source
-fencing, transport/controller integration and a two-host recovery exercise.
-Selected-runtime evidence must bind what the native process actually consumed.
-Native startup validation and long-retention capacity must also be completed.
+Schema-22 durable Circuit ingress, activation, recorded choices, reservations and
+Wait/Effect checkpoints are source-present. They still require a normal Agentd
+product port with real owners and process-cut recovery evidence that does not
+recompute an outcome in the test process. The cross-host manifest still needs an
+operated source fence, transport/controller integration and a two-host exercise.
+TaskFlow startup materialization is page-bounded, but selected-runtime behavior and
+long-retention latency/RSS/I/O capacity must still be measured.
 These are source obligations, not merely externally supplied signatures.
 
 The checkpoint CLI provides consistent backup and staged restore without changing
