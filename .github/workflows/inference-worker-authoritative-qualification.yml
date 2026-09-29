@@ -1,19 +1,17 @@
-name: Inference worker authoritative qualification
+name: Inference worker reviewed source materialization
 
 on:
   push:
     branches:
       - codex/inference-worker-authoritative-20260929
     paths:
-      - .github/materialization/inference-worker-runtime-closure/**
-      - .github/workflows/inference-worker-runtime-closure-materialize.yml
       - .github/workflows/inference-worker-authoritative-qualification.yml
 
 permissions:
   contents: write
 
 concurrency:
-  group: inference-worker-runtime-closure-materialize
+  group: inference-worker-reviewed-source-materialization
   cancel-in-progress: true
 
 env:
@@ -27,9 +25,9 @@ env:
 
 jobs:
   materialize:
-    name: Materialize durable usage, interrupts, and event-sequence proof
+    name: Materialize reviewed inference.worker source
     runs-on: ubuntu-24.04
-    timeout-minutes: 120
+    timeout-minutes: 180
     steps:
       - name: Check out exact setup commit
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -48,6 +46,56 @@ jobs:
 
       - name: Apply reviewed runtime closure patch
         run: python3 .github/materialization/inference-worker-runtime-closure/apply.py
+
+      - name: Complete historical Observe fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("codex-rs/hepta-infer-core/src/native_control_tests.rs")
+          text = path.read_text(encoding="utf-8")
+          replacements = {
+              '''    let event = Event::Observe {
+                  request_id: "r1".to_string(),
+                  output: observed,
+              };''': '''    let event = Event::Observe {
+                  request_id: "r1".to_string(),
+                  output: observed,
+                  observed_at_unix_ms: 0,
+                  usage_units: None,
+              };''',
+              '''    let event = Event::Observe {
+                  request_id: "r1".to_string(),
+                  output: old_output,
+              };''': '''    let event = Event::Observe {
+                  request_id: "r1".to_string(),
+                  output: old_output,
+                  observed_at_unix_ms: 0,
+                  usage_units: None,
+              };''',
+          }
+          for old, new in replacements.items():
+              if text.count(old) != 1:
+                  raise SystemExit(f"expected exactly one historical Observe fixture: {old!r}")
+              text = text.replace(old, new, 1)
+          anchor = '''    let mut json = serde_json::to_value(event).unwrap();
+              json["Observe"]["output"]'''
+          replacement = '''    let mut json = serde_json::to_value(event).unwrap();
+              json["Observe"]
+                  .as_object_mut()
+                  .unwrap()
+                  .remove("observed_at_unix_ms");
+              json["Observe"]
+                  .as_object_mut()
+                  .unwrap()
+                  .remove("usage_units");
+              json["Observe"]["output"]'''
+          if text.count(anchor) != 1:
+              raise SystemExit("legacy Observe JSON anchor drifted")
+          path.write_text(text.replace(anchor, replacement, 1), encoding="utf-8")
+          PY
 
       - name: Format exact Rust surfaces
         shell: bash
@@ -94,7 +142,11 @@ jobs:
         working-directory: codex-rs
         run: cargo test --locked -p codex-hepta-infer-core
 
-      - name: Test authoritative worker including local profile
+      - name: Test hosted worker default profile
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-infer-worker-host
+
+      - name: Test experimental local profile
         working-directory: codex-rs
         run: cargo test --locked -p codex-hepta-infer-worker-host --features experimental-local-model
 
@@ -110,6 +162,7 @@ jobs:
         working-directory: codex-rs
         run: |
           cargo check --locked -p codex-hepta-infer-core --all-targets
+          cargo check --locked -p codex-hepta-infer-worker-host --all-targets
           cargo check --locked -p codex-hepta-infer-worker-host \
             --features experimental-local-model --all-targets
 
@@ -117,6 +170,8 @@ jobs:
         working-directory: codex-rs
         run: |
           cargo clippy --locked -p codex-hepta-infer-core \
+            --all-targets --no-deps -- -D warnings
+          cargo clippy --locked -p codex-hepta-infer-worker-host \
             --all-targets --no-deps -- -D warnings
           cargo clippy --locked -p codex-hepta-infer-worker-host \
             --features experimental-local-model \
@@ -133,20 +188,21 @@ jobs:
             -p 'test_inference_worker_*.py'
           git diff --check
 
-      - name: Restore qualification workflow and remove one-shot materializers
+      - name: Install read-only qualification and remove materializers
         shell: bash
         run: |
           set -euo pipefail
-          git show "$SOURCE_SHA^:.github/workflows/inference-worker-authoritative-qualification.yml" \
+          git show b8a4f0a625ae2c56747a7abdf5a3d70a2fa50761:.github/workflows/inference-worker-authoritative-qualification.yml \
             > .github/workflows/inference-worker-authoritative-qualification.yml
           rm -rf .github/materialization/inference-worker-runtime-closure
           rm -f .github/workflows/inference-worker-runtime-closure-materialize.yml
           rm -rf .github/materialization/inference-worker-stage1
           rm -rf .github/materialization/inference-worker-stage2
           rm -f .github/workflows/inference-worker-authoritative-materialize.yml
+          rm -f .github/workflows/inference-worker-qualification.yml
           git diff --check
 
-      - name: Commit and push verified closure
+      - name: Commit and push reviewed source
         shell: bash
         run: |
           set -euo pipefail
