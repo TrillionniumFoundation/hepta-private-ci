@@ -1,0 +1,185 @@
+name: intuition.policy MacBook Source Authoring
+
+on:
+  push:
+    branches: [codex/intuition-policy-production-closure-20260927]
+    paths:
+      - ".github/intuition-authoring-patch/READY"
+      - ".github/workflows/intuition-source-export.yml"
+      - ".github/workflows/intuition-source-author-self-hosted.yml"
+      - ".github/workflows/intuition-source-author-pocket4.yml"
+      - ".github/workflows/intuition-source-author-macbook.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: intuition-macbook-source-authoring-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  author:
+    name: Apply, verify, and publish on MacBook
+    runs-on: [self-hosted, macOS, ARM64, macbook]
+    timeout-minutes: 90
+    steps:
+      - name: Check out exact authoring head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+          clean: true
+
+      - name: Recover and apply the exact reviewed patch
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          printf 'AUTHORING_HEAD=%s\n' "$GITHUB_SHA" >> "$GITHUB_ENV"
+          ready=.github/intuition-authoring-patch/READY
+          base="$(sed -n 's/^base=//p' "$ready" | tr -d '\r')"
+          part_000="$(sed -n 's/^part-000=//p' "$ready" | tr -d '\r')"
+          part_001="$(sed -n 's/^part-001=//p' "$ready" | tr -d '\r')"
+          part_002="$(sed -n 's/^part-002=//p' "$ready" | tr -d '\r')"
+          test "$base" = "696447e733e22e425cd05691d98f4fe0ef63f759"
+          test "$part_000" = "ff90ec4b0bb594c6659c0805f7683e625f423d46"
+          test "$part_001" = "8ef03a50ccef25591918ed67fb42506bcfdd21f1"
+          test "$part_002" = "627e323cc4086e712a04ffa58b02e7723415e64c"
+          test "$(git cat-file -t "$base")" = commit
+          for spec in \
+            "part-000:$part_000" \
+            "part-001:$part_001" \
+            "part-002:$part_002"
+          do
+            name="${spec%%:*}"
+            blob="${spec#*:}"
+            curl --fail --silent --show-error --location \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "https://api.github.com/repos/$GITHUB_REPOSITORY/git/blobs/$blob" \
+              | python3 -c 'import base64, json, sys; sys.stdout.buffer.write(base64.b64decode(json.load(sys.stdin)["content"]))' \
+              > ".git/$name.b64"
+          done
+          python3 - <<'PY'
+          import base64
+          import binascii
+          import hashlib
+          import pathlib
+
+          expected = "d9988033416a6bf64588b593c34496abba4d3f66a20df57d749a6308500ca3dc"
+          parts = [
+              b"".join(pathlib.Path(f".git/part-{index:03d}.b64").read_bytes().split())
+              for index in range(3)
+          ]
+          direct = b"".join(parts)
+          print("compact lengths:", [len(part) for part in parts], "total:", len(direct))
+
+          def candidates():
+              yield "direct", None, direct
+              if len(direct) % 4 == 1:
+                  for index in range(len(direct)):
+                      yield "single-byte-removal", index, direct[:index] + direct[index + 1 :]
+
+          selected = None
+          for method, index, encoded in candidates():
+              try:
+                  patch = base64.b64decode(encoded, validate=True)
+              except (ValueError, binascii.Error):
+                  continue
+              if hashlib.sha256(patch).hexdigest() == expected:
+                  selected = method, index, patch
+                  break
+          if selected is None:
+              raise SystemExit("exact reviewed patch reconstruction failed")
+          method, index, patch = selected
+          if not patch.startswith(b"diff --git a/") or not patch.endswith(b"\n"):
+              raise SystemExit("reviewed digest did not decode to a unified patch")
+          target = pathlib.Path(".git/intuition-source.patch")
+          target.write_bytes(patch)
+          pathlib.Path(".git/intuition-source.patch.sha256").write_text(
+              f"{expected}  {target.name}\n", encoding="utf-8"
+          )
+          pathlib.Path(".git/intuition-source.patch.recovery").write_text(
+              f"method={method}\nindex={index}\nsha256={expected}\n", encoding="utf-8"
+          )
+          print(f"selected method={method} index={index} sha256={expected}")
+          PY
+          git apply --check .git/intuition-source.patch
+          git apply --index .git/intuition-source.patch
+          rm -rf .github/intuition-authoring-patch
+          rm -f .github/workflows/intuition-source-export.yml
+          rm -f .github/workflows/intuition-source-author-self-hosted.yml
+          rm -f .github/workflows/intuition-source-author-pocket4.yml
+          rm -f .github/workflows/intuition-source-author-macbook.yml
+
+      - name: Set up repository CI dependencies
+        uses: ./.github/actions/setup-ci
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt,clippy
+
+      - name: Format and verify source boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          (cd codex-rs && cargo fmt --all)
+          python3 scripts/intuition_legacy_consumers.py
+          python3 -m unittest discover -s scripts/tests -p 'test_intuition*.py' -v
+
+      - name: Run final-use and existing policy regressions
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-intuition
+          cargo test --locked -p codex-hepta-intelligence intuition
+          cargo test --locked -p codex-hepta-agentd --test intuition_policy_final_use_v4
+          cargo test --locked -p codex-hepta-agentd --test intuition_policy_commit_boundary
+          cargo test --locked -p codex-hepta-agentd --lib intuition_policy
+          cargo clippy --locked -p codex-hepta-agentd --lib --tests -- -D warnings
+          cargo fmt --all -- --check
+
+      - name: Publish one clean source commit with exact lease
+        shell: bash
+        env:
+          TARGET_BRANCH: codex/intuition-policy-production-closure-20260927
+          CLEAN_PARENT: 696447e733e22e425cd05691d98f4fe0ef63f759
+        run: |
+          set -euo pipefail
+          git diff --check
+          test -z "$(find . -type d -name __pycache__ -print -quit)"
+          git config user.name "OpenAI source authoring"
+          git config user.email "assistant@openai.invalid"
+          git add -A
+          test -z "$(git diff --cached --name-only | grep -E '^\.github/(intuition-authoring-patch|workflows/intuition-source-(export|author-self-hosted|author-pocket4|author-macbook)\.yml)' || true)"
+          tree="$(git write-tree)"
+          commit="$(printf '%s\n\n%s\n' \
+            'fix(intuition): revalidate authority at final use' \
+            'Preserve the sole ledger owner while moving fresh time, generation, and three-party qualification checks under its serialization boundary. Add typed boundary domains, stage telemetry, legacy-consumer drift checks, and separate safety/effectiveness/operator acceptance states.' \
+            | git commit-tree "$tree" -p "$CLEAN_PARENT")"
+          if ! git push --force-with-lease="refs/heads/$TARGET_BRANCH:$AUTHORING_HEAD" \
+            origin "$commit:refs/heads/$TARGET_BRANCH"; then
+            git fetch --no-tags origin "refs/heads/$TARGET_BRANCH:refs/remotes/origin/$TARGET_BRANCH"
+            remote="$(git rev-parse "refs/remotes/origin/$TARGET_BRANCH")"
+            test "$(git rev-parse "$remote^{tree}")" = "$tree"
+          fi
+          printf 'published_tree=%s\npublished_commit=%s\n' "$tree" "$commit"
+
+      - name: Upload failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intuition-macbook-authoring-failure-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            .git/intuition-source.patch
+            .git/intuition-source.patch.sha256
+            .git/intuition-source.patch.recovery
+          if-no-files-found: warn
+          retention-days: 3
