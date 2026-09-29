@@ -11,6 +11,19 @@ const digests = {
   b: "b".repeat(64),
   c: "c".repeat(64),
 };
+const operationIdentityFields = [
+  "protocolVersion",
+  "method",
+  "semanticDigest",
+  "action",
+  "targetId",
+  "reason",
+  "sessionId",
+  "connectionGeneration",
+  "generation",
+  "displayedRevision",
+  "snapshotDigest",
+];
 
 const heldResponseReleases = new Set();
 
@@ -117,6 +130,18 @@ function snapshot() {
   };
 }
 
+function operationBinding(input) {
+  return Object.fromEntries(
+    operationIdentityFields.map(field => [field, input[field]]),
+  );
+}
+
+function conflicts(prior, binding) {
+  return operationIdentityFields.some(
+    field => prior.binding[field] !== binding[field],
+  );
+}
+
 async function api(request, response, url) {
   const path = url.pathname.slice("/api/ui-control/v1/".length);
   if (path === "session/connect" && request.method === "POST") {
@@ -153,22 +178,26 @@ async function api(request, response, url) {
         message: "displayed revision is stale",
       });
     }
+    const binding = operationBinding(input);
     const prior = state.operations.get(input.operationId);
-    if (prior && prior.semanticDigest !== input.semanticDigest) {
+    if (prior && conflicts(prior, binding)) {
       return json(response, 409, {
         errorCode: "OPERATION_ID_CONFLICT",
-        message: "operation id is bound to different semantics",
+        message: "operation id is bound to different semantics or authority",
       });
     }
     state.requestCount += prior ? 0 : 1;
-    const observation = prior ?? {
-      found: true,
-      operationId: input.operationId,
-      semanticDigest: input.semanticDigest,
-      status: "pending",
-      auditTraceId: `audit-${input.operationId}`,
+    const record = prior ?? {
+      binding,
+      observation: {
+        found: true,
+        operationId: input.operationId,
+        semanticDigest: input.semanticDigest,
+        status: "pending",
+        auditTraceId: `audit-${input.operationId}`,
+      },
     };
-    state.operations.set(input.operationId, observation);
+    state.operations.set(input.operationId, record);
     if (input.reason.includes("HOLD_RESPONSE")) {
       await holdAcceptedResponse(request, response);
       if (response.destroyed || response.writableEnded) return;
@@ -182,12 +211,25 @@ async function api(request, response, url) {
       operationId: input.operationId,
       semanticDigest: input.semanticDigest,
       status: "accepted",
-      auditTraceId: observation.auditTraceId,
+      auditTraceId: record.observation.auditTraceId,
     });
   }
   if (path.startsWith("operations/") && request.method === "GET") {
     const operationId = decodeURIComponent(path.slice("operations/".length));
-    return json(response, 200, state.operations.get(operationId) ?? { found: false });
+    const record = state.operations.get(operationId);
+    if (!record) return json(response, 200, { found: false });
+    const queryGeneration = Number(url.searchParams.get("connectionGeneration"));
+    const sameAuthority =
+      url.searchParams.get("sessionId") === record.binding.sessionId &&
+      queryGeneration === record.binding.connectionGeneration &&
+      url.searchParams.get("semanticDigest") === record.binding.semanticDigest;
+    if (!sameAuthority) {
+      return json(response, 403, {
+        errorCode: "PERMISSION_DENIED",
+        message: "operation lookup authority does not match the admitted record",
+      });
+    }
+    return json(response, 200, record.observation);
   }
   return json(response, 404, { errorCode: "NOT_FOUND", message: "unknown API path" });
 }
@@ -201,7 +243,10 @@ async function testApi(request, response, url) {
     return json(response, 200, {
       snapshotRevision: state.snapshotRevision,
       requestCount: state.requestCount,
-      operations: [...state.operations.values()],
+      operations: [...state.operations.values()].map(record => ({
+        ...record.observation,
+        binding: record.binding,
+      })),
       heldResponseCount: heldResponseReleases.size,
     });
   }
@@ -214,11 +259,11 @@ async function testApi(request, response, url) {
   }
   if (url.pathname === "/__test__/complete") {
     const operationId = url.searchParams.get("operationId");
-    const operation = operationId ? state.operations.get(operationId) : null;
-    if (!operation) return json(response, 404, { message: "operation not found" });
-    operation.status = "succeeded";
-    operation.outcomeDigest = digests.c;
-    return json(response, 200, operation);
+    const record = operationId ? state.operations.get(operationId) : null;
+    if (!record) return json(response, 404, { message: "operation not found" });
+    record.observation.status = "succeeded";
+    record.observation.outcomeDigest = digests.c;
+    return json(response, 200, record.observation);
   }
   return json(response, 404, { message: "unknown test endpoint" });
 }
