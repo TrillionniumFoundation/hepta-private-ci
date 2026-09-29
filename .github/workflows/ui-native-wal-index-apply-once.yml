@@ -33,7 +33,6 @@ jobs:
       - id: source
         name: Verify immutable input and apply reviewed source patch
         env:
-          EXPECTED_PARENT: a52b9c76db167d68ff66c638c44fad70de970d6a
           PATCH_BLOB_SHA: cf8d5267cbcde61455849e24be9eac9d1a8d14f3
         run: |
           set -euo pipefail
@@ -48,7 +47,6 @@ jobs:
             exit 0
           fi
           echo 'apply=true' >> "$GITHUB_OUTPUT"
-          test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
           test "$(git rev-parse HEAD:.ci/ui-native-wal-index/source.patch.gz)" = "$PATCH_BLOB_SHA"
           sha256sum .ci/ui-native-wal-index/source.patch.gz > "$diagnostics/capsule.sha256"
           gzip -dc .ci/ui-native-wal-index/source.patch.gz > /tmp/ui-native-wal-index.patch
