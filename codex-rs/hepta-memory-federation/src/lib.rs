@@ -1,6 +1,10 @@
 //! Scoped, fail-closed cognitive federation verification.
 
 #![forbid(unsafe_code)]
+#![cfg_attr(
+    feature = "legacy-v1",
+    allow(deprecated, reason = "the explicit compatibility feature must compile historical V1 receipts without admitting V1 to the default product surface")
+)]
 
 mod v2;
 
