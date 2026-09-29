@@ -1,0 +1,7 @@
+Request the branch-owned ui.native WAL and retirement-index source applicator.
+
+The applicator checks out the exact target-branch base SHA, verifies the immutable
+capsule blob, applies only the reviewed ui.native source/document paths, runs the
+pinned Rust format/check/clippy/test and Python suites, and fast-forwards the
+target branch only after success. This trigger branch is not an implementation
+or qualification source.
