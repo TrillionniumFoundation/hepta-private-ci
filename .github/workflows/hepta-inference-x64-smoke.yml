@@ -46,7 +46,7 @@ jobs:
           toolchain: '1.95.0'
           components: rustfmt, clippy
 
-      - uses: Swatinem/rust-cache@77931a8407f581e22279abbd9de9398dc21a88f1
+      - uses: Swatinem/rust-cache@f0d9c3887740aee45f6153b24b3a6b815192ec16
         with:
           workspaces: |
             codex-rs -> target
