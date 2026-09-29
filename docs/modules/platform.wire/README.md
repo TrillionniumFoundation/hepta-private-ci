@@ -28,7 +28,7 @@ Source code, ordinary pull-request CI, local fixtures and in-process profiles ca
 ## Evidence producers and workflows
 
 - `.github/workflows/platform-wire-core.yml` runs the actual crate, resource/consumer contracts, strict Clippy and release profiles on source-head and ordered merge.
-- `.github/workflows/platform-wire-exact-qualification.yml` produces exact-source and deterministic synthetic-merge qualification evidence.
+- `.github/workflows/platform-wire-exact.yml` produces exact-source and deterministic synthetic-merge qualification evidence.
 - `.github/workflows/platform-wire-target-host.yml` is the protected selected-host qualification path.
 - `.github/workflows/platform-wire-performance-intake.yml` admits only a registered exact-source five-path measurement artifact.
 - `.github/workflows/platform-wire-production-contract.yml` validates the closed production evidence contracts on source-head and ordered merge; it does not claim a deployment occurred.
