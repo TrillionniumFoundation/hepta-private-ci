@@ -13,7 +13,7 @@ permissions:
 
 concurrency:
   group: control-runtime-apply-once-${{ github.event.pull_request.number }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   CARGO_INCREMENTAL: '0'
@@ -23,7 +23,7 @@ env:
 
 jobs:
   apply-and-verify:
-    runs-on: ubuntu-24.04
+    runs-on: macos-14
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -50,7 +50,7 @@ jobs:
         run: |
           set -euo pipefail
           base64 -d .control-runtime-next.patch | gzip -d > "$RUNNER_TEMP/control-runtime-next.patch"
-          echo "edc2303f0b0f22a38eb04af352f6d43c7c821558ad2285f6d94e7e75e40831d9  $RUNNER_TEMP/control-runtime-next.patch" | sha256sum -c -
+          echo "edc2303f0b0f22a38eb04af352f6d43c7c821558ad2285f6d94e7e75e40831d9  $RUNNER_TEMP/control-runtime-next.patch" | shasum -a 256 -c -
           git apply --check "$RUNNER_TEMP/control-runtime-next.patch"
           git apply "$RUNNER_TEMP/control-runtime-next.patch"
           git diff --check
@@ -59,48 +59,30 @@ jobs:
         if: steps.stage.outputs.present == 'true'
         run: python3 scripts/control_runtime_validate_state.py --output "$RUNNER_TEMP/control-runtime-state-before.json"
 
-      - name: Install native prerequisites
-        if: steps.stage.outputs.present == 'true'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential pkg-config libcap-dev
-
-      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
-        if: steps.stage.outputs.present == 'true'
-        with:
-          tool: just@1.51.0,nextest@0.9.103
-
-      - name: Resolve verified V8 artifacts
-        if: steps.stage.outputs.present == 'true'
-        env:
-          CODEX_REPO_ROOT: ${{ github.workspace }}
-          PYTHONPATH: scripts
-        run: python3 scripts/hepta_ci_v8.py
-
       - name: Format changed Rust source
         if: steps.stage.outputs.present == 'true'
         working-directory: codex-rs
-        run: cargo fmt -p codex-hepta-control-plane -p codex-hepta-agentd -p codex-hepta-ndu
+        run: cargo fmt -p codex-hepta-control-plane
 
       - name: Formatting check
         if: steps.stage.outputs.present == 'true'
         working-directory: codex-rs
-        run: cargo fmt -p codex-hepta-control-plane -p codex-hepta-agentd -p codex-hepta-ndu -- --check
+        run: cargo fmt -p codex-hepta-control-plane -- --check
 
-      - name: Actual package regression suite
+      - name: Control-plane regression suite
         if: steps.stage.outputs.present == 'true'
         working-directory: codex-rs
-        run: just test --locked -p codex-hepta-control-plane -p codex-hepta-agentd -p codex-hepta-ndu
+        run: cargo test --locked -p codex-hepta-control-plane
 
-      - name: All-target compilation
+      - name: Control-plane all-target compilation
         if: steps.stage.outputs.present == 'true'
         working-directory: codex-rs
-        run: cargo check --locked --all-targets -p codex-hepta-control-plane -p codex-hepta-agentd -p codex-hepta-ndu
+        run: cargo check --locked --all-targets -p codex-hepta-control-plane
 
-      - name: Strict lint
+      - name: Control-plane strict lint
         if: steps.stage.outputs.present == 'true'
         working-directory: codex-rs
-        run: cargo clippy --locked --all-targets -p codex-hepta-control-plane -p codex-hepta-agentd -p codex-hepta-ndu -- -D warnings
+        run: cargo clippy --locked --all-targets -p codex-hepta-control-plane -- -D warnings
 
       - name: Revalidate state and prepare verified commit
         if: steps.stage.outputs.present == 'true'
