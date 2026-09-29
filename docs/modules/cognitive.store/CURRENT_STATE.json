@@ -351,7 +351,7 @@
     },
     {
       "id": "CS-RET-001",
-      "invariant": "Retention readiness binds ordered disjoint segment ranges, the complete aggregate, independent owners and a subsequent unpublished same-cut rebuild",
+      "invariant": "Retention readiness binds owner-attested disjoint key ranges, distinct segment identities, the complete aggregate and an unpublished same-cut rebuild",
       "sources": [
         "tools/cognitive-store-host-bootstrap/retention_readiness.py"
       ],
@@ -361,11 +361,11 @@
       "records": [
         "retention-readiness-tests.json"
       ],
-      "scope": "Signed readiness evidence with key-range/owner separation and final-use ordering only; publication, pruning and erasure remain unclaimed"
+      "scope": "Signed range/data/manifest evidence with owner separation and final-use ordering only; publication, pruning and erasure remain unclaimed"
     },
     {
       "id": "CS-ACC-001",
-      "invariant": "Independent acceptance binds exact evidence, distinct roles and an ordered approval dependency chain without performing effects",
+      "invariant": "Independent acceptance validates the bound evidence reports, distinct roles and ordered approval dependencies without performing effects",
       "sources": [
         "tools/cognitive-store-host-bootstrap/acceptance_governance.py"
       ],
@@ -375,7 +375,7 @@
       "records": [
         "acceptance-governance-tests.json"
       ],
-      "scope": "Real Ed25519 fixture approvals, prerequisite decisions and final-use trust checks; actual independent reviewers and release execution remain external"
+      "scope": "Real Ed25519 fixture approvals plus source-head/merge/host/retention/lifecycle report validation and final-use trust checks; actual independent reviewers and release execution remain external"
     }
   ],
   "externalEvidence": [

@@ -18,10 +18,10 @@ import uuid
 from lifecycle import digest, exact, identifier, integer, load_bounded, require
 from lifecycle import sha256, validate_trust, verify_signature
 
-PLAN_SCHEMA = "hepta.cognitive.retention-checkpoint-plan.v2"
-SEGMENT_RECEIPT_SCHEMA = "hepta.cognitive.retention-segment-receipt.v2"
-REBUILD_RECEIPT_SCHEMA = "hepta.cognitive.retention-rebuild-receipt.v2"
-REPORT_SCHEMA = "hepta.cognitive.retention-readiness-report.v2"
+PLAN_SCHEMA = "hepta.cognitive.retention-checkpoint-plan.v3"
+SEGMENT_RECEIPT_SCHEMA = "hepta.cognitive.retention-segment-receipt.v3"
+REBUILD_RECEIPT_SCHEMA = "hepta.cognitive.retention-rebuild-receipt.v3"
+REPORT_SCHEMA = "hepta.cognitive.retention-readiness-report.v3"
 MAX_SEGMENTS = 128
 MAX_IMAGE_BYTES = 128 * 1024 * 1024
 GIT_OID = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})\Z")
@@ -54,6 +54,9 @@ def validate_segment(segment: object, ordinal: int, previous_manifest: str | Non
     for field in ("first_key_sha256", "last_key_sha256", "plaintext_sha256",
                   "ciphertext_sha256", "manifest_sha256"):
         digest(segment[field])
+    require(len({segment["plaintext_sha256"], segment["ciphertext_sha256"],
+                 segment["manifest_sha256"]}) == 3,
+            "retention segment data, ciphertext and manifest identities overlap")
     if segment["row_count"] == 1:
         require(segment["first_key_sha256"] == segment["last_key_sha256"],
                 "single-row segment must bind one exact key")
@@ -148,14 +151,15 @@ def validate_plan(plan: object, trust: dict, now: int) -> dict:
 
 def validate_segment_receipt(receipt: object, plan: dict, segment: dict, now: int) -> dict:
     exact(receipt, {"schema", "plan_sha256", "segment_id", "storage_owner", "ordinal",
-                    "row_count", "plaintext_sha256", "manifest_sha256", "ciphertext_sha256",
-                    "predecessor_manifest_sha256", "status", "method", "observed_at",
-                    "evidence_sha256"})
+                    "first_key_sha256", "last_key_sha256", "row_count", "plaintext_sha256",
+                    "manifest_sha256", "ciphertext_sha256", "predecessor_manifest_sha256",
+                    "status", "method", "observed_at", "evidence_sha256"})
     require(receipt["schema"] == SEGMENT_RECEIPT_SCHEMA,
             "unsupported retention segment receipt")
     require(receipt["plan_sha256"] == sha256(plan), "segment receipt binds another plan")
-    for field in ("segment_id", "storage_owner", "ordinal", "row_count", "plaintext_sha256",
-                  "manifest_sha256", "ciphertext_sha256", "predecessor_manifest_sha256"):
+    for field in ("segment_id", "storage_owner", "ordinal", "first_key_sha256",
+                  "last_key_sha256", "row_count", "plaintext_sha256", "manifest_sha256",
+                  "ciphertext_sha256", "predecessor_manifest_sha256"):
         require(receipt[field] == segment[field], "segment receipt identity mismatch: " + field)
     require(receipt["status"] in {"completed", "pending", "indeterminate", "failed"},
             "unknown retention segment status")

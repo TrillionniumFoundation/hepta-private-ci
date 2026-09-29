@@ -16,7 +16,7 @@ class T(unittest.TestCase):
   s.refresh_aggregate(); s.pe=s.sign(s.plan,"coord",s.c)
   s.sr=[]
   for i,g in enumerate(s.plan["segments"]):
-   p={"schema":m.SEGMENT_RECEIPT_SCHEMA,"plan_sha256":l.sha256(s.plan),**{k:g[k] for k in ("segment_id","storage_owner","ordinal","row_count","plaintext_sha256","manifest_sha256","ciphertext_sha256","predecessor_manifest_sha256")},"status":"completed","method":"immutable_encrypted_segment","observed_at":s.now,"evidence_sha256":f"{100+i:064x}"}
+   p={"schema":m.SEGMENT_RECEIPT_SCHEMA,"plan_sha256":l.sha256(s.plan),**{k:g[k] for k in ("segment_id","storage_owner","ordinal","first_key_sha256","last_key_sha256","row_count","plaintext_sha256","manifest_sha256","ciphertext_sha256","predecessor_manifest_sha256")},"status":"completed","method":"immutable_encrypted_segment","observed_at":s.now,"evidence_sha256":f"{100+i:064x}"}
    s.sr.append(s.sign(p,"segment-owner",s.so))
   s.rebuild=s.sign(s.rebuild_payload(),"rebuild-owner",s.ro)
  @staticmethod
@@ -52,7 +52,7 @@ def mutate(s,c):
  if c=="reverse": s.plan["segments"][0].update(first_key_sha256="0"*63+"2",last_key_sha256="0"*63+"1"); s.rp(); return "invalid declared"
  if c=="overlap": s.plan["segments"][1]["first_key_sha256"]=s.plan["segments"][0]["last_key_sha256"]; s.rp(); return "ordered and disjoint"
  if c=="single": s.plan["segments"][0]["row_count"]=1; s.rp(); return "single-row"
- if c=="v1": s.plan["schema"]="hepta.cognitive.retention-checkpoint-plan.v1"; s.rp(); return "unsupported retention"
+ if c=="v2": s.plan["schema"]="hepta.cognitive.retention-checkpoint-plan.v2"; s.rp(); return "unsupported retention"
  if c=="dupid": s.plan["segments"][1]["segment_id"]=s.plan["segments"][0]["segment_id"]; s.rp(); return "duplicate"
  if c=="dupdigest": s.plan["segments"][1]["ciphertext_sha256"]=s.plan["segments"][0]["manifest_sha256"]; s.rp(); return "duplicate"
  if c=="coordseg": s.plan["segments"][0]["storage_owner"]="coord"; s.rp(); return "independent"
@@ -60,6 +60,9 @@ def mutate(s,c):
  if c=="expired": s.plan["expires_at"]=s.now; s.rp(); return "expired"
  if c=="oversize": s.plan["successor_image_bytes"]=m.MAX_IMAGE_BYTES+1; s.rp(); return "exceeds"
  if c=="method": s.rr(0,method="copy"); return "immutable encrypted"
+ if c=="receiptfirst": s.rr(0,first_key_sha256="f"*64); return "first_key_sha256"
+ if c=="receiptlast": s.rr(0,last_key_sha256="f"*64); return "last_key_sha256"
+ if c=="overlapdigest": s.plan["segments"][0]["ciphertext_sha256"]=s.plan["segments"][0]["plaintext_sha256"]; s.rp(); return "identities overlap"
  if c=="plain": s.rr(0,plaintext_sha256="f"*64); return "plaintext_sha256"
  if c=="segrows": s.rr(0,row_count=999); return "row_count"
  if c=="rbset": s.rb(segment_set_sha256="f"*64); return "segment_set_sha256"
@@ -81,5 +84,5 @@ def make(c):
   else: s.assertRaisesRegex(ValueError,e or ".+",s.rec)
  return test
 
-for n in ("missing pending independent predates signer wrongplan revoked setdigest count rows endpoint chain ordinal reverse overlap single v1 dupid dupdigest coordseg sameimage expired oversize method plain segrows rbset unresolved cut published integrity source frontier future status").split(): setattr(T,"test_"+n,make(n))
+for n in ("missing pending independent predates signer wrongplan revoked setdigest count rows endpoint chain ordinal reverse overlap single v2 dupid dupdigest overlapdigest coordseg sameimage expired oversize method receiptfirst receiptlast plain segrows rbset unresolved cut published integrity source frontier future status").split(): setattr(T,"test_"+n,make(n))
 if __name__=="__main__": unittest.main()
