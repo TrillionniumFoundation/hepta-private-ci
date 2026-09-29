@@ -6,9 +6,10 @@ OOD comparison can encode that safely even when a softmax rounds to exactly one.
 """
 import numpy as np
 
-CALIBRATION_PROFILE = "hepta.decision-cell-joint-support-calibration.v1"
+CALIBRATION_PROFILE = "hepta.decision-cell-joint-support-calibration.v2"
 MAX_ROWS = 4096
-MAX_ERROR = 0.05
+MAX_ERROR_DENOMINATOR = 20
+MAX_ERROR = 1 / MAX_ERROR_DENOMINATOR
 CLASSES = {"action": 6, "target": 4, "disposition": 6, "postcondition": 6, "ood": 2}
 
 
@@ -81,11 +82,52 @@ def select_confidence_threshold(confidence: np.ndarray, correct: np.ndarray,
     }
 
 
+def _joint_thresholds(confidence: np.ndarray, ood: np.ndarray,
+                      inside: np.ndarray, correct: np.ndarray) -> tuple[float | None, float]:
+    """Search the complete bounded two-threshold frontier in O(n**2) time/O(n) space.
+
+    Inputs are already validated, owned snapshots. Confidence ties enter as a
+    group and OOD remains strict less-than, exactly as in the tensor consumer.
+    Preserve BOTH the marginal OOD false-accept cap and complete supported-error
+    cap. Maximize supported in-domain rows, then minimize supported error, prefer
+    higher confidence and finally lower OOD threshold. OOD rows never earn credit.
+    """
+    if not inside.any() or inside.all():
+        raise ValueError("OOD calibration requires both labelled populations")
+    order = np.argsort(-confidence, kind="stable")
+    confidence, ood = confidence[order], ood[order]
+    inside, correct = inside[order], correct[order]
+    ends = np.flatnonzero(np.r_[confidence[:-1] != confidence[1:], True])
+    thresholds = confidence[ends]
+    outside_count = int((~inside).sum())
+    best, result = None, (None, 0.0)
+    for maximum_ood in np.unique(np.r_[0.0, 1.0, ood]):
+        eligible = ood < maximum_ood
+        if int((eligible & ~inside).sum()) * MAX_ERROR_DENOMINATOR > outside_count:
+            continue
+        counts = np.cumsum(eligible)[ends]
+        errors = np.cumsum(eligible & ~correct)[ends]
+        in_counts = np.cumsum(eligible & inside)[ends]
+        feasible = (in_counts > 0) & (errors * MAX_ERROR_DENOMINATOR <= counts)
+        if not feasible.any():
+            continue
+        indices = np.flatnonzero(feasible & (in_counts == in_counts[feasible].max()))
+        rates = errors[indices] / counts[indices]
+        # Thresholds are descending: the first tied optimum is most restrictive.
+        index = int(indices[np.flatnonzero(rates == rates.min())[0]])
+        key = (int(in_counts[index]), -float(errors[index] / counts[index]),
+               float(thresholds[index]), -float(maximum_ood))
+        if best is None or key > best:
+            best = key
+            result = (float(thresholds[index]), float(maximum_ood))
+    return result
+
+
 def joint_support_calibration(probabilities: dict, labels: dict) -> dict:
     """Fit support using action, applicable target, disposition and postcondition.
 
-    OOD acceptance is fixed first. Confidence selection evaluates that exact
-    intersection; every accepted OOD row is an error, even with matching labels.
+    Search the joint threshold frontier; every accepted OOD row is an error,
+    even with matching labels. Neither empirical error cap is relaxed.
     Only the supplied calibration partition is inspected. Returned scalar
     thresholds retain their existing runtime meaning and require no wire change.
     """
@@ -113,10 +155,8 @@ def joint_support_calibration(probabilities: dict, labels: dict) -> dict:
         if name == "target":
             matches |= y[name] < 0
         correct &= matches
-    ood_threshold, _ = select_ood_threshold(p["ood"][:, 1], y["ood"])
     confidence = p["action"].max(axis=1)
-    threshold, _ = select_confidence_threshold(
-        confidence, correct, eligible=p["ood"][:, 1] < ood_threshold)
+    threshold, ood_threshold = _joint_thresholds(confidence, p["ood"][:, 1], inside, correct)
     feasible = threshold is not None
     if not feasible:
         threshold, ood_threshold = 1.0, 0.0

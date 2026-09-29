@@ -97,6 +97,9 @@ def inspect_response(*, catalog: bytes, response: bytes, diagnostics: bytes,
             if not isinstance(run_id, str) or not NONCE.fullmatch(run_id):
                 raise ValueError("invalid gateway run identity")
             report["gateway_run_id"] = run_id
+        if "ok" in value and type(value["ok"]) is not bool:
+            report["status"] = "invalid_gateway_flag"
+            return report
         if value.get("ok") is False or value.get("error") is not None:
             report["status"] = "gateway_error_reconcile_before_retry"
             return report
@@ -113,6 +116,17 @@ def inspect_response(*, catalog: bytes, response: bytes, diagnostics: bytes,
         return report
     if not isinstance(result, dict):
         raise ValueError("gateway result must be an object")
+    # An outer success cannot override an explicit inner denial or unfinished
+    # result. Reject numeric/null flags rather than relying on Python equality.
+    if "ok" in result and type(result["ok"]) is not bool:
+        report["status"] = "invalid_gateway_flag"
+        return report
+    if result.get("ok") is False:
+        report["status"] = "gateway_error_reconcile_before_retry"
+        return report
+    if result.get("status") not in (None, "ok", "completed"):
+        report["status"] = "gateway_not_terminal"
+        return report
     meta = result.get("meta", {})
     if not isinstance(meta, dict) or meta.get("aborted") is not False:
         report["status"] = "completion_not_confirmed"
@@ -147,7 +161,8 @@ def inspect_response(*, catalog: bytes, response: bytes, diagnostics: bytes,
     if payload != expected or type(payload.get("advisory_only")) is not bool or type(payload.get("training_authorized")) is not bool:
         report["status"] = "reply_binding_mismatch"
         return report
-    if item.get("isError") not in (None, False) or item.get("mediaUrl") is not None:
+    if (("isError" in item and item["isError"] is not False) or
+            item.get("mediaUrl") is not None):
         report["status"] = "unexpected_reply_shape"
         return report
     if expected_model not in models:

@@ -89,3 +89,15 @@ source SHA, integration base, candidate tree and retained logs.
 
 For any ambiguous result, start with the exact operation key and follow the
 runbook. Never recover capacity by deleting or reinterpreting V2 history.
+
+## DecisionCell qualification contracts
+
+[`SUPPORT_CALIBRATION.md`](SUPPORT_CALIBRATION.md) defines the v2 joint threshold
+frontier, preserved empirical caps, artifact compatibility and frozen independent
+and prospective evaluation design. It supersedes v1 sequential-search descriptions
+for newly fitted artifacts, never the recorded meaning of historical receipts.
+
+[`TEACHER_QUALIFICATION.md`](TEACHER_QUALIFICATION.md) separates retained Gateway
+diagnostics from native Codex transport identity, isolation and account-specific
+teacher-data rights. Neither guide adds a runtime owner or grants selection,
+training admission, product qualification or activation.
