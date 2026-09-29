@@ -18,7 +18,7 @@ concurrency:
 jobs:
   export:
     name: Export reviewed materialized source without publishing it
-    runs-on: ubuntu-24.04
+    runs-on: macos-26-arm64
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -52,15 +52,6 @@ jobs:
           python3 -m py_compile /tmp/materialize-phase.py
           python3 /tmp/materialize-phase.py
 
-          for item in \
-            f7fbe294b5161bc980f1541711559052a73e3d86 \
-            a4a4672b60ca40a4a74ec045a18d2a29bbdffda4 \
-            84adc7988aeb7a83a1ca6e2d4a47f70f0009a698 \
-            5b5b301dce83fb16fc4cb2a35307bec3580d0d2c \
-            87a95d53c47fa231e4814b8660ff639ace056697 \
-            920a0503eaf039e509cf017b2a4c141fc8be98d2; do
-            : "$item"
-          done
           test "$(git hash-object .authoring/learning-plasticity-finalize-source.patch.gz.b64.part00)" = "f7fbe294b5161bc980f1541711559052a73e3d86"
           test "$(git hash-object .authoring/learning-plasticity-finalize-source.patch.gz.b64.part01)" = "a4a4672b60ca40a4a74ec045a18d2a29bbdffda4"
           test "$(git hash-object .authoring/learning-plasticity-finalize-source.patch.gz.b64.part02)" = "84adc7988aeb7a83a1ca6e2d4a47f70f0009a698"
@@ -88,7 +79,7 @@ jobs:
           cp codex-rs/hepta-agentd/src/plasticity_host.rs diagnostic/plasticity-materialized/
           git diff --binary > diagnostic/plasticity-materialized/materialized.patch
           git diff --name-status > diagnostic/plasticity-materialized/changed-files.txt
-          sha256sum diagnostic/plasticity-materialized/* > diagnostic/plasticity-materialized/SHA256SUMS
+          shasum -a 256 diagnostic/plasticity-materialized/* > diagnostic/plasticity-materialized/SHA256SUMS
 
       - name: Retain exact materialized source
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
