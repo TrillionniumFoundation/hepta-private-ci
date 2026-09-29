@@ -1657,6 +1657,13 @@ def build_parser() -> argparse.ArgumentParser:
     verify.add_argument("--models", nargs="+", choices=sorted(MODEL_SPECS), default=sorted(MODEL_SPECS))
     verify.set_defaults(handler=command_verify)
 
+    from family_replay import command_family_support
+
+    support = subparsers.add_parser("family-support", help="replay the complete frozen family without training or granting trust")
+    support.add_argument("--summary-sha256", required=True)
+    support.add_argument("--report", required=True, type=Path)
+    support.set_defaults(handler=command_family_support)
+
     all_models = subparsers.add_parser("all", help="run each model in a fresh process, then summarize and verify")
     all_models.add_argument("--models", nargs="+", choices=sorted(MODEL_SPECS), default=sorted(MODEL_SPECS))
     all_models.add_argument("--model-timeout-seconds", type=float, default=900)

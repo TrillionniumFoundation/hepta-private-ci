@@ -533,3 +533,34 @@ for the exact profile and distinction between historical revalidation and a new
 provider execution. Run `python3 -m unittest -v test_teacher_native_observation`.
 Successful parsing does not prove isolation, provider entitlement, training rights,
 independent acceptance or readiness to admit a teacher dataset.
+
+
+## Complete frozen-family saved-artifact diagnostics
+
+Use the already retained complete four-backend panel, not a selected subset. Bind
+the `summary_sha256` from its original `summaries/current.json` explicitly:
+
+```sh
+python3 decision_cell_bakeoff.py --output-dir /restricted/existing-panel \
+  --model-root /restricted/existing-models --device cpu family-support \
+  --summary-sha256 ORIGINAL_SUMMARY_SHA256 --report /restricted/new-family-report.json
+python3 -m unittest -v test_family_support test_family_replay
+```
+
+This entry reuses the existing receipt verifier, frozen-feature loader and real
+saved-tensor consumer. It does not invoke an encoder or optimizer, edit old
+receipts, select a backend or dispatch native effects. The report is exclusive
+and private; an existing destination is never overwritten. Its original training
+sources, current consumer source, exact family, parameter groups, dataset/features,
+row-level typed outcomes and integer denominators are retained separately.
+
+`family_support` allocates alpha=.05 over both risks of every frozen candidate,
+not just whichever model looked best afterward. With four candidates and the
+existing 5000-ppm diagnostic budget, even zero errors need 1013 independent trials
+per population per candidate. Empty support is undefined, not zero risk. The
+retained synthetic panel does not establish independence or deployment sampling;
+this new historical reanalysis cannot retroactively become a preregistration.
+Exit zero reports successful replay; inspect `all_count_bounds_met` separately.
+Trust, runtime selection, prospective efficacy and activation remain false.
+See the existing [support experiment contract](../../../docs/modules/neuron.runtime/SUPPORT_CALIBRATION.md)
+for the required independent-population and prospective-window design boundaries.

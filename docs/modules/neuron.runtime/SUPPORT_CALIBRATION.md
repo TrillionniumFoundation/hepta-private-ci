@@ -71,6 +71,45 @@ and exercise its real support predicate. Fixture weights are not a trained base,
 model-quality evidence, a fresh bakeoff or a target-host product qualification.
 The existing qualification workflow discovers these tests without a new CI lane.
 
+## Frozen-family count diagnostics and saved-artifact replay
+
+`binomial_support.family_support_report` extends the existing count diagnostic to
+an explicit complete family of 1--32 distinct candidate receipt identities. For
+M candidates it allocates familywise alpha=.05 across 2M one-sided limits, one for
+marginal OOD false acceptance and one for complete supported-decision errors per
+candidate. Each limit uses Clopper--Pearson with alpha=.05/(2M). Missing or extra
+candidates, duplicate receipt identities, malformed counts and empty populations
+cannot improve the verdict. The original two-bound report and historical receipts
+retain their original interpretation; this is a separate diagnostic profile.
+
+At the existing diagnostic budget of 5000 ppm, a four-candidate family needs at
+least 1013 zero-error independent trials **per candidate per population**, rather
+than the single-candidate 736. This is a zero-error planning boundary, not a promise
+that 1013 observed examples will qualify. Nonzero errors need larger samples.
+Candidate results may be correlated: Bonferroni does not require independence
+between models or risks. Binomial limits still require independent sampling units
+within each target population. Repeated cases, synthetic source groups and a fixed
+ID/OOD mixture do not prove the relevant deployment-population assumptions.
+
+The existing bakeoff CLI's `family-support` command requires the original summary
+digest and verifies all four configured backends through the existing receipt and
+summary verifier. It reuses the frozen-feature loader and `HeadTensorBundleV2` to
+reload actual saved weights and compute exact integer counts from test/OOD rows.
+It neither refits thresholds nor infers counts from rounded receipt metrics. OOD
+false acceptance is marginal: confidence abstention cannot hide it. Complete
+supported errors include action, applicable target, disposition and postcondition;
+every accepted OOD row is an error. The report retains full eligible denominators,
+per-row prediction/support traces without prompt text, artifact hashes, original
+training sources and the distinct current consumer source. It verifies the source
+and complete family again before reporting and publishes a new private file only.
+
+The report is retrospective synthetic-panel reanalysis, not a new encoder run,
+training, independent calibration, a preregistration or prospective evaluation.
+The trace makes the counted outcomes inspectable but does not independently
+establish sampling, provenance authority, label correctness or rights. All trust,
+selection, acceptance and activation flags remain false even when count limits
+are met. Exit zero means the reanalysis executed, not that the counts passed.
+
 ## Frozen experiment design and independent acceptance
 
 Before new model execution, retain one immutable experiment manifest binding
