@@ -1,0 +1,73 @@
+name: intuition.policy final-use macOS diagnostic
+
+on:
+  push:
+    branches: [codex/intuition-policy-final-use-diag-20260929]
+    paths:
+      - ".github/workflows/intuition-final-use-diag-macos.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: intuition-final-use-diag-macos-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CLEAN_PARENT: 696447e733e22e425cd05691d98f4fe0ef63f759
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  compile-diagnostic:
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - name: Check out exact diagnostic carrier
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Rebuild fixed-parent source
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cp codex-rs/hepta-agentd/src/intuition_policy_final_use.rs \
+            "$RUNNER_TEMP/intuition_policy_final_use.rs"
+          cp scripts/intuition_final_use_apply.py \
+            "$RUNNER_TEMP/intuition_final_use_apply.py"
+          git reset --hard "$CLEAN_PARENT"
+          cp "$RUNNER_TEMP/intuition_policy_final_use.rs" \
+            codex-rs/hepta-agentd/src/intuition_policy_final_use.rs
+          python3 "$RUNNER_TEMP/intuition_final_use_apply.py"
+          python3 scripts/intuition_legacy_consumers.py
+
+      - name: Set up repository CI dependencies
+        uses: ./.github/actions/setup-ci
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt,clippy
+
+      - name: Format and compile focused product source
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --all -- --check
+          cargo check --locked -p codex-hepta-agentd --lib
+          cargo test --locked -p codex-hepta-agentd --lib intuition_policy --no-run
+
+      - name: Upload diagnostics on failure
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intuition-final-use-macos-diag-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            codex-rs/target/.rustc_info.json
+            codex-rs/target/debug/.fingerprint/
+          if-no-files-found: warn
+          retention-days: 2
