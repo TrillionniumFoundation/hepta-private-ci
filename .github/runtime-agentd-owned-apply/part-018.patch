@@ -1,0 +1,118 @@
+ json.dumps(result, indent=2, sort_keys=True) + "\n"
++        if args.output is not None:
++            args.output.write_text(text, encoding="utf-8")
++        print(text, end="")
++        return 0
++    except (OSError, ValueError, subprocess.SubprocessError, tomllib.TOMLDecodeError, json.JSONDecodeError) as error:
++        print(f"FAIL_RUNTIME_AGENTD_SCOPE: {error}", file=sys.stderr)
++        return 1
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+diff --git a/scripts/qualification/test_agentd_exact_head.py b/scripts/qualification/test_agentd_exact_head.py
+index c77ac601ec46066dd0e114c08941c3f22f1d1061..4f629b2c2de1de2a8a85dcd265116c29bf6f097f 100644
+--- a/scripts/qualification/test_agentd_exact_head.py
++++ b/scripts/qualification/test_agentd_exact_head.py
+@@ -152,6 +152,9 @@ class ReceiptTests(unittest.TestCase):
+                 self.assertIn("--locked", argv)
+                 self.assertNotIn("--ignored", argv)
+                 self.assertNotIn("--skip", argv)
++        strict = q.cargo_commands("strict-clippy")
++        self.assertEqual(len(strict), 1)
++        self.assertIn("--no-deps", strict[0])
+ 
+     def test_all_fixture_roles_must_resolve_from_cargo_artifacts(self):
+         log = self.root / "cargo.jsonl"
+@@ -164,14 +167,18 @@ class ReceiptTests(unittest.TestCase):
+             lines.append(json.dumps({"reason": "compiler-artifact", "target": {"name": names[0]},
+                                      "executable": str(executable)}))
+         log.write_text("\n".join(lines))
+-        result = q.fixture_environment(log, env)
++        fixture_root = self.root / "fixture-snapshot"
++        result = q.fixture_environment(log, env, fixture_root)
+         self.assertEqual(set(result), set(q.ALIASES))
+         self.assertEqual(env["CODEX_EXE_PATH"], env["HEPTA_CODEX_BIN"])
+         self.assertEqual(env["AGENTD_EXE_PATH"], env["HEPTA_AGENTD_BIN"])
+         self.assertEqual(env["SUPERVISOR_EXE_PATH"], env["HEPTA_SUPERVISOR_BIN"])
++        self.assertEqual(env["APP_SERVER_EXE_PATH"], env["HEPTA_TEST_CODEX_EXE"])
++        for binary in result.values():
++            self.assertTrue(Path(binary["path"]).is_relative_to(fixture_root))
+         log.write_text("{}\n")
+         with self.assertRaisesRegex(ValueError, "missing"):
+-            q.fixture_environment(log, {})
++            q.fixture_environment(log, {}, self.root / "missing-fixtures")
+ 
+     def test_failed_command_has_actual_exit_and_log(self):
+         import os
+diff --git a/scripts/qualification/test_runtime_agentd_dependency_boundary.py b/scripts/qualification/test_runtime_agentd_dependency_boundary.py
+index edd896aee8ed2a942789a3a7ea34f030adb672ef..79f9a411caf783944ddb456afd58a978d2e071f6 100644
+--- a/scripts/qualification/test_runtime_agentd_dependency_boundary.py
++++ b/scripts/qualification/test_runtime_agentd_dependency_boundary.py
+@@ -45,6 +45,7 @@ tempfile = "1"
+             "module": "runtime.agentd",
+             "status": {
+                 "defaultFeatureReadOnly": True,
++                "corePolicyBuildEstablished": True,
+                 "coreOnlyBuildEstablished": False,
+                 "productAdaptersOptionalized": False,
+             },
+@@ -61,16 +62,36 @@ tempfile = "1"
+                 ],
+                 "development_only": ["tempfile"],
+             },
+-            "migration": {"targetFeature": "product-adapters"},
++            "migration": {
++                "targetFeature": "product-adapters",
++                "corePolicyQualification": "qualification/runtime-agentd-core/Cargo.toml",
++                "corePolicySource": "codex-rs/hepta-agentd/src/runtime_codex_policy.rs",
++            },
+         }
+         (crate / "DEPENDENCY_BOUNDARY.json").write_text(
+             json.dumps(boundary, indent=2) + "\n", encoding="utf-8"
+         )
++        (crate / "src").mkdir()
++        (crate / "src/runtime_codex_policy.rs").write_text(
++            "pub enum RuntimeCodexFailureClassV1 { OwnerFailed }\n", encoding="utf-8"
++        )
++        qualification = root / "qualification/runtime-agentd-core"
++        (qualification / "src").mkdir(parents=True)
++        (qualification / "Cargo.toml").write_text(
++            "[package]\nname = \"runtime-agentd-core-qualification\"\nversion = \"0.0.0\"\nedition = \"2024\"\n\n[workspace]\n",
++            encoding="utf-8",
++        )
++        (qualification / "Cargo.lock").write_text("version = 4\n", encoding="utf-8")
++        (qualification / "src/lib.rs").write_text(
++            'include!("../../../codex-rs/hepta-agentd/src/runtime_codex_policy.rs");\n',
++            encoding="utf-8",
++        )
+         return root
+ 
+     def test_exact_inventory_and_nonclaiming_status_pass(self) -> None:
+         result = verify(self.fixture())
+         self.assertEqual(result["normalDependencies"], 8)
++        self.assertTrue(result["corePolicyBuildEstablished"])
+         self.assertFalse(result["coreOnlyBuildEstablished"])
+ 
+     def test_unclassified_dependency_fails(self) -> None:
+@@ -101,6 +122,27 @@ tempfile = "1"
+         with self.assertRaisesRegex(ValueError, "default feature set"):
+             verify(root)
+ 
++
++    def test_core_policy_claim_requires_dependency_free_bound_source(self) -> None:
++        root = self.fixture()
++        manifest = root / "qualification/runtime-agentd-core/Cargo.toml"
++        manifest.write_text(manifest.read_text() + "\n[dependencies]\nserde = \"1\"\n")
++        with self.assertRaisesRegex(ValueError, "must not load product dependencies"):
++            verify(root)
++
++    def test_feature_name_alone_does_not_establish_optionalization(self) -> None:
++        root = self.fixture()
++        cargo = root / "codex-rs/hepta-agentd/Cargo.toml"
++        cargo.write_text(
++            cargo.read_text().replace(
++                "qualification-cognitive-write = [\"production-cognitive-write\"]",
++                "qualification-cognitive-write = [\"production-cognitive-write\"]\nproduct-adapters = []",
++            ),
++            encoding="utf-8",
