@@ -11,11 +11,46 @@ import shlex
 
 
 def run_scalar_commands(scalar: str) -> list[list[str]]:
-    """Tokenize executable lines from one already-parsed ``run`` scalar."""
+    """Tokenize declared shell lines, excluding comments and here-document data.
+
+    This is intentionally not a shell interpreter: conditions are not evaluated
+    and a declared command never proves that CI executed it successfully.
+    """
     commands: list[list[str]] = []
-    for line in scalar.replace(chr(92) + "\n", " ").splitlines():
+    documents: list[tuple[str, bool]] = []
+    continuation = ""
+    for physical in scalar.splitlines():
+        if documents:
+            delimiter, strip_tabs = documents[0]
+            candidate = physical.lstrip("\t") if strip_tabs else physical
+            if candidate == delimiter:
+                documents.pop(0)
+            continue
+        line = continuation + physical
+        if (len(line) - len(line.rstrip(chr(92)))) % 2:
+            continuation = line[:-1] + " "
+            continue
+        continuation = ""
         try:
             tokens = shlex.split(line, comments=True)
+            # Non-POSIX tokenization retains quotes, distinguishing the actual
+            # redirection operator from a string such as echo '<<'.
+            lexer = shlex.shlex(line, posix=False, punctuation_chars="<>")
+            lexer.whitespace_split = True
+            redirections = list(lexer)
+            for index, token in enumerate(redirections):
+                if token != "<<" or index + 1 == len(redirections):
+                    continue
+                word = redirections[index + 1]
+                strip_tabs = word.startswith("-")
+                if strip_tabs:
+                    word = word[1:]
+                    if not word and index + 2 < len(redirections):
+                        word = redirections[index + 2]
+                delimiter = shlex.split(word, comments=False)
+                if len(delimiter) != 1 or not delimiter[0]:
+                    raise ValueError("unsupported here-document delimiter")
+                documents.append((delimiter[0], strip_tabs))
         except ValueError:
             continue
         if tokens:

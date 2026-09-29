@@ -9,6 +9,7 @@ import unittest
 
 from hepta_workflow_commands import (
     declared_commands,
+    run_scalar_commands,
     verify_synthetic_merge,
     verify_owner_self_tests,
     workflow_commands,
@@ -30,6 +31,41 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class WorkflowCommandTests(unittest.TestCase):
+    def test_here_document_payload_never_counts_as_an_executable_check(self):
+        for marker in ("PAYLOAD", "'PAYLOAD'", '"PAYLOAD"'):
+            script = (
+                "cat <<"
+                + marker
+                + " >/dev/null\npython3 scripts/missing.py verify\nPAYLOAD\nprintf done\n"
+            )
+            commands = run_scalar_commands(script)
+            self.assertNotIn(["python3", "scripts/missing.py", "verify"], commands)
+            self.assertEqual(commands[-1], ["printf", "done"])
+            if os.name != "nt":
+                observed = subprocess.run(
+                    ["sh", "-c", script], check=True, capture_output=True, text=True
+                )
+                self.assertEqual(observed.stdout, "done")
+
+    def test_multiple_and_tab_stripped_documents_preserve_following_command(self):
+        script = "cat <<ONE <<-'TWO' >/dev/null\nfirst data\nONE\n\tpython3 scripts/missing.py verify\n\tTWO\njust test --locked\n"
+        commands = run_scalar_commands(script)
+        self.assertEqual(len(commands), 2)
+        self.assertEqual(commands[-1], ["just", "test", "--locked"])
+
+    def test_space_after_tab_stripping_operator_still_marks_data(self):
+        commands = run_scalar_commands(
+            "cat <<- 'END'\n\tjust test --locked\n\tEND\nprintf done\n"
+        )
+        self.assertEqual(len(commands), 2)
+        self.assertEqual(commands[-1], ["printf", "done"])
+
+    def test_quoted_redirection_text_does_not_hide_real_following_commands(self):
+        commands = run_scalar_commands("echo '<<' ignored\njust test --locked\n")
+        self.assertEqual(
+            commands, [["echo", "<<", "ignored"], ["just", "test", "--locked"]]
+        )
+
     def test_only_run_scalars_are_commands(self):
         self.assertEqual(
             workflow_commands("""name: cargo test

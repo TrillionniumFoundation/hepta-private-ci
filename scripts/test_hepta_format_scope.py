@@ -93,7 +93,37 @@ class FormatterScopeTests(unittest.TestCase):
         self.assertIn(
             "skip_children=true", command.args[command.args.index("--config") + 1]
         )
-        self.assertEqual(command.args[-1], "./codex-rs/example/src/lib.rs")
+        self.assertEqual(
+            command.args[-1], str(self.root / "codex-rs/example/src/lib.rs")
+        )
+        self.assertEqual(command.cwd, self.root / "codex-rs/example")
+
+    def test_rust_formatter_executes_in_owner_context_without_touching_neighbor(self):
+        import json
+
+        owner = self.root / "codex-rs/owner"
+        source = self.write("codex-rs/owner/src/lib.rs", "pub fn selected() {}\n")
+        untouched = self.write("codex-rs/other/src/lib.rs", "pub fn unchanged() {}\n")
+        self.write(
+            "codex-rs/owner/Cargo.toml", '[package]\nname="owner"\nedition="2024"\n'
+        )
+        tool = self.write(
+            "tool_probe.py",
+            'import json,os,sys\nprint(json.dumps({"cwd":os.getcwd(),"args":sys.argv[1:]}))\n',
+        )
+        command = FMT.rust_file_command("codex-rs/owner/src/lib.rs", check=True)
+        process = subprocess.run(
+            [sys.executable, str(tool), *command.args[1:]],
+            cwd=command.cwd,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        observed = json.loads(process.stdout)
+        self.assertEqual(Path(observed["cwd"]), owner)
+        self.assertEqual(Path(observed["args"][-1]), source)
+        self.assertIn("--check", observed["args"])
+        self.assertEqual(untouched.read_text(), "pub fn unchanged() {}\n")
 
     def test_nested_rust_config_limits_tools_to_existing_owner_sources(self):
         self.write("codex-rs/Cargo.toml", '[workspace.package]\nedition="2024"\n')
@@ -114,8 +144,8 @@ class FormatterScopeTests(unittest.TestCase):
         self.assertEqual(
             [command.args[-1] for command in groups[0].commands],
             [
-                "./codex-rs/first/src/lib.rs",
-                "./codex-rs/first/src/new module.rs",
+                str(self.root / "codex-rs/first/src/lib.rs"),
+                str(self.root / "codex-rs/first/src/new module.rs"),
             ],
         )
         self.assertTrue(
@@ -141,8 +171,8 @@ class FormatterScopeTests(unittest.TestCase):
         self.assertEqual(
             [command.args[-1] for command in groups[0].commands],
             [
-                "./codex-rs/first/src/lib.rs",
-                "./codex-rs/other/src/lib.rs",
+                str(self.root / "codex-rs/first/src/lib.rs"),
+                str(self.root / "codex-rs/other/src/lib.rs"),
             ],
         )
 
@@ -157,7 +187,10 @@ class FormatterScopeTests(unittest.TestCase):
         )
         self.assertEqual([group.name for group in groups], ["Rust"])
         command = groups[0].commands[0]
-        self.assertEqual(command.args[-1], "./qualification/fixture/src/lib.rs")
+        self.assertEqual(
+            command.args[-1], str(self.root / "qualification/fixture/src/lib.rs")
+        )
+        self.assertEqual(command.cwd, self.root / "qualification/fixture")
         self.assertEqual(command.args[command.args.index("--edition") + 1], "2021")
 
     def test_changed_ruff_configuration_checks_the_owning_python_tree(self):
