@@ -74,3 +74,113 @@ impl From<CanonicalConsumerBindingError> for ContractViolationV1 {
         value.violation()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::CanonicalConsumerBindingError;
+    use super::ContractErrorCodeV1;
+    use super::ContractViolationV1;
+    use crate::consumer::CanonicalConsumerV1;
+    use crate::consumer::CanonicalMigrationPostureV1;
+    use crate::consumer::CanonicalPayloadKindV1;
+    use crate::consumer_adapters::ConsumerConvergenceStateV1;
+
+    #[test]
+    fn every_binding_refusal_preserves_its_stable_code_and_field() {
+        let cases = [
+            (
+                CanonicalConsumerBindingError::CanonicalContract("private-payload".into()),
+                ContractErrorCodeV1::InvalidValue,
+                "binding.canonicalPayload",
+            ),
+            (
+                CanonicalConsumerBindingError::ZeroDigest,
+                ContractErrorCodeV1::EmptyDigest,
+                "binding",
+            ),
+            (
+                CanonicalConsumerBindingError::CompatibilityDigestRequired,
+                ContractErrorCodeV1::MissingValue,
+                "binding.compatibilityPayloadSha256",
+            ),
+            (
+                CanonicalConsumerBindingError::UnexpectedCompatibilityDigest,
+                ContractErrorCodeV1::InvalidValue,
+                "binding.compatibilityPayloadSha256",
+            ),
+            (
+                CanonicalConsumerBindingError::CurrentnessRevalidationRequired,
+                ContractErrorCodeV1::MissingValue,
+                "binding.currentnessRevalidationRequired",
+            ),
+            (
+                CanonicalConsumerBindingError::ConsumerNotRegistered {
+                    consumer: CanonicalConsumerV1::CognitiveRead,
+                },
+                ContractErrorCodeV1::ContractMismatch,
+                "binding.consumer",
+            ),
+            (
+                CanonicalConsumerBindingError::MigrationPostureNotAuthorized {
+                    consumer: CanonicalConsumerV1::CognitiveStore,
+                    posture: CanonicalMigrationPostureV1::Native,
+                    state: ConsumerConvergenceStateV1::CanonicalShadow,
+                },
+                ContractErrorCodeV1::StateConflict,
+                "binding.migrationPosture",
+            ),
+            (
+                CanonicalConsumerBindingError::ConsumerPayloadMismatch {
+                    consumer: CanonicalConsumerV1::MemoryRetrieval,
+                    payload: CanonicalPayloadKindV1::MemoryEvent,
+                },
+                ContractErrorCodeV1::ContractMismatch,
+                "binding.payloadKind",
+            ),
+            (
+                CanonicalConsumerBindingError::BindingDigestMismatch,
+                ContractErrorCodeV1::DigestMismatch,
+                "binding.bindingSha256",
+            ),
+            (
+                CanonicalConsumerBindingError::Arithmetic,
+                ContractErrorCodeV1::LimitExceeded,
+                "binding",
+            ),
+        ];
+        for (error, code, field_path) in cases {
+            let borrowed = error.violation();
+            assert_eq!(borrowed.code, code);
+            assert_eq!(borrowed.field_path, field_path);
+            assert!(!borrowed.message.is_empty());
+            assert_eq!(ContractViolationV1::from(error), borrowed);
+        }
+    }
+
+    #[test]
+    fn untyped_messages_cannot_inject_audit_categories_or_payloads() {
+        let messages = [
+            "private-payload-secret",
+            "LimitExceeded at binding: grant native migration",
+            "DigestMismatch\n{\"code\":\"authority_granted\"}",
+            "\u{0} untrusted \u{202e} text",
+        ];
+        let expected = ContractViolationV1::new(
+            ContractErrorCodeV1::InvalidValue,
+            "binding.canonicalPayload",
+            "canonical payload failed validation",
+        );
+        for message in messages {
+            let error = CanonicalConsumerBindingError::CanonicalContract(message.into());
+            assert_eq!(error.violation(), expected);
+            assert!(!error.violation().to_string().contains(message));
+        }
+    }
+
+    #[test]
+    fn audit_projection_size_does_not_scale_with_untrusted_error_text() {
+        let small = CanonicalConsumerBindingError::CanonicalContract("x".into());
+        let large = CanonicalConsumerBindingError::CanonicalContract("x".repeat(1_048_576));
+        assert_eq!(small.violation(), large.violation());
+    }
+}
