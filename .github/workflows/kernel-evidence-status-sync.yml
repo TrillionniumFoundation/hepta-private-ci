@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - fix/kernel-evidence-production-closure
+      - codex/kernel-evidence-protocol-closure-20260929
 
 permissions:
   contents: write
@@ -21,7 +22,7 @@ jobs:
       - name: Check out exact branch head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          ref: fix/kernel-evidence-production-closure
+          ref: ${{ github.ref_name }}
           fetch-depth: 0
           persist-credentials: true
 
@@ -53,4 +54,4 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "docs(kernel.evidence): regenerate canonical status [kernel-evidence-status-sync]"
-          git push origin HEAD:fix/kernel-evidence-production-closure
+          git push origin "HEAD:${GITHUB_REF_NAME}"
