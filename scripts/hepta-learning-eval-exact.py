@@ -104,7 +104,7 @@ def commands(output: Path) -> list[tuple[str, list[str], str]]:
         ("signed-e2e", ["just", "test", "--locked", "-p", "codex-hepta-intelligence-eval", "signed_qualification_e2e", "--test-threads=1"], "codex-rs"),
         ("shadow-consumer", ["just", "test", "--locked", "-p", "codex-hepta-intelligence", "evaluated_shadow", "--test-threads=1"], "codex-rs"),
         ("plasticity-consumer", ["just", "test", "--locked", "-p", "codex-hepta-intelligence", "plasticity_product", "--test-threads=1"], "codex-rs"),
-        ("agentd-consumer", ["just", "test", "--locked", "-p", "codex-hepta-agentd", "signed_candidate_passes_only_on_bound_current_owner_and_context", "--test-threads=1"], "codex-rs"),
+        ("agentd-consumer", ["just", "test", "--locked", "-p", "codex-hepta-agentd", "intelligence_evaluation_tests", "--test-threads=1"], "codex-rs"),
         ("agentd-outcome-consumer", ["just", "test", "--locked", "-p", "codex-hepta-agentd", "multi_outcome_consumer_rejects_context_owner_and_signature_substitution", "--test-threads=1"], "codex-rs"),
         ("cold-recovery-e2e", ["just", "test", "--locked", "-p", "codex-hepta-intelligence-eval", "--test", "cold_recovery_e2e", "--test-threads=1"], "codex-rs"),
         ("fault-matrix", ["bash", "scripts/hepta-learning-eval-faults.sh", "--json", str(output / "faults.json"), "--log", str(output / "faults.log")], "."),
