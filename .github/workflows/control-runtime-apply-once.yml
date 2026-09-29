@@ -49,7 +49,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          base64 -d .control-runtime-next.patch | gzip -d > "$RUNNER_TEMP/control-runtime-next.patch"
+          python3 - <<'PY'
+          import base64
+          import gzip
+          import os
+          from pathlib import Path
+
+          source = b"".join(Path(".control-runtime-next.patch").read_bytes().split())
+          payload = gzip.decompress(base64.b64decode(source, validate=True))
+          target = Path(os.environ["RUNNER_TEMP"]) / "control-runtime-next.patch"
+          target.write_bytes(payload)
+          PY
           echo "edc2303f0b0f22a38eb04af352f6d43c7c821558ad2285f6d94e7e75e40831d9  $RUNNER_TEMP/control-runtime-next.patch" | shasum -a 256 -c -
           git apply --check "$RUNNER_TEMP/control-runtime-next.patch"
           git apply "$RUNNER_TEMP/control-runtime-next.patch"
