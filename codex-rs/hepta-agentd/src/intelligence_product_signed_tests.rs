@@ -81,6 +81,8 @@ async fn signed_evaluation_completes_existing_owner_preparation_and_run_admissio
         .expect("runner")
         .with_authority_rollback_guard(guard)
         .expect("host rollback witness")
+        .with_hard_timeout_process_exit(Duration::from_secs(5))
+        .expect("hard timeout process fence")
         .with_evaluation_trust(trust)
         .expect("host-root trust");
     assert!(runner.canonical_profile_ready());
