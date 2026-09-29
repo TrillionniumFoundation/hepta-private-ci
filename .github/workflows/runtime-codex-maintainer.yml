@@ -18,13 +18,18 @@ on:
       - scripts/runtime-codex-qualification-fixup.py
       - scripts/runtime-codex-finalize-map.py
       - scripts/runtime-codex-finalize-map-followup.py
+      - codex-rs/hepta-agent-protocol/**
+      - codex-rs/hepta-agentd/**
+      - codex-rs/hepta-infer-core/**
+      - codex-rs/hepta-infer-worker-host/**
+      - docs/modules/runtime.codex/**
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: runtime-codex-maintainer
+  group: runtime-codex-maintainer-${{ github.ref }}
   cancel-in-progress: true
 
 env:
@@ -32,15 +37,15 @@ env:
   LOG_DIR: qualification/runtime-codex-maintainer
 
 jobs:
-  converge:
+  verify:
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
-          ref: codex/runtime-codex-full-convergence-20260929
-          persist-credentials: true
+          ref: ${{ github.sha }}
+          persist-credentials: false
       - uses: ./.github/actions/setup-ci
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
@@ -48,13 +53,18 @@ jobs:
       - uses: ./.github/actions/setup-rusty-v8
         with:
           target: x86_64-unknown-linux-gnu
-      - name: Bind source
+      - name: Bind immutable source
         run: |
           set -euo pipefail
-          git rev-parse HEAD
-          git rev-parse 'HEAD^{tree}'
-          git archive --format=zip --output=runtime-codex-source-before.zip HEAD
-      - name: Apply full runtime.codex convergence
+          mkdir -p "$LOG_DIR"
+          source_commit="$(git rev-parse HEAD)"
+          source_tree="$(git rev-parse 'HEAD^{tree}')"
+          test "$source_commit" = "${GITHUB_SHA}"
+          test -z "$(git status --porcelain=v1)"
+          printf 'source_commit=%s\nsource_tree=%s\n' "$source_commit" "$source_tree" \
+            | tee "$LOG_DIR/source.txt"
+          git archive --format=zip --output=runtime-codex-source.zip HEAD
+      - name: Verify convergence generators are idempotent
         run: |
           set -euo pipefail
           python3 -m py_compile \
@@ -80,8 +90,15 @@ jobs:
           python3 scripts/runtime-codex-storage-fixup.py
           python3 scripts/runtime-codex-process-crash-migration.py
           python3 scripts/runtime-codex-qualification-fixup.py
-          cd codex-rs
-          cargo fmt --all
+          python3 scripts/runtime-codex-finalize-map.py
+          python3 scripts/runtime-codex-finalize-map-followup.py
+          (
+            cd codex-rs
+            cargo fmt --all
+          )
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1)"
       - name: Verify convergence candidate
         id: verify
         shell: bash
@@ -90,7 +107,11 @@ jobs:
           mkdir -p "$LOG_DIR"
           cd codex-rs
 
-          cargo check \
+          cargo fmt --all -- --check \
+            2>&1 | tee "../$LOG_DIR/format.log"
+          format_status=${PIPESTATUS[0]}
+
+          cargo check --locked \
             -p codex-hepta-agent-protocol \
             -p codex-hepta-infer-core \
             -p codex-hepta-codex-adapter \
@@ -141,56 +162,19 @@ jobs:
           clippy_status=${PIPESTATUS[0]}
 
           cd ..
-          printf 'check=%s\nprotocol=%s\ncore=%s\nagentd=%s\nworker=%s\ncrash=%s\nprocess_crash=%s\nproduct_e2e=%s\nclippy=%s\n' \
-            "$check_status" "$protocol_status" "$core_status" "$agentd_status" \
-            "$worker_status" "$crash_status" "$process_crash_status" \
+          printf 'format=%s\ncheck=%s\nprotocol=%s\ncore=%s\nagentd=%s\nworker=%s\ncrash=%s\nprocess_crash=%s\nproduct_e2e=%s\nclippy=%s\n' \
+            "$format_status" "$check_status" "$protocol_status" "$core_status" \
+            "$agentd_status" "$worker_status" "$crash_status" "$process_crash_status" \
             "$product_e2e_status" "$clippy_status" | tee "$LOG_DIR/status.txt"
           exit 0
-      - name: Commit source convergence
+      - name: Recheck immutable source
         if: always()
-        shell: bash
         run: |
           set -euo pipefail
-          git config user.name 'runtime.codex maintainer'
-          git config user.email 'runtime-codex-maintainer@invalid'
-          git add \
-            codex-rs/Cargo.lock \
-            codex-rs/hepta-infer-core \
-            codex-rs/hepta-infer-worker-host \
-            codex-rs/hepta-agentd
-          if ! git diff --cached --quiet; then
-            git commit -m 'fix(runtime.codex): close durable bound execution obligations'
-            git push origin HEAD:codex/runtime-codex-full-convergence-20260929
-          fi
-          source_commit="$(git rev-parse HEAD)"
-          source_tree="$(git rev-parse 'HEAD^{tree}')"
-          echo "RUNTIME_CODEX_SOURCE_COMMIT=$source_commit" >> "$GITHUB_ENV"
-          echo "RUNTIME_CODEX_SOURCE_TREE=$source_tree" >> "$GITHUB_ENV"
-          printf 'source_commit=%s\nsource_tree=%s\n' "$source_commit" "$source_tree"
-          git archive --format=zip --output=runtime-codex-source-after.zip "$source_commit"
-      - name: Finalize canonical maps from verified source
-        if: always()
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -f "$LOG_DIR/status.txt"
-          if grep -Eq '=[1-9][0-9]*$' "$LOG_DIR/status.txt"; then
-            echo 'source verification failed; canonical maps remain unchanged'
-            git archive --format=zip --output=runtime-codex-final-head.zip HEAD
-            exit 0
-          fi
-          python3 scripts/runtime-codex-finalize-map.py
-          python3 scripts/runtime-codex-finalize-map-followup.py
-          git config user.name 'runtime.codex maintainer'
-          git config user.email 'runtime-codex-maintainer@invalid'
-          git add \
-            docs/modules/runtime.codex \
-            docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json
-          if ! git diff --cached --quiet; then
-            git commit -m 'docs(runtime.codex): bind durable convergence candidate'
-            git push origin HEAD:codex/runtime-codex-full-convergence-20260929
-          fi
-          git archive --format=zip --output=runtime-codex-final-head.zip HEAD
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          test -z "$(git status --porcelain=v1)"
+          source_tree="$(sed -n 's/^source_tree=//p' "$LOG_DIR/source.txt")"
+          test "$(git rev-parse 'HEAD^{tree}')" = "$source_tree"
       - name: Upload maintainer evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -198,9 +182,7 @@ jobs:
           name: runtime-codex-maintainer-${{ github.run_id }}
           path: |
             qualification/runtime-codex-maintainer/
-            runtime-codex-source-before.zip
-            runtime-codex-source-after.zip
-            runtime-codex-final-head.zip
+            runtime-codex-source.zip
           if-no-files-found: warn
           retention-days: 30
       - name: Enforce verification
