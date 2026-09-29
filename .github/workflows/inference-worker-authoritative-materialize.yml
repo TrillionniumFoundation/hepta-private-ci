@@ -13,7 +13,7 @@ permissions:
 
 concurrency:
   group: inference-worker-authoritative-materialize
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   BASE_SHA: c3b3aaa9887e15bf18b1572f259b6893ddbe2b68
@@ -27,7 +27,7 @@ env:
 jobs:
   materialize:
     name: Verify and materialize stage 1
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 45
     steps:
       - name: Check out exact transfer head
