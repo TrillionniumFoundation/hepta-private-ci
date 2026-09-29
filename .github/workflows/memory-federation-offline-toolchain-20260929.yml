@@ -1,0 +1,35 @@
+name: memory federation offline compiler inputs 20260929
+on:
+  push:
+    branches: [ops/memory-federation-source-review-20260929]
+    paths: [.github/workflows/memory-federation-offline-toolchain-20260929.yml]
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-slim
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: d3c0aed52200abd44122bdbbe0f9a66a67f4b4ec
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Fetch pinned public compiler and locked crates only
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain 1.95.0
+          export PATH="$HOME/.cargo/bin:$PATH"
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
+          cargo +1.95.0 fetch --locked --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml
+          mkdir -p "$RUNNER_TEMP/offline-inputs"
+          tar -C "$HOME" -czf "$RUNNER_TEMP/offline-inputs/rust-public-inputs.tar.gz" .rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu .cargo/registry
+          sha256sum "$RUNNER_TEMP/offline-inputs/rust-public-inputs.tar.gz" > "$RUNNER_TEMP/offline-inputs/sha256.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-federation-offline-public-inputs
+          path: ${{ runner.temp }}/offline-inputs
+          compression-level: 0
+          retention-days: 3
+          if-no-files-found: error
