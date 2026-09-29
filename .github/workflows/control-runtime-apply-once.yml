@@ -8,47 +8,31 @@ on:
       - '.github/workflows/control-runtime-apply-once.yml'
 
 permissions:
-  contents: write
+  contents: read
   pull-requests: read
 
 concurrency:
   group: control-runtime-apply-once-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
-env:
-  CARGO_INCREMENTAL: '0'
-  CARGO_BUILD_JOBS: '2'
-  CARGO_PROFILE_TEST_DEBUG: '0'
-  CARGO_PROFILE_DEV_DEBUG: '0'
-
 jobs:
-  apply-and-verify:
-    runs-on: macos-14
-    timeout-minutes: 90
+  retain-conflict-bundle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
-          persist-credentials: true
+          persist-credentials: false
 
-      - name: Detect staged convergence payload
-        id: stage
+      - name: Decode and three-way apply exact staged patch
+        id: apply
         shell: bash
         run: |
           set -euo pipefail
-          if test -f .control-runtime-next.patch; then
-            echo 'present=true' >> "$GITHUB_OUTPUT"
-          else
-            echo 'present=false' >> "$GITHUB_OUTPUT"
-            echo 'No staged payload remains; verified application is already complete.'
-          fi
-
-      - name: Decode and apply exact staged patch
-        if: steps.stage.outputs.present == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
+          bundle="$RUNNER_TEMP/control-runtime-conflict-bundle"
+          mkdir -p "$bundle/conflicts"
           python3 - <<'PY'
           import base64
           import gzip
@@ -60,63 +44,43 @@ jobs:
           target = Path(os.environ["RUNNER_TEMP"]) / "control-runtime-next.patch"
           target.write_bytes(payload)
           PY
-          echo "edc2303f0b0f22a38eb04af352f6d43c7c821558ad2285f6d94e7e75e40831d9  $RUNNER_TEMP/control-runtime-next.patch" | shasum -a 256 -c -
-          git apply --stat "$RUNNER_TEMP/control-runtime-next.patch"
-          if ! git apply --3way --whitespace=fix "$RUNNER_TEMP/control-runtime-next.patch"; then
-            git status --short
-            for path in $(git diff --name-only --diff-filter=U); do
-              echo "::group::${path} combined conflict diff"
-              git diff --cc --unified=60 -- "$path" || true
-              echo "::endgroup::"
-            done
-            exit 1
+          echo "edc2303f0b0f22a38eb04af352f6d43c7c821558ad2285f6d94e7e75e40831d9  $RUNNER_TEMP/control-runtime-next.patch" | sha256sum -c -
+          cp "$RUNNER_TEMP/control-runtime-next.patch" "$bundle/control-runtime-next.patch"
+          git apply --stat "$RUNNER_TEMP/control-runtime-next.patch" > "$bundle/patch-stat.txt"
+          set +e
+          git apply --3way --whitespace=fix "$RUNNER_TEMP/control-runtime-next.patch" > "$bundle/apply.stdout.txt" 2> "$bundle/apply.stderr.txt"
+          apply_status=$?
+          set -e
+          git status --short > "$bundle/status.txt"
+          if test "$apply_status" -eq 0; then
+            echo 'clean=true' >> "$GITHUB_OUTPUT"
+            git diff --cached --binary > "$bundle/applied.patch"
+          else
+            echo 'clean=false' >> "$GITHUB_OUTPUT"
+            git diff --name-only --diff-filter=U > "$bundle/conflicted-paths.txt"
+            while IFS= read -r path; do
+              test -n "$path" || continue
+              git checkout --conflict=diff3 -- "$path" || true
+              mkdir -p "$bundle/conflicts/$(dirname "$path")"
+              cp "$path" "$bundle/conflicts/$path"
+              {
+                echo "===== $path ====="
+                git diff --cc --unified=100 -- "$path" || true
+              } >> "$bundle/combined-conflicts.diff"
+            done < "$bundle/conflicted-paths.txt"
           fi
-          git diff --check
 
-      - name: Validate canonical module state before compilation
-        if: steps.stage.outputs.present == 'true'
-        run: python3 scripts/control_runtime_validate_state.py --output "$RUNNER_TEMP/control-runtime-state-before.json"
+      - name: Retain exact decoded patch and conflict files
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: control-runtime-conflict-bundle-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/control-runtime-conflict-bundle
+          if-no-files-found: error
+          retention-days: 7
 
-      - name: Format changed Rust source
-        if: steps.stage.outputs.present == 'true'
-        working-directory: codex-rs
-        run: cargo fmt -p codex-hepta-control-plane
-
-      - name: Formatting check
-        if: steps.stage.outputs.present == 'true'
-        working-directory: codex-rs
-        run: cargo fmt -p codex-hepta-control-plane -- --check
-
-      - name: Control-plane regression suite
-        if: steps.stage.outputs.present == 'true'
-        working-directory: codex-rs
-        run: cargo test --locked -p codex-hepta-control-plane
-
-      - name: Control-plane all-target compilation
-        if: steps.stage.outputs.present == 'true'
-        working-directory: codex-rs
-        run: cargo check --locked --all-targets -p codex-hepta-control-plane
-
-      - name: Control-plane strict lint
-        if: steps.stage.outputs.present == 'true'
-        working-directory: codex-rs
-        run: cargo clippy --locked --all-targets -p codex-hepta-control-plane -- -D warnings
-
-      - name: Revalidate state and prepare verified commit
-        if: steps.stage.outputs.present == 'true'
-        shell: bash
+      - name: Require conflict-free application
+        if: steps.apply.outputs.clean != 'true'
         run: |
-          set -euo pipefail
-          python3 scripts/control_runtime_validate_state.py --output "$RUNNER_TEMP/control-runtime-state-after.json"
-          rm .control-runtime-next.patch
-          git diff --check
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git diff --cached --check
-          git commit -s -m "feat(control.runtime): close recovery scheduling and crash qualification gaps"
-
-      - name: Push verified convergence source
-        if: steps.stage.outputs.present == 'true'
-        shell: bash
-        run: git push origin HEAD:codex/control-runtime-convergence-v1
+          echo 'The exact staged patch still has three-way conflicts; inspect the retained private bundle.' >&2
+          exit 1
