@@ -16,8 +16,11 @@ use crate::durable_control::native::NativeRunRecord;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum CognitiveContextDeliveryStateV1 {
-    /// The live owner durably proved a pre-effect stop or observed refusal.
+    /// The live owner durably proved that the payload did not cross the effect boundary.
     NotSent,
+    /// The App Server received the request but refused turn admission. This is
+    /// not proof that context bytes were never transmitted or disclosed.
+    RejectedBeforeTurn,
     /// Dispatch exists, but no exact turn was durably observed. Reconcile only.
     AcceptanceUnknown,
     /// The exact App Server turn was observed. Terminal outcome is separate.
@@ -155,8 +158,10 @@ impl DurableInferenceControl {
             CognitiveContextDeliveryStateV1::TerminalObserved
         } else if record.turn_id.is_some() {
             CognitiveContextDeliveryStateV1::TurnAccepted
-        } else if record.pre_dispatch_stop.is_some() || record.dispatch_rejection.is_some() {
+        } else if record.pre_dispatch_stop.is_some() {
             CognitiveContextDeliveryStateV1::NotSent
+        } else if record.dispatch_rejection.is_some() {
+            CognitiveContextDeliveryStateV1::RejectedBeforeTurn
         } else {
             // A cancellation intent, timeout, or recovered dispatch is not a
             // proof of non-delivery. Do not use reservation state as a shortcut.
@@ -167,6 +172,7 @@ impl DurableInferenceControl {
             CognitiveContextDeliveryStateV1::AcceptanceUnknown => 1,
             CognitiveContextDeliveryStateV1::TurnAccepted => 2,
             CognitiveContextDeliveryStateV1::TerminalObserved => 3,
+            CognitiveContextDeliveryStateV1::RejectedBeforeTurn => 4,
         };
         // No raw prompt, memory, model output, or stop reason enters this
         // projection. Its digest is integrity evidence, not a signature.

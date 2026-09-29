@@ -215,3 +215,23 @@ fn substituted_source_admission_cannot_join_a_preparation() {
         CognitiveContextDeliveryError::RequestMismatch
     );
 }
+
+#[test]
+fn observed_server_rejection_does_not_claim_the_payload_was_not_sent() {
+    use crate::durable_control::native::NativeDispatchRejection;
+    use crate::durable_control::native::NativeDispatchRejectionStatus;
+
+    let fixture = Fixture::new();
+    let mut owner = fixture.open();
+    owner.reserve_native(request(), /*maximum_in_flight*/ 1).unwrap();
+    owner.dispatch_native("request-1", dispatch()).unwrap();
+    owner.reject_native_before_start("request-1", NativeDispatchRejection {
+        status: NativeDispatchRejectionStatus::Rejected,
+        reason: "observed refusal".to_string(),
+        response_digest: "4".repeat(64),
+        retry_safe_before_admission: false,
+    }).unwrap();
+    assert_eq!(state(&owner), Some(CognitiveContextDeliveryStateV1::RejectedBeforeTurn));
+    drop(owner);
+    assert_eq!(state(&fixture.open()), Some(CognitiveContextDeliveryStateV1::RejectedBeforeTurn));
+}

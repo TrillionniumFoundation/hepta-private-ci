@@ -185,6 +185,3 @@ fn assignment_identity(
 #[path = "cognitive_retrieval_learning_tests.rs"]
 mod tests;
 
-#[cfg(test)]
-#[path = "cognitive_retrieval_delivery_tests.rs"]
-mod delivery_tests;

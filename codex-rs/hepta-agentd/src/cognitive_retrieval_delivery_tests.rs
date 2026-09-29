@@ -6,8 +6,7 @@ use codex_hepta_infer_core::durable_control::native::NativeDispatch;
 use codex_hepta_infer_core::durable_control::native::NativeRequest;
 use codex_hepta_infer_worker_host::native_app_server::AppServerModelDriver;
 use codex_hepta_infer_worker_host::native_app_server::NativeWorkerConfig;
-use super::CognitiveRetrievalLearningSink;
-use super::assignment_identity;
+use codex_hepta_agentd::CognitiveRetrievalLearningSink;
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::path::Path;
@@ -111,17 +110,36 @@ fn assignment(record_id: StableId, episode_id: StableId) -> ledger::RetrievalAss
     }
 }
 
+
+// Mirror the frozen public episode identity in an external integration test.
+// This test deliberately uses the library crate on both sides of the existing
+// Agentd/worker-host dev-dependency edge, not a second unit-test crate identity.
+fn assignment_identity(owner: &AgentId, generation: u64, request: u64) -> (StableId, StableId) {
+    let raw = owner.as_str().as_bytes();
+    let mut bytes = b"hepta.agentd.retrieval-assignment.v1".to_vec();
+    bytes.extend_from_slice(&(raw.len() as u64).to_be_bytes());
+    bytes.extend_from_slice(raw);
+    bytes.extend_from_slice(&generation.to_be_bytes());
+    bytes.extend_from_slice(&request.to_be_bytes());
+    (
+        id(&format!("retrieval-assignment:{}", Digest32::of_bytes(&bytes))),
+        id(&format!("retrieval-episode:{}:{generation}:{request}", owner.as_str())),
+    )
+}
+
 #[test]
 fn real_learning_and_native_owners_join_exact_preparation_and_acceptance() {
     let temp = tempfile::tempdir().unwrap();
     let owner = AgentId::parse("00000000-0000-4000-8000-000000000191").unwrap();
     let generation = 4;
     let read_request_id = 17;
-    let (record_id, episode_id) = assignment_identity(&owner, generation, read_request_id).unwrap();
+    let (record_id, episode_id) = assignment_identity(&owner, generation, read_request_id);
     let prepared = assignment(record_id, episode_id);
     let context = prepared.published_context_digest.unwrap();
     let mut writer = writer(temp.path());
-    let receipt = writer.append_retrieval_assignment_current(prepared).unwrap();
+    writer.append_retrieval_assignment_current(prepared).unwrap();
+    let ledger_before = std::fs::read(temp.path().join("learning.journal")).unwrap();
+    let witness_before = std::fs::read(temp.path().join("learning.witness")).unwrap();
     let sink = CognitiveRetrievalLearningSink::new(writer);
     let driver = AppServerModelDriver::new(NativeWorkerConfig {
         agentd_socket: temp.path().join("agentd.sock"),
@@ -173,7 +191,8 @@ fn real_learning_and_native_owners_join_exact_preparation_and_acceptance() {
     let mut wrong_generation = request.clone();
     wrong_generation.worker_generation += 1;
     assert!(driver.inspect_cognitive_assignment(&control, &sink, &wrong_generation, read_request_id, context).is_err());
-    assert_eq!(sink.writer.lock().unwrap().witness_frontier().unwrap().anchor.chain_digest, receipt.chain_digest);
+    assert_eq!(std::fs::read(temp.path().join("learning.journal")).unwrap(), ledger_before);
+    assert_eq!(std::fs::read(temp.path().join("learning.witness")).unwrap(), witness_before);
     drop(control);
     let reopened = DurableInferenceControl::open(temp.path().join("native.journal"), capacity).unwrap();
     assert_eq!(driver.inspect_cognitive_assignment(&reopened, &sink, &request, read_request_id, context).unwrap(), accepted);

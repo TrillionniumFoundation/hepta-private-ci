@@ -444,7 +444,7 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         &fresh_plan.plan,
     )?
     .to_string();
-    response.plan = Some(fresh_plan.plan);
+    response.plan = Some(fresh_plan.plan.clone());
     if serde_json::to_vec(&response)
         .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?
         .len()
@@ -456,15 +456,6 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         .into());
     }
 
-    // A concurrent correction, deletion, changed citation, expiry or restored
-    // older database must not leak a stale projection into the response.
-    store
-        .revalidate_lane_c_selection(&access, &scope, &selected_cut, now_seconds()?)
-        .await
-        .map_err(|error| {
-            cognitive_context_metrics::record_stale_cut_rejection();
-            error
-        })?;
     if let Some(ranker) = ranker {
         let ranker = std::sync::Arc::clone(ranker);
         tokio::task::spawn_blocking(move || ranker.revalidate())
@@ -538,6 +529,19 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         .map_err(|_| CognitiveContextError::RetrievalLearningUnavailable)?
         .map_err(|_| CognitiveContextError::RetrievalLearningUnavailable)?;
     }
+    // Publication is the last memory-owner observation, after every awaited
+    // ranker/retrieval/learning operation. A write-ahead learning assignment may
+    // survive a rejection here; it remains preparation evidence, not delivery.
+    // Do not move another await below this fence. The worker independently
+    // repeats currentness at physical use; this observation is not a lease.
+    store
+        .revalidate_lane_c_selection(&access, &scope, &selected_cut, now_seconds()?)
+        .await
+        .map_err(|error| {
+            cognitive_context_metrics::record_stale_cut_rejection();
+            error
+        })?;
+    fresh_plan.ensure_current(plan_binding::now_micros()?)?;
     cognitive_context_metrics::record_selected(response.items.len());
     operation.succeed();
     Ok(response)
