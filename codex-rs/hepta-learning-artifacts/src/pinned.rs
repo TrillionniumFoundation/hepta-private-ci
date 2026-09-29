@@ -15,6 +15,8 @@ use crate::ArtifactManifest;
 use crate::ArtifactRegistry;
 use crate::ArtifactStorageError;
 use crate::RegistrySnapshotReceipt;
+use crate::VerifiedCurrentArtifactUseV1;
+use crate::current_use::projection_matches;
 use crate::read_candidate_payload;
 use crate::read_registry_snapshot;
 
@@ -129,11 +131,13 @@ pub fn load_pinned_candidate(
     })
 }
 
-/// Authenticated exact registry view for final-use revalidation.
+/// Authenticated exact registry view for compatibility revalidation.
 ///
 /// External callers cannot construct this value directly. It is issued only
 /// after the artifact authority verifies a signed CURRENT head and the exact
-/// registry snapshot backing that head.
+/// registry snapshot backing that head. This V1 view does not retain complete
+/// dataset lineage; dataset-derived final use should prefer
+/// [`VerifiedCurrentArtifactUseV1`].
 pub struct VerifiedCurrentRegistryViewV1 {
     receipt: RegistrySnapshotReceipt,
     registry: ArtifactRegistry,
@@ -213,16 +217,39 @@ impl RevalidatingCandidate {
         self.candidate.spec()
     }
 
-    /// Invoke a bounded, read-only consumer only after checking an authenticated
-    /// current view. The closure must not retain authority or dispatch effects.
-    /// Already decoded model state may be captured by the closure: payload bytes
-    /// need not be decoded again. Hosts must serialize view publication and use
-    /// at their own effect boundary; this function supplies no global lock.
+    /// Compatibility revalidation against signed CURRENT only.
+    ///
+    /// This proves registry monotonicity and current V1 eligibility, but does
+    /// not prove that complete V2 dataset lineage remains outside the latest
+    /// withdrawal frontier. Dataset-derived final use should call
+    /// [`Self::with_current_use`].
     pub fn with_current<T>(
         &mut self,
         current: VerifiedCurrentRegistryViewV1,
         consume: impl FnOnce(&[u8]) -> T,
     ) -> Result<T, PinnedCandidateLoadError> {
+        self.with_verified_registry(current.receipt, current.registry, consume)
+    }
+
+    /// Invoke a bounded read-only consumer after checking signed CURRENT, the
+    /// complete V2/V3 publication admission, and the owner's current durable
+    /// withdrawal frontier. Semantic mismatch permanently closes this consumer.
+    pub fn with_current_use<T>(
+        &mut self,
+        current: VerifiedCurrentArtifactUseV1,
+        consume: impl FnOnce(&[u8]) -> T,
+    ) -> Result<T, PinnedCandidateLoadError> {
+        if self.unavailable {
+            return Err(PinnedCandidateLoadError::Unavailable);
+        }
+        let (current, admission) = current.into_parts();
+        if !projection_matches(
+            &self.candidate.spec.manifest,
+            &admission.validated_manifest,
+        ) {
+            self.unavailable = true;
+            return Err(PinnedCandidateLoadError::PinMismatch);
+        }
         self.with_verified_registry(current.receipt, current.registry, consume)
     }
 
@@ -281,3 +308,7 @@ impl RevalidatingCandidate {
 #[cfg(test)]
 #[path = "pinned_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "pinned_current_use_tests.rs"]
+mod current_use_tests;
