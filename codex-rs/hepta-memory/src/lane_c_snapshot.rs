@@ -4,6 +4,10 @@
 //! revisions, citations, heads and source/projection frontiers. Only verified,
 //! currently valid heads are exposed as facts; tombstones remain visible.
 
+#[path = "lane_c_selected_snapshot.rs"]
+mod selected;
+pub use selected::DurableCognitiveSelectionSnapshot;
+
 use std::collections::BTreeMap;
 
 use codex_hepta_cognitive_read::AuthoritativeSnapshotV1;
@@ -99,6 +103,7 @@ pub struct DurableCognitiveSnapshotPage {
     complete: bool,
     observed_at_unix_seconds: i64,
     cut_digest: Digest32,
+    owner_state_digest: Digest32,
     page_digest: Digest32,
     authority: AuthorityPosture,
 }
@@ -273,6 +278,18 @@ impl CognitiveStore {
         maximum_heads: u32,
         after: Option<DurableCognitiveSnapshotCursor>,
     ) -> Result<DurableCognitiveSnapshotPage, CognitiveStoreError> {
+        self.lane_c_snapshot_page_inner(access, scope, now_unix_seconds, maximum_heads, after, None).await
+    }
+
+    async fn lane_c_snapshot_page_inner(
+        &self,
+        access: &CognitiveAccess,
+        scope: &CognitiveScope,
+        now_unix_seconds: i64,
+        maximum_heads: u32,
+        after: Option<DurableCognitiveSnapshotCursor>,
+        exact_ids: Option<&[StableId]>,
+    ) -> Result<DurableCognitiveSnapshotPage, CognitiveStoreError> {
         self.authorize(access, scope)?;
         if now_unix_seconds < 0 {
             return Err(CognitiveStoreError::Invalid(
@@ -374,10 +391,12 @@ impl CognitiveStore {
         // Revisions, citations, sources and fact sets are immutable; their
         // append-only counts above change whenever those ledgers advance.
         let mut head_set_digest = Digest32::of_bytes(b"hepta.sqlite.lane-c.head-set.v1");
+        let mut head_state_digest = Digest32::of_bytes(b"hepta.sqlite.lane-c.head-states.v1");
         let mut digest_after = String::new();
         loop {
             let head_rows = sqlx::query(
-                "SELECT h.memory_id, h.revision
+                "SELECT h.memory_id, h.revision, r.content_sha256, r.verification, r.lifecycle,
+                        r.valid_from_unix_seconds, r.valid_to_unix_seconds
                  FROM memory_heads h JOIN memory_revisions r
                    ON r.memory_id = h.memory_id AND r.revision = h.revision
                  WHERE r.owner_agent_id = ? AND r.scope_kind = ? AND r.workspace_sha256 IS ?
@@ -407,6 +426,7 @@ impl CognitiveStore {
                 step.extend_from_slice(memory_id.as_bytes());
                 step.extend_from_slice(&revision.to_be_bytes());
                 head_set_digest = Digest32::of_bytes(&step);
+                head_state_digest = selected::advance_head_state(head_state_digest, row, now_unix_seconds)?;
                 digest_after = memory_id;
             }
             if head_rows.len() < usize::try_from(LANE_C_HEAD_DIGEST_BATCH).unwrap_or(usize::MAX) {
@@ -414,6 +434,13 @@ impl CognitiveStore {
             }
         }
 
+        let owner_state_digest = lane_c_page_cut_digest(
+            &scope_id,
+            &frontiers,
+            u64::try_from(citation_count).map_err(corrupt)?,
+            head_state_digest,
+            /*observed_at_unix_seconds*/ 0,
+        );
         let cut_digest = lane_c_page_cut_digest(
             &scope_id,
             &frontiers,
@@ -430,36 +457,44 @@ impl CognitiveStore {
             ));
         }
 
-        let after_memory_id = after
-            .as_ref()
-            .map_or("", |cursor| cursor.after_memory_id.as_str());
-        let page_limit = i64::try_from(maximum_heads.saturating_add(1)).map_err(|_| {
-            CognitiveStoreError::Invalid("Lane C page size exceeds i64".to_string())
-        })?;
-        let mut head_rows = sqlx::query(
-            "SELECT h.memory_id
-             FROM memory_heads h JOIN memory_revisions r
-               ON r.memory_id = h.memory_id AND r.revision = h.revision
-             WHERE r.owner_agent_id = ? AND r.scope_kind = ? AND r.workspace_sha256 IS ?
-               AND h.memory_id > ?
-             ORDER BY h.memory_id LIMIT ?",
-        )
-        .bind(self.owner_agent_id.as_str())
-        .bind(scope_kind)
-        .bind(workspace)
-        .bind(after_memory_id)
-        .bind(page_limit)
-        .fetch_all(&mut *transaction)
-        .await
-        .map_err(unavailable)?;
-        let has_more = head_rows.len() > maximum_heads;
-        if has_more {
-            head_rows.truncate(maximum_heads);
-        }
-        let head_ids = head_rows
-            .iter()
-            .map(|row| row.try_get::<String, _>("memory_id").map_err(unavailable))
-            .collect::<Result<Vec<_>, _>>()?;
+        let (head_ids, has_more) = if let Some(ids) = exact_ids {
+            if after.is_some() || ids.len() > maximum_heads {
+                return Err(CognitiveStoreError::Invalid("invalid exact-ID owner page".to_string()));
+            }
+            (ids.iter().map(|id| id.as_str().to_string()).collect::<Vec<_>>(), false)
+        } else {
+            let after_memory_id = after
+                .as_ref()
+                .map_or("", |cursor| cursor.after_memory_id.as_str());
+            let page_limit = i64::try_from(maximum_heads.saturating_add(1)).map_err(|_| {
+                CognitiveStoreError::Invalid("Lane C page size exceeds i64".to_string())
+            })?;
+            let mut head_rows = sqlx::query(
+                "SELECT h.memory_id
+                 FROM memory_heads h JOIN memory_revisions r
+                   ON r.memory_id = h.memory_id AND r.revision = h.revision
+                 WHERE r.owner_agent_id = ? AND r.scope_kind = ? AND r.workspace_sha256 IS ?
+                   AND h.memory_id > ?
+                 ORDER BY h.memory_id LIMIT ?",
+            )
+            .bind(self.owner_agent_id.as_str())
+            .bind(scope_kind)
+            .bind(workspace)
+            .bind(after_memory_id)
+            .bind(page_limit)
+            .fetch_all(&mut *transaction)
+            .await
+            .map_err(unavailable)?;
+            let has_more = head_rows.len() > maximum_heads;
+            if has_more {
+                head_rows.truncate(maximum_heads);
+            }
+            let head_ids = head_rows
+                .iter()
+                .map(|row| row.try_get::<String, _>("memory_id").map_err(unavailable))
+                .collect::<Result<Vec<_>, _>>()?;
+            (head_ids, has_more)
+        };
 
         let mut records = Vec::new();
         if !head_ids.is_empty() {
@@ -653,6 +688,7 @@ impl CognitiveStore {
             complete: !has_more,
             observed_at_unix_seconds: now_unix_seconds,
             cut_digest,
+            owner_state_digest,
             page_digest: Digest32::ZERO,
             authority: AuthorityPosture::DENY_ALL,
         };

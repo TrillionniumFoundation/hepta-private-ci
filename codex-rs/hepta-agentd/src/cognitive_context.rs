@@ -24,7 +24,7 @@ use codex_hepta_cognitive_store::DurableCognitiveStoreError as CognitiveStoreErr
 use codex_hepta_contracts::AgentId;
 use codex_hepta_memory::CognitiveAccess;
 use codex_hepta_memory::CognitiveScope;
-use codex_hepta_memory::DurableCognitiveSnapshot;
+use codex_hepta_memory::DurableCognitiveSelectionSnapshot as DurableCognitiveSnapshot;
 use codex_hepta_memory::RetrievalCandidateIdentityV1;
 use codex_hepta_memory::RetrievalExecutionContextV1;
 use codex_hepta_memory::RetrievalRequest;
@@ -193,8 +193,6 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
     }
     let mut pending_assignment = None;
 
-    let cut = store.lane_c_snapshot(&access, &scope, now).await?;
-    let read_view = OwnerCutReadView::new(&cut).map_err(map_read_ids_error)?;
     let observation = store
         .observe_memory_retrieval(&access, &RetrievalRequest::new(query, now))
         .await?;
@@ -208,6 +206,8 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         .collect::<Result<Vec<_>, _>>()?;
     record_ids.sort();
     record_ids.dedup();
+    let cut = store.lane_c_snapshot_ids(&access, &scope, now, &record_ids).await?;
+    let read_view = OwnerCutReadView::new(cut.owner_snapshot()).map_err(map_read_ids_error)?;
     let admission_read = read_view
         .read_ids(ReadIdsRequestV1 {
             snapshot_digest: cut.snapshot().snapshot_digest,
@@ -238,7 +238,7 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         })?;
         let execution = execute_owner_observation(
             &observation,
-            &cut,
+            cut.owner_snapshot(),
             context,
             Digest32::of_bytes(query.as_bytes()),
             acquired_at_unix_ms,
@@ -417,9 +417,14 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         }
     }
 
-    let selected_read = read_selected_items(&read_view, &response.items)?;
+    let selected_ids = response.items.iter().map(|item| {
+        StableId::new(item.memory_id.as_str()).map_err(|error| CognitiveStoreError::Invalid(error.to_string()))
+    }).collect::<Result<Vec<_>, _>>()?;
+    let selected_cut = cut.select_ids(&selected_ids)?;
+    let selected_view = OwnerCutReadView::new(selected_cut.owner_snapshot()).map_err(map_read_ids_error)?;
+    let selected_read = read_selected_items(&selected_view, &response.items)?;
     let selected_read_binding =
-        bind_selected_read(&cut, &selected_read, expected_retrieval_context_digest);
+        bind_selected_read(&selected_cut, &selected_read, expected_retrieval_context_digest);
     response.snapshot_digest = selected_read.snapshot_digest().to_string();
     response.read_digest = selected_read_binding.to_string();
     let fresh_plan = plan_binding::evaluate(
@@ -454,7 +459,7 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
     // A concurrent correction, deletion, changed citation, expiry or restored
     // older database must not leak a stale projection into the response.
     store
-        .revalidate_lane_c_snapshot(&access, &scope, &cut, now_seconds()?)
+        .revalidate_lane_c_selection(&access, &scope, &selected_cut, now_seconds()?)
         .await
         .map_err(|error| {
             cognitive_context_metrics::record_stale_cut_rejection();

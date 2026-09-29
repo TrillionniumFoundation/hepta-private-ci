@@ -8,6 +8,7 @@ use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_memory::CognitiveAccess;
 use codex_hepta_memory::CognitiveScope;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 
 use super::CognitiveContextError;
 use super::CognitiveStore;
@@ -24,7 +25,7 @@ use super::read_selected_items;
 use super::read_view::OwnerCutReadView;
 use crate::CognitiveContextItem;
 use crate::CognitiveContextPlan;
-use crate::CognitiveContextRevalidation;
+use super::CognitiveContextRevalidation;
 use crate::CognitiveContextSnapshot;
 
 pub(crate) async fn revalidate_with_retrieval_context(
@@ -83,8 +84,11 @@ pub(crate) async fn revalidate_with_retrieval_context(
     }
     let access = CognitiveAccess::agent_private(owner.clone());
     let scope = CognitiveScope::AgentPrivate;
+    let record_ids = items.iter().map(|item| {
+        StableId::new(item.memory_id.as_str()).map_err(|error| CognitiveStoreError::Invalid(error.to_string()))
+    }).collect::<Result<Vec<_>, _>>()?;
     let cut = store
-        .lane_c_snapshot(&access, &scope, now_seconds()?)
+        .lane_c_snapshot_ids(&access, &scope, now_seconds()?, &record_ids)
         .await?;
     if cut.snapshot().snapshot_digest != expected_snapshot {
         return Err(CognitiveStoreError::Conflict(
@@ -93,7 +97,7 @@ pub(crate) async fn revalidate_with_retrieval_context(
         .into());
     }
 
-    let read_view = OwnerCutReadView::new(&cut).map_err(map_read_ids_error)?;
+    let read_view = OwnerCutReadView::new(cut.owner_snapshot()).map_err(map_read_ids_error)?;
     let read = read_selected_items(&read_view, items)?;
     let retrieval_context_digest = match current_retrieval {
         Some(current) => Some(
@@ -181,7 +185,7 @@ pub(crate) async fn revalidate_with_retrieval_context(
     // Awaited registry/model work must not hide a correction or expiry that
     // occurred after the initial cut acquisition in this final-use request.
     store
-        .revalidate_lane_c_snapshot(&access, &scope, &cut, now_seconds()?)
+        .revalidate_lane_c_selection(&access, &scope, &cut, now_seconds()?)
         .await?;
     let fresh = plan_binding::evaluate(
         owner,
