@@ -242,6 +242,22 @@ class EntrypointEvidenceTests(unittest.TestCase):
                 self.attempt,
             )
 
+    def test_symlinked_receipt_or_checksum_is_rejected(self):
+        self.make_matrix()
+        directory = next(self.matrix.iterdir())
+        for name in ("receipt.json", "receipt.sha256"):
+            with self.subTest(name=name):
+                target = directory / name
+                original = target.read_bytes()
+                borrowed = self.root / f"borrowed-{name}"
+                borrowed.write_bytes(original)
+                target.unlink()
+                target.symlink_to(borrowed)
+                with self.assertRaises(evidence.EvidenceError):
+                    self.verify()
+                target.unlink()
+                target.write_bytes(original)
+
     def test_synthetic_merge_parent_substitution_is_rejected(self):
         directory = self.matrix / "merge"
         directory.mkdir()
