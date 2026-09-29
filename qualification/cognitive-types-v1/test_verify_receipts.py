@@ -11,6 +11,7 @@ import sys
 import tempfile
 import unittest
 
+from command_process import CAPTURE_VERSION, MAX_LOG_BYTES
 import evidence_inventory as inventory
 import run_qualification as qualification
 import verify_receipts as verifier
@@ -56,6 +57,9 @@ class ReceiptVerificationTests(unittest.TestCase):
                     checks.append({"name": check_name, "argv": argv, "cwd": str(cwd),
                                    "status": "passed", "exit_code": 0, "error": None,
                                    "started_unix_ns": 1, "finished_unix_ns": 2,
+                                   "capture_version": CAPTURE_VERSION, "log_complete": True,
+                                   "process_group_closed": True, "log_bytes": log.stat().st_size,
+                                   "log_limit_bytes": MAX_LOG_BYTES,
                                    "log": log.name, "log_sha256": verifier.file_digest(log)})
                 checks.append({"name": "clean-tree", "status": "passed", "exit_code": 0, "porcelain": ""})
                 receipt = {"schema": "hepta.cognitive-types.readonly-execution.v1",
@@ -111,6 +115,35 @@ class ReceiptVerificationTests(unittest.TestCase):
             self.assertIs(report[key], False)
         self.assertNotEqual(self.identities["exact-head"]["candidate_commit"],
                             self.identities["synthetic-merge"]["candidate_commit"])
+
+    def test_resealed_process_and_log_completion_claims_are_rejected(self):
+        changes = (("capture_version", True), ("capture_version", 0),
+                   ("log_complete", False), ("log_complete", 1),
+                   ("process_group_closed", False), ("process_group_closed", "true"),
+                   ("log_limit_bytes", MAX_LOG_BYTES * 2), ("log_bytes", True),
+                   ("log_bytes", 0), ("log_bytes", MAX_LOG_BYTES + 1))
+        for group in qualification.GROUPS:
+            for kind in verifier.KINDS:
+                for key, value in changes:
+                    with self.subTest(group=group, kind=kind, key=key, value=value):
+                        self.assert_resealed_change_rejected(
+                            lambda r: r["checks"][0].update({key: value}), group, kind)
+                for key in ("capture_version", "log_complete", "process_group_closed",
+                            "log_bytes", "log_limit_bytes"):
+                    with self.subTest(group=group, kind=kind, missing=key):
+                        self.assert_resealed_change_rejected(
+                            lambda r: r["checks"][0].pop(key), group, kind)
+        self.assert_resealed_change_rejected(lambda r: r.update(check_plan_version=2))
+
+    def test_runner_refuses_to_seal_incomplete_process_capture(self):
+        output = self.directory / "incomplete-capture"
+        shutil.copytree(self.artifacts["native", "exact-head"], output)
+        for key, value in (("log_complete", False), ("process_group_closed", False),
+                           ("log_bytes", 0), ("log_sha256", "0" * 64),
+                           ("log", "wrong.log")):
+            receipt = copy.deepcopy(self.receipts["native", "exact-head"])
+            receipt["checks"][0][key] = value
+            self.assertFalse(qualification.finish_receipt(receipt, output))
 
     def test_missing_artifact_is_not_qualification(self):
         shutil.rmtree(self.artifacts["owners", "synthetic-merge"])

@@ -9,15 +9,15 @@ import os
 from pathlib import Path
 import platform
 import re
-import signal
 import subprocess
 import sys
 import time
 
+from command_process import capture_command, closed_capture
 from evidence_inventory import collect_inventory, require_files, require_fresh_output
 
 SHA = re.compile(r"[0-9a-f]{40}")
-CHECK_PLAN_VERSION = 2
+CHECK_PLAN_VERSION = 3
 GROUPS = {
     "native": ["codex-hepta-cognitive-types"],
     "consumers": ["codex-hepta-cognitive-read", "codex-hepta-cognitive-store",
@@ -98,40 +98,22 @@ def log_tail(path: Path) -> str:
 
 
 def run_check(name: str, argv: list[str], cwd: Path, output: Path, timeout: int = 1800) -> dict:
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,127}", name):
+        raise ValueError("unsafe command evidence name")
     output.mkdir(parents=True, exist_ok=True)
     log = output / (name + ".log")
     started = time.time_ns()
-    error = None
-    status = "failed"
-    code = None
-    with log.open("wb") as stream:
-        try:
-            process = subprocess.Popen(argv, cwd=cwd, stdout=stream, stderr=subprocess.STDOUT,
-                                       start_new_session=os.name == "posix")
-            try:
-                code = process.wait(timeout=timeout)
-            except subprocess.TimeoutExpired:
-                if os.name == "posix":
-                    try:
-                        os.killpg(process.pid, signal.SIGKILL)
-                    except ProcessLookupError:
-                        pass
-                else:
-                    process.kill()
-                process.wait()
-                raise
-            status = "passed" if code == 0 else "failed"
-        except (OSError, subprocess.TimeoutExpired) as exc:
-            error = f"{type(exc).__name__}: {exc}"
-            stream.write((error + "\n").encode())
-            status = "infrastructure_invalid"
+    result = capture_command(argv, cwd, log, timeout)
     digest = file_sha256(log)
+    status, code = result["status"], result["exit_code"]
     print(f"{name}: {status} (exit={code}; log_sha256={digest})", flush=True)
     if status != "passed":
         print(log_tail(log), flush=True)
-    return {"name": name, "argv": argv, "cwd": str(cwd), "exit_code": code,
-            "status": status, "started_unix_ns": started, "finished_unix_ns": time.time_ns(),
-            "log": log.name, "log_sha256": digest, "error": error}
+        if result["error"]:
+            print(result["error"], flush=True)
+    return {"name": name, "argv": argv, "cwd": str(cwd), **result,
+            "started_unix_ns": started, "finished_unix_ns": time.time_ns(),
+            "log": log.name, "log_sha256": digest}
 
 
 def command_plan(root: Path, group: str, output: Path) -> list[tuple[str, list[str], Path]]:
@@ -195,13 +177,15 @@ def finish_receipt(receipt: dict, output: Path) -> bool:
     # A nonempty passing prefix is not a complete qualification. Require the
     # exact reviewed plan, one outcome per command, and the final clean cut.
     passed = (bool(expected) and receipt.get("identity_valid") is True
-              and receipt.get("check_plan_version") == CHECK_PLAN_VERSION
+              and type(receipt.get("check_plan_version")) is int
+              and receipt["check_plan_version"] == CHECK_PLAN_VERSION
               and isinstance(checks, list)
               and all(isinstance(check, dict) for check in checks)
               and [check.get("name") for check in checks] == expected
               and all(check.get("status") == "passed"
                       and type(check.get("exit_code")) is int and check["exit_code"] == 0
                       and check.get("error") is None for check in checks)
+              and all(closed_capture(check) for check in checks[:-1])
               and checks[-1].get("porcelain") == "")
     # Seal all logs and nested result files, not just their console summaries.
     output.mkdir(parents=True, exist_ok=True)
@@ -212,6 +196,14 @@ def finish_receipt(receipt: dict, output: Path) -> bool:
         if group == "native":
             required += ["quality-receipt.json", "mutations/mutation-receipt.json"]
         require_files(inventory, required)
+        if passed:
+            files = {row["path"]: row for row in inventory["files"]}
+            passed = all(
+                check.get("log") == check["name"] + ".log"
+                and check["log_bytes"] == files[check["log"]]["bytes"]
+                and check.get("log_sha256") == files[check["log"]]["sha256"]
+                for check in checks[:-1]
+            )
     except (OSError, ValueError) as exc:
         receipt["evidence_error"] = f"{type(exc).__name__}: {exc}"
         passed = False

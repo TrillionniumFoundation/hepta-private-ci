@@ -32,7 +32,7 @@ Package execution and explicit canonical inputs are not sufficient evidence that
 
 The read-only `cognitive-types-qualification.yml` resolves one full source SHA and one fetched main SHA before fanout. Its native, consumers and owners groups each run exact-head and deterministic synthetic-merge candidates. A merge conflict rejects. The synthetic commit has the ordered parents `[base, source]`, the merge-tree result and deterministic commit metadata.
 
-`run_qualification.py` records source/base/candidate commits and trees, ordered parents, workflow/run identity, runner image and actual toolchain commands. Every command retains its argv, working directory, exit code, timing and SHA-256 of its captured log. Timeouts terminate the process group on POSIX hosts so descendants cannot continue after the receipt is finalized. Missing tools and timeouts are `infrastructure_invalid`, not passes. Nonzero exits, missing/empty checks and skipped states cannot satisfy qualification. Final checks reject candidate-head changes, tracked modifications and untracked source files.
+`run_qualification.py` records source/base/candidate commits and trees, ordered parents, workflow/run identity, runner image and actual toolchain commands. Every command retains its argv, working directory, exit code, timing and SHA-256 of its captured log. The shared command capture terminates the owned POSIX process group on timeout and rejects a zero-exit leader that leaves residual members; its containment limit is specified below. Missing tools and timeouts are `infrastructure_invalid`, not passes. Nonzero exits, missing/empty checks and skipped states cannot satisfy qualification. Final checks reject candidate-head changes, tracked modifications and untracked source files.
 
 Receipts and build targets used by the probe live outside the source tree. Upload failures fail the job. The matrix aggregate requires all groups; qualification does not set product acceptance, activation or release. The workflow has read-only repository permissions and never repairs, deletes, commits or pushes candidate source.
 
@@ -49,6 +49,25 @@ python3 qualification/cognitive-types-v1/run_qualification.py \
 ```
 
 Repeat with `--kind synthetic-merge` and groups `consumers` and `owners`, preserving the same source/base values. The candidate preparation may detach HEAD but does not update any branch. Use `just test` as the repository package-test entrypoint. The CI matrix installs explicit test-runner versions and records the actual active compiler; setup failures remain unsatisfied.
+
+### 4.1 Closed command capture and check-plan version 3
+
+The existing `run_check` entrypoint now delegates process and log capture to `command_process.py`; native, consumer and owner commands, as well as mutation builds and exact-test experiments, retain that same entrypoint. This changes no command list, package selection, lint strictness or candidate identity. It repairs an observed counterexample: a parent exited zero, the old runner sealed an empty passing log, and its child subsequently appended 14 bytes, invalidating the recorded digest.
+
+The parent exclusively creates and owns each log file; children receive a pipe instead of the writable log descriptor. Existing files and symlink aliases reject rather than overwrite. The selected POSIX runner uses a monotonic deadline, reads at most 64 KiB per chunk, retains at most 64 MiB per command and allows five seconds for leader cleanup after termination. Exceeding the log limit retains a bounded diagnostic prefix with `log_complete: false`; it is `infrastructure_invalid`, never a truncated pass or a killed semantic mutant. Missing programs, deadlines, signals and residual process groups also cannot pass. A properly waited child and an exactly-at-limit complete log remain valid observations.
+
+Every command records `capture_version`, `log_complete`, `process_group_closed`, `log_bytes` and `log_limit_bytes`. Both receipt sealing and six-artifact verification require strictly typed completion facts, the reviewed limit and exact correspondence with the inventoried log bytes and digest. Check-plan version 3 rejects earlier receipts as evidence for the new capture contract; older evidence remains historical and is not rewritten. The evidence schema and frozen cognitive wire/digest profiles are unchanged.
+
+This is bounded pipe capture and owned-process-group cleanup, not an OS sandbox or a proof that every process on the host has stopped. Processes that create a separate session/group, including independently supervised nested commands, require host-level containment for whole-tree cancellation; file-system mutation by an escaped or unrelated process is not prevented by this helper. Unresolved cleanup remains nonpassing. Current owner authentication, revocation and final-use checks are not cached or supplied by the runner.
+
+The focused regression entrypoint is:
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover \
+  -s qualification/cognitive-types-v1 -p 'test_*.py'
+```
+
+For development without the complete repository, the narrower `test_command_process`, `test_run_qualification` and `test_verify_receipts` modules can be run explicitly from that directory. Those process/fixture tests are not Rust, cross-language, source-mutation, authenticated product or selected-host capacity qualification. The full command plan and both fixed candidate trees remain mandatory for module acceptance.
 
 ## 5. Cross-language, hostile-input and source-mutation evidence
 

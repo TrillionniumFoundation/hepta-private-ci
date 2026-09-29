@@ -16,6 +16,7 @@ import re
 import subprocess
 import sys
 
+from command_process import closed_capture
 from evidence_inventory import require_files, verify_inventory
 from run_qualification import CHECK_PLAN_VERSION, GROUPS, SHA, command_plan, git, resolve_candidate
 
@@ -133,7 +134,10 @@ def verify_receipt(directory: Path, group: str, identity: dict, execution: dict)
         require(type(started) is int and type(finished) is int and 0 < started <= finished,
                 f"invalid command times: {name}")
         require(check.get("log") == name + ".log", f"wrong log identity: {name}")
-        actual = file_digest(regular_file(directory, name + ".log"))
+        require(closed_capture(check), f"incomplete process or log capture: {name}")
+        log = regular_file(directory, name + ".log")
+        require(check["log_bytes"] == log.stat().st_size, f"log byte count mismatch: {name}")
+        actual = file_digest(log)
         require(check.get("log_sha256") == actual, f"log digest mismatch: {name}")
         log_digests[name] = actual
     require(checks[-1].get("porcelain") == "", "candidate worktree was not clean")
