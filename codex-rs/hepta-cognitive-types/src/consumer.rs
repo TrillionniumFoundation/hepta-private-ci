@@ -399,7 +399,7 @@ pub enum CanonicalConsumerBindingError {
 
 impl fmt::Display for CanonicalConsumerBindingError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(formatter, "{self:?}")
+        self.violation().fmt(formatter)
     }
 }
 
