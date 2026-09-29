@@ -75,18 +75,7 @@ jobs:
             python scripts/hepta-learning-operator-contract.py verify
             git diff --check
             git status --short > .ci-artifacts/transformed-status.txt
-            tar --exclude=.git --exclude=target --exclude=codex-rs/target \
-              --exclude=.ci-artifacts \
-              -czf .ci-artifacts/learning-operator-transformed-source.tar.gz .
           ) 2>&1 | tee .ci-artifacts/transform.log
-      - name: Upload transformed source and transform log
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: learning-operator-transformed-${{ env.SOURCE_SHA }}
-          path: .ci-artifacts/
-          if-no-files-found: error
-          retention-days: 14
       - name: Stop after transform failure
         if: steps.transform.outcome == 'failure'
         shell: bash
@@ -124,12 +113,16 @@ jobs:
               -p codex-hepta-agentd -- --check
             git diff --check
           ) 2>&1 | tee .ci-artifacts/rust.log
-      - name: Upload Rust evidence
+      - name: Upload compact diagnostics
         if: always()
+        continue-on-error: true
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: learning-operator-windows-rust-${{ env.SOURCE_SHA }}
-          path: .ci-artifacts/rust.log
+          name: learning-operator-windows-${{ env.SOURCE_SHA }}
+          path: |
+            .ci-artifacts/transform.log
+            .ci-artifacts/transformed-status.txt
+            .ci-artifacts/rust.log
           if-no-files-found: warn
           retention-days: 14
       - name: Stop after compile or test failure
