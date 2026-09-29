@@ -1,0 +1,167 @@
+name: Platform wire production contract source and merge
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/platform_wire_production_gate.py'
+      - 'scripts/platform_wire_production_schema.py'
+      - 'scripts/platform_wire_status.py'
+      - 'scripts/platform_wire_status_contracts.py'
+      - 'scripts/platform_wire_status_receipts.py'
+      - 'scripts/platform_wire_status_selftest.py'
+      - 'scripts/platform_wire_receipt_subject.py'
+      - 'docs/modules/platform.wire/PRODUCTION_INTAKE_20260929.md'
+      - 'docs/modules/platform.wire/PRODUCTION_PRODUCERS.json'
+      - 'docs/modules/platform.wire/STATUS.md'
+      - '.github/workflows/platform-wire-production-contract.yml'
+      - '.github/workflows/platform-wire-production-intake.yml'
+      - '.github/actions/hepta-synthetic-merge/**'
+      - 'scripts/hepta_ci_exec.py'
+  workflow_dispatch:
+    inputs:
+      base_sha:
+        description: Immutable 40-hex integration base, distinct from dispatched source
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: platform-wire-production-contract-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  contract:
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, base-merge]
+    name: Production contract ${{ matrix.lane }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || inputs.base_sha }}
+      HEPTA_CI_LANE: ${{ matrix.lane }}
+      PYTHONDONTWRITEBYTECODE: '1'
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Verify fixed source and integration base
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$SOURCE_SHA" != "$BASE_SHA"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git cat-file -e "$BASE_SHA^{commit}"
+
+      - name: Construct exact ordered merge
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number || '0' }}
+          author-name: Hepta Wire Production Contract CI
+          author-email: hepta-wire-production-contract@users.noreply.github.com
+          message: Synthetic platform.wire production-contract merge
+
+      - name: Bind tested source
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "TESTED_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          echo "RECORDS=$RUNNER_TEMP/platform-wire-production-contract" >> "$GITHUB_ENV"
+
+      - name: Validate closed production evidence contracts
+        id: tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/platform-wire-production-contract"
+          mkdir -p "$records"
+          status=0
+          record() {
+            local name="$1" minimum="$2"
+            shift 2
+            python3 scripts/hepta_ci_exec.py --output "$records/$name.json" --minimum-tests "$minimum" -- "$@" || status=1
+          }
+          record production-gate-tests 9 python3 scripts/platform_wire_production_gate.py --self-test
+          record lifecycle-tests 0 python3 scripts/platform_wire_status.py self-test
+          record lifecycle-document 0 python3 scripts/platform_wire_status.py check-doc
+          record registry-shape 0 python3 -c 'import json; p=json.load(open("docs/modules/platform.wire/PRODUCTION_PRODUCERS.json", encoding="utf-8")); assert p == {"schema":"hepta.platform-wire.production-producers.v1","producers":[]}'
+          record clean-tree 0 bash -c 'git diff --exit-code && git diff --cached --exit-code && test -z "$(git status --porcelain --untracked-files=all)"'
+          exit "$status"
+
+      - name: Retain bounded production-contract evidence
+        if: always()
+        env:
+          TEST_OUTCOME: ${{ steps.tests.outcome }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RECORDS"
+          python3 - <<'PY'
+          from datetime import datetime, timezone
+          import hashlib
+          import json
+          import os
+          import platform
+          from pathlib import Path
+          import subprocess
+
+          def git(*args):
+              return subprocess.check_output(["git", *args], text=True).strip()
+
+          records = Path(os.environ["RECORDS"])
+          files = {
+              path.name: hashlib.sha256(path.read_bytes()).hexdigest()
+              for path in sorted(records.iterdir())
+              if path.is_file() and path.name != "production-contract-execution.json"
+          }
+          payload = {
+              "schema": "hepta.platform-wire.production-contract-execution.v1",
+              "source_sha": os.environ["SOURCE_SHA"],
+              "source_tree": git("rev-parse", os.environ["SOURCE_SHA"] + "^{tree}"),
+              "base_sha": os.environ["BASE_SHA"],
+              "tested_sha": git("rev-parse", "HEAD"),
+              "tested_tree": git("rev-parse", "HEAD^{tree}"),
+              "parents": git("show", "-s", "--format=%P", "HEAD").split(),
+              "lane": os.environ["HEPTA_CI_LANE"],
+              "workflow": os.environ.get("GITHUB_WORKFLOW"),
+              "workflow_ref": os.environ.get("GITHUB_WORKFLOW_REF"),
+              "workflow_sha": os.environ.get("GITHUB_WORKFLOW_SHA"),
+              "run_id": int(os.environ["GITHUB_RUN_ID"]),
+              "run_attempt": int(os.environ["GITHUB_RUN_ATTEMPT"]),
+              "generated_at": datetime.now(timezone.utc).isoformat(),
+              "runner": platform.platform(),
+              "status": "passed" if os.environ.get("TEST_OUTCOME") == "success" else "failed",
+              "files_sha256": files,
+              "scope": "closed production plan/report/registry and lifecycle contract tests; no deployment observation or acceptance claim",
+              "production_observed": False,
+              "independent_acceptance": False,
+              "activation": False,
+              "release": False,
+          }
+          (records / "production-contract-execution.json").write_text(
+              json.dumps(payload, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          print(json.dumps(payload, indent=2, sort_keys=True))
+          PY
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: platform-wire-production-contract-${{ matrix.lane }}-${{ env.SOURCE_SHA }}-${{ github.run_id }}
+          path: ${{ env.RECORDS }}/
+          if-no-files-found: error
+          retention-days: 90
