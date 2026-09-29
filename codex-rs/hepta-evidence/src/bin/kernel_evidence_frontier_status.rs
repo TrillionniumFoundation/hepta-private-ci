@@ -8,7 +8,7 @@ use std::path::PathBuf;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_evidence::LockedFileEvidenceFrontierBackend;
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug)]
 struct StatusArguments {
     backend_root: PathBuf,
     backend_identity_sha256: Sha256Digest,
@@ -128,7 +128,10 @@ mod tests {
 
     #[test]
     fn accepts_one_complete_read_only_status_request() {
-        let parsed = parse_arguments(valid_arguments()).expect("valid status arguments");
+        let parsed = match parse_arguments(valid_arguments()) {
+            Ok(parsed) => parsed,
+            Err(error) => panic!("valid status arguments were rejected: {error}"),
+        };
         assert_eq!(parsed.backend_root, PathBuf::from("/external/evidence"));
         assert_eq!(parsed.local_rollback_root, PathBuf::from("/var/lib/hepta"));
         assert_eq!(parsed.store_id, "store:production");
