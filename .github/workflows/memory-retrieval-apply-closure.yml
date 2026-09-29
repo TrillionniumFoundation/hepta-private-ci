@@ -1,5 +1,7 @@
 name: Apply memory retrieval closure patch
 
+# One-shot bootstrap. The job self-deletes this workflow and its patch payloads only after
+# the exact source, test, format, compile, and strict-Clippy gates all pass.
 on:
   push:
     branches:
