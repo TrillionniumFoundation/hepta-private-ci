@@ -134,7 +134,9 @@ fn decided_committed_publication_is_reconciled_without_a_write() {
     let second = reconcile_product_attempt_publication_v1(&mut journal, &mut store, &id("attempt"))
         .expect("idempotent settled recovery");
     assert_eq!(second, settled);
-    assert_eq!(store.loads, 1);
+    // Even a locally Published attempt must re-read the external owner. The
+    // terminal journal state is not a substitute for durable publication proof.
+    assert_eq!(store.loads, 2);
 }
 
 #[test]

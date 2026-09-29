@@ -46,7 +46,21 @@ impl CrossFoldPlanV1 {
         }
         let mut declared = self.folds.clone();
         declared.sort_by_key(|fold| fold.fold_id.clone());
+
+        // Cross-fold held-out identity is a global admission invariant. Check it
+        // before fitting any fold so a duplicate cannot be masked by the first
+        // affected fold's changed prediction digest.
         let mut held_out_decisions = BTreeSet::new();
+        for (_, _, _, targets) in &inputs {
+            for target in targets {
+                if !held_out_decisions.insert(target.decision_id.clone()) {
+                    return Err(ProductEvaluationError::Binding(
+                        "cross-fit held-out decision reuse",
+                    ));
+                }
+            }
+        }
+
         let mut total_rows = 0_usize;
         let mut total_action_cells = 0_usize;
 
@@ -66,11 +80,6 @@ impl CrossFoldPlanV1 {
                     .checked_add(target.actions.len())
                     .filter(|value| *value <= MAX_CROSS_FIT_ACTION_CELLS)
                     .ok_or(ProductEvaluationError::Binding("cross-fit action budget"))?;
-                if !held_out_decisions.insert(target.decision_id.clone()) {
-                    return Err(ProductEvaluationError::Binding(
-                        "cross-fit held-out decision reuse",
-                    ));
-                }
             }
             validate_lineage(partition, training, targets)?;
             let receipt = fit_temporal_fold(fold_plan, training, targets)
