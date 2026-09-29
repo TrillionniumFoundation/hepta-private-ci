@@ -8,51 +8,129 @@ on:
       - .github/patches/memory-retrieval-phase1a.patch
       - .github/patches/memory-retrieval-phase1b.patch
       - .github/workflows/memory-retrieval-apply-closure.yml
-  pull_request:
-    branches:
-      - main
-    paths:
-      - .github/patches/memory-retrieval-phase1a.patch
-      - .github/patches/memory-retrieval-phase1b.patch
-      - .github/workflows/memory-retrieval-apply-closure.yml
 
 permissions:
   contents: write
 
+concurrency:
+  group: memory-retrieval-closure-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
-  apply:
+  apply-validate-commit:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: chatgpt/memory-retrieval-full-closure-20260929
           fetch-depth: 0
           persist-credentials: true
-      - name: Apply, format and commit the exact closure patch
+
+      - name: Verify exact branch identity
         shell: bash
         run: |
-          set -euo pipefail
-          git apply --index .github/patches/memory-retrieval-phase1a.patch
-          git apply --index .github/patches/memory-retrieval-phase1b.patch
+          set -euxo pipefail
+          test "$(git branch --show-current)" = "chatgpt/memory-retrieval-full-closure-20260929"
+          test -z "$(git status --porcelain)"
+          git rev-parse HEAD
+          git rev-parse HEAD^{tree}
 
-          cd codex-rs
-          cargo fmt --all -- --config imports_granularity=Item
-          cargo fmt --all -- --check --config imports_granularity=Item
-          cargo metadata --locked --no-deps --format-version 1 >/dev/null
-          cd ..
+      - name: Preflight phase 1A patch
+        shell: bash
+        run: |
+          set -euxo pipefail
+          git apply --check --verbose .github/patches/memory-retrieval-phase1a.patch
 
-          git diff --check
+      - name: Preflight phase 1B patch
+        shell: bash
+        run: |
+          set -euxo pipefail
+          git apply --check --verbose .github/patches/memory-retrieval-phase1b.patch
+
+      - name: Apply exact closure patches
+        shell: bash
+        run: |
+          set -euxo pipefail
+          git apply --index --verbose .github/patches/memory-retrieval-phase1a.patch
+          git apply --index --verbose .github/patches/memory-retrieval-phase1b.patch
           git diff --cached --check
+          git status --short
 
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.8.22"
+          enable-cache: false
+
+      - name: Prepare native build prerequisites
+        shell: bash
+        run: |
+          set -euxo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends pkg-config libssl-dev protobuf-compiler
+
+      - name: Format the complete repository
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python3 scripts/format.py
+          git add -A
+          git diff --cached --check
+          python3 scripts/format.py --check
+
+      - name: Validate Cargo graph
+        shell: bash
+        working-directory: codex-rs
+        run: |
+          set -euxo pipefail
+          cargo metadata --locked --no-deps --format-version 1 >/dev/null
+
+      - name: Test retrieval core
+        shell: bash
+        working-directory: codex-rs
+        run: |
+          set -euxo pipefail
+          cargo test --locked -p codex-hepta-memory-retrieval
+
+      - name: Test durable memory migration
+        shell: bash
+        working-directory: codex-rs
+        run: |
+          set -euxo pipefail
+          cargo test --locked -p codex-hepta-memory
+
+      - name: Compile Agentd product path
+        shell: bash
+        working-directory: codex-rs
+        run: |
+          set -euxo pipefail
+          cargo test --locked -p codex-hepta-agentd --no-run
+
+      - name: Run strict all-target Clippy
+        shell: bash
+        working-directory: codex-rs
+        run: |
+          set -euxo pipefail
+          cargo clippy --locked --all-targets \
+            -p codex-hepta-memory-retrieval \
+            -p codex-hepta-memory \
+            -p codex-hepta-agentd \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-operations \
+            -- -D warnings
+
+      - name: Commit only after every source gate passes
+        if: github.event_name == 'push'
+        shell: bash
+        run: |
+          set -euxo pipefail
           rm .github/patches/memory-retrieval-phase1a.patch
           rm .github/patches/memory-retrieval-phase1b.patch
           rm .github/workflows/memory-retrieval-apply-closure.yml
           git add -A
           git diff --cached --check
           test -n "$(git status --porcelain)"
-
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git commit -m "fix(memory-retrieval): close exact-head source blockers"
