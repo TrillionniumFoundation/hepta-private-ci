@@ -249,11 +249,10 @@ impl<I: DurableNeuronInvocation> CanonicalOwnerPortsV1 for DurableNeuronOwnerPor
             }
         }
 
-        let intuition = self
-            .inner
-            .intuition_request
-            .as_mut()
-            .ok_or_else(|| AgentdOwnerPortsV1::reject(input.stage, "intuition consumer missing"))?;
+        let intuition =
+            self.inner.intuition_request.as_mut().ok_or_else(|| {
+                AgentdOwnerPortsV1::reject(input.stage, "intuition consumer missing")
+            })?;
         intuition.state_digest = result.output.tick.checkpoint_after;
         AgentdOwnerPortsV1::receipt(
             input,
@@ -390,13 +389,8 @@ impl AgentdIntelligenceProductRunnerV1 {
         neuron: I,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
         let composition = coordinator.composition().clone();
-        self.prepare_for_composition_with_neuron_invocation(
-            &composition,
-            request,
-            inputs,
-            neuron,
-        )
-        .await
+        self.prepare_for_composition_with_neuron_invocation(&composition, request, inputs, neuron)
+            .await
     }
 
     pub async fn prepare_for_composition_with_durable_neuron(
@@ -406,13 +400,8 @@ impl AgentdIntelligenceProductRunnerV1 {
         inputs: AgentdIntelligenceOwnerInputsV1,
         neuron: crate::AgentdNeuronInvocationV1,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
-        self.prepare_for_composition_with_neuron_invocation(
-            composition,
-            request,
-            inputs,
-            neuron,
-        )
-        .await
+        self.prepare_for_composition_with_neuron_invocation(composition, request, inputs, neuron)
+            .await
     }
 
     pub async fn prepare_for_composition_with_durable_neuron_v2(
@@ -422,13 +411,8 @@ impl AgentdIntelligenceProductRunnerV1 {
         inputs: AgentdIntelligenceOwnerInputsV1,
         neuron: crate::AgentdNeuronInvocationV2,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
-        self.prepare_for_composition_with_neuron_invocation(
-            composition,
-            request,
-            inputs,
-            neuron,
-        )
-        .await
+        self.prepare_for_composition_with_neuron_invocation(composition, request, inputs, neuron)
+            .await
     }
 
     async fn prepare_for_composition_with_neuron_invocation<I: DurableNeuronInvocation>(
@@ -521,16 +505,9 @@ impl AgentdIntelligenceProductRunnerV1 {
                 deadline: stage_deadline,
                 cancellation: worker_cancellation,
             };
-            let mut ports = DurableNeuronOwnerPorts::new(
-                inputs,
-                evaluation_session,
-                neuron,
-                admission,
-            );
-            let mut oracle = FileBackedFreshnessOracleV1::new(
-                authority_file,
-                authority_verifier,
-            );
+            let mut ports =
+                DurableNeuronOwnerPorts::new(inputs, evaluation_session, neuron, admission);
+            let mut oracle = FileBackedFreshnessOracleV1::new(authority_file, authority_verifier);
             prepare_intelligence_run(request, &mut ports, &mut oracle)
         })?;
         let outcome = timeout(Duration::from_micros(timeout_micros), &mut worker)
@@ -699,9 +676,7 @@ fn finish_prepared_outcome(
                 },
             ))
         }
-        CanonicalRunOutcomeV1::Abstained(_) => {
-            Ok(AgentdIntelligenceProductOutcomeV1::Abstained)
-        }
+        CanonicalRunOutcomeV1::Abstained(_) => Ok(AgentdIntelligenceProductOutcomeV1::Abstained),
         CanonicalRunOutcomeV1::SlowPath(_) => Ok(AgentdIntelligenceProductOutcomeV1::SlowPath),
     }
 }

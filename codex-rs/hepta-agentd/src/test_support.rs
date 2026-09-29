@@ -161,10 +161,10 @@ impl CognitiveTestHost {
             }
             if control_task.is_finished() {
                 let outcome = control_task.await?;
-                return Err(
-                    format!("Agentd test control server exited before readiness: {outcome:?}")
-                        .into(),
-                );
+                return Err(format!(
+                    "Agentd test control server exited before readiness: {outcome:?}"
+                )
+                .into());
             }
             if Instant::now() >= deadline {
                 return Err("timed out waiting for Agentd test App Server socket".into());
@@ -175,8 +175,7 @@ impl CognitiveTestHost {
 
         let client = AgentdClient::new(identity.control_socket.clone(), agent_id.clone(), 1)?;
         let deadline = Instant::now() + READY_TIMEOUT;
-        let mut last_control_observation =
-            "no control health response was observed".to_string();
+        let mut last_control_observation = "no control health response was observed".to_string();
         loop {
             if app_server_task.is_finished() {
                 let outcome = app_server_task.await?;
