@@ -1,0 +1,94 @@
++            # retains the exact inode while later Cargo test commands atomically
++            # replace their normal target path. This avoids multi-gigabyte copies
++            # while still detecting any in-place mutation of tested bytes.
++            os.link(source, path)
++        except OSError:
++            shutil.copy2(source, path)
++        path = path.resolve(strict=True)
++        require(path.is_file() and os.access(path, os.X_OK), f"invalid fixture snapshot: {path}")
+         env[f"HEPTA_{role}_BIN"] = str(path)
+         # Legacy and current fixtures use different names; all resolve to the
+-        # very same compiler-artifact executable, never an inferred target path.
++        # same frozen compiler-artifact executable, never an inferred path.
+         env[f"{role}_EXE_PATH"] = str(path)
+         for name in names:
+             env[f"CARGO_BIN_EXE_{name}"] = str(path)
+-        result[role] = {"path": str(path), "sha256": sha256(path), "size": path.stat().st_size}
++        if role == "APP_SERVER":
++            env["HEPTA_TEST_CODEX_EXE"] = str(path)
++        result[role] = {
++            "path": str(path),
++            "sha256": sha256(path),
++            "size": path.stat().st_size,
++        }
+     return result
+ 
+ 
+@@ -154,6 +187,7 @@
+     env["CODEX_RS_DIR"] = str(root / "codex-rs")
+     env["CARGO_TARGET_DIR"] = str(root / "codex-rs" / "target")
+     env["CARGO_INCREMENTAL"] = "0"
++    fixture_root: Path | None = None
+     try:
+         require(re.fullmatch(r"[0-9a-f]{40}", args.sha) is not None, "expected SHA must be exact")
+         require(platform.system() == ("Linux" if args.os == "ubuntu-latest" else "Darwin"), "runner OS differs from matrix")
+@@ -174,7 +208,16 @@
+             if argv[1] == "build":
+                 try:
+                     require(command["exit_code"] == 0, "fixture build failed")
+-                    record["binaries"] = fixture_environment(output / command["log"], env)
++                    fixture_root = (
++                        root
++                        / "codex-rs"
++                        / "target"
++                        / ".agentd-exact-fixtures"
++                        / f"{args.run_id}-{args.attempt}-{args.os}-{args.suite}"
++                    )
++                    record["binaries"] = fixture_environment(
++                        output / command["log"], env, fixture_root
++                    )
+                 except (OSError, ValueError, KeyError) as error:
+                     record["errors"].append(str(error))
+             # Every command is attempted, including after a failed build/test.
+@@ -189,6 +232,8 @@
+     except (OSError, ValueError, subprocess.SubprocessError) as error:
+         record["errors"].append(f"{type(error).__name__}: {error}")
+     finally:
++        if fixture_root is not None:
++            shutil.rmtree(fixture_root, ignore_errors=True)
+         atomic_json(output / "receipt.json", record)
+     print(json.dumps({key: record[key] for key in ("source_sha", "os", "suite", "result", "errors")}))
+     return 0 if record["result"] == "success" else 1
+--- a/scripts/qualification/test_agentd_exact_head.py
++++ b/scripts/qualification/test_agentd_exact_head.py
+@@ -152,6 +152,9 @@
+                 self.assertIn("--locked", argv)
+                 self.assertNotIn("--ignored", argv)
+                 self.assertNotIn("--skip", argv)
++        strict = q.cargo_commands("strict-clippy")
++        self.assertEqual(len(strict), 1)
++        self.assertIn("--no-deps", strict[0])
+ 
+     def test_all_fixture_roles_must_resolve_from_cargo_artifacts(self):
+         log = self.root / "cargo.jsonl"
+@@ -164,14 +167,18 @@
+             lines.append(json.dumps({"reason": "compiler-artifact", "target": {"name": names[0]},
+                                      "executable": str(executable)}))
+         log.write_text("\n".join(lines))
+-        result = q.fixture_environment(log, env)
++        fixture_root = self.root / "fixture-snapshot"
++        result = q.fixture_environment(log, env, fixture_root)
+         self.assertEqual(set(result), set(q.ALIASES))
+         self.assertEqual(env["CODEX_EXE_PATH"], env["HEPTA_CODEX_BIN"])
+         self.assertEqual(env["AGENTD_EXE_PATH"], env["HEPTA_AGENTD_BIN"])
+         self.assertEqual(env["SUPERVISOR_EXE_PATH"], env["HEPTA_SUPERVISOR_BIN"])
++        self.assertEqual(env["APP_SERVER_EXE_PATH"], env["HEPTA_TEST_CODEX_EXE"])
++        for binary in result.values():
++            self.assertTrue(Path(binary["path"]).is_relative_to(fixture_root))
+         log.write_text("{}\n")
+         with self.assertRaisesRegex(ValueError, "missing"):
+-            q.fixture_environment(log, {})
++            q.fixture_environment(log, {}, self.root / "missing-fixtures")
+ 
+     def test_failed_command_has_actual_exit_and_log(self):
+         import os
