@@ -189,6 +189,15 @@ where
         FederationProductPacketV1::new(frame, body)?.encode()
     }
 
+    /// Run owner-local bounded maintenance through the same durable wire owner.
+    /// It never dispatches or retries a product query.
+    pub fn maintain_expired(
+        &mut self,
+        now_unix_ms: u64,
+    ) -> Result<usize, FederationProductErrorV1> {
+        Ok(self.wire.maintain_expired(now_unix_ms)?)
+    }
+
     pub fn into_wire_host(self) -> FederationWireHostV1<S> {
         self.wire
     }
@@ -298,6 +307,15 @@ where
             return Err(FederationProductErrorV1::UnexpectedWireMessage);
         }
         Ok(response)
+    }
+
+    /// Run owner-local bounded maintenance through the same durable wire owner.
+    /// It never dispatches or retries a product query.
+    pub fn maintain_expired(
+        &mut self,
+        now_unix_ms: u64,
+    ) -> Result<usize, FederationProductErrorV1> {
+        Ok(self.wire.maintain_expired(now_unix_ms)?)
     }
 
     pub fn into_wire_client(self) -> FederationWireClientV1<S> {

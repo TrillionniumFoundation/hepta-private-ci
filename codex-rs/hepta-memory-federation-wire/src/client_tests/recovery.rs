@@ -106,3 +106,29 @@ fn failed_inbound_store_can_be_retried_after_restart_without_state_drift() {
         FederationWireMessageV1::Response(_)
     ));
 }
+
+#[test]
+fn client_owner_maintenance_is_atomic_and_reconciles_expired_attempt_metadata() {
+    let store = ControlledStore::default();
+    let control = store.clone();
+    let mut client = open_client(store, NOW);
+    client
+        .begin_query(&id("peer-b"), query(), NOW + 1, NOW + 100)
+        .expect("query");
+    let before = client.recovery_snapshot().expect("before");
+    control.fail_next_store();
+    assert!(matches!(
+        client.maintain_expired(NOW + 101),
+        Err(FederationClientError::Recovery(
+            FederationRecoveryError::StoreUnavailable
+        ))
+    ));
+    assert_eq!(
+        client.recovery_snapshot().expect("failure unchanged"),
+        before
+    );
+    assert_eq!(client.maintain_expired(NOW + 101).expect("maintenance"), 1);
+    let mut restarted = open_client(client.into_recovery_store(), NOW + 102);
+    assert_eq!(restarted.maintain_expired(NOW + 102).expect("drained"), 0);
+    assert!(restarted.maintain_expired(NOW + 100).is_err());
+}

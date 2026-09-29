@@ -44,7 +44,7 @@ def prepare(source_sha: str, base_sha: str, branch: str) -> dict:
             raise ValueError(f"candidate map must retain {field}=false")
     head = row["headAttestation"]
     head["evidencePaths"] = sorted(set(head["evidencePaths"]) | set(NEW_EVIDENCE))
-    paths = sorted(set(verifier.tracked_source_paths(row)) | set(row["observedSourcePaths"]))
+    paths = sorted(set(verifier.tracked_source_paths(row)) | set(row["observedSourcePaths"]) | set(NEW_EVIDENCE))
     if MAP in paths:
         raise ValueError("implementation map cannot hash its own future commit")
     verifier.require_tracked_paths(source_sha, paths)

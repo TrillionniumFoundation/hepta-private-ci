@@ -119,3 +119,25 @@ credential generations, backend configuration and fault observations (replay,
 identity mismatch, response loss, crash/restart, cancellation, rotation,
 revocation, clock anomalies and capacity backpressure). Logical-host tests and
 fresh source receipts alone cannot set these deployment gates to true.
+
+
+## Owner maintenance progress under repeated admission failure
+
+Host and client expose `maintain_expired(now)` through their existing product
+bridge. A call commits a shared maximum of 64 expired durable protocol rows and
+live replay rows through the same recovery store, without sending or retrying a
+query. The selected host owner must budget these calls between admissions;
+there is no second worker, authority store, or automatic query retry here.
+This matters when a denied attempt would repeatedly discard its staged cleanup
+and otherwise never reach later expired rows in a full peer partition. A failed
+maintenance store leaves the live snapshot unchanged; a successful call makes
+its cleanup and clock high-water mark durable before installing state. Live
+replay and cancellation fences remain untouched. Client metadata reconciliation,
+state cloning, and full snapshot persistence still have bounded O(n) costs; the
+64-row limit is not a claim of constant total operation cost. Regressions cover
+partition pressure, a failed maintenance write, progress through multiple
+quanta, replay retention, restart, and clock rollback.
+
+The public crate root now also exports the already implemented configured
+transport-context issuer, verifier, and key-size constant. This repairs product
+consumer compilation without introducing a bare trusted-context constructor.

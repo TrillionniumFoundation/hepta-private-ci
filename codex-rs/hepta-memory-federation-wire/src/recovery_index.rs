@@ -11,6 +11,14 @@ impl DurableFederationStateV1 {
     /// The caller still must store the complete canonical snapshot successfully
     /// before installing this staged state or exposing an admission/response.
     pub(crate) fn stage_at(&self, now_unix_ms: u64) -> Result<Self, FederationRecoveryError> {
+        self.stage_maintenance_at(now_unix_ms, FEDERATION_RECOVERY_CLEANUP_BATCH)
+    }
+
+    pub(crate) fn stage_maintenance_at(
+        &self,
+        now_unix_ms: u64,
+        maximum_records: usize,
+    ) -> Result<Self, FederationRecoveryError> {
         if now_unix_ms == 0 {
             return Err(FederationRecoveryError::ZeroObservationTime);
         }
@@ -19,7 +27,10 @@ impl DurableFederationStateV1 {
         }
         let mut next = self.clone();
         next.observe_time(now_unix_ms)?;
-        next.purge_expired(now_unix_ms);
+        next.purge_expired_bounded(
+            now_unix_ms,
+            maximum_records.min(FEDERATION_RECOVERY_CLEANUP_BATCH),
+        )?;
         Ok(next)
     }
 

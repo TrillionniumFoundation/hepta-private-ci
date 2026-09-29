@@ -17,6 +17,22 @@ impl<S> FederationWireClientV1<S>
 where
     S: FederationRecoveryStoreV1,
 {
+    /// Persist one bounded expiry-maintenance quantum independently of any
+    /// request. Failed admission cleanup is intentionally rolled back; this
+    /// owner entrypoint makes progress without replaying a query. Derived client
+    /// metadata is reconciled by the existing atomic state replacement.
+    pub fn maintain_expired(&mut self, now_unix_ms: u64) -> Result<usize, FederationClientError> {
+        let maximum = crate::recovery::FEDERATION_RECOVERY_CLEANUP_BATCH;
+        let before = self.recovery.replay_len() + self.recovery.attempt_len();
+        let next = self.recovery.stage_maintenance_at(now_unix_ms, maximum)?;
+        let removed = before - next.replay_len() - next.attempt_len();
+        let mut replay = self.replay.clone();
+        let live_removed =
+            replay.purge_expired_bounded(now_unix_ms, maximum.saturating_sub(removed))?;
+        self.replace_state_and_replay(next, self.attempts.clone(), self.frontiers.clone(), replay)?;
+        Ok(removed + live_removed)
+    }
+
     pub fn recovery_snapshot(&self) -> Result<Vec<u8>, FederationClientError> {
         encode_client_snapshot(
             &self.local_peer_id,

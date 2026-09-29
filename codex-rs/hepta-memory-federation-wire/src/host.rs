@@ -372,6 +372,24 @@ where
         Ok(response)
     }
 
+    /// Commit at most one 64-row expiry-maintenance quantum across durable
+    /// protocol rows and the live replay cache. This owner operation performs
+    /// no remote I/O, query replay, credential change, or authority decision.
+    /// Use it between admissions so failed requests cannot stall cleanup by
+    /// repeatedly rolling back their temporary transaction state.
+    pub fn maintain_expired(&mut self, now_unix_ms: u64) -> Result<usize, FederationHostError> {
+        let maximum = crate::recovery::FEDERATION_RECOVERY_CLEANUP_BATCH;
+        let before = self.recovery.replay_len() + self.recovery.attempt_len();
+        let next = self.recovery.stage_maintenance_at(now_unix_ms, maximum)?;
+        let removed = before - next.replay_len() - next.attempt_len();
+        let mut replay = self.replay.clone();
+        let live_removed = replay
+            .purge_expired_bounded(now_unix_ms, maximum.saturating_sub(removed))
+            .map_err(FederationHostError::Replay)?;
+        self.commit_recovery_and_replay(next, replay)?;
+        Ok(removed + live_removed)
+    }
+
     pub fn recovery_snapshot(&self) -> Result<Vec<u8>, FederationHostError> {
         self.recovery
             .snapshot_bytes()

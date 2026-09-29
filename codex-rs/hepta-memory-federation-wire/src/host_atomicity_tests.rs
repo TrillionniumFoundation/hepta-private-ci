@@ -283,3 +283,61 @@ fn invalid_mac_precedes_recovery_staging_and_preserves_original_packet() {
         FederationHostAdmissionV1::Query(_)
     ));
 }
+
+#[test]
+fn owner_maintenance_progresses_after_failed_admission_without_replaying_queries() {
+    let limits = FederationRecoveryLimitsV1 {
+        replay_capacity: 512,
+        replay_per_peer_capacity: 128,
+        attempt_capacity: 512,
+        attempt_per_peer_capacity: 128,
+    };
+    let mut state = DurableFederationStateV1::empty(id("peer-b"), limits, NOW).expect("state");
+    for (peer, expiry) in [("peer-c", NOW + 1_000), ("peer-a", NOW + 2_000)] {
+        for slot in 0..128 {
+            let key = digest(format!("maintenance-{peer}-{slot}").as_bytes());
+            state
+                .record_verified_frame(*key.as_array(), &id(peer), expiry)
+                .expect("fixture row");
+        }
+    }
+    let store = ControlledStore::default();
+    store.state.lock().expect("store").snapshot = Some(state.snapshot_bytes().expect("snapshot"));
+    let control = store.clone();
+    let mut host =
+        FederationWireHostV1::open(id("peer-b"), credentials(), 512, 128, limits, store, NOW)
+            .expect("host");
+    let packet = encode_from_a(FederationWireMessageV1::Query(query()), 119);
+    let before = host.recovery_snapshot().expect("before");
+    assert!(matches!(
+        host.admit(&id("peer-a"), &packet, NOW + 3_000),
+        Err(FederationHostError::Recovery(
+            FederationRecoveryError::ReplayPeerCapacityExhausted
+        ))
+    ));
+    assert_eq!(host.recovery_snapshot().expect("denial unchanged"), before);
+    control.fail_next_store();
+    assert!(matches!(
+        host.maintain_expired(NOW + 3_000),
+        Err(FederationHostError::Recovery(
+            FederationRecoveryError::StoreUnavailable
+        ))
+    ));
+    assert_eq!(host.recovery_snapshot().expect("failure unchanged"), before);
+    for _ in 0..4 {
+        assert_eq!(host.maintain_expired(NOW + 3_000).expect("maintenance"), 64);
+    }
+    assert_eq!(host.maintain_expired(NOW + 3_000).expect("drained"), 0);
+    assert!(matches!(
+        host.admit(&id("peer-a"), &packet, NOW + 3_001)
+            .expect("first admission"),
+        FederationHostAdmissionV1::Query(_)
+    ));
+    assert_eq!(
+        host.maintain_expired(NOW + 3_002)
+            .expect("live fence retained"),
+        0
+    );
+    assert!(host.admit(&id("peer-a"), &packet, NOW + 3_003).is_err());
+    assert!(host.maintain_expired(NOW + 2_999).is_err());
+}
