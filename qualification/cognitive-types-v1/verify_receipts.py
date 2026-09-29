@@ -107,7 +107,8 @@ def verify_receipt(directory: Path, group: str, identity: dict, execution: dict)
         inventory = verify_inventory(directory, receipt.get("evidence_files"))
         required = [name + ".log" for name, _, _ in command_plan(root, group, output)]
         if group == "native":
-            required += ["quality-receipt.json", "mutations/mutation-receipt.json"]
+            required += ["quality-receipt.json", "mutations/mutation-receipt.json",
+                         "resources/resource-receipt.json"]
         require_files(inventory, required)
     except (OSError, ValueError) as error:
         raise EvidenceError(str(error)) from error

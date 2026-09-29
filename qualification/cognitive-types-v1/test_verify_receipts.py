@@ -74,6 +74,9 @@ class ReceiptVerificationTests(unittest.TestCase):
                     (artifact / "quality-receipt.json").write_text('{"fixture": "no Rust execution"}\n')
                     (artifact / "mutations").mkdir()
                     (artifact / "mutations/mutation-receipt.json").write_text('{"fixture": "no mutants executed"}\n')
+                    (artifact / "resources").mkdir()
+                    (artifact / "resources/resource-receipt.json").write_text('{"fixture": "no codec profiling"}\n')
+                    (artifact / "resources/time.txt").write_text("synthetic raw resource fixture\n")
                 receipt["evidence_files"] = inventory.collect_inventory(artifact)
                 receipt["cargo_target_directory"] = str(output.parent / "cognitive-types-cargo-target")
                 self.artifacts[group, kind] = artifact
@@ -133,7 +136,8 @@ class ReceiptVerificationTests(unittest.TestCase):
                     with self.subTest(group=group, kind=kind, missing=key):
                         self.assert_resealed_change_rejected(
                             lambda r: r["checks"][0].pop(key), group, kind)
-        self.assert_resealed_change_rejected(lambda r: r.update(check_plan_version=2))
+        for version in (2, 3):
+            self.assert_resealed_change_rejected(lambda r: r.update(check_plan_version=version))
 
     def test_runner_refuses_to_seal_incomplete_process_capture(self):
         output = self.directory / "incomplete-capture"
@@ -263,7 +267,8 @@ class ReceiptVerificationTests(unittest.TestCase):
     def test_auxiliary_result_tampering_is_rejected(self):
         for kind in verifier.KINDS:
             artifact = self.artifacts["native", kind]
-            for name in ("quality-receipt.json", "mutations/mutation-receipt.json"):
+            for name in ("quality-receipt.json", "mutations/mutation-receipt.json",
+                         "resources/resource-receipt.json", "resources/time.txt"):
                 with self.subTest(kind=kind, name=name):
                     path = artifact / name
                     original = path.read_bytes()
@@ -284,6 +289,21 @@ class ReceiptVerificationTests(unittest.TestCase):
         self.write_receipt(artifact, receipt)
         with self.assertRaises(verifier.EvidenceError):
             self.verify()
+
+    def test_resource_evidence_and_heap_command_cannot_be_resealed_away(self):
+        artifact = self.artifacts["native", "exact-head"]
+        receipt = copy.deepcopy(self.receipts["native", "exact-head"])
+        (artifact / "resources/resource-receipt.json").unlink()
+        receipt["evidence_files"] = inventory.collect_inventory(artifact)
+        self.write_receipt(artifact, receipt)
+        with self.assertRaises(verifier.EvidenceError):
+            self.verify()
+        self.assertFalse(qualification.finish_receipt(receipt, artifact))
+
+    def test_resource_command_substitution_is_rejected(self):
+        checks = self.receipts["native", "exact-head"]["checks"]
+        index = next(i for i, check in enumerate(checks) if check["name"] == "resource-profile")
+        self.assert_resealed_change_rejected(lambda r: r["checks"][index]["argv"].remove("--heap"))
 
     def test_unrecorded_nested_file_and_boolean_size_are_rejected(self):
         artifact = self.artifacts["native", "exact-head"]
@@ -332,3 +352,4 @@ class ReceiptVerificationTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

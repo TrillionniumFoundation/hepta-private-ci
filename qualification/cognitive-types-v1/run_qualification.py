@@ -17,7 +17,7 @@ from command_process import capture_command, closed_capture
 from evidence_inventory import collect_inventory, require_files, require_fresh_output
 
 SHA = re.compile(r"[0-9a-f]{40}")
-CHECK_PLAN_VERSION = 3
+CHECK_PLAN_VERSION = 4
 GROUPS = {
     "native": ["codex-hepta-cognitive-types"],
     "consumers": ["codex-hepta-cognitive-read", "codex-hepta-cognitive-store",
@@ -130,6 +130,7 @@ def command_plan(root: Path, group: str, output: Path) -> list[tuple[str, list[s
     if group == "native":
         target = output.parent / "cognitive-probe-target"
         probe = target / "debug/examples/canonical_probe"
+        resource_probe = target / "release/examples/canonical_probe"
         mutation_output = output.parent / "cognitive-mutation-work" / "evidence"
         plan += [("python-regressions", [sys.executable, "-m", "unittest", "discover", "-s",
                                         "qualification/cognitive-types-v1", "-p", "test_*.py"], root),
@@ -144,6 +145,11 @@ def command_plan(root: Path, group: str, output: Path) -> list[tuple[str, list[s
                                    "--example", "canonical_probe", "--target-dir", str(target)], rust),
                  ("differential-quality", [sys.executable, "qualification/cognitive-types-v1/quality_checks.py",
                                           "--probe", str(probe), "--output", str(output / "quality-receipt.json")], root),
+                 ("resource-probe-build", ["cargo", "build", "--release", "--locked", "-p", "codex-hepta-cognitive-types",
+                                            "--example", "canonical_probe", "--target-dir", str(target)], rust),
+                 ("resource-profile", [sys.executable, "qualification/cognitive-types-v1/resource_profile.py",
+                                       "--probe", str(resource_probe), "--output", str(output / "resources"),
+                                       "--samples", "3", "--heap"], root),
                  ("targeted-source-mutations", [sys.executable, "qualification/cognitive-types-v1/run_mutations.py",
                                                "--probe", str(probe), "--output", str(mutation_output)], root),
                  ("archive-mutation-evidence", [sys.executable, "qualification/cognitive-types-v1/evidence_inventory.py",
@@ -194,7 +200,8 @@ def finish_receipt(receipt: dict, output: Path) -> bool:
         receipt["evidence_files"] = inventory
         required = [name + ".log" for name in expected if name != "clean-tree"]
         if group == "native":
-            required += ["quality-receipt.json", "mutations/mutation-receipt.json"]
+            required += ["quality-receipt.json", "mutations/mutation-receipt.json",
+                         "resources/resource-receipt.json"]
         require_files(inventory, required)
         if passed:
             files = {row["path"]: row for row in inventory["files"]}

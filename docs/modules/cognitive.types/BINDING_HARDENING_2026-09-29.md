@@ -135,11 +135,10 @@ qualification; results must not be silently transferred to a different head.
 Focused checks for the Rust additions, from the repository root, are:
 
 ```sh
-cd codex-rs
-cargo test -p libcognitive-types --locked consumer::error_mapping::tests
-cargo test -p libcognitive-types --locked consumer::digest_encoding::tests
-cargo test -p libcognitive-types --locked
-cargo clippy -p libcognitive-types --locked --all-targets -- -D warnings
+just test -p codex-hepta-cognitive-types --locked consumer::error_mapping::tests
+just test -p codex-hepta-cognitive-types --locked consumer::digest_encoding::tests
+just test -p codex-hepta-cognitive-types --locked
+cargo clippy --manifest-path codex-rs/Cargo.toml -p codex-hepta-cognitive-types --locked --all-targets -- -D warnings
 ```
 
 These commands do not replace the existing full exact-head and pinned-base merge
