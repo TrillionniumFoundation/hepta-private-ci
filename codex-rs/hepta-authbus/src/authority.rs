@@ -203,6 +203,8 @@ pub enum AuthBusAuthorityError {
     CapacityExceeded,
     #[error("AuthBus external authority checkpoint indicates rollback or drift")]
     RollbackDetected,
+    #[error("another AuthBus authority writer already owns this checkpoint")]
+    WriterAlreadyActive,
     #[error("AuthBus owner has not completed restart reconciliation")]
     RecoveryRequired,
     #[error("AuthBus authority checkpoint file is unsafe or unavailable")]
