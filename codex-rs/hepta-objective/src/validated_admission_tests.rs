@@ -248,19 +248,20 @@ fn validated_profile_rejects_cross_collection_semantic_collision() {
 }
 
 #[test]
-fn authoritative_admission_rejects_sub_millisecond_deadline() {
+fn authoritative_admission_preserves_sub_millisecond_deadline() {
     let profile = profile();
     let validated = ValidatedAdmissionProfileV1::from_profile(&profile).expect("validated");
     let mut source = source();
     source.deadline = Some("2026-09-08T10:05:00.000001Z".to_owned());
     let context = context(&profile, &source);
 
-    assert!(matches!(
-        admit_validated_objective_v1(&source, &validated, &context),
-        Err(ObjectiveAdmissionError::InvalidTimestamp(
-            "deadline millisecond precision"
-        ))
-    ));
+    let admitted =
+        admit_validated_objective_v1(&source, &validated, &context).expect("admitted");
+    let deadline = admitted
+        .receipt()
+        .deadline_unix_micros
+        .expect("exact deadline");
+    assert_eq!(deadline % 1_000, 1);
 }
 
 #[test]

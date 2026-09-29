@@ -4,9 +4,9 @@
 //! product composition must first freeze and validate a profile through
 //! [`ValidatedAdmissionProfileV1`], then use
 //! [`compile_authoritative_objective_v1`]. This closes target collisions before
-//! source adaptation, rejects deadlines that cannot be represented exactly by
-//! `ObjectiveFunctionV1`, and carries a non-forgeable provenance proof beside
-//! the native compile outcome.
+//! source adaptation, preserves exact microsecond deadlines in admission, uses
+//! a conservative millisecond projection for `ObjectiveFunctionV1`, and carries
+//! a non-forgeable provenance proof beside the native compile outcome.
 
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
@@ -31,7 +31,7 @@ use crate::canonical_objective_intent_digest_v1;
 use crate::compile_admitted_objective_v1;
 use crate::objective_admission::admit_frozen_objective_v1;
 
-const COMPILER_CONTRACT_V1: &[u8] = b"hepta.objective.compiler.contract.v1:indexed-profile:exact-ms-deadline:proof-bearing-admission";
+const COMPILER_CONTRACT_V1: &[u8] = b"hepta.objective.compiler.contract.v1:indexed-profile:conservative-ms-deadline:proof-bearing-admission";
 
 /// Exact identity of reusable static profile validation.
 ///
@@ -327,15 +327,6 @@ pub fn admit_validated_objective_v1(
     context: &ObjectiveAdmissionContextV1,
 ) -> Result<ValidatedObjectiveAdmissionV1, ObjectiveAdmissionError> {
     let admitted = admit_frozen_objective_v1(envelope, profile, context)?;
-    if admitted
-        .receipt()
-        .deadline_unix_micros
-        .is_some_and(|deadline| deadline % 1_000 != 0)
-    {
-        return Err(ObjectiveAdmissionError::InvalidTimestamp(
-            "deadline millisecond precision",
-        ));
-    }
     let proof = admission_proof(envelope, profile, context, &admitted)?;
     Ok(ValidatedObjectiveAdmissionV1 { admitted, proof })
 }

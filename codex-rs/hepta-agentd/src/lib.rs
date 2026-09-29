@@ -10,13 +10,30 @@ mod authbus_dispatch;
 mod authbus_ingress;
 mod authbus_trust;
 mod automation;
+#[allow(
+    clippy::large_enum_variant,
+    reason = "reconciliation keeps the exact observed effect receipt without a second allocation"
+)]
 mod automation_effect_host;
 mod automation_recovery;
+#[allow(
+    dead_code,
+    reason = "the validated protocol sequence is intentionally not re-exposed after frame admission"
+)]
 mod browser_servo;
 mod client;
+#[allow(
+    clippy::too_many_arguments,
+    reason = "retrieval final-use boundaries keep each signed owner identity explicit"
+)]
 mod cognitive_context;
 mod cognitive_ranker;
 mod cognitive_retrieval_context;
+#[allow(
+    dead_code,
+    clippy::too_many_arguments,
+    reason = "compatibility delivery helpers retain every durable learning identity explicitly"
+)]
 mod cognitive_retrieval_learning;
 mod config;
 mod control;
@@ -26,14 +43,30 @@ mod evidence_frontier;
 mod evidence_host;
 mod evidence_trust;
 mod intelligence_ingress;
+#[allow(
+    clippy::large_enum_variant,
+    reason = "one-shot outcomes preserve complete prepared and indeterminate recovery values"
+)]
 mod intelligence_product;
 mod intuition_policy;
 mod lane_b_runtime;
 mod neuron_runtime;
 mod objective_run_start_checkpoint;
+#[allow(
+    clippy::large_enum_variant,
+    reason = "ObjectiveStart returns the exact durable admission value synchronously"
+)]
 mod objective_runtime;
 mod plasticity_anchor_journal;
+#[allow(
+    clippy::too_many_arguments,
+    reason = "the host boundary keeps independent owners, verifier and rollback anchor explicit"
+)]
 mod plasticity_host;
+#[allow(
+    dead_code,
+    reason = "the sole governed producer remains wired but dormant until plasticity activation"
+)]
 mod plasticity_learning_producer;
 mod plasticity_owner_evidence;
 mod plasticity_process_bootstrap;
@@ -44,6 +77,10 @@ mod qualification_writer;
 mod runtime;
 mod runtime_tasks;
 mod shared_terminal_cell;
+#[allow(
+    dead_code,
+    reason = "compatibility run-start and dormant plasticity entrypoints remain owner-bound"
+)]
 mod state;
 pub use shared_terminal_cell::AgentdSharedReplayHostV1;
 pub use shared_terminal_cell::SharedTerminalCandidateV1;
