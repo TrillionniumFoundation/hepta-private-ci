@@ -9,13 +9,13 @@ permissions:
   contents: write
 
 concurrency:
-  group: kg-remaining-four-arm-${{ github.sha }}
+  group: kg-remaining-four-x64-${{ github.sha }}
   cancel-in-progress: false
 
 jobs:
   close:
     if: startsWith(github.event.head_commit.message, 'kg remaining-four closure')
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     timeout-minutes: 180
     env:
       CARGO_INCREMENTAL: "0"
