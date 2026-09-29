@@ -119,6 +119,10 @@ impl RegistryDefinitionV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ContractRegistryV1 {
     entries: Vec<RegistryDefinitionV1>,
+    /// Immutable lookup projection sorted by `(kind, digest, canonical entry
+    /// index)`. It is derived only from already-validated registry content and
+    /// never caches freshness, authorization or final-use acceptance.
+    definition_digest_index: Vec<(RegistryKindV1, Digest32, usize)>,
     numeric_profiles: Vec<NumericProfileDefinitionV1>,
     registry_digest: Digest32,
 }
@@ -158,6 +162,13 @@ impl ContractRegistryV1 {
                 return Err(RegistryError::DuplicateDefinition);
             }
         }
+        let mut definition_digest_index = entries
+            .iter()
+            .enumerate()
+            .map(|(entry_index, entry)| (entry.kind, entry.digest, entry_index))
+            .collect::<Vec<_>>();
+        definition_digest_index.sort_unstable();
+
         numeric_profiles
             .sort_unstable_by_key(super::numeric_profile::NumericProfileDefinitionV1::profile);
         for pair in numeric_profiles.windows(2) {
@@ -168,6 +179,7 @@ impl ContractRegistryV1 {
         let registry_digest = compute_registry_digest(&entries, &numeric_profiles)?;
         Ok(Self {
             entries,
+            definition_digest_index,
             numeric_profiles,
             registry_digest,
         })
@@ -205,9 +217,16 @@ impl ContractRegistryV1 {
         kind: RegistryKindV1,
         digest: Digest32,
     ) -> Option<&RegistryDefinitionV1> {
-        self.entries
-            .iter()
-            .find(|entry| entry.kind == kind && entry.digest == digest)
+        let key = (kind, digest);
+        let index_position = self
+            .definition_digest_index
+            .partition_point(|(entry_kind, entry_digest, _)| (*entry_kind, *entry_digest) < key);
+        let (entry_kind, entry_digest, entry_index) =
+            *self.definition_digest_index.get(index_position)?;
+        if (entry_kind, entry_digest) != key {
+            return None;
+        }
+        self.entries.get(entry_index)
     }
 
     pub fn normalization_definition(&self, digest: Digest32) -> Option<&RegistryDefinitionV1> {

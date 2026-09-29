@@ -50,11 +50,15 @@ release remain separate.
 
 `ContractRegistryV1` content identity is the versioned canonical
 `Digest32` commitment over the sorted definition and numeric-profile digests.
-It is not an FNV checksum and is not a signature. The immutable registry now
-computes that commitment once after validation and reuses it; exact
-kind/identifier/version and numeric-profile lookups reuse the canonical sort
-order through binary search. Digest lookup remains bounded by the registry's
-256-entry limit rather than adding an unconditional second index.
+It is not an FNV checksum and is not a signature. The immutable registry
+computes that commitment once after validation and reuses it. Exact
+kind/identifier/version and numeric-profile lookups reuse canonical sort order
+through binary search. Digest lookup uses a bounded immutable projection built
+once from the already-validated entries and sorted by `(kind, digest, canonical
+entry index)`, avoiding a repeated linear scan without introducing mutable or
+authoritative state. The index has at most `MAX_REGISTRY_ENTRIES_V1` entries,
+and its construction and lookup costs remain covered by the same-candidate
+registry benchmark.
 
 These optimizations reuse immutable structural work only. They do not cache any
 of the following:
