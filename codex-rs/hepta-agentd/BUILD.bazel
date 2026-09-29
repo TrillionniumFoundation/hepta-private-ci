@@ -6,7 +6,10 @@ codex_rust_crate(
     name = "hepta-agentd",
     crate_features = ["production-cognitive-write"],
     crate_name = "codex_hepta_agentd",
-    integration_compile_data_extra = ["//codex-rs/hepta-automation:migration_test_inputs"],
+    integration_compile_data_extra = [
+        "//codex-rs/hepta-automation:migration_test_inputs",
+        "//codex-rs/hepta-control-plane:src/organ_runtime_test_support.rs",
+    ],
     integration_test_timeout = "long",
 )
 
