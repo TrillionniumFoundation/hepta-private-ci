@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  close:
+  close-labelled:
     name: close (${{ matrix.runner_name }})
     if: startsWith(github.event.head_commit.message, 'kg remaining-four closure')
     strategy:
@@ -37,129 +37,35 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      BRANCH: work/kg-abc-evidence-hardening-20260928
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: true
-
-      - name: Fence the authoring head and trusted runner
+      - name: Execute fenced closure
         shell: bash
-        run: |
-          set -euo pipefail
-          test "$RUNNER_NAME" = "${{ matrix.runner_name }}"
-          test "$GITHUB_EVENT_NAME" = "push"
-          test "$GITHUB_REF_NAME" = "$BRANCH"
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          git diff --quiet
-          git diff --cached --quiet
+        run: bash .github/kg-run-finalize.sh '${{ matrix.platform }}' '${{ matrix.runner_name }}'
 
-      - name: Install Linux native prerequisites
-        if: matrix.platform == 'linux'
+  close-gpu-group:
+    name: close (trillionnium-android-gpu)
+    if: startsWith(github.event.head_commit.message, 'kg remaining-four closure')
+    runs-on:
+      group: trillionnium-android-gpu
+      labels: [self-hosted, linux, x64]
+    timeout-minutes: 180
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Execute fenced closure
         shell: bash
-        run: |
-          set -euo pipefail
-          sudo apt-get update
-          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config protobuf-compiler
-          command -v protoc
-          protoc --version
-          sudo sysctl -w kernel.unprivileged_userns_clone=1
-          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
-            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
-          fi
-
-      - name: Verify macOS native prerequisites
-        if: matrix.platform == 'macos'
-        shell: bash
-        run: |
-          set -euo pipefail
-          if ! command -v protoc >/dev/null 2>&1; then
-            brew install protobuf
-          fi
-          command -v protoc
-          protoc --version
-
-      - name: Apply fail-closed closure patch
-        shell: bash
-        run: |
-          set -euo pipefail
-          base64 --decode .github/kg-finalize.py.gz.b64 | gzip --decompress > "$RUNNER_TEMP/kg-finalize.py"
-          python3 "$RUNNER_TEMP/kg-finalize.py"
-          python3 scripts/hepta_kg_status.py --apply
-          cd codex-rs
-          cargo fmt --all
-
-      - name: Resolve verified sandboxed V8 artifacts
-        env:
-          CODEX_REPO_ROOT: ${{ github.workspace }}
-          PYTHONPATH: scripts
-        run: python3 scripts/hepta_ci_v8.py
-
-      - name: Test Linux kernel, durable owner and real consumers
-        if: matrix.platform == 'linux'
-        shell: bash
-        run: |
-          set -euo pipefail
-          cd codex-rs
-          cargo test --locked -p codex-hepta-kg -- --nocapture
-          cargo test --locked -p codex-hepta-prompt-optimizer -- --nocapture
-          cargo test --locked -p codex-hepta-memory --lib cognitive_kg_oracle_tests:: -- --nocapture --test-threads=1
-          cargo test --locked -p codex-hepta-agentd --test cognitive_product_e2e -- --nocapture --test-threads=1
-          cargo clippy --locked -p codex-hepta-kg -p codex-hepta-prompt-optimizer -p codex-hepta-memory -p codex-hepta-agentd --no-deps --all-targets -- -D warnings
-
-      - name: Test macOS authoring candidate
-        if: matrix.platform == 'macos'
-        shell: bash
-        run: |
-          set -euo pipefail
-          cd codex-rs
-          cargo test --locked -p codex-hepta-kg -- --nocapture
-          cargo test --locked -p codex-hepta-prompt-optimizer -- --nocapture
-          cargo test --locked -p codex-hepta-memory --lib cognitive_kg_oracle_tests:: -- --nocapture --test-threads=1
-          cargo check --locked -p codex-hepta-agentd --all-targets
-          cargo clippy --locked -p codex-hepta-kg -p codex-hepta-prompt-optimizer -p codex-hepta-memory -p codex-hepta-agentd --no-deps --all-targets -- -D warnings
-
-      - name: Commit tested source and documentation
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name "Hepta Knowledge Graph Bot"
-          git config user.email "hepta-kg-bot@users.noreply.github.com"
-          rm -f .github/kg-finalize.py.gz.b64
-          rm -f .github/workflows/hepta-kg-finalize.yml
-          rm -f .github/kg-close.py.gz
-          rm -f .github/workflows/hepta-kg-remaining-four-closure.yml
-          git add -A
-          git diff --cached --check
-          git commit -m "feat(knowledge.graph): wire guarded product resource contracts"
-
-      - name: Rebind machine map and generated status
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 scripts/hepta-implementation-maps.py migrate --module knowledge.graph
-          python3 scripts/hepta_kg_status.py --apply
-          git add docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json docs/modules/knowledge.graph/CURRENT_STATUS.json docs/modules/knowledge.graph/CURRENT_STATUS.md docs/modules/knowledge.graph/TECHNICAL.md
-          git diff --cached --check
-          git commit -m "docs(knowledge.graph): bind split status to closure candidate"
-
-      - name: Verify exact final candidate truth
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 scripts/hepta_knowledge_graph_map_verify.py --expected-sha "$(git rev-parse HEAD)" --expected-tree "$(git rev-parse HEAD^{tree})"
-          python3 scripts/hepta_kg_status.py --check
-          python3 scripts/hepta_kg_documentation_sync.py --check
-          git diff --quiet
-          git diff --cached --quiet
-          test -z "$(git status --porcelain --untracked-files=no)"
-
-      - name: Push fast-forward closure candidate
-        shell: bash
-        run: |
-          set -euo pipefail
-          git fetch origin "$BRANCH"
-          test "$(git rev-parse origin/$BRANCH)" = "$GITHUB_SHA"
-          git push origin "HEAD:refs/heads/$BRANCH"
+        run: bash .github/kg-run-finalize.sh linux
