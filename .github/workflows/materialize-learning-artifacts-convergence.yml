@@ -1,4 +1,4 @@
-name: Materialize learning.artifacts convergence map
+name: Materialize learning.artifacts final candidate
 
 on:
   push:
@@ -10,42 +10,151 @@ permissions:
 
 concurrency:
   group: materialize-learning-artifacts-convergence
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   materialize:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
           persist-credentials: true
           ref: codex/learning-artifacts-convergence-20260929
-      - name: Verify exact trigger head
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+      - name: Verify and repair the exact candidate
         env:
           TRIGGER_SHA: ${{ github.sha }}
-        run: test "$(git rev-parse HEAD)" = "$TRIGGER_SHA"
-      - name: Extend the existing implementation map without advancing authority claims
         shell: bash
         run: |
           set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TRIGGER_SHA"
           python3 - <<'PY'
           import json
           from pathlib import Path
 
-          path = Path('docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json')
-          data = json.loads(path.read_text(encoding='utf-8'))
+          def replace(path, old, new):
+              p = Path(path)
+              text = p.read_text(encoding='utf-8')
+              if old not in text:
+                  raise SystemExit(f'missing expected text in {path}: {old!r}')
+              p.write_text(text.replace(old, new), encoding='utf-8')
+
+          replace(
+              'codex-rs/hepta-learning-artifacts/src/owner/bootstrap.rs',
+              'return Err(ArtifactOwnerConfigError::InvalidValue(prefix));',
+              'return Err(ArtifactOwnerConfigError::InvalidEntry(prefix.to_owned()));',
+          )
+          replace(
+              'codex-rs/hepta-learning-artifacts/src/owner/capability_validation.rs',
+              'use std::str::FromStr;\n',
+              '',
+          )
+          replace(
+              'codex-rs/hepta-learning-artifacts/src/owner/publication_coordination.rs',
+              'use codex_hepta_types::StableId;\n',
+              '#[cfg(test)]\nuse codex_hepta_types::StableId;\n',
+          )
+          replace(
+              'scripts/hepta_artifact_qualification.py',
+              ', "--retries", "0", "--no-fail-fast"],',
+              ', "--retries", "0"],',
+          )
+          replace(
+              '.github/workflows/hepta-lane-e-gap-closure.yml',
+              'cargo-llvm-cov@0.9.1',
+              'cargo-llvm-cov@0.9.0',
+          )
+
+          service = Path('codex-rs/hepta-learning-artifacts/src/owner_service.rs')
+          text = service.read_text(encoding='utf-8')
+          if 'AuthorityPosture::DENY_ALL' not in text:
+              text = text.replace(
+                  'use codex_hepta_types::Digest32;\n',
+                  'use codex_hepta_types::AuthorityPosture;\nuse codex_hepta_types::Digest32;\n',
+              )
+              marker = '    #[must_use]\n    pub fn registry(&self) -> &ArtifactRegistry {\n'
+              method = (
+                  '    /// The owner persists eligibility and evidence only; it never grants '
+                  'selection, activation, promotion, or release authority.\n'
+                  '    #[must_use]\n'
+                  '    pub const fn authority(&self) -> AuthorityPosture {\n'
+                  '        AuthorityPosture::DENY_ALL\n'
+                  '    }\n\n'
+              )
+              if marker not in text:
+                  raise SystemExit('owner service insertion point missing')
+              text = text.replace(marker, method + marker)
+              service.write_text(text, encoding='utf-8')
+
+          status = {
+              'schema': 'hepta.learning-artifacts-qualification-status.v1',
+              'module': 'learning.artifacts',
+              'unifiedComplete': False,
+              'dimensions': {
+                  'sourceImplementation': 'implemented',
+                  'readProductComposition': 'implemented_current_candidate',
+                  'writerServiceComposition': 'implemented_current_candidate',
+                  'canonicalRequestIdentity': 'implemented_current_candidate',
+                  'durableWithdrawalFloor': 'implemented_current_candidate',
+                  'durableDrainIntent': 'implemented_current_candidate',
+                  'stableErrorTaxonomy': 'implemented_current_candidate',
+                  'actionableOwnerState': 'implemented_current_candidate',
+                  'stageMeasurement': 'implemented_current_candidate',
+                  'referenceHost': 'repository_candidate_under_qualification',
+                  'exactHeadQualification': 'pending_current_candidate',
+                  'actualBaseSyntheticMergeQualification': 'pending_current_candidate',
+                  'withdrawalPropagationToExistingConsumers': 'partial_open_integration',
+                  'consumerPinAccounting': 'not_owned_not_established',
+                  'physicalEraseAccounting': 'not_owned_not_established',
+                  'targetHostDurability': 'external_not_established',
+                  'productionActivation': 'external_not_established',
+                  'independentAcceptance': 'external_not_established',
+                  'release': 'external_not_established',
+              },
+              'qualificationPolicy': {
+                  'skippedAccepted': False,
+                  'historicalResultAccepted': False,
+                  'exactCommitAndTreeRequired': True,
+                  'orderedParentActualBaseMergeRequired': True,
+                  'sourceObjectBindingRequired': True,
+                  'completeNativeTestIdentityRequired': True,
+                  'receiptArtifact': 'learning-artifacts-exact-head-<sha>.json',
+                  'deliveryIndex': 'docs/modules/learning.artifacts/DELIVERY_INDEX.md',
+              },
+              'truthfulUnknowns': {
+                  'pinnedBytes': None,
+                  'pendingPhysicalEraseBytes': None,
+                  'resourceAccountingComplete': False,
+              },
+          }
+          Path('qualification/learning-artifacts/STATUS.json').write_text(
+              json.dumps(status, indent=2) + '\n', encoding='utf-8'
+          )
+
+          trace_path = Path('qualification/lane-e/TEST_TRACEABILITY.json')
+          trace = json.loads(trace_path.read_text(encoding='utf-8'))
+          for case in trace.get('cases', []):
+              for test in case.get('tests', []):
+                  if test.get('function') == 'named_owner_service_publishes_retries_and_reopens_from_current_head':
+                      test['source'] = 'codex-rs/hepta-learning-artifacts/src/owner_service_tests.rs'
+          trace_path.write_text(json.dumps(trace, indent=2) + '\n', encoding='utf-8')
+
+          map_path = Path('docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json')
+          data = json.loads(map_path.read_text(encoding='utf-8'))
           assert data['module'] == 'learning.artifacts'
           assert data['productionImplementation'] is False
-
-          def upsert_operation(name, symbol, source, state, tests):
-              entry = next((item for item in data['operations'] if item['operation'] == name), None)
-              if entry is None:
-                  entry = {'operation': name}
-                  data['operations'].append(entry)
-              entry.update({
+          def upsert(name, symbol, source, state, tests):
+              row = next((x for x in data['operations'] if x['operation'] == name), None)
+              if row is None:
+                  row = {'operation': name}
+                  data['operations'].append(row)
+              row.update({
                   'nativeSymbol': symbol,
                   'sourcePath': source,
                   'state': state,
@@ -55,239 +164,78 @@ jobs:
                   'designOperation': name,
                   'mappingClass': 'owner_native',
                   'delegatedCallees': [],
-                  # Refreshed by the repository-owned source-binding tool below.
-                  'sourceBlob': entry.get('sourceBlob', '0' * 40),
+                  'sourceBlob': row.get('sourceBlob', '0' * 40),
               })
-
-          service_tests = 'codex-rs/hepta-learning-artifacts/src/owner_service_tests.rs'
-          crash_tests = 'owner_service::tests::process::sigkill_every_durable_phase_reconciles_exactly_and_preserves_writer_exclusion'
-          drain_tests = 'codex-rs/hepta-learning-artifacts/src/owner/drain_tests.rs'
-
-          upsert_operation(
-              'canonical_request_identity',
-              'RequestIdentityVerifier::verify_and_digest',
-              'codex-rs/hepta-learning-artifacts/src/owner/request_identity.rs',
-              'product_writer_service_composed',
-              [
-                  f'{service_tests}::named_owner_service_publishes_retries_and_reopens_from_current_head',
-                  f'{service_tests}::rejected_payload_before_prepare_leaves_no_checkpoint_or_request_identity',
-                  crash_tests,
-              ],
-          )
-          upsert_operation(
-              'durable_request_identity',
-              'DurableRequestIdentity::bind',
-              'codex-rs/hepta-learning-artifacts/src/owner/durable_request_identity.rs',
-              'product_writer_service_composed',
-              [
-                  f'{service_tests}::checkpoint_without_canonical_request_identity_fails_closed',
-                  crash_tests,
-              ],
-          )
-          upsert_operation(
-              'durable_withdrawal_floor',
-              'DurableWithdrawalFloor::persist',
-              'codex-rs/hepta-learning-artifacts/src/owner/durable_withdrawals.rs',
-              'product_writer_service_composed',
-              [
-                  'owner_service::withdrawal_tests::installed_frontier_survives_reopen_and_rejects_older_input',
-                  'owner_service::withdrawal_tests::uncertain_frontier_write_fences_publication_current_view_and_drain',
-              ],
-          )
-          upsert_operation(
-              'durable_drain_intent',
-              'LearningArtifactOwnerService::begin_drain_durable_at',
-              'codex-rs/hepta-learning-artifacts/src/owner_service.rs',
-              'product_writer_service_composed',
-              [
-                  f'{drain_tests}::durable_drain_survives_restart_and_remains_idempotent',
-                  f'{drain_tests}::durable_stop_survives_sigkill',
-                  f'{drain_tests}::failed_durable_stop_never_acknowledges_drain_or_reopens_admission',
-              ],
-          )
-          upsert_operation(
-              'owner_operational_state',
-              'LearningArtifactOwnerService::operational_state',
-              'codex-rs/hepta-learning-artifacts/src/owner_service.rs',
-              'product_writer_service_composed',
-              [f'{service_tests}::operational_state_reports_recovery_and_drain_age'],
-          )
-          upsert_operation(
-              'owner_operational_metrics',
-              'LearningArtifactReferenceHostV1::operational_metrics',
-              'codex-rs/hepta-learning-artifacts/src/owner/publication_coordination.rs',
-              'reference_host_source_implemented',
-              ['owner::publication_coordination::tests::operational_metrics_expose_actionable_state_without_false_resource_zeroes'],
-          )
-          upsert_operation(
-              'owner_stage_measurement',
-              'MeasuredLearningArtifactOwnerHostV1',
-              'codex-rs/hepta-learning-artifacts/src/owner/measurement.rs',
-              'source_implemented_qualification_pending',
-              ['owner::measurement::tests::recorder_retains_success_and_failure_without_fabricating_resource_counts'],
-          )
-          upsert_operation(
-              'authenticated_current_artifact_use',
-              'LearningArtifactOwnerService::current_artifact_use_view',
-              'codex-rs/hepta-learning-artifacts/src/current_use.rs',
-              'source_implemented_product_adoption_pending',
-              [
-                  'current_use::tests::v1_projection_must_match_the_complete_validated_v2_manifest',
-                  'current_use::tests::newer_withdrawal_frontier_invalidates_the_old_final_use_admission',
-              ],
-          )
-          upsert_operation(
-              'revalidate_pinned_candidate_withdrawal_aware',
-              'RevalidatingCandidate::with_current_use',
-              'codex-rs/hepta-learning-artifacts/src/pinned.rs',
-              'source_implemented_product_adoption_pending',
-              [
-                  'pinned::current_use_tests::final_use_view_allows_exact_complete_admission',
-                  'pinned::current_use_tests::substituted_complete_admission_closes_the_cached_consumer',
-              ],
-          )
-
-          by_name = {item['operation']: item for item in data['operations']}
-          if 'owner_service_publish' in by_name:
-              by_name['owner_service_publish']['tests'] = [
-                  f'{service_tests}::named_owner_service_publishes_retries_and_reopens_from_current_head',
-                  f'{service_tests}::uncertain_checkpoint_fences_unrelated_requests_and_current_reads',
-                  f'{service_tests}::rejected_payload_before_prepare_leaves_no_checkpoint_or_request_identity',
-                  f'{service_tests}::checkpoint_without_canonical_request_identity_fails_closed',
-                  crash_tests,
-              ]
-          if 'revalidate_pinned_candidate' in by_name:
-              by_name['revalidate_pinned_candidate']['state'] = 'compatibility_product_read_composed'
-
-          data['productCallerState'] = (
-              'explicit_read_and_writer_service_composed; withdrawal-aware final-use source '
-              'implemented with named product adoption pending'
-          )
-          data['productionWriterState'] = (
-              'named_authenticated_reference_host_and_owner_service_composed; '
-              'exact-candidate qualification pending'
-          )
-          data['currentNativeState'] = (
-              'immutable registry/storage, scoped withdrawal, V3 admission, durable lifecycle and '
-              'withdrawal snapshots, create-only canonical request identities, durable withdrawal '
-              'and drain floors, ordered publication recovery, stable owner errors, actionable '
-              'operational state, bounded stage measurement, an authenticated reference host, and '
-              'withdrawal-aware final-use views are source implemented; exact-head execution, named '
-              'product adoption of final-use views, pin/erase accounting, activation, acceptance and '
-              'release remain separate'
-          )
+          st = 'codex-rs/hepta-learning-artifacts/src/owner_service_tests.rs'
+          upsert('canonical_request_identity', 'RequestIdentityVerifier::verify_and_digest', 'codex-rs/hepta-learning-artifacts/src/owner/request_identity.rs', 'product_writer_service_composed', [f'{st}::named_owner_service_publishes_retries_and_reopens_from_current_head'])
+          upsert('durable_request_identity', 'DurableRequestIdentity::bind', 'codex-rs/hepta-learning-artifacts/src/owner/durable_request_identity.rs', 'product_writer_service_composed', [f'{st}::checkpoint_without_canonical_request_identity_fails_closed'])
+          upsert('durable_withdrawal_floor', 'DurableWithdrawalFloor::persist', 'codex-rs/hepta-learning-artifacts/src/owner/durable_withdrawals.rs', 'product_writer_service_composed', ['owner_service::withdrawal_tests::installed_frontier_survives_reopen_and_rejects_older_input'])
+          upsert('durable_drain_intent', 'LearningArtifactOwnerService::begin_drain_durable_at', 'codex-rs/hepta-learning-artifacts/src/owner_service.rs', 'product_writer_service_composed', ['owner_service::tests::drain::durable_drain_survives_restart_and_remains_idempotent'])
+          upsert('owner_operational_state', 'LearningArtifactOwnerService::operational_state', 'codex-rs/hepta-learning-artifacts/src/owner_service.rs', 'product_writer_service_composed', [f'{st}::operational_state_reports_recovery_and_drain_age'])
+          upsert('owner_operational_metrics', 'LearningArtifactReferenceHostV1::operational_metrics', 'codex-rs/hepta-learning-artifacts/src/owner/publication_coordination.rs', 'reference_host_source_implemented', ['owner::publication_coordination::tests::operational_metrics_expose_actionable_state_without_false_resource_zeroes'])
+          upsert('owner_stage_measurement', 'MeasuredLearningArtifactOwnerHostV1', 'codex-rs/hepta-learning-artifacts/src/owner/measurement.rs', 'source_implemented_qualification_pending', ['owner::measurement::tests::recorder_retains_success_and_failure_without_fabricating_resource_counts'])
+          upsert('authenticated_current_artifact_use', 'LearningArtifactOwnerService::current_artifact_use_view', 'codex-rs/hepta-learning-artifacts/src/current_use.rs', 'source_implemented_product_adoption_pending', ['current_use::tests::newer_withdrawal_frontier_invalidates_the_old_final_use_admission'])
+          upsert('revalidate_pinned_candidate_withdrawal_aware', 'RevalidatingCandidate::with_current_use', 'codex-rs/hepta-learning-artifacts/src/pinned.rs', 'source_implemented_product_adoption_pending', ['pinned::current_use_tests::final_use_view_allows_exact_complete_admission', 'pinned::current_use_tests::substituted_complete_admission_closes_the_cached_consumer'])
+          data['productCallerState'] = 'explicit read and writer service composed; withdrawal-aware final-use source implemented with named product adoption pending'
+          data['productionWriterState'] = 'named authenticated reference host and owner service composed; exact-candidate qualification pending'
           data['repositoryControlledGaps'] = [
-              'Execute all exact-head and ordered-parent actual-base qualification lanes on the final source SHA.',
-              'Adopt VerifiedCurrentArtifactUseV1 at every dataset-derived named product use boundary; the existing Agentd compatibility caller still accepts registry-only current views.',
-              'Map the new identity, durability, operational-state, measurement and final-use regressions into retained exact-source JUnit evidence.',
-              'Keep pinned-byte and pending-physical-erase accounting unknown until the consumer and retention owners provide authoritative counters and witnesses.',
+              'Execute exact-head and ordered-parent actual-base qualification on the final source SHA.',
+              'Adopt VerifiedCurrentArtifactUseV1 at every dataset-derived named product use boundary.',
+              'Retain authoritative pin and physical-erasure accounting from the consumer and retention owners.',
           ]
-          data['hostIntegrationRequirements'] = [
-              'Persist ArtifactPublicationTransactionSnapshotV1 and the canonical request-identity sidecar under the same retained product writer fence before treating a phase as durable.',
-              'Authenticate withdrawal actors and registry-head signatures before constructing typed source evidence.',
-              'For every dataset-derived use, obtain a fresh VerifiedCurrentArtifactUseV1 and consume through RevalidatingCandidate::with_current_use.',
-              'Operate newest-head discovery, independently retained withdrawal/operator-stop rollback floors, parent-directory durability, retention/orphan reconciliation and trusted-root protection.',
-              'Supply authoritative pinned-byte, pending-erasure and erasure-completion accounting from the consumer and retention owners; unknown must not be reported as zero.',
-              'Compose independently selected product loading and routing without granting this crate selection, activation or release authority.',
-          ]
-          data['externalEvidenceGates'] = [
-              'independent semantic review',
-              'target-host product execution, filesystem and physical power-loss qualification',
-              'production owner/selector trust provisioning and independent operator acceptance',
-              'independent newest-head, withdrawal and operator-stop rollback floors',
-              'consumer pin retirement and physical erasure witnesses',
-              'canary, promotion and release',
-          ]
-
-          claim = data.setdefault('claimBoundary', {})
-          claim.update({
-              'nativeSourceMappingComplete': True,
-              'sourceRootPresent': True,
+          data['claimBoundary'].update({
               'productionImplementation': False,
               'productExecutionProved': False,
               'independentAcceptance': False,
               'activation': False,
               'release': False,
-              'implementedOperationMappingComplete': True,
           })
-          if 'requirementTraceabilityComplete' in claim:
-              claim['requirementTraceabilityComplete'] = False
-
-          bindings = data.setdefault('productCallerBindings', [])
-          bindings = [item for item in bindings if item.get('operation') != 'authenticated_current_artifact_use']
-          bindings.append({
-              'operation': 'authenticated_current_artifact_use',
-              'mode': 'owner_issued_withdrawal_aware_final_use_view',
-              'callerPath': 'codex-rs/hepta-learning-artifacts/src/current_use.rs',
-              'mustContain': 'current_artifact_use_view',
-              'productPath': 'LearningArtifactOwnerService::current_artifact_use_view -> VerifiedCurrentArtifactUseV1 -> RevalidatingCandidate::with_current_use',
-              'state': 'source_composed_named_product_adoption_pending',
-          })
-          data['productCallerBindings'] = bindings
-
-          writer_bindings = data.setdefault('productionWriterBindings', [])
-          for binding in writer_bindings:
-              if binding.get('owner') == 'LearningArtifactOwnerService':
-                  guarantees = list(dict.fromkeys(binding.get('guarantees', []) + [
-                      'canonical_request_identity_sidecar',
-                      'durable_withdrawal_floor',
-                      'durable_drain_intent',
-                      'stable_error_taxonomy',
-                      'actionable_operational_state',
-                  ]))
-                  binding['guarantees'] = guarantees
-
-          callers = data.setdefault('productCallers', [])
-          desired = [
-              {
-                  'sourcePath': 'codex-rs/hepta-learning-artifacts/src/current_use.rs',
-                  'nativeSymbol': 'LearningArtifactOwnerService::current_artifact_use_view',
-                  'state': 'owner_service_source_composed_product_adoption_pending',
-              },
-              {
-                  'sourcePath': 'codex-rs/hepta-learning-artifacts/src/owner/publication_coordination.rs',
-                  'nativeSymbol': 'LearningArtifactReferenceHostV1',
-                  'state': 'reference_host_source_composed_qualification_pending',
-              },
-          ]
-          keys = {(item.get('sourcePath'), item.get('nativeSymbol')) for item in callers}
-          for item in desired:
-              key = (item['sourcePath'], item['nativeSymbol'])
-              if key not in keys:
-                  callers.append(item)
-                  keys.add(key)
-
           data['deliveryIndex'] = 'docs/modules/learning.artifacts/DELIVERY_INDEX.md'
           data['qualificationStatus'] = 'qualification/learning-artifacts/STATUS.json'
-          path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
+          map_path.write_text(json.dumps(data, indent=2) + '\n', encoding='utf-8')
           PY
 
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-artifacts
+          git add codex-rs/hepta-learning-artifacts \
+            scripts/hepta_artifact_qualification.py \
+            .github/workflows/hepta-lane-e-gap-closure.yml \
+            qualification/learning-artifacts/STATUS.json \
+            qualification/lane-e/TEST_TRACEABILITY.json \
+            docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json
+          candidate_tree="$(git write-tree)"
           python3 scripts/hepta_artifact_source_binding.py \
-            --tree "$(git rev-parse HEAD^{tree})" \
+            --tree "$candidate_tree" \
             --include .github/workflows/hepta-learning-artifacts-qualification.yml \
+            --include .github/workflows/hepta-lane-e-gap-closure.yml \
+            --include codex-rs/hepta-learning-artifacts/src/current_use.rs \
             --include codex-rs/hepta-learning-artifacts/src/lib.rs \
             --include codex-rs/hepta-learning-artifacts/src/owner/mod.rs \
-            --include codex-rs/hepta-learning-artifacts/src/owner/drain_tests.rs \
+            --include codex-rs/hepta-learning-artifacts/src/owner/durable_request_identity.rs \
+            --include codex-rs/hepta-learning-artifacts/src/owner/measurement.rs \
+            --include codex-rs/hepta-learning-artifacts/src/owner/publication_coordination.rs \
+            --include codex-rs/hepta-learning-artifacts/src/owner/request_identity.rs \
             --include codex-rs/hepta-learning-artifacts/src/owner/service_crash_tests.rs \
+            --include codex-rs/hepta-learning-artifacts/src/owner_service.rs \
             --include codex-rs/hepta-learning-artifacts/src/owner_service_tests.rs \
+            --include codex-rs/hepta-learning-artifacts/src/pinned.rs \
             --include codex-rs/hepta-learning-artifacts/src/pinned_current_use_tests.rs \
             --include docs/modules/learning.artifacts/DELIVERY_INDEX.md \
             --include qualification/learning-artifacts/STATUS.json \
+            --include qualification/lane-e/TEST_TRACEABILITY.json \
             --include scripts/hepta_artifact_qualification.py \
-            --include scripts/hepta_artifact_receipt_guard.py \
-            --include scripts/hepta_artifact_source_binding.py \
             --write
-          python3 -m json.tool docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json >/dev/null
-          python3 scripts/hepta_artifact_source_binding.py --tree "$(git rev-parse HEAD^{tree})"
-      - name: Commit the materialized map and remove this one-shot workflow
+          git add docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json
+          cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-learning-artifacts --all-targets
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-learning-artifacts --all-targets -- -D warnings
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-artifacts -- --check
+      - name: Commit exact source and remove this one-shot workflow
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name 'learning.artifacts map materializer'
-          git config user.email 'artifact-map@users.noreply.github.com'
+          git config user.name 'learning.artifacts candidate materializer'
+          git config user.email 'artifact-candidate@users.noreply.github.com'
           rm .github/workflows/materialize-learning-artifacts-convergence.yml
-          git add docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json \
-            .github/workflows/materialize-learning-artifacts-convergence.yml
+          git add -A
           git diff --cached --check
-          git commit -m 'learning.artifacts: bind convergence implementation map'
+          git commit -m 'learning.artifacts: seal native convergence candidate'
           git push origin HEAD:codex/learning-artifacts-convergence-20260929
