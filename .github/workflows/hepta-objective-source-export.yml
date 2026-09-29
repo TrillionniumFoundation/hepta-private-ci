@@ -1,0 +1,47 @@
+name: Hepta objective immutable source export
+
+on:
+  push:
+    branches:
+      - work/objective-compiler-production-convergence-20260927
+    paths:
+      - .github/workflows/hepta-objective-source-export.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out the immutable event source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Export tracked source and its Git identities
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git status --porcelain)"
+          out="$RUNNER_TEMP/objective-source-export"
+          mkdir -p "$out"
+          git archive --format=tar.gz --output="$out/source.tar.gz" HEAD
+          git rev-parse HEAD > "$out/SOURCE_SHA"
+          git rev-parse 'HEAD^{tree}' > "$out/SOURCE_TREE"
+          git ls-tree -r HEAD > "$out/SOURCE_FILES"
+          (cd "$out" && sha256sum source.tar.gz SOURCE_SHA SOURCE_TREE SOURCE_FILES > SHA256SUMS)
+          printf '%s\n' 'Tracked source export only. Not an execution, native, target-host, acceptance, activation or release receipt.' > "$out/SCOPE.txt"
+      - name: Preserve the exact source for independent verification
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: objective-source-${{ github.sha }}
+          path: ${{ runner.temp }}/objective-source-export
+          if-no-files-found: error
+          retention-days: 1
