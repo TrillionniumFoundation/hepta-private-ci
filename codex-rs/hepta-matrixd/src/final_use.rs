@@ -15,6 +15,14 @@ use codex_hepta_paths::HeptaAgentLayout;
 use serde::Deserialize;
 use serde::Serialize;
 
+#[cfg(unix)]
+mod revocation_file;
+
+#[cfg(unix)]
+use revocation_file::RevocationFeed;
+#[cfg(unix)]
+use revocation_file::read_private_json;
+
 const HOST_CONFIG_FILE: &str = "final-use.json";
 const REVOCATIONS_FILE: &str = "final-use-revocations.json";
 const STATE_DIRECTORY: &str = "final-use-authority-state";
@@ -54,7 +62,7 @@ struct MatrixGrantBrokerResponse {
 pub(crate) struct MatrixFinalUseBroker {
     authority: FinalUseAuthority,
     broker_socket: PathBuf,
-    revocations_file: PathBuf,
+    revocations: RevocationFeed,
     request_timeout: Duration,
 }
 
@@ -72,8 +80,8 @@ impl MatrixFinalUseBroker {
         }
         let broker_socket = PathBuf::from(&config.broker_socket);
         validate_private_socket(&broker_socket)?;
-        let head: FinalUseRevocations =
-            read_private_json(&revocations_file, REVOCATIONS_MAX_BYTES)?;
+        let (revocations, head) =
+            RevocationFeed::open(revocations_file, REVOCATIONS_MAX_BYTES)?;
         let authority = FinalUseAuthority::open_state_dir(
             &layout.matrix_root().join(STATE_DIRECTORY),
             config.signer_id,
@@ -83,7 +91,7 @@ impl MatrixFinalUseBroker {
         let broker = Self {
             authority,
             broker_socket,
-            revocations_file,
+            revocations,
             request_timeout: Duration::from_millis(config.request_timeout_ms),
         };
         broker.probe().await?;
@@ -103,31 +111,32 @@ impl MatrixFinalUseBroker {
     }
 
     fn refresh_revocations(&self) -> Result<(), MatrixAuthorityError> {
-        let head: FinalUseRevocations =
-            read_private_json(&self.revocations_file, REVOCATIONS_MAX_BYTES)
+        self.revocations.refresh(|head| {
+            let current = self
+                .authority
+                .revocation_head()
                 .map_err(|_| MatrixAuthorityError::Unavailable)?;
-        let current = self
-            .authority
-            .revocation_head()
-            .map_err(|_| MatrixAuthorityError::Unavailable)?;
-        if head.authority_epoch == current.authority_epoch && head.revision == current.revision {
-            if head.revoked_grant_ids == current.revoked_grant_ids {
-                return Ok(());
+            if head.authority_epoch == current.authority_epoch
+                && head.revision == current.revision
+            {
+                if head.revoked_grant_ids == current.revoked_grant_ids {
+                    return Ok(());
+                }
+                // A revision is the immutable identity of one revocation set.
+                // Accepting different bytes under the same frontier would let a
+                // stale or rewritten file evade the monotonic update check.
+                return Err(MatrixAuthorityError::Rejected);
             }
-            // A revision is the immutable identity of one revocation set.
-            // Accepting different bytes under the same frontier would let a
-            // stale or rewritten file evade the monotonic update check.
-            return Err(MatrixAuthorityError::Rejected);
-        }
-        if head.authority_epoch < current.authority_epoch
-            || (head.authority_epoch == current.authority_epoch
-                && head.revision <= current.revision)
-        {
-            return Err(MatrixAuthorityError::Rejected);
-        }
-        self.authority
-            .update_revocations(head)
-            .map_err(|_| MatrixAuthorityError::Rejected)
+            if head.authority_epoch < current.authority_epoch
+                || (head.authority_epoch == current.authority_epoch
+                    && head.revision <= current.revision)
+            {
+                return Err(MatrixAuthorityError::Rejected);
+            }
+            self.authority
+                .update_revocations(head)
+                .map_err(|_| MatrixAuthorityError::Rejected)
+        })
     }
 
     async fn request_grant(
@@ -234,48 +243,6 @@ impl MatrixOutboundAuthorizer for MatrixFinalUseBroker {
 }
 
 #[cfg(unix)]
-fn read_private_json<T: serde::de::DeserializeOwned>(
-    path: &Path,
-    maximum: usize,
-) -> Result<T, MatrixFinalUseBrokerError> {
-    use std::fs::File;
-    use std::io::Read;
-    use std::os::unix::fs::MetadataExt;
-
-    if !path.is_absolute()
-        || std::fs::canonicalize(path).map_err(|_| MatrixFinalUseBrokerError::UnsafePath)? != path
-    {
-        return Err(MatrixFinalUseBrokerError::UnsafePath);
-    }
-    let file: File = rustix::fs::open(
-        path,
-        rustix::fs::OFlags::RDONLY | rustix::fs::OFlags::NOFOLLOW | rustix::fs::OFlags::CLOEXEC,
-        rustix::fs::Mode::empty(),
-    )
-    .map_err(|_| MatrixFinalUseBrokerError::UnsafePath)?
-    .into();
-    let metadata = file
-        .metadata()
-        .map_err(|_| MatrixFinalUseBrokerError::UnsafePath)?;
-    if !metadata.is_file()
-        || metadata.mode() & 0o077 != 0
-        || metadata.nlink() != 1
-        || metadata.uid() != rustix::process::geteuid().as_raw()
-        || metadata.len() > maximum as u64
-    {
-        return Err(MatrixFinalUseBrokerError::UnsafePath);
-    }
-    let mut bytes = Vec::new();
-    file.take((maximum + 1) as u64)
-        .read_to_end(&mut bytes)
-        .map_err(|_| MatrixFinalUseBrokerError::UnsafePath)?;
-    if bytes.len() > maximum {
-        return Err(MatrixFinalUseBrokerError::UnsafePath);
-    }
-    serde_json::from_slice(&bytes).map_err(|_| MatrixFinalUseBrokerError::InvalidConfiguration)
-}
-
-#[cfg(unix)]
 fn validate_private_socket(path: &Path) -> Result<(), MatrixFinalUseBrokerError> {
     use std::os::unix::fs::FileTypeExt;
     use std::os::unix::fs::MetadataExt;
@@ -333,8 +300,6 @@ mod tests {
     use super::*;
 
     #[cfg(unix)]
-    use std::collections::BTreeSet;
-    #[cfg(unix)]
     use std::error::Error;
     #[cfg(unix)]
     use std::os::unix::fs::PermissionsExt;
@@ -364,6 +329,14 @@ mod tests {
     }
 
     #[cfg(unix)]
+    fn replace_private_json(path: &Path, value: &FinalUseRevocations) -> TestResult {
+        let replacement = path.with_extension("replacement");
+        write_private_json(&replacement, value)?;
+        std::fs::rename(replacement, path)?;
+        Ok(())
+    }
+
+    #[cfg(unix)]
     fn test_broker(
         initial: FinalUseRevocations,
         file_head: FinalUseRevocations,
@@ -373,7 +346,10 @@ mod tests {
         let root = directory.path().canonicalize()?;
         let signer = SigningKey::from_bytes(&[71; 32]);
         let revocations_file = root.join("revocations.json");
-        write_private_json(&revocations_file, &file_head)?;
+        write_private_json(&revocations_file, &initial)?;
+        let (revocations, initial) =
+            RevocationFeed::open(revocations_file.clone(), REVOCATIONS_MAX_BYTES)?;
+        replace_private_json(&revocations_file, &file_head)?;
         let authority = FinalUseAuthority::open_state_dir(
             &root.join("authority"),
             "matrix-broker-test".to_string(),
@@ -383,7 +359,7 @@ mod tests {
         let broker = MatrixFinalUseBroker {
             authority,
             broker_socket: root.join("broker.sock"),
-            revocations_file,
+            revocations,
             request_timeout: Duration::from_millis(MIN_BROKER_TIMEOUT_MS),
         };
         Ok((directory, broker))
@@ -432,7 +408,8 @@ mod tests {
     #[cfg(unix)]
     #[test]
     fn stronger_revocation_file_is_adopted_monotonically() -> TestResult {
-        let (_directory, broker) = test_broker(head(17, 1, &[]), head(17, 2, &["revoked-a"]))?;
+        let (_directory, broker) =
+            test_broker(head(17, 1, &[]), head(17, 2, &["revoked-a"]))?;
         broker.refresh_revocations()?;
         let frontier = broker.authority.revocation_head()?;
         assert_eq!(frontier.authority_epoch, 17);
