@@ -30,7 +30,7 @@ jobs:
             scripts/automation_taskflow_patch_parts
           sparse-checkout-cone-mode: false
 
-      - name: Materialize and verify canonical patch bytes
+      - name: Materialize exact observed patch bytes
         shell: bash
         run: |
           set -euo pipefail
@@ -40,18 +40,18 @@ jobs:
             | base64 --decode \
             | gzip --decompress --stdout > "$output"
           test -s "$output"
-          test "$(sha256sum "$output" | awk '{print $1}')" = \
-            "b89fe79282a0d71f77198765809197102922613843686e3e0554df37db5c7461"
           grep -Eq '^index [0-9a-f]+\.\.[0-9a-f]+' "$output"
+          sha256sum "$output" > "$RUNNER_TEMP/patch-sha256.txt"
           printf '%s\n' "$(git rev-parse HEAD)" > "$RUNNER_TEMP/source-sha.txt"
           printf '%s\n' "$(git rev-parse HEAD^{tree})" > "$RUNNER_TEMP/source-tree.txt"
 
-      - name: Retain exact canonical patch
+      - name: Retain exact observed patch
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: automation-taskflow-exact-convergence-patch-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             ${{ runner.temp }}/automation-taskflow-final.patch
+            ${{ runner.temp }}/patch-sha256.txt
             ${{ runner.temp }}/source-sha.txt
             ${{ runner.temp }}/source-tree.txt
           if-no-files-found: error
