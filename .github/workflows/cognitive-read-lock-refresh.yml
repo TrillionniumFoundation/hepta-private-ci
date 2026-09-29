@@ -7,6 +7,7 @@ on:
     paths:
       - .github/workflows/cognitive-read-lock-refresh.yml
       - scripts/repair-cognitive-read-qualification.py
+      - scripts/run-cognitive-read-convergence-repair.py
       - scripts/prepare-cognitive-read-source.py
       - scripts/prepare-cognitive-read-durable-handoff.py
       - scripts/apply-cognitive-read-selected-cut.py
@@ -67,7 +68,7 @@ jobs:
           test "$(git ls-remote origin "refs/heads/$SOURCE_BRANCH" | cut -f1)" = "$GITHUB_SHA"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          python3 scripts/repair-cognitive-read-qualification.py --expected-sha "$GITHUB_SHA"
+          python3 scripts/run-cognitive-read-convergence-repair.py --expected-sha "$GITHUB_SHA"
           repaired_head="$(git rev-parse HEAD)"
           python3 scripts/prepare-cognitive-read-durable-handoff.py --expected-sha "$repaired_head"
           cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
