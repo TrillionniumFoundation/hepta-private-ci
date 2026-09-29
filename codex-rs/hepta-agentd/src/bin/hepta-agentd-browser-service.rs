@@ -37,7 +37,8 @@ const MAX_FRAME_BYTES: usize = 1_048_576;
 const MAX_ERROR_CHARS: usize = 512;
 const MAX_JSON_DEPTH: usize = 32;
 const JS_SAFE_INTEGER: u64 = 9_007_199_254_740_991;
-const OPERATION_ABSENT: &str = "operation has not crossed the browser effect boundary";
+const REPLAY_PROBE_RESULT_KIND: &str = "hepta.browser.replay-probe-result.v1";
+const OPERATION_ABSENCE_CODE: &str = "hepta.browser.operation-not-crossed.v1";
 
 #[derive(Clone, Copy, Debug, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -190,13 +191,50 @@ fn execute_call_result(
     owner.call(BrowserServoCall::read(method, call.input)?)
 }
 
+fn invalid_replay_probe(message: &str) -> BrowserServoError {
+    BrowserServoError::Invalid(message.to_string())
+}
+
 fn classify_replay_probe(
     result: Result<Value, BrowserServoError>,
 ) -> Result<Option<Value>, BrowserServoError> {
-    match result {
-        Ok(receipt) => Ok(Some(receipt)),
-        Err(BrowserServoError::Rejected(message)) if message == OPERATION_ABSENT => Ok(None),
-        Err(error) => Err(error),
+    let value = result?;
+    let object = value.as_object().ok_or_else(|| {
+        invalid_replay_probe("Browser replay probe result must be an object")
+    })?;
+    if object.get("kind").and_then(Value::as_str) != Some(REPLAY_PROBE_RESULT_KIND) {
+        return Err(invalid_replay_probe(
+            "Browser replay probe result kind is unsupported",
+        ));
+    }
+
+    match object.get("status").and_then(Value::as_str) {
+        Some("present") => {
+            if object.len() != 3
+                || !object.contains_key("receipt")
+                || object.contains_key("absenceCode")
+            {
+                return Err(invalid_replay_probe(
+                    "Browser replay present result contains missing or unknown fields",
+                ));
+            }
+            Ok(Some(object["receipt"].clone()))
+        }
+        Some("absent") => {
+            if object.len() != 3
+                || object.get("absenceCode").and_then(Value::as_str)
+                    != Some(OPERATION_ABSENCE_CODE)
+                || object.contains_key("receipt")
+            {
+                return Err(invalid_replay_probe(
+                    "Browser replay absence is not the registered proof",
+                ));
+            }
+            Ok(None)
+        }
+        _ => Err(invalid_replay_probe(
+            "Browser replay probe status is unsupported",
+        )),
     }
 }
 
@@ -472,17 +510,54 @@ mod tests {
     use super::*;
 
     #[test]
-    fn replay_probe_accepts_only_exact_absence_as_permission_for_a_new_effect() {
-        let replay = json!({"operationId": "operation.1", "status": "succeeded"});
+    fn replay_probe_accepts_only_the_versioned_absence_proof() {
+        let receipt = json!({"operationId": "operation.1", "status": "succeeded"});
+        let present = json!({
+            "kind": REPLAY_PROBE_RESULT_KIND,
+            "status": "present",
+            "receipt": receipt,
+        });
         assert_eq!(
-            classify_replay_probe(Ok(replay.clone())).expect("replay"),
-            Some(replay)
+            classify_replay_probe(Ok(present)).expect("present replay"),
+            Some(receipt)
         );
+
+        let absent = json!({
+            "kind": REPLAY_PROBE_RESULT_KIND,
+            "status": "absent",
+            "absenceCode": OPERATION_ABSENCE_CODE,
+        });
         assert!(
-            classify_replay_probe(Err(BrowserServoError::Rejected(OPERATION_ABSENT.into())))
-                .expect("absence")
+            classify_replay_probe(Ok(absent))
+                .expect("registered absence")
                 .is_none()
         );
+
+        for malformed in [
+            json!({"kind": REPLAY_PROBE_RESULT_KIND, "status": "absent"}),
+            json!({
+                "kind": REPLAY_PROBE_RESULT_KIND,
+                "status": "absent",
+                "absenceCode": "hepta.browser.unknown.v1",
+            }),
+            json!({
+                "kind": REPLAY_PROBE_RESULT_KIND,
+                "status": "absent",
+                "absenceCode": OPERATION_ABSENCE_CODE,
+                "receipt": {},
+            }),
+            json!({
+                "kind": "hepta.browser.replay-probe-result.v2",
+                "status": "absent",
+                "absenceCode": OPERATION_ABSENCE_CODE,
+            }),
+        ] {
+            assert!(matches!(
+                classify_replay_probe(Ok(malformed)),
+                Err(BrowserServoError::Invalid(_))
+            ));
+        }
+
         assert!(matches!(
             classify_replay_probe(Err(BrowserServoError::Rejected(
                 "operation reconciliation changed immutable semantics".into()
