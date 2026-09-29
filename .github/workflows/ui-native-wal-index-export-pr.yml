@@ -1,0 +1,92 @@
+name: ui.native WAL source export (read-only)
+
+on:
+  pull_request:
+    branches: [work/ui-native-qualified-integration-20260928]
+    paths:
+      - .ci/ui-native-wal-index-trigger/**
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ui-native-wal-source-export-${{ github.event.pull_request.base.sha }}
+  cancel-in-progress: true
+
+jobs:
+  export-reviewed-source:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-slim
+    timeout-minutes: 15
+    env:
+      TARGET_SHA: ${{ github.event.pull_request.base.sha }}
+      PATCH_BLOB_SHA: cf8d5267cbcde61455849e24be9eac9d1a8d14f3
+      PATCH_SHA256: b863bb348b91e038f711b5a155a383aaa342ee6beacb1cd168901f82159dd74a
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify and materialize the immutable source patch
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          test -z "$(git status --porcelain)"
+          test "$(git rev-parse HEAD:.ci/ui-native-wal-index/source.patch.gz)" = "$PATCH_BLOB_SHA"
+          mkdir -p export/source export/evidence
+          gzip -dc .ci/ui-native-wal-index/source.patch.gz > export/source.patch
+          printf '%s  %s\n' "$PATCH_SHA256" export/source.patch | sha256sum --check --strict
+          git apply --check --verbose --whitespace=error-all export/source.patch \
+            > export/evidence/apply-check.stdout \
+            2> export/evidence/apply-check.stderr
+          git apply --index --whitespace=error-all export/source.patch
+          git diff --cached --check
+          git diff --cached --name-status > export/evidence/changed-paths.txt
+          git diff --cached --stat > export/evidence/stat.txt
+          git rev-parse HEAD HEAD^{tree} > export/evidence/input-identity.txt
+          sha256sum .ci/ui-native-wal-index/source.patch.gz export/source.patch \
+            > export/evidence/digests.sha256
+          python3 - <<'PYTHON'
+          import pathlib
+          import shutil
+          import subprocess
+
+          paths = subprocess.check_output(
+              ['git', 'diff', '--cached', '--name-only'],
+              text=True,
+              encoding='utf-8',
+              errors='strict',
+          ).splitlines()
+          required = {
+              'apps/hepta-native/src/journal.rs',
+              'apps/hepta-native/src/journal_storage.rs',
+              'apps/hepta-native/src/retirement.rs',
+          }
+          if not required.issubset(paths):
+              raise SystemExit(f'missing required source paths: {sorted(required - set(paths))}')
+          unexpected = [
+              path for path in paths
+              if not path.startswith('apps/hepta-native/')
+              and not path.startswith('docs/modules/ui.native/')
+          ]
+          if unexpected:
+              raise SystemExit(f'unexpected patch paths: {unexpected}')
+          root = pathlib.Path('export/source')
+          for name in paths:
+              source = pathlib.Path(name)
+              destination = root / source
+              destination.parent.mkdir(parents=True, exist_ok=True)
+              if source.exists():
+                  shutil.copy2(source, destination)
+          PYTHON
+          tar -C export/source -czf export/materialized-source.tar.gz .
+          sha256sum export/materialized-source.tar.gz >> export/evidence/digests.sha256
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ui-native-wal-materialized-source-${{ env.TARGET_SHA }}-attempt-${{ github.run_attempt }}
+          path: export
+          if-no-files-found: error
+          retention-days: 7
