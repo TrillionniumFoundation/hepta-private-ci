@@ -1,0 +1,100 @@
+name: control.runtime verified patch application
+
+on:
+  push:
+    branches:
+      - codex/control-runtime-convergence-v1
+    paths:
+      - '.github/workflows/control-runtime-apply-once.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: control-runtime-apply-once
+  cancel-in-progress: false
+
+env:
+  CARGO_INCREMENTAL: '0'
+  CARGO_BUILD_JOBS: '2'
+  CARGO_PROFILE_TEST_DEBUG: '0'
+  CARGO_PROFILE_DEV_DEBUG: '0'
+
+jobs:
+  apply-and-verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Decode and apply exact staged patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          base64 -d .control-runtime-next.patch | gzip -d > "$RUNNER_TEMP/control-runtime-next.patch"
+          echo "edc2303f0b0f22a38eb04af352f6d43c7c821558ad2285f6d94e7e75e40831d9  $RUNNER_TEMP/control-runtime-next.patch" | sha256sum -c -
+          git apply --check "$RUNNER_TEMP/control-runtime-next.patch"
+          git apply "$RUNNER_TEMP/control-runtime-next.patch"
+          git diff --check
+
+      - name: Validate canonical module state before compilation
+        run: python3 scripts/control_runtime_validate_state.py --output "$RUNNER_TEMP/control-runtime-state-before.json"
+
+      - name: Install native prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libcap-dev
+
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Resolve verified V8 artifacts
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+
+      - name: Format changed Rust source
+        working-directory: codex-rs
+        run: cargo fmt -p codex-hepta-control-plane -p codex-hepta-agentd -p codex-hepta-ndu
+
+      - name: Formatting check
+        working-directory: codex-rs
+        run: cargo fmt -p codex-hepta-control-plane -p codex-hepta-agentd -p codex-hepta-ndu -- --check
+
+      - name: Actual package regression suite
+        working-directory: codex-rs
+        run: just test --locked -p codex-hepta-control-plane -p codex-hepta-agentd -p codex-hepta-ndu
+
+      - name: All-target compilation
+        working-directory: codex-rs
+        run: cargo check --locked --all-targets -p codex-hepta-control-plane -p codex-hepta-agentd -p codex-hepta-ndu
+
+      - name: Strict lint
+        working-directory: codex-rs
+        run: cargo clippy --locked --all-targets -p codex-hepta-control-plane -p codex-hepta-agentd -p codex-hepta-ndu -- -D warnings
+
+      - name: Revalidate state and tracked changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/control_runtime_validate_state.py --output "$RUNNER_TEMP/control-runtime-state-after.json"
+          rm .control-runtime-next.patch
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=all | grep -v '^?? .github/workflows/control-runtime-apply-once.yml$' || true)" || git status --short
+
+      - name: Commit verified convergence source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -s -m "feat(control.runtime): close recovery scheduling and crash qualification gaps"
+          git push origin HEAD:codex/control-runtime-convergence-v1
