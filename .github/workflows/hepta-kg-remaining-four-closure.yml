@@ -1,78 +1,46 @@
-name: knowledge.graph remaining-four closure
+name: knowledge.graph cross-platform source qualification
 
 on:
   push:
     branches:
       - work/kg-abc-evidence-hardening-20260928
+    paths:
+      - "codex-rs/hepta-kg/**"
+      - "codex-rs/hepta-memory/**"
+      - "codex-rs/hepta-prompt-optimizer/**"
+      - "codex-rs/hepta-agentd/**"
+      - "docs/modules/knowledge.graph/**"
+      - "qualification/knowledge-graph/**"
+      - "scripts/hepta_kg_*.py"
+      - "scripts/hepta_kg_*.sh"
+      - "scripts/hepta_knowledge_graph_map_verify.py"
+      - ".github/kg-run-finalize.sh"
+      - ".github/workflows/hepta-kg-remaining-four-closure.yml"
+  workflow_dispatch:
+    inputs:
+      include_self_hosted:
+        description: Run the separately governed target-host lanes
+        required: false
+        default: false
+        type: boolean
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: kg-remaining-four-${{ github.sha }}
+  group: kg-cross-platform-${{ github.ref }}-${{ github.sha }}
   cancel-in-progress: false
 
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  PYTHONDONTWRITEBYTECODE: "1"
+
 jobs:
-  close-labelled:
-    name: close (${{ matrix.runner_name }})
-    if: startsWith(github.event.head_commit.message, 'kg remaining-four closure')
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - runner_name: rog
-            platform: linux
-            runs_on: '["self-hosted","linux","x64","rog"]'
-          - runner_name: pocket4
-            platform: linux
-            runs_on: '["self-hosted","linux","x64","pocket4"]'
-          - runner_name: macbook-pro
-            platform: macos
-            runs_on: '["self-hosted","macOS","ARM64","macbook"]'
-    runs-on: ${{ fromJSON(matrix.runs_on) }}
-    timeout-minutes: 180
-    env:
-      CARGO_INCREMENTAL: "0"
-      CARGO_BUILD_JOBS: "2"
-      CARGO_PROFILE_TEST_DEBUG: "0"
-      CARGO_PROFILE_DEV_DEBUG: "0"
-      PYTHONDONTWRITEBYTECODE: "1"
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        with:
-          ref: ${{ github.sha }}
-          fetch-depth: 0
-          persist-credentials: true
-      - name: Execute fenced closure
-        shell: bash
-        run: bash .github/kg-run-finalize.sh '${{ matrix.platform }}' '${{ matrix.runner_name }}'
-
-  close-gpu-group:
-    name: close (trillionnium-android-gpu)
-    if: startsWith(github.event.head_commit.message, 'kg remaining-four closure')
-    runs-on:
-      group: trillionnium-android-gpu
-      labels: [self-hosted, linux, x64]
-    timeout-minutes: 180
-    env:
-      CARGO_INCREMENTAL: "0"
-      CARGO_BUILD_JOBS: "2"
-      CARGO_PROFILE_TEST_DEBUG: "0"
-      CARGO_PROFILE_DEV_DEBUG: "0"
-      PYTHONDONTWRITEBYTECODE: "1"
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        with:
-          ref: ${{ github.sha }}
-          fetch-depth: 0
-          persist-credentials: true
-      - name: Execute fenced closure
-        shell: bash
-        run: bash .github/kg-run-finalize.sh linux
-
-  close-hosted:
-    name: close (${{ matrix.runner_name }})
-    if: startsWith(github.event.head_commit.message, 'kg remaining-four closure')
+  hosted:
+    name: hosted source evidence (${{ matrix.runner_name }})
     strategy:
       fail-fast: false
       matrix:
@@ -88,18 +56,112 @@ jobs:
             runs_on: macos-15
     runs-on: ${{ matrix.runs_on }}
     timeout-minutes: 180
-    env:
-      CARGO_INCREMENTAL: "0"
-      CARGO_BUILD_JOBS: "2"
-      CARGO_PROFILE_TEST_DEBUG: "0"
-      CARGO_PROFILE_DEV_DEBUG: "0"
-      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
           fetch-depth: 0
-          persist-credentials: true
-      - name: Execute fenced closure
+          persist-credentials: false
+
+      - name: Execute transparent read-only qualification
         shell: bash
+        env:
+          KG_PLATFORM_EVIDENCE_DIR: ${{ runner.temp }}/kg-platform-${{ matrix.runner_name }}
         run: bash .github/kg-run-finalize.sh '${{ matrix.platform }}'
+
+      - name: Upload immutable hosted evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: kg-platform-${{ matrix.runner_name }}-${{ github.sha }}
+          path: ${{ runner.temp }}/kg-platform-${{ matrix.runner_name }}
+          if-no-files-found: error
+          retention-days: 30
+
+  self-hosted:
+    name: target-host evidence (${{ matrix.runner_name }})
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.include_self_hosted }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner_name: rog
+            platform: linux
+            runs_on: '["self-hosted","linux","x64","rog"]'
+          - runner_name: pocket4
+            platform: linux
+            runs_on: '["self-hosted","linux","x64","pocket4"]'
+          - runner_name: macbook-pro
+            platform: macos
+            runs_on: '["self-hosted","macOS","ARM64","macbook"]'
+    runs-on: ${{ fromJSON(matrix.runs_on) }}
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Execute transparent read-only target qualification
+        shell: bash
+        env:
+          KG_PLATFORM_EVIDENCE_DIR: ${{ runner.temp }}/kg-platform-${{ matrix.runner_name }}
+        run: bash .github/kg-run-finalize.sh '${{ matrix.platform }}' '${{ matrix.runner_name }}'
+
+      - name: Upload immutable target-host evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: kg-platform-${{ matrix.runner_name }}-${{ github.sha }}
+          path: ${{ runner.temp }}/kg-platform-${{ matrix.runner_name }}
+          if-no-files-found: error
+          retention-days: 30
+
+  gpu-group:
+    name: target-host evidence (trillionnium-android-gpu)
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.include_self_hosted }}
+    runs-on:
+      group: trillionnium-android-gpu
+      labels: [self-hosted, linux, x64]
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Execute transparent read-only target qualification
+        shell: bash
+        env:
+          KG_PLATFORM_EVIDENCE_DIR: ${{ runner.temp }}/kg-platform-trillionnium-android-gpu
+        run: bash .github/kg-run-finalize.sh linux
+
+      - name: Upload immutable target-host evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: kg-platform-trillionnium-android-gpu-${{ github.sha }}
+          path: ${{ runner.temp }}/kg-platform-trillionnium-android-gpu
+          if-no-files-found: error
+          retention-days: 30
+
+  gate:
+    name: cross-platform source-evidence gate
+    if: always()
+    needs: [hosted, self-hosted, gpu-group]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Require hosted evidence and any requested target-host lanes
+        env:
+          HOSTED_RESULT: ${{ needs.hosted.result }}
+          SELF_HOSTED_RESULT: ${{ needs.self-hosted.result }}
+          GPU_GROUP_RESULT: ${{ needs.gpu-group.result }}
+        run: |
+          set -euo pipefail
+          test "$HOSTED_RESULT" = success
+          case "$SELF_HOSTED_RESULT" in success|skipped) ;; *) exit 1 ;; esac
+          case "$GPU_GROUP_RESULT" in success|skipped) ;; *) exit 1 ;; esac
+          printf '%s\n' \
+            'Source execution evidence passed. Independent operator acceptance, activation, and release remain separate gates.'
