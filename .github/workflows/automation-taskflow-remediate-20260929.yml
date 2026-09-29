@@ -20,12 +20,26 @@ jobs:
     runs-on: ubuntu-slim
     timeout-minutes: 15
     steps:
-      - name: Check out current convergence branch
+      - name: Check out exact remediation inputs
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: work/automation-taskflow-full-closure-2026-09-27
           fetch-depth: 0
           persist-credentials: true
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            .github/workflows/automation-taskflow-export-final-patch.yml
+            .github/workflows/automation-taskflow-remediate-20260929.yml
+            .github/workflows/automation-taskflow-selected-host.yml
+            codex-rs/hepta-automation/migrations/0022_durable_neural_circuit.sql
+            codex-rs/hepta-automation/src/durable_neural_circuit.rs
+            codex-rs/hepta-automation/src/durable_neural_circuit_recovery.rs
+            codex-rs/hepta-automation/src/timer_lifecycle.rs
+            codex-rs/hepta-automation/tests/automation.rs
+            codex-rs/hepta-automation/tests/durable_neural_circuit.rs
+            codex-rs/hepta-automation/tests/durable_neural_circuit_recovery.rs
+            docs/modules/automation.taskflow/SCHEMA_CONTRACT.json
+            scripts/automation_taskflow_remediation_20260929.patch.b64
 
       - name: Materialize and apply reviewed source patch
         shell: bash
