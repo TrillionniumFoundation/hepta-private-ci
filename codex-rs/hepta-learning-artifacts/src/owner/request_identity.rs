@@ -1,9 +1,9 @@
-//! Request integrity preflight for both new publication and terminal replay.
+//! Canonical request integrity for new publication, recovery and terminal replay.
 //!
-//! This verifier binds bytes, public admission fields and the signature to the
-//! owner's configured head-signing keys. It does not grant current authority:
-//! lease expiry, current signer policy and withdrawal freshness remain checked
-//! by LearningArtifactOwnerHost on every non-terminal publication phase.
+//! The resulting digest deliberately excludes the caller's observation time so
+//! an exact historical retry may be read later. It includes every semantic input
+//! that may change the durable publication: operation, complete admission,
+//! payload identity, predecessor and the exact signed CURRENT witness.
 
 use std::collections::BTreeMap;
 
@@ -34,10 +34,10 @@ impl RequestIdentityVerifier {
         }
     }
 
-    pub(super) fn verify(
+    pub(super) fn verify_and_digest(
         &self,
         request: &LearningArtifactPublishRequestV1,
-    ) -> Result<(), LearningArtifactOwnerServiceError> {
+    ) -> Result<Digest32, LearningArtifactOwnerServiceError> {
         let admission = &request.admission;
         // Historical reconstruction is intentionally separate from the live
         // withdrawal check. Returning an old DENY_ALL receipt renews nothing.
@@ -46,7 +46,7 @@ impl RequestIdentityVerifier {
             admission.withdrawal_head_digest,
             admission.admitted_at,
         )
-        .map_err(|_| LearningArtifactOwnerServiceError::RequestMismatch)?;
+        .map_err(|_| LearningArtifactOwnerServiceError::RequestIdentityConflict)?;
         let manifest = &admission.validated_manifest.manifest;
         let signed = &request.signed_current_head;
         if request.now < admission.admitted_at
@@ -55,21 +55,43 @@ impl RequestIdentityVerifier {
             || Digest32::of_bytes(&request.payload) != manifest.bytes_digest
             || signed.witness.registry_id != self.registry_id
         {
-            return Err(LearningArtifactOwnerServiceError::RequestMismatch);
+            return Err(LearningArtifactOwnerServiceError::RequestIdentityConflict);
         }
         let key_bytes = self
             .head_keys
             .get(&signed.witness.signer_id)
-            .ok_or(LearningArtifactOwnerServiceError::RequestMismatch)?;
+            .ok_or(LearningArtifactOwnerServiceError::RequestIdentityConflict)?;
         if Digest32::of_bytes(key_bytes) != signed.witness.signing_key_digest {
-            return Err(LearningArtifactOwnerServiceError::RequestMismatch);
+            return Err(LearningArtifactOwnerServiceError::RequestIdentityConflict);
         }
         let key = VerifyingKey::from_bytes(key_bytes)
-            .map_err(|_| LearningArtifactOwnerServiceError::RequestMismatch)?;
+            .map_err(|_| LearningArtifactOwnerServiceError::RequestIdentityConflict)?;
         key.verify_strict(
             &signed.signing_bytes(),
             &Signature::from_bytes(&signed.signature),
         )
-        .map_err(|_| LearningArtifactOwnerServiceError::RequestMismatch)
+        .map_err(|_| LearningArtifactOwnerServiceError::RequestIdentityConflict)?;
+
+        let mut signed_head_bytes = b"hepta.learning-artifacts.signed-current-head.identity.v1".to_vec();
+        signed_head_bytes.extend_from_slice(&signed.signing_bytes());
+        signed_head_bytes.extend_from_slice(&signed.signature);
+        let signed_head_digest = Digest32::of_bytes(&signed_head_bytes);
+
+        let mut identity = b"hepta.learning-artifacts.publication-request.identity.v1".to_vec();
+        push_id(&mut identity, &request.operation_id);
+        identity.extend_from_slice(admission.admission_digest.as_array());
+        identity.extend_from_slice(admission.validated_manifest.manifest_digest.as_array());
+        identity.extend_from_slice(admission.withdrawal_scope_digest.as_array());
+        identity.extend_from_slice(admission.withdrawal_head_digest.as_array());
+        identity.extend_from_slice(&(request.payload.len() as u64).to_be_bytes());
+        identity.extend_from_slice(manifest.bytes_digest.as_array());
+        identity.extend_from_slice(request.expected_registry_predecessor_head.as_array());
+        identity.extend_from_slice(signed_head_digest.as_array());
+        Ok(Digest32::of_bytes(&identity))
     }
+}
+
+fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
+    bytes.extend_from_slice(&(value.as_str().len() as u64).to_be_bytes());
+    bytes.extend_from_slice(value.as_str().as_bytes());
 }
