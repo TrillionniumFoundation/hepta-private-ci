@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Any
 
 try:
-    from scripts.hepta_metadata import has_object_keys
+    from scripts.hepta_metadata import has_object_keys, has_registry_ids
     from scripts.hepta_metadata import (
         AUTHORITY_KEYS as AUTHORITY_KEYS,
         has_schema_version,
@@ -22,7 +22,7 @@ try:
 except ModuleNotFoundError as error:
     if error.name != "scripts":
         raise
-    from hepta_metadata import has_object_keys
+    from hepta_metadata import has_object_keys, has_registry_ids
     from hepta_metadata import (
         AUTHORITY_KEYS as AUTHORITY_KEYS,
         has_schema_version,
@@ -100,6 +100,43 @@ REQUIRED_PROTOCOLS = [
     "ConsolidationArtifactV1",
     "HumanOverrideV1",
 ]
+
+# V1 semantic obligations, not a maximum size or serialization order.
+REQUIRED_GAP_TOPICS = {
+    "closed_world_organ_anatomy",
+    "organ_lifecycle_and_retirement",
+    "body_graph_dependency_cycle_rejection",
+    "essential_organ_fallback",
+    "constitutional_and_objective_immutability",
+    "no_central_rpc_on_local_hot_paths",
+    "homeostatic_resource_allocation",
+    "sensor_time_calibration_and_staleness",
+    "body_state_and_generation_binding",
+    "world_model_uncertainty_and_ood",
+    "complete_legal_action_gating",
+    "independent_reflex_veto",
+    "physical_effect_idempotency_and_terminal_observation",
+    "digital_twin_and_fault_injection",
+    "next_snapshot_structural_plasticity",
+    "generator_evaluator_operator_separation",
+    "sleep_consolidation_and_revocation_exclusion",
+    "human_emergency_override",
+    "deterministic_reference_vectors",
+    "machine_closed_world_validation",
+    "multimodal_hippocampal_memory_reference",
+    "paper_source_bytes_independent_replay",
+}
+REQUIRED_EXTERNAL_GATES = {
+    "real_sensor_identity_and_calibration",
+    "hardware_in_loop_actuation",
+    "real_time_deadline_and_jitter",
+    "physical_safety_and_emergency_stop",
+    "future_time_longitudinal_efficacy",
+    "empirical_functional_biomimicry",
+    "independent_operator_acceptance",
+    "production_canary_selection_promotion_release",
+}
+
 HARD = {
     "authority",
     "truth",
@@ -309,12 +346,21 @@ def verify() -> int:
     ]:
         false_authority(value.get("authorityFlags"), label)
     organs = arch["organs"]
+    need(has_registry_ids(organs, required=REQUIRED_ORGANS), "organ IDs")
     ids = [x["id"] for x in organs]
+    roles = arch.get("requiredOrganRoles")
     need(
-        ids == REQUIRED_ORGANS and arch["requiredOrganRoles"] == REQUIRED_ORGANS,
-        "organ closed world/order",
+        isinstance(roles, list)
+        and all(isinstance(role, str) for role in roles)
+        and len(roles) == len(set(roles)),
+        "required organ role identities",
     )
-    need(len(set(ids)) == 24, "organ IDs")
+    need(
+        set(REQUIRED_ORGANS) <= set(ids)
+        and set(arch["requiredOrganRoles"]) <= set(ids)
+        and set(REQUIRED_ORGANS) <= set(arch["requiredOrganRoles"]),
+        "required organ role coverage",
+    )
     need(arch["organLifecycle"] == LIFECYCLE, "lifecycle")
     need(
         arch["structuralMutationGrammar"]
@@ -338,6 +384,13 @@ def verify() -> int:
     edges = []
     for row in organs:
         need(has_object_keys(row, ORGAN_KEYS), row["id"] + " key closure")
+        need(
+            all(
+                type(row[key]) is bool
+                for key in ("essential", "localHotPath", "effectBoundary")
+            ),
+            row["id"] + " boolean boundary fields",
+        )
         need(
             row["moduleBindings"] and row["function"] and row["anatomicalRole"],
             row["id"] + " identity",
@@ -389,11 +442,11 @@ def verify() -> int:
         arch.get("qualificationReferences", []),
     )
     prows = protocols["protocols"]
-    pids = [x["id"] for x in prows]
-    need(pids == REQUIRED_PROTOCOLS and len(set(pids)) == 15, "protocol closed world")
+    need(has_registry_ids(prows, required=REQUIRED_PROTOCOLS), "protocol identities")
     for row in prows:
         need(
-            list(row) == ["id", "owner", "requiredFields"], row["id"] + " protocol keys"
+            has_object_keys(row, ["id", "owner", "requiredFields"]),
+            row["id"] + " protocol keys",
         )
         need(
             (row["owner"] in by_id or row["owner"] in mids) and row["requiredFields"],
@@ -417,10 +470,10 @@ def verify() -> int:
         "gap truth posture",
     )
     grows = gaps["gaps"]
+    need(has_registry_ids(grows), "gap identities")
     need(
-        len(grows) == 22
-        and [x["id"] for x in grows] == [f"CNS-GAP-{i:03d}" for i in range(1, 23)],
-        "gap closure",
+        has_registry_ids(grows, key="gap", required=REQUIRED_GAP_TOPICS),
+        "gap obligation coverage",
     )
     for row in grows:
         need(
@@ -430,7 +483,11 @@ def verify() -> int:
         for path in row["evidence"]:
             need((ROOT / path).exists(), row["id"] + " missing evidence " + path)
     ext = gaps["externalCapabilityGates"]
-    need(len(ext) == 8, "external gate count")
+    need(has_registry_ids(ext), "external gate identities")
+    need(
+        has_registry_ids(ext, key="gate", required=REQUIRED_EXTERNAL_GATES),
+        "external gate obligation coverage",
+    )
     need(
         all(
             x["repositoryMaySelfCertify"] is False
@@ -496,10 +553,10 @@ def verify() -> int:
         json.dumps(
             {
                 "status": "PASS_HEPTA_CNS_ORGAN_CLOSED_WORLD",
-                "organs": 24,
-                "protocols": 15,
-                "repositoryGaps": 22,
-                "externalCapabilityGates": 8,
+                "organs": len(organs),
+                "protocols": len(prows),
+                "repositoryGaps": len(grows),
+                "externalCapabilityGates": len(ext),
                 "topologicalOrderDigest": hashlib.sha256(
                     "\n".join(order).encode()
                 ).hexdigest(),

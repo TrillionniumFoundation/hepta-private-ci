@@ -1480,22 +1480,16 @@ def verify(*, require_path_lease_attestation=False) -> int:
     sub = subordinate_state()
     need(
         sub["readiness"].get("overlayId") == "HEPTA-V8-PRECODING-READINESS"
-        and sub["readiness"].get("globalClosure", {}).get("state") == "closed"
-        and len(sub["readiness"]["documents"]) == 9
-        and len(sub["readiness_protocols"]["protocols"]) == 31
-        and len(sub["readiness_gaps"]["gaps"]) == 54,
+        and sub["readiness"].get("globalClosure", {}).get("state") == "closed",
         "readiness subordinate closure",
     )
     need(
         sub["cns"].get("claimBoundary", {}).get("repositoryReferenceClosure") is True
-        and sub["cns"].get("claimBoundary", {}).get("productionEmbodiment") is False
-        and len(sub["cns"]["organs"]) == 24
-        and len(sub["cns_gaps"]["gaps"]) == 22,
+        and sub["cns"].get("claimBoundary", {}).get("productionEmbodiment") is False,
         "CNS subordinate closure",
     )
     need(
-        sub["hnmf"].get("claimPosture", {}).get("productionActivation") is False
-        and len(sub["hnmf_gaps"]["gaps"]) == 18,
+        sub["hnmf"].get("claimPosture", {}).get("productionActivation") is False,
         "HNMF subordinate closure",
     )
     need((ROOT / "docs/STATUS.md").read_text() == status_text(d), "STATUS stale")

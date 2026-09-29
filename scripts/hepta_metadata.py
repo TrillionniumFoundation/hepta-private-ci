@@ -68,3 +68,26 @@ def has_object_keys(value: object, expected: list[str]) -> bool:
     verifier's responsibility. JSON loaders must still reject duplicate keys.
     """
     return isinstance(value, dict) and value.keys() == set(expected)
+
+
+def has_registry_ids(rows: object, *, required=(), key: str = "id") -> bool:
+    """Check named obligations and unique identities, not a historical row count.
+
+    Required identities are semantic obligations of the owning protocol. Extra
+    rows still need their owner's shape, bounds, references and authority checks.
+    """
+    if not isinstance(rows, list) or not rows:
+        return False
+    identities = []
+    for row in rows:
+        if not isinstance(row, dict):
+            return False
+        identity = row.get(key)
+        if (
+            not isinstance(identity, str)
+            or not identity
+            or identity.strip() != identity
+        ):
+            return False
+        identities.append(identity)
+    return len(identities) == len(set(identities)) and set(required) <= set(identities)
