@@ -1,0 +1,150 @@
+name: memory federation indexed admission authoring 20260929
+on:
+  push:
+    branches: [ops/memory-federation-source-review-20260929]
+    paths: [.github/workflows/memory-federation-indexed-author-20260929.yml]
+permissions:
+  contents: read
+jobs:
+  author:
+    runs-on: ubuntu-slim
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    outputs:
+      candidate: ${{ steps.publish.outputs.candidate }}
+    steps:
+      - name: Read reviewed patch carrier
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          path: author-tools
+          persist-credentials: false
+      - name: Read fixed source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: b1740debc187fb1a7661c9c4cf0bdd0e9ca3065f
+          path: candidate
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Check and apply reviewed patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64, gzip, hashlib, pathlib, subprocess
+          root = pathlib.Path('candidate').resolve()
+          assert subprocess.check_output(['git','rev-parse','HEAD'], cwd=root, text=True).strip() == 'b1740debc187fb1a7661c9c4cf0bdd0e9ca3065f'
+          carrier = pathlib.Path('author-tools/qualification/memory-federation/authoring-20260929')
+          encoded = ''.join((carrier / f'part{i}.b64').read_text().strip() for i in range(3))
+          patch = gzip.decompress(base64.b64decode(encoded, validate=True))
+          assert hashlib.sha256(patch).hexdigest() == '5a3155e8121276954315f6d77371f0db1ddf60c571c907a3ae02e87135efd8d8'
+          subprocess.run(['git','apply','--check','--index'], input=patch, cwd=root, check=True)
+          subprocess.run(['git','apply','--index'], input=patch, cwd=root, check=True)
+          PY
+      - name: Install pinned formatting toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v rustup >/dev/null; then
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain 1.95.0
+          fi
+          export PATH="$HOME/.cargo/bin:$PATH"
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+      - name: Format only owned source and freeze observation
+        working-directory: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 fmt --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml
+          rustfmt +1.95.0 --edition 2024 --config-path codex-rs/rustfmt.toml --config skip_children=true codex-rs/hepta-memory/src/cognitive_runtime.rs
+          python3 - <<'PY'
+          import subprocess
+          paths = subprocess.check_output(['git','diff','HEAD','--name-only'], text=True).splitlines()
+          exact = {'codex-rs/hepta-memory/src/cognitive_runtime.rs', 'scripts/memory_federation_full_attestation.py', 'scripts/prepare_memory_federation_observation.py', 'scripts/test_memory_federation_entrypoints.py'}
+          assert all(p in exact or p.startswith(('codex-rs/hepta-memory-federation-wire/', 'docs/modules/memory.federation/')) for p in paths), paths
+          PY
+          git diff --check
+          git config user.name 'Hepta Memory Federation Development'
+          git config user.email 'hepta-memory-federation-dev@users.noreply.github.com'
+          git add codex-rs/hepta-memory-federation-wire codex-rs/hepta-memory/src/cognitive_runtime.rs scripts/memory_federation_full_attestation.py scripts/prepare_memory_federation_observation.py scripts/test_memory_federation_entrypoints.py docs/modules/memory.federation
+          git commit -m 'fix(memory.federation): authenticate before staging and index bounded recovery cleanup'
+          SOURCE_SHA="$(git rev-parse HEAD)"
+          python3 scripts/prepare_memory_federation_observation.py --source-sha "$SOURCE_SHA" --base-sha a126987b84737dbc2ee2592442a314117bddb4a2 --candidate-branch feat/memory-federation-full-closure-20260927 --write
+          test "$(git diff --name-only)" = docs/modules/memory.federation/IMPLEMENTATION_MAP.json
+          git add docs/modules/memory.federation/IMPLEMENTATION_MAP.json
+          git commit -m 'docs(memory.federation): bind frozen indexed-admission source observation without execution claims'
+          python3 scripts/verify_memory_federation_status.py verify
+          python3 scripts/verify_memory_federation_implementation.py --expected-sha "$(git rev-parse HEAD)" --expected-tree "$(git rev-parse HEAD^{tree})"
+      - name: Publish candidate branch without force
+        id: publish
+        working-directory: candidate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain --untracked-files=no)"
+          AUTH="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $AUTH" push origin HEAD:refs/heads/work/memory-federation-indexed-admission-20260929
+          echo "candidate=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+  focused-read-only:
+    needs: author
+    runs-on: ubuntu-slim
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.author.outputs.candidate }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install pinned test toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v rustup >/dev/null; then
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain 1.95.0
+          fi
+          export PATH="$HOME/.cargo/bin:$PATH"
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+      - name: Execute focused tests and retain diagnostic evidence
+        env:
+          EXPECTED_SHA: ${{ needs.author.outputs.candidate }}
+          CARGO_TARGET_DIR: ${{ runner.temp }}/wire-target
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT="$RUNNER_TEMP/federation-focused"
+          mkdir -p "$OUT"
+          exec > >(tee "$OUT/execution.log") 2>&1
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          TREE="$(git rev-parse HEAD^{tree})"
+          python3 scripts/memory_federation_execution_guard.py capture --state "$OUT/guard.json" --expected-sha "$EXPECTED_SHA" --expected-tree "$TREE"
+          python3 -m unittest discover -s scripts -p 'test_memory_federation_*py'
+          python3 scripts/memory_federation_full_attestation.py self-test
+          python3 scripts/verify_memory_federation_implementation.py --expected-sha "$EXPECTED_SHA" --expected-tree "$TREE"
+          cargo +1.95.0 fmt --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml -- --check
+          cargo +1.95.0 test --locked --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml --lib
+          cargo +1.95.0 test --locked --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml --doc
+          cargo +1.95.0 clippy --locked --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml --all-targets -- -D warnings
+          cargo +1.95.0 run --locked --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml --bin memory_federation_capacity_probe -- "$OUT/capacity.json"
+          python3 - "$OUT/capacity.json" <<'PY'
+          import json, pathlib, sys
+          sys.path.insert(0, 'scripts')
+          from memory_federation_full_attestation import require_metrics
+          require_metrics(json.loads(pathlib.Path(sys.argv[1]).read_text()))
+          PY
+          python3 scripts/memory_federation_execution_guard.py verify --state "$OUT/guard.json" --expected-sha "$EXPECTED_SHA" --expected-tree "$TREE"
+          printf '%s\n' "$EXPECTED_SHA" > "$OUT/tested-sha.txt"
+          printf '%s\n' 'Focused diagnostics only; not full product qualification or independent acceptance.' > "$OUT/CLAIM_BOUNDARY.txt"
+      - name: Retain focused diagnostics
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-federation-indexed-focused-${{ github.run_id }}
+          path: ${{ runner.temp }}/federation-focused
+          if-no-files-found: error
+          retention-days: 30
