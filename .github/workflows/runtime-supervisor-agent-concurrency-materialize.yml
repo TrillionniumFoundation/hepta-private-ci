@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   materialize:
-    if: github.event.head_commit.message == 'chore(runtime.supervisor): stage per-Agent concurrency materializer'
+    if: ${{ github.event.head_commit.message == 'chore(runtime.supervisor): stage per-Agent concurrency materializer' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     steps:
