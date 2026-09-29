@@ -7,6 +7,15 @@ on:
       - codex/inference-worker-authoritative-20260929
     paths:
       - .github/workflows/inference-worker-authoritative-qualification.yml
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - reopened
+      - synchronize
+    paths:
+      - .github/workflows/inference-worker-authoritative-qualification.yml
 
 permissions:
   contents: write
@@ -16,7 +25,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  SOURCE_SHA: ${{ github.sha }}
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
   BRANCH_NAME: codex/inference-worker-authoritative-20260929
   CARGO_INCREMENTAL: "0"
   CARGO_BUILD_JOBS: "2"
@@ -27,6 +36,7 @@ env:
 jobs:
   materialize:
     name: Materialize reviewed inference.worker source
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.ref == 'codex/inference-worker-authoritative-20260929'
     runs-on: ubuntu-24.04
     timeout-minutes: 180
     steps:
