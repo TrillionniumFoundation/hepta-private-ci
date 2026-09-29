@@ -1,0 +1,232 @@
+name: Kernel evidence remaining-seven convergence worker
+
+on:
+  push:
+    branches:
+      - codex/kernel-evidence-remaining-seven-20260929
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kernel-evidence-remaining-seven-worker
+  cancel-in-progress: false
+
+jobs:
+  converge:
+    if: ${{ !contains(github.event.head_commit.message, '[kernel-evidence-seven-worker]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Check out exact convergence branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: codex/kernel-evidence-remaining-seven-20260929
+          fetch-depth: 0
+          persist-credentials: true
+
+      - uses: ./.github/actions/setup-ci
+
+      - name: Install pinned Python formatter
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v7.2.1
+        with:
+          version: "0.11.3"
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+
+      - name: Close strict-lint blockers without weakening policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          prompt = Path("codex-rs/ext/hepta-prompt/src/lib.rs")
+          text = prompt.read_text(encoding="utf-8")
+
+          replacements = [
+              (
+                  "use tokio::sync::Mutex;\n",
+                  "use tokio::sync::OnceCell;\n",
+              ),
+              (
+                  "    resolved: Mutex<Option<ResolvedAttachment>>,\n",
+                  "    resolved: OnceCell<ResolvedAttachment>,\n",
+              ),
+              (
+                  '''        let state = turn_store.get_or_init(PromptRuntimeTurnState::default);
+                  let mut resolved = state.resolved.lock().await;
+                  if let Some(value) = resolved.as_ref() {
+                      return value.clone();
+                  }
+                  let value = match self
+                      .host
+                      .prepare(PromptRuntimePrepareRequest {
+                          thread_id,
+                          turn_id,
+                          model_context_window,
+                      })
+                      .await
+                  {
+                      Ok(Some(attachment)) => match attachment.validate() {
+                          Ok(()) => ResolvedAttachment::Ready(attachment),
+                          Err(error) => ResolvedAttachment::Failed(PromptRuntimeHostError::new(
+                              "prompt_runtime_attachment_invalid",
+                              error.to_string(),
+                          )),
+                      },
+                      Ok(None) => ResolvedAttachment::None,
+                      Err(error) => ResolvedAttachment::Failed(error),
+                  };
+                  *resolved = Some(value.clone());
+                  value
+          ''',
+                  '''        let state = turn_store.get_or_init(PromptRuntimeTurnState::default);
+                  let host = self.host.clone();
+                  state
+                      .resolved
+                      .get_or_init(move || async move {
+                          match host
+                              .prepare(PromptRuntimePrepareRequest {
+                                  thread_id,
+                                  turn_id,
+                                  model_context_window,
+                              })
+                              .await
+                          {
+                              Ok(Some(attachment)) => match attachment.validate() {
+                                  Ok(()) => ResolvedAttachment::Ready(attachment),
+                                  Err(error) => ResolvedAttachment::Failed(
+                                      PromptRuntimeHostError::new(
+                                          "prompt_runtime_attachment_invalid",
+                                          error.to_string(),
+                                      ),
+                                  ),
+                              },
+                              Ok(None) => ResolvedAttachment::None,
+                              Err(error) => ResolvedAttachment::Failed(error),
+                          }
+                      })
+                      .await
+                      .clone()
+          ''',
+              ),
+              (
+                  '''impl PromptRuntimeAttemptLease {
+              // This lease is created by the physical ModelProviderPolicyContributor,
+          ''',
+                  '''type PromptRuntimeTerminalMapping = (
+              PromptRuntimeTerminalOutcomeV1,
+              Option<String>,
+              Option<bool>,
+              Option<PromptDeliveryObservationV1>,
+          );
+
+          impl PromptRuntimeAttemptLease {
+              // This lease is created by the physical ModelProviderPolicyContributor,
+          ''',
+              ),
+              (
+                  '''    fn map_terminal(
+                  &self,
+                  terminal: ModelProviderTerminal,
+              ) -> Result<
+                  (
+                      PromptRuntimeTerminalOutcomeV1,
+                      Option<String>,
+                      Option<bool>,
+                      Option<PromptDeliveryObservationV1>,
+                  ),
+                  PromptRuntimeError,
+              > {
+          ''',
+                  '''    fn map_terminal(
+                  &self,
+                  terminal: ModelProviderTerminal,
+              ) -> Result<PromptRuntimeTerminalMapping, PromptRuntimeError> {
+          ''',
+              ),
+          ]
+          for old, new in replacements:
+              if new in text:
+                  continue
+              if text.count(old) != 1:
+                  raise SystemExit(f"prompt runtime replacement expected once: {old[:80]!r}")
+              text = text.replace(old, new, 1)
+          prompt.write_text(text, encoding="utf-8")
+
+          ndu = Path("codex-rs/hepta-ndu/src/lib.rs")
+          text = ndu.read_text(encoding="utf-8")
+          old = "pub use evaluator::evaluate_candidates;\n"
+          new = '''#[allow(
+              deprecated,
+              reason = "retain the registered legacy Rust export; new callers use evaluate_candidates_with_policy"
+          )]
+          pub use evaluator::evaluate_candidates;
+          '''
+          if new not in text:
+              if text.count(old) != 1:
+                  raise SystemExit("NDU legacy export replacement expected once")
+              text = text.replace(old, new, 1)
+          ndu.write_text(text, encoding="utf-8")
+          PY
+
+      - name: Apply the repository-pinned Python formatter
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv run --frozen --project scripts ruff format scripts
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all
+          git diff --check
+
+      - name: Commit direct source convergence
+        id: commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Kernel evidence convergence worker'
+          git config user.email 'noreply@github.com'
+          git add scripts codex-rs/ext/hepta-prompt/src/lib.rs codex-rs/hepta-ndu/src/lib.rs
+          if git diff --cached --quiet; then
+            echo 'changed=false' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git commit -m 'fix(kernel.evidence): close strict qualification blockers [kernel-evidence-seven-worker]'
+          git push origin HEAD:codex/kernel-evidence-remaining-seven-20260929
+          echo 'changed=true' >> "$GITHUB_OUTPUT"
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Verify formatting
+        shell: bash
+        run: just fmt-check
+
+      - name: Verify evidence package
+        shell: bash
+        run: just test --locked -p codex-hepta-evidence
+
+      - name: Verify Agentd evidence product
+        shell: bash
+        run: >-
+          just test --locked -p codex-hepta-agentd --lib
+          --test kernel_evidence_product
+          --test kernel_evidence_profile
+          --test kernel_evidence_paging_product
+          --test kernel_evidence_publication_cli
+
+      - name: Verify evidence doctests
+        shell: bash
+        run: cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-evidence --doc
+
+      - name: Verify strict Clippy
+        shell: bash
+        run: >-
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked
+          -p codex-hepta-evidence -p codex-hepta-agentd --all-targets -- -D warnings
+
+      - name: Verify product build
+        shell: bash
+        run: cargo build --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-agentd --bin codex-hepta-agentd
