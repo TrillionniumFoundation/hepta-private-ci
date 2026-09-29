@@ -14,12 +14,6 @@ pub enum SettlementStatus {
     Rejected,
 }
 
-pub struct SettlementIssuerRegistration {
-    pub issuer_id: StableId,
-    pub key_epoch: Generation,
-    pub verifying_key: VerifyingKey,
-    pub revoked: bool,
-}
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SettlementEvidenceClaims {
@@ -73,12 +67,15 @@ impl SignedSettlementEvidence {
 
     pub(crate) fn authenticate(
         &self,
-        issuer: &SettlementIssuerRegistration,
+        issuer: &crate::IssuerRecord,
         reservation_id: &StableId,
         operation_id: &StableId,
         now_ms: u64,
     ) -> Result<AuthenticatedSettlementEvidence, AuthBusAuthorityError> {
-        if self.claims.issuer_id != issuer.issuer_id || self.claims.key_epoch != issuer.key_epoch {
+        if issuer.purpose != crate::IssuerPurpose::Settlement
+            || self.claims.issuer_id != issuer.issuer_id
+            || self.claims.key_epoch != issuer.key_epoch
+        {
             return Err(AuthBusAuthorityError::SettlementIssuerMismatch);
         }
         if &self.claims.reservation_id != reservation_id
@@ -86,7 +83,7 @@ impl SignedSettlementEvidence {
         {
             return Err(AuthBusAuthorityError::SettlementEvidenceMismatch);
         }
-        if issuer.revoked {
+        if issuer.state != crate::IssuerLifecycleState::Active {
             return Err(AuthBusAuthorityError::SettlementIssuerRevoked);
         }
         if self.claims.terminal_evidence_digest.is_zero()

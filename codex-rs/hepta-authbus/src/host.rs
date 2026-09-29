@@ -1,6 +1,11 @@
 use std::path::Path;
 use std::path::PathBuf;
 
+#[cfg(test)]
+use std::sync::atomic::AtomicBool;
+#[cfg(test)]
+use std::sync::atomic::Ordering;
+
 #[cfg(unix)]
 use std::fs::File;
 #[cfg(unix)]
@@ -32,7 +37,6 @@ use crate::QuotaSnapshot;
 use crate::QuotaSpec;
 use crate::ReservationRequest;
 use crate::Settlement;
-use crate::SettlementIssuerRegistration;
 use crate::SignedSettlementEvidence;
 use crate::SignedTrustedTimeAttestation;
 use crate::TrustedTimeSample;
@@ -41,9 +45,11 @@ const CHECKPOINT_SCHEMA_VERSION: u32 = 1;
 const MAX_CHECKPOINT_BYTES: u64 = 4096;
 const RECOVERY_BATCH: u32 = 256;
 
-pub struct AuthBusAuthorityHost {
+pub(crate) struct AuthBusAuthorityHost {
     store: AuthBusAuthorityStore,
     checkpoint: AuthorityCheckpointFile,
+    #[cfg(test)]
+    fail_after_external_replace: AtomicBool,
 }
 
 impl AuthBusAuthorityHost {
@@ -67,7 +73,12 @@ impl AuthBusAuthorityHost {
             }
         }
         while !store.reconcile_after_restart(RECOVERY_BATCH).await? {}
-        let host = Self { store, checkpoint };
+        let host = Self {
+            store,
+            checkpoint,
+            #[cfg(test)]
+            fail_after_external_replace: AtomicBool::new(false),
+        };
         host.sync_checkpoint().await?;
         Ok(host)
     }
@@ -76,11 +87,26 @@ impl AuthBusAuthorityHost {
         let external = self.checkpoint.read()?;
         if let Some(next) = self.store.reconcile_authority_checkpoint(external).await? {
             self.checkpoint.replace(external, next)?;
+            #[cfg(test)]
+            if self
+                .fail_after_external_replace
+                .swap(false, Ordering::SeqCst)
+            {
+                return Err(AuthBusAuthorityError::Storage(
+                    "injected crash after external checkpoint publication".to_owned(),
+                ));
+            }
             self.store
                 .advance_authority_checkpoint(external.generation, next)
                 .await?;
         }
         Ok(())
+    }
+
+    #[cfg(test)]
+    pub(crate) fn fail_after_external_replace_once(&self) {
+        self.fail_after_external_replace
+            .store(true, Ordering::SeqCst);
     }
 
     async fn finish<T>(
@@ -161,13 +187,6 @@ impl AuthBusAuthorityHost {
         self.store.message_issuer(issuer_id, key_epoch).await
     }
 
-    pub async fn settlement_issuer(
-        &self,
-        issuer_id: &StableId,
-        key_epoch: Generation,
-    ) -> Result<SettlementIssuerRegistration, AuthBusAuthorityError> {
-        self.store.settlement_issuer(issuer_id, key_epoch).await
-    }
 
     pub async fn create_policy(
         &self,
@@ -319,11 +338,10 @@ impl AuthBusAuthorityHost {
 
     pub async fn settle(
         &self,
-        issuer: &SettlementIssuerRegistration,
         evidence: &SignedSettlementEvidence,
         time: TrustedTimeSample,
     ) -> Result<Settlement, AuthBusAuthorityError> {
-        let result = self.store.settle(issuer, evidence, time).await;
+        let result = self.store.settle(evidence, time).await;
         self.finish(result).await
     }
 

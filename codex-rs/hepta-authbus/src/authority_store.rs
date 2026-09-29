@@ -357,6 +357,9 @@ pub(crate) async fn advance_time(
         if sample.source_revision == prior.source_revision && sample != &prior {
             return Err(AuthBusAuthorityError::TimeConflict);
         }
+        if sample == &prior {
+            return Ok(());
+        }
     }
     sqlx::query(
         "INSERT INTO authbus_trusted_time
