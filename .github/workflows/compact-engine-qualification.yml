@@ -111,6 +111,22 @@ jobs:
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
           components: rustfmt,clippy
+      - name: Retain exact rustfmt for source normalization
+        if: matrix.mode == 'exact-head'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/compact-rustfmt"
+          cp "$(rustup which rustfmt)" "$RUNNER_TEMP/compact-rustfmt/rustfmt"
+          rustfmt --version > "$RUNNER_TEMP/compact-rustfmt/version.txt"
+      - name: Upload exact rustfmt
+        if: matrix.mode == 'exact-head'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: compact-engine-rustfmt-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/compact-rustfmt/
+          retention-days: 1
+          if-no-files-found: error
       - name: Check locked build
         working-directory: codex-rs
         shell: bash
