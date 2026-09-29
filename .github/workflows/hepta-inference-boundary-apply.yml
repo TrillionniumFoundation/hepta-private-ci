@@ -29,7 +29,7 @@ jobs:
         env:
           PYTHONDONTWRITEBYTECODE: 1
           DESTINATION: codex/inference-control-boundary-capacity-20260929
-          BASE: a9fa9b4d0629bcab149026ac76a5f1470ee8363d
+          BASE: e05a74b234631802ca7ebd6f49f5a96495c45767
         shell: bash
         run: |
           exec > >(tee "$RUNNER_TEMP/inference-boundary-apply.log") 2>&1
@@ -40,8 +40,8 @@ jobs:
           chunks = sorted(Path('scripts/inference-boundary-payload').glob('*.b64'))
           assert len(chunks) == 4
           raw = lzma.decompress(base64.b64decode(''.join(p.read_text().strip() for p in chunks), validate=True))
-          assert len(raw) == 169197
-          assert hashlib.sha256(raw).hexdigest() == 'd04657495bf2766a302c7c649104f9d98e66623dd17ac0c069408e508abd83c4'
+          assert len(raw) == 5422
+          assert hashlib.sha256(raw).hexdigest() == '98ed1ba75067e6cdf5b65b01ddde3fc4891e80cb15c1cbe6992c2154568358ce'
           Path(os.environ['RUNNER_TEMP'], 'inference-boundary.patch').write_bytes(raw)
           PY
           git fetch origin "$DESTINATION"
@@ -53,9 +53,12 @@ jobs:
           import subprocess
           changed = subprocess.check_output(['git','diff','--cached','--name-only','-z']).decode().split('\0')
           prefixes = ('codex-rs/hepta-infer-worker-host/src/', 'docs/modules/inference.control/')
-          scripts = {'scripts/hepta-inference-control-current-state.py', 'scripts/hepta_inference_boundary_native.py',
+          scripts = {'scripts/hepta-inference-control-current-state.py', 'scripts/hepta-inference-control-actor-migrate.py',
+                     'scripts/hepta-implementation-maps.py', 'scripts/hepta_inference_boundary_native.py',
                      'scripts/hepta_inference_capacity.py', 'scripts/test_hepta_inference_capacity.py',
-                     'scripts/test_hepta_inference_current_state.py', '.github/workflows/hepta-inference-maintenance.yml'}
+                     'scripts/test_hepta_inference_current_state.py',
+                     '.github/workflows/hepta-inference-maintenance.yml',
+                     '.github/workflows/hepta-inference-readonly-matrix.yml'}
           for name in filter(None, changed):
               assert name.startswith(prefixes) or name in scripts, name
               if name.endswith('.rs'):
@@ -66,12 +69,13 @@ jobs:
           python3 scripts/hepta-inference-control-current-state.py sync
           python3 scripts/hepta-inference-control-current-state.py check
           python3 scripts/hepta-inference-control-actor-migrate.py check
+          python3 scripts/hepta-implementation-maps.py verify --module inference.control
           python3 -m unittest -v scripts.test_hepta_inference_current_state scripts.test_hepta_inference_capacity
           git diff --check
           git add -u
           git config user.name 'ChatGPT engineering'
           git config user.email 'chatgpt@users.noreply.github.com'
-          git commit -m 'fix(inference.control): bound admitted replies, reserve terminal capacity, and retain exact evidence'
+          git commit -m 'ci(inference.control): scope exact implementation-map verification'
           git push origin "HEAD:refs/heads/$DESTINATION"
           printf 'source_sha=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           git show --stat --oneline HEAD
