@@ -26,7 +26,7 @@ pub(super) struct FinalSendGate<'gate, 'claim, T: ?Sized, A: ?Sized> {
 /// The exact claim and real kernel proof live through all outcome persistence.
 #[must_use]
 pub(super) struct EnteredSend<'claim> {
-    pub(super) result: Result<MatrixEventId, MatrixTransportError>,
+    result: Result<MatrixEventId, MatrixTransportError>,
     claim: &'claim MatrixFencedOutboxClaim,
     proof: Arc<EnteredUseToken>,
 }
@@ -34,6 +34,10 @@ pub(super) struct EnteredSend<'claim> {
 impl<'claim> EnteredSend<'claim> {
     pub(super) fn claim(&self) -> &'claim MatrixFencedOutboxClaim {
         self.claim
+    }
+
+    pub(super) fn outcome(&self) -> &Result<MatrixEventId, MatrixTransportError> {
+        &self.result
     }
 }
 
@@ -136,8 +140,7 @@ impl<'claim, T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + 
                     binding,
                     self.expected_identity,
                     self.record,
-                )
-                .map_err(|_| OutboxDispatchError::Authority)?;
+                );
                 self.preflight(grant, stats)?;
 
                 // Keep permit validation and transport-future construction

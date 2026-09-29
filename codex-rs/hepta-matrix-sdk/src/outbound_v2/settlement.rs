@@ -14,7 +14,7 @@ pub(super) async fn settle_entered(
     let claim = entered.claim();
     let record = claim.record();
     let outcome_at_ms = clock.now_ms()?;
-    match &entered.result {
+    match entered.outcome() {
         Ok(event_id) => {
             let observed = store
                 .record_outbox_transport_accepted(

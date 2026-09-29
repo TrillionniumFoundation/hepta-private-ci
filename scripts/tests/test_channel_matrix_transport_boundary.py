@@ -23,7 +23,7 @@ class ChannelMatrixTransportBoundaryTests(unittest.TestCase):
             "impl<T: MatrixOutboundTransport + ?Sized> MatrixAuthorizedTransport for T {}",
             source,
         )
-        self.assertIn("permit.validate(record, &identity)", source)
+        self.assertEqual(source.count("permit.validate(record, &identity)"), 1)
         self.assertIn(
             "Ok(self.send(record, MatrixRawSendSeal { _private: () }))", source
         )
@@ -36,6 +36,39 @@ class ChannelMatrixTransportBoundaryTests(unittest.TestCase):
         self.assertNotIn("pub use permit::MatrixSendPermit", outbound)
         self.assertIn("pub(super) struct MatrixSendPermit", permit)
         self.assertIn("pub(super) fn validate(", permit)
+
+    def test_permit_constructor_does_not_repeat_boundary_validation(self) -> None:
+        permit = self.read("codex-rs/hepta-matrix-sdk/src/outbound_v2/permit.rs")
+        gate = self.read("codex-rs/hepta-matrix-sdk/src/outbound_v2/gate.rs")
+        start = permit.index("pub(super) fn new(")
+        end = permit.index("pub(super) fn validate(", start)
+        constructor = permit[start:end]
+        self.assertIn(") -> Self {", constructor)
+        self.assertNotIn("Result<", constructor)
+        self.assertNotIn(".validate(", constructor)
+        self.assertEqual(permit.count("outbound_payload_digest(record)"), 1)
+        self.assertIn("let permit = MatrixSendPermit::new(", gate)
+        constructor_call = gate[
+            gate.index("let permit = MatrixSendPermit::new(") : gate.index(
+                "self.preflight(grant, stats)?;",
+                gate.index("let permit = MatrixSendPermit::new("),
+            )
+        ]
+        self.assertNotIn("map_err", constructor_call)
+
+    def test_entered_outcome_is_read_only_outside_gate(self) -> None:
+        gate = self.read("codex-rs/hepta-matrix-sdk/src/outbound_v2/gate.rs")
+        settlement = self.read(
+            "codex-rs/hepta-matrix-sdk/src/outbound_v2/settlement.rs"
+        )
+        start = gate.index("pub(super) struct EnteredSend")
+        end = gate.index("impl<'claim> EnteredSend", start)
+        entered = gate[start:end]
+        self.assertIn("result: Result<", entered)
+        self.assertNotIn("pub(super) result", entered)
+        self.assertIn("pub(super) fn outcome(", gate)
+        self.assertIn("match entered.outcome()", settlement)
+        self.assertNotIn("entered.result", settlement)
 
     def test_real_sdk_uses_only_the_sealed_raw_seam(self) -> None:
         facade = self.read("codex-rs/hepta-matrix-sdk/src/sdk.rs")

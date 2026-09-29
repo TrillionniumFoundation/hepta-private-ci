@@ -31,13 +31,19 @@ impl fmt::Debug for MatrixSendPermit {
 }
 
 impl MatrixSendPermit {
+    /// Capture the immutable entry tuple without repeating validation.
+    ///
+    /// The gate has already validated canonical content before kernel entry.
+    /// The module-private adapter consumes this permit and performs the one
+    /// independent boundary validation immediately before constructing the
+    /// raw transport future.
     pub(super) fn new(
         proof: Arc<EnteredUseToken>,
         binding: &FinalUseBinding,
         identity: &MatrixOutboundIdentity,
         record: &OutboxRecord,
-    ) -> Result<Self, MatrixTransportError> {
-        let permit = Self {
+    ) -> Self {
+        Self {
             proof,
             binding: binding.clone(),
             identity: identity.clone(),
@@ -46,9 +52,7 @@ impl MatrixSendPermit {
             room_id: record.room_id.as_str().to_string(),
             binding_revision: record.binding_revision,
             generation: record.generation,
-        };
-        permit.validate(record, identity)?;
-        Ok(permit)
+        }
     }
 
     pub(super) fn validate(

@@ -10,15 +10,17 @@ ordinary admission error. Its successful result is either `AlreadyTerminal` or
 `Entered(EnteredSend)`. `EnteredSend` has private fields containing the actual
 kernel `EnteredUseToken` and a borrow of the exact fenced claim. It is not
 cloneable and cannot be constructed by external transport implementations.
+The transport outcome is private to `gate.rs`; settlement receives it through a
+read-only accessor and cannot replace an entered result with a pre-entry error.
 
 `gate.rs::continue_entered` returns `EnteredSend`, not a fallible admission
 result. The inner asynchronous result absorbs binding, timestamp, proof-write,
-freshness, cancellation, permit and adapter failures into an indeterminate
-transport observation. The outer caller retains the proof through
-`settlement.rs::settle_entered`. Settlement has no pre-entry cleanup arm. A
-failed outcome write leaves the live claim fenced for lease-expiry recovery and
-normal authenticated sync reconciliation. Kernel entry alone does not prove
-network entry, remote acceptance or logical success.
+freshness, cancellation, adapter-boundary permit validation and transport
+failures into an indeterminate transport observation. The outer caller retains
+the proof through `settlement.rs::settle_entered`. Settlement has no pre-entry
+cleanup arm. A failed outcome write leaves the live claim fenced for lease-expiry
+recovery and normal authenticated sync reconciliation. Kernel entry alone does
+not prove network entry, remote acceptance or logical success.
 
 The sender no longer maintains an independent `entered_effect` Boolean. A
 post-entry error cannot cause a later caller to treat the current claim as
@@ -50,9 +52,14 @@ throughput or latency improvement is claimed until measured on the target host.
 
 An `OutboxRecord` owns its content bytes and remains immutably borrowed with its
 binding for the lifetime of a gate. Canonical payload verification is performed
-once by that gate. The private sealed permit separately validates the content at
-adapter construction. Neither the signed content nor the durable pin is changed
-by this optimization.
+once by that gate before kernel entry. `MatrixSendPermit::new` is an infallible
+capture of the already-entered immutable tuple and performs no second digest or
+proof validation. The module-private authorized adapter performs one independent
+permit/content validation at the actual adapter boundary, immediately before it
+constructs the raw transport future. Thus the final gate path has one measured
+pre-entry verification and one independent boundary verification, not a third
+constructor-time repetition. Neither the signed content nor the durable pin is
+changed by this optimization.
 
 Permit validation and construction of the real SDK future occur inside the
 first live-gated poll. The gate checks the dynamic authority/session/deadline
@@ -66,7 +73,8 @@ deadline, authenticated revocation epoch/revision and exact transport/session
 identity are checked again. None of those dynamic results is cached. Time is
 checked both before and after synchronous refresh/identity work. Gate digest
 count/time and dynamic-check count/time are distinct counters. The digest count
-covers the gate only, not earlier request canonicalization or permit validation.
+covers the gate only, not earlier request canonicalization or the independent
+adapter-boundary permit validation.
 
 ## 4. Operations without a second state owner
 
@@ -119,7 +127,8 @@ approve an older binary that only understands migrations 1-12.
 | Later messages have no speculative lease; work-per-pass bound remains | `final_poll_regressions/optimization.rs` | locked native test |
 | Cancellation after entry leaves current unknown and later attempts untouched | same fixture | locked native test |
 | Multiple polls retain one gate digest and fresh dynamic checks | `pending_poll_regressions.rs` | locked native test |
-| Typed entered result preserves post-entry errors | gate/settlement plus existing entry/reopen cases | locked native test |
+| Typed entered result preserves post-entry errors and exposes outcome read-only | gate/settlement plus `test_channel_matrix_transport_boundary.py` | Python boundary regression and locked native test |
+| Permit construction is infallible/non-validating; exactly one independent adapter-boundary validation remains | `test_channel_matrix_transport_boundary.py` plus native compilation | Python boundary regression and locked native compile |
 | Public transport cannot override permit validation; real future construction remains inside the first gated poll | `test_channel_matrix_transport_boundary.py` plus native compilation | Python boundary regression and locked native compile |
 | Numeric telemetry saturation and identity-free output | `outbound_v2/telemetry_tests.rs` | locked native unit test |
 | Diagnostic read-only, missing measurement, capacity, parameterization and migration rejection | `test_channel_matrix_diagnostics.py` | Python with real SQLite migrations |
