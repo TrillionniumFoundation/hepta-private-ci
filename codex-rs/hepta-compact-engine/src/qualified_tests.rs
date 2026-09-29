@@ -463,7 +463,11 @@ fn failing_deletion_obligation_never_produces_proof() {
 
 #[test]
 fn large_input_remains_deterministic_and_bounded() {
-    const SOURCE_RECORDS: usize = 4_096;
+    // Keep the ordinary debug-profile unit lane below nextest's per-test
+    // timeout while still exercising non-trivial ordering and omission. The
+    // 65,536-record protocol ceiling is covered by `tests/capacity_profile.rs`
+    // in the dedicated release-profile capacity workflow.
+    const SOURCE_RECORDS: usize = 1_024;
     const RETAINED_RECORDS: u32 = 512;
     const RECORD_BYTES: u64 = 32;
     const RECORD_TOKENS: u64 = 4;

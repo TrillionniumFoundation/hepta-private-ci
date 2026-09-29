@@ -479,7 +479,7 @@ async fn public_v2_path_publishes_restarts_reconstructs_and_advances() {
     let temp = TempDir::new().expect("temp dir");
     let url = database_url(&temp);
 
-    let first = sealed_publication(&fixture, &["memory:e2e:a"], 1, 2, None, "first");
+    let first = sealed_publication(&fixture, &["memory:e2e:a"], 1, 1, None, "first");
     let first_checkpoint = first.candidate().checkpoint().checkpoint_digest;
     let coordinator = MemoryCheckpointCoordinatorV2::open(
         &url,
@@ -517,7 +517,7 @@ async fn public_v2_path_publishes_restarts_reconstructs_and_advances() {
         .await
         .expect("recover first checkpoint")
         .expect("first checkpoint exists");
-    assert_eq!(recovered.generation(), 2);
+    assert_eq!(recovered.generation(), 1);
     assert_eq!(recovered.checkpoint_digest(), first_checkpoint);
     recovered
         .publication()
@@ -530,7 +530,7 @@ async fn public_v2_path_publishes_restarts_reconstructs_and_advances() {
         &fixture,
         &["memory:e2e:a", "memory:e2e:b"],
         2,
-        3,
+        2,
         Some(first_checkpoint),
         "second",
     );
@@ -544,7 +544,7 @@ async fn public_v2_path_publishes_restarts_reconstructs_and_advances() {
         .await
         .expect("recover latest checkpoint")
         .expect("latest checkpoint exists");
-    assert_eq!(latest.generation(), 3);
+    assert_eq!(latest.generation(), 2);
     assert_eq!(latest.checkpoint_digest(), second_checkpoint);
     assert_eq!(
         latest
