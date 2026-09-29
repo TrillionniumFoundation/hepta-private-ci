@@ -1,17 +1,18 @@
 name: control.runtime verified patch application
 
 on:
-  push:
-    branches:
-      - codex/control-runtime-convergence-v1
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main]
     paths:
       - '.github/workflows/control-runtime-apply-once.yml'
 
 permissions:
   contents: write
+  pull-requests: read
 
 concurrency:
-  group: control-runtime-apply-once
+  group: control-runtime-apply-once-${{ github.event.pull_request.number }}
   cancel-in-progress: false
 
 env:
@@ -27,11 +28,24 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
           persist-credentials: true
 
+      - name: Detect staged convergence payload
+        id: stage
+        shell: bash
+        run: |
+          set -euo pipefail
+          if test -f .control-runtime-next.patch; then
+            echo 'present=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'present=false' >> "$GITHUB_OUTPUT"
+            echo 'No staged payload remains; verified application is already complete.'
+          fi
+
       - name: Decode and apply exact staged patch
+        if: steps.stage.outputs.present == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -42,59 +56,67 @@ jobs:
           git diff --check
 
       - name: Validate canonical module state before compilation
+        if: steps.stage.outputs.present == 'true'
         run: python3 scripts/control_runtime_validate_state.py --output "$RUNNER_TEMP/control-runtime-state-before.json"
 
       - name: Install native prerequisites
+        if: steps.stage.outputs.present == 'true'
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential pkg-config libcap-dev
 
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        if: steps.stage.outputs.present == 'true'
         with:
           tool: just@1.51.0,nextest@0.9.103
 
       - name: Resolve verified V8 artifacts
+        if: steps.stage.outputs.present == 'true'
         env:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
 
       - name: Format changed Rust source
+        if: steps.stage.outputs.present == 'true'
         working-directory: codex-rs
         run: cargo fmt -p codex-hepta-control-plane -p codex-hepta-agentd -p codex-hepta-ndu
 
       - name: Formatting check
+        if: steps.stage.outputs.present == 'true'
         working-directory: codex-rs
         run: cargo fmt -p codex-hepta-control-plane -p codex-hepta-agentd -p codex-hepta-ndu -- --check
 
       - name: Actual package regression suite
+        if: steps.stage.outputs.present == 'true'
         working-directory: codex-rs
         run: just test --locked -p codex-hepta-control-plane -p codex-hepta-agentd -p codex-hepta-ndu
 
       - name: All-target compilation
+        if: steps.stage.outputs.present == 'true'
         working-directory: codex-rs
         run: cargo check --locked --all-targets -p codex-hepta-control-plane -p codex-hepta-agentd -p codex-hepta-ndu
 
       - name: Strict lint
+        if: steps.stage.outputs.present == 'true'
         working-directory: codex-rs
         run: cargo clippy --locked --all-targets -p codex-hepta-control-plane -p codex-hepta-agentd -p codex-hepta-ndu -- -D warnings
 
-      - name: Revalidate state and tracked changes
+      - name: Revalidate state and prepare verified commit
+        if: steps.stage.outputs.present == 'true'
         shell: bash
         run: |
           set -euo pipefail
           python3 scripts/control_runtime_validate_state.py --output "$RUNNER_TEMP/control-runtime-state-after.json"
           rm .control-runtime-next.patch
           git diff --check
-          test -z "$(git status --porcelain --untracked-files=all | grep -v '^?? .github/workflows/control-runtime-apply-once.yml$' || true)" || git status --short
-
-      - name: Commit verified convergence source
-        shell: bash
-        run: |
-          set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           git diff --cached --check
           git commit -s -m "feat(control.runtime): close recovery scheduling and crash qualification gaps"
-          git push origin HEAD:codex/control-runtime-convergence-v1
+
+      - name: Push verified convergence source
+        if: steps.stage.outputs.present == 'true'
+        shell: bash
+        run: git push origin HEAD:codex/control-runtime-convergence-v1
