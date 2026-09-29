@@ -24,8 +24,13 @@ class EvidenceGateTests(unittest.TestCase):
             (self.evidence / f"{label}.command.json").write_text(json.dumps(argv))
             (self.evidence / f"{label}.log").write_text("Summary [0.1s] 1 test run: 1 passed, 0 skipped\n")
             if label == "test-runner":
+                commit = "d2e7b879fb79975e8b47a8e3ce569b651e6381c0"
                 (self.evidence / f"{label}.log").write_text(
-                    f"cargo-nextest {NEXTEST_VERSION}\n"
+                    f"cargo-nextest {NEXTEST_VERSION} ({commit[:9]} 2025-08-25)\n"
+                    f"release: {NEXTEST_VERSION}\n"
+                    f"commit-hash: {commit}\n"
+                    "commit-date: 2025-08-25\n"
+                    "host: x86_64-unknown-linux-gnu\n"
                 )
             elif label == "native-final-use-e2e":
                 (self.evidence / f"{label}.log").write_text(
