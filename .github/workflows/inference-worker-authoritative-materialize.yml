@@ -11,6 +11,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: inference-worker-authoritative-materialize
+  cancel-in-progress: false
+
 env:
   BASE_SHA: c3b3aaa9887e15bf18b1572f259b6893ddbe2b68
   PATCH_SHA256: a4be02dea1d771a4467f0bb05cb4be7122ab71b4d54c79506c778785e55a85a3
