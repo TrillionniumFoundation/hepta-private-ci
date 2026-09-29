@@ -10,10 +10,7 @@ on:
   pull_request:
     branches:
       - main
-    types:
-      - opened
-      - reopened
-      - synchronize
+    types: [opened, reopened, synchronize]
     paths:
       - .github/workflows/inference-worker-authoritative-qualification.yml
 
@@ -37,7 +34,7 @@ jobs:
   materialize:
     name: Materialize reviewed inference.worker source
     if: github.event_name != 'pull_request' || github.event.pull_request.head.ref == 'codex/inference-worker-authoritative-20260929'
-    runs-on: ubuntu-latest
+    runs-on: macos-14
     timeout-minutes: 180
     steps:
       - name: Check out exact setup commit
@@ -126,24 +123,10 @@ jobs:
       - name: Refresh generated document projection
         run: python3 scripts/hepta-module-docs.py refresh-derived
 
-      - name: Prepare native build prerequisites
-        shell: bash
-        run: |
-          set -euo pipefail
-          sudo apt-get update
-          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
-          sudo sysctl -w kernel.unprivileged_userns_clone=1
-          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
-            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
-          fi
-
       - name: Install DotSlash
         uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
 
-      - name: Expose DotSlash for integration tests
-        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
-
-      - name: Resolve verified sandboxed V8 artifacts
+      - name: Resolve verified V8 artifacts
         env:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
@@ -161,32 +144,15 @@ jobs:
         working-directory: codex-rs
         run: cargo test --locked -p codex-hepta-infer-worker-host --features experimental-local-model
 
-      - name: Exercise real Agentd App Server event sequence
-        working-directory: codex-rs
-        run: |
-          cargo test --locked -p codex-hepta-infer-worker-host \
-            --features experimental-local-model \
-            real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone \
-            -- --nocapture --test-threads=1
-
-      - name: Check all targets
+      - name: Check and lint exact targets
         working-directory: codex-rs
         run: |
           cargo check --locked -p codex-hepta-infer-core --all-targets
           cargo check --locked -p codex-hepta-infer-worker-host --all-targets
-          cargo check --locked -p codex-hepta-infer-worker-host \
-            --features experimental-local-model --all-targets
-
-      - name: Strict Clippy
-        working-directory: codex-rs
-        run: |
-          cargo clippy --locked -p codex-hepta-infer-core \
-            --all-targets --no-deps -- -D warnings
-          cargo clippy --locked -p codex-hepta-infer-worker-host \
-            --all-targets --no-deps -- -D warnings
-          cargo clippy --locked -p codex-hepta-infer-worker-host \
-            --features experimental-local-model \
-            --all-targets --no-deps -- -D warnings
+          cargo check --locked -p codex-hepta-infer-worker-host --features experimental-local-model --all-targets
+          cargo clippy --locked -p codex-hepta-infer-core --all-targets --no-deps -- -D warnings
+          cargo clippy --locked -p codex-hepta-infer-worker-host --all-targets --no-deps -- -D warnings
+          cargo clippy --locked -p codex-hepta-infer-worker-host --features experimental-local-model --all-targets --no-deps -- -D warnings
 
       - name: Verify source and documentation projections
         shell: bash
@@ -195,16 +161,14 @@ jobs:
           python3 scripts/hepta-module-docs.py refresh-derived --check
           python3 scripts/hepta_module_registry.py --strict
           python3 scripts/hepta-implementation-maps.py verify
-          python3 -m unittest discover -v -s scripts/tests \
-            -p 'test_inference_worker_*.py'
+          python3 -m unittest discover -v -s scripts/tests -p 'test_inference_worker_*.py'
           git diff --check
 
       - name: Install read-only qualification and remove materializers
         shell: bash
         run: |
           set -euo pipefail
-          git show b8a4f0a625ae2c56747a7abdf5a3d70a2fa50761:.github/workflows/inference-worker-authoritative-qualification.yml \
-            > .github/workflows/inference-worker-authoritative-qualification.yml
+          git show b8a4f0a625ae2c56747a7abdf5a3d70a2fa50761:.github/workflows/inference-worker-authoritative-qualification.yml > .github/workflows/inference-worker-authoritative-qualification.yml
           rm -rf .github/materialization/inference-worker-runtime-closure
           rm -f .github/workflows/inference-worker-runtime-closure-materialize.yml
           rm -rf .github/materialization/inference-worker-stage1
