@@ -4,12 +4,15 @@ on:
   push:
     branches:
       - fix/memory-federation-host-semantics-20260930-r1
+  pull_request:
+    branches:
+      - feat/memory-federation-full-closure-20260927
 
 permissions:
   contents: read
 
 concurrency:
-  group: memory-federation-source-export-${{ github.ref }}
+  group: memory-federation-source-export-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -20,7 +23,7 @@ jobs:
       - name: Check out exact source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - name: Record source identity
         run: |
