@@ -11,12 +11,12 @@ permissions:
   contents: write
 
 concurrency:
-  group: kernel-authority-exact-remote-apply-arm
+  group: kernel-authority-exact-remote-apply-slim
   cancel-in-progress: false
 
 jobs:
   apply:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-slim
     timeout-minutes: 30
     steps:
       - name: Checkout immutable staging payload
