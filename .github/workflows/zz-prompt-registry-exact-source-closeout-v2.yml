@@ -1,0 +1,302 @@
+name: Prompt registry exact source closeout v2
+
+on:
+  push:
+    branches:
+      - codex/prompt-registry-full-closeout-20260929
+    paths:
+      - .github/workflows/zz-prompt-registry-exact-source-closeout-v2.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: prompt-registry-exact-source-closeout-v2
+  cancel-in-progress: false
+
+jobs:
+  closeout:
+    runs-on: ubuntu-slim
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - name: Bind exact trigger and remote ref
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git ls-remote origin refs/heads/codex/prompt-registry-full-closeout-20260929 | cut -f1)" = "$GITHUB_SHA"
+          test "$(git hash-object codex-rs/ext/hepta-prompt/src/lib.rs)" = 74978ec6a00bfb0fc8e1269e3c57b05fb4dc7ec8
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt
+      - name: Rewrite exact async and terminal boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('codex-rs/ext/hepta-prompt/src/lib.rs')
+          text = path.read_text(encoding='utf-8')
+
+          def once(old: str, new: str) -> None:
+              global text
+              if text.count(old) != 1:
+                  raise SystemExit(f'anchor count {text.count(old)} != 1: {old[:80]!r}')
+              text = text.replace(old, new, 1)
+
+          once('use tokio::sync::Mutex;\n', 'use tokio::sync::Mutex;\nuse tokio::sync::Semaphore;\n')
+          once(
+              '''#[derive(Default)]
+          struct PromptRuntimeTurnState {
+              resolved: Mutex<Option<ResolvedAttachment>>,
+              injected: AtomicBool,
+          }
+          ''',
+              '''struct PromptRuntimeTurnState {
+              resolved: Mutex<Option<ResolvedAttachment>>,
+              resolve_serial: Semaphore,
+              injected: AtomicBool,
+          }
+
+          impl Default for PromptRuntimeTurnState {
+              fn default() -> Self {
+                  Self {
+                      resolved: Mutex::new(None),
+                      resolve_serial: Semaphore::new(1),
+                      injected: AtomicBool::new(false),
+                  }
+              }
+          }
+          ''',
+          )
+
+          resolve_start = text.index('    async fn resolve(\n')
+          resolve_end = text.index('\n}\n\nimpl ContextContributor for PromptRuntimeExtension', resolve_start)
+          new_resolve = '''    async fn resolve(
+              &self,
+              thread_id: String,
+              turn_id: String,
+              model_context_window: Option<i64>,
+              turn_store: &ExtensionData,
+          ) -> ResolvedAttachment {
+              let state = turn_store.get_or_init(PromptRuntimeTurnState::default);
+              let Ok(_resolve_permit) = state.resolve_serial.acquire().await else {
+                  return ResolvedAttachment::Failed(PromptRuntimeHostError::new(
+                      "prompt_runtime_resolution_closed",
+                      "prompt attachment resolver is unavailable",
+                  ));
+              };
+              let previous = {
+                  let resolved = state.resolved.lock().await;
+                  resolved.as_ref().cloned()
+              };
+              if let Some(value) = previous.as_ref()
+                  && !matches!(value, ResolvedAttachment::Ready(_))
+              {
+                  return value.clone();
+              }
+              let value = match self
+                  .host
+                  .prepare(PromptRuntimePrepareRequest {
+                      thread_id,
+                      turn_id,
+                      model_context_window,
+                  })
+                  .await
+              {
+                  Ok(Some(attachment)) => match attachment.validate() {
+                      Ok(()) => ResolvedAttachment::Ready(attachment),
+                      Err(error) => ResolvedAttachment::Failed(PromptRuntimeHostError::new(
+                          "prompt_runtime_attachment_invalid",
+                          error.to_string(),
+                      )),
+                  },
+                  Ok(None) => ResolvedAttachment::None,
+                  Err(error) => ResolvedAttachment::Failed(error),
+              };
+              let value = match (previous, value) {
+                  (Some(ResolvedAttachment::Ready(previous)), ResolvedAttachment::Ready(current))
+                      if previous != current =>
+                  {
+                      ResolvedAttachment::Failed(PromptRuntimeHostError::new(
+                          "prompt_runtime_cached_binding_changed",
+                          "an injected attachment changed; recompile in a fresh turn",
+                      ))
+                  }
+                  (Some(ResolvedAttachment::Ready(_)), ResolvedAttachment::None) => {
+                      ResolvedAttachment::Failed(PromptRuntimeHostError::new(
+                          "prompt_runtime_cached_attachment_removed",
+                          "the owner no longer exposes the injected attachment",
+                      ))
+                  }
+                  (_, value) => value,
+              };
+              *state.resolved.lock().await = Some(value.clone());
+              value
+          }'''
+          text = text[:resolve_start] + new_resolve + text[resolve_end:]
+
+          attempt_marker = '''struct PromptRuntimeAttemptLease {
+              host: PromptRuntimeHost,
+              attachment: PromptRuntimeAttachmentV1,
+              thread_id: String,
+              turn_id: String,
+              attempt_id: String,
+              request_binding_id: String,
+              provider_request_digest: Digest32,
+              dispatch_unix_ms: u64,
+          }
+          '''
+          if text.count(attempt_marker) != 1:
+              raise SystemExit('attempt lease anchor mismatch')
+          typed = attempt_marker + '''
+          struct PromptRuntimeTerminalResolution {
+              outcome: PromptRuntimeTerminalOutcomeV1,
+              terminal_reason_code: Option<String>,
+              end_turn: Option<bool>,
+              delivery_observation: Option<PromptDeliveryObservationV1>,
+          }
+          '''
+          text = text.replace(attempt_marker, typed, 1)
+
+          finish_start = text.index('impl ModelProviderAttemptLease for PromptRuntimeAttemptLease {\n')
+          finish_end = text.index('\n}\n\nimpl PromptRuntimeAttemptLease {', finish_start)
+          new_finish = '''impl ModelProviderAttemptLease for PromptRuntimeAttemptLease {
+              fn finish(
+                  self: Box<Self>,
+                  terminal: ModelProviderTerminal,
+              ) -> ModelProviderPolicyFuture<'static, ()> {
+                  Box::pin(async move {
+                      let observed_unix_ms = current_unix_ms().map_err(runtime_policy_error)?;
+                      let resolution = self.map_terminal(terminal).map_err(runtime_policy_error)?;
+                      let record = PromptRuntimeTerminalRecordV1 {
+                          compilation_id: self.attachment.compilation_id.clone(),
+                          context_attachment_digest: self.attachment.context_attachment_digest,
+                          context_payload_digest: self.attachment.context_payload_digest,
+                          source_binding_digest: self.attachment.source_binding_digest,
+                          thread_id: self.thread_id,
+                          turn_id: self.turn_id,
+                          attempt_id: self.attempt_id,
+                          request_binding_id: self.request_binding_id,
+                          provider_request_digest: self.provider_request_digest,
+                          outcome: resolution.outcome,
+                          end_turn: resolution.end_turn,
+                          terminal_reason_code: resolution.terminal_reason_code,
+                          delivery_observation: resolution.delivery_observation,
+                          observed_unix_ms,
+                      };
+                      record.validate().map_err(runtime_policy_error)?;
+                      self.host.record(record).await.map_err(|error| {
+                          ModelProviderPolicyError::new(
+                              error.reason_code().to_owned(),
+                              error.detail().to_owned(),
+                          )
+                      })
+                  })
+              }
+          }'''
+          text = text[:finish_start] + new_finish + text[finish_end:]
+
+          terminal_start = text.index('    fn map_terminal(\n')
+          terminal_end = text.index('\n    }\n}\n\npub fn install_prompt_runtime', terminal_start) + len('\n    }')
+          new_terminal = '''    fn map_terminal(
+              &self,
+              terminal: ModelProviderTerminal,
+          ) -> Result<PromptRuntimeTerminalResolution, PromptRuntimeError> {
+              match terminal {
+                  ModelProviderTerminal::Completed { end_turn, .. } => {
+                      let observation = self.delivery_observation(true, None)?;
+                      Ok(PromptRuntimeTerminalResolution {
+                          outcome: PromptRuntimeTerminalOutcomeV1::Delivered,
+                          terminal_reason_code: None,
+                          end_turn,
+                          delivery_observation: Some(observation),
+                      })
+                  }
+                  ModelProviderTerminal::Rejected { reason_code } => {
+                      let rejection_reason = rejection_reason(&reason_code)?;
+                      let observation = self.delivery_observation(false, Some(rejection_reason))?;
+                      Ok(PromptRuntimeTerminalResolution {
+                          outcome: PromptRuntimeTerminalOutcomeV1::Rejected,
+                          terminal_reason_code: Some(reason_code),
+                          end_turn: None,
+                          delivery_observation: Some(observation),
+                      })
+                  }
+                  ModelProviderTerminal::NotDispatched { reason_code } => {
+                      Ok(PromptRuntimeTerminalResolution {
+                          outcome: PromptRuntimeTerminalOutcomeV1::NotDispatched,
+                          terminal_reason_code: Some(reason_code),
+                          end_turn: None,
+                          delivery_observation: None,
+                      })
+                  }
+                  ModelProviderTerminal::Indeterminate { reason_code, .. } => {
+                      Ok(PromptRuntimeTerminalResolution {
+                          outcome: PromptRuntimeTerminalOutcomeV1::Indeterminate,
+                          terminal_reason_code: Some(reason_code),
+                          end_turn: None,
+                          delivery_observation: None,
+                      })
+                  }
+                  ModelProviderTerminal::CompletedUnary { .. } => {
+                      Ok(PromptRuntimeTerminalResolution {
+                          outcome: PromptRuntimeTerminalOutcomeV1::Indeterminate,
+                          terminal_reason_code: Some(
+                              "unexpected_unary_terminal_for_turn".to_owned(),
+                          ),
+                          end_turn: None,
+                          delivery_observation: None,
+                      })
+                  }
+              }
+          }'''
+          text = text[:terminal_start] + new_terminal + text[terminal_end:]
+
+          path.write_text(text, encoding='utf-8')
+          PY
+      - name: Format and verify candidate
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt -p codex-hepta-prompt-registry -p codex-hepta-prompt-optimizer \
+            -p codex-hepta-agentd -p codex-hepta-intelligence \
+            -p codex-hepta-prompt-extension
+          cargo fmt -p codex-hepta-prompt-registry -p codex-hepta-prompt-optimizer \
+            -p codex-hepta-agentd -p codex-hepta-intelligence \
+            -p codex-hepta-prompt-extension -- --check
+      - name: Remove temporary authoring workflows
+        shell: bash
+        run: |
+          rm -f .github/workflows/zz-prompt-registry-*.yml
+      - name: Commit source and exact implementation truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'OpenAI Codex'
+          git config user.email 'codex@openai.com'
+          git add codex-rs .github/workflows
+          test -n "$(git diff --cached --name-only)"
+          git commit -m 'fix(prompt.registry): close exact qualification blockers'
+          python3 scripts/hepta-prompt-registry-map.py --write
+          git add docs/modules/prompt.registry/IMPLEMENTATION_MAP.json \
+                  docs/modules/prompt.registry/QUALIFICATION_STATUS.md
+          if test -n "$(git diff --cached --name-only)"; then
+            git commit -m 'docs(prompt.registry): bind repaired source truth'
+          fi
+          python3 scripts/hepta-prompt-registry-map.py --check
+          git diff --check
+          test -z "$(git status --porcelain)"
+      - name: Publish only as fast-forward from trigger
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git ls-remote origin refs/heads/codex/prompt-registry-full-closeout-20260929 | cut -f1)" = "$GITHUB_SHA"
+          git push origin HEAD:codex/prompt-registry-full-closeout-20260929
