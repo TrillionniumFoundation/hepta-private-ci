@@ -1,0 +1,73 @@
+name: Kernel authority evidence integrity
+
+on:
+  push:
+    branches: [main, work/kernel-authority-convergence-20260925]
+    paths:
+      - 'qualification/kernel-authority/**'
+      - 'docs/modules/kernel.authority/**'
+      - 'codex-rs/hepta-contracts/**'
+      - 'codex-rs/hepta-agentd/**'
+      - '.github/workflows/kernel-authority-*.yml'
+  pull_request:
+    paths:
+      - 'qualification/kernel-authority/**'
+      - 'docs/modules/kernel.authority/**'
+      - 'codex-rs/hepta-contracts/**'
+      - 'codex-rs/hepta-agentd/**'
+      - '.github/workflows/kernel-authority-*.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kernel-authority-evidence-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  integrity:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONDONTWRITEBYTECODE: 1
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind source identity without executing a native pilot
+        shell: bash
+        env:
+          EXPECTED_SOURCE: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          test -z "$(git status --porcelain)"
+          mkdir -p "$RUNNER_TEMP/authority-integrity"
+          python3 -B qualification/kernel-authority/prepare_candidate.py \
+            --mode exact-head --base-sha "$EXPECTED_SOURCE" \
+            --output "$RUNNER_TEMP/authority-integrity/identity.json"
+      - name: Run all evidence parser and workflow regression tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B -m unittest discover -s qualification/kernel-authority -p 'test_*.py' \
+            2>&1 | tee "$RUNNER_TEMP/authority-integrity/python-tests.log"
+      - name: Verify generated state and project unproved port obligations
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B qualification/kernel-authority/generate_status.py --check
+          python3 -B qualification/kernel-authority/port_acceptance.py \
+            --identity "$RUNNER_TEMP/authority-integrity/identity.json" \
+            --output "$RUNNER_TEMP/authority-integrity/port-acceptance.json"
+          test -z "$(git status --porcelain)"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with:
+          name: kernel-authority-evidence-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/authority-integrity
+          if-no-files-found: error
+          retention-days: 14

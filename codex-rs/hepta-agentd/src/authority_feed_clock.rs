@@ -37,7 +37,10 @@ impl FeedClock {
         &self,
         verified: &VerifiedFinalUseRevocationHead,
     ) -> Result<(), AuthorityTrustError> {
-        let mut current = self.window.lock().map_err(|_| AuthorityTrustError::Unavailable)?;
+        let mut current = self
+            .window
+            .lock()
+            .map_err(|_| AuthorityTrustError::Unavailable)?;
         // Sample after acquiring the publication lock. Expiry while waiting
         // for either owner cannot be hidden by an earlier time sample.
         // Failed replacement never leaves a previously live interval behind.
@@ -55,8 +58,12 @@ impl FeedClock {
 
 fn interval_is_live((now, uncertainty): (u64, u64), (issued, expires): (u64, u64)) -> bool {
     uncertainty <= codex_hepta_contracts::authority_trust::MAX_PRODUCTION_CLOCK_UNCERTAINTY_MS
-        && now.checked_sub(uncertainty).is_some_and(|earliest| earliest >= issued)
-        && now.checked_add(uncertainty).is_some_and(|latest| latest < expires)
+        && now
+            .checked_sub(uncertainty)
+            .is_some_and(|earliest| earliest >= issued)
+        && now
+            .checked_add(uncertainty)
+            .is_some_and(|latest| latest < expires)
 }
 
 impl AuthorityClock for FeedClock {
@@ -65,7 +72,10 @@ impl AuthorityClock for FeedClock {
     }
 
     fn now_with_uncertainty(&self) -> Result<(u64, u64), AuthorityTrustError> {
-        let mut window = self.window.lock().map_err(|_| AuthorityTrustError::Unavailable)?;
+        let mut window = self
+            .window
+            .lock()
+            .map_err(|_| AuthorityTrustError::Unavailable)?;
         let sample = match self.clock.now_with_uncertainty() {
             Ok(sample) => sample,
             Err(error) => {
@@ -154,5 +164,4 @@ mod tests {
         feed.invalidate().unwrap();
         assert_eq!(reader.now_unix_ms(), Err(AuthorityTrustError::Unavailable));
     }
-
 }

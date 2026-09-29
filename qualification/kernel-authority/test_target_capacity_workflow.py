@@ -64,7 +64,7 @@ class TargetCapacityWorkflowTest(unittest.TestCase):
         self.assertEqual(self.workflow.count(trusted_collector), 3)
         self.assertEqual(self.workflow.count(trusted_gate), 1)
         self.assertNotIn("subject/qualification/kernel-authority", self.workflow)
-        self.assertIn("No script, action, build hook, or binary from `subject`", self.runbook)
+        self.assertIn("No script, action, build hook, or binary from `subject`", " ".join(self.runbook.split()))
 
     def test_driver_and_policy_are_fixed_and_content_addressed(self) -> None:
         self.assertIn(
