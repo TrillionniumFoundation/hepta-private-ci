@@ -1,0 +1,53 @@
+name: automation-taskflow-source-export
+
+on:
+  push:
+    branches:
+      - work/automation-taskflow-full-closure-2026-09-27
+    paths:
+      - .github/workflows/automation-taskflow-source-export.yml
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact pushed candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Package reviewed TaskFlow inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/taskflow-source"
+          tar -czf "$RUNNER_TEMP/taskflow-source/exact-taskflow-source.tar.gz" \
+            codex-rs/hepta-automation/src/durable_neural_circuit.rs \
+            codex-rs/hepta-automation/src/durable_neural_circuit_recovery.rs \
+            codex-rs/hepta-automation/src/taskflow.rs \
+            codex-rs/hepta-automation/tests/durable_neural_circuit.rs \
+            codex-rs/hepta-automation/tests/durable_neural_circuit_recovery.rs \
+            codex-rs/hepta-automation/tests/taskflow.rs \
+            codex-rs/hepta-automation/migrations/0022_durable_neural_circuit.sql \
+            docs/modules/automation.taskflow \
+            scripts/automation_taskflow_contract.py \
+            scripts/automation_taskflow_truthful_finalize_20260929.py \
+            scripts/automation_taskflow_layered_contract_20260929.py \
+            scripts/automation_taskflow_source_last_mile_20260929.py.gz.b64 \
+            .github/workflows/automation-taskflow-selected-host.yml \
+            .github/workflows/automation-taskflow-focused.yml
+          sha256sum "$RUNNER_TEMP/taskflow-source/exact-taskflow-source.tar.gz" \
+            > "$RUNNER_TEMP/taskflow-source/SHA256SUMS"
+          printf '%s\n' "${{ github.sha }}" > "$RUNNER_TEMP/taskflow-source/COMMIT"
+      - name: Upload exact source bundle
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: automation-taskflow-source-${{ github.sha }}
+          path: ${{ runner.temp }}/taskflow-source/
+          if-no-files-found: error
+          retention-days: 1
