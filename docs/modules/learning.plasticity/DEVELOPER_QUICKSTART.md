@@ -3,7 +3,8 @@
 This guide is the shortest executable route through the current governed
 plasticity source. It supplements `TECHNICAL.md`, `CURRENT_IMPLEMENTATION.md` and
 `OPERATIONS.md`; it does not replace their authority, persistence or deployment
-requirements.
+requirements. Runtime quota, cache, shutdown and crash-recovery invariants are
+specified in [RUNTIME_RESOURCE_RECOVERY.md](RUNTIME_RESOURCE_RECOVERY.md).
 
 The module is proposal-only. None of the examples below select, install, activate,
 promote or release a parameter or topology candidate.
