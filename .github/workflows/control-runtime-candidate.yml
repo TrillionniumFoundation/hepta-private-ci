@@ -1,26 +1,31 @@
-name: control.runtime exact candidate (read-only)
+name: control.runtime immutable candidate qualification
 
 on:
   pull_request:
+    branches: [main]
     paths:
       - 'codex-rs/hepta-control-plane/**'
       - 'codex-rs/hepta-agentd/**'
       - 'codex-rs/hepta-ndu/**'
+      - 'codex-rs/hepta-memory/**'
+      - 'codex-rs/hepta-operations/**'
       - 'docs/modules/control.runtime/**'
       - 'docs/readiness/CONTROL_RUNTIME*'
       - 'scripts/control_runtime_*'
       - '.github/workflows/control-runtime-candidate.yml'
+      - '.github/workflows/control-runtime-crash-recovery.yml'
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: control-runtime-exact-${{ github.event.pull_request.number }}
+  group: control-runtime-immutable-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 env:
-  SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
-  BASE_SHA: ${{ github.event.pull_request.base.sha }}
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.repository.default_branch }}
   CARGO_INCREMENTAL: '0'
   CARGO_BUILD_JOBS: '2'
   CARGO_PROFILE_TEST_DEBUG: '0'
@@ -41,10 +46,11 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          mkdir -p "$RUNNER_TEMP/control-runtime-source"
-          git archive --format=tar.gz HEAD > "$RUNNER_TEMP/control-runtime-source/source.tar.gz"
-          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/control-runtime-source/identity.txt"
-          sha256sum "$RUNNER_TEMP/control-runtime-source/source.tar.gz" > "$RUNNER_TEMP/control-runtime-source/SHA256SUMS"
+          evidence="$RUNNER_TEMP/control-runtime-source"
+          mkdir -p "$evidence"
+          git archive --format=tar.gz HEAD > "$evidence/source.tar.gz"
+          git rev-parse HEAD HEAD^{tree} > "$evidence/identity.txt"
+          sha256sum "$evidence/source.tar.gz" > "$evidence/SHA256SUMS"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: control-runtime-source-${{ env.SOURCE_SHA }}
@@ -53,13 +59,14 @@ jobs:
           retention-days: 14
 
   qualify:
-    name: Runtime qualification (${{ matrix.lane }})
-    runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    name: Runtime qualification (${{ matrix.os }}, ${{ matrix.lane }})
     strategy:
       fail-fast: false
       matrix:
+        os: [ubuntu-24.04, macos-14]
         lane: [source-head, base-merge]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
     env:
       HEPTA_CI_LANE: ${{ matrix.lane }}
     steps:
@@ -68,12 +75,19 @@ jobs:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: false
+      - name: Resolve immutable base SHA for manual runs
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          set -euo pipefail
+          base_sha="$(git rev-parse "origin/${{ github.event.repository.default_branch }}")"
+          echo "BASE_SHA=$base_sha" >> "$GITHUB_ENV"
       - uses: ./.github/actions/hepta-synthetic-merge
         if: matrix.lane == 'base-merge'
         with:
           base-sha: ${{ env.BASE_SHA }}
           source-sha: ${{ env.SOURCE_SHA }}
-          pr-number: ${{ github.event.pull_request.number }}
+          pr-number: ${{ github.event.pull_request.number || 0 }}
           author-name: Control Runtime Qualification
           author-email: control-runtime-qualification@users.noreply.github.com
           message: Immutable control.runtime qualification
@@ -83,16 +97,38 @@ jobs:
           set -euo pipefail
           git diff --exit-code
           git diff --cached --exit-code
-          echo "TESTED_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          tested_sha="$(git rev-parse HEAD)"
+          if [[ "$HEPTA_CI_LANE" == source-head ]]; then
+            test "$tested_sha" = "$SOURCE_SHA"
+          fi
+          echo "TESTED_SHA=$tested_sha" >> "$GITHUB_ENV"
           echo "CARGO_TARGET_DIR=$RUNNER_TEMP/control-runtime-target" >> "$GITHUB_ENV"
-          mkdir -p "$RUNNER_TEMP/control-runtime-records"
+          evidence="$RUNNER_TEMP/control-runtime-records"
+          mkdir -p "$evidence"
           python3 - <<'PY'
           import json, os, subprocess
           from pathlib import Path
           def git(*args):
               return subprocess.check_output(['git', *args], text=True).strip()
-          record = {'source_commit': os.environ['SOURCE_SHA'], 'source_tree': git('rev-parse', os.environ['SOURCE_SHA'] + '^{tree}'), 'base_commit': os.environ['BASE_SHA'], 'tested_commit': git('rev-parse', 'HEAD'), 'tested_tree': git('rev-parse', 'HEAD^{tree}'), 'lane': os.environ['HEPTA_CI_LANE'], 'run_id': os.environ['GITHUB_RUN_ID'], 'run_attempt': os.environ['GITHUB_RUN_ATTEMPT'], 'workflow_sha': os.environ['GITHUB_WORKFLOW_SHA'], 'runner_os': os.environ['RUNNER_OS'], 'runner_arch': os.environ['RUNNER_ARCH'], 'image_os': os.environ.get('ImageOS'), 'image_version': os.environ.get('ImageVersion')}
-          Path(os.environ['RUNNER_TEMP'], 'control-runtime-records', 'identity.json').write_text(json.dumps(record, indent=2) + '\n')
+          record = {
+              'source_commit': os.environ['SOURCE_SHA'],
+              'source_tree': git('rev-parse', os.environ['SOURCE_SHA'] + '^{tree}'),
+              'base_commit': os.environ['BASE_SHA'],
+              'tested_commit': git('rev-parse', 'HEAD'),
+              'tested_tree': git('rev-parse', 'HEAD^{tree}'),
+              'parents': git('show', '-s', '--format=%P', 'HEAD').split(),
+              'lane': os.environ['HEPTA_CI_LANE'],
+              'run_id': os.environ['GITHUB_RUN_ID'],
+              'run_attempt': os.environ['GITHUB_RUN_ATTEMPT'],
+              'workflow_sha': os.environ['GITHUB_WORKFLOW_SHA'],
+              'runner_os': os.environ['RUNNER_OS'],
+              'runner_arch': os.environ['RUNNER_ARCH'],
+              'image_os': os.environ.get('ImageOS'),
+              'image_version': os.environ.get('ImageVersion'),
+          }
+          Path(os.environ['RUNNER_TEMP'], 'control-runtime-records', 'identity.json').write_text(
+              json.dumps(record, indent=2) + '\n', encoding='utf-8'
+          )
           PY
       - name: Validate canonical module state
         id: state
@@ -100,7 +136,8 @@ jobs:
         run: >-
           python3 scripts/control_runtime_validate_state.py
           --output "$RUNNER_TEMP/control-runtime-records/state.json"
-      - name: Install native prerequisites
+      - name: Install Linux native prerequisites
+        if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential pkg-config libcap-dev
@@ -112,29 +149,41 @@ jobs:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
-      - name: Formatting (never mutates source)
+      - name: Formatting
         id: fmt
         continue-on-error: true
         working-directory: codex-rs
-        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/control-runtime-records/fmt.json" -- cargo fmt -p codex-hepta-control-plane -p codex-hepta-agentd -p codex-hepta-ndu -- --check
-      - name: Actual package regression suite
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/control-runtime-records/fmt.json" --
+          cargo fmt -p codex-hepta-control-plane -p codex-hepta-agentd -p codex-hepta-ndu -- --check
+      - name: Package regression suite
         id: tests
         if: '!cancelled()'
         continue-on-error: true
         working-directory: codex-rs
-        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/control-runtime-records/tests.json" -- just test --locked -p codex-hepta-control-plane -p codex-hepta-agentd -p codex-hepta-ndu
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/control-runtime-records/tests.json" --
+          just test --locked -p codex-hepta-control-plane -p codex-hepta-agentd -p codex-hepta-ndu
       - name: All-target compilation
         id: check
         if: '!cancelled()'
         continue-on-error: true
         working-directory: codex-rs
-        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/control-runtime-records/check.json" -- cargo check --locked --all-targets -p codex-hepta-control-plane -p codex-hepta-agentd -p codex-hepta-ndu
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/control-runtime-records/check.json" --
+          cargo check --locked --all-targets -p codex-hepta-control-plane -p codex-hepta-agentd -p codex-hepta-ndu
       - name: Strict lint
         id: lint
         if: '!cancelled()'
         continue-on-error: true
         working-directory: codex-rs
-        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/control-runtime-records/clippy.json" -- cargo clippy --locked --all-targets -p codex-hepta-control-plane -p codex-hepta-agentd -p codex-hepta-ndu -- -D warnings
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/control-runtime-records/clippy.json" --
+          cargo clippy --locked --all-targets -p codex-hepta-control-plane -p codex-hepta-agentd -p codex-hepta-ndu -- -D warnings
       - name: Require every independent check and unchanged tracked source
         if: always()
         env:
@@ -147,8 +196,12 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$TESTED_SHA"
-          git diff --exit-code
-          git diff --cached --exit-code
+          if ! git diff --exit-code || ! git diff --cached --exit-code; then
+            git status --short
+            git diff --stat
+            git diff --name-only
+            exit 1
+          fi
           test "$STATE_RESULT" = success
           test "$FMT_RESULT" = success
           test "$TEST_RESULT" = success
@@ -158,7 +211,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: control-runtime-exact-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
+          name: control-runtime-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.os }}-${{ matrix.lane }}
           path: ${{ runner.temp }}/control-runtime-records/*
           if-no-files-found: error
           retention-days: 30
