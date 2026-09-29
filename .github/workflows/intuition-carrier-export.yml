@@ -9,9 +9,13 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: intuition-carrier-export-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   export:
-    runs-on: ubuntu-24.04
+    runs-on: macos-15
     timeout-minutes: 10
     steps:
       - name: Check out exact carrier
@@ -32,7 +36,19 @@ jobs:
           cp .github/intuition-authoring-patch/part-001.b64 "$out/"
           cp .github/intuition-authoring-patch/part-002.b64 "$out/"
           git rev-parse HEAD > "$out/carrier-head.txt"
-          sha256sum "$out"/* > "$out/files.sha256"
+          python3 - "$out" <<'PY'
+          import hashlib
+          import pathlib
+          import sys
+
+          root = pathlib.Path(sys.argv[1])
+          rows = []
+          for path in sorted(root.iterdir()):
+              if path.name == "files.sha256":
+                  continue
+              rows.append(f"{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.name}\n")
+          (root / "files.sha256").write_text("".join(rows), encoding="utf-8")
+          PY
 
       - name: Upload immutable carrier
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
