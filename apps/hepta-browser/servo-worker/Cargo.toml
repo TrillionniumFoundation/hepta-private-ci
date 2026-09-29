@@ -17,6 +17,6 @@ servo = { git = "https://github.com/servo/servo.git", rev = "b5a1f5e6ec6f8685d40
 
 [profile.release]
 codegen-units = 1
-lto = "thin"
+lto = "fat"
 panic = "abort"
 strip = "symbols"

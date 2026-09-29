@@ -199,9 +199,9 @@ fn classify_replay_probe(
     result: Result<Value, BrowserServoError>,
 ) -> Result<Option<Value>, BrowserServoError> {
     let value = result?;
-    let object = value.as_object().ok_or_else(|| {
-        invalid_replay_probe("Browser replay probe result must be an object")
-    })?;
+    let object = value
+        .as_object()
+        .ok_or_else(|| invalid_replay_probe("Browser replay probe result must be an object"))?;
     if object.get("kind").and_then(Value::as_str) != Some(REPLAY_PROBE_RESULT_KIND) {
         return Err(invalid_replay_probe(
             "Browser replay probe result kind is unsupported",
@@ -222,8 +222,7 @@ fn classify_replay_probe(
         }
         Some("absent") => {
             if object.len() != 3
-                || object.get("absenceCode").and_then(Value::as_str)
-                    != Some(OPERATION_ABSENCE_CODE)
+                || object.get("absenceCode").and_then(Value::as_str) != Some(OPERATION_ABSENCE_CODE)
                 || object.contains_key("receipt")
             {
                 return Err(invalid_replay_probe(

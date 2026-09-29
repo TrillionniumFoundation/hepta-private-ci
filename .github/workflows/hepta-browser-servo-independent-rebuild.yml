@@ -93,7 +93,14 @@ jobs:
           set -euo pipefail
           export SOURCE_DATE_EPOCH="$(git show -s --format=%ct HEAD)"
           export CARGO_INCREMENTAL=0
-          export RUSTFLAGS="--remap-path-prefix=${GITHUB_WORKSPACE}=/src -C debuginfo=0"
+          export CARGO_BUILD_JOBS=1
+          export NUM_JOBS=1
+          export CMAKE_BUILD_PARALLEL_LEVEL=1
+          export RAYON_NUM_THREADS=1
+          export MAKEFLAGS=-j1
+          export LC_ALL=C.UTF-8
+          export TZ=UTC
+          export RUSTFLAGS="--remap-path-prefix=${GITHUB_WORKSPACE}=/src --remap-path-prefix=${RUNNER_TEMP}=/runner-temp -C debuginfo=0 -C link-arg=-Wl,--build-id=none"
           export CARGO_TERM_COLOR=never
           CARGO_TARGET_DIR="$RUNNER_TEMP/servo-worker-independent" \
             cargo build --release --locked --manifest-path "$WORKER_MANIFEST" 2>&1 \
