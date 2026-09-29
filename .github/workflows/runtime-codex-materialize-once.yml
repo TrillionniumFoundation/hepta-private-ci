@@ -3,7 +3,7 @@ name: runtime.codex materialize once
 on:
   push:
     branches:
-      - codex/runtime-codex-full-closure-20260929-r2
+      - codex/runtime-codex-final-convergence-20260929-r3
     paths:
       - .github/workflows/runtime-codex-materialize-once.yml
       - scripts/runtime-codex-process-crash-migration.py
@@ -61,12 +61,10 @@ jobs:
           nl -ba scripts/runtime-codex-process-crash-migration.py | sed -n '420,500p'
           echo '--- generator diff stat ---'
           git diff --stat -- scripts/runtime-codex-process-crash-migration.py
-          exit 42
       - name: Commit exactly the materialized source
-        if: ${{ success() }}
         shell: bash
         env:
-          BRANCH: codex/runtime-codex-full-closure-20260929-r2
+          BRANCH: codex/runtime-codex-final-convergence-20260929-r3
         run: |
           set -euo pipefail
           git rm .github/workflows/runtime-codex-materialize-once.yml
