@@ -1,0 +1,202 @@
+name: Kernel evidence final closure worker
+
+on:
+  push:
+    branches:
+      - codex/kernel-evidence-final-closure-20260929
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: always
+
+concurrency:
+  group: kernel-evidence-final-closure
+  cancel-in-progress: false
+
+jobs:
+  converge:
+    if: ${{ !contains(github.event.head_commit.message || '', '[kernel-evidence-finalized]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    steps:
+      - name: Check out authoritative closure branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: codex/kernel-evidence-final-closure-20260929
+          fetch-depth: 0
+          persist-credentials: true
+
+      - uses: ./.github/actions/setup-ci
+
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+
+      - name: Materialize phase A correctness changes into source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import textwrap
+
+          path = Path('.github/workflows/kernel-evidence-closure-bot.yml')
+          text = path.read_text(encoding='utf-8')
+          start_marker = "          python3 - <<'PY'\n"
+          end_marker = "\n          PY\n"
+          start = text.index(start_marker) + len(start_marker)
+          end = text.index(end_marker, start)
+          source = textwrap.dedent(text[start:end])
+          namespace = {'__name__': '__main__'}
+          exec(compile(source, str(path) + ':phase-a', 'exec'), namespace, namespace)
+          PY
+          cd codex-rs
+          cargo fmt --all
+          cargo test --locked -p codex-hepta-evidence
+          cargo test --locked -p codex-hepta-agentd --test kernel_evidence_product
+          cd ..
+          git diff --check
+          git add codex-rs docs qualification
+          git commit -m "kernel.evidence: close verification policy and identity assignment"
+
+      - name: Materialize phase B trust recovery and publication changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/kernel_evidence_phase2_hardening.py
+          cd codex-rs
+          cargo fmt --all
+          cargo test --locked -p codex-hepta-evidence
+          cargo test --locked -p codex-hepta-agentd --lib \
+            --test kernel_evidence_product \
+            --test kernel_evidence_profile \
+            --test kernel_evidence_paging_product \
+            --test kernel_evidence_publication_cli
+          cargo clippy --locked -p codex-hepta-evidence -p codex-hepta-agentd --all-targets -- -D warnings
+          cd ..
+          python3 -m unittest discover scripts/tests -p 'test_kernel_evidence*.py'
+          git diff --check
+          git add codex-rs docs qualification scripts .github/workflows/hepta-kernel-evidence-qualification.yml
+          git commit -m "kernel.evidence: close trust recovery and durable publication"
+
+      - name: Adapt and materialize phase C operations changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('scripts/kernel_evidence_phase3_operations.py')
+          text = path.read_text(encoding='utf-8')
+          text = text.replace(
+              'marker = "      - name: Retain exact-source receipts\\n"',
+              'marker = "      - name: Upload exact source diagnostics and receipts\\n"',
+          )
+          text = text.replace(
+              'marker = "      - name: Retain synthetic-merge receipts\\n"',
+              'marker = "      - name: Upload deterministic merge diagnostics and receipts\\n"',
+          )
+          text = text.replace(
+              '--records "$RUNNER_TEMP/kernel-evidence"',
+              '--records "$KERNEL_EVIDENCE_RECORDS"',
+          )
+          path.write_text(text, encoding='utf-8')
+          PY
+          python3 scripts/kernel_evidence_phase3_operations.py
+          python3 -m unittest discover scripts/tests -p 'test_kernel_evidence*.py'
+          git diff --check
+
+      - name: Remove one-shot generators and bind the source anchor
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm -f --ignore-unmatch \
+            .github/kernel-evidence-exact-head-repair-trigger \
+            .github/workflows/kernel-evidence-closure-bot.yml \
+            .github/workflows/kernel-evidence-closure-pr-driver.yml \
+            .github/workflows/kernel-evidence-phase-one-direct.yml \
+            .github/workflows/kernel-evidence-phase-two-three.yml \
+            .github/workflows/kernel-evidence-final-closure.yml \
+            scripts/kernel_evidence_phase2_hardening.py \
+            scripts/kernel_evidence_phase3_operations.py
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path('qualification/kernel-evidence/STATUS_SOURCE.json')
+          status = json.loads(path.read_text(encoding='utf-8'))
+          temporary = {
+              '.github/kernel-evidence-exact-head-repair-trigger',
+              '.github/workflows/kernel-evidence-closure-bot.yml',
+              '.github/workflows/kernel-evidence-closure-pr-driver.yml',
+              '.github/workflows/kernel-evidence-phase-one-direct.yml',
+              '.github/workflows/kernel-evidence-phase-two-three.yml',
+              '.github/workflows/kernel-evidence-final-closure.yml',
+              'scripts/kernel_evidence_phase2_hardening.py',
+              'scripts/kernel_evidence_phase3_operations.py',
+          }
+          status['sourcePaths'] = sorted(
+              item for item in status.get('sourcePaths', []) if item not in temporary
+          )
+          for flag in (
+              'exactSourceQualified',
+              'mergeCandidateQualified',
+              'independentAcceptance',
+              'externalFrontierActive',
+              'backupRestoreDrilled',
+              'canaryAccepted',
+              'releaseApproved',
+          ):
+              status[flag] = False
+          status['workflowRunId'] = None
+          status['artifactDigest'] = None
+          path.write_text(json.dumps(status, indent=2) + '\n', encoding='utf-8')
+          PY
+          cd codex-rs
+          cargo fmt --all
+          cargo test --locked -p codex-hepta-evidence
+          cargo test --locked -p codex-hepta-agentd --lib \
+            --test kernel_evidence_product \
+            --test kernel_evidence_profile \
+            --test kernel_evidence_paging_product \
+            --test kernel_evidence_publication_cli
+          cargo clippy --locked -p codex-hepta-evidence -p codex-hepta-agentd --all-targets -- -D warnings
+          cd ..
+          python3 -m unittest discover scripts/tests -p 'test_kernel_evidence*.py'
+          git diff --check
+          git add -A
+          git commit -m "kernel.evidence: finalize bounded product operations"
+          printf 'commit=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          printf 'tree=%s\n' "$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
+
+      - name: Synchronize canonical status implementation map and documents
+        shell: bash
+        env:
+          SOURCE_COMMIT: ${{ steps.source.outputs.commit }}
+          SOURCE_TREE: ${{ steps.source.outputs.tree }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          path = Path('qualification/kernel-evidence/STATUS_SOURCE.json')
+          status = json.loads(path.read_text(encoding='utf-8'))
+          status['asOfCommit'] = os.environ['SOURCE_COMMIT']
+          status['asOfTree'] = os.environ['SOURCE_TREE']
+          status['workflowRunId'] = None
+          status['artifactDigest'] = None
+          path.write_text(json.dumps(status, indent=2) + '\n', encoding='utf-8')
+          PY
+          python3 scripts/kernel_evidence_status.py sync
+          python3 scripts/hepta-implementation-maps.py migrate --module kernel.evidence
+          python3 scripts/verify_lane_a_foundation.py verify
+          python3 scripts/hepta-docs.py verify
+          python3 scripts/hepta-implementation-maps.py verify
+          python3 -m unittest discover scripts/tests -p 'test_kernel_evidence*.py'
+          git diff --check
+          git add qualification docs scripts .github/workflows/hepta-kernel-evidence-qualification.yml .github/workflows/hepta-kernel-evidence-convergence.yml
+          git commit -m "kernel.evidence: bind final source truth [kernel-evidence-finalized]"
+          git push origin HEAD:codex/kernel-evidence-final-closure-20260929
