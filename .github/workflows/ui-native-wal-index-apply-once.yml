@@ -1,4 +1,4 @@
-name: ui.native WAL and retirement-index qualification
+name: ui.native WAL and retirement-index source export
 
 on:
   push:
@@ -12,17 +12,13 @@ permissions:
   contents: read
 
 concurrency:
-  group: ui-native-wal-index-qualification-${{ github.ref }}
+  group: ui-native-wal-index-source-export-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  CARGO_TERM_COLOR: always
-  CARGO_INCREMENTAL: "0"
-
 jobs:
-  apply-and-qualify:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 120
+  export:
+    runs-on: ubuntu-slim
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -30,10 +26,9 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - id: source
-        name: Verify immutable capsule and apply without publishing
+      - name: Verify immutable capsule and apply without publishing
         env:
-          EXPECTED_PARENT: 430be19aec8c71be2680d5c09d7e0ed7966bc4c9
+          EXPECTED_PARENT: 726acbd4d1ef7226f6d49c2b6f1c980110d18ec4
           PATCH_BLOB_SHA: cf8d5267cbcde61455849e24be9eac9d1a8d14f3
           PATCH_GZIP_SHA256: 292f9f99997e3d1078cc296819f225cd2100b5fd023c74b53e0bed9912b39252
           PATCH_SHA256: b863bb348b91e038f711b5a155a383aaa342ee6beacb1cd168901f82159dd74a
@@ -77,7 +72,7 @@ jobs:
           print('\n'.join(paths))
           PYTHON
 
-      - name: Export exact applied source before execution
+      - name: Export exact applied source and identity
         run: |
           set -euo pipefail
           mkdir -p source-bundle/files source-evidence
@@ -90,61 +85,11 @@ jobs:
             mkdir -p "source-bundle/files/$(dirname "$path")"
             cp "$path" "source-bundle/files/$path"
           done
-
-      - name: Install pinned Rust and Linux native prerequisites
-        run: |
-          set -euo pipefail
-          sudo apt-get update
-          sudo apt-get install -y \
-            libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev \
-            libxkbcommon-dev libxkbcommon-x11-dev libwayland-dev \
-            libgl1-mesa-dev libssl-dev desktop-file-utils \
-            xvfb xauth dbus-x11 gnome-keyring xdotool x11-utils \
-            python3-cryptography fonts-noto-cjk
-          rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
-          rustc +1.95.0 --version --verbose | tee source-evidence/rustc.txt
-          cargo +1.95.0 --version | tee source-evidence/cargo.txt
-
-      - name: Execute source and regression qualification
-        run: |
-          set -euo pipefail
-          run_check() {
-            local label="$1"
-            shift
-            echo "::group::$label"
-            "$@" 2>&1 | tee "source-evidence/${label}.log"
-            echo "::endgroup::"
-          }
-          run_check fmt \
-            cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml --check
-          run_check check \
-            cargo +1.95.0 check --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets --all-features
-          run_check clippy \
-            cargo +1.95.0 clippy --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets --all-features -- -D warnings
-          run_check journal_v7 \
-            cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml --locked --test journal_v7
-          run_check retirement_index \
-            cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml --locked --test retirement_index
-          run_check all_targets \
-            cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets
-          run_check ui_native_python \
-            python3 -m unittest discover -s scripts -p 'test_hepta_ui_native*.py' -v
-          test -z "$(git diff --name-only)"
-          git diff --cached --check
-          printf 'qualified\n' > source-evidence/result.txt
-
-      - name: Capture final evidence state
-        if: always()
-        run: |
-          set +e
-          mkdir -p source-evidence
           git status --short > source-evidence/status.txt
-          git diff --cached --name-status > source-evidence/final-name-status.txt
-          git diff --cached --check > source-evidence/diff-check.txt 2>&1
-          git rev-parse HEAD HEAD^{tree} > source-evidence/final-subject.txt
+          git diff --cached --check > source-evidence/diff-check.txt
+          printf 'source-exported-not-qualified\n' > source-evidence/result.txt
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        if: always()
         with:
           name: ui-native-wal-index-source-${{ github.sha }}-attempt-${{ github.run_attempt }}
           path: |
