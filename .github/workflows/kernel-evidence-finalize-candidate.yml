@@ -8,20 +8,20 @@ permissions:
   contents: write
 
 concurrency:
-  group: kernel-evidence-candidate-metadata-finalization-v4
+  group: kernel-evidence-candidate-metadata-finalization-v5
   cancel-in-progress: false
 
 jobs:
   finalize:
-    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'fix/kernel-evidence-production-closure'
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'codex/kernel-evidence-protocol-closure-20260929'
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     env:
       EVENT_SHA: ${{ github.event.pull_request.head.sha }}
-      EXPECTED_PARENT: 3391c7c3c41ebb74615eef6028007e5e768d4946
-      SOURCE_ANCHOR: 4dd844af8af04372d75001be10fcabbf97f6e679
-      SOURCE_TREE: 598697096a10d1015609168ab7064298c0dc8ace
-      TARGET_BRANCH: fix/kernel-evidence-production-closure
+      EXPECTED_PARENT: c60f12b3a4506a021ad9ae98dd54706e9bf0333c
+      SOURCE_ANCHOR: f825d362dac83def6bca189899412ce1815cbaa4
+      SOURCE_TREE: 1735ad26577ee74792f9265c96ede0c40ad8ef60
+      TARGET_BRANCH: codex/kernel-evidence-protocol-closure-20260929
     steps:
       - name: Check out exact metadata-finalization request
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
