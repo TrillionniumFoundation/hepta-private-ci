@@ -95,48 +95,24 @@ def test_generation_has_single_maintenance_entrypoint_script() -> None:
     assert scripts == ["update_sdk_artifacts.py"]
 
 
-def test_root_fmt_recipes_use_shared_formatter_driver() -> None:
-    """The root formatting recipes should use the shared cross-platform driver."""
-    justfile = ROOT.parents[1] / "justfile"
-    lines = justfile.read_text().splitlines()
-    fmt_index = lines.index("fmt:")
-    fmt_check_index = lines.index("fmt-check:")
-    next_recipe_index = next(
-        index
-        for index in range(fmt_check_index + 1, len(lines))
-        if lines[index] and not lines[index].startswith((" ", "\t", "#"))
-    )
-    actual = {
-        "working_directory": lines[0],
-        "fmt_comment": next(line for line in reversed(lines[:fmt_index]) if line.startswith("#")),
-        "fmt_commands": [
-            line.strip()
-            for line in lines[fmt_index + 1 : fmt_check_index]
-            if line.strip() and not line.startswith("#")
-        ],
-        "fmt_check_comment": next(
-            line for line in reversed(lines[:fmt_check_index]) if line.startswith("#")
-        ),
-        "fmt_check_commands": [
-            line.strip() for line in lines[fmt_check_index + 1 : next_recipe_index] if line.strip()
-        ],
-    }
-    expected = {
-        "working_directory": 'set working-directory := "codex-rs"',
-        "fmt_comment": (
-            "# Format the justfile, Rust, Bazel/Starlark, Python SDK code, and Python scripts."
-        ),
-        "fmt_commands": ["@{{ python }} ../scripts/format.py"],
-        "fmt_check_comment": "# Check formatting without modifying files.",
-        "fmt_check_commands": ["@{{ python }} ../scripts/format.py --check"],
-    }
+def test_root_format_driver_defaults_to_changed_inputs(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Observe the normal formatter entry without freezing recipe text or comments."""
+    script = _load_root_format_script_module()
+    selected = "sdk/python/tests/test_artifact_workflow_and_binaries.py"
+    observed = []
+    monkeypatch.setattr(script, "changed_paths", lambda base=None: [selected])
 
-    assert actual == expected, (
-        "The root formatting recipes must use the shared formatter driver. "
-        "Fix the recipes in `justfile`, then run `just fmt`.\n"
-        f"Expected: {json.dumps(expected, indent=2)}\n"
-        f"Actual: {json.dumps(actual, indent=2)}"
-    )
+    def run(group):
+        observed.append(group)
+        return script.FormatterResult(group.name, "", 0)
+
+    monkeypatch.setattr(script, "run_formatter_group", run)
+    monkeypatch.setattr(sys, "argv", ["format.py"])
+    assert script.main() == 0
+    assert [group.name for group in observed] == ["Python SDK"]
+    assert len(observed[0].commands) == 2
+    assert all(command.args[-1] == "./" + selected for command in observed[0].commands)
+    assert all("--frozen" in command.args for command in observed[0].commands)
 
 
 def test_root_format_driver_covers_all_formatter_groups(
@@ -294,7 +270,7 @@ def test_root_format_driver_is_silent_when_all_formatters_succeed(
         "run_formatter_group",
         lambda group: script.FormatterResult(group.name, "hidden output\n", 0),
     )
-    monkeypatch.setattr(sys, "argv", ["format.py"])
+    monkeypatch.setattr(sys, "argv", ["format.py", "--all"])
 
     assert script.main() == 0
     captured = capsys.readouterr()
@@ -318,7 +294,7 @@ def test_root_format_driver_reports_only_failed_formatters(
         return script.FormatterResult(group.name, "hidden output\n", 0)
 
     monkeypatch.setattr(script, "run_formatter_group", fake_run)
-    monkeypatch.setattr(sys, "argv", ["format.py"])
+    monkeypatch.setattr(sys, "argv", ["format.py", "--all"])
 
     assert script.main() == 1
     captured = capsys.readouterr()
