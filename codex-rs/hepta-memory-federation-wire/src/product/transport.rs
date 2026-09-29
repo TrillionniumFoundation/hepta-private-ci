@@ -57,6 +57,8 @@ pub trait FederationProductExchangeV1: Send + Sync {
     ) -> FederationProductExchangeFutureV1<'a>;
 }
 
+/// Owner-supplied clock, re-observed at each local admission boundary.
+/// Transport timestamps never replace these observations.
 pub trait FederationProductClockV1: Send + Sync {
     fn now_unix_ms(&self) -> Result<u64, FederationProductErrorV1>;
 }
@@ -112,6 +114,22 @@ where
     }
 }
 
+impl<S, T, C> FederationWireTransportV2<S, T, C>
+where
+    S: FederationRecoveryStoreV1,
+    C: FederationProductClockV1,
+{
+    /// Reclaim one bounded expiry batch through the existing durable owner.
+    /// The owner schedules this explicitly; it never sends or retries a query.
+    pub fn maintain_expired(&self) -> Result<usize, FederationProductErrorV1> {
+        let mut client = self
+            .client
+            .lock()
+            .map_err(|_| FederationProductErrorV1::ClientStatePoisoned)?;
+        client.maintain_expired(self.clock.now_unix_ms()?)
+    }
+}
+
 impl<S, T, C> FederationTransportV2 for FederationWireTransportV2<S, T, C>
 where
     S: FederationRecoveryStoreV1 + Send,
@@ -120,34 +138,44 @@ where
 {
     fn send_once<'a>(&'a self, query: &'a FederatedQueryV2) -> FederationTransportFuture<'a> {
         Box::pin(async move {
-            let required_transport_profile = self
-                .client
-                .lock()
-                .map_err(|_| FederationV2Error::TransportRejected)?
-                .profile()
-                .transport_profile_id()
-                .clone();
-            if self.transport.transport_profile_id() != &required_transport_profile {
-                return Err(FederationV2Error::TransportRejected);
-            }
-            let started_unix_ms = self
-                .clock
-                .now_unix_ms()
-                .map_err(|_| FederationV2Error::TransportRejected)?;
-            if started_unix_ms >= query.deadline_unix_ms {
-                return Ok(FederationTransportResultV2::NonTerminal(
-                    FederationTransportOutcomeV2::TimedOut,
-                ));
-            }
-            let request_packet = {
+            let (started_unix_ms, request_packet) = {
                 let mut client = self
                     .client
                     .lock()
                     .map_err(|_| FederationV2Error::TransportRejected)?;
-                client
+                if self.transport.transport_profile_id() != client.profile().transport_profile_id()
+                {
+                    return Err(FederationV2Error::TransportRejected);
+                }
+                // Sample after acquiring the owner, not before waiting for it.
+                let started_unix_ms = self
+                    .clock
+                    .now_unix_ms()
+                    .map_err(|_| FederationV2Error::TransportRejected)?;
+                if started_unix_ms >= query.deadline_unix_ms {
+                    return Ok(FederationTransportResultV2::NonTerminal(
+                        FederationTransportOutcomeV2::TimedOut,
+                    ));
+                }
+                let packet = client
                     .begin_query(query, started_unix_ms)
-                    .map_err(|_| FederationV2Error::TransportRejected)?
+                    .map_err(|_| FederationV2Error::TransportRejected)?;
+                (started_unix_ms, packet)
             };
+            // Durable preparation can consume the remaining horizon. Never
+            // enter the selected network exchange using its earlier timestamp.
+            let dispatch_unix_ms = self
+                .clock
+                .now_unix_ms()
+                .map_err(|_| FederationV2Error::TransportRejected)?;
+            if dispatch_unix_ms < started_unix_ms {
+                return Err(FederationV2Error::TransportRejected);
+            }
+            if dispatch_unix_ms >= query.deadline_unix_ms {
+                return Ok(FederationTransportResultV2::NonTerminal(
+                    FederationTransportOutcomeV2::TimedOut,
+                ));
+            }
             let exchange = self
                 .transport
                 .exchange_once(&query.peer_id, request_packet, query.deadline_unix_ms)
@@ -173,24 +201,51 @@ where
                     return Err(FederationV2Error::TransportRejected);
                 }
             };
-            let received_unix_ms = self
+            let (received_unix_ms, response) = {
+                let mut client = self
+                    .client
+                    .lock()
+                    .map_err(|_| FederationV2Error::TransportRejected)?;
+                // A contended owner lock must not reuse an observation made
+                // before waiting. Admission receives a fresh local timestamp.
+                let received_unix_ms = self
+                    .clock
+                    .now_unix_ms()
+                    .map_err(|_| FederationV2Error::TransportRejected)?;
+                if received_unix_ms < dispatch_unix_ms {
+                    return Err(FederationV2Error::TransportRejected);
+                }
+                if received_unix_ms >= query.deadline_unix_ms {
+                    return Ok(FederationTransportResultV2::NonTerminal(
+                        FederationTransportOutcomeV2::TimedOut,
+                    ));
+                }
+                let response = client
+                    .admit_response_for_query(
+                        query,
+                        &exchange.transport,
+                        &exchange.packet,
+                        received_unix_ms,
+                    )
+                    .map_err(|_| FederationV2Error::TransportRejected)?;
+                (received_unix_ms, response)
+            };
+            // Terminal persistence may also cross a deadline. Keep the durable
+            // terminal fence, but never expose stale evidence or replay it.
+            let completed_unix_ms = self
                 .clock
                 .now_unix_ms()
                 .map_err(|_| FederationV2Error::TransportRejected)?;
-            if received_unix_ms < started_unix_ms {
+            if completed_unix_ms < received_unix_ms {
                 return Err(FederationV2Error::TransportRejected);
             }
-            if received_unix_ms >= query.deadline_unix_ms {
+            if completed_unix_ms >= query.deadline_unix_ms
+                || completed_unix_ms >= response.expires_unix_ms
+            {
                 return Ok(FederationTransportResultV2::NonTerminal(
                     FederationTransportOutcomeV2::TimedOut,
                 ));
             }
-            let response = self
-                .client
-                .lock()
-                .map_err(|_| FederationV2Error::TransportRejected)?
-                .admit_response(&exchange.transport, &exchange.packet, received_unix_ms)
-                .map_err(|_| FederationV2Error::TransportRejected)?;
             Ok(FederationTransportResultV2::Terminal(response))
         })
     }

@@ -1,4 +1,5 @@
 use codex_hepta_memory_federation::FederatedQueryV2;
+use codex_hepta_memory_federation::FederationV2Error;
 use codex_hepta_memory_federation::RemoteFederatedResponseV2;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -268,6 +269,44 @@ where
         payload: &[u8],
         now_unix_ms: u64,
     ) -> Result<RemoteFederatedResponseV2, FederationProductErrorV1> {
+        self.admit_response_checked(transport, payload, now_unix_ms, |_| Ok(()))
+    }
+
+    /// Bind a response to the exact canonical attempt before consuming replay
+    /// or terminal state. The V2 transport must use this request-bound entry.
+    pub fn admit_response_for_query(
+        &mut self,
+        query: &FederatedQueryV2,
+        transport: &FederationAuthenticatedTransportV1,
+        payload: &[u8],
+        now_unix_ms: u64,
+    ) -> Result<RemoteFederatedResponseV2, FederationProductErrorV1> {
+        query.validate(now_unix_ms)?;
+        self.admit_response_checked(transport, payload, now_unix_ms, |response| {
+            // Shape and response digest were checked once by the common
+            // preflight. Do not clone/hash the evidence vector again here.
+            if response.peer_id != query.peer_id
+                || response.query_binding_digest != query.binding_digest()
+                || response.scope_digest != query.scope_digest
+                || response.purpose_digest != query.purpose_digest
+                || response.generation_vector_digest != query.generation_vector_digest
+            {
+                return Err(FederationProductErrorV1::ResponseBindingMismatch);
+            }
+            Ok(())
+        })
+    }
+
+    fn admit_response_checked<F>(
+        &mut self,
+        transport: &FederationAuthenticatedTransportV1,
+        payload: &[u8],
+        now_unix_ms: u64,
+        check_query: F,
+    ) -> Result<RemoteFederatedResponseV2, FederationProductErrorV1>
+    where
+        F: FnOnce(&RemoteFederatedResponseV2) -> Result<(), FederationProductErrorV1>,
+    {
         self.transport_context_verifier.require_current_context(
             transport,
             self.profile.transport_profile_id(),
@@ -298,6 +337,10 @@ where
             return Err(FederationProductErrorV1::ResponseBindingMismatch);
         }
         validate_response_shape(&response)?;
+        if now_unix_ms >= response.expires_unix_ms {
+            return Err(FederationV2Error::ResponseExpired.into());
+        }
+        check_query(&response)?;
         let verified = self.wire.admit(
             transport.peer_id(),
             packet.authenticated_frame(),

@@ -23,6 +23,8 @@ on:
       - scripts/memory_federation_full_attestation.py
       - scripts/memory_federation_execution_receipt.py
       - scripts/test_memory_federation_execution_receipt.py
+      - scripts/test_memory_federation_entrypoints.py
+      - scripts/prepare_memory_federation_observation.py
       - scripts/run_memory_federation_qualification.sh
       - scripts/verify_memory_federation_implementation.py
       - scripts/verify_memory_federation_status.py
@@ -137,34 +139,38 @@ jobs:
 
   deterministic-merge:
     name: deterministic merge contract and product
-    if: ${{ github.event_name == 'pull_request' }}
+    # Main has no distinct current-base merge. All source-candidate invocations
+    # (push, dispatch, and reusable PR calls) run the same two-lane matrix.
+    if: ${{ github.event_name == 'pull_request' || github.ref != 'refs/heads/main' || (inputs.expected_sha != '' && inputs.expected_sha != github.sha) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
       - name: Check out exact source for merge construction
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ inputs.expected_sha || github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
       - name: Resolve current base head
         id: base
         env:
-          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          BASE_REF: ${{ github.event.pull_request.base.ref || github.event.repository.default_branch || 'main' }}
         run: |
           set -euo pipefail
-          test -n "$BASE_REF"
-          git fetch --no-tags origin "$BASE_REF"
-          BASE_SHA="$(git rev-parse "refs/remotes/origin/$BASE_REF")"
-          test -n "$BASE_SHA"
+          git check-ref-format "refs/heads/$BASE_REF"
+          git fetch --no-tags origin "refs/heads/$BASE_REF"
+          # FETCH_HEAD is the result of this fetch, not a possibly stale
+          # tracking ref left by the initial checkout.
+          BASE_SHA="$(git rev-parse --verify 'FETCH_HEAD^{commit}')"
+          [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]]
           echo "sha=$BASE_SHA" >> "$GITHUB_OUTPUT"
       - name: Construct deterministic synthetic merge
         id: merge
         uses: ./.github/actions/hepta-synthetic-merge
         with:
           base-sha: ${{ steps.base.outputs.sha }}
-          source-sha: ${{ github.event.pull_request.head.sha }}
-          pr-number: ${{ github.event.pull_request.number }}
+          source-sha: ${{ inputs.expected_sha || github.event.pull_request.head.sha || github.sha }}
+          pr-number: ${{ github.event.pull_request.number || 'source-candidate' }}
           author-name: Hepta Memory Federation CI
           author-email: hepta-memory-federation-ci@users.noreply.github.com
           message: Memory federation synthetic merge
@@ -191,7 +197,7 @@ jobs:
         if: ${{ always() }}
         env:
           JOB_CONCLUSION: ${{ steps.qualification.outcome }}
-          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          SOURCE_SHA: ${{ inputs.expected_sha || github.event.pull_request.head.sha || github.sha }}
           BASE_SHA: ${{ steps.base.outputs.sha }}
           MERGE_SHA: ${{ steps.merge.outputs.sha }}
           MERGE_TREE: ${{ steps.merge.outputs.tree }}
