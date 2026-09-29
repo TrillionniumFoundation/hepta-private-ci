@@ -1,0 +1,407 @@
+name: Materialize learning.artifacts preflight-safe static candidate
+
+on:
+  push:
+    branches:
+      - codex/learning-artifacts-convergence-20260929
+
+permissions:
+  contents: write
+
+concurrency:
+  group: materialize-learning-artifacts-preflight-safe
+  cancel-in-progress: true
+
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+          ref: ${{ github.sha }}
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+      - name: Apply pre-mutation authority checks and compile fixes
+        env:
+          TRIGGER_SHA: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TRIGGER_SHA"
+          test "$(git rev-parse refs/remotes/origin/codex/learning-artifacts-convergence-20260929)" = "$TRIGGER_SHA"
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              target = Path(path)
+              text = target.read_text(encoding="utf-8")
+              if new in text and old not in text:
+                  return
+              if text.count(old) != 1:
+                  raise SystemExit(f"expected exactly one source match in {path}: {old!r}")
+              target.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          replace_once(
+              "codex-rs/hepta-learning-artifacts/src/owner/bootstrap.rs",
+              "return Err(ArtifactOwnerConfigError::InvalidValue(prefix));",
+              "return Err(ArtifactOwnerConfigError::InvalidEntry(prefix.to_owned()));",
+          )
+          replace_once(
+              "codex-rs/hepta-learning-artifacts/src/owner/capability_validation.rs",
+              "use std::str::FromStr;\n",
+              "",
+          )
+          replace_once(
+              "codex-rs/hepta-learning-artifacts/src/owner/publication_coordination.rs",
+              "use codex_hepta_types::StableId;\n",
+              "#[cfg(test)]\nuse codex_hepta_types::StableId;\n",
+          )
+
+          qualifier = Path("scripts/hepta_artifact_qualification.py")
+          qualifier_text = qualifier.read_text(encoding="utf-8")
+          if '"--no-fail-fast"' in qualifier_text:
+              qualifier_text = qualifier_text.replace(', "--no-fail-fast"', '', 1)
+              qualifier.write_text(qualifier_text, encoding="utf-8")
+
+          host = Path("codex-rs/hepta-learning-artifacts/src/owner_host.rs")
+          host_text = host.read_text(encoding="utf-8")
+          witness_marker = "    /// Publish an authenticated immutable head record and the canonical witness\n"
+          if "pub fn preflight_publication_head" not in host_text:
+              helper = '''    fn publication_head_requirement(
+        &self,
+        signed: &SignedCurrentArtifactHeadV1,
+        expected_predecessor: Digest32,
+        now: u64,
+    ) -> Result<RegistryHeadRequirementV1, ArtifactOwnerHostError> {
+        let current = self.discover_current_head(now)?;
+        match current.as_ref() {
+            Some(current) if current.signed.witness.head_digest == signed.witness.head_digest => {
+                Ok(RegistryHeadRequirementV1 {
+                    registry_id: self.verifier.trust.registry_id.clone(),
+                    minimum_generation: signed.witness.generation,
+                    expected_predecessor_head_digest: expected_predecessor,
+                    minimum_authority_epoch: self.verifier.trust.minimum_authority_epoch,
+                    now,
+                })
+            }
+            Some(current) if current.signed.witness.head_digest == expected_predecessor => {
+                Ok(RegistryHeadRequirementV1 {
+                    registry_id: self.verifier.trust.registry_id.clone(),
+                    minimum_generation: current
+                        .signed
+                        .witness
+                        .generation
+                        .next()
+                        .map_err(|_| ArtifactOwnerHostError::CurrentHeadContext)?,
+                    expected_predecessor_head_digest: expected_predecessor,
+                    minimum_authority_epoch: current.signed.witness.authority_epoch,
+                    now,
+                })
+            }
+            None if expected_predecessor == self.verifier.trust.genesis_predecessor_head_digest => {
+                Ok(RegistryHeadRequirementV1 {
+                    registry_id: self.verifier.trust.registry_id.clone(),
+                    minimum_generation: self.verifier.trust.minimum_registry_generation,
+                    expected_predecessor_head_digest: expected_predecessor,
+                    minimum_authority_epoch: self.verifier.trust.minimum_authority_epoch,
+                    now,
+                })
+            }
+            Some(_) | None => Err(ArtifactOwnerHostError::CurrentHeadConflict),
+        }
+    }
+
+    fn verify_publication_head(
+        &self,
+        signed: &SignedCurrentArtifactHeadV1,
+        expected_predecessor: Digest32,
+        now: u64,
+    ) -> Result<
+        (RegistryHeadRequirementV1, VerifiedCurrentArtifactHeadV1),
+        ArtifactOwnerHostError,
+    > {
+        self.require_current_writer(now)?;
+        if now > signed.witness.expires_at {
+            return Err(ArtifactOwnerHostError::CurrentHeadExpired);
+        }
+        let requirement =
+            self.publication_head_requirement(signed, expected_predecessor, now)?;
+        let verified = self
+            .verifier
+            .verify_signed_head(signed, &requirement, true)?;
+        Ok((requirement, verified))
+    }
+
+    /// Validate the exact CURRENT authority, generation, predecessor and signer
+    /// context used by witness publication without creating any durable object.
+    pub fn preflight_publication_head(
+        &self,
+        signed: &SignedCurrentArtifactHeadV1,
+        expected_predecessor: Digest32,
+        now: u64,
+    ) -> Result<VerifiedCurrentArtifactHeadV1, ArtifactOwnerHostError> {
+        let (_, verified) =
+            self.verify_publication_head(signed, expected_predecessor, now)?;
+        Ok(verified)
+    }
+
+'''
+              if witness_marker not in host_text:
+                  raise SystemExit("owner host witness insertion point missing")
+              host_text = host_text.replace(witness_marker, helper + witness_marker, 1)
+
+          old_witness_prefix = '''        self.require_current_writer(now)?;
+        let current = self.discover_current_head(now)?;
+        let expected_predecessor = transaction.intent().expected_registry_predecessor_head;
+        let requirement = match current.as_ref() {
+            Some(current) if current.signed.witness.head_digest == signed.witness.head_digest => {
+                RegistryHeadRequirementV1 {
+                    registry_id: self.verifier.trust.registry_id.clone(),
+                    minimum_generation: signed.witness.generation,
+                    expected_predecessor_head_digest: expected_predecessor,
+                    minimum_authority_epoch: self.verifier.trust.minimum_authority_epoch,
+                    now,
+                }
+            }
+            Some(current) if current.signed.witness.head_digest == expected_predecessor => {
+                RegistryHeadRequirementV1 {
+                    registry_id: self.verifier.trust.registry_id.clone(),
+                    minimum_generation: current
+                        .signed
+                        .witness
+                        .generation
+                        .next()
+                        .map_err(|_| ArtifactOwnerHostError::CurrentHeadContext)?,
+                    expected_predecessor_head_digest: expected_predecessor,
+                    minimum_authority_epoch: current.signed.witness.authority_epoch,
+                    now,
+                }
+            }
+            None if expected_predecessor == self.verifier.trust.genesis_predecessor_head_digest => {
+                RegistryHeadRequirementV1 {
+                    registry_id: self.verifier.trust.registry_id.clone(),
+                    minimum_generation: self.verifier.trust.minimum_registry_generation,
+                    expected_predecessor_head_digest: expected_predecessor,
+                    minimum_authority_epoch: self.verifier.trust.minimum_authority_epoch,
+                    now,
+                }
+            }
+            Some(_) | None => return Err(ArtifactOwnerHostError::CurrentHeadConflict),
+        };
+        let verified = self
+            .verifier
+            .verify_signed_head(signed, &requirement, true)?;
+'''
+          new_witness_prefix = '''        let expected_predecessor = transaction.intent().expected_registry_predecessor_head;
+        let (requirement, verified) =
+            self.verify_publication_head(signed, expected_predecessor, now)?;
+'''
+          if old_witness_prefix not in host_text:
+              raise SystemExit("owner host witness verification block missing")
+          host.write_text(host_text.replace(old_witness_prefix, new_witness_prefix, 1), encoding="utf-8")
+
+          service = Path("codex-rs/hepta-learning-artifacts/src/owner_service.rs")
+          service_text = service.read_text(encoding="utf-8")
+          if "pub const fn authority(&self) -> AuthorityPosture" not in service_text:
+              service_text = service_text.replace(
+                  "use codex_hepta_types::Digest32;\n",
+                  "use codex_hepta_types::AuthorityPosture;\nuse codex_hepta_types::Digest32;\n",
+                  1,
+              )
+              registry_marker = "    #[must_use]\n    pub fn registry(&self) -> &ArtifactRegistry {\n"
+              authority_method = '''    /// This owner persists eligibility and evidence only; it never grants
+    /// selection, activation, promotion, or release authority.
+    #[must_use]
+    pub const fn authority(&self) -> AuthorityPosture {
+        AuthorityPosture::DENY_ALL
+    }
+
+'''
+              if registry_marker not in service_text:
+                  raise SystemExit("owner service authority insertion point missing")
+              service_text = service_text.replace(registry_marker, authority_method + registry_marker, 1)
+
+          staged_check = '''        if staged.snapshot().head_digest != request.signed_current_head.witness.head_digest {
+            return Err(LearningArtifactOwnerServiceError::RequestMismatch);
+        }
+'''
+          preflight = staged_check + '''        self.host.preflight_publication_head(
+            &request.signed_current_head,
+            request.expected_registry_predecessor_head,
+            request.now,
+        )?;
+'''
+          if "self.host.preflight_publication_head(" not in service_text:
+              if service_text.count(staged_check) != 1:
+                  raise SystemExit("owner service staged-head check missing or duplicated")
+              service_text = service_text.replace(staged_check, preflight, 1)
+
+          old_host_mapping = '''            ArtifactOwnerHostError::WriterLeaseContext
+            | ArtifactOwnerHostError::SignerRevoked
+            | ArtifactOwnerHostError::CurrentHeadExpired
+            | ArtifactOwnerHostError::CurrentHeadRollback => Self::StaleOwner,
+            ArtifactOwnerHostError::Capacity => Self::CapacityExhausted,
+'''
+          new_host_mapping = '''            ArtifactOwnerHostError::WriterLeaseContext
+            | ArtifactOwnerHostError::SignerContext
+            | ArtifactOwnerHostError::SignerRevoked
+            | ArtifactOwnerHostError::CurrentHeadConflict
+            | ArtifactOwnerHostError::CurrentHeadExpired
+            | ArtifactOwnerHostError::CurrentHeadRollback => Self::StaleOwner,
+            ArtifactOwnerHostError::UnknownSigner
+            | ArtifactOwnerHostError::InvalidSignature
+            | ArtifactOwnerHostError::RegistryPredecessorMismatch
+            | ArtifactOwnerHostError::CurrentHeadContext => Self::RequestMismatch,
+            ArtifactOwnerHostError::CheckpointGap
+            | ArtifactOwnerHostError::CheckpointMismatch
+            | ArtifactOwnerHostError::CurrentHeadFork => Self::CheckpointMismatch,
+            ArtifactOwnerHostError::Capacity => Self::CapacityExhausted,
+'''
+          if old_host_mapping not in service_text:
+              raise SystemExit("owner service host error mapping missing")
+          service.write_text(service_text.replace(old_host_mapping, new_host_mapping, 1), encoding="utf-8")
+
+          tests = Path("codex-rs/hepta-learning-artifacts/src/owner_service_tests.rs")
+          tests_text = tests.read_text(encoding="utf-8")
+          if "expired_current_head_is_rejected_before_any_durable_publication_state" not in tests_text:
+              test_marker = "#[test]\nfn checkpoint_without_canonical_request_identity_fails_closed() {\n"
+              new_tests = '''#[test]
+fn expired_current_head_is_rejected_before_any_durable_publication_state() {
+    let (directory, key, _withdrawals, mut service, mut request) = service_and_request();
+    let operation_id = request.operation_id.clone();
+    let predecessor = service.registry().snapshot().head_digest;
+    request.signed_current_head.witness.issued_at = 10;
+    request.signed_current_head.witness.expires_at = request.now - 1;
+    request.signed_current_head.signature = key
+        .sign(&request.signed_current_head.signing_bytes())
+        .to_bytes();
+
+    let error = service
+        .publish(request)
+        .expect_err("expired CURRENT must reject before durable mutation");
+    assert_eq!(error.code(), LearningArtifactOwnerErrorCodeV1::StaleOwner);
+    assert!(
+        service
+            .host
+            .recover_publication(&operation_id)
+            .fixture("probe checkpoint")
+            .is_none()
+    );
+    assert_eq!(service.registry().snapshot().head_digest, predecessor);
+    assert!(service.recovery_required().is_none());
+    let identities = directory.0.join("writer/request-identities-v1");
+    assert!(
+        !identities.exists()
+            || fs::read_dir(identities)
+                .fixture("identity directory")
+                .next()
+                .is_none()
+    );
+}
+
+#[test]
+fn invalid_current_head_signature_is_rejected_before_any_durable_publication_state() {
+    let (directory, _key, _withdrawals, mut service, mut request) = service_and_request();
+    let operation_id = request.operation_id.clone();
+    let predecessor = service.registry().snapshot().head_digest;
+    request.signed_current_head.signature[0] ^= 1;
+
+    let error = service
+        .publish(request)
+        .expect_err("invalid CURRENT signature must reject before durable mutation");
+    assert_eq!(error.code(), LearningArtifactOwnerErrorCodeV1::InvalidRequest);
+    assert!(
+        service
+            .host
+            .recover_publication(&operation_id)
+            .fixture("probe checkpoint")
+            .is_none()
+    );
+    assert_eq!(service.registry().snapshot().head_digest, predecessor);
+    assert!(service.recovery_required().is_none());
+    let identities = directory.0.join("writer/request-identities-v1");
+    assert!(
+        !identities.exists()
+            || fs::read_dir(identities)
+                .fixture("identity directory")
+                .next()
+                .is_none()
+    );
+}
+
+'''
+              if test_marker not in tests_text:
+                  raise SystemExit("owner service test insertion point missing")
+              tests.write_text(tests_text.replace(test_marker, new_tests + test_marker, 1), encoding="utf-8")
+
+          delivery = Path("docs/modules/learning.artifacts/DELIVERY_INDEX.md")
+          delivery_text = delivery.read_text(encoding="utf-8")
+          if "Pre-mutation CURRENT authority preflight" not in delivery_text:
+              row_marker = "| Durable withdrawal lower bound | Source implemented"
+              row = "| Pre-mutation CURRENT authority preflight | Source implemented | `LearningArtifactOwnerHost::preflight_publication_head`, `LearningArtifactOwnerService::publish` | expired/invalid CURRENT rejection before request-identity or checkpoint creation; terminal historical replay | Pending final exact-head receipt | Not integrated | Historical terminal receipt replay remains authority-free; non-terminal recovery still requires a currently valid signer and writer lease |\n"
+              if row_marker not in delivery_text:
+                  raise SystemExit("delivery index insertion point missing")
+              delivery.write_text(delivery_text.replace(row_marker, row + row_marker, 1), encoding="utf-8")
+          PY
+
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-artifacts
+          git add \
+            codex-rs/hepta-learning-artifacts/src/owner/bootstrap.rs \
+            codex-rs/hepta-learning-artifacts/src/owner/capability_validation.rs \
+            codex-rs/hepta-learning-artifacts/src/owner/publication_coordination.rs \
+            codex-rs/hepta-learning-artifacts/src/owner_host.rs \
+            codex-rs/hepta-learning-artifacts/src/owner_service.rs \
+            codex-rs/hepta-learning-artifacts/src/owner_service_tests.rs \
+            docs/modules/learning.artifacts/DELIVERY_INDEX.md \
+            scripts/hepta_artifact_qualification.py
+          candidate_tree="$(git write-tree)"
+          python3 scripts/hepta_artifact_source_binding.py \
+            --tree "$candidate_tree" \
+            --include .github/workflows/hepta-learning-artifacts-qualification.yml \
+            --include codex-rs/hepta-learning-artifacts/src/owner/bootstrap.rs \
+            --include codex-rs/hepta-learning-artifacts/src/owner/capability_validation.rs \
+            --include codex-rs/hepta-learning-artifacts/src/owner/publication_coordination.rs \
+            --include codex-rs/hepta-learning-artifacts/src/owner_host.rs \
+            --include codex-rs/hepta-learning-artifacts/src/owner_service.rs \
+            --include codex-rs/hepta-learning-artifacts/src/owner_service_tests.rs \
+            --include docs/modules/learning.artifacts/DELIVERY_INDEX.md \
+            --include scripts/hepta_artifact_qualification.py \
+            --write
+          git add docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json
+
+          python3 -m unittest discover -s scripts -p 'test_hepta_artifact_*.py' -v
+          cargo check --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-learning-artifacts --all-targets
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-learning-artifacts --all-targets -- -D warnings
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-learning-artifacts \
+            expired_current_head_is_rejected_before_any_durable_publication_state -- --nocapture
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-learning-artifacts \
+            invalid_current_head_signature_is_rejected_before_any_durable_publication_state -- --nocapture
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-learning-artifacts --lib
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-learning-artifacts -- --check
+          git diff --check
+      - name: Commit and push the static candidate
+        env:
+          TRIGGER_SHA: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse refs/remotes/origin/codex/learning-artifacts-convergence-20260929)" = "$TRIGGER_SHA"
+          git config user.name 'learning.artifacts candidate materializer'
+          git config user.email 'artifact-candidate@users.noreply.github.com'
+          rm .github/workflows/materialize-learning-artifacts-final-fixes.yml
+          git add -A
+          git diff --cached --check
+          git commit -m 'learning.artifacts: seal preflight-safe convergence candidate'
+          git push origin HEAD:codex/learning-artifacts-convergence-20260929
