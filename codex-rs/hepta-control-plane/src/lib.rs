@@ -89,6 +89,11 @@ pub struct OrganFanoutReceiptV1 {
     pub authority: codex_hepta_types::AuthorityPosture,
 }
 
+mod organ_fanout_recovery;
+pub use organ_fanout_recovery::{
+    OrganFanoutContinuationV1, OrganFanoutRecoveryErrorV1,
+};
+
 mod authenticated_context;
 pub use authenticated_context::{
     AuthenticatedContextRecordV1, AuthenticatedObservedContextV1,
