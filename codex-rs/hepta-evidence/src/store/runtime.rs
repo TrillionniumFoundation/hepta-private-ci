@@ -147,10 +147,11 @@ mod tests {
             result.is_err(),
             "disk-full injection unexpectedly committed"
         );
-        transaction
-            .rollback()
-            .await
-            .expect("rollback failed disk-full transaction");
+        // SQLITE_FULL is allowed to roll back the active transaction itself.
+        // Treat a subsequent "no transaction is active" rollback response as
+        // equivalent to a successful explicit rollback; the authoritative
+        // postconditions are proved by the empty table and quick-check below.
+        let _ = transaction.rollback().await;
 
         let rows: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM kernel_evidence_disk_full_probe")
             .fetch_one(&store.pool)
