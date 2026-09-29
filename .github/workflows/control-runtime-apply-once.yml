@@ -65,6 +65,38 @@ jobs:
           if ! git apply --3way --whitespace=fix "$RUNNER_TEMP/control-runtime-next.patch"; then
             git status --short
             git diff --name-only --diff-filter=U
+            python3 - <<'PY'
+          from pathlib import Path
+
+          conflict_paths = [
+              Path("codex-rs/hepta-agentd/src/cognitive_context.rs"),
+              Path("codex-rs/hepta-control-plane/src/control_runtime/organ_host.rs"),
+              Path("codex-rs/hepta-control-plane/src/control_runtime/planner_store.rs"),
+              Path("codex-rs/hepta-control-plane/src/control_runtime/planner_store_tests.rs"),
+          ]
+          for path in conflict_paths:
+              if not path.exists():
+                  continue
+              lines = path.read_text(encoding="utf-8").splitlines()
+              cursor = 0
+              conflict_number = 0
+              while cursor < len(lines):
+                  if not lines[cursor].startswith("<<<<<<<"):
+                      cursor += 1
+                      continue
+                  start = cursor
+                  while cursor < len(lines) and not lines[cursor].startswith(">>>>>>>"):
+                      cursor += 1
+                  end = min(cursor, len(lines) - 1)
+                  conflict_number += 1
+                  low = max(0, start - 20)
+                  high = min(len(lines), end + 21)
+                  print(f"::group::{path} conflict {conflict_number} lines {low + 1}-{high}")
+                  for index in range(low, high):
+                      print(f"{index + 1:6}: {lines[index]}")
+                  print("::endgroup::")
+                  cursor = end + 1
+          PY
             exit 1
           fi
           git diff --check
