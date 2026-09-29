@@ -21,7 +21,7 @@ env:
 jobs:
   materialize:
     name: Materialize reviewed inference.worker source
-    runs-on: [self-hosted, linux, x64, pocket4]
+    runs-on: [self-hosted, macOS, ARM64, macbook]
     timeout-minutes: 20
     steps:
       - name: Check out exact setup commit
