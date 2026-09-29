@@ -17,7 +17,7 @@ concurrency:
 jobs:
   rustfmt-repair:
     if: github.actor != 'github-actions[bot]'
-    runs-on: ubuntu-latest
+    runs-on: macos-15
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
