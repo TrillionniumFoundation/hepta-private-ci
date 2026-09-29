@@ -29,7 +29,7 @@ env:
 jobs:
   materialize:
     name: Materialize reviewed runtime closure into normal source
-    runs-on: ubuntu-24.04
+    runs-on: macos-26-arm64
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -58,12 +58,20 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/materialize_learning_plasticity_runtime_closure.py
-          test "$(sha256sum codex-rs/hepta-agentd/src/plasticity_runtime.rs | awk '{print $1}')" = \
-            "8bb9e10d29181dc0eaa97a1f805eba13e3aead92b1217bf7d59c063efd13f29b"
-          test "$(sha256sum docs/modules/learning.plasticity/RUNTIME_RESOURCE_RECOVERY.md | awk '{print $1}')" = \
-            "d3f591894eb9570f91ee03b98cc0b81b8373aad892c988f4cccfa496af514970"
-          test "$(sha256sum scripts/qualify_learning_plasticity.py | awk '{print $1}')" = \
-            "eac4db744a4d95990e824d9c46bac386b3aebdc8aa79f23aac392809acb96685"
+          python3 - <<'PY'
+          import hashlib
+          from pathlib import Path
+
+          expected = {
+              "codex-rs/hepta-agentd/src/plasticity_runtime.rs": "8bb9e10d29181dc0eaa97a1f805eba13e3aead92b1217bf7d59c063efd13f29b",
+              "docs/modules/learning.plasticity/RUNTIME_RESOURCE_RECOVERY.md": "d3f591894eb9570f91ee03b98cc0b81b8373aad892c988f4cccfa496af514970",
+              "scripts/qualify_learning_plasticity.py": "eac4db744a4d95990e824d9c46bac386b3aebdc8aa79f23aac392809acb96685",
+          }
+          for name, digest in expected.items():
+              actual = hashlib.sha256(Path(name).read_bytes()).hexdigest()
+              if actual != digest:
+                  raise SystemExit(f"{name}: expected {digest}, observed {actual}")
+          PY
           python3 -m py_compile scripts/qualify_learning_plasticity.py
           python3 scripts/test_learning_plasticity_grammar_contract.py
 
