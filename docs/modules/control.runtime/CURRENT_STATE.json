@@ -123,7 +123,9 @@
       "released": false,
       "notes": [
         "Trusted in-process read-only handlers are not a sandbox.",
-        "Fanout receipts preserve every admitted target identity, partial-delivery disposition, and exact output digest for each successfully delivered prefix target."
+        "A canonical fanout evidence digest binds the exact generation, source, output port, payload digest, ordered admitted routes, per-target dispositions, outputs, fault codes and dispatch error boundary.",
+        "The product owner must retain that digest independently; a matching receipt can yield only a DENY_ALL continuation for the first incomplete route and refuses incomplete delivered evidence.",
+        "Actual retry, downstream target idempotency, blocking work, plugins, model calls and effects remain owned by separate bounded product owners."
       ]
     }
   },
