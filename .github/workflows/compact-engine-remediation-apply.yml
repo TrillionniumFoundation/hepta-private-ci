@@ -1,0 +1,74 @@
+name: compact.engine atomic remediation apply
+
+on:
+  push:
+    branches: [fix/compact-engine-current-main-convergence-20260925]
+    paths:
+      - ".github/workflows/compact-engine-remediation-apply.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: compact-engine-remediation-apply
+  cancel-in-progress: false
+
+jobs:
+  apply-verified-remediation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: fix/compact-engine-current-main-convergence-20260925
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Bind exact starting source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "bb398d7d6c71e80ce61cadf99d3ea0dbba663d63"
+          test -z "$(git status --porcelain)"
+      - name: Apply bounded source patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          base64 -d > "$RUNNER_TEMP/compact-engine-remediation.patch" <<'PATCH_B64'
+LS0tIGEvY29kZXgtcnMvaGVwdGEtY29tcGFjdC1lbmdpbmUvc3JjL2R1cmFibGUucnMKKysrIGIvY29kZXgtcnMvaGVwdGEtY29tcGFjdC1lbmdpbmUvc3JjL2R1cmFibGUucnMKQEAgLTEwMjQsOSArMTAyNCwxNCBAQAogICAgIC5hd2FpdD87CiAgICAgbWF0Y2ggYWN0aXZlIHsKICAgICAgICAgTm9uZSA9PiB7Ci0gICAgICAgICAgICBpZiBidW5kbGUuZ2VuZXJhdGlvbiAhPSAxIHx8IGJ1bmRsZS5wcmVkZWNlc3Nvcl9jaGVja3BvaW50X2RpZ2VzdC5pc19zb21lKCkgeworICAgICAgICAgICAgLy8gVGhlIGxvY2FsIGR1cmFibGUgbGluZWFnZSBtYXkgc3RhcnQgZnJvbSBhbnkgcG9zaXRpdmUgZ2VuZXJhdGlvbgorICAgICAgICAgICAgLy8gYWxyZWFkeSBwcm92ZW4gYnkgdGhlIGF1dGhvcml0YXRpdmUgTGFuZSBDIHNuYXBzaG90LiBSZXF1aXJpbmcKKyAgICAgICAgICAgIC8vIGdlbmVyYXRpb24gb25lIGhlcmUgY29udHJhZGljdHMgdGhlIGtlcm5lbCBjb250cmFjdCB3aGVuIHRoaXMKKyAgICAgICAgICAgIC8vIG93bmVyIG1hdGVyaWFsaXplcyBhIGxhdGVyIGV4dGVybmFsbHkgcmV0YWluZWQgZ2VuZXJhdGlvbi4gVGhlCisgICAgICAgICAgICAvLyBsb2NhbCByb290IHN0aWxsIG11c3Qgbm90IGludmVudCBhIHByZWRlY2Vzc29yLgorICAgICAgICAgICAgaWYgYnVuZGxlLmdlbmVyYXRpb24gPT0gMCB8fCBidW5kbGUucHJlZGVjZXNzb3JfY2hlY2twb2ludF9kaWdlc3QuaXNfc29tZSgpIHsKICAgICAgICAgICAgICAgICByZXR1cm4gRXJyKGNvbmZsaWN0KAotICAgICAgICAgICAgICAgICAgICAiZmlyc3QgZHVyYWJsZSBjaGVja3BvaW50IG11c3QgYmUgZ2VuZXJhdGlvbiBvbmUgd2l0aCBubyBwcmVkZWNlc3NvciIsCisgICAgICAgICAgICAgICAgICAgICJmaXJzdCBkdXJhYmxlIGNoZWNrcG9pbnQgbXVzdCBiZSBhIHBvc2l0aXZlIGdlbmVyYXRpb24gd2l0aCBubyBwcmVkZWNlc3NvciIsCiAgICAgICAgICAgICAgICAgKSk7CiAgICAgICAgICAgICB9CiAgICAgICAgICAgICBzcWx4OjpxdWVyeSgKLS0tIGEvY29kZXgtcnMvaGVwdGEtY29tcGFjdC1lbmdpbmUvc3JjL3Byb2R1Y3RfZTJlX3Rlc3RzLnJzCisrKyBiL2NvZGV4LXJzL2hlcHRhLWNvbXBhY3QtZW5naW5lL3NyYy9wcm9kdWN0X2UyZV90ZXN0cy5ycwpAQCAtNDc5LDcgKzQ3OSw3IEBACiAgICAgbGV0IHRlbXAgPSBUZW1wRGlyOjpuZXcoKS5leHBlY3QoInRlbXAgZGlyIik7CiAgICAgbGV0IHVybCA9IGRhdGFiYXNlX3VybCgmdGVtcCk7CiAKLSAgICBsZXQgZmlyc3QgPSBzZWFsZWRfcHVibGljYXRpb24oJmZpeHR1cmUsICZbIm1lbW9yeTplMmU6YSJdLCAxLCAxLCBOb25lLCAiZmlyc3QiKTsKKyAgICBsZXQgZmlyc3QgPSBzZWFsZWRfcHVibGljYXRpb24oJmZpeHR1cmUsICZbIm1lbW9yeTplMmU6YSJdLCAxLCAyLCBOb25lLCAiZmlyc3QiKTsKICAgICBsZXQgZmlyc3RfY2hlY2twb2ludCA9IGZpcnN0LmNhbmRpZGF0ZSgpLmNoZWNrcG9pbnQoKS5jaGVja3BvaW50X2RpZ2VzdDsKICAgICBsZXQgY29vcmRpbmF0b3IgPSBNZW1vcnlDaGVja3BvaW50Q29vcmRpbmF0b3JWMjo6b3BlbigKICAgICAgICAgJnVybCwKQEAgLTUxNyw3ICs1MTcsNyBAQAogICAgICAgICAuYXdhaXQKICAgICAgICAgLmV4cGVjdCgicmVjb3ZlciBmaXJzdCBjaGVja3BvaW50IikKICAgICAgICAgLmV4cGVjdCgiZmlyc3QgY2hlY2twb2ludCBleGlzdHMiKTsKLSAgICBhc3NlcnRfZXEhKHJlY292ZXJlZC5nZW5lcmF0aW9uKCksIDEpOworICAgIGFzc2VydF9lcSEocmVjb3ZlcmVkLmdlbmVyYXRpb24oKSwgMik7CiAgICAgYXNzZXJ0X2VxIShyZWNvdmVyZWQuY2hlY2twb2ludF9kaWdlc3QoKSwgZmlyc3RfY2hlY2twb2ludCk7CiAgICAgcmVjb3ZlcmVkCiAgICAgICAgIC5wdWJsaWNhdGlvbigpCkBAIC01MzAsNyArNTMwLDcgQEAKICAgICAgICAgJmZpeHR1cmUsCiAgICAgICAgICZbIm1lbW9yeTplMmU6YSIsICJtZW1vcnk6ZTJlOmIiXSwKICAgICAgICAgMiwKLSAgICAgICAgMiwKKyAgICAgICAgMywKICAgICAgICAgU29tZShmaXJzdF9jaGVja3BvaW50KSwKICAgICAgICAgInNlY29uZCIsCiAgICAgKTsKQEAgLTU0NCw3ICs1NDQsNyBAQAogICAgICAgICAuYXdhaXQKICAgICAgICAgLmV4cGVjdCgicmVjb3ZlciBsYXRlc3QgY2hlY2twb2ludCIpCiAgICAgICAgIC5leHBlY3QoImxhdGVzdCBjaGVja3BvaW50IGV4aXN0cyIpOwotICAgIGFzc2VydF9lcSEobGF0ZXN0LmdlbmVyYXRpb24oKSwgMik7CisgICAgYXNzZXJ0X2VxIShsYXRlc3QuZ2VuZXJhdGlvbigpLCAzKTsKICAgICBhc3NlcnRfZXEhKGxhdGVzdC5jaGVja3BvaW50X2RpZ2VzdCgpLCBzZWNvbmRfY2hlY2twb2ludCk7CiAgICAgYXNzZXJ0X2VxISgKICAgICAgICAgbGF0ZXN0Ci0tLSBhL2NvZGV4LXJzL2hlcHRhLW1lbW9yeS9zcmMvY29nbml0aXZlX3N0b3JlX3JlY292ZXJ5LnJzCisrKyBiL2NvZGV4LXJzL2hlcHRhLW1lbW9yeS9zcmMvY29nbml0aXZlX3N0b3JlX3JlY292ZXJ5LnJzCkBAIC05Myw2ICs5MywxNCBAQAogfQogCiBpbXBsIENvZ25pdGl2ZVN0b3JlIHsKKyAgICAvLy8gQ2xvc2UgZXZlcnkgcG9vbGVkIFNRTGl0ZSBjb25uZWN0aW9uIGJlZm9yZSByZWxlYXNpbmcgdGhlIGZpbGVzeXN0ZW0KKyAgICAvLy8gcmVjb3ZlcnkgZmVuY2UuIEV4YWN0LWN1dCByZWNvdmVyeSBjYWxsZXJzIG11c3QgdXNlIHRoaXMgaW5zdGVhZCBvZgorICAgIC8vLyByZWx5aW5nIG9uIGFzeW5jaHJvbm91cyBwb29sIGRyb3AsIGJlY2F1c2UgV0FML1NITSB0ZWFyZG93biBjYW4gcmFjZQorICAgIC8vLyBkZXNjcmlwdG9yLWJvdW5kIGlkZW50aXR5IGNhcHR1cmUuCisgICAgcHViIGFzeW5jIGZuIGNsb3NlKHNlbGYpIHsKKyAgICAgICAgc2VsZi5wb29sLmNsb3NlKCkuYXdhaXQ7CisgICAgfQorCiAgICAgLy8vIENhcHR1cmUgb25lIGNvaGVyZW50IGJvdW5kZWQgb3duZXIgY3V0LiBUaGUgaG9zdCByZXRhaW5zL2F1dGhlbnRpY2F0ZXMgaXQKICAgICAvLy8gaW5kZXBlbmRlbnRseTsgdGhpcyBtZXRob2QgZG9lcyBub3QgcHVibGlzaCBhbiBhY2tub3dsZWRnZW1lbnQgd2l0bmVzcy4KICAgICBwdWIgYXN5bmMgZm4gcmVjb3ZlcnlfYW5jaG9yKCZzZWxmKSAtPiBSZXN1bHQ8Q29nbml0aXZlUmVjb3ZlcnlBbmNob3IsIENvZ25pdGl2ZVN0b3JlRXJyb3I+IHsKLS0tIGEvY29kZXgtcnMvaGVwdGEtYWdlbnRkL3Rlc3RzL2NvZ25pdGl2ZV9zdG9yZV9wcm9kdWN0X3dyaXRlci5ycworKysgYi9jb2RleC1ycy9oZXB0YS1hZ2VudGQvdGVzdHMvY29nbml0aXZlX3N0b3JlX3Byb2R1Y3Rfd3JpdGVyLnJzCkBAIC0xNDMsNyArMTQzLDcgQEAKIAogICAgIGxldCBzdG9yZSA9IER1cmFibGVDb2duaXRpdmVTdG9yZTo6b3BlbigmY29uZmlnLmlkZW50aXR5KCkubGF5b3V0KS5hd2FpdD87CiAgICAgbGV0IGV4cGVjdGVkID0gc3RvcmUucmVjb3ZlcnlfYW5jaG9yKCkuYXdhaXQ/OwotICAgIGRyb3Aoc3RvcmUpOworICAgIHN0b3JlLmNsb3NlKCkuYXdhaXQ7CiAKICAgICBsZXQgYXV0aG9yaXR5ID0gUHJvZHVjdGlvbkF1dGhvcml0eUxlYXNlOjpmcm9tX3ZlcmlmaWVkX3BhcnRzKAogICAgICAgICBvd25lci5jbG9uZSgpLAo=
+PATCH_B64
+          git apply --check "$RUNNER_TEMP/compact-engine-remediation.patch"
+          git apply "$RUNNER_TEMP/compact-engine-remediation.patch"
+          rm .github/workflows/compact-engine-remediation-apply.yml
+          git diff --check
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: rustfmt,clippy
+      - name: Format
+        working-directory: codex-rs
+        run: cargo fmt --all -- --check
+      - name: Check locked source
+        working-directory: codex-rs
+        run: cargo check --locked -p codex-hepta-compact-engine -p codex-hepta-agentd --all-targets
+      - name: Install repository test runners
+        run: cargo install --locked just cargo-nextest
+      - name: Test focused product path
+        run: just test --locked -p codex-hepta-compact-engine -p codex-hepta-agentd
+      - name: Strict Clippy
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-compact-engine -p codex-hepta-agentd --all-targets -- -D warnings
+      - name: Commit verified source directly to convergence branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git status --short
+          git config user.name "compact.engine remediation"
+          git config user.email "compact-engine-remediation@invalid.example"
+          git add \
+            codex-rs/hepta-compact-engine/src/durable.rs \
+            codex-rs/hepta-compact-engine/src/product_e2e_tests.rs \
+            codex-rs/hepta-memory/src/cognitive_store_recovery.rs \
+            codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs \
+            .github/workflows/compact-engine-remediation-apply.yml
+          git commit -m "fix(compact.engine): close generation and exact-cut recovery"
+          git push origin HEAD:fix/compact-engine-current-main-convergence-20260925
