@@ -466,8 +466,9 @@ fn recovery_converges_observed_provider_result_without_redispatch() {
     let recovered = checked(runtime.recover_operation(&mut model, &request));
     assert!(matches!(
         recovered,
-        NeuronOperationStatusV2::Committed { .. }
+        NeuronOperationStatusV2::Committed { witness_acknowledged: true, .. }
     ));
+    assert_eq!(checked(runtime.query_input_operation(&request)), recovered);
     assert_eq!(execute_calls.load(Ordering::SeqCst), 1);
     assert_eq!(reconcile_calls.load(Ordering::SeqCst), 1);
     let measurement = runtime.last_measurement().expect("recovery measurement");

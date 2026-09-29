@@ -40,6 +40,9 @@ use crate::NeuronRuntimeV2;
 use crate::NeuronRuntimeV2Error;
 use crate::NeuronTickInputV1;
 
+#[path = "decision_cell_lifecycle_v2.rs"]
+mod lifecycle;
+
 const RECEIPT_SCHEMA_ID: &str = "hepta.decision-cell.receipt.v1";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]

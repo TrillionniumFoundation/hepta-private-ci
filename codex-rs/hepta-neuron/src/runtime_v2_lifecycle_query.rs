@@ -91,8 +91,18 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
         input: &NeuronTickInputV1,
         guard: &mut dyn NeuronAdmissionGuard,
     ) -> Result<Option<NeuronRuntimeCommitV2>, NeuronRuntimeV2Error> {
+        self.query_result_with_input_digest_guarded(input, input.semantic_digest()?, guard)
+    }
+
+    /// Reuse current-use authorization for an owning adapter's exact input key.
+    pub(crate) fn query_result_with_input_digest_guarded(
+        &mut self,
+        input: &NeuronTickInputV1,
+        input_digest: Digest32,
+        guard: &mut dyn NeuronAdmissionGuard,
+    ) -> Result<Option<NeuronRuntimeCommitV2>, NeuronRuntimeV2Error> {
         self.reconcile()?;
-        match self.query_input_operation(input)? {
+        match self.query_operation(&input.tick_id, input_digest)? {
             NeuronOperationStatusV2::Committed { commit, .. } => {
                 guard
                     .check(&self.config, input)

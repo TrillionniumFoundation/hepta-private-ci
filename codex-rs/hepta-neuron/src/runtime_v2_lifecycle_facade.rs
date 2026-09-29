@@ -67,9 +67,20 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
         model: &mut impl DurableNeuronModelPort,
         input: &NeuronTickInputV1,
     ) -> Result<NeuronOperationStatusV2, NeuronRuntimeV2Error> {
+        self.recover_operation_with_input_digest(model, input, input.semantic_digest()?)
+    }
+
+    /// Only a validated owning adapter may provide an extended operation key.
+    pub(crate) fn recover_operation_with_input_digest(
+        &mut self,
+        model: &mut impl DurableNeuronModelPort,
+        input: &NeuronTickInputV1,
+        input_digest: Digest32,
+    ) -> Result<NeuronOperationStatusV2, NeuronRuntimeV2Error> {
         self.recover_operation_with_disposition(
             model,
             input,
+            input_digest,
             NeuronRecoveryDispositionV2::PreserveUnexecuted,
         )
     }
@@ -82,9 +93,20 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
         model: &mut impl DurableNeuronModelPort,
         input: &NeuronTickInputV1,
     ) -> Result<NeuronOperationStatusV2, NeuronRuntimeV2Error> {
+        self.close_unexecuted_operation_with_input_digest(model, input, input.semantic_digest()?)
+    }
+
+    /// Typed quiesce closure shares the ordinary operation recovery kernel.
+    pub(crate) fn close_unexecuted_operation_with_input_digest(
+        &mut self,
+        model: &mut impl DurableNeuronModelPort,
+        input: &NeuronTickInputV1,
+        input_digest: Digest32,
+    ) -> Result<NeuronOperationStatusV2, NeuronRuntimeV2Error> {
         self.recover_operation_with_disposition(
             model,
             input,
+            input_digest,
             NeuronRecoveryDispositionV2::CloseUnexecuted,
         )
     }
@@ -93,6 +115,7 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
         &mut self,
         model: &mut impl DurableNeuronModelPort,
         input: &NeuronTickInputV1,
+        input_digest: Digest32,
         disposition: NeuronRecoveryDispositionV2,
     ) -> Result<NeuronOperationStatusV2, NeuronRuntimeV2Error> {
         let started = Instant::now();
@@ -103,7 +126,8 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
             recovery_only: true,
             ..PhaseMeasurementV2::default()
         };
-        let result = self.recover_operation_inner(model, input, disposition, &mut phases);
+        let result =
+            self.recover_operation_inner(model, input, input_digest, disposition, &mut phases);
         let store_after = self.store.storage_observation();
         let index_after = self.index.storage_observation();
         let witness_after = self.witness.io_metrics();

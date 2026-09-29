@@ -3,6 +3,7 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
         &mut self,
         model: &mut impl DurableNeuronModelPort,
         input: &NeuronTickInputV1,
+        input_digest: Digest32,
         disposition: NeuronRecoveryDispositionV2,
         phases: &mut PhaseMeasurementV2,
     ) -> Result<NeuronOperationStatusV2, NeuronRuntimeV2Error> {
@@ -13,7 +14,6 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
             .saturating_add(elapsed_micros(phase_started));
         local?;
 
-        let input_digest = input.semantic_digest()?;
         let status = self.query_operation(&input.tick_id, input_digest)?;
         match &status {
             NeuronOperationStatusV2::NotRecorded
@@ -63,7 +63,7 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
             .saturating_add(elapsed_micros(phase_started));
         match resolution {
             Ok(NeuronModelResolutionV2::Observed(output)) => {
-                let record = self.commit_observed_result(
+                self.commit_observed_result(
                     model,
                     input,
                     input_digest,
@@ -74,10 +74,9 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
                     provider_started,
                     phases,
                 )?;
-                Ok(NeuronOperationStatusV2::Committed {
-                    commit: Box::new(self.commit_from_record(&record)?),
-                    witness_acknowledged: record.witness_acknowledged,
-                })
+                // Witness reconciliation updates durable acknowledgement state;
+                // the pre-ack commit snapshot must not become the returned status.
+                self.query_operation(&input.tick_id, input_digest)
             }
             Ok(NeuronModelResolutionV2::NotStarted) => match disposition {
                 NeuronRecoveryDispositionV2::PreserveUnexecuted => {

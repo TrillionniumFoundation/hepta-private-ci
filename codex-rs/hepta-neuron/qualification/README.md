@@ -443,3 +443,33 @@ qualification. Retain the run/thread reference for diagnosis; do not ask the mod
 to certify its own identity. Connectivity outputs stay outside the training corpus.
 The actual account agreement, permitted output use and distribution scope remain
 separate from successful login, CLI completion and repository administrator rights.
+
+## Typed DecisionCell recovery and current result use
+
+The V2 owner exposes the same four boundaries for a complete typed invocation:
+`tick_decision_cell_guarded` admits new work;
+`recover_decision_cell_operation` reconciles already reserved work;
+`query_decision_cell_operation` reports durable truth; and
+`query_decision_cell_result_guarded` releases immutable bytes only after a current
+use check. Recovery never calls `infer`, reserves a new operation, or grants use.
+`close_unexecuted_decision_cell_operation` is separately quiesce-only: its caller
+must already own lifecycle authorization. It closes only proven-unexecuted work,
+retains unknown outcomes, and commits an observed provider result without retry.
+
+Every typed path validates the original invocation and uses the same
+`hepta.neuron.decision-cell-input.v2` digest of the ordinary tick and complete
+DecisionCell request. Actions, target identities/generations, observation frontier,
+parameters and deadline therefore cannot change between dispatch and recovery.
+Do not pass a typed operation to the ordinary tick-derived recovery/result APIs:
+those deliberately retain ordinary-tick identity and are not typed aliases.
+The provider adapter, recovery kernel, measurements, witness and result writer
+are shared; no persisted format, second journal or second execution owner is added.
+
+The package regressions reopen the real V2 store/index after a lost model reply,
+reconcile the retained typed observation, validate its receipt extension and reject
+current result use after revocation while keeping terminal truth unchanged. They
+also cover unknown versus authoritative NotStarted, unexecuted reservations,
+absent operations and request substitution before provider reconciliation.
+Providers in these fault schedules are explicit fixtures, not model-quality or
+production qualification evidence. These APIs do not bootstrap a selected real
+model in Agentd, migrate live V1 state, or grant calibration or activation trust.
