@@ -387,9 +387,9 @@ fn enforce_raw_limits(bytes: &[u8]) -> Result<(), PlatformManifestWireError> {
         match byte {
             b'"' => in_string = true,
             b'{' | b'[' => {
-                depth = depth.checked_add(1).ok_or_else(|| {
-                    PlatformManifestWireError::Wire(PlatformTypesWireError::DepthExceeded)
-                })?;
+                depth = depth.checked_add(1).ok_or(
+                    PlatformManifestWireError::Wire(PlatformTypesWireError::DepthExceeded),
+                )?;
                 if depth > MAX_PLATFORM_TYPES_JSON_DEPTH_V1 {
                     return Err(PlatformManifestWireError::Wire(
                         PlatformTypesWireError::DepthExceeded,
