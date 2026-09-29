@@ -20,12 +20,15 @@ jobs:
     runs-on: ubuntu-slim
     timeout-minutes: 10
     steps:
-      - name: Check out exact branch head
+      - name: Check out exact patch payload
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: work/automation-taskflow-full-closure-2026-09-27
-          fetch-depth: 0
+          fetch-depth: 1
           persist-credentials: false
+          sparse-checkout: |
+            scripts/automation_taskflow_patch_parts
+          sparse-checkout-cone-mode: false
 
       - name: Materialize and verify canonical patch bytes
         shell: bash
