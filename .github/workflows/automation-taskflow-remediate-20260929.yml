@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: work/automation-taskflow-full-closure-2026-09-27
-          fetch-depth: 0
+          fetch-depth: 1
           persist-credentials: true
           sparse-checkout-cone-mode: false
           sparse-checkout: |
@@ -51,8 +51,8 @@ jobs:
             | gzip --decompress --stdout > "$patch_file"
           test "$(sha256sum "$patch_file" | awk '{print $1}')" = \
             "d0a48c30545262f63fc22587e36c03376cd9112eea626cf363ffc1a9d8ff844c"
-          git apply --check --3way "$patch_file"
-          git apply --3way "$patch_file"
+          git apply --check "$patch_file"
+          git apply "$patch_file"
 
       - name: Select real durable Circuit integration tests
         shell: bash
