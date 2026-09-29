@@ -145,7 +145,7 @@ pub fn write_agentd_neuron_generation_state_v2(
     state: &AgentdNeuronGenerationStateV2,
 ) -> Result<(), AgentdNeuronControlStateErrorV2> {
     state.validate()?;
-    validate_generation_state_path(path, false)?;
+    let parent_before = validate_generation_state_path(path, false)?;
     let encoded = serde_json::to_vec_pretty(state)
         .map_err(|_| AgentdNeuronControlStateErrorV2::Corrupt)?;
     let encoded_bytes = u64::try_from(encoded.len())
@@ -180,6 +180,11 @@ pub fn write_agentd_neuron_generation_state_v2(
         let mut file = options.open(&temporary)?;
         file.write_all(&encoded)?;
         file.sync_all()?;
+        let opened = file.metadata()?;
+        validate_generation_state_metadata(&opened)?;
+        let temporary_metadata = std::fs::symlink_metadata(&temporary)?;
+        validate_generation_state_metadata(&temporary_metadata)?;
+        validate_same_generation_state_identity(&opened, &temporary_metadata)?;
         drop(file);
         replace_generation_state_same_directory(&temporary, path)?;
         sync_generation_state_directory(parent)?;
@@ -187,6 +192,8 @@ pub fn write_agentd_neuron_generation_state_v2(
         if published != encoded {
             return Err(AgentdNeuronControlStateErrorV2::Corrupt);
         }
+        let parent_after = generation_state_parent_metadata(path)?;
+        validate_same_generation_state_directory_identity(&parent_before, &parent_after)?;
         Ok::<(), AgentdNeuronControlStateErrorV2>(())
     })();
     if result.is_err() {
@@ -208,7 +215,7 @@ pub fn read_agentd_neuron_generation_state_v2(
 fn read_generation_state_bytes(
     path: &Path,
 ) -> Result<Vec<u8>, AgentdNeuronControlStateErrorV2> {
-    validate_generation_state_path(path, true)?;
+    let parent_before = validate_generation_state_path(path, true)?;
     let before = std::fs::symlink_metadata(path)?;
     validate_generation_state_metadata(&before)?;
 
@@ -233,6 +240,8 @@ fn read_generation_state_bytes(
     let after = std::fs::symlink_metadata(path)?;
     validate_generation_state_metadata(&after)?;
     validate_same_generation_state_identity(&opened, &after)?;
+    let parent_after = generation_state_parent_metadata(path)?;
+    validate_same_generation_state_directory_identity(&parent_before, &parent_after)?;
     Ok(bytes)
 }
 
@@ -316,14 +325,8 @@ fn poison_control_state(
 fn validate_generation_state_path(
     path: &Path,
     require_file: bool,
-) -> Result<(), AgentdNeuronControlStateErrorV2> {
-    let parent = path
-        .parent()
-        .ok_or(AgentdNeuronControlStateErrorV2::Invalid)?;
-    let parent_metadata = std::fs::symlink_metadata(parent)?;
-    if parent_metadata.file_type().is_symlink() || !parent_metadata.is_dir() {
-        return Err(AgentdNeuronControlStateErrorV2::Invalid);
-    }
+) -> Result<std::fs::Metadata, AgentdNeuronControlStateErrorV2> {
+    let parent_metadata = generation_state_parent_metadata(path)?;
     match std::fs::symlink_metadata(path) {
         Ok(metadata) => {
             if metadata.file_type().is_symlink() || !metadata.is_file() {
@@ -333,7 +336,27 @@ fn validate_generation_state_path(
         Err(error) if !require_file && error.kind() == io::ErrorKind::NotFound => {}
         Err(error) => return Err(error.into()),
     }
-    Ok(())
+    Ok(parent_metadata)
+}
+
+fn generation_state_parent_metadata(
+    path: &Path,
+) -> Result<std::fs::Metadata, AgentdNeuronControlStateErrorV2> {
+    let parent = path
+        .parent()
+        .ok_or(AgentdNeuronControlStateErrorV2::Invalid)?;
+    let metadata = std::fs::symlink_metadata(parent)?;
+    if metadata.file_type().is_symlink() || !metadata.is_dir() {
+        return Err(AgentdNeuronControlStateErrorV2::Invalid);
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        if metadata.mode() & 0o077 != 0 {
+            return Err(AgentdNeuronControlStateErrorV2::Invalid);
+        }
+    }
+    Ok(metadata)
 }
 
 fn validate_generation_state_metadata(
@@ -375,6 +398,26 @@ fn validate_same_generation_state_identity(
     if left.len() != right.len() {
         return Err(AgentdNeuronControlStateErrorV2::Invalid);
     }
+    Ok(())
+}
+
+#[cfg(unix)]
+fn validate_same_generation_state_directory_identity(
+    left: &std::fs::Metadata,
+    right: &std::fs::Metadata,
+) -> Result<(), AgentdNeuronControlStateErrorV2> {
+    use std::os::unix::fs::MetadataExt;
+    if left.dev() != right.dev() || left.ino() != right.ino() {
+        return Err(AgentdNeuronControlStateErrorV2::Invalid);
+    }
+    Ok(())
+}
+
+#[cfg(not(unix))]
+fn validate_same_generation_state_directory_identity(
+    _left: &std::fs::Metadata,
+    _right: &std::fs::Metadata,
+) -> Result<(), AgentdNeuronControlStateErrorV2> {
     Ok(())
 }
 

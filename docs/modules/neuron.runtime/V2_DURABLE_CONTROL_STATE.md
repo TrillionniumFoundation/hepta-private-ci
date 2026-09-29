@@ -76,31 +76,38 @@ All cases still fail closed and grant no operation or result-use authority.
 ## 3. Publication and filesystem contract
 
 Before taking ownership of caller handles, construction validates that the
-control-state parent already exists, is a directory and is not a symlink. A
-missing or invalid namespace therefore fails without silently advancing the
+control-state parent already exists, is a directory and is not a symlink. On
+Unix the parent must also have no group or other permission bits. Construction
+captures this validated parent identity before fencing caller handles, so a
+missing, shared or invalid namespace fails without silently advancing the
 caller's execution epoch.
 
 Every publication:
 
-1. validates the complete candidate state;
+1. validates the complete candidate state and private parent namespace;
 2. serializes a bounded JSON object;
 3. creates a new same-directory temporary file with exclusive creation;
-4. writes and syncs the complete bytes;
+4. writes and syncs the complete bytes, then verifies that the opened temporary
+   descriptor and temporary path still identify the same regular private file;
 5. replaces the final path in the same directory;
 6. syncs the parent directory on platforms that expose directory sync;
 7. opens the published file, validates its metadata and reads back the exact
-   bytes before reporting success.
+   bytes before reporting success;
+8. revalidates the parent and, on Unix, requires its device/inode identity to be
+   unchanged across the publication.
 
 The final file must be regular, bounded and non-empty. On Unix it must have link
-count one and no group/other permission bits. Reads compare the pre-open path
-metadata, opened file metadata and post-read path metadata; device/inode changes
-fail closed. Symlinks and hard links are rejected. A state digest mismatch is
-corruption, not an absent state. Do not delete the file and silently start a new
-topology.
+count one and no group/other permission bits. Reads compare the validated parent
+before and after the operation and compare the pre-open path metadata, opened
+file metadata and post-read path metadata; device/inode changes fail closed.
+Symlinks and hard links are rejected. A state digest mismatch is corruption, not
+an absent state. Do not delete the file and silently start a new topology.
 
-The state path belongs in a host-owned namespace distinct from untrusted model or
-request content. It may share a protected runtime directory, but it must never be
-placed inside a path an unprivileged provider can replace.
+The state path belongs in a host-owned, owner-private namespace distinct from
+untrusted model or request content. It may share a protected runtime directory,
+but it must never be placed inside a path an unprivileged provider can read,
+traverse or replace. On Unix, deployment must provision the immediate parent
+with owner-only permissions before constructing the controller.
 
 ## 4. Transition ordering
 
@@ -163,8 +170,9 @@ When startup reports `control_state_invalid`, `control_state_corrupt`,
 
 1. keep all generation execution gates closed;
 2. retain the state file and runtime paths as incident evidence;
-3. for `control_state_invalid`, verify the parent/file type, Unix link count and
-   private permissions before replacing anything;
+3. for `control_state_invalid`, verify the parent/file type, Unix parent and file
+   permissions, link count, parent identity and opened-file identity before
+   replacing anything;
 4. for `control_state_corrupt`, retain the exact bytes and verify the canonical
    digest; do not rewrite the topology by hand;
 5. for `control_state_io`, restore the required host-owned namespace or storage
@@ -185,9 +193,9 @@ target manually to make startup succeed.
 Repository regression tests cover state round-trip, digest tampering, every
 published lifecycle transition, both accepted interrupted-reload topologies,
 ambiguous-topology rejection, specific corrupt/I/O error propagation, parent
-preflight before handle fencing, and Unix symlink/hard-link/private-mode
-rejection. These tests are source evidence only until the exact-head
-qualification workflow completes.
+preflight before handle fencing, Unix non-private-parent rejection, and Unix
+symlink/hard-link/private-file-mode rejection. These tests are source evidence
+only until the exact-head qualification workflow completes.
 
 Target-host qualification must still terminate the process at each publication
 cut and exercise real filesystem sync failure, owner panic, namespace replacement

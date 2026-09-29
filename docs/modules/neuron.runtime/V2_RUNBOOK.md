@@ -135,25 +135,28 @@ collapsing every state-file problem into `controller_poisoned`:
 
 | Stable code | Required response |
 | --- | --- |
-| `control_state_invalid` | Verify parent/file type, Unix private permissions, link count and opened-file identity. Do not replace the state from an untrusted path. |
+| `control_state_invalid` | Verify immediate parent/file type, Unix owner-only parent and file permissions, link count, parent identity and opened-file identity. Do not replace the state from an untrusted path. |
 | `control_state_corrupt` | Retain the exact bytes, verify the canonical digest and reconstruct only from matching durable generation histories. |
 | `control_state_io` | Restore the host-owned namespace or storage dependency; do not fabricate an empty topology. |
 | `controller_poisoned` | Reconstruct the in-process controller and execution fence from durable state. Do not interpret this as an operation retry. |
 
 | Observation | Required response |
 | --- | --- |
-| Symlink, reparse point, FIFO or non-regular path | Fail closed; restore from an authenticated retained copy. |
-| Inode/device identity changed before open or after read | Stop writes and investigate host ownership; do not reopen a replacement as the same history. |
+| Immediate parent is a symlink, non-directory or Unix-shared namespace | Fail closed before fencing handles; provision an authenticated owner-private directory. |
+| Symlink, reparse point, FIFO or non-regular state path | Fail closed; restore from an authenticated retained copy. |
+| Parent or file inode/device identity changed during a read/publication | Stop writes and investigate host ownership; do not reopen a replacement as the same history. |
 | Link count is not one | Fail closed because another writable name can mutate the owned file. |
-| Unix group/other permission bits are present | Fail closed and restore the file under the private owner-only contract. |
+| Unix group/other permission bits are present | Fail closed and restore the parent and file under the private owner-only contract. |
 | Partial final frame | Reopen through the qualified recovery path; only a verified incomplete tail may be truncated. |
 | Complete checksum/frontier mismatch | Treat as corruption, retain evidence and do not truncate through it. |
 | Sync result indeterminate or store poisoned | Query after reopening; never write a negative tombstone from absence that is not proven. |
 | Owner or controller poisoned | Stop serving, reconstruct from durable handles and histories, and resume only after reconciliation. |
 
-Parent directories are trusted host-owned namespaces in the current contract.
-An equally privileged actor replacing ancestor directories is outside this local
-file-lock guarantee and belongs in the host threat model.
+The immediate control-state parent is an owner-private host namespace and is
+identity-checked across reads and publications on Unix. An equally privileged
+actor replacing a higher ancestor or mutating the namespace through host-level
+mount operations remains outside this local file contract and belongs in the
+host threat model.
 
 ## Measurement and evidence
 

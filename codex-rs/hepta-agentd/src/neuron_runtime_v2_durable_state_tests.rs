@@ -296,6 +296,49 @@ fn invalid_control_state_parent_fails_before_fencing_the_caller_handle() {
 
 #[cfg(unix)]
 #[test]
+fn non_private_control_state_parent_fails_before_fencing_the_caller_handle() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let directory = checked(tempfile::tempdir());
+    let parent = directory.path().join("control-state");
+    checked(std::fs::create_dir(&parent));
+    checked(std::fs::set_permissions(
+        &parent,
+        std::fs::Permissions::from_mode(0o750),
+    ));
+    let path = parent.join("neuron-generation-state.json");
+    let state = checked(AgentdNeuronGenerationStateV2::new(
+        AgentdNeuronLifecycleStateV2::Starting,
+        1,
+        Vec::new(),
+        None,
+    ));
+    let write_error = write_agentd_neuron_generation_state_v2(&path, &state)
+        .expect_err("non-private control-state parent was accepted for publication");
+    assert_eq!(write_error.stable_code(), "control_state_invalid");
+
+    let (active, _) = handle(1);
+    let active_clone = active.clone();
+    let controller_error = match AgentdNeuronGenerationControllerV2::new_with_state_path(
+        active, &path,
+    ) {
+        Ok(_) => panic!("controller accepted a non-private control-state parent"),
+        Err(error) => error,
+    };
+    assert_eq!(controller_error.stable_code(), "control_state_invalid");
+
+    let input = test_input(1);
+    checked(active_clone.prepare(
+        input.tick_id.clone(),
+        active_clone
+            .body_bundle_digest()
+            .expect("active body digest"),
+        input,
+    ));
+}
+
+#[cfg(unix)]
+#[test]
 fn control_state_rejects_symlinks_hardlinks_and_non_private_permissions() {
     use std::os::unix::fs::PermissionsExt;
     use std::os::unix::fs::symlink;
