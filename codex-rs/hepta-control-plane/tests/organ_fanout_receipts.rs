@@ -5,6 +5,7 @@ use codex_hepta_control_plane::FailureDomainV1;
 use codex_hepta_control_plane::FallbackTerminal;
 use codex_hepta_control_plane::InputPort;
 use codex_hepta_control_plane::OrganEdge;
+use codex_hepta_control_plane::OrganFanoutRecoveryErrorV1;
 use codex_hepta_control_plane::OrganGraphsV1;
 use codex_hepta_control_plane::OrganHandlerFaultV1;
 use codex_hepta_control_plane::OrganHostV1;
@@ -167,4 +168,52 @@ fn failed_fanout_preserves_the_exact_successful_prefix_digest() {
     assert_eq!(receipt.targets[1].output_digest, None);
     assert_eq!(receipt.targets[1].fault_code, Some(id("handle.failed")));
     assert!(!receipt.authority.grants_any());
+
+    let evidence_digest = receipt.evidence_digest().expect("canonical evidence");
+    let continuation = receipt
+        .continuation(evidence_digest)
+        .expect("receipt integrity")
+        .expect("failed target continuation");
+    assert_eq!(continuation.receipt_evidence_digest, evidence_digest);
+    assert_eq!(continuation.next_route_index, 1);
+    assert_eq!(continuation.next_target, id("target.b"));
+    assert_eq!(continuation.next_input_port, 0);
+    assert!(!continuation.authority.grants_any());
+
+    let mut tampered = receipt.clone();
+    tampered.targets[0].output_digest = Some(Digest32::of_bytes(b"tampered"));
+    assert_eq!(
+        tampered.continuation(evidence_digest),
+        Err(OrganFanoutRecoveryErrorV1::ReceiptEvidenceMismatch),
+    );
+
+    let mut wrong_failure_boundary = receipt.clone();
+    if let Some(OrganRuntimeError::HandleFailed { delivered, .. }) =
+        wrong_failure_boundary.error.as_mut()
+    {
+        *delivered = 0;
+    } else {
+        panic!("fixture must retain the handler failure");
+    }
+    let wrong_failure_digest = wrong_failure_boundary
+        .evidence_digest()
+        .expect("canonical tampered evidence");
+    assert_eq!(
+        wrong_failure_boundary.continuation(wrong_failure_digest),
+        Err(OrganFanoutRecoveryErrorV1::ErrorDispositionMismatch),
+    );
+
+    let mut incomplete_delivered = receipt;
+    incomplete_delivered.targets[0].disposition =
+        OrganTargetDeliveryDispositionV1::DeliveredOutputUnavailable;
+    incomplete_delivered.targets[0].output_digest = None;
+    let incomplete_digest = incomplete_delivered
+        .evidence_digest()
+        .expect("canonical incomplete evidence");
+    assert_eq!(
+        incomplete_delivered.continuation(incomplete_digest),
+        Err(OrganFanoutRecoveryErrorV1::IncompleteDeliveredEvidence {
+            route_index: 0,
+        }),
+    );
 }
