@@ -1,0 +1,49 @@
+name: Hepta knowledge.graph exact-source export macOS (temporary)
+
+on:
+  push:
+    branches:
+      - work/kg-abc-evidence-hardening-20260928
+    paths:
+      - .github/workflows/hepta-kg-source-export-macos-temporary.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: macos-15
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind source
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'commit=%s\ntree=%s\n' "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})" > kg-export-identity.txt
+      - name: Upload exact candidate source
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: knowledge-graph-exact-source-macos-${{ github.sha }}
+          path: |
+            kg-export-identity.txt
+            .github
+            codex-rs/hepta-kg
+            codex-rs/hepta-memory
+            codex-rs/hepta-prompt-registry
+            codex-rs/hepta-prompt-optimizer
+            codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs
+            codex-rs/hepta-fleet/src/release.rs
+            docs/modules/knowledge.graph
+            qualification/knowledge-graph
+            qualification/module-execution-dossiers/detail/knowledge.graph.md
+            scripts/hepta*kg*
+            scripts/hepta*knowledge*graph*
+            scripts/test_hepta*kg*
+            scripts/test_hepta*knowledge*graph*
+          if-no-files-found: error
+          retention-days: 7
