@@ -43,8 +43,8 @@ class LifecycleFinalUseTests(unittest.TestCase):
             "storage_class": item["storage_class"], "storage_owner": "storage-owner",
             "inventory_sha256": item["inventory_sha256"], "status": "completed",
             "method": "parameter_unlearning" if item["requirement"] == "unlearn" else "physical_storage",
-            "observed_at": self.now, "evidence_sha256": "e" * 64}, "storage-owner", self.owner)
-            for item in self.plan["obligations"]]
+            "observed_at": self.now, "evidence_sha256": f"{700 + index:064x}"}, "storage-owner", self.owner)
+            for index, item in enumerate(self.plan["obligations"])]
         self.trust_path, self.plan_path, self.receipts_path = (self.root / name for name in
                                                              ("trust.json", "plan.json", "receipts.json"))
         self.write(self.trust_path, self.trust)

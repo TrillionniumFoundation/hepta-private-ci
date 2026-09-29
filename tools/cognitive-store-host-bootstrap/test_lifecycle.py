@@ -37,11 +37,11 @@ class LifecycleTests(unittest.TestCase):
                              for kind in sorted(module.CLASSES)]}
         cls.base_signed = cls.sign(cls.base_plan, "coordinator")
         cls.base_receipts = []
-        for obligation in cls.base_plan["obligations"]:
+        for index, obligation in enumerate(cls.base_plan["obligations"]):
             payload = {"schema": "hepta.cognitive.lifecycle-receipt.v1", "plan_sha256": module.sha256(cls.base_plan),
                        "storage_class": obligation["storage_class"], "storage_owner": "storage-owner",
                        "inventory_sha256": obligation["inventory_sha256"], "status": "completed", "method": "physical_storage",
-                       "observed_at": 102, "evidence_sha256": "e" * 64}
+                       "observed_at": 102, "evidence_sha256": f"{500 + index:064x}"}
             cls.base_receipts.append(cls.sign(payload, "storage-owner"))
 
     @classmethod
@@ -167,6 +167,18 @@ class LifecycleTests(unittest.TestCase):
     def test_wrong_inventory_rejects(self):
         self.change_receipt(inventory_sha256="f" * 64)
         with self.assertRaises(ValueError):
+            self.run_reconcile()
+
+    def test_duplicate_evidence_identity_rejects(self):
+        payload = {**self.receipts[1]["payload"],
+                   "evidence_sha256": self.receipts[0]["payload"]["evidence_sha256"]}
+        self.receipts[1] = self.sign(payload, "storage-owner")
+        with self.assertRaisesRegex(ValueError, "reuse one evidence"):
+            self.run_reconcile()
+
+    def test_evidence_cannot_reuse_inventory_identity(self):
+        self.change_receipt(evidence_sha256=self.base_plan["inventory_sha256"])
+        with self.assertRaisesRegex(ValueError, "plan, cut, policy or inventory"):
             self.run_reconcile()
 
     def test_future_observation_rejects(self):

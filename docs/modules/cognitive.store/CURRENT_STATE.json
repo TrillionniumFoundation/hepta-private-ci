@@ -231,7 +231,7 @@
     },
     {
       "id": "CS-LIFE-002",
-      "invariant": "Every declared storage owner signs its exact lifecycle obligation",
+      "invariant": "Every declared storage owner signs its exact lifecycle obligation with a unique evidence identity",
       "sources": [
         "tools/cognitive-store-host-bootstrap/lifecycle.py"
       ],
@@ -241,7 +241,7 @@
       "records": [
         "lifecycle-owner-receipts.json"
       ],
-      "scope": "Real Ed25519 verification with fixture keys; owner attestations are not independently observed physical erasure"
+      "scope": "Real Ed25519 verification with fixture keys, per-obligation evidence uniqueness and plan/inventory disjointness; owner attestations are not independently observed physical erasure"
     },
     {
       "id": "CS-ARCH-001",
@@ -337,7 +337,7 @@
     },
     {
       "id": "CS-HOST-001",
-      "invariant": "Selected-host receipts bind one coherent cut and fresh grant-bound writer-generation ceremony",
+      "invariant": "Selected-host receipts bind one coherent cut, fresh grant-bound writer generation and distinct per-step evidence",
       "sources": [
         "tools/cognitive-store-host-bootstrap/host_qualification.py"
       ],
@@ -347,11 +347,11 @@
       "records": [
         "host-qualification-tests.json"
       ],
-      "scope": "Real Ed25519 fixture receipts, cut/generation/grant chains and final-use trust checks; actual selected-host execution and acceptance remain external"
+      "scope": "Real Ed25519 fixture receipts, cut/generation/grant chains, globally unique evidence/metrics and final-use trust checks; actual selected-host execution and acceptance remain external"
     },
     {
       "id": "CS-RET-001",
-      "invariant": "Retention readiness binds owner-attested disjoint key ranges, distinct segment identities, the complete aggregate and an unpublished same-cut rebuild",
+      "invariant": "Retention readiness binds owner-attested disjoint key ranges, globally distinct content/evidence identities, the complete aggregate and an unpublished same-cut rebuild",
       "sources": [
         "tools/cognitive-store-host-bootstrap/retention_readiness.py"
       ],
@@ -361,11 +361,11 @@
       "records": [
         "retention-readiness-tests.json"
       ],
-      "scope": "Signed range/data/manifest evidence with owner separation and final-use ordering only; publication, pruning and erasure remain unclaimed"
+      "scope": "Signed range/data/manifest/evidence identities with owner separation and final-use ordering only; publication, pruning and erasure remain unclaimed"
     },
     {
       "id": "CS-ACC-001",
-      "invariant": "Independent acceptance validates the bound evidence reports, distinct roles and ordered approval dependencies without performing effects",
+      "invariant": "Independent acceptance validates the exact qualification inventory, coherent bound evidence, distinct reviews and ordered approval dependencies without effects",
       "sources": [
         "tools/cognitive-store-host-bootstrap/acceptance_governance.py"
       ],
@@ -375,7 +375,7 @@
       "records": [
         "acceptance-governance-tests.json"
       ],
-      "scope": "Real Ed25519 fixture approvals plus source-head/merge/host/retention/lifecycle report validation and final-use trust checks; actual independent reviewers and release execution remain external"
+      "scope": "Real Ed25519 fixture approvals plus exact qualification-plan inventory, source-head/merge/host/retention/lifecycle validation, unique review evidence and final-use trust checks; actual reviewers and release execution remain external"
     }
   ],
   "externalEvidence": [

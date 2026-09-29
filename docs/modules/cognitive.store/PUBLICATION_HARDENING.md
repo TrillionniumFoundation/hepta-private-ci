@@ -38,13 +38,13 @@ The validator rejects duplicate JSON fields, nonfinite/floating values, missing 
 |---|---:|---|
 | `test_archive.py` | 45 | Existing real crypto/filesystem protocol regressions; named native-owner mock, plus negative executable admission cases |
 | `test_archive_publication.py` | 21 | Normal archive/restore path, directory descriptors, file identity, no-replace publication, retained ambiguous output and conservative scratch cleanup |
-| `test_lifecycle.py` | 35 | Real Ed25519/OpenSSL signatures, all storage classes, pinned parent paths, PATH-injection rejection and bounded signed inputs |
+| `test_lifecycle.py` | 37 | Real Ed25519/OpenSSL signatures, all storage classes, pinned parent paths, PATH-injection rejection and bounded signed inputs |
 | `test_lifecycle_final_use.py` | 12 | Real Ed25519/OpenSSL signatures, complete ordinary CLI invocation, final trust/input changes and incomplete receipt sets |
 | `scripts/test_cognitive_store_recovery_report.py` | 21 | Synthetic measurement fixtures testing the validator; not performance measurements |
 
 Four publication regressions fail against the exact pre-change archive blob `9371893ca8ca748f5ee818dca8154be411d4f3b2` and pass against the changed implementation: changed restore bytes after native checking; changed bytes during reauthorization; redirected output parent; redirected archive name before manifest publication. No regression bypass or test-only publisher was added. The existing concurrent-destination test was adapted to directory-relative syscall arguments while retaining its no-overwrite assertion.
 
-These 134 local tests are not exact-head/base-merge Rust execution, native owner acceptance, independent deployment qualification, destructive pruning or physical erasure. The committed plan retains all independent records for publication-boundary tests, lifecycle verification/final-use tests, report-validator tests and both release-report validators. Source-head and deterministic base-merge must each establish their own terminal results. Qualification remains read-only and never applies a patch or pushes a fix.
+These 136 local tests are not exact-head/base-merge Rust execution, native owner acceptance, independent deployment qualification, destructive pruning or physical erasure. The committed plan retains all independent records for publication-boundary tests, lifecycle verification/final-use tests, report-validator tests and both release-report validators. Source-head and deterministic base-merge must each establish their own terminal results. Qualification remains read-only and never applies a patch or pushes a fix.
 
 ## Remaining work
 

@@ -26,7 +26,7 @@ class T(unittest.TestCase):
   s.plan.update(segment_set_sha256=l.sha256(s.plan["segments"]),segment_count=len(s.plan["segments"]),segment_row_count=sum(x["row_count"] for x in s.plan["segments"]),first_segment_manifest_sha256=s.plan["segments"][0]["manifest_sha256"],last_segment_manifest_sha256=s.plan["segments"][-1]["manifest_sha256"])
  def rebuild_payload(s):
   keys=("rebuild_owner","owner_agent_id","source_commit","source_tree","writer_generation","schema_sha256","predecessor_image_sha256","successor_image_sha256","successor_image_bytes","head_set_sha256","tombstone_frontier","source_frontier","fact_frontier","kg_frontier","segment_set_sha256","segment_count","segment_row_count","first_segment_manifest_sha256","last_segment_manifest_sha256")
-  return {"schema":m.REBUILD_RECEIPT_SCHEMA,"plan_sha256":l.sha256(s.plan),**{k:s.plan[k] for k in keys},"before_cut_sha256":s.plan["current_cut_sha256"],"after_cut_sha256":s.plan["current_cut_sha256"],"segments_resolved":True,"integrity_check":True,"foreign_key_check":True,"projection_check":True,"pending_operation_check":True,"published":False,"status":"completed","observed_at":s.now,"evidence_sha256":"6"*64}
+  return {"schema":m.REBUILD_RECEIPT_SCHEMA,"plan_sha256":l.sha256(s.plan),**{k:s.plan[k] for k in keys},"before_cut_sha256":s.plan["current_cut_sha256"],"after_cut_sha256":s.plan["current_cut_sha256"],"segments_resolved":True,"integrity_check":True,"foreign_key_check":True,"projection_check":True,"pending_operation_check":True,"published":False,"status":"completed","observed_at":s.now,"evidence_sha256":"c"*64}
  def rp(s): s.pe=s.sign(s.plan,"coord",s.c); s.rebuild=s.sign(s.rebuild_payload(),"rebuild-owner",s.ro)
  def rr(s,i,**x): s.sr[i]=s.sign({**s.sr[i]["payload"],**x},"segment-owner",s.so)
  def rb(s,**x): s.rebuild=s.sign({**s.rebuild["payload"],**x},"rebuild-owner",s.ro)
@@ -56,6 +56,9 @@ def mutate(s,c):
  if c=="dupid": s.plan["segments"][1]["segment_id"]=s.plan["segments"][0]["segment_id"]; s.rp(); return "duplicate"
  if c=="dupdigest": s.plan["segments"][1]["ciphertext_sha256"]=s.plan["segments"][0]["manifest_sha256"]; s.rp(); return "duplicate retention segment content"
  if c=="dupplaintext": s.plan["segments"][1]["plaintext_sha256"]=s.plan["segments"][0]["plaintext_sha256"]; s.refresh_aggregate(); s.rp(); return "duplicate retention segment content"
+ if c=="dupevidence": s.rr(1,evidence_sha256=s.sr[0]["payload"]["evidence_sha256"]); return "reuse one evidence"
+ if c=="rebuildreuse": s.rb(evidence_sha256=s.sr[0]["payload"]["evidence_sha256"]); return "reuses a segment evidence"
+ if c=="evidencecontent": s.rr(0,evidence_sha256=s.plan["segments"][0]["plaintext_sha256"]); return "reuses a data, image, cut or policy"
  if c=="coordseg": s.plan["segments"][0]["storage_owner"]="coord"; s.rp(); return "independent"
  if c=="sameimage": s.plan["successor_image_sha256"]=s.plan["predecessor_image_sha256"]; s.rp(); return "distinct"
  if c=="expired": s.plan["expires_at"]=s.now; s.rp(); return "expired"
@@ -85,5 +88,5 @@ def make(c):
   else: s.assertRaisesRegex(ValueError,e or ".+",s.rec)
  return test
 
-for n in ("missing pending independent predates signer wrongplan revoked setdigest count rows endpoint chain ordinal reverse overlap single v2 dupid dupdigest dupplaintext overlapdigest coordseg sameimage expired oversize method receiptfirst receiptlast plain segrows rbset unresolved cut published integrity source frontier future status").split(): setattr(T,"test_"+n,make(n))
+for n in ("missing pending independent predates signer wrongplan revoked setdigest count rows endpoint chain ordinal reverse overlap single v2 dupid dupdigest dupplaintext dupevidence rebuildreuse evidencecontent overlapdigest coordseg sameimage expired oversize method receiptfirst receiptlast plain segrows rbset unresolved cut published integrity source frontier future status").split(): setattr(T,"test_"+n,make(n))
 if __name__=="__main__": unittest.main()

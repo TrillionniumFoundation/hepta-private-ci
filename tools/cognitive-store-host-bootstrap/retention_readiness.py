@@ -480,6 +480,28 @@ def reconcile(
     )
     expected = {row["segment_id"]: row for row in plan["segments"]}
     observed = {}
+    reserved_identities = {
+        plan[field]
+        for field in (
+            "schema_sha256",
+            "current_cut_sha256",
+            "head_set_sha256",
+            "policy_sha256",
+            "hold_state_sha256",
+            "pending_operations_sha256",
+            "predecessor_image_sha256",
+            "successor_image_sha256",
+            "segment_set_sha256",
+            "first_segment_manifest_sha256",
+            "last_segment_manifest_sha256",
+        )
+    }
+    for segment in plan["segments"]:
+        reserved_identities.update(
+            segment[field]
+            for field in ("plaintext_sha256", "ciphertext_sha256", "manifest_sha256")
+        )
+    evidence_identities = set()
     for envelope in segment_envelopes:
         require(isinstance(envelope, dict), "invalid retention segment receipt envelope")
         signer = trusted.get(envelope.get("signer_id"))
@@ -498,9 +520,19 @@ def reconcile(
             signer["signer_id"] == expected[identity]["storage_owner"],
             "segment receipt signer is not the planned storage owner",
         )
-        observed[identity] = validate_segment_receipt(
+        receipt = validate_segment_receipt(
             receipt, plan, expected[identity], now
         )
+        require(
+            receipt["evidence_sha256"] not in reserved_identities,
+            "retention evidence identity reuses a data, image, cut or policy identity",
+        )
+        require(
+            receipt["evidence_sha256"] not in evidence_identities,
+            "retention receipts reuse one evidence identity",
+        )
+        evidence_identities.add(receipt["evidence_sha256"])
+        observed[identity] = receipt
 
     rebuild_envelope = receipt_bundle["rebuild"]
     require(
@@ -515,6 +547,14 @@ def reconcile(
     )
     rebuild = validate_rebuild_receipt(
         verify_signature(rebuild_envelope, rebuild_signer), plan, now
+    )
+    require(
+        rebuild["evidence_sha256"] not in reserved_identities,
+        "retention rebuild evidence reuses a data, image, cut or policy identity",
+    )
+    require(
+        rebuild["evidence_sha256"] not in evidence_identities,
+        "retention rebuild reuses a segment evidence identity",
     )
     if rebuild["status"] == "completed" and observed:
         require(

@@ -29,6 +29,8 @@ Plaintext, ciphertext and manifest identities must be pairwise distinct inside e
 
 Each segment owner signs `hepta.cognitive.retention-segment-receipt.v3`, explicitly attesting the segment's first and last key, ordinal, row count, plaintext digest, ciphertext digest, manifest digest and predecessor link. The coordinator's plan therefore cannot claim a range that the storage owner never signed. Only a completed `immutable_encrypted_segment` observation satisfies the segment obligation. Missing, pending, indeterminate or failed publication remains incomplete.
 
+Every segment receipt must carry a distinct evidence digest, and the rebuild receipt must use another distinct evidence digest. Receipt evidence identities cannot equal a segment plaintext/ciphertext/manifest identity, a predecessor or successor image identity, a cut/frontier/policy identity, or the signed segment aggregate. This prevents one underlying artifact from being relabelled as several owner publications or as the independent rebuild proof.
+
 The rebuild owner signs `hepta.cognitive.retention-rebuild-receipt.v3`. A completed receipt must prove:
 
 - the exact source, owner, generation, schema, image identities and frontiers from the plan;

@@ -21,7 +21,7 @@ and recomputes the merge tree. Every command has an exclusive record and bounded
 | `module-inventory.json` | `.` | `python3 scripts/check-rust-module-inventory.py codex-rs/hepta-cognitive-store/src` | 0 |
 | `host-bootstrap.json` | `.` | `python3 tools/cognitive-store-host-bootstrap/test_bootstrap.py` | 1 |
 | `expired-bootstrap-cli.json` | `.` | `python3 tools/cognitive-store-host-bootstrap/test_expired_cli.py` | 1 |
-| `lifecycle-owner-receipts.json` | `.` | `python3 tools/cognitive-store-host-bootstrap/test_lifecycle.py -v` | 32 |
+| `lifecycle-owner-receipts.json` | `.` | `python3 tools/cognitive-store-host-bootstrap/test_lifecycle.py -v` | 37 |
 | `archive-dependencies.json` | `.` | `python3 tools/cognitive-store-host-bootstrap/prepare_archive_env.py` | 0 |
 | `archive-publication-boundary-tests.json` | `.` | `$RUNNER_TEMP/cognitive-archive-venv/bin/python tools/cognitive-store-host-bootstrap/test_archive_publication.py -v` | 21 |
 | `lifecycle-final-use-tests.json` | `.` | `$RUNNER_TEMP/cognitive-archive-venv/bin/python tools/cognitive-store-host-bootstrap/test_lifecycle_final_use.py -v` | 12 |
@@ -52,9 +52,9 @@ and recomputes the merge tree. Every command has an exclusive record and bounded
 | `recovery-release-256-report.json` | `.` | `python3 scripts/cognitive_store_recovery_report.py --report $RUNNER_TEMP/cognitive-recovery-perf-256.json --source-commit $SOURCE_SHA --tested-commit $TESTED_SHA --tested-tree $TESTED_TREE --records 256 --minimum-repetitions 3 --require-rss` | 0 |
 | `recovery-release-16384.json` | `codex-rs` | `cargo run --locked --release -p codex-hepta-memory --example cognitive_store_recovery_perf` | 0 |
 | `recovery-release-16384-report.json` | `.` | `python3 scripts/cognitive_store_recovery_report.py --report $RUNNER_TEMP/cognitive-recovery-perf-16384.json --source-commit $SOURCE_SHA --tested-commit $TESTED_SHA --tested-tree $TESTED_TREE --records 16384 --minimum-repetitions 3 --require-rss` | 0 |
-| `host-qualification-tests.json` | `.` | `python3 tools/cognitive-store-host-bootstrap/test_host_qualification.py -v` | 34 |
-| `retention-readiness-tests.json` | `.` | `python3 tools/cognitive-store-host-bootstrap/test_retention_readiness.py -v` | 39 |
-| `acceptance-governance-tests.json` | `.` | `python3 tools/cognitive-store-host-bootstrap/test_acceptance_governance.py -v` | 34 |
+| `host-qualification-tests.json` | `.` | `python3 tools/cognitive-store-host-bootstrap/test_host_qualification.py -v` | 38 |
+| `retention-readiness-tests.json` | `.` | `python3 tools/cognitive-store-host-bootstrap/test_retention_readiness.py -v` | 43 |
+| `acceptance-governance-tests.json` | `.` | `python3 tools/cognitive-store-host-bootstrap/test_acceptance_governance.py -v` | 43 |
 | `clippy.json` | `codex-rs` | `cargo clippy --locked -p codex-hepta-cognitive-store -p codex-hepta-memory -p codex-hepta-agentd --all-targets --all-features --no-deps -- -D warnings` | 0 |
 | `clean-source.json` | `.` | `git diff --exit-code HEAD --` | 0 |
 

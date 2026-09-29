@@ -185,6 +185,14 @@ def reconcile(plan_envelope: dict, receipts: list, trust: dict, now: int, expect
     digest(expected_plan_sha256)
     require(plan_digest == expected_plan_sha256, "plan differs from the host-requested operation")
     observed = {}
+    evidence_identities = set()
+    reserved_identities = {
+        plan_digest,
+        plan["cut_sha256"],
+        plan["policy_sha256"],
+        plan["inventory_sha256"],
+        *(item["inventory_sha256"] for item in obligations),
+    }
     for envelope in receipts:
         require(isinstance(envelope, dict), "invalid receipt envelope")
         signer = signers.get(envelope.get("signer_id"))
@@ -202,6 +210,11 @@ def reconcile(plan_envelope: dict, receipts: list, trust: dict, now: int, expect
         integer(receipt["observed_at"])
         require(plan["created_at"] <= receipt["observed_at"] <= now, "stale or future lifecycle receipt")
         digest(receipt["evidence_sha256"])
+        require(receipt["evidence_sha256"] not in reserved_identities,
+                "lifecycle evidence reuses a plan, cut, policy or inventory identity")
+        require(receipt["evidence_sha256"] not in evidence_identities,
+                "lifecycle obligations reuse one evidence identity")
+        evidence_identities.add(receipt["evidence_sha256"])
         identifier(receipt["method"])
         require(receipt["status"] in {"completed", "pending", "indeterminate", "failed"}, "unknown disposition")
         if receipt["status"] == "completed":
@@ -211,7 +224,8 @@ def reconcile(plan_envelope: dict, receipts: list, trust: dict, now: int, expect
                     "logical tombstone, revocation or wrong method is not the requested completion")
         observed[identity] = receipt
     results = [{**item, "status": observed.get(key, {}).get("status", "missing"),
-                "verified_receipt_sha256": sha256(observed[key]) if key in observed else None}
+                "verified_receipt_sha256": sha256(observed[key]) if key in observed else None,
+                "verified_evidence_sha256": observed[key]["evidence_sha256"] if key in observed else None}
                for key, item in sorted(expected.items())]
     complete = all(item["status"] == "completed" for item in results)
     return {"schema": "hepta.cognitive.lifecycle-reconciliation.v1", "plan_sha256": plan_digest,

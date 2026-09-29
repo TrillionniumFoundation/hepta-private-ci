@@ -48,6 +48,9 @@ def mutate(s,code):
  if code=="v1": s.plan["schema"]="hepta.cognitive.host-qualification-plan.v1"; s.rp(); return "unsupported"
  if code=="source": s.rr(0,source_commit="f"*40); return "source_commit"
  if code=="profile": s.rr(0,evidence_profile_sha256="f"*64); return "profile"
+ if code=="profileoverlap": s.rr(0,evidence_sha256=s.rs[0]["payload"]["evidence_profile_sha256"]); return "identities overlap"
+ if code=="dupevidence": s.rr(1,evidence_sha256=s.rs[0]["payload"]["evidence_sha256"]); return "reuse one evidence or metrics"
+ if code=="dupmetrics": s.rr(1,metrics_sha256=s.rs[0]["payload"]["metrics_sha256"]); return "reuse one evidence or metrics"
  if code=="signer": p={**s.rs[0]["payload"],"executor":"other"}; s.rs[0]=s.sign(p,"other",s.o); return ""
  if code=="dupr": s.rs[-1]=s.rs[0]; return "duplicate"
  if code=="missstep": s.plan["steps"].pop(); s.rp(); return "step set is incomplete"
@@ -73,5 +76,5 @@ def make(code):
   else: s.assertRaisesRegex(ValueError,expected or ".+",s.rec)
  return test
 
-for n in ("missing pending disp canary anchor successor witness time floor genfloor grant oldgen oldgrant sloctx revocation rollback v1 source profile signer dupr missstep dupstep coord expired future wrongplan revoked git owner status cut zerocommit objectfmt").split(): setattr(T,"test_"+n,make(n))
+for n in ("missing pending disp canary anchor successor witness time floor genfloor grant oldgen oldgrant sloctx revocation rollback v1 source profile profileoverlap dupevidence dupmetrics signer dupr missstep dupstep coord expired future wrongplan revoked git owner status cut zerocommit objectfmt").split(): setattr(T,"test_"+n,make(n))
 if __name__=="__main__": unittest.main()

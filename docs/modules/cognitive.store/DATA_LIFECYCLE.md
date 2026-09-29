@@ -38,6 +38,8 @@ Archive follows ADR-0001. The current semantic cut must remain identical before 
 
 Physical erase is policy- and owner-specific. The coordinator records dispositions for active SQLite generations, retired generations, WAL/journal, backups, cold segments, caches, exports and derived artifacts. Any unavailable owner produces an explicit pending/indeterminate disposition, not a false success.
 
+Each storage obligation must carry its own owner-signed evidence identity. Evidence digests are unique across obligations and cannot reuse the lifecycle plan, cut, policy, global inventory or per-owner inventory identities. A single deletion ticket, inventory digest or provider acknowledgement therefore cannot be relabelled as completion for multiple storage classes.
+
 ## Restore rule
 
 A technically valid SQLite image is not necessarily current. Writer recovery requires an independently retained signed exact-current-cut witness and live external authority. An older internally valid image is rejected even if `PRAGMA integrity_check` succeeds.

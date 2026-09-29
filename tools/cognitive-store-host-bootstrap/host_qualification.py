@@ -155,6 +155,11 @@ def validate_receipt(receipt: object, plan: dict, step: dict, now: int) -> dict:
                   "before_cut_sha256", "after_cut_sha256", "evidence_profile_sha256",
                   "evidence_sha256", "metrics_sha256"):
         digest(receipt[field])
+    require(
+        len({receipt["evidence_profile_sha256"], receipt["evidence_sha256"],
+             receipt["metrics_sha256"]}) == 3,
+        "host qualification profile, evidence and metrics identities overlap",
+    )
     expected = expected_writer_context(plan, receipt["step"])
     observed = (receipt["before_writer_generation"], receipt["after_writer_generation"],
                 receipt["before_authority_grant_sha256"],
@@ -247,6 +252,7 @@ def reconcile(plan_envelope: object, receipt_envelopes: object, trust: dict,
             "host qualification receipt budget exceeded")
     expected = {row["step"]: row for row in plan["steps"]}
     observed = {}
+    artifact_identities = set()
     for envelope in receipt_envelopes:
         require(isinstance(envelope, dict), "invalid host qualification receipt envelope")
         signer = trusted.get(envelope.get("signer_id"))
@@ -258,7 +264,14 @@ def reconcile(plan_envelope: object, receipt_envelopes: object, trust: dict,
                 "unknown or duplicate host qualification receipt")
         require(signer["signer_id"] == expected[step_name]["executor"],
                 "host receipt signer is not the planned executor")
-        observed[step_name] = validate_receipt(receipt, plan, expected[step_name], now)
+        receipt = validate_receipt(receipt, plan, expected[step_name], now)
+        for field in ("evidence_sha256", "metrics_sha256"):
+            require(
+                receipt[field] not in artifact_identities,
+                "host qualification steps reuse one evidence or metrics identity",
+            )
+            artifact_identities.add(receipt[field])
+        observed[step_name] = receipt
 
     qualified_cut = validate_ceremony_chain(plan, observed)
     rows = []
