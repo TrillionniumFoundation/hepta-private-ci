@@ -1,11 +1,11 @@
-"""Exercise failure isolation through the real qualification shell entrypoint."""
-
+"""Real shell, count parser and evidence builder; native commands remain stand-ins."""
 from __future__ import annotations
 
 import json
 import os
-import shutil
 from pathlib import Path
+import shlex
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -19,18 +19,51 @@ class ConsumerExecutionTests(unittest.TestCase):
     def execute(self, failure: str):
         with tempfile.TemporaryDirectory() as directory:
             work = Path(directory)
+            root = work / "source"
+            (root / "scripts").mkdir(parents=True)
+            for name in ("run_platform_types_consumer_qualification.sh",
+                         "platform_types_nonempty_tests.py", "platform_types_consumer_evidence.py"):
+                shutil.copyfile(ROOT / "scripts" / name, root / "scripts" / name)
+            vector = root / "codex-rs/hepta-types/conformance/verify_vectors.ts"
+            vector.parent.mkdir(parents=True)
+            vector.write_text("// Synthetic runner input; node is a stand-in.\n")
+            (root / ".gitignore").write_text("__pycache__/\n")
+            def git(*args):
+                return subprocess.check_output(["git", *args], cwd=root, text=True).strip()
+            git("init", "-q")
+            git("config", "user.name", "Consumer runner fixture")
+            git("config", "user.email", "consumer@example.invalid")
+            git("config", "core.hooksPath", "/dev/null")
+            git("add", ".")
+            git("-c", "commit.gpgsign=false", "commit", "-qm", "fixture")
+            self.fixture_head = git("rev-parse", "HEAD")
             tools = work / "bin"
             tools.mkdir()
             for name in ("cargo", "just", "python3", "node"):
                 tool = tools / name
                 tool.write_text(
                     "#!/bin/sh\n"
-                    f'if [ "${{0##*/}}" = python3 ] && [ "$1" = - ]; then exec {sys.executable} "$@"; fi\n'
-                    'printf "%s\\n" "$0 $*" >> "$TEST_COMMAND_LOG"\n'
-                    'case "$0 $*" in\n'
-                    '  */cargo\\ check*) test "$TEST_FAILURE" != compile || exit 19;;\n'
-                    '  *codex-hepta-supervisor*topology_candidate*) test "$TEST_FAILURE" != empty || exit 4;;\n'
-                    "esac\nexit 0\n"
+                    'name="${0##*/}"\n'
+                    'printf "%s\\n" "$name $*" >> "$TEST_COMMAND_LOG"\n'
+                    'if [ "$name" = python3 ]; then\n'
+                    '  case "$1" in\n'
+                    '    scripts/platform_types_nonempty_tests.py)\n'
+                    '      if [ "$TEST_FAILURE" = count-tamper ]; then printf \'{"executedTests":999}\\n\'; exit 0; fi;;\n'
+                    '  esac\n'
+                    '  case "$1" in\n'
+                    '    scripts/platform_types_nonempty_tests.py|scripts/platform_types_consumer_evidence.py)\n'
+                    f'      exec {shlex.quote(sys.executable)} -S "$@";;\n'
+                    '  esac\n'
+                    'fi\n'
+                    'if [ "$name" = cargo ] && [ "$1" = check ] && [ "$TEST_FAILURE" = compile ]; then exit 19; fi\n'
+                    'if [ "$name" = cargo ] && [ "$1" = test ]; then\n'
+                    '  case "$*" in\n'
+                    '    *topology_candidate*)\n'
+                    '      if [ "$TEST_FAILURE" = empty ]; then printf "%s\\n" "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 9 filtered out; finished in 0.00s"; exit 0; fi\n'
+                    '      if [ "$TEST_FAILURE" = compile-only ]; then printf "%s\\n" "Finished test profile; no tests executed"; exit 0; fi;;\n'
+                    '  esac\n'
+                    '  printf "%s\\n" "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s"\n'
+                    'fi\nexit 0\n'
                 )
                 tool.chmod(0o755)
             if failure == "drift":
@@ -44,35 +77,25 @@ class ConsumerExecutionTests(unittest.TestCase):
                     f'  if [ -f "{marker}" ]; then printf "%040d\\n" 1; exit 0; fi\n'
                     f'  : > "{marker}"\n'
                     'fi\n'
-                    f'exec "{real_git}" "$@"\n'
+                    f'exec {shlex.quote(real_git)} "$@"\n'
                 )
                 git_tool.chmod(0o755)
             evidence = work / "evidence"
-            env = dict(
-                os.environ,
-                PATH=str(tools) + os.pathsep + os.environ["PATH"],
-                HEPTA_TYPES_EVIDENCE_DIR=str(evidence),
-                TEST_COMMAND_LOG=str(work / "commands.log"),
-                TEST_FAILURE=failure,
-            )
-            process = subprocess.run(
-                [
-                    "bash",
-                    str(ROOT / "scripts/run_platform_types_consumer_qualification.sh"),
-                ],
-                cwd=work,
-                env=env,
-                capture_output=True,
-                text=True,
-                timeout=90,
-            )
-            self.assertTrue(
-                (evidence / "execution.json").is_file(), process.stdout + process.stderr
-            )
+            evidence.mkdir()
+            (evidence / "topology-consumer-count.json").write_text('{"executedTests":99}')
+            env = dict(os.environ, PATH=str(tools) + os.pathsep + os.environ["PATH"],
+                       HEPTA_TYPES_EVIDENCE_DIR=str(evidence), TEST_COMMAND_LOG=str(work / "commands.log"),
+                       TEST_FAILURE=failure, PYTHONDONTWRITEBYTECODE="1")
+            process = subprocess.run(["bash", str(root / "scripts/run_platform_types_consumer_qualification.sh")],
+                                     cwd=work, env=env, capture_output=True, text=True, timeout=90)
+            self.assertTrue((evidence / "execution.json").is_file(), process.stdout + process.stderr)
             record = json.loads((evidence / "execution.json").read_text())
             for row in record["checks"]:
                 self.assertTrue((evidence / row["log"]).is_file())
                 self.assertEqual(len(row["logSha256"]), 64)
+                if "testCountLog" in row:
+                    self.assertTrue((evidence / row["testCountLog"]).is_file())
+                    self.assertEqual(len(row["testCountSha256"]), 64)
             return process, record, (work / "commands.log").read_text()
 
     def test_compile_failure_keeps_every_later_consumer_and_stays_red(self):
@@ -83,17 +106,11 @@ class ConsumerExecutionTests(unittest.TestCase):
         checks = {row["name"]: row["exitCode"] for row in record["checks"]}
         self.assertEqual(len(checks), EXPECTED_CHECK_COUNT)
         self.assertEqual(checks["consumer-compile"], 19)
-        self.assertEqual(checks["manifest-rust"], 0)
-        self.assertEqual(checks["wire-tests"], 0)
-        self.assertEqual(checks["topology-consumer"], 0)
-        self.assertEqual(checks["manifest-owners"], 0)
-        self.assertEqual(checks["wire-lint"], 0)
-        self.assertEqual(checks["ndu-lint"], 0)
-        self.assertIn("verify_manifest_vectors.py", commands)
-        self.assertIn("verify_platform_wire_vectors.py", commands)
-        self.assertIn("manifest_protocol_consumer", commands)
-        self.assertIn("codex-hepta-wire", commands)
-        self.assertIn("codex-hepta-learning-ledger", commands)
+        for name in ("manifest-rust", "wire-tests", "topology-consumer", "manifest-owners", "wire-lint", "ndu-lint"):
+            self.assertEqual(checks[name], 0)
+        for name in ("verify_manifest_vectors.py", "verify_platform_wire_vectors.py", "manifest_protocol_consumer",
+                     "codex-hepta-wire", "codex-hepta-learning-ledger"):
+            self.assertIn(name, commands)
 
     def test_empty_focused_suite_is_not_success(self):
         process, record, _ = self.execute("empty")
@@ -108,22 +125,15 @@ class ConsumerExecutionTests(unittest.TestCase):
 
     def test_success_requires_all_checks_and_retains_exact_source(self):
         process, record, _ = self.execute("")
-        self.assertEqual(
-            process.returncode,
-            0 if record["cleanWorktree"] else 1,
-            process.stdout + process.stderr,
-        )
+        self.assertEqual(process.returncode, 0, process.stdout + process.stderr)
         self.assertTrue(record["checksPassed"])
+        self.assertTrue(record["qualified"])
         self.assertEqual(len(record["checks"]), EXPECTED_CHECK_COUNT)
-        self.assertEqual(
-            record["sourceHead"],
-            subprocess.check_output(
-                ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
-            ).strip(),
-        )
+        self.assertEqual(record["sourceHead"], self.fixture_head)
         self.assertTrue(record["sourceUnchanged"])
         self.assertFalse(record["productActivation"])
         self.assertFalse(record["independentAcceptance"])
+        self.assertEqual(sum("executedTests" in row for row in record["checks"]), 8)
 
     def test_source_change_cannot_turn_successful_commands_into_qualification(self):
         process, record, _ = self.execute("drift")
@@ -132,21 +142,23 @@ class ConsumerExecutionTests(unittest.TestCase):
         self.assertFalse(record["sourceUnchanged"])
         self.assertFalse(record["qualified"])
 
+    def test_compile_only_and_forged_count_cannot_qualify(self):
+        for failure in ("compile-only", "count-tamper"):
+            with self.subTest(failure=failure):
+                process, record, _ = self.execute(failure)
+                self.assertNotEqual(process.returncode, 0)
+                self.assertFalse(record["qualified"])
+                self.assertEqual(len(record["checks"]), EXPECTED_CHECK_COUNT)
+
     def test_each_lane_requires_independent_consumer_outcome(self):
         import yaml
 
-        workflow = yaml.safe_load(
-            (ROOT / ".github/workflows/lane-a-foundation.yml").read_text()
-        )
+        workflow = yaml.safe_load((ROOT / ".github/workflows/lane-a-foundation.yml").read_text())
         for job in workflow["jobs"].values():
             steps = job["steps"]
-            consumers = next(
-                step for step in steps if step.get("id", "").endswith("_consumers")
-            )
+            consumers = next(step for step in steps if step.get("id", "").endswith("_consumers"))
             self.assertEqual(consumers["if"], "${{ !cancelled() }}")
-            receipt = next(
-                step for step in steps if step.get("id", "").endswith("_receipts")
-            )
+            receipt = next(step for step in steps if step.get("id", "").endswith("_receipts"))
             self.assertIn(consumers["id"] + ".outcome == 'success'", receipt["if"])
             final = steps[-1]
             self.assertIn("CONSUMER_OUTCOME", final["env"])

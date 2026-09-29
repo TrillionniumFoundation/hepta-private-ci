@@ -1,16 +1,30 @@
 #!/usr/bin/env python3
-"""A successful compiler or empty filtered libtest run is not test evidence."""
+"""Validate completed libtest summaries, not compiler success or log substrings."""
+from __future__ import annotations
+
 import json
 from pathlib import Path
 import re
 import sys
 
+# Deliberately anchored: a quoted diagnostic is not a completed test suite.
+SUMMARY = re.compile(
+    r"^test result: (ok|FAILED)\. (\d+) passed; (\d+) failed; (\d+) ignored;"
+    r"(?: (\d+) measured; (\d+) filtered out; finished in .+)?$",
+    re.MULTILINE,
+)
 
-def executed_tests(text):
-    summaries = re.findall(r"test result: (ok|FAILED)\. (\d+) passed; (\d+) failed; (\d+) ignored;", text)
-    if not summaries or any(state != "ok" or int(failed) != 0 for state, _, failed, _ in summaries):
+
+def executed_tests(text: str) -> int:
+    summaries = SUMMARY.findall(text)
+    if not summaries or any(
+        state != "ok" or int(failed) != 0
+        for state, _, failed, _, _, _ in summaries
+    ):
         raise ValueError("missing or failed libtest execution summary")
-    passed = sum(int(passed) for _, passed, _, _ in summaries)
+    # Zero-test auxiliary binary targets are valid in an all-targets run, but
+    # cannot substitute for at least one actually passed test in the command.
+    passed = sum(int(passed) for _, passed, _, _, _ in summaries)
     if passed == 0:
         raise ValueError("zero executed tests cannot qualify")
     return passed

@@ -9,7 +9,7 @@ INITIAL_TREE="$(git rev-parse HEAD^{tree})" || exit 1
 INITIAL_STATUS="$(git status --porcelain --untracked-files=normal)" || exit 1
 EVIDENCE="${HEPTA_TYPES_EVIDENCE_DIR:-$ROOT/.hepta-evidence/platform-types-consumers}"
 mkdir -p "$EVIDENCE" || exit 1
-rm -f "$EVIDENCE/execution.json" || exit 1
+rm -f "$EVIDENCE/execution.json" "$EVIDENCE/execution.json.tmp" || exit 1
 RESULTS="$EVIDENCE/results.tsv"
 : > "$RESULTS"
 failed=0
@@ -17,7 +17,11 @@ run_step() {
   local name="$1"; shift
   local rc=0 start=$SECONDS
   printf '\n=== %s ===\n' "$name"
-  "$@" > "$EVIDENCE/$name.log" 2>&1 || rc=$?
+  # Do not reuse an earlier test count after a failed or empty native command.
+  rm -f "$EVIDENCE/$name-count.json" || rc=$?
+  if (( rc == 0 )); then
+    "$@" > "$EVIDENCE/$name.log" 2>&1 || rc=$?
+  fi
   cat "$EVIDENCE/$name.log"
   case "$name" in
     manifest-rust|types-tests|wire-tests|ndu-tests|prompt-producer|prompt-ledger|topology-consumer|manifest-owners)
@@ -68,32 +72,8 @@ run_step manifest-owners run_rust cargo test --locked --manifest-path "$MANIFEST
 run_step types-lint run_rust cargo clippy --locked --manifest-path "$MANIFEST" -p codex-hepta-types --all-targets -- -D warnings
 run_step wire-lint run_rust cargo clippy --locked --manifest-path "$MANIFEST" -p codex-hepta-wire --lib -- -D warnings
 run_step ndu-lint run_rust cargo clippy --locked --manifest-path "$MANIFEST" -p codex-hepta-ndu --lib -- -D warnings
-python3 - "$ROOT" "$EVIDENCE" "$INITIAL_HEAD" "$INITIAL_TREE" "$INITIAL_STATUS" <<'RECEIPT'
-import hashlib, json, pathlib, subprocess, sys
-root, evidence = map(pathlib.Path, sys.argv[1:3])
-initial_head, initial_tree, initial_status = sys.argv[3:6]
-def git(*args):
-    return subprocess.check_output(["git", *args], cwd=root, text=True).strip()
-checks = []
-for row in (evidence / "results.tsv").read_text().splitlines():
-    name, rc, seconds = row.split("\t")
-    log = evidence / (name + ".log")
-    checks.append({"name": name, "exitCode": int(rc), "seconds": int(seconds),
-                   "log": log.name, "logSha256": hashlib.sha256(log.read_bytes()).hexdigest()})
-final_head, final_tree = git("rev-parse", "HEAD"), git("rev-parse", "HEAD^{tree}")
-unchanged = (initial_head, initial_tree) == (final_head, final_tree)
-clean = not initial_status and not git("status", "--porcelain", "--untracked-files=normal")
-passed = len(checks) == 24 and all(row["exitCode"] == 0 for row in checks)
-record = {"schema": "hepta.platform-types.consumer-execution.v2", "sourceHead": initial_head,
-          "sourceTree": initial_tree, "finalSourceHead": final_head, "finalSourceTree": final_tree,
-          "sourceUnchanged": unchanged, "cleanWorktree": clean,
-          "checksPassed": passed, "qualified": passed and clean and unchanged, "checks": checks,
-          "productActivation": False, "independentAcceptance": False}
-(evidence / "execution.json").write_text(json.dumps(record, indent=2) + "\n")
-print(json.dumps({key: record[key] for key in ("sourceHead", "checksPassed", "qualified")}))
-if not unchanged or not clean or not passed:
-    raise SystemExit("consumer qualification requires all 24 checks and a clean unchanged candidate")
-RECEIPT
+python3 scripts/platform_types_consumer_evidence.py \
+  "$ROOT" "$EVIDENCE" "$INITIAL_HEAD" "$INITIAL_TREE" "$INITIAL_STATUS"
 receipt_rc=$?
 if (( receipt_rc != 0 )); then failed=1; fi
 exit "$failed"
