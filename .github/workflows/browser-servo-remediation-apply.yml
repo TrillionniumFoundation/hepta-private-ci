@@ -1,0 +1,150 @@
+name: Apply browser.servo qualification remediation
+
+on:
+  push:
+    branches:
+      - codex/browser-servo-full-convergence-20260927
+    paths:
+      - .github/workflows/browser-servo-remediation-apply.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: browser-servo-remediation-apply
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      EXPECTED_BASE: c4b13a08734f3bfe94edd5b8cb95896dc7181e0a
+      TARGET_BRANCH: codex/browser-servo-full-convergence-20260927
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/browser-servo-full-convergence-20260927
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify the exact continuation point
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$EXPECTED_BASE"
+          test "$(git branch --show-current)" = "$TARGET_BRANCH"
+
+      - name: Apply bounded source, workflow and documentation fixes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path, old, new):
+              target = Path(path)
+              text = target.read_text(encoding="utf-8")
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"{path}: expected one replacement, found {count}")
+              target.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          service = "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser-service.rs"
+          replace_once(
+              service,
+              '''    let object = value.as_object().ok_or_else(|| {\n        invalid_replay_probe("Browser replay probe result must be an object")\n    })?;''',
+              '''    let object = value\n        .as_object()\n        .ok_or_else(|| invalid_replay_probe("Browser replay probe result must be an object"))?;''',
+          )
+          replace_once(
+              service,
+              '''                || object.get("absenceCode").and_then(Value::as_str)\n                    != Some(OPERATION_ABSENCE_CODE)''',
+              '''                || object.get("absenceCode").and_then(Value::as_str) != Some(OPERATION_ABSENCE_CODE)''',
+          )
+
+          replace_once(
+              "apps/hepta-browser/servo-worker/Cargo.toml",
+              'lto = "thin"',
+              'lto = "fat"',
+          )
+
+          deterministic_env = '''          export CARGO_INCREMENTAL=0\n          export CARGO_BUILD_JOBS=1\n          export NUM_JOBS=1\n          export CMAKE_BUILD_PARALLEL_LEVEL=1\n          export RAYON_NUM_THREADS=1\n          export MAKEFLAGS=-j1\n          export LC_ALL=C.UTF-8\n          export TZ=UTC\n'''
+          primary = ".github/workflows/hepta-browser-servo-worker-dev.yml"
+          replace_once(
+              primary,
+              '''          export CARGO_INCREMENTAL=0\n          export RUSTFLAGS="--remap-path-prefix=${GITHUB_WORKSPACE}=/src --remap-path-prefix=${RUNNER_TEMP}=/runner-temp -C debuginfo=0 -C link-arg=-Wl,--build-id=none"\n''',
+              deterministic_env + '''          export RUSTFLAGS="--remap-path-prefix=${GITHUB_WORKSPACE}=/src --remap-path-prefix=${RUNNER_TEMP}=/runner-temp -C debuginfo=0 -C link-arg=-Wl,--build-id=none"\n''',
+          )
+          replace_once(
+              primary,
+              '''          cmp --silent "$first" "$second" || { echo 'same-runner exact-input builds are not byte-identical' >&2; exit 1; }''',
+              '''          if ! cmp --silent "$first" "$second"; then\n            cmp -l "$first" "$second" | head -n 256 > worker-evidence/repro-first-byte-differences.txt || true\n            readelf -W -S "$first" > worker-evidence/repro-sections-a.txt\n            readelf -W -S "$second" > worker-evidence/repro-sections-b.txt\n            readelf -W -n "$first" > worker-evidence/repro-notes-a.txt\n            readelf -W -n "$second" > worker-evidence/repro-notes-b.txt\n            echo 'same-runner exact-input builds are not byte-identical' >&2\n            exit 1\n          fi''',
+          )
+
+          independent = ".github/workflows/hepta-browser-servo-independent-rebuild.yml"
+          replace_once(
+              independent,
+              '''          export CARGO_INCREMENTAL=0\n          export RUSTFLAGS="--remap-path-prefix=${GITHUB_WORKSPACE}=/src -C debuginfo=0"\n''',
+              deterministic_env + '''          export RUSTFLAGS="--remap-path-prefix=${GITHUB_WORKSPACE}=/src --remap-path-prefix=${RUNNER_TEMP}=/runner-temp -C debuginfo=0 -C link-arg=-Wl,--build-id=none"\n''',
+          )
+
+          replace_once(
+              "docs/modules/browser.servo/IMPLEMENTATION_MAP.json",
+              '"repositoryControlledSourceBoundaryGapsClosed": true',
+              '"repositoryControlledSourceBoundaryGapsClosed": false',
+          )
+
+          remediation = "docs/modules/browser.servo/REMEDIATION_20260927.md"
+          replace_once(
+              remediation,
+              '''The existing journal owner now has an executable scale probe rather than a prose-only performance claim. `journal-scale-probe.js` drives 128 operations through dispatch, worker-admission, egress and terminal-observation transitions, records warm-path and restart statistics, compacts and reopens the same journal, and requires validated incremental-index reuse. It records hosted-runner latency but explicitly leaves performance qualification false.''',
+              '''The existing journal owner now has an executable scale probe rather than a prose-only performance claim. `journal-scale-probe.js` drives terminal and deliberately unresolved operations through dispatch, worker-admission, egress and terminal-observation transitions; records p50/p95/p99/max warm-path, compaction and restart statistics; reopens the same journal; and requires validated incremental-index reuse without losing the unresolved backlog. It does not add an authorization cache. Hosted-runner observations explicitly leave near-capacity, slow-storage and performance qualification false.''',
+          )
+          replace_once(
+              remediation,
+              '''## Completion boundary\n\nThe current booleans remain:''',
+              '''## Completion boundary\n\nThe tracked topology, owner path and implementation anchors are present, but the repository-controlled source boundary remains open until formatting, byte-identical exact-input builds, hostile-page smoke, real Browser E2E and soak all succeed on one exact head. A source map or generated registry is not execution evidence.\n\nThe current booleans remain:''',
+          )
+
+          technical = "docs/modules/browser.servo/TECHNICAL.md"
+          replace_once(
+              technical,
+              '''The 16-worker pool is resident capacity, not parent-channel parallelism. `hepta-agentd-browser-service` intentionally processes one private parent call at a time; cross-profile calls can head-of-line block behind a bounded operation. Multiplexing requires a separately versioned protocol and qualification.\n\nTarget qualification runs a 32-cycle real-worker soak and enforces bounded RSS/FD growth.''',
+              '''The 16-worker pool is resident capacity, not parent-channel parallelism. `hepta-agentd-browser-service` intentionally processes one private parent call at a time; cross-profile calls can head-of-line block behind a bounded operation. Multiplexing requires a separately versioned protocol and qualification.\n\nThe Browser owner separately enforces the active-profile ceiling and an aggregate admitted-mutation budget across serialization keys. Capacity is released only after the admitted operation settles and cleanup ownership is observed; cancellation intent alone does not return budget. Queue-wait totals/maxima, peak admitted work and aggregate backpressure rejects are measurements, not claims of parent-channel concurrency.\n\nTarget qualification runs a 32-cycle real-worker soak and enforces bounded RSS/FD growth.''',
+          )
+          PY
+
+          rm .github/workflows/browser-servo-remediation-apply.yml
+          node apps/hepta-browser/scripts/generate-source-registry.mjs
+          git diff --check
+
+      - name: Verify Browser source and Agentd composition
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm --prefix apps/hepta-browser run verify:registry
+          node --test apps/hepta-browser/test/*.test.js
+          for source in apps/hepta-browser/src/*.js apps/hepta-browser/scripts/*.js apps/hepta-browser/scripts/*.mjs; do
+            test ! -f "$source" || node --check "$source"
+          done
+          rustup toolchain install 1.88.0 --profile minimal --component rustfmt,clippy
+          rustup override set 1.88.0
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-agentd -- --check
+          cd codex-rs
+          cargo test --locked -p codex-hepta-agentd browser_servo --lib
+          cargo test --locked -p codex-hepta-agentd --bin hepta-agentd-browser-service
+          cargo check --locked -p codex-hepta-agentd --bin hepta-agentd-browser --bin hepta-agentd-browser-service
+          cargo clippy --locked -p codex-hepta-agentd --lib --bin hepta-agentd-browser --bin hepta-agentd-browser-service --no-deps -- -D warnings
+
+      - name: Commit and push the exact verified tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "hepta-browser-remediation"
+          git config user.email "hepta-browser-remediation@users.noreply.github.com"
+          git add -A
+          test ! -e .github/workflows/browser-servo-remediation-apply.yml
+          git diff --cached --check
+          git diff --cached --quiet && { echo 'no remediation changes were produced' >&2; exit 1; }
+          git commit -m "fix(browser.servo): close reproducibility and qualification blockers"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
