@@ -95,6 +95,71 @@ class FormatterScopeTests(unittest.TestCase):
         )
         self.assertEqual(command.args[-1], "./codex-rs/example/src/lib.rs")
 
+    def test_nested_rust_config_limits_tools_to_existing_owner_sources(self):
+        self.write("codex-rs/Cargo.toml", '[workspace.package]\nedition="2024"\n')
+        for owner in ("first", "other"):
+            self.write(
+                f"codex-rs/{owner}/Cargo.toml",
+                f'[package]\nname="{owner}"\nedition.workspace=true\n',
+            )
+            self.write(f"codex-rs/{owner}/src/lib.rs", "pub fn original() {}\n")
+        removed = self.write("codex-rs/first/src/removed.rs", "pub fn removed() {}\n")
+        self.git("add", ".")
+        self.git("commit", "-qm", "Rust owners")
+        self.write("codex-rs/first/rustfmt.toml", "max_width=88\n")
+        self.write("codex-rs/first/src/new module.rs", "pub fn new() {}\n")
+        removed.unlink()
+        groups = FMT.scoped_formatter_groups(FMT.changed_paths(), check=True)
+        self.assertEqual([group.name for group in groups], ["Rust"])
+        self.assertEqual(
+            [command.args[-1] for command in groups[0].commands],
+            [
+                "./codex-rs/first/src/lib.rs",
+                "./codex-rs/first/src/new module.rs",
+            ],
+        )
+        self.assertTrue(
+            all("--check" in command.args for command in groups[0].commands)
+        )
+
+    def test_deleted_rust_configuration_rechecks_its_subtree_and_other_actual_edit(
+        self,
+    ):
+        self.write("codex-rs/Cargo.toml", '[workspace.package]\nedition="2024"\n')
+        for owner in ("first", "other"):
+            self.write(
+                f"codex-rs/{owner}/Cargo.toml",
+                f'[package]\nname="{owner}"\nedition.workspace=true\n',
+            )
+            self.write(f"codex-rs/{owner}/src/lib.rs", "pub fn original() {}\n")
+        config = self.write("codex-rs/first/.rustfmt.toml", "max_width=88\n")
+        self.git("add", ".")
+        self.git("commit", "-qm", "Rust config")
+        config.unlink()
+        self.write("codex-rs/other/src/lib.rs", "pub fn changed() {}\n")
+        groups = FMT.scoped_formatter_groups(FMT.changed_paths(), check=False)
+        self.assertEqual(
+            [command.args[-1] for command in groups[0].commands],
+            [
+                "./codex-rs/first/src/lib.rs",
+                "./codex-rs/other/src/lib.rs",
+            ],
+        )
+
+    def test_independent_qualification_rust_edit_keeps_its_own_edition(self):
+        self.write(
+            "qualification/fixture/Cargo.toml",
+            '[package]\nname="fixture"\nedition="2021"\n',
+        )
+        self.write("qualification/fixture/src/lib.rs", "pub fn entry() {}\n")
+        groups = FMT.scoped_formatter_groups(
+            ["qualification/fixture/src/lib.rs"], check=True
+        )
+        self.assertEqual([group.name for group in groups], ["Rust"])
+        command = groups[0].commands[0]
+        self.assertEqual(command.args[-1], "./qualification/fixture/src/lib.rs")
+        self.assertEqual(command.args[command.args.index("--edition") + 1], "2021")
+
     def test_changed_ruff_configuration_checks_the_owning_python_tree(self):
         groups = FMT.scoped_formatter_groups(["scripts/ruff.toml"], check=True)
         self.assertEqual([group.name for group in groups], ["Python scripts"])
