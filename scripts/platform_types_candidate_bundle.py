@@ -8,7 +8,11 @@ import sys
 from pathlib import Path
 
 from lane_a_foundation_lib import CANDIDATE_KINDS, VerificationError
-from platform_types_candidate_evidence import write_diagnostics, write_receipt
+from platform_types_candidate_evidence import (
+    _validate_registry_benchmark,
+    write_diagnostics,
+    write_receipt,
+)
 from platform_types_candidate_render import render_bundle
 from platform_types_candidate_support import CandidateBundleError, parse_named_values
 
@@ -21,6 +25,29 @@ def add_identity_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--pr-number", type=int)
 
 
+def _benchmark_fixture(*, threshold: int | None = None) -> dict:
+    fields = {
+        "constructionElapsedNs": 1,
+        "constructionNsPerEntry": 1,
+        "identityElapsedNs": 1,
+        "identityNsPerLookup": 1,
+        "digestElapsedNs": 1,
+        "digestNsPerLookup": 1,
+        "registryIdentityElapsedNs": 1,
+        "registryIdentityNsPerLookup": 1,
+    }
+    return {
+        "schema": "hepta.platform-types.registry-lookup-benchmark.v1",
+        "schemaVersion": 1,
+        "iterationsPerLookup": 1,
+        "acceptanceThreshold": threshold,
+        "cases": [
+            {"entryCount": 8, **fields},
+            {"entryCount": 256, **fields},
+        ],
+    }
+
+
 def self_test() -> None:
     outcomes = parse_named_values(["truth=success", "miri=failure"], outcomes=True)
     if outcomes != {"truth": "success", "miri": "failure"}:
@@ -28,8 +55,16 @@ def self_test() -> None:
     try:
         parse_named_values(["truth=green"], outcomes=True)
     except CandidateBundleError:
+        pass
+    else:
+        raise CandidateBundleError("invalid outcome accepted")
+
+    _validate_registry_benchmark(_benchmark_fixture())
+    try:
+        _validate_registry_benchmark(_benchmark_fixture(threshold=10))
+    except CandidateBundleError:
         return
-    raise CandidateBundleError("invalid outcome accepted")
+    raise CandidateBundleError("unearned registry benchmark threshold accepted")
 
 
 def main() -> int:
