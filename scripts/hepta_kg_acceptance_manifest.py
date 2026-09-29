@@ -3,8 +3,8 @@
 
 The repository may issue an unsigned request, but it cannot accept itself.
 Acceptance is valid only when an allowed independent identity signs the exact
-candidate commit/tree plus workflow, dependency-lock and schema fingerprints.
-Any source, workflow, lockfile or schema change invalidates the manifest.
+candidate commit/tree plus workflow, executed harness, dependency-lock, schema
+and complete source fingerprints. Any bound change invalidates the manifest.
 """
 
 from __future__ import annotations
@@ -22,6 +22,7 @@ SIGNATURE_NAMESPACE = "hepta-knowledge-graph-acceptance"
 DEFAULT_IMPLEMENTATION_OWNER = "knowledge-graph"
 
 WORKFLOW_PATH = ".github/workflows/hepta-knowledge-graph-qualification.yml"
+HARNESS_PATH = "scripts/hepta_kg_qualification_lane.sh"
 LOCK_PATH = "codex-rs/Cargo.lock"
 SCHEMA_PATH = "codex-rs/hepta-memory/migrations/0013_kg_generation_semantics.sql"
 MAP_PATH = "docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json"
@@ -35,15 +36,18 @@ FINGERPRINT_ROOTS = (
     "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
     "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
     "codex-rs/hepta-memory/src/cognitive_store.rs",
-    "codex-rs/hepta-memory/migrations/0013_kg_generation_semantics.sql",
+    SCHEMA_PATH,
     "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
     "codex-rs/hepta-prompt-optimizer",
     "codex-rs/hepta-prompt-registry",
     LOCK_PATH,
     MAP_PATH,
+    "docs/modules/knowledge.graph/CURRENT_STATUS.json",
+    "docs/modules/knowledge.graph/CURRENT_STATUS.md",
     "docs/modules/knowledge.graph/TECHNICAL.md",
     "scripts/hepta_kg_acceptance_manifest.py",
-    "scripts/hepta_kg_qualification_lane.sh",
+    HARNESS_PATH,
+    "scripts/hepta_kg_status.py",
 )
 
 
@@ -116,6 +120,8 @@ def candidate_fingerprint(root: Path) -> dict[str, Any]:
         "commit": run_git(root, "rev-parse", "HEAD"),
         "tree": run_git(root, "rev-parse", "HEAD^{tree}"),
         "workflowBlob": run_git(root, "rev-parse", f"HEAD:{WORKFLOW_PATH}"),
+        "qualificationHarnessBlob": run_git(root, "rev-parse", f"HEAD:{HARNESS_PATH}"),
+        "qualificationHarnessSha256": required_digest(HARNESS_PATH),
         "cargoLockSha256": required_digest(LOCK_PATH),
         "schemaSha256": required_digest(SCHEMA_PATH),
         "implementationMapSha256": required_digest(MAP_PATH),
@@ -139,14 +145,21 @@ def load_receipts(paths: Iterable[Path]) -> list[dict[str, Any]]:
         row = json.loads(raw)
         if row.get("schema") != "hepta.knowledge-graph.qualification-receipt.v1":
             raise AcceptanceError(f"unsupported qualification receipt: {path}")
+        parents = row.get("testedParents", [])
+        if not isinstance(parents, list) or any(not isinstance(value, str) for value in parents):
+            raise AcceptanceError(f"invalid testedParents in qualification receipt: {path}")
         receipts.append(
             {
                 "lane": row.get("lane"),
                 "testedCommit": row.get("testedCommit"),
                 "testedTree": row.get("testedTree"),
+                "testedParents": parents,
                 "sourceCommit": row.get("sourceCommit"),
                 "baseCommit": row.get("baseCommit"),
-                "workflowBlob": row.get("workflowBlob"),
+                "testedWorkflowBlob": row.get("testedWorkflowBlob", row.get("workflowBlob")),
+                "sourceWorkflowBlob": row.get("sourceWorkflowBlob"),
+                "sourceHarnessBlob": row.get("sourceHarnessBlob"),
+                "executedHarnessSha256": row.get("executedHarnessSha256"),
                 "cargoLockSha256": row.get("cargoLockSha256"),
                 "schemaSha256": row.get("kgSchemaSha256"),
                 "allRequiredPassed": row.get("allRequiredPassed") is True,
@@ -185,27 +198,53 @@ def require_lane_receipts(manifest: dict[str, Any], candidate: dict[str, Any]) -
         if lane in by_lane:
             raise AcceptanceError(f"duplicate qualification lane: {lane}")
         by_lane[lane] = row
-    for lane in ("source-head", "main-head", "base-merge"):
-        if lane not in by_lane:
-            raise AcceptanceError(f"missing required qualification lane: {lane}")
-        if by_lane[lane].get("allRequiredPassed") is not True:
+    required_lanes = {"source-head", "main-head", "base-merge"}
+    if set(by_lane) != required_lanes:
+        missing = sorted(required_lanes.difference(by_lane))
+        extra = sorted(set(by_lane).difference(required_lanes))
+        raise AcceptanceError(f"qualification lane set mismatch: missing={missing}, extra={extra}")
+
+    for lane, row in by_lane.items():
+        if row.get("allRequiredPassed") is not True:
             raise AcceptanceError(f"qualification lane did not pass: {lane}")
+        if row.get("sourceCommit") != candidate["commit"]:
+            raise AcceptanceError(f"{lane} receipt does not bind the candidate source commit")
+        if row.get("sourceWorkflowBlob") != candidate["workflowBlob"]:
+            raise AcceptanceError(f"{lane} receipt source workflow binding drifted")
+        if row.get("sourceHarnessBlob") != candidate["qualificationHarnessBlob"]:
+            raise AcceptanceError(f"{lane} receipt source harness binding drifted")
+        if row.get("executedHarnessSha256") != candidate["qualificationHarnessSha256"]:
+            raise AcceptanceError(f"{lane} executed a different qualification harness")
+        if not isinstance(row.get("testedCommit"), str) or not isinstance(
+            row.get("testedTree"), str
+        ):
+            raise AcceptanceError(f"{lane} receipt is missing tested identity")
 
     source = by_lane["source-head"]
     if source.get("testedCommit") != candidate["commit"]:
         raise AcceptanceError("source-head receipt does not bind the candidate commit")
     if source.get("testedTree") != candidate["tree"]:
         raise AcceptanceError("source-head receipt does not bind the candidate tree")
-    if source.get("workflowBlob") != candidate["workflowBlob"]:
-        raise AcceptanceError("source-head receipt workflow binding drifted")
+    if source.get("testedWorkflowBlob") != candidate["workflowBlob"]:
+        raise AcceptanceError("source-head tested workflow binding drifted")
     if source.get("cargoLockSha256") != candidate["cargoLockSha256"]:
         raise AcceptanceError("source-head receipt dependency lock drifted")
     if source.get("schemaSha256") != candidate["schemaSha256"]:
         raise AcceptanceError("source-head receipt schema drifted")
 
+    main = by_lane["main-head"]
+    if main.get("testedCommit") != main.get("baseCommit"):
+        raise AcceptanceError("main-head receipt did not execute the declared base commit")
+
     merge = by_lane["base-merge"]
-    if merge.get("sourceCommit") != candidate["commit"]:
-        raise AcceptanceError("base-merge receipt does not bind the candidate source commit")
+    if merge.get("baseCommit") != main.get("testedCommit"):
+        raise AcceptanceError("base-merge and main-head receipts disagree on the base commit")
+    parents = merge.get("testedParents")
+    if not isinstance(parents, list) or set(parents) != {
+        candidate["commit"],
+        main["testedCommit"],
+    }:
+        raise AcceptanceError("base-merge receipt does not bind both source and base parents")
 
 
 def verify_manifest(
@@ -230,8 +269,10 @@ def verify_manifest(
     if acceptance.get("signerIdentity") != identity:
         raise AcceptanceError("acceptance signer identity mismatch")
 
-    forbidden = {DEFAULT_IMPLEMENTATION_OWNER, *forbidden_identities}
-    if identity in forbidden:
+    normalized_identity = identity.casefold()
+    forbidden = {DEFAULT_IMPLEMENTATION_OWNER.casefold()}
+    forbidden.update(value.casefold() for value in forbidden_identities)
+    if normalized_identity in forbidden:
         raise AcceptanceError("implementation identity cannot sign its own acceptance")
 
     observed = candidate_fingerprint(root)
