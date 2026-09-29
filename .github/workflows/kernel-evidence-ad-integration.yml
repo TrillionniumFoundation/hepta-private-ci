@@ -27,25 +27,26 @@ jobs:
       BASE_SHA: a126987b84737dbc2ee2592442a314117bddb4a2
       LANE: ${{ matrix.lane }}
       RUSTUP_TOOLCHAIN: 1.95.0
+      OUT: ${{ runner.temp }}/kernel-evidence-ad
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
+
       - name: Bind immutable candidate
         shell: bash
         run: |
           set -euo pipefail
-          out="$RUNNER_TEMP/kernel-evidence-ad"
-          mkdir -p "$out"
-          printf '%s\n' "$SOURCE_SHA" "$BASE_SHA" "$LANE" > "$out/requested-identity.txt"
+          mkdir -p "$OUT"
+          printf '%s\n' "$SOURCE_SHA" "$BASE_SHA" "$LANE" > "$OUT/requested-identity.txt"
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           test -z "$(git status --porcelain)"
           test "$(git rev-parse "$BASE_SHA^{commit}")" = "$BASE_SHA"
           if [ "$LANE" = base-merge ]; then
-            git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA" > "$out/merge-tree.txt"
-            tree="$(head -n 1 "$out/merge-tree.txt")"
+            git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA" > "$OUT/merge-tree.txt"
+            tree="$(head -n 1 "$OUT/merge-tree.txt")"
             export GIT_AUTHOR_NAME='Kernel evidence diagnostic'
             export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
             export GIT_AUTHOR_EMAIL='noreply@github.com'
@@ -55,49 +56,38 @@ jobs:
             candidate="$(printf '%s\n' 'kernel.evidence fixed-main A-D merge' | git commit-tree "$tree" -p "$BASE_SHA" -p "$SOURCE_SHA")"
             git checkout --detach "$candidate"
           fi
-          git rev-parse HEAD HEAD^{tree} > "$out/tested-identity.txt"
-          git status --porcelain > "$out/dirty-before.txt"
-          test ! -s "$out/dirty-before.txt"
+          git rev-parse HEAD HEAD^{tree} > "$OUT/tested-identity.txt"
+          git status --porcelain > "$OUT/dirty-before.txt"
+          test ! -s "$OUT/dirty-before.txt"
+
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
           toolchain: 1.95.0
           components: rustfmt, clippy
+
       - name: Native isolated solver and Python regression oracles
-        if: ${{ !cancelled() && success() }}
-        shell: bash
-        run: |
-          set -uo pipefail
-          set +e
-          out="$RUNNER_TEMP/kernel-evidence-ad"
-          rustc --version --verbose > "$out/rustc.txt"
-          rustc --edition=2024 --test codex-rs/hepta-evidence/src/identity_assignment.rs -o "$out/identity-tests" > "$out/identity-compile.log" 2>&1
-          compile=$?
-          printf '%s\n' "$compile" > "$out/identity-compile.exit"
-          result=1
-          if [ "$compile" -eq 0 ]; then
-            "$out/identity-tests" --nocapture > "$out/identity-tests.log" 2>&1
-            result=$?
-          fi
-          printf '%s\n' "$result" > "$out/identity-tests.exit"
-          python3 -m unittest discover -s scripts/tests -p 'test_kernel_evidence*.py' -v > "$out/python-tests.log" 2>&1
-          py=$?
-          printf '%s\n' "$py" > "$out/python-tests.exit"
-          test "$compile" -eq 0 && test "$result" -eq 0 && test "$py" -eq 0
-      - name: Retain formatting suggestions separately from tested source
-        if: ${{ !cancelled() && hashFiles('codex-rs/hepta-evidence/Cargo.toml') != '' }}
         shell: bash
         run: |
           set -euo pipefail
-          out="$RUNNER_TEMP/kernel-evidence-ad"
+          rustc --version --verbose > "$OUT/rustc.txt"
+          rustc --edition=2024 --test codex-rs/hepta-evidence/src/identity_assignment.rs -o "$OUT/identity-tests" > "$OUT/identity-compile.log" 2>&1
+          "$OUT/identity-tests" --nocapture > "$OUT/identity-tests.log" 2>&1
+          python3 -m unittest discover -s scripts/tests -p 'test_kernel_evidence*.py' -v > "$OUT/python-tests.log" 2>&1
+
+      - name: Retain formatting suggestions separately from tested source
+        shell: bash
+        run: |
+          set -euo pipefail
           diagnostic="$RUNNER_TEMP/kernel-evidence-format"
           git worktree add --detach "$diagnostic" HEAD
           cd "$diagnostic/codex-rs"
-          cargo fmt --all > "$out/formatter.log" 2>&1
+          cargo fmt --all > "$OUT/formatter.log" 2>&1
           cd ..
-          git diff --binary -- codex-rs/hepta-evidence codex-rs/hepta-agentd codex-rs/hepta-agent-protocol codex-rs/state > "$out/formatting-only.patch"
-          git diff --name-only -- codex-rs/hepta-evidence codex-rs/hepta-agentd codex-rs/hepta-agent-protocol codex-rs/state > "$out/formatted-paths.txt"
+          git diff --binary -- codex-rs/hepta-evidence codex-rs/hepta-agentd codex-rs/hepta-agent-protocol codex-rs/state > "$OUT/formatting-only.patch"
+          git diff --name-only -- codex-rs/hepta-evidence codex-rs/hepta-agentd codex-rs/hepta-agent-protocol codex-rs/state > "$OUT/formatted-paths.txt"
           git diff --check
-          git archive --format=tar.gz HEAD codex-rs/hepta-evidence codex-rs/hepta-agentd codex-rs/hepta-agent-protocol > "$out/tested-module-source.tar.gz"
+          git archive --format=tar.gz HEAD codex-rs/hepta-evidence codex-rs/hepta-agentd codex-rs/hepta-agent-protocol > "$OUT/tested-module-source.tar.gz"
+
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
@@ -105,34 +95,34 @@ jobs:
           path: ${{ runner.temp }}/kernel-evidence-ad
           if-no-files-found: error
           retention-days: 14
+
       - uses: ./.github/actions/setup-ci
-        if: ${{ !cancelled() && hashFiles('codex-rs/hepta-evidence/Cargo.toml') != '' }}
+
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
-        if: ${{ !cancelled() && hashFiles('codex-rs/hepta-evidence/Cargo.toml') != '' }}
         with:
           tool: cargo-nextest
-      - name: Execute all package diagnostics without repair or result substitution
-        if: ${{ !cancelled() && hashFiles('codex-rs/hepta-evidence/Cargo.toml') != '' }}
+
+      - name: Execute every package and truth oracle
+        id: diagnostics
+        continue-on-error: true
         shell: bash
         run: |
           set -uo pipefail
           set +e
-          out="$RUNNER_TEMP/kernel-evidence-ad"
-          test -s "$out/tested-identity.txt" || exit 1
-          test "$(git rev-parse HEAD)" = "$(head -n 1 "$out/tested-identity.txt")" || exit 1
+          test -s "$OUT/tested-identity.txt" || exit 1
+          test "$(git rev-parse HEAD)" = "$(head -n 1 "$OUT/tested-identity.txt")" || exit 1
           test -z "$(git status --porcelain)" || exit 1
           failures=0
           run_check() {
             local name="$1"; local budget="$2"; shift 2
-            printf '%q ' "$@" > "$out/$name.command"
-            printf '\n' >> "$out/$name.command"
-            printf '%s\n' "$budget" > "$out/$name.timeout"
-            printf '%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$out/$name.started-at"
-            timeout --signal=TERM --kill-after=30s "$budget" "$@" > "$out/$name.log" 2>&1
+            printf '%q ' "$@" > "$OUT/$name.command"
+            printf '\n' >> "$OUT/$name.command"
+            printf '%s\n' "$budget" > "$OUT/$name.timeout"
+            printf '%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$OUT/$name.started-at"
+            timeout --signal=TERM --kill-after=30s "$budget" "$@" > "$OUT/$name.log" 2>&1
             local rc=$?
-            printf '%s\n' "$rc" > "$out/$name.exit"
-            printf '%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$out/$name.finished-at"
-            tail -n 35 "$out/$name.log"
+            printf '%s\n' "$rc" > "$OUT/$name.exit"
+            printf '%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$OUT/$name.finished-at"
             if [ "$rc" -ne 0 ]; then failures=$((failures + 1)); fi
           }
           run_check format 10m just fmt-check
@@ -147,22 +137,23 @@ jobs:
           run_check status 5m python3 scripts/kernel_evidence_status.py verify
           run_check docs 10m python3 scripts/hepta-docs.py verify
           run_check implementation-maps 5m python3 scripts/hepta-implementation-maps.py verify
-          git status --porcelain > "$out/dirty-after.txt"
-          if [ -s "$out/dirty-after.txt" ]; then failures=$((failures + 1)); fi
-          printf '%s\n' "$failures" > "$out/failed-check-count.txt"
-          test "$failures" -eq 0
+          git status --porcelain > "$OUT/dirty-after.txt"
+          if [ -s "$OUT/dirty-after.txt" ]; then failures=$((failures + 1)); fi
+          printf '%s\n' "$failures" > "$OUT/failed-check-count.txt"
+          exit 0
+
       - name: Bind final diagnostic inventory
         if: always()
         shell: bash
         run: |
           set -euo pipefail
-          out="$RUNNER_TEMP/kernel-evidence-ad"
-          mkdir -p "$out"
-          printf '%s\n' 'Diagnostic execution only. Missing/skipped/failed checks are not qualified. No independent acceptance, deployment, canary or release.' > "$out/CLAIM_BOUNDARY.txt"
-          git rev-parse HEAD HEAD^{tree} > "$out/final-identity.txt"
-          git status --porcelain > "$out/final-dirty.txt"
-          cd "$out"
+          mkdir -p "$OUT"
+          printf '%s\n' 'Diagnostic execution only. Missing, skipped, timed-out or failed checks are non-success. No independent acceptance, deployment, restore witnessing, canary, promotion or release.' > "$OUT/CLAIM_BOUNDARY.txt"
+          git rev-parse HEAD HEAD^{tree} > "$OUT/final-identity.txt"
+          git status --porcelain > "$OUT/final-dirty.txt"
+          cd "$OUT"
           find . -maxdepth 1 -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS
+
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
@@ -170,3 +161,12 @@ jobs:
           path: ${{ runner.temp }}/kernel-evidence-ad
           if-no-files-found: error
           retention-days: 14
+
+      - name: Fail closed after retaining diagnostics
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s "$OUT/failed-check-count.txt"
+          failures="$(cat "$OUT/failed-check-count.txt")"
+          test "$failures" = 0
