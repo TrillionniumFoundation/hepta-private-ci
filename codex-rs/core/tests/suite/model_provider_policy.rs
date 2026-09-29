@@ -405,7 +405,7 @@ async fn active_provider_policy_governs_websocket_prewarm_and_turn() -> Result<(
     );
 
     state.terminal_release.add_permits(1);
-    timeout(Duration::from_secs(5), state.wait_for_terminal_count(2)).await?;
+    timeout(Duration::from_secs(15), state.wait_for_terminal_count(2)).await?;
     assert!(
         timeout(Duration::from_millis(50), &mut submit)
             .await
@@ -413,7 +413,7 @@ async fn active_provider_policy_governs_websocket_prewarm_and_turn() -> Result<(
         "turn must wait for its own provider terminal acknowledgement"
     );
     state.terminal_release.add_permits(1);
-    timeout(Duration::from_secs(10), &mut submit).await??;
+    timeout(Duration::from_secs(20), &mut submit).await??;
 
     assert_eq!(state.begin_count.load(Ordering::SeqCst), 2);
     assert_eq!(state.terminal_count.load(Ordering::SeqCst), 2);

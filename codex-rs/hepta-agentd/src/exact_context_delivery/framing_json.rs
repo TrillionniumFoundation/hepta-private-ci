@@ -81,9 +81,13 @@ pub(super) fn parse(bytes: &[u8]) -> Result<Value, String> {
     if bytes.len() > codex_hepta_context_compiler::MAX_FINAL_PROVIDER_REQUEST_BYTES_V2 {
         return Err("provider_request_too_large".to_owned());
     }
+    // The custom visitor is the duplicate-key and container-boundary gate. With
+    // serde_json's arbitrary-precision feature, numbers may be presented to a
+    // deserialize_any visitor through an internal sentinel map, so do not use
+    // the visitor's reconstructed Value as the semantic provider value.
     serde_json::from_slice::<UniqueValue>(bytes)
-        .map(|value| value.0)
-        .map_err(|_| "invalid_or_duplicate_provider_json".to_owned())
+        .map_err(|_| "invalid_or_duplicate_provider_json".to_owned())?;
+    serde_json::from_slice(bytes).map_err(|_| "invalid_or_duplicate_provider_json".to_owned())
 }
 
 #[cfg(test)]
