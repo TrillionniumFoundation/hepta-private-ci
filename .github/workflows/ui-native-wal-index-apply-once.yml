@@ -12,7 +12,7 @@ permissions:
 
 concurrency:
   group: ui-native-wal-index-source-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   CARGO_TERM_COLOR: always
@@ -20,7 +20,7 @@ env:
 
 jobs:
   apply-test-publish:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -32,9 +32,9 @@ jobs:
       - id: source
         name: Verify immutable input and apply reviewed source patch
         env:
-          EXPECTED_PARENT: 2fbff0ccd55234905ba890f42c45750ea9c1fbfd
-          PATCH_GZIP_SHA256: df46c164bcc53926e5ccc2c7bbe3eb2e0bc84dc5cb5b499d03cb1533bae241bd
-          PATCH_SHA256: 4cc209f814ccc0c40894b16127688bcea3eb375c7a6b5ca12e7e5e1a67b7eb89
+          EXPECTED_PARENT: 2613c7263c1bbf2d75c76b49eea797de540545cd
+          PATCH_GZIP_SHA256: 292f9f99997e3d1078cc296819f225cd2100b5fd023c74b53e0bed9912b39252
+          PATCH_SHA256: b863bb348b91e038f711b5a155a383aaa342ee6beacb1cd168901f82159dd74a
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
