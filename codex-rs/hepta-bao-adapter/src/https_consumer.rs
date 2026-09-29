@@ -227,38 +227,50 @@ impl BaoClient {
         .map_err(|_| BaoClientError::InvalidRequest)?;
         Ok(Digest32::of_bytes(&bytes))
     }
+}
 
-    /// Product composition for a quota-controlled Bao read. The adapter
-    /// accepts only the bounded effect port; it cannot enroll issuers or mutate
-    /// policy and quota configuration.
-    pub async fn consume_kv_v2_with_authbus<
-        E: BaoAuthBusEvidenceProvider,
-        C: AsAuthBusEffectPort + ?Sized,
-    >(
-        &self,
-        authbus: &C,
-        admission: &BaoAuthBusAdmission,
-        authority: &FinalUseAuthority,
-        grant: &SignedFinalUseGrant,
-        request: &BaoReadRequest,
-        evidence: &mut E,
-        consumer: impl FnOnce(&[u8]) -> Result<(), ()>,
-    ) -> Result<BaoSecretReceipt, BaoAuthBusError> {
-        if admission.policy_revision == 0
-            || admission.expected_quota_revision == 0
-            || admission.amount == 0
-            || admission.expires_at_ms == 0
-        {
-            return Err(BaoClientError::InvalidRequest.into());
-        }
-        let authbus = authbus.as_authbus_effect_port();
-        let binding = self.binding(request)?;
-        let principal = StableId::new(binding.subject_id.clone())
-            .map_err(|_| BaoClientError::InvalidRequest)?;
-        let action =
-            StableId::new("action:bao-read").map_err(|_| BaoClientError::InvalidRequest)?;
-        let scope = Digest32::from_array(binding.scope_sha256);
-        let effect_digest = self.authbus_effect_digest(request, &admission.operation_id)?;
+fn component(value: &str) -> bool {
+    !value.is_empty()
+        && value.len() <= 128
+        && value != "."
+        && value != ".."
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || b"_-.:".contains(&byte))
+}
 
-        let observed = evidence.trusted_time()?;
-        let time = authbus.
+fn segmented(value: &str) -> bool {
+    value.len() <= 1024 && value.split('/').all(component)
+}
+
+#[path = "https_consumer_effect.rs"]
+mod effect;
+#[path = "https_consumer_delivery.rs"]
+mod delivery;
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum BaoClientError {
+    InvalidConfiguration,
+    InvalidRequest,
+    Authority(FinalUseError),
+    ProviderDenied,
+    ProviderUnavailable,
+    NotFound,
+    TransportUnavailable,
+    TimedOut,
+    ResponseTooLarge,
+    InvalidResponse,
+    VersionMismatch,
+    SecretDigestMismatch,
+    ConsumerIndeterminate,
+}
+impl fmt::Display for BaoClientError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+impl std::error::Error for BaoClientError {}
+
+#[cfg(all(test, unix))]
+#[path = "https_consumer_tests.rs"]
+mod tests;
