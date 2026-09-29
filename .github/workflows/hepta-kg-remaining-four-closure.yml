@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: kg-remaining-four-self-hosted-${{ github.sha }}
+  group: kg-remaining-four-${{ github.sha }}
   cancel-in-progress: false
 
 jobs:
@@ -69,3 +69,37 @@ jobs:
       - name: Execute fenced closure
         shell: bash
         run: bash .github/kg-run-finalize.sh linux
+
+  close-hosted:
+    name: close (${{ matrix.runner_name }})
+    if: startsWith(github.event.head_commit.message, 'kg remaining-four closure')
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner_name: hosted-linux-x64
+            platform: linux
+            runs_on: ubuntu-24.04
+          - runner_name: hosted-linux-arm64
+            platform: linux
+            runs_on: ubuntu-24.04-arm
+          - runner_name: hosted-macos-arm64
+            platform: macos
+            runs_on: macos-15
+    runs-on: ${{ matrix.runs_on }}
+    timeout-minutes: 180
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Execute fenced closure
+        shell: bash
+        run: bash .github/kg-run-finalize.sh '${{ matrix.platform }}'
