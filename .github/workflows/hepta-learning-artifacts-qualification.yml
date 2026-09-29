@@ -2,7 +2,7 @@ name: Hepta learning.artifacts qualification
 
 on:
   push:
-    branches: [main, 'codex/learning-artifacts-qualification-recovery-*', 'codex/learning-artifacts-qualified-host-*']
+    branches: [main, 'codex/learning-artifacts-qualification-recovery-*', 'codex/learning-artifacts-qualified-host-*', 'work/learning-artifacts-production-closure-*']
   pull_request:
   merge_group:
   workflow_dispatch:
@@ -27,14 +27,30 @@ env:
 
 jobs:
   qualify:
-    name: learning.artifacts (${{ matrix.os }}, ${{ matrix.lane }})
+    name: learning.artifacts (${{ matrix.profile }}, ${{ matrix.lane }})
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, macos-15]
         lane: [exact-head, synthetic-merge]
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 100
+        include:
+          - profile: linux-x86_64-stable
+            runner: ubuntu-24.04
+            toolchain: 1.95.0
+            architecture: x86_64-unknown-linux-gnu
+          - profile: linux-aarch64-stable
+            runner: ubuntu-24.04-arm
+            toolchain: 1.95.0
+            architecture: aarch64-unknown-linux-gnu
+          - profile: macos-aarch64-stable
+            runner: macos-15
+            toolchain: 1.95.0
+            architecture: aarch64-apple-darwin
+          - profile: linux-x86_64-msrv
+            runner: ubuntu-24.04
+            toolchain: 1.88.0
+            architecture: x86_64-unknown-linux-gnu
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -73,12 +89,59 @@ jobs:
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
-      - name: Install pinned Rust
+      - name: Install qualified Rust toolchain
         id: rust
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
-          toolchain: 1.95.0
+          toolchain: ${{ matrix.toolchain }}
           components: clippy,rustfmt
+      - name: Record immutable runner and source identity
+        env:
+          PROFILE: ${{ matrix.profile }}
+          LANE: ${{ matrix.lane }}
+          EXPECTED_ARCHITECTURE: ${{ matrix.architecture }}
+          TOOLCHAIN: ${{ matrix.toolchain }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          results="$RUNNER_TEMP/artifact-evidence"
+          mkdir -p "$results"
+          test "$(rustc -vV | sed -n 's/^host: //p')" = "$EXPECTED_ARCHITECTURE"
+          export RESULTS_DIR="$results"
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          import pathlib
+          import platform
+          import subprocess
+
+          root = pathlib.Path.cwd()
+          def sha256(path: pathlib.Path) -> str:
+              return hashlib.sha256(path.read_bytes()).hexdigest()
+
+          record = {
+              "schema": "hepta.learning-artifacts-runner-identity.v1",
+              "sourceSha": os.environ["SOURCE_SHA"],
+              "baseSha": os.environ["BASE_SHA"],
+              "profile": os.environ["PROFILE"],
+              "lane": os.environ["LANE"],
+              "expectedArchitecture": os.environ["EXPECTED_ARCHITECTURE"],
+              "toolchain": os.environ["TOOLCHAIN"],
+              "runnerOs": os.environ.get("RUNNER_OS"),
+              "runnerArch": os.environ.get("RUNNER_ARCH"),
+              "runnerImage": os.environ.get("ImageOS"),
+              "runnerImageVersion": os.environ.get("ImageVersion"),
+              "platform": platform.platform(),
+              "rustcVerbose": subprocess.check_output(["rustc", "-vV"], text=True),
+              "cargoVersion": subprocess.check_output(["cargo", "-V"], text=True).strip(),
+              "cargoLockSha256": sha256(root / "codex-rs" / "Cargo.lock"),
+              "workflowSha256": sha256(root / ".github" / "workflows" / "hepta-learning-artifacts-qualification.yml"),
+              "implementationMapSha256": sha256(root / "docs" / "modules" / "learning.artifacts" / "IMPLEMENTATION_MAP.json"),
+          }
+          out = pathlib.Path(os.environ["RESULTS_DIR"]) / "runner-identity.json"
+          out.write_text(json.dumps(record, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+          PY
       - name: Evidence verifier regression tests
         run: python3 -m unittest discover -s scripts -p 'test_hepta_artifact_*.py' -v
       - name: Execute every native gate and retain each outcome
@@ -105,10 +168,10 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: learning-artifacts-${{ env.SOURCE_SHA }}-${{ matrix.os }}-${{ matrix.lane }}-${{ github.run_attempt }}
+          name: learning-artifacts-${{ env.SOURCE_SHA }}-${{ matrix.profile }}-${{ matrix.lane }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/artifact-evidence
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 30
 
   required:
     name: Lane E artifacts required
