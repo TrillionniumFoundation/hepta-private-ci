@@ -9,123 +9,235 @@ on:
       - main
     paths:
       - '.github/workflows/channel-matrix-preserve-unknown.yml'
-      - '.github/workflows/channel-matrix-closure-apply.yml'
-      - '.matrix-staging/channel_matrix_apply.part*'
+      - 'codex-rs/Cargo.lock'
+      - 'codex-rs/Cargo.toml'
+      - 'codex-rs/rust-toolchain.toml'
+      - 'codex-rs/.config/nextest.toml'
+      - 'codex-rs/hepta-matrix-protocol/**'
+      - 'codex-rs/hepta-matrix-store/**'
+      - 'codex-rs/hepta-matrix-sdk/**'
+      - 'codex-rs/hepta-matrixd/**'
+      - 'codex-rs/hepta-supervisor/src/matrix.rs'
+      - 'codex-rs/state/**'
+      - 'docs/modules/channel.matrix/**'
+      - 'scripts/*channel_matrix*'
+      - 'scripts/tests/test_channel_matrix*'
+      - 'scripts/verify_channel_matrix_candidate.py'
+      - 'tests/fixtures/run-hermetic-synapse.sh'
+      - 'justfile'
   workflow_dispatch: {}
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: channel-matrix-exact-closure-apply
+  group: channel-matrix-exact-candidate-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: false
 
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  REQUESTED_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+  PYTHONDONTWRITEBYTECODE: '1'
+  CARGO_INCREMENTAL: '0'
+  CARGO_BUILD_JOBS: '2'
+
 jobs:
-  apply-verified-closure:
-    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && ((github.event_name == 'push' && github.ref == 'refs/heads/codex/channel-matrix-full-closure-20260927') || (github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'codex/channel-matrix-full-closure-20260927'))
+  source-head:
+    name: Matrix source-head
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
     runs-on: ubuntu-24.04
-    timeout-minutes: 50
-    env:
-      STAGING_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-      PYTHONDONTWRITEBYTECODE: '1'
-      CARGO_INCREMENTAL: '0'
-      CARGO_BUILD_JOBS: '2'
+    timeout-minutes: 70
     steps:
-      - name: Checkout exact staging commit
+      - name: Checkout exact source candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Materialize and apply closed-scope patch
+      - name: Install exact-candidate prerequisites
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$STAGING_SHA"
-          cat .matrix-staging/channel_matrix_apply.part* | base64 --decode > "$RUNNER_TEMP/channel_matrix_apply.py.gz"
-          echo '6be88c59e74ef4d6f16231c0ba13dadfe542c69b3e060c10719bb7b7245d90a2  '"$RUNNER_TEMP/channel_matrix_apply.py.gz" | sha256sum --check --strict
-          gzip -dc "$RUNNER_TEMP/channel_matrix_apply.py.gz" > "$RUNNER_TEMP/channel_matrix_apply.py"
-          echo '8832745814d7b33f52ee4a11c2d780133db34b21b18d204412e92bd6c43fd8bc  '"$RUNNER_TEMP/channel_matrix_apply.py" | sha256sum --check --strict
-          python3 "$RUNNER_TEMP/channel_matrix_apply.py"
-          git diff --check
-          python3 -m compileall -q \
-            scripts/channel_matrix_evidence.py \
-            scripts/channel_matrix_qualification.py \
-            scripts/channel_matrix_pair_acceptance.py \
-            scripts/tests/test_channel_matrix_qualification.py \
-            scripts/tests/test_channel_matrix_pair_acceptance.py
-          python3 -m unittest discover -s scripts/tests -p 'test_channel_matrix*.py' -v
+          rustup component add rustfmt clippy
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends sqlite3 libsqlite3-dev binutils
+          mkdir -p "$RUNNER_TEMP/matrix-source-head"
 
-      - name: Update lockfile and verify affected Rust owners
-        shell: bash
-        working-directory: codex-rs
-        run: |
-          set -euo pipefail
-          cargo check -p codex-hepta-operations --all-targets
-          cargo fmt --package codex-state --package codex-hepta-operations
-          cargo fmt --package codex-state --package codex-hepta-operations -- --check
-          cargo clippy --locked --no-deps -p codex-hepta-operations --all-targets -- -D warnings
-
-      - name: Commit verified closure candidate
-        id: commit
+      - name: Resolve immutable identities
         shell: bash
         run: |
           set -euo pipefail
-          git rm -r .matrix-staging
-          git rm .github/workflows/channel-matrix-closure-apply.yml
-          git add \
-            .github/workflows/channel-matrix-preserve-unknown.yml \
-            codex-rs/Cargo.lock \
-            codex-rs/hepta-operations/Cargo.toml \
-            codex-rs/hepta-operations/src/destination_dedupe.rs \
-            codex-rs/hepta-operations/src/durable_store.rs \
-            codex-rs/state/src/lib.rs \
-            codex-rs/state/src/sqlite.rs \
-            scripts/channel_matrix_evidence.py \
-            scripts/channel_matrix_qualification.py \
-            scripts/channel_matrix_pair_acceptance.py \
-            scripts/tests/test_channel_matrix_qualification.py \
-            scripts/tests/test_channel_matrix_pair_acceptance.py
-          git diff --cached --check
-          test -z "$(git status --porcelain | grep '^??' || true)"
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit \
-            -m 'channel.matrix: close exact-candidate qualification' \
-            -m 'Route durable SQLite owners through the state shim, eliminate strict clippy failures, bind transitive source bytes, generate per-test scenario executions from nextest JUnit, and add a non-skipping paired source/merge acceptance receipt without granting release authority.'
-          final=$(git rev-parse HEAD)
-          echo "final_sha=$final" >> "$GITHUB_OUTPUT"
-          git format-patch -1 --stdout > "$RUNNER_TEMP/channel-matrix-closure.patch"
-          git bundle create "$RUNNER_TEMP/channel-matrix-closure.bundle" HEAD
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          base="$REQUESTED_BASE_SHA"
+          if test -z "$base"; then
+            base=$(git rev-parse origin/main)
+          fi
+          test "$(git rev-parse "$base^{commit}")" = "$base"
+          test "$(git rev-parse "$SOURCE_SHA^{commit}")" = "$SOURCE_SHA"
+          echo "BASE_SHA=$base" >> "$GITHUB_ENV"
+          echo "SOURCE_TREE=$(git rev-parse "$SOURCE_SHA^{tree}")" >> "$GITHUB_ENV"
 
-      - name: Retain independently replayable closure result
+      - name: Bind source navigation and exact bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/matrix-source-head"
+          python3 scripts/verify_channel_matrix_candidate.py \
+            --expected-sha "$SOURCE_SHA" \
+            --output "$evidence/candidate.json"
+          python3 scripts/channel_matrix_evidence.py snapshot \
+            --expected-sha "$SOURCE_SHA" \
+            --source-sha "$SOURCE_SHA" \
+            --base-sha "$BASE_SHA" \
+            --lane source-head \
+            --output "$evidence/source.json"
+
+      - name: Execute locked native qualification
+        id: native
+        shell: bash
+        run: |
+          set -uo pipefail
+          evidence="$RUNNER_TEMP/matrix-source-head"
+          result=0
+          for label in compile focused-tests clippy format; do
+            python3 scripts/channel_matrix_evidence.py run \
+              --directory "$evidence" \
+              --label "$label" || result=1
+          done
+          python3 scripts/channel_matrix_evidence.py snapshot \
+            --expected-sha "$SOURCE_SHA" \
+            --source-sha "$SOURCE_SHA" \
+            --base-sha "$BASE_SHA" \
+            --lane source-head \
+            --output "$evidence/source-after.json" || result=1
+          python3 scripts/channel_matrix_status.py --directory "$evidence" || result=1
+          if test "$result" -eq 0; then job_status=success; else job_status=failure; fi
+          python3 scripts/channel_matrix_evidence.py manifest \
+            --directory "$evidence" \
+            --job-status "$job_status" || result=1
+          exit "$result"
+
+      - name: Retain source-head evidence
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: channel-matrix-closure-${{ github.run_id }}-${{ github.run_attempt }}
-          path: |
-            ${{ runner.temp }}/channel-matrix-closure.patch
-            ${{ runner.temp }}/channel-matrix-closure.bundle
+          name: channel-matrix-source-head-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/matrix-source-head
           if-no-files-found: error
           retention-days: 30
 
-      - name: Publish validated immutable reference
+  deterministic-merge:
+    name: Matrix deterministic merge
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 70
+    steps:
+      - name: Checkout exact source candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install exact-candidate prerequisites
         shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-          FINAL_SHA: ${{ steps.commit.outputs.final_sha }}
         run: |
           set -euo pipefail
-          auth=$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 | tr -d '\n')
-          echo "::add-mask::$auth"
-          remote=$(git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" \
-            ls-remote origin refs/heads/codex/channel-matrix-full-closure-20260927 | cut -f1)
-          test "$remote" = "$STAGING_SHA"
-          validated_ref="refs/heads/codex/channel-matrix-closure-validated-$STAGING_SHA"
-          existing=$(git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" \
-            ls-remote origin "$validated_ref" | cut -f1)
-          test -z "$existing" || test "$existing" = "$FINAL_SHA"
-          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" \
-            push origin "HEAD:$validated_ref"
-          echo "FINAL_COMMIT=$FINAL_SHA"
-          echo "VALIDATED_REF=$validated_ref"
+          rustup component add rustfmt clippy
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends sqlite3 libsqlite3-dev binutils
+          mkdir -p "$RUNNER_TEMP/matrix-base-merge"
+
+      - name: Materialize deterministic base merge
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          base="$REQUESTED_BASE_SHA"
+          if test -z "$base"; then
+            base=$(git rev-parse origin/main)
+          fi
+          test "$(git rev-parse "$base^{commit}")" = "$base"
+          test "$(git rev-parse "$SOURCE_SHA^{commit}")" = "$SOURCE_SHA"
+          tree=$(git merge-tree --write-tree "$base" "$SOURCE_SHA")
+          export GIT_AUTHOR_NAME='channel.matrix exact candidate'
+          export GIT_AUTHOR_EMAIL='channel-matrix@invalid'
+          export GIT_AUTHOR_DATE='2000-01-01T00:00:00Z'
+          export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+          export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+          export GIT_COMMITTER_DATE="$GIT_AUTHOR_DATE"
+          merge=$(printf '%s\n' 'channel.matrix deterministic merge candidate' | \
+            git commit-tree "$tree" -p "$base" -p "$SOURCE_SHA")
+          git checkout --detach "$merge"
+          test "$(git rev-parse HEAD^{tree})" = "$tree"
+          echo "BASE_SHA=$base" >> "$GITHUB_ENV"
+          echo "MERGE_SHA=$merge" >> "$GITHUB_ENV"
+          echo "MERGE_TREE=$tree" >> "$GITHUB_ENV"
+
+      - name: Bind merge navigation and exact bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/matrix-base-merge"
+          python3 scripts/verify_channel_matrix_candidate.py \
+            --expected-sha "$MERGE_SHA" \
+            --output "$evidence/candidate.json"
+          python3 scripts/channel_matrix_evidence.py snapshot \
+            --expected-sha "$MERGE_SHA" \
+            --source-sha "$SOURCE_SHA" \
+            --base-sha "$BASE_SHA" \
+            --lane base-merge \
+            --output "$evidence/source.json"
+
+      - name: Execute locked merge qualification
+        id: native
+        shell: bash
+        run: |
+          set -uo pipefail
+          evidence="$RUNNER_TEMP/matrix-base-merge"
+          result=0
+          for label in compile focused-tests clippy format; do
+            python3 scripts/channel_matrix_evidence.py run \
+              --directory "$evidence" \
+              --label "$label" || result=1
+          done
+          python3 scripts/channel_matrix_evidence.py snapshot \
+            --expected-sha "$MERGE_SHA" \
+            --source-sha "$SOURCE_SHA" \
+            --base-sha "$BASE_SHA" \
+            --lane base-merge \
+            --output "$evidence/source-after.json" || result=1
+          python3 scripts/channel_matrix_status.py --directory "$evidence" || result=1
+          if test "$result" -eq 0; then job_status=success; else job_status=failure; fi
+          python3 scripts/channel_matrix_evidence.py manifest \
+            --directory "$evidence" \
+            --job-status "$job_status" || result=1
+          exit "$result"
+
+      - name: Retain deterministic-merge evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: channel-matrix-base-merge-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/matrix-base-merge
+          if-no-files-found: error
+          retention-days: 30
+
+  candidate-required:
+    name: Matrix candidate required
+    if: always()
+    needs:
+      - source-head
+      - deterministic-merge
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Require both exact candidates
+        shell: bash
+        env:
+          SOURCE_RESULT: ${{ needs.source-head.result }}
+          MERGE_RESULT: ${{ needs.deterministic-merge.result }}
+        run: |
+          set -euo pipefail
+          test "$SOURCE_RESULT" = success
+          test "$MERGE_RESULT" = success
