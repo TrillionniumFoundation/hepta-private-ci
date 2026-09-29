@@ -82,13 +82,17 @@ class ProductProcessWorkflowTests(unittest.TestCase):
         fmt = self.workflow.index("cargo fmt --check -p codex-hepta-agentd")
         clippy = self.workflow.index("--test authority_effect_process_restart -- -D warnings")
         execution = self.workflow.rindex(
-            "python3 -B qualification/kernel-authority/product_process_recovery.py \\\"
+            "python3 -B qualification/kernel-authority/product_process_recovery.py"
         )
         self.assertLess(workflow_test, parser_test)
         self.assertLess(parser_test, fmt)
         self.assertLess(fmt, clippy)
         self.assertLess(clippy, execution)
         self.assertIn("python3 -B", self.workflow)
+        self.assertIn(
+            '--identity "$RUNNER_TEMP/kernel-authority-product-process/identity.json"',
+            self.workflow,
+        )
 
     def test_no_queued_or_partial_run_can_satisfy_the_gate(self) -> None:
         self.assertIn("Require exact-head and synthetic-merge recovery", self.workflow)
