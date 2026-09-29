@@ -8,7 +8,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: kernel-evidence-candidate-metadata-finalization-v5
+  group: kernel-evidence-candidate-metadata-finalization-v6
   cancel-in-progress: false
 
 jobs:
@@ -18,9 +18,9 @@ jobs:
     timeout-minutes: 25
     env:
       EVENT_SHA: ${{ github.event.pull_request.head.sha }}
-      EXPECTED_PARENT: c60f12b3a4506a021ad9ae98dd54706e9bf0333c
-      SOURCE_ANCHOR: f825d362dac83def6bca189899412ce1815cbaa4
-      SOURCE_TREE: 1735ad26577ee74792f9265c96ede0c40ad8ef60
+      EXPECTED_PARENT: 1f694563457ea33ac4b9a4d9251fcc6d46831b37
+      SOURCE_ANCHOR: 1f694563457ea33ac4b9a4d9251fcc6d46831b37
+      SOURCE_TREE: 898f0243c42b8ce07a417b3a7e91d90450a6fda0
       TARGET_BRANCH: codex/kernel-evidence-protocol-closure-20260929
     steps:
       - name: Check out exact metadata-finalization request
@@ -67,6 +67,7 @@ jobs:
               '.github/workflows/blocking-ci.yml',
               '.github/workflows/hepta-kernel-evidence-convergence.yml',
               '.github/workflows/hepta-kernel-evidence-qualification.yml',
+              '.github/workflows/kernel-evidence-core-regression.yml',
               '.github/workflows/kernel-evidence-publication-native.yml',
               'codex-rs/Cargo.lock',
               'codex-rs/Cargo.toml',
@@ -76,6 +77,7 @@ jobs:
               'codex-rs/hepta-authbus/src/lib.rs',
               'codex-rs/hepta-evidence/Cargo.toml',
               'codex-rs/state/Cargo.toml',
+              'docs/lane-a-foundation/kernel.evidence/OPERATIONS.md',
               'scripts/build_kernel_evidence_status.py',
               'scripts/kernel_evidence_candidate.py',
               'scripts/kernel_evidence_record_validation.py',
