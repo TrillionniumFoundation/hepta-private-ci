@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "hepta.ui-control.independent-acceptance-receipt.v2",
-  "title": "ui.control independent browser, keyboard, and assistive-technology acceptance",
+  "title": "ui.control independent browser, keyboard, assistive-technology, and operator-flow acceptance",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -34,7 +34,7 @@
     },
     "observations": {
       "type": "array",
-      "minItems": 5,
+      "minItems": 8,
       "maxItems": 128,
       "items": { "$ref": "#/$defs/observation" }
     },
@@ -43,10 +43,30 @@
   "$defs": {
     "sha1": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
     "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "flow": {
+      "enum": [
+        "read-runtime-view",
+        "start-confirmation",
+        "reconcile-confirmation",
+        "stop-confirmation",
+        "stale-confirmation-rejected",
+        "indeterminate-recovery-by-lookup",
+        "terminal-storage-failure-visible",
+        "keyboard-focus-restoration"
+      ]
+    },
     "observation": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "modality", "browser", "os", "result", "rawEvidenceDigest"],
+      "required": [
+        "id",
+        "modality",
+        "browser",
+        "os",
+        "flows",
+        "result",
+        "rawEvidenceDigest"
+      ],
       "properties": {
         "id": { "type": "string", "minLength": 1, "maxLength": 128 },
         "modality": { "enum": ["browser-operator", "keyboard-only", "screen-reader"] },
@@ -60,6 +80,13 @@
           }
         },
         "os": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "flows": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/flow" }
+        },
         "assistiveTechnology": {
           "type": "object",
           "additionalProperties": false,
@@ -70,13 +97,17 @@
           }
         },
         "result": { "enum": ["pass", "fail"] },
-        "notes": { "type": "string", "maxLength": 4096 },
+        "notes": { "type": "string", "minLength": 1, "maxLength": 4096 },
         "rawEvidenceDigest": { "$ref": "#/$defs/sha256" }
       },
       "allOf": [
         {
-          "if": { "properties": { "modality": { "const": "screen-reader" } } },
-          "then": { "required": ["assistiveTechnology"] }
+          "if": {
+            "properties": { "modality": { "const": "screen-reader" } },
+            "required": ["modality"]
+          },
+          "then": { "required": ["assistiveTechnology"] },
+          "else": { "not": { "required": ["assistiveTechnology"] } }
         }
       ]
     }

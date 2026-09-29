@@ -14,8 +14,10 @@ import {
   validateChaosEvidence,
   validateDeploymentSecurityReceipt,
   validateIndependentAcceptance,
+  validateIndependentAcceptanceMatrix,
   validateIndependentSecurityReview,
   validateOperationalExercise,
+  validateOperationalExerciseWithRolloutFence,
   validateProductionApproval,
   validateRealBackendReceipt,
   validateRepositoryQualificationReceipt,
@@ -174,6 +176,77 @@ function backendReceipt() {
   };
 }
 
+function statusOnlyAcceptanceReceipt() {
+  return {
+    schema: "hepta.ui-control.independent-acceptance-receipt.v2",
+    status: "passed",
+    ...expected,
+    executedAt,
+    rawEvidenceDigest: raw,
+    verifier: {
+      identity: "Verifier",
+      organization: "Independent Lab",
+      independentOfImplementationAuthor: true,
+    },
+    observations: [
+      {
+        id: "chrome-keyboard",
+        modality: "keyboard-only",
+        browser: { name: "Chrome", version: "154" },
+        os: "Windows",
+        result: "pass",
+        rawEvidenceDigest: raw,
+      },
+      {
+        id: "firefox-operator",
+        modality: "browser-operator",
+        browser: { name: "Firefox", version: "150" },
+        os: "Linux",
+        result: "pass",
+        rawEvidenceDigest: raw,
+      },
+      {
+        id: "safari-operator",
+        modality: "browser-operator",
+        browser: { name: "Safari", version: "20" },
+        os: "macOS",
+        result: "pass",
+        rawEvidenceDigest: raw,
+      },
+      {
+        id: "nvda",
+        modality: "screen-reader",
+        browser: { name: "Chrome", version: "154" },
+        os: "Windows",
+        assistiveTechnology: { name: "NVDA", version: "2026.2" },
+        result: "pass",
+        rawEvidenceDigest: raw,
+      },
+      {
+        id: "voiceover",
+        modality: "screen-reader",
+        browser: { name: "Safari", version: "20" },
+        os: "macOS",
+        assistiveTechnology: { name: "VoiceOver", version: "20" },
+        result: "pass",
+        rawEvidenceDigest: raw,
+      },
+    ],
+  };
+}
+
+function statusOnlyOperationalReceipt() {
+  return {
+    schema: "hepta.ui-control.operational-exercise-receipt.v1",
+    status: "passed",
+    ...expected,
+    executedAt,
+    rawEvidenceDigest: raw,
+    cases: ["rollback", "disaster-recovery", "alert-routing", "log-redaction", "credential-rotation"]
+      .map(id => ({ id, status: "passed", rawEvidenceDigest: raw })),
+  };
+}
+
 test("deployment identity is stable and path-sensitive", () => {
   const first = deploymentSubject("https://control.example.test/console/", "release-17");
   const second = deploymentSubject("https://control.example.test/console", "release-17");
@@ -249,59 +322,65 @@ test("authority evidence closes permission-revision and revocation semantics", (
   assert.throws(() => validateAuthorityEvidence(receipt, expected, { now }), /missing authority cases/u);
 });
 
-test("independent evidence requires full browser, keyboard, and screen-reader coverage", () => {
-  const receipt = {
-    schema: "hepta.ui-control.independent-acceptance-receipt.v2",
-    status: "passed",
-    ...expected,
-    executedAt,
-    rawEvidenceDigest: raw,
-    verifier: { identity: "Verifier", organization: "Independent Lab", independentOfImplementationAuthor: true },
-    observations: [
-      { id: "chrome-keyboard", modality: "keyboard-only", browser: { name: "Chrome", version: "154" }, os: "Windows", result: "pass", rawEvidenceDigest: raw },
-      { id: "firefox-operator", modality: "browser-operator", browser: { name: "Firefox", version: "150" }, os: "Linux", result: "pass", rawEvidenceDigest: raw },
-      { id: "safari-operator", modality: "browser-operator", browser: { name: "Safari", version: "20" }, os: "macOS", result: "pass", rawEvidenceDigest: raw },
-      { id: "nvda", modality: "screen-reader", browser: { name: "Chrome", version: "154" }, os: "Windows", assistiveTechnology: { name: "NVDA", version: "2026.2" }, result: "pass", rawEvidenceDigest: raw },
-      { id: "voiceover", modality: "screen-reader", browser: { name: "Safari", version: "20" }, os: "macOS", assistiveTechnology: { name: "VoiceOver", version: "20" }, result: "pass", rawEvidenceDigest: raw },
-    ],
-  };
-  assert.doesNotThrow(() => validateIndependentAcceptance(receipt, expected, { now }));
-  receipt.observations[1] = { ...receipt.observations[1], browser: { name: "Chrome", version: "154" } };
-  assert.throws(() => validateIndependentAcceptance(receipt, expected, { now }), /Chrome, Firefox, and Safari/u);
+test("canonical evidence-library names cannot select weaker acceptance or operations validation", () => {
+  assert.equal(validateIndependentAcceptance, validateIndependentAcceptanceMatrix);
+  assert.equal(validateOperationalExercise, validateOperationalExerciseWithRolloutFence);
+
+  assert.throws(
+    () => validateIndependentAcceptance(statusOnlyAcceptanceReceipt(), expected, { now }),
+    error => error?.code === "UI_CONTROL_ACCEPTANCE_OBSERVATIONS",
+  );
+  assert.throws(
+    () => validateOperationalExercise(statusOnlyOperationalReceipt(), expected, { now }),
+    error => error?.code === "UI_CONTROL_OPERATIONS_CASES",
+  );
 });
 
-test("security, operations, and signed production approval remain separate gates", () => {
+test("security and signed production approval remain separate exact-subject gates", () => {
   const security = {
     schema: "hepta.ui-control.independent-security-review-receipt.v1",
     status: "passed",
     ...expected,
     executedAt,
     rawEvidenceDigest: raw,
-    reviewer: { identity: "Security Reviewer", organization: "Independent Lab", independentOfImplementationAuthor: true },
-    controls: INDEPENDENT_SECURITY_CONTROLS.map(id => ({ id, status: "passed", rawEvidenceDigest: raw })),
+    reviewer: {
+      identity: "Security Reviewer",
+      organization: "Independent Lab",
+      independentOfImplementationAuthor: true,
+    },
+    controls: INDEPENDENT_SECURITY_CONTROLS.map(id => ({
+      id,
+      status: "passed",
+      rawEvidenceDigest: raw,
+    })),
     findings: { openCritical: 0, openHigh: 0, openMedium: 1, openLow: 2 },
   };
   assert.doesNotThrow(() => validateIndependentSecurityReview(security, expected, { now }));
+
   const failedControl = structuredClone(security);
   failedControl.controls.find(item => item.id === "browser-token-non-persistence").status = "failed";
-  assert.throws(() => validateIndependentSecurityReview(failedControl, expected, { now }), /browser-token-non-persistence/u);
+  assert.throws(
+    () => validateIndependentSecurityReview(failedControl, expected, { now }),
+    /browser-token-non-persistence/u,
+  );
+
   const scopeOnly = structuredClone(security);
   delete scopeOnly.controls;
   scopeOnly.scope = [...INDEPENDENT_SECURITY_CONTROLS];
-  assert.throws(() => validateIndependentSecurityReview(scopeOnly, expected, { now }), /exactly the required control observations/u);
+  assert.throws(
+    () => validateIndependentSecurityReview(scopeOnly, expected, { now }),
+    /exactly the required control observations/u,
+  );
 
-  const operations = {
-    schema: "hepta.ui-control.operational-exercise-receipt.v1",
-    status: "passed",
-    ...expected,
-    executedAt,
-    rawEvidenceDigest: raw,
-    cases: ["rollback", "disaster-recovery", "alert-routing", "log-redaction", "credential-rotation"]
-      .map(id => ({ id, status: "passed", rawEvidenceDigest: raw })),
+  const evidenceDigests = {
+    sourceHead: "1".repeat(64),
+    mergeTree: "2".repeat(64),
+    deploymentSecurity: "3".repeat(64),
+    realBackend: "4".repeat(64),
+    independentAcceptance: "5".repeat(64),
+    independentSecurity: "6".repeat(64),
+    operationalExercise: "7".repeat(64),
   };
-  assert.doesNotThrow(() => validateOperationalExercise(operations, expected, { now }));
-
-  const evidenceDigests = { sourceHead: "1".repeat(64), mergeTree: "2".repeat(64), deploymentSecurity: "3".repeat(64), realBackend: "4".repeat(64), independentAcceptance: "5".repeat(64), independentSecurity: "6".repeat(64), operationalExercise: "7".repeat(64) };
   const approval = {
     schema: "hepta.ui-control.production-approval-receipt.v1",
     status: "approved",
@@ -323,7 +402,10 @@ test("security, operations, and signed production approval remain separate gates
 });
 
 test("failure projection strips control characters and bounds output", () => {
-  const projected = safeFailure(Object.assign(new Error("bad\nsecret\u0000text"), { code: "UI_CONTROL_TEST" }), "probe");
+  const projected = safeFailure(
+    Object.assign(new Error("bad\nsecret\u0000text"), { code: "UI_CONTROL_TEST" }),
+    "probe",
+  );
   assert.equal(projected.code, "UI_CONTROL_TEST");
   assert.equal(projected.stage, "probe");
   assert.ok(!projected.message.includes("\n"));
@@ -373,33 +455,51 @@ test("repository, deployment, and real-backend receipts remain exact-subject gat
     validateDeploymentSecurityReceipt(deployment, expected, { now }).policyProfile,
     UI_CONTROL_DEPLOYMENT_SECURITY_PROFILE,
   );
+
   const legacyPolicy = deploymentReceipt();
   delete legacyPolicy.policy;
   assert.throws(
     () => validateDeploymentSecurityReceipt(legacyPolicy, expected, { now }),
     /security-policy profile/u,
   );
+
   const weakTls = deploymentReceipt();
   weakTls.tls.protocol = "TLSv1.2";
   weakTls.tls.cipher = "ECDHE-RSA-AES256-SHA";
-  assert.throws(() => validateDeploymentSecurityReceipt(weakTls, expected, { now }), /AEAD encryption/u);
+  assert.throws(
+    () => validateDeploymentSecurityReceipt(weakTls, expected, { now }),
+    /AEAD encryption/u,
+  );
+
   deployment.checks = deployment.checks.slice(1);
-  assert.throws(() => validateDeploymentSecurityReceipt(deployment, expected, { now }), /deployment checks/u);
+  assert.throws(
+    () => validateDeploymentSecurityReceipt(deployment, expected, { now }),
+    /deployment checks/u,
+  );
 
   const backend = backendReceipt();
   assert.doesNotThrow(() => validateRealBackendReceipt(backend, expected, { now }));
 
   const missingBinding = backendReceipt();
   delete missingBinding.operationBindings.duplicateOperation;
-  assert.throws(() => validateRealBackendReceipt(missingBinding, expected, { now }), /operation binding is missing/u);
+  assert.throws(
+    () => validateRealBackendReceipt(missingBinding, expected, { now }),
+    /operation binding is missing/u,
+  );
 
   const reusedAudit = backendReceipt();
   reusedAudit.operationBindings.responseLossOperation.auditTraceIdSha256 =
     reusedAudit.operationBindings.duplicateOperation.auditTraceIdSha256;
-  assert.throws(() => validateRealBackendReceipt(reusedAudit, expected, { now }), /reused one audit trace identity/u);
+  assert.throws(
+    () => validateRealBackendReceipt(reusedAudit, expected, { now }),
+    /reused one audit trace identity/u,
+  );
 
   backend.cases = backend.cases.slice(1);
-  assert.throws(() => validateRealBackendReceipt(backend, expected, { now }), /real-backend cases/u);
+  assert.throws(
+    () => validateRealBackendReceipt(backend, expected, { now }),
+    /real-backend cases/u,
+  );
 });
 
 test("all external qualification command modules parse under the supported Node runtime", () => {

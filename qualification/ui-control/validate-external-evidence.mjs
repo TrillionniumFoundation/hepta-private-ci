@@ -9,7 +9,7 @@ import {
   sha256,
   validateAssuranceChain,
   validateDeploymentSecurityReceipt,
-  validateIndependentAcceptance,
+  validateIndependentAcceptanceMatrix,
   validateIndependentSecurityReview,
   validateOperationalExerciseWithRolloutFence,
   validateProductionApproval,
@@ -123,7 +123,7 @@ try {
   stage = "independent-accessibility-and-operator-acceptance";
   ledger.begin(stage);
   const independentAcceptance = await readEvidence("UI_CONTROL_INDEPENDENT_ACCEPTANCE_RECEIPT", "independentAcceptance");
-  validateIndependentAcceptance(independentAcceptance, expected);
+  validateIndependentAcceptanceMatrix(independentAcceptance, expected);
   ledger.accept(stage);
 
   stage = "independent-security-review";

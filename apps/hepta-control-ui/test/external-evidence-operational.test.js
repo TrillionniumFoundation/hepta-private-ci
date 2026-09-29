@@ -23,9 +23,69 @@ function receipt() {
     executedAt: "2026-09-29T09:40:00.000Z",
     rawEvidenceDigest,
     cases: [
-      ...REQUIRED_OPERATIONAL_EXERCISE_CASES
-        .filter(id => id !== "mixed-version-mutation-fence")
-        .map(id => ({ id, status: "passed", rawEvidenceDigest })),
+      {
+        id: "rollback",
+        status: "passed",
+        rollbackBuildManifestSha256: "6".repeat(64),
+        restoredBrowserBuildManifestSha256: manifestDigest,
+        mutationFenceObserved: true,
+        operationLedgerContinuity: true,
+        unresolvedOperations: 0,
+        duplicateSideEffects: 0,
+        rawEvidenceDigest,
+      },
+      {
+        id: "disaster-recovery",
+        status: "passed",
+        objectiveRpoSeconds: 300,
+        observedRpoSeconds: 12,
+        objectiveRtoSeconds: 1800,
+        observedRtoSeconds: 420,
+        operationLedgerRestored: true,
+        auditLinkageRestored: true,
+        terminalLookupContinuity: true,
+        unresolvedOperations: 0,
+        duplicateSideEffects: 0,
+        rawEvidenceDigest,
+      },
+      {
+        id: "alert-routing",
+        status: "passed",
+        alertRuleSha256: "7".repeat(64),
+        routeConfigurationSha256: "8".repeat(64),
+        objectiveAcknowledgementSeconds: 900,
+        observedAcknowledgementSeconds: 42,
+        alertTriggered: true,
+        routeMatched: true,
+        acknowledged: true,
+        escalationPolicyVerified: true,
+        rawEvidenceDigest,
+      },
+      {
+        id: "log-redaction",
+        status: "passed",
+        logCorpusSha256: "9".repeat(64),
+        secretCanaryCount: 4,
+        secretCanaryMatches: 0,
+        correlationCanaryCount: 6,
+        fullIdentifierMatches: 0,
+        redactedCorrelationMatches: 6,
+        credentialMatches: 0,
+        rawEvidenceDigest,
+      },
+      {
+        id: "credential-rotation",
+        status: "passed",
+        oldCredentialFingerprintSha256: "a".repeat(64),
+        newCredentialFingerprintSha256: "b".repeat(64),
+        activeOldCredentials: 0,
+        oldCredentialRejectedStatus: 403,
+        oldCredentialOperationCreated: false,
+        newCredentialAuthenticated: true,
+        permissionRevisionAdvanced: true,
+        postRotationLookupSucceeded: true,
+        rawEvidenceDigest,
+      },
       {
         id: "mixed-version-mutation-fence",
         status: "passed",
@@ -46,9 +106,17 @@ const options = Object.freeze({
   browserBuildManifestSha256: manifestDigest,
 });
 
-test("operational evidence binds mixed-version fencing to the exact qualified browser build", () => {
+function caseById(value, id) {
+  return value.cases.find(item => item.id === id);
+}
+
+test("operational evidence requires semantic proof for every release exercise", () => {
   const result = validateOperationalExerciseWithRolloutFence(receipt(), expected, options);
   assert.equal(result.caseCount, REQUIRED_OPERATIONAL_EXERCISE_CASES.length);
+  assert.equal(result.cases.rollback.unresolvedOperations, 0);
+  assert.equal(result.cases["disaster-recovery"].duplicateSideEffects, 0);
+  assert.equal(result.cases["log-redaction"].fullIdentifierMatches, 0);
+  assert.equal(result.cases["credential-rotation"].activeOldCredentials, 0);
   assert.deepEqual(result.mixedVersionMutationFence, {
     activeLegacyMutationSessions: 0,
     staleClientMutationStatus: 403,
@@ -57,29 +125,97 @@ test("operational evidence binds mixed-version fencing to the exact qualified br
   });
 });
 
-test("operational evidence rejects a stale mutation that created an operation record", () => {
+test("operational evidence rejects status-only placeholder cases", () => {
   const value = receipt();
-  value.cases.at(-1).staleClientOperationCreated = true;
+  value.cases[0] = {
+    id: "rollback",
+    status: "passed",
+    rawEvidenceDigest,
+  };
   assert.throws(
     () => validateOperationalExerciseWithRolloutFence(value, expected, options),
+    error => error?.code === "UI_CONTROL_OPERATIONS_CASE_FIELDS",
+  );
+});
+
+test("rollback must exercise another build and restore the exact candidate", () => {
+  const sameBuild = receipt();
+  caseById(sameBuild, "rollback").rollbackBuildManifestSha256 = manifestDigest;
+  assert.throws(
+    () => validateOperationalExerciseWithRolloutFence(sameBuild, expected, options),
+    error => error?.code === "UI_CONTROL_OPERATIONS_ROLLBACK_DISTINCT",
+  );
+
+  const wrongRestore = receipt();
+  caseById(wrongRestore, "rollback").restoredBrowserBuildManifestSha256 = "c".repeat(64);
+  assert.throws(
+    () => validateOperationalExerciseWithRolloutFence(wrongRestore, expected, options),
+    error => error?.code === "UI_CONTROL_OPERATIONS_ROLLBACK_RESTORE",
+  );
+});
+
+test("disaster recovery rejects missed objectives and duplicate effects", () => {
+  const missedRto = receipt();
+  caseById(missedRto, "disaster-recovery").observedRtoSeconds = 1801;
+  assert.throws(
+    () => validateOperationalExerciseWithRolloutFence(missedRto, expected, options),
+    error => error?.code === "UI_CONTROL_OPERATIONS_OBJECTIVE_MISSED",
+  );
+
+  const duplicate = receipt();
+  caseById(duplicate, "disaster-recovery").duplicateSideEffects = 1;
+  assert.throws(
+    () => validateOperationalExerciseWithRolloutFence(duplicate, expected, options),
+    error => error?.code === "UI_CONTROL_OPERATIONS_DR_DUPLICATE_EFFECT",
+  );
+});
+
+test("alert routing requires acknowledgement within the retained objective", () => {
+  const value = receipt();
+  caseById(value, "alert-routing").observedAcknowledgementSeconds = 901;
+  assert.throws(
+    () => validateOperationalExerciseWithRolloutFence(value, expected, options),
+    error => error?.code === "UI_CONTROL_OPERATIONS_OBJECTIVE_MISSED",
+  );
+});
+
+test("log redaction rejects full identifiers, credentials, and missing redacted correlation", () => {
+  const fullIdentifier = receipt();
+  caseById(fullIdentifier, "log-redaction").fullIdentifierMatches = 1;
+  assert.throws(
+    () => validateOperationalExerciseWithRolloutFence(fullIdentifier, expected, options),
+    error => error?.code === "UI_CONTROL_OPERATIONS_REDACTION_IDENTIFIER",
+  );
+
+  const missingRedacted = receipt();
+  caseById(missingRedacted, "log-redaction").redactedCorrelationMatches = 5;
+  assert.throws(
+    () => validateOperationalExerciseWithRolloutFence(missingRedacted, expected, options),
+    error => error?.code === "UI_CONTROL_OPERATIONS_REDACTION_CORRELATION",
+  );
+});
+
+test("credential rotation rejects an old credential that still has mutation authority", () => {
+  const value = receipt();
+  caseById(value, "credential-rotation").oldCredentialOperationCreated = true;
+  assert.throws(
+    () => validateOperationalExerciseWithRolloutFence(value, expected, options),
+    error => error?.code === "UI_CONTROL_OPERATIONS_ROTATION_RECORD",
+  );
+});
+
+test("mixed-version fencing rejects stale mutation admission and another restored build", () => {
+  const admitted = receipt();
+  caseById(admitted, "mixed-version-mutation-fence").staleClientOperationCreated = true;
+  assert.throws(
+    () => validateOperationalExerciseWithRolloutFence(admitted, expected, options),
     error => error?.code === "UI_CONTROL_OPERATIONS_STALE_MUTATION_RECORD",
   );
-});
 
-test("operational evidence rejects a rollout restored with another browser build", () => {
-  const value = receipt();
-  value.cases.at(-1).freshClientBuildManifestSha256 = "6".repeat(64);
+  const wrongBuild = receipt();
+  caseById(wrongBuild, "mixed-version-mutation-fence").freshClientBuildManifestSha256 = "d".repeat(64);
   assert.throws(
-    () => validateOperationalExerciseWithRolloutFence(value, expected, options),
+    () => validateOperationalExerciseWithRolloutFence(wrongBuild, expected, options),
     error => error?.code === "UI_CONTROL_OPERATIONS_BUILD_IDENTITY",
-  );
-});
-
-test("operational evidence rejects any remaining legacy mutation-capable session", () => {
-  const value = receipt();
-  value.cases.at(-1).activeLegacyMutationSessions = 1;
-  assert.throws(
-    () => validateOperationalExerciseWithRolloutFence(value, expected, options),
-    error => error?.code === "UI_CONTROL_OPERATIONS_LEGACY_SESSIONS",
   );
 });

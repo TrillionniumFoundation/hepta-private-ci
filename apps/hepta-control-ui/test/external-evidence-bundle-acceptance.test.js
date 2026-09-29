@@ -22,7 +22,169 @@ import {
 
 const fingerprint = Array.from({ length: 32 }, () => "AA").join(":");
 
-test("bundle validation accepts one exact, mutually bound evidence set on main", () => {
+function acceptanceObservations(rawEvidenceDigest) {
+  const observation = ({ id, modality, browser, os, flows, assistiveTechnology }) => ({
+    id,
+    modality,
+    browser,
+    os,
+    flows,
+    ...(assistiveTechnology ? { assistiveTechnology } : {}),
+    result: "pass",
+    rawEvidenceDigest,
+  });
+  return [
+    observation({
+      id: "chrome-operator",
+      modality: "browser-operator",
+      browser: { name: "Chrome", version: "154" },
+      os: "Windows",
+      flows: ["read-runtime-view", "start-confirmation", "reconcile-confirmation"],
+    }),
+    observation({
+      id: "firefox-operator",
+      modality: "browser-operator",
+      browser: { name: "Firefox", version: "150" },
+      os: "Linux",
+      flows: ["read-runtime-view", "stop-confirmation", "stale-confirmation-rejected"],
+    }),
+    observation({
+      id: "safari-operator",
+      modality: "browser-operator",
+      browser: { name: "Safari", version: "20" },
+      os: "macOS",
+      flows: ["read-runtime-view", "indeterminate-recovery-by-lookup"],
+    }),
+    observation({
+      id: "chrome-keyboard",
+      modality: "keyboard-only",
+      browser: { name: "Chrome", version: "154" },
+      os: "Windows",
+      flows: ["start-confirmation", "reconcile-confirmation", "keyboard-focus-restoration"],
+    }),
+    observation({
+      id: "firefox-keyboard",
+      modality: "keyboard-only",
+      browser: { name: "Firefox", version: "150" },
+      os: "Linux",
+      flows: ["stop-confirmation", "stale-confirmation-rejected", "keyboard-focus-restoration"],
+    }),
+    observation({
+      id: "safari-keyboard",
+      modality: "keyboard-only",
+      browser: { name: "Safari", version: "20" },
+      os: "macOS",
+      flows: ["read-runtime-view", "indeterminate-recovery-by-lookup", "keyboard-focus-restoration"],
+    }),
+    observation({
+      id: "nvda-chrome",
+      modality: "screen-reader",
+      browser: { name: "Chrome", version: "154" },
+      os: "Windows",
+      assistiveTechnology: { name: "NVDA", version: "2026.2" },
+      flows: [
+        "read-runtime-view",
+        "indeterminate-recovery-by-lookup",
+        "terminal-storage-failure-visible",
+      ],
+    }),
+    observation({
+      id: "voiceover-safari",
+      modality: "screen-reader",
+      browser: { name: "Safari", version: "20" },
+      os: "macOS",
+      assistiveTechnology: { name: "VoiceOver", version: "20" },
+      flows: [
+        "read-runtime-view",
+        "indeterminate-recovery-by-lookup",
+        "terminal-storage-failure-visible",
+      ],
+    }),
+  ];
+}
+
+function operationalCases(manifestDigest, rawEvidenceDigest) {
+  const cases = [
+    {
+      id: "rollback",
+      status: "passed",
+      rollbackBuildManifestSha256: "6".repeat(64),
+      restoredBrowserBuildManifestSha256: manifestDigest,
+      mutationFenceObserved: true,
+      operationLedgerContinuity: true,
+      unresolvedOperations: 0,
+      duplicateSideEffects: 0,
+      rawEvidenceDigest,
+    },
+    {
+      id: "disaster-recovery",
+      status: "passed",
+      objectiveRpoSeconds: 300,
+      observedRpoSeconds: 12,
+      objectiveRtoSeconds: 1800,
+      observedRtoSeconds: 420,
+      operationLedgerRestored: true,
+      auditLinkageRestored: true,
+      terminalLookupContinuity: true,
+      unresolvedOperations: 0,
+      duplicateSideEffects: 0,
+      rawEvidenceDigest,
+    },
+    {
+      id: "alert-routing",
+      status: "passed",
+      alertRuleSha256: "7".repeat(64),
+      routeConfigurationSha256: "8".repeat(64),
+      objectiveAcknowledgementSeconds: 900,
+      observedAcknowledgementSeconds: 42,
+      alertTriggered: true,
+      routeMatched: true,
+      acknowledged: true,
+      escalationPolicyVerified: true,
+      rawEvidenceDigest,
+    },
+    {
+      id: "log-redaction",
+      status: "passed",
+      logCorpusSha256: "9".repeat(64),
+      secretCanaryCount: 4,
+      secretCanaryMatches: 0,
+      correlationCanaryCount: 6,
+      fullIdentifierMatches: 0,
+      redactedCorrelationMatches: 6,
+      credentialMatches: 0,
+      rawEvidenceDigest,
+    },
+    {
+      id: "credential-rotation",
+      status: "passed",
+      oldCredentialFingerprintSha256: "a".repeat(64),
+      newCredentialFingerprintSha256: "b".repeat(64),
+      activeOldCredentials: 0,
+      oldCredentialRejectedStatus: 403,
+      oldCredentialOperationCreated: false,
+      newCredentialAuthenticated: true,
+      permissionRevisionAdvanced: true,
+      postRotationLookupSucceeded: true,
+      rawEvidenceDigest,
+    },
+    {
+      id: "mixed-version-mutation-fence",
+      status: "passed",
+      oldMutationSessionsRevoked: true,
+      cachedHtmlInvalidated: true,
+      activeLegacyMutationSessions: 0,
+      staleClientMutationStatus: 403,
+      staleClientOperationCreated: false,
+      freshClientBuildManifestSha256: manifestDigest,
+      rawEvidenceDigest,
+    },
+  ];
+  assert.deepEqual(cases.map(item => item.id), [...REQUIRED_OPERATIONAL_EXERCISE_CASES]);
+  return cases;
+}
+
+test("bundle validation accepts one exact, semantically complete evidence set on main", () => {
   const root = fileURLToPath(new URL("../../../", import.meta.url));
   const directory = mkdtempSync(join(tmpdir(), "ui-control-external-accepted-"));
   try {
@@ -32,9 +194,16 @@ test("bundle validation accepts one exact, mutually bound evidence set on main",
     writeFileSync(join(directory, "marker.txt"), "candidate\n");
     execFileSync("git", ["add", "marker.txt"], { cwd: directory });
     execFileSync("git", ["commit", "-q", "-m", "candidate"], { cwd: directory });
-    const candidateCommit = execFileSync("git", ["rev-parse", "HEAD"], { cwd: directory, encoding: "utf8" }).trim();
-    const candidateTree = execFileSync("git", ["rev-parse", "HEAD^{tree}"], { cwd: directory, encoding: "utf8" }).trim();
+    const candidateCommit = execFileSync("git", ["rev-parse", "HEAD"], {
+      cwd: directory,
+      encoding: "utf8",
+    }).trim();
+    const candidateTree = execFileSync("git", ["rev-parse", "HEAD^{tree}"], {
+      cwd: directory,
+      encoding: "utf8",
+    }).trim();
     execFileSync("git", ["update-ref", "refs/remotes/origin/main", candidateCommit], { cwd: directory });
+
     const selected = deploymentSubject("https://control.example.test/console", "release-accepted");
     const observedAt = new Date().toISOString();
     const approvalExpiry = new Date(Date.now() + 24 * 60 * 60_000).toISOString();
@@ -47,6 +216,7 @@ test("bundle validation accepts one exact, mutually bound evidence set on main",
       writeFileSync(path, text);
       return { path, digest: sha256(text) };
     };
+
     const stages = {
       sourceTestsPassed: { state: "passed" },
       browserTestsPassed: { state: "passed" },
@@ -81,10 +251,7 @@ test("bundle validation accepts one exact, mutually bound evidence set on main",
         sourceHead: { sha: candidateCommit, tree: candidateTree },
         base: { sha: "c".repeat(40), tree: "d".repeat(40) },
       },
-      verificationStages: {
-        ...stages,
-        mergeTreePassed: { state: "passed" },
-      },
+      verificationStages: { ...stages, mergeTreePassed: { state: "passed" } },
       artifacts,
       claims: {
         repositorySourceQualified: true,
@@ -98,7 +265,11 @@ test("bundle validation accepts one exact, mutually bound evidence set on main",
       candidateCommit,
       candidateTree,
       backendDeploymentDigest: selected.digest,
-      source: { sha: candidateCommit, tree: candidateTree, browserBuildManifestSha256: manifestDigest },
+      source: {
+        sha: candidateCommit,
+        tree: candidateTree,
+        browserBuildManifestSha256: manifestDigest,
+      },
       deployment: { ...selected.subject, observedAt },
       policy: {
         profile: UI_CONTROL_DEPLOYMENT_SECURITY_PROFILE,
@@ -114,7 +285,9 @@ test("bundle validation accepts one exact, mutually bound evidence set on main",
       },
       assets: {
         verifiedAssetCount: 19,
-        runtimeSubstitutions: [{ path: "index.html", kind: UI_CONTROL_CSRF_SUBSTITUTION_KIND }],
+        runtimeSubstitutions: [
+          { path: "index.html", kind: UI_CONTROL_CSRF_SUBSTITUTION_KIND },
+        ],
       },
       checks: [...REQUIRED_DEPLOYMENT_SECURITY_CHECKS],
       claims: { deployedSecurityObserved: true, exactCandidateAssetsObserved: true },
@@ -174,41 +347,32 @@ test("bundle validation accepts one exact, mutually bound evidence set on main",
     const acceptanceReceipt = writeReceipt("acceptance.json", {
       schema: "hepta.ui-control.independent-acceptance-receipt.v2",
       ...common,
-      verifier: { identity: "Independent verifier", organization: "Independent lab", independentOfImplementationAuthor: true },
-      observations: [
-        { id: "chrome-keyboard", modality: "keyboard-only", browser: { name: "Chrome", version: "154" }, os: "Windows", result: "pass", rawEvidenceDigest: evidenceRaw },
-        { id: "firefox-operator", modality: "browser-operator", browser: { name: "Firefox", version: "150" }, os: "Linux", result: "pass", rawEvidenceDigest: evidenceRaw },
-        { id: "safari-operator", modality: "browser-operator", browser: { name: "Safari", version: "20" }, os: "macOS", result: "pass", rawEvidenceDigest: evidenceRaw },
-        { id: "nvda", modality: "screen-reader", browser: { name: "Chrome", version: "154" }, os: "Windows", assistiveTechnology: { name: "NVDA", version: "2026.2" }, result: "pass", rawEvidenceDigest: evidenceRaw },
-        { id: "voiceover", modality: "screen-reader", browser: { name: "Safari", version: "20" }, os: "macOS", assistiveTechnology: { name: "VoiceOver", version: "20" }, result: "pass", rawEvidenceDigest: evidenceRaw },
-      ],
+      verifier: {
+        identity: "Independent verifier",
+        organization: "Independent lab",
+        independentOfImplementationAuthor: true,
+      },
+      observations: acceptanceObservations(evidenceRaw),
     });
     const securityReceipt = writeReceipt("security.json", {
       schema: "hepta.ui-control.independent-security-review-receipt.v1",
       ...common,
-      reviewer: { identity: "Security reviewer", organization: "Independent lab", independentOfImplementationAuthor: true },
-      controls: INDEPENDENT_SECURITY_CONTROLS.map(id => ({ id, status: "passed", rawEvidenceDigest: evidenceRaw })),
+      reviewer: {
+        identity: "Security reviewer",
+        organization: "Independent lab",
+        independentOfImplementationAuthor: true,
+      },
+      controls: INDEPENDENT_SECURITY_CONTROLS.map(id => ({
+        id,
+        status: "passed",
+        rawEvidenceDigest: evidenceRaw,
+      })),
       findings: { openCritical: 0, openHigh: 0, openMedium: 0, openLow: 1 },
     });
     const operationsReceipt = writeReceipt("operations.json", {
       schema: "hepta.ui-control.operational-exercise-receipt.v1",
       ...common,
-      cases: [
-        ...REQUIRED_OPERATIONAL_EXERCISE_CASES
-          .filter(id => id !== "mixed-version-mutation-fence")
-          .map(id => ({ id, status: "passed", rawEvidenceDigest: evidenceRaw })),
-        {
-          id: "mixed-version-mutation-fence",
-          status: "passed",
-          oldMutationSessionsRevoked: true,
-          cachedHtmlInvalidated: true,
-          activeLegacyMutationSessions: 0,
-          staleClientMutationStatus: 403,
-          staleClientOperationCreated: false,
-          freshClientBuildManifestSha256: manifestDigest,
-          rawEvidenceDigest: evidenceRaw,
-        },
-      ],
+      cases: operationalCases(manifestDigest, evidenceRaw),
     });
     const approvalEvidenceDigests = {
       sourceHead: sourceReceipt.digest,
@@ -236,6 +400,7 @@ test("bundle validation accepts one exact, mutually bound evidence set on main",
       ],
       evidenceDigests: approvalEvidenceDigests,
     });
+
     const output = join(directory, "bundle.json");
     const result = spawnSync(
       process.execPath,
@@ -267,7 +432,10 @@ test("bundle validation accepts one exact, mutually bound evidence set on main",
     assert.equal(bundle.stageResults["main-ancestry"].acceptedEvidence, true);
     assert.equal(bundle.stageResults["production-approval"].observedOutcome, "passed");
     assert.equal(bundle.stageResults["production-approval"].acceptedEvidence, true);
-    assert.deepEqual(bundle.evidenceDigests, { ...approvalEvidenceDigests, productionApproval: approvalReceipt.digest });
+    assert.deepEqual(bundle.evidenceDigests, {
+      ...approvalEvidenceDigests,
+      productionApproval: approvalReceipt.digest,
+    });
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }
