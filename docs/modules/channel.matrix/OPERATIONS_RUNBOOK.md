@@ -76,6 +76,16 @@ python3 scripts/channel_matrix_diagnostics.py --database /private/matrix_1.sqlit
 python3 scripts/channel_matrix_diagnostics.py --database /private/matrix_1.sqlite3 --format prometheus --check
 ```
 
+A transaction selector returns closed reason/retry/action codes without echoing the
+transaction ID. `active_claim_preparing`, `active_claim_authorized` and
+`active_claim_dispatching_or_unknown_effect` prohibit another retry while the
+claim is live. `expired_active_claim_requires_fenced_recovery` requires process
+lease verification before owner recovery. `retry_window_not_due` exposes the
+next durable schedule. `fresh_authority_required` requires a new broker grant and
+current revocation frontier. `remote_result_not_yet_reconciled`, legacy holds and
+parked work preserve the same transaction and require authenticated `/sync`
+reconciliation; none authorizes a new transaction or manual SQL repair.
+
 The tool uses `mode=ro`, `query_only`, a consistent read transaction and a bounded
 SQLite instruction budget. It performs no migrations, writes, retries, grant
 issuance or automatic remediation. It reads only counts/timestamps and explicitly
