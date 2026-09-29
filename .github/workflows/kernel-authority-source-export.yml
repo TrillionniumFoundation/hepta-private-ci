@@ -17,7 +17,7 @@ concurrency:
 jobs:
   export:
     name: Export exact source tree
-    runs-on: macos-15
+    runs-on: windows-2025
     timeout-minutes: 20
     steps:
       - name: Checkout exact source
@@ -33,7 +33,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           test -z "$(git status --porcelain)"
           git archive --format=tar.gz --output="$RUNNER_TEMP/hepta-private-ci-${GITHUB_SHA}.tar.gz" HEAD
-          shasum -a 256 "$RUNNER_TEMP/hepta-private-ci-${GITHUB_SHA}.tar.gz" > "$RUNNER_TEMP/source.sha256"
+          sha256sum "$RUNNER_TEMP/hepta-private-ci-${GITHUB_SHA}.tar.gz" > "$RUNNER_TEMP/source.sha256"
           git rev-parse HEAD 'HEAD^{tree}' > "$RUNNER_TEMP/source.identity"
       - name: Upload exact source archive
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
