@@ -18,7 +18,7 @@ concurrency:
 jobs:
   export:
     name: Export reviewed materialized source without publishing it
-    runs-on: macos-26-arm64
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -79,7 +79,7 @@ jobs:
           cp codex-rs/hepta-agentd/src/plasticity_host.rs diagnostic/plasticity-materialized/
           git diff --binary > diagnostic/plasticity-materialized/materialized.patch
           git diff --name-status > diagnostic/plasticity-materialized/changed-files.txt
-          shasum -a 256 diagnostic/plasticity-materialized/* > diagnostic/plasticity-materialized/SHA256SUMS
+          sha256sum diagnostic/plasticity-materialized/* > diagnostic/plasticity-materialized/SHA256SUMS
 
       - name: Retain exact materialized source
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
