@@ -5,7 +5,12 @@ use sqlx::Row;
 use sqlx::SqlitePool;
 
 use crate::EvidenceError;
+use crate::qualification::QUALIFICATION_EVIDENCE_MAX_RECEIPT_BYTES;
 use crate::schema_validation::classify_sqlx_error;
+
+const MAX_QUALIFICATION_STARTUP_ROWS: i64 = 1_000_000;
+const MAX_QUALIFICATION_STARTUP_ENVELOPE_BYTES: i64 = 512 * 1024 * 1024;
+const AUTHBUS_SIGNATURE_BYTES: i64 = 64;
 
 struct RequiredObject {
     name: &'static str,
@@ -183,6 +188,7 @@ const REQUIRED_OPERATIONAL_OBJECTS: &[RequiredObject] = &[
 
 pub(crate) async fn verify_operational_schema(pool: &SqlitePool) -> Result<(), EvidenceError> {
     verify_required_objects(pool).await?;
+    verify_qualification_startup_capacity(pool).await?;
     verify_publication_rows(pool).await?;
     verify_trust_rows(pool).await
 }
@@ -229,6 +235,84 @@ async fn verify_required_objects(pool: &SqlitePool) -> Result<(), EvidenceError>
                 )));
             }
         }
+    }
+    Ok(())
+}
+
+/// Bound the later canonical row reconstruction before it materializes rows.
+///
+/// The detailed decoder still verifies every row, digest and lineage edge. This
+/// aggregate preflight ensures a syntactically valid but oversized SQLite image
+/// cannot force startup to allocate an unbounded result set first.
+async fn verify_qualification_startup_capacity(
+    pool: &SqlitePool,
+) -> Result<(), EvidenceError> {
+    let row = sqlx::query(
+        "SELECT COUNT(*) AS row_count,
+                COALESCE(MAX(length(CAST(envelope_json AS BLOB))), 0) AS largest_envelope,
+                COALESCE(SUM(length(CAST(envelope_json AS BLOB))), 0) AS envelope_bytes,
+                COALESCE(MAX(CASE WHEN auth_signature IS NULL
+                                  THEN 0 ELSE length(auth_signature) END), 0)
+                    AS largest_signature,
+                COALESCE(SUM(CASE WHEN auth_signature IS NULL
+                                  THEN 0 ELSE length(auth_signature) END), 0)
+                    AS signature_bytes
+         FROM qualification_evidence",
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(classify_sqlx_error)?;
+    validate_qualification_startup_capacity(
+        row.try_get("row_count").map_err(classify_sqlx_error)?,
+        row.try_get("largest_envelope")
+            .map_err(classify_sqlx_error)?,
+        row.try_get("envelope_bytes")
+            .map_err(classify_sqlx_error)?,
+        row.try_get("largest_signature")
+            .map_err(classify_sqlx_error)?,
+        row.try_get("signature_bytes")
+            .map_err(classify_sqlx_error)?,
+    )
+}
+
+fn validate_qualification_startup_capacity(
+    row_count: i64,
+    largest_envelope: i64,
+    envelope_bytes: i64,
+    largest_signature: i64,
+    signature_bytes: i64,
+) -> Result<(), EvidenceError> {
+    if row_count < 0
+        || largest_envelope < 0
+        || envelope_bytes < 0
+        || largest_signature < 0
+        || signature_bytes < 0
+    {
+        return Err(corrupt(
+            "qualification startup capacity accounting contains a negative value",
+        ));
+    }
+    if largest_envelope > QUALIFICATION_EVIDENCE_MAX_RECEIPT_BYTES as i64 {
+        return Err(corrupt(
+            "qualification startup found an envelope above the canonical receipt bound",
+        ));
+    }
+    if largest_signature > AUTHBUS_SIGNATURE_BYTES
+        || signature_bytes
+            > row_count
+                .checked_mul(AUTHBUS_SIGNATURE_BYTES)
+                .ok_or_else(|| corrupt("qualification signature capacity overflow"))?
+    {
+        return Err(corrupt(
+            "qualification startup found authentication signatures above the fixed-width bound",
+        ));
+    }
+    if row_count > MAX_QUALIFICATION_STARTUP_ROWS
+        || envelope_bytes > MAX_QUALIFICATION_STARTUP_ENVELOPE_BYTES
+    {
+        return Err(EvidenceError::Unavailable(
+            "qualification startup reconstruction exceeds its row or byte budget".to_string(),
+        ));
     }
     Ok(())
 }
@@ -406,4 +490,57 @@ fn parse_digest(
 
 fn corrupt(message: &str) -> EvidenceError {
     EvidenceError::Corrupt(message.to_string())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn qualification_startup_capacity_accepts_exact_bounds() {
+        assert!(
+            validate_qualification_startup_capacity(
+                MAX_QUALIFICATION_STARTUP_ROWS,
+                QUALIFICATION_EVIDENCE_MAX_RECEIPT_BYTES as i64,
+                MAX_QUALIFICATION_STARTUP_ENVELOPE_BYTES,
+                AUTHBUS_SIGNATURE_BYTES,
+                MAX_QUALIFICATION_STARTUP_ROWS * AUTHBUS_SIGNATURE_BYTES,
+            )
+            .is_ok()
+        );
+    }
+
+    #[test]
+    fn qualification_startup_capacity_rejects_resource_and_shape_overflow() {
+        assert!(matches!(
+            validate_qualification_startup_capacity(
+                MAX_QUALIFICATION_STARTUP_ROWS + 1,
+                1,
+                1,
+                0,
+                0,
+            ),
+            Err(EvidenceError::Unavailable(_))
+        ));
+        assert!(matches!(
+            validate_qualification_startup_capacity(
+                1,
+                QUALIFICATION_EVIDENCE_MAX_RECEIPT_BYTES as i64 + 1,
+                1,
+                0,
+                0,
+            ),
+            Err(EvidenceError::Corrupt(_))
+        ));
+        assert!(matches!(
+            validate_qualification_startup_capacity(
+                1,
+                1,
+                1,
+                AUTHBUS_SIGNATURE_BYTES + 1,
+                AUTHBUS_SIGNATURE_BYTES + 1,
+            ),
+            Err(EvidenceError::Corrupt(_))
+        ));
+    }
 }
