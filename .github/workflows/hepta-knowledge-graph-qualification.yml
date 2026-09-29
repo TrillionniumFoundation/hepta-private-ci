@@ -18,11 +18,14 @@ on:
       - "scripts/hepta-knowledge-graph-budget-check.py"
       - "scripts/hepta-knowledge-graph-target-measure.py"
       - "scripts/hepta_knowledge_graph_map_verify.py"
+      - "scripts/hepta_kg_acceptance_manifest.py"
       - "scripts/hepta_kg_current_candidate_runner.py"
       - "scripts/hepta_kg_contract_evidence.py"
       - "scripts/hepta_kg_documentation_sync.py"
       - "scripts/hepta_kg_evidence.py"
       - "scripts/hepta_kg_execution_audit.py"
+      - "scripts/hepta_kg_qualification_lane.sh"
+      - "scripts/test_hepta_kg_acceptance_manifest.py"
       - "scripts/test_hepta_kg_execution_audit.py"
       - "scripts/test_hepta_kg_contract_evidence.py"
       - "scripts/test_hepta_kg_measurement.py"
@@ -48,17 +51,21 @@ on:
       - "scripts/hepta-knowledge-graph-budget-check.py"
       - "scripts/hepta-knowledge-graph-target-measure.py"
       - "scripts/hepta_knowledge_graph_map_verify.py"
+      - "scripts/hepta_kg_acceptance_manifest.py"
       - "scripts/hepta_kg_current_candidate_runner.py"
       - "scripts/hepta_kg_contract_evidence.py"
       - "scripts/hepta_kg_documentation_sync.py"
       - "scripts/hepta_kg_evidence.py"
       - "scripts/hepta_kg_execution_audit.py"
+      - "scripts/hepta_kg_qualification_lane.sh"
+      - "scripts/test_hepta_kg_acceptance_manifest.py"
       - "scripts/test_hepta_kg_execution_audit.py"
       - "scripts/test_hepta_kg_contract_evidence.py"
       - "scripts/test_hepta_kg_measurement.py"
       - "scripts/test_hepta_knowledge_graph_budget.py"
       - ".github/workflows/hepta-kg-abc-execution.yml"
       - ".github/workflows/hepta-knowledge-graph-qualification.yml"
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -69,23 +76,13 @@ concurrency:
 
 env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
 
 jobs:
-  qualification:
-    name: knowledge.graph (${{ matrix.lane }})
+  formatting:
+    name: knowledge.graph scoped formatting
     runs-on: ubuntu-24.04
-    timeout-minutes: 75
-    strategy:
-      fail-fast: false
-      matrix:
-        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
-    env:
-      CARGO_INCREMENTAL: "0"
-      CARGO_BUILD_JOBS: "2"
-      CARGO_PROFILE_TEST_DEBUG: "0"
-      CARGO_PROFILE_DEV_DEBUG: "0"
-      PYTHONDONTWRITEBYTECODE: "1"
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -93,14 +90,63 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Bind exact source identity
+      - name: Check KG-owned Rust formatting
+        working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          git diff --quiet
-          git diff --cached --quiet
-          git rev-parse HEAD HEAD^{tree}
+          mkdir -p "$RUNNER_TEMP/knowledge-graph-formatting"
+          cargo fmt --package codex-hepta-kg --package codex-hepta-prompt-registry \
+            --package codex-hepta-prompt-optimizer --package codex-hepta-memory \
+            --package codex-hepta-agentd -- --check \
+            2>&1 | tee "$RUNNER_TEMP/knowledge-graph-formatting/cargo-fmt.log"
+
+      - name: Preserve formatting evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: knowledge-graph-formatting-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/knowledge-graph-formatting
+          if-no-files-found: error
+          retention-days: 30
+
+  qualification:
+    name: knowledge.graph (${{ matrix.lane }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","main-head","base-merge"]' || '["source-head"]') }}
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      PYTHONDONTWRITEBYTECODE: "1"
+      KG_QUALIFICATION_LANE: ${{ matrix.lane }}
+      KG_EVIDENCE_DIR: ${{ runner.temp }}/knowledge-graph-${{ matrix.lane }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Preserve candidate qualification harness
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp scripts/hepta_kg_qualification_lane.sh \
+            "$RUNNER_TEMP/hepta_kg_qualification_lane.sh"
+          chmod +x "$RUNNER_TEMP/hepta_kg_qualification_lane.sh"
+
+      - name: Select current main baseline
+        if: matrix.lane == 'main-head'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git checkout --detach "$BASE_SHA"
 
       - name: Construct deterministic synthetic merge
         id: synthetic
@@ -117,15 +163,22 @@ jobs:
       - name: Bind tested candidate identity
         shell: bash
         env:
-          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+          TESTED_SHA: ${{ matrix.lane == 'main-head' && env.BASE_SHA || steps.synthetic.outputs.sha || env.SOURCE_SHA }}
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$TESTED_SHA"
           git diff --quiet
           git diff --cached --quiet
-          git rev-parse HEAD HEAD^{tree}
+          {
+            echo "lane=${{ matrix.lane }}"
+            echo "tested_sha=$(git rev-parse HEAD)"
+            echo "tested_tree=$(git rev-parse HEAD^{tree})"
+            echo "source_sha=$SOURCE_SHA"
+            echo "base_sha=$BASE_SHA"
+          } | tee "$RUNNER_TEMP/knowledge-graph-binding.txt"
 
-      - name: Verify knowledge.graph closed-world truth
+      - name: Verify candidate closed-world truth
+        if: matrix.lane != 'main-head'
         shell: bash
         run: |
           set -euo pipefail
@@ -134,29 +187,27 @@ jobs:
             --expected-tree "$(git rev-parse HEAD^{tree})"
 
       - name: Self-test target-host evidence harness
+        if: matrix.lane != 'main-head'
         shell: bash
         run: python3 scripts/hepta-knowledge-graph-target-measure.py --self-test
 
       - name: Test delivery-evidence validator
+        if: matrix.lane != 'main-head'
         run: |
           python3 -m unittest discover -s scripts \
             -p test_hepta_kg_contract_evidence.py -v
+          if test -f scripts/test_hepta_kg_acceptance_manifest.py; then
+            python3 -m unittest discover -s scripts \
+              -p test_hepta_kg_acceptance_manifest.py -v
+          fi
 
       - name: Observe repository-wide detailed-design health
+        if: matrix.lane != 'main-head'
         continue-on-error: true
         shell: bash
         run: |
           set -euo pipefail
           python3 scripts/hepta-technical-closure.py verify
-
-      - name: Check KG-owned Rust formatting
-        working-directory: codex-rs
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo fmt --package codex-hepta-kg --package codex-hepta-prompt-registry \
-            --package codex-hepta-prompt-optimizer --package codex-hepta-memory \
-            --package codex-hepta-agentd -- --check
 
       - name: Prepare native test prerequisites
         shell: bash
@@ -178,83 +229,11 @@ jobs:
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
 
-      - name: Test canonical KG kernel
-        working-directory: codex-rs
-        run: cargo test --locked -p codex-hepta-kg -- --nocapture
-
-      - name: Measure public KG operation boundaries
-        working-directory: codex-rs
+      - name: Execute full lane and preserve all results
+        shell: bash
         run: |
-          set -euo pipefail
-          cargo test --locked -p codex-hepta-kg --test operation_measurement \
-            -- --exact public_operation_boundaries_emit_nonzero_regression_metrics --nocapture
-
-      - name: Test prompt-factor owner, projection and real consumer
-        working-directory: codex-rs
-        run: |
-          set -euo pipefail
-          cargo test --locked -p codex-hepta-prompt-registry -- --nocapture
-          cargo test --locked -p codex-hepta-prompt-optimizer -- --nocapture
-
-      - name: Test durable cognitive KG owner and recovery
-        working-directory: codex-rs
-        run: cargo test --locked -p codex-hepta-memory --lib -- --nocapture --test-threads=1
-
-      - name: Test publication retry and competing-head delivery consistency
-        working-directory: codex-rs
-        run: |
-          set -euo pipefail
-          cargo test --locked -p codex-hepta-memory \
-            --test kg_delivery_consistency -- --nocapture --test-threads=1
-
-      - name: Crash/reopen KG transaction windows
-        working-directory: codex-rs
-        run: |
-          set -euo pipefail
-          cargo test --locked -p codex-hepta-memory --lib \
-            cognitive_store_tests::qualification_kg_projection_crash_windows_restore_exact_predecessor \
-            -- --ignored --exact --nocapture --test-threads=1
-
-      - name: Measure PERF-LIBRARY pilot capacity
-        if: matrix.lane == 'source-head'
-        working-directory: codex-rs
-        run: |
-          set -euo pipefail
-          cargo test --locked -p codex-hepta-memory --lib \
-            cognitive_kg_benchmark_tests::qualification_knowledge_graph_capacity_receipt \
-            -- --ignored --exact --nocapture --test-threads=1
-
-      - name: Test default Agentd production cognitive-writer profile
-        working-directory: codex-rs
-        run: |
-          set -euo pipefail
-          cargo test --locked -p codex-hepta-agentd \
-            --test cognitive_product_e2e -- --nocapture --test-threads=1
-
-      - name: Test qualification witness on top of product writer
-        working-directory: codex-rs
-        run: |
-          set -euo pipefail
-          cargo test --locked -p codex-hepta-agentd \
-            --features qualification-cognitive-write \
-            --test cognitive_product_e2e -- --nocapture --test-threads=1
-
-      - name: Exercise bounded history growth and deletion across reopen
-        working-directory: codex-rs
-        run: |
-          cargo test --locked -p codex-hepta-memory --lib \
-            cognitive_kg_benchmark_tests::history::qualification_kg_history_reopen_no_resurrection \
-            -- --ignored --exact --nocapture --test-threads=1
-
-      - name: Strict KG lint
-        working-directory: codex-rs
-        run: |
-          set -euo pipefail
-          cargo clippy --locked \
-            -p codex-hepta-kg -p codex-hepta-prompt-registry \
-            -p codex-hepta-prompt-optimizer -p codex-hepta-memory -p codex-hepta-agentd \
-            --no-deps --all-targets --features codex-hepta-agentd/qualification-cognitive-write \
-            -- -D warnings
+          set -o pipefail
+          "$RUNNER_TEMP/hepta_kg_qualification_lane.sh" "$GITHUB_WORKSPACE"
 
       - name: Preserve exact tracked source
         if: always()
@@ -264,3 +243,29 @@ jobs:
           git diff --check
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Upload immutable lane evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: knowledge-graph-${{ matrix.lane }}-${{ env.SOURCE_SHA }}
+          path: |
+            ${{ runner.temp }}/knowledge-graph-${{ matrix.lane }}
+            ${{ runner.temp }}/knowledge-graph-binding.txt
+          if-no-files-found: error
+          retention-days: 30
+
+  qualification-gate:
+    name: knowledge.graph qualification gate
+    if: always()
+    needs: [formatting, qualification]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Require formatting and every execution lane
+        env:
+          FORMATTING_RESULT: ${{ needs.formatting.result }}
+          QUALIFICATION_RESULT: ${{ needs.qualification.result }}
+        run: |
+          set -euo pipefail
+          test "$FORMATTING_RESULT" = "success"
+          test "$QUALIFICATION_RESULT" = "success"
