@@ -97,7 +97,9 @@ class RamaLockGuardTests(unittest.TestCase):
     def test_nonexact_direct_constraint_is_rejected(self):
         with self.assertRaises(RamaLockError):
             self.validate_fixture(
-                manifest_text(override={"rama-core": EXPECTED_VERSION.lstrip("=")}),
+                manifest_text(
+                    override={"rama-core": f"{EXPECTED_VERSION}, <0.4.0"}
+                ),
                 lock_text(),
             )
 
