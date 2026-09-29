@@ -39,6 +39,10 @@ permissions:
 env:
   SOURCE_SHA: ${{ inputs.source_commit || github.sha }}
   QUALIFICATION_WORKFLOW_SHA: ${{ github.workflow_sha }}
+  # macOS exposes /tmp through a symlinked /var path. The product fixtures
+  # require a canonical, short owner path so Unix sockets and private checkpoint
+  # parent validation exercise the intended boundary rather than host aliases.
+  TMPDIR: /private/tmp
 
 concurrency:
   group: objective-exact-${{ inputs.source_commit || github.sha }}-${{ inputs.merge_base || github.sha }}
@@ -102,23 +106,6 @@ jobs:
               --exact-execution "$receipt" \
               --output "$RUNNER_TEMP/objective-exact-evidence/evidence-projection.json"
           fi
-      - name: Preserve exact diagnostic source inputs
-        if: always()
-        shell: bash
-        run: |
-          set -euo pipefail
-          snapshot="$RUNNER_TEMP/objective-exact-evidence/source-snapshot"
-          mkdir -p "$snapshot/codex-rs/hepta-agentd/tests/support"
-          mkdir -p "$snapshot/codex-rs/hepta-intelligence/src"
-          mkdir -p "$snapshot/codex-rs/hepta-objective/src"
-          mkdir -p "$snapshot/scripts"
-          mkdir -p "$snapshot/.github/workflows"
-          cp codex-rs/hepta-agentd/tests/objective_product_e2e.rs "$snapshot/codex-rs/hepta-agentd/tests/"
-          cp codex-rs/hepta-agentd/tests/support/fleet.rs "$snapshot/codex-rs/hepta-agentd/tests/support/"
-          cp codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs "$snapshot/codex-rs/hepta-intelligence/src/"
-          cp codex-rs/hepta-objective/src/lib.rs "$snapshot/codex-rs/hepta-objective/src/"
-          cp scripts/hepta-objective-target-measure.py "$snapshot/scripts/"
-          cp .github/workflows/hepta-objective-target-measurement.yml "$snapshot/.github/workflows/"
       - name: Preserve observed failures and partial execution as evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

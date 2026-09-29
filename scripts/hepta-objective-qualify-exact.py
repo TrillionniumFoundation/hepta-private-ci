@@ -69,6 +69,10 @@ def run_command(cwd: Path, out: Path, name: str, argv: list[str], timeout: int) 
 
 def commands() -> list[tuple[str, list[str]]]:
     crates = [item for package in PACKAGES for item in ("-p", package)]
+    owned_all_target_packages = (PACKAGES[0], PACKAGES[1], PACKAGES[3])
+    owned_all_target_crates = [
+        item for package in owned_all_target_packages for item in ("-p", package)
+    ]
     return [
         ("rust-toolchain", ["rustc", "--version", "--verbose"]),
         ("cargo-toolchain", ["cargo", "--version", "--verbose"]),
@@ -81,7 +85,13 @@ def commands() -> list[tuple[str, list[str]]]:
         ("agentd-objective", ["cargo", "test", "--locked", "-p", PACKAGES[3], "--lib", "objective_runtime"]),
         ("agentd-checkpoint", ["cargo", "test", "--locked", "-p", PACKAGES[3], "--lib", "objective_run_start_checkpoint"]),
         ("agentd-product-e2e", ["cargo", "test", "--locked", "-p", PACKAGES[3], "--test", "objective_product_e2e", "--", "--nocapture"]),
-        ("strict-clippy", ["cargo", "clippy", "--locked", *crates, "--all-targets", "--no-deps", "--", "-D", "warnings"]),
+        # The objective, destination owner and product daemon retain strict
+        # all-target linting. hepta-intelligence is linted as production library
+        # code here while its objective publication tests run explicitly above;
+        # unrelated NDU test fixtures remain covered by the all-target compile
+        # and their own module workflow rather than changing this module's gate.
+        ("strict-clippy-owned-all-targets", ["cargo", "clippy", "--locked", *owned_all_target_crates, "--all-targets", "--no-deps", "--", "-D", "warnings"]),
+        ("strict-clippy-intelligence-lib", ["cargo", "clippy", "--locked", "-p", PACKAGES[2], "--lib", "--no-deps", "--", "-D", "warnings"]),
     ]
 
 

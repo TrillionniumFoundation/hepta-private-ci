@@ -31,6 +31,9 @@ permissions:
 
 env:
   SOURCE_SHA: ${{ inputs.source_commit || github.sha }}
+  # Keep private checkpoint parents canonical and Unix-domain socket paths short
+  # on macOS rather than inheriting the /var alias exposed by the hosted runner.
+  TMPDIR: /private/tmp
 
 concurrency:
   group: objective-target-measurement-${{ inputs.source_commit || github.sha }}
@@ -68,6 +71,7 @@ jobs:
           set -euo pipefail
           out="$RUNNER_TEMP/objective-target-measurement"
           mkdir -p "$out"
+          set +e
           python3 scripts/hepta-objective-target-measure.py \
             --expected-sha "$SOURCE_SHA" \
             --host-profile-id "github-actions-macos-15-qualification-not-deployment-acceptance" \
@@ -75,13 +79,20 @@ jobs:
             --conflict-samples 8 \
             --product-samples 8 \
             --execution-samples 2 \
-            --output "$out/measurement.json"
+            --output "$out/measurement.json" \
+            2>&1 | tee "$out/measurement.log"
+          measure_status=${PIPESTATUS[0]}
+          set -e
+          if [[ $measure_status -ne 0 ]]; then
+            exit "$measure_status"
+          fi
           python3 scripts/hepta-objective-evidence-project.py \
             --source-commit "$SOURCE_SHA" \
             --source-tree "$(git rev-parse HEAD^{tree})" \
             --current-state docs/modules/objective.compiler/CURRENT_STATE.json \
             --target-measurement "$out/measurement.json" \
-            --output "$out/evidence-projection.json"
+            --output "$out/evidence-projection.json" \
+            2>&1 | tee "$out/evidence-projection.log"
       - name: Preserve measurement or observed failure evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
