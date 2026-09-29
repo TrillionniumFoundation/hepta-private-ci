@@ -26,9 +26,18 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD:.ci/ui-native-wal-index/source.patch.gz)" = "$PATCH_BLOB_SHA"
-          mkdir -p "$RUNNER_TEMP/ui-native-wal-index-text"
-          gzip -dc .ci/ui-native-wal-index/source.patch.gz > "$RUNNER_TEMP/ui-native-wal-index-text/source.patch"
-          sha256sum .ci/ui-native-wal-index/source.patch.gz "$RUNNER_TEMP/ui-native-wal-index-text/source.patch" > "$RUNNER_TEMP/ui-native-wal-index-text/sha256.txt"
+          out="$RUNNER_TEMP/ui-native-wal-index-text"
+          mkdir -p "$out"
+          set +e
+          gzip -dc .ci/ui-native-wal-index/source.patch.gz > "$out/source.patch" 2> "$out/gzip.stderr"
+          gzip_status=$?
+          set -e
+          test -s "$out/source.patch"
+          grep -q '^diff --git a/apps/hepta-native/src/journal.rs b/apps/hepta-native/src/journal.rs$' "$out/source.patch"
+          grep -q '^diff --git a/apps/hepta-native/src/retirement.rs b/apps/hepta-native/src/retirement.rs$' "$out/source.patch"
+          grep -q '^diff --git a/docs/modules/ui.native/TECHNICAL.md b/docs/modules/ui.native/TECHNICAL.md$' "$out/source.patch"
+          printf 'gzip_status=%s\n' "$gzip_status" > "$out/decode-status.txt"
+          sha256sum .ci/ui-native-wal-index/source.patch.gz "$out/source.patch" > "$out/sha256.txt"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: ui-native-wal-index-text-${{ github.sha }}
