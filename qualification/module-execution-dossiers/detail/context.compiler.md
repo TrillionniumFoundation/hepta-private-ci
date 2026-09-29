@@ -1,7 +1,7 @@
 # context.compiler execution dossier
 <!-- GENERATED CURRENT STATE: edit CURRENT_STATE.json; detailed design is retained separately. -->
 
-State SHA-256: `18a848c116591af6e1a067c0cabbd03ff6a472c2b22c4861e293eb21d27fdd15`. Source anchor: `c21a781119e9fc241197b61a304698f023c8979b`.
+State SHA-256: `416938bb2030e741275c90f8ed5d8f04110315286c25e3d64d28f0f828d68719`. Source anchor: `c21a781119e9fc241197b61a304698f023c8979b`.
 The source anchor is provenance, not the final tested head. Only external execution receipts bind a final source/merge object.
 
 ## 1. Current implementation and evidence state
@@ -70,7 +70,7 @@ external reconciliation rather than being upgraded into evidence.
 
 - Wire the named Agentd compile_and_stage_v3 entrypoint into ordinary authenticated App Server turn admission and prove that exact product call on the immutable source/merge objects.
 - Provision and independently qualify the real provider/model tokenizer, immutable executable/interpreter/runtime, vocabulary and normalization. Hash pins detect observed artifact drift but do not attest semantic token accuracy or exclude a privileged replace-and-restore adversary.
-- Integrate transport-owner final-use/cancellation authority after the durable authorization linearization point; a revocation committed before authorization is rejected, while post-authorization cancellation remains a separate effect-owner contract.
+- Integrate transport-owner final-use/cancellation authority after the durable authorization linearization point; a revocation committed before authorization is rejected, while post-authorization remains a separate effect-owner contract.
 - Bind terminal acknowledgement to exact attempt identity before reusing a turn observer and qualify the provider evidence owner independently from Agentd.
 - Finish cross-holder raw-content redaction, remaining provider typed slots and provider/model-specific framing policies beyond the current developer-only profile.
 - Qualify durable filesystem ownership, rollback resistance, symlink/race resistance and safe retention/retirement beyond bounded JSON state.
@@ -81,22 +81,7 @@ external reconciliation rather than being upgraded into evidence.
 - Qualify schema-3 storage on the selected host for ownership, rollback resistance, power-loss behavior, symlink/race resistance, retention and capacity; bounded JSON source semantics are not target-host durability evidence.
 - Run immutable source-head and deterministic synthetic-merge qualification over the final direct-source commit; pre-commit materialization tests do not transfer qualification to the generated successor commit.
 
-## 6. Verification
-
-The final ordinary-source candidate must pass deterministic generated-truth checks, default V3 and explicit legacy profiles, V3 product regressions, typed-slot and attempt-bound terminal tests, tokenizer revocation/expiry races, process-reopen recovery, strict all-feature Clippy, dependency policy, exact source-head and deterministic synthetic-merge qualification. Read-only CI and source generation cannot self-certify independent acceptance, activation or release.
-
-The canonical workflow uses separate source-head and deterministic synthetic-merge lanes. Both must retain passing receipts with source/base/tested commit/tree, run/attempt, command exit codes, nonempty native test counts and log digests. Candidate identity is revalidated before and after each command. Pending, skipped, cancelled and missing artifacts are not passes.
-
-## 7. Retained detailed design
-
-The complete previous technical guide, implementation map, dossier and product-path design are preserved byte-for-byte below. Their earlier completion statements are historical, not current acceptance evidence. Algorithms, proof objects, byte identities, capacity requirements, threat controls, migration targets and test design remain available in full.
-
-- [TECHNICAL.md](../../../docs/modules/context.compiler/design-baseline/TECHNICAL.md) â€” retained Git blob `ffe234853d9be0666ce1980607227a4b1f05997a`
-- [IMPLEMENTATION_MAP.json](../../../docs/modules/context.compiler/design-baseline/IMPLEMENTATION_MAP.json) â€” retained Git blob `ccd04f04efde519b7deaf020e49d631dc09ffdf2`
-- [context.compiler.md](../../../docs/modules/context.compiler/design-baseline/context.compiler.md) â€” retained Git blob `4cbb4f33e5ab1984ca851f3dcbb3c1c22b361f15`
-- [CURRENT_PRODUCT_PATH.md](../../../docs/modules/context.compiler/design-baseline/CURRENT_PRODUCT_PATH.md) â€” retained Git blob `3e0574772391b71b247c25514507826860543a83`
-- [MODULE_MANIFEST.json](../../../docs/modules/context.compiler/design-baseline/MODULE_MANIFEST.json) â€” retained Git blob `938477695f05fbf08818e3387f73964c1442c04a`
-
-## 8. Change discipline
-
-Edit `CURRENT_STATE.json`, run `python3 scripts/generate_context_compiler_module_docs.py --write`, and commit all five projections together. CI uses `--check` only. Source-navigation checks are deliberately not described as compilation or independent security acceptance. No candidate workflow may rewrite Rust source or push remediation commits.
+## 6ˆ™\šYšXØ][Û‚‚•Hš[˜[Ü™[˜\K\Ûİ\˜ÙHØ[™Y]H]\İ\ÜÈ]\›Z[š\İXÈÙ[™\˜]Y]]ÚXÚÜËY˜][ŒÈ[™^XÚ]YØXŞH›Ùš[\ËŒÈ›ÙXİ™YÜ™\ÜÚ[ÛœË\Y\Ûİ[™][\X›İ[™\›Z[˜[\İËÚÙ[š^™\ˆ™]›ØØ][Û‹Ù^\H˜XÙ\Ë›ØÙ\ÜË\™[Ü[ˆ™XÛİ™\KİšXİ[Y™X]\™HÛ\K\[™[˜ŞHÛXŞK^XİÛİ\˜ÙKZXY[™]\›Z[š\İXÈŞ[]XË[Y\™ÙH]X[YšXØ][Û‹ˆ™XY[Û›HÒH[™Ûİ\˜ÙHÙ[™\˜][ÛˆØ[››İÙ[‹XÙ\YH[™\[™[XØÙ\[˜ÙKXİ]˜][ÛˆÜˆ™[X\ÙK‚‚•HØ[›ÛšXØ[ÛÜšÙ›İÈ\Ù\ÈÙ\\˜]HÛİ\˜ÙKZXY[™]\›Z[š\İXÈŞ[]XË[Y\™ÙH[™\Ëˆ›İ]\İ™]Z[ˆ\ÜÚ[™È™XÙZ\ÈÚ]Ûİ\˜ÙKØ˜\ÙKİ\İYÛÛ[Z]İ™YK[‹Ø][\ÛÛ[X[™^]ÛÙ\Ë›Û™[\H˜]]™H\İÛİ[È[™ÙÈYÙ\İËˆØ[™Y]HY[]H\È™]˜[Y]Y™Y›Ü™H[™Y\ˆXXÚÛÛ[X[™ˆ[™[™ËÚÚ\YØ[˜Ù[Y[™Z\ÜÚ[™È\Y˜XİÈ\™H›İ\ÜÙ\Ë‚‚ˆÈÈËˆ™]Z[™Y]Z[Y\ÚYÛ‚‚•HÛÛ\]H™]š[İ\ÈXÚšXØ[İZYK[\[Y[][ÛˆX\ÜÜÚY\ˆ[™›ÙXİ\]\ÚYÛˆ\™H™\Ù\™Y]KY›Ü‹X]H™[İËˆZ\ˆX\›Y\ˆÛÛ\][Ûˆİ][Y[È\™H\İÜšXØ[›İİ\œ™[XØÙ\[˜ÙH]šY[˜ÙKˆ[ÛÜš]\Ë›ÛÙˆØš™XİË]HY[]Y\ËØ\XÚ]H™\]Z\™[Y[Ë™X]ÛÛ›ÛËZYÜ˜][Ûˆ\™Ù]È[™\İ\ÚYÛˆ™[XZ[ˆ]˜Z[X›H[ˆ[‚‚‹HÕPÒ’PĞS›YJ‹‹Ë‹‹Ë‹‹ÙØÜËÛ[Ù[\ËØÛÛ^˜ÛÛ\[\‹Ù\ÚYÛ‹X˜\Ù[[™KÕPÒ’PĞS›Y
+H8 %™]Z[™YÚ]›Øˆ™™LŒÍLÙX™L˜ÙLNNŒÌŒØMŒYŒNNMØX‹HÒSTSQS•USÓ—ÓPTšœÛÛ—J‹‹Ë‹‹Ë‹‹ÙØÜËÛ[Ù[\ËØÛÛ^˜ÛÛ\[\‹Ù\ÚYÛ‹X˜\Ù[[™KÒSTSQS•USÓ—ÓPTšœÛÛŠH8 %™]Z[™YÚ]›ØˆØÙŒY™MLNXÙXYŒŒMYŒÌYÌY™™Œ˜‹HØÛÛ^˜ÛÛ\[\‹›YJ‹‹Ë‹‹Ë‹‹ÙØÜËÛ[Ù[\ËØÛÛ^˜ÛÛ\[\‹Ù\ÚYÛ‹X˜\Ù[[™KØÛÛ^˜ÛÛ\[\‹›Y
+H8 %™]Z[™YÚ]›ØˆØ˜ŒÌÙMXXŒNNØNLYŒÙØ˜ŒØÌXÌŒ˜ŒÍŒYŒMX‹HĞÕT”‘S•Ô“ÑPÕÔU›YJ‹‹Ë‹‹Ë‹‹ÙØÜËÛ[Ù[\ËØÛÛ^˜ÛÛ\[\‹Ù\ÚYÛ‹X˜\Ù[[™KĞÕT”‘S•Ô“ÑPÕÔU›Y
+H8 %™]Z[™YÚ]›ØˆÙLMÍÍÌŒÎLXÌXŒØÌMLMLÎŒMØNØ‹HÓSÑSWÓPS’Q‘TÕšœÛÛ—J‹‹Ë‹‹Ë‹‹ÙØÜËÛ[Ù[\ËØÛÛ^˜ÛÛ\[\‹Ù\ÚYÛ‹X˜\Ù[[™KÓSÑSWÓPS’Q‘TÕšœÛÛŠH8 %™]Z[™YÚ]›ØˆLÎÍÍMYŒY˜™ŒNLÌÎÙÌÎMÌM˜ÌX‚ˆÈÈˆÚ[™ÙH\ØÚ\[™B‚‘Y]ÕT”‘S•ÔÕUKšœÛÛ˜[ˆ]ÛŒÈØÜš\ËÙÙ[™\˜]WØÛÛ^ØÛÛ\[\—Û[Ù[WÙØÜËœHK]Üš]X[™ÛÛ[Z][š]™H›Ú™Xİ[ÛœÈÙÙ]\‹ˆÒH\Ù\ÈKXÚXÚØÛ›KˆÛİ\˜ÙK[˜]šYØ][ÛˆÚXÚÜÈ\™H[X™\˜][H›İ\ØÜšX™Y\ÈÛÛ\[][ÛˆÜˆ[™\[™[ÙXİ\š]HXØÙ\[˜ÙKˆ›ÈØ[™Y]HÛÜšÙ›İÈX^H™]Üš]H\İÛİ\˜ÙHÜˆ\Ú™[YYX][ÛˆÛÛ[Z]Ë‚
