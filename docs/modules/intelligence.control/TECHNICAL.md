@@ -14,247 +14,375 @@
 
 **Bootstrap work package:** `INTELLIGENCE-A0-Q0.63`
 
-This stable document is the implementation guide for `intelligence.control`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
+This is the effective implementation guide. Canonical JSON registries retain
+ownership of module, contract, data-authority and delivery facts. This guide,
+[product composition](PRODUCT_CLOSURE.md),
+[restart semantics](RESTART_RECONCILIATION.md), the
+[durable-operation ADR](ADR-001-DURABLE-OPERATION-RECOVERY.md),
+[operations runbook](OPERATIONS_RUNBOOK.md) and
+[compatibility contract](COMPATIBILITY.md) describe the same current source,
+not competing historical amendments. Git history preserves earlier designs.
+Source presence, native execution, complete product composition, independent
+acceptance and activation are separate claims.
 
 ## 1. Identity, mission and ownership
 
-Compose objective, utility, neuron, intuition, prompt, context and evaluation ports without owning their facts.
+Compose objective, utility, neuron, intuition, prompt, context and evaluation
+owners without taking ownership of their facts. Placement is plane `domain`,
+kind and architecture role `composition_facade`, state model `ephemeral`.
+The facade grants no global optimality, execution or mutation authority.
 
-The primary owner `intelligence-platform` controls changes inside the declared target roots and is accountable for correctness, backward compatibility, test evidence and rollback. The deputy `qualification-plane` independently reviews public contracts, authority checks, persistence, migrations, concurrency, resource limits and activation behavior. A work package may narrow this scope but may not widen it. Cross-owner changes require an explicit co-owner or a separate integration package.
-
-Plane `domain`, kind `composition_facade`, state model `ephemeral` and architecture role `composition_facade` define placement. The module may optimize locally, but cannot claim global optimality or absorb another module's durable facts.
+The primary owner controls the declared source root. The deputy independently
+reviews contracts, authority, persistence, concurrency and qualification.
+Agentd owns product lifetime; kernel.operations owns operation/outbox state;
+learning.ledger owns learning records and its independent witness. Cross-owner
+changes use explicit integration ownership, not a second intelligence store.
 
 ## 2. Source binding and implementation status
 
-Declared exclusive target roots:
+Declared and existing exclusive root: `codex-rs/hepta-intelligence`.
+No missing declared root or alternative authoritative implementation root exists.
+`existing_bound` records location, not product completion.
 
-- `codex-rs/hepta-intelligence`
+The pure canonical API lives in `src/canonical.rs`, with mutable-DTO checks in
+`src/canonical_invariants.rs`. Agentd's named implementation is split into
+`intelligence_product.rs`, `intelligence_product_ports.rs`,
+`intelligence_product_runner.rs` and `intelligence_prepared_integrity.rs`.
+Input admission is `intelligence_ingress.rs`; durable learning is
+`intelligence_learning.rs` with payload, clock and scheduling companions.
 
-Existing declared roots at this exact source snapshot:
+The authenticated `ObjectiveStart` route invokes the runner only for an
+atomically configured runner/provider profile. That profile also requires the
+independent authority rollback witness and process hard-timeout fence. Ordinary
+CLI bootstrap neither constructs an authorized seven-owner factory nor accepts
+a runner-only pseudo-profile; product embeddings use
+`AgentdConfig::with_canonical_intelligence_profile`. `ContextAttached` is not
+proof that Decision publication, physical App Server execution and Outcome
+recovery formed one observed product episode. Those live edges remain acceptance
+work.
 
-- `codex-rs/hepta-intelligence`
-
-Non-authoritative implementation evidence roots:
-
-None.
-
-Declared roots not yet present:
-
-None.
-
-`existing_bound` is a source-location fact: the declared roots exist. The source and test references below identify what can be inspected and invoked; only exact-candidate execution receipts establish that the checks passed. This status does not establish runtime composition, operator acceptance, selection, promotion or release. Any source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide together.
-
-### Native source and scope
-
-The canonical source is [codex-rs/hepta-intelligence/src/canonical.rs](../../../codex-rs/hepta-intelligence/src/canonical.rs); root exports include `build_legal_candidates`, `prepare_intelligence_run`, `decide_boundary`, `assemble_context` and `validate_current_snapshot`. The named product-runner implementation is [codex-rs/hepta-agentd/src/intelligence_product.rs](../../../codex-rs/hepta-agentd/src/intelligence_product.rs). It supplies concrete adapters to the seven authoritative owner crates and retains no replacement store. The configured Agentd product profile now invokes this runner from the authenticated `ObjectiveStart` daemon ingress through a host-owned seven-owner invocation provider; the bare compatibility profile leaves that provider absent and does not advertise canonical execution. Historical `run_read_only_vertical`, `run_shadow_pipeline{,_v2}`, `run_evaluated_shadow_v1` and `compose` remain compatibility/reference surfaces, not parallel product facades. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/intelligence.control.md#8-current-native-implementation) for the exact claim boundary.
+Historical `compose`, read-only vertical and shadow/evaluated-shadow entrypoints
+remain compatibility or qualification APIs, not parallel product choices.
 
 ## 3. Boundary, responsibilities and non-goals
 
-Direct dependencies:
+Direct dependencies are `objective.compiler`, `utility.ndu`, `neuron.runtime`,
+`intuition.policy`, `prompt.optimizer`, `context.compiler` and `learning.eval`.
+Authoritative write domains: none. Explicitly denied capabilities are
+`production_write`, `model_authority` and `physical_effect`.
 
-- `objective.compiler`
-- `utility.ndu`
-- `neuron.runtime`
-- `intuition.policy`
-- `prompt.optimizer`
-- `context.compiler`
-- `learning.eval`
+Inputs and receipts are bounded, versioned and identity-bound. A digest is not
+an authenticated producer or a permission. Missing authority, source drift,
+unknown critical fields, invalid scope and invalid canonical identity fail
+closed. Cross-owner mutation uses the existing local transaction, durable
+intent, outbox, destination deduplication and fenced reconciliation protocol.
 
-Authoritative write domains:
-
-None.
-
-Explicitly denied capabilities:
-
-- `production_write`
-- `model_authority`
-- `physical_effect`
-
-The module accepts only registered, bounded, versioned inputs. It rejects unknown critical fields and treats missing authority, stale revisions, scope mismatch and digest mismatch as hard failures. It never directly writes another owner's store. Cross-owner mutation follows local transaction, durable intent, outbox, destination deduplication, acknowledgement and fenced reconciliation.
-
-Non-goals include becoming a general state store, bypassing the Codex execution spine, interpreting model prose as authority, minting an authority consumed by the same component, or converting qualification evidence into deployment authority. A façade may sequence modules but may not own their facts.
+Do not introduce a second App Server executor, intelligence database, central
+all-Agent context, arbitrary self-issued trust, model-prose authorization or a
+parallel Laya/meta-RL control loop. Facts and inference remain with their owners.
 
 ## 4. Internal architecture and component decomposition
 
-The bounded components are:
+The current canonical execution order is:
 
-- `canonical seven-owner snapshot and currentness fence`
-- `ordered objective -> NDU -> neuron -> prompt -> intuition -> context -> evaluation pipeline`
-- `advisory decision/context boundary compiler`
-- `Agentd product runner and final-use fence`
-- `durable Decision/Outcome append plus exact indeterminate replay seam`
-- `compatibility read-only/evaluated-shadow adapters`
+```text
+objective validation -> NDU -> neuron -> prompt optimization
+-> calibrated intuition -> context compilation -> signed evaluation
+-> authority-free envelope -> Agentd context attachment
+```
 
-Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
+Intuition abstention/slow-path ends before context/evaluation/dispatch. Every
+stage checks its frozen owner binding before and after its call. The canonical
+facade and Agentd each perform a final currentness check.
 
-Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. Queue acceptance or handler completion is never inferred as external success. Component interfaces support deterministic fixtures and fault injection.
+Concrete owner adapters now retain the actual NDU evaluation digest and actual
+neuron result. Neuron receives that NDU digest; intuition's state identity is
+bound to the actual neuron output. A host template may leave these derived
+fields zero before the owner call; a nonzero conflicting value is rejected.
+The owner never receives zero as an admitted predecessor. NDU contributions
+must cover the canonical candidates, with only the owner's reserved `abstain`
+entry permitted additionally. Intuition may not mark an NDU-infeasible candidate
+as legal and unvetoed. These checks do not manufacture calibrated scores.
 
-Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
+The physical canonical profile now consumes a privately source-bound
+`PreparedPromptDeliveryV1`, revalidates the actual serialization proof and
+retains the exact context attachment and payload. Prompt output and neural output
+jointly condition intuition; conflicting precomputed state fails. Physical send
+uses only `PreparedAgentdIntelligenceRunV1::physical_prompt`, not arbitrary prompt
+text. Compatibility preparation without this delivery cannot execute the physical
+product path. Live selected-action semantics and quality remain acceptance gates.
 
 ### Multiscale DecisionCell integration target
 
-Compose one product path using the existing objective, owner evidence, NDU value, cell/organ inference, calibrated policy and context stages. Keep backend-specific Laya APIs behind inference/Neuron adapters; preserve outcomes back to the ledger. Do not add a parallel Laya control loop or store.
-
-Use one product composition for circuit-triggered cell/organ calls and result feedback. Do not add an independent Laya flow engine or flatten every organ into private cells. See the
-[Neural Circuit execution contract](../automation.taskflow/TECHNICAL.md#41-neural-circuit-target-and-legacy-boundary).
-
-Required targeted tests: coherent bundle across stages, required-owner outage, source/parameter drift and actual downstream outcome linkage.
-
-The shared contract and record design are in
-[DecisionCell mechanics](../../learning/NEURAL_BIOMIMICRY_SPEC.md);
-[organ composition](../../cns/TECHNICAL.md) defines the stable outer boundary.
-This target does not change the current native implementation, source status or
-product/activation evidence recorded below. No existing wire version is redefined.
-
-### Capacity, depth and learning evidence target
-
-Compose one mixed computation path with explicit continuous regions, discrete control and external observation. Record scope-limited capacity/depth/budget facts without conflating hierarchy with gradient depth or installing a parallel meta-RL controller.
-
-Detailed conditions are in [Cell expressivity](../../learning/NEURAL_BIOMIMICRY_SPEC.md)
-and [learning experiments](../../learning/CAUSAL_LONGITUDINAL_SPEC.md). This is a
-planned integration requirement, not a change to source or product status.
+Use the existing objective, NDU, cell/organ inference, calibrated policy,
+context and learning owners. Keep backend-specific Laya APIs behind inference
+and Neuron adapters. Circuit-triggered calls retain the existing
+[Neural Circuit contract](../automation.taskflow/TECHNICAL.md#41-neural-circuit-target-and-legacy-boundary).
+The [DecisionCell mechanics](../../learning/NEURAL_BIOMIMICRY_SPEC.md) and
+[organ composition](../../cns/TECHNICAL.md) define scope, capacity and depth.
+Coherent bundles, required-owner outage, source/parameter drift and downstream
+outcome linkage need actual tests; these targets do not change product status.
 
 ### Shared-experience and isolated-Agent integration target
 
-Compose local task/context and permitted shared evidence through existing owners, with independent feedback to learning. Do not create a central all-Agent context, data writer or hidden parameter updater. Actual evidence delivery and selected bundles remain run-bound.
-
-The target [HNMF contract](../../hnmf/TECHNICAL.md) and
-[migration sequence](../../hnmf/MIGRATION.md#7a-shared-experience-delivery-through-existing-owners)
-retain current source, wire and capability states.
+Permitted shared evidence flows through existing owners, with local task/context
+isolation and independent feedback. Preserve the [HNMF contract](../../hnmf/TECHNICAL.md)
+and [migration sequence](../../hnmf/MIGRATION.md#7a-shared-experience-delivery-through-existing-owners).
+Capacity/depth claims and learning gains require the scoped experiments in
+[causal longitudinal learning](../../learning/CAUSAL_LONGITUDINAL_SPEC.md), not
+an interpretation of hierarchy as gradient depth.
 
 ## 5. Contracts, ports and compatibility
 
-Produced contracts:
+Produced contracts: `IntelligenceHostEnvelopeV1`, `LegalActionCandidateSetV1`.
+Consumed ports, protocols and read domains are enumerated in the unchanged
+registry projection below. No wire meaning is silently redefined.
 
-- `IntelligenceHostEnvelopeV1`
-- `LegalActionCandidateSetV1`
+Canonical candidate IDs are sorted and duplicate-free. Selection must belong
+to the admitted set and have positive propensity. A mutable retained outcome
+is revalidated against the original request: nested run identity, decision
+content/digest, context binding and envelope dependencies are rehashed.
+Changing to another legal candidate or another positive propensity still changes
+the decision and cannot retain the old digest.
 
-Consumed contracts:
+The Agentd prepared object additionally retains a private frozen attachment.
+Learning publication rechecks mutable public fields against that attachment and
+the exact dispatch-proposal digest. Rehashing substituted public fields cannot
+change the original attachment. Pure DTO checks do not authenticate arbitrary
+callers or prove a physical provider observation.
 
-- `DomainRead::eligibility_trace_checkpointV1`
-- `DomainRead::ndu_preference_projectionV1`
-- `DomainRead::ndu_utility_projectionV1`
-- `DomainRead::neuron_state_checkpointV1`
-- `LearningArtifactManifestV1`
-- `ModulePort::context.compiler::intelligence.control`
-- `ModulePort::intuition.policy::intelligence.control`
-- `ModulePort::learning.eval::intelligence.control`
-- `ModulePort::neuron.runtime::intelligence.control`
-- `ModulePort::objective.compiler::intelligence.control`
-- `ModulePort::prompt.optimizer::intelligence.control`
-- `ModulePort::utility.ndu::intelligence.control`
-
-Critical protocol schemas:
-
-- `IntelligenceHostEnvelopeV1`
-- `LearningArtifactManifestV1`
-- `LegalActionCandidateSetV1`
-
-Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
-
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+Compatibility is additive only where registered. Serialization, duplicate,
+unknown/missing-field, enum, size and canonical-order tests are required for
+wire surfaces. Native-only helpers are not automatically wire implementations.
 
 ## 6. Data authority, persistence and migrations
 
-Owned authoritative or rebuildable domains:
+Owned authoritative/rebuildable domains: none. Read domains include NDU and
+neuron projections and the additional registered support/coefficient records.
+The facade must never directly replace those stores.
 
-None.
+Formal default-build Decision/Outcome adapters call only `LedgerWriter`.
+The product learning host first writes an immutable V2 payload sidecar and syncs
+it and its directory, then publishes the existing kernel.operations intent.
+The sidecar retains the original operation identity, predecessor, evidence,
+principal/controller/key/credential/scope/epoch bindings and event time.
+V2 serialization and digest grammars remain unchanged by the code split.
 
-Read-only data dependencies:
-
-- `eligibility_trace_checkpoint`
-- `ndu_preference_projection`
-- `ndu_utility_projection`
-- `neuron_state_checkpoint`
-
-For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
-
-Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
-
-Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
+Sidecar publication uses a same-directory temporary file and atomic no-replace
+publication rather than overwrite. Unix reads and publication walk an opened
+parent-directory handle without following links; the opened leaf is checked for
+regular-file identity, permissions, link count and actual byte bounds. Orphan
+retention, host-root write-side replacement, disk-full and complete process-loss
+qualification remain separate obligations. Migration must preserve old V2 bytes
+and the ability to identify acknowledged, rejected, quarantined and unresolved
+operations. Never clear a journal to regain capacity or erase uncertainty.
 
 ## 7. Runtime, concurrency and transaction model
 
-The canonical facade is in-process and ephemeral. Agentd owns the product-call lifetime. Every owner stage is fenced by a before/after reread of owner generation, implementation digest, current key digest/epoch, authority epoch and revocation frontier; selected runs receive another all-owner fence before the host envelope and another Agentd fence before dispatch/ledger use. The currentness manifest is Ed25519-authenticated against a verifier configured outside the manifest; the signed domain includes authority epoch, revocation frontier, all seven owner generation/implementation/key bindings and signer identity. The file is bounded and, on Unix, must be a non-symlink regular file without group/world write permission.
+One durable RunStart supplies the physical run identity. Running generation is
+`spawn_generation + 1`; the canonical fence constructor is shared by admission,
+invocation and coordinator checks. Configuration changes create a new profile
+or generation rather than modifying a current run.
 
-Agentd runs cognition inside a blocking worker that receives no effect or ledger capability. Each real owner call is measured against its stage budget and the full worker is bounded by the total cognition budget. A late computation result is discarded rather than published; this isolates effect publication but does not claim that `spawn_blocking` can terminate a running synchronous Rust stage. The daemon separately owns `AgentRunCoordinator`; its control protocol exposes typed start/attach/status/dispatch/cancel/terminal transitions, with admission time taken by Agentd rather than supplied by the client. Durable Decision/Outcome writes occur only after the cognition worker and final-use fence, through the existing sealed `DurableLearningJournal`.
+The runner uses four slots. Actual blocking work retains its permit even if the
+request times out or is dropped. A worker-owned completion guard starts an
+independent OS-thread watchdog; request-future cancellation cannot disarm it.
+The guard joins its watchdog before releasing the worker permit. The advertised
+canonical profile requires a nonzero process hard-timeout grace; an overrun exits
+Agentd with code 70 so Supervisor must create a fresh generation and durable
+reconciliation must classify every unknown operation. Compatibility-only direct
+preparation may omit this fence, but cannot be advertised as
+`intelligence.canonical_v1`.
 
-For physical model execution, `AppServerModelDriver::run_intelligence` accepts a non-authorizing exact run binding. Before a `turn/start`, runtime.codex requires the same Agentd run to be `ContextAttached` at the expected revision with matching context and intelligence-envelope digests, persists its native dispatch record, atomically advances Agentd to `Dispatched`, and only then crosses the App Server effect boundary.
+The host-owned invocation factory has its own bounded in-flight policy and
+absolute deadline derived from the durable RunStart. It runs inside the runner's
+supervised lifetime, so a detached or stuck factory cannot evade the canonical
+process fence. Signed-evaluation manifest reads and final all-owner revalidation
+also run inside supervised work and share the remaining monotonic cognition
+budget. Owner call latency is recorded before propagating either success or
+failure.
 
-[Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at every authoritative owner boundary.
+Deadlines are not conflated. The durable RunStart deadline bounds invocation and
+admission; the cognition budget is the minimum of its requested total and the
+remaining RunStart time; the native App Server driver retains its own physical
+request timeout and reconciliation semantics. None of these clocks converts an
+unknown physical result into safe replay.
+
+Learning file/grant/writer operations use bounded blocking slots and retain real
+capacity until completion after request detachment. Arbitrary synchronous storage
+I/O is not claimed to be safely interruptible in-process; its unknown outcomes
+remain durable reconcile-only work. Supervisor replacement for cognition exit 70
+and learning-I/O crash cuts remain target-host qualification, not missing source
+interfaces.
+
+[Shared concurrency requirements](../README.md#shared-concurrency-and-transactions)
+remain mandatory at every owner boundary.
 
 ## 8. Failure semantics, recovery and rollback
 
-Owner rejection, unauthenticated/unavailable currentness, key/generation/authority/revocation drift, stage timeout and total timeout all fail before dispatch publication. Abstain and slow-path are explicit terminal advisory outcomes and never fabricate context/evaluation/dispatch receipts. Durable ledger `Indeterminate` or ambiguous I/O returns the exact event plus its original predecessor as `PendingIntelligenceLedgerAppendV1`; reconciliation requires a freshly recovered journal and exact replay.
+`kernel.operations` owns durable identity, operation/outbox state and recovery.
+`DurableFailureClass` preserves identity, capacity, lease, authority, clock,
+corruption and unknown-outcome distinctions. `RecoveryDisposition` restricts
+callers to reject, same-identity retry, capacity backoff, reconcile-only,
+successor-owner replacement or clock/store repair. `Prepared` and a proven
+`NotDispatched` effect are the only generic same-identity retry cases.
 
-After the physical dispatch write-ahead, a lost `turn/start` acknowledgement is never replay evidence: the Agentd run is moved to `Indeterminate`. Cancellation or deadline handling first records the Agentd cancellation transition; if the interrupt/grace window still lacks a terminal provider observation, the run also becomes `Indeterminate`. A real terminal App Server observation is committed back to the same Agentd run revision. Failure of that terminal-control RPC is reported as reconciliation-required and does not erase or upgrade the provider observation. No queue/handler/transport acknowledgement is inferred as terminal external success.
+Durable Unix timestamps are obtained from an injected `DurableOperationClock`
+after SQLite grants the immediate writer transaction. Monotonic elapsed budgets
+remain owner-local and absolute. See the
+[decision record](ADR-001-DURABLE-OPERATION-RECOVERY.md) and
+[runbook](OPERATIONS_RUNBOOK.md).
 
-[Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
+See [the effective restart contract](RESTART_RECONCILIATION.md). Event time is
+historical Unix milliseconds; current evidence validation reads the host clock
+at enqueue and actual application. A future historical timestamp/clock rollback
+is not normalized into an old valid instant. Expired evidence cannot authorize
+its first application merely because it was valid when enqueued.
+
+Recovery observes the exact destination event before requesting a new grant.
+A missing event can be applied only with fresh final-use authority, current
+verified evidence and the original immutable predecessor. Historical observation
+is delegated to `LedgerWriter::reconcile_exact_event_v1`, which requires complete
+event and predecessor equality and the independent witness. It can repair only
+the exact already-committed last record; it never creates a missing event. Full
+daemon restart qualification is still separate.
+
+Stable keyset traversal prevents a timestamp-ordered poison prefix from owning
+every recovery page. Recovery and fresh dispatch receive separate bounded
+shares; batch size one alternates them. Transient grant failure before dispatch
+can defer only an exact, live Prepared claim. A dispatching/unknown operation
+cannot re-enter the ordinary queue. Transient failures back off without
+silently changing their logical identity.
+
+Physical lost acknowledgement, uncertain interruption and absent terminal
+provider evidence remain `Indeterminate`. Never retry a physical effect under
+a new ID to make uncertainty disappear. Recovery, drain, cancellation and
+release are not interchangeable states.
 
 ## 9. Security, privacy and threat controls
 
-Owned threat entries:
+Owned registry threat entries: none. Applicable controls still include authority,
+replay, file replacement, source substitution and privacy boundaries.
 
-None.
+The manifest is verified with an externally configured Ed25519 key, strict
+signature checks and weak-key rejection. It has exactly seven owner rows;
+actual file reads are capped at 64 KiB and the opened Unix object, permissions,
+link count and parent identity are checked without following path components.
+Every signature-verified manifest is admitted through an independently retained
+`IntelligenceAuthorityRollbackGuardV1` before it can satisfy a canonical
+currentness read. Lower authority epochs and same-epoch digest substitution fail
+closed across reopen. The witness grants no authority and must live outside the
+Agent home and run roots.
 
-The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
+Target-host backup separation, privileged parent replacement, non-Unix handle
+parity and crash injection remain qualification gates. They are not reasons to
+relabel the implemented no-follow reader or durable rollback floor as absent.
 
-Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
+No secrets or credentials belong in ordinary logs, prompt factors or learning
+datasets. Runtime grants remain short-lived, payload-bound and revocation-aware.
+Independent security review is mandatory for physical and durable boundaries.
 
 ## 10. Performance, capacity and hot-path policy
 
-The canonical source enforces at most 128 legal candidates, exactly seven owner bindings, non-zero per-stage budgets, a bounded total cognition budget and monotonic elapsed-time rejection for every real owner call. Agentd additionally applies a total worker timeout and a four-worker admission bound. A permit remains owned by the actual blocking computation until it finishes, including after request timeout or cancellation. Saturation returns `Busy` without enqueueing another computation; it is not a successful advisory outcome. This bound does not wire the runner into the daemon request path. These are source enforcement facts, not target-host latency/RSS measurements; target-host qualification remains separate.
+The pure facade accepts at most 128 candidates and exactly seven owner bindings.
+NDU's own 128-candidate bound includes its required reserved abstain entry;
+combined inputs must satisfy both owners, not add an unaccounted 129th entry.
+Stage budgets are positive and their checked sum fits the total budget.
 
-[Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
+Learning payloads are capped at 1 MiB. Reconciliation cadence is 10 ms to one
+hour and each iteration visits at most 256 scheduled operations. Work is not
+unbounded merely because a request detached. These are code bounds, not RSS,
+latency or throughput measurements.
+
+Further optimization should reuse one authenticated manifest per validation
+boundary and owner-local exact ledger indexes without weakening between-stage
+freshness or exact authenticated event equality. Current historical observation
+still clones/scans ledger history; no index-speedup claim is made.
+
+[Shared performance requirements](../README.md#shared-performance-and-capacity)
+and selected-host measurements remain applicable.
 
 ## 11. Observability and operations
 
-The canonical product topology is Agentd -> intelligence.control -> seven authoritative owner ports -> Agentd run lifecycle -> runtime.codex/App Server. The facade produces an authority-free host envelope; Agentd freezes that exact envelope into a `ContextAttached` run record and derives only a dispatch proposal digest after final currentness. The native inference worker can consume the binding programmatically or through the all-or-none `--intelligence-*` CLI arguments; it cannot manufacture a run or bypass the Agentd revision fence. Decision and independently observed Outcome use the existing learning ledger owner. Legacy read-only/evaluated-shadow entrypoints remain observable compatibility surfaces but are not product routing choices.
+Telemetry includes worker activity/peak/busy, timeout/late completion/crash,
+stage latency/failure class, currentness/identity rejection, advisory outcomes
+and run-phase dwell. Kernel.operations exposes queued, leased, acknowledged,
+indeterminate and terminal backlog counts.
 
-Current operating and state-format references:
+`capability_profile_digest` uses the versioned v2 domain, length-delimited
+path/signer, rollback profile and full hard-timeout precision. It identifies a
+configuration, not an activation grant. Old profile digests are historical
+qualification identities.
 
-- [codex-rs/hepta-intelligence/EVALUATED_SHADOW.md](../../../codex-rs/hepta-intelligence/EVALUATED_SHADOW.md).
-- [docs/readiness/LANE_B_NATIVE_HOST.md](../../readiness/LANE_B_NATIVE_HOST.md).
-
-[Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
+Operators must distinguish source declaration, ContextAttached, physical
+Dispatching, observed terminal, ledger commit and witness acknowledgement.
+The compatibility runbook remains [EVALUATED_SHADOW.md](../../../codex-rs/hepta-intelligence/EVALUATED_SHADOW.md);
+[Lane B host](../../readiness/LANE_B_NATIVE_HOST.md) describes the runtime owner.
+[Shared operations requirements](../README.md#shared-observability-and-operations)
+apply; no default CLI fabricates owner/evidence sources.
 
 ## 12. Verification and qualification
 
-Current focused test sources (source references, not pass receipts):
+`IMPLEMENTATION_MAP.json` and `TEST_TRACEABILITY.json` are reviewed source/test
+declarations. They explicitly identify requirement support scope, package,
+source file and test, including integration tests outside `src`. They are not
+an automatically promoted count of functions or a complete repository inventory.
 
-- [codex-rs/hepta-intelligence/src/canonical_tests.rs](../../../codex-rs/hepta-intelligence/src/canonical_tests.rs): first-class NDU/seven-owner order, abstention, post-call generation drift, key rotation, wrong-owner receipt and candidate closure.
-- [codex-rs/hepta-agentd/src/intelligence_product_tests.rs](../../../codex-rs/hepta-agentd/src/intelligence_product_tests.rs): real owner APIs, signed-currentness tamper rejection, exact Agentd admit/context/dispatch/terminal lifecycle, durable Decision -> independent Outcome, acknowledged reopen/idempotent retry, final-use revocation race, missing owner and total timeout.
-- [codex-rs/hepta-agent-protocol/src/lib.rs](../../../codex-rs/hepta-agent-protocol/src/lib.rs): strict/bounded run-lifecycle wire round trip and proof that admission time is not client supplied.
-- [codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs) and native-run-control tests: physical turn terminal/cancellation/indeterminate semantics. Exact intelligence-bound real-process execution remains an exact-candidate product-E2E requirement.
-- [codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs](../../../codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs): compatibility durable evaluated-shadow regression.
+`scripts/hepta-intelligence-control-status.py --check-tracked` validates them.
+The companion Python tests reject wrong-head, failed/queued, changed-checkout,
+missing-log and missing/ambiguous-test evidence. They also reject a standalone
+runner-only startup and a canonical profile that lacks rollback or process hard
+containment. Native workflow projection requires exact command arrays, exit
+codes, source/lane identity, unchanged log hashes and each explicitly mapped
+test observed passing. All package tests, including unrelated tests within those
+packages, still run.
 
-In `codex-rs`, run `just test -p codex-hepta-intelligence -p codex-hepta-agentd`. The command is a test invocation, not a stored result. Exact-head and deterministic-merge workflow receipts, skips and target-host measurements must be inspected before elevating the claim boundary.
+The independent workflow runs source-head and deterministic base-merge lanes:
+formatting; intelligence and operations package tests; default Agentd library
+tests; separately labelled legacy tests; all-target compilation; strict Clippy.
+Read-only macOS diagnostics may retain additional failures and a formatter patch
+from a separate worktree, but do not replace those qualification lanes.
 
-[Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
+Real-child watchdog test source is not an executed result. Default-profile
+process restart, App Server E2E, every durable crash cut and performance/quality
+baselines remain required. No queued, skipped or prior-head result qualifies the
+current tree. [Shared qualification requirements](../README.md#shared-verification-and-qualification)
+remain in force.
 
 ## 13. Implementation sequence and work packages
 
-Applicable work packages:
+Packages are `INTELLIGENCE-A0-Q0.63`, `C1-PROMPTED-MEMORY-RETRIEVAL-RANK` and
+`INT-2-AGENTD-CODEX-COMPOSITION`. Keep their separate development, activation and
+evidence DAGs. Ordinary owner-authorized implementation does not require a
+handwritten deployment grant. Cross-owner changes retain explicit owners.
 
-- `C1-PROMPTED-MEMORY-RETRIEVAL-RANK`
-- `INTELLIGENCE-A0-Q0.63`
-- `INT-2-AGENTD-CODEX-COMPOSITION`
-
-The bootstrap package is `INTELLIGENCE-A0-Q0.63`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
-
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned packages may remain without invalidating documentation closure.
+Qualify the existing stage data/time semantics and executable product host on one
+exact candidate, run the full process-loss and acknowledgement matrix, then
+collect selected-host resource and quality evidence. Do not substitute another
+facade or a larger intelligence plane.
 
 ## 14. Activation, compatibility and retirement
 
-The named source-level composition caller is `AgentdIntelligenceProductRunnerV1`; the named physical turn caller is `AppServerModelDriver::run_intelligence`, with `hepta-infer-worker` exposing the same exact binding as an all-or-none CLI profile. This establishes product-route source, not deployment activation or real-provider qualification. A selected live Agentd/App Server profile must still provision the trusted currentness signer/verifier, demonstrate exact run-lifecycle execution on the candidate and target host, and satisfy activation predecessors. Shadow and qualification callers remain non-production evidence unless they traverse that same route.
+The configured capability requires an atomic runner/provider profile, an
+independent rollback guard and process hard-timeout fence. The ordinary Agentd
+binary rejects the legacy authority-only runner tuple and advertises no canonical
+profile. Physical provider execution, accepted owner trust, operator approval,
+activation, promotion and release remain separate. Legacy learning writes remain
+feature-gated and cannot qualify the default writer.
 
-Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
+Retire a compatibility path only after all its named callers migrate, applicable
+oracle parity and rollback are rehearsed, and independent acceptance exists.
+Preserve historical records and digest interpretation.
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
-
-For `intelligence.control`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
+Documentation needs consistent effective contracts and registry validation.
+Source needs reachable implementations and native checks. Product completion
+needs actual owner inputs, Decision-before-dispatch, the exact physical request,
+independent terminal evidence and durable Outcome/witness recovery. Qualification
+needs current source/merge results; acceptance and release are separately issued.
+`allRequirementsClosed`, product E2E, target-host and release remain false until
+those conditions are observed, not merely declared.
 
 ### Work-package execution envelopes
 
@@ -262,100 +390,28 @@ For `intelligence.control`, this document grants no runtime, production, model, 
 
 - State: `planned`; priority: `1`; parallel class: `contract_coordinated`.
 - Owner/deputy: `intelligence-platform` / `qualification-plane`.
-- Allowed write paths:
-- `codex-rs/hepta-intelligence/**`
-- `qa/learning/prompted-memory-retrieval/**`
-- Development predecessors:
-- `CTX-1-CONTEXT-COMPILER`
-- `HBO-2-BELLMAN-OPERATOR-SHADOW`
-- `P0.8D-VERTICAL-SLICE`
-- `INTELLIGENCE-A0-Q0.63`
-- Activation predecessors:
-- `CTX-1-CONTEXT-COMPILER`
-- `HBO-2-BELLMAN-OPERATOR-SHADOW`
-- `P0.8D-VERTICAL-SLICE`
-- `INTELLIGENCE-A0-Q0.63`
-- Required deliverables:
-- `exact_source_identity`
-- `source_inventory`
-- `static_verification`
-- `focused_tests`
-- `package_tests`
-- `all_target_check`
-- `strict_lint`
-- `clean_worktree`
-- `exact_head_execution`
-- `merge_candidate_execution`
-- `read_only_action_domain`
-- `complete_candidate_set`
-- `logged_propensity`
-- `no_prompt_baseline`
-- `factor_and_timing_ablation`
-- `zero_memory_kg_effect`
-- Stop conditions:
-- `authority_violation`
-- `base_drift`
-- `claim_evidence_mismatch`
-- `cross_owner_write`
-- `unbounded_resource_or_retry`
+- Allowed write paths: `codex-rs/hepta-intelligence/**`, `qa/learning/prompted-memory-retrieval/**`.
+- Development and activation predecessors: `CTX-1-CONTEXT-COMPILER`, `HBO-2-BELLMAN-OPERATOR-SHADOW`, `P0.8D-VERTICAL-SLICE`, `INTELLIGENCE-A0-Q0.63`.
+- Required deliverables: `exact_source_identity`, `source_inventory`, `static_verification`, `focused_tests`, `package_tests`, `all_target_check`, `strict_lint`, `clean_worktree`, `exact_head_execution`, `merge_candidate_execution`, `read_only_action_domain`, `complete_candidate_set`, `logged_propensity`, `no_prompt_baseline`, `factor_and_timing_ablation`, `zero_memory_kg_effect`.
+- Stop conditions: `authority_violation`, `base_drift`, `claim_evidence_mismatch`, `cross_owner_write`, `unbounded_resource_or_retry`.
 
 #### `INTELLIGENCE-A0-Q0.63`
 
 - State: `source_implemented_execution_pending`; priority: `1`; parallel class: `independent_qualification_source`.
 - Owner/deputy: `intelligence-platform` / `qualification-plane`.
-- Allowed write paths:
-- `codex-rs/hepta-intelligence/**`
-- `scripts/hepta-intelligence-*.py`
-- `.github/workflows/hepta-intelligence-*.yml`
-- Development predecessors:
-- `DOC-1-V8-SEMANTIC-UPGRADE`
-- Activation predecessors:
-- `P0.7B-B0-VERIFIED-USE`
-- Required deliverables:
-- `exact_source_identity`
-- `source_inventory`
-- `static_verification`
-- `focused_tests`
-- `package_tests`
-- `all_target_check`
-- `strict_lint`
-- `clean_worktree`
-- `exact_head_execution`
-- `merge_candidate_execution`
-- Stop conditions:
-- `authority_violation`
-- `base_drift`
-- `claim_evidence_mismatch`
-- `cross_owner_write`
-- `unbounded_resource_or_retry`
+- Allowed write paths: `codex-rs/hepta-intelligence/**`, `scripts/hepta-intelligence-*.py`, `.github/workflows/hepta-intelligence-*.yml`.
+- Development predecessor: `DOC-1-V8-SEMANTIC-UPGRADE`; activation predecessor: `P0.7B-B0-VERIFIED-USE`.
+- Required deliverables: `exact_source_identity`, `source_inventory`, `static_verification`, `focused_tests`, `package_tests`, `all_target_check`, `strict_lint`, `clean_worktree`, `exact_head_execution`, `merge_candidate_execution`.
+- Stop conditions: `authority_violation`, `base_drift`, `claim_evidence_mismatch`, `cross_owner_write`, `unbounded_resource_or_retry`.
 
 #### `INT-2-AGENTD-CODEX-COMPOSITION`
 
 - State: `planned`; priority: `2`; parallel class: `contract_coordinated`.
 - Owner/deputy: `intelligence-platform` / `qualification-plane`.
-- Allowed write paths:
-- `codex-rs/hepta-intelligence/**`
-- Development predecessors:
-- `CTX-1-CONTEXT-COMPILER`
-- `INT-1-CALIBRATED-INTUITION-POLICY`
-- `C1-PROMPTED-MEMORY-RETRIEVAL-RANK`
-- `INTELLIGENCE-A0-Q0.63`
-- Activation predecessors:
-- `CTX-1-CONTEXT-COMPILER`
-- `INT-1-CALIBRATED-INTUITION-POLICY`
-- `C1-PROMPTED-MEMORY-RETRIEVAL-RANK`
-- `INTELLIGENCE-A0-Q0.63`
-- Required deliverables:
-- `exact_source_identity`
-- `static_verification`
-- `focused_tests`
-- `clean_worktree`
-- Stop conditions:
-- `authority_violation`
-- `base_drift`
-- `claim_evidence_mismatch`
-- `cross_owner_write`
-- `unbounded_resource_or_retry`
+- Allowed write paths: `codex-rs/hepta-intelligence/**`.
+- Development and activation predecessors: `CTX-1-CONTEXT-COMPILER`, `INT-1-CALIBRATED-INTUITION-POLICY`, `C1-PROMPTED-MEMORY-RETRIEVAL-RANK`, `INTELLIGENCE-A0-Q0.63`.
+- Required deliverables: `exact_source_identity`, `static_verification`, `focused_tests`, `clean_worktree`.
+- Stop conditions: `authority_violation`, `base_drift`, `claim_evidence_mismatch`, `cross_owner_write`, `unbounded_resource_or_retry`.
 
 <!-- BEGIN GENERATED EXACT REGISTRY PROJECTION -->
 ### Exact closed-world registry projection
@@ -418,28 +474,70 @@ This generated projection binds `intelligence.control` to the current canonical 
 
 ## 16. V8.2 pre-coding implementation-readiness overlay
 
-The canonical readiness overlay binds `intelligence.control` to primary lane `LANE-F-ADAPTIVE-POLICY`. The following implementation-level specifications are mandatory alongside Sections 1–15:
+Primary lane: `LANE-F-ADAPTIVE-POLICY`. Mandatory specifications:
+[`RDY-SRC`](../../readiness/SOURCE_BASELINE_AND_BRANCH_POLICY.md),
+[`RDY-PAR`](../../readiness/PARALLEL_DEVELOPMENT.md),
+[`RDY-OBJ`](../../readiness/OBJECTIVE_COMPILER_EXECUTION.md),
+[`RDY-SI`](../../readiness/SELF_ITERATION_EXECUTION.md),
+[`RDY-EMB`](../../readiness/EMBODIED_RUNTIME_EXECUTION.md).
+Owned readiness protocols: none. Consumed protocols:
+`ObjectiveCompileReceiptV1`, `ObjectiveConflictReceiptV1`, `ObjectiveSourceEnvelopeV1`.
 
-- [`RDY-SRC`](../../readiness/SOURCE_BASELINE_AND_BRANCH_POLICY.md)
-- [`RDY-PAR`](../../readiness/PARALLEL_DEVELOPMENT.md)
-- [`RDY-OBJ`](../../readiness/OBJECTIVE_COMPILER_EXECUTION.md)
-- [`RDY-SI`](../../readiness/SELF_ITERATION_EXECUTION.md)
-- [`RDY-EMB`](../../readiness/EMBODIED_RUNTIME_EXECUTION.md)
-
-Owned readiness protocols:
-
-- None.
-
-Consumed readiness protocols:
-
-- `ObjectiveCompileReceiptV1`
-- `ObjectiveConflictReceiptV1`
-- `ObjectiveSourceEnvelopeV1`
-
-Ordinary authorized coding identifies the Git baseline, relevant contracts, owned paths, mandatory fixtures, deterministic fallback and rollback. A runtime coordinator admitting an envelope still verifies its current `CanonicalSourceReceiptV1`, frozen contract/readiness digest, expiry and zero authority delta; manually issuing an envelope is not a separate permission gate for ordinary repository work. This overlay does not change activation, acceptance, selection, promotion or release.
+Ordinary authorized coding identifies Git baseline, contracts, owned paths,
+fixtures, fallback and rollback. A runtime coordinator verifies the actual
+`CanonicalSourceReceiptV1`, frozen contract/readiness digest, expiry and zero
+authority delta at its boundary; that is not additional permission for ordinary
+source work. This overlay grants no selection, activation, acceptance or release.
 
 ## 17. Source implementation receipt
 
-The bootstrap source-location obligation remains implemented by `INTELLIGENCE-A0-Q0.63` in `codex-rs/hepta-intelligence`. The current candidate routes the named Agentd runner from authenticated `ObjectiveStart` through `AgentdState::start_canonical_intelligence`, binds the resulting envelope into the daemon-owned run/context lifecycle, and advertises the canonical capability only for that configured profile. Durable product Decision/Outcome process-loss recovery, exact physical App Server execution and target-host qualification remain pending; this source route alone is not deployment activation.
+Current immutable identity is obtained from Git and actual workflow records,
+not cached branch names or prior passes. The named authenticated daemon route,
+canonical owner adapters, formal writer/outbox, rollback guard and mandatory
+product watchdog have source. The [implementation map](IMPLEMENTATION_MAP.json)
+and [test traceability](TEST_TRACEABILITY.json) retain pending execution in
+tracked files. Exact workflow projections may certify only their executed lane.
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml` and the Agentd process qualification, including package tests, all-target compilation, strict Clippy, formatting and deterministic merge qualification. Until exact-current-candidate receipts are terminal green, this guide claims source code presence only. It grants no production-writer, model/provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+## 18. Product acceptance boundary
+
+The source now includes normal authenticated ObjectiveStart completion through
+`AgentdIntelligenceExecutionHostV1` and the existing-driver
+`NativeIntelligenceProductEmbeddingV1`. An authorized embedding installs it after
+the guarded runner/provider profile. Decision plus witness acknowledgement
+precedes model send; terminal Outcome support is checked against the observed run
+and physical output. Errors after a terminal observation preserve it for recovery.
+The default binary still supplies no owner factory, execution host or evidence.
+The effective source, setup and remaining evidence contract is
+[PRODUCT_CLOSURE.md](PRODUCT_CLOSURE.md), including Section 12.
+
+The remaining obligations are live evidence, not absent repository mechanisms:
+supply the selected authenticated owner/evidence sources; execute
+ObjectiveStart through canonical preparation, Decision, App Server terminal and
+Outcome across restart, outage, cancellation and acknowledgement-loss cuts;
+qualify Supervisor replacement after exit 70 and learning-I/O crash recovery;
+run exact source-head and synthetic-merge checks; measure target-host latency,
+RSS, CPU, signature cost, saturation, recovery and hard-kill time; and obtain
+independent semantic/security and operator acceptance. Do not relabel these as
+source-complete or infer them from an interface.
+
+### Independent authority-manifest rollback floor
+
+The configured canonical profile is fail-closed unless the runner carries both
+an independently retained `IntelligenceAuthorityRollbackGuardV1` and a nonzero
+process hard-timeout fence. The witness path must be canonical and outside both
+Agent home and run roots. Each signature-verified authority manifest is checked
+against the durable maximum epoch and exact same-epoch digest before its owner
+bindings can satisfy a currentness read. Compatibility-only runner construction
+may omit either requirement, but such a runner cannot be advertised or entered
+as `intelligence.canonical_v1`.
+
+### Blocking work and no-follow reads
+
+The invocation factory is inside an independent supervised worker lifetime.
+Learning file/grant/writer operations use bounded blocking workers whose slots
+remain owned until actual completion, even when the awaiting request disappears.
+Unix authority/sidecar reads walk no-follow parent handles and use a nonblocking
+leaf open plus same-handle regular-file, permissions, hard-link and byte checks.
+Non-Unix hosts require their own qualified handle implementation. Arbitrary
+learning I/O is not claimed to be forcibly terminable; host-root write-side
+replacement and complete crash/backup matrices remain explicit acceptance work.

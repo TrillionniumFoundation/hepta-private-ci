@@ -297,8 +297,8 @@ impl ObjectiveRuntimeHost {
         let disposition = match record.disposition {
             RunStartObjectiveDispositionV1::Compiled => {
                 match agentd.start_canonical_intelligence(&record).await? {
-                    Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Ready { .. }) => {
-                        "canonical_ready"
+                    Some(admitted @ crate::AgentdIntelligenceAdmittedOutcomeV1::Ready { .. }) => {
+                        agentd.complete_canonical_intelligence(admitted).await?
                     }
                     Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Abstained) => {
                         "canonical_abstained"
@@ -389,11 +389,11 @@ fn objective_scope(identity: &AgentdIdentity) -> Digest32 {
 }
 
 fn objective_fence(identity: &AgentdIdentity, current_generation: u64) -> Digest32 {
-    let mut bytes = b"hepta:agentd:objective-fence:v1\0".to_vec();
-    bytes.extend_from_slice(identity.agent_id.as_str().as_bytes());
-    bytes.extend_from_slice(&identity.spawn_generation.to_be_bytes());
-    bytes.extend_from_slice(&current_generation.to_be_bytes());
-    Digest32::of_bytes(&bytes)
+    crate::objective_run_fence_digest_v1(
+        identity.agent_id.as_str(),
+        identity.spawn_generation,
+        current_generation,
+    )
 }
 
 fn parse_digest(value: &str, field: &'static str) -> Result<Digest32, AgentdError> {

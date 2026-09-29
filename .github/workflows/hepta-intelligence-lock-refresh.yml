@@ -1,0 +1,43 @@
+name: intelligence.control lock refresh
+
+on:
+  push:
+    paths:
+      - ".github/workflows/hepta-intelligence-lock-refresh.yml"
+      - "codex-rs/hepta-operations/Cargo.toml"
+      - "codex-rs/state/Cargo.toml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: intelligence-lock-refresh-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  refresh:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Refresh workspace lock without source mutation
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo metadata --format-version 1 --no-deps >/dev/null
+          cargo check -p codex-hepta-operations
+          git diff -- Cargo.lock
+
+      - name: Upload exact refreshed lock
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intelligence-lock-${{ github.sha }}
+          path: codex-rs/Cargo.lock
+          if-no-files-found: error
+          retention-days: 1

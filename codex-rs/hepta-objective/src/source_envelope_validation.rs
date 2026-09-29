@@ -72,9 +72,10 @@ impl ObjectiveSourceEnvelopeV1 {
     /// Structural ceilings are admission-safe, not merely per-field maxima:
     /// source constraints reserve ten native slots for generated resource/risk
     /// constraints and success/terminal/evidence predicates share the native
-    /// 128-slot aggregate. Source actions may contain up to 128 entries because
-    /// one can be an explicit intrinsic `abstain`; native compile enforces the
-    /// 127-entry ceiling only when it must inject abstain itself.
+    /// 128-slot aggregate. A source objective must retain at least one legal
+    /// action. Source action sets may contain up to 128 entries because one can
+    /// be an explicit intrinsic `abstain`; native compile enforces the 127-entry
+    /// ceiling only when it must inject abstain itself.
     ///
     /// This is deliberately not wire validation: JSON escaping/framing and
     /// aggregate encoded-byte limits, duplicate/unknown JSON fields, ID/time
@@ -115,7 +116,7 @@ impl ObjectiveSourceEnvelopeV1 {
             (
                 &intent.legal_action_classes,
                 "legalActionClasses",
-                0,
+                1,
                 MAX_SOURCE_ACTIONS,
             ),
             (

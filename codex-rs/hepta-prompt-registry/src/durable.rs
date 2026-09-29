@@ -189,10 +189,6 @@ impl DurablePromptRegistry {
         })
     }
 
-    #[expect(
-        clippy::too_many_arguments,
-        reason = "Keep the established final-use API and explicit operation-bound fields compatible"
-    )]
     pub fn register_realization_payload_final_use_v2(
         &mut self,
         authority: &FinalUseAuthority,
@@ -300,10 +296,6 @@ impl DurablePromptRegistry {
             .map_err(DurableRegistryError::Admission)?
     }
 
-    #[expect(
-        clippy::too_many_arguments,
-        reason = "Keep the established final-use API and explicit operation-bound fields compatible"
-    )]
     pub fn revoke_factor_final_use(
         &mut self,
         authority: &FinalUseAuthority,

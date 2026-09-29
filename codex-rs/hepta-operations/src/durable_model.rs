@@ -302,6 +302,35 @@ pub enum DestinationApplyDisposition {
     AlreadyApplied,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum DurableFailureClass {
+    InvalidRequest,
+    MissingOperation,
+    IdentityConflict,
+    RetiredIdentity,
+    CapacityInsufficient,
+    StaleOwnerGeneration,
+    LeaseLost,
+    InvalidTransition,
+    ClockRollback,
+    PermissionDenied,
+    PersistenceCorrupt,
+    OutcomeUnknown,
+}
+
+/// The only recovery actions exposed to callers. In particular, an unavailable
+/// durable store is treated as an unknown commit outcome and must be reconciled
+/// before the same effect is attempted again.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum RecoveryDisposition {
+    Reject,
+    RetrySameIdentity,
+    RetryAfterCapacity,
+    ReconcileOnly,
+    ReplaceOwner,
+    RepairClockOrStore,
+}
+
 #[derive(Debug)]
 pub enum DurableOperationError {
     Invalid(&'static str),
@@ -344,6 +373,67 @@ impl fmt::Display for DurableOperationError {
             }
             Self::Unavailable(message) => {
                 write!(formatter, "durable operation store unavailable: {message}")
+            }
+        }
+    }
+}
+
+impl DurableOperationError {
+    #[must_use]
+    pub const fn failure_class(&self) -> DurableFailureClass {
+        match self {
+            Self::Invalid(_) => DurableFailureClass::InvalidRequest,
+            Self::Missing(_) => DurableFailureClass::MissingOperation,
+            Self::Conflict(_) => DurableFailureClass::IdentityConflict,
+            Self::Retired(_) => DurableFailureClass::RetiredIdentity,
+            Self::Capacity => DurableFailureClass::CapacityInsufficient,
+            Self::StaleGeneration => DurableFailureClass::StaleOwnerGeneration,
+            Self::StaleLease => DurableFailureClass::LeaseLost,
+            Self::InvalidTransition { .. } => DurableFailureClass::InvalidTransition,
+            Self::ClockRollback => DurableFailureClass::ClockRollback,
+            Self::Authority(_) => DurableFailureClass::PermissionDenied,
+            Self::Corrupt(_) => DurableFailureClass::PersistenceCorrupt,
+            Self::Unavailable(_) => DurableFailureClass::OutcomeUnknown,
+        }
+    }
+
+    #[must_use]
+    pub const fn recovery_disposition(&self) -> RecoveryDisposition {
+        match self {
+            Self::Invalid(_) | Self::Conflict(_) | Self::Retired(_) | Self::Authority(_) => {
+                RecoveryDisposition::Reject
+            }
+            Self::Capacity => RecoveryDisposition::RetryAfterCapacity,
+            Self::StaleGeneration => RecoveryDisposition::ReplaceOwner,
+            Self::Missing(_)
+            | Self::StaleLease
+            | Self::InvalidTransition { .. }
+            | Self::Unavailable(_) => RecoveryDisposition::ReconcileOnly,
+            Self::ClockRollback | Self::Corrupt(_) => RecoveryDisposition::RepairClockOrStore,
+        }
+    }
+}
+
+impl DurableOperationState {
+    #[must_use]
+    pub const fn recovery_disposition(self) -> RecoveryDisposition {
+        match self {
+            Self::Prepared => RecoveryDisposition::RetrySameIdentity,
+            Self::Dispatching | Self::Dispatched | Self::Indeterminate => {
+                RecoveryDisposition::ReconcileOnly
+            }
+            Self::Applied | Self::NotApplied | Self::Quarantined => RecoveryDisposition::Reject,
+        }
+    }
+}
+
+impl<T> DispatchEffect<T> {
+    #[must_use]
+    pub const fn recovery_disposition(&self) -> RecoveryDisposition {
+        match self {
+            Self::NotDispatched { .. } => RecoveryDisposition::RetrySameIdentity,
+            Self::Dispatched { .. } | Self::Indeterminate { .. } => {
+                RecoveryDisposition::ReconcileOnly
             }
         }
     }

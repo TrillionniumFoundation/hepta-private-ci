@@ -7,6 +7,7 @@
 #![forbid(unsafe_code)]
 
 mod canonical;
+mod canonical_invariants;
 
 pub use canonical::AdvisoryDecisionReceiptV1;
 pub use canonical::AdvisoryDecisionV1;
@@ -38,6 +39,9 @@ pub use canonical::build_legal_candidates;
 pub use canonical::decide_boundary;
 pub use canonical::prepare_intelligence_run;
 pub use canonical::validate_current_snapshot;
+pub use canonical_invariants::canonical_candidate_ids_v1;
+pub use canonical_invariants::validate_canonical_outcome_v1;
+pub use canonical_invariants::validate_selected_candidate_v1;
 
 mod evaluated_shadow;
 mod ndu_stochastic_admission;

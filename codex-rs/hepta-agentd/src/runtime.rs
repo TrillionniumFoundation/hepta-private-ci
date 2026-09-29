@@ -40,6 +40,7 @@ pub async fn run(
     arg0_paths: Arg0DispatchPaths,
 ) -> Result<(), AgentdError> {
     let production_operations = config.take_production_operations();
+    let intelligence_learning = config.take_intelligence_learning_runtime();
     let plasticity_bootstrap = config.take_plasticity_runtime_bootstrap();
     let trust_file = config
         .authbus_trust_file()
@@ -77,6 +78,7 @@ pub async fn run(
     let retrieval_learning = config.cognitive_retrieval_learning();
     require_cognitive_retrieval_context_for_mode(retrieval_mode, retrieval_context.is_some())?;
     let intuition_policy_host = config.intuition_policy_host();
+    let intelligence_execution = config.intelligence_execution_host();
     let intelligence_product = config.intelligence_product_runner();
     let intelligence_invocation = config.intelligence_invocation_provider();
     let (identity, registry, writer_lock) = config.into_parts();
@@ -106,6 +108,11 @@ pub async fn run(
             .set(ranker)
             .map_err(|_| AgentdError::Invalid("cognitive ranker already attached".to_string()))?;
     }
+    if let Some(host) = intelligence_execution {
+        state.intelligence_execution.set(host).map_err(|_| {
+            AgentdError::Invalid("intelligence execution host already attached".to_string())
+        })?;
+    }
     if let Some(runner) = intelligence_product {
         state.intelligence_product.set(runner).map_err(|_| {
             AgentdError::Invalid("intelligence product runner already attached".to_string())
@@ -115,6 +122,9 @@ pub async fn run(
         state.intelligence_invocation.set(provider).map_err(|_| {
             AgentdError::Invalid("intelligence invocation provider already attached".to_string())
         })?;
+        if let Some(runner) = state.intelligence_product.get() {
+            runner.telemetry().set_provider_configured(true);
+        }
     }
     if let Some(current) = retrieval_context {
         state
@@ -249,6 +259,19 @@ pub async fn run(
     // All fallible owner opens and control binding above precede task startup.
     let mut tasks = RuntimeTasks::new(cancellation.clone(), TASK_SHUTDOWN_GRACE)?;
     let startup: Result<(), AgentdError> = async {
+        if let Some(runtime) = intelligence_learning {
+            let (host, interval, max_batch) = runtime.into_parts();
+            tasks.spawn_required(
+                "intelligence-learning-reconciler",
+                crate::intelligence_learning_runtime::run_intelligence_learning_runtime_v1(
+                    host,
+                    Arc::clone(&state),
+                    interval,
+                    max_batch,
+                    cancellation.clone(),
+                ),
+            )?;
+        }
         if let Some((host, interval)) = production_operations {
             tasks.spawn_required(
                 "production-operation-reconciler",

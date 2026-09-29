@@ -93,6 +93,22 @@ fn exercised_portfolio_compiles_attaches_and_observes_exact_delivery() {
         },
     )
     .expect("prepare delivery");
+    delivery.validate().expect("complete owner lineage");
+    let mut changed = delivery.clone();
+    changed.exercise.policy_digest = digest("substituted-policy");
+    assert!(changed.validate().is_err());
+    let mut changed = delivery.clone();
+    changed.serialized_payload[0] ^= 1;
+    assert!(changed.validate().is_err());
+    let mut changed = delivery.clone();
+    changed.serialization_proof.occurrences[0].start_offset += 1;
+    changed.serialization_proof.proof_digest =
+        prompt_serialization_proof_digest(&changed.serialization_proof);
+    changed
+        .serialization_proof
+        .validate()
+        .expect("internally consistent forged proof");
+    assert!(changed.validate().is_err());
     assert_eq!(delivery.serialized_payload, serialized_payload);
     assert_eq!(delivery.materialization, prepared.materialization);
     assert_eq!(delivery.serialization.payload_digest(), payload_digest);
