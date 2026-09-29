@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Run the reviewed cognitive.read convergence repair with newline-tolerant matching.
+"""Run the reviewed cognitive.read convergence repair with narrow shape fixes.
 
 The authored repair intentionally rejects semantic source drift. This launcher
-normalizes only the presence or absence of one terminal newline so Git's text
-shape cannot turn an otherwise exact reviewed replacement into a false failure.
+normalizes only the presence or absence of one terminal newline and applies the
+reviewed strict single-line nextest-version validation before the ordinary
+non-force authoring commits are created.
 """
 from __future__ import annotations
 
@@ -14,6 +15,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 REPAIR = ROOT / "scripts/repair-cognitive-read-qualification.py"
+EVIDENCE = ROOT / "scripts/cognitive_read_evidence.py"
 
 
 def load_repair_module():
@@ -50,6 +52,26 @@ def replace_once_tolerating_terminal_newline(
     raise ValueError(f"convergence source shape drift: {path.relative_to(ROOT)}")
 
 
+def harden_pinned_runner_validation() -> None:
+    old = '''        if label == "test-runner":
+            runner_lines = log.read_text(errors="replace").splitlines()
+            first_line = runner_lines[0].strip() if runner_lines else ""
+            version = re.escape(NEXTEST_VERSION)
+            if re.fullmatch(rf"cargo-nextest {version}(?:[ \\t][^\\r\\n]*)?", first_line) is None:
+                problems.append("test-runner: missing or unexpected pinned nextest version")
+'''
+    new = '''        if label == "test-runner":
+            runner_lines = log.read_text(errors="replace").splitlines()
+            first_line = runner_lines[0].strip() if runner_lines else ""
+            version = re.escape(NEXTEST_VERSION)
+            if len(runner_lines) != 1 or re.fullmatch(
+                rf"cargo-nextest {version}(?:[ \\t][^\\r\\n]*)?", first_line
+            ) is None:
+                problems.append("test-runner: missing or unexpected pinned nextest version")
+'''
+    replace_once_tolerating_terminal_newline(EVIDENCE, old, new)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--expected-sha", required=True)
@@ -57,6 +79,14 @@ def main() -> None:
 
     module = load_repair_module()
     module.replace_once = replace_once_tolerating_terminal_newline
+    module.SOURCE_ALLOWED_PATHS.add("scripts/cognitive_read_evidence.py")
+    repair_source_files = module.repair_source_files
+
+    def repair_source_files_with_runner_hardening() -> None:
+        repair_source_files()
+        harden_pinned_runner_validation()
+
+    module.repair_source_files = repair_source_files_with_runner_hardening
     sys.argv = [str(REPAIR), "--expected-sha", args.expected_sha]
     module.main()
 
