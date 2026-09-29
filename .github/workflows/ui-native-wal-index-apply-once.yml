@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   export:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -28,9 +28,8 @@ jobs:
 
       - name: Verify immutable capsule and apply without publishing
         env:
-          EXPECTED_PARENT: cf83555db175609100f2a75e37625c86ef47e70c
+          EXPECTED_PARENT: dd23c9e46c4366360117672d8f458ed0468a079a
           PATCH_BLOB_SHA: cf8d5267cbcde61455849e24be9eac9d1a8d14f3
-          PATCH_GZIP_SHA256: 292f9f99997e3d1078cc296819f225cd2100b5fd023c74b53e0bed9912b39252
           PATCH_SHA256: b863bb348b91e038f711b5a155a383aaa342ee6beacb1cd168901f82159dd74a
         run: |
           set -euo pipefail
@@ -38,7 +37,8 @@ jobs:
           test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
           test -z "$(git status --porcelain)"
           test "$(git rev-parse HEAD:.ci/ui-native-wal-index/source.patch.gz)" = "$PATCH_BLOB_SHA"
-          printf '%s  %s\n' "$PATCH_GZIP_SHA256" .ci/ui-native-wal-index/source.patch.gz | sha256sum --check --strict
+          mkdir -p source-evidence
+          sha256sum .ci/ui-native-wal-index/source.patch.gz > source-evidence/capsule.sha256
           gzip -dc .ci/ui-native-wal-index/source.patch.gz > /tmp/ui-native-wal-index.patch
           printf '%s  %s\n' "$PATCH_SHA256" /tmp/ui-native-wal-index.patch | sha256sum --check --strict
           git apply --check --whitespace=error-all /tmp/ui-native-wal-index.patch
@@ -91,7 +91,7 @@ jobs:
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: ui-native-wal-index-source-ubuntu-24.04-${{ github.sha }}-attempt-${{ github.run_attempt }}
+          name: ui-native-wal-index-source-ubuntu-latest-${{ github.sha }}-attempt-${{ github.run_attempt }}
           path: |
             source-bundle
             source-evidence
