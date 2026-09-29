@@ -94,10 +94,11 @@ jobs:
             verify.stdout verify.stderr > SHA256SUMS)
 
       - name: Retain exact migration proposal
+        if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: implementation-map-migration-${{ env.SOURCE_SHA }}
           path: ${{ runner.temp }}/implementation-map-migration
           include-hidden-files: true
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 3
