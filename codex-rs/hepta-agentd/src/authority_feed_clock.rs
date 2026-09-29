@@ -40,6 +40,8 @@ impl FeedClock {
         let mut current = self.window.lock().map_err(|_| AuthorityTrustError::Unavailable)?;
         // Sample after acquiring the publication lock. Expiry while waiting
         // for either owner cannot be hidden by an earlier time sample.
+        // Failed replacement never leaves a previously live interval behind.
+        *current = None;
         let sample = self.clock.now_with_uncertainty()?;
         let window = (verified.issued_at_unix_ms(), verified.expires_at_unix_ms());
         if !interval_is_live(sample, window) {
@@ -63,11 +65,22 @@ impl AuthorityClock for FeedClock {
     }
 
     fn now_with_uncertainty(&self) -> Result<(u64, u64), AuthorityTrustError> {
-        let window = self.window.lock().map_err(|_| AuthorityTrustError::Unavailable)?;
-        let sample = self.clock.now_with_uncertainty()?;
+        let mut window = self.window.lock().map_err(|_| AuthorityTrustError::Unavailable)?;
+        let sample = match self.clock.now_with_uncertainty() {
+            Ok(sample) => sample,
+            Err(error) => {
+                *window = None;
+                return Err(error);
+            }
+        };
         match *window {
-            Some(window) if interval_is_live(sample, window) => Ok(sample),
-            _ => Err(AuthorityTrustError::Unavailable),
+            Some(current) if interval_is_live(sample, current) => Ok(sample),
+            _ => {
+                // An observed expiry/failure cannot disappear after clock
+                // rollback. Only verified publication may restore admission.
+                *window = None;
+                Err(AuthorityTrustError::Unavailable)
+            }
         }
     }
 }
@@ -97,6 +110,7 @@ mod tests {
         clock.0.store(110, Ordering::SeqCst);
         assert!(feed.now_unix_ms().is_err());
         clock.0.store(100, Ordering::SeqCst);
+        assert!(feed.now_unix_ms().is_err());
         feed.invalidate().unwrap();
         assert!(feed.now_unix_ms().is_err());
     }
@@ -116,4 +130,29 @@ mod tests {
         *feed.window.lock().unwrap() = Some((101, 110));
         assert!(feed.now_unix_ms().is_err());
     }
+
+    #[test]
+    fn clock_failure_invalidates_the_previous_feed_window() {
+        struct UnavailableClock;
+        impl AuthorityClock for UnavailableClock {
+            fn now_unix_ms(&self) -> Result<u64, AuthorityTrustError> {
+                Err(AuthorityTrustError::Unavailable)
+            }
+        }
+        let feed = FeedClock::new(Arc::new(UnavailableClock));
+        *feed.window.lock().unwrap() = Some((90, 110));
+        assert_eq!(feed.now_unix_ms(), Err(AuthorityTrustError::Unavailable));
+        assert_eq!(*feed.window.lock().unwrap(), None);
+    }
+
+    #[test]
+    fn invalidating_a_shared_reader_cannot_leave_a_live_snapshot() {
+        let feed = Arc::new(FeedClock::new(Arc::new(Clock(AtomicU64::new(100)))));
+        *feed.window.lock().unwrap() = Some((90, 110));
+        let reader: Arc<dyn AuthorityClock> = feed.clone();
+        assert_eq!(reader.now_unix_ms(), Ok(100));
+        feed.invalidate().unwrap();
+        assert_eq!(reader.now_unix_ms(), Err(AuthorityTrustError::Unavailable));
+    }
+
 }
