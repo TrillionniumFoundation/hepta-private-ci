@@ -1,4 +1,4 @@
-name: Automation TaskFlow selected-host exact repair
+name: Automation TaskFlow alternate exact repair
 
 on:
   push:
@@ -12,12 +12,12 @@ permissions:
   contents: write
 
 concurrency:
-  group: automation-taskflow-selected-host-exact-repair
+  group: automation-taskflow-alternate-exact-repair
   cancel-in-progress: true
 
 jobs:
   repair:
-    runs-on: [self-hosted, hepta-automation-selected-host]
+    runs-on: ubuntu-22.04
     timeout-minutes: 90
     env:
       TARGET_BRANCH: work/automation-taskflow-full-closure-2026-09-27
@@ -46,6 +46,13 @@ jobs:
         with:
           toolchain: "1.95.0"
           components: clippy,rustfmt
+
+      - name: Install native prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
 
       - name: Apply and compile exact source repair
         shell: bash
