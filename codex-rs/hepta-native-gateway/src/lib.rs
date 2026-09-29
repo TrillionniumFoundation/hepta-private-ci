@@ -7,6 +7,7 @@
 
 mod connection_loop;
 mod http_accept;
+mod request_head;
 
 use std::env;
 use std::net::SocketAddr;
@@ -18,6 +19,8 @@ use anyhow::Result;
 use codex_hepta_paths::HeptaStateRoot;
 use codex_hepta_runtime::HeptaRuntime;
 use http_accept::RuntimeRepresentation;
+use request_head::read_request;
+#[cfg(test)]
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 use tokio::net::TcpListener;
@@ -194,27 +197,6 @@ async fn serve_connection(mut stream: TcpStream, runtime: Arc<HeptaRuntime>) -> 
         .await
         .context("loopback shutdown timed out")?
         .context("close loopback response")
-}
-
-async fn read_request(stream: &mut TcpStream) -> Result<Vec<u8>> {
-    let mut bytes = Vec::with_capacity(2048);
-    let mut buffer = [0_u8; 2048];
-    loop {
-        if bytes.windows(4).any(|window| window == b"\r\n\r\n") {
-            return Ok(bytes);
-        }
-        let read = stream
-            .read(&mut buffer)
-            .await
-            .context("read loopback request")?;
-        if read == 0 {
-            anyhow::bail!("loopback request ended before complete headers");
-        }
-        bytes.extend_from_slice(&buffer[..read]);
-        if bytes.len() > MAX_REQUEST_BYTES {
-            anyhow::bail!("HTTP request headers exceed {MAX_REQUEST_BYTES} bytes");
-        }
-    }
 }
 
 fn route_request(request: &[u8], runtime: &HeptaRuntime) -> Result<Vec<u8>> {

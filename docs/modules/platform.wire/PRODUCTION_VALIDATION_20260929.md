@@ -15,7 +15,7 @@ No alternate authenticator, network listener, scheduler, authority grant or doma
 | Scope | Actual owner / workflow | Evidence boundary |
 |---|---|---|
 | Core source and ordered merge | `platform-wire-core.yml` | Full wire all-targets, resource and public consumer contracts, strict Clippy, single/fleet release profiles, real emitter contract, HTTP parser, receipt and performance-validator tests |
-| Integrated source and ordered merge | `platform-wire-exact.yml` | Existing registered adapter ports, cross-runtime loading, gateway build and strict lint, plus the same new evidence-validator regressions |
+| Integrated source and ordered merge | `platform-wire-exact.yml` and `platform_wire_exact_qualification.py` | Fixed argv/floor plan, raw-log revalidation, existing adapter ports, cross-runtime and normal worker-path regression, 18 gateway cases, strict lint and release retention measurements |
 | Protected target host | `platform-wire-target-host.yml` and `platform_wire_target_qualification.py` | Pinned/offline native commands, existing normal worker-path regression, release profiles and process RSS on the selected host |
 | Paired five-path performance | `platform_wire_performance_gate.py` | Owner-supplied frozen workload plan and raw paired candidate/reference measurements; no benchmark or external acceptance is fabricated |
 | Lifecycle | `platform_wire_status.py` and `platform_wire_receipt_subject.py` | Evidence must match the selected source; independent reviewer, operations and release remain external inputs |
@@ -74,4 +74,86 @@ The normal `run_native_gateway` listener now uses one bounded `JoinSet` through 
 
 Shutdown closes the listener, aborts outstanding read-only connection futures and awaits task reclamation under the existing response timeout. A shutdown timeout is an error, not a successful drain. Dropping the listener future drops its `JoinSet` rather than detaching accepted tasks. This does not claim preemption of synchronous work or bound the runtime snapshot's own memory. It is a resource fix on the existing loopback-only read surface, not a new authenticated network service or HPTM transport.
 
-Four real loopback tests exercise saturated admission and slot reuse with the normal V2 route; shutdown with incomplete headers; malformed-request slot reclamation; and invalid private limit rejection. Their `http_accept_` names place all four in the existing exact/merge and protected-host `--lib http_accept` command selection, alongside the eight content-negotiation parser cases. Existing test floors are not reduced. No new Cargo dependency or transport credential was introduced. These tests require the current candidate's native gateway build; the wire-only core suite is not substituted for them.
+Five real loopback tests exercise saturated admission and slot reuse with the normal V2 route; shutdown with incomplete headers; malformed-request slot reclamation; invalid private limit rejection; and valid V2 headers followed by non-UTF-8 trailing bytes. Five additional private-reader regressions cover fragmentation, the exact header ceiling, no over-budget read, every incomplete truncation, and separation from the next request. Their `http_accept_` names place all ten in the existing exact/merge and protected-host `--lib http_accept` selection alongside the eight content-negotiation parser cases. Both integrated command plans now require at least 18 cases, rather than allowing a stale one- or eight-test floor to hide missing connection coverage. Existing test floors are not reduced. No new Cargo dependency or transport credential was introduced. These tests require the current candidate's native gateway build; the wire-only core suite is not substituted for them.
+
+
+## Header-boundary and fairness follow-up
+
+The normal `serve_connection` now uses the private `request_head::read_request`,
+not another listener. It accepts only the first CRLF-terminated header block,
+stops reading at the 32 KiB header ceiling, and accepts a terminator ending
+exactly at that ceiling. It scans only new bytes plus the three-byte delimiter
+overlap, rather than rescanning the entire prefix on every small fragment.
+Trailing body or pipelined bytes never participate in UTF-8 or representation
+selection. This single-request, connection-close service does not acquire body,
+keep-alive, authenticated-ingress or domain-execution capabilities.
+
+The existing bounded connection set prioritizes shutdown, then reclamation of
+completed tasks, then new socket admission. Read/write deadlines and the 64-task
+ceiling are unchanged. This avoids preferring new accepts over already completed
+work in the biased selection loop; it is not a general peer scheduler.
+
+## Eighteen measured retention-policy scenarios
+
+`managed_retention_profile` calls the same public managed session/stream API as
+normal callers. The matrix has feed budgets 4 KiB and the default 64 KiB; small
+128-byte, large 128-KiB and alternating payloads; and default, disabled and
+explicitly raised idle-retention limits. A one-byte first fragment forces record
+staging; later input windows are 32 KiB. Completed batches are checked and drained
+before the next record. Framing, MAC, sequence, policy and EOF checks remain the
+existing owner's responsibility. Keys and channel bindings are fixed fixtures,
+not deployed peer credentials.
+
+The emitter records raw per-record decode-and-delivery latency and idle capacity,
+source and delivered bytes, progress/yield counts, observed staging peaks and
+pressure-release results. Observed Vec capacity is neither allocation-call count
+nor RSS, and samples taken at feed boundaries may miss intra-call peaks. The
+validator checks all 18 scenarios, exact workloads, positive samples, bounded
+progress, retention and output accounting, then recomputes nearest-rank p99. It
+never substitutes fixture data for missing measured input. Its ten mutation tests
+run both on an explicitly synthetic self-test and, separately, on actual emitter
+output with `--contract`.
+
+Core and integrated workflows run 32 records per scenario; the protected host
+runs 128 and retains an external GNU time maximum-RSS report, bound by digest
+alongside the raw measurements. These are diagnostic samples, not a declaration
+of stable tail-latency superiority. No new ratio replaces the frozen five-path
+size <= 0.70 and p99 <= 0.80 gates.
+
+The implementation-introduction commit `3873c523f2fab7af49557e819754215d6482d3e4`
+passed both jobs of core run `36543490742`. Its downloaded source artifact
+`11021436171` was verified against SHA-256
+`b95c0207a262b35783daea569df74b03fda88b70e3161e323ce6766f2d79db28`, as were its
+receipt-listed inner files. That exact run executed 146 wire tests, strict
+Clippy and all 18 new release scenarios; both the ten-test self-test and the
+ten-test real-output contract passed. These results do not qualify a later
+containing commit or a gateway build, protected host, live network or provider.
+
+## One exact-source command plan and independently checked logs
+
+`scripts/platform_wire_exact_qualification.py` replaces the older inline shell
+command list and weaker inline receipt loop in the existing exact workflow.
+Execution and verification use one argv/floor plan and reuse the protected-host
+`verify_command` implementation. Verification checks every exit field with exact
+integer types, run attempt, source/tree/ordered parents, unchanged clean checkout,
+time/output limits, bounded local raw logs and their digests. It re-parses test
+counts from those logs rather than trusting JSON counters. Profile validation
+also reopens the actual reports and binds their raw bytes. Toolchain commands,
+runner identity, per-file hashes, failed command records and failed receipts are
+retained. No source script authenticates an external reviewer or operator.
+
+Twelve issuer regressions cover source and ordered-merge subjects, wrong parent
+order/recomputed trees, changed argv and floors, stale attempts, false test counts,
+mutated or absent logs, malformed exits/JSON, missing or overclaiming measurements,
+failed/skipped execution, dirty or mismatched workflow context and symlinked input.
+They are validator tests, not production receipts. The editing environment ran
+these 12 tests, the existing 16 protected-host verifier tests, 10 source-subject
+and 8 performance-gate tests, plus retention self-tests and workflow path checks.
+It could not run `just`, Cargo, Rustfmt or native gateway tests locally. The exact
+current source and ordered merge still require their own remote native evidence.
+
+The remaining production facts above are unchanged: the existing read-only
+loopback gateway is not transformed into a deployed authenticated HPTM service;
+five frozen real paths/reference artifacts and target-host observations are not
+invented; independent reviewer, operations and release receipts remain absent
+until their actual owners issue them. `STATUS.md` is not manually promoted.

@@ -94,36 +94,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$RECORDS"
-          status=0
-          record() {
-            local name="$1" minimum="$2"
-            shift 2
-            python3 scripts/hepta_ci_exec.py --output "$RECORDS/$name.json" --minimum-tests "$minimum" -- "$@" || status=1
-          }
-          record path-tests 10 python3 -m unittest discover -s scripts -p test_generate_lane_a_workflow_paths.py
-          record path-drift 0 python3 scripts/generate_lane_a_workflow_paths.py check
-          record lane-truth 0 python3 scripts/verify_lane_a_foundation.py verify
-          record status-tests 0 python3 scripts/platform_wire_status.py self-test
-          record status-drift 0 python3 scripts/platform_wire_status.py check-doc
-          record target-evidence-tests 16 python3 -m unittest discover -s scripts/tests -p test_platform_wire_target_qualification.py
-          record receipt-subject-tests 10 python3 -m unittest discover -s scripts/tests -p test_platform_wire_receipt_subject.py
-          record performance-gate-tests 8 python3 scripts/platform_wire_performance_gate.py --self-test
-          record wire 102 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-wire --all-targets
-          record consumer-contracts 5 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-wire --test managed_consumer_contracts
-          record wire-doc 0 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-wire --doc
-          record ports 12 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-context-compiler -p codex-hepta-codex-adapter --lib wire::tests
-          record cross-runtime 2 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-shadow-qualification --test cross_runtime_wire_session
-          record gateway 1 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-native-gateway --lib http_accept
-          record strict-clippy 0 cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-wire -p codex-hepta-codex-adapter --all-targets --no-deps -- -D warnings
-          record managed-fleet-profile-selftest 11 python3 scripts/platform_wire_managed_fleet_profile.py --self-test
-          record managed-fleet-profile-build 0 cargo build --release --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-wire --example managed_fleet_profile
-          record managed-fleet-profile-run 0 bash -c '"$CARGO_TARGET_DIR/release/examples/managed_fleet_profile" 8 > "$RECORDS/managed-fleet-profile.measurements.json"'
-          record managed-fleet-profile-validation 0 python3 scripts/platform_wire_managed_fleet_profile.py --input "$RECORDS/managed-fleet-profile.measurements.json" --rounds 8
-          record managed-fleet-emitter-contract 7 python3 scripts/platform_wire_fleet_contract.py --input "$RECORDS/managed-fleet-profile.measurements.json" --rounds 8
-          record clean-diff 0 bash -c 'git diff --exit-code && git diff --cached --exit-code && test -z "$(git status --porcelain --untracked-files=all)"'
-          echo "$status" > "$RECORDS/exit-code"
-          exit "$status"
+          python3 scripts/platform_wire_exact_qualification.py run \
+            --records "$RECORDS" --source-sha "$SOURCE_SHA" \
+            --base-sha "$BASE_SHA" --lane "$WIRE_LANE"
       - name: Validate command records and write a current-subject receipt
         if: always()
         env:
@@ -131,90 +104,17 @@ jobs:
           TOOLCHAIN_OUTCOME: ${{ steps.toolchain.outcome }}
         shell: bash
         run: |
-          python3 - <<'PY'
-          import hashlib, json, os, platform, re, subprocess
-          from datetime import datetime, timezone
-          from pathlib import Path
-          def run(*args):
-              try:
-                  return subprocess.check_output(args, text=True, stderr=subprocess.DEVNULL).strip()
-              except (OSError, subprocess.CalledProcessError):
-                  return None
-          def git(*args):
-              return run('git', *args)
-          source, base = os.environ['SOURCE_SHA'], os.environ.get('BASE_SHA', '')
-          tested = git('rev-parse', 'HEAD')
-          tree = git('rev-parse', 'HEAD^{tree}')
-          parents = (git('show', '-s', '--format=%P', 'HEAD') or '').split()
-          root = Path(os.environ['RUNNER_TEMP']) / ('wire-'+os.environ['WIRE_LANE']+'-'+os.environ['GITHUB_RUN_ID'])
-          root.mkdir(parents=True, exist_ok=True)
-          expected = ['path-tests','path-drift','lane-truth','status-tests','status-drift','target-evidence-tests','receipt-subject-tests','performance-gate-tests','wire','consumer-contracts','wire-doc','ports','cross-runtime','gateway','strict-clippy','managed-fleet-profile-selftest','managed-fleet-profile-build','managed-fleet-profile-run','managed-fleet-profile-validation','managed-fleet-emitter-contract','clean-diff']
-          errors = []
-          if os.environ.get('EXECUTION_OUTCOME') != 'success':
-              errors.append('execution step did not pass')
-          if os.environ.get('TESTED_SHA') != tested or re.fullmatch(r'[0-9a-f]{40}', tested or '') is None:
-              errors.append('tested subject was not bound')
-          if os.environ['WIRE_LANE'] == 'source-head':
-              if tested != source:
-                  errors.append('source-head identity mismatch')
-          elif parents != [base, source] or tree != git('merge-tree','--write-tree',base,source):
-              errors.append('ordered merge identity or recomputed tree mismatch')
-          records = {}
-          for name in expected:
-              path = root/(name+'.json')
-              try:
-                  record = json.loads(path.read_text())
-                  log_name = record.get('log_file', '')
-                  if not isinstance(log_name,str) or not log_name or Path(log_name).name != log_name:
-                      raise ValueError('missing or nonlocal raw log')
-                  log = root/log_name
-                  if log.is_symlink():
-                      raise ValueError('symlinked log')
-                  raw = log.read_bytes()
-                  if hashlib.sha256(raw).hexdigest() != record.get('log_sha256'):
-                      raise ValueError('raw log digest mismatch')
-                  if record.get('status') != 'passed' or record.get('command_exit_code') != 0:
-                      raise ValueError('command not passed')
-                  if record.get('source_sha') != source or record.get('tested_sha') != tested or record.get('lane') != os.environ['HEPTA_CI_LANE']:
-                      raise ValueError('command subject mismatch')
-                  for edge in ('before','after'):
-                      if record.get(edge,{}).get('commit') != tested or record.get(edge,{}).get('tree') != tree or record.get(edge,{}).get('dirty') is not False:
-                          raise ValueError('command clean-tree mismatch')
-                  records[name] = {'record': path.name, 'record_sha256': hashlib.sha256(path.read_bytes()).hexdigest(), 'log': log.name, 'log_sha256': record['log_sha256'], 'command': record['command'], 'command_exit_code': record['command_exit_code'], 'observed_passed_tests': record.get('observed_passed_tests',0)}
-              except (OSError,ValueError,TypeError,KeyError) as exc:
-                  errors.append(name+': '+str(exc))
-          infrastructure_invalid = not os.environ.get('TESTED_SHA') or os.environ.get('TOOLCHAIN_OUTCOME') != 'success' or os.environ.get('EXECUTION_OUTCOME') in ('skipped','cancelled','')
-          status = 'infrastructure_invalid' if infrastructure_invalid else ('failed' if errors else 'passed')
-          receipt = {
-              'schema': 'hepta.platform-wire.receipt.v2',
-              'kind': 'platform-wire-exact-head' if os.environ['WIRE_LANE'] == 'source-head' else 'platform-wire-synthetic-merge',
-              'source_sha': source, 'source_tree': git('rev-parse',source+'^{tree}'),
-              'base_sha': base, 'base_tree': git('rev-parse',base+'^{tree}') if base else None,
-              'tested_sha': tested, 'tested_tree': tree, 'tested_parents': parents,
-              'lane': os.environ['WIRE_LANE'], 'execution_lane': os.environ['HEPTA_CI_LANE'],
-              'workflow': os.environ['GITHUB_WORKFLOW'], 'workflow_ref': os.environ['GITHUB_WORKFLOW_REF'],
-              'workflow_sha': os.environ['GITHUB_WORKFLOW_SHA'], 'event': os.environ['GITHUB_EVENT_NAME'],
-              'run_id': int(os.environ['GITHUB_RUN_ID']), 'run_attempt': int(os.environ['GITHUB_RUN_ATTEMPT']),
-              'generated_at': datetime.now(timezone.utc).isoformat(),
-              'runner_image': os.environ.get('ImageOS'), 'runner_image_version': os.environ.get('ImageVersion'),
-              'runner': platform.platform(), 'rustc': run('rustc','--version','--verbose'), 'cargo': run('cargo','--version'),
-              'qualification_scope': 'public managed HPTM consumer contracts and bounded multi-peer release measurements; no transport or acceptance claim',
-              'status': status, 'errors': errors, 'command_records': records,
-              'independent_acceptance': False, 'activation': False, 'release': False,
-          }
-          (root/'receipt.json').write_text(json.dumps(receipt,indent=2,sort_keys=True)+'\n')
-          hashes = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(root.iterdir()) if p.is_file() and not p.is_symlink() and p.name != 'SHA256SUMS.json'}
-          (root/'SHA256SUMS.json').write_text(json.dumps(hashes,indent=2,sort_keys=True)+'\n')
-          print(json.dumps({'status':status,'source_sha':source,'tested_sha':tested,'errors':errors},indent=2))
-          raise SystemExit(0 if status == 'passed' else 1)
-          PY
+          python3 scripts/platform_wire_exact_qualification.py receipt \
+            --records "$RECORDS" --source-sha "$SOURCE_SHA" \
+            --base-sha "$BASE_SHA" --lane "$WIRE_LANE" \
+            --setup-outcome "$TOOLCHAIN_OUTCOME" --execution-outcome "$EXECUTION_OUTCOME"
       - name: Retain command records and raw logs even after failure
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: wire-${{ matrix.lane }}-${{ env.SOURCE_SHA }}-${{ github.run_id }}
           path: ${{ runner.temp }}/wire-${{ matrix.lane }}-${{ github.run_id }}
-          if-no-files-found: warn
+          if-no-files-found: error
           retention-days: 90
       - name: Reject any source mutation
         if: always()

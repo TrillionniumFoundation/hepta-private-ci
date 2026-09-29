@@ -48,7 +48,7 @@ def commands(records: Path) -> list[tuple[str, int, list[str]]]:
         ("cross-runtime", 2, cargo + [
             "-p", "codex-hepta-shadow-qualification", "--test", "cross_runtime_wire_session",
         ]),
-        ("gateway", 8, cargo + [
+        ("gateway", 18, cargo + [
             "-p", "codex-hepta-native-gateway", "--lib", "http_accept",
         ]),
         ("native-worker", 1, cargo + [
@@ -57,7 +57,7 @@ def commands(records: Path) -> list[tuple[str, int, list[str]]]:
         ]),
         ("strict-clippy", 0, ["cargo", "clippy", *MANIFEST,
             "-p", "codex-hepta-wire", "-p", "codex-hepta-codex-adapter",
-            "--all-targets", "--no-deps", "--", "-D", "warnings",
+            "-p", "codex-hepta-native-gateway", "--all-targets", "--no-deps", "--", "-D", "warnings",
         ]),
         ("profile-selftest", 9, [
             "python3", "scripts/platform_wire_managed_profile.py", "--self-test",
@@ -67,7 +67,7 @@ def commands(records: Path) -> list[tuple[str, int, list[str]]]:
         ]),
         ("profiles-build", 0, ["cargo", "build", "--release", *MANIFEST,
             "-p", "codex-hepta-wire", "--example", "managed_record_profile",
-            "--example", "managed_fleet_profile",
+            "--example", "managed_fleet_profile", "--example", "managed_retention_profile",
         ]),
         ("profile-run", 0, ["bash", "-c",
             'LC_ALL=C /usr/bin/time -v -o "$RECORDS/managed-profile.time" '
@@ -90,6 +90,22 @@ def commands(records: Path) -> list[tuple[str, int, list[str]]]:
         ("fleet-emitter-contract", 7, [
             "python3", "scripts/platform_wire_fleet_contract.py", "--input",
             str(records / "managed-fleet.json"), "--rounds", "64",
+        ]),
+        ("retention-selftest", 10, [
+            "python3", "scripts/platform_wire_retention_profile.py", "--self-test",
+        ]),
+        ("retention-run", 0, ["bash", "-c",
+            'LC_ALL=C /usr/bin/time -v -o "$RECORDS/retention.time" '
+            '"$CARGO_TARGET_DIR/release/examples/managed_retention_profile" 128 '
+            '> "$RECORDS/retention.json"',
+        ]),
+        ("retention-validation", 0, [
+            "python3", "scripts/platform_wire_retention_profile.py", "--input",
+            str(records / "retention.json"), "--iterations", "128",
+        ]),
+        ("retention-emitter-contract", 10, [
+            "python3", "scripts/platform_wire_retention_profile.py", "--input",
+            str(records / "retention.json"), "--iterations", "128", "--contract",
         ]),
         ("clean-tree", 0, ["bash", "-c",
             'git diff --exit-code && git diff --cached --exit-code && '
@@ -168,6 +184,7 @@ def git(*args: str) -> str:
 def receipt(records: Path, expected: str, setup: str, execution: str) -> int:
     from platform_wire_managed_profile import validate as validate_profile
     from platform_wire_managed_fleet_profile import validate as validate_fleet
+    from platform_wire_retention_profile import validate as validate_retention
 
     errors: list[str] = []
     tested = git("rev-parse", "HEAD")
@@ -202,7 +219,8 @@ def receipt(records: Path, expected: str, setup: str, execution: str) -> int:
         except (OSError, ValueError, TypeError, KeyError) as error:
             errors.append(f"{name}: {error}")
     measurements: dict[str, Any] = {}
-    profiles = (("managed-profile", validate_profile, 512), ("managed-fleet", validate_fleet, 64))
+    profiles = (("managed-profile", validate_profile, 512), ("managed-fleet", validate_fleet, 64),
+                ("retention", validate_retention, 128))
     for name, validate, count in profiles:
         try:
             raw = read_local(records, name + ".json", 1024 * 1024)

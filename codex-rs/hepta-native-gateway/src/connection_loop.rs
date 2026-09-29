@@ -42,6 +42,12 @@ pub(super) async fn serve(
             signal = &mut shutdown => {
                 break signal.context("wait for gateway shutdown signal");
             }
+            // Reclaim completed tasks before accepting another ready socket.
+            joined = connections.join_next(), if !connections.is_empty() => {
+                if let Some(Err(error)) = joined {
+                    eprintln!("hepta loopback connection task failed: {error}");
+                }
+            }
             accepted = listener.accept(), if connections.len() < max_connections => {
                 let (stream, peer) = match accepted {
                     Ok(accepted) => accepted,
@@ -56,11 +62,6 @@ pub(super) async fn serve(
                         eprintln!("hepta loopback request failed: {error:#}");
                     }
                 });
-            }
-            joined = connections.join_next(), if !connections.is_empty() => {
-                if let Some(Err(error)) = joined {
-                    eprintln!("hepta loopback connection task failed: {error}");
-                }
             }
         }
     };

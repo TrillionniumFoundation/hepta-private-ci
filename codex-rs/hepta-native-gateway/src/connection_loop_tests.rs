@@ -141,3 +141,19 @@ async fn http_accept_private_limit_cannot_disable_or_exceed_the_connection_ceili
     }
     Ok(())
 }
+
+#[tokio::test]
+async fn http_accept_valid_wire_header_ignores_invalid_utf8_after_its_boundary() -> Result<()> {
+    let (address, mut stop, server) = start().await?;
+    let mut client = TcpStream::connect(address).await?;
+    let mut request = REQUEST.to_vec();
+    request.extend_from_slice(b"\xff\xfe");
+    client.write_all(&request).await?;
+    let mut response = Vec::new();
+    // A close with unread trailing bytes may reset after delivering the response.
+    let _ = timeout(TEST_DEADLINE, client.read_to_end(&mut response)).await?;
+    assert_wire_response(&response)?;
+    stop.write_all(&[1]).await?;
+    timeout(TEST_DEADLINE, server).await???;
+    Ok(())
+}
