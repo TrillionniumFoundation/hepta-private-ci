@@ -57,6 +57,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          cargo fmt --all
           cargo fmt --all -- --check
           cargo check --locked -p codex-hepta-agentd --lib
           cargo test --locked -p codex-hepta-agentd --lib intuition_policy --no-run
