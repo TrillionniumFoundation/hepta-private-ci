@@ -1,0 +1,147 @@
+{
+  "schema": "hepta.module-current-state.v2",
+  "schemaVersion": 2,
+  "module": "control.runtime",
+  "owner": "runtime-control",
+  "deputy": "security-authority",
+  "canonicalStatusSource": true,
+  "candidateBinding": {
+    "branch": "codex/control-runtime-convergence-v1",
+    "exactHead": null,
+    "exactTree": null,
+    "bindingMode": "workflow_resolved_from_pull_request_head",
+    "qualificationState": "pending_exact_head_and_fixed_merge_receipts"
+  },
+  "authorityDelta": "none",
+  "stageOrder": [
+    "designDefined",
+    "sourcePresent",
+    "guardedPublicEntry",
+    "productCallsiteIntegrated",
+    "exactSourceTestsPassed",
+    "fixedMergeCandidatePassed",
+    "targetHostRecoveryPassed",
+    "independentlyAccepted",
+    "activated",
+    "released"
+  ],
+  "subsystems": {
+    "boundedPlanner": {
+      "designDefined": true,
+      "sourcePresent": true,
+      "guardedPublicEntry": true,
+      "productCallsiteIntegrated": true,
+      "exactSourceTestsPassed": false,
+      "fixedMergeCandidatePassed": false,
+      "targetHostRecoveryPassed": false,
+      "independentlyAccepted": false,
+      "activated": false,
+      "released": false,
+      "notes": [
+        "Agentd read-only context planning is source-composed.",
+        "Global effect execution is not a production product callsite."
+      ]
+    },
+    "authenticatedAgentdFinalUse": {
+      "designDefined": true,
+      "sourcePresent": true,
+      "guardedPublicEntry": true,
+      "productCallsiteIntegrated": true,
+      "exactSourceTestsPassed": false,
+      "fixedMergeCandidatePassed": false,
+      "targetHostRecoveryPassed": false,
+      "independentlyAccepted": false,
+      "activated": false,
+      "released": false,
+      "notes": [
+        "Exact records, request identity, retrieval policy, ranker policy, body generation, complete plan receipt and a monotonic process lease are bound before final use."
+      ]
+    },
+    "plannerJournal": {
+      "designDefined": true,
+      "sourcePresent": true,
+      "guardedPublicEntry": true,
+      "productCallsiteIntegrated": false,
+      "exactSourceTestsPassed": false,
+      "fixedMergeCandidatePassed": false,
+      "targetHostRecoveryPassed": false,
+      "independentlyAccepted": false,
+      "activated": false,
+      "released": false,
+      "notes": [
+        "Typed append, raw append and reopen share one transition validator."
+      ]
+    },
+    "plannerStore": {
+      "designDefined": true,
+      "sourcePresent": true,
+      "guardedPublicEntry": true,
+      "productCallsiteIntegrated": false,
+      "exactSourceTestsPassed": false,
+      "fixedMergeCandidatePassed": false,
+      "targetHostRecoveryPassed": false,
+      "independentlyAccepted": false,
+      "activated": false,
+      "released": false,
+      "notes": [
+        "The public owner wrapper holds an operating-system-backed lock across open, backup and restore; uncertain mutation errors poison the current handle until drop and reopen.",
+        "A poisoned handle rejects authoritative checkpoint verification and dispatch-state inspection; its retained in-memory records are diagnostic only.",
+        "Generic append rejects execution-reserved dispatch-claim, terminal and reconciliation records; only the crate-local typed execution state machine can write their canonical envelopes.",
+        "Recovery projection first requires an exact durable claim, then validates ordered initial-terminal and reconciliation transitions; receipt-before-claim, grant drift, duplicate initial terminals and conclusive replacement fail closed.",
+        "Compaction preserves all non-snapshot semantic evidence and its preceding snapshot; independent anchor ownership and two-process target-host recovery remain external gates."
+      ]
+    },
+    "authorityExecutionLoop": {
+      "designDefined": true,
+      "sourcePresent": true,
+      "guardedPublicEntry": true,
+      "productCallsiteIntegrated": false,
+      "exactSourceTestsPassed": false,
+      "fixedMergeCandidatePassed": false,
+      "targetHostRecoveryPassed": false,
+      "independentlyAccepted": false,
+      "activated": false,
+      "released": false,
+      "notes": [
+        "A stable request/grant dispatch claim is persisted before final authority revalidation and executor invocation; v1 claim envelopes remain readable.",
+        "Conclusive receipts are returned unchanged, unresolved claims reconcile by stable operation identity with the original grant, and public reconciliation requires an existing durable claim.",
+        "PlannerStore terminal sinks verify the canonical receipt digest, exact durable claim and original grant, and reject replacement of a conclusive terminal result.",
+        "Reopen reconstructs the same claim-to-observation state machine rather than trusting structurally valid execution records in isolation.",
+        "Authority failure after claim persists an explicit not-dispatched terminal receipt instead of leaving a false unknown-effect state."
+      ]
+    },
+    "organHost": {
+      "designDefined": true,
+      "sourcePresent": true,
+      "guardedPublicEntry": true,
+      "productCallsiteIntegrated": false,
+      "exactSourceTestsPassed": false,
+      "fixedMergeCandidatePassed": false,
+      "targetHostRecoveryPassed": false,
+      "independentlyAccepted": false,
+      "activated": false,
+      "released": false,
+      "notes": [
+        "Trusted in-process read-only handlers are not a sandbox.",
+        "A canonical fanout evidence digest binds the exact generation, source, output port, payload digest, ordered admitted routes, per-target dispositions, outputs, fault codes and dispatch error boundary.",
+        "The product owner must retain that digest independently; a matching receipt can yield only a DENY_ALL continuation for the first incomplete route and refuses incomplete delivered evidence.",
+        "Actual retry, downstream target idempotency, blocking work, plugins, model calls and effects remain owned by separate bounded product owners."
+      ]
+    }
+  },
+  "externalEvidenceGates": {
+    "targetHostRecovery": false,
+    "independentSemanticReview": false,
+    "operatorAcceptance": false,
+    "canary": false,
+    "activation": false,
+    "promotion": false,
+    "release": false
+  },
+  "nonClaims": [
+    "Source presence is not production activation.",
+    "Repository tests are not independent acceptance.",
+    "A deny-all plan or grant request is not an execution capability.",
+    "No target-host recovery, operator acceptance, canary, activation, promotion or release is asserted by this file."
+  ]
+}

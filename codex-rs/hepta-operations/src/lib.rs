@@ -9,6 +9,14 @@
 //! transaction.
 
 #![forbid(unsafe_code)]
+#![expect(
+    clippy::disallowed_methods,
+    reason = "operation-owned arbitrary-path SQLite pools await an owner-neutral shared shim"
+)]
+#![expect(
+    clippy::collapsible_if,
+    reason = "the nested outbox state gate keeps load and transition evidence separate"
+)]
 
 mod destination_dedupe;
 mod dispatcher;

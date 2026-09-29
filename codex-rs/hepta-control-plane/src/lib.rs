@@ -1,287 +1,101 @@
 //! Revision- and authority-epoch-fenced runtime control state plus a bounded,
 //! snapshot-coherent global planning kernel.
 //!
-//! Actions update desired control state only. Planning and grant-request
-//! construction remain advisory and deny-all: they do not execute effects,
-//! operate hardware, issue capabilities, deploy, merge, promote or release.
+//! The historical crate root is retained in `lib_core.rs`. This root adds the
+//! authenticated context adapter, persistent dispatch-claim contract and
+//! explicit per-target organ fanout receipts without rewriting unrelated
+//! public surfaces.
 
 #![forbid(unsafe_code)]
 
-#[path = "embodiment/cart.rs"]
-mod cart;
-#[path = "embodiment/io.rs"]
-mod io;
-mod module_runtime;
-mod organ_graph;
-mod organ_hierarchy;
-mod organ_registry;
-mod organ_runtime;
-mod organ_wire;
-mod planner;
-mod planner_context;
-mod planner_journal;
-mod planner_ndu;
-#[path = "embodiment/timing.rs"]
-mod timing;
+#[path = "lib_core.rs"]
+mod legacy_root;
+pub use legacy_root::*;
 
-pub use cart::CART_Q24_SCALE;
-pub use cart::CartCommandV1;
-pub use cart::CartControlMode;
-pub use cart::CartControllerV1;
-pub use cart::CartError;
-pub use cart::CartSensorProfileV1;
-pub use cart::CartSimulatorV1;
-pub use cart::CartStateV1;
-pub use cart::SyntheticCartObservationV1;
-pub use cart::SyntheticCartPlant;
-pub use io::EmbodimentIoError;
-pub use io::SyntheticActuatorReceiptV1;
-pub use io::SyntheticCartIoV1;
-pub use io::TypedActuatorDispatchV1;
-pub use io::TypedSensorReadingV1;
-pub use module_runtime::ActiveRuntimeModuleV1;
-pub use module_runtime::MAX_MODULE_DEPENDENCIES;
-pub use module_runtime::MAX_MODULE_DOMAINS;
-pub use module_runtime::MAX_MODULE_EFFECTS;
-pub use module_runtime::MAX_MODULE_PORTS;
-pub use module_runtime::MAX_RUNTIME_MODULES;
-pub use module_runtime::RuntimeModuleAbiV1;
-pub use module_runtime::RuntimeModuleLifecycleV1;
-pub use module_runtime::RuntimeModulePromotionWitnessV1;
-pub use module_runtime::RuntimeModuleRecordV1;
-pub use module_runtime::RuntimeModuleRegistryError;
-pub use module_runtime::RuntimeModuleRegistryV1;
-pub use module_runtime::RuntimeModuleStateClassV1;
-pub use module_runtime::RuntimeTopologySnapshotV1;
-pub use organ_graph::DataflowTiming;
-pub use organ_graph::FailureDomainV1;
-pub use organ_graph::FallbackTerminal;
-pub use organ_graph::FeedbackProfileV1;
-pub use organ_graph::InputPort;
-pub use organ_graph::OrganEdge;
-pub use organ_graph::OrganGraphError;
-pub use organ_graph::OrganGraphsV1;
-pub use organ_graph::OrganNodeV1;
-pub use organ_graph::OrganRole;
-pub use organ_graph::OutputPort;
-pub use organ_graph::RuntimeLinkV1;
-pub use organ_graph::ValidatedOrganGraphsV1;
-pub use organ_hierarchy::CnsDeliveryV1;
-pub use organ_hierarchy::CnsHierarchyError;
-pub use organ_hierarchy::CnsHierarchyV1;
-pub use organ_hierarchy::CnsOrganHostV1;
-pub use organ_hierarchy::CnsRouteV1;
-pub use organ_hierarchy::CompiledOrganDriverV1;
-pub use organ_hierarchy::OrganDriverBindingV1;
-pub use organ_hierarchy::OrganPathV1;
-pub use organ_hierarchy::OrganSystemV1;
-pub use organ_registry::OrganHandlerFactoryV1;
-pub use organ_registry::OrganHandlerRegistryError;
-pub use organ_registry::OrganHandlerRegistryV1;
-pub use organ_runtime::HostedOrganStateV1;
-pub use organ_runtime::HostedOrganStatusV1;
-pub use organ_runtime::MAX_ORGAN_MESSAGE_BYTES;
-pub use organ_runtime::OrganAbiV1;
-pub use organ_runtime::OrganDeliveryV1;
-pub use organ_runtime::OrganFallbackStatusV1;
-pub use organ_runtime::OrganFaultRecordV1;
-pub use organ_runtime::OrganHandlerFaultV1;
-pub use organ_runtime::OrganHostV1;
-pub use organ_runtime::OrganMigrationError;
-pub use organ_runtime::OrganRuntimeError;
-pub use organ_runtime::OrganStateMigrationV1;
-pub use organ_runtime::TrustedReadOnlyOrganV1;
-pub use organ_wire::BODY_GRAPH_SNAPSHOT_PROTOCOL_V1;
-pub use organ_wire::BodyGraphBindingV1;
-pub use organ_wire::COMPILED_BODY_GRAPH_PROFILE_V2;
-pub use organ_wire::CompiledOrganAdmissionV2;
-pub use organ_wire::CompiledOrganHandlerV2;
-pub use organ_wire::MAX_COMPILED_BODY_GRAPH_BYTES;
-pub use organ_wire::NativeHandoffProtocolAdmissionV1;
-pub use organ_wire::NativeHandoffProtocolRegistryV1;
-pub use organ_wire::NativeHandoffReceiptV1;
-pub use organ_wire::OrganManifestBindingV1;
-pub use organ_wire::OrganWireError;
-pub use organ_wire::VerifiedCompiledBodyGraphV2;
-pub use organ_wire::admit_compiled_body_graph_v2;
-pub use organ_wire::compiled_body_graph_digest_v2;
-pub use organ_wire::decode_compiled_body_graph_v2;
-pub use organ_wire::encode_compiled_body_graph_v2;
-pub use planner::FeasiblePlanReceiptV1;
-pub use planner::GlobalStateSnapshotV1;
-pub use planner::GrantRequestSetV1;
-pub use planner::GrantRequestV1;
-pub use planner::NduPlanEvaluationInputV1;
-pub use planner::NduPlanEvaluationV1;
-pub use planner::OwnerReadinessV1;
-pub use planner::OwnerSummaryV1;
-pub use planner::PlanCandidateV1;
-pub use planner::PlannerAxisValueV1;
-pub use planner::PlannerError;
-pub use planner::PlanningEvaluationDispositionV1;
-pub use planner::PlanningRequestV1;
-pub use planner::PreparedPlanInputV1;
-pub use planner::ResourceReservationV1;
-pub use planner::SearchDisclosureV1;
-pub use planner::SnapshotRequestV1;
-pub use planner::bind_ndu_plan_evaluation_v1;
-pub use planner::collect_snapshot;
-pub use planner::finalize_plan;
-pub use planner::prepare_plan;
-pub use planner::request_execution_grants;
-pub use planner_context::ObservedContextPlanV1;
-pub use planner_context::ObservedContextV1;
-pub use planner_context::plan_observed_context;
-pub use planner_journal::PlannerJournalEntryV1;
-pub use planner_journal::PlannerJournalError;
-pub use planner_journal::PlannerJournalKindV1;
-pub use planner_journal::PlannerJournalV1;
-pub use planner_ndu::EvaluatedPlanV1;
-pub use planner_ndu::NduPlanningError;
-pub use planner_ndu::NduPlanningInputV1;
-pub use planner_ndu::canonical_ndu_planning_policy_digest;
-pub use planner_ndu::evaluate_prepared_plan_with_ndu;
-pub use timing::FixedPriorityTaskV1;
-pub use timing::TimingError;
-pub use timing::fixed_priority_response_times;
-
-use std::error::Error as StdError;
-use std::fmt;
-
-use codex_hepta_types::AuthorityPosture;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::Revision;
-use codex_hepta_types::StableId;
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum ControlMode {
-    Ready,
-    Quarantined,
-    Recovering,
-    RollbackRequested,
+/// Result of consulting the durable dispatch owner for one exact operation.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum PlannerDispatchClaimOutcomeV1 {
+    /// This caller durably acquired the first claim and may proceed to final
+    /// authority revalidation and effect dispatch.
+    Acquired,
+    /// A claim exists without a conclusive terminal observation. The grant is
+    /// the exact grant recorded by the first attempt and may only bind an
+    /// effect-owner reconciliation query; the effect must not be replayed.
+    ExistingClaim {
+        original_grant_digest: codex_hepta_types::Digest32,
+    },
+    /// A conclusive durable terminal observation already exists. Idempotent
+    /// retries return it unchanged without invoking the executor or reconciler.
+    ExistingTerminal {
+        receipt: Box<PlannerTerminalReceiptV1>,
+    },
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct ControlState {
-    pub revision: Revision,
-    pub authority_epoch: u64,
-    pub mode: ControlMode,
-    pub configuration_digest: Digest32,
+/// Persistent admission boundary used before any planner effect dispatch.
+///
+/// `Acquired` permits the first dispatch. `ExistingClaim` requires
+/// reconciliation against the stable operation identity and never permits
+/// replay. `ExistingTerminal` returns the already committed receipt. The sink
+/// stores the original grant digest so a later authorization refresh cannot be
+/// misreported as the grant used by the first attempt.
+pub trait PlannerDispatchClaimSinkV1: PlannerTerminalReceiptSinkV1 {
+    /// Inspect an exact operation without creating or changing durable state.
+    /// A conclusive terminal result may be returned after the original request
+    /// expires because this path does not authorize or dispatch a new effect.
+    fn inspect_dispatch(
+        &self,
+        operation_identity_digest: codex_hepta_types::Digest32,
+        request_digest: codex_hepta_types::Digest32,
+        final_payload_digest: codex_hepta_types::Digest32,
+    ) -> Result<Option<PlannerDispatchClaimOutcomeV1>, PlannerExecutionError>;
+
+    fn claim_dispatch(
+        &mut self,
+        operation_identity_digest: codex_hepta_types::Digest32,
+        request_digest: codex_hepta_types::Digest32,
+        grant_digest: codex_hepta_types::Digest32,
+        final_payload_digest: codex_hepta_types::Digest32,
+        claimed_at_micros: u64,
+    ) -> Result<PlannerDispatchClaimOutcomeV1, PlannerExecutionError>;
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum ControlAction {
-    Quarantine,
-    BeginRecovery,
-    RequestRollback,
-    MarkReady,
+pub enum OrganTargetDeliveryDispositionV1 {
+    Delivered,
+    /// The legacy handler completed before a later target failed, but the old
+    /// aggregate error path did not preserve that target's output bytes.
+    DeliveredOutputUnavailable,
+    Failed,
+    NotAttempted,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct ControlIntent {
-    pub operation_id: StableId,
-    pub expected_revision: Revision,
-    pub expected_authority_epoch: u64,
-    pub action: ControlAction,
-    pub payload_digest: Digest32,
+pub struct OrganTargetDeliveryReceiptV1 {
+    pub target: codex_hepta_types::StableId,
+    pub input_port: usize,
+    pub disposition: OrganTargetDeliveryDispositionV1,
+    pub output_digest: Option<codex_hepta_types::Digest32>,
+    pub fault_code: Option<codex_hepta_types::StableId>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct ControlReceipt {
-    pub operation_id: StableId,
-    pub previous_revision: Revision,
-    pub next_revision: Revision,
-    pub mode: ControlMode,
-    pub state_digest: Digest32,
-    pub authority: AuthorityPosture,
+pub struct OrganFanoutReceiptV1 {
+    pub generation: codex_hepta_types::Generation,
+    pub source: codex_hepta_types::StableId,
+    pub output_port: usize,
+    pub payload_digest: codex_hepta_types::Digest32,
+    pub targets: Vec<OrganTargetDeliveryReceiptV1>,
+    pub error: Option<OrganRuntimeError>,
+    pub authority: codex_hepta_types::AuthorityPosture,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub enum Error {
-    EmptyDigest(&'static str),
-    ZeroAuthorityEpoch,
-    StaleRevision,
-    StaleAuthorityEpoch,
-    InvalidTransition,
-    RevisionOverflow,
-}
+mod organ_fanout_recovery;
+pub use organ_fanout_recovery::{
+    OrganFanoutContinuationV1, OrganFanoutRecoveryErrorV1,
+};
 
-impl fmt::Display for Error {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(formatter, "{self:?}")
-    }
-}
-
-impl StdError for Error {}
-
-pub fn apply(
-    state: &ControlState,
-    intent: ControlIntent,
-) -> Result<(ControlState, ControlReceipt), Error> {
-    if state.configuration_digest.is_zero() {
-        return Err(Error::EmptyDigest("configuration"));
-    }
-    if intent.payload_digest.is_zero() {
-        return Err(Error::EmptyDigest("intent payload"));
-    }
-    if state.authority_epoch == 0 || intent.expected_authority_epoch == 0 {
-        return Err(Error::ZeroAuthorityEpoch);
-    }
-    if intent.expected_revision != state.revision {
-        return Err(Error::StaleRevision);
-    }
-    if intent.expected_authority_epoch != state.authority_epoch {
-        return Err(Error::StaleAuthorityEpoch);
-    }
-    let next_mode = transition(state.mode, intent.action)?;
-    let next_revision = state.revision.next().map_err(|_| Error::RevisionOverflow)?;
-    let next = ControlState {
-        revision: next_revision,
-        authority_epoch: state.authority_epoch,
-        mode: next_mode,
-        configuration_digest: state.configuration_digest,
-    };
-    let state_digest = digest_state(&next, &intent);
-    let receipt = ControlReceipt {
-        operation_id: intent.operation_id,
-        previous_revision: state.revision,
-        next_revision,
-        mode: next_mode,
-        state_digest,
-        authority: AuthorityPosture::DENY_ALL,
-    };
-    Ok((next, receipt))
-}
-
-fn transition(mode: ControlMode, action: ControlAction) -> Result<ControlMode, Error> {
-    match (mode, action) {
-        (ControlMode::Ready, ControlAction::Quarantine) => Ok(ControlMode::Quarantined),
-        (ControlMode::Quarantined, ControlAction::BeginRecovery) => Ok(ControlMode::Recovering),
-        (ControlMode::Recovering, ControlAction::MarkReady) => Ok(ControlMode::Ready),
-        (ControlMode::Quarantined, ControlAction::RequestRollback)
-        | (ControlMode::Recovering, ControlAction::RequestRollback) => {
-            Ok(ControlMode::RollbackRequested)
-        }
-        _ => Err(Error::InvalidTransition),
-    }
-}
-
-fn digest_state(state: &ControlState, intent: &ControlIntent) -> Digest32 {
-    let mut bytes = Vec::new();
-    bytes.extend_from_slice(b"hepta.control.state.v1");
-    bytes.extend_from_slice(&state.revision.get().to_be_bytes());
-    bytes.extend_from_slice(&state.authority_epoch.to_be_bytes());
-    bytes.push(match state.mode {
-        ControlMode::Ready => 0,
-        ControlMode::Quarantined => 1,
-        ControlMode::Recovering => 2,
-        ControlMode::RollbackRequested => 3,
-    });
-    bytes.extend_from_slice(state.configuration_digest.as_array());
-    bytes.extend_from_slice(intent.payload_digest.as_array());
-    Digest32::of_bytes(&bytes)
-}
-
-#[cfg(test)]
-#[path = "lib_tests.rs"]
-mod tests;
+mod authenticated_context;
+pub use authenticated_context::{
+    AuthenticatedContextRecordV1, AuthenticatedObservedContextV1,
+    plan_authenticated_observed_context,
+};
