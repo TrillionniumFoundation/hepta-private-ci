@@ -1,0 +1,264 @@
+name: Hepta Laya real-model smoke
+
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-infer-worker-host/python/**'
+      - 'codex-rs/hepta-bellman-operator/python/**'
+      - 'codex-rs/hepta-intelligence-eval/python/**'
+      - 'codex-rs/hepta-infer-worker-host/src/semantic*.rs'
+      - 'codex-rs/hepta-infer-worker-host/src/model_worker.rs'
+      - 'codex-rs/hepta-infer-core/src/semantic*.rs'
+      - '.github/workflows/hepta-laya-smoke.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'codex-rs/hepta-infer-worker-host/python/**'
+      - 'codex-rs/hepta-bellman-operator/python/**'
+      - 'codex-rs/hepta-intelligence-eval/python/**'
+      - 'codex-rs/hepta-infer-worker-host/src/semantic*.rs'
+      - 'codex-rs/hepta-infer-worker-host/src/model_worker.rs'
+      - 'codex-rs/hepta-infer-core/src/semantic*.rs'
+      - '.github/workflows/hepta-laya-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-laya-smoke-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  cpu-smoke:
+    name: Laya CPU (${{ matrix.os }}, ${{ matrix.lane }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15, ubuntu-24.04]
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+      LANE: ${{ matrix.lane }}
+      PYTHONDONTWRITEBYTECODE: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Construct immutable merge candidate
+        id: merge
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Docs CI
+          author-email: hepta-docs-ci@users.noreply.github.com
+          message: Synthetic merge
+      - name: Bind exact tested source and retain read-only source snapshot
+        env:
+          TESTED: ${{ steps.merge.outputs.sha || env.SOURCE_SHA }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED"
+          printf 'source=%s\nbase=%s\ntested=%s\ntree=%s\nlane=%s\n' "$SOURCE_SHA" "$BASE_SHA" "$TESTED" "$(git rev-parse HEAD^{tree})" "$LANE" > "$RUNNER_TEMP/laya-identity.txt"
+          git archive --format=tar.gz HEAD > "$RUNNER_TEMP/laya-source.tar.gz"
+          git diff --check
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - name: Install fixed direct dependencies and retain resolved provenance
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/laya-env"
+          if [[ "$RUNNER_OS" == "Linux" ]]; then
+            "$RUNNER_TEMP/laya-env/bin/python" -m pip install --disable-pip-version-check \
+              --report "$RUNNER_TEMP/laya-torch-install.json" 'torch==2.8.0' \
+              --index-url https://download.pytorch.org/whl/cpu
+          fi
+          "$RUNNER_TEMP/laya-env/bin/python" -m pip install --disable-pip-version-check --report "$RUNNER_TEMP/laya-install.json" \
+            'torch==2.8.0' 'transformers==4.56.2' 'tokenizers==0.22.0' \
+            'safetensors==0.6.2' 'huggingface_hub==0.34.4' 'numpy==2.2.6' \
+            'laya @ git+https://github.com/NandhaKishorM/laya@4066d5d5fbf08b66c6757ddeedbd797bd7655bc0'
+          "$RUNNER_TEMP/laya-env/bin/python" -m pip freeze --all > "$RUNNER_TEMP/laya-environment.txt"
+      - name: Contract and preparation tests (not model execution)
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/laya-env/bin/python" -m unittest discover -v -s codex-rs/hepta-infer-worker-host/python -p 'test_*.py' 2>&1 | tee "$RUNNER_TEMP/laya-contracts.log"
+          "$RUNNER_TEMP/laya-env/bin/python" - <<'PY'
+          import os, re
+          from pathlib import Path
+          output = (Path(os.environ['RUNNER_TEMP']) / 'laya-contracts.log').read_text()
+          counts = re.findall(r'^Ran ([0-9]+) tests? in ', output, re.MULTILINE)
+          assert len(counts) == 1 and int(counts[0]) >= 125, 'incomplete contract execution'
+          assert re.search(r'^OK$', output, re.MULTILINE), 'skipped or failed contracts are not qualification'
+          PY
+      - name: Numerical trainer and paired-metric tests (not Laya weight evidence)
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/laya-env/bin/python" -m unittest discover -v -s codex-rs/hepta-bellman-operator/python -p 'test_*.py' 2>&1 | tee "$RUNNER_TEMP/laya-training-contracts.log"
+          "$RUNNER_TEMP/laya-env/bin/python" -m unittest discover -v -s codex-rs/hepta-intelligence-eval/python -p 'test_*.py' 2>&1 | tee "$RUNNER_TEMP/laya-metrics-contracts.log"
+      - name: Real pinned checkpoint load and bounded read-only predictions
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/laya-env/bin/python" codex-rs/hepta-infer-worker-host/python/laya_smoke.py --supervised --output "$RUNNER_TEMP/laya-smoke" 2>&1 | tee "$RUNNER_TEMP/laya-smoke.log"
+      - name: Real pinned resident process and distinct read-only exchanges
+        env:
+          HF_HUB_OFFLINE: '1'
+          TRANSFORMERS_OFFLINE: '1'
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/laya-env/bin/python" codex-rs/hepta-infer-worker-host/python/laya_resident_smoke.py --prepared "$RUNNER_TEMP/laya-smoke" 2>&1 | tee "$RUNNER_TEMP/laya-resident-smoke.log"
+      - name: Real frozen-Laya features and private scorer training
+        env:
+          HF_HUB_OFFLINE: '1'
+          TRANSFORMERS_OFFLINE: '1'
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/laya-env/bin/python" codex-rs/hepta-bellman-operator/python/laya_training_smoke.py --prepared "$RUNNER_TEMP/laya-smoke" 2>&1 | tee "$RUNNER_TEMP/laya-training-smoke.log"
+      - name: Require actual model observations on this tested tree
+        env:
+          TESTED: ${{ steps.merge.outputs.sha || env.SOURCE_SHA }}
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/laya-env/bin/python" - <<'PY'
+          import json, os, subprocess
+          from pathlib import Path
+          root = Path(os.environ['RUNNER_TEMP']) / 'laya-smoke'
+          run = json.loads((root / 'run.json').read_text())
+          observation = json.loads((root / 'model-observation.json').read_text())
+          assert run['success'] is True
+          assert run['source_sha'] == os.environ['SOURCE_SHA']
+          assert run['tested_sha'] == os.environ['TESTED']
+          assert run['tested_tree'] == subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip()
+          assert observation['real_model_forward_calls'] == 3
+          assert observation['binary']['real_model_forward_calls'] == 1
+          assert observation['binary']['decoded_reply']['input_tokens'] > 0
+          assert observation['binary']['decoded_reply']['output_tokens'] == 0
+          assert observation['weights_parameters'] > 100_000_000
+          assert observation['production_composition'] is False
+          assert observation['held_out_efficacy'] is False
+          training = json.loads((root / 'training-report.json').read_text())
+          assert training['success'] is True
+          assert training['source_sha'] == run['source_sha']
+          assert training['tested_sha'] == run['tested_sha']
+          assert training['tested_tree'] == run['tested_tree']
+          assert training['real_model_forward_calls'] == 16
+          assert training['actual_input_tokens'] > 0
+          assert training['fit']['steps'] == 16
+          assert training['fit']['delta_norm'] > 0
+          assert training['fit']['candidate_head_digest'] != training['fit']['baseline_head_digest']
+          assert training['selected_parameters_unchanged'] is True
+          assert training['synthetic_labels_and_logical_times'] is True
+          assert training['held_out_efficacy'] is False
+          assert training['independent_acceptance'] is False
+          assert training['artifact_adoption'] is False
+          assert training['cost_seconds']['total'] < training['total_budget_seconds']
+          import hashlib
+          assert hashlib.sha256((root / 'candidate-head.safetensors').read_bytes()).hexdigest() == training['fit']['payload_sha256']
+          for split in ('future', 'retention'):
+              assert training['paired_metrics'][split]['rows'] == 4
+              assert training['paired_metrics'][split]['final_holdout_consumed'] is False
+          process = json.loads((root / 'process-observation.json').read_text())
+          assert process['transport']['eligible_reply'] is True
+          assert process['transport']['direct_child_exit_observed'] is True
+          assert process['transport']['returncode'] == 0
+          assert process['transport']['retry_allowed'] is False
+          assert process['transport']['observed_memory_bytes'] is None
+          assert process['decoded_reply']['input_tokens'] > 0
+          assert process['decoded_reply']['output_tokens'] == 0
+          resident = json.loads((root / 'resident-report.json').read_text())
+          assert resident['success'] is True
+          for key in ('source_sha', 'tested_sha', 'tested_tree'):
+              assert resident[key] == run[key]
+          assert len(resident['observations']) == 2
+          first, second = resident['observations']
+          assert first['transport']['process_id'] == second['transport']['process_id']
+          assert first['request_sha256'] != second['request_sha256']
+          for index, entry in enumerate(resident['observations'], 1):
+              assert entry['transport']['eligible_reply'] is True
+              assert entry['transport']['completed_exchanges'] == index
+              assert entry['transport']['model_reservation_released'] is False
+              assert entry['decoded_reply']['bundle_digest'] == resident['bundle_digest']
+              assert entry['decoded_reply']['input_tokens'] > 0
+              assert entry['decoded_reply']['output_tokens'] == 0
+          assert resident['close']['direct_child_reaped'] is True
+          assert resident['close']['descendant_exit_verified'] is False
+          assert resident['production_composition'] is False
+          assert resident['held_out_efficacy'] is False
+          assert resident['artifact_adoption'] is False
+          PY
+          git diff --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ always() }}
+        with:
+          name: laya-real-model-${{ matrix.os }}-${{ matrix.lane }}-${{ env.SOURCE_SHA }}
+          path: |
+            ${{ runner.temp }}/laya-identity.txt
+            ${{ runner.temp }}/laya-source.tar.gz
+            ${{ runner.temp }}/laya-install.json
+            ${{ runner.temp }}/laya-torch-install.json
+            ${{ runner.temp }}/laya-environment.txt
+            ${{ runner.temp }}/laya-contracts.log
+            ${{ runner.temp }}/laya-training-contracts.log
+            ${{ runner.temp }}/laya-metrics-contracts.log
+            ${{ runner.temp }}/laya-training-smoke.log
+            ${{ runner.temp }}/laya-resident-smoke.log
+            ${{ runner.temp }}/laya-smoke/candidate-head.safetensors
+            ${{ runner.temp }}/laya-smoke.log
+            ${{ runner.temp }}/laya-smoke/*.json
+          if-no-files-found: error
+          retention-days: 14
+
+  native-format:
+    name: Native bridge formatting diagnosis
+    runs-on: macos-15
+    timeout-minutes: 15
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Format a disposable diagnostic copy, never the reviewed checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          mkdir -p "$RUNNER_TEMP/bridge-format/copy"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/bridge-format/identity.txt"
+          git archive HEAD | tar -x -C "$RUNNER_TEMP/bridge-format/copy"
+          cd "$RUNNER_TEMP/bridge-format/copy/codex-rs"
+          rustfmt --version > "$RUNNER_TEMP/bridge-format/tool.txt"
+          cargo fmt -p codex-hepta-infer-core -p codex-hepta-infer-worker-host
+          tar -czf "$RUNNER_TEMP/bridge-format/formatted-components.tar.gz" hepta-infer-core hepta-infer-worker-host
+      - name: Check the actual candidate without mutation
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -- --check 2>&1 | tee "$RUNNER_TEMP/bridge-format/check.log"
+      - name: Preserve reviewed source
+        if: ${{ always() }}
+        run: git diff --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ always() }}
+        with:
+          name: bridge-format-${{ env.SOURCE_SHA }}
+          path: |
+            ${{ runner.temp }}/bridge-format/identity.txt
+            ${{ runner.temp }}/bridge-format/tool.txt
+            ${{ runner.temp }}/bridge-format/check.log
+            ${{ runner.temp }}/bridge-format/formatted-components.tar.gz
+          if-no-files-found: error
+          retention-days: 3

@@ -34,7 +34,8 @@ PACKAGE_GROUPS = {
     "hepta-plasticity": {"learning", "lifecycle"},
     "hepta-intelligence": {"objective", "learning"},
     "hepta-intuition": {"objective", "learning"},
-    "hepta-neuron": {"learning"},
+    # Neuron commits depend on model receipts and generation recovery.
+    "hepta-neuron": {"inference", "learning", "lifecycle"},
     "hepta-ndu": {"objective", "learning"},
     "hepta-cognitive-read": {"learning"},
     "hepta-cognitive-store": {"learning", "lifecycle"},
@@ -61,7 +62,7 @@ FILE_GROUPS = {
     "codex-rs/hepta-supervisor/src/module_runtime.rs": {"lifecycle"},
     "codex-rs/hepta-supervisor/src/module_runtime_safety_tests.rs": {"lifecycle"},
     "codex-rs/hepta-fleet/src/module_catalog.rs": {"lifecycle"},
-    "codex-rs/hepta-plasticity/src/topology_v3.rs": {"learning", "lifecycle"},
+    "codex-rs/hepta-plasticity/src/topology_v2.rs": {"learning", "lifecycle"},
     "codex-rs/hepta-plasticity/src/durable_topology_registry.rs": {"learning", "lifecycle"},
 }
 

@@ -1,0 +1,268 @@
+name: Hepta inference worker qualification
+
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-*/**'
+      - 'codex-rs/app-server*/**'
+      - 'codex-rs/Cargo.*'
+      - 'codex-rs/.config/nextest.toml'
+      - 'codex-rs/rust-toolchain.toml'
+      - 'codex-rs/rustfmt.toml'
+      - 'docs/modules/inference.*/**'
+      - 'docs/readiness/LANE_B_NATIVE_HOST.md'
+      - 'qualification/module-execution-dossiers/**'
+      - 'scripts/hepta_inference*'
+      - 'scripts/test_hepta_inference*'
+      - 'scripts/hepta_ci_*.py'
+      - 'scripts/hepta_workspace.py'
+      - '.github/workflows/hepta-inference-worker.yml'
+      - '.github/scripts/check_ci_results.py'
+      - 'justfile'
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  # v2 escapes the historical cancelled run whose Linux aggregator is queued.
+  # The small aggregator below must remain runnable even when Linux is delayed.
+  group: hepta-inference-worker-v2-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source:
+    # Platform-neutral checks do not replace either native platform lane.
+    runs-on: macos-15
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Retain exact tracked source for reproducible diagnosis
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/inference-source-identity.txt"
+          git archive --format=tar.gz --output="$RUNNER_TEMP/inference-source.tar.gz" HEAD
+      - name: Test fail-closed receipt generation and Git identity binding
+        run: python3 -m unittest -v scripts.test_hepta_inference_status
+      - name: Check derived projections without mutation
+        if: ${{ !cancelled() }}
+        run: |
+          set -o pipefail
+          python3 scripts/hepta-module-docs.py refresh-derived --check 2>&1 | tee "$RUNNER_TEMP/inference-projections.log"
+      - name: Check canonical registry
+        if: ${{ !cancelled() }}
+        run: |
+          set -o pipefail
+          python3 scripts/hepta_module_registry.py --strict 2>&1 | tee "$RUNNER_TEMP/inference-registry.log"
+      - name: Check implementation mappings
+        if: ${{ !cancelled() }}
+        run: |
+          set -o pipefail
+          python3 scripts/hepta-implementation-maps.py verify 2>&1 | tee "$RUNNER_TEMP/inference-mappings.log"
+      - name: Retain source and diagnostic evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: inference-source-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/inference-*
+          retention-days: 1
+          if-no-files-found: error
+
+  owners:
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","merge-candidate"]' || '["source-head"]') }}
+        os: [ubuntu-24.04, macos-15]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
+      EXPECTED_SHA: ${{ matrix.lane == 'merge-candidate' && github.sha || github.event.pull_request.head.sha || github.sha }}
+      LANE: ${{ matrix.lane }}
+      RUST_BACKTRACE: '1'
+      CARGO_BUILD_JOBS: '2'
+      TMPDIR: /tmp
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind exact source or deterministic merge tree
+        id: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/inference-evidence"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          if [ "$LANE" = merge-candidate ]; then
+            expected_tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+            test "$(git rev-parse HEAD^{tree})" = "$expected_tree"
+          else
+            test "$EXPECTED_SHA" = "$SOURCE_SHA"
+          fi
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Resolve workspace and verified V8 artifacts
+        id: setup
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_workspace.py
+          python3 scripts/hepta_ci_v8.py
+      - name: Check owner formatting without changing source
+        id: format
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        working-directory: codex-rs
+        run: |
+          set -o pipefail
+          cargo fmt -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-agentd -- --check 2>&1 | tee "$RUNNER_TEMP/inference-evidence/rustfmt.log"
+      - name: Retain early formatting diagnosis
+        if: ${{ !cancelled() && steps.format.outcome == 'failure' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: inference-format-${{ matrix.os }}-${{ matrix.lane }}-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/inference-evidence/rustfmt.log
+          retention-days: 3
+          if-no-files-found: error
+      - name: Test inference.control library independently
+        id: infer_core
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f target/nextest/local/junit.xml
+          trap 'if test -f target/nextest/local/junit.xml; then cp target/nextest/local/junit.xml "$RUNNER_TEMP/inference-evidence/infer_core.xml"; fi' EXIT
+          just test --locked --lib -p codex-hepta-infer-core --retries 0 --test-threads=1 2>&1 | tee "$RUNNER_TEMP/inference-evidence/infer_core.log"
+      - name: Test inference.worker library independently
+        id: worker
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f target/nextest/local/junit.xml
+          trap 'if test -f target/nextest/local/junit.xml; then cp target/nextest/local/junit.xml "$RUNNER_TEMP/inference-evidence/worker.xml"; fi' EXIT
+          just test --locked --lib -p codex-hepta-infer-worker-host --retries 0 --test-threads=1 2>&1 | tee "$RUNNER_TEMP/inference-evidence/worker.log"
+      - name: Test Agentd library independently
+        id: agentd
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f target/nextest/local/junit.xml
+          trap 'if test -f target/nextest/local/junit.xml; then cp target/nextest/local/junit.xml "$RUNNER_TEMP/inference-evidence/agentd.xml"; fi' EXIT
+          just test --locked --lib -p codex-hepta-agentd --retries 0 --test-threads=1 2>&1 | tee "$RUNNER_TEMP/inference-evidence/agentd.log"
+      - name: Retain owner diagnostics before later build stages
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: inference-libraries-${{ matrix.os }}-${{ matrix.lane }}-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/inference-evidence/
+          retention-days: 3
+          if-no-files-found: error
+      - name: Compile all owner binaries
+        id: binary
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        working-directory: codex-rs
+        run: |
+          set -o pipefail
+          cargo build --locked --bins -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-agentd 2>&1 | tee "$RUNNER_TEMP/inference-evidence/binary.log"
+      - name: Exercise CLI help and denied admission as actual binary smoke tests
+        id: binary_smoke
+        if: ${{ !cancelled() && steps.binary.outcome == 'success' }}
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          binary=target/debug/hepta-infer-worker
+          "$binary" --help > "$RUNNER_TEMP/inference-evidence/cli-help.txt"
+          grep -q -- '--reconcile-only' "$RUNNER_TEMP/inference-evidence/cli-help.txt"
+          if "$binary" --profile unsupported </dev/null > /dev/null 2> "$RUNNER_TEMP/inference-evidence/cli-invalid-profile.txt"; then
+            echo 'invalid profile was accepted' >&2
+            exit 1
+          fi
+          grep -q 'unsupported worker profile' "$RUNNER_TEMP/inference-evidence/cli-invalid-profile.txt"
+          if "$binary" --reconcile-only </dev/null > /dev/null 2> "$RUNNER_TEMP/inference-evidence/cli-explicit-profile.txt"; then
+            echo 'reconcile-only bypassed explicit profile selection' >&2
+            exit 1
+          fi
+          grep -q 'must be selected explicitly' "$RUNNER_TEMP/inference-evidence/cli-explicit-profile.txt"
+          if "$binary" --profile native-app-server </dev/null > /dev/null 2> "$RUNNER_TEMP/inference-evidence/cli-authority-required.txt"; then
+            echo 'missing authority configuration was accepted' >&2
+            exit 1
+          fi
+          grep -q -- '--final-use-authority-config is required' "$RUNNER_TEMP/inference-evidence/cli-authority-required.txt"
+      - name: Check default all-owner targets
+        id: all_targets
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        working-directory: codex-rs
+        run: |
+          set -o pipefail
+          cargo check --locked --all-targets -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-agentd 2>&1 | tee "$RUNNER_TEMP/inference-evidence/all-targets.log"
+      - name: Check explicit experimental-local feature separately
+        id: experimental
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        working-directory: codex-rs
+        run: |
+          set -o pipefail
+          cargo check --locked --all-targets -p codex-hepta-infer-worker-host --features experimental-local-model 2>&1 | tee "$RUNNER_TEMP/inference-evidence/experimental.log"
+      - name: Strict Clippy for default owners and explicit local feature
+        id: clippy
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo clippy --locked --all-targets --no-deps -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-agentd -- -D warnings 2>&1 | tee "$RUNNER_TEMP/inference-evidence/clippy.log"
+          cargo clippy --locked --all-targets --no-deps -p codex-hepta-infer-worker-host --features experimental-local-model -- -D warnings 2>&1 | tee "$RUNNER_TEMP/inference-evidence/clippy-experimental.log"
+      - name: Require unchanged candidate
+        id: clean_tree
+        if: ${{ always() }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+      - name: Write exact-candidate CURRENT_STATUS.json
+        if: ${{ always() }}
+        env:
+          STEP_RESULTS: ${{ toJSON(steps) }}
+        run: python3 scripts/hepta_inference_status.py --output "$RUNNER_TEMP/inference-evidence/CURRENT_STATUS.json" --junit-dir "$RUNNER_TEMP/inference-evidence"
+      - name: Retain non-interchangeable lane receipts
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: inference-${{ matrix.os }}-${{ matrix.lane }}-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/inference-evidence/
+          retention-days: 14
+          if-no-files-found: error
+
+  qualification-result:
+    if: ${{ always() }}
+    needs: [source, owners]
+    # Aggregation is platform-neutral; both native Linux lanes remain required.
+    runs-on: macos-15
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Reject missing, skipped, cancelled or failed lanes
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+          EXPECTED_NEEDS: '["source","owners"]'
+        run: python3 .github/scripts/check_ci_results.py

@@ -66,7 +66,7 @@ class ScopeTests(unittest.TestCase):
                 self.assertFalse(scope["native"])
 
     def test_plasticity_change_runs_learning_and_lifecycle_only(self):
-        scope = select(["codex-rs/hepta-plasticity/src/topology_v3.rs"])
+        scope = select(["codex-rs/hepta-plasticity/src/topology_v2.rs"])
         self.assertTrue(scope["learning"])
         self.assertTrue(scope["lifecycle"])
         for group in GROUPS - {"learning", "lifecycle"}:

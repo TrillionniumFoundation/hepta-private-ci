@@ -18,6 +18,7 @@ import {
   stableId,
 } from "./runtime-contract.js";
 import { callWithDeadline, exclusive } from "./runtime-boundary.js";
+import { snapshotHostInput } from "./runtime-input.js";
 
 export class BrowserProfileHost {
   #driver;
@@ -62,7 +63,7 @@ export class BrowserProfileHost {
   }
 
   async openProfile(input) {
-    requireRecord(input, "input");
+    input = snapshotHostInput(input);
     const profileId = stableId(input.profileId, "profileId");
     return exclusive(this.#locks, profileId, async () => {
       if (this.#profiles.has(profileId) || this.#openingProfiles.has(profileId)) {
@@ -143,7 +144,7 @@ export class BrowserProfileHost {
   }
 
   async admitEffectGrant(input) {
-    requireRecord(input, "input");
+    input = snapshotHostInput(input);
     const profileId = stableId(input.profileId, "profileId");
     return exclusive(this.#locks, profileId, async () => {
       const state = this.#profile(input, true);
@@ -167,7 +168,7 @@ export class BrowserProfileHost {
   }
 
   async observePage(input) {
-    requireRecord(input, "input");
+    input = snapshotHostInput(input);
     const profileId = stableId(input.profileId, "profileId");
     return exclusive(this.#locks, profileId, async () => {
       const state = this.#profile(input, true);
@@ -213,7 +214,7 @@ export class BrowserProfileHost {
   }
 
   async navigateOrAct(input) {
-    requireRecord(input, "input");
+    input = snapshotHostInput(input);
     const profileId = stableId(input.profileId, "profileId");
     return exclusive(this.#locks, profileId, async () => {
       const state = this.#profile(input, true);
@@ -222,34 +223,43 @@ export class BrowserProfileHost {
         input,
         this.#clock(),
       );
-      let prior = state.operations.get(operationId);
-      if (!prior) {
-        const durable = await this.#journal.getOperation(
-          state.profileId,
-          state.generation,
-          operationId,
-        );
-        if (durable) prior = this.#entryFromDurable(durable, requestSemantics);
+      // The journal may have been advanced by persisted reconciliation. Never
+      // return a cached unknown result after that owner has recorded a terminal.
+      const durable = await this.#journal.getOperation(
+        state.profileId,
+        state.generation,
+        operationId,
+      );
+      const prior = durable ? this.#entryFromDurable(durable, requestSemantics) : null;
+      if (!durable && state.operations.has(operationId)) {
+        throw new TypeError("cached operation has no durable owner record");
       }
       if (prior) {
         if (prior.requestDigest !== requestDigest) {
           throw new TypeError("operation identity was reused with changed semantics");
         }
-        if (!state.operations.has(operationId) && !prior.receipt.terminalObserved) {
-          state.operations.set(operationId, prior);
-        }
+        if (prior.receipt.terminalObserved) state.operations.delete(operationId);
+        else state.operations.set(operationId, prior);
         return prior.receipt;
       }
       if (this.#activeOperationCount(state) >= MAX_OUTSTANDING_OPERATIONS) {
         throw new TypeError("profile operation capacity is exhausted");
       }
 
+      // A final-use token cannot outlive the narrower profile/effect window.
+      // Keep the original request deadline in its digest; this local bound only
+      // restricts admission and is never a rewritten historical operation.
+      const dispatchDeadlineMs = Math.min(
+        requestSemantics.deadlineMs,
+        state.expiresAtMs,
+        state.effectGrants.get(requestSemantics.effectGrantDigest).expiresAtMs,
+      );
       let entry = null;
       try {
         const observed = requireRecord(
           await this.#withVerifiedUse(
             Object.freeze({ ...requestSemantics, requestDigest }),
-            requestSemantics.deadlineMs,
+            dispatchDeadlineMs,
             async (verified) => {
               requireRecord(verified, "verified-use witness");
               if (verified.authorized !== true) {
@@ -290,7 +300,7 @@ export class BrowserProfileHost {
               // cannot slip between final validation and effect dispatch.
               await this.#journal.recordDispatch(this.#durableRecord(state, entry));
               state.operations.set(operationId, entry);
-              return this.#callDriver("dispatch", semantics, requestSemantics.deadlineMs);
+              return this.#callDriver("dispatch", semantics, dispatchDeadlineMs);
             },
           ),
           "driver dispatch observation",
@@ -321,31 +331,31 @@ export class BrowserProfileHost {
   }
 
   async reconcileOperation(input) {
-    requireRecord(input, "input");
+    input = snapshotHostInput(input);
     const profileId = stableId(input.profileId, "profileId");
     return exclusive(this.#locks, profileId, async () => {
       const state = this.#profile(input, false);
       const operationId = stableId(input.operationId, "operationId");
-      let prior = state.operations.get(operationId);
-      if (!prior) {
-        const durable = await this.#journal.getOperation(
-          state.profileId,
-          state.generation,
-          operationId,
-        );
-        if (!durable) {
-          throw new TypeError("operation has not crossed the browser effect boundary");
-        }
-        prior = this.#entryFromDurable(
-          durable,
-          this.#requestSemanticsFromDurableInput(state, input, durable),
-        );
-        if (!prior.receipt.terminalObserved) state.operations.set(operationId, prior);
+      const durable = await this.#journal.getOperation(
+        state.profileId,
+        state.generation,
+        operationId,
+      );
+      if (!durable) {
+        throw new TypeError("operation has not crossed the browser effect boundary");
       }
+      const prior = this.#entryFromDurable(
+        durable,
+        this.#requestSemanticsFromDurableInput(state, input, durable),
+      );
       if (prior.requestDigest !== reconciliationRequestDigest(state, input, prior.semantics)) {
         throw new TypeError("operation reconciliation changed immutable semantics");
       }
-      if (prior.receipt.terminalObserved) return prior.receipt;
+      if (prior.receipt.terminalObserved) {
+        state.operations.delete(operationId);
+        return prior.receipt;
+      }
+      state.operations.set(operationId, prior);
       try {
         const observed = requireRecord(
           await this.#callDriver(
@@ -376,15 +386,15 @@ export class BrowserProfileHost {
       await this.#persistReceipt(state, prior);
       this.#pruneTerminalOperations(state);
       return prior.receipt;
-    });
+    }, { settlement: true });
   }
 
   async reconcilePersistedOperation(input) {
-    requireRecord(input, "input");
+    input = snapshotHostInput(input);
     const profileId = stableId(input.profileId, "profileId");
     const generation = positiveInteger(input.generation, "generation");
     const operationId = stableId(input.operationId, "operationId");
-    return exclusive(this.#locks, `${profileId}:${generation}`, async () => {
+    return exclusive(this.#locks, profileId, async () => {
       const durable = await this.#journal.getOperation(profileId, generation, operationId);
       if (!durable) throw new TypeError("persisted operation does not exist");
       if (input.principalId !== durable.principalId) {
@@ -403,7 +413,8 @@ export class BrowserProfileHost {
         durable,
       );
       const requestDigest = canonicalDigest(semantics);
-      if (requestDigest !== durable.requestDigest) {
+      if (requestDigest !== durable.requestDigest ||
+          reconciliationRequestDigest(pseudoState, input, semantics) !== durable.requestDigest) {
         throw new TypeError("persisted reconciliation changed immutable semantics");
       }
       if (durable.terminalObserved === true) return this.#receiptFromDurable(durable);
@@ -440,13 +451,21 @@ export class BrowserProfileHost {
             : "reconcile_error",
         );
       }
-      await this.#journal.recordObservation({ ...durable, ...receipt });
+      // Persist only outcome fields. Public presentation/authority flags are
+      // not new durable facts and cannot alter an operation's immutable record.
+      await this.#journal.recordObservation({
+        ...durable,
+        status: receipt.status,
+        outcomeDigest: receipt.outcomeDigest,
+        terminalObserved: receipt.terminalObserved,
+        observationReason: receipt.observationReason,
+      });
       return receipt;
-    });
+    }, { settlement: true });
   }
 
   async closeProfile(input) {
-    requireRecord(input, "input");
+    input = snapshotHostInput(input);
     const profileId = stableId(input.profileId, "profileId");
     return exclusive(this.#locks, profileId, async () => {
       const state = this.#profile(input, false);
@@ -481,7 +500,7 @@ export class BrowserProfileHost {
         generation: state.generation,
         terminalObserved: true,
       });
-    });
+    }, { settlement: true });
   }
 
   #profile(input, requireLiveGrant) {
@@ -644,9 +663,30 @@ export class BrowserProfileHost {
     let finishConsumer;
     const consumerFinished = new Promise((resolve) => { finishConsumer = resolve; });
     let enteredOnce = false;
+    let entryOpen = true;
+    const entryStartedAtMs = this.#clock();
+    futureDeadline(deadlineMs, entryStartedAtMs, "authority entry deadline");
+    const entryMonotonicEnd = performance.now() + Math.min(
+      this.#driverCallTimeoutMs,
+      deadlineMs - entryStartedAtMs,
+    );
 
-    const authorityCall = Promise.resolve().then(() =>
+    let authorityCall;
+    const startAuthorityCall = () => Promise.resolve().then(() =>
       this.#authority.withVerifiedUse(request, async (verified) => {
+        // A timed-out Promise does not cancel its producer. Close the callback
+        // itself before releasing the profile lock so a late verifier cannot
+        // dispatch into a closed/replaced profile or duplicate a later attempt.
+        if (!entryOpen) {
+          throw new TypeError("final-use authority entry is closed");
+        }
+        const now = this.#clock();
+        if (!Number.isSafeInteger(now) || now < entryStartedAtMs) {
+          throw new TypeError("authority entry clock is invalid or regressed");
+        }
+        if (now >= deadlineMs || performance.now() >= entryMonotonicEnd) {
+          throw new TypeError("final-use authority entry deadline expired");
+        }
         if (enteredOnce) {
           throw new TypeError("final-use authority invoked the consumer more than once");
         }
@@ -663,20 +703,35 @@ export class BrowserProfileHost {
     // verified-use consumer has started, its driver operation owns its own
     // deadline; racing a second authority timer here can misclassify a driver
     // timeout as an authority failure.
-    const first = await callWithDeadline({
-      call: () =>
-        Promise.race([
-          authorityCall.then((value) => ({ kind: "completed", value })),
-          entered.then(() => ({ kind: "entered" })),
-        ]),
-      payload: null,
-      now: this.#clock,
-      deadlineMs,
-      timeoutCapMs: this.#driverCallTimeoutMs,
-      abortable: false,
-      timeoutName: "browser authority",
-    });
-    if (first.kind === "completed") return first.value;
+    let first;
+    try {
+      first = await callWithDeadline({
+        call: () => {
+          // Attach the observer in the same turn that starts verification. If
+          // the deadline wrapper rejects before entry, no orphan verification
+          // Promise (or unhandled rejection) is created.
+          authorityCall = startAuthorityCall();
+          return Promise.race([
+            authorityCall.then((value) => ({ kind: "completed", value })),
+            entered.then(() => ({ kind: "entered" })),
+          ]);
+        },
+        payload: null,
+        now: this.#clock,
+        deadlineMs,
+        timeoutCapMs: this.#driverCallTimeoutMs,
+        abortable: false,
+        timeoutName: "browser authority",
+      });
+    } finally {
+      entryOpen = false;
+    }
+    if (first.kind === "completed") {
+      if (!enteredOnce) {
+        throw new TypeError("final-use authority completed without consumer entry");
+      }
+      return first.value;
+    }
 
     await consumerFinished;
     // After the local consumer settles, bound only the authority-side

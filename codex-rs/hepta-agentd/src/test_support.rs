@@ -77,6 +77,8 @@ impl CognitiveTestHost {
         agent_id: AgentId,
         model: &str,
         provider_base_url: &str,
+        codex_self_exe: PathBuf,
+        codex_linux_sandbox_exe: Option<PathBuf>,
     ) -> TestResult<Self> {
         validate_config_scalar(model, "model")?;
         validate_config_scalar(provider_base_url, "provider base URL")?;
@@ -116,6 +118,10 @@ impl CognitiveTestHost {
         )?);
         let store = Arc::new(CognitiveStore::open(&identity.layout).await?);
         state.attach_cognitive_store(Arc::clone(&store))?;
+        // Match default Agentd startup after opening/attaching the real store.
+        // This freezes the zero-effect-authority baseline, not a test override
+        // of health.ready or a replacement for final-use authorization.
+        state.mark_runtime_prerequisites_ready()?;
         registry.compare_and_transition(&agent_id, 1, AgentLifecycle::Running)?;
         state.refresh_generation()?;
 
@@ -123,6 +129,11 @@ impl CognitiveTestHost {
             AbsolutePathBuf::from_absolute_path(identity.home_root.clone())?,
         )?;
 
+        let dispatch_paths = Arg0DispatchPaths {
+            codex_self_exe: Some(codex_self_exe.canonicalize()?),
+            codex_linux_sandbox_exe,
+            ..Arg0DispatchPaths::default()
+        };
         let cancellation = CancellationToken::new();
         let control = AgentdControlServer::bind(
             identity.control_socket.clone(),
@@ -133,16 +144,35 @@ impl CognitiveTestHost {
         let control_task = tokio::spawn(control.run());
         let app_server_task = tokio::spawn(run_app_server(
             identity.clone(),
-            Arg0DispatchPaths::default(),
+            dispatch_paths,
             CognitiveRuntime::Available(Arc::clone(&store)),
             Arc::clone(&state),
             /*production_writer_host*/ None,
         ));
 
+        // Own both tasks before the first fallible readiness wait. Any early
+        // return now cancels/aborts them through Drop rather than detaching them.
+        let mut host = Self {
+            _root: root,
+            agent_id: agent_id.clone(),
+            layout: identity.layout.clone(),
+            store,
+            cancellation,
+            control_task: Some(control_task),
+            app_server_task: Some(app_server_task),
+        };
         let deadline = Instant::now() + READY_TIMEOUT;
         while !identity.app_server_socket.exists() {
-            if app_server_task.is_finished() {
-                let outcome = app_server_task.await?;
+            if host
+                .app_server_task
+                .as_ref()
+                .is_some_and(JoinHandle::is_finished)
+            {
+                let outcome = host
+                    .app_server_task
+                    .take()
+                    .ok_or("missing Agentd test App Server task")?
+                    .await?;
                 return Err(
                     format!("Agentd test App Server exited before readiness: {outcome:?}").into(),
                 );
@@ -159,22 +189,17 @@ impl CognitiveTestHost {
         loop {
             match client.health().await {
                 Ok(health) if health.ready => break,
-                _ if Instant::now() >= deadline => {
-                    return Err("timed out waiting for Agentd test control readiness".into());
+                last if Instant::now() >= deadline => {
+                    return Err(format!(
+                        "timed out waiting for Agentd test control readiness: {last:?}"
+                    )
+                    .into());
                 }
                 _ => tokio::time::sleep(Duration::from_millis(10)).await,
             }
         }
 
-        Ok(Self {
-            _root: root,
-            agent_id,
-            layout: identity.layout,
-            store,
-            cancellation,
-            control_task: Some(control_task),
-            app_server_task: Some(app_server_task),
-        })
+        Ok(host)
     }
 
     pub fn agent_id(&self) -> &AgentId {

@@ -1,17 +1,28 @@
 //! Authority-checked inference worker boundary.
 //!
-//! The legacy boundary validates a pre-existing request, lease and reservation.
-//! The native App Server profile invokes the owning Agent's configured provider
-//! and observes its turn events. Neither profile issues grants, mutates fleet
-//! state, infers success from queue acceptance, promotes or releases artifacts.
+//! HostedAppServerWorker is a production candidate, not an activated product.
+//! LocalModelWorker is experimental and unavailable in default production builds.
+//! LegacyReceiptBoundary only validates supplied values; it never runs a model.
+//! No profile issues grants, mutates fleet state, promotes or releases artifacts.
 
 #![forbid(unsafe_code)]
 
-/// Model-manifest/grant state machine for native driver implementations.
+/// Experimental model policy/resource state machine. The explicit Cargo feature
+/// is required outside unit tests. Fixtures never prove real-device execution.
+#[cfg(any(test, feature = "experimental-local-model"))]
 pub mod model_worker;
+
+/// Kernel-verified local preparation only; no physical effect-entry is exposed.
+#[cfg(any(test, feature = "experimental-local-model"))]
+pub mod local_admission;
 
 pub mod final_use_authorizer;
 pub mod native_app_server;
+mod native_diagnostics;
+pub use native_diagnostics::NativeAuthorityObservation;
+pub use native_diagnostics::NativeRecoveryAction;
+pub use native_diagnostics::NativeRecoverySnapshot;
+pub use native_diagnostics::inspect_native_run;
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -116,6 +127,9 @@ pub fn request_digest(request: &InferenceRequest) -> Digest32 {
     Digest32::of_bytes(&bytes)
 }
 
+/// LegacyReceiptBoundary: pure validation, not execution, verified authority,
+/// or billing evidence. The v1 unknown-consumption zero sentinel is retained
+/// only for compatibility; native/local observation APIs use explicit Option.
 pub fn execute(
     now_ms: u64,
     request: InferenceRequest,

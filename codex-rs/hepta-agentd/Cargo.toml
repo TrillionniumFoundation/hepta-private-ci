@@ -52,6 +52,7 @@ codex-hepta-bellman-operator = { path = "../hepta-bellman-operator" }
 codex-hepta-learning-artifacts = { path = "../hepta-learning-artifacts" }
 codex-hepta-intelligence = { path = "../hepta-intelligence" }
 codex-hepta-intuition = { path = "../hepta-intuition" }
+codex-hepta-infer-core = { path = "../hepta-infer-core" }
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger" }
 codex-hepta-authbus = { path = "../hepta-authbus" }
 codex-hepta-evidence = { workspace = true }
@@ -102,7 +103,6 @@ tokio-util = { workspace = true }
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = ["qualification-legacy-write"] }
 codex-hepta-operations = { workspace = true }
 codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
-codex-hepta-infer-core = { path = "../hepta-infer-core" }
 app_test_support = { workspace = true }
 codex-hepta-infer-worker-host = { path = "../hepta-infer-worker-host" }
 codex-hepta-context-compiler = { path = "../hepta-context-compiler" }

@@ -131,12 +131,25 @@ class CandidateTransportWorkflowTests(unittest.TestCase):
             with self.subTest(status=status, body=body):
                 result, retained = self.run_step(status, body)
                 self.assertNotEqual(result.returncode, 0)
-                self.assertEqual(retained, "")
+                observation = json.loads(retained)
+                self.assertIsNone(observation["write_transport_denied"])
+                self.assertEqual(observation["observation_status"], "not_established")
+                self.assertEqual(observation["failure_type"], "ControlError")
+                self.assertFalse(observation["activation_authorized"])
+                self.assertNotIn(body, retained)
 
     def test_timeout_is_unknown_not_a_permission_denial(self):
         result, retained = self.run_step(403, "", timeout=True)
         self.assertNotEqual(result.returncode, 0)
-        self.assertEqual(retained, "")
+        self.assertEqual(json.loads(retained), {
+            "write_transport_denied": None,
+            "activation_authorized": False,
+            "credential_separation_proven": False,
+            "admin_denial_proven": False,
+            "pull_request_write_denial_proven": False,
+            "observation_status": "not_established",
+            "failure_type": "ControlError",
+        })
 
 
 if __name__ == "__main__":

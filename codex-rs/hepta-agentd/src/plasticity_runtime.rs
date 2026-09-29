@@ -76,20 +76,37 @@ pub struct PlasticityRuntimeHandleV1 {
 }
 
 impl PlasticityRuntimeHandleV1 {
+    /// Connection liveness is not permission, proposal acceptance or completion.
+    pub(crate) fn is_closed(&self) -> bool {
+        self.sender.is_closed()
+    }
+
+    fn reserve_slot(
+        &self,
+    ) -> Result<mpsc::Permit<'_, PlasticityRuntimeCommandV1>, PlasticityRuntimeCallErrorV1> {
+        if self.is_closed() {
+            return Err(PlasticityRuntimeCallErrorV1::Closed);
+        }
+        self.sender.try_reserve().map_err(|error| match error {
+            mpsc::error::TrySendError::Full(_) => PlasticityRuntimeCallErrorV1::Unavailable,
+            mpsc::error::TrySendError::Closed(_) => PlasticityRuntimeCallErrorV1::Closed,
+        })
+    }
+
     pub async fn propose_parameter(
         &self,
         request: ParameterPlasticityProductRequestV1,
         now: u64,
     ) -> Result<ParameterPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1> {
+        // Bound admission itself, not just the queue behind arbitrarily many
+        // suspended producers. No wait or retry is hidden in this handle.
+        let permit = self.reserve_slot()?;
         let (response, receive) = oneshot::channel();
-        self.sender
-            .send(PlasticityRuntimeCommandV1::Parameter {
-                request: Box::new(request),
-                now,
-                response,
-            })
-            .await
-            .map_err(|_| PlasticityRuntimeCallErrorV1::Closed)?;
+        permit.send(PlasticityRuntimeCommandV1::Parameter {
+            request: Box::new(request),
+            now,
+            response,
+        });
         receive
             .await
             .map_err(|_| PlasticityRuntimeCallErrorV1::Closed)?
@@ -100,15 +117,15 @@ impl PlasticityRuntimeHandleV1 {
         request: TopologyPlasticityProductRequestV1,
         now: u64,
     ) -> Result<TopologyPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1> {
+        // Bound admission itself, not just the queue behind arbitrarily many
+        // suspended producers. No wait or retry is hidden in this handle.
+        let permit = self.reserve_slot()?;
         let (response, receive) = oneshot::channel();
-        self.sender
-            .send(PlasticityRuntimeCommandV1::Topology {
-                request: Box::new(request),
-                now,
-                response,
-            })
-            .await
-            .map_err(|_| PlasticityRuntimeCallErrorV1::Closed)?;
+        permit.send(PlasticityRuntimeCommandV1::Topology {
+            request: Box::new(request),
+            now,
+            response,
+        });
         receive
             .await
             .map_err(|_| PlasticityRuntimeCallErrorV1::Closed)?
@@ -275,6 +292,7 @@ impl PlasticityRuntimeOwnerV1 {
     ) -> Result<(), AgentdError> {
         loop {
             let command = tokio::select! {
+                biased;
                 _ = cancellation.cancelled() => return Ok(()),
                 command = self.receiver.recv() => command,
             };
@@ -292,7 +310,7 @@ impl PlasticityRuntimeOwnerV1 {
                     now,
                     response,
                 } => {
-                    if !ready {
+                    if !proposal_entry_open(ready, &cancellation, &response) {
                         let _ = response.send(Err(PlasticityRuntimeCallErrorV1::Unavailable));
                         continue;
                     }
@@ -315,7 +333,7 @@ impl PlasticityRuntimeOwnerV1 {
                     now,
                     response,
                 } => {
-                    if !ready {
+                    if !proposal_entry_open(ready, &cancellation, &response) {
                         let _ = response.send(Err(PlasticityRuntimeCallErrorV1::Unavailable));
                         continue;
                     }
@@ -336,6 +354,16 @@ impl PlasticityRuntimeOwnerV1 {
     }
 }
 
+// Only pre-entry abandonment is skipped. Once the synchronous durable owner
+// call begins, its append/anchor/result obligations cannot be cancelled away.
+fn proposal_entry_open<T>(
+    ready: bool,
+    cancellation: &CancellationToken,
+    response: &oneshot::Sender<T>,
+) -> bool {
+    ready && !cancellation.is_cancelled() && !response.is_closed()
+}
+
 #[cfg(test)]
 #[path = "plasticity_runtime_lifetime_tests.rs"]
 mod lifetime_tests;
@@ -350,5 +378,44 @@ mod tests {
         assert!(validate_plasticity_runtime_capacity(MAX_PLASTICITY_RUNTIME_QUEUE).is_ok());
         assert!(validate_plasticity_runtime_capacity(0).is_err());
         assert!(validate_plasticity_runtime_capacity(MAX_PLASTICITY_RUNTIME_QUEUE + 1).is_err());
+    }
+
+    #[test]
+    fn proposal_capacity_is_reserved_without_waiting_and_recovers() {
+        let (sender, _receiver) = mpsc::channel(1);
+        let handle = PlasticityRuntimeHandleV1 { sender };
+        let occupied = handle.reserve_slot().expect("first slot");
+        assert!(matches!(
+            handle.reserve_slot(),
+            Err(PlasticityRuntimeCallErrorV1::Unavailable)
+        ));
+        drop(occupied);
+        assert!(handle.reserve_slot().is_ok());
+    }
+
+    #[test]
+    fn receiver_closure_is_not_an_overload_or_available_producer() {
+        let (sender, receiver) = mpsc::channel(1);
+        let handle = PlasticityRuntimeHandleV1 { sender };
+        assert!(!handle.is_closed());
+        drop(receiver);
+        assert!(handle.is_closed());
+        assert!(matches!(
+            handle.reserve_slot(),
+            Err(PlasticityRuntimeCallErrorV1::Closed)
+        ));
+    }
+
+    #[test]
+    fn cancelled_or_abandoned_proposals_cannot_enter_the_writer() {
+        let cancellation = CancellationToken::new();
+        let (response, receive) = oneshot::channel::<()>();
+        assert!(proposal_entry_open(true, &cancellation, &response));
+        assert!(!proposal_entry_open(false, &cancellation, &response));
+        drop(receive);
+        assert!(!proposal_entry_open(true, &cancellation, &response));
+        let (response, _receive) = oneshot::channel::<()>();
+        cancellation.cancel();
+        assert!(!proposal_entry_open(true, &cancellation, &response));
     }
 }

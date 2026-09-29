@@ -75,6 +75,97 @@ impl AppServerModelDriver {
         .await
     }
 
+    /// Reconcile an already journaled exact operation without reserving a new
+    /// request, claiming a new grant, or entering `turn/start`. Missing requests
+    /// and never-dispatched reservations are errors, not permission to execute.
+    /// Terminal observations remain immutable; absent history remains unknown.
+    pub async fn reconcile_only(
+        &self,
+        control: &mut DurableInferenceControl,
+        request_id: &str,
+        prompt: &str,
+        context_query: &Option<String>,
+        intelligence: Option<&NativeIntelligenceRunBinding>,
+    ) -> Result<NativeRunOutput> {
+        validate_native_input(prompt, context_query)?;
+        let record = control
+            .native_record(request_id)
+            .cloned()
+            .ok_or("reconcile-only request not found; no reservation was created")?;
+        let payload_digest = native_source_payload_digest(
+            prompt,
+            context_query,
+            &self.config.agentd_socket,
+            self.config.timeout.as_millis(),
+            intelligence,
+        )?;
+        if record.request.principal_id != self.config.agent_id.to_string()
+            || record.request.worker_generation != self.config.generation
+            || record.request.model != self.config.model
+            || record.request.payload_digest != payload_digest
+        {
+            return Err("reconcile-only request identity or input binding mismatch".into());
+        }
+        if let Some(reason) = &record.pre_dispatch_stop {
+            return Err(format!("request stopped before dispatch: {reason}").into());
+        }
+        if let Some(rejection) = &record.dispatch_rejection {
+            return Err(format!(
+                "turn/start was explicitly rejected before start ({:?}): {}",
+                rejection.status, rejection.reason
+            )
+            .into());
+        }
+        if record.state == NativeReservationState::Reserved {
+            return Err(
+                "request has not reached durable dispatch; reconcile-only never dispatches".into(),
+            );
+        }
+        if let Some(output) = record
+            .observation
+            .as_ref()
+            .filter(|output| output.terminal_observed)
+        {
+            // This preserves unknown usage as None. A separately verified usage
+            // amendment protocol is required before immutable terminals change.
+            return Ok(output.clone());
+        }
+        if let Some(reconciled) = self.reconcile_existing(&record, prompt).await? {
+            let settled = control.settle_native(request_id, reconciled)?;
+            return settled
+                .observation
+                .ok_or_else(|| "durable reconciliation omitted its normalized observation".into());
+        }
+        if let Some(output) = record.observation {
+            return Ok(output);
+        }
+        let dispatch = record
+            .dispatch
+            .as_ref()
+            .ok_or("missing durable dispatch binding")?;
+        let output = NativeRunOutput {
+            thread_id: dispatch.thread_id.clone(),
+            turn_id: record.turn_id.clone().unwrap_or_default(),
+            model: record.request.model.clone(),
+            model_provider: dispatch.model_provider.clone(),
+            status: NativeRunStatus::Indeterminate,
+            boundary_status: codex_hepta_infer_core::durable_control::native::NativeBoundaryStatus::Indeterminate,
+            output: String::new(),
+            observed_output_tokens: None,
+            terminal_observed: false,
+            owner_authority: NativeOwnerAuthority::Unverified,
+            stop_reason: Some(
+                "reopened after possible dispatch; thread/read found no exact terminal evidence; reservation held, no replay"
+                    .to_string(),
+            ),
+            codex_terminal_correlation_digest: None,
+        };
+        let settled = control.settle_native(request_id, output)?;
+        settled
+            .observation
+            .ok_or_else(|| "durable reconciliation omitted its normalized observation".into())
+    }
+
     async fn run_bound(
         &self,
         control: &mut DurableInferenceControl,
@@ -84,15 +175,7 @@ impl AppServerModelDriver {
         intelligence: Option<&NativeIntelligenceRunBinding>,
         cancellation: &CancellationToken,
     ) -> Result<NativeRunOutput> {
-        if prompt.is_empty() || prompt.len() > super::MAX_PROMPT_BYTES {
-            return Err("prompt must contain 1..32768 bytes".into());
-        }
-        if context_query
-            .as_ref()
-            .is_some_and(|query| query.is_empty() || query.len() > 2048)
-        {
-            return Err("context query must contain 1..2048 bytes".into());
-        }
+        validate_native_input(&prompt, &context_query)?;
         let request = NativeRequest {
             request_id: admission.request_id,
             principal_id: self.config.agent_id.to_string(),
@@ -107,56 +190,16 @@ impl AppServerModelDriver {
             )?,
         };
         let record = control.reserve_native(request, admission.maximum_in_flight)?;
-        if let Some(reason) = &record.pre_dispatch_stop {
-            return Err(format!("request stopped before dispatch: {reason}").into());
-        }
-        if let Some(rejection) = &record.dispatch_rejection {
-            return Err(format!(
-                "turn/start was explicitly rejected before start ({:?}): {}",
-                rejection.status, rejection.reason
-            )
-            .into());
-        }
         if record.state != NativeReservationState::Reserved {
-            if let Some(output) = record
-                .observation
-                .as_ref()
-                .filter(|output| output.terminal_observed)
-            {
-                return Ok(output.clone());
-            }
-            if let Some(reconciled) = self.reconcile_existing(&record, &prompt).await? {
-                let settled = control.settle_native(&record.request.request_id, reconciled)?;
-                return settled.observation.ok_or_else(|| {
-                    "durable reconciliation omitted its normalized observation".into()
-                });
-            }
-            if let Some(output) = record.observation {
-                return Ok(output);
-            }
-            let dispatch = record
-                .dispatch
-                .as_ref()
-                .ok_or("missing durable dispatch binding")?;
-            let output = NativeRunOutput {
-                thread_id: dispatch.thread_id.clone(),
-                turn_id: record.turn_id.clone().unwrap_or_default(),
-                model: record.request.model.clone(),
-                model_provider: dispatch.model_provider.clone(),
-                status: NativeRunStatus::Indeterminate,
-                boundary_status: codex_hepta_infer_core::durable_control::native::NativeBoundaryStatus::Indeterminate,
-                output: String::new(),
-                observed_output_tokens: None,
-                terminal_observed: false,
-                owner_authority: NativeOwnerAuthority::Unverified,
-                stop_reason: Some(
-                    "reopened after possible dispatch; thread/read found no exact terminal evidence; reservation held, no replay"
-                        .to_string(),
-                ),
-                codex_terminal_correlation_digest: None,
-            };
-            control.settle_native(&record.request.request_id, output.clone())?;
-            return Ok(output);
+            return self
+                .reconcile_only(
+                    control,
+                    &record.request.request_id,
+                    &prompt,
+                    &context_query,
+                    intelligence,
+                )
+                .await;
         }
         let request_id = record.request.request_id;
         match self
@@ -192,6 +235,19 @@ impl AppServerModelDriver {
             }
         }
     }
+}
+
+fn validate_native_input(prompt: &str, context_query: &Option<String>) -> Result<()> {
+    if prompt.is_empty() || prompt.len() > super::MAX_PROMPT_BYTES {
+        return Err("prompt must contain 1..32768 bytes".into());
+    }
+    if context_query
+        .as_ref()
+        .is_some_and(|query| query.is_empty() || query.len() > 2048)
+    {
+        return Err("context query must contain 1..2048 bytes".into());
+    }
+    Ok(())
 }
 
 fn native_source_payload_digest(
@@ -231,3 +287,7 @@ pub(super) fn digest(bytes: &[u8]) -> String {
 #[cfg(test)]
 #[path = "native_run_control_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "native_reconcile_tests.rs"]
+mod reconciliation_tests;

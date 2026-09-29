@@ -16,6 +16,9 @@ use std::path::PathBuf;
 #[path = "native_control.rs"]
 pub mod native;
 
+#[path = "semantic_control.rs"]
+pub mod semantic;
+
 const MAX_RECORDS: usize = 16_384;
 const MAX_JOURNAL_BYTES: u64 = 64 * 1024 * 1024;
 const MAX_JOURNAL_LINE_BYTES: usize = 8 * 1024 * 1024;
@@ -173,6 +176,7 @@ pub struct DurableInferenceControl {
     file: File,
     records: BTreeMap<String, RequestRecord>,
     native: native::NativeJournal,
+    semantic: semantic::SemanticJournal,
     capacity: usize,
     journal_bytes: u64,
     poisoned: bool,
@@ -199,6 +203,7 @@ impl DurableInferenceControl {
         file.try_lock().map_err(|_| Error::WriterUnavailable)?;
         let mut records = BTreeMap::new();
         let mut native = native::NativeJournal::default();
+        let mut semantic = semantic::SemanticJournal::default();
         let mut reader = BufReader::new(file.try_clone()?);
         let mut journal_bytes = 0_u64;
         let mut line = Vec::new();
@@ -226,10 +231,18 @@ impl DurableInferenceControl {
             if line.is_empty() {
                 continue;
             }
-            if let Some(json) = line.strip_prefix(native::JOURNAL_PREFIX) {
+            if let Some(json) = line.strip_prefix(semantic::JOURNAL_PREFIX) {
+                semantic.replay(json, &mut records)?;
+            } else if let Some(json) = line.strip_prefix(native::JOURNAL_PREFIX) {
                 native.replay(json)?;
             } else {
-                apply_event(&mut records, &decode_event(line)?, /*replay*/ true)?;
+                let event = decode_event(line)?;
+                if semantic.records.contains_key(event.request_id()) {
+                    return Err(Error::CorruptJournal(
+                        "semantic identity used by legacy event",
+                    ));
+                }
+                apply_event(&mut records, &event, /*replay*/ true)?;
             }
             if records.len() + native.records.len() > capacity
                 || records.keys().any(|id| native.records.contains_key(id))
@@ -250,6 +263,7 @@ impl DurableInferenceControl {
             file,
             records,
             native,
+            semantic,
             capacity,
             journal_bytes,
             poisoned: false,
@@ -261,6 +275,7 @@ impl DurableInferenceControl {
         now_ms: u64,
         request: InferenceRequest,
     ) -> Result<ControlReceipt, Error> {
+        self.require_legacy_identity(&request.request_id)?;
         validate_request(now_ms, &request)?;
         if let Some(current) = self.records.get(&request.request_id) {
             if current.request == request {
@@ -285,6 +300,7 @@ impl DurableInferenceControl {
         expected_revision: u64,
         reservation: Reservation,
     ) -> Result<ControlReceipt, Error> {
+        self.require_legacy_identity(request_id)?;
         validate_identity(request_id, "request")?;
         validate_reservation(now_ms, &reservation)?;
         let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
@@ -315,6 +331,7 @@ impl DurableInferenceControl {
         expected_revision: u64,
         assignment: Assignment,
     ) -> Result<ControlReceipt, Error> {
+        self.require_legacy_identity(request_id)?;
         validate_identity(request_id, "request")?;
         validate_assignment(&assignment)?;
         let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
@@ -340,6 +357,7 @@ impl DurableInferenceControl {
         request_id: &str,
         expected_revision: u64,
     ) -> Result<ControlReceipt, Error> {
+        self.require_legacy_identity(request_id)?;
         validate_identity(request_id, "request")?;
         let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
         if record.revision != expected_revision {
@@ -364,6 +382,7 @@ impl DurableInferenceControl {
         observation_digest: String,
         observation: TerminalObservation,
     ) -> Result<ControlReceipt, Error> {
+        self.require_legacy_identity(request_id)?;
         validate_identity(request_id, "request")?;
         validate_digest(&observation_digest, "observation")?;
         validate_observation(&observation)?;
@@ -422,7 +441,20 @@ impl DurableInferenceControl {
     }
 
     pub fn get(&self, request_id: &str) -> Option<&RequestRecord> {
+        if self.semantic.records.contains_key(request_id) {
+            return None;
+        }
         self.records.get(request_id)
+    }
+
+    fn require_legacy_identity(&self, request_id: &str) -> Result<(), Error> {
+        if self.poisoned {
+            return Err(Error::WriterUnavailable);
+        }
+        if self.semantic.records.contains_key(request_id) {
+            return Err(Error::Conflict);
+        }
+        Ok(())
     }
 
     pub fn journal_path(&self) -> &Path {
@@ -449,6 +481,15 @@ impl DurableInferenceControl {
     }
 
     fn append(&mut self, encoded: &str) -> Result<(), Error> {
+        let reserved = self.semantic.pending_result_bytes();
+        self.append_with_semantic_reservation(encoded, reserved)
+    }
+
+    fn append_with_semantic_reservation(
+        &mut self,
+        encoded: &str,
+        reserved: u64,
+    ) -> Result<(), Error> {
         if self.poisoned {
             return Err(Error::WriterUnavailable);
         }
@@ -456,7 +497,11 @@ impl DurableInferenceControl {
             .journal_bytes
             .checked_add(encoded.len() as u64)
             .ok_or(Error::ArithmeticOverflow)?;
-        if encoded.len() > MAX_JOURNAL_LINE_BYTES || next_bytes > MAX_JOURNAL_BYTES {
+        if encoded.len() > MAX_JOURNAL_LINE_BYTES
+            || next_bytes
+                .checked_add(reserved)
+                .is_none_or(|bytes| bytes > MAX_JOURNAL_BYTES)
+        {
             return Err(Error::CapacityExceeded);
         }
         let persisted = self

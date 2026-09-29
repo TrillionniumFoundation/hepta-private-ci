@@ -1,13 +1,18 @@
 name: Hepta Browser Agentd composition
 
 on:
-  push:
-    branches: [codex/browser-servo-agentd-composition-20260917]
+  pull_request:
     paths:
       - 'codex-rs/hepta-agentd/**'
       - 'codex-rs/hepta-agent-protocol/**'
-      - 'apps/hepta-browser/src/agentd-*.js'
-      - 'apps/hepta-browser/test/agentd-service.test.js'
+      - 'apps/hepta-browser/**'
+      - '.github/workflows/hepta-browser-agentd-composition.yml'
+  push:
+    branches: [main, codex/browser-servo-agentd-composition-20260917]
+    paths:
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-agent-protocol/**'
+      - 'apps/hepta-browser/**'
       - '.github/workflows/hepta-browser-agentd-composition.yml'
   workflow_dispatch:
 
@@ -15,65 +20,110 @@ permissions:
   contents: read
 
 concurrency:
-  group: hepta-browser-agentd-composition-${{ github.ref }}
-  cancel-in-progress: true
+  group: hepta-browser-agentd-composition-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   exact-composition:
+    name: Browser owner (${{ matrix.lane }})
     runs-on: ubuntu-24.04
     timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
-          fetch-depth: 1
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
           persist-credentials: false
-
+      - name: Construct immutable merge candidate
+        id: merge
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Docs CI
+          author-email: hepta-docs-ci@users.noreply.github.com
+          message: Synthetic merge
       - name: Bind exact source
+        env:
+          TESTED: ${{ steps.merge.outputs.sha || env.SOURCE_SHA }}
+          LANE: ${{ matrix.lane }}
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          git rev-parse HEAD HEAD^{tree}
-
-      - name: Verify Browser private-parent protocol tests
+          test "$(git rev-parse HEAD)" = "$TESTED"
+          mkdir -p "$RUNNER_TEMP/browser-owner"
+          printf 'source=%s\nbase=%s\ntested=%s\ntree=%s\nlane=%s\n' "$SOURCE_SHA" "$BASE_SHA" "$TESTED" "$(git rev-parse HEAD^{tree})" "$LANE" > "$RUNNER_TEMP/browser-owner/identity.txt"
+          git diff --check
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+        with:
+          node-version: '22.16.0'
+      - name: Verify complete Browser package, including journal failures
         shell: bash
         run: |
           set -euo pipefail
-          node --test apps/hepta-browser/test/agentd-service.test.js apps/hepta-browser/test/worker-driver.test.js
-
+          node --version > "$RUNNER_TEMP/browser-owner/node.txt"
+          for file in apps/hepta-browser/src/*.js apps/hepta-browser/test/*.js; do node --check "$file"; done
+          node --test apps/hepta-browser/test/*.test.js 2>&1 | tee "$RUNNER_TEMP/browser-owner/node-tests.log"
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        id: tools
+        if: ${{ !cancelled() }}
+        with:
+          tool: just@1.51.0,nextest@0.9.103
       - name: Verify Agentd Browser formatting
+        if: ${{ !cancelled() && steps.tools.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
-          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-agentd -- --check
-
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-agentd -- --check 2>&1 | tee "$RUNNER_TEMP/browser-owner/format.log"
       - name: Exercise real FinalUseAuthority handoff tests
+        if: ${{ !cancelled() && steps.tools.outcome == 'success' }}
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          cargo test --locked -p codex-hepta-agentd browser_servo --lib
-
+          just test --locked --lib -p codex-hepta-agentd --retries 0 --test-threads=1 browser_servo 2>&1 | tee "$RUNNER_TEMP/browser-owner/native-tests.log"
+      - name: Exercise bounded plasticity owner admission and recovery
+        if: ${{ !cancelled() && steps.tools.outcome == 'success' }}
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test --locked --lib -p codex-hepta-agentd --retries 0 --test-threads=1 plasticity_runtime 2>&1 | tee "$RUNNER_TEMP/browser-owner/plasticity-runtime-tests.log"
       - name: Compile named Agentd Browser product caller
+        if: ${{ !cancelled() && steps.tools.outcome == 'success' }}
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          cargo check --locked -p codex-hepta-agentd --bin hepta-agentd-browser
-
+          cargo check --locked -p codex-hepta-agentd --bin hepta-agentd-browser 2>&1 | tee "$RUNNER_TEMP/browser-owner/check.log"
       - name: Deny Agentd Browser lint warnings
+        if: ${{ !cancelled() && steps.tools.outcome == 'success' }}
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          cargo clippy --locked -p codex-hepta-agentd --lib --bin hepta-agentd-browser --no-deps -- -D warnings
-
+          cargo clippy --locked -p codex-hepta-agentd --lib --bin hepta-agentd-browser --no-deps -- -D warnings 2>&1 | tee "$RUNNER_TEMP/browser-owner/clippy.log"
       - name: Verify source stayed clean
-        if: always()
+        if: ${{ always() }}
         shell: bash
         run: |
           set -euo pipefail
           git diff --check
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ always() }}
+        with:
+          name: browser-owner-${{ matrix.lane }}-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/browser-owner/
+          if-no-files-found: error
+          retention-days: 14

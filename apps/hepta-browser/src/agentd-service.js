@@ -2,6 +2,7 @@ import {
   AgentdBrowserFrameDecoder,
   encodeAgentdBrowserFrame,
   buildAgentdBrowserFrame,
+  canonicalAgentdBrowserJson,
 } from "./agentd-protocol.js";
 
 const SERVICE_METHODS = new Set([
@@ -44,6 +45,8 @@ function positiveInteger(value, name) {
   return value;
 }
 
+class AgentdBrowserChannelClosed extends Error {}
+
 export class AgentdBrowserChannel {
   #input;
   #output;
@@ -51,6 +54,9 @@ export class AgentdBrowserChannel {
   #nextIncomingSequence = 1;
   #nextOutgoingSequence = 1;
   #queue = [];
+  #queuedBytes = 0;
+  #writes = new Set();
+  #pendingWriteBytes = 0;
   #waiters = [];
   #failed = null;
   #ended = false;
@@ -64,52 +70,117 @@ export class AgentdBrowserChannel {
     input.on("data", (chunk) => this.#onBytes(chunk));
     input.on("end", () => this.#onEnd());
     input.on("error", (error) => this.#fail(error));
+    input.on("close", () => this.#streamClosed("input"));
     output.on?.("error", (error) => this.#fail(error));
+    output.on?.("close", () => this.#streamClosed("output"));
+    output.on?.("finish", () => this.#streamClosed("output"));
+    this.#checkStreams();
   }
 
-  async nextFrame() {
-    if (this.#queue.length) return this.#queue.shift();
+  async nextFrame({ signal } = {}) {
+    this.#checkStreams();
     if (this.#failed) throw this.#failed;
+    if (signal?.aborted) throw new Error("Agentd browser receive was cancelled");
+    if (this.#queue.length) {
+      const { frame, bytes } = this.#queue.shift();
+      this.#queuedBytes -= bytes;
+      return frame;
+    }
     if (this.#ended) return null;
-    return new Promise((resolve, reject) => this.#waiters.push({ resolve, reject }));
+    if (this.#waiters.length >= 8) {
+      throw new TypeError("Agentd browser receive waiter capacity occupied");
+    }
+    return new Promise((resolve, reject) => {
+      const cleanup = () => signal?.removeEventListener("abort", abort);
+      const waiter = {
+        resolve: (frame) => { cleanup(); resolve(frame); },
+        reject: (error) => { cleanup(); reject(error); },
+      };
+      const abort = () => {
+        const index = this.#waiters.indexOf(waiter);
+        if (index !== -1) this.#waiters.splice(index, 1);
+        waiter.reject(new Error("Agentd browser receive was cancelled"));
+      };
+      this.#waiters.push(waiter);
+      signal?.addEventListener("abort", abort, { once: true });
+    });
   }
 
-  send(kind, requestId, payload) {
-    if (this.#failed) return Promise.reject(this.#failed);
-    if (this.#ended) return Promise.reject(new Error("Agentd browser channel is closed"));
+  invalidate(error) {
+    this.#fail(error);
+  }
+
+  assertUsable() {
+    this.#checkStreams();
+    if (this.#failed) throw this.#failed;
+    if (this.#ended) throw new Error("Agentd browser channel is closed");
+  }
+
+  async send(kind, requestId, payload) {
+    this.assertUsable();
     const encoded = encodeAgentdBrowserFrame(
       buildAgentdBrowserFrame({
-        sequence: this.#nextOutgoingSequence++,
+        sequence: this.#nextOutgoingSequence,
         kind,
         requestId,
         payload,
       }),
     );
+    if (this.#writes.size >= 8 || this.#pendingWriteBytes + encoded.length > 4 * 1_048_576) {
+      // Nothing was written and the sequence has not advanced. Backpressure is
+      // a rejection, not a lost/unknown write and not permission to retry effects.
+      throw new TypeError("Agentd browser output capacity occupied");
+    }
+    this.#nextOutgoingSequence++;
+    this.#pendingWriteBytes += encoded.length;
     return new Promise((resolve, reject) => {
-      this.#output.write(encoded, (error) => {
-        if (error) reject(error);
+      let settled = false;
+      const finish = (error) => {
+        if (settled) return;
+        settled = true;
+        this.#writes.delete(finish);
+        this.#pendingWriteBytes -= encoded.length;
+        if (error) this.#fail(error);
+        if (this.#failed) reject(this.#failed);
         else resolve();
-      });
+      };
+      this.#writes.add(finish);
+      try {
+        this.#output.write(encoded, finish);
+      } catch (error) {
+        finish(error);
+      }
     });
   }
 
   #onBytes(chunk) {
     if (this.#failed || this.#ended) return;
-    let frames;
     try {
-      frames = this.#decoder.push(chunk);
+      const frames = this.#decoder.push(chunk);
+      let nextSequence = this.#nextIncomingSequence;
+      // Validate the entire decoded batch before resolving any reader. A valid
+      // authority_enter prefix followed by a replay must not release a callback.
+      for (const frame of frames) {
+        if (frame.sequence !== nextSequence++) {
+          throw new TypeError("Agentd browser input sequence is not monotonic");
+        }
+      }
+      const pending = frames.slice(this.#waiters.length).map((frame) => ({
+        frame,
+        bytes: Buffer.byteLength(canonicalAgentdBrowserJson(frame), "utf8") + 4,
+      }));
+      const pendingBytes = pending.reduce((sum, entry) => sum + entry.bytes, 0);
+      if (this.#queue.length + pending.length > 64 || this.#queuedBytes + pendingBytes > 4 * 1_048_576) {
+        throw new TypeError("Agentd browser receive queue exceeds capacity");
+      }
+      this.#nextIncomingSequence = nextSequence;
+      for (const frame of frames.slice(0, this.#waiters.length)) {
+        this.#waiters.shift().resolve(frame);
+      }
+      this.#queue.push(...pending);
+      this.#queuedBytes += pendingBytes;
     } catch (error) {
       this.#fail(error);
-      return;
-    }
-    for (const frame of frames) {
-      if (frame.sequence !== this.#nextIncomingSequence++) {
-        this.#fail(new TypeError("Agentd browser input sequence is not monotonic"));
-        return;
-      }
-      const waiter = this.#waiters.shift();
-      if (waiter) waiter.resolve(frame);
-      else this.#queue.push(frame);
     }
   }
 
@@ -122,19 +193,47 @@ export class AgentdBrowserChannel {
       return;
     }
     this.#ended = true;
+    // A queued request cannot cross authority after its parent has left. EOF
+    // also cannot acknowledge an output write whose callback never arrived.
+    this.#queue = [];
+    this.#queuedBytes = 0;
+    if (this.#writes.size) {
+      this.#fail(new AgentdBrowserChannelClosed("Agentd browser input ended before output acknowledgement"));
+      return;
+    }
     for (const waiter of this.#waiters.splice(0)) waiter.resolve(null);
+  }
+
+  #checkStreams() {
+    // destroy() changes these flags before the asynchronous close event. Check
+    // them at actual use as well as construction, not just in event callbacks.
+    if (this.#failed || this.#ended) return;
+    if (this.#input.destroyed || this.#input.closed || this.#input.readableEnded) {
+      this.#streamClosed("input");
+    } else if (this.#output.destroyed || this.#output.closed || this.#output.writableEnded) {
+      this.#streamClosed("output");
+    }
+  }
+
+  #streamClosed(side) {
+    // Normal retirement after an already observed idle EOF remains a clean end.
+    if (this.#ended && this.#writes.size === 0) return;
+    this.#fail(new AgentdBrowserChannelClosed(`Agentd browser ${side} stream closed`));
   }
 
   #fail(error) {
     if (this.#failed) return;
     this.#failed = error instanceof Error ? error : new Error(String(error));
+    this.#queue = [];
+    this.#queuedBytes = 0;
     for (const waiter of this.#waiters.splice(0)) waiter.reject(this.#failed);
+    for (const finish of [...this.#writes]) finish(this.#failed);
   }
 }
 
 export class ParentFinalUseAuthority {
   #channel;
-  #activeRequestId = null;
+  #activeRequest = null;
 
   constructor(channel) {
     if (!(channel instanceof AgentdBrowserChannel)) {
@@ -144,54 +243,79 @@ export class ParentFinalUseAuthority {
   }
 
   async withRequest(requestId, call) {
-    if (this.#activeRequestId !== null) {
+    if (this.#activeRequest !== null) {
       throw new TypeError("browser service authority request is already active");
     }
-    this.#activeRequestId = requestId;
+    const scope = { requestId, controller: new AbortController(), used: false, pending: false };
+    this.#activeRequest = scope;
     try {
       return await call();
     } finally {
-      this.#activeRequestId = null;
+      this.#activeRequest = null;
+      scope.controller.abort();
+      if (scope.pending) {
+        // A late authority_enter cannot be assigned to another request, even
+        // with reused IDs. The owner must reconcile over a new channel.
+        this.#channel.invalidate(new Error("final-use exchange outlived its request scope"));
+      }
     }
   }
 
   async withVerifiedUse(request, consumer) {
     requireRecord(request, "final-use request");
-    if (this.#activeRequestId === null) {
-      throw new TypeError("final-use authority may only run inside one Agentd request");
+    const scope = this.#activeRequest;
+    if (scope === null || scope.used) {
+      throw new TypeError("final-use authority requires one unused active Agentd request");
     }
-    const requestId = this.#activeRequestId;
-    const requestDigest = digest(request.requestDigest, "requestDigest");
-    const authorityEpoch = positiveInteger(request.authorityEpoch, "authorityEpoch");
-    await this.#channel.send("authority_challenge", requestId, {
-      request,
-      requestDigest,
-      authorityEpoch,
-    });
-    const enter = await this.#channel.nextFrame();
-    if (!enter || enter.kind !== "authority_enter" || enter.requestId !== requestId) {
-      throw new TypeError("Agentd did not enter the matching final-use fence");
+    if (typeof consumer !== "function") throw new TypeError("final-use consumer is required");
+    scope.used = true;
+    scope.pending = true;
+    try {
+      const requireActive = () => {
+        this.#channel.assertUsable();
+        if (this.#activeRequest !== scope || scope.controller.signal.aborted) {
+          throw new TypeError("final-use authority request scope is closed");
+        }
+      };
+      const requestId = scope.requestId;
+      const requestDigest = digest(request.requestDigest, "requestDigest");
+      const authorityEpoch = positiveInteger(request.authorityEpoch, "authorityEpoch");
+      await this.#channel.send("authority_challenge", requestId, {
+        request,
+        requestDigest,
+        authorityEpoch,
+      });
+      requireActive();
+      const enter = await this.#channel.nextFrame({ signal: scope.controller.signal });
+      requireActive();
+      if (!enter || enter.kind !== "authority_enter" || enter.requestId !== requestId) {
+        throw new TypeError("Agentd did not enter the matching final-use fence");
+      }
+      const payload = requireRecord(enter.payload, "authority enter payload");
+      if (payload.authorized !== true) {
+        throw new TypeError("Agentd final-use authority denied browser dispatch");
+      }
+      const witness = Object.freeze({
+        authorized: true,
+        witnessDigest: digest(payload.witnessDigest, "witnessDigest"),
+        authorityEpoch: positiveInteger(payload.authorityEpoch, "authorityEpoch"),
+        requestDigest: digest(payload.requestDigest, "requestDigest"),
+      });
+      if (witness.requestDigest !== requestDigest || witness.authorityEpoch !== authorityEpoch) {
+        throw new TypeError("Agentd final-use witness does not bind the Browser request");
+      }
+      requireActive();
+      const result = await consumer(witness);
+      requireActive();
+      await this.#channel.send("dispatch_boundary", requestId, {
+        requestDigest,
+        witnessDigest: witness.witnessDigest,
+        localDispatchCrossed: true,
+      });
+      return result;
+    } finally {
+      scope.pending = false;
     }
-    const payload = requireRecord(enter.payload, "authority enter payload");
-    if (payload.authorized !== true) {
-      throw new TypeError("Agentd final-use authority denied browser dispatch");
-    }
-    const witness = Object.freeze({
-      authorized: true,
-      witnessDigest: digest(payload.witnessDigest, "witnessDigest"),
-      authorityEpoch: positiveInteger(payload.authorityEpoch, "authorityEpoch"),
-      requestDigest: digest(payload.requestDigest, "requestDigest"),
-    });
-    if (witness.requestDigest !== requestDigest || witness.authorityEpoch !== authorityEpoch) {
-      throw new TypeError("Agentd final-use witness does not bind the Browser request");
-    }
-    const result = await consumer(witness);
-    await this.#channel.send("dispatch_boundary", requestId, {
-      requestDigest,
-      witnessDigest: witness.witnessDigest,
-      localDispatchCrossed: true,
-    });
-    return result;
   }
 }
 
@@ -201,7 +325,12 @@ export class BrowserAgentdService {
   #authority;
 
   constructor({ host, channel, authority }) {
-    requireRecord(host, "browser host");
+    // A selected host is an implementation object (BrowserProfileHost has
+    // prototype methods), not an untrusted JSON payload. Keep wire records
+    // strict while checking this owner against its executable method contract.
+    if (host === null || typeof host !== "object" || Array.isArray(host)) {
+      throw new TypeError("browser host must be an implementation object");
+    }
     for (const method of [
       "openProfile",
       "admitEffectGrant",
@@ -226,8 +355,17 @@ export class BrowserAgentdService {
 
   async run() {
     while (true) {
-      const frame = await this.#channel.nextFrame();
+      let frame;
+      try {
+        frame = await this.#channel.nextFrame();
+      } catch (error) {
+        // Idle transport retirement stops the service. It emits no response and
+        // does not settle an effect; closure during #serve still rejects there.
+        if (error instanceof AgentdBrowserChannelClosed) return;
+        throw error;
+      }
       if (frame === null) return;
+      this.#channel.assertUsable();
       if (frame.kind !== "request") {
         throw new TypeError("Browser service expected an Agentd request frame");
       }

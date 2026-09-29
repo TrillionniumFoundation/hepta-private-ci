@@ -116,6 +116,8 @@ impl BrowserServoCall {
     }
 }
 
+/// Private, ordered frame transport owned by one Browser port.
+/// Implementations must bound I/O; an uncertain exchange is never retry authority.
 pub trait BrowserServoTransport: Send {
     fn write_frame(&mut self, bytes: &[u8]) -> Result<(), BrowserServoError>;
     fn read_frame(&mut self) -> Result<Vec<u8>, BrowserServoError>;
@@ -131,6 +133,7 @@ struct PortState<T> {
     next_request_id: u64,
     next_outgoing_sequence: u64,
     next_incoming_sequence: u64,
+    exchange_unresolved: bool,
 }
 
 impl<T: BrowserServoTransport> fmt::Debug for BrowserServoPort<T> {
@@ -151,6 +154,7 @@ impl<T: BrowserServoTransport> BrowserServoPort<T> {
                 next_request_id: 1,
                 next_outgoing_sequence: 1,
                 next_incoming_sequence: 1,
+                exchange_unresolved: false,
             }),
         }
     }
@@ -166,6 +170,12 @@ impl<T: BrowserServoTransport> BrowserServoPort<T> {
             .state
             .lock()
             .map_err(|_| BrowserServoError::Unavailable("Browser port mutex is poisoned".into()))?;
+        if state.exchange_unresolved {
+            return Err(BrowserServoError::Indeterminate(
+                "Browser channel has an unresolved exchange; recover through the owning journal"
+                    .into(),
+            ));
+        }
         let request_id = format!("browser.agentd.{}", state.next_request_id);
         state.next_request_id = state
             .next_request_id
@@ -183,7 +193,7 @@ impl<T: BrowserServoTransport> BrowserServoPort<T> {
         )?;
 
         let first = receive_frame(&mut state)?;
-        if call.method.requires_final_use() {
+        let result = if call.method.requires_final_use() {
             if first.kind != "authority_challenge" || first.request_id != request_id {
                 return Err(BrowserServoError::Protocol(
                     "effect Browser call did not begin with the matching authority challenge"
@@ -198,7 +208,15 @@ impl<T: BrowserServoTransport> BrowserServoPort<T> {
             response_result(response, &request_id)
         } else {
             response_result(first, &request_id)
+        };
+        // Only a complete, matching terminal envelope settles the exchange.
+        // A service rejection settles transport, not the external operation.
+        // All earlier errors retain the fence, including authority rejection,
+        // partial I/O and a late/malformed response after local dispatch.
+        if result.is_ok() || matches!(&result, Err(BrowserServoError::Rejected(_))) {
+            state.exchange_unresolved = false;
         }
+        result
     }
 
     fn authorize_dispatch_boundary(
@@ -314,7 +332,6 @@ fn response_result(frame: DecodedFrame, request_id: &str) -> Result<Value, Brows
 
 #[derive(Debug)]
 struct DecodedFrame {
-    sequence: u64,
     kind: String,
     request_id: String,
     payload: Value,
@@ -343,10 +360,12 @@ fn send_frame<T: BrowserServoTransport>(
         "payloadDigest": hex_lower(&payload_digest),
         "payload": payload,
     });
-    state.next_outgoing_sequence =
-        state.next_outgoing_sequence.checked_add(1).ok_or_else(|| {
-            BrowserServoError::Unavailable("Browser output sequence exhausted".into())
-        })?;
+    if state.next_outgoing_sequence > JS_SAFE_INTEGER {
+        return Err(BrowserServoError::Unavailable(
+            "Browser output sequence exhausted".into(),
+        ));
+    }
+    let next_sequence = state.next_outgoing_sequence + 1;
     let body = canonical_json(&frame)?.into_bytes();
     if body.is_empty() || body.len() > MAX_FRAME_BYTES {
         return Err(BrowserServoError::Protocol(
@@ -356,6 +375,10 @@ fn send_frame<T: BrowserServoTransport>(
     let mut bytes = Vec::with_capacity(body.len() + 4);
     bytes.extend_from_slice(&(body.len() as u32).to_be_bytes());
     bytes.extend_from_slice(&body);
+    // Spend a sequence only after complete local encoding succeeds. Once I/O
+    // begins, even a reported write failure may have exposed a frame prefix.
+    state.exchange_unresolved = true;
+    state.next_outgoing_sequence = next_sequence;
     state.transport.write_frame(&bytes)
 }
 
@@ -450,7 +473,6 @@ fn receive_frame<T: BrowserServoTransport>(
         ));
     }
     Ok(DecodedFrame {
-        sequence,
         kind: kind.to_string(),
         request_id: request_id.to_string(),
         payload,
@@ -655,7 +677,7 @@ impl BrowserServoProcessConfig {
 pub struct ChildBrowserTransport {
     child: Child,
     stdin: ChildStdin,
-    frames: mpsc::Receiver<Result<Vec<u8>, BrowserServoError>>,
+    frames: Option<mpsc::Receiver<Result<Vec<u8>, BrowserServoError>>>,
     reader: Option<thread::JoinHandle<()>>,
 }
 
@@ -719,7 +741,7 @@ impl ChildBrowserTransport {
         Ok(Self {
             child,
             stdin,
-            frames,
+            frames: Some(frames),
             reader: Some(reader),
         })
     }
@@ -745,7 +767,10 @@ impl BrowserServoTransport for ChildBrowserTransport {
     }
 
     fn read_frame(&mut self) -> Result<Vec<u8>, BrowserServoError> {
-        match self.frames.recv_timeout(MAX_DISPATCH_CHANNEL_WAIT) {
+        let frames = self.frames.as_ref().ok_or_else(|| {
+            BrowserServoError::Indeterminate("Browser private-channel receiver closed".into())
+        })?;
+        match frames.recv_timeout(MAX_DISPATCH_CHANNEL_WAIT) {
             Ok(result) => result,
             Err(mpsc::RecvTimeoutError::Timeout) => Err(BrowserServoError::Indeterminate(
                 "Browser private-channel response deadline exceeded".into(),
@@ -759,6 +784,9 @@ impl BrowserServoTransport for ChildBrowserTransport {
 
 impl Drop for ChildBrowserTransport {
     fn drop(&mut self) {
+        // Disconnect before joining: the bounded reader may be blocked sending
+        // a second frame. Killing the child alone cannot release that sender.
+        drop(self.frames.take());
         let _ = self.child.kill();
         let _ = self.child.wait();
         if let Some(reader) = self.reader.take() {
@@ -1135,3 +1163,7 @@ mod tests {
         assert_eq!(result["origin"], "https://example.com");
     }
 }
+
+#[cfg(test)]
+#[path = "browser_servo_recovery_tests.rs"]
+mod recovery_tests;

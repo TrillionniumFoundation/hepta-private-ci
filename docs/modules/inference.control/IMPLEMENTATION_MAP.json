@@ -16,7 +16,7 @@
     "codex-rs/hepta-infer-core",
     "codex-rs/hepta-inferd"
   ],
-  "stateOwnerDisposition": "The same single-writer DurableInferenceControl journal owns legacy records and native hosted request identity, local in-flight slot reservations, dispatch bindings and observations.",
+  "stateOwnerDisposition": "The same single-writer DurableInferenceControl journal owns legacy records and native hosted request identity, local in-flight slot reservations, dispatch bindings and observations. The same journal also owns semantic read-only retrieval admissions, exact resource identity, dispatch fences, full binary observations and acknowledgement state; resource identity is not physical resource attestation.",
   "terminalObserverDisposition": "The actual Agent-fenced App Server client supplies matching turn observations through a trusted in-process port. Missing tokens remain null; uncertain execution holds its local slot. This is not provider billing or signed remote-worker authority.",
   "operations": [
     {
@@ -40,7 +40,8 @@
       "operation": "reserve_request",
       "nativeSymbol": "pub fn reserve_native(",
       "sourcePath": "codex-rs/hepta-infer-core/src/native_control.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "d92b748a22b19046465bcfe0b4fd9f58cc0c09fa"
     },
     {
       "designOperation": "schedule",
@@ -63,7 +64,8 @@
       "operation": "schedule",
       "nativeSymbol": "pub fn dispatch_native(",
       "sourcePath": "codex-rs/hepta-infer-core/src/native_control.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "d92b748a22b19046465bcfe0b4fd9f58cc0c09fa"
     },
     {
       "designOperation": "cancel",
@@ -86,7 +88,8 @@
       "operation": "cancel",
       "nativeSymbol": "pub fn cancel_native(",
       "sourcePath": "codex-rs/hepta-infer-core/src/native_control.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "d92b748a22b19046465bcfe0b4fd9f58cc0c09fa"
     },
     {
       "designOperation": "settle",
@@ -109,13 +112,49 @@
       "operation": "settle",
       "nativeSymbol": "pub fn settle_native(",
       "sourcePath": "codex-rs/hepta-infer-core/src/native_control.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "d92b748a22b19046465bcfe0b4fd9f58cc0c09fa"
+    },
+    {
+      "designOperation": "semantic_retrieval_resource_admission",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-infer-core/src/semantic_control.rs",
+        "symbol": "pub fn reserve_semantic_with_resources(",
+        "buildTarget": "codex-hepta-infer-core::durable_control::semantic"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-infer-core/src/semantic_resource_tests.rs",
+          "kind": "resource_identity_and_reopen",
+          "command": "just test --locked --lib -p codex-hepta-infer-core --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-infer-core/src/semantic_control_tests.rs",
+          "kind": "fence_result_cancel_ack_recovery",
+          "command": "just test --locked --lib -p codex-hepta-infer-core --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-infer-core/src/semantic_owner_lock_tests.rs",
+          "kind": "writer_lock_reopen",
+          "command": "just test --locked --lib -p codex-hepta-infer-core --retries 0"
+        }
+      ],
+      "sourceSemantics": "Existing single-writer journal stores versioned semantic requests, exact resource tuples, dispatch fences, complete results and downstream acknowledgements. New ReserveResourcesV2 is a critical event; legacy bytes are not reinterpreted. Reopen or cancellation never makes unknown work replayable. These source bindings are not actual model, device, protected consumer or native-test evidence.",
+      "operation": "semantic_retrieval_resource_admission",
+      "nativeSymbol": "pub fn reserve_semantic_with_resources(",
+      "sourcePath": "codex-rs/hepta-infer-core/src/semantic_control.rs",
+      "sourcePathExists": true,
+      "sourceBlob": "e1ec7bdf59c89d8c3bf96bfd64c927b902767aa8"
     }
   ],
   "repositoryControlledGaps": [
     "Connect economically meaningful quota and hardware-capacity authorities; the shipped native policy reserves only local in-flight run slots.",
     "Implement authenticated recovery of actual provider terminal/usage observations after process loss; reopening a dispatched run conservatively holds capacity and never replays it.",
-    "Add bounded archival/retention under the same journal owner; the current 64 MiB journal rejects further appends without truncating acknowledged history."
+    "Add bounded archival/retention under the same journal owner; the current 64 MiB journal rejects further appends without truncating acknowledged history.",
+    "Join the experimental resource-accounted semantic worker to the verified local inference entry and an actual Neuron/Agentd consumer; validate current source/artifact revocation at delivery. The full binary result journal does not itself prove this product composition."
   ],
   "externalEvidenceGates": [
     "real provider deployment and crash/cancellation acceptance",
@@ -148,5 +187,55 @@
   "sourceRoot": [
     "codex-rs/hepta-infer-core",
     "codex-rs/hepta-inferd"
+  ],
+  "mappingSourceIdentityMode": "exact_blob",
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "observedAtHead": {
+    "commit": "1602d0dbe5be655cb90189e1b6974277f2c583fb",
+    "tree": "8280199e6f03846ea7ec6df4a6ae94d1b1e21c11"
+  },
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-infer-core",
+    "codex-rs/hepta-inferd"
+  ],
+  "sourceObjects": [
+    {
+      "path": "codex-rs/hepta-infer-core",
+      "object": "b09a6173b3b4d00db79647fae2b95d037ff9e777"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_control.rs",
+      "object": "d92b748a22b19046465bcfe0b4fd9f58cc0c09fa"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_control_tests.rs",
+      "object": "60094e54bdeb0f35d5004b1579c7fc5f71b740c3"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/semantic_control.rs",
+      "object": "e1ec7bdf59c89d8c3bf96bfd64c927b902767aa8"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/semantic_control_tests.rs",
+      "object": "500ed3f1ed8ffc4520d3448ce3cc404fba610d79"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/semantic_owner_lock_tests.rs",
+      "object": "edf3e82d0562c6217884df12216fe3cc726c4990"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/semantic_resource_tests.rs",
+      "object": "8e2c3f77ad5ff68f729e757d10a7f621f7141d33"
+    },
+    {
+      "path": "codex-rs/hepta-inferd",
+      "object": "803e2f4c6efc0dafbea8ea0beff338270b0d1b1b"
+    },
+    {
+      "path": "docs/modules/inference.control/TECHNICAL.md",
+      "object": "366ce449260f639415c7cc581f7f87876edd82c0"
+    }
   ]
 }

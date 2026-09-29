@@ -4,6 +4,10 @@ on:
   # Always report a terminal identity check; select expensive boundaries below.
   # Workflow-level path skipping can leave a required check permanently pending.
   pull_request:
+  push:
+    branches: [main]
+  merge_group:
+    types: [checks_requested]
   workflow_dispatch:
 
 permissions:
@@ -11,11 +15,11 @@ permissions:
 
 concurrency:
   group: hepta-architecture-convergence-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
-  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before }}
   PYTHONDONTWRITEBYTECODE: "1"
   CARGO_INCREMENTAL: "0"
   CARGO_BUILD_JOBS: "2"
@@ -168,59 +172,73 @@ jobs:
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.inference == 'true'
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-types
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-scale.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core history_growth_emits_update_recovery_memory_and_disk_curve -- --ignored --nocapture
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-multiwriter-scale.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core alternating_writers_replay_only_peer_deltas -- --ignored --nocapture
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-maintenance-scale.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core post_compaction_multi_generation_curve -- --ignored --nocapture --test-threads=1
+          status=0
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-infer-core -p codex-hepta-types || status=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-scale.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-infer-core semantic_journal_retained_history_curve --run-ignored only --no-capture || status=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-owner-turnover.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-infer-core --test retained_history_maintenance exclusive_owner_turnover_retains_unknown_and_completed_work --run-ignored only --no-capture || status=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-maintenance-scale.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-infer-core post_compaction_multi_generation_curve --run-ignored only --no-capture --test-threads=1 || status=1
+          exit "$status"
       - name: Durable operation and external-effect recovery
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/operations.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operations
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/retirement.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-automation --test retirement_recovery
+          status=0
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/operations.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-operations || status=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/retirement.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-automation --test retirement_recovery || status=1
+          exit "$status"
       - name: Module lifecycle generations and migration rollback
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.lifecycle == 'true'
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/stateless-lifecycle.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane repeated_read_only_add_replace_retire_preserves_dispatch_and_generation_fences
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/migration.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane migration_callback_runs_before_successor_publication
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/migration-rollback.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane migration_failure_rolls_back_and_preserves_predecessor
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/full-lifecycle.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane stateful_feature_history_replace_failure_retire_preserves_effect_idempotency
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-module-catalog.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-fleet module_catalog
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-module-abi.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane module_runtime
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-module-supervisor.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor module_runtime
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/writer-handoff-generations.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor writer_handoff
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/topology-contract.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-types topology
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/topology-proposal.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-plasticity topology_v3
+          status=0
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/read-only-organ.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-control-plane read_only_add_replace_retire_preserves_dispatch_and_generation_fences || status=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/migration.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-control-plane migration_callback_runs_before_successor_publication || status=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/migration-rollback.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-control-plane migration_failure_rolls_back_and_preserves_predecessor || status=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/full-lifecycle.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-control-plane stateful_feature_history_replace_failure_retire_preserves_effect_idempotency || status=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-module-catalog.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-fleet module_catalog || status=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-module-abi.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-control-plane module_runtime || status=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-module-supervisor.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-supervisor module_runtime || status=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/writer-handoff-generations.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-supervisor writer_handoff || status=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/topology-contract.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-types topology || status=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/topology-proposal.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-plasticity topology_v2 || status=1
+          exit "$status"
       - name: Objective and prompt policy convergence
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.objective == 'true'
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/objective-contract.json" --minimum-tests 1 -- python3 -m unittest -v scripts.test_hepta_objective_contracts
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/objective.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-objective
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/prompt.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-prompt-optimizer
+          status=0
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/objective-contract.json" --minimum-tests 1 -- python3 -m unittest -v scripts.test_hepta_objective_contracts || status=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/objective.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-objective || status=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/prompt.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-prompt-optimizer || status=1
+          exit "$status"
       - name: Converged authority and browser semantics
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/final-use.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-contracts --test final_use_linearization
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/browser.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd browser_servo
+          status=0
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/final-use.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-contracts --test final_use_linearization || status=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/browser.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-agentd browser_servo || status=1
+          exit "$status"
       - name: Selected-artifact adoption and explicit rollback
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.learning == 'true'
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/selected-ranker.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd new_generation_candidate_changes_behavior_and_explicit_predecessor_reload_restores_it
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/eval.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-intelligence-eval closure
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/self-evolution-selection.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-intelligence-eval self_evolution_selection
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/selector-role.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-ledger selector_role_is_explicit_and_independent_from_evaluator
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/ledger.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-ledger
+          status=0
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/selected-ranker.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-agentd new_generation_candidate_changes_behavior_and_explicit_predecessor_reload_restores_it || status=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/eval.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-intelligence-eval closure || status=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/self-evolution-selection.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-intelligence-eval self_evolution_selection || status=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/selector-role.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-learning-ledger selector_role_is_explicit_and_independent_from_evaluator || status=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/ledger.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-learning-ledger || status=1
+          exit "$status"
       - name: Optional service process lifecycle and executable identity
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.lifecycle == 'true'
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-image.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd runtime_executable
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/operation-timer-fence.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-automation --test operation_timer_fence
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/optional-process-restart.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --test optional_module_restart forty_first_service -- --nocapture
+          status=0
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-image.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-agentd runtime_executable || status=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/operation-timer-fence.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-automation --test operation_timer_fence || status=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/optional-process-restart.json" --minimum-tests 1 -- just test --locked --retries 0 -p codex-hepta-agentd --test optional_module_restart forty_first_service --no-capture || status=1
+          exit "$status"
       - name: Derived-view drift
         if: steps.scope.outputs.derived == 'true'
         run: |
@@ -248,9 +266,21 @@ jobs:
           import json
           import os
           from hepta_repository_controls import observe_write_transport_denial
-          observation = observe_write_transport_denial(os.environ["REPO"], os.environ["GH_TOKEN"])
+          exit_code = 0
+          try:
+              observation = observe_write_transport_denial(os.environ["REPO"], os.environ["GH_TOKEN"])
+          except Exception as error:
+              # Keep a bounded failure observation, never response bodies, token
+              # headers or exception text. Unknown is not an explicit denial.
+              observation = {"write_transport_denied": None,
+                             "activation_authorized": False,
+                             "credential_separation_proven": False,
+                             "observation_status": "not_established",
+                             "failure_type": type(error).__name__}
+              exit_code = 1
           observation.update(admin_denial_proven=False, pull_request_write_denial_proven=False)
           print(json.dumps(observation, sort_keys=True))
+          raise SystemExit(exit_code)
           PYCODE
       - name: Verify unchanged reviewed source
         run: |
@@ -284,4 +314,4 @@ jobs:
           RESULT: ${{ needs.qualification.result }}
         run: |
           test "$RESULT" = success
-          echo "All applicable exact-candidate lanes succeeded; identical-tree reuse includes source-head success."
+          echo "All applicable checks executed successfully in each exact-candidate lane; tree equality did not waive execution."

@@ -118,43 +118,85 @@ export function encodeAgentdBrowserFrame(value) {
 }
 
 export class AgentdBrowserFrameDecoder {
-  #buffer = Buffer.alloc(0);
+  #header = Buffer.alloc(4);
+  #headerUsed = 0;
+  #body = null;
+  #bodyUsed = 0;
+  #failed = null;
+  #ended = false;
 
   push(chunk) {
-    if (!(chunk instanceof Uint8Array)) {
-      throw new TypeError("Agentd browser frame chunk must be bytes");
-    }
-    this.#buffer = Buffer.concat([this.#buffer, Buffer.from(chunk)]);
-    const frames = [];
-    while (this.#buffer.length >= 4) {
-      const length = this.#buffer.readUInt32BE(0);
-      if (length === 0 || length > MAX_BROWSER_AGENTD_FRAME_BYTES) {
-        throw new TypeError("Agentd browser frame announced length is invalid");
+    if (this.#failed) throw this.#failed;
+    if (this.#ended) throw new TypeError("Agentd browser decoder is closed");
+    try {
+      if (!(chunk instanceof Uint8Array)) {
+        throw new TypeError("Agentd browser frame chunk must be bytes");
       }
-      if (this.#buffer.length < 4 + length) break;
-      const body = this.#buffer.subarray(4, 4 + length).toString("utf8");
-      this.#buffer = this.#buffer.subarray(4 + length);
-      let parsed;
-      try {
-        parsed = JSON.parse(body);
-      } catch {
-        throw new TypeError("Agentd browser frame body is not valid JSON");
+      // Bound work and returned frames per call, not just an unfinished tail.
+      // Native pipe chunks are much smaller; arbitrary callers must split input.
+      if (chunk.byteLength > 4 * (MAX_BROWSER_AGENTD_FRAME_BYTES + 4)) {
+        throw new TypeError("Agentd browser input chunk exceeds byte limit");
       }
-      const normalized = normalizeAgentdBrowserFrame(parsed);
-      if (canonicalAgentdBrowserJson(normalized) !== body) {
-        throw new TypeError("Agentd browser frame body is not canonical JSON");
+      const bytes = Buffer.from(chunk.buffer, chunk.byteOffset, chunk.byteLength);
+      const frames = [];
+      let offset = 0;
+      while (offset < bytes.length) {
+        if (this.#body === null) {
+          const count = Math.min(4 - this.#headerUsed, bytes.length - offset);
+          bytes.copy(this.#header, this.#headerUsed, offset, offset + count);
+          this.#headerUsed += count;
+          offset += count;
+          if (this.#headerUsed !== 4) continue;
+          const length = this.#header.readUInt32BE(0);
+          if (length === 0 || length > MAX_BROWSER_AGENTD_FRAME_BYTES) {
+            throw new TypeError("Agentd browser frame announced length is invalid");
+          }
+          this.#body = Buffer.allocUnsafe(length);
+          this.#bodyUsed = 0;
+        }
+        const count = Math.min(this.#body.length - this.#bodyUsed, bytes.length - offset);
+        bytes.copy(this.#body, this.#bodyUsed, offset, offset + count);
+        this.#bodyUsed += count;
+        offset += count;
+        if (this.#bodyUsed !== this.#body.length) continue;
+        // Fatal decoding rejects invalid UTF-8 rather than replacing bytes in
+        // an input whose canonical representation is part of its identity.
+        const body = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(this.#body);
+        let parsed;
+        try {
+          parsed = JSON.parse(body);
+        } catch {
+          throw new TypeError("Agentd browser frame body is not valid JSON");
+        }
+        const normalized = normalizeAgentdBrowserFrame(parsed);
+        if (canonicalAgentdBrowserJson(normalized) !== body) {
+          throw new TypeError("Agentd browser frame body is not canonical JSON");
+        }
+        if (frames.length >= 64) {
+          throw new TypeError("Agentd browser input batch exceeds frame limit");
+        }
+        frames.push(normalized);
+        this.#headerUsed = 0;
+        this.#body = null;
+        this.#bodyUsed = 0;
       }
-      frames.push(normalized);
+      return frames;
+    } catch (error) {
+      this.#failed = error;
+      this.#body = null;
+      this.#bodyUsed = 0;
+      this.#headerUsed = 0;
+      throw error;
     }
-    if (this.#buffer.length > MAX_BROWSER_AGENTD_FRAME_BYTES + 4) {
-      throw new TypeError("Agentd browser frame buffer exceeds limit");
-    }
-    return frames;
   }
 
   end() {
-    if (this.#buffer.length !== 0) {
-      throw new TypeError("Agentd browser channel ended with a partial frame");
+    if (this.#failed) throw this.#failed;
+    if (this.#headerUsed !== 0 || this.#body !== null) {
+      this.#failed = new TypeError("Agentd browser channel ended with a partial frame");
+      this.#body = null;
+      throw this.#failed;
     }
+    this.#ended = true;
   }
 }

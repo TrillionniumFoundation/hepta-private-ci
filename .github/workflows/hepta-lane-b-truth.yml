@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
       - "codex-rs/hepta-automation/**"
       - "codex-rs/hepta-contracts/**"
       - "codex-rs/hepta-memory/**"
@@ -22,6 +24,8 @@ on:
       - main
     paths:
       - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
       - "codex-rs/hepta-automation/**"
       - "codex-rs/hepta-contracts/**"
       - "codex-rs/hepta-memory/**"

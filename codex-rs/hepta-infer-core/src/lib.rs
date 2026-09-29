@@ -7,6 +7,8 @@
 /// Reusable state machine; does not install a second runtime owner.
 pub mod durable_control;
 mod neuron_feature;
+mod neuron_feature_store;
+mod semantic_retrieval;
 
 pub use neuron_feature::NeuronFeatureContractError;
 pub use neuron_feature::NeuronFeatureObservationV1;
@@ -17,6 +19,18 @@ pub use neuron_feature::NeuronModelRuntimeTupleV1;
 pub use neuron_feature::build_neuron_feature_receipt_v1;
 pub use neuron_feature::neuron_feature_request_digest_v1;
 pub use neuron_feature::verify_neuron_feature_receipt_v1;
+pub use neuron_feature_store::FileNeuronFeatureExecutionStoreV1;
+pub use neuron_feature_store::NeuronFeatureAdmissionV1;
+pub use neuron_feature_store::NeuronFeatureExecutionRecordV1;
+pub use neuron_feature_store::NeuronFeatureExecutionStateV1;
+pub use neuron_feature_store::NeuronFeatureStoreContextV1;
+pub use neuron_feature_store::NeuronFeatureStoreError;
+
+pub use semantic_retrieval::MAX_RETRIEVAL_FRAME_BYTES;
+pub use semantic_retrieval::RetrievalSourceV1;
+pub use semantic_retrieval::RetrievalWireError;
+pub use semantic_retrieval::SemanticRetrievalReplyV1;
+pub use semantic_retrieval::SemanticRetrievalRequestV1;
 
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
