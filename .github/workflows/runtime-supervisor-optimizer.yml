@@ -6,6 +6,7 @@ on:
       - work/runtime-supervisor-qualification-20260929
     paths:
       - .github/scripts/runtime_supervisor_source.py
+      - .github/scripts/runtime_supervisor_pre_integration.py
       - .github/scripts/runtime_supervisor_integration.py
       - .github/scripts/runtime_supervisor_fixups.py
       - .github/workflows/runtime-supervisor-optimizer.yml
@@ -20,7 +21,7 @@ concurrency:
 
 jobs:
   optimize-and-qualify:
-    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, 'bootstrap(runtime-supervisor)')
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, 'bootstrap(runtime-supervisor)') || contains(github.event.head_commit.message, 'fix(runtime.supervisor)')
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     defaults:
@@ -35,6 +36,7 @@ jobs:
       - name: Apply runtime supervisor source changes
         run: |
           python3 .github/scripts/runtime_supervisor_source.py
+          python3 .github/scripts/runtime_supervisor_pre_integration.py
           python3 .github/scripts/runtime_supervisor_integration.py
           python3 .github/scripts/runtime_supervisor_fixups.py
 
