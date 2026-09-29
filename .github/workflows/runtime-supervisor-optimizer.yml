@@ -7,6 +7,7 @@ on:
     paths:
       - .github/scripts/runtime_supervisor_source.py
       - .github/scripts/runtime_supervisor_integration.py
+      - .github/scripts/runtime_supervisor_fixups.py
       - .github/workflows/runtime-supervisor-optimizer.yml
   workflow_dispatch:
 
@@ -15,7 +16,7 @@ permissions:
 
 concurrency:
   group: runtime-supervisor-optimizer-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   optimize-and-qualify:
@@ -35,6 +36,7 @@ jobs:
         run: |
           python3 .github/scripts/runtime_supervisor_source.py
           python3 .github/scripts/runtime_supervisor_integration.py
+          python3 .github/scripts/runtime_supervisor_fixups.py
 
       - name: Format runtime supervisor
         working-directory: codex-rs
