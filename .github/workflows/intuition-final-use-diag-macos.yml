@@ -1,4 +1,4 @@
-name: intuition.policy final-use macOS diagnostic
+name: intuition.policy final-use macOS publisher
 
 on:
   push:
@@ -7,31 +7,34 @@ on:
       - ".github/workflows/intuition-final-use-diag-macos.yml"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
-  group: intuition-final-use-diag-macos-${{ github.ref }}
+  group: intuition-final-use-macos-publisher-${{ github.ref }}
   cancel-in-progress: true
 
 env:
+  TARGET_BRANCH: codex/intuition-policy-final-use-recovery-20260929
+  EXPECTED_TARGET_HEAD: e433ec9b2097f2ac6b53f463427d8ac99d68da7e
   CLEAN_PARENT: 696447e733e22e425cd05691d98f4fe0ef63f759
   PYTHONDONTWRITEBYTECODE: "1"
 
 jobs:
-  compile-diagnostic:
+  verify-and-publish:
     runs-on: macos-15
-    timeout-minutes: 60
+    timeout-minutes: 90
     steps:
       - name: Check out exact diagnostic carrier
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
           fetch-depth: 0
-          persist-credentials: false
+          persist-credentials: true
 
       - name: Rebuild fixed-parent source
         shell: bash
         run: |
+          exec > >(tee "$RUNNER_TEMP/intuition-final-use-macos.log") 2>&1
           set -euxo pipefail
           cp codex-rs/hepta-agentd/src/intuition_policy_final_use.rs \
             "$RUNNER_TEMP/intuition_policy_final_use.rs"
@@ -41,7 +44,9 @@ jobs:
           cp "$RUNNER_TEMP/intuition_policy_final_use.rs" \
             codex-rs/hepta-agentd/src/intuition_policy_final_use.rs
           python3 "$RUNNER_TEMP/intuition_final_use_apply.py"
-          python3 scripts/intuition_legacy_consumers.py
+          test -f scripts/intuition_legacy_consumers.py
+          test ! -e .github/intuition-authoring-patch
+          test ! -e .github/workflows/intuition-final-use-diag-macos.yml
 
       - name: Set up repository CI dependencies
         uses: ./.github/actions/setup-ci
@@ -52,23 +57,73 @@ jobs:
           toolchain: 1.95.0
           components: rustfmt,clippy
 
-      - name: Format and compile focused product source
+      - name: Format exact Rust source
+        working-directory: codex-rs
+        run: cargo fmt --all
+
+      - name: Verify generated boundaries and state tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/intuition_legacy_consumers.py
+          python3 -m unittest discover -s scripts/tests -p 'test_intuition*.py' -v
+
+      - name: Run policy, authentication, host and durable-boundary tests
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          cargo fmt --all
-          cargo fmt --all -- --check
-          cargo check --locked -p codex-hepta-agentd --lib
-          cargo test --locked -p codex-hepta-agentd --lib intuition_policy --no-run
+          cargo test --locked -p codex-hepta-intuition
+          cargo test --locked -p codex-hepta-intelligence intuition
+          cargo test --locked -p codex-hepta-agentd --test intuition_policy_product_v3
+          cargo test --locked -p codex-hepta-agentd --test intuition_policy_commit_boundary
+          cargo test --locked -p codex-hepta-agentd --lib intuition_policy
 
-      - name: Upload diagnostics on failure
+      - name: Run strict lint on the affected product package
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-agentd --lib --tests -- -D warnings
+
+      - name: Verify format and source hygiene
+        shell: bash
+        run: |
+          set -euo pipefail
+          (cd codex-rs && cargo fmt --all -- --check)
+          git diff --check
+          test -z "$(find . -type d -name __pycache__ -print -quit)"
+
+      - name: Publish only against the reviewed target head
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "OpenAI source authoring"
+          git config user.email "assistant@openai.invalid"
+          git add -A
+          tree="$(git write-tree)"
+          commit="$(printf '%s\n\n%s\n' \
+            'fix(intuition): revalidate authority at final use' \
+            'Preserve the sole ledger owner while moving fresh wall-clock, generation, and generator/evaluator/observer qualification checks under its serialization boundary. Add typed boundary domains, stage telemetry, legacy product-consumer drift checks, and keep known durable commits as recovery evidence.' \
+            | git commit-tree "$tree" -p "$CLEAN_PARENT")"
+          git push --force-with-lease="refs/heads/$TARGET_BRANCH:$EXPECTED_TARGET_HEAD" \
+            origin "$commit:refs/heads/$TARGET_BRANCH"
+          printf 'published=%s\n' "$commit"
+
+      - name: Retain failure diagnostics
+        if: failure()
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/intuition-final-use-macos-failure"
+          mkdir -p "$out"
+          git status --short > "$out/status.txt"
+          git diff --binary > "$out/worktree.patch"
+          git diff --cached --binary > "$out/index.patch"
+          cp "$RUNNER_TEMP/intuition-final-use-macos.log" "$out/authoring.log" 2>/dev/null || true
+
+      - name: Upload failure diagnostics
         if: failure()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: intuition-final-use-macos-diag-${{ github.sha }}-${{ github.run_attempt }}
-          path: |
-            codex-rs/target/.rustc_info.json
-            codex-rs/target/debug/.fingerprint/
+          name: intuition-final-use-macos-failure-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/intuition-final-use-macos-failure/
           if-no-files-found: warn
-          retention-days: 2
+          retention-days: 3
