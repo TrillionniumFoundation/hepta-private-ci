@@ -5,6 +5,7 @@
 
 #![forbid(unsafe_code)]
 
+mod connection_loop;
 mod http_accept;
 
 use std::env;
@@ -148,26 +149,13 @@ pub async fn run_native_gateway(options: NativeGatewayOptions) -> Result<()> {
     validate_loopback(actual_addr)?;
     eprintln!("hepta live shell listening on http://{actual_addr}");
 
-    loop {
-        tokio::select! {
-            accepted = listener.accept() => {
-                let (stream, peer) = accepted.context("accept loopback gateway connection")?;
-                if !peer.ip().is_loopback() {
-                    continue;
-                }
-                let runtime = Arc::clone(&runtime);
-                tokio::spawn(async move {
-                    if let Err(error) = serve_connection(stream, runtime).await {
-                        eprintln!("hepta loopback request failed: {error:#}");
-                    }
-                });
-            }
-            signal = tokio::signal::ctrl_c() => {
-                signal.context("wait for gateway shutdown signal")?;
-                return Ok(());
-            }
-        }
-    }
+    connection_loop::serve(
+        listener,
+        runtime,
+        connection_loop::MAX_CONNECTIONS,
+        tokio::signal::ctrl_c(),
+    )
+    .await
 }
 
 fn validate_loopback(address: SocketAddr) -> Result<()> {
@@ -329,6 +317,10 @@ const CONTROL_SHELL: &str = r#"<!doctype html>
 <script>fetch('/api/hepta/runtime').then(r=>r.json()).then(v=>status.textContent=JSON.stringify(v,null,2)).catch(e=>status.textContent=String(e))</script>
 </html>
 "#;
+
+#[cfg(test)]
+#[path = "connection_loop_tests.rs"]
+mod bounded_connections;
 
 #[cfg(test)]
 #[path = "organ_request_tests.rs"]
