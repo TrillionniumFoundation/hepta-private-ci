@@ -36,14 +36,21 @@ replace_once(
 )
 
 replace_once(
-    "codex-rs/hepta-supervisor/src/supervisor_lock.rs",
-    '''    fn deref(&self) -> &Self::Target {
-        &self.guard
-    }
+    "codex-rs/hepta-supervisor/src/daemon_protocol.rs",
+    '''use crate::ProductionMutationState;
+use crate::ProductionRecoveryDecision;
 ''',
-    '''    fn deref(&self) -> &Self::Target {
-        &self.guard
-    }
+    '''use crate::ProductionMutationState;
+use crate::ProductionMutationStatus;
+use crate::ProductionRecoveryDecision;
+''',
+)
+
+replace_once(
+    "codex-rs/hepta-supervisor/src/signed_intent.rs",
+    '''    publish::publish_with_context("signed_intent", &temp, &final_path)?;
+''',
+    '''    crate::durable_publish::publish_with_context("signed_intent", &temp, &final_path)?;
 ''',
 )
 
