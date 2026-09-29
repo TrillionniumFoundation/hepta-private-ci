@@ -160,9 +160,12 @@ const TOKEN_PREFIX=__TOKEN_PREFIX__;
 const apply=Reflect.apply;
 const defineProperty=Object.defineProperty;
 const getOwnPropertyDescriptor=Object.getOwnPropertyDescriptor;
+const create=Object.create;
+const setPrototypeOf=Object.setPrototypeOf;
 const stringify=JSON.stringify;
 const isArray=Array.isArray;
 const nativeString=String;
+const toLowerCase=String.prototype.toLowerCase;
 const numberToString=Number.prototype.toString;
 const querySelector=Document.prototype.querySelector;
 const getClientRects=Element.prototype.getClientRects;
@@ -188,6 +191,14 @@ let nextHandle=1;
 const call=(fn,receiver,args)=>apply(fn,receiver,args);
 const select=(selector)=>call(querySelector,ownerDocument,[selector]);
 const text=(value)=>nativeString(value??"");
+const lower=(value)=>call(toLowerCase,text(value),[]);
+const record=()=>call(create,Object,[null]);
+const bareArray=()=>{
+  const value=[];
+  call(setPrototypeOf,Object,[value,null]);
+  return value;
+};
+const encode=(value)=>call(stringify,JSON,[value]);
 const visible=(element)=>{
   if(!element||call(getClientRects,element,[]).length===0) return false;
   const style=call(getComputedStyleNative,window,[element]);
@@ -196,8 +207,8 @@ const visible=(element)=>{
   return display!=="none"&&visibility!=="hidden"&&visibility!=="collapse";
 };
 const disabled=(element)=>call(matches,element,[":disabled"]);
-const tag=(element)=>text(call(tagNameGetter,element,[])).toLowerCase();
-const attribute=(element,name)=>text(call(getAttribute,element,[name])).toLowerCase();
+const tag=(element)=>lower(call(tagNameGetter,element,[]));
+const attribute=(element,name)=>lower(call(getAttribute,element,[name]));
 const has=(element,name)=>call(hasAttribute,element,[name]);
 const supportedTextInput=(element,elementTag,inputType)=>{
   if(elementTag==="textarea") return !call(textareaReadOnlyGetter,element,[]);
@@ -214,21 +225,33 @@ const tokenFor=(element)=>{
   }
   return token;
 };
-const fail=(error)=>stringify({ok:false,error});
+const fail=(error)=>{
+  const result=record();
+  result.ok=false;
+  result.error=error;
+  return encode(result);
+};
 const bridge=(candidateSecret,request)=>{
   if(candidateSecret!==SECRET) return fail("unauthorized");
   try{
     if(request===null||typeof request!=="object") return fail("invalid_request");
     if(request.kind==="bind"){
       if(!isArray(request.selectors)||request.selectors.length>256) return fail("invalid_selectors");
-      const output=[];
-      for(const selector of request.selectors){
+      const output=bareArray();
+      for(let index=0;index<request.selectors.length;index+=1){
+        const selector=request.selectors[index];
         if(typeof selector!=="string"||selector.length===0||selector.length>2048) return fail("invalid_selector");
         const element=select(selector);
         if(!visible(element)) return fail("target_missing");
-        output.push({selector,handle:tokenFor(element)});
+        const entry=record();
+        entry.selector=selector;
+        entry.handle=tokenFor(element);
+        output[index]=entry;
       }
-      return stringify({ok:true,handles:output});
+      const result=record();
+      result.ok=true;
+      result.handles=output;
+      return encode(result);
     }
     if(request.kind!=="act") return fail("invalid_request_kind");
     if(typeof request.action!=="string"||typeof request.selector!=="string"||typeof request.handle!=="string") return fail("invalid_action_request");
@@ -254,7 +277,10 @@ const bridge=(candidateSecret,request)=>{
     }else{
       return fail("unsupported_action");
     }
-    return stringify({ok:true,acted:true});
+    const result=record();
+    result.ok=true;
+    result.acted=true;
+    return encode(result);
   }catch(_error){
     return fail("bridge_failure");
   }
