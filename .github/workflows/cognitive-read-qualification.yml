@@ -193,3 +193,56 @@ jobs:
         env:
           FAILED: ${{ steps.qualification.outputs.failed }}
         run: test "$FAILED" = '0'
+
+  source-proposal:
+    name: Local-only cognitive.read repair proposal
+    if: github.event_name == 'pull_request'
+    runs-on: macos-14
+    timeout-minutes: 120
+    permissions:
+      contents: read
+    steps:
+      - name: Check out exact source without persistent credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Prepare CI tools
+        uses: ./.github/actions/setup-ci
+      - name: Generate detached local proposal
+        id: proposal
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          evidence="$RUNNER_TEMP/cognitive-read-proposal"
+          mkdir -p "$evidence"
+          status=0
+          PYTHONPATH=scripts python3 - "$EXPECTED_SHA" "$evidence" <<'PY' || status=$?
+          from pathlib import Path
+          import json
+          import sys
+          from cognitive_read_source_proposal import generate_source_proposal
+
+          candidate, destination = sys.argv[1:]
+          result = generate_source_proposal(Path.cwd(), Path(destination), candidate)
+          print(json.dumps(result, indent=2, sort_keys=True))
+          raise SystemExit(0 if result.get("status") == "generated" else 1)
+          PY
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Retain reviewable non-qualification proposal
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cognitive-read-local-proposal-${{ github.event.pull_request.head.sha }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/cognitive-read-proposal/source-proposal
+          if-no-files-found: error
+          retention-days: 14
+      - name: Enforce proposal generation
+        if: always()
+        env:
+          STATUS: ${{ steps.proposal.outputs.status }}
+        run: test "$STATUS" = '0'
