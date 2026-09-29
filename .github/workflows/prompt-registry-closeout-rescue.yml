@@ -1,0 +1,71 @@
+name: Prompt registry closeout rescue
+on:
+  push:
+    branches:
+      - codex/prompt-registry-production-closeout-20260929
+    paths:
+      - .github/workflows/prompt-registry-closeout-rescue.yml
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: prompt-registry-closeout-rescue
+  cancel-in-progress: false
+jobs:
+  apply:
+    runs-on: ubuntu-slim
+    steps:
+      - name: Cancel superseded queued bootstrap
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api --method POST repos/${{ github.repository }}/actions/runs/36533994432/cancel || true
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/prompt-registry-production-closeout-20260929
+          fetch-depth: 0
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt
+      - name: Apply assertion-bound phase-one edits
+        run: python3 scripts/apply-prompt-registry-production-closeout.py
+      - name: Format changed Rust source
+        working-directory: codex-rs
+        run: >-
+          cargo fmt
+          -p codex-hepta-agentd
+          -p codex-hepta-prompt-registry
+          -p codex-hepta-intelligence
+      - name: Commit source candidate locally
+        run: |
+          set -euo pipefail
+          git config user.name 'Prompt registry closeout automation'
+          git config user.email 'prompt-registry-closeout@users.noreply.github.com'
+          git add -A
+          git diff --cached --quiet && exit 1
+          git commit -m 'feat(prompt.registry): close qualification and acceptance evidence gaps'
+      - name: Generate source-bound implementation map and documentation truth
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-prompt-registry-map.py --write
+          python3 scripts/hepta-prompt-registry-doc-truth.py --write
+          python3 scripts/hepta-prompt-registry-doc-truth.py --check
+          python3 -m py_compile \
+            scripts/hepta-prompt-registry-doc-truth.py \
+            scripts/hepta-prompt-registry-accept.py \
+            scripts/hepta-prompt-registry-aggregate.py \
+            scripts/hepta-prompt-registry-qualify.py
+          git diff --check
+          git add docs/modules/prompt.registry/IMPLEMENTATION_MAP.json \
+                  docs/modules/prompt.registry/QUALIFICATION_FACTS.json \
+                  docs/modules/prompt.registry/QUALIFICATION_STATUS.md
+          git commit -m 'docs(prompt.registry): bind map and generated qualification truth'
+      - name: Remove temporary bootstrap machinery
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/prompt-registry-closeout-bootstrap.yml
+          rm -f .github/workflows/prompt-registry-closeout-rescue.yml
+          git add -A
+          git commit -m 'chore(prompt.registry): remove closeout bootstrap workflows'
+      - name: Push complete candidate once
+        run: git push origin HEAD:codex/prompt-registry-production-closeout-20260929
