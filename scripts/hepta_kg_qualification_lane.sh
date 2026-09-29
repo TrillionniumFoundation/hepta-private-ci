@@ -7,6 +7,7 @@ REPO_ROOT="${1:-$(pwd)}"
 LANE="${KG_QUALIFICATION_LANE:?KG_QUALIFICATION_LANE must be set}"
 EVIDENCE_DIR="${KG_EVIDENCE_DIR:-${RUNNER_TEMP:-/tmp}/knowledge-graph-${LANE}}"
 RESULTS_TSV="${EVIDENCE_DIR}/results.tsv"
+RUNNER_SCRIPT="$0"
 mkdir -p "${EVIDENCE_DIR}"
 : >"${RESULTS_TSV}"
 
@@ -54,8 +55,13 @@ run_optional_check() {
   fi
 }
 
-# Core deterministic kernel, external query contract and public operation metrics.
+# Core deterministic kernel, adversarial corpus, external query contract and
+# public operation metrics. Formatting is a different workflow job so it cannot
+# suppress these runtime checks.
 run_check kg_kernel cargo test --locked -p codex-hepta-kg -- --nocapture
+run_optional_check kg_adversarial_fuzz \
+  codex-rs/hepta-kg/tests/adversarial_fuzz.rs \
+  cargo test --locked -p codex-hepta-kg --test adversarial_fuzz -- --nocapture
 run_optional_check kg_query_acceptance \
   codex-rs/hepta-kg/tests/query_acceptance.rs \
   cargo test --locked -p codex-hepta-kg --test query_acceptance -- --nocapture
@@ -124,6 +130,7 @@ export HEPTA_KG_RECEIPT_LANE="${LANE}"
 export HEPTA_KG_RECEIPT_RESULTS="${RESULTS_TSV}"
 export HEPTA_KG_RECEIPT_DIR="${EVIDENCE_DIR}"
 export HEPTA_KG_RECEIPT_FAILURES="${failures}"
+export HEPTA_KG_RECEIPT_RUNNER="${RUNNER_SCRIPT}"
 python3 - <<'PY'
 from __future__ import annotations
 
@@ -138,12 +145,23 @@ root = pathlib.Path(os.environ["HEPTA_KG_RECEIPT_REPO_ROOT"])
 lane = os.environ["HEPTA_KG_RECEIPT_LANE"]
 results_path = pathlib.Path(os.environ["HEPTA_KG_RECEIPT_RESULTS"])
 evidence_dir = pathlib.Path(os.environ["HEPTA_KG_RECEIPT_DIR"])
+runner_path = pathlib.Path(os.environ["HEPTA_KG_RECEIPT_RUNNER"]).resolve()
 failures = int(os.environ["HEPTA_KG_RECEIPT_FAILURES"])
+workflow_path = ".github/workflows/hepta-knowledge-graph-qualification.yml"
+harness_path = "scripts/hepta_kg_qualification_lane.sh"
 
 def git(*args: str) -> str:
     return subprocess.check_output(
-        ["git", "-C", str(root), *args], text=True
+        ["git", "-C", str(root), *args], text=True, stderr=subprocess.STDOUT
     ).strip()
+
+def git_object(commit: str | None, relative: str) -> str | None:
+    if not commit:
+        return None
+    try:
+        return git("rev-parse", f"{commit}:{relative}")
+    except subprocess.CalledProcessError:
+        return None
 
 def file_digest(relative: str) -> str | None:
     path = root / relative
@@ -173,19 +191,24 @@ for path in sorted(evidence_dir.glob("*.log")):
         }
     )
 
+tested_commit = git("rev-parse", "HEAD")
+source_commit = os.environ.get("SOURCE_SHA") or tested_commit
+parents = git("rev-list", "--parents", "-n", "1", "HEAD").split()[1:]
 receipt = {
     "schema": "hepta.knowledge-graph.qualification-receipt.v1",
     "lane": lane,
     "candidateLane": lane in {"source-head", "base-merge"},
-    "testedCommit": git("rev-parse", "HEAD"),
+    "testedCommit": tested_commit,
     "testedTree": git("rev-parse", "HEAD^{tree}"),
-    "sourceCommit": os.environ.get("SOURCE_SHA"),
+    "testedParents": parents,
+    "sourceCommit": source_commit,
     "baseCommit": os.environ.get("BASE_SHA"),
-    "workflowBlob": (
-        git("rev-parse", "HEAD:.github/workflows/hepta-knowledge-graph-qualification.yml")
-        if (root / ".github/workflows/hepta-knowledge-graph-qualification.yml").is_file()
-        else None
-    ),
+    "testedWorkflowBlob": git_object(tested_commit, workflow_path),
+    "sourceWorkflowBlob": git_object(source_commit, workflow_path),
+    "sourceHarnessBlob": git_object(source_commit, harness_path),
+    "executedHarnessSha256": hashlib.sha256(runner_path.read_bytes()).hexdigest(),
+    # Retained for v1 consumers; this is the tested checkout's workflow blob.
+    "workflowBlob": git_object(tested_commit, workflow_path),
     "cargoLockSha256": file_digest("codex-rs/Cargo.lock"),
     "kgSchemaSha256": file_digest(
         "codex-rs/hepta-memory/migrations/0013_kg_generation_semantics.sql"
