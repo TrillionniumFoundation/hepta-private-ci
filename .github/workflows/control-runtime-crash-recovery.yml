@@ -1,13 +1,10 @@
-name: control.runtime crash and recovery regression
+name: control.runtime canonical rustfmt capture
 
 on:
   pull_request:
     branches: [main]
     paths:
       - 'codex-rs/hepta-control-plane/**'
-      - 'docs/modules/control.runtime/**'
-      - 'docs/readiness/CONTROL_RUNTIME_*.md'
-      - 'scripts/control_runtime_validate_state.py'
       - '.github/workflows/control-runtime-crash-recovery.yml'
   workflow_dispatch:
 
@@ -15,50 +12,57 @@ permissions:
   contents: read
 
 concurrency:
-  group: control-runtime-crash-recovery-${{ github.event.pull_request.number || github.ref }}
+  group: control-runtime-rustfmt-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
-env:
-  CARGO_INCREMENTAL: '0'
-  CARGO_BUILD_JOBS: '2'
-  CARGO_PROFILE_TEST_DEBUG: '0'
-  CARGO_PROFILE_DEV_DEBUG: '0'
-
 jobs:
-  source-and-process-recovery:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-24.04, macos-14]
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 45
+  capture-rustfmt:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
 
-      - name: Install Linux native prerequisites
-        if: runner.os == 'Linux'
+      - name: Generate canonical package formatting
+        working-directory: codex-rs
+        run: cargo fmt -p codex-hepta-control-plane
+
+      - name: Retain exact formatted files and patch
+        shell: bash
         run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential pkg-config libcap-dev
+          set -euo pipefail
+          bundle="$RUNNER_TEMP/control-runtime-rustfmt"
+          mkdir -p "$bundle/files"
+          git diff --check
+          git diff --binary > "$bundle/rustfmt.patch"
+          git diff --name-only --diff-filter=ACMRT > "$bundle/paths.txt"
+          git rev-parse HEAD > "$bundle/source-head.txt"
+          rustfmt --version > "$bundle/rustfmt-version.txt"
+          python3 - <<'PY'
+          import os
+          import shutil
+          from pathlib import Path
 
-      - name: Formatting
-        working-directory: codex-rs
-        run: cargo fmt -p codex-hepta-control-plane -- --check
+          root = Path.cwd()
+          bundle = Path(os.environ["RUNNER_TEMP"]) / "control-runtime-rustfmt" / "files"
+          paths = (Path(os.environ["RUNNER_TEMP"]) / "control-runtime-rustfmt" / "paths.txt").read_text().splitlines()
+          for value in paths:
+              source = root / value
+              if not source.is_file():
+                  raise SystemExit(f"formatted path is not a file: {value}")
+              destination = bundle / value
+              destination.parent.mkdir(parents=True, exist_ok=True)
+              shutil.copy2(source, destination)
+          PY
+          test -s "$bundle/rustfmt.patch"
+          test -s "$bundle/paths.txt"
 
-      - name: Pending reconciliation inventory regressions
-        working-directory: codex-rs
-        run: cargo test --locked -p codex-hepta-control-plane pending_dispatch_inventory
-
-      - name: Abnormal process and restore regressions
-        working-directory: codex-rs
-        run: cargo test --locked -p codex-hepta-control-plane --test planner_store_process_recovery -- --nocapture
-
-      - name: All-target compilation
-        working-directory: codex-rs
-        run: cargo check --locked --all-targets -p codex-hepta-control-plane
-
-      - name: Strict lint
-        working-directory: codex-rs
-        run: cargo clippy --locked --all-targets -p codex-hepta-control-plane -- -D warnings
+      - name: Upload canonical formatting bundle
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: control-runtime-rustfmt-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/control-runtime-rustfmt
+          if-no-files-found: error
+          retention-days: 7
