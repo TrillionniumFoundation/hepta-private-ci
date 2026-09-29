@@ -42,7 +42,9 @@ jobs:
 
       - name: Test supervisor default feature surface
         working-directory: codex-rs
-        run: cargo test -p codex-hepta-supervisor --lib
+        run: |
+          cargo test -p codex-hepta-supervisor --lib
+          cargo test -p codex-hepta-supervisor --test authority_distribution
 
       - name: Test supervisor qualification feature surface
         working-directory: codex-rs
