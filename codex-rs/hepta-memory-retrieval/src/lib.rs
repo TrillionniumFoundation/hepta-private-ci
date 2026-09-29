@@ -7,6 +7,7 @@ mod engram;
 mod generation_bound;
 mod generator;
 mod lifecycle;
+pub mod product;
 mod semantics;
 mod v2;
 mod vector_owner;
