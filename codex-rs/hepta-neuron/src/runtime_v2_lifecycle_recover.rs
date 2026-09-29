@@ -8,7 +8,13 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
         phases: &mut PhaseMeasurementV2,
     ) -> Result<NeuronOperationStatusV2, NeuronRuntimeV2Error> {
         let phase_started = Instant::now();
-        let local = self.reconcile();
+        // Exact-operation recovery must remain reachable while new-work
+        // admission is closed or the independent witness is unavailable. It
+        // reconciles local durability first, then queries only the already
+        // fenced provider operation. Any observed result still attempts normal
+        // witness publication during commit and remains unavailable to product
+        // use until the separate live result-use gate succeeds.
+        let local = self.reconcile_local_state();
         phases.local_reconciliation_micros = phases
             .local_reconciliation_micros
             .saturating_add(elapsed_micros(phase_started));

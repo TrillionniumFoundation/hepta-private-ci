@@ -56,5 +56,7 @@ mod status_code_tests {
 }
 
 #[cfg(test)]
-#[path = "runtime_v2_recovery_policy_tests.rs"]
-mod recovery_policy_tests;
+mod recovery_policy_tests {
+    include!("runtime_v2_recovery_policy_tests.rs");
+    include!("runtime_v2_witness_isolation_tests.rs");
+}

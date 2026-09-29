@@ -1,4 +1,18 @@
 impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
+    /// Reconcile only local durable state. Administrative truth queries,
+    /// exact-operation provider recovery and current-use authorization must not
+    /// let an independent witness outage hide an already durable local result.
+    /// Startup, new-work execution, sealing and explicit `reconcile()` retain
+    /// the stricter external-witness requirement.
+    fn reconcile_local_state(&mut self) -> Result<(), NeuronRuntimeV2Error> {
+        self.finish_pending_index_commit()?;
+        let checkpoint = self.current_checkpoint_anchor();
+        if self.index.frontier()? != checkpoint || self.store.current_anchor()? != checkpoint {
+            return Err(NeuronRuntimeV2Error::RecoveryMismatch);
+        }
+        Ok(())
+    }
+
     pub fn query_operation(
         &mut self,
         tick_id: &StableId,
@@ -11,8 +25,8 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
         key.semantic_digest()?;
         // Recover the local commit without making a remote witness outage hide
         // an already durable outcome. The normal execution/recovery paths still
-        // reconcile the independent witness.
-        self.finish_pending_index_commit()?;
+        // reconcile the independent witness when their contract requires it.
+        self.reconcile_local_state()?;
         if let Some(record) = self.store.find_operation(&key)? {
             if self.index.failure(&key)?.is_some() {
                 return Err(NeuronRuntimeV2Error::RecoveryMismatch);
@@ -54,7 +68,7 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
     pub fn pending_operation_status(
         &mut self,
     ) -> Result<Option<(NeuronOperationKeyV2, NeuronOperationStatusV2)>, NeuronRuntimeV2Error> {
-        self.finish_pending_index_commit()?;
+        self.reconcile_local_state()?;
         let Some(pending) = self.index.pending()? else {
             return Ok(None);
         };
@@ -63,14 +77,15 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
         Ok(Some((key, status)))
     }
 
-    /// Administrative result read retained for recovery tooling. Product result
-    /// release must use `query_result_guarded` or a guarded execution path.
+    /// Administrative result read retained for recovery tooling. This performs
+    /// local reconciliation only; product result release must use
+    /// `query_result_guarded` or a guarded execution path.
     pub fn query_result(
         &mut self,
         tick_id: &StableId,
         input_digest: Digest32,
     ) -> Result<Option<NeuronRuntimeCommitV2>, NeuronRuntimeV2Error> {
-        self.reconcile()?;
+        self.reconcile_local_state()?;
         match self.query_operation(tick_id, input_digest)? {
             NeuronOperationStatusV2::Committed { commit, .. } => Ok(Some(*commit)),
             NeuronOperationStatusV2::Failed(failure) => {
@@ -85,7 +100,8 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
 
     /// Current-use gate for an immutable committed result. This performs only
     /// local reconciliation and a live guard check; it never dispatches or
-    /// reconciles provider work.
+    /// reconciles provider work. Witness acknowledgement remains visible in
+    /// `query_operation` and is still mandatory for full reconciliation/seal.
     pub fn query_result_guarded(
         &mut self,
         input: &NeuronTickInputV1,
@@ -101,7 +117,7 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
         input_digest: Digest32,
         guard: &mut dyn NeuronAdmissionGuard,
     ) -> Result<Option<NeuronRuntimeCommitV2>, NeuronRuntimeV2Error> {
-        self.reconcile()?;
+        self.reconcile_local_state()?;
         match self.query_operation(&input.tick_id, input_digest)? {
             NeuronOperationStatusV2::Committed { commit, .. } => {
                 guard
