@@ -80,6 +80,10 @@ run_step() {
 truth_check() {
   test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
   python3 scripts/platform_types_candidate_bundle.py self-test
+  python3 scripts/platform_types_rama_lock_guard.py
+  python3 -m unittest \
+    scripts/test_platform_types_rama_lock_guard.py \
+    scripts/test_platform_types_rustdoc_api.py
   python3 scripts/platform_types_public_api.py
   python3 scripts/platform_types_implementation_map.py \
     --output "$OUT/generated-implementation-map.json"
@@ -92,6 +96,33 @@ truth_check() {
   python3 codex-rs/hepta-types/conformance/verify_platform_wire_vectors.py
   node codex-rs/hepta-types/conformance/verify_platform_wire_vectors.mjs
   bash scripts/run_platform_types_consumer_qualification.sh
+  cargo run --release --locked --manifest-path "$MANIFEST" \
+    --package "$PACKAGE" --bin platform-types-registry-bench -- \
+    100000 "$OUT/registry-benchmark.json"
+  python3 - "$OUT/registry-benchmark.json" <<'PY'
+import json
+import pathlib
+import sys
+
+value = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
+assert value["schema"] == "hepta.platform-types.registry-lookup-benchmark.v1"
+assert value["schemaVersion"] == 1
+assert value["iterationsPerLookup"] == 100000
+assert value["acceptanceThreshold"] is None
+assert [row["entryCount"] for row in value["cases"]] == [8, 256]
+for row in value["cases"]:
+    for field in (
+        "constructionElapsedNs",
+        "constructionNsPerEntry",
+        "identityElapsedNs",
+        "identityNsPerLookup",
+        "digestElapsedNs",
+        "digestNsPerLookup",
+        "registryIdentityElapsedNs",
+        "registryIdentityNsPerLookup",
+    ):
+        assert isinstance(row[field], int) and row[field] >= 0
+PY
   git diff --check
   test -z "$(git status --porcelain --untracked-files=no)"
 }
@@ -169,6 +200,7 @@ EVIDENCE_ARGS=(
   --evidence "bundle-log=$OUT/bundle.log"
   --evidence "generated-map=$OUT/generated-implementation-map.json"
   --evidence "property-report=$OUT/property-report.json"
+  --evidence "registry-benchmark=$OUT/registry-benchmark.json"
   --evidence "protocol-catalog=$OUT/protocol-catalog.json"
   --evidence "protocol-catalog-markdown=$OUT/protocol-catalog.md"
   --evidence "provenance=$OUT/provenance.json"
