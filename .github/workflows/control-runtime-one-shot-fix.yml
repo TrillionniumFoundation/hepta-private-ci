@@ -22,47 +22,21 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: codex/control-runtime-convergence-v1
-          fetch-depth: 2
+          fetch-depth: 0
       - name: Apply reviewed qualification fixes and remove this workflow
         shell: bash
         env:
-          EXPECTED_PARENT: 5ab1b91aac484b856571e00ee8c865ebb4e318e7
+          EXPECTED_SOURCE: 5ab1b91aac484b856571e00ee8c865ebb4e318e7
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
-          base64 --decode <<'PATCH_BASE64' | gzip --decompress > "$RUNNER_TEMP/control-runtime.patch"
-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
-PATCH_BASE64
+          git merge-base --is-ancestor "$EXPECTED_SOURCE" HEAD
+          git diff --exit-code "$EXPECTED_SOURCE" -- \
+            codex-rs/hepta-control-plane/src/organ_fanout_recovery.rs \
+            codex-rs/hepta-control-plane/src/planner_journal.rs \
+            codex-rs/hepta-control-plane/src/planner_journal_core.rs \
+            codex-rs/hepta-control-plane/src/planner_store.rs \
+            codex-rs/hepta-control-plane/src/planner_store_core.rs
+          printf '%s' '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' | base64 --decode | gzip --decompress > "$RUNNER_TEMP/control-runtime.patch"
           echo "15da68d7e473bb47fdd7350046e880e42916cacc5c05dd584d7fa177582d1945  $RUNNER_TEMP/control-runtime.patch" | sha256sum --check --status
           git apply --check "$RUNNER_TEMP/control-runtime.patch"
           git apply "$RUNNER_TEMP/control-runtime.patch"
