@@ -123,6 +123,16 @@ impl PlannerJournalV1 {
         identity_digest: Digest32,
         payload_digest: Digest32,
     ) -> Result<PlannerJournalEntryV1, PlannerJournalError> {
+        self.append_with_validation(kind, identity_digest, payload_digest, true)
+    }
+
+    fn append_with_validation(
+        &mut self,
+        kind: PlannerJournalKindV1,
+        identity_digest: Digest32,
+        payload_digest: Digest32,
+        validate_semantics: bool,
+    ) -> Result<PlannerJournalEntryV1, PlannerJournalError> {
         if identity_digest.is_zero() || payload_digest.is_zero() {
             return Err(PlannerJournalError::EmptyDigest);
         }
@@ -136,6 +146,9 @@ impl PlannerJournalV1 {
                     .ok_or(PlannerJournalError::CorruptEntryDigest);
             }
             return Err(PlannerJournalError::IdentityConflict);
+        }
+        if validate_semantics {
+            validate_transition(&self.entries, kind, payload_digest)?;
         }
         if self.entries.len() >= MAX_RECORDS {
             return Err(PlannerJournalError::RecordLimitExceeded);
@@ -217,7 +230,7 @@ impl PlannerJournalV1 {
             return Err(PlannerJournalError::Truncated);
         }
 
-        let mut journal = Self::new();
+        let mut decoded = Self::new();
         let mut offset = 12;
         for index in 0..count {
             let sequence = read_u64(bytes, &mut offset)?;
@@ -233,7 +246,7 @@ impl PlannerJournalV1 {
             if sequence != expected_sequence {
                 return Err(PlannerJournalError::CorruptSequence);
             }
-            let expected_predecessor = journal
+            let expected_predecessor = decoded
                 .entries
                 .last()
                 .map_or(Digest32::ZERO, |entry| entry.entry_digest);
@@ -253,22 +266,40 @@ impl PlannerJournalV1 {
             if identity_digest.is_zero() || payload_digest.is_zero() {
                 return Err(PlannerJournalError::EmptyDigest);
             }
-            if journal.identities.contains_key(&identity_digest) {
+            if decoded.identities.contains_key(&identity_digest) {
                 return Err(PlannerJournalError::DuplicateSerializedIdentity);
             }
-            journal
-                .identities
-                .insert(identity_digest, (kind, payload_digest));
-            journal.entries.push(PlannerJournalEntryV1 {
+            let parsed = PlannerJournalEntryV1 {
                 sequence,
                 kind,
                 identity_digest,
                 payload_digest,
                 predecessor_entry_digest,
                 entry_digest,
-            });
+            };
+            let replayed = decoded.append_with_validation(
+                kind,
+                identity_digest,
+                payload_digest,
+                false,
+            )?;
+            if replayed != parsed {
+                return Err(PlannerJournalError::CorruptEntryDigest);
+            }
         }
-        Ok(journal)
+
+        let mut validated = Self::new();
+        for entry in decoded.entries {
+            let replayed = validated.append(
+                entry.kind,
+                entry.identity_digest,
+                entry.payload_digest,
+            )?;
+            if replayed != entry {
+                return Err(PlannerJournalError::CorruptEntryDigest);
+            }
+        }
+        Ok(validated)
     }
 
     fn revoked_digests(&self) -> BTreeSet<Digest32> {
@@ -278,6 +309,29 @@ impl PlannerJournalV1 {
             .map(|entry| entry.payload_digest)
             .collect()
     }
+}
+
+fn validate_transition(
+    entries: &[PlannerJournalEntryV1],
+    kind: PlannerJournalKindV1,
+    payload_digest: Digest32,
+) -> Result<(), PlannerJournalError> {
+    if kind != PlannerJournalKindV1::SelectedPlan {
+        return Ok(());
+    }
+    let decision_exists = entries.iter().any(|entry| {
+        entry.kind == PlannerJournalKindV1::Decision && entry.payload_digest == payload_digest
+    });
+    if !decision_exists {
+        return Err(PlannerJournalError::DecisionNotRecorded);
+    }
+    let revoked = entries.iter().any(|entry| {
+        entry.kind == PlannerJournalKindV1::Revocation && entry.payload_digest == payload_digest
+    });
+    if revoked {
+        return Err(PlannerJournalError::RevokedPlan);
+    }
+    Ok(())
 }
 
 fn digest_entry(
