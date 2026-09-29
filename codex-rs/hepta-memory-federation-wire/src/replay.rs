@@ -1,4 +1,5 @@
 use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::error::Error;
 use std::fmt;
 
@@ -18,6 +19,8 @@ pub struct FederationReplayKeyV1<'a> {
 
 pub const MAX_FEDERATION_REPLAY_ENTRIES: usize = 16_384;
 pub const MAX_FEDERATION_REPLAY_ENTRIES_PER_CREDENTIAL: usize = 1_024;
+/// Maximum expired records reclaimed by one admission cleanup batch.
+pub const FEDERATION_REPLAY_CLEANUP_BATCH: usize = 64;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 struct ReplayEntry {
@@ -32,6 +35,7 @@ pub struct ReplayCacheV1 {
     last_observed_unix_ms: u64,
     entries: BTreeMap<[u8; 32], ReplayEntry>,
     credential_counts: BTreeMap<[u8; 32], usize>,
+    expiries: BTreeSet<(u64, [u8; 32])>,
 }
 
 impl ReplayCacheV1 {
@@ -60,6 +64,7 @@ impl ReplayCacheV1 {
             last_observed_unix_ms: 0,
             entries: BTreeMap::new(),
             credential_counts: BTreeMap::new(),
+            expiries: BTreeSet::new(),
         })
     }
 
@@ -91,7 +96,7 @@ impl ReplayCacheV1 {
         if expires_unix_ms <= now_unix_ms {
             return Err(ReplayError::Expired);
         }
-        self.purge_expired_unchecked(now_unix_ms);
+        self.purge_expired_unchecked(now_unix_ms, FEDERATION_REPLAY_CLEANUP_BATCH);
         let credential_scope =
             credential_scope_key(sender_peer_id, receiver_peer_id, key_id, generation);
         let key = replay_key(sender_peer_id, receiver_peer_id, key_id, generation, nonce);
@@ -117,13 +122,24 @@ impl ReplayCacheV1 {
                 expires_unix_ms,
             },
         );
+        self.expiries.insert((expires_unix_ms, key));
         *self.credential_counts.entry(credential_scope).or_insert(0) += 1;
         Ok(())
     }
 
     pub fn purge_expired(&mut self, now_unix_ms: u64) -> Result<usize, ReplayError> {
+        self.purge_expired_bounded(now_unix_ms, self.capacity)
+    }
+
+    /// Reclaim at most `maximum_entries` expired nonces; never evict a live one.
+    /// An admission may conservatively report capacity while cleanup is pending.
+    pub fn purge_expired_bounded(
+        &mut self,
+        now_unix_ms: u64,
+        maximum_entries: usize,
+    ) -> Result<usize, ReplayError> {
         self.observe_time(now_unix_ms)?;
-        Ok(self.purge_expired_unchecked(now_unix_ms))
+        Ok(self.purge_expired_unchecked(now_unix_ms, maximum_entries.min(self.capacity)))
     }
 
     pub const fn capacity(&self) -> usize {
@@ -154,29 +170,31 @@ impl ReplayCacheV1 {
         Ok(())
     }
 
-    fn purge_expired_unchecked(&mut self, now_unix_ms: u64) -> usize {
-        let before = self.entries.len();
-        let mut removed_scopes = Vec::new();
-        self.entries.retain(|_, entry| {
-            let keep = entry.expires_unix_ms > now_unix_ms;
-            if !keep {
-                removed_scopes.push(entry.credential_scope);
-            }
-            keep
-        });
-        for scope in removed_scopes {
-            let remove_scope = match self.credential_counts.get_mut(&scope) {
-                Some(count) => {
-                    *count = count.saturating_sub(1);
-                    *count == 0
-                }
-                None => false,
+    fn purge_expired_unchecked(&mut self, now_unix_ms: u64, maximum_entries: usize) -> usize {
+        let mut removed = 0;
+        while removed < maximum_entries {
+            let Some((expiry, key)) = self.expiries.first().copied() else {
+                break;
             };
-            if remove_scope {
-                self.credential_counts.remove(&scope);
+            if expiry > now_unix_ms {
+                break;
+            }
+            self.expiries.remove(&(expiry, key));
+            if let Some(entry) = self.entries.remove(&key) {
+                let remove_scope = match self.credential_counts.get_mut(&entry.credential_scope) {
+                    Some(count) => {
+                        *count -= 1;
+                        *count == 0
+                    }
+                    None => false,
+                };
+                if remove_scope {
+                    self.credential_counts.remove(&entry.credential_scope);
+                }
+                removed += 1;
             }
         }
-        before.saturating_sub(self.entries.len())
+        removed
     }
 }
 
@@ -252,3 +270,7 @@ impl fmt::Display for ReplayError {
 }
 
 impl Error for ReplayError {}
+
+#[cfg(test)]
+#[path = "replay_index_tests.rs"]
+mod index_tests;

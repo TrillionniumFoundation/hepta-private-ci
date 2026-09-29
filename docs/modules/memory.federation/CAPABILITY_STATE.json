@@ -38,7 +38,9 @@
     "availableRecoveryBackends": [
       "in_memory_test_double",
       "unix_atomic_file_candidate_pending_selected_host"
-    ]
+    ],
+    "admissionPreparation": "authenticated_before_staged_replay_and_recovery_source_candidate",
+    "expiryMaintenance": "derived_indexes_incremental_partition_counts_bounded_cleanup_source_candidate"
   },
   "execution": {
     "exactHead": "pending_current_head_qualification",
@@ -48,7 +50,8 @@
     "successfulReceiptsRequireCapacityMetrics": true,
     "successfulReceiptsRequireCommandExecution": true,
     "successfulReceiptsRequireTrackedLock": true,
-    "receiptsBindWorkflowAttempt": true
+    "receiptsBindWorkflowAttempt": true,
+    "entrypointIdentity": "single_cli_and_import_module_instance_source_candidate"
   },
   "claims": {
     "sourceRootPresent": true,

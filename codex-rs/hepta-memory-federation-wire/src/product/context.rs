@@ -94,10 +94,7 @@ impl FederationAuthenticatedTransportV1 {
         append_transport_component(&mut payload, FEDERATION_TRANSPORT_CONTEXT_DOMAIN)?;
         append_transport_component(&mut payload, self.local_peer_id.as_str().as_bytes())?;
         append_transport_component(&mut payload, self.peer_id.as_str().as_bytes())?;
-        append_transport_component(
-            &mut payload,
-            self.transport_profile_id.as_str().as_bytes(),
-        )?;
+        append_transport_component(&mut payload, self.transport_profile_id.as_str().as_bytes())?;
         append_transport_component(&mut payload, self.channel_binding_digest.as_array())?;
         append_transport_component(&mut payload, &self.established_unix_ms.to_be_bytes())?;
         append_transport_component(&mut payload, &self.expires_unix_ms.to_be_bytes())?;

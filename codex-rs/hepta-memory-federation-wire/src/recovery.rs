@@ -1,4 +1,5 @@
 use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::error::Error;
 use std::fmt;
 
@@ -15,6 +16,11 @@ use crate::protocol::FederationCancellationReasonV1;
 use crate::replay::FederationReplayKeyV1;
 
 pub const MAX_FEDERATION_RECOVERY_BYTES: usize = 32 * 1024 * 1024;
+/// One cleanup batch spans replay and attempts together, not the live tables.
+pub const FEDERATION_RECOVERY_CLEANUP_BATCH: usize = 64;
+
+#[path = "recovery_index.rs"]
+mod index;
 
 const SNAPSHOT_SCHEMA: &str = "hepta.memory-federation.host-recovery.v1";
 const SNAPSHOT_DIGEST_DOMAIN: &[u8] = b"hepta.memory-federation.host-recovery.v1";
@@ -79,12 +85,19 @@ struct ReplayEntry {
     expires_unix_ms: u64,
 }
 
+#[derive(Clone)]
 pub struct DurableFederationStateV1 {
     local_peer_id: StableId,
     limits: FederationRecoveryLimitsV1,
     last_observed_unix_ms: u64,
     replay: BTreeMap<[u8; 32], ReplayEntry>,
     attempts: BTreeMap<AttemptIdentity, AttemptEntry>,
+    // Derived indexes are never serialized or accepted from a caller. Recovery
+    // rebuilds them from validated canonical primary records.
+    replay_expiries: BTreeSet<(u64, [u8; 32])>,
+    attempt_expiries: BTreeSet<(u64, AttemptIdentity)>,
+    replay_counts: BTreeMap<String, usize>,
+    attempt_counts: BTreeMap<String, usize>,
 }
 
 impl DurableFederationStateV1 {
@@ -103,6 +116,10 @@ impl DurableFederationStateV1 {
             last_observed_unix_ms: now_unix_ms,
             replay: BTreeMap::new(),
             attempts: BTreeMap::new(),
+            replay_expiries: BTreeSet::new(),
+            attempt_expiries: BTreeSet::new(),
+            replay_counts: BTreeMap::new(),
+            attempt_counts: BTreeMap::new(),
         })
     }
 
@@ -232,6 +249,7 @@ impl DurableFederationStateV1 {
                 return Err(FederationRecoveryError::SnapshotDuplicate);
             }
         }
+        state.rebuild_indexes();
         state.require_capacity_isolation()?;
         Ok(state)
     }
@@ -302,10 +320,10 @@ impl DurableFederationStateV1 {
             return Err(FederationRecoveryError::ReplayCapacityExhausted);
         }
         let peer_count = self
-            .replay
-            .values()
-            .filter(|entry| entry.peer_id == sender_peer_id.as_str())
-            .count();
+            .replay_counts
+            .get(sender_peer_id.as_str())
+            .copied()
+            .unwrap_or_default();
         if peer_count >= self.limits.replay_per_peer_capacity {
             return Err(FederationRecoveryError::ReplayPeerCapacityExhausted);
         }
@@ -321,13 +339,30 @@ impl DurableFederationStateV1 {
         if self.replay.contains_key(&key) {
             return Err(FederationRecoveryError::Replay);
         }
+        if key == [0; 32] {
+            return Err(FederationRecoveryError::FrameIdentityMismatch);
+        }
+        if expires_unix_ms <= self.last_observed_unix_ms {
+            return Err(FederationRecoveryError::Expired);
+        }
+        if self.replay.len() >= self.limits.replay_capacity {
+            return Err(FederationRecoveryError::ReplayCapacityExhausted);
+        }
+        let peer = sender_peer_id.as_str().to_string();
+        if self.replay_counts.get(&peer).copied().unwrap_or_default()
+            >= self.limits.replay_per_peer_capacity
+        {
+            return Err(FederationRecoveryError::ReplayPeerCapacityExhausted);
+        }
         self.replay.insert(
             key,
             ReplayEntry {
-                peer_id: sender_peer_id.as_str().to_string(),
+                peer_id: peer.clone(),
                 expires_unix_ms,
             },
         );
+        self.replay_expiries.insert((expires_unix_ms, key));
+        *self.replay_counts.entry(peer).or_default() += 1;
         Ok(())
     }
 
@@ -353,21 +388,26 @@ impl DurableFederationStateV1 {
             return Err(FederationRecoveryError::AttemptCapacityExhausted);
         }
         let peer_count = self
-            .attempts
-            .keys()
-            .filter(|entry| entry.peer_id == peer_id.as_str())
-            .count();
+            .attempt_counts
+            .get(peer_id.as_str())
+            .copied()
+            .unwrap_or_default();
         if peer_count >= self.limits.attempt_per_peer_capacity {
             return Err(FederationRecoveryError::AttemptPeerCapacityExhausted);
         }
         self.attempts.insert(
-            identity,
+            identity.clone(),
             AttemptEntry {
                 began_unix_ms: now_unix_ms,
                 expires_unix_ms,
                 state: AttemptState::Pending,
             },
         );
+        self.attempt_expiries.insert((expires_unix_ms, identity));
+        *self
+            .attempt_counts
+            .entry(peer_id.as_str().to_string())
+            .or_default() += 1;
         Ok(())
     }
 
@@ -426,7 +466,7 @@ impl DurableFederationStateV1 {
             .get(&identity)
             .is_some_and(|entry| observed_unix_ms >= entry.expires_unix_ms)
         {
-            self.attempts.remove(&identity);
+            self.remove_attempt(&identity);
         }
         let (disposition, acknowledged_unix_ms) = match self.attempts.get_mut(&identity) {
             None => (
@@ -519,13 +559,6 @@ impl DurableFederationStateV1 {
         }
         self.last_observed_unix_ms = now_unix_ms;
         Ok(())
-    }
-
-    fn purge_expired(&mut self, now_unix_ms: u64) {
-        self.replay
-            .retain(|_, entry| entry.expires_unix_ms > now_unix_ms);
-        self.attempts
-            .retain(|_, entry| entry.expires_unix_ms > now_unix_ms);
     }
 
     fn require_capacity_isolation(&self) -> Result<(), FederationRecoveryError> {
@@ -876,3 +909,7 @@ impl Error for FederationRecoveryError {}
 #[cfg(test)]
 #[path = "recovery_validation_tests.rs"]
 mod validation_tests;
+
+#[cfg(test)]
+#[path = "recovery_index_tests.rs"]
+mod index_tests;

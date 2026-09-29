@@ -249,3 +249,37 @@ fn terminal_store_failure_leaves_pending_attempt_retryable() {
             .is_empty()
     );
 }
+
+#[test]
+fn invalid_mac_precedes_recovery_staging_and_preserves_original_packet() {
+    let mut host = open_host(ControlledStore::default());
+    let advanced = FederationQueryMessageV1 {
+        query_id: id("advance-clock"),
+        query_binding_digest: digest(b"advance-clock"),
+        ..query()
+    };
+    host.admit(
+        &id("peer-a"),
+        &encode_from_a(FederationWireMessageV1::Query(advanced), 110),
+        NOW + 20,
+    )
+    .expect("advance durable clock");
+    let original = encode_from_a(FederationWireMessageV1::Query(query()), 111);
+    let (schemas, codec) = registered_codec_v1().expect("codec");
+    let mut frame = decode_registered_frame_v1(&schemas, &codec, &original).expect("decode");
+    frame.mac[0] ^= 1;
+    let forged = encode_registered_frame_v1(&schemas, &codec, &frame).expect("encode");
+    let before = host.recovery_snapshot().expect("before");
+    assert!(matches!(
+        host.admit(&id("peer-a"), &forged, NOW + 1),
+        Err(FederationHostError::Protocol(
+            FederationProtocolError::MacMismatch
+        ))
+    ));
+    assert_eq!(host.recovery_snapshot().expect("unchanged"), before);
+    assert!(matches!(
+        host.admit(&id("peer-a"), &original, NOW + 21)
+            .expect("original packet"),
+        FederationHostAdmissionV1::Query(_)
+    ));
+}

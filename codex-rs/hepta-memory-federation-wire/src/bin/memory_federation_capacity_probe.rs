@@ -14,9 +14,9 @@ use serde::Serialize;
 
 const NOW: u64 = 4_000_000;
 const EXPIRES: u64 = NOW + 10_000;
-const PEERS: usize = 8;
-const REPLAY_PER_PEER: usize = 32;
-const ATTEMPTS_PER_PEER: usize = 16;
+const PEERS: usize = 16;
+const REPLAY_PER_PEER: usize = 1_024;
+const ATTEMPTS_PER_PEER: usize = 1_024;
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]

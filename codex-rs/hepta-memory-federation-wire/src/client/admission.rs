@@ -29,6 +29,9 @@ where
             return Err(FederationClientError::TransportPeerMismatch);
         }
 
+        let authentication =
+            frame.authenticate(&self.local_peer_id, now_unix_ms, &self.credentials)?;
+
         let mut next = self.clone_recovery(now_unix_ms)?;
         let mut next_replay = self.replay.clone();
         let durable_replay_key = next.preflight_frame(
@@ -42,12 +45,7 @@ where
             frame.expires_unix_ms,
             now_unix_ms,
         )?;
-        let verified = frame.verify(
-            &self.local_peer_id,
-            now_unix_ms,
-            &self.credentials,
-            &mut next_replay,
-        )?;
+        let verified = authentication.admit_replay(&mut next_replay)?;
         next.record_verified_frame(
             durable_replay_key,
             verified.sender_peer_id(),

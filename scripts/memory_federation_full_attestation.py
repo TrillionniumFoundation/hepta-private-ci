@@ -6,7 +6,14 @@ from __future__ import annotations
 import os
 import pathlib
 import shutil
+import sys
 import tempfile
+
+# A CLI invocation and an imported invocation must share one module instance.
+# The execution guard imports this module while verifying a transcript; without
+# this alias it reapplies QUALIFIED_PATHS and wraps the verifier a second time.
+if __name__ == "__main__":
+    sys.modules["memory_federation_full_attestation"] = sys.modules[__name__]
 
 import memory_federation_attestation as base
 import memory_federation_execution_receipt as execution
@@ -16,6 +23,8 @@ base.QUALIFIED_PATHS = (
     "codex-rs",  # Pin workspace build inputs and all transitive local crates.
     "scripts/memory_federation_execution_receipt.py",
     "scripts/test_memory_federation_execution_receipt.py",
+    "scripts/test_memory_federation_entrypoints.py",
+    "scripts/prepare_memory_federation_observation.py",
     "codex-rs/hepta-memory-federation-wire",
     "scripts/memory_federation_full_attestation.py",
     "scripts/memory_federation_execution_guard.py",
@@ -33,6 +42,7 @@ base.COMMANDS = (
     "scripts/memory_federation_execution_receipt.py "
     "scripts/test_memory_federation_execution_receipt.py",
     "python3 -m unittest discover -s scripts -p test_memory_federation_execution_receipt.py",
+    "python3 -m unittest discover -s scripts -p test_memory_federation_entrypoints.py",
     "python3 scripts/memory_federation_execution_guard.py self-test",
     "python3 scripts/memory_federation_execution_guard.py capture "
     "--state <guard-state> --expected-sha <tested-sha> --expected-tree <tested-tree>",
@@ -161,8 +171,8 @@ def require_metrics(value):
     ):
         raise base.AttestationError("capacity-metrics invariant mismatch")
     # Bind the actual checked-in diagnostic workload, not a one-entry fixture.
-    if (value["peerCount"] != 8 or value["liveReplayEntries"] != 256 or
-            value["durableReplayEntries"] != 256 or value["durableAttemptEntries"] != 128 or
+    if (value["peerCount"] != 16 or value["liveReplayEntries"] != 16_384 or
+            value["durableReplayEntries"] != 16_384 or value["durableAttemptEntries"] != 16_384 or
             value["cancellationAverageNanos"] != value["cancellationTotalNanos"] // value["cancellationCount"]):
         raise base.AttestationError("capacity-metrics workload or average mismatch")
     return value
@@ -307,18 +317,18 @@ def _self_test_metrics():
     return {
         "schema": "hepta.memory-federation.capacity-probe.v1",
         "profile": "logical-host-candidate-not-production-slo",
-        "peerCount": 8,
-        "liveReplayEntries": 256,
+        "peerCount": 16,
+        "liveReplayEntries": 16384,
         "liveFillNanos": 1,
-        "livePartitionRejections": 8,
-        "liveCleanupRemoved": 256,
+        "livePartitionRejections": 16,
+        "liveCleanupRemoved": 16384,
         "liveCleanupNanos": 1,
-        "durableReplayEntries": 256,
-        "durableReplayPartitionRejections": 8,
-        "durableAttemptEntries": 128,
-        "durableAttemptPartitionRejections": 8,
-        "cancellationCount": 128,
-        "cancellationTotalNanos": 128,
+        "durableReplayEntries": 16384,
+        "durableReplayPartitionRejections": 16,
+        "durableAttemptEntries": 16384,
+        "durableAttemptPartitionRejections": 16,
+        "cancellationCount": 16384,
+        "cancellationTotalNanos": 16384,
         "cancellationAverageNanos": 1,
         "snapshotBytes": 1,
         "snapshotEncodeNanos": 1,

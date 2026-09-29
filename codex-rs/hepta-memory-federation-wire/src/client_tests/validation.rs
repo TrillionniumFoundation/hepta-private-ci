@@ -69,3 +69,40 @@ fn response_frontier_is_bound_to_sender_and_frame_time() {
         Err(FederationClientError::RemoteObservationClockInvalid)
     ));
 }
+
+#[test]
+fn invalid_mac_precedes_client_staging_and_preserves_valid_response() {
+    let mut client = open_client(InMemoryFederationRecoveryStoreV1::default(), NOW);
+    let request = query();
+    client
+        .begin_query(&id("peer-b"), request.clone(), NOW + 1, NOW + 20_000)
+        .expect("query");
+    client
+        .begin_query(
+            &id("peer-b"),
+            FederationQueryMessageV1 {
+                query_id: id("advance-clock-query"),
+                query_binding_digest: digest(b"advance-clock"),
+                ..query()
+            },
+            NOW + 20,
+            NOW + 20_000,
+        )
+        .expect("advance durable clock");
+    let original = encode_from_b(response_for_query(&request, "peer-b", NOW + 2), NOW + 3);
+    let (schemas, codec) = registered_codec_v1().expect("codec");
+    let mut frame = decode_registered_frame_v1(&schemas, &codec, &original).expect("decode");
+    frame.mac[0] ^= 1;
+    let forged = encode_registered_frame_v1(&schemas, &codec, &frame).expect("encode");
+    let before = client.recovery_snapshot().expect("before");
+    assert!(matches!(
+        client.admit(&id("peer-b"), &forged, NOW + 4),
+        Err(FederationClientError::Protocol(
+            FederationProtocolError::MacMismatch
+        ))
+    ));
+    assert_eq!(client.recovery_snapshot().expect("unchanged"), before);
+    client
+        .admit(&id("peer-b"), &original, NOW + 21)
+        .expect("original response");
+}

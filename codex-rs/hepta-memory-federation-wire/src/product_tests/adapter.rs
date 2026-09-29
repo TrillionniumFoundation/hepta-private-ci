@@ -102,11 +102,8 @@ fn canonical_transport_adapter_uses_existing_v2_trait_without_parallel_engine() 
         profile_id: id("authenticated-channel-v1"),
         server: Mutex::new(server()),
     };
-    let adapter = FederationWireTransportV2::with_clock(
-        client(),
-        exchange,
-        SequenceClock::new(NOW + 1),
-    );
+    let adapter =
+        FederationWireTransportV2::with_clock(client(), exchange, SequenceClock::new(NOW + 1));
     let query = query();
     let result = block_on(adapter.send_once(&query)).expect("transport result");
     let FederationTransportResultV2::Terminal(observed) = result else {

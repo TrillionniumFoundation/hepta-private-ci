@@ -35,12 +35,7 @@ where
         &self,
         now_unix_ms: u64,
     ) -> Result<DurableFederationStateV1, FederationClientError> {
-        Ok(DurableFederationStateV1::restore(
-            self.local_peer_id.clone(),
-            self.limits,
-            now_unix_ms,
-            &self.recovery.snapshot_bytes()?,
-        )?)
+        Ok(self.recovery.stage_at(now_unix_ms)?)
     }
 
     pub(super) fn replace_state(

@@ -47,11 +47,10 @@ impl FederationProductPacketV1 {
     pub fn encode(&self) -> Result<Vec<u8>, FederationProductErrorV1> {
         let frame_len = u32::try_from(self.authenticated_frame.len())
             .map_err(|_| FederationProductErrorV1::PacketOversize)?;
-        let body_len = u32::try_from(self.body.len())
-            .map_err(|_| FederationProductErrorV1::PacketOversize)?;
-        let mut bytes = Vec::with_capacity(
-            4 + 2 + 4 + self.authenticated_frame.len() + 4 + self.body.len(),
-        );
+        let body_len =
+            u32::try_from(self.body.len()).map_err(|_| FederationProductErrorV1::PacketOversize)?;
+        let mut bytes =
+            Vec::with_capacity(4 + 2 + 4 + self.authenticated_frame.len() + 4 + self.body.len());
         bytes.extend_from_slice(&PACKET_MAGIC);
         bytes.extend_from_slice(&PACKET_VERSION.to_be_bytes());
         bytes.extend_from_slice(&frame_len.to_be_bytes());

@@ -34,7 +34,10 @@ pub enum FederationProductExchangeErrorV1 {
 pub type FederationProductExchangeFutureV1<'a> = Pin<
     Box<
         dyn Future<
-                Output = Result<FederationProductExchangeResponseV1, FederationProductExchangeErrorV1>,
+                Output = Result<
+                    FederationProductExchangeResponseV1,
+                    FederationProductExchangeErrorV1,
+                >,
             > + Send
             + 'a,
     >,

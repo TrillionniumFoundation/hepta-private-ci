@@ -81,9 +81,8 @@ impl fmt::Display for FederationProductErrorV1 {
             Self::QueryBeyondAuthenticatedHorizon => {
                 formatter.write_str("canonical query deadline exceeds authenticated frame horizon")
             }
-            Self::ResponseBeyondAuthenticatedHorizon => {
-                formatter.write_str("canonical response expiry exceeds authenticated channel horizon")
-            }
+            Self::ResponseBeyondAuthenticatedHorizon => formatter
+                .write_str("canonical response expiry exceeds authenticated channel horizon"),
             Self::ResponseBindingMismatch => {
                 formatter.write_str("canonical V2 response binding differs")
             }

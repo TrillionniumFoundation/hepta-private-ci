@@ -1554,6 +1554,25 @@ mod product_nonce_tests {
         assert_eq!(completed, 9);
     }
 
+    #[tokio::test]
+    async fn completed_discovery_returns_without_waiting_for_its_phase_deadline() {
+        // A future deadline must not create a fixed phase barrier when every
+        // discovery is already complete. Read admission retains the original
+        // global horizon; no authority observation is cached or carried over.
+        let discovery = stream::iter([3_u8, 1_u8, 2_u8]);
+        let result = tokio::time::timeout(
+            Duration::from_millis(100),
+            collect_discovery_outcomes(
+                discovery,
+                3,
+                tokio::time::Instant::now() + Duration::from_secs(60),
+            ),
+        )
+        .await
+        .expect("completed discovery must return immediately");
+        assert_eq!(result, (vec![3, 1, 2], 0));
+    }
+
     #[test]
     fn repeated_product_attempts_receive_distinct_nonce_digests() {
         let query_digest = Digest32::of_bytes(b"same-query");

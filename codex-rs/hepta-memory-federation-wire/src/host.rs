@@ -141,7 +141,6 @@ where
     credentials: PeerCredentialRegistryV1,
     outbound_credentials: BTreeMap<String, FederationOutboundCredentialV1>,
     replay: ReplayCacheV1,
-    recovery_limits: FederationRecoveryLimitsV1,
     recovery: DurableFederationStateV1,
     recovery_store: S,
 }
@@ -179,7 +178,6 @@ where
             credentials,
             outbound_credentials: BTreeMap::new(),
             replay,
-            recovery_limits,
             recovery,
             recovery_store,
         };
@@ -254,6 +252,9 @@ where
             return Err(FederationHostError::TransportPeerMismatch);
         }
 
+        let authentication =
+            frame.authenticate(&self.local_peer_id, now_unix_ms, &self.credentials)?;
+
         let mut next_recovery = self.stage_recovery()?;
         let mut next_replay = self.replay.clone();
         let durable_replay_key = next_recovery.preflight_frame(
@@ -269,12 +270,7 @@ where
         )?;
         let request_key_id = frame.key_id.clone();
         let request_key_generation = frame.key_generation;
-        let verified = frame.verify(
-            &self.local_peer_id,
-            now_unix_ms,
-            &self.credentials,
-            &mut next_replay,
-        )?;
+        let verified = authentication.admit_replay(&mut next_replay)?;
         next_recovery.record_verified_frame(
             durable_replay_key,
             verified.sender_peer_id(),
@@ -422,14 +418,9 @@ where
     }
 
     fn stage_recovery(&self) -> Result<DurableFederationStateV1, FederationHostError> {
-        let snapshot = self.recovery.snapshot_bytes()?;
-        DurableFederationStateV1::restore(
-            self.local_peer_id.clone(),
-            self.recovery_limits,
-            self.recovery.last_observed_unix_ms(),
-            &snapshot,
-        )
-        .map_err(FederationHostError::Recovery)
+        self.recovery
+            .stage_at(self.recovery.last_observed_unix_ms())
+            .map_err(FederationHostError::Recovery)
     }
 
     fn commit_recovery(

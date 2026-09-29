@@ -347,8 +347,8 @@ Reviewed architecture ceilings include:
 - explicit durable replay/attempt global and per-peer limits;
 - at most 1,024 outbound host peer bindings.
 
-These are source ceilings, not deployment SLOs. The current replay and durable
-recovery implementations perform bounded scans/counting at admission or purge;
+These are source ceilings, not deployment SLOs. The replay and durable recovery implementations use derived expiry indexes and
+incremental partition counts with bounded cleanup batches;
 target-host qualification must measure cleanup cost, rejection rate, replay
 pressure, cancellation tail, snapshot encode/store latency, restart recovery and
 backpressure. Capacity limits prevent unbounded growth but do not themselves
@@ -433,3 +433,10 @@ dependency validation. Federation does not invent a global total order. A timed
 out peer is unavailable coverage, not zero records or a valid training empty
 set. Denied record existence may not leak through dedup indexes or response
 statistics.
+
+## 14. Indexed admission and source freeze procedure
+
+See [`INDEXED_ADMISSION.md`](INDEXED_ADMISSION.md) for authentication-before-staging,
+derived-index invariants, conservative cleanup backpressure, unchanged durable
+commit ordering, architecture-scale diagnostics and the author-only observation
+sequence. This guide adds no execution, deployment or acceptance claim.

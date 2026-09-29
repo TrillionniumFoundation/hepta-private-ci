@@ -130,19 +130,19 @@ where
                 None
             }
         };
-        let wire_admission =
-            self.wire
-                .admit(transport.peer_id(), packet.authenticated_frame(), now_unix_ms)?;
+        let wire_admission = self.wire.admit(
+            transport.peer_id(),
+            packet.authenticated_frame(),
+            now_unix_ms,
+        )?;
         match (wire_admission, preflight_query) {
-            (FederationHostAdmissionV1::Query(wire), Some(query)) => {
-                Ok(FederationProductHostAdmissionV1::Query(
-                    AdmittedFederationProductQueryV1 {
-                        wire,
-                        query,
-                        transport_expires_unix_ms: transport.expires_unix_ms(),
-                    },
-                ))
-            }
+            (FederationHostAdmissionV1::Query(wire), Some(query)) => Ok(
+                FederationProductHostAdmissionV1::Query(AdmittedFederationProductQueryV1 {
+                    wire,
+                    query,
+                    transport_expires_unix_ms: transport.expires_unix_ms(),
+                }),
+            ),
             (FederationHostAdmissionV1::Reply(frame), None) => {
                 let packet = FederationProductPacketV1::new(frame, Vec::new())?.encode()?;
                 Ok(FederationProductHostAdmissionV1::Reply(packet))
@@ -183,7 +183,9 @@ where
             Digest32::of_bytes(&body),
             frontier,
         )?;
-        let frame = self.wire.complete_query(admitted.wire, result, now_unix_ms)?;
+        let frame = self
+            .wire
+            .complete_query(admitted.wire, result, now_unix_ms)?;
         FederationProductPacketV1::new(frame, body)?.encode()
     }
 
@@ -306,7 +308,8 @@ where
 fn decode_untrusted_frame(
     payload: &[u8],
 ) -> Result<crate::AuthenticatedFederationFrameV1, FederationProductErrorV1> {
-    let (schemas, codec) = registered_codec_v1().map_err(|_| FederationProductErrorV1::WireCodec)?;
+    let (schemas, codec) =
+        registered_codec_v1().map_err(|_| FederationProductErrorV1::WireCodec)?;
     decode_registered_frame_v1(&schemas, &codec, payload)
         .map_err(|_| FederationProductErrorV1::WireCodec)
 }

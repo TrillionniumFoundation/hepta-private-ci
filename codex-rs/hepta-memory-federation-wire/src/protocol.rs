@@ -244,6 +244,45 @@ pub(crate) struct DecodedFederationFrameV1 {
     pub(crate) mac: [u8; FEDERATION_MAC_BYTES],
 }
 
+/// A request-local MAC proof, not an admission or authority token.
+/// Its immutable borrow prevents mutation between MAC verification and replay.
+pub(crate) struct AuthenticatedFrameProofV1<'a> {
+    frame: &'a AuthenticatedFederationFrameV1,
+    observed_unix_ms: u64,
+    frame_digest: Digest32,
+}
+
+impl AuthenticatedFrameProofV1<'_> {
+    pub(crate) fn admit_replay(
+        self,
+        replay: &mut ReplayCacheV1,
+    ) -> Result<VerifiedFederationFrameV1, FederationProtocolError> {
+        let frame = self.frame;
+        replay.admit(
+            FederationReplayKeyV1 {
+                sender_peer_id: &frame.sender_peer_id,
+                receiver_peer_id: &frame.receiver_peer_id,
+                key_id: &frame.key_id,
+                generation: frame.key_generation,
+                nonce: frame.nonce.as_bytes(),
+            },
+            frame.expires_unix_ms,
+            self.observed_unix_ms,
+        )?;
+        Ok(VerifiedFederationFrameV1 {
+            sender_peer_id: frame.sender_peer_id.clone(),
+            receiver_peer_id: frame.receiver_peer_id.clone(),
+            key_id: frame.key_id.clone(),
+            key_generation: frame.key_generation,
+            issued_unix_ms: frame.issued_unix_ms,
+            expires_unix_ms: frame.expires_unix_ms,
+            nonce: frame.nonce,
+            message: frame.message.clone(),
+            frame_digest: self.frame_digest,
+        })
+    }
+}
+
 impl AuthenticatedFederationFrameV1 {
     pub fn seal(
         credential: &PeerCredentialV1,
@@ -283,6 +322,19 @@ impl AuthenticatedFederationFrameV1 {
         credentials: &PeerCredentialRegistryV1,
         replay: &mut ReplayCacheV1,
     ) -> Result<VerifiedFederationFrameV1, FederationProtocolError> {
+        self.authenticate(expected_receiver_peer_id, now_unix_ms, credentials)?
+            .admit_replay(replay)
+    }
+
+    /// Authenticate immutable frame bytes before allocating transaction state.
+    /// This proof is crate-private and borrows the frame: it cannot authorize a
+    /// modified frame, expose an admitted query, or skip replay admission.
+    pub(crate) fn authenticate(
+        &self,
+        expected_receiver_peer_id: &StableId,
+        now_unix_ms: u64,
+        credentials: &PeerCredentialRegistryV1,
+    ) -> Result<AuthenticatedFrameProofV1<'_>, FederationProtocolError> {
         self.validate_shape(now_unix_ms)?;
         if &self.receiver_peer_id != expected_receiver_peer_id {
             return Err(FederationProtocolError::ReceiverMismatch);
@@ -294,33 +346,17 @@ impl AuthenticatedFederationFrameV1 {
             self.key_generation,
             now_unix_ms,
         )?;
+        let input = self.mac_input();
         let mut verifier = HmacSha256::new_from_slice(credential.secret())
             .map_err(|_| FederationProtocolError::InvalidMacKey)?;
-        verifier.update(&self.mac_input());
+        verifier.update(&input);
         verifier
             .verify_slice(&self.mac)
             .map_err(|_| FederationProtocolError::MacMismatch)?;
-        replay.admit(
-            FederationReplayKeyV1 {
-                sender_peer_id: &self.sender_peer_id,
-                receiver_peer_id: &self.receiver_peer_id,
-                key_id: &self.key_id,
-                generation: self.key_generation,
-                nonce: self.nonce.as_bytes(),
-            },
-            self.expires_unix_ms,
-            now_unix_ms,
-        )?;
-        Ok(VerifiedFederationFrameV1 {
-            sender_peer_id: self.sender_peer_id.clone(),
-            receiver_peer_id: self.receiver_peer_id.clone(),
-            key_id: self.key_id.clone(),
-            key_generation: self.key_generation,
-            issued_unix_ms: self.issued_unix_ms,
-            expires_unix_ms: self.expires_unix_ms,
-            nonce: self.nonce,
-            message: self.message.clone(),
-            frame_digest: Digest32::of_bytes(&self.mac_input()),
+        Ok(AuthenticatedFrameProofV1 {
+            frame: self,
+            observed_unix_ms: now_unix_ms,
+            frame_digest: Digest32::of_bytes(&input),
         })
     }
 
