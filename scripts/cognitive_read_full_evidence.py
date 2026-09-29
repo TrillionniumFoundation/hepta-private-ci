@@ -7,6 +7,10 @@ from pathlib import Path
 import re
 
 import cognitive_read_evidence as base
+from cognitive_read_delivery_gates import DELIVERY_GATES
+from cognitive_read_delivery_gates import delivery_commands
+from cognitive_read_delivery_gates import delivery_gate_passed
+from cognitive_read_delivery_gates import delivery_log_problems
 
 SQLITE_CAPACITY_SCHEMA = "hepta.cognitive.read.sqlite-capacity.v1"
 REVISION_SHADOW_TESTS = (
@@ -121,6 +125,19 @@ def commands(candidate: str, evidence: Path) -> dict[str, list[str]]:
         "-E",
         exact_filter(INTELLIGENCE_PRODUCT_TESTS),
     ]
+    result.update(delivery_commands())
+    # Include every touched production package in format and all-target lint,
+    # including the existing learning owner rather than just its dependency lib.
+    format_packages = (*base.PACKAGES, "codex-hepta-learning-ledger")
+    result["rust-format"] = [
+        "cargo", "fmt", "--manifest-path", "codex-rs/Cargo.toml",
+        *[arg for package in format_packages for arg in ("-p", package)],
+        "--", "--check",
+    ]
+    for label in ("all-target-check", "strict-clippy"):
+        argv = result[label]
+        position = argv.index("--") if "--" in argv else len(argv)
+        result[label] = [*argv[:position], "-p", "codex-hepta-learning-ledger", *argv[position:]]
     result["sqlite-capacity"] = ["python3", "scripts/cognitive_read_sqlite_capacity.py"]
     result["tracked-clean"] = tracked_clean
     return result
@@ -194,6 +211,12 @@ def validate_evidence(evidence: Path, expected: dict[str, list[str]]) -> list[st
         for case in cases:
             if re.search(rf"(?m)^\s*PASS\s+.*\b{re.escape(case)}\s*$", body) is None:
                 problems.append(f"{label}: exact case not proved: {case}")
+    for label in DELIVERY_GATES:
+        log = evidence / f"{label}.log"
+        if log.is_symlink() or not log.is_file():
+            problems.append(f"{label}: missing regular execution log")
+        else:
+            problems.extend(delivery_log_problems(label, log.read_text(errors="replace")))
     return problems
 
 
@@ -235,6 +258,11 @@ def emit(root: Path, evidence: Path, candidate: str, kind: str, output: Path) ->
             "native-final-use-e2e",
         )
     }
+    receipt["cognitive_delivery_execution"] = {
+        "gates": {label: delivery_gate_passed(evidence, label) for label in DELIVERY_GATES},
+        "automatic_learning_ingestion": False,
+        "authority": "deny_all",
+    }
     receipt["sqlite_capacity"] = {
         "gate": "sqlite-capacity",
         "passed": gate_status(evidence, "sqlite-capacity"),
@@ -249,7 +277,7 @@ base.commands = commands
 base.validate_measurement = validate_measurement
 base.validate_evidence = validate_evidence
 base.emit = emit
-base.TEST_GATES = set(base.TEST_GATES) | set(EXACT_CASES) | set(CONSUMER_PACKAGES) | {
+base.TEST_GATES = set(base.TEST_GATES) | set(EXACT_CASES) | set(CONSUMER_PACKAGES) | set(DELIVERY_GATES) | {
     "consumer-intelligence-product-e2e"
 }
 base.BENCHMARK_SCHEMAS = dict(base.BENCHMARK_SCHEMAS)

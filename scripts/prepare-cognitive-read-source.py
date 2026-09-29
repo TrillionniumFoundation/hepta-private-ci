@@ -13,6 +13,9 @@ import re
 import subprocess
 import tomllib
 
+from cognitive_read_delivery_gates import GUIDE as DELIVERY_GUIDE
+from cognitive_read_delivery_gates import SOURCE_PATHS as DELIVERY_SOURCE_PATHS
+
 ROOT = Path(__file__).resolve().parents[1]
 BASE = "a126987b84737dbc2ee2592442a314117bddb4a2"
 MAP = "docs/modules/cognitive.read/IMPLEMENTATION_MAP.json"
@@ -23,7 +26,7 @@ CAPACITY_GUIDE = "docs/modules/cognitive.read/SELECTED_OWNER_CUT.md"
 INTEGRATION_PATHS = [MEMORY + "lane_c_snapshot.rs", MEMORY + "lib.rs", AGENTD + "cognitive_context.rs", AGENTD + "cognitive_context_final_use.rs"]
 NEW_PATHS = [AGENTD + "cognitive_context_" + suffix + ".rs" for suffix in (
     "final_use", "plan", "plan_tests", "observation", "observation_tests", "closure_tests",
-)] + [MEMORY + "lane_c_selected_snapshot.rs", MEMORY + "lane_c_selected_snapshot_tests.rs"]
+)] + [MEMORY + "lane_c_selected_snapshot.rs", MEMORY + "lane_c_selected_snapshot_tests.rs"] + list(DELIVERY_SOURCE_PATHS)
 
 
 def git(*args: str) -> str:
@@ -104,7 +107,7 @@ def refresh_map() -> None:
     for identity in ("sourceBase", "observedAtHead"):
         mapping[identity] = {"commit": source, "tree": tree}
     objects = {entry["path"]: entry for entry in mapping["sourceObjects"]}
-    for name in NEW_PATHS + INTEGRATION_PATHS + [SUPPLEMENT, CAPACITY_GUIDE, "scripts/apply-cognitive-read-selected-cut.py"]:
+    for name in NEW_PATHS + INTEGRATION_PATHS + [SUPPLEMENT, CAPACITY_GUIDE, DELIVERY_GUIDE, "scripts/apply-cognitive-read-selected-cut.py"]:
         if not (ROOT / name).is_file():
             raise ValueError(f"required closure source is absent: {name}")
         objects.setdefault(name, {"path": name})
@@ -143,9 +146,9 @@ def refresh_map() -> None:
         if caller["role"] == "owner_final_use_revalidation":
             caller["sourcePath"] = AGENTD + "cognitive_context_final_use.rs"
         caller["blobSha"] = git("rev-parse", f'{source}:{caller["sourcePath"]}')
-    mapping["observedSourcePaths"] = sorted(set(mapping.get("observedSourcePaths", []) + NEW_PATHS + INTEGRATION_PATHS + [SUPPLEMENT, CAPACITY_GUIDE]))
+    mapping["observedSourcePaths"] = sorted(set(mapping.get("observedSourcePaths", []) + NEW_PATHS + INTEGRATION_PATHS + [SUPPLEMENT, CAPACITY_GUIDE, DELIVERY_GUIDE]))
     supplements = mapping.setdefault("technicalSupplements", [])
-    for guide in [SUPPLEMENT, CAPACITY_GUIDE]:
+    for guide in [SUPPLEMENT, CAPACITY_GUIDE, DELIVERY_GUIDE]:
         if guide not in supplements:
             supplements.append(guide)
     if json.dumps(mapping.get("claimBoundary"), sort_keys=True) != before_flags:
