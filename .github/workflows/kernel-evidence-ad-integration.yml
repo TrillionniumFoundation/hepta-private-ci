@@ -17,7 +17,7 @@ jobs:
   qualification:
     if: github.event_name == 'push' || github.event.pull_request.head.ref == 'work/kernel-evidence-ad-integration-20260928'
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 120
+    timeout-minutes: 360
     strategy:
       fail-fast: false
       matrix:
@@ -123,27 +123,30 @@ jobs:
           test -z "$(git status --porcelain)" || exit 1
           failures=0
           run_check() {
-            local name="$1"; shift
+            local name="$1"; local budget="$2"; shift 2
             printf '%q ' "$@" > "$out/$name.command"
             printf '\n' >> "$out/$name.command"
-            "$@" > "$out/$name.log" 2>&1
+            printf '%s\n' "$budget" > "$out/$name.timeout"
+            printf '%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$out/$name.started-at"
+            timeout --signal=TERM --kill-after=30s "$budget" "$@" > "$out/$name.log" 2>&1
             local rc=$?
             printf '%s\n' "$rc" > "$out/$name.exit"
+            printf '%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$out/$name.finished-at"
             tail -n 35 "$out/$name.log"
             if [ "$rc" -ne 0 ]; then failures=$((failures + 1)); fi
           }
-          run_check format just fmt-check
-          run_check evidence-tests just test --locked -p codex-hepta-evidence
-          run_check agentd-tests just test --locked -p codex-hepta-agentd --lib --test kernel_evidence_product --test kernel_evidence_profile --test kernel_evidence_paging_product --test kernel_evidence_publication_cli
+          run_check format 10m just fmt-check
+          run_check evidence-tests 75m just test --locked -p codex-hepta-evidence
+          run_check agentd-tests 100m just test --locked -p codex-hepta-agentd --lib --test kernel_evidence_product --test kernel_evidence_profile --test kernel_evidence_paging_product --test kernel_evidence_publication_cli
           cd codex-rs
-          run_check doctests cargo test --locked -p codex-hepta-evidence --doc
-          run_check strict-clippy cargo clippy --locked -p codex-hepta-evidence -p codex-hepta-agentd --all-targets -- -D warnings
-          run_check build cargo build --locked -p codex-hepta-evidence -p codex-hepta-agentd
+          run_check doctests 30m cargo test --locked -p codex-hepta-evidence --doc
+          run_check strict-clippy 50m cargo clippy --locked -p codex-hepta-evidence -p codex-hepta-agentd --all-targets -- -D warnings
+          run_check build 30m cargo build --locked -p codex-hepta-evidence -p codex-hepta-agentd
           cd ..
-          run_check lane-a python3 scripts/verify_lane_a_foundation.py verify
-          run_check status python3 scripts/kernel_evidence_status.py verify
-          run_check docs python3 scripts/hepta-docs.py verify
-          run_check implementation-maps python3 scripts/hepta-implementation-maps.py verify
+          run_check lane-a 10m python3 scripts/verify_lane_a_foundation.py verify
+          run_check status 5m python3 scripts/kernel_evidence_status.py verify
+          run_check docs 10m python3 scripts/hepta-docs.py verify
+          run_check implementation-maps 5m python3 scripts/hepta-implementation-maps.py verify
           git status --porcelain > "$out/dirty-after.txt"
           if [ -s "$out/dirty-after.txt" ]; then failures=$((failures + 1)); fi
           printf '%s\n' "$failures" > "$out/failed-check-count.txt"
