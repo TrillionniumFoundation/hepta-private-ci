@@ -80,11 +80,10 @@ maps remain reproducible source inputs.
 
 ## Workflow checkout security
 
-Manual qualification runs select their source through GitHub's workflow-ref
-picker. `github.sha` is the executable checkout identity; free-form
-`candidate_ref` and `base_ref` inputs are not accepted. Pull-request runs use the
-immutable PR head and base SHAs supplied by the event, and push runs resolve the
-checked-out push SHA and the pre-push/base reference once.
+Qualification workflows do not expose manual dispatch. Pull-request runs use
+the immutable PR head and base SHAs supplied by the event, and push runs resolve
+the checked-out push SHA and the pre-push/base reference once. No caller-supplied
+ref can select executable bytes.
 
 After the initial event-bound checkout, the binding job resolves full Git object
 IDs and both qualification lanes consume only those outputs. All checkouts keep

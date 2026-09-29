@@ -19,13 +19,6 @@ on:
       - ".github/workflows/lane-a-foundation.yml"
   push:
     branches: [main]
-  workflow_dispatch:
-    inputs:
-      pr_number:
-        description: Positive PR number for deterministic synthetic-merge provenance
-        required: true
-        type: string
-
 permissions:
   contents: read
 
@@ -52,8 +45,8 @@ jobs:
       base_sha: ${{ steps.bind.outputs.base_sha }}
       base_tree: ${{ steps.bind.outputs.base_tree }}
     steps:
-      # Manual runs select the candidate through GitHub's workflow-ref picker.
-      # They do not accept a free-form checkout ref from workflow inputs.
+      # Every run selects executable bytes from the immutable pull-request or push event.
+      # No manually supplied ref can influence checkout.
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -68,11 +61,11 @@ jobs:
         env:
           REQUESTED_SOURCE_REF: ${{ github.event.pull_request.head.sha || github.sha }}
           REQUESTED_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before || 'origin/main' }}
-          REQUESTED_PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
+          REQUESTED_PR_NUMBER: ${{ github.event.pull_request.number }}
           EVENT_NAME: ${{ github.event_name }}
         run: |
           set -euo pipefail
-          if [[ "$EVENT_NAME" != push ]]; then
+          if [[ "$EVENT_NAME" == pull_request ]]; then
             [[ "$REQUESTED_PR_NUMBER" =~ ^[1-9][0-9]*$ ]]
           fi
           python3 scripts/platform_types_candidate_binding.py resolve \
@@ -94,7 +87,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ needs.resolve.outputs.source_sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
           fetch-depth: 0
       - name: Verify frozen checkout and install the qualification toolchain
@@ -156,13 +149,13 @@ jobs:
   merge:
     name: Qualify deterministic platform.types merge candidate
     needs: resolve
-    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-24.04
     timeout-minutes: 180
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ needs.resolve.outputs.source_sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
           fetch-depth: 0
       - name: Verify frozen checkout and install the qualification toolchain
@@ -193,7 +186,7 @@ jobs:
         with:
           base-sha: ${{ needs.resolve.outputs.base_sha }}
           source-sha: ${{ needs.resolve.outputs.source_sha }}
-          pr-number: ${{ github.event.pull_request.number || inputs.pr_number }}
+          pr-number: ${{ github.event.pull_request.number }}
           author-name: Hepta platform.types CI
           author-email: hepta-platform-types-ci@users.noreply.github.com
           message: Synthetic platform.types deep qualification merge
@@ -212,7 +205,7 @@ jobs:
           SOURCE_SHA: ${{ needs.resolve.outputs.source_sha }}
           BASE_SHA: ${{ needs.resolve.outputs.base_sha }}
           MERGE_SHA: ${{ steps.merge.outputs.sha }}
-          PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: >-
           scripts/run_platform_types_deep_qualification.sh
           synthetic-merge "$MERGE_SHA" "$SOURCE_SHA" "$BASE_SHA" "$PR_NUMBER"

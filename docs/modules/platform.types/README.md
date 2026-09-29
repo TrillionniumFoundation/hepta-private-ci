@@ -45,9 +45,9 @@ repeats that binding, and the final qualification receipt rejects any mismatch
 with its own exact candidate identity. This is the authoritative exact-head
 binding used by qualification.
 
-Manual qualification workflows select executable bytes through GitHub's workflow
-ref picker and `github.sha`; free-form workflow inputs cannot control checkout
-refs. Resolved full object IDs are then frozen and reused by both source-head and
+Qualification workflows are event-bound and do not expose manual dispatch.
+Executable bytes come only from immutable pull-request or push event SHAs;
+resolved full object IDs are then frozen and reused by both source-head and
 synthetic-merge jobs.
 
 ## Current boundary

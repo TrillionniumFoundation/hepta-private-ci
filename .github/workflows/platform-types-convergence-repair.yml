@@ -1,7 +1,23 @@
 name: platform.types legacy closure verification
 
 on:
-  workflow_dispatch:
+  pull_request:
+    paths:
+      - "codex-rs/Cargo.*"
+      - "codex-rs/hepta-types/**"
+      - "codex-rs/hepta-wire/**"
+      - "docs/modules/platform.types/**"
+      - "scripts/*platform_types*.py"
+      - ".github/workflows/platform-types-convergence-repair.yml"
+  push:
+    branches: [main]
+    paths:
+      - "codex-rs/Cargo.*"
+      - "codex-rs/hepta-types/**"
+      - "codex-rs/hepta-wire/**"
+      - "docs/modules/platform.types/**"
+      - "scripts/*platform_types*.py"
+      - ".github/workflows/platform-types-convergence-repair.yml"
 
 permissions:
   contents: read
@@ -24,17 +40,16 @@ jobs:
       CARGO_HTTP_MULTIPLEXING: "false"
       CARGO_HTTP_LOW_SPEED_LIMIT: "1"
     steps:
-      # Manual runs select the candidate through GitHub's workflow-ref picker.
-      # No free-form workflow input is allowed to control executable checkout bytes.
+      # Executable bytes are selected only by the immutable pull-request or push event.
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
 
       - name: Verify exact dispatch checkout and workflow hardening
         env:
-          EXPECTED_SHA: ${{ github.sha }}
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"

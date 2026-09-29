@@ -20,6 +20,9 @@ class PlatformTypesWorkflowSecurityTests(unittest.TestCase):
             "ref: ${{ inputs.",
             "REQUESTED_SOURCE_REF: ${{ inputs.",
             "REQUESTED_BASE_REF: ${{ inputs.",
+            "inputs.pr_number",
+            "workflow_dispatch",
+            "ref: ${{ needs.resolve.outputs.source_sha }}",
         ):
             self.assertNotIn(forbidden, text)
         self.assertIn(
@@ -33,18 +36,24 @@ class PlatformTypesWorkflowSecurityTests(unittest.TestCase):
             "REQUESTED_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before || 'origin/main' }}",
             text,
         )
+        self.assertGreaterEqual(
+            text.count("ref: ${{ github.event.pull_request.head.sha || github.sha }}"),
+            3,
+        )
+        self.assertIn("if: github.event_name == 'pull_request'", text)
         self.assertGreaterEqual(text.count("persist-credentials: false"), 3)
         self.assertIn("permissions:\n  contents: read", text)
 
-    def test_legacy_verifier_uses_dispatch_sha_only(self) -> None:
+    def test_legacy_verifier_uses_event_bound_sha_only(self) -> None:
         text = LEGACY.read_text(encoding="utf-8")
         for forbidden in (
             "candidate_ref:",
             "inputs.candidate_ref",
             "ref: ${{ inputs.",
+            "workflow_dispatch",
         ):
             self.assertNotIn(forbidden, text)
-        self.assertIn("ref: ${{ github.sha }}", text)
+        self.assertIn("ref: ${{ github.event.pull_request.head.sha || github.sha }}", text)
         self.assertIn('test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"', text)
         self.assertIn("persist-credentials: false", text)
         self.assertIn("permissions:\n  contents: read", text)
