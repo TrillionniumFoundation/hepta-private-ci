@@ -1,62 +1,77 @@
 {
-  "schema": "hepta.automation-taskflow.contract.v1",
-  "storeSchemaVersion": 21,
-  "taskflowSchemaVersion": 1,
-  "neuralCircuitCandidateSchemaVersion": 1,
-  "neuralCircuitRuntimeSchemaVersion": 1,
-  "runtimePolicySchemaVersion": 1,
-  "crossHostRecoverySchemaVersion": 1,
-  "migrationTopology": [
-    {
-      "version": 17,
-      "path": "codex-rs/hepta-automation/migrations/0017_kernel_operation_dedupe.sql",
-      "blobSha": "cec5cf4574785e27653212f776a4056a6c4bb28b",
-      "requiredMarker": "CREATE TABLE destination_operation_dedupe",
-      "purpose": "immutable destination operation dedupe; historical SQL retained"
-    },
-    {
-      "version": 18,
-      "path": "codex-rs/hepta-automation/migrations/0018_timer_lifecycle.sql",
-      "blobSha": "7bd35e962aee168d30881417356e3e050fe46b6b",
-      "requiredMarker": "CREATE TABLE automation_timer_lifecycle",
-      "purpose": "timer lifecycle and writer epoch; historical SQL retained"
-    },
-    {
-      "version": 19,
-      "path": "codex-rs/hepta-automation/migrations/0019_converged_owner_schema.sql",
-      "blobSha": "db3b59b54af3817d1bf60547bae6184a03e33720",
-      "requiredMarker": "schema_version = 19",
-      "purpose": "reviewed migration-history convergence"
-    },
-    {
-      "version": 20,
-      "path": "codex-rs/hepta-automation/migrations/0020_recovery_sweeps.sql",
-      "blobSha": "2df4cb1c5d65a710d35ec8be1a4278611ccd6f71",
-      "requiredMarker": "CREATE TABLE automation_recovery_sweeps",
-      "purpose": "two permanent frozen-frontier polling sweeps, independent of execution state"
-    },
-    {
-      "version": 21,
-      "path": "codex-rs/hepta-automation/migrations/0021_recovery_frontier_indexes.sql",
-      "blobSha": "0743bf5b5d2c30bcdeebb9bab9a0046b6dc489e9",
-      "requiredMarker": "CREATE INDEX automation_dispatch_recovery_identity",
-      "purpose": "indexed sparse unknown frontier; schema-20 checksum preserved"
-    }
-  ],
-  "productComposition": {
-    "calendarV2Agentd": true,
-    "externalEffectAgentdHost": true,
-    "boundedAdmissionBatch": true,
-    "separateRecoveryBudget": true,
-    "neuralCircuitVerticalSlice": true,
-    "crossHostRecoveryManifest": true
-  },
+  "crossHostRecoverySchemaVersion": 2,
   "externalGates": {
-    "selectedHostQualified": false,
+    "activation": false,
     "currentAuthenticIanaTzdbQualified": false,
     "independentAcceptance": false,
-    "activation": false,
     "promotion": false,
-    "release": false
-  }
+    "release": false,
+    "selectedHostQualified": false
+  },
+  "migrationTopology": [
+    {
+      "blobSha": "cec5cf4574785e27653212f776a4056a6c4bb28b",
+      "path": "codex-rs/hepta-automation/migrations/0017_kernel_operation_dedupe.sql",
+      "purpose": "immutable destination operation dedupe; historical SQL retained",
+      "requiredMarker": "CREATE TABLE destination_operation_dedupe",
+      "version": 17
+    },
+    {
+      "blobSha": "7bd35e962aee168d30881417356e3e050fe46b6b",
+      "path": "codex-rs/hepta-automation/migrations/0018_timer_lifecycle.sql",
+      "purpose": "timer lifecycle and writer epoch; historical SQL retained",
+      "requiredMarker": "CREATE TABLE automation_timer_lifecycle",
+      "version": 18
+    },
+    {
+      "blobSha": "db3b59b54af3817d1bf60547bae6184a03e33720",
+      "path": "codex-rs/hepta-automation/migrations/0019_converged_owner_schema.sql",
+      "purpose": "reviewed migration-history convergence",
+      "requiredMarker": "schema_version = 19",
+      "version": 19
+    },
+    {
+      "blobSha": "2df4cb1c5d65a710d35ec8be1a4278611ccd6f71",
+      "path": "codex-rs/hepta-automation/migrations/0020_recovery_sweeps.sql",
+      "purpose": "two permanent frozen-frontier polling sweeps, independent of execution state",
+      "requiredMarker": "CREATE TABLE automation_recovery_sweeps",
+      "version": 20
+    },
+    {
+      "blobSha": "0743bf5b5d2c30bcdeebb9bab9a0046b6dc489e9",
+      "path": "codex-rs/hepta-automation/migrations/0021_recovery_frontier_indexes.sql",
+      "purpose": "indexed sparse unknown frontier; schema-20 checksum preserved",
+      "requiredMarker": "CREATE INDEX automation_dispatch_recovery_identity",
+      "version": 21
+    },
+    {
+      "blobSha": "a92b7547befbf52b796abfa17860316d1e32ab0b",
+      "path": "codex-rs/hepta-automation/migrations/0022_durable_neural_circuit.sql",
+      "purpose": "durable Neural Circuit activation intents, fenced budget reservations, immutable receipts, checkpoints and recorded choices; unresolved activations block writer handoff",
+      "requiredMarker": "CREATE TABLE neural_circuit_runs",
+      "version": 22
+    }
+  ],
+  "neuralCircuitCandidateSchemaVersion": 1,
+  "neuralCircuitRuntimeSchemaVersion": 1,
+  "productComposition": {
+    "boundedAdmissionBatch": true,
+    "boundedOccurrenceStartupVerification": true,
+    "boundedTaskFlowStartupVerification": false,
+    "calendarV2Agentd": true,
+    "crossHostRecoveryController": false,
+    "crossHostRecoveryManifest": true,
+    "durableNeuralCircuitOwner": true,
+    "durableNeuralCircuitRecovery": true,
+    "externalEffectAgentdHost": true,
+    "neuralCircuitVerticalSlice": true,
+    "selectedHostExecutionProved": false,
+    "selectedHostQualificationPath": true,
+    "separateRecoveryBudget": true,
+    "signedCrossHostFenceContract": true
+  },
+  "runtimePolicySchemaVersion": 1,
+  "schema": "hepta.automation-taskflow.contract.v1",
+  "storeSchemaVersion": 22,
+  "taskflowSchemaVersion": 1
 }

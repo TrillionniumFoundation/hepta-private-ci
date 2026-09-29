@@ -185,7 +185,9 @@ pub(super) async fn read_status(
         "SELECT writer_epoch, phase,
              (SELECT COUNT(*) FROM automation_runs WHERE state = 'pending') AS pending,
              (SELECT COUNT(*) FROM automation_runs WHERE state = 'leased') AS leased,
-             (SELECT COUNT(*) FROM automation_dispatch_outcomes WHERE outcome = 'uncertain') AS uncertain
+             ((SELECT COUNT(*) FROM automation_dispatch_outcomes WHERE outcome = 'uncertain')
+              + (SELECT COUNT(*) FROM neural_circuit_runs
+                 WHERE state IN ('executing', 'recovery_required'))) AS uncertain
          FROM automation_timer_lifecycle WHERE singleton = 1",
     )
     .fetch_optional(&mut **transaction)

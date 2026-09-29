@@ -55,10 +55,12 @@ fn candidate() -> NeuralCircuitCandidateV1 {
             CircuitNodeV1::new("observe", CircuitNodeRoleV1::Observe),
             wait,
             CircuitNodeV1::new("success", CircuitNodeRoleV1::ExitSuccess),
+            CircuitNodeV1::new("failure", CircuitNodeRoleV1::ExitFailure),
         ],
         vec![
             CircuitEdgeV1::new("observe", "wait"),
             CircuitEdgeV1::new("wait", "success"),
+            CircuitEdgeV1::new("wait", "failure"),
         ],
         Vec::new(),
         digest("route-policy"),
@@ -221,6 +223,38 @@ async fn recovery_required_can_settle_later_without_reexecuting_the_wait_owner()
             .state,
         DurableCircuitRunStateV1::RecoveryRequired
     );
+
+    let wrong_event = CircuitEventIngressV1::new(
+        "different-recovery-event",
+        digest("different-payload"),
+        None,
+    )
+    .expect("different event");
+    let mut must_not_observe = Observer { outcome: None };
+    assert!(matches!(
+        store
+            .settle_durable_neural_circuit_recovery_v1(
+                "run-recovery-required",
+                &candidate,
+                &wrong_event,
+                &profile,
+                &fence(),
+                25,
+                &mut must_not_observe,
+            )
+            .await,
+        Err(codex_hepta_automation::DurableNeuralCircuitError::Conflict(_))
+    ));
+    let still_quarantined = store
+        .durable_neural_circuit_snapshot_v1("run-recovery-required")
+        .await
+        .expect("snapshot after wrong input")
+        .expect("run after wrong input");
+    assert_eq!(
+        still_quarantined.state,
+        DurableCircuitRunStateV1::RecoveryRequired
+    );
+    assert_eq!(still_quarantined.reserved_cost_units, 0);
 
     let observed = run_neural_circuit_v1(
         &candidate,

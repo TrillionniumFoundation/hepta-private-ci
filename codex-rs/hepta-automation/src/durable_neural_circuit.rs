@@ -36,7 +36,9 @@ use crate::resume_neural_circuit_v1;
 use crate::run_neural_circuit_v1;
 use crate::runtime_profile_digest_v1;
 use crate::validate_circuit_runtime_outcome_v1;
+use crate::AutomationError;
 use crate::AutomationStore;
+use crate::TimerPhase;
 
 const CIRCUIT_TASKFLOW_LEASE_MS: u64 = 30_000;
 const MAX_RUN_ID_BYTES: usize = 256;
@@ -47,6 +49,8 @@ pub enum DurableNeuralCircuitError {
     TaskFlow(#[from] TaskFlowError),
     #[error(transparent)]
     Runtime(#[from] NeuralCircuitRuntimeError),
+    #[error(transparent)]
+    Automation(#[from] AutomationError),
     #[error("durable Neural Circuit input is invalid: {0}")]
     Invalid(String),
     #[error("durable Neural Circuit identity or state conflicts: {0}")]
@@ -185,16 +189,16 @@ pub trait CircuitRuntimeRecoveryObserverV1 {
 }
 
 #[derive(Clone)]
-struct StoredCircuit {
-    state: DurableCircuitRunStateV1,
-    activation_seq: u64,
-    cost_budget_units: u64,
-    consumed_cost_units: u64,
-    reserved_cost_units: u64,
-    checkpoint: Option<CircuitRuntimeCheckpointV1>,
-    outcome: Option<CircuitRuntimeOutcomeV1>,
-    outcome_digest: Option<Sha256Digest>,
-    projection_pending: bool,
+pub(crate) struct StoredCircuit {
+    pub(crate) state: DurableCircuitRunStateV1,
+    pub(crate) activation_seq: u64,
+    pub(crate) cost_budget_units: u64,
+    pub(crate) consumed_cost_units: u64,
+    pub(crate) reserved_cost_units: u64,
+    pub(crate) checkpoint: Option<CircuitRuntimeCheckpointV1>,
+    pub(crate) outcome: Option<CircuitRuntimeOutcomeV1>,
+    pub(crate) outcome_digest: Option<Sha256Digest>,
+    pub(crate) projection_pending: bool,
 }
 
 #[derive(Clone)]
@@ -235,6 +239,11 @@ impl AutomationStore {
                 run_id, thread_id, candidate, event, profile, fence, now_ms,
             )
             .await?;
+        if stored.state == DurableCircuitRunStateV1::Executing
+            || stored.state == DurableCircuitRunStateV1::RecoveryRequired
+        {
+            return Err(DurableNeuralCircuitError::RecoveryRequired);
+        }
         if let Some(receipt) = self
             .replay_committed_circuit_outcome(
                 run_id, candidate, event, profile, fence, now_ms, &stored,
@@ -242,11 +251,6 @@ impl AutomationStore {
             .await?
         {
             return Ok(receipt);
-        }
-        if stored.state == DurableCircuitRunStateV1::Executing
-            || stored.state == DurableCircuitRunStateV1::RecoveryRequired
-        {
-            return Err(DurableNeuralCircuitError::RecoveryRequired);
         }
         if stored.state != DurableCircuitRunStateV1::Admitted {
             return Err(DurableNeuralCircuitError::Conflict(
@@ -263,6 +267,7 @@ impl AutomationStore {
                 event,
                 profile,
                 None::<&CircuitEffectResolutionV1>,
+                fence,
                 now_ms,
             )
             .await?;
@@ -336,6 +341,7 @@ impl AutomationStore {
                 event,
                 profile,
                 None::<&CircuitEffectResolutionV1>,
+                fence,
                 now_ms,
             )
             .await?;
@@ -401,6 +407,7 @@ impl AutomationStore {
                 "effect-pending circuit has no checkpoint".to_string(),
             )
         })?;
+        self.ensure_taskflow_running(run_id, fence, now_ms).await?;
         let reservation = self
             .begin_circuit_activation(
                 run_id,
@@ -410,6 +417,7 @@ impl AutomationStore {
                 event,
                 profile,
                 Some(resolution),
+                fence,
                 now_ms,
             )
             .await?;
@@ -502,9 +510,16 @@ impl AutomationStore {
             predecessor_checkpoint_digest,
             reserved_cost_units: stored.reserved_cost_units,
         };
+        self.validate_circuit_taskflow_fence(run_id, fence, now_ms)
+            .await?;
         let Some(recovered) = observer.observe(&request)? else {
-            self.mark_circuit_recovery_required(run_id, stored.activation_seq, now_ms)
-                .await?;
+            self.mark_circuit_recovery_required(
+                run_id,
+                stored.activation_seq,
+                fence,
+                now_ms,
+            )
+            .await?;
             return Ok(None);
         };
         validate_digest_text(&recovered.evidence_digest)?;
@@ -620,7 +635,7 @@ impl AutomationStore {
             .await
     }
 
-    async fn load_exact_circuit(
+    pub(crate) async fn load_exact_circuit(
         &self,
         run_id: &str,
         candidate: &NeuralCircuitCandidateV1,
@@ -687,13 +702,15 @@ impl AutomationStore {
         event: &CircuitEventIngressV1,
         profile: &CircuitRuntimeProfileV1,
         semantic_input: Option<&T>,
+        fence: &TaskFlowFence,
         now_ms: u64,
     ) -> Result<ActivationReservation, DurableNeuralCircuitError> {
-        let mut tx = self
-            .taskflow_pool()
-            .begin()
-            .await
-            .map_err(|_| DurableNeuralCircuitError::Unavailable)?;
+        let (mut tx, phase) = self.begin_timer_write().await?;
+        if phase != TimerPhase::Active {
+            return Err(TaskFlowError::StaleFence.into());
+        }
+        self.check_circuit_taskflow_fence_tx(&mut tx, run_id, fence, now_ms)
+            .await?;
         let row = sqlx::query(
             "SELECT * FROM neural_circuit_runs WHERE owner_agent_id = ? AND run_id = ?",
         )
@@ -858,11 +875,9 @@ impl AutomationStore {
                 false,
             ),
         };
-        let mut tx = self
-            .taskflow_pool()
-            .begin()
-            .await
-            .map_err(|_| DurableNeuralCircuitError::Unavailable)?;
+        let (mut tx, _) = self.begin_timer_write().await?;
+        self.check_circuit_taskflow_fence_tx(&mut tx, run_id, fence, now_ms)
+            .await?;
         if let Some(existing) = sqlx::query(
             "SELECT outcome_json, outcome_digest FROM neural_circuit_activation_receipts
              WHERE owner_agent_id = ? AND run_id = ? AND activation_seq = ?",
@@ -1030,6 +1045,27 @@ impl AutomationStore {
         let Some(outcome) = stored.outcome.as_ref() else {
             return Ok(None);
         };
+        let receipt = sqlx::query(
+            "SELECT outcome_digest FROM neural_circuit_activation_receipts
+             WHERE owner_agent_id = ? AND run_id = ? AND activation_seq = ?",
+        )
+        .bind(self.owner_agent_id().as_str())
+        .bind(run_id)
+        .bind(to_i64(stored.activation_seq)?)
+        .fetch_optional(self.taskflow_pool())
+        .await
+        .map_err(|_| DurableNeuralCircuitError::Unavailable)?
+        .ok_or_else(|| corrupt("committed circuit outcome has no activation receipt"))?;
+        let receipt_digest: String = receipt
+            .try_get("outcome_digest")
+            .map_err(|_| corrupt("activation receipt digest column"))?;
+        if stored.outcome_digest.as_ref().map(Sha256Digest::as_str)
+            != Some(receipt_digest.as_str())
+        {
+            return Err(corrupt(
+                "committed circuit outcome does not match its activation receipt",
+            ));
+        }
         validate_circuit_runtime_outcome_v1(candidate, event, profile, outcome)?;
         self.project_committed_circuit_outcome(run_id, fence, now_ms, stored)
             .await?;
@@ -1042,7 +1078,7 @@ impl AutomationStore {
         .map(Some)
     }
 
-    async fn ensure_taskflow_running(
+    pub(crate) async fn ensure_taskflow_running(
         &self,
         run_id: &str,
         fence: &TaskFlowFence,
@@ -1052,8 +1088,10 @@ impl AutomationStore {
             .taskflow_run(run_id)
             .await?
             .ok_or_else(|| corrupt("TaskFlow run is missing"))?;
-        if run.state != TaskFlowRunState::Queued {
-            return Ok(());
+        if !matches!(run.state, TaskFlowRunState::Queued | TaskFlowRunState::Running) {
+            return Err(DurableNeuralCircuitError::Conflict(
+                "TaskFlow run is not executable".to_string(),
+            ));
         }
         let claimed = self
             .claim_taskflow_run(run_id, fence, now_ms, CIRCUIT_TASKFLOW_LEASE_MS)
@@ -1132,8 +1170,13 @@ impl AutomationStore {
                 if run.state == TaskFlowRunState::Waiting
                     && run.wait_token.as_deref() == Some(boundary.boundary_digest.as_str())
                 {
-                    self.clear_circuit_projection_pending(run_id, stored.activation_seq, now_ms)
-                        .await?;
+                    self.clear_circuit_projection_pending(
+                    run_id,
+                    stored.activation_seq,
+                    fence,
+                    now_ms,
+                )
+                    .await?;
                     return Ok(());
                 }
                 TaskFlowTransition::Wait {
@@ -1148,8 +1191,22 @@ impl AutomationStore {
                         | TaskFlowRunState::Failed
                         | TaskFlowRunState::Cancelled
                 ) {
-                    self.clear_circuit_projection_pending(run_id, stored.activation_seq, now_ms)
-                        .await?;
+                    if !self
+                        .taskflow_terminal_matches_circuit(run_id, receipt)
+                        .await?
+                    {
+                        return Err(DurableNeuralCircuitError::Conflict(
+                            "TaskFlow terminal projection conflicts with the circuit receipt"
+                                .to_string(),
+                        ));
+                    }
+                    self.clear_circuit_projection_pending(
+                    run_id,
+                    stored.activation_seq,
+                    fence,
+                    now_ms,
+                )
+                    .await?;
                     return Ok(());
                 }
                 match receipt.state {
@@ -1165,7 +1222,12 @@ impl AutomationStore {
                 }
             }
             CircuitRuntimeOutcomeV1::EffectPending(_) => {
-                self.clear_circuit_projection_pending(run_id, stored.activation_seq, now_ms)
+                self.clear_circuit_projection_pending(
+                    run_id,
+                    stored.activation_seq,
+                    fence,
+                    now_ms,
+                )
                     .await?;
                 return Ok(());
             }
@@ -1188,16 +1250,23 @@ impl AutomationStore {
             now_ms,
         )?)
         .await?;
-        self.clear_circuit_projection_pending(run_id, stored.activation_seq, now_ms)
-            .await
+        self.clear_circuit_projection_pending(
+            run_id,
+            stored.activation_seq,
+            fence,
+            now_ms,
+        )
+        .await
     }
 
     async fn clear_circuit_projection_pending(
         &self,
         run_id: &str,
         activation_seq: u64,
+        _fence: &TaskFlowFence,
         now_ms: u64,
     ) -> Result<(), DurableNeuralCircuitError> {
+        let (mut tx, _) = self.begin_timer_write().await?;
         let result = sqlx::query(
             "UPDATE neural_circuit_runs SET projection_pending = 0, updated_at_ms = ?
              WHERE owner_agent_id = ? AND run_id = ? AND activation_seq = ?",
@@ -1206,7 +1275,7 @@ impl AutomationStore {
         .bind(self.owner_agent_id().as_str())
         .bind(run_id)
         .bind(to_i64(activation_seq)?)
-        .execute(self.taskflow_pool())
+        .execute(&mut *tx)
         .await
         .map_err(map_sql_write)?;
         if result.rows_affected() != 1 {
@@ -1214,15 +1283,137 @@ impl AutomationStore {
                 "projection acknowledgement lost its activation fence".to_string(),
             ));
         }
+        tx.commit()
+            .await
+            .map_err(|_| DurableNeuralCircuitError::Unavailable)?;
         Ok(())
+    }
+
+    pub(crate) async fn validate_circuit_taskflow_fence(
+        &self,
+        run_id: &str,
+        fence: &TaskFlowFence,
+        now_ms: u64,
+    ) -> Result<(), DurableNeuralCircuitError> {
+        let (mut tx, _) = self.begin_timer_write().await?;
+        self.check_circuit_taskflow_fence_tx(&mut tx, run_id, fence, now_ms)
+            .await?;
+        tx.commit()
+            .await
+            .map_err(|_| DurableNeuralCircuitError::Unavailable)
+    }
+
+    pub(crate) async fn check_circuit_taskflow_fence_tx(
+        &self,
+        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        run_id: &str,
+        fence: &TaskFlowFence,
+        now_ms: u64,
+    ) -> Result<(), DurableNeuralCircuitError> {
+        if fence.owner_agent_id != *self.owner_agent_id() {
+            return Err(TaskFlowError::StaleFence.into());
+        }
+        let row = sqlx::query(
+            "SELECT state, owner_id, owner_epoch, generation, fencing_token,
+                    lease_expires_at_ms, cancel_requested
+             FROM taskflow_runs WHERE owner_agent_id = ? AND run_id = ?",
+        )
+        .bind(self.owner_agent_id().as_str())
+        .bind(run_id)
+        .fetch_optional(&mut **tx)
+        .await
+        .map_err(|_| DurableNeuralCircuitError::Unavailable)?
+        .ok_or_else(|| corrupt("TaskFlow run is missing"))?;
+        let state: String = row
+            .try_get("state")
+            .map_err(|_| corrupt("TaskFlow state column"))?;
+        let owner_id: Option<String> = row
+            .try_get("owner_id")
+            .map_err(|_| corrupt("TaskFlow owner column"))?;
+        let owner_epoch: Option<i64> = row
+            .try_get("owner_epoch")
+            .map_err(|_| corrupt("TaskFlow owner epoch column"))?;
+        let generation: Option<i64> = row
+            .try_get("generation")
+            .map_err(|_| corrupt("TaskFlow generation column"))?;
+        let fencing_token: Option<String> = row
+            .try_get("fencing_token")
+            .map_err(|_| corrupt("TaskFlow fencing token column"))?;
+        let lease_expires_at_ms: Option<i64> = row
+            .try_get("lease_expires_at_ms")
+            .map_err(|_| corrupt("TaskFlow lease column"))?;
+        let cancel_requested: i64 = row
+            .try_get("cancel_requested")
+            .map_err(|_| corrupt("TaskFlow cancellation column"))?;
+        let now_i64 = to_i64(now_ms)?;
+        if state != "running"
+            || owner_id.as_deref() != Some(fence.owner_id.as_str())
+            || owner_epoch != Some(to_i64(fence.owner_epoch)?)
+            || generation != Some(to_i64(fence.generation)?)
+            || fencing_token.as_deref() != Some(fence.fencing_token.as_str())
+            || lease_expires_at_ms.is_none_or(|expires| expires <= now_i64)
+            || cancel_requested != 0
+        {
+            return Err(TaskFlowError::StaleFence.into());
+        }
+        Ok(())
+    }
+
+    async fn taskflow_terminal_matches_circuit(
+        &self,
+        run_id: &str,
+        receipt: &crate::CircuitTerminalReceiptV1,
+    ) -> Result<bool, DurableNeuralCircuitError> {
+        let row = sqlx::query(
+            "SELECT transition, payload_json FROM taskflow_events
+             WHERE owner_agent_id = ? AND run_id = ?
+             ORDER BY event_seq DESC LIMIT 1",
+        )
+        .bind(self.owner_agent_id().as_str())
+        .bind(run_id)
+        .fetch_optional(self.taskflow_pool())
+        .await
+        .map_err(|_| DurableNeuralCircuitError::Unavailable)?
+        .ok_or_else(|| corrupt("terminal TaskFlow run has no event"))?;
+        let transition: String = row
+            .try_get("transition")
+            .map_err(|_| corrupt("terminal TaskFlow transition column"))?;
+        let payload_json: String = row
+            .try_get("payload_json")
+            .map_err(|_| corrupt("terminal TaskFlow payload column"))?;
+        let payload: TaskFlowTransition = serde_json::from_str(&payload_json)
+            .map_err(|_| corrupt("terminal TaskFlow payload is invalid"))?;
+        let expected_reason = format!("circuit:{}", receipt.receipt_digest.as_str());
+        Ok(match (&receipt.state, transition.as_str(), payload) {
+            (
+                CircuitTerminalStateV1::Succeeded,
+                "succeeded",
+                TaskFlowTransition::Succeed { output_digest },
+            ) => output_digest == receipt.receipt_digest,
+            (
+                CircuitTerminalStateV1::Failed,
+                "failed",
+                TaskFlowTransition::Fail { reason },
+            ) => reason == expected_reason,
+            (
+                CircuitTerminalStateV1::Cancelled,
+                "cancelled",
+                TaskFlowTransition::Cancel { reason },
+            ) => reason == expected_reason,
+            _ => false,
+        })
     }
 
     async fn mark_circuit_recovery_required(
         &self,
         run_id: &str,
         activation_seq: u64,
+        fence: &TaskFlowFence,
         now_ms: u64,
     ) -> Result<(), DurableNeuralCircuitError> {
+        let (mut tx, _) = self.begin_timer_write().await?;
+        self.check_circuit_taskflow_fence_tx(&mut tx, run_id, fence, now_ms)
+            .await?;
         let result = sqlx::query(
             "UPDATE neural_circuit_runs
              SET state = 'recovery_required', reserved_cost_units = 0, updated_at_ms = ?
@@ -1233,7 +1424,7 @@ impl AutomationStore {
         .bind(self.owner_agent_id().as_str())
         .bind(run_id)
         .bind(to_i64(activation_seq)?)
-        .execute(self.taskflow_pool())
+        .execute(&mut *tx)
         .await
         .map_err(map_sql_write)?;
         if result.rows_affected() != 1 {
@@ -1241,6 +1432,9 @@ impl AutomationStore {
                 "recovery-required transition lost its activation fence".to_string(),
             ));
         }
+        tx.commit()
+            .await
+            .map_err(|_| DurableNeuralCircuitError::Unavailable)?;
         Ok(())
     }
 }

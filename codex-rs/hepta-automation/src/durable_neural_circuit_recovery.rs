@@ -34,25 +34,26 @@ impl AutomationStore {
     where
         R: CircuitRuntimeRecoveryObserverV1,
     {
-        let snapshot = self
-            .durable_neural_circuit_snapshot_v1(run_id)
-            .await?
-            .ok_or_else(|| {
-                DurableNeuralCircuitError::Conflict(
-                    "durable circuit run does not exist".to_string(),
-                )
-            })?;
-        match snapshot.state {
+        // Validate the exact immutable circuit/event/profile before changing
+        // recovery state. A wrong caller input must leave quarantine untouched.
+        let stored = self
+            .load_exact_circuit(run_id, candidate, event, profile)
+            .await?;
+        self.ensure_taskflow_running(run_id, fence, now_ms).await?;
+        match stored.state {
             DurableCircuitRunStateV1::Executing => {}
             DurableCircuitRunStateV1::RecoveryRequired => {
+                let (mut tx, _) = self.begin_timer_write().await?;
+                self.check_circuit_taskflow_fence_tx(&mut tx, run_id, fence, now_ms)
+                    .await?;
                 let row = sqlx::query(
                     "SELECT reserved_cost_units FROM neural_circuit_activation_intents
                      WHERE owner_agent_id = ? AND run_id = ? AND activation_seq = ?",
                 )
                 .bind(self.owner_agent_id().as_str())
                 .bind(run_id)
-                .bind(to_i64(snapshot.activation_seq)?)
-                .fetch_optional(self.taskflow_pool())
+                .bind(to_i64(stored.activation_seq)?)
+                .fetch_optional(&mut *tx)
                 .await
                 .map_err(|_| DurableNeuralCircuitError::Unavailable)?
                 .ok_or_else(|| {
@@ -69,10 +70,10 @@ impl AutomationStore {
                         })?,
                 )?;
                 if reserved == 0
-                    || snapshot
+                    || stored
                         .consumed_cost_units
                         .checked_add(reserved)
-                        .is_none_or(|total| total > snapshot.cost_budget_units)
+                        .is_none_or(|total| total > stored.cost_budget_units)
                 {
                     return Err(DurableNeuralCircuitError::Corrupt(
                         "activation reservation exceeds the durable circuit budget".to_string(),
@@ -90,9 +91,9 @@ impl AutomationStore {
                 .bind(to_i64(now_ms)?)
                 .bind(self.owner_agent_id().as_str())
                 .bind(run_id)
-                .bind(to_i64(snapshot.activation_seq)?)
+                .bind(to_i64(stored.activation_seq)?)
                 .bind(to_i64(reserved)?)
-                .execute(self.taskflow_pool())
+                .execute(&mut *tx)
                 .await
                 .map_err(|_| DurableNeuralCircuitError::Unavailable)?;
                 if updated.rows_affected() != 1 {
@@ -100,6 +101,9 @@ impl AutomationStore {
                         "recovery reservation lost its activation fence".to_string(),
                     ));
                 }
+                tx.commit()
+                    .await
+                    .map_err(|_| DurableNeuralCircuitError::Unavailable)?;
             }
             _ => {
                 return Err(DurableNeuralCircuitError::Conflict(

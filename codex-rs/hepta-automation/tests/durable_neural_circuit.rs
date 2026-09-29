@@ -225,6 +225,19 @@ impl CircuitWaitJoinPortV1 for WaitPort {
     }
 }
 
+struct LostWait;
+
+impl CircuitWaitJoinPortV1 for LostWait {
+    fn wait(
+        &mut self,
+        _request: &CircuitWaitRequestV1,
+    ) -> Result<CircuitWaitReceiptV1, NeuralCircuitRuntimeError> {
+        Err(NeuralCircuitRuntimeError::Port(
+            "wait owner outcome was lost".to_string(),
+        ))
+    }
+}
+
 struct PanicDecision;
 
 impl CircuitDecisionCellV1 for PanicDecision {
@@ -451,6 +464,90 @@ async fn effect_result_continues_only_from_a_committed_effect_boundary() {
             if receipt.state == CircuitTerminalStateV1::Succeeded
     ));
     reopened.close().await;
+}
+
+#[tokio::test]
+async fn second_activation_loss_never_relabels_the_previous_outcome_as_committed() {
+    let fixture = Fixture::new();
+    let store = AutomationStore::open(&fixture.layout).await.expect("store");
+    let candidate = wait_candidate("durable-second-activation-loss");
+    let profile = CircuitRuntimeProfileV1::default();
+    let ingress = event();
+    let mut decision = RouteOrgan::healthy();
+    let mut organ = CountingOrgan {
+        calls: Cell::new(0),
+    };
+    let mut pending = WaitPort {
+        calls: Cell::new(0),
+        state: CircuitWaitStateV1::Pending,
+    };
+    let first = store
+        .execute_durable_neural_circuit_v1(
+            "run-second-activation-loss",
+            THREAD_ID,
+            &candidate,
+            &ingress,
+            &profile,
+            &fence(),
+            10,
+            &mut decision,
+            &mut organ,
+            &mut pending,
+            &NeverCancelled,
+        )
+        .await
+        .expect("first wait boundary");
+    assert_eq!(first.activation_seq, 1);
+    assert_eq!(first.state, DurableCircuitRunStateV1::Waiting);
+
+    let mut panic_decision = PanicDecision;
+    let mut panic_organ = PanicOrgan;
+    assert!(matches!(
+        store
+            .resume_durable_neural_circuit_wait_v1(
+                "run-second-activation-loss",
+                &candidate,
+                &ingress,
+                &profile,
+                &fence(),
+                20,
+                &mut panic_decision,
+                &mut panic_organ,
+                &mut LostWait,
+                &NeverCancelled,
+            )
+            .await,
+        Err(DurableNeuralCircuitError::Runtime(
+            NeuralCircuitRuntimeError::Port(_)
+        ))
+    ));
+
+    let snapshot = store
+        .durable_neural_circuit_snapshot_v1("run-second-activation-loss")
+        .await
+        .expect("snapshot")
+        .expect("run");
+    assert_eq!(snapshot.activation_seq, 2);
+    assert_eq!(snapshot.state, DurableCircuitRunStateV1::Executing);
+
+    assert!(matches!(
+        store
+            .resume_durable_neural_circuit_wait_v1(
+                "run-second-activation-loss",
+                &candidate,
+                &ingress,
+                &profile,
+                &fence(),
+                30,
+                &mut panic_decision,
+                &mut panic_organ,
+                &mut LostWait,
+                &NeverCancelled,
+            )
+            .await,
+        Err(DurableNeuralCircuitError::RecoveryRequired)
+    ));
+    store.close().await;
 }
 
 struct RecoveryObserver {

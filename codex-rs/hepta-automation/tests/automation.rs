@@ -966,6 +966,26 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
     // Keep the schema rewind on one connection so each DDL statement sees
     // the preceding change, and publish the complete v1 fixture atomically.
     let mut rewind = pool.begin().await.expect("begin legacy schema rewind");
+    for statement in [
+        "DROP TRIGGER IF EXISTS automation_timer_lifecycle_drain",
+        "DROP TRIGGER IF EXISTS neural_circuit_recorded_choices_no_update",
+        "DROP TRIGGER IF EXISTS neural_circuit_recorded_choices_no_delete",
+        "DROP TRIGGER IF EXISTS neural_circuit_activation_receipts_no_update",
+        "DROP TRIGGER IF EXISTS neural_circuit_activation_receipts_no_delete",
+        "DROP TRIGGER IF EXISTS neural_circuit_activation_intents_no_update",
+        "DROP TRIGGER IF EXISTS neural_circuit_activation_intents_no_delete",
+        "DROP TRIGGER IF EXISTS neural_circuit_runs_guard_update",
+        "DROP TRIGGER IF EXISTS neural_circuit_runs_no_delete",
+        "DROP TABLE IF EXISTS neural_circuit_recorded_choices",
+        "DROP TABLE IF EXISTS neural_circuit_activation_receipts",
+        "DROP TABLE IF EXISTS neural_circuit_activation_intents",
+        "DROP TABLE IF EXISTS neural_circuit_runs",
+    ] {
+        sqlx::query(statement)
+            .execute(&mut *rewind)
+            .await
+            .expect("drop schema-22 circuit object");
+    }
     sqlx::query("DROP INDEX automation_dispatch_outcome_state_idx")
         .execute(&mut *rewind)
         .await

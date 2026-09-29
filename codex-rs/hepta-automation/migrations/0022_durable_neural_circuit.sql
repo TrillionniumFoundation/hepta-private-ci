@@ -191,6 +191,25 @@ BEGIN
     SELECT RAISE(ABORT, 'Neural Circuit recorded choices are immutable');
 END;
 
+
+-- Circuit owner contact is an unresolved owner operation until an immutable
+-- receipt is committed. Writer handoff must not cross an executing or
+-- quarantined activation merely because the legacy dispatch tables are drained.
+DROP TRIGGER automation_timer_lifecycle_drain;
+CREATE TRIGGER automation_timer_lifecycle_drain
+BEFORE UPDATE OF writer_epoch ON automation_timer_lifecycle
+WHEN NEW.writer_epoch != OLD.writer_epoch AND (
+    EXISTS (SELECT 1 FROM automation_runs WHERE state = 'leased')
+    OR EXISTS (SELECT 1 FROM automation_dispatch_outcomes WHERE outcome = 'uncertain')
+    OR EXISTS (
+        SELECT 1 FROM neural_circuit_runs
+        WHERE state IN ('executing', 'recovery_required')
+    )
+)
+BEGIN
+    SELECT RAISE(ABORT, 'timer owner still has unresolved dispatches');
+END;
+
 DROP TRIGGER automation_meta_no_update;
 UPDATE automation_meta SET schema_version = 22 WHERE singleton = 1;
 CREATE TRIGGER automation_meta_no_update
