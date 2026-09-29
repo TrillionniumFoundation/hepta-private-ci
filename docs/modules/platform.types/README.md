@@ -32,10 +32,12 @@ has migrated to the newest version.
 ## Exact candidate evidence
 
 The committed public inventory and detailed implementation map are content-derived
-source documents. A committed file cannot safely claim its own final Git commit
-hash, because changing that file changes the commit. Therefore final qualification
-does not treat a historical `sourceBase` or `observedAtHead` field as the candidate
-receipt.
+source documents. The inventory is closed over both exact top-level `pub use`
+exports and exact public `pub mod` declarations; the normalized rustdoc snapshot
+remains the complete nested API and signature evidence. A committed file cannot
+safely claim its own final Git commit hash, because changing that file changes the
+commit. Therefore final qualification does not treat a historical `sourceBase`
+or `observedAtHead` field as the candidate receipt.
 
 For every source-head and deterministic synthetic-merge run,
 `scripts/platform_types_implementation_map.py` emits a candidate artifact that

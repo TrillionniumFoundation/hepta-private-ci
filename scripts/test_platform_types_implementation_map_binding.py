@@ -46,6 +46,37 @@ class ExactImplementationMapBindingTests(unittest.TestCase):
         self.assertRegex(binding["publicApiInventorySha256"], DIGEST_RE)
         self.assertRegex(binding["detailedImplementationMapSha256"], DIGEST_RE)
 
+    def test_public_modules_have_operation_owners(self) -> None:
+        value = expected_map(git("rev-parse", "HEAD"))
+        self.assertEqual(
+            value["coveragePolicy"],
+            "closed_world_exact_pub_use_and_pub_mod_exports",
+        )
+        by_operation = {
+            row["operation"]: row
+            for row in value["operations"]
+        }
+        expected = {
+            "registered_numeric_conversion_v2": (
+                "numeric_registry_v2",
+                "codex-rs/hepta-types/src/numeric_registry_v2.rs",
+            ),
+            "prompt_delivery_observation_v2": (
+                "prompt_delivery_v2",
+                "codex-rs/hepta-types/src/prompt_delivery_v2.rs",
+            ),
+            "protocol_catalog_v2": (
+                "protocol_catalog_v2",
+                "codex-rs/hepta-types/src/protocol_catalog_v2.rs",
+            ),
+        }
+        for operation, (symbol, source_path) in expected.items():
+            row = by_operation[operation]
+            self.assertEqual(row["sourcePaths"], [source_path])
+            self.assertEqual(row["exportCount"], 1)
+            self.assertEqual(row["exports"][0]["symbol"], symbol)
+            self.assertEqual(row["exports"][0]["sourcePath"], source_path)
+
     def test_wrong_expected_commit_fails_closed(self) -> None:
         wrong = "0" * 40
         if wrong == git("rev-parse", "HEAD"):

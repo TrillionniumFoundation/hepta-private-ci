@@ -3,8 +3,8 @@
   "schemaVersion": 1,
   "module": "platform.types",
   "publicApiInventory": "docs/modules/platform.types/PUBLIC_API_INVENTORY_V1.json",
-  "publicApiExportCount": 78,
-  "publicApiOperationCount": 17,
+  "publicApiExportCount": 81,
+  "publicApiOperationCount": 20,
   "formalTechnicalSupplement": "docs/modules/platform.types/PROTOCOL_AND_QUALIFICATION_V1.md",
   "currentTechnicalAmendment": "docs/modules/platform.types/TECHNICAL_CURRENT_AMENDMENT_V2.md",
   "normativeProtocolSource": "codex-rs/hepta-types/src/protocol_catalog_v2.rs",
@@ -21,9 +21,10 @@
   },
   "qualificationState": "exact_candidate_pending",
   "apiEvidence": {
-    "legacyOwnershipProjection": "exact top-level pub-use projection only",
+    "legacyOwnershipProjection": "exact top-level pub-use and public-module ownership projection",
     "completeCandidateApi": "normalized rustdoc JSON types methods fields variants and signatures",
-    "semverPolicy": "existing public path removal or fingerprint mutation rejects; additions reported"
+    "semverPolicy": "existing public path removal or fingerprint mutation rejects; additions reported",
+    "ownershipCoveragePolicy": "closed_world_exact_pub_use_and_pub_mod_exports"
   },
   "digestContracts": {
     "promptDeliveryV1": "frozen historical custom commitment; not HPTC and never reinterpreted",
@@ -71,7 +72,8 @@
     "properties": "deterministic mutation checks plus bounded coverage-guided libFuzzer",
     "independentReview": "separate exact-current-head governance evidence; excludes PR author and every candidate commit author/committer and is conditionally fanned into blocking-ci CI required",
     "failureDiagnostics": "retained as non-authoritative candidate diagnostics",
-    "authoritativeReceipts": "emitted only after truth, catalog, consumers, provenance, API, MSRV, native, Miri, fuzz and bundle outcomes pass"
+    "authoritativeReceipts": "emitted only after truth, catalog, consumers, provenance, API, MSRV, native, Miri, fuzz and bundle outcomes pass",
+    "implementationMap": "runtime exact checked-out commit/tree plus SHA-256 of the committed public inventory and detailed implementation map; historical committed sourceBase and observedAtHead values are non-authoritative provenance"
   },
   "evidenceAnchors": [
     "codex-rs/hepta-types/src/lib.rs",

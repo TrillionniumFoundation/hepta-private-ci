@@ -35,11 +35,14 @@ The exact current-state correction to the stable architecture guide is
 protocol boundary is
 `docs/modules/platform.types/PROTOCOL_AND_QUALIFICATION_V1.md`.
 
-The narrow exact-`pub use` ownership projection remains in
-`docs/modules/platform.types/PUBLIC_API_INVENTORY_V1.json`. It is not described
-as the complete Rust API. Exact-candidate public modules, types, methods, fields,
-enum variants and signatures are derived from rustdoc JSON and compared against
-the PR base. The module truth state remains in
+The closed-world top-level ownership projection remains in
+`docs/modules/platform.types/PUBLIC_API_INVENTORY_V1.json`. It covers every
+exact `pub use` export and every exact public `pub mod` declaration in
+`codex-rs/hepta-types/src/lib.rs`; adding either form without assigning an
+operation owner fails verification. It is not described as the complete nested
+Rust API. Exact-candidate public modules, types, methods, fields, enum variants
+and signatures are derived from rustdoc JSON and compared against the PR base.
+The module truth state remains in
 `docs/lane-a-foundation/platform.types/TRUTH_MATRIX_V1.json`.
 
 ## Public symbols and source bindings
@@ -145,10 +148,12 @@ objects into an ambient serialization platform.
 - No type, codec or receipt grants runtime, write, selection, promotion or
   release authority.
 
-Committed prose does not pretend to contain its own current commit SHA. Exact
-Git tree/blob provenance, rustdoc API snapshots, generated protocol projections,
-diagnostics and qualification receipts are produced for the checked-out
-candidate.
+Committed prose and detailed source maps do not pretend to contain their own
+current commit SHA. Historical `sourceBase` and `observedAtHead` values are
+non-authoritative provenance. Exact Git commit/tree identity and the SHA-256
+digests of the committed public inventory and detailed implementation map are
+emitted at runtime for the checked-out source-head or synthetic-merge candidate;
+the two candidate kinds are never interchangeable.
 
 ## Verification
 

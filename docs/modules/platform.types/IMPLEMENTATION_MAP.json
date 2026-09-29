@@ -1,1 +1,510 @@
-{"schema":"hepta.module-implementation-map.v3","schemaVersion":3,"sourceBase":{"commit":"56db98219c75491aeb5ce93a660b9b23109a045d","tree":"c03d4cb5724095e06fa22ad85cf94ea650196bce"},"laneId":"LANE-A-FOUNDATION","module":"platform.types","owner":"kernel-contracts","deputy":"architecture","technicalGuide":"docs/modules/platform.types/TECHNICAL.md","formalTechnicalSupplement":"docs/modules/platform.types/PROTOCOL_AND_QUALIFICATION_V1.md","moduleTruthMatrix":"docs/lane-a-foundation/platform.types/TRUTH_MATRIX_V1.json","executionDossier":"qualification/module-execution-dossiers/detail/platform.types.md","publicApiInventory":{"path":"docs/modules/platform.types/PUBLIC_API_INVENTORY_V1.json","coveragePolicy":"closed_world_exact_pub_use_exports","exportCount":78,"operationCount":17},"declaredRoots":["codex-rs/hepta-types"],"resolvedRoots":["codex-rs/hepta-types"],"sourceRootPresent":true,"productionImplementation":false,"productCallerState":"capability_specific_source_consumers_composed_product_qualification_pending","productionWriterState":"not_established","stateOwnerDisposition":"Stateless authority-free values; immutable registry generations are caller-owned inputs and registered admission is proven by a distinct receipt.","terminalObserverDisposition":"No effect owner; prompt delivery and topology values are observations/proposals consumed by their named owners.","operations":[{"operation":"bounded_values","nativeSymbol":"BoundedText","sourcePath":"codex-rs/hepta-types/src/bounded.rs","state":"source_implemented_not_product_qualified","authority":"none","tests":["codex-rs/hepta-types/src/bounded_tests.rs"],"sourcePathExists":true,"designOperation":"bounded_values","mappingClass":"owner_native","delegatedCallees":[]},{"operation":"validate_id","nativeSymbol":"validate_id","sourcePath":"codex-rs/hepta-types/src/identity.rs","state":"source_implemented_not_product_qualified","authority":"none","tests":["codex-rs/hepta-types/src/identity_tests.rs"],"sourcePathExists":true,"designOperation":"validate_id","mappingClass":"owner_native","delegatedCallees":[]},{"operation":"raw_authority_ingress","nativeSymbol":"AuthorityPosture::try_from_wire_bytes","sourcePath":"codex-rs/hepta-types/src/identity.rs","state":"source_implemented_not_product_qualified","authority":"none","tests":["codex-rs/hepta-types/src/identity_tests.rs"],"sourcePathExists":true,"designOperation":"raw_authority_ingress","mappingClass":"owner_native","delegatedCallees":[]},{"operation":"digest32","nativeSymbol":"Digest32","sourcePath":"codex-rs/hepta-types/src/digest.rs","state":"source_implemented_not_product_qualified","authority":"none","tests":["codex-rs/hepta-types/src/digest_tests.rs"],"sourcePathExists":true,"designOperation":"digest32","mappingClass":"owner_native","delegatedCallees":[]},{"operation":"canonical_digest_v1","nativeSymbol":"canonical_digest_v1","sourcePath":"codex-rs/hepta-types/src/canonical_digest.rs","state":"source_implemented_not_product_qualified","authority":"none","tests":["codex-rs/hepta-types/src/canonical_digest_tests.rs","codex-rs/hepta-types/conformance/verify_vectors.py","codex-rs/hepta-types/conformance/verify_vectors.ts"],"sourcePathExists":true,"designOperation":"canonical_digest_v1","mappingClass":"owner_native","delegatedCallees":[]},{"operation":"canonical_validate_v1","nativeSymbol":"canonical_validate_v1","sourcePath":"codex-rs/hepta-types/src/canonical_digest.rs","state":"source_implemented_not_product_qualified","authority":"none","tests":["codex-rs/hepta-types/src/canonical_digest_tests.rs","codex-rs/hepta-types/conformance/verify_rejections.py","codex-rs/hepta-types/conformance/verify_rejections.mjs"],"sourcePathExists":true,"designOperation":"canonical_validate_v1","mappingClass":"owner_native","delegatedCallees":[]},{"operation":"fixed_q32","nativeSymbol":"FixedQ32","sourcePath":"codex-rs/hepta-types/src/fixed.rs","state":"source_implemented_not_product_qualified","authority":"none","tests":["codex-rs/hepta-types/src/fixed_tests.rs"],"sourcePathExists":true,"designOperation":"fixed_q32","mappingClass":"owner_native","delegatedCallees":[]},{"operation":"contract_registry_v1","nativeSymbol":"ContractRegistryV1","sourcePath":"codex-rs/hepta-types/src/registry.rs","state":"source_implemented_not_product_qualified","authority":"none","tests":["codex-rs/hepta-types/src/registry_tests.rs"],"sourcePathExists":true,"designOperation":"contract_registry_v1","mappingClass":"owner_native","delegatedCallees":[]},{"operation":"numeric_profile_definition_v1","nativeSymbol":"NumericProfileDefinitionV1","sourcePath":"codex-rs/hepta-types/src/numeric_profile.rs","state":"source_implemented_not_product_qualified","authority":"none","tests":["codex-rs/hepta-types/src/numeric_profile_tests.rs"],"sourcePathExists":true,"designOperation":"numeric_profile_definition_v1","mappingClass":"owner_native","delegatedCallees":[]},{"operation":"rescale_signal","nativeSymbol":"rescale_signal","sourcePath":"codex-rs/hepta-types/src/numeric_conversion.rs","state":"source_implemented_not_product_qualified","authority":"none","tests":["codex-rs/hepta-types/src/numeric_conversion_tests.rs"],"sourcePathExists":true,"designOperation":"rescale_signal","mappingClass":"owner_native","delegatedCallees":[]},{"operation":"rescale_signal_registered","nativeSymbol":"rescale_signal_registered","sourcePath":"codex-rs/hepta-types/src/numeric_conversion.rs","state":"source_implemented_not_product_qualified","authority":"none","tests":["codex-rs/hepta-types/src/numeric_conversion_tests.rs"],"sourcePathExists":true,"designOperation":"rescale_signal_registered","mappingClass":"owner_native","delegatedCallees":[]},{"operation":"prompt_delivery_observation_v1","nativeSymbol":"PromptDeliveryObservationV1","sourcePath":"codex-rs/hepta-types/src/prompt_delivery.rs","state":"source_implemented_not_product_qualified","authority":"none","tests":["codex-rs/hepta-types/src/prompt_delivery_tests.rs"],"sourcePathExists":true,"designOperation":"prompt_delivery_observation_v1","mappingClass":"owner_native","delegatedCallees":[]},{"operation":"runtime_topology_candidate_v1","nativeSymbol":"RuntimeTopologyCandidateV1","sourcePath":"codex-rs/hepta-types/src/topology.rs","state":"source_implemented_not_product_qualified","authority":"none","tests":["codex-rs/hepta-types/src/topology.rs","codex-rs/hepta-supervisor/src/module_runtime_safety_tests.rs"],"sourcePathExists":true,"designOperation":"runtime_topology_candidate_v1","mappingClass":"owner_native","delegatedCallees":[]},{"operation":"manifest_contract_primitives_v1","nativeSymbol":"ManifestContractErrorV1","sourcePath":"codex-rs/hepta-types/src/manifests.rs","state":"source_implemented_not_product_qualified","authority":"none","tests":["codex-rs/hepta-types/src/manifests_tests.rs"],"sourcePathExists":true,"designOperation":"manifest_contract_primitives_v1","mappingClass":"owner_native","delegatedCallees":[]},{"operation":"random_stream_manifest_v1","nativeSymbol":"RandomStreamManifestV1","sourcePath":"codex-rs/hepta-types/src/manifests.rs","state":"source_implemented_not_product_qualified","authority":"none","tests":["codex-rs/hepta-types/src/manifests_tests.rs","codex-rs/hepta-types/MANIFEST_V1_CONFORMANCE.json","codex-rs/hepta-types/schemas/random-stream-manifest-v1.schema.json"],"sourcePathExists":true,"designOperation":"random_stream_manifest_v1","mappingClass":"owner_native","delegatedCallees":[]},{"operation":"external_system_manifest_v1","nativeSymbol":"ExternalSystemManifestV1","sourcePath":"codex-rs/hepta-types/src/manifests.rs","state":"source_implemented_not_product_qualified","authority":"none","tests":["codex-rs/hepta-types/src/manifests_tests.rs","codex-rs/hepta-types/schemas/external-system-manifest-v1.schema.json","codex-rs/hepta-types/conformance/verify_manifest_vectors.py","codex-rs/hepta-types/conformance/verify_manifest_vectors.mjs"],"sourcePathExists":true,"designOperation":"external_system_manifest_v1","mappingClass":"owner_native","delegatedCallees":[]},{"operation":"sensor_calibration_manifest_v1","nativeSymbol":"SensorCalibrationManifestV1","sourcePath":"codex-rs/hepta-types/src/manifests.rs","state":"source_implemented_not_product_qualified","authority":"none","tests":["codex-rs/hepta-types/src/manifests_tests.rs","codex-rs/hepta-types/schemas/sensor-calibration-manifest-v1.schema.json","codex-rs/hepta-types/tests/manifest_protocol_consumer.rs"],"sourcePathExists":true,"designOperation":"sensor_calibration_manifest_v1","mappingClass":"owner_native","delegatedCallees":[]},{"operation":"generated_bindings_v1","nativeSymbol":"generate_bindings.py","sourcePath":"codex-rs/hepta-types/bindings/generate_bindings.py","state":"source_implemented_not_product_qualified","authority":"none","tests":["codex-rs/hepta-types/bindings/verify_generated.py","codex-rs/hepta-types/bindings/verify_generated.mjs"],"sourcePathExists":true,"designOperation":"generated_bindings_v1","mappingClass":"owner_native","delegatedCallees":[]},{"operation":"public_api_inventory_v1","nativeSymbol":"platform_types_public_api.py","sourcePath":"scripts/platform_types_public_api.py","state":"source_implemented_not_product_qualified","authority":"none","tests":["docs/modules/platform.types/PUBLIC_API_INVENTORY_V1.json","docs/lane-a-foundation/platform.types/TRUTH_MATRIX_V1.json","scripts/verify_lane_a_foundation.py"],"sourcePathExists":true,"designOperation":"public_api_inventory_v1","mappingClass":"owner_native","delegatedCallees":[]},{"operation":"consumer_qualification_v1","nativeSymbol":"run_platform_types_consumer_qualification.sh","sourcePath":"scripts/run_platform_types_consumer_qualification.sh","state":"source_implemented_not_product_qualified","authority":"none","tests":["codex-rs/hepta-types/CONSUMER_QUALIFICATION_V1.json","scripts/verify_platform_types_consumers.py","scripts/test_platform_types_consumer_qualification.py"],"sourcePathExists":true,"designOperation":"consumer_qualification_v1","mappingClass":"owner_native","delegatedCallees":[]},{"operation":"protocol_qualification_documentation_v1","nativeSymbol":"PROTOCOL_AND_QUALIFICATION_V1.md","sourcePath":"docs/modules/platform.types/PROTOCOL_AND_QUALIFICATION_V1.md","state":"source_implemented_not_product_qualified","authority":"none","tests":["docs/lane-a-foundation/platform.types/CURRENT_IMPLEMENTATION.md","qualification/module-execution-dossiers/detail/platform.types.md"],"sourcePathExists":true,"designOperation":"protocol_qualification_documentation_v1","mappingClass":"owner_native","delegatedCallees":[]}],"ownedTargetProtocols":[{"protocol":"RandomStreamManifestV1","state":"source_implemented"},{"protocol":"ExternalSystemManifestV1","state":"source_implemented"},{"protocol":"SensorCalibrationManifestV1","state":"source_implemented"}],"repositoryControlledGaps":["Run exact-head source-tree and deterministic synthetic-merge Lane A qualification for the final candidate.","Retain current candidate diagnostics and authoritative receipts; diagnostics alone do not qualify.","Run the declared MSRV, Miri and fuzz/property lanes before expanding the qualification claim."],"externalEvidenceGates":["authenticated registry-generation provisioning and target-host product qualification","independent semantic review and external wire parity where required","operator acceptance canary promotion and release"],"claimBoundary":{"implementedOperationMappingComplete":true,"ownedTargetProtocolSourceComplete":true,"nativeSourceMappingComplete":true,"publicApiInventoryComplete":true,"repositoryControlledDocumentationGapsClosed":true,"repositoryControlledMappingGapsClosed":true,"repositoryControlledSourceBoundaryGapsClosed":true,"sourceRootPresent":true,"productionImplementation":false,"productExecutionProved":false,"deploymentQualificationComplete":false,"independentAcceptance":false,"activation":false,"release":false},"sourceIdentityPolicy":"candidate_or_exact_observation_v1","observedAtHead":{"commit":"56db98219c75491aeb5ce93a660b9b23109a045d","tree":"c03d4cb5724095e06fa22ad85cf94ea650196bce"},"observedSourcePaths":["codex-rs/Cargo.lock","codex-rs/Cargo.toml","codex-rs/hepta-types"],"productCallers":[{"sourcePath":"codex-rs/hepta-ndu/src/numeric_admission.rs","nativeSymbol":"NduNumericRegistryV1::admit_utility_signal","state":"registered_consumer"},{"sourcePath":"codex-rs/hepta-ndu/src/owner.rs","nativeSymbol":"NduAuthenticatedOwnerV1::admit_utility_signal","state":"authenticated_owner_consumer"},{"sourcePath":"codex-rs/hepta-learning-ledger/src/ledger.rs","nativeSymbol":"LedgerWriter::append_runtime_prompt_delivery_v1","state":"durable_prompt_delivery_consumer"},{"sourcePath":"codex-rs/hepta-supervisor/src/module_runtime.rs","nativeSymbol":"RuntimeModuleSupervisor::register_selected_topology_candidate","state":"runtime_topology_consumer"}],"exactSourceEvidenceMode":"lane_a_runtime_head_tree_and_registered_callers","sourceRoot":["codex-rs/hepta-types"]}
+{
+  "schema": "hepta.module-implementation-map.v3",
+  "schemaVersion": 3,
+  "sourceBase": {
+    "commit": "56db98219c75491aeb5ce93a660b9b23109a045d",
+    "tree": "c03d4cb5724095e06fa22ad85cf94ea650196bce"
+  },
+  "laneId": "LANE-A-FOUNDATION",
+  "module": "platform.types",
+  "owner": "kernel-contracts",
+  "deputy": "architecture",
+  "technicalGuide": "docs/modules/platform.types/TECHNICAL.md",
+  "formalTechnicalSupplement": "docs/modules/platform.types/PROTOCOL_AND_QUALIFICATION_V1.md",
+  "moduleTruthMatrix": "docs/lane-a-foundation/platform.types/TRUTH_MATRIX_V1.json",
+  "executionDossier": "qualification/module-execution-dossiers/detail/platform.types.md",
+  "publicApiInventory": {
+    "path": "docs/modules/platform.types/PUBLIC_API_INVENTORY_V1.json",
+    "coveragePolicy": "closed_world_exact_pub_use_and_pub_mod_exports",
+    "exportCount": 81,
+    "operationCount": 20
+  },
+  "declaredRoots": [
+    "codex-rs/hepta-types"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-types"
+  ],
+  "sourceRootPresent": true,
+  "productionImplementation": false,
+  "productCallerState": "capability_specific_source_consumers_composed_product_qualification_pending",
+  "productionWriterState": "not_established",
+  "stateOwnerDisposition": "Stateless authority-free values; immutable registry generations are caller-owned inputs and registered admission is proven by a distinct receipt.",
+  "terminalObserverDisposition": "No effect owner; prompt delivery and topology values are observations/proposals consumed by their named owners.",
+  "operations": [
+    {
+      "operation": "bounded_values",
+      "nativeSymbol": "BoundedText",
+      "sourcePath": "codex-rs/hepta-types/src/bounded.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/bounded_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "bounded_values",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "validate_id",
+      "nativeSymbol": "validate_id",
+      "sourcePath": "codex-rs/hepta-types/src/identity.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/identity_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "validate_id",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "raw_authority_ingress",
+      "nativeSymbol": "AuthorityPosture::try_from_wire_bytes",
+      "sourcePath": "codex-rs/hepta-types/src/identity.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/identity_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "raw_authority_ingress",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "digest32",
+      "nativeSymbol": "Digest32",
+      "sourcePath": "codex-rs/hepta-types/src/digest.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/digest_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "digest32",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "canonical_digest_v1",
+      "nativeSymbol": "canonical_digest_v1",
+      "sourcePath": "codex-rs/hepta-types/src/canonical_digest.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/canonical_digest_tests.rs",
+        "codex-rs/hepta-types/conformance/verify_vectors.py",
+        "codex-rs/hepta-types/conformance/verify_vectors.ts"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "canonical_digest_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "canonical_validate_v1",
+      "nativeSymbol": "canonical_validate_v1",
+      "sourcePath": "codex-rs/hepta-types/src/canonical_digest.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/canonical_digest_tests.rs",
+        "codex-rs/hepta-types/conformance/verify_rejections.py",
+        "codex-rs/hepta-types/conformance/verify_rejections.mjs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "canonical_validate_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "fixed_q32",
+      "nativeSymbol": "FixedQ32",
+      "sourcePath": "codex-rs/hepta-types/src/fixed.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/fixed_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "fixed_q32",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "contract_registry_v1",
+      "nativeSymbol": "ContractRegistryV1",
+      "sourcePath": "codex-rs/hepta-types/src/registry.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/registry_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "contract_registry_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "numeric_profile_definition_v1",
+      "nativeSymbol": "NumericProfileDefinitionV1",
+      "sourcePath": "codex-rs/hepta-types/src/numeric_profile.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/numeric_profile_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "numeric_profile_definition_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "rescale_signal",
+      "nativeSymbol": "rescale_signal",
+      "sourcePath": "codex-rs/hepta-types/src/numeric_conversion.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/numeric_conversion_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "rescale_signal",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "rescale_signal_registered",
+      "nativeSymbol": "rescale_signal_registered",
+      "sourcePath": "codex-rs/hepta-types/src/numeric_conversion.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/numeric_conversion_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "rescale_signal_registered",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "registered_numeric_conversion_v2",
+      "nativeSymbol": "RegisteredNumericConversionReceiptV2",
+      "sourcePath": "codex-rs/hepta-types/src/numeric_registry_v2.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/numeric_registry_v2.rs",
+        "codex-rs/hepta-ndu/src/owner_numeric_snapshot_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "registered_numeric_conversion_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "prompt_delivery_observation_v1",
+      "nativeSymbol": "PromptDeliveryObservationV1",
+      "sourcePath": "codex-rs/hepta-types/src/prompt_delivery.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/prompt_delivery_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "prompt_delivery_observation_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "prompt_delivery_observation_v2",
+      "nativeSymbol": "PromptDeliveryObservationV2",
+      "sourcePath": "codex-rs/hepta-types/src/prompt_delivery_v2.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/prompt_delivery_v2.rs",
+        "codex-rs/hepta-types/tests/prompt_v2_hashability.rs",
+        "codex-rs/hepta-wire/src/platform_types_json.rs",
+        "codex-rs/hepta-types/conformance/verify_platform_wire_vectors.py",
+        "codex-rs/hepta-types/conformance/verify_platform_wire_vectors.mjs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "prompt_delivery_observation_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "runtime_topology_candidate_v1",
+      "nativeSymbol": "RuntimeTopologyCandidateV1",
+      "sourcePath": "codex-rs/hepta-types/src/topology.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/topology.rs",
+        "codex-rs/hepta-supervisor/src/module_runtime_safety_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "runtime_topology_candidate_v1",
+      "mappingClass": "owner_native",
+      "delegatedCalleees": []
+    },
+    {
+      "operation": "manifest_contract_primitives_v1",
+      "nativeSymbol": "ManifestContractErrorV1",
+      "sourcePath": "codex-rs/hepta-types/src/manifests.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/manifests_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "manifest_contract_primitives_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "random_stream_manifest_v1",
+      "nativeSymbol": "RandomStreamManifestV1",
+      "sourcePath": "codex-rs/hepta-types/src/manifests.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/manifests_tests.rs",
+        "codex-rs/hepta-types/MANIFEST_V1_CONFORMANCE.json",
+        "codex-rs/hepta-types/schemas/random-stream-manifest-v1.schema.json"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "random_stream_manifest_v1",
+      "mappingClass": "owner_native",
+      "delegatedCalleees": []
+    },
+    {
+      "operation": "external_system_manifest_v1",
+      "nativeSymbol": "ExternalSystemManifestV1",
+      "sourcePath": "codex-rs/hepta-types/src/manifests.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/manifests_tests.rs",
+        "codex-rs/hepta-types/schemas/external-system-manifest-v1.schema.json",
+        "codex-rs/hepta-types/conformance/verify_manifest_vectors.py",
+        "codex-rs/hepta-types/conformance/verify_manifest_vectors.mjs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "external_system_manifest_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "sensor_calibration_manifest_v1",
+      "nativeSymbol": "SensorCalibrationManifestV1",
+      "sourcePath": "codex-rs/hepta-types/src/manifests.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/manifests_tests.rs",
+        "codex-rs/hepta-types/schemas/sensor-calibration-manifest-v1.schema.json",
+        "codex-rs/hepta-types/tests/manifest_protocol_consumer.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "sensor_calibration_manifest_v1",
+      "mappingClass": "owner_native",
+      "delegatedCalleees": []
+    },
+    {
+      "operation": "protocol_catalog_v2",
+      "nativeSymbol": "PLATFORM_TYPES_PROTOCOL_CATALOG_V2",
+      "sourcePath": "codex-rs/hepta-types/src/protocol_catalog_v2.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/bin/platform-types-protocol-codegen.rs",
+        "scripts/verify_platform_types_schema_catalog.py",
+        "scripts/run_platform_types_schema_qualification.sh"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "protocol_catalog_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "generated_bindings_v1",
+      "nativeSymbol": "generate_bindings.py",
+      "sourcePath": "codex-rs/hepta-types/bindings/generate_bindings.py",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/bindings/verify_generated.py",
+        "codex-rs/hepta-types/bindings/verify_generated.mjs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "generated_bindings_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "public_api_inventory_v1",
+      "nativeSymbol": "platform_types_public_api.py",
+      "sourcePath": "scripts/platform_types_public_api.py",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "docs/modules/platform.types/PUBLIC_API_INVENTORY_V1.json",
+        "docs/lane-a-foundation/platform.types/TRUTH_MATRIX_V1.json",
+        "scripts/verify_lane_a_foundation.py"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "public_api_inventory_v1",
+      "mappingClass": "owner_native",
+      "delegatedCalleees": []
+    },
+    {
+      "operation": "consumer_qualification_v1",
+      "nativeSymbol": "run_platform_types_consumer_qualification.sh",
+      "sourcePath": "scripts/run_platform_types_consumer_qualification.sh",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/CONSUMER_QUALIFICATION_V1.json",
+        "scripts/verify_platform_types_consumers.py",
+        "scripts/test_platform_types_consumer_qualification.py"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "consumer_qualification_v1",
+      "mappingClass": "owner_native",
+      "delegatedCalleees": []
+    },
+    {
+      "operation": "protocol_qualification_documentation_v1",
+      "nativeSymbol": "PROTOCOL_AND_QUALIFICATION_V1.md",
+      "sourcePath": "docs/modules/platform.types/PROTOCOL_AND_QUALIFICATION_V1.md",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "docs/lane-a-foundation/platform.types/CURRENT_IMPLEMENTATION.md",
+        "qualification/module-execution-dossiers/detail/platform.types.md"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "protocol_qualification_documentation_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    }
+  ],
+  "ownedTargetProtocols": [
+    {
+      "protocol": "RandomStreamManifestV1",
+      "state": "source_implemented"
+    },
+    {
+      "protocol": "ExternalSystemManifestV1",
+      "state": "source_implemented"
+    },
+    {
+      "protocol": "SensorCalibrationManifestV1",
+      "state": "source_implemented"
+    }
+  ],
+  "repositoryControlledGaps": [
+    "Run exact-head source-tree and deterministic synthetic-merge Lane A qualification for the final candidate.",
+    "Retain current candidate diagnostics and authoritative receipts; diagnostics alone do not qualify.",
+    "Run the declared MSRV, Miri and fuzz/property lanes before expanding the qualification claim."
+  ],
+  "externalEvidenceGates": [
+    "authenticated registry-generation provisioning and target-host product qualification",
+    "independent semantic review and external wire parity where required",
+    "operator acceptance canary promotion and release"
+  ],
+  "claimBoundary": {
+    "implementedOperationMappingComplete": true,
+    "ownedTargetProtocolSourceComplete": true,
+    "nativeSourceMappingComplete": true,
+    "publicApiInventoryComplete": true,
+    "repositoryControlledDocumentationGapsClosed": true,
+    "repositoryControlledMappingGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "sourceRootPresent": true,
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "deploymentQualificationComplete": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false
+  },
+  "sourceIdentityPolicy": "historical_committed_provenance_plus_runtime_exact_git_candidate_v1",
+  "observedAtHead": {
+    "commit": "56db98219c75491aeb5ce93a660b9b23109a045d",
+    "tree": "c03d4cb5724095e06fa22ad85cf94ea650196bce"
+  },
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-types"
+  ],
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-ndu/src/numeric_admission.rs",
+      "nativeSymbol": "NduNumericRegistryV1::admit_utility_signal",
+      "state": "registered_consumer"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-ndu/src/owner.rs",
+      "nativeSymbol": "NduAuthenticatedOwnerV1::admit_utility_signal",
+      "state": "authenticated_owner_consumer"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-ndu/src/owner_numeric_snapshot.rs",
+      "nativeSymbol": "NduAuthenticatedOwnerV1::verify_utility_signal_v2",
+      "state": "owner_pinned_numeric_v2_final_use_consumer"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-ndu/src/random_stream_owner.rs",
+      "nativeSymbol": "admit_ndu_random_stream_manifest_v1",
+      "state": "random_stream_manifest_owner"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/ledger.rs",
+      "nativeSymbol": "LedgerWriter::append_runtime_prompt_delivery_v1",
+      "state": "durable_prompt_delivery_consumer"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-supervisor/src/module_runtime.rs",
+      "nativeSymbol": "RuntimeModuleSupervisorV1::register_selected_topology_candidate",
+      "state": "runtime_topology_consumer"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-supervisor/src/platform_manifest_admission.rs",
+      "nativeSymbol": "admit_external_system_manifest_v1",
+      "state": "external_system_manifest_owner"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-supervisor/src/platform_manifest_admission.rs",
+      "nativeSymbol": "admit_sensor_calibration_manifest_v1",
+      "state": "sensor_calibration_manifest_owner"
+    }
+  ],
+  "exactSourceEvidenceMode": "lane_a_runtime_head_tree_and_registered_callers",
+  "sourceRoot": [
+    "codex-rs/hepta-types"
+  ],
+  "sourceBaseRole": "historical integration provenance only; it is not the self-referential candidate commit and is never accepted as a qualification receipt",
+  "observedAtHeadRole": "historical committed observation only; authoritative currentness is emitted at runtime from the exact checked-out Git commit/tree and document digests",
+  "exactCandidateBinding": {
+    "policy": "runtime_exact_git_candidate_v1",
+    "generator": "scripts/platform_types_implementation_map.py",
+    "bindingFields": [
+      "commit",
+      "tree",
+      "publicApiInventorySha256",
+      "detailedImplementationMapSha256"
+    ],
+    "requiredFor": [
+      "source-head",
+      "synthetic-merge"
+    ],
+    "interchangeability": "forbidden"
+  }
+}

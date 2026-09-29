@@ -23,11 +23,12 @@ semantic commitments, not execution, authenticated registry publication,
 deployment or release. `platform.wire` owns strict JSON transport. NDU and the
 runtime supervisor own product-specific manifest admission.
 
-The legacy top-level ownership projection is
-`docs/modules/platform.types/PUBLIC_API_INVENTORY_V1.json`; the module truth
+The closed-world top-level ownership projection is
+`docs/modules/platform.types/PUBLIC_API_INVENTORY_V1.json`; it covers exact
+`pub use` exports and exact public `pub mod` declarations. The module truth
 matrix is `docs/lane-a-foundation/platform.types/TRUTH_MATRIX_V1.json`.
 Complete public API evidence is rustdoc-derived per candidate rather than
-inferred from top-level re-exports alone.
+inferred from top-level exports alone.
 
 ## 2. Versioned protocol contracts
 

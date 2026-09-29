@@ -132,10 +132,7 @@ def expected_map(expected_sha: str | None = None) -> dict[str, Any]:
             "python3 scripts/platform_types_implementation_map.py "
             "--expected-sha <candidate-sha> --output <candidate-artifact-path>"
         ),
-        "coveragePolicy": (
-            "every exact pub-use export is assigned to exactly one "
-            "implementation operation and source path"
-        ),
+        "coveragePolicy": inventory["coveragePolicy"],
         "candidateBinding": _candidate_binding(expected_sha),
         "exportCount": inventory["exportCount"],
         "operationCount": inventory["operationCount"],
@@ -180,7 +177,7 @@ def _validate_detailed_map(generated: dict[str, Any]) -> None:
     reference = detailed.get("publicApiInventory")
     expected_reference = {
         "path": INVENTORY_RELATIVE,
-        "coveragePolicy": "closed_world_exact_pub_use_exports",
+        "coveragePolicy": generated["coveragePolicy"],
         "exportCount": generated["exportCount"],
         "operationCount": generated["operationCount"],
     }

@@ -23,6 +23,12 @@ PUB_USE = re.compile(
     r"^pub use (?P<module>[a-z_][a-z0-9_]*)::"
     r"(?P<symbol>[A-Za-z_][A-Za-z0-9_]*);$"
 )
+PUB_MOD = re.compile(r"^pub mod (?P<module>[a-z_][a-z0-9_]*);$")
+PUBLIC_MODULE_OWNERS: dict[str, str] = {
+    "numeric_registry_v2": "registered_numeric_conversion_v2",
+    "prompt_delivery_v2": "prompt_delivery_observation_v2",
+    "protocol_catalog_v2": "protocol_catalog_v2",
+}
 SYMBOL_OWNERS: dict[str, tuple[str, str]] = {
     "AuthorityFlagsV1": ("identity", "raw_authority_ingress"),
     "AuthorityPosture": ("identity", "raw_authority_ingress"),
@@ -105,7 +111,7 @@ SYMBOL_OWNERS: dict[str, tuple[str, str]] = {
 }
 INVENTORY_RELATIVE = "docs/modules/platform.types/PUBLIC_API_INVENTORY_V1.json"
 TRUTH_MATRIX_RELATIVE = "docs/lane-a-foundation/platform.types/TRUTH_MATRIX_V1.json"
-COVERAGE_POLICY = "closed_world_exact_pub_use_exports"
+COVERAGE_POLICY = "closed_world_exact_pub_use_and_pub_mod_exports"
 
 
 class PublicApiInventoryError(RuntimeError):
@@ -118,36 +124,68 @@ def _exports() -> list[dict[str, str]]:
     except OSError as error:
         raise PublicApiInventoryError(f"cannot read {LIB_PATH}: {error}") from error
     rows: list[dict[str, str]] = []
+    module_rows: list[dict[str, str]] = []
     seen: set[str] = set()
+    seen_public_modules: set[str] = set()
     for line_number, raw in enumerate(lines, 1):
         line = raw.strip()
-        if not line.startswith("pub use "):
+        if line.startswith("pub use "):
+            match = PUB_USE.fullmatch(line)
+            if match is None:
+                raise PublicApiInventoryError(
+                    f"unsupported public export syntax at lib.rs:{line_number}: {line}"
+                )
+            module = match.group("module")
+            symbol = match.group("symbol")
+            if symbol in seen:
+                raise PublicApiInventoryError(f"duplicate public symbol: {symbol}")
+            seen.add(symbol)
+            owner = SYMBOL_OWNERS.get(symbol)
+            if owner is None:
+                raise PublicApiInventoryError(
+                    f"unregistered public symbol {symbol} from {module}; "
+                    "assign an explicit operation owner before exporting it"
+                )
+            expected_module, operation = owner
+            if module != expected_module:
+                raise PublicApiInventoryError(
+                    f"{symbol} moved from {expected_module} to {module} without "
+                    "an inventory ownership update"
+                )
+            rows.append(
+                {
+                    "symbol": symbol,
+                    "sourceModule": module,
+                    "sourcePath": f"codex-rs/hepta-types/src/{module}.rs",
+                    "operation": operation,
+                }
+            )
             continue
-        match = PUB_USE.fullmatch(line)
+        if not line.startswith("pub mod "):
+            continue
+        match = PUB_MOD.fullmatch(line)
         if match is None:
             raise PublicApiInventoryError(
-                f"unsupported public export syntax at lib.rs:{line_number}: {line}"
+                f"unsupported public module syntax at lib.rs:{line_number}: {line}"
             )
         module = match.group("module")
-        symbol = match.group("symbol")
-        if symbol in seen:
-            raise PublicApiInventoryError(f"duplicate public symbol: {symbol}")
-        seen.add(symbol)
-        owner = SYMBOL_OWNERS.get(symbol)
-        if owner is None:
+        if module in seen_public_modules:
+            raise PublicApiInventoryError(f"duplicate public module: {module}")
+        seen_public_modules.add(module)
+        operation = PUBLIC_MODULE_OWNERS.get(module)
+        if operation is None:
             raise PublicApiInventoryError(
-                f"unregistered public symbol {symbol} from {module}; "
+                f"unregistered public module {module}; "
                 "assign an explicit operation owner before exporting it"
             )
-        expected_module, operation = owner
-        if module != expected_module:
+        if module in seen:
             raise PublicApiInventoryError(
-                f"{symbol} moved from {expected_module} to {module} without "
-                "an inventory ownership update"
+                f"public module name collides with public symbol: {module}"
             )
-        rows.append(
+        seen.add(module)
+        module_rows.append(
             {
-                "symbol": symbol,
+                "symbol": module,
                 "sourceModule": module,
                 "sourcePath": f"codex-rs/hepta-types/src/{module}.rs",
                 "operation": operation,
@@ -158,6 +196,13 @@ def _exports() -> list[dict[str, str]]:
         raise PublicApiInventoryError(
             "registered public symbols no longer exported: " + ", ".join(orphaned)
         )
+    orphaned_modules = sorted(set(PUBLIC_MODULE_OWNERS) - seen_public_modules)
+    if orphaned_modules:
+        raise PublicApiInventoryError(
+            "registered public modules no longer exported: "
+            + ", ".join(orphaned_modules)
+        )
+    rows.extend(module_rows)
     if not rows:
         raise PublicApiInventoryError("no public exports found")
     return rows
@@ -190,6 +235,7 @@ def expected_inventory() -> dict[str, Any]:
         "generatedFrom": "codex-rs/hepta-types/src/lib.rs",
         "generationCommand": "python3 scripts/platform_types_public_api.py --write",
         "coveragePolicy": COVERAGE_POLICY,
+        "topLevelExportForms": ["pub use", "pub mod"],
         "provenancePolicy": (
             "committed inventory is content-derived; exact candidate SHA and tree "
             "are injected into Lane A qualification artifacts"
