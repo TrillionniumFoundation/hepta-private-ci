@@ -99,6 +99,19 @@ class MeasurementsTests(unittest.TestCase):
             {"p50": 14, "p95": 14, "p99": 14},
         )
         self.assertEqual(
+            result["phase_share_basis_points"]["receipt_encode"],
+            {"p50": 1538, "p95": 3478, "p99": 4000},
+        )
+        self.assertEqual(
+            result["phase_share_basis_points"]["full_receipt_materialize"],
+            {"p50": 577, "p95": 1304, "p99": 1500},
+        )
+        self.assertEqual(
+            result["phase_share_basis_points"]["summed_sync"],
+            {"p50": 2692, "p95": 6087, "p99": 7000},
+        )
+        self.assertTrue(result["phase_shares_are_independent"])
+        self.assertEqual(
             result["generation_store_growth_bytes"],
             {"p50": 300, "p95": 300, "p99": 300},
         )
@@ -146,6 +159,12 @@ class MeasurementsTests(unittest.TestCase):
     def test_sync_cannot_exceed_enclosing_commit_phase(self):
         samples = self.samples()
         samples[0]["measurement"]["store_commit_micros"] = 4
+        with self.assertRaises(ValueError):
+            summarize(samples, "a" * 40)
+
+    def test_phase_cannot_exceed_total_request_time(self):
+        samples = self.samples()
+        samples[0]["measurement"]["receipt_encode_micros"] = 21
         with self.assertRaises(ValueError):
             summarize(samples, "a" * 40)
 

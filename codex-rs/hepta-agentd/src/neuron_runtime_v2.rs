@@ -54,5 +54,6 @@ include!("neuron_runtime_v2_operational.rs");
 include!("neuron_runtime_v2_errors.rs");
 include!("neuron_runtime_v2_durable_state.rs");
 include!("neuron_runtime_v2_controller.rs");
+include!("neuron_runtime_v2_startup_recovery.rs");
 include!("neuron_runtime_v2_failed_recovery.rs");
 include!("neuron_runtime_v2_modules.rs");

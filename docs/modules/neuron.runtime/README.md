@@ -8,24 +8,28 @@ from being mistaken for the current implementation contract.
    the four permission boundaries, preserving versus quiesce-closing recovery,
    invocation epoch fencing, daemon restart reconstruction, generation handoff
    and actionable signals.
-2. [`V2_DURABLE_CONTROL_STATE.md`](V2_DURABLE_CONTROL_STATE.md) — checksummed
+2. [`V2_STARTUP_RECOVERY.md`](V2_STARTUP_RECOVERY.md) — exact startup readiness
+   postcondition, lifecycle-aware recovery policy, explicit fenced closure and
+   cross-platform evidence identity.
+3. [`V2_DURABLE_CONTROL_STATE.md`](V2_DURABLE_CONTROL_STATE.md) — checksummed
    Agentd lifecycle/topology state, atomic publication ordering and interrupted
    generation-handoff restart resolution.
-3. [`V2_DEVELOPMENT.md`](V2_DEVELOPMENT.md) — durable operation lifecycle,
+4. [`V2_DEVELOPMENT.md`](V2_DEVELOPMENT.md) — durable operation lifecycle,
    filesystem boundary, measurement model and backend qualification details.
-4. [`V2_RUNBOOK.md`](V2_RUNBOOK.md) — operation-state handling, capacity actions,
+5. [`V2_RUNBOOK.md`](V2_RUNBOOK.md) — operation-state handling, capacity actions,
    incident recovery and safe generation handoff without history deletion.
-5. [`TECHNICAL.md`](TECHNICAL.md) — Sparse Q24 mechanism, core data structures,
+6. [`TECHNICAL.md`](TECHNICAL.md) — Sparse Q24 mechanism, core data structures,
    model/body binding and the broader technical reference.
-6. [`../../../qualification/module-execution-dossiers/detail/neuron.runtime.md`](../../../qualification/module-execution-dossiers/detail/neuron.runtime.md)
+7. [`../../../qualification/module-execution-dossiers/detail/neuron.runtime.md`](../../../qualification/module-execution-dossiers/detail/neuron.runtime.md)
    — qualification scope and claim boundary.
 
 `V2_CONTROL_PLANE.md` is authoritative where an older lifecycle paragraph in a
-broader development note is less specific. `V2_DURABLE_CONTROL_STATE.md` is
-authoritative for Agentd state-file publication and restart resolution.
-`GAP_ANALYSIS.md` was a historical working ledger and is not present on the
-current convergence head. Do not treat links or checkboxes from an earlier head
-as current implementation or execution evidence.
+broader development note is less specific. `V2_STARTUP_RECOVERY.md` is
+authoritative for startup readiness and recovery while the execution gate is
+closed. `V2_DURABLE_CONTROL_STATE.md` is authoritative for Agentd state-file
+publication and restart resolution. `GAP_ANALYSIS.md` was a historical working
+ledger and is not present on the current convergence head. Do not treat links or
+checkboxes from an earlier head as current implementation or execution evidence.
 
 ## Current authority boundary
 
@@ -43,11 +47,16 @@ remain separate evidence and decision gates.
 
 - `tick_guarded`: admits new work, preserves observed provider truth, then applies
   a final current-use fence before returning the result;
-- `recover_operation`: converges one exact reserved operation without creating a
-  reservation or calling provider `execute`; in serving/startup mode it preserves
-  a proven-unexecuted operation for a later live-admitted resume;
-- `close_unexecuted_operation`: quiesce-only administrative closure for a proven
-  unexecuted reservation or authoritative provider `NotStarted` result;
+- runtime `recover_operation`: converges one exact reserved operation without
+  creating a reservation or calling provider `execute`;
+- controller `recover_existing_operation`: applies one explicit lifecycle policy:
+  preserve in `Starting`/`Serving`, close only proven-unexecuted work in
+  `Quiescing`, and reject unrelated lifecycle states;
+- controller `close_unexecuted_operation`: explicit fenced closure available only
+  in `Starting` or `Quiescing`; unknown provider outcomes remain pending;
+- `AgentdNeuronHandleV2::reconcile_control`: requires local reconciliation plus no
+  pending operation and no pending witness acknowledgement before lifecycle
+  readiness is reported;
 - `query_input_operation` / `query_operation`: determine exact operation state;
 - `query_result_guarded`: applies current-use authorization to an immutable local
   result without provider work;
@@ -58,8 +67,13 @@ remain separate evidence and decision gates.
   `schedule_generation_handoff` or `backpressure`;
 - `last_measurement`: provider, transition, encoding, store, index, witness and
   final-use phase diagnostics, including measured sync/non-sync separation;
+- diagnostic summaries expose independent basis-point shares of request time for
+  encoding, full-receipt materialization and measured sync boundaries; nested
+  shares overlap and are not additive;
 - `AgentdNeuronGenerationControllerV2`: `Starting -> Serving -> Quiescing ->
   Sealed -> Reloading -> Serving`, with old generations retained for queries;
+- `start` keeps every gate closed and returns `pending_recovery` while the active
+  or any retained generation has unresolved operation or witness work;
 - prepared invocations capture a live execution epoch and revalidate it while
   entering the owner; quiesce invalidates stale invocations and seal requires an
   exclusive drain proof;
@@ -83,9 +97,14 @@ remain separate evidence and decision gates.
 
 The Neuron qualification lanes compile and lint all Agentd targets, but execute
 only Agentd tests owned by `neuron_runtime_v2`. This prevents an unrelated shared
-Agentd owner from falsifying the Neuron module result. Repository-wide CI still
-owns the complete Agentd test suite. Every pass claim remains bound to the exact
-source SHA, integration base, candidate tree and retained logs.
+Agentd owner from falsifying the Neuron module result. Worker-host tests build and
+bind the actual same-candidate Codex executable. Repository-wide CI still owns the
+complete Agentd test suite.
+
+Every lane rejects both tracked and untracked source mutation. Diagnostic samples
+are bound to the actual tested commit, so a deterministic synthetic merge is not
+mislabelled as the source-branch SHA. Every pass claim remains bound to the exact
+source SHA, integration base, tested commit, candidate tree and retained logs.
 
 For any ambiguous result, start with the exact operation key and follow the
 runbook. Never recover capacity by deleting or reinterpreting V2 history.

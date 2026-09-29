@@ -9,6 +9,7 @@ on:
       - "codex-rs/hepta-neuron/**"
       - "codex-rs/hepta-agentd/**"
       - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
       - "codex-rs/hepta-intelligence/**"
       - "codex-rs/hepta-types/**"
       - "codex-rs/Cargo.toml"
@@ -16,6 +17,7 @@ on:
       - "codex-rs/rust-toolchain*"
       - "scripts/neuron/**"
       - "docs/modules/neuron.runtime/**"
+      - ".github/scripts/check_ci_results.py"
       - ".github/workflows/neuron-runtime-closure*.yml"
 
 permissions:
@@ -35,7 +37,7 @@ jobs:
   qualification:
     name: Neuron macOS closure (${{ matrix.lane }})
     runs-on: macos-15
-    timeout-minutes: 55
+    timeout-minutes: 70
     strategy:
       fail-fast: false
       matrix:
@@ -68,6 +70,7 @@ jobs:
           printf 'tested_commit=%s\ntested_tree=%s\nsource=%s\nbase=%s\nlane=%s\n' \
             "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})" \
             "$SOURCE_SHA" "$BASE_SHA" '${{ matrix.lane }}'
+          test -z "$(git status --porcelain --untracked-files=all)"
 
       - name: Install pinned repository test tools
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
@@ -80,28 +83,53 @@ jobs:
           set -euo pipefail
           log="$RUNNER_TEMP/neuron-runtime-macos-closure.log"
           exec > >(tee "$log") 2>&1
-          printf 'tested_commit=%s\ntested_tree=%s\n' "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})"
+          printf 'tested_commit=%s\ntested_tree=%s\n' \
+            "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})"
           rustc --version
           cargo --version
           python3 --version
           python3 scripts/verify_cargo_lock.py
           python3 -m unittest discover -v -s scripts/neuron -p 'test_*.py'
+
           cd codex-rs
           cargo metadata --locked --format-version=1 >/dev/null
-          cargo check --locked -p codex-hepta-neuron -p codex-hepta-agentd --all-targets
+          cargo check --locked \
+            -p codex-hepta-neuron \
+            -p codex-hepta-agentd \
+            -p codex-hepta-infer-worker-host \
+            --all-targets
+          cargo build --locked -p codex-cli --bin codex
+          export CARGO_BIN_EXE_codex="$(
+            cargo metadata --locked --format-version=1 --no-deps |
+              python3 -c 'import json,sys; print(json.load(sys.stdin)["target_directory"] + "/debug/codex")'
+          )"
+          test -x "$CARGO_BIN_EXE_codex"
 
           # Keep the architecture lane owned by Neuron. Agentd is still fully
           # compiled/linted; only Neuron V2 tests execute here.
-          just test --locked --retries 0 -p codex-hepta-neuron
+          just test --locked --retries 0 \
+            -p codex-hepta-neuron \
+            -p codex-hepta-infer-core \
+            -p codex-hepta-infer-worker-host
           just test --locked --retries 0 -p codex-hepta-agentd \
             -E 'test(/neuron_runtime_v2/)'
 
-          cargo clippy --locked -p codex-hepta-neuron -p codex-hepta-agentd --all-targets -- -D warnings
-          cargo fmt --package codex-hepta-neuron --package codex-hepta-agentd -- --check
+          cargo clippy --locked \
+            -p codex-hepta-neuron \
+            -p codex-hepta-agentd \
+            -p codex-hepta-infer-worker-host \
+            --all-targets -- -D warnings
+          cargo fmt \
+            --package codex-hepta-neuron \
+            --package codex-hepta-agentd \
+            --package codex-hepta-infer-core \
+            --package codex-hepta-infer-worker-host \
+            -- --check
           cd ..
+
           git diff --check
           git diff --exit-code
-          test -z "$(git status --porcelain --untracked-files=no)"
+          test -z "$(git status --porcelain --untracked-files=all)"
 
       - name: Retain exact macOS evidence
         if: always()
@@ -119,4 +147,22 @@ jobs:
           set -euo pipefail
           git diff --check
           git diff --exit-code
-          test -z "$(git status --porcelain --untracked-files=no)"
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+  qualification-result:
+    name: Neuron macOS closure result
+    if: ${{ always() }}
+    needs: [qualification]
+    runs-on: macos-15
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Require every exact-tree lane
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+          EXPECTED_NEEDS: '["qualification"]'
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/check_ci_results.py

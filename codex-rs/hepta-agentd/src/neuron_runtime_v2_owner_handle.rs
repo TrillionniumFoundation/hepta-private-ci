@@ -50,8 +50,20 @@ impl AgentdNeuronHandleV2 {
         self.owner.reconcile()
     }
 
+    /// Reconcile local durable obligations and prove that no operation or
+    /// witness acknowledgement remains pending before a lifecycle transition.
+    ///
+    /// This postcondition is intentionally stronger than the compatibility
+    /// `reconcile()` method: daemon start, seal and generation handoff must not
+    /// open an execution gate while exact recovery is still required.
     pub fn reconcile_control(&self) -> Result<(), AgentdNeuronControlErrorV2> {
-        self.owner.reconcile_control()
+        self.owner.reconcile_control()?;
+        let snapshot = self.owner.operational_snapshot_control()?;
+        if snapshot.pending_operation_code.is_some() || snapshot.pending_witness_count != 0 {
+            Err(AgentdNeuronControlErrorV2::PendingRecovery)
+        } else {
+            Ok(())
+        }
     }
 
     /// Query exact operation truth through the same serialized product owner.

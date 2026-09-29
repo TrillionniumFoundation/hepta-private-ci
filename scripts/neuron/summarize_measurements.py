@@ -17,6 +17,12 @@ def percentile(values: list[int], fraction: float) -> int:
     return sorted(values)[max(0, math.ceil(len(values) * fraction) - 1)]
 
 
+def basis_points(part: int, whole: int) -> int:
+    if part < 0 or whole <= 0 or part > whole:
+        raise ValueError("invalid phase share")
+    return (part * 10_000 + whole // 2) // whole
+
+
 def summarize(
     samples: list[dict[str, Any]], expected_source: str, minimum: int = 64
 ) -> dict[str, Any]:
@@ -44,6 +50,12 @@ def summarize(
     index_sync: list[int] = []
     witness_sync: list[int] = []
     summed_sync: list[int] = []
+    receipt_encode_share: list[int] = []
+    full_receipt_materialize_share: list[int] = []
+    store_sync_share: list[int] = []
+    index_sync_share: list[int] = []
+    witness_sync_share: list[int] = []
+    summed_sync_share: list[int] = []
     store_growth: list[int] = []
     index_growth: list[int] = []
     combined_growth: list[int] = []
@@ -77,6 +89,8 @@ def summarize(
             index_commit_micros,
         ) < 0 or materialize_micros > encode_micros:
             raise ValueError("invalid phase measurement")
+        if max(encode_micros, store_commit_micros, index_commit_micros) > total_micros:
+            raise ValueError("phase duration exceeds total request time")
 
         latency.append(total_micros)
         recovery.append(sample["recovery_micros"])
@@ -122,6 +136,14 @@ def summarize(
         witness_sync.append(witness["sync_micros"])
         summed_sync.append(measured_sync)
         non_sync_latency.append(total_micros - measured_sync)
+        receipt_encode_share.append(basis_points(encode_micros, total_micros))
+        full_receipt_materialize_share.append(
+            basis_points(materialize_micros, total_micros)
+        )
+        store_sync_share.append(basis_points(phase_sync["store"], total_micros))
+        index_sync_share.append(basis_points(phase_sync["index"], total_micros))
+        witness_sync_share.append(basis_points(witness["sync_micros"], total_micros))
+        summed_sync_share.append(basis_points(measured_sync, total_micros))
         store_growth.append(phase_growth["store"])
         index_growth.append(phase_growth["index"])
         combined_growth.append(phase_growth["store"] + phase_growth["index"])
@@ -155,6 +177,16 @@ def summarize(
         "index_sync_micros_per_request": quantiles(index_sync),
         "witness_sync_micros_per_request": quantiles(witness_sync),
         "summed_sync_micros_per_request": quantiles(summed_sync),
+        "phase_share_scale": "basis_points_of_request_total",
+        "phase_shares_are_independent": True,
+        "phase_share_basis_points": {
+            "receipt_encode": quantiles(receipt_encode_share),
+            "full_receipt_materialize": quantiles(full_receipt_materialize_share),
+            "store_sync": quantiles(store_sync_share),
+            "index_sync": quantiles(index_sync_share),
+            "witness_sync": quantiles(witness_sync_share),
+            "summed_sync": quantiles(summed_sync_share),
+        },
         "generation_store_growth_bytes": quantiles(store_growth),
         "runtime_index_growth_bytes": quantiles(index_growth),
         "generation_plus_index_growth_bytes": quantiles(combined_growth),
