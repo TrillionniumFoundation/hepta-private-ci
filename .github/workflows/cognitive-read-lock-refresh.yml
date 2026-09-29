@@ -41,7 +41,7 @@ jobs:
     # Source authoring remains on a GitHub-hosted runner. The repository's
     # self-hosted target machines are not exposed to branch-authored code, and
     # qualification/target-host acceptance remain separate workflows.
-    runs-on: macos-15
+    runs-on: macos-15-xlarge
     timeout-minutes: 45
     permissions:
       contents: write
