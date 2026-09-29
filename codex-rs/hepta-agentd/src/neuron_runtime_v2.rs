@@ -29,6 +29,8 @@ use std::sync::atomic::Ordering;
 use std::time::Instant;
 
 use codex_hepta_neuron::AnchorWitnessStore;
+use codex_hepta_neuron::DecisionCellInvocationV2;
+use codex_hepta_neuron::DecisionCellRuntimeV2Error;
 use codex_hepta_neuron::DurableInferenceControlModelPort;
 use codex_hepta_neuron::DurableNeuronInferenceControlPort;
 use codex_hepta_neuron::NeuronAdmissionError;
@@ -57,3 +59,5 @@ include!("neuron_runtime_v2_controller.rs");
 include!("neuron_runtime_v2_startup_recovery.rs");
 include!("neuron_runtime_v2_failed_recovery.rs");
 include!("neuron_runtime_v2_modules.rs");
+#[path = "neuron_runtime_v2_decision_cell.rs"]
+mod decision_cell;

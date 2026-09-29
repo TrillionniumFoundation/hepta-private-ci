@@ -83,6 +83,25 @@ pub use lifecycle::NeuronOperationStatusV2;
 /// before physical dispatch and reconciles dispatched operations without blind
 /// re-execution. There is intentionally no blanket implementation.
 pub trait DurableNeuronInferenceControlPort: NeuronInferenceControlPort {
+    /// Execute all typed heads and transition tensors under this same durable
+    /// inference owner. Unsupported implementations reject before physical work;
+    /// they must never route a typed request through the untyped feature path.
+    fn execute_decision_cell(
+        &mut self,
+        _request: &codex_hepta_infer_core::DecisionCellRequestV1,
+    ) -> Result<crate::DecisionCellModelExecutionV2, crate::DecisionCellModelFailureV2> {
+        Err(crate::DecisionCellModelFailureV2::Rejected)
+    }
+
+    /// Observe the original typed operation without inference or result-use
+    /// authority. Missing typed capability/history is not a no-dispatch proof.
+    fn reconcile_decision_cell(
+        &mut self,
+        _request: &codex_hepta_infer_core::DecisionCellRequestV1,
+    ) -> Result<crate::DecisionCellModelResolutionV2, crate::DecisionCellModelFailureV2> {
+        Ok(crate::DecisionCellModelResolutionV2::Unknown)
+    }
+
     /// Query the exact operation without starting physical work. `NotStarted`
     /// requires an authoritative, current no-dispatch observation under the
     /// same durable owner. Missing history is not proof of non-execution.
@@ -136,7 +155,7 @@ pub enum NeuronModelResolutionV2 {
 }
 
 pub struct DurableInferenceControlModelPort<'a, P: DurableNeuronInferenceControlPort> {
-    control: &'a mut P,
+    pub(crate) control: &'a mut P,
 }
 
 impl<'a, P: DurableNeuronInferenceControlPort> DurableInferenceControlModelPort<'a, P> {

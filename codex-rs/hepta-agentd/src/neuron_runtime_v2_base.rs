@@ -55,13 +55,11 @@ impl AgentdNeuronExecutionGateV2 {
         Ok(epoch)
     }
 
-    fn enter(
-        &self,
-        expected_epoch: u64,
-    ) -> Result<RwLockReadGuard<'_, ()>, NeuronRuntimeV2Error> {
-        let guard = self.in_flight.read().map_err(|_| {
-            NeuronRuntimeV2Error::Index(NeuronRuntimeIndexError::Poisoned)
-        })?;
+    fn enter(&self, expected_epoch: u64) -> Result<RwLockReadGuard<'_, ()>, NeuronRuntimeV2Error> {
+        let guard = self
+            .in_flight
+            .read()
+            .map_err(|_| NeuronRuntimeV2Error::Index(NeuronRuntimeIndexError::Poisoned))?;
         if !self.accepting_new_work.load(Ordering::Acquire)
             || self.epoch.load(Ordering::Acquire) != expected_epoch
         {
@@ -130,12 +128,19 @@ pub struct AgentdNeuronHandleV2 {
 }
 
 #[derive(Clone)]
+enum AgentdNeuronInvocationContextV2 {
+    Neuron,
+    DecisionCell(Box<DecisionCellInvocationV2>),
+}
+
+#[derive(Clone)]
 pub struct AgentdNeuronInvocationV2 {
     handle: AgentdNeuronHandleV2,
     run_id: StableId,
     runtime_body_digest: Digest32,
     input: NeuronTickInputV1,
     lifecycle_epoch: u64,
+    context: AgentdNeuronInvocationContextV2,
 }
 
 struct GuardedOwnerV2<W, P, G>
@@ -173,9 +178,7 @@ impl AgentdNeuronCounterStoreV2 {
             stale_invocation_rejections: self.stale_invocation_rejections.load(Ordering::Relaxed),
             runtime_admission_denials: self.runtime_admission_denials.load(Ordering::Relaxed),
             recovery_attempts: self.recovery_attempts.load(Ordering::Relaxed),
-            recovery_preserve_requests: self
-                .recovery_preserve_requests
-                .load(Ordering::Relaxed),
+            recovery_preserve_requests: self.recovery_preserve_requests.load(Ordering::Relaxed),
             recovery_close_requests: self.recovery_close_requests.load(Ordering::Relaxed),
             recovery_converged: self.recovery_converged.load(Ordering::Relaxed),
             recovery_pending: self.recovery_pending.load(Ordering::Relaxed),
@@ -204,6 +207,43 @@ where
 }
 
 trait ProductNeuronOwnerV2: Send + Sync {
+    fn execute_decision_cell(
+        &self,
+        _invocation: &DecisionCellInvocationV2,
+        _input: NeuronTickInputV1,
+        _guard: &mut dyn NeuronAdmissionGuard,
+    ) -> Result<NeuronRuntimeCommitV2, NeuronRuntimeV2Error> {
+        Err(NeuronRuntimeV2Error::Admission(
+            NeuronAdmissionError::BindingMismatch,
+        ))
+    }
+
+    fn query_decision_cell_operation(
+        &self,
+        _invocation: &DecisionCellInvocationV2,
+        _input: &NeuronTickInputV1,
+    ) -> Result<NeuronOperationStatusV2, NeuronRuntimeV2Error> {
+        Err(NeuronRuntimeV2Error::PendingOperation)
+    }
+
+    fn query_decision_cell_result_guarded(
+        &self,
+        _invocation: &DecisionCellInvocationV2,
+        _input: &NeuronTickInputV1,
+        _guard: &mut dyn NeuronAdmissionGuard,
+    ) -> Result<Option<NeuronRuntimeCommitV2>, NeuronRuntimeV2Error> {
+        Err(NeuronRuntimeV2Error::PendingOperation)
+    }
+
+    fn recover_decision_cell_control(
+        &self,
+        _invocation: &DecisionCellInvocationV2,
+        _input: &NeuronTickInputV1,
+        _policy: AgentdNeuronRecoveryPolicyV2,
+    ) -> Result<NeuronOperationStatusV2, AgentdNeuronControlErrorV2> {
+        Err(AgentdNeuronControlErrorV2::PendingRecovery)
+    }
+
     fn execute(
         &self,
         input: NeuronTickInputV1,
@@ -232,7 +272,8 @@ trait ProductNeuronOwnerV2: Send + Sync {
     fn reconcile(&self) -> Result<(), NeuronRuntimeV2Error>;
 
     fn reconcile_control(&self) -> Result<(), AgentdNeuronControlErrorV2> {
-        self.reconcile().map_err(AgentdNeuronControlErrorV2::Runtime)
+        self.reconcile()
+            .map_err(AgentdNeuronControlErrorV2::Runtime)
     }
 
     fn query_operation(
@@ -316,8 +357,7 @@ fn compatibility_error(error: AgentdNeuronControlErrorV2) -> NeuronRuntimeV2Erro
         | AgentdNeuronControlErrorV2::ControllerPoisoned => {
             NeuronRuntimeV2Error::Index(NeuronRuntimeIndexError::Poisoned)
         }
-        AgentdNeuronControlErrorV2::OwnerBusy
-        | AgentdNeuronControlErrorV2::ControllerBusy => {
+        AgentdNeuronControlErrorV2::OwnerBusy | AgentdNeuronControlErrorV2::ControllerBusy => {
             NeuronRuntimeV2Error::Admission(NeuronAdmissionError::Unavailable)
         }
         AgentdNeuronControlErrorV2::PendingRecovery => NeuronRuntimeV2Error::PendingOperation,

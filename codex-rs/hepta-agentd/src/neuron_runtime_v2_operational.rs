@@ -40,7 +40,15 @@ impl AgentdNeuronInvocationV2 {
             expected_config: self.handle.config_digest,
             inner: guard,
         };
-        self.handle.owner.execute(self.input.clone(), &mut bound)
+        match &self.context {
+            AgentdNeuronInvocationContextV2::Neuron => {
+                self.handle.owner.execute(self.input.clone(), &mut bound)
+            }
+            AgentdNeuronInvocationContextV2::DecisionCell(invocation) => self
+                .handle
+                .owner
+                .execute_decision_cell(invocation, self.input.clone(), &mut bound),
+        }
     }
 }
 
@@ -165,9 +173,7 @@ pub struct AgentdNeuronRecoveryReportV2 {
 impl AgentdNeuronRecoveryReportV2 {
     fn from_status(status: NeuronOperationStatusV2) -> Self {
         let failure_code = match &status {
-            NeuronOperationStatusV2::Failed(failure) => {
-                Some(failure.stable_code().to_owned())
-            }
+            NeuronOperationStatusV2::Failed(failure) => Some(failure.stable_code().to_owned()),
             _ => None,
         };
         let (operation_digest, witness_acknowledged) = match &status {

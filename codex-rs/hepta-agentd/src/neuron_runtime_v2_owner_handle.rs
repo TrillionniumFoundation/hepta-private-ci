@@ -3,10 +3,7 @@ where
     W: AnchorWitnessStore + Send + 'static,
     P: DurableNeuronInferenceControlPort + Send + 'static,
 {
-    pub fn into_shared<G>(
-        self,
-        admission: G,
-    ) -> Result<AgentdNeuronHandleV2, NeuronRuntimeV2Error>
+    pub fn into_shared<G>(self, admission: G) -> Result<AgentdNeuronHandleV2, NeuronRuntimeV2Error>
     where
         G: NeuronAdmissionGuard + Send + 'static,
     {
@@ -99,10 +96,7 @@ impl AgentdNeuronHandleV2 {
         &self,
         input: &NeuronTickInputV1,
     ) -> Result<AgentdNeuronRecoveryReportV2, AgentdNeuronControlErrorV2> {
-        self.recover_operation_with_policy(
-            input,
-            AgentdNeuronRecoveryPolicyV2::PreserveUnexecuted,
-        )
+        self.recover_operation_with_policy(input, AgentdNeuronRecoveryPolicyV2::PreserveUnexecuted)
     }
 
     pub(crate) fn recover_operation_with_policy(
@@ -157,7 +151,9 @@ impl AgentdNeuronHandleV2 {
         if input.tick_id != run_id
             || runtime_body_digest.is_zero()
             || !body_matches
-            || input.body_generation.is_none_or(|generation| generation == 0)
+            || input
+                .body_generation
+                .is_none_or(|generation| generation == 0)
         {
             self.owner.record_entry_rejection();
             return Err(NeuronRuntimeV2Error::Admission(
@@ -177,6 +173,7 @@ impl AgentdNeuronHandleV2 {
             runtime_body_digest,
             input,
             lifecycle_epoch,
+            context: AgentdNeuronInvocationContextV2::Neuron,
         })
     }
 

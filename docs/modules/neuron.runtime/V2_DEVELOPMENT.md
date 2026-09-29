@@ -9,7 +9,8 @@ substitute a historical SHA for that evidence.
 
 `V2_CONTROL_PLANE.md` is the authoritative product contract for the four permission
 boundaries and daemon lifecycle. In particular, ordinary recovery preserves
-proven-unexecuted work, while only a quiescing controller may close it. A prepared
+proven-unexecuted work. Explicit administrative closure requires a fenced
+`Starting` or `Quiescing` controller; ordinary serving recovery cannot close it. A prepared
 invocation is not execution authority forever: it is bound to the controller's
 live execution epoch and is rejected after quiesce or generation handoff.
 
@@ -21,6 +22,81 @@ HPTNGS02 result store and HPTNGI02 admission/discovery index. The independent
 `AnchorWitnessStore` owns accepted checkpoint frontiers. A trait implementation
 is a protocol obligation, not a cryptographic certificate or production test.
 No status or diagnostic object grants execution, selection or release authority.
+
+## Typed DecisionCell through the same Agentd owner
+
+The typed path is `AgentdNeuronHandleV2::prepare_decision_cell` (or the generation
+controller's equivalent) -> `AgentdNeuronInvocationV2` -> the existing canonical
+`prepare_with_durable_neuron_v2` runner -> `AgentdNeuronOwnerV2` ->
+`DurableInferenceControlModelPort` -> the installed
+`DurableNeuronInferenceControlPort::execute_decision_cell`. The existing untyped
+feature path remains available for ordinary Neuron ticks. There is no second
+model executor, admission gate, journal, witness owner or product runner.
+
+Preparation retains the complete `DecisionCellInvocationV2`, not a projection to
+features. At canonical stage entry the invocation checks the same run, objective,
+NDU predecessor, runtime configuration and live lifecycle epoch as the existing
+Neuron path. The same serialized owner combines installed artifact admission
+with the current stage guard before the typed runtime reserves or dispatches.
+Full typed request binding, including candidate identities, target generations,
+observation frontier, deadline and parameter/runtime tuple, is validated by the
+existing typed runtime. Contract/binding failures are admission rejections; an
+inner runtime error retains its original recovery semantics.
+
+The canonical runner currently consumes the Neuron signal projection; the full
+typed receipt remains in the same durable commit extension and can be decoded
+with `decode_decision_cell_commit_v2`. Returning a typed result does not grant
+permission to issue a browser/native effect. The effect consumer needs its own
+current authority and exact request/observation binding.
+
+The durable inference-control trait's default typed execution rejects without
+physical work. Its default typed reconciliation returns `Unknown`, never
+`NotStarted`. A feature-only backend must not silently serve a typed request via
+`execute_feature`, fill missing heads with constants, manufacture a state
+successor or infer non-execution from absent history. A real typed implementation
+must supply all required model transition tensors and observations and reconcile
+the original operation through the same durable provider owner.
+
+### Typed lifecycle and result-use APIs
+
+`AgentdNeuronGenerationControllerV2::recover_existing_decision_cell_operation`
+retains complete typed context. It preserves unexecuted work in
+`Starting`/`Serving`, closes only proven-unexecuted work in `Quiescing`, and rejects
+other lifecycle states. `close_unexecuted_decision_cell_operation` is an explicit
+administrative operation restricted to `Starting`/`Quiescing`. Both hold the
+controller lifecycle lock through the serialized owner operation, so admission
+cannot reopen between checking the closing policy and performing closure.
+Unknown provider outcomes still block startup and sealing. These APIs never call
+provider inference or create a reservation.
+
+The handle's `recover_decision_cell_operation` is the preserving recovery profile.
+`query_decision_cell_operation` reads exact operation truth without authorizing
+its use. `query_decision_cell_result_guarded` releases a retained result only after
+both installed artifact admission and the caller's current-use guard succeed;
+it performs no provider execution. Post-observation revocation does not erase
+committed truth or permit redispatch. All typed recovery and result-use operations
+use the existing owner lock and operational counters.
+
+### Acceptance and remaining implementation boundary
+
+`decision_cell_control_port_tests.rs` exercises lost-reply reconciliation after
+real store/index reopen and rejects an untyped fallback. Agentd's
+`neuron_runtime_v2_decision_cell_*tests.rs` exercises canonical stage dispatch,
+exact retry/reopen, startup recovery, quiesce/retirement fencing, unknown versus
+proven-unexecuted closure, post-observation revocation and context substitution.
+Those tests use actual V2 files and an explicitly deterministic model/witness
+fixture. They do not establish trained-model selection, production witness
+qualification or a deployed daemon model loop.
+
+The frozen-encoder Python worker and tensor-consumption experiments are separate
+from this ordinary Rust owner path. The concrete provider integration must bind
+actual checkpoint/adapter/head bytes, supply the full transition/head contract,
+retain complete operation identity across process loss, and pass the same tests
+with a real same-candidate worker. A stateless four-target experiment cannot fill
+missing recurrent/parameter heads by assertion. Backend selection, live V2
+migration and rollback, independently calibrated OOD trust, actual motor-consumer
+acceptance and prospective future-window efficacy remain separate qualification
+and release decisions. No existing history is rewritten by this API extension.
 
 ## Four permission boundaries
 
@@ -38,7 +114,8 @@ failure into “retry the tick”:
 4. **Result-use authorization** — `query_result_guarded` performs no provider work
    and releases an immutable committed result only after a current guard check.
 
-`close_unexecuted_operation` is a separate quiesce-only administrative boundary.
+`close_unexecuted_operation` is a separate fenced administrative boundary,
+available only in `Starting` or `Quiescing`.
 It may write terminal `AdmissionDenied` history for an undispatched reservation or
 an authoritative provider `NotStarted` result so a generation can seal without
 silently dropping identity. It cannot close an unknown provider outcome.

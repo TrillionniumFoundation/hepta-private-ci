@@ -13,6 +13,18 @@ fn checked<T, E: std::fmt::Debug>(value: Result<T, E>) -> T {
     }
 }
 
+// The product contract requires a private parent. tempfile's default directory
+// mode follows platform defaults/umask; do not relax the owner to accommodate it.
+pub(super) fn private_state_directory() -> tempfile::TempDir {
+    let mut builder = tempfile::Builder::new();
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        builder.permissions(std::fs::Permissions::from_mode(0o700));
+    }
+    checked(builder.tempdir())
+}
+
 fn id(value: &str) -> StableId {
     checked(StableId::new(value))
 }
@@ -110,7 +122,7 @@ fn handle(generation: u64) -> (AgentdNeuronHandleV2, Arc<DurableStateStubOwner>)
 
 #[test]
 fn generation_state_round_trips_and_rejects_digest_tampering() {
-    let directory = checked(tempfile::tempdir());
+    let directory = private_state_directory();
     let path = directory.path().join("neuron-generation-state.json");
     let state = checked(AgentdNeuronGenerationStateV2::new(
         AgentdNeuronLifecycleStateV2::Serving,
@@ -119,7 +131,10 @@ fn generation_state_round_trips_and_rejects_digest_tampering() {
         None,
     ));
     checked(write_agentd_neuron_generation_state_v2(&path, &state));
-    assert_eq!(checked(read_agentd_neuron_generation_state_v2(&path)), state);
+    assert_eq!(
+        checked(read_agentd_neuron_generation_state_v2(&path)),
+        state
+    );
 
     let encoded = checked(std::fs::read_to_string(&path));
     let tampered = encoded.replacen("\"activeGeneration\": 2", "\"activeGeneration\": 3", 1);
@@ -132,7 +147,7 @@ fn generation_state_round_trips_and_rejects_digest_tampering() {
 
 #[test]
 fn durable_controller_publishes_every_lifecycle_transition() {
-    let directory = checked(tempfile::tempdir());
+    let directory = private_state_directory();
     let path = directory.path().join("neuron-generation-state.json");
     let (active, _) = handle(1);
     let controller = checked(AgentdNeuronGenerationControllerV2::new_with_state_path(
@@ -167,7 +182,7 @@ fn durable_controller_publishes_every_lifecycle_transition() {
 
 #[test]
 fn interrupted_reload_accepts_only_the_old_or_completed_topology() {
-    let directory = checked(tempfile::tempdir());
+    let directory = private_state_directory();
     let path = directory.path().join("neuron-generation-state.json");
     let interrupted = checked(AgentdNeuronGenerationStateV2::new(
         AgentdNeuronLifecycleStateV2::Reloading,
@@ -175,10 +190,7 @@ fn interrupted_reload_accepts_only_the_old_or_completed_topology() {
         Vec::new(),
         Some(2),
     ));
-    checked(write_agentd_neuron_generation_state_v2(
-        &path,
-        &interrupted,
-    ));
+    checked(write_agentd_neuron_generation_state_v2(&path, &interrupted));
 
     let (old_active, _) = handle(1);
     let old_topology = checked(
@@ -197,10 +209,7 @@ fn interrupted_reload_accepts_only_the_old_or_completed_topology() {
     assert_eq!(sealed.active_generation, 1);
     assert_eq!(sealed.reload_target_generation, None);
 
-    checked(write_agentd_neuron_generation_state_v2(
-        &path,
-        &interrupted,
-    ));
+    checked(write_agentd_neuron_generation_state_v2(&path, &interrupted));
     let (new_active, new_owner) = handle(2);
     let (old_retained, old_owner) = handle(1);
     let completed_topology = checked(
@@ -223,18 +232,13 @@ fn interrupted_reload_accepts_only_the_old_or_completed_topology() {
     assert_eq!(serving.retained_generations, vec![1]);
     assert_eq!(serving.reload_target_generation, None);
 
-    checked(write_agentd_neuron_generation_state_v2(
-        &path,
-        &interrupted,
-    ));
+    checked(write_agentd_neuron_generation_state_v2(&path, &interrupted));
     let (ambiguous_active, _) = handle(3);
-    let error = match
-        AgentdNeuronGenerationControllerV2::from_recovered_generations_with_state_path(
-            ambiguous_active,
-            std::iter::empty(),
-            &path,
-        )
-    {
+    let error = match AgentdNeuronGenerationControllerV2::from_recovered_generations_with_state_path(
+        ambiguous_active,
+        std::iter::empty(),
+        &path,
+    ) {
         Ok(_) => panic!("ambiguous interrupted reload topology was accepted"),
         Err(error) => error,
     };
@@ -243,7 +247,7 @@ fn interrupted_reload_accepts_only_the_old_or_completed_topology() {
 
 #[test]
 fn corrupt_control_state_reports_the_specific_failure_before_service() {
-    let directory = checked(tempfile::tempdir());
+    let directory = private_state_directory();
     let path = directory.path().join("neuron-generation-state.json");
     let state = checked(AgentdNeuronGenerationStateV2::new(
         AgentdNeuronLifecycleStateV2::Starting,
@@ -255,13 +259,11 @@ fn corrupt_control_state_reports_the_specific_failure_before_service() {
     checked(std::fs::write(&path, b"not-json"));
 
     let (active, _) = handle(1);
-    let error = match
-        AgentdNeuronGenerationControllerV2::from_recovered_generations_with_state_path(
-            active,
-            std::iter::empty(),
-            &path,
-        )
-    {
+    let error = match AgentdNeuronGenerationControllerV2::from_recovered_generations_with_state_path(
+        active,
+        std::iter::empty(),
+        &path,
+    ) {
         Ok(_) => panic!("corrupt control state was accepted"),
         Err(error) => error,
     };
@@ -270,7 +272,7 @@ fn corrupt_control_state_reports_the_specific_failure_before_service() {
 
 #[test]
 fn invalid_control_state_parent_fails_before_fencing_the_caller_handle() {
-    let directory = checked(tempfile::tempdir());
+    let directory = private_state_directory();
     let path = directory
         .path()
         .join("missing-parent")
@@ -285,13 +287,15 @@ fn invalid_control_state_parent_fails_before_fencing_the_caller_handle() {
     assert_eq!(error.stable_code(), "control_state_io");
 
     let input = test_input(1);
-    checked(active_clone.prepare(
-        input.tick_id.clone(),
-        active_clone
-            .body_bundle_digest()
-            .expect("active body digest"),
-        input,
-    ));
+    checked(
+        active_clone.prepare(
+            input.tick_id.clone(),
+            active_clone
+                .body_bundle_digest()
+                .expect("active body digest"),
+            input,
+        ),
+    );
 }
 
 #[cfg(unix)]
@@ -299,7 +303,7 @@ fn invalid_control_state_parent_fails_before_fencing_the_caller_handle() {
 fn non_private_control_state_parent_fails_before_fencing_the_caller_handle() {
     use std::os::unix::fs::PermissionsExt;
 
-    let directory = checked(tempfile::tempdir());
+    let directory = private_state_directory();
     let parent = directory.path().join("control-state");
     checked(std::fs::create_dir(&parent));
     checked(std::fs::set_permissions(
@@ -319,22 +323,23 @@ fn non_private_control_state_parent_fails_before_fencing_the_caller_handle() {
 
     let (active, _) = handle(1);
     let active_clone = active.clone();
-    let controller_error = match AgentdNeuronGenerationControllerV2::new_with_state_path(
-        active, &path,
-    ) {
-        Ok(_) => panic!("controller accepted a non-private control-state parent"),
-        Err(error) => error,
-    };
+    let controller_error =
+        match AgentdNeuronGenerationControllerV2::new_with_state_path(active, &path) {
+            Ok(_) => panic!("controller accepted a non-private control-state parent"),
+            Err(error) => error,
+        };
     assert_eq!(controller_error.stable_code(), "control_state_invalid");
 
     let input = test_input(1);
-    checked(active_clone.prepare(
-        input.tick_id.clone(),
-        active_clone
-            .body_bundle_digest()
-            .expect("active body digest"),
-        input,
-    ));
+    checked(
+        active_clone.prepare(
+            input.tick_id.clone(),
+            active_clone
+                .body_bundle_digest()
+                .expect("active body digest"),
+            input,
+        ),
+    );
 }
 
 #[cfg(unix)]
@@ -343,7 +348,7 @@ fn control_state_rejects_symlinks_hardlinks_and_non_private_permissions() {
     use std::os::unix::fs::PermissionsExt;
     use std::os::unix::fs::symlink;
 
-    let directory = checked(tempfile::tempdir());
+    let directory = private_state_directory();
     let path = directory.path().join("neuron-generation-state.json");
     let state = checked(AgentdNeuronGenerationStateV2::new(
         AgentdNeuronLifecycleStateV2::Starting,
@@ -375,15 +380,14 @@ fn control_state_rejects_symlinks_hardlinks_and_non_private_permissions() {
     assert_eq!(mode_error.stable_code(), "control_state_invalid");
 
     let (active, _) = handle(1);
-    let controller_error = match
-        AgentdNeuronGenerationControllerV2::from_recovered_generations_with_state_path(
+    let controller_error =
+        match AgentdNeuronGenerationControllerV2::from_recovered_generations_with_state_path(
             active,
             std::iter::empty(),
             &path,
-        )
-    {
-        Ok(_) => panic!("controller accepted non-private state"),
-        Err(error) => error,
-    };
+        ) {
+            Ok(_) => panic!("controller accepted non-private state"),
+            Err(error) => error,
+        };
     assert_eq!(controller_error.stable_code(), "control_state_invalid");
 }

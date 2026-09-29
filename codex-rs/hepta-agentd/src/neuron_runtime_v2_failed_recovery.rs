@@ -99,7 +99,7 @@ mod failed_recovery_tests {
 
     #[test]
     fn failed_controller_requires_explicit_closed_startup_recovery() {
-        let directory = tempfile::tempdir().expect("temporary directory");
+        let directory = super::durable_state_tests::private_state_directory();
         let state_path = directory.path().join("neuron-generation-state.json");
         let failed = AgentdNeuronGenerationStateV2::new(
             AgentdNeuronLifecycleStateV2::Failed,
@@ -112,12 +112,13 @@ mod failed_recovery_tests {
             .expect("persist failed state");
 
         let (active, owner) = failed_handle();
-        let controller = AgentdNeuronGenerationControllerV2::from_recovered_generations_with_state_path(
-            active,
-            std::iter::empty(),
-            &state_path,
-        )
-        .expect("rebuild failed controller");
+        let controller =
+            AgentdNeuronGenerationControllerV2::from_recovered_generations_with_state_path(
+                active,
+                std::iter::empty(),
+                &state_path,
+            )
+            .expect("rebuild failed controller");
         assert_eq!(
             controller.state().expect("failed lifecycle"),
             AgentdNeuronLifecycleStateV2::Failed
@@ -127,18 +128,22 @@ mod failed_recovery_tests {
             .expect("failed controller snapshot");
         assert!(!before.accepting_new_work);
 
-        controller.recover_failed().expect("re-arm startup recovery");
+        controller
+            .recover_failed()
+            .expect("re-arm startup recovery");
         assert_eq!(
             controller.state().expect("starting lifecycle"),
             AgentdNeuronLifecycleStateV2::Starting
         );
-        let starting = read_agentd_neuron_generation_state_v2(&state_path)
-            .expect("persisted starting state");
+        let starting =
+            read_agentd_neuron_generation_state_v2(&state_path).expect("persisted starting state");
         assert_eq!(starting.lifecycle, AgentdNeuronLifecycleStateV2::Starting);
-        assert!(!controller
-            .controller_snapshot()
-            .expect("starting controller snapshot")
-            .accepting_new_work);
+        assert!(
+            !controller
+                .controller_snapshot()
+                .expect("starting controller snapshot")
+                .accepting_new_work
+        );
 
         controller.start().expect("reconcile and start");
         assert_eq!(owner.reconciles.load(Ordering::SeqCst), 1);
@@ -146,9 +151,11 @@ mod failed_recovery_tests {
             controller.state().expect("serving lifecycle"),
             AgentdNeuronLifecycleStateV2::Serving
         );
-        assert!(controller
-            .controller_snapshot()
-            .expect("serving controller snapshot")
-            .accepting_new_work);
+        assert!(
+            controller
+                .controller_snapshot()
+                .expect("serving controller snapshot")
+                .accepting_new_work
+        );
     }
 }

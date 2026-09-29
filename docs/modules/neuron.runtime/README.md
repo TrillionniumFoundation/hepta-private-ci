@@ -47,6 +47,14 @@ remain separate evidence and decision gates.
 
 - `tick_guarded`: admits new work, preserves observed provider truth, then applies
   a final current-use fence before returning the result;
+- `prepare_decision_cell`: retains complete typed context in the existing Agentd
+  invocation and canonical V2 runner, with the same owner and execution epoch;
+- typed `recover_existing_decision_cell_operation`,
+  `close_unexecuted_decision_cell_operation`, `query_decision_cell_operation` and
+  `query_decision_cell_result_guarded`: preserve the same four permission
+  boundaries with full typed request identity; see
+  [`V2_DEVELOPMENT.md`](V2_DEVELOPMENT.md#typed-decisioncell-through-the-same-agentd-owner)
+  for the implemented path and the still-unconnected concrete model backend;
 - runtime `recover_operation`: converges one exact reserved operation without
   creating a reservation or calling provider `execute`;
 - controller `recover_existing_operation`: applies one explicit lifecycle policy:

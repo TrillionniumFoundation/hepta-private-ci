@@ -3,6 +3,67 @@ where
     W: AnchorWitnessStore,
     P: DurableNeuronInferenceControlPort,
 {
+    fn recover_typed_or_neuron_control(
+        &self,
+        invocation: Option<&DecisionCellInvocationV2>,
+        input: &NeuronTickInputV1,
+        policy: AgentdNeuronRecoveryPolicyV2,
+    ) -> Result<NeuronOperationStatusV2, AgentdNeuronControlErrorV2> {
+        self.counters
+            .recovery_attempts
+            .fetch_add(1, Ordering::Relaxed);
+        if policy == AgentdNeuronRecoveryPolicyV2::CloseUnexecuted {
+            self.counters
+                .recovery_close_requests
+                .fetch_add(1, Ordering::Relaxed);
+        } else {
+            self.counters
+                .recovery_preserve_requests
+                .fetch_add(1, Ordering::Relaxed);
+        }
+        let result = (|| {
+            let mut locked = self.lock_control()?;
+            let AgentdNeuronOwnerV2 {
+                runtime,
+                inference_control,
+            } = &mut locked.owner;
+            let mut model = DurableInferenceControlModelPort::new(inference_control);
+            let recovered = match (invocation, policy) {
+                (Some(cell), AgentdNeuronRecoveryPolicyV2::CloseUnexecuted) => runtime
+                    .close_unexecuted_decision_cell_operation(&mut model, cell, input)
+                    .map_err(decision_cell::runtime_error),
+                (Some(cell), AgentdNeuronRecoveryPolicyV2::PreserveUnexecuted) => runtime
+                    .recover_decision_cell_operation(&mut model, cell, input)
+                    .map_err(decision_cell::runtime_error),
+                (None, AgentdNeuronRecoveryPolicyV2::CloseUnexecuted) => {
+                    runtime.close_unexecuted_operation(&mut model, input)
+                }
+                (None, AgentdNeuronRecoveryPolicyV2::PreserveUnexecuted) => {
+                    runtime.recover_operation(&mut model, input)
+                }
+            };
+            recovered.map_err(AgentdNeuronControlErrorV2::Runtime)
+        })();
+        match &result {
+            Ok(status) if status.requires_reconciliation() => {
+                self.counters
+                    .recovery_pending
+                    .fetch_add(1, Ordering::Relaxed);
+            }
+            Ok(_) => {
+                self.counters
+                    .recovery_converged
+                    .fetch_add(1, Ordering::Relaxed);
+            }
+            Err(_) => {
+                self.counters
+                    .recovery_errors
+                    .fetch_add(1, Ordering::Relaxed);
+            }
+        }
+        result
+    }
+
     fn lock_control(
         &self,
     ) -> Result<MutexGuard<'_, GuardedOwnerV2<W, P, G>>, AgentdNeuronControlErrorV2> {
@@ -87,9 +148,7 @@ where
                     capacity.witness_records_remaining,
                     previous.witness_records_remaining,
                 ) {
-                    (Some(current), Some(previous)) => {
-                        Some(signed_delta_usize(current, previous))
-                    }
+                    (Some(current), Some(previous)) => Some(signed_delta_usize(current, previous)),
                     _ => None,
                 },
             }
@@ -111,9 +170,7 @@ where
             pending_tick_id,
             pending_input_digest,
             pending_operation_code,
-            oldest_outcome_unknown_age_micros: telemetry
-                .outcome_unknown_since
-                .map(elapsed_micros),
+            oldest_outcome_unknown_age_micros: telemetry.outcome_unknown_since.map(elapsed_micros),
             pending_witness_count,
             pending_witness_age_micros: telemetry.witness_pending_since.map(elapsed_micros),
             capacity,
@@ -130,6 +187,80 @@ where
     P: DurableNeuronInferenceControlPort + Send,
     G: NeuronAdmissionGuard + Send,
 {
+    fn execute_decision_cell(
+        &self,
+        invocation: &DecisionCellInvocationV2,
+        input: NeuronTickInputV1,
+        stage: &mut dyn NeuronAdmissionGuard,
+    ) -> Result<NeuronRuntimeCommitV2, NeuronRuntimeV2Error> {
+        let mut locked = self.lock_control().map_err(compatibility_error)?;
+        let GuardedOwnerV2 { owner, admission } = &mut *locked;
+        let AgentdNeuronOwnerV2 {
+            runtime,
+            inference_control,
+        } = owner;
+        let mut model = DurableInferenceControlModelPort::new(inference_control);
+        let mut guard = CombinedAdmission {
+            selected: admission,
+            stage,
+        };
+        let result = runtime
+            .tick_decision_cell_guarded(&mut model, invocation, input, &mut guard)
+            .map_err(decision_cell::runtime_error);
+        if matches!(&result, Err(NeuronRuntimeV2Error::Admission(_))) {
+            self.counters
+                .runtime_admission_denials
+                .fetch_add(1, Ordering::Relaxed);
+        }
+        result
+    }
+
+    fn query_decision_cell_operation(
+        &self,
+        invocation: &DecisionCellInvocationV2,
+        input: &NeuronTickInputV1,
+    ) -> Result<NeuronOperationStatusV2, NeuronRuntimeV2Error> {
+        self.lock_control()
+            .map_err(compatibility_error)?
+            .owner
+            .runtime
+            .query_decision_cell_operation(invocation, input)
+            .map_err(decision_cell::runtime_error)
+    }
+
+    fn query_decision_cell_result_guarded(
+        &self,
+        invocation: &DecisionCellInvocationV2,
+        input: &NeuronTickInputV1,
+        stage: &mut dyn NeuronAdmissionGuard,
+    ) -> Result<Option<NeuronRuntimeCommitV2>, NeuronRuntimeV2Error> {
+        let mut locked = self.lock_control().map_err(compatibility_error)?;
+        let GuardedOwnerV2 { owner, admission } = &mut *locked;
+        let mut guard = CombinedAdmission {
+            selected: admission,
+            stage,
+        };
+        let result = owner
+            .runtime
+            .query_decision_cell_result_guarded(invocation, input, &mut guard)
+            .map_err(decision_cell::runtime_error);
+        if matches!(&result, Err(NeuronRuntimeV2Error::Admission(_))) {
+            self.counters
+                .runtime_admission_denials
+                .fetch_add(1, Ordering::Relaxed);
+        }
+        result
+    }
+
+    fn recover_decision_cell_control(
+        &self,
+        invocation: &DecisionCellInvocationV2,
+        input: &NeuronTickInputV1,
+        policy: AgentdNeuronRecoveryPolicyV2,
+    ) -> Result<NeuronOperationStatusV2, AgentdNeuronControlErrorV2> {
+        self.recover_typed_or_neuron_control(Some(invocation), input, policy)
+    }
+
     fn execute(
         &self,
         input: NeuronTickInputV1,
@@ -180,50 +311,7 @@ where
         input: &NeuronTickInputV1,
         policy: AgentdNeuronRecoveryPolicyV2,
     ) -> Result<NeuronOperationStatusV2, AgentdNeuronControlErrorV2> {
-        self.counters
-            .recovery_attempts
-            .fetch_add(1, Ordering::Relaxed);
-        if policy == AgentdNeuronRecoveryPolicyV2::CloseUnexecuted {
-            self.counters
-                .recovery_close_requests
-                .fetch_add(1, Ordering::Relaxed);
-        } else {
-            self.counters
-                .recovery_preserve_requests
-                .fetch_add(1, Ordering::Relaxed);
-        }
-        let result = (|| {
-            let mut locked = self.lock_control()?;
-            let AgentdNeuronOwnerV2 {
-                runtime,
-                inference_control,
-            } = &mut locked.owner;
-            let mut model = DurableInferenceControlModelPort::new(inference_control);
-            let recovered = if policy == AgentdNeuronRecoveryPolicyV2::CloseUnexecuted {
-                runtime.close_unexecuted_operation(&mut model, input)
-            } else {
-                runtime.recover_operation(&mut model, input)
-            };
-            recovered.map_err(AgentdNeuronControlErrorV2::Runtime)
-        })();
-        match &result {
-            Ok(status) if status.requires_reconciliation() => {
-                self.counters
-                    .recovery_pending
-                    .fetch_add(1, Ordering::Relaxed);
-            }
-            Ok(_) => {
-                self.counters
-                    .recovery_converged
-                    .fetch_add(1, Ordering::Relaxed);
-            }
-            Err(_) => {
-                self.counters
-                    .recovery_errors
-                    .fetch_add(1, Ordering::Relaxed);
-            }
-        }
-        result
+        self.recover_typed_or_neuron_control(None, input, policy)
     }
 
     fn reconcile(&self) -> Result<(), NeuronRuntimeV2Error> {

@@ -16,6 +16,7 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
 mod artifact_binding;
+mod decision_cell_control_port_v2;
 mod decision_cell_runtime_v2;
 mod deletion;
 mod generation_store_v2;
