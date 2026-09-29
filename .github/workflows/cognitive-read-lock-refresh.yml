@@ -38,7 +38,10 @@ concurrency:
 jobs:
   prepare:
     if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/work/cognitive-read-production-convergence-20260927'
-    runs-on: ubuntu-24.04
+    # Keep source authoring off the repository's saturated hosted-x64 queue.
+    # This is still a GitHub-hosted runner; qualification and target-host
+    # acceptance remain separate workflows and are not moved or waived here.
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 45
     permissions:
       contents: write
