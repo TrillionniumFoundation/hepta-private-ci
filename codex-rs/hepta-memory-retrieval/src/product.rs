@@ -92,8 +92,9 @@ impl RetrievalCompletenessPolicyV1 {
         if incomplete_sources.is_empty() {
             return Ok(RetrievalCompletenessDecisionV1::Complete);
         }
-        incomplete_sources.sort();
-        Ok(match decision.expect("non-empty incomplete source decision") {
+        incomplete_sources.sort_by_key(|source| source.generator);
+        let decision = decision.ok_or(ProductRecallErrorV1::InvalidCompletenessPolicy)?;
+        Ok(match decision {
             IncompleteSourceActionV1::Degrade => {
                 RetrievalCompletenessDecisionV1::Degraded { incomplete_sources }
             }
@@ -107,7 +108,7 @@ impl RetrievalCompletenessPolicyV1 {
     }
 }
 
-#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct IncompleteRetrievalSourceV1 {
     pub generator: RetrievalGeneratorOwnerV1,
     pub completeness: RetrievalSourceCompletenessV1,
@@ -131,7 +132,7 @@ pub enum RetrievalCompletenessDecisionV1 {
 impl RetrievalCompletenessDecisionV1 {
     #[must_use]
     pub fn permits_recall(&self) -> bool {
-        matches!(Self::Complete | Self::Degraded { .. }, self)
+        matches!(self, Self::Complete | Self::Degraded { .. })
     }
 }
 
