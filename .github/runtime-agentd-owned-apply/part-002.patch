@@ -1,0 +1,140 @@
+T: ${{ needs.suite.result }}
+         run: |
+-          test "$CONTRACT_RESULT" = success
+-          test "$SUITE_RESULT" = success
+-      - uses: actions/upload-artifact@v4
++          set -euo pipefail
++          test "$SCOPE_RESULT" = success
++          if [ "$APPLICABLE" = true ]; then
++            test "$CONTRACT_RESULT" = success
++            test "$SUITE_RESULT" = success
++          else
++            test "$CONTRACT_RESULT" = skipped
++            test "$SUITE_RESULT" = skipped
++          fi
++      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+         if: ${{ always() }}
+         with:
+-          name: agentd-engineering-result-${{ github.run_id }}-${{ github.run_attempt }}
+-          path: ${{ runner.temp }}/agentd-engineering-result.json
++          name: agentd-source-result-${{ github.run_id }}-${{ github.run_attempt }}
++          path: ${{ runner.temp }}/agentd-source-result.json
+           if-no-files-found: error
++          retention-days: 14
+diff --git a/.github/workflows/hepta-agentd-prospective-merge.yml b/.github/workflows/hepta-agentd-prospective-merge.yml
+new file mode 100644
+index 0000000000000000000000000000000000000000..724c32f266aebded5dce5603db83ee17cc835c6e
+--- /dev/null
++++ b/.github/workflows/hepta-agentd-prospective-merge.yml
+@@ -0,0 +1,185 @@
++name: Agentd prospective-merge engineering
++
++on:
++  pull_request:
++    paths:
++      - 'codex-rs/**'
++      - 'docs/delivery/PATH_OWNERSHIP.json'
++      - 'docs/modules/runtime.agentd/**'
++      - 'qualification/module-execution-dossiers/detail/runtime.agentd.md'
++      - 'qualification/runtime-agentd-core/**'
++      - 'scripts/hepta*agentd*'
++      - 'scripts/hepta-module-docs.py'
++      - 'scripts/hepta-implementation-maps.py'
++      - 'scripts/hepta_module_registry.py'
++      - 'scripts/qualification/*agentd*'
++      - '.github/workflows/hepta-agentd-exact-head.yml'
++      - '.github/workflows/hepta-agentd-prospective-merge.yml'
++      - '.github/workflows/runtime-agentd-*.yml'
++
++permissions:
++  contents: read
++
++concurrency:
++  group: agentd-merge-${{ github.event.pull_request.number }}-${{ github.workflow_ref }}
++  cancel-in-progress: true
++
++jobs:
++  scope:
++    name: Agentd merge ownership
++    runs-on: ubuntu-24.04
++    timeout-minutes: 10
++    outputs:
++      applicable: ${{ steps.select.outputs.applicable }}
++      reason: ${{ steps.select.outputs.reason }}
++    steps:
++      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
++        with:
++          ref: ${{ github.event.pull_request.head.sha }}
++          fetch-depth: 0
++          persist-credentials: false
++      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
++        with:
++          python-version: '3.12'
++      - id: select
++        env:
++          BASE_SHA: ${{ github.event.pull_request.base.sha }}
++          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
++        run: |
++          python3 scripts/qualification/runtime_agentd_scope.py \
++            --repository . --base "$BASE_SHA" --head "$SOURCE_SHA" \
++            --output "$RUNNER_TEMP/runtime-agentd-merge-scope.json"
++      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
++        with:
++          name: agentd-merge-scope-${{ github.run_id }}-${{ github.run_attempt }}
++          path: ${{ runner.temp }}/runtime-agentd-merge-scope.json
++          if-no-files-found: error
++          retention-days: 14
++
++  merge-candidate:
++    name: Agentd deterministic merge candidate
++    needs: scope
++    if: needs.scope.outputs.applicable == 'true'
++    runs-on: ubuntu-24.04
++    timeout-minutes: 120
++    env:
++      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
++      BASE_SHA: ${{ github.event.pull_request.base.sha }}
++      MERGE_SHA: ${{ github.sha }}
++      CARGO_INCREMENTAL: '0'
++    steps:
++      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
++        with:
++          ref: ${{ env.MERGE_SHA }}
++          fetch-depth: 0
++          persist-credentials: false
++      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
++        with:
++          python-version: '3.12'
++      - name: Bind deterministic prospective merge tree
++        shell: bash
++        run: |
++          set -euo pipefail
++          test "$(git rev-parse HEAD)" = "$MERGE_SHA"
++          expected_tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
++          test "$(git rev-parse HEAD^{tree})" = "$expected_tree"
++          git merge-base --is-ancestor "$BASE_SHA" HEAD
++          git merge-base --is-ancestor "$SOURCE_SHA" HEAD
++          test -z "$(git status --porcelain --untracked-files=all)"
++      - name: Install repository toolchain
++        shell: bash
++        run: |
++          set -euo pipefail
++          toolchain=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
++          rustup toolchain install "$toolchain" --profile minimal --component clippy
++      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6
++        with:
++          workspaces: codex-rs
++          shared-key: agentd-merge-v3
++      - name: Compile and execute merge-candidate boundaries
++        working-directory: codex-rs
++        shell: bash
++        run: |
++          set -euo pipefail
++          cargo test --locked -p codex-hepta-agentd --lib
++          cargo check --locked -p codex-hepta-agentd --no-default-features --lib
++          cargo test --locked --manifest-path ../qualification/runtime-agentd-core/Cargo.toml
++          cargo test --locked -p codex-hepta-agentd --test runtime_codex_product_e2e
++          cargo test --locked -p codex-hepta-agentd --test supervisord_product_e2e
++          cargo test --locked -p codex-hepta-infer-worker-host --test native_host_process_e2e
++          cargo clippy --locked -p codex-hepta-agentd -p codex-hepta-supervisor \
++            -p codex-hepta-infer-worker-host --all-targets --no-deps -- -D 
