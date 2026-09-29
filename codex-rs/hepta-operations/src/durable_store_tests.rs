@@ -15,6 +15,9 @@ use codex_hepta_types::StableId;
 use sqlx::sqlite::SqliteConnectOptions;
 use sqlx::sqlite::SqlitePoolOptions;
 
+use crate::DurableFailureClass;
+use crate::RecoveryDisposition;
+
 fn stable_id(value: &str) -> StableId {
     StableId::new(value).expect("test identifier")
 }
@@ -60,8 +63,7 @@ impl DurableOperationClock for ManualClock {
 #[test]
 fn recovery_disposition_is_effect_boundary_aware() {
     assert_eq!(
-        DurableOperationError::Conflict(stable_id("operation:conflict"))
-            .recovery_disposition(),
+        DurableOperationError::Conflict(stable_id("operation:conflict")).recovery_disposition(),
         RecoveryDisposition::Reject
     );
     assert_eq!(
