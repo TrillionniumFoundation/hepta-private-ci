@@ -76,3 +76,26 @@ not receipts for this branch. Do not infer activation, acceptance, release,
 streaming-output cancellation, secure device erasure or historical GC age from
 these changes. Oldest-reclaimable age remains unknown without a durable clock
 policy. Use current workflow artifacts for pass/fail/not-run status.
+
+## Machine-generated implementation status
+
+<!-- prompt.registry generated-status:begin -->
+
+| Generated field | Value |
+| --- | --- |
+| `sourceImplemented` | `true` |
+| `sourceComposed` | `true` |
+| `closedWorldPublicFunctions` | `false` |
+| `nativeSourceMappingComplete` | `false` |
+| `productExecutionProved` | `false` |
+| `independentlyAccepted` | `false` |
+| `productActivated` | `false` |
+| `productionReady` | `false` |
+| `released` | `false` |
+| `activePersistentSchemas` | `4, 5` |
+| `semanticSchema` | `4` |
+| `payloadGenerationSchema` | `5` |
+
+This block is generated from `IMPLEMENTATION_MAP.json`. When either `productExecutionProved` or `closedWorldPublicFunctions` is false, this document cannot claim production completion.
+
+<!-- prompt.registry generated-status:end -->
