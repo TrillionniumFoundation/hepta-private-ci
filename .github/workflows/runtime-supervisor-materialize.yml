@@ -18,7 +18,7 @@ concurrency:
 jobs:
   materialize:
     if: github.actor != 'github-actions[bot]'
-    runs-on: ubuntu-24.04
+    runs-on: macos-15
     timeout-minutes: 30
     steps:
       - name: Checkout exact branch
@@ -32,7 +32,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          base64 --decode scripts/runtime-supervisor-phase1.patch.gz.b64 | gzip -dc > /tmp/runtime-supervisor-phase1.patch
+          python3 - <<'PY_PATCH'
+          import base64, gzip
+          from pathlib import Path
+          encoded = Path('scripts/runtime-supervisor-phase1.patch.gz.b64').read_bytes()
+          Path('/tmp/runtime-supervisor-phase1.patch').write_bytes(gzip.decompress(base64.b64decode(encoded)))
+          PY_PATCH
           git apply --check /tmp/runtime-supervisor-phase1.patch
           git apply /tmp/runtime-supervisor-phase1.patch
           rm -f scripts/runtime-supervisor-phase1.patch.gz.b64
