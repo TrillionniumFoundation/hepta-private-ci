@@ -1,4 +1,4 @@
-name: ui.native WAL and retirement-index source applicator
+name: ui.native WAL and retirement-index qualification
 
 on:
   push:
@@ -6,12 +6,13 @@ on:
     paths:
       - .ci/ui-native-wal-index/source.patch.gz
       - .github/workflows/ui-native-wal-index-apply-once.yml
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: ui-native-wal-index-source-${{ github.ref }}
+  group: ui-native-wal-index-qualification-${{ github.ref }}
   cancel-in-progress: true
 
 env:
@@ -19,41 +20,78 @@ env:
   CARGO_INCREMENTAL: "0"
 
 jobs:
-  apply-test-publish:
-    runs-on: ubuntu-latest
-    timeout-minutes: 90
+  apply-and-qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
           fetch-depth: 0
-          persist-credentials: true
+          persist-credentials: false
 
       - id: source
-        name: Verify immutable input and apply reviewed source patch
+        name: Verify immutable capsule and apply without publishing
         env:
-          EXPECTED_PARENT: 2613c7263c1bbf2d75c76b49eea797de540545cd
+          EXPECTED_PARENT: 430be19aec8c71be2680d5c09d7e0ed7966bc4c9
+          PATCH_BLOB_SHA: cf8d5267cbcde61455849e24be9eac9d1a8d14f3
           PATCH_GZIP_SHA256: 292f9f99997e3d1078cc296819f225cd2100b5fd023c74b53e0bed9912b39252
           PATCH_SHA256: b863bb348b91e038f711b5a155a383aaa342ee6beacb1cd168901f82159dd74a
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          test -z "$(git status --porcelain)"
-          if [[ ! -f .ci/ui-native-wal-index/source.patch.gz ]]; then
-            echo 'one-shot source patch already consumed'
-            echo 'apply=false' >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          echo 'apply=true' >> "$GITHUB_OUTPUT"
           test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
+          test -z "$(git status --porcelain)"
+          test "$(git rev-parse HEAD:.ci/ui-native-wal-index/source.patch.gz)" = "$PATCH_BLOB_SHA"
           printf '%s  %s\n' "$PATCH_GZIP_SHA256" .ci/ui-native-wal-index/source.patch.gz | sha256sum --check --strict
           gzip -dc .ci/ui-native-wal-index/source.patch.gz > /tmp/ui-native-wal-index.patch
           printf '%s  %s\n' "$PATCH_SHA256" /tmp/ui-native-wal-index.patch | sha256sum --check --strict
           git apply --check --whitespace=error-all /tmp/ui-native-wal-index.patch
           git apply --index --whitespace=error-all /tmp/ui-native-wal-index.patch
+          git rm .ci/ui-native-wal-index/source.patch.gz
+          git diff --cached --check
+          python3 - <<'PYTHON'
+          import subprocess
+
+          paths = subprocess.check_output(
+              ['git', 'diff', '--cached', '--name-only'],
+              text=True,
+              encoding='utf-8',
+              errors='strict',
+          ).splitlines()
+          required = {
+              'apps/hepta-native/src/journal.rs',
+              'apps/hepta-native/src/journal_storage.rs',
+              'apps/hepta-native/src/retirement.rs',
+          }
+          if not required.issubset(paths):
+              raise SystemExit(f'missing required source paths: {sorted(required - set(paths))}')
+          unexpected = [
+              path for path in paths
+              if path != '.ci/ui-native-wal-index/source.patch.gz'
+              and not path.startswith('apps/hepta-native/')
+              and not path.startswith('docs/modules/ui.native/')
+          ]
+          if unexpected:
+              raise SystemExit(f'unexpected staged paths: {unexpected}')
+          print('\n'.join(paths))
+          PYTHON
+
+      - name: Export exact applied source before execution
+        run: |
+          set -euo pipefail
+          mkdir -p source-bundle/files source-evidence
+          cp /tmp/ui-native-wal-index.patch source-bundle/source.patch
+          git diff --cached --binary > source-bundle/applied.patch
+          git diff --cached --name-status > source-bundle/name-status.txt
+          git rev-parse HEAD HEAD^{tree} > source-bundle/subject.txt
+          sha256sum source-bundle/source.patch source-bundle/applied.patch > source-bundle/digests.sha256
+          git diff --cached --name-only --diff-filter=ACMRT | while IFS= read -r path; do
+            mkdir -p "source-bundle/files/$(dirname "$path")"
+            cp "$path" "source-bundle/files/$path"
+          done
 
       - name: Install pinned Rust and Linux native prerequisites
-        if: steps.source.outputs.apply == 'true'
         run: |
           set -euo pipefail
           sudo apt-get update
@@ -64,63 +102,53 @@ jobs:
             xvfb xauth dbus-x11 gnome-keyring xdotool x11-utils \
             python3-cryptography fonts-noto-cjk
           rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
+          rustc +1.95.0 --version --verbose | tee source-evidence/rustc.txt
+          cargo +1.95.0 --version | tee source-evidence/cargo.txt
 
-      - name: Format and create a local immutable source commit
-        if: steps.source.outputs.apply == 'true'
+      - name: Execute source and regression qualification
         run: |
           set -euo pipefail
-          cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml
-          git add apps/hepta-native
-          git rm .ci/ui-native-wal-index/source.patch.gz
+          run_check() {
+            local label="$1"
+            shift
+            echo "::group::$label"
+            "$@" 2>&1 | tee "source-evidence/${label}.log"
+            echo "::endgroup::"
+          }
+          run_check fmt \
+            cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml --check
+          run_check check \
+            cargo +1.95.0 check --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets --all-features
+          run_check clippy \
+            cargo +1.95.0 clippy --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets --all-features -- -D warnings
+          run_check journal_v7 \
+            cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml --locked --test journal_v7
+          run_check retirement_index \
+            cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml --locked --test retirement_index
+          run_check all_targets \
+            cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets
+          run_check ui_native_python \
+            python3 -m unittest discover -s scripts -p 'test_hepta_ui_native*.py' -v
+          test -z "$(git diff --name-only)"
           git diff --cached --check
-          python3 - <<'PYTHON'
-          import subprocess
-          paths = subprocess.check_output(
-              ['git', 'diff', '--cached', '--name-only'], text=True, encoding='utf-8', errors='strict'
-          ).splitlines()
-          if not paths or any(
-              path != '.ci/ui-native-wal-index/source.patch.gz'
-              and not path.startswith('apps/hepta-native/')
-              for path in paths
-          ):
-              raise SystemExit(f'unexpected staged path set: {paths}')
-          PYTHON
-          git config user.name 'hepta-native-source-bot'
-          git config user.email 'hepta-native-source-bot@users.noreply.github.com'
-          git commit -m 'feat(ui.native): bound durable history lookup and journal writes' \
-            -m 'Add a content-addressed retirement disk index, exact active-operation index, checksummed fsynced WAL, bounded checkpointing, recovery tests, and the pending Rust formatting closure without weakening Prepared/Invoking durability or unknown-result replay fences.'
+          printf 'qualified\n' > source-evidence/result.txt
 
-      - name: Verify exact committed source
-        if: steps.source.outputs.apply == 'true'
-        run: |
-          set -euo pipefail
-          test -z "$(git status --porcelain)"
-          cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml --check
-          cargo +1.95.0 check --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets --all-features
-          cargo +1.95.0 clippy --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets --all-features -- -D warnings
-          cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets
-          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s scripts -p 'test_hepta_ui_native*.py' -v
-
-      - name: Publish only the verified source commit
-        if: steps.source.outputs.apply == 'true'
-        run: |
-          set -euo pipefail
-          git push origin "HEAD:refs/heads/${GITHUB_REF_NAME}"
-
-      - name: Retain failure diagnostics without publishing source
-        if: failure()
+      - name: Capture final evidence state
+        if: always()
         run: |
           set +e
-          mkdir -p source-diagnostics
-          git rev-parse HEAD HEAD^{tree} > source-diagnostics/identity.txt
-          git status --short > source-diagnostics/status.txt
-          git diff --binary HEAD^ > source-diagnostics/candidate.patch
-          sha256sum source-diagnostics/candidate.patch > source-diagnostics/candidate.patch.sha256
+          mkdir -p source-evidence
+          git status --short > source-evidence/status.txt
+          git diff --cached --name-status > source-evidence/final-name-status.txt
+          git diff --cached --check > source-evidence/diff-check.txt 2>&1
+          git rev-parse HEAD HEAD^{tree} > source-evidence/final-subject.txt
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        if: failure()
+        if: always()
         with:
-          name: ui-native-wal-index-failure-${{ github.sha }}-attempt-${{ github.run_attempt }}
-          path: source-diagnostics
+          name: ui-native-wal-index-source-${{ github.sha }}-attempt-${{ github.run_attempt }}
+          path: |
+            source-bundle
+            source-evidence
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 14
