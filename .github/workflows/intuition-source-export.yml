@@ -5,24 +5,33 @@ on:
     branches: [codex/intuition-policy-final-use-recovery-20260929]
     paths:
       - ".github/intuition-authoring-patch/READY"
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - ".github/intuition-authoring-patch/READY"
 
 permissions:
   contents: write
 
 concurrency:
-  group: intuition-one-shot-authoring-${{ github.ref }}
+  group: intuition-one-shot-authoring-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
+
+env:
+  AUTHORING_HEAD: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
 
 jobs:
   apply-verify-push:
     name: Apply, format, verify, and publish source patch
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: windows-2025
     timeout-minutes: 75
     steps:
       - name: Check out exact authoring head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ env.AUTHORING_HEAD }}
           fetch-depth: 0
           persist-credentials: true
       - name: Validate and apply immutable patch
@@ -97,7 +106,7 @@ jobs:
       - name: Upload patched source snapshot
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: intuition-patched-source-${{ github.sha }}-${{ github.run_attempt }}
+          name: intuition-patched-source-${{ env.AUTHORING_HEAD }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/intuition-patched-source/
           if-no-files-found: error
           retention-days: 1
@@ -150,7 +159,7 @@ jobs:
             'fix(intuition): revalidate authority at final use' \
             'Preserve the sole ledger owner while moving fresh time, generation, and three-party qualification checks under its serialization boundary. Add typed boundary domains, stage telemetry, legacy-consumer drift checks, and separate safety/effectiveness/operator acceptance states.' \
             | git commit-tree "$tree" -p "$CLEAN_PARENT")"
-          git push --force-with-lease="refs/heads/$TARGET_BRANCH:$GITHUB_SHA" \
+          git push --force-with-lease="refs/heads/$TARGET_BRANCH:$AUTHORING_HEAD" \
             origin "$commit:refs/heads/$TARGET_BRANCH"
           printf '%s\n' "$commit" > .git/final-source-sha.txt
       - name: Retain authoring diagnostics on failure
@@ -170,7 +179,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: intuition-authoring-failure-${{ github.sha }}-${{ github.run_attempt }}
+          name: intuition-authoring-failure-${{ env.AUTHORING_HEAD }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/intuition-authoring-failure/
           if-no-files-found: warn
           retention-days: 1
