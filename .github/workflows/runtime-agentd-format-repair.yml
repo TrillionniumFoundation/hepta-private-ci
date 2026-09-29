@@ -1,23 +1,23 @@
-name: Runtime Agentd source publication
+name: Runtime Agentd source export
 
-# This temporary publisher applies one reviewed, content-addressed source tree.
-# The published source restores the ordinary formatting workflow from BASE_SHA;
-# complete Linux/macOS, process, product and merge-candidate qualification runs
-# against the resulting exact head rather than against this carrier.
+# This temporary exporter applies one reviewed, content-addressed source tree,
+# formats it with the pinned repository toolchain, verifies the source contracts,
+# and uploads the exact staged patch. A repository connector with workflow-write
+# authority publishes that verified tree; the Actions token is deliberately read-only.
 on:
   push:
     branches:
       - work/runtime-agentd-production-closure-20260928
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: runtime-agentd-publish-${{ github.ref }}
+  group: runtime-agentd-export-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  publish:
+  export:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-slim
     timeout-minutes: 15
@@ -25,7 +25,6 @@ jobs:
       BASE_SHA: 3f6b49355947c3cddaaa89198cbf17b66d46c2fa
       PATCH_SHA256: 60b54679710d460f3be18a74a7760d034fbf281afa387f9107fbda1212d617eb
       PATCH_GLOB: .github/runtime-agentd-source.patch.b64.part*
-      TARGET_BRANCH: work/runtime-agentd-production-closure-20260928
       CARGO_INCREMENTAL: '0'
       CARGO_PROFILE_TEST_DEBUG: '0'
       CARGO_PROFILE_DEV_DEBUG: '0'
@@ -35,7 +34,7 @@ jobs:
         with:
           ref: ${{ github.sha }}
           fetch-depth: 128
-          persist-credentials: true
+          persist-credentials: false
 
       - name: Verify scope and apply the exact patch
         shell: bash
@@ -99,7 +98,7 @@ jobs:
           print("PASS_RUNTIME_AGENTD_INSTANCE_OWNERSHIP_AND_BOUNDED_MAINTENANCE")
           PY
 
-      - name: Publish reviewed source for exact-head qualification
+      - name: Export exact staged source patch
         shell: bash
         run: |
           set -euo pipefail
@@ -107,8 +106,23 @@ jobs:
           test -z "$(find .github -maxdepth 1 -name 'runtime-agentd-source.patch.b64.part*' -print -quit)"
           test ! -e .github/runtime-agentd-instance.patch.gz
           test ! -e .github/workflows/runtime-agentd-apply-instance-patch.yml
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
-          git commit -m 'runtime.agentd: own instances and bound maintenance'
-          git push origin HEAD:"$TARGET_BRANCH"
+          git diff --cached --binary --full-index > "$RUNNER_TEMP/runtime-agentd-published.patch"
+          git diff --cached --name-status > "$RUNNER_TEMP/runtime-agentd-published-files.txt"
+          git write-tree > "$RUNNER_TEMP/runtime-agentd-published-tree.txt"
+          git rev-parse HEAD > "$RUNNER_TEMP/runtime-agentd-carrier-head.txt"
+          sha256sum "$RUNNER_TEMP/runtime-agentd-published.patch" > "$RUNNER_TEMP/runtime-agentd-published.patch.sha256"
+          test -s "$RUNNER_TEMP/runtime-agentd-published.patch"
+
+      - name: Upload connector-ready verified source
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-agentd-source-export-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/runtime-agentd-published.patch
+            ${{ runner.temp }}/runtime-agentd-published-files.txt
+            ${{ runner.temp }}/runtime-agentd-published-tree.txt
+            ${{ runner.temp }}/runtime-agentd-carrier-head.txt
+            ${{ runner.temp }}/runtime-agentd-published.patch.sha256
+          if-no-files-found: error
+          retention-days: 14
