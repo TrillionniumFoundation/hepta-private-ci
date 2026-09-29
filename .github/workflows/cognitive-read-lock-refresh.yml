@@ -39,12 +39,14 @@ jobs:
 
           path = Path("scripts/cognitive_read_evidence.py")
           body = path.read_text(encoding="utf-8")
-          old = '''            runner_lines = log.read_text(errors="replace").splitlines()
-            first_line = runner_lines[0].strip() if runner_lines else ""
-'''
-          new = '''            runner_lines = log.read_text(errors="replace").splitlines()
-            first_line = runner_lines[0].strip() if len(runner_lines) == 1 else ""
-'''
+          old = (
+              '            runner_lines = log.read_text(errors="replace").splitlines()\n'
+              '            first_line = runner_lines[0].strip() if runner_lines else ""\n'
+          )
+          new = (
+              '            runner_lines = log.read_text(errors="replace").splitlines()\n'
+              '            first_line = runner_lines[0].strip() if len(runner_lines) == 1 else ""\n'
+          )
           if body.count(old) != 1:
               raise SystemExit("pinned nextest gate source shape drifted")
           path.write_text(body.replace(old, new), encoding="utf-8")
