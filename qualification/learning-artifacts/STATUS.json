@@ -1,29 +1,48 @@
 {
-  "schema": "hepta.learning-artifacts-qualification-status.v1",
+  "schema": "hepta.learning-artifacts-qualification-status.v2",
   "module": "learning.artifacts",
   "unifiedComplete": false,
   "dimensions": {
-    "sourceImplementation": "implemented",
-    "readProductComposition": "implemented",
-    "writerServiceComposition": "implemented",
+    "sourceImplementation": "implemented_current_candidate",
+    "readProductComposition": "implemented_current_candidate",
+    "writerServiceComposition": "implemented_current_candidate",
+    "canonicalRequestIdentity": "implemented_current_candidate",
+    "durableWithdrawalFloor": "implemented_current_candidate",
+    "durableDrainIntent": "implemented_current_candidate",
+    "stableErrorTaxonomy": "implemented_current_candidate",
+    "actionableOwnerState": "implemented_current_candidate",
+    "stageMeasurement": "implemented_current_candidate",
     "referenceHost": "repository_candidate_under_qualification",
-    "exactHeadQualification": "pending_current_candidate",
+    "exactHeadQualification": "pending_final_candidate",
+    "actualBaseSyntheticMergeQualification": "pending_final_candidate",
+    "consumerPinAccounting": "not_owned_not_established",
+    "physicalEraseAccounting": "not_owned_not_established",
+    "withdrawalPropagationToExistingConsumers": "partial_open_integration",
     "targetHostDurability": "external_not_established",
     "productionActivation": "external_not_established",
     "independentAcceptance": "external_not_established",
     "release": "external_not_established"
   },
   "qualificationPolicy": {
-    "requiredTaskCount": 10,
     "skippedAccepted": false,
     "historicalResultAccepted": false,
     "exactCommitAndTreeRequired": true,
+    "orderedParentActualBaseMergeRequired": true,
     "sourceObjectBindingRequired": true,
-    "receiptArtifact": "learning-artifacts-exact-head-<sha>.json"
+    "completeNativeTestIdentityRequired": true,
+    "receiptArtifact": "learning-artifacts-exact-head-<sha>.json",
+    "deliveryIndex": "docs/modules/learning.artifacts/DELIVERY_INDEX.md"
+  },
+  "truthfulUnknowns": {
+    "pinnedBytes": null,
+    "pendingPhysicalEraseBytes": null,
+    "resourceAccountingComplete": false
   },
   "externalGates": [
     "target-host power-loss qualification",
     "production owner and selector trust provisioning",
+    "independent newest-head, withdrawal and operator-stop rollback floors",
+    "consumer pin retirement and physical erasure witnesses",
     "independent semantic and operator acceptance",
     "canary, promotion and release authority"
   ]
