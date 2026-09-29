@@ -1,0 +1,85 @@
+name: Prompt registry production hardening author
+
+on:
+  push:
+    branches: [ops/prompt-registry-production-hardening-author-20260929]
+    paths:
+      - .github/workflows/prompt-registry-production-hardening-author.yml
+
+permissions:
+  contents: write
+
+jobs:
+  author:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      TARGET_BRANCH: codex/prompt-registry-production-hardening-20260929
+      TARGET_SHA: 8e801ed8711107d08d4e4a279db41b28617d2d7a
+      CARGO_INCREMENTAL: '0'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.TARGET_BRANCH }}
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Bind exact target and apply reviewed patch
+        shell: bash
+        env:
+          AUTHOR_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          curl --fail --silent --show-error --location \
+            "https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${AUTHOR_SHA}/.github/patches/prompt-registry-production-hardening-stage-a.patch.gz.b64" \
+            | base64 --decode | gzip --decompress > "$RUNNER_TEMP/stage-a.patch"
+          git apply --check "$RUNNER_TEMP/stage-a.patch"
+          git apply "$RUNNER_TEMP/stage-a.patch"
+          git diff --check
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+      - name: Prepare native product dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+      - name: Resolve checksum-verified V8 inputs
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Format the complete Rust workspace
+        working-directory: codex-rs
+        run: cargo fmt --all
+      - name: Verify prompt extension and adapter
+        working-directory: codex-rs
+        run: |
+          cargo test --locked -p codex-hepta-prompt-extension
+          cargo check --locked -p codex-hepta-codex-adapter --all-targets
+          cargo clippy --locked -p codex-hepta-prompt-extension --all-targets --no-deps -- -D warnings
+      - name: Verify Agentd prompt runtime
+        working-directory: codex-rs
+        run: |
+          cargo test --locked -p codex-hepta-agentd prompt_runtime --lib -- --nocapture
+          cargo clippy --locked -p codex-hepta-agentd --all-targets --no-deps -- -D warnings
+      - name: Verify Core provider-output terminality
+        working-directory: codex-rs
+        run: |
+          cargo test --locked -p codex-core model_provider_policy::response_terminal --lib -- --nocapture
+          cargo clippy --locked -p codex-core --lib --no-deps -- -D warnings
+      - name: Commit exact verified source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          (cd codex-rs && cargo fmt --all -- --check)
+          test -n "$(git status --short)"
+          git config user.name 'Prompt registry hardening author'
+          git config user.email 'prompt-registry-hardening@users.noreply.github.com'
+          git add -A
+          git commit -m 'prompt.registry: fence final output and expose actionable telemetry'
+          git push origin "HEAD:${TARGET_BRANCH}"
