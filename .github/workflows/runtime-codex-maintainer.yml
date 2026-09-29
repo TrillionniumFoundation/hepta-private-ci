@@ -10,7 +10,14 @@ on:
       - scripts/runtime-codex-maintainer-followup.py
       - scripts/runtime-codex-durability-migration.py
       - scripts/runtime-codex-durability-fixup.py
+      - scripts/runtime-codex-quarantine-migration.py
+      - scripts/runtime-codex-deadline-migration.py
+      - scripts/runtime-codex-cleanup-migration.py
+      - scripts/runtime-codex-storage-fixup.py
+      - scripts/runtime-codex-process-crash-migration.py
+      - scripts/runtime-codex-qualification-fixup.py
       - scripts/runtime-codex-finalize-map.py
+      - scripts/runtime-codex-finalize-map-followup.py
   workflow_dispatch:
 
 permissions:
@@ -27,7 +34,7 @@ env:
 jobs:
   converge:
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -47,7 +54,7 @@ jobs:
           git rev-parse HEAD
           git rev-parse 'HEAD^{tree}'
           git archive --format=zip --output=runtime-codex-source-before.zip HEAD
-      - name: Apply protocol convergence, hardening, and durable owner
+      - name: Apply full runtime.codex convergence
         run: |
           set -euo pipefail
           python3 -m py_compile \
@@ -55,11 +62,24 @@ jobs:
             scripts/runtime-codex-maintainer-followup.py \
             scripts/runtime-codex-durability-migration.py \
             scripts/runtime-codex-durability-fixup.py \
-            scripts/runtime-codex-finalize-map.py
+            scripts/runtime-codex-quarantine-migration.py \
+            scripts/runtime-codex-deadline-migration.py \
+            scripts/runtime-codex-cleanup-migration.py \
+            scripts/runtime-codex-storage-fixup.py \
+            scripts/runtime-codex-process-crash-migration.py \
+            scripts/runtime-codex-qualification-fixup.py \
+            scripts/runtime-codex-finalize-map.py \
+            scripts/runtime-codex-finalize-map-followup.py
           python3 scripts/runtime-codex-maintainer.py
           python3 scripts/runtime-codex-maintainer-followup.py
           python3 scripts/runtime-codex-durability-migration.py
           python3 scripts/runtime-codex-durability-fixup.py
+          python3 scripts/runtime-codex-quarantine-migration.py
+          python3 scripts/runtime-codex-deadline-migration.py
+          python3 scripts/runtime-codex-cleanup-migration.py
+          python3 scripts/runtime-codex-storage-fixup.py
+          python3 scripts/runtime-codex-process-crash-migration.py
+          python3 scripts/runtime-codex-qualification-fixup.py
           cd codex-rs
           cargo fmt --all
       - name: Verify convergence candidate
@@ -79,17 +99,36 @@ jobs:
             --all-targets 2>&1 | tee "../$LOG_DIR/check.log"
           check_status=${PIPESTATUS[0]}
 
-          cargo test --locked -p codex-hepta-agent-protocol 2>&1 | tee "../$LOG_DIR/agent-protocol.log"
+          cargo test --locked -p codex-hepta-agent-protocol \
+            2>&1 | tee "../$LOG_DIR/agent-protocol.log"
           protocol_status=${PIPESTATUS[0]}
-          cargo test --locked -p codex-hepta-infer-core 2>&1 | tee "../$LOG_DIR/infer-core.log"
+
+          cargo test --locked -p codex-hepta-infer-core \
+            2>&1 | tee "../$LOG_DIR/infer-core.log"
           core_status=${PIPESTATUS[0]}
-          cargo test --locked -p codex-hepta-agentd --lib lane_b_runtime 2>&1 | tee "../$LOG_DIR/agentd-owner.log"
+
+          cargo test --locked -p codex-hepta-agentd --lib lane_b_runtime \
+            2>&1 | tee "../$LOG_DIR/agentd-owner.log"
           agentd_status=${PIPESTATUS[0]}
-          cargo test --locked -p codex-hepta-infer-worker-host 2>&1 | tee "../$LOG_DIR/worker-host.log"
-          worker_status=${PIPESTATUS[0]}
+
           cargo test --locked -p codex-hepta-infer-worker-host \
-            --test runtime_codex_crash_matrix 2>&1 | tee "../$LOG_DIR/crash-matrix.log"
+            2>&1 | tee "../$LOG_DIR/worker-host.log"
+          worker_status=${PIPESTATUS[0]}
+
+          cargo test --locked -p codex-hepta-infer-worker-host \
+            --test runtime_codex_crash_matrix \
+            2>&1 | tee "../$LOG_DIR/crash-matrix.log"
           crash_status=${PIPESTATUS[0]}
+
+          cargo test --locked -p codex-hepta-agentd \
+            --test runtime_codex_process_crash \
+            2>&1 | tee "../$LOG_DIR/process-crash.log"
+          process_crash_status=${PIPESTATUS[0]}
+
+          cargo test --locked -p codex-hepta-agentd \
+            runtime_codex_product_caller_commits_one_authorized_terminal_turn \
+            2>&1 | tee "../$LOG_DIR/product-e2e.log"
+          product_e2e_status=${PIPESTATUS[0]}
 
           cargo clippy --locked \
             -p codex-hepta-agent-protocol \
@@ -97,13 +136,15 @@ jobs:
             -p codex-hepta-codex-adapter \
             -p codex-hepta-agentd \
             -p codex-hepta-infer-worker-host \
-            --all-targets --no-deps -- -D warnings 2>&1 | tee "../$LOG_DIR/clippy.log"
+            --all-targets --no-deps -- -D warnings \
+            2>&1 | tee "../$LOG_DIR/clippy.log"
           clippy_status=${PIPESTATUS[0]}
 
           cd ..
-          printf 'check=%s\nprotocol=%s\ncore=%s\nagentd=%s\nworker=%s\ncrash=%s\nclippy=%s\n' \
+          printf 'check=%s\nprotocol=%s\ncore=%s\nagentd=%s\nworker=%s\ncrash=%s\nprocess_crash=%s\nproduct_e2e=%s\nclippy=%s\n' \
             "$check_status" "$protocol_status" "$core_status" "$agentd_status" \
-            "$worker_status" "$crash_status" "$clippy_status" | tee "$LOG_DIR/status.txt"
+            "$worker_status" "$crash_status" "$process_crash_status" \
+            "$product_e2e_status" "$clippy_status" | tee "$LOG_DIR/status.txt"
           exit 0
       - name: Commit source convergence
         if: always()
@@ -120,7 +161,7 @@ jobs:
             codex-rs/hepta-infer-worker-host \
             codex-rs/hepta-agentd
           if ! git diff --cached --quiet; then
-            git commit -m 'fix(runtime.codex): converge and durably fence bound execution'
+            git commit -m 'fix(runtime.codex): close durable bound execution obligations'
             git push origin HEAD:codex/runtime-codex-full-convergence-20260929
           fi
           source_commit="$(git rev-parse HEAD)"
@@ -141,13 +182,14 @@ jobs:
             exit 0
           fi
           python3 scripts/runtime-codex-finalize-map.py
+          python3 scripts/runtime-codex-finalize-map-followup.py
           git config user.name 'runtime.codex maintainer'
           git config user.email 'runtime-codex-maintainer@invalid'
           git add \
             docs/modules/runtime.codex \
             docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json
           if ! git diff --cached --quiet; then
-            git commit -m 'docs(runtime.codex): bind converged source candidate'
+            git commit -m 'docs(runtime.codex): bind durable convergence candidate'
             git push origin HEAD:codex/runtime-codex-full-convergence-20260929
           fi
           git archive --format=zip --output=runtime-codex-final-head.zip HEAD
