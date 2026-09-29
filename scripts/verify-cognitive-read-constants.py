@@ -103,7 +103,7 @@ def require_contract_language() -> None:
     require(workflow_path, ("run-cognitive-read-qualification.sh", "actions/upload-artifact", "artifact-digest", "exact-head", "merge-candidate", "contents: read", "persist-credentials: false"))
     if "contents: write" in read(workflow_path) or "git push" in read(workflow_path):
         raise ValueError("qualification may not write repository source")
-    require("scripts/run-cognitive-read-qualification.sh", ('exec python3 scripts/cognitive_read_evidence.py "$@"',))
+    require("scripts/run-cognitive-read-qualification.sh", ('exec python3 scripts/cognitive_read_full_evidence.py "$@"',))
     require("scripts/cognitive_read_evidence.py", ("SHA256SUMS", "qualification-receipt.json", "tarfile.open", "info.uid = info.gid = info.mtime = 0", "validate_evidence"))
     inventory = commands("0" * 40, ROOT / ".hepta-evidence/contract-probe")
     required = {"product-read-replay", "product-write-smoke", "core-tests", "owner-tests",
