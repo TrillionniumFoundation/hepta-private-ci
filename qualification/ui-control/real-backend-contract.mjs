@@ -295,6 +295,39 @@ try {
   );
   completedCases.push("cross-identity-lookup-denied");
 
+  stage = "cross-identity-operation-rebind";
+  const crossIdentityRebindBody = Object.freeze({
+    ...duplicateBody,
+    sessionId: secondary.sessionId,
+    connectionGeneration: secondary.connectionGeneration,
+  });
+  const crossIdentityRebind = await submit(
+    crossIdentityRebindBody,
+    secondaryCookie,
+    secondaryCsrf,
+  );
+  assertEvidence(
+    crossIdentityRebind.response.status === 409,
+    "UI_CONTROL_CROSS_IDENTITY_REBIND",
+    `the same operation identity and semantic digest under another principal must return 409, got ${crossIdentityRebind.response.status}`,
+  );
+  const primaryAfterCrossIdentityRebind = await lookup(
+    primary,
+    duplicateBody,
+    primaryCookie,
+  );
+  assertEvidence(
+    primaryAfterCrossIdentityRebind.response.ok,
+    "UI_CONTROL_CROSS_IDENTITY_REBIND_ORIGINAL",
+    `the original operation became unavailable after a rejected principal rebind: ${primaryAfterCrossIdentityRebind.response.status}`,
+  );
+  assertOperationObservation(
+    primaryAfterCrossIdentityRebind.payload,
+    duplicateBody,
+    { expectedAuditTraceId: duplicateAuditTraceId },
+  );
+  completedCases.push("cross-identity-operation-rebind-conflict");
+
   stage = "first-operation-terminal-observation";
   const duplicateTerminal = await waitForTerminal(
     primary,

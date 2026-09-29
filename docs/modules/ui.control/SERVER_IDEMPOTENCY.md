@@ -21,7 +21,7 @@ target_id
 reason
 ```
 
-`operation_id` is globally unique within the backend's documented retention horizon. The backend must not silently rebind it.
+`operation_id` is globally unique within the backend's documented retention horizon. The backend must not silently rebind it. An identical semantic digest is not sufficient for replay: the complete immutable authority and snapshot binding above must also match the admitted row.
 
 ## Atomic admission
 
@@ -51,9 +51,9 @@ Admission transaction:
 
 1. authenticate session and verify expiry/revocation/permission revision;
 2. verify CSRF, Origin, request bounds, generation, revision, and snapshot digest;
-3. attempt `INSERT` of `operation_id` and `semantic_digest`;
-4. if a row exists with the same digest, return that row without a second side effect;
-5. if a row exists with a different digest, return conflict and perform no side effect;
+3. attempt `INSERT` of `operation_id` and the complete immutable operation binding;
+4. if a row exists and every semantic, session, generation, revision, snapshot, action, target, and reason field matches, return that row without a second side effect;
+5. if any binding field differs—including the same semantic digest under another session or principal—return conflict and perform no side effect;
 6. in the same transaction, create an outbox/queue record or otherwise atomically establish dispatch responsibility;
 7. commit before returning `accepted`.
 
@@ -61,8 +61,8 @@ A database insert followed by a non-atomic best-effort queue publish is insuffic
 
 ## HTTP semantics
 
-- `202`: accepted or previously accepted with identical semantics;
-- `409`: operation ID already exists with different semantics;
+- `202`: accepted or previously accepted with an identical complete semantic and authority binding;
+- `409`: operation ID already exists with different semantics, session authority, generation, revision, snapshot, target, action, or reason;
 - `412`: displayed generation/revision/snapshot is stale;
 - `401`: session expired or no longer valid;
 - `403`: permission/CSRF/origin denied;
@@ -106,6 +106,7 @@ Production evidence must demonstrate:
 - concurrent inserts for one operation ID create one row and one side effect;
 - identical replay returns the same record and audit trace;
 - digest conflict returns 409 with no side effect;
+- a second authenticated identity cannot rebind the same operation ID even when it reuses the original semantic digest, and the rejected attempt leaves the original audit trace unchanged;
 - crash between admission and dispatch is recovered from the outbox;
 - accepted response loss is recovered by lookup;
 - pending, terminal, restart-reconciled, and same-principal post-session-switch lookups retain the admission audit trace;

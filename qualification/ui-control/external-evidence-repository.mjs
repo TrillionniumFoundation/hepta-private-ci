@@ -41,6 +41,7 @@ export const REQUIRED_REAL_BACKEND_CASES = Object.freeze([
   "changed-payload-conflict",
   "rejected-before-admission-no-record",
   "cross-identity-lookup-denied",
+  "cross-identity-operation-rebind-conflict",
   "first-operation-terminal-lookup",
   "fresh-snapshot-before-next-mutation",
   "accepted-response-loss-lookup",

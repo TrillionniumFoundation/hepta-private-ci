@@ -6,6 +6,7 @@ import "./external-evidence-stage-ledger.test.js";
 import "./external-evidence-bundle-failure.test.js";
 import "./external-evidence-bundle-acceptance.test.js";
 import "./real-backend-invariants.test.js";
+import "./real-backend-contract-coverage.test.js";
 import "./external-preflight.test.js";
 import "./external-workflow-security.test.js";
 import "./external-workflow-observation.test.js";
