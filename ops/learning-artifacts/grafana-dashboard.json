@@ -45,10 +45,10 @@
       "gridPos": {"h": 8, "w": 8, "x": 0, "y": 8},
       "id": 4,
       "targets": [
-        {"expr": "hepta_learning_artifact_owner_withdrawal_blocks_total", "legendFormat": "blocks", "refId": "A"},
-        {"expr": "hepta_learning_artifact_owner_withdrawal_block_seconds_total", "legendFormat": "blocked seconds", "refId": "B"}
+        {"expr": "hepta_learning_artifact_owner_withdrawal_blocks_total", "legendFormat": "withdrawal blocks", "refId": "A"},
+        {"expr": "hepta_learning_artifact_owner_quarantine_items", "legendFormat": "quarantine items", "refId": "B"}
       ],
-      "title": "Withdrawal blocking",
+      "title": "Withdrawal and quarantine",
       "type": "timeseries"
     },
     {
@@ -100,6 +100,6 @@
   "timezone": "browser",
   "title": "Hepta learning.artifacts owner",
   "uid": "hepta-learning-artifacts-owner-v1",
-  "version": 1,
+  "version": 2,
   "weekStart": ""
 }
