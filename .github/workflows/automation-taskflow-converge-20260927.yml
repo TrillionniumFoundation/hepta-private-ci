@@ -62,135 +62,11 @@ jobs:
           set -euo pipefail
           python3 -m py_compile \
             scripts/automation_taskflow_truthful_finalize_20260929.py \
+            scripts/automation_taskflow_layered_contract_20260929.py \
             scripts/automation_taskflow_contract.py \
             scripts/automation_taskflow_selected_host.py
           python3 scripts/automation_taskflow_truthful_finalize_20260929.py
-          python3 - <<'PY'
-          from pathlib import Path
-
-          root = Path.cwd()
-          technical = root / "docs/modules/automation.taskflow/TECHNICAL.md"
-          body = technical.read_text(encoding="utf-8")
-          body = body.replace("**Durable store schema:** **v21**", "**Durable store schema:** **v22**")
-          body = body.replace("## 3. Durable schema v21 and retained history", "## 3. Durable schema v22 and retained history")
-          body = body.replace("schema 21 must not open", "schema 22 must not open")
-          row21 = "| 21 | indexed sparse unknown frontier | preserves migration 20's checksum and selects the indexed dispatch key |"
-          row22 = "| 22 | durable Neural Circuit activation, receipts, choices and checkpoints | additive existing-owner state; unsettled owner contact prevents handoff |"
-          if row22 not in body:
-              if row21 not in body:
-                  raise SystemExit("TECHNICAL migration-table anchor is missing")
-              body = body.replace(row21, row21 + "\n" + row22, 1)
-          old_status = (
-              "**Status:** V1 durable owner and configured Agentd product composition are\n"
-              "source-present. Exact-head/native/merged-tree execution, durable Circuit product\n"
-              "integration, cross-host operation and selected-runtime evidence remain distinct\n"
-              "unfinished work. No deployment or independent acceptance is asserted."
-          )
-          new_status = (
-              "**Status:** schema-22 durable Circuit source is present in the native build tree,\n"
-              "while its normal Agentd DecisionCell/organ/Wait/Effect product port is still open.\n"
-              "Exact-head and merged-tree execution, real process/two-host recovery, bounded\n"
-              "TaskFlow startup, selected-host behavior and independent acceptance remain separate."
-          )
-          body = body.replace(old_status, new_status)
-          old_owner = (
-              "The bounded Neural Circuit library adapter produces choice/organ/wait traces up\n"
-              "to a wait or effect boundary. It is not yet the durable product interpreter."
-          )
-          new_owner = (
-              "The bounded Neural Circuit adapter now has a schema-22 durable owner extension: it\n"
-              "persists activation intent, reservation, exact outcome, choices and checkpoints.\n"
-              "It still lacks the normal Agentd product port that supplies real owner components."
-          )
-          body = body.replace(old_owner, new_owner)
-          old_row = "| Neural Circuit activation adapter | `neural_circuit_runtime/` | library trace/boundary output; durable product continuation remains open |"
-          new_rows = (
-              "| Neural Circuit runtime adapter | `neural_circuit_runtime/` | bounded trace and boundary computation |\n"
-              "| Durable Neural Circuit owner | `durable_neural_circuit.rs`, `durable_neural_circuit_recovery.rs` | schema-22 persistence; normal Agentd owner-port composition remains open |"
-          )
-          body = body.replace(old_row, new_rows)
-          technical.write_text(body, encoding="utf-8")
-
-          slo = root / "docs/modules/automation.taskflow/SLO.md"
-          body = slo.read_text(encoding="utf-8").replace(
-              "These schema-21 objectives", "These schema-22 objectives"
-          )
-          slo.write_text(body, encoding="utf-8")
-          PY
-          python3 - <<'PY'
-          from pathlib import Path
-
-          path = Path("scripts/automation_taskflow_contract.py")
-          body = path.read_text(encoding="utf-8")
-          old = '''COMPONENTS = ("boundedAdmissionBatchComplete", "separateRecoveryBudgetComplete",
-              "externalEffectProductCompositionComplete",
-              "neuralCircuitRuntimeVerticalSliceComplete", "durableNeuralCircuitProductComplete",
-              "crossHostRecoveryContractComplete", "crossHostRecoveryProductComplete",
-              "selectedHostQualificationPathComplete", "independentAcceptanceVerificationPathComplete")
-'''
-          new = '''COMPONENTS = ("boundedAdmissionBatchComplete", "separateRecoveryBudgetComplete",
-              "externalEffectProductCompositionComplete",
-              "neuralCircuitRuntimeVerticalSliceComplete", "durableNeuralCircuitSourceComplete",
-              "durableNeuralCircuitBuildTreeComplete", "durableNeuralCircuitProductComplete",
-              "crossHostRecoveryContractComplete", "signedCrossHostFenceReceiptComplete",
-              "crossHostRecoveryProductComplete", "boundedOccurrenceStartupVerificationComplete",
-              "boundedTaskFlowStartupVerificationComplete", "exactConsumedSelectedHostBindingComplete",
-              "selectedHostQualificationPathComplete", "independentAcceptanceVerificationPathComplete")
-DELIVERY_STAGES = ("schema22SourcePresent", "nativeBuildTreeIntegrated",
-                   "normalProductEntrypointComposed", "exactSourceQualificationPassed",
-                   "deterministicMergeQualificationPassed", "selectedHostBehaviorPassed",
-                   "independentAcceptancePassed")
-'''
-          if "DELIVERY_STAGES =" not in body:
-              if old not in body:
-                  raise SystemExit("contract component-list anchor is missing")
-              body = body.replace(old, new, 1)
-          old = '''    gaps = implementation.get("remainingModuleGaps")
-    product_gaps = implementation.get("repositoryControlledProductCompositionGaps")
-'''
-          new = '''    stages = implementation.get("deliveryStages")
-    need(isinstance(stages, dict), "implementation map deliveryStages is missing")
-    for key in DELIVERY_STAGES:
-        need(type(stages.get(key)) is bool, f"delivery stage {key} must be an explicit boolean")
-    need(stages["schema22SourcePresent"], "schema-22 source stage must reflect the current source")
-    need(stages["nativeBuildTreeIntegrated"], "schema-22 native build-tree stage is missing")
-    need(not stages["normalProductEntrypointComposed"],
-         "source map cannot claim the missing normal Agentd Circuit entrypoint")
-    for key in ("exactSourceQualificationPassed", "deterministicMergeQualificationPassed",
-                "selectedHostBehaviorPassed", "independentAcceptancePassed"):
-        need(stages[key] is False, f"source map cannot self-issue delivery stage {key}")
-    gaps = implementation.get("remainingModuleGaps")
-    product_gaps = implementation.get("repositoryControlledProductCompositionGaps")
-'''
-          if "implementation map deliveryStages is missing" not in body:
-              if old not in body:
-                  raise SystemExit("contract facts anchor is missing")
-              body = body.replace(old, new, 1)
-          old = '''        "claimBoundary": {key: claims[key] for key in (*REPOSITORY, *COMPONENTS, *EXTERNAL)},
-        "remainingModuleGaps": implementation["remainingModuleGaps"],
-'''
-          new = '''        "claimBoundary": {key: claims[key] for key in (*REPOSITORY, *COMPONENTS, *EXTERNAL)},
-        "deliveryStages": {key: implementation["deliveryStages"][key] for key in DELIVERY_STAGES},
-        "remainingModuleGaps": implementation["remainingModuleGaps"],
-'''
-          if '"deliveryStages": {key:' not in body:
-              if old not in body:
-                  raise SystemExit("contract projection anchor is missing")
-              body = body.replace(old, new, 1)
-          old = '''    lines += [f"| `{key}` | `{str(value).lower()}` |" for key, value in state["claimBoundary"].items()]
-    lines += ["", "## Remaining module work", ""]
-'''
-          new = '''    lines += [f"| `{key}` | `{str(value).lower()}` |" for key, value in state["claimBoundary"].items()]
-    lines += ["", "## Layered delivery status", "", "| Delivery stage | State |", "|---|---|"]
-    lines += [f"| `{key}` | `{str(value).lower()}` |" for key, value in state["deliveryStages"].items()]
-    lines += ["", "## Remaining module work", ""]
-'''
-          if "## Layered delivery status" not in body:
-              if old not in body:
-                  raise SystemExit("contract status-render anchor is missing")
-              body = body.replace(old, new, 1)
-          path.write_text(body, encoding="utf-8")
-          PY
+          python3 scripts/automation_taskflow_layered_contract_20260929.py
           python3 scripts/automation_taskflow_contract.py render
           python3 scripts/hepta_transition_lineage.py
           python3 scripts/hepta-document-index.py
@@ -199,6 +75,7 @@ DELIVERY_STAGES = ("schema22SourcePresent", "nativeBuildTreeIntegrated",
             scripts/automation_taskflow_converge_20260927.py \
             scripts/automation_taskflow_finalize_20260928.py \
             scripts/automation_taskflow_truthful_finalize_20260929.py \
+            scripts/automation_taskflow_layered_contract_20260929.py \
             scripts/automation_taskflow_patch_parts
           git diff --check
           git add -u
