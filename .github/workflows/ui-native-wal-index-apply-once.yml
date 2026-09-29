@@ -6,27 +6,34 @@ on:
     paths:
       - .ci/ui-native-wal-index/source.patch.gz
       - .github/workflows/ui-native-wal-index-apply-once.yml
+  pull_request:
+    branches: [work/ui-native-qualified-integration-20260928]
+    paths:
+      - .ci/ui-native-wal-index-trigger/**
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: ui-native-wal-index-source-${{ github.ref }}
+  group: ui-native-wal-index-source-${{ github.event.pull_request.base.ref || github.ref }}
   cancel-in-progress: true
 
 env:
   CARGO_TERM_COLOR: always
   CARGO_INCREMENTAL: "0"
+  TARGET_BRANCH: work/ui-native-qualified-integration-20260928
+  TARGET_SHA: ${{ github.event.pull_request.base.sha || github.sha }}
 
 jobs:
   apply-test-publish:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ env.TARGET_SHA }}
           fetch-depth: 0
           persist-credentials: true
 
@@ -39,7 +46,7 @@ jobs:
           diagnostics="$RUNNER_TEMP/ui-native-wal-index-diagnostics"
           rm -rf "$diagnostics"
           mkdir -p "$diagnostics"
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
           test -z "$(git status --porcelain)"
           if [[ ! -f .ci/ui-native-wal-index/source.patch.gz ]]; then
             echo 'one-shot source patch already consumed'
@@ -106,6 +113,7 @@ jobs:
           cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml
           git add apps/hepta-native docs/modules/ui.native
           git rm .ci/ui-native-wal-index/source.patch.gz
+          git rm .github/workflows/ui-native-wal-index-apply-once.yml
           git diff --cached --check
           python3 - <<'PYTHON'
           import subprocess
@@ -118,9 +126,13 @@ jobs:
           ).splitlines()
           if not paths:
               raise SystemExit('empty source commit')
+          allowed_exact = {
+              '.ci/ui-native-wal-index/source.patch.gz',
+              '.github/workflows/ui-native-wal-index-apply-once.yml',
+          }
           unexpected = [
               path for path in paths
-              if path != '.ci/ui-native-wal-index/source.patch.gz'
+              if path not in allowed_exact
               and not path.startswith('apps/hepta-native/')
               and not path.startswith('docs/modules/ui.native/')
           ]
@@ -130,7 +142,7 @@ jobs:
           git config user.name 'hepta-native-source-bot'
           git config user.email 'hepta-native-source-bot@users.noreply.github.com'
           git commit -m 'feat(ui.native): bound durable history lookup and journal writes' \
-            -m 'Add a content-addressed retirement disk index, exact active-operation index, checksummed fsynced WAL, bounded checkpointing and recovery tests without weakening Prepared/Invoking durability or unknown-result replay fences.'
+            -m 'Add a content-addressed retirement disk index, exact active-operation index, checksummed fsynced WAL, bounded checkpointing and recovery tests without weakening Prepared/Invoking durability or unknown-result replay fences. Remove the consumed source capsule and one-shot publisher.'
 
       - name: Verify exact committed source
         if: steps.source.outputs.apply == 'true'
@@ -147,7 +159,9 @@ jobs:
         if: steps.source.outputs.apply == 'true'
         run: |
           set -euo pipefail
-          git push origin "HEAD:refs/heads/${GITHUB_REF_NAME}"
+          remote_head="$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | cut -f1)"
+          test "$remote_head" = "$TARGET_SHA"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
 
       - name: Retain failure diagnostics without publishing source
         if: failure()
