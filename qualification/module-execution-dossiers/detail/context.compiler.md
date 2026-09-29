@@ -1,7 +1,7 @@
 # context.compiler execution dossier
 <!-- GENERATED CURRENT STATE: edit CURRENT_STATE.json; detailed design is retained separately. -->
 
-State SHA-256: `416938bb2030e741275c90f8ed5d8f04110315286c25e3d64d28f0f828d68719`. Source anchor: `c21a781119e9fc241197b61a304698f023c8979b`.
+State SHA-256: `e44ec8dfcc2e8a9102ae3fee0b5b428f8885044018be59f0810ee488c836a0d2`. Source anchor: `cd07ed1ca09bef0538955ce44b9a60d8bac2dba9`.
 The source anchor is provenance, not the final tested head. Only external execution receipts bind a final source/merge object.
 
 ## 1. Current implementation and evidence state
@@ -39,6 +39,16 @@ The source anchor is provenance, not the final tested head. Only external execut
 - Schema-2 digest-only pre-send history remains fail-closed and non-recoverable; migration never fabricates missing recovery evidence.
 - Recovery archive tampering, intent drift, request-body drift, wire-semantic drift, context attachment drift and conflicting terminal replacement are rejected.
 - V2 compiler errors and raw payload holders use stable redacted diagnostics; dynamic error detail and prompt bytes are excluded from Debug and Display output.
+- Lifecycle follow-up: the existing exact owner publishes the runtime projection under one exclusive exact-state reservation before inserting the exact stage. Validation, capacity and uncertain runtime persistence errors cannot leave a newly usable half-published exact context.
+- Completed end-turn and rejected terminals retire raw exact context after the last preparation/attempt settles; tool-continuation and Indeterminate contexts remain retained. Attempt/proof/observation history is not removed. Existing capacity limits are unchanged.
+- AgentdPromptPipelineOwner::clear_turn coordinates explicit unused/settled-turn retirement with the same two owners. Runtime schema 2 records raw-free retired turn identities; schema 1 remains readable and cannot carry invented retirement. Old dispatches remain queryable and cannot admit new attempts.
+- New admissions preserve bounded terminal headroom: 64 KiB per unresolved exact attempt and 128 KiB per unresolved runtime projection attempt. Producer-side record limits protect the reservation. Unknown observations cannot spend the final reserve, and final reconciliation can consume its own reservation. Legacy states acquire no fabricated historical reservation.
+- The existing owner records seventeen bounded process-local phase measurements, including failed/cancelled scopes, with last-256 nearest-rank p50/p95/p99 and lifetime saturating totals/maxima. Unobserved phases remain null. Nested measurements overlap and are not additive latency; no target-host improvement is asserted.
+- Seventeen new native regressions cover 257 sequential exact-owner turns, runtime validation/capacity/post-rename failures, preparation-clear exclusion, tool/unknown retention, schema retirement/reopen, terminal headroom and bounded timing. These are registered source tests, not locally executed Rust evidence.
+- Exact-candidate qualification now requires the reviewed fully qualified native test names as well as command success and aggregate counts. It binds a 257-turn protocol-fixture profile to the command log and source/merge identity without promoting it to provider or selected-host acceptance.
+- Consumer execution rows distinguish actual source callsites from absent authenticated ingress and absent external-security consumption. Receipt projection records native results separately from unverified authenticated product E2E, independent acceptance, activation and release.
+- Exact-attempt observer terminal binding was already implemented in ext/hepta-prompt/src/exact_body.rs before this follow-up; it is retained rather than repeatedly listed as missing source.
+- Live attempt completion measures final-request observation through durable final persistence, including the intervening transport interval. Recovered reconciliation is a separate attempted phase and does not invent pre-crash elapsed time. Neither is a full authenticated user-turn SLO.
 
 ## 3. Current product call path
 
@@ -55,12 +65,14 @@ registry-owned V3 authority / optimizer portfolio
   -> live terminal path OR process reopen
        -> raw-free recovery archive
        -> same ProviderInvocationIntent only
-       -> independent delivery verifier
+       -> local intent/byte verifier (independent provider evidence still open)
        -> monotone Indeterminate/final durable observation
 ```
 The recovery archive grants no dispatch authority and cannot re-release request
 bytes. Legacy digest-only records continue to block blind replay and require
 external reconciliation rather than being upgraded into evidence.
+
+Stage publication uses exact-state -> runtime-state lock order, with no await or provider effect. Terminal retirement frees raw payload but retains proof/history. Ordinary authenticated ingress and external security-capability consumption are not yet composed.
 
 ## 4. Dormant integration inputs
 
@@ -71,7 +83,6 @@ external reconciliation rather than being upgraded into evidence.
 - Wire the named Agentd compile_and_stage_v3 entrypoint into ordinary authenticated App Server turn admission and prove that exact product call on the immutable source/merge objects.
 - Provision and independently qualify the real provider/model tokenizer, immutable executable/interpreter/runtime, vocabulary and normalization. Hash pins detect observed artifact drift but do not attest semantic token accuracy or exclude a privileged replace-and-restore adversary.
 - Integrate transport-owner final-use/cancellation authority after the durable authorization linearization point; a revocation committed before authorization is rejected, while post-authorization cancellation remains a separate effect-owner contract.
-- Bind terminal acknowledgement to exact attempt identity before reusing a turn observer and qualify the provider evidence owner independently from Agentd.
 - Finish cross-holder raw-content redaction, remaining provider typed slots and provider/model-specific framing policies beyond the current developer-only profile.
 - Qualify durable filesystem ownership, rollback resistance, symlink/race resistance and safe retention/retirement beyond bounded JSON state.
 - Run pinned formatting, compilation, native regressions, product E2E, strict lint, dependency policy, exact-head and deterministic synthetic-merge qualification for the final committed source.
@@ -80,10 +91,14 @@ external reconciliation rather than being upgraded into evidence.
 - Qualify the independent provider evidence owner and its authenticated receipt acquisition; Agentd remains an evidence consumer and must not self-attest provider truth.
 - Qualify schema-3 storage on the selected host for ownership, rollback resistance, power-loss behavior, symlink/race resistance, retention and capacity; bounded JSON source semantics are not target-host durability evidence.
 - Run immutable source-head and deterministic synthetic-merge qualification over the final direct-source commit; pre-commit materialization tests do not transfer qualification to the generated successor commit.
+- Compose ContextSecurityCapabilitiesV3 into the existing actual exact-delivery owner: external lease/journal/generation, immutable tokenizer custody and independent terminal attestation remain defined interfaces rather than consumed runtime capabilities. The current local verifier binds intent and bytes but is not independent provider truth.
+- Long-lived history rollover is not implemented by raw-payload retirement. The 1024 runtime dispatch and 4096 exact pre-send limits, bounded whole-JSON persistence and replay cost remain. A versioned append-only journal/checkpoint/archive migration must retain every attempt tombstone, unresolved binding and independently anchored frontier; do not delete history or increase limits as a substitute.
+- Execute all seventeen lifecycle/capacity/metrics Rust regressions on the final source and merge candidates, including their named-output and bounded-profile validation. No local Rust toolchain was available for this follow-up.
+- Connect public cleanup and raw-free diagnostics to authenticated turn lifecycle/operations consumers; a method definition or a direct owner fixture is not proof of ordinary App Server ingress, cross-host safety or production operations.
 
 ## 6. Verification
 
-The final ordinary-source candidate must pass deterministic generated-truth checks, default V3 and explicit legacy profiles, V3 product regressions, typed-slot and attempt-bound terminal tests, tokenizer revocation/expiry races, process-reopen recovery, strict all-feature Clippy, dependency policy, exact source-head and deterministic synthetic-merge qualification. Read-only CI and source generation cannot self-certify independent acceptance, activation or release.
+The final ordinary-source candidate must pass deterministic generated-truth checks, default V3 and explicit legacy profiles, V3 product regressions, typed-slot and attempt-bound terminal tests, tokenizer revocation/expiry races, process-reopen recovery, strict all-feature Clippy, dependency policy, exact source-head and deterministic synthetic-merge qualification. Read-only CI and source generation cannot self-certify independent acceptance, activation or release. The lifecycle, capacity and metrics command groups additionally require 17 exact native names; the lifecycle group retains a 257-turn owner protocol-fixture measurement. Neither source navigation nor native fixture evidence grants authenticated product E2E or target-host acceptance.
 
 The canonical workflow uses separate source-head and deterministic synthetic-merge lanes. Both must retain passing receipts with source/base/tested commit/tree, run/attempt, command exit codes, nonempty native test counts and log digests. Candidate identity is revalidated before and after each command. Pending, skipped, cancelled and missing artifacts are not passes.
 
@@ -97,6 +112,21 @@ The complete previous technical guide, implementation map, dossier and product-p
 - [CURRENT_PRODUCT_PATH.md](../../../docs/modules/context.compiler/design-baseline/CURRENT_PRODUCT_PATH.md) — retained Git blob `3e0574772391b71b247c25514507826860543a83`
 - [MODULE_MANIFEST.json](../../../docs/modules/context.compiler/design-baseline/MODULE_MANIFEST.json) — retained Git blob `938477695f05fbf08818e3387f73964c1442c04a`
 
-## 8. Change discipline
+## 8. Consumer execution trace
+
+| Capability | Definition | Actual source consumer | Native command | Authenticated product E2E |
+|---|---|---|---|---|
+| `stage-publication` | `codex-rs/hepta-agentd/src/exact_context_delivery/lifecycle.rs::stage_with` | `codex-rs/hepta-agentd/src/prompt_runtime.rs::compile_and_stage_v3` | `owner-lifecycle-regressions` | unverified |
+| `raw-turn-retirement` | `codex-rs/hepta-agentd/src/exact_context_delivery/lifecycle.rs::retire_completed_stage` | `codex-rs/hepta-agentd/src/exact_context_delivery.rs::commit_terminal` | `owner-lifecycle-regressions` | unverified |
+| `runtime-retirement` | `codex-rs/hepta-agentd/src/prompt_runtime.rs::clear_turn` | `codex-rs/hepta-agentd/src/exact_context_delivery/lifecycle.rs::clear_turn_with` | `owner-lifecycle-regressions` | unverified |
+| `terminal-headroom` | `codex-rs/hepta-agentd/src/exact_context_delivery/terminal_state.rs::completion_reserve` | `codex-rs/hepta-agentd/src/exact_context_delivery.rs::commit_pre_send` | `owner-capacity-regressions` | unverified |
+| `runtime-headroom` | `codex-rs/hepta-agentd/src/prompt_runtime.rs::pending_completion_count` | `codex-rs/hepta-agentd/src/prompt_runtime.rs::commit_state` | `owner-lifecycle-regressions` | unverified |
+| `phase-observation` | `codex-rs/hepta-agentd/src/exact_context_delivery/metrics.rs::Metrics` | `codex-rs/hepta-agentd/src/exact_context_delivery.rs::observe_final_request` | `owner-metrics-regressions` | unverified |
+| `authenticated-app-server-ingress` | `codex-rs/hepta-agentd/src/prompt_runtime.rs::compile_and_stage_v3` | Not composed | `none` | unverified |
+| `external-security-consumption` | `codex-rs/hepta-agentd/src/context_security_runtime.rs::ContextSecurityCapabilitiesV3` | Not composed | `none` | unverified |
+
+These are reviewed source anchors, not compiler reachability or execution evidence. The exact-candidate receipt records each required native name and command/log identity; native fixture passes never qualify authenticated ingress, independent provider truth or a target host.
+
+## 9. Change discipline
 
 Edit `CURRENT_STATE.json`, run `python3 scripts/generate_context_compiler_module_docs.py --write`, and commit all five projections together. CI uses `--check` only. Source-navigation checks are deliberately not described as compilation or independent security acceptance. No candidate workflow may rewrite Rust source or push remediation commits.

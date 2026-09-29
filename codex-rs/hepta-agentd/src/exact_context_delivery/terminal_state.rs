@@ -269,3 +269,36 @@ pub(super) fn validate(state: &StoredExactDeliveryState) -> Result<(), ExactCont
     }
     Ok(())
 }
+
+// Includes the serialized map key, record and punctuation. This is an explicit
+// native record bound, not an estimate of provider usage or a disk-space grant.
+const FINAL_COMPLETION_BYTES: u64 = 64 * 1024;
+
+pub(super) fn completion_reserve(
+    state: &StoredExactDeliveryState,
+) -> Result<u64, ExactContextDeliveryError> {
+    let pending = state
+        .pre_sends
+        .keys()
+        .filter(|attempt| state.has_unresolved_attempt(attempt))
+        .count();
+    u64::try_from(pending)
+        .ok()
+        .and_then(|count| count.checked_mul(FINAL_COMPLETION_BYTES))
+        .ok_or(ExactContextDeliveryError::Capacity)
+}
+
+pub(super) fn validate_terminal_size(
+    terminal: &StoredTerminal,
+) -> Result<(), ExactContextDeliveryError> {
+    let encoded = serde_json::to_vec(&(&terminal.attempt_id, terminal))
+        .map_err(|_| ExactContextDeliveryError::Unavailable)?;
+    if u64::try_from(encoded.len())
+        .ok()
+        .and_then(|length| length.checked_add(4))
+        .is_none_or(|length| length > FINAL_COMPLETION_BYTES)
+    {
+        return Err(ExactContextDeliveryError::Capacity);
+    }
+    Ok(())
+}

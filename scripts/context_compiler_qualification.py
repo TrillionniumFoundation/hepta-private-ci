@@ -33,6 +33,13 @@ TRUTH_FILES = (
     ROOT / "qualification/module-execution-dossiers/detail/context.compiler.md",
 )
 SOURCE_EVIDENCE_FILES = (
+    ROOT / "codex-rs/hepta-agentd/src/exact_context_delivery/lifecycle.rs",
+    ROOT / "codex-rs/hepta-agentd/src/exact_context_delivery/metrics.rs",
+    ROOT / "codex-rs/hepta-agentd/src/exact_context_delivery/lifecycle_tests.rs",
+    ROOT / "codex-rs/hepta-agentd/src/exact_context_delivery/metrics_tests.rs",
+    ROOT / "codex-rs/hepta-agentd/src/exact_context_delivery/capacity_tests.rs",
+    ROOT / "codex-rs/hepta-agentd/src/prompt_runtime_lifecycle_tests.rs",
+    ROOT / "scripts/context_compiler_named_evidence.py",
     ROOT / "codex-rs/hepta-context-compiler/src/lib.rs",
     ROOT / "codex-rs/hepta-context-compiler/src/provider_closure.rs",
     ROOT / "codex-rs/hepta-context-compiler/src/v2.rs",

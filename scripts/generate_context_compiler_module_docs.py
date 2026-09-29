@@ -71,6 +71,7 @@ def validate_runtime_sources(state, root=ROOT):
 
 def validate_bindings(state, root=ROOT):
     validate_runtime_sources(state, root)
+    validate_consumer_execution(state, root)
     for reference in state["designReferences"]:
         content = (root / reference["path"]).read_bytes()
         actual = hashlib.sha1(f"blob {len(content)}\0".encode() + content).hexdigest()
@@ -84,6 +85,50 @@ def validate_bindings(state, root=ROOT):
             raise ValueError(f"registered source/caller anchor missing: {binding['path']}")
     # These checks establish source-navigation anchors, not type-checking,
     # exhaustive call-graph reachability, native execution or authority honesty.
+
+
+def validate_consumer_execution(state, root=ROOT):
+    """Navigation checks only; exact runtime passes come from external logs."""
+    registered = {entry["path"] for entry in state.get("runtimeSourceFiles", [])}
+    identifiers = set()
+    for row in state.get("consumerExecution", []):
+        if row["id"] in identifiers:
+            raise ValueError("duplicate consumer trace identity")
+        identifiers.add(row["id"])
+        if row["authenticatedProductE2E"] != "unverified" or row["exactExecution"] != "CI_EXACT_HEAD":
+            raise ValueError("source trace cannot self-certify execution")
+        definition = row["definition"]
+        consumer = row.get("consumer")
+        if (consumer is None) != (row["sourceState"] == "not_composed"):
+            raise ValueError("consumer source state contradicts callsite")
+        for anchor in [definition] + ([consumer] if consumer is not None else []):
+            if anchor["path"] not in registered:
+                raise ValueError("consumer source anchor is not blob-bound")
+            source = (root / anchor["path"]).read_text(encoding="utf-8")
+            if anchor["symbol"] not in source or anchor.get("call", "") not in source:
+                raise ValueError("missing consumer source anchor")
+        names = row.get("nativeTests", [])
+        if len(names) != len(set(names)) or bool(names) != bool(row.get("command")):
+            raise ValueError("invalid consumer native inventory")
+        for test in row.get("testSources", []):
+            if test["path"] not in registered or test["name"] not in names:
+                raise ValueError("test source is not bound to the native inventory")
+            if f"fn {test['name'].split('::')[-1]}(" not in (root / test["path"]).read_text(encoding="utf-8"):
+                raise ValueError("native test definition missing")
+        if {test["name"] for test in row.get("testSources", [])} != set(names):
+            raise ValueError("native inventory lacks complete test source mapping")
+
+
+def consumer_table(state):
+    rows = ["| Capability | Definition | Actual source consumer | Native command | Authenticated product E2E |",
+            "|---|---|---|---|---|"]
+    for row in state.get("consumerExecution", []):
+        definition = row["definition"]
+        consumer = row.get("consumer")
+        caller = f"`{consumer['path']}::{consumer['symbol']}`" if consumer else "Not composed"
+        rows.append(f"| `{row['id']}` | `{definition['path']}::{definition['symbol']}` | {caller} | "
+                    f"`{row.get('command') or 'none'}` | unverified |")
+    return "\n".join(rows)
 
 
 def bullets(values):
@@ -146,7 +191,11 @@ counted as active merely because they exist.
             + "The complete previous technical guide, implementation map, dossier and product-path design are preserved byte-for-byte below. "
             + "Their earlier completion statements are historical, not current acceptance evidence. Algorithms, proof objects, byte identities, capacity requirements, threat controls, migration targets and test design remain available in full.\n\n"
             + bullets(references)
-            + "\n\n## 8. Change discipline\n\n"
+            + "\n\n## 8. Consumer execution trace\n\n" + consumer_table(state)
+            + "\n\nThese are reviewed source anchors, not compiler reachability or execution evidence. "
+            + "The exact-candidate receipt records each required native name and command/log identity; "
+            + "native fixture passes never qualify authenticated ingress, independent provider truth or a target host.\n"
+            + "\n## 9. Change discipline\n\n"
             + "Edit `CURRENT_STATE.json`, run `python3 scripts/generate_context_compiler_module_docs.py --write`, and commit all five projections together. "
             + "CI uses `--check` only. Source-navigation checks are deliberately not described as compilation or independent security acceptance. "
             + "No candidate workflow may rewrite Rust source or push remediation commits.\n"
@@ -173,6 +222,7 @@ counted as active merely because they exist.
             "status": state["status"], "statusRationale": rationale, "maturity": state["maturity"],
             "sourceBindings": state["sourceBindings"], "dormantSource": state["dormantSource"],
             "runtimeSourceFiles": state.get("runtimeSourceFiles", []),
+            "consumerExecution": state.get("consumerExecution", []),
             "designReferences": state["designReferences"], "knownOpenItems": state["knownOpenItems"],
             "invariantInterpretation": "Retained invariants are required contracts; status and knownOpenItems identify implementation and execution gaps.",
         })
@@ -183,7 +233,7 @@ counted as active merely because they exist.
         value["qualification"]["commands"] = [command.replace("cargo test", "just test") for command in value["qualification"]["commands"]]
         if kind == "map":
             value["productComposition"]["state"] = "partial"
-            value["productComposition"]["singlePhysicalPath"] = "Current V2 exact-body source path with explicit open authority/tokenizer/recovery gates; not a completed V3 product cutover."
+            value["productComposition"]["singlePhysicalPath"] = "Registry/compiler V3 uses the existing Agentd exact-body owner; authenticated ingress and external security-capability consumption remain not composed. No alternate owner is activated."
         else:
             value["artifacts"]["currentProductPath"] = str(OUTPUTS["product"])
         documents[OUTPUTS[kind]] = json.dumps(value, ensure_ascii=False, indent=2) + "\n"

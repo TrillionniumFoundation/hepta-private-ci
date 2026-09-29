@@ -18,8 +18,8 @@
   },
   "statusRationale": {
     "coreImplementation": "Core verified-V2 compilation, compiler-owned serialization, typed-slot framing, exact-request proof and deny-all receipts exist in direct source.",
-    "productComposition": "Registry-owned V3 authority and compiler composition are registered and wired to the existing Agentd exact-body owner; V1 composition is default-off. Ordinary product-ingress execution remains an explicit qualification gate.",
-    "v2ProviderClosure": "Typed developer-slot framing, exact final-request tokenization, post-tokenization authority revalidation, durable pre-send, monotone terminal observations and raw-free terminal-only crash recovery are source-composed. Exact-head execution, independently authenticated provider evidence and deployment durability remain external gates.",
+    "productComposition": "Registry/compiler V3 composes into the existing Agentd exact-body owner, now with coordinated stage publication and retirement. Ordinary authenticated ingress and external security-capability consumption remain source integration work, not merely deployment approval.",
+    "v2ProviderClosure": "Exact-body authorization ordering, bounded terminal headroom, monotone local observations and raw-free recovery bindings exist. Independently authenticated provider evidence, filesystem/rollback protection, long-lived journal rollover and target-host execution remain open.",
     "currentHeadQualification": "Only immutable source-head and deterministic synthetic-merge receipts for the final commit can establish execution. This source state does not self-certify."
   },
   "artifacts": {
@@ -46,16 +46,30 @@
     "codex-rs/hepta-intelligence/src/prompt_product_v3.rs",
     "codex-rs/hepta-agentd/src/prompt_runtime.rs",
     "codex-rs/hepta-context-compiler/src/v2/recovery.rs",
+    "codex-rs/hepta-agentd/src/context_security_runtime.rs",
+    "codex-rs/hepta-agentd/src/exact_context_delivery/capacity_tests.rs",
     "codex-rs/hepta-agentd/src/exact_context_delivery/framing_json.rs",
+    "codex-rs/hepta-agentd/src/exact_context_delivery/lifecycle.rs",
+    "codex-rs/hepta-agentd/src/exact_context_delivery/lifecycle_tests.rs",
+    "codex-rs/hepta-agentd/src/exact_context_delivery/metrics.rs",
+    "codex-rs/hepta-agentd/src/exact_context_delivery/metrics_tests.rs",
     "codex-rs/hepta-agentd/src/exact_context_delivery/registry_race_tests.rs",
     "codex-rs/hepta-agentd/src/exact_context_delivery/runtime_tests.rs",
     "codex-rs/hepta-agentd/src/exact_context_delivery/terminal_state.rs",
     "codex-rs/hepta-agentd/src/exact_context_delivery/tokenizer_io.rs",
+    "codex-rs/hepta-agentd/src/prompt_runtime_lifecycle_tests.rs",
     "codex-rs/hepta-context-compiler/src/v2/delivery_evidence.rs",
     "codex-rs/hepta-context-compiler/src/v2/preparation_archive.rs",
     "codex-rs/hepta-context-compiler/src/v2/redaction.rs",
     "codex-rs/hepta-intelligence/src/lib.rs",
-    "codex-rs/hepta-prompt-registry/src/lib.rs"
+    "codex-rs/hepta-prompt-registry/src/lib.rs",
+    "scripts/context_compiler_execution.py",
+    "scripts/context_compiler_named_evidence.py",
+    "scripts/context_compiler_qualification.py",
+    "scripts/generate_context_compiler_module_docs.py",
+    "scripts/test_context_compiler_named_evidence.py",
+    "scripts/test_context_compiler_single_owner.py",
+    "scripts/test_context_compiler_state.py"
   ],
   "publicSurface": [
     "compile_prompt_registry_v2",
@@ -180,13 +194,41 @@
     "targetHostQualified": false,
     "runtimeFollowupPythonTestsPassed": 10,
     "runtimeFollowupPythonScope": "Current-state generation, retained inventories and exact source-blob drift tests only. Not Rust execution.",
+    "lifecycleFollowupNativeRegressionsAdded": 17,
+    "lifecycleFollowupNativeExecutedLocally": false,
+    "nativeNames": {
+      "owner-lifecycle-regressions": [
+        "exact_context_delivery::registry_race_tests::lifecycle_tests::sequential_completed_turns_release_more_than_256_stages",
+        "exact_context_delivery::registry_race_tests::lifecycle_tests::runtime_stage_failure_does_not_publish_an_exact_stage",
+        "exact_context_delivery::registry_race_tests::lifecycle_tests::runtime_capacity_failure_does_not_consume_exact_capacity",
+        "exact_context_delivery::registry_race_tests::lifecycle_tests::uncertain_runtime_publication_leaves_no_exact_authorization",
+        "exact_context_delivery::registry_race_tests::lifecycle_tests::preparation_reservation_blocks_clear_without_calling_runtime",
+        "exact_context_delivery::registry_race_tests::lifecycle_tests::tool_continuation_and_unknown_terminal_keep_the_stage",
+        "prompt_runtime::lifecycle_tests::explicit_retirement_survives_reopen_without_raw_context",
+        "prompt_runtime::lifecycle_tests::unresolved_attempt_cannot_be_retired",
+        "prompt_runtime::lifecycle_tests::schema_one_cannot_smuggle_retirement_and_schema_two_rejects_orphans",
+        "prompt_runtime::lifecycle_tests::new_staging_cannot_spend_an_admitted_attempts_completion_reserve"
+      ],
+      "owner-metrics-regressions": [
+        "exact_context_delivery::metrics::tests::window_is_bounded_and_percentiles_are_nearest_rank",
+        "exact_context_delivery::metrics::tests::an_unobserved_phase_is_not_a_zero_latency_claim",
+        "exact_context_delivery::metrics::tests::leaving_a_failed_phase_still_records_attempted_time",
+        "exact_context_delivery::metrics::tests::diagnostics_do_not_hold_a_lock_across_measured_work"
+      ],
+      "owner-capacity-regressions": [
+        "exact_context_delivery::capacity_tests::unknown_observations_cannot_release_the_final_reservation",
+        "exact_context_delivery::capacity_tests::reserve_exhaustion_rejects_before_writing_and_does_not_poison",
+        "exact_context_delivery::capacity_tests::oversized_terminal_cannot_exceed_its_reserved_record_bound"
+      ]
+    },
+    "lifecycleFollowupPythonTestsPassed": 61,
+    "lifecycleFollowupPythonScope": "Local editing-source identity, state generation, source-navigation, named-log/profile parsing and consumer projection only; not Rust, authenticated E2E or target-host acceptance.",
     "runner": "scripts/context_compiler_execution.py"
   },
   "knownOpenItems": [
     "Wire the named Agentd compile_and_stage_v3 entrypoint into ordinary authenticated App Server turn admission and prove that exact product call on the immutable source/merge objects.",
     "Provision and independently qualify the real provider/model tokenizer, immutable executable/interpreter/runtime, vocabulary and normalization. Hash pins detect observed artifact drift but do not attest semantic token accuracy or exclude a privileged replace-and-restore adversary.",
     "Integrate transport-owner final-use/cancellation authority after the durable authorization linearization point; a revocation committed before authorization is rejected, while post-authorization cancellation remains a separate effect-owner contract.",
-    "Bind terminal acknowledgement to exact attempt identity before reusing a turn observer and qualify the provider evidence owner independently from Agentd.",
     "Finish cross-holder raw-content redaction, remaining provider typed slots and provider/model-specific framing policies beyond the current developer-only profile.",
     "Qualify durable filesystem ownership, rollback resistance, symlink/race resistance and safe retention/retirement beyond bounded JSON state.",
     "Run pinned formatting, compilation, native regressions, product E2E, strict lint, dependency policy, exact-head and deterministic synthetic-merge qualification for the final committed source.",
@@ -194,17 +236,21 @@
     "Obtain independent security acceptance and operator-controlled activation/release; repository source changes grant none of these authorities.",
     "Qualify the independent provider evidence owner and its authenticated receipt acquisition; Agentd remains an evidence consumer and must not self-attest provider truth.",
     "Qualify schema-3 storage on the selected host for ownership, rollback resistance, power-loss behavior, symlink/race resistance, retention and capacity; bounded JSON source semantics are not target-host durability evidence.",
-    "Run immutable source-head and deterministic synthetic-merge qualification over the final direct-source commit; pre-commit materialization tests do not transfer qualification to the generated successor commit."
+    "Run immutable source-head and deterministic synthetic-merge qualification over the final direct-source commit; pre-commit materialization tests do not transfer qualification to the generated successor commit.",
+    "Compose ContextSecurityCapabilitiesV3 into the existing actual exact-delivery owner: external lease/journal/generation, immutable tokenizer custody and independent terminal attestation remain defined interfaces rather than consumed runtime capabilities. The current local verifier binds intent and bytes but is not independent provider truth.",
+    "Long-lived history rollover is not implemented by raw-payload retirement. The 1024 runtime dispatch and 4096 exact pre-send limits, bounded whole-JSON persistence and replay cost remain. A versioned append-only journal/checkpoint/archive migration must retain every attempt tombstone, unresolved binding and independently anchored frontier; do not delete history or increase limits as a substitute.",
+    "Execute all seventeen lifecycle/capacity/metrics Rust regressions on the final source and merge candidates, including their named-output and bounded-profile validation. No local Rust toolchain was available for this follow-up.",
+    "Connect public cleanup and raw-free diagnostics to authenticated turn lifecycle/operations consumers; a method definition or a direct owner fixture is not proof of ordinary App Server ingress, cross-host safety or production operations."
   ],
   "generated": {
     "state": "docs/modules/context.compiler/CURRENT_STATE.json",
-    "stateSha256": "416938bb2030e741275c90f8ed5d8f04110315286c25e3d64d28f0f828d68719",
+    "stateSha256": "e44ec8dfcc2e8a9102ae3fee0b5b428f8885044018be59f0810ee488c836a0d2",
     "generator": "scripts/generate_context_compiler_module_docs.py",
     "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
     "integrationBranch": "codex/context-compiler-v3-closure-20260928"
   },
-  "runtimeSourceAnchor": "c21a781119e9fc241197b61a304698f023c8979b",
-  "runtimeSourceTree": "9f779326e71a63764cf7a9cc085948b0421f82ec",
+  "runtimeSourceAnchor": "cd07ed1ca09bef0538955ce44b9a60d8bac2dba9",
+  "runtimeSourceTree": "94040868000198d9d18cd589cc31e3c967e03f18",
   "maturity": {
     "sourceExists": true,
     "compiledModuleReachability": "source_composed_pending_exact_head_execution",
@@ -281,16 +327,40 @@
       "blobSha": "2832d5406caf1125e1b5a5824efff4c2d810eed5"
     },
     {
+      "path": "codex-rs/hepta-agentd/src/context_security_runtime.rs",
+      "blobSha": "65b9037586d8c403fc515a94ac78146dfb6b6d65"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/exact_context_delivery.rs",
-      "blobSha": "f420aeb894c9cdce7526eb82d743a1b93ff73ef5"
+      "blobSha": "2ec389b6d738a735ef18f5f378d88f10a13b248b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/exact_context_delivery/capacity_tests.rs",
+      "blobSha": "07678a90f653bd6b1594d941a5c70548367f9abd"
     },
     {
       "path": "codex-rs/hepta-agentd/src/exact_context_delivery/framing_json.rs",
       "blobSha": "ea0ef8a54f6e6fc90da0f4525c99b7486de44dd3"
     },
     {
+      "path": "codex-rs/hepta-agentd/src/exact_context_delivery/lifecycle.rs",
+      "blobSha": "a2a7fe61922b339ea5e9e8ae5f6628530bb6d94a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/exact_context_delivery/lifecycle_tests.rs",
+      "blobSha": "c496d7f52044831f3ecedbeb4785c7baa60006f1"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/exact_context_delivery/metrics.rs",
+      "blobSha": "b7d50c671bf790e525f6a3a025206a974562b6e8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/exact_context_delivery/metrics_tests.rs",
+      "blobSha": "ba9cf70200cf081606e91218535b63ab8c590106"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/exact_context_delivery/registry_race_tests.rs",
-      "blobSha": "b412ec2459707cbe9492ef0d57e8e98b06e90758"
+      "blobSha": "991a031ef98462e8aebd46f85d7c624333e8a1b3"
     },
     {
       "path": "codex-rs/hepta-agentd/src/exact_context_delivery/runtime_tests.rs",
@@ -298,7 +368,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/exact_context_delivery/terminal_state.rs",
-      "blobSha": "57c328dba76768628876d81f50d36ba4f715ef5c"
+      "blobSha": "76bfa6efd7e8acd535929bb1c92cf5e3bf1f1759"
     },
     {
       "path": "codex-rs/hepta-agentd/src/exact_context_delivery/tokenizer_io.rs",
@@ -306,7 +376,11 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
-      "blobSha": "4ec9ef8c23c76088a2d6921d57f50dd2f133d3a9"
+      "blobSha": "04b28b77709a94a85c673309967ab5177016266f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/prompt_runtime_lifecycle_tests.rs",
+      "blobSha": "fcf9de3f80b7b63feed13a7a92383653e137acb1"
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/v2/delivery_evidence.rs",
@@ -339,6 +413,269 @@
     {
       "path": "codex-rs/hepta-prompt-registry/src/lib.rs",
       "blobSha": "e975add5aeaca85f741b8df5563b4f26e81ad1d0"
+    },
+    {
+      "path": "scripts/context_compiler_execution.py",
+      "blobSha": "d7686aed3a85031c215cf6e41fa0d9b9dac0157f"
+    },
+    {
+      "path": "scripts/context_compiler_named_evidence.py",
+      "blobSha": "58d8063b4c4d1a35dde1295769f83545dd1d5a4b"
+    },
+    {
+      "path": "scripts/context_compiler_qualification.py",
+      "blobSha": "de1793b98572dec53bfb893696b3b124ec728f3e"
+    },
+    {
+      "path": "scripts/generate_context_compiler_module_docs.py",
+      "blobSha": "37187b03513ff1c7f1b4c94b6ce8071ad89021a2"
+    },
+    {
+      "path": "scripts/test_context_compiler_named_evidence.py",
+      "blobSha": "e55172d349742a05922cdfd0297937b3741b42d2"
+    },
+    {
+      "path": "scripts/test_context_compiler_single_owner.py",
+      "blobSha": "c04dc52facd7b84785b014b89e15d233ad5932e5"
+    },
+    {
+      "path": "scripts/test_context_compiler_state.py",
+      "blobSha": "5bd3331e2c1d54edb5cc7e0847da9d269aa5cf35"
+    }
+  ],
+  "consumerExecution": [
+    {
+      "id": "stage-publication",
+      "definition": {
+        "path": "codex-rs/hepta-agentd/src/exact_context_delivery/lifecycle.rs",
+        "symbol": "stage_with"
+      },
+      "consumer": {
+        "path": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+        "symbol": "compile_and_stage_v3",
+        "call": ".stage_with("
+      },
+      "sourceState": "source_composed",
+      "nativeTests": [
+        "exact_context_delivery::registry_race_tests::lifecycle_tests::runtime_stage_failure_does_not_publish_an_exact_stage",
+        "exact_context_delivery::registry_race_tests::lifecycle_tests::runtime_capacity_failure_does_not_consume_exact_capacity",
+        "exact_context_delivery::registry_race_tests::lifecycle_tests::uncertain_runtime_publication_leaves_no_exact_authorization"
+      ],
+      "testSources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/exact_context_delivery/lifecycle_tests.rs",
+          "name": "exact_context_delivery::registry_race_tests::lifecycle_tests::runtime_stage_failure_does_not_publish_an_exact_stage"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/exact_context_delivery/lifecycle_tests.rs",
+          "name": "exact_context_delivery::registry_race_tests::lifecycle_tests::runtime_capacity_failure_does_not_consume_exact_capacity"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/exact_context_delivery/lifecycle_tests.rs",
+          "name": "exact_context_delivery::registry_race_tests::lifecycle_tests::uncertain_runtime_publication_leaves_no_exact_authorization"
+        }
+      ],
+      "command": "owner-lifecycle-regressions",
+      "authenticatedProductE2E": "unverified",
+      "exactExecution": "CI_EXACT_HEAD"
+    },
+    {
+      "id": "raw-turn-retirement",
+      "definition": {
+        "path": "codex-rs/hepta-agentd/src/exact_context_delivery/lifecycle.rs",
+        "symbol": "retire_completed_stage"
+      },
+      "consumer": {
+        "path": "codex-rs/hepta-agentd/src/exact_context_delivery.rs",
+        "symbol": "commit_terminal",
+        "call": "lifecycle::retire_completed_stage"
+      },
+      "sourceState": "source_composed",
+      "nativeTests": [
+        "exact_context_delivery::registry_race_tests::lifecycle_tests::sequential_completed_turns_release_more_than_256_stages",
+        "exact_context_delivery::registry_race_tests::lifecycle_tests::preparation_reservation_blocks_clear_without_calling_runtime",
+        "exact_context_delivery::registry_race_tests::lifecycle_tests::tool_continuation_and_unknown_terminal_keep_the_stage"
+      ],
+      "testSources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/exact_context_delivery/lifecycle_tests.rs",
+          "name": "exact_context_delivery::registry_race_tests::lifecycle_tests::sequential_completed_turns_release_more_than_256_stages"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/exact_context_delivery/lifecycle_tests.rs",
+          "name": "exact_context_delivery::registry_race_tests::lifecycle_tests::preparation_reservation_blocks_clear_without_calling_runtime"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/exact_context_delivery/lifecycle_tests.rs",
+          "name": "exact_context_delivery::registry_race_tests::lifecycle_tests::tool_continuation_and_unknown_terminal_keep_the_stage"
+        }
+      ],
+      "command": "owner-lifecycle-regressions",
+      "authenticatedProductE2E": "unverified",
+      "exactExecution": "CI_EXACT_HEAD"
+    },
+    {
+      "id": "runtime-retirement",
+      "definition": {
+        "path": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+        "symbol": "clear_turn"
+      },
+      "consumer": {
+        "path": "codex-rs/hepta-agentd/src/exact_context_delivery/lifecycle.rs",
+        "symbol": "clear_turn_with",
+        "call": "clear_runtime()?"
+      },
+      "sourceState": "source_composed",
+      "nativeTests": [
+        "prompt_runtime::lifecycle_tests::explicit_retirement_survives_reopen_without_raw_context",
+        "prompt_runtime::lifecycle_tests::unresolved_attempt_cannot_be_retired",
+        "prompt_runtime::lifecycle_tests::schema_one_cannot_smuggle_retirement_and_schema_two_rejects_orphans"
+      ],
+      "testSources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/prompt_runtime_lifecycle_tests.rs",
+          "name": "prompt_runtime::lifecycle_tests::explicit_retirement_survives_reopen_without_raw_context"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/prompt_runtime_lifecycle_tests.rs",
+          "name": "prompt_runtime::lifecycle_tests::unresolved_attempt_cannot_be_retired"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/prompt_runtime_lifecycle_tests.rs",
+          "name": "prompt_runtime::lifecycle_tests::schema_one_cannot_smuggle_retirement_and_schema_two_rejects_orphans"
+        }
+      ],
+      "command": "owner-lifecycle-regressions",
+      "authenticatedProductE2E": "unverified",
+      "exactExecution": "CI_EXACT_HEAD"
+    },
+    {
+      "id": "terminal-headroom",
+      "definition": {
+        "path": "codex-rs/hepta-agentd/src/exact_context_delivery/terminal_state.rs",
+        "symbol": "completion_reserve"
+      },
+      "consumer": {
+        "path": "codex-rs/hepta-agentd/src/exact_context_delivery.rs",
+        "symbol": "commit_pre_send",
+        "call": "persist_reserving"
+      },
+      "sourceState": "source_composed",
+      "nativeTests": [
+        "exact_context_delivery::capacity_tests::unknown_observations_cannot_release_the_final_reservation",
+        "exact_context_delivery::capacity_tests::reserve_exhaustion_rejects_before_writing_and_does_not_poison",
+        "exact_context_delivery::capacity_tests::oversized_terminal_cannot_exceed_its_reserved_record_bound"
+      ],
+      "testSources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/exact_context_delivery/capacity_tests.rs",
+          "name": "exact_context_delivery::capacity_tests::unknown_observations_cannot_release_the_final_reservation"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/exact_context_delivery/capacity_tests.rs",
+          "name": "exact_context_delivery::capacity_tests::reserve_exhaustion_rejects_before_writing_and_does_not_poison"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/exact_context_delivery/capacity_tests.rs",
+          "name": "exact_context_delivery::capacity_tests::oversized_terminal_cannot_exceed_its_reserved_record_bound"
+        }
+      ],
+      "command": "owner-capacity-regressions",
+      "authenticatedProductE2E": "unverified",
+      "exactExecution": "CI_EXACT_HEAD"
+    },
+    {
+      "id": "runtime-headroom",
+      "definition": {
+        "path": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+        "symbol": "pending_completion_count"
+      },
+      "consumer": {
+        "path": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+        "symbol": "commit_state",
+        "call": "pending_completion_count(&next)"
+      },
+      "sourceState": "source_composed",
+      "nativeTests": [
+        "prompt_runtime::lifecycle_tests::new_staging_cannot_spend_an_admitted_attempts_completion_reserve"
+      ],
+      "testSources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/prompt_runtime_lifecycle_tests.rs",
+          "name": "prompt_runtime::lifecycle_tests::new_staging_cannot_spend_an_admitted_attempts_completion_reserve"
+        }
+      ],
+      "command": "owner-lifecycle-regressions",
+      "authenticatedProductE2E": "unverified",
+      "exactExecution": "CI_EXACT_HEAD"
+    },
+    {
+      "id": "phase-observation",
+      "definition": {
+        "path": "codex-rs/hepta-agentd/src/exact_context_delivery/metrics.rs",
+        "symbol": "Metrics"
+      },
+      "consumer": {
+        "path": "codex-rs/hepta-agentd/src/exact_context_delivery.rs",
+        "symbol": "observe_final_request",
+        "call": "Phase::RegistryWait"
+      },
+      "sourceState": "source_composed",
+      "nativeTests": [
+        "exact_context_delivery::metrics::tests::window_is_bounded_and_percentiles_are_nearest_rank",
+        "exact_context_delivery::metrics::tests::an_unobserved_phase_is_not_a_zero_latency_claim",
+        "exact_context_delivery::metrics::tests::leaving_a_failed_phase_still_records_attempted_time",
+        "exact_context_delivery::metrics::tests::diagnostics_do_not_hold_a_lock_across_measured_work"
+      ],
+      "testSources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/exact_context_delivery/metrics_tests.rs",
+          "name": "exact_context_delivery::metrics::tests::window_is_bounded_and_percentiles_are_nearest_rank"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/exact_context_delivery/metrics_tests.rs",
+          "name": "exact_context_delivery::metrics::tests::an_unobserved_phase_is_not_a_zero_latency_claim"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/exact_context_delivery/metrics_tests.rs",
+          "name": "exact_context_delivery::metrics::tests::leaving_a_failed_phase_still_records_attempted_time"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/exact_context_delivery/metrics_tests.rs",
+          "name": "exact_context_delivery::metrics::tests::diagnostics_do_not_hold_a_lock_across_measured_work"
+        }
+      ],
+      "command": "owner-metrics-regressions",
+      "authenticatedProductE2E": "unverified",
+      "exactExecution": "CI_EXACT_HEAD"
+    },
+    {
+      "id": "authenticated-app-server-ingress",
+      "definition": {
+        "path": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+        "symbol": "compile_and_stage_v3"
+      },
+      "consumer": null,
+      "sourceState": "not_composed",
+      "nativeTests": [],
+      "testSources": [],
+      "command": null,
+      "authenticatedProductE2E": "unverified",
+      "exactExecution": "CI_EXACT_HEAD"
+    },
+    {
+      "id": "external-security-consumption",
+      "definition": {
+        "path": "codex-rs/hepta-agentd/src/context_security_runtime.rs",
+        "symbol": "ContextSecurityCapabilitiesV3"
+      },
+      "consumer": null,
+      "sourceState": "not_composed",
+      "nativeTests": [],
+      "testSources": [],
+      "command": null,
+      "authenticatedProductE2E": "unverified",
+      "exactExecution": "CI_EXACT_HEAD"
     }
   ],
   "designReferences": [

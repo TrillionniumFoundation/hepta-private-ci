@@ -60,7 +60,12 @@ class ContextCompilerSingleOwnerTests(unittest.TestCase):
         self.assertEqual(runtime.count("pub fn compile_and_stage_v3"), 1)
         self.assertIn(".with_final_request_observer", runtime)
         self.assertIn(".with_final_terminal_observer", runtime)
-        self.assertIn("self.exact\n            .stage(thread_id, turn_id, compiled.clone())", runtime)
+        self.assertIn(".stage_with(thread_id, turn_id, compiled.clone(), ||", runtime)
+        lifecycle = read("codex-rs/hepta-agentd/src/exact_context_delivery/lifecycle.rs")
+        self.assertLess(lifecycle.index("let result = publish()?;"),
+                        lifecycle.index("state.staged.insert(key, Arc::new(compiled))"))
+        self.assertIn("self.exact.clear_turn_with", runtime)
+        self.assertIn("retire_completed_stage", lifecycle)
 
         v3_definition = ROOT / "codex-rs/ext/hepta-prompt/src/v3.rs"
         for path in sorted((ROOT / "codex-rs").rglob("*.rs")):

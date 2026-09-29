@@ -78,6 +78,10 @@ struct Fixture {
 
 impl Fixture {
     fn new() -> Self {
+        Self::with_lifetime(/*lifetime_ms*/ 30_000)
+    }
+
+    fn with_lifetime(lifetime_ms: u64) -> Self {
         let directory = tempfile::tempdir().expect("tempdir");
         let entered = directory.path().join("entered");
         let release = directory.path().join("release");
@@ -135,7 +139,7 @@ impl Fixture {
                 binding: final_use_admission_binding(&factor, &id("reviewer:1"), scope, evidence)
                     .expect("binding"),
                 not_before_unix_ms: now.saturating_sub(1000),
-                expires_at_unix_ms: now + 30_000,
+                expires_at_unix_ms: now + lifetime_ms,
             },
         );
         registry
@@ -193,7 +197,7 @@ impl Fixture {
                 )
                 .expect("binding"),
                 not_before_unix_ms: now.saturating_sub(1000),
-                expires_at_unix_ms: now + 30_000,
+                expires_at_unix_ms: now + lifetime_ms,
             },
         );
         registry
@@ -230,7 +234,7 @@ impl Fixture {
                 interaction_digest: digest("interaction"),
                 expected_utility_q32: FixedQ32::ONE,
                 total_token_upper_bound: 4,
-                valid_until_unix_ms: now + 30_000,
+                valid_until_unix_ms: now + lifetime_ms,
                 receipt_digest: digest("portfolio-receipt"),
                 authority: AuthorityPosture::DENY_ALL,
             },
@@ -299,7 +303,7 @@ impl Fixture {
             compiled.attachment.attachment_digest(),
             compiled.attachment.payload_digest(),
             "model",
-            now + 30_000,
+            now + lifetime_ms,
             vec![PromptRuntimeDeveloperFragmentV1::new(context.clone()).expect("fragment")],
         )
         .expect("attachment");
@@ -669,3 +673,6 @@ async fn legacy_digest_only_pre_send_remains_non_recoverable() {
     assert_eq!(legacy.recovery_binding_digest, [0; 32]);
     assert!(reopened.has_unresolved_attempt("legacy-attempt"));
 }
+
+#[path = "lifecycle_tests.rs"]
+mod lifecycle_tests;

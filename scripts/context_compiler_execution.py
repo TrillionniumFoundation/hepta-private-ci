@@ -19,6 +19,7 @@ import sys
 from typing import Any
 
 import context_compiler_candidate as candidate
+import context_compiler_named_evidence as named_evidence
 
 ANSI = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
 
@@ -114,6 +115,57 @@ def specs(legacy):
             ],
             "minimumTests": 1,
         },
+    ]
+
+    commands[2:2] = [
+        {
+            "name": 'owner-lifecycle-regressions',
+            "cwd": legacy.CODEX_RS,
+            "argv": ["just", "test", "--locked", "-p", "codex-hepta-agentd",
+                     'lifecycle_tests', "--status-level", "pass", "--success-output", "immediate"],
+            "minimumTests": 10,
+            "requiredNativeTests": [
+                'exact_context_delivery::registry_race_tests::lifecycle_tests::sequential_completed_turns_release_more_than_256_stages',
+                'exact_context_delivery::registry_race_tests::lifecycle_tests::runtime_stage_failure_does_not_publish_an_exact_stage',
+                'exact_context_delivery::registry_race_tests::lifecycle_tests::runtime_capacity_failure_does_not_consume_exact_capacity',
+                'exact_context_delivery::registry_race_tests::lifecycle_tests::uncertain_runtime_publication_leaves_no_exact_authorization',
+                'exact_context_delivery::registry_race_tests::lifecycle_tests::preparation_reservation_blocks_clear_without_calling_runtime',
+                'exact_context_delivery::registry_race_tests::lifecycle_tests::tool_continuation_and_unknown_terminal_keep_the_stage',
+                'prompt_runtime::lifecycle_tests::explicit_retirement_survives_reopen_without_raw_context',
+                'prompt_runtime::lifecycle_tests::unresolved_attempt_cannot_be_retired',
+                'prompt_runtime::lifecycle_tests::schema_one_cannot_smuggle_retirement_and_schema_two_rejects_orphans',
+                'prompt_runtime::lifecycle_tests::new_staging_cannot_spend_an_admitted_attempts_completion_reserve',
+            ],
+            "requireFixtureProfile": True,
+        },
+        {
+            "name": 'owner-metrics-regressions',
+            "cwd": legacy.CODEX_RS,
+            "argv": ["just", "test", "--locked", "-p", "codex-hepta-agentd",
+                     'exact_context_delivery::metrics::tests', "--status-level", "pass", "--success-output", "immediate"],
+            "minimumTests": 4,
+            "requiredNativeTests": [
+                'exact_context_delivery::metrics::tests::window_is_bounded_and_percentiles_are_nearest_rank',
+                'exact_context_delivery::metrics::tests::an_unobserved_phase_is_not_a_zero_latency_claim',
+                'exact_context_delivery::metrics::tests::leaving_a_failed_phase_still_records_attempted_time',
+                'exact_context_delivery::metrics::tests::diagnostics_do_not_hold_a_lock_across_measured_work',
+            ],
+        },
+        {
+            "name": 'owner-capacity-regressions',
+            "cwd": legacy.CODEX_RS,
+            "argv": ["just", "test", "--locked", "-p", "codex-hepta-agentd",
+                     'exact_context_delivery::capacity_tests', "--status-level", "pass", "--success-output", "immediate"],
+            "minimumTests": 3,
+            "requiredNativeTests": [
+                'exact_context_delivery::capacity_tests::unknown_observations_cannot_release_the_final_reservation',
+                'exact_context_delivery::capacity_tests::reserve_exhaustion_rejects_before_writing_and_does_not_poison',
+                'exact_context_delivery::capacity_tests::oversized_terminal_cannot_exceed_its_reserved_record_bound',
+            ],
+        },
+        {"name": "named-evidence-parser-regressions", "cwd": legacy.ROOT,
+         "argv": ["python3", "-B", "-m", "unittest", "discover", "-s", "scripts",
+                  "-p", "test_context_compiler_named_evidence.py", "-v"]},
     ]
     return commands
 
@@ -244,6 +296,18 @@ def main() -> int:
                     count = observed_tests(stream.read().decode("utf-8", errors="replace"))
                 result.update({"minimumTests": minimum, "testsObserved": count})
                 result["succeeded"] = result["succeeded"] and count >= minimum
+            if spec.get("requiredNativeTests"):
+                try:
+                    named = named_evidence.bind_named_tests(log, spec["requiredNativeTests"])
+                    result.update(named)
+                    result["succeeded"] = result["succeeded"] and named["namedNativeTestsPassed"]
+                    if spec.get("requireFixtureProfile"):
+                        profile = named_evidence.fixture_profile(log)
+                        result["ownerFixtureProfile"] = profile
+                        result["succeeded"] = result["succeeded"] and profile is not None
+                except (OSError, ValueError, TypeError, UnicodeError) as error:
+                    result["namedEvidenceFailure"] = type(error).__name__
+                    result["succeeded"] = False
             receipt["commands"].append(result)
             candidate.verify(root, record_document)
             receipt.pop("receiptSha256", None)
@@ -259,6 +323,10 @@ def main() -> int:
         and len(receipt["commands"]) == len(command_specs)
         and all(item["succeeded"] or not item["required"] for item in receipt["commands"])
     ) else "failed"
+    state = json.loads(legacy.MANIFEST.read_text(encoding="utf-8"))
+    receipt["consumerExecution"] = named_evidence.consumer_projection(
+        state.get("consumerExecution", []), receipt["commands"], immutable_identity
+    )
     receipt["toolchain"] = {
         name: legacy.tool_version(argv)
         for name, argv in {

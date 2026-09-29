@@ -14,6 +14,7 @@ use std::sync::Mutex;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
+use std::time::Instant;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -55,12 +56,19 @@ use sha2::Digest as _;
 use tokio::process::Command;
 
 mod framing_json;
+mod lifecycle;
+pub(crate) mod metrics;
 mod terminal_state;
 mod tokenizer_io;
 
+use metrics::Phase;
 use terminal_state::apply_observation;
+use terminal_state::completion_reserve;
 use terminal_state::legacy_observation_version;
 use terminal_state::migrate_state;
+use terminal_state::validate_terminal_size;
+#[cfg(test)]
+mod capacity_tests;
 #[cfg(all(test, unix))]
 mod registry_race_tests;
 #[cfg(test)]
@@ -107,6 +115,7 @@ struct ExactTurnKey {
 
 #[derive(Clone)]
 struct ActiveExactDelivery {
+    started: Instant,
     compiled: Arc<PromptRegistryCompiledContextV3>,
     fresh: PreparedPromptDeliveryV3,
     final_request_proof: FinalProviderRequestProofV2,
@@ -147,49 +156,12 @@ impl AgentdExactContextDeliveryOwner {
         })
     }
 
-    pub(crate) fn stage(
-        &self,
-        thread_id: &str,
-        turn_id: &str,
-        compiled: PromptRegistryCompiledContextV3,
-    ) -> Result<(), ExactContextDeliveryError> {
-        self.store.ensure_available()?;
-        validate_runtime_id(thread_id, "thread id")?;
-        validate_runtime_id(turn_id, "turn id")?;
-        compiled
-            .validate()
-            .map_err(|error| ExactContextDeliveryError::Domain(error.to_string()))?;
-        let key = ExactTurnKey {
-            thread_id: thread_id.to_owned(),
-            turn_id: turn_id.to_owned(),
-        };
-        let mut state = self
-            .state
-            .lock()
-            .map_err(|_| ExactContextDeliveryError::ReopenRequired)?;
-        if state.durable.has_unresolved_for_turn(thread_id, turn_id) {
-            return Err(ExactContextDeliveryError::RecoveryRequired);
-        }
-        if let Some(existing) = state.staged.get(&key) {
-            return if existing.as_ref() == &compiled {
-                Ok(())
-            } else {
-                Err(ExactContextDeliveryError::Conflict(
-                    "a different compiled context is already staged for this turn",
-                ))
-            };
-        }
-        if state.staged.len() >= MAX_STAGED_CONTEXTS {
-            return Err(ExactContextDeliveryError::Capacity);
-        }
-        state.staged.insert(key, Arc::new(compiled));
-        Ok(())
-    }
-
     pub(crate) async fn observe_final_request(
         self: Arc<Self>,
         request: PromptRuntimeFinalRequestV2,
     ) -> Result<(), ExactContextDeliveryError> {
+        let started = Instant::now();
+        let _request_time = self.measure(Phase::RequestPreparation);
         self.store.ensure_available()?;
         request
             .attempt
@@ -208,7 +180,9 @@ impl AgentdExactContextDeliveryOwner {
             request.attachment.deadline_ms,
         )?;
         let tokenizer = self.tokenizer_for(&request, &compiled)?;
-        let token_count = tokenizer.count(&request.canonical_request).await?;
+        let token_count = tokenizer
+            .count(&request.canonical_request, &self.store.metrics)
+            .await?;
         let bound_tokenizer = BoundFinalRequestTokenizer {
             identity: tokenizer.identity.clone(),
             request_digest: Digest32::of_bytes(&request.canonical_request),
@@ -226,10 +200,13 @@ impl AgentdExactContextDeliveryOwner {
         // committed during tokenization is observed here, not hidden behind a
         // pre-tokenization snapshot. Revocation after authorization is a
         // transport-owner cancellation concern, not an exactly-once claim.
+        let registry_wait = self.measure(Phase::RegistryWait);
         let registry = self
             .registry
             .lock()
             .map_err(|_| ExactContextDeliveryError::ReopenRequired)?;
+        drop(registry_wait);
+        let final_proof_time = self.measure(Phase::FinalProof);
         let now_unix_ms = current_unix_ms()?;
         check_send_time(started_unix_ms, now_unix_ms, request.attachment.deadline_ms)?;
         if now_unix_ms < compiled.authority_observed_unix_ms() {
@@ -277,10 +254,12 @@ impl AgentdExactContextDeliveryOwner {
             &recovery,
             now_unix_ms,
         )?;
+        drop(final_proof_time);
         self.commit_pre_send(
             request.attempt.attempt_id.clone(),
             pre_send,
             ActiveExactDelivery {
+                started,
                 compiled,
                 fresh,
                 final_request_proof,
@@ -343,6 +322,12 @@ impl AgentdExactContextDeliveryOwner {
             .tokenizer
             .lock()
             .map_err(|_| ExactContextDeliveryError::ReopenRequired)?;
+        let configuration_phase = if configured.is_none() {
+            Phase::TokenizerColdConfiguration
+        } else {
+            Phase::TokenizerWarmConfiguration
+        };
+        let _configuration_time = self.measure(configuration_phase);
         if configured.is_none() {
             *configured = Some(Arc::new(TokenizerRuntimeConfig::load(request, compiled)?));
         }
@@ -493,6 +478,7 @@ impl AgentdExactContextDeliveryOwner {
         terminal_observation_digest: Digest32,
         archive: &[u8],
     ) -> Result<(), ExactContextDeliveryError> {
+        let _recovery_time = self.measure(Phase::RecoveredReconciliation);
         let recovery = ContextDeliveryRecoveryBindingV2::reopen_canonical_archive(archive)
             .map_err(|_| ExactContextDeliveryError::CorruptState)?;
         exact_attempt_from_intent(recovery.provider_intent(), &terminal.attempt)?;
@@ -570,7 +556,8 @@ impl AgentdExactContextDeliveryOwner {
         }
         let mut next = state.durable.clone();
         next.pre_sends.insert(attempt_id.clone(), stored);
-        self.store.persist(&next)?;
+        let _persistence_time = self.measure(Phase::PreSendPersistence);
+        self.store.persist_reserving(&next, completion_reserve(&next)?)?;
         state.durable = next;
         state.active.insert(attempt_id, active);
         Ok(())
@@ -594,15 +581,30 @@ impl AgentdExactContextDeliveryOwner {
                 "terminal receipt does not bind the durable pre-send proof",
             ));
         }
+        validate_terminal_size(&stored)?;
+        let turn = ExactTurnKey {
+            thread_id: pre_send.thread_id.clone(),
+            turn_id: pre_send.turn_id.clone(),
+        };
         let mut next = state.durable.clone();
         let is_final = stored.is_final();
         if !apply_observation(&mut next, stored)? {
             return Ok(());
         }
-        self.store.persist(&next)?;
+        let _persistence_time = self.measure(Phase::TerminalPersistence);
+        // Nonfinal observations cannot spend space reserved for final receipts.
+        // A final consumes its own bounded reservation. Old schema-3 histories
+        // without reserved headroom may still reconcile whenever bytes fit.
+        let reserve = if is_final { 0 } else { completion_reserve(&next)? };
+        self.store.persist_reserving(&next, reserve)?;
         state.durable = next;
         if is_final {
-            state.active.remove(attempt_id);
+            if let Some(active) = state.active.remove(attempt_id) {
+                self.store
+                    .metrics
+                    .record(Phase::LiveAttemptCompletion, active.started.elapsed());
+            }
+            lifecycle::retire_completed_stage(&mut state, &turn);
         }
         Ok(())
     }
@@ -617,6 +619,7 @@ impl Drop for PreparationReservation {
     fn drop(&mut self) {
         if let Ok(mut state) = self.owner.state.lock() {
             state.preparing.remove(&self.key);
+            lifecycle::retire_completed_stage(&mut state, &self.key);
         }
     }
 }
@@ -846,8 +849,15 @@ impl TokenizerRuntimeConfig {
         })
     }
 
-    async fn count(&self, request: &[u8]) -> Result<u64, ExactContextDeliveryError> {
-        self.verify_artifacts()?;
+    async fn count(
+        &self,
+        request: &[u8],
+        metrics: &metrics::Metrics,
+    ) -> Result<u64, ExactContextDeliveryError> {
+        {
+            let _artifact_time = metrics.measure(Phase::TokenizerArtifacts);
+            self.verify_artifacts()?;
+        }
         let mut command = Command::new(&self.binary);
         command
             .arg("--provider")
@@ -860,6 +870,7 @@ impl TokenizerRuntimeConfig {
             .arg(&self.vocabulary)
             .arg("--normalization")
             .arg(&self.normalization);
+        let process_time = metrics.measure(Phase::TokenizerProcess);
         let output = tokenizer_io::run(
             &mut command,
             request,
@@ -867,9 +878,13 @@ impl TokenizerRuntimeConfig {
             MAX_TOKENIZER_STDOUT_BYTES,
         )
         .await?;
+        drop(process_time);
         // These checks detect drift; immutable mounts/runtime qualification are
         // still required to exclude adversarial replace-and-restore races.
-        self.verify_artifacts()?;
+        {
+            let _artifact_time = metrics.measure(Phase::TokenizerArtifacts);
+            self.verify_artifacts()?;
+        }
         parse_token_count(&output)
     }
 
@@ -1348,6 +1363,7 @@ impl StoredTerminal {
 
 struct ExactDeliveryStore {
     root: PathBuf,
+    metrics: metrics::Metrics,
     poisoned: AtomicBool,
     _lock: File,
 }
@@ -1356,6 +1372,7 @@ impl ExactDeliveryStore {
     fn open(
         directory: &Path,
     ) -> Result<(Self, StoredExactDeliveryState), ExactContextDeliveryError> {
+        let opened_at = Instant::now();
         prepare_directory(directory)?;
         let lock_path = directory.join(LOCK_FILE);
         let lock = OpenOptions::new()
@@ -1370,11 +1387,13 @@ impl ExactDeliveryStore {
             .map_err(|_| ExactContextDeliveryError::StateLocked)?;
         let store = Self {
             root: directory.to_path_buf(),
+            metrics: metrics::Metrics::default(),
             poisoned: AtomicBool::new(false),
             _lock: lock,
         };
         let path = directory.join(STATE_FILE);
         if !path.exists() {
+            store.metrics.record(Phase::StoreOpen, opened_at.elapsed());
             return Ok((
                 store,
                 StoredExactDeliveryState {
@@ -1396,6 +1415,7 @@ impl ExactDeliveryStore {
             serde_json::from_slice(&bytes).map_err(|_| ExactContextDeliveryError::CorruptState)?;
         migrate_state(&mut state)?;
         validate_stored_state(&state)?;
+        store.metrics.record(Phase::StoreOpen, opened_at.elapsed());
         Ok((store, state))
     }
 
@@ -1406,17 +1426,36 @@ impl ExactDeliveryStore {
         Ok(())
     }
 
+    #[cfg(test)]
     fn persist(&self, state: &StoredExactDeliveryState) -> Result<(), ExactContextDeliveryError> {
         self.persist_with_sync(state, sync_directory)
     }
 
+    fn persist_reserving(
+        &self,
+        state: &StoredExactDeliveryState,
+        reserved_bytes: u64,
+    ) -> Result<(), ExactContextDeliveryError> {
+        self.persist_with_capacity(state, reserved_bytes, sync_directory)
+    }
+
+    #[cfg(test)]
     fn persist_with_sync(
         &self,
         state: &StoredExactDeliveryState,
         sync: impl FnOnce(&Path) -> Result<(), ExactContextDeliveryError>,
     ) -> Result<(), ExactContextDeliveryError> {
+        self.persist_with_capacity(state, /*reserved_bytes*/ 0, sync)
+    }
+
+    fn persist_with_capacity(
+        &self,
+        state: &StoredExactDeliveryState,
+        reserved_bytes: u64,
+        sync: impl FnOnce(&Path) -> Result<(), ExactContextDeliveryError>,
+    ) -> Result<(), ExactContextDeliveryError> {
         self.ensure_available()?;
-        let result = self.persist_inner(state, sync);
+        let result = self.persist_inner(state, reserved_bytes, sync);
         if matches!(
             result,
             Err(ExactContextDeliveryError::IndeterminateDurability)
@@ -1429,14 +1468,22 @@ impl ExactDeliveryStore {
     fn persist_inner(
         &self,
         state: &StoredExactDeliveryState,
+        reserved_bytes: u64,
         sync: impl FnOnce(&Path) -> Result<(), ExactContextDeliveryError>,
     ) -> Result<(), ExactContextDeliveryError> {
+        let encoding_time = self.metrics.measure(Phase::StoreEncoding);
         validate_stored_state(state)?;
         let bytes =
             serde_json::to_vec(state).map_err(|_| ExactContextDeliveryError::Unavailable)?;
-        if u64::try_from(bytes.len()).unwrap_or(u64::MAX) > MAX_DURABLE_STATE_BYTES {
+        if u64::try_from(bytes.len())
+            .ok()
+            .and_then(|length| length.checked_add(reserved_bytes))
+            .is_none_or(|required| required > MAX_DURABLE_STATE_BYTES)
+        {
             return Err(ExactContextDeliveryError::Capacity);
         }
+        drop(encoding_time);
+        let file_time = self.metrics.measure(Phase::StoreFileSync);
         let next_path = self.root.join(NEXT_FILE);
         let mut next = OpenOptions::new()
             .create(true)
@@ -1448,6 +1495,8 @@ impl ExactDeliveryStore {
         next.write_all(&bytes)
             .and_then(|()| next.sync_all())
             .map_err(|_| ExactContextDeliveryError::Unavailable)?;
+        drop(file_time);
+        let _directory_time = self.metrics.measure(Phase::StoreDirectorySync);
         std::fs::rename(&next_path, self.root.join(STATE_FILE))
             .map_err(|_| ExactContextDeliveryError::Unavailable)?;
         sync(&self.root)
@@ -1719,7 +1768,10 @@ mod tests {
         };
         let request = "{\"model\":\"model\",\"input\":\"政策🧪\\ncontrol:\\u0001\"}".as_bytes();
         assert_eq!(
-            tokenizer.count(request).await.expect("tokenizer count"),
+            tokenizer
+                .count(request, &super::metrics::Metrics::default())
+                .await
+                .expect("tokenizer count"),
             u64::try_from(request.len()).expect("length")
         );
     }

@@ -95,6 +95,25 @@ class CurrentStateTests(unittest.TestCase):
         for path, content in first.items():
             self.assertIn(digest, content, str(path))
 
+    def test_consumer_rows_bind_real_source_and_complete_native_inventory(self):
+        docs.validate_consumer_execution(self.state)
+        broken = copy.deepcopy(self.state)
+        broken["consumerExecution"][0]["consumer"]["call"] = "NONEXISTENT_PRODUCT_CALL"
+        with self.assertRaises(ValueError):
+            docs.validate_consumer_execution(broken)
+        broken = copy.deepcopy(self.state)
+        broken["consumerExecution"][0]["testSources"] = []
+        with self.assertRaises(ValueError):
+            docs.validate_consumer_execution(broken)
+
+    def test_source_rows_cannot_promote_a_missing_consumer_or_product_e2e(self):
+        for mutation in ("consumer", "authenticatedProductE2E", "exactExecution"):
+            broken = copy.deepcopy(self.state)
+            row = broken["consumerExecution"][0]
+            row[mutation] = None if mutation == "consumer" else "passed"
+            with self.assertRaises(ValueError):
+                docs.validate_consumer_execution(broken)
+
     def test_projection_keeps_contract_inventory_and_uses_current_narrative(self):
         state = copy.deepcopy(self.state)
         state["verificationNarrative"] = "TEST-ONLY-VERIFICATION-SENTINEL"
