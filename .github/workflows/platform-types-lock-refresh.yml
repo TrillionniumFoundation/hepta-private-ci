@@ -15,43 +15,79 @@ on:
 permissions:
   contents: read
 
+env:
+  RUSTUP_TOOLCHAIN: "1.96.0"
+
 jobs:
   verify:
     name: Verify platform.types lock with Rust 1.96
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
 
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@1.96.0
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          components: rustfmt, clippy
+          persist-credentials: false
+          fetch-depth: 0
 
-      - name: Verify prerelease dependency coherence
+      - name: Install and record the pinned environment
         run: |
+          set -euo pipefail
+          rustup toolchain install "$RUSTUP_TOOLCHAIN" --profile minimal \
+            --component rustfmt --component clippy
+          rustc --version --verbose
+          cargo --version --verbose
+          uname -a
+          printf 'runner_os=%s\nrunner_arch=%s\nimage_os=%s\nimage_version=%s\n' \
+            "$RUNNER_OS" "$RUNNER_ARCH" "${ImageOS:-unknown}" "${ImageVersion:-unknown}"
+
+      - name: Verify reviewed Rama dependency coherence
+        run: |
+          set -euo pipefail
           python3 scripts/platform_types_rama_lock_guard.py
           python3 -m unittest scripts/test_platform_types_rama_lock_guard.py
 
       - name: Inspect the locked graph
         run: |
+          set -euo pipefail
           cargo metadata --manifest-path codex-rs/Cargo.toml --locked --no-deps > /dev/null
           cargo tree --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-types > /dev/null
           cargo tree --manifest-path codex-rs/Cargo.toml --locked -p codex-network-proxy > /dev/null
 
       - name: Run focused native truth gates
         run: |
-          cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-types -p codex-network-proxy
-          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-types --all-targets
-          cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-types -p codex-network-proxy --all-targets -- -D warnings
+          set -euo pipefail
+          cargo check --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-types -p codex-network-proxy
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-types --all-targets
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-types -p codex-network-proxy --all-targets -- -D warnings
 
-      - name: Exercise the registry lookup workload matrix
+      - name: Exercise the registry workload matrix
         run: |
+          set -euo pipefail
           cargo run --release --locked --manifest-path codex-rs/Cargo.toml \
             -p codex-hepta-types --bin platform-types-registry-bench -- \
             50000 "$RUNNER_TEMP/platform-types-registry-benchmark.json"
-          python3 -c 'import json, pathlib, os; value=json.loads(pathlib.Path(os.environ["RUNNER_TEMP"], "platform-types-registry-benchmark.json").read_text()); assert value["schema"] == "hepta.platform-types.registry-lookup-benchmark.v1"; assert [row["entryCount"] for row in value["cases"]] == [8, 256]'
+          python3 - "$RUNNER_TEMP/platform-types-registry-benchmark.json" <<'PY'
+          import json
+          import pathlib
+          import sys
 
-      - name: Prove the lockfile is immutable
-        run: git diff --exit-code -- codex-rs/Cargo.lock
+          value = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
+          assert value["schema"] == "hepta.platform-types.registry-lookup-benchmark.v1"
+          assert value["acceptanceThreshold"] is None
+          assert [row["entryCount"] for row in value["cases"]] == [8, 256]
+          for row in value["cases"]:
+              assert row["constructionElapsedNs"] >= 0
+              assert row["identityElapsedNs"] >= 0
+              assert row["digestElapsedNs"] >= 0
+              assert row["registryIdentityElapsedNs"] >= 0
+          PY
+
+      - name: Prove the lockfile and source tree are immutable
+        run: |
+          git diff --check
+          git diff --exit-code -- codex-rs/Cargo.lock
+          test -z "$(git status --porcelain --untracked-files=all)"
