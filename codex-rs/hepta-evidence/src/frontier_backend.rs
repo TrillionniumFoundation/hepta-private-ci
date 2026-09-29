@@ -98,7 +98,8 @@ impl EvidenceFrontierHistoryRangeV1 {
     }
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct EvidenceFrontierDurableAckV1 {
     pub backend_id: String,
     pub backend_identity_sha256: Sha256Digest,
