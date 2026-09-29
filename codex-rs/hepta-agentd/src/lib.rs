@@ -10,13 +10,23 @@ mod authbus_dispatch;
 mod authbus_ingress;
 mod authbus_trust;
 mod automation;
+// Recovery outcomes retain the complete typed receipt instead of changing the
+// public contract to an allocation-only representation.
+#[allow(clippy::large_enum_variant)]
 mod automation_effect_host;
 mod automation_recovery;
 mod browser_servo;
 mod client;
+// Context reads bind store, generation, retrieval and learning owners at one
+// call boundary; keeping those authorities explicit is safer than a bag of
+// partially validated options.
+#[allow(clippy::too_many_arguments)]
 mod cognitive_context;
 mod cognitive_ranker;
 mod cognitive_retrieval_context;
+// The compatibility adapters remain available to replay/identity tests while
+// product delivery supplies the full policy tuple.
+#[allow(dead_code, clippy::too_many_arguments)]
 mod cognitive_retrieval_learning;
 mod config;
 mod control;
@@ -26,6 +36,9 @@ mod evidence_frontier;
 mod evidence_host;
 mod evidence_trust;
 mod intelligence_ingress;
+// These public result contracts deliberately carry complete prepared and
+// indeterminate state so callers cannot lose recovery material.
+#[allow(clippy::large_enum_variant)]
 mod intelligence_product;
 mod intuition_policy;
 mod lane_b_runtime;
@@ -33,7 +46,13 @@ mod neuron_artifact_admission;
 mod neuron_runtime;
 mod objective_runtime;
 mod plasticity_anchor_journal;
+// The host call keeps each independent owner and verifier explicit at the
+// final-use boundary.
+#[allow(clippy::too_many_arguments)]
 mod plasticity_host;
+// Phase-E product producers are retained while the remaining real consumer
+// ingress is wired through AgentdState; tests already exercise the owner path.
+#[allow(dead_code)]
 mod plasticity_learning_producer;
 mod plasticity_owner_evidence;
 mod plasticity_process_bootstrap;
@@ -45,6 +64,9 @@ mod runtime;
 mod runtime_tasks;
 mod semantic_neuron_delivery;
 mod shared_terminal_cell;
+// The governed plasticity submission entry points are staged for the real
+// learning consumer and intentionally remain non-public outside Agentd.
+#[allow(dead_code)]
 mod state;
 pub use shared_terminal_cell::AgentdSharedReplayHostV1;
 pub use shared_terminal_cell::SharedTerminalCandidateV1;
