@@ -20,6 +20,10 @@ PHASES = ('claimed', 'authorized', 'dispatching')
 FAILURES = ('retryable', 'rate_limited', 'dns', 'tls', 'connect_timeout',
             'connect_failure', 'read_timeout', 'connection_reset', 'response_lost',
             'server_unavailable', 'permanent', 'authority_denied')
+ATTEMPT_EVENTS = ('claimed', 'prepared', 'authorized', 'dispatching',
+                  'transport_accepted', 'indeterminate', 'retry_scheduled',
+                  'confirmed', 'redacted', 'permanently_rejected', 'revoked',
+                  'canceled', 'expired')
 UNMEASURED = ('live_authority_freshness', 'redaction_propagation_latency',
               'supervisor_restarts', 'encrypted_session_continuity')
 
@@ -39,6 +43,81 @@ def age(now: int, timestamp: int | None) -> int | None:
     if timestamp > now or timestamp < 0:
         raise ValueError('clock precedes durable observation')
     return now - timestamp
+
+
+def selected_dispatch(row: tuple | None, now_ms: int) -> dict:
+    """Classify one selected transaction without returning its identifier or payload."""
+    if row is None:
+        return {'reason': 'not_found'}
+    (queue, state, attempts, next_ms, held, entered, phase, lease_until_ms,
+     latest_event, latest_failure, latest_retry_after_ms) = row
+    if queue not in OUTBOX or state not in (*LEDGER, None):
+        raise ValueError('unsupported selected state')
+    if phase not in (*PHASES, None):
+        raise ValueError('unsupported active claim phase')
+    if latest_event not in (*ATTEMPT_EVENTS, None):
+        raise ValueError('unsupported attempt event')
+    if latest_failure not in (*FAILURES, None):
+        raise ValueError('unsupported attempt failure')
+    if type(attempts) is not int or attempts < 0:
+        raise ValueError('invalid attempt count')
+    for value in (next_ms, lease_until_ms, latest_retry_after_ms):
+        if value is not None and (type(value) is not int or not 0 <= value <= MAX_I64):
+            raise ValueError('invalid diagnostic timestamp or delay')
+
+    terminal = state in ('succeeded', 'observed_unqualified', 'failed', 'redacted')
+    if terminal:
+        reason, retry, action = 'terminal_observed', 'not_applicable', 'none'
+    elif held:
+        reason = 'legacy_hold_requires_authenticated_reconciliation'
+        retry, action = 'forbidden', 'restore_authenticated_sync_preserve_transaction'
+    elif next_ms == MAX_I64:
+        reason = 'parked_requires_authenticated_reconciliation'
+        retry, action = 'forbidden', 'restore_authenticated_sync_preserve_transaction'
+    elif state in ('accepted', 'indeterminate'):
+        reason = 'remote_result_not_yet_reconciled'
+        retry = 'owner_policy_same_transaction_only'
+        action = 'restore_authenticated_sync_preserve_transaction'
+    elif phase is not None and lease_until_ms is not None and lease_until_ms <= now_ms:
+        reason = 'expired_active_claim_requires_fenced_recovery'
+        retry = 'owner_fenced_recovery_only'
+        action = 'verify_process_lease_then_expire_same_claim'
+    elif phase is not None:
+        reason = {
+            'claimed': 'active_claim_preparing',
+            'authorized': 'active_claim_authorized',
+            'dispatching': 'active_claim_dispatching_or_unknown_effect',
+        }[phase]
+        retry = 'forbidden_while_live_claim'
+        action = 'wait_exact_owner_or_fenced_recovery'
+    elif queue == 'retry_scheduled' and next_ms is not None and next_ms > now_ms:
+        reason = 'retry_window_not_due'
+        retry = 'wait_until_next_attempt_at'
+        action = 'wait_owner_schedule'
+    elif latest_failure == 'authority_denied':
+        reason = 'fresh_authority_required'
+        retry = 'owner_fresh_grant_only'
+        action = 'restore_broker_and_revocation_freshness'
+    elif queue == 'permanent_failure':
+        reason, retry, action = 'permanent_failure', 'forbidden', 'inspect_terminal_evidence'
+    else:
+        reason, retry, action = 'pending_owner_execution', 'owner_policy_only', 'wait_owner'
+
+    return {
+        'queue_state': queue,
+        'dispatch_state': state,
+        'attempts': attempts,
+        'next_attempt_at_ms': next_ms,
+        'active_claim_phase': phase,
+        'active_claim_lease_until_ms': lease_until_ms,
+        'latest_attempt_event': latest_event,
+        'latest_failure_class': latest_failure,
+        'latest_retry_after_ms': latest_retry_after_ms,
+        'entered_evidence_exists': bool(entered),
+        'reason': reason,
+        'retry': retry,
+        'action': action,
+    }
 
 
 def diagnose(db: sqlite3.Connection, now_ms: int, capacity: int = 4096,
@@ -116,29 +195,24 @@ def diagnose(db: sqlite3.Connection, now_ms: int, capacity: int = 4096,
     selected = None
     if transaction is not None:
         row = db.execute('''SELECT o.state, d.state, o.attempts, o.next_attempt_at_ms,
-            EXISTS(SELECT 1 FROM matrix_dispatch_legacy_content_holds h WHERE h.stable_txn_id=o.stable_txn_id),
-            EXISTS(SELECT 1 FROM matrix_dispatch_use_entries u WHERE u.stable_txn_id=o.stable_txn_id)
-            FROM outbox_messages o LEFT JOIN matrix_dispatch_ledger d USING(stable_txn_id)
+            EXISTS(SELECT 1 FROM matrix_dispatch_legacy_content_holds h
+                   WHERE h.stable_txn_id=o.stable_txn_id),
+            EXISTS(SELECT 1 FROM matrix_dispatch_use_entries u
+                   WHERE u.stable_txn_id=o.stable_txn_id),
+            c.phase, c.lease_until_ms,
+            (SELECT e.event_kind FROM matrix_dispatch_attempt_events e
+             WHERE e.stable_txn_id=o.stable_txn_id ORDER BY e.event_seq DESC LIMIT 1),
+            (SELECT e.failure_class FROM matrix_dispatch_attempt_events e
+             WHERE e.stable_txn_id=o.stable_txn_id AND e.failure_class IS NOT NULL
+             ORDER BY e.event_seq DESC LIMIT 1),
+            (SELECT e.retry_after_ms FROM matrix_dispatch_attempt_events e
+             WHERE e.stable_txn_id=o.stable_txn_id AND e.retry_after_ms IS NOT NULL
+             ORDER BY e.event_seq DESC LIMIT 1)
+            FROM outbox_messages o
+            LEFT JOIN matrix_dispatch_ledger d USING(stable_txn_id)
+            LEFT JOIN matrix_dispatch_active_claims c USING(stable_txn_id)
             WHERE o.stable_txn_id=?''', (transaction,)).fetchone()
-        if row is None:
-            selected = {'reason': 'not_found'}
-        else:
-            queue, state, attempts, next_ms, held, entered = row
-            if queue not in OUTBOX or state not in (*LEDGER, None):
-                raise ValueError('unsupported selected state')
-            terminal = state in ('succeeded', 'observed_unqualified', 'failed', 'redacted')
-            if terminal:
-                reason, retry = 'terminal_observed', 'not_applicable'
-            elif held:
-                reason, retry = 'legacy_hold_requires_authenticated_reconciliation', 'forbidden'
-            elif next_ms == MAX_I64:
-                reason, retry = 'parked_requires_authenticated_reconciliation', 'forbidden'
-            elif state in ('accepted', 'indeterminate'):
-                reason, retry = 'remote_result_not_yet_reconciled', 'owner_policy_same_transaction_only'
-            else:
-                reason, retry = 'pending_owner_execution', 'owner_policy_only'
-            selected = {'queue_state': queue, 'dispatch_state': state, 'attempts': attempts,
-                        'entered_evidence_exists': bool(entered), 'reason': reason, 'retry': retry}
+        selected = selected_dispatch(row, now_ms)
     return {'schema': 'hepta.channel-matrix-diagnostics.v1', 'observed_at_ms': now_ms,
             'scope': 'read_only_durable_snapshot_not_authority_or_native_integrity_proof',
             'schema_version': SCHEMA_VERSION, 'capacity_policy': capacity,
