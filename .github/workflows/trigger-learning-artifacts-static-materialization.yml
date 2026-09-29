@@ -1,0 +1,84 @@
+name: Trigger learning.artifacts static materialization
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/trigger-learning-artifacts-static-materialization.yml
+      - .github/workflows/materialize-learning-artifacts-final-fixes.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: trigger-learning-artifacts-static-materialization
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    if: >-
+      github.actor != 'github-actions[bot]' &&
+      (github.event_name == 'workflow_dispatch' ||
+       github.event.pull_request.head.ref == 'codex/learning-artifacts-convergence-20260929')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+          ref: codex/learning-artifacts-convergence-20260929
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+      - name: Execute the reviewed one-shot materializer
+        env:
+          TRIGGER_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import os
+          import subprocess
+          from pathlib import Path
+
+          source = Path('.github/workflows/materialize-learning-artifacts-final-fixes.yml')
+          lines = source.read_text(encoding='utf-8').splitlines()
+          scripts: list[str] = []
+          index = 0
+          while index < len(lines):
+              if lines[index] != '        run: |':
+                  index += 1
+                  continue
+              index += 1
+              body: list[str] = []
+              while index < len(lines):
+                  line = lines[index]
+                  if line and not line.startswith('          '):
+                      break
+                  body.append(line[10:] if line.startswith('          ') else '')
+                  index += 1
+              scripts.append('\n'.join(body) + '\n')
+
+          if len(scripts) != 2:
+              raise SystemExit(f'expected exactly two materializer scripts, found {len(scripts)}')
+
+          environment = os.environ.copy()
+          for number, script in enumerate(scripts, start=1):
+              path = Path(f'/tmp/learning-artifacts-materializer-step-{number}.sh')
+              path.write_text(script, encoding='utf-8')
+              subprocess.run(['bash', str(path)], cwd='.', env=environment, check=True)
+          PY
+      - name: Remove the trigger workflow from the static candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'learning.artifacts candidate materializer'
+          git config user.email 'artifact-candidate@users.noreply.github.com'
+          git rm .github/workflows/trigger-learning-artifacts-static-materialization.yml
+          git diff --cached --check
+          git commit -m 'ci(learning-artifacts): remove one-shot materialization trigger'
+          git push origin HEAD:codex/learning-artifacts-convergence-20260929
