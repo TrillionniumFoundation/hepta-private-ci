@@ -88,6 +88,20 @@ def patch_owner_service() -> None:
     )
 
 
+def patch_pinned_compatibility() -> None:
+    path = "codex-rs/hepta-learning-artifacts/src/pinned.rs"
+    replace_once(
+        path,
+        """        if withdrawal_head_digest.is_zero()\n            || self\n                .withdrawal_head_digest\n                .is_some_and(|previous| previous != withdrawal_head_digest)\n        {\n""",
+        """        if self.withdrawal_head_digest.is_some_and(|previous| {\n            withdrawal_head_digest.is_zero() || previous != withdrawal_head_digest\n        }) {\n""",
+    )
+    replace_once(
+        path,
+        """        self.candidate.spec.registry_receipt = current;\n        self.withdrawal_head_digest = Some(withdrawal_head_digest);\n        let result = consume(&self.candidate.bytes);\n""",
+        """        self.candidate.spec.registry_receipt = current;\n        if !withdrawal_head_digest.is_zero() {\n            self.withdrawal_head_digest = Some(withdrawal_head_digest);\n        }\n        let result = consume(&self.candidate.bytes);\n""",
+    )
+
+
 def patch_qualification_runner() -> None:
     replace_once(
         "scripts/hepta_artifact_qualification.py",
@@ -113,7 +127,6 @@ def converge_coverage_pin() -> None:
             path.write_text(updated, encoding="utf-8")
             changed += 1
     if changed == 0:
-        # Idempotent after the pin has converged.
         all_text = "\n".join(
             path.read_text(encoding="utf-8")
             for path in sorted((ROOT / ".github/workflows").glob("*.yml"))
@@ -127,6 +140,7 @@ def main() -> int:
     patch_imports()
     patch_crash_tests()
     patch_owner_service()
+    patch_pinned_compatibility()
     patch_qualification_runner()
     patch_traceability()
     converge_coverage_pin()
