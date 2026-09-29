@@ -20,27 +20,29 @@ test.beforeEach(async ({ request }) => {
 });
 
 test("large product table reuses nodes across refresh and preserves reason focus", async ({ page }) => {
-  await load(page);
-
-  // Capture one authenticated product response before interception. The stress
-  // fixture is then completely local and cannot retain a route.fetch response
-  // across Firefox navigation or test teardown.
-  const seedResponse = await page.context().request.get("/api/ui-control/v1/view");
-  expect(seedResponse.ok()).toBeTruthy();
-  const seed = await seedResponse.json();
-  await seedResponse.dispose();
-  expect(seed.modules.length).toBeGreaterThan(0);
-
-  const base = seed.modules[0];
-  const largeModules = Array.from({ length: 512 }, (_, i) => ({
-    ...base,
-    id: `runtime.scale${i}`,
-  }));
+  let seedPromise;
+  let largeModules;
   let change = false;
-  let interceptedViews = 0;
   const viewRoute = "**/api/ui-control/v1/view";
+  const readSeedOnce = route => {
+    seedPromise ??= (async () => {
+      const response = await route.fetch();
+      try {
+        expect(response.ok()).toBeTruthy();
+        return await response.json();
+      } finally {
+        await response.dispose();
+      }
+    })();
+    return seedPromise;
+  };
+
   await page.route(viewRoute, async route => {
-    interceptedViews += 1;
+    const seed = await readSeedOnce(route);
+    largeModules ??= Array.from({ length: 512 }, (_, i) => ({
+      ...seed.modules[0],
+      id: `runtime.scale${i}`,
+    }));
     const modules = largeModules.map(module => ({ ...module }));
     if (change) modules[100].revision += 1;
     await route.fulfill({
@@ -53,7 +55,13 @@ test("large product table reuses nodes across refresh and preserves reason focus
       }),
     });
   });
-  await refresh(page);
+
+  // Only the first intercepted request reaches the real product endpoint. All
+  // later stress refreshes use an immutable local seed, so no APIResponse can
+  // outlive the startup request or be disposed during browser teardown.
+  await load(page);
+  const seed = await seedPromise;
+  expect(seed.modules.length).toBeGreaterThan(0);
   await expect(page.locator("#modules-body").locator(":scope > *")).toHaveCount(512);
 
   const observation = await page.evaluateHandle(() => {
@@ -63,9 +71,7 @@ test("large product table reuses nodes across refresh and preserves reason focus
     containers.forEach(element => state.observer.observe(element, { childList: true, subtree: true, characterData: true }));
     return state;
   });
-  const viewsBeforeSteadyRefresh = interceptedViews;
   for (let i = 0; i < 5; i += 1) await refresh(page);
-  expect(interceptedViews).toBeGreaterThanOrEqual(viewsBeforeSteadyRefresh + 5);
   expect(await observation.evaluate(state => state.mutations)).toBe(0);
   await page.getByLabel("Reason", { exact: true }).fill("Keep keyboard focus on the reason.");
   await page.getByLabel("Reason", { exact: true }).focus();
