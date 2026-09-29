@@ -1,0 +1,201 @@
+name: knowledge.graph full closure bootstrap
+
+on:
+  push:
+    branches: [work/kg-full-closure-20260929]
+    paths:
+      - ".github/workflows/kg-full-closure-bootstrap.yml"
+      - "scripts/apply_kg_full_closure.py"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: knowledge-graph-full-closure-bootstrap
+  cancel-in-progress: true
+
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  close-runtime-delta:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: work/kg-full-closure-20260929
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Configure exact branch writer
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "knowledge.graph closure bot"
+          git config user.email "noreply@openai.com"
+          test "$(git branch --show-current)" = "work/kg-full-closure-20260929"
+          test "$(git rev-parse HEAD)" = "${{ github.sha }}"
+          mkdir -p "$RUNNER_TEMP/knowledge-graph-full-closure"
+
+      - name: Apply exact runtime-delta patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/apply_kg_full_closure.py \
+            2>&1 | tee "$RUNNER_TEMP/knowledge-graph-full-closure/apply.log"
+
+      - name: Format owned Rust sources
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --package codex-hepta-kg --package codex-hepta-memory -- --check \
+            2>&1 | tee "$RUNNER_TEMP/knowledge-graph-full-closure/cargo-fmt-check.log" || {
+              cargo fmt --package codex-hepta-kg --package codex-hepta-memory
+              cargo fmt --package codex-hepta-kg --package codex-hepta-memory -- --check \
+                2>&1 | tee "$RUNNER_TEMP/knowledge-graph-full-closure/cargo-fmt-after-apply.log"
+            }
+
+      - name: Check textual patch integrity
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check \
+            2>&1 | tee "$RUNNER_TEMP/knowledge-graph-full-closure/git-diff-check.log"
+          grep -q "plan_generation_transition_v2" codex-rs/hepta-memory/src/cognitive_kg_store.rs
+          grep -q "kg_projection_generation_kernel_deltas" codex-rs/hepta-memory/src/cognitive_kg_store.rs
+          grep -q "second kernel delta receipt" codex-rs/hepta-memory/src/cognitive_kg_store_tests.rs
+
+      - name: Test knowledge.graph kernel default surface
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test -p codex-hepta-kg --locked \
+            2>&1 | tee "$RUNNER_TEMP/knowledge-graph-full-closure/hepta-kg-default.log"
+
+      - name: Test feature-gated legacy fixture surface
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test -p codex-hepta-kg --locked --features fixture \
+            2>&1 | tee "$RUNNER_TEMP/knowledge-graph-full-closure/hepta-kg-fixture.log"
+
+      - name: Test durable transition and delta receipts
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test -p codex-hepta-memory --locked \
+            cognitive_kg_store_tests::product_projection_is_scoped_cited_append_only_and_fts_backed \
+            -- --exact --nocapture \
+            2>&1 | tee "$RUNNER_TEMP/knowledge-graph-full-closure/hepta-memory-delta-receipt.log"
+
+      - name: Test persisted generation oracle chain
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test -p codex-hepta-memory --locked cognitive_kg_oracle_tests -- --nocapture \
+            2>&1 | tee "$RUNNER_TEMP/knowledge-graph-full-closure/hepta-memory-oracle.log"
+
+      - name: Commit verified runtime implementation
+        id: source_commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add \
+            codex-rs/hepta-memory/src/cognitive_kg_store.rs \
+            codex-rs/hepta-memory/src/cognitive_kg_store_tests.rs \
+            docs/modules/knowledge.graph/TECHNICAL.md
+          if git diff --cached --quiet; then
+            echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          else
+            git commit -m "feat(knowledge.graph): select and receipt runtime kernel deltas"
+            echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Regenerate exact implementation and split status
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py migrate --module knowledge.graph \
+            2>&1 | tee "$RUNNER_TEMP/knowledge-graph-full-closure/map-migrate.log"
+          python3 scripts/hepta_kg_documentation_sync.py --apply \
+            2>&1 | tee "$RUNNER_TEMP/knowledge-graph-full-closure/documentation-apply.log"
+          python3 scripts/hepta_kg_status.py --apply \
+            2>&1 | tee "$RUNNER_TEMP/knowledge-graph-full-closure/status-apply.log"
+          git add \
+            docs/modules/knowledge.graph \
+            qualification/module-execution-dossiers/detail/knowledge.graph.md \
+            qualification/knowledge-graph
+          if ! git diff --cached --quiet; then
+            git commit -m "docs(knowledge.graph): rebind split status to runtime delta closure"
+          fi
+
+      - name: Verify generated truth at committed head
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_kg_status.py --check \
+            2>&1 | tee "$RUNNER_TEMP/knowledge-graph-full-closure/status-check.log"
+          python3 scripts/hepta_kg_documentation_sync.py --check \
+            2>&1 | tee "$RUNNER_TEMP/knowledge-graph-full-closure/documentation-check.log"
+          python3 scripts/hepta_knowledge_graph_map_verify.py \
+            --expected-sha "$(git rev-parse HEAD)" \
+            --expected-tree "$(git rev-parse HEAD^{tree})" \
+            2>&1 | tee "$RUNNER_TEMP/knowledge-graph-full-closure/map-check.log"
+          git diff --exit-code
+          git diff --cached --exit-code
+
+      - name: Remove bootstrap-only files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm \
+            scripts/apply_kg_full_closure.py \
+            .github/workflows/kg-full-closure-bootstrap.yml \
+            .github/workflows/kg-source-snapshot.yml
+          git commit -m "chore(knowledge.graph): retire closure bootstrap"
+
+      - name: Reverify source-bound truth after cleanup commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_kg_status.py --check \
+            2>&1 | tee "$RUNNER_TEMP/knowledge-graph-full-closure/status-post-cleanup.log"
+          python3 scripts/hepta_kg_documentation_sync.py --check \
+            2>&1 | tee "$RUNNER_TEMP/knowledge-graph-full-closure/documentation-post-cleanup.log"
+          python3 scripts/hepta_knowledge_graph_map_verify.py \
+            --expected-sha "$(git rev-parse HEAD)" \
+            --expected-tree "$(git rev-parse HEAD^{tree})" \
+            2>&1 | tee "$RUNNER_TEMP/knowledge-graph-full-closure/map-post-cleanup.log"
+          git diff --exit-code
+          git diff --cached --exit-code
+
+      - name: Push verified closure commits
+        shell: bash
+        run: |
+          set -euo pipefail
+          git push origin HEAD:refs/heads/work/kg-full-closure-20260929 \
+            2>&1 | tee "$RUNNER_TEMP/knowledge-graph-full-closure/push.log"
+          printf '%s\n' "$(git rev-parse HEAD)" \
+            > "$RUNNER_TEMP/knowledge-graph-full-closure/final-head.txt"
+          git log --oneline --decorate -8 \
+            > "$RUNNER_TEMP/knowledge-graph-full-closure/final-log.txt"
+
+      - name: Preserve bootstrap qualification evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: knowledge-graph-full-closure-${{ github.sha }}
+          path: ${{ runner.temp }}/knowledge-graph-full-closure
+          if-no-files-found: error
+          retention-days: 30
