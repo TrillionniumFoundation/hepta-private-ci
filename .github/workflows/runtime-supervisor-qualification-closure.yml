@@ -1,0 +1,68 @@
+name: Runtime supervisor qualification closure
+
+on:
+  push:
+    branches:
+      - codex/runtime-supervisor-qualification-closure-20260929
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-supervisor-qualification-closure
+  cancel-in-progress: false
+
+jobs:
+  integrate-and-verify:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/runtime-supervisor-qualification-closure-20260929
+          fetch-depth: 0
+
+      - name: Apply bounded integration patch
+        run: python3 .github/scripts/apply_runtime_supervisor_qualification_closure.py
+
+      - name: Format Rust sources
+        working-directory: codex-rs
+        run: cargo fmt --all
+
+      - name: Verify Python qualification tools
+        run: |
+          python3 -m py_compile \
+            qualification/runtime-supervisor/run_target_host.py \
+            qualification/runtime-supervisor/verify_receipt.py
+          python3 qualification/runtime-supervisor/verify_receipt.py --self-test
+
+      - name: Test supervisor default feature surface
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-supervisor --lib
+
+      - name: Test supervisor qualification feature surface
+        working-directory: codex-rs
+        run: |
+          cargo test -p codex-hepta-supervisor --features qualification --lib
+          cargo test -p codex-hepta-supervisor --features qualification --test qualification_256
+
+      - name: Check combined qualification and production authority surface
+        working-directory: codex-rs
+        run: cargo check -p codex-hepta-supervisor --features "qualification production-authority" --all-targets
+
+      - name: Check patch hygiene
+        run: git diff --check
+
+      - name: Commit verified integration
+        env:
+          BRANCH: codex/runtime-supervisor-qualification-closure-20260929
+        run: |
+          rm .github/scripts/apply_runtime_supervisor_qualification_closure.py
+          rm .github/workflows/runtime-supervisor-qualification-closure.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "feat(runtime.supervisor): qualify concurrency durability and recovery"
+          git push origin "HEAD:${BRANCH}"
