@@ -1,5 +1,8 @@
 name: Apply learning.operator V4 source convergence
 
+# Authoritative dispatch: apply the idempotent V4/type-state/budget/RCU convergence
+# from parent e3678c8f4cd74460940d3d3f766d347e48da1918, then remove this one-shot workflow.
+
 on:
   push:
     branches: [codex/learning-operator-full-convergence-20260926]
