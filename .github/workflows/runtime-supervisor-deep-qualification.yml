@@ -1,0 +1,68 @@
+name: runtime.supervisor deep qualification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-supervisor/**"
+      - "docs/modules/runtime.supervisor/**"
+      - "qualification/runtime-supervisor/**"
+      - ".github/workflows/runtime-supervisor-deep-qualification.yml"
+  push:
+    branches:
+      - codex/runtime-supervisor-full-qualification-20260930
+    paths:
+      - "codex-rs/hepta-supervisor/**"
+      - "docs/modules/runtime.supervisor/**"
+      - "qualification/runtime-supervisor/**"
+      - ".github/workflows/runtime-supervisor-deep-qualification.yml"
+
+permissions:
+  contents: read
+
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  RUST_BACKTRACE: "1"
+
+jobs:
+  deep-qualification:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install exact Rust toolchain
+        run: |
+          set -euo pipefail
+          channel="$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')"
+          rustup toolchain install "$channel" --profile minimal --component rustfmt
+          echo "RUSTUP_TOOLCHAIN=$channel" >> "$GITHUB_ENV"
+      - name: Check formatting and clean diff
+        run: |
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-supervisor -- --check
+          git diff --check
+      - name: Default library regression
+        run: cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor --lib
+      - name: Qualification library and products
+        run: >-
+          cargo test --manifest-path codex-rs/Cargo.toml --locked
+          -p codex-hepta-supervisor --features qualification --lib
+      - name: 256-Agent HOL and fault qualification
+        run: |
+          set -o pipefail
+          mkdir -p "$RUNNER_TEMP/runtime-supervisor"
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-supervisor --features qualification \
+            --test supervisor_hol_qualification -- --nocapture 2>&1 \
+            | tee "$RUNNER_TEMP/runtime-supervisor/hol-256.log"
+      - name: Upload exact-head qualification log
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-supervisor-deep-${{ github.sha }}
+          path: ${{ runner.temp }}/runtime-supervisor/
+          if-no-files-found: warn
+          retention-days: 30
