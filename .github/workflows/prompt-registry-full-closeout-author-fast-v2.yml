@@ -1,0 +1,136 @@
+name: Prompt registry fast source author v2
+
+on:
+  push:
+    branches: [ops/prompt-registry-full-closeout-author-20260929]
+    paths:
+      - .github/scripts/prompt_registry_full_closeout_phase1.py
+      - .github/workflows/prompt-registry-full-closeout-author-fast-v2.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: prompt-registry-fast-source-author-v2
+  cancel-in-progress: false
+
+jobs:
+  author:
+    runs-on: ubuntu-slim
+    timeout-minutes: 20
+    env:
+      TARGET_BRANCH: codex/prompt-registry-full-closeout-20260929
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.TARGET_BRANCH }}
+          fetch-depth: 0
+          persist-credentials: true
+      - id: apply
+        name: Apply source changes inside the checked-out workspace
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          exec > >(tee "$RUNNER_TEMP/prompt-registry-author.log") 2>&1
+          set -euxo pipefail
+          test "$(git rev-parse HEAD)" = "b6cdf7d069a84592c610d57f2685096bb1cf0859"
+          mkdir -p .github/scripts
+          author=.github/scripts/_prompt_registry_full_closeout_phase1.py
+          curl --fail --silent --show-error \
+            -H "Authorization: Bearer ${{ github.token }}" \
+            -H "Accept: application/vnd.github.raw+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/contents/.github/scripts/prompt_registry_full_closeout_phase1.py?ref=${GITHUB_SHA}" \
+            -o "$author"
+          python3 "$author"
+          rm -f "$author"
+          git diff --check
+          python3 - <<'PY'
+          from pathlib import Path
+          for name in [
+              'scripts/hepta-prompt-registry-map.py',
+              'scripts/hepta-prompt-registry-status.py',
+              'scripts/hepta-prompt-registry-qualify.py',
+              'scripts/hepta-prompt-registry-aggregate.py',
+              'scripts/hepta-prompt-registry-harness-tests.py',
+              'scripts/hepta-prompt-registry-accept.py',
+          ]:
+              compile(Path(name).read_text(encoding='utf-8'), name, 'exec')
+          PY
+          python3 scripts/hepta-prompt-registry-harness-tests.py
+          if grep -n 'nonce: \[' \
+            codex-rs/hepta-agentd/src/prompt_final_use_tests.rs \
+            codex-rs/hepta-agentd/src/prompt_runtime_tests.rs \
+            codex-rs/hepta-prompt-registry/tests/durable_relations_v4.rs; then
+            echo 'hard-coded test nonce remains' >&2
+            exit 1
+          fi
+      - name: Preserve author diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-registry-fast-author-v2-diagnostics-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/prompt-registry-author.log
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Require successful source application
+        if: steps.apply.outcome != 'success'
+        shell: bash
+        run: |
+          cat "$RUNNER_TEMP/prompt-registry-author.log" || true
+          exit 1
+      - name: Commit source candidate
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git diff --cached --check
+          git commit -m 'prompt.registry: close product qualification and evidence identity'
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          git push origin "HEAD:$TARGET_BRANCH"
+      - id: truth
+        name: Generate exact source truth
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          exec > >(tee "$RUNNER_TEMP/prompt-registry-truth.log") 2>&1
+          set -euxo pipefail
+          python3 scripts/hepta-prompt-registry-map.py --write
+          python3 scripts/hepta-prompt-registry-map.py --check
+          python3 scripts/hepta-prompt-registry-status.py --check
+          changed=$(git diff --name-only | sort)
+          expected=$(printf '%s\n' \
+            docs/modules/prompt.registry/IMPLEMENTATION_MAP.json \
+            docs/modules/prompt.registry/QUALIFICATION_STATUS.md | sort)
+          test "$changed" = "$expected"
+          git add \
+            docs/modules/prompt.registry/IMPLEMENTATION_MAP.json \
+            docs/modules/prompt.registry/QUALIFICATION_STATUS.md
+          git diff --cached --check
+          git commit -m 'docs(prompt.registry): regenerate exact source truth'
+          git push origin "HEAD:$TARGET_BRANCH"
+          printf 'source_parent=%s\ndelivery_sha=%s\ndelivery_tree=%s\n' \
+            "${{ steps.source.outputs.sha }}" \
+            "$(git rev-parse HEAD)" \
+            "$(git rev-parse HEAD^{tree})" | tee "$RUNNER_TEMP/prompt-registry-delivery.txt"
+      - name: Preserve truth diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-registry-fast-truth-v2-diagnostics-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/prompt-registry-truth.log
+            ${{ runner.temp }}/prompt-registry-delivery.txt
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Require successful generated truth
+        if: steps.truth.outcome != 'success'
+        shell: bash
+        run: |
+          cat "$RUNNER_TEMP/prompt-registry-truth.log" || true
+          exit 1
