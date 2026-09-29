@@ -19,6 +19,15 @@ SOURCE_TREE="$(git -C "$ROOT" rev-parse HEAD^{tree})"
 INITIAL_STATUS="$(git -C "$ROOT" status --porcelain --untracked-files=no)"
 test -z "$INITIAL_STATUS"
 
+# Exercise the real guards before expensive native work. These tests use
+# stand-in native commands and synthetic samples, never native pass evidence.
+(
+  cd "$ROOT"
+  for pattern in test_platform_types_consumer\*.py test_platform_types_nonempty_tests.py test_platform_types_resource\*.py; do
+    python3 -m unittest discover -s scripts -p "$pattern" -v
+  done
+) 2>&1 | tee "$OUT/qualification-guards.log"
+
 CARGO_TARGET_DIR="$OUT/target" \
   cargo run --locked --manifest-path "$MANIFEST" \
     --package "$PACKAGE" --bin platform-types-protocol-codegen -- \
@@ -64,6 +73,7 @@ for name in (
     "semantic-bounds-report.json",
     "semantic-bounds.log",
     "semantic-bounds-tests.log",
+    "qualification-guards.log",
 ):
     path = out / name
     raw = path.read_bytes()

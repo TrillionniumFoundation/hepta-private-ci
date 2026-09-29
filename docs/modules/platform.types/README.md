@@ -15,3 +15,7 @@ independent review are separate evidence. Source existence is not activation.
 The supported foundation remains authority-free and stateless. Prompt V1 bytes
 remain frozen. Prompt V2 now admits only values within its frozen HPTC array
 capacity; larger V1 observations are retained as V1, never silently truncated.
+
+The [qualification integrity continuation](QUALIFICATION_INTEGRITY_20260929.md)
+defines resource-attempt publication, stale-report rejection, independently
+recomputed consumer test counts, and the existing-lane guard regressions.
