@@ -18,7 +18,7 @@ concurrency:
 jobs:
   export:
     name: Export exact source tree
-    runs-on: windows-2025
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - name: Checkout exact source
