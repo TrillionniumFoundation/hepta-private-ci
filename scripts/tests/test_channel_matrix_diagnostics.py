@@ -60,6 +60,8 @@ class DiagnosticsTests(unittest.TestCase):
         before = hashlib.sha256(self.path.read_bytes()).hexdigest()
         row = diag.inspect(self.path, 100, transaction='txn')
         self.assertEqual(row['selected']['reason'], 'remote_result_not_yet_reconciled')
+        self.assertEqual(row['selected']['action'],
+                         'restore_authenticated_sync_preserve_transaction')
         self.assertEqual(hashlib.sha256(self.path.read_bytes()).hexdigest(), before)
         self.assertNotIn('SECRET_BODY', str(row))
         self.assertNotIn('!r:t', diag.prometheus(row))
@@ -76,6 +78,43 @@ class DiagnosticsTests(unittest.TestCase):
         row = diag.inspect(self.path, 100, transaction="txn' OR 1=1 --")
         self.assertEqual(row['selected'], {'reason': 'not_found'})
         self.assertEqual(row['unresolved'], 1)
+
+    def test_selected_transaction_distinguishes_live_claim_phase(self):
+        row = diag.selected_dispatch(
+            ('in_flight', 'dispatched', 2, 100, 0, 1, 'authorized', 500,
+             'authorized', None, None), 100)
+        self.assertEqual(row['reason'], 'active_claim_authorized')
+        self.assertEqual(row['retry'], 'forbidden_while_live_claim')
+        self.assertEqual(row['active_claim_lease_until_ms'], 500)
+
+    def test_selected_transaction_distinguishes_expired_claim(self):
+        row = diag.selected_dispatch(
+            ('in_flight', 'dispatched', 2, 100, 0, 1, 'dispatching', 99,
+             'dispatching', None, None), 100)
+        self.assertEqual(row['reason'], 'expired_active_claim_requires_fenced_recovery')
+        self.assertEqual(row['retry'], 'owner_fenced_recovery_only')
+
+    def test_selected_transaction_distinguishes_retry_window(self):
+        row = diag.selected_dispatch(
+            ('retry_scheduled', 'dispatched', 2, 500, 0, 0, None, None,
+             'retry_scheduled', 'server_unavailable', 400), 100)
+        self.assertEqual(row['reason'], 'retry_window_not_due')
+        self.assertEqual(row['retry'], 'wait_until_next_attempt_at')
+        self.assertEqual(row['latest_retry_after_ms'], 400)
+
+    def test_selected_transaction_distinguishes_authority_denial(self):
+        row = diag.selected_dispatch(
+            ('retry_scheduled', 'dispatched', 2, 100, 0, 0, None, None,
+             'revoked', 'authority_denied', None), 100)
+        self.assertEqual(row['reason'], 'fresh_authority_required')
+        self.assertEqual(row['retry'], 'owner_fresh_grant_only')
+
+    def test_unknown_remote_effect_wins_over_live_claim_hint(self):
+        row = diag.selected_dispatch(
+            ('in_flight', 'indeterminate', 2, 100, 0, 1, 'dispatching', 500,
+             'dispatching', None, None), 100)
+        self.assertEqual(row['reason'], 'remote_result_not_yet_reconciled')
+        self.assertEqual(row['retry'], 'owner_policy_same_transaction_only')
 
     def test_failed_migration_is_not_a_healthy_snapshot(self):
         self.db.execute('UPDATE _sqlx_migrations SET success=0 WHERE version=12')
