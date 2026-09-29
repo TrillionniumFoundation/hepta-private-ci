@@ -4,9 +4,9 @@ use std::error::Error as StdError;
 use std::fmt;
 use std::fs;
 use std::fs::File;
+use std::net::SocketAddr;
 #[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
-use std::net::SocketAddr;
 use std::path::Path;
 use std::path::PathBuf;
 use std::str::FromStr;
@@ -39,6 +39,21 @@ const OWNER_SCHEMA_MAGIC: &[u8] = b"HEPTA-LEARNING-ARTIFACTD-SCHEMA-V1\nversion=
 const MAX_CONFIG_BYTES: u64 = 256 * 1024;
 const MAX_SIGNERS: usize = 32;
 const MAX_CLIENTS: usize = 64;
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum ArtifactSignerSetV1 {
+    Writer,
+    CurrentHead,
+}
+
+impl ArtifactSignerSetV1 {
+    const fn prefix(self) -> &'static str {
+        match self {
+            Self::Writer => "writer_signer.",
+            Self::CurrentHead => "head_signer.",
+        }
+    }
+}
 
 #[derive(Clone, Debug)]
 pub struct ArtifactOwnerBootstrapConfigV1 {
@@ -104,8 +119,8 @@ impl ArtifactOwnerBootstrapV1 {
                 &config,
                 "minimum_authority_epoch",
             )?)?,
-            writer_signers: parse_signers(&config, "writer_signer.")?,
-            head_signers: parse_signers(&config, "head_signer.")?,
+            writer_signers: parse_signers(&config, ArtifactSignerSetV1::Writer)?,
+            head_signers: parse_signers(&config, ArtifactSignerSetV1::CurrentHead)?,
         };
         let writer_lease = SignedArtifactWriterLeaseV1 {
             lease_id: parse_id(required(&config, "lease_id")?)?,
@@ -223,8 +238,9 @@ pub(crate) fn load_keyring(
 
 fn parse_signers(
     values: &BTreeMap<String, String>,
-    prefix: &str,
+    signer_set: ArtifactSignerSetV1,
 ) -> Result<Vec<TrustedArtifactSignerV1>, ArtifactOwnerConfigError> {
+    let prefix = signer_set.prefix();
     let mut signers = Vec::new();
     for (name, value) in values.iter().filter(|(name, _)| name.starts_with(prefix)) {
         if signers.len() >= MAX_SIGNERS {
@@ -408,9 +424,9 @@ fn read_key_value_file(
             .ok_or(ArtifactOwnerConfigError::NonCanonical)?;
         if name.is_empty()
             || value.is_empty()
-            || name.bytes().any(|byte| !(byte.is_ascii_lowercase()
-                || byte.is_ascii_digit()
-                || matches!(byte, b'_' | b'.')))
+            || name.bytes().any(|byte| {
+                !(byte.is_ascii_lowercase() || byte.is_ascii_digit() || matches!(byte, b'_' | b'.'))
+            })
             || values.insert(name.to_owned(), value.to_owned()).is_some()
         {
             return Err(ArtifactOwnerConfigError::NonCanonical);
@@ -510,8 +526,8 @@ fn decode_fixed_hex<const N: usize>(
     for (index, output) in bytes.iter_mut().enumerate() {
         let raw = value.as_bytes();
         let high = decode_nibble(raw[index * 2]).ok_or(ArtifactOwnerConfigError::InvalidHex)?;
-        let low = decode_nibble(raw[index * 2 + 1])
-            .ok_or(ArtifactOwnerConfigError::InvalidHex)?;
+        let low =
+            decode_nibble(raw[index * 2 + 1]).ok_or(ArtifactOwnerConfigError::InvalidHex)?;
         *output = (high << 4) | low;
     }
     Ok(bytes)
