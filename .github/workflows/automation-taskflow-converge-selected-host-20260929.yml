@@ -1,0 +1,47 @@
+name: Automation TaskFlow schema-22 selected-host convergence
+
+on:
+  push:
+    branches:
+      - ci/automation-taskflow-schema22-finalize-20260929
+    paths:
+      - .github/workflows/automation-taskflow-converge-selected-host-20260929.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: automation-taskflow-schema22-selected-host-finalize-20260929
+  cancel-in-progress: true
+
+jobs:
+  converge:
+    runs-on: [self-hosted, hepta-automation-selected-host]
+    environment: automation-taskflow-selected-host
+    timeout-minutes: 150
+    steps:
+      - name: Check out exact isolated candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ci/automation-taskflow-schema22-finalize-20260929
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Prepare CI environment
+        uses: ./.github/actions/setup-ci
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: "1.95.0"
+          components: clippy,rustfmt
+
+      - name: Install repository test runner
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Execute exact convergence, qualification and guarded push
+        shell: bash
+        run: bash scripts/automation_taskflow_selected_host_finalize_20260929.sh
