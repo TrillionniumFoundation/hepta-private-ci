@@ -53,6 +53,7 @@ jobs:
             --include codex-rs/hepta-learning-artifacts/src/owner/service_crash_tests.rs \
             --include qualification/lane-e/TEST_TRACEABILITY.json \
             --include .github/workflows/hepta-learning-artifacts-qualification.yml
+          python3 -c 'from pathlib import Path; p=Path("docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json"); p.write_text("\n".join(line.rstrip() for line in p.read_text(encoding="utf-8").splitlines()) + "\n", encoding="utf-8")'
           git add docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json
       - name: Verify materialized source before publication
         shell: bash
