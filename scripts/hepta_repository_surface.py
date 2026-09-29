@@ -78,18 +78,20 @@ def load_policy(root: Path = ROOT) -> dict[str, Any]:
         raise ValueError("CI feedback target and tier budgets must be ordered")
     if convergence.get("selfIterationDraftOnly") is not True:
         raise ValueError("self-iteration must remain draft-only")
-    if surface.get("newPullRequestWorkflowFilesAllowed") is not False:
-        raise ValueError("new pull-request workflow files must remain frozen")
+    if surface.get("newAutomaticOrPrivilegedWorkflowFilesAllowed") is not False:
+        raise ValueError(
+            "new automatic or privileged workflow files must require integration review"
+        )
 
-    allowed_root = surface.get("allowedRootModuleFiles")
-    allowed_local = surface.get("allowedModuleLocalMachineFiles")
+    allowed_root = surface.get("canonicalRootMachineFiles")
+    allowed_local = surface.get("canonicalModuleLocalMachineFiles")
     if (
         not isinstance(allowed_root, list)
         or any(not isinstance(value, str) or not value for value in allowed_root)
         or set(allowed_root) != _REQUIRED_ROOT_MODULE_FILES
         or len(allowed_root) != len(_REQUIRED_ROOT_MODULE_FILES)
     ):
-        raise ValueError("allowedRootModuleFiles widened or drifted")
+        raise ValueError("canonicalRootMachineFiles widened or drifted")
     if (
         not isinstance(allowed_local, list)
         or set(allowed_local) != _REQUIRED_LOCAL_MACHINE_FILES
@@ -103,9 +105,9 @@ def load_policy(root: Path = ROOT) -> dict[str, Any]:
         "maximumActiveConvergencePrsPerCapability": 1,
         "allowedDispositions": sorted(_REQUIRED_DISPOSITIONS),
         **expected_minutes,
-        "newPullRequestWorkflowFilesAllowed": False,
-        "allowedRootModuleFiles": set(allowed_root),
-        "allowedModuleLocalMachineFiles": set(allowed_local),
+        "newAutomaticOrPrivilegedWorkflowFilesAllowed": False,
+        "canonicalRootMachineFiles": set(allowed_root),
+        "canonicalModuleLocalMachineFiles": set(allowed_local),
     }
 
 
@@ -250,7 +252,7 @@ def forbidden_additions(
             except (ValueError, OSError):
                 forbidden.append(value)
         elif value.startswith("docs/modules/"):
-            if value in policy["allowedRootModuleFiles"] or path.suffix == ".md":
+            if value in policy["canonicalRootMachineFiles"] or path.suffix == ".md":
                 continue
             if len(path.parts) == 4 and path.name == "module.toml":
                 continue

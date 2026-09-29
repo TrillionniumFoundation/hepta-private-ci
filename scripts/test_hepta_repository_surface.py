@@ -75,8 +75,8 @@ class RepositorySurfaceTests(unittest.TestCase):
                 "selfIterationReleaseAllowed = true",
             ),
             (
-                "newPullRequestWorkflowFilesAllowed = false",
-                "newPullRequestWorkflowFilesAllowed = true",
+                "newAutomaticOrPrivilegedWorkflowFilesAllowed = false",
+                "newAutomaticOrPrivilegedWorkflowFilesAllowed = true",
             ),
             (
                 '  "docs/modules/registry.toml",',

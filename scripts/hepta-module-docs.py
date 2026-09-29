@@ -3,14 +3,12 @@
 
 try:
     from scripts.hepta_metadata import (
-        AUTHORITY_KEYS,
         has_deny_all_authority,
     )
 except ModuleNotFoundError as error:
     if error.name != "scripts":
         raise
     from hepta_metadata import (
-        AUTHORITY_KEYS,
         has_deny_all_authority,
     )
 
@@ -203,10 +201,12 @@ def refresh_derived(check):
                 {
                     "module": module_id,
                     "sourceEvidenceRoots": [],
-                    "interpretation": "generated_navigation_only_not_execution_evidence",
                 },
             )
         )
+        # Explanatory prose belongs in the module guide, not a duplicated
+        # machine projection that can contradict typed implementation facts.
+        row.pop("interpretation", None)
         declared = [binding["path"] for binding in module["rootBindings"]]
         existing = [item for item in declared if (ROOT / item).exists()]
         row.update(

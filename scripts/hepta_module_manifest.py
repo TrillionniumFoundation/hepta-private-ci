@@ -63,7 +63,9 @@ def load_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def load_manifests(root: Path = ROOT) -> tuple[dict[str, Any], list[dict[str, Any]], list[dict[str, Any]], dict[str, str]]:
+def load_manifests(
+    root: Path = ROOT,
+) -> tuple[dict[str, Any], list[dict[str, Any]], list[dict[str, Any]]]:
     module_root = root / "docs/modules"
     registry_path = module_root / "registry.toml"
     if not registry_path.is_file():
@@ -74,7 +76,6 @@ def load_manifests(root: Path = ROOT) -> tuple[dict[str, Any], list[dict[str, An
 
     modules: list[dict[str, Any]] = []
     cargo_rows: list[dict[str, Any]] = []
-    interpretations: dict[str, str] = {}
     seen_ids: set[str] = set()
     seen_orders: set[int] = set()
     orders: dict[str, int] = {}
@@ -98,34 +99,42 @@ def load_manifests(root: Path = ROOT) -> tuple[dict[str, Any], list[dict[str, An
         if missing:
             raise ValueError(f"{path}: missing fields: {', '.join(missing)}")
         modules.append(OrderedDict((key, document[key]) for key in MODULE_KEYS))
-        interpretation = document.get("sourceInterpretation")
-        if not isinstance(interpretation, str) or not interpretation:
-            raise ValueError(f"{path}: sourceInterpretation must be non-empty")
-        interpretations[module_id] = interpretation
         packages = document.get("cargoPackages", [])
         if not isinstance(packages, list):
             raise ValueError(f"{path}: cargoPackages must be an array of tables")
         for package in packages:
             package_path = package.get("path") if isinstance(package, dict) else None
             groups = package.get("ciGroups") if isinstance(package, dict) else None
-            compile_layer = package.get("compileLayer") if isinstance(package, dict) else None
-            if not isinstance(package_path, str) or not package_path.startswith("codex-rs/"):
+            compile_layer = (
+                package.get("compileLayer") if isinstance(package, dict) else None
+            )
+            if not isinstance(package_path, str) or not package_path.startswith(
+                "codex-rs/"
+            ):
                 raise ValueError(f"{path}: invalid Cargo package path")
             if package_path in seen_packages:
                 raise ValueError(
                     f"Cargo package {package_path} owned by both {seen_packages[package_path]} and {module_id}"
                 )
-            if not isinstance(groups, list) or any(group not in ALL_CI_GROUPS for group in groups):
+            if not isinstance(groups, list) or any(
+                group not in ALL_CI_GROUPS for group in groups
+            ):
                 raise ValueError(f"{path}: invalid ciGroups for {package_path}")
             if not isinstance(compile_layer, int) or compile_layer < 0:
-                raise ValueError(f"{path}: compileLayer must be a non-negative integer for {package_path}")
+                raise ValueError(
+                    f"{path}: compileLayer must be a non-negative integer for {package_path}"
+                )
             seen_packages[package_path] = module_id
             manifest = root / package_path / "Cargo.toml"
             if not manifest.is_file():
-                raise ValueError(f"{path}: missing Cargo manifest {package_path}/Cargo.toml")
+                raise ValueError(
+                    f"{path}: missing Cargo manifest {package_path}/Cargo.toml"
+                )
             cargo = tomllib.loads(manifest.read_text(encoding="utf-8"))
             package_name = cargo.get("package", {}).get("name")
-            if not isinstance(package_name, str) or not package_name.startswith("codex-hepta-"):
+            if not isinstance(package_name, str) or not package_name.startswith(
+                "codex-hepta-"
+            ):
                 raise ValueError(f"{manifest}: not a codex-hepta package")
             cargo_rows.append(
                 {
@@ -142,22 +151,31 @@ def load_manifests(root: Path = ROOT) -> tuple[dict[str, Any], list[dict[str, An
     for module in modules:
         unknown = sorted(set(module["uses"]) - ids)
         if unknown:
-            raise ValueError(f"{module['id']}: unknown semantic dependencies: {unknown}")
+            raise ValueError(
+                f"{module['id']}: unknown semantic dependencies: {unknown}"
+            )
         roots = [binding.get("path") for binding in module["rootBindings"]]
         if any(not isinstance(value, str) or not value for value in roots):
             raise ValueError(f"{module['id']}: invalid rootBindings")
     if not modules:
         raise ValueError("no module manifests found")
-    return registry, modules, sorted(cargo_rows, key=lambda row: row["packagePath"]), interpretations
+    return registry, modules, sorted(cargo_rows, key=lambda row: row["packagePath"])
 
 
 def projected_documents(root: Path = ROOT) -> dict[Path, str]:
-    registry, modules, cargo_rows, interpretations = load_manifests(root)
+    registry, modules, cargo_rows = load_manifests(root)
     projection = registry.get("projection")
     if not isinstance(projection, dict):
         raise ValueError("registry.toml: missing [projection]")
     module_document: OrderedDict[str, Any] = OrderedDict()
-    for key in ("schema", "schemaVersion", "documentClass", "authorityScope", "planId", "planVersion"):
+    for key in (
+        "schema",
+        "schemaVersion",
+        "documentClass",
+        "authorityScope",
+        "planId",
+        "planVersion",
+    ):
         if key not in projection:
             raise ValueError(f"registry.toml: projection.{key} missing")
         module_document[key] = projection[key]
@@ -201,10 +219,11 @@ def projected_documents(root: Path = ROOT) -> dict[Path, str]:
                 "declaredRoots": declared,
                 "existingDeclaredRoots": existing,
                 "sourceEvidenceRoots": module["sourceEvidenceRoots"],
-                "missingDeclaredRoots": [value for value in declared if value not in existing],
+                "missingDeclaredRoots": [
+                    value for value in declared if value not in existing
+                ],
                 "bootstrapWorkPackage": module["bootstrapWorkPackage"],
                 "technicalDocument": module["technicalDocument"],
-                "interpretation": interpretations[module["id"]],
             }
         )
 
@@ -234,7 +253,11 @@ def run_docs_projection(root: Path, check: bool) -> None:
     # never require prose byte counts, word counts or guide SHA refreshes.
     # Those optional presentation metrics are release/audit-only through the
     # explicit ``hepta_module_doc_metadata.py --write --prose-metrics`` path.
-    command = [sys.executable, str(root / "scripts/hepta-module-docs.py"), "refresh-derived"]
+    command = [
+        sys.executable,
+        str(root / "scripts/hepta-module-docs.py"),
+        "refresh-derived",
+    ]
     if check:
         command.append("--check")
     subprocess.run(command, cwd=root, check=True)
@@ -256,13 +279,21 @@ def main(argv: list[str] | None = None) -> int:
         if args.check and changed:
             raise ValueError("generated projection drift: " + ", ".join(changed))
         run_docs_projection(args.root, args.check)
-    except (OSError, ValueError, subprocess.CalledProcessError, tomllib.TOMLDecodeError, json.JSONDecodeError) as error:
+    except (
+        OSError,
+        ValueError,
+        subprocess.CalledProcessError,
+        tomllib.TOMLDecodeError,
+        json.JSONDecodeError,
+    ) as error:
         print(f"FAIL_HEPTA_MODULE_MANIFEST: {error}", file=sys.stderr)
         return 1
     print(
         json.dumps(
             {
-                "status": "PASS_HEPTA_MODULE_MANIFEST" if args.check else "UPDATED_HEPTA_MODULE_MANIFEST",
+                "status": "PASS_HEPTA_MODULE_MANIFEST"
+                if args.check
+                else "UPDATED_HEPTA_MODULE_MANIFEST",
                 "source": "docs/modules/*/module.toml",
                 "changed": changed,
             },

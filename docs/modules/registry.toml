@@ -45,13 +45,13 @@ selfIterationPromotionAllowed = false
 selfIterationReleaseAllowed = false
 
 [repositorySurface]
-newPullRequestWorkflowFilesAllowed = false
-allowedRootModuleFiles = [
+newAutomaticOrPrivilegedWorkflowFilesAllowed = false
+canonicalRootMachineFiles = [
   "docs/modules/CI_MATRIX.json",
   "docs/modules/COMPILE_GRAPH.json",
   "docs/modules/registry.toml",
 ]
-allowedModuleLocalMachineFiles = ["module.toml"]
+canonicalModuleLocalMachineFiles = ["module.toml"]
 
 [authorityFlags]
 runtimeAuthority = false

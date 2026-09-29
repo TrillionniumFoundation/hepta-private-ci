@@ -14,7 +14,7 @@ manifest = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(manifest)
 
 
-REGISTRY = '''schema = "hepta.module-manifest-registry.v1"
+REGISTRY = """schema = "hepta.module-manifest-registry.v1"
 
 [projection]
 schema = "hepta.module-registry.v7"
@@ -35,10 +35,12 @@ oneModulePerPrimarySourceRoot = true
 
 [authorityFlags]
 runtimeAuthority = false
-'''
+"""
 
 
-def module_text(module_id: str, order: int, package: str | None, uses: list[str] | None = None) -> str:
+def module_text(
+    module_id: str, order: int, package: str | None, uses: list[str] | None = None
+) -> str:
     uses = uses or []
     package_table = ""
     roots = ""
@@ -78,7 +80,6 @@ missingDeclaredRoots = []
 bootstrapWorkPackage = "TEST"
 technicalDocument = "docs/modules/{module_id}/TECHNICAL.md"
 documentationReady = true
-sourceInterpretation = "generated test module"
 
 [hotPathPolicy]
 centralSynchronousRpcAllowed = false
@@ -98,14 +99,20 @@ class ModuleManifestTests(unittest.TestCase):
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name)
         (self.root / "docs/modules").mkdir(parents=True)
-        (self.root / "docs/modules/registry.toml").write_text(REGISTRY, encoding="utf-8")
+        (self.root / "docs/modules/registry.toml").write_text(
+            REGISTRY, encoding="utf-8"
+        )
         (self.root / "docs/modules/SOURCE_BINDINGS.json").write_text(
             json.dumps({"schema": "hepta.module-source-binding.v2", "bindings": []}),
             encoding="utf-8",
         )
 
     def add_module(
-        self, module_id: str, order: int, package: str | None, uses: list[str] | None = None
+        self,
+        module_id: str,
+        order: int,
+        package: str | None,
+        uses: list[str] | None = None,
     ) -> None:
         directory = self.root / "docs/modules" / module_id
         directory.mkdir(parents=True)
@@ -115,7 +122,9 @@ class ModuleManifestTests(unittest.TestCase):
         if package:
             package_root = self.root / package
             package_root.mkdir(parents=True)
-            package_name = "codex-hepta-" + package.rsplit("/", 1)[-1].removeprefix("hepta-")
+            package_name = "codex-hepta-" + package.rsplit("/", 1)[-1].removeprefix(
+                "hepta-"
+            )
             (package_root / "Cargo.toml").write_text(
                 f'[package]\nname = "{package_name}"\nversion = "0.0.0"\nedition = "2024"\n',
                 encoding="utf-8",
@@ -123,10 +132,7 @@ class ModuleManifestTests(unittest.TestCase):
 
     def projected(self) -> dict[str, dict]:
         rendered = manifest.projected_documents(self.root)
-        return {
-            path.name: json.loads(text)
-            for path, text in rendered.items()
-        }
+        return {path.name: json.loads(text) for path, text in rendered.items()}
 
     def test_stateless_module_add_and_remove_leave_no_projection_residue(self) -> None:
         self.add_module("platform.types", 0, None)
@@ -164,12 +170,45 @@ class ModuleManifestTests(unittest.TestCase):
         self.assertEqual(removed["CI_MATRIX.json"]["packages"], [])
         self.assertNotIn("feature.sample", json.dumps(removed, sort_keys=True))
 
+    def test_editorial_source_interpretation_never_enters_machine_projections(
+        self,
+    ) -> None:
+        self.add_module("platform.types", 0, None)
+        manifest_path = self.root / "docs/modules/platform.types/module.toml"
+        baseline = self.projected()
+        for explanation in (
+            "source exists but activation is separate",
+            "a completely different editorial explanation",
+        ):
+            current = manifest_path.read_text()
+            manifest_path.write_text(
+                current.replace(
+                    "\n[hotPathPolicy]",
+                    f'\nsourceInterpretation = "{explanation}"\n\n[hotPathPolicy]',
+                    1,
+                ),
+                encoding="utf-8",
+            )
+            projected = self.projected()
+            self.assertEqual(projected, baseline)
+            self.assertNotIn(
+                "interpretation", projected["SOURCE_BINDINGS.json"]["bindings"][0]
+            )
+            lines = [
+                line
+                for line in manifest_path.read_text().splitlines()
+                if not line.startswith("sourceInterpretation = ")
+            ]
+            manifest_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
     def test_ordinary_projection_never_gates_on_prose_metrics(self) -> None:
         with mock.patch.object(manifest.subprocess, "run") as run:
             manifest.run_docs_projection(self.root, check=True)
         commands = [list(call.args[0]) for call in run.call_args_list]
         flattened = [" ".join(command) for command in commands]
-        self.assertTrue(any("refresh-derived --check" in command for command in flattened))
+        self.assertTrue(
+            any("refresh-derived --check" in command for command in flattened)
+        )
         self.assertTrue(
             any("hepta_module_doc_metadata.py" in command for command in flattened)
         )
@@ -180,7 +219,10 @@ class ModuleManifestTests(unittest.TestCase):
             manifest.run_docs_projection(self.root, check=False)
         flattened = [" ".join(call.args[0]) for call in run.call_args_list]
         self.assertTrue(
-            any("hepta_module_doc_metadata.py --write" in command for command in flattened)
+            any(
+                "hepta_module_doc_metadata.py --write" in command
+                for command in flattened
+            )
         )
         self.assertFalse(any("--prose-metrics" in command for command in flattened))
 
