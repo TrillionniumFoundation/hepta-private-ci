@@ -26,19 +26,19 @@ struct Timings {
 }
 
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
-pub(super) struct LockTelemetrySnapshot {
-    pub(super) acquisitions: u64,
-    pub(super) contended_acquisitions: u64,
-    pub(super) wait_us: u64,
-    pub(super) wait_max_us: u64,
-    pub(super) slow_waits: u64,
-    pub(super) hold_us: u64,
-    pub(super) hold_max_us: u64,
-    pub(super) slow_holds: u64,
+pub struct LockTelemetrySnapshot {
+    pub acquisitions: u64,
+    pub contended_acquisitions: u64,
+    pub wait_us: u64,
+    pub wait_max_us: u64,
+    pub slow_waits: u64,
+    pub hold_us: u64,
+    pub hold_max_us: u64,
+    pub slow_holds: u64,
 }
 
 impl LockTelemetrySnapshot {
-    pub(super) fn delta(self, earlier: Self) -> Self {
+    pub fn delta(self, earlier: Self) -> Self {
         Self {
             acquisitions: self.acquisitions.saturating_sub(earlier.acquisitions),
             contended_acquisitions: self
@@ -54,30 +54,30 @@ impl LockTelemetrySnapshot {
     }
 }
 
-pub(super) struct MeasuredMutex<T> {
+pub struct MeasuredMutex<T> {
     inner: Mutex<T>,
     timings: Timings,
 }
 
-pub(super) struct MeasuredGuard<'a, T> {
+pub struct MeasuredGuard<'a, T> {
     inner: MutexGuard<'a, T>,
     timings: &'a Timings,
     acquired: Instant,
 }
 
-pub(super) fn micros(duration: Duration) -> u64 {
+pub fn micros(duration: Duration) -> u64 {
     u64::try_from(duration.as_micros()).unwrap_or(u64::MAX)
 }
 
 impl<T> MeasuredMutex<T> {
-    pub(super) fn new(value: T) -> Self {
+    pub fn new(value: T) -> Self {
         Self {
             inner: Mutex::new(value),
             timings: Timings::default(),
         }
     }
 
-    pub(super) async fn lock(&self) -> MeasuredGuard<'_, T> {
+    pub async fn lock(&self) -> MeasuredGuard<'_, T> {
         let waiting = Instant::now();
         match self.inner.try_lock() {
             Ok(inner) => self.guard(inner, waiting, false),
@@ -88,7 +88,7 @@ impl<T> MeasuredMutex<T> {
         }
     }
 
-    pub(super) fn blocking_lock(&self) -> MeasuredGuard<'_, T> {
+    pub fn blocking_lock(&self) -> MeasuredGuard<'_, T> {
         let waiting = Instant::now();
         match self.inner.try_lock() {
             Ok(inner) => self.guard(inner, waiting, false),
@@ -127,7 +127,7 @@ impl<T> MeasuredMutex<T> {
         }
     }
 
-    pub(super) fn snapshot(&self) -> LockTelemetrySnapshot {
+    pub fn snapshot(&self) -> LockTelemetrySnapshot {
         let t = &self.timings;
         LockTelemetrySnapshot {
             acquisitions: t.acquisitions.load(Ordering::Relaxed),
@@ -141,7 +141,7 @@ impl<T> MeasuredMutex<T> {
         }
     }
 
-    pub(super) fn log_snapshot(&self) {
+    pub fn log_snapshot(&self) {
         let t = self.snapshot();
         eprintln!(
             "hepta_supervisord_mutex acquisitions={} contended={} wait_us={} wait_max_us={} slow_waits={} hold_us={} hold_max_us={} slow_holds={}",
