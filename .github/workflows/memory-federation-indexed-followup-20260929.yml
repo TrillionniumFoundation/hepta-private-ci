@@ -16,39 +16,52 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
+          ref: 0b1637d31355bdce52ceec261bfa550b868b9cd6
+          path: author-tools
+          persist-credentials: false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
           ref: d3c0aed52200abd44122bdbbe0f9a66a67f4b4ec
+          path: candidate
           fetch-depth: 0
           persist-credentials: false
-      - name: Apply exact reviewed export and observation changes
+      - name: Install pinned authoring formatter
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v rustup >/dev/null; then
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain 1.95.0
+          fi
+          export PATH="$HOME/.cargo/bin:$PATH"
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+      - name: Apply reviewed source and freeze observation
+        working-directory: candidate
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = d3c0aed52200abd44122bdbbe0f9a66a67f4b4ec
-          python3 - <<'PY'
-          from pathlib import Path
-          def replace(path, old, new):
-              p = Path(path)
-              text = p.read_text()
-              assert text.count(old) == 1, path
-              p.write_text(text.replace(old, new))
-          path = 'codex-rs/hepta-memory-federation-wire/src/lib.rs'
-          replace(path, 'pub use product::FederationAuthenticatedTransportV1;', 'pub use product::FEDERATION_TRANSPORT_CONTEXT_KEY_BYTES;\npub use product::FederationAuthenticatedTransportV1;')
-          replace(path, 'pub use product::FederationWireTransportV2;', 'pub use product::FederationTransportContextIssuerV1;\npub use product::FederationTransportContextVerifierV1;\npub use product::FederationWireTransportV2;')
-          replace('scripts/prepare_memory_federation_observation.py', 'set(verifier.tracked_source_paths(row)) | set(row["observedSourcePaths"])', 'set(verifier.tracked_source_paths(row)) | set(row["observedSourcePaths"]) | set(NEW_EVIDENCE)')
-          PY
+          python3 ../author-tools/qualification/memory-federation/authoring-20260929/followup.py
+          cargo +1.95.0 fmt --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml
           git diff --check
+          python3 - <<'PY'
+          import subprocess
+          paths = subprocess.check_output(['git','diff','--name-only'], text=True).splitlines()
+          assert all(p.startswith('codex-rs/hepta-memory-federation-wire/') or p in {'scripts/prepare_memory_federation_observation.py', 'docs/modules/memory.federation/INDEXED_ADMISSION.md'} for p in paths), paths
+          PY
           git config user.name 'Hepta Memory Federation Development'
           git config user.email 'hepta-memory-federation-dev@users.noreply.github.com'
-          git add codex-rs/hepta-memory-federation-wire/src/lib.rs scripts/prepare_memory_federation_observation.py
-          git commit -m 'fix(memory.federation): expose configured context capabilities and bind new evidence paths'
+          git add codex-rs/hepta-memory-federation-wire scripts/prepare_memory_federation_observation.py docs/modules/memory.federation/INDEXED_ADMISSION.md
+          git commit -m 'fix(memory.federation): preserve bounded cleanup progress and expose configured context capabilities'
           python3 scripts/prepare_memory_federation_observation.py --source-sha "$(git rev-parse HEAD)" --base-sha a126987b84737dbc2ee2592442a314117bddb4a2 --candidate-branch feat/memory-federation-full-closure-20260927 --write
           test "$(git diff --name-only)" = docs/modules/memory.federation/IMPLEMENTATION_MAP.json
           git add docs/modules/memory.federation/IMPLEMENTATION_MAP.json
-          git commit -m 'docs(memory.federation): rebind exported context candidate before read-only execution'
+          git commit -m 'docs(memory.federation): bind owner-maintenance candidate before read-only execution'
           python3 scripts/verify_memory_federation_status.py verify
           python3 scripts/verify_memory_federation_implementation.py --expected-sha "$(git rev-parse HEAD)" --expected-tree "$(git rev-parse HEAD^{tree})"
       - name: Publish source without force
         id: publish
+        working-directory: candidate
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -71,7 +84,6 @@ jobs:
       SOURCE_SHA: ${{ needs.author.outputs.candidate }}
       BASE_SHA: a126987b84737dbc2ee2592442a314117bddb4a2
       MODE: ${{ matrix.mode }}
-      CARGO_TARGET_DIR: ${{ runner.temp }}/federation-target
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -85,6 +97,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           git fetch --no-tags origin main
           test "$(git rev-parse refs/remotes/origin/main)" = "$BASE_SHA"
+          echo "CARGO_TARGET_DIR=$RUNNER_TEMP/federation-target" >> "$GITHUB_ENV"
       - name: Construct existing deterministic merge
         if: ${{ matrix.mode == 'deterministic-merge' }}
         uses: ./.github/actions/hepta-synthetic-merge
