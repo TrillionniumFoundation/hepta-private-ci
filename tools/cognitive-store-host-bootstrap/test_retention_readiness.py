@@ -54,7 +54,8 @@ def mutate(s,c):
  if c=="single": s.plan["segments"][0]["row_count"]=1; s.rp(); return "single-row"
  if c=="v2": s.plan["schema"]="hepta.cognitive.retention-checkpoint-plan.v2"; s.rp(); return "unsupported retention"
  if c=="dupid": s.plan["segments"][1]["segment_id"]=s.plan["segments"][0]["segment_id"]; s.rp(); return "duplicate"
- if c=="dupdigest": s.plan["segments"][1]["ciphertext_sha256"]=s.plan["segments"][0]["manifest_sha256"]; s.rp(); return "duplicate"
+ if c=="dupdigest": s.plan["segments"][1]["ciphertext_sha256"]=s.plan["segments"][0]["manifest_sha256"]; s.rp(); return "duplicate retention segment content"
+ if c=="dupplaintext": s.plan["segments"][1]["plaintext_sha256"]=s.plan["segments"][0]["plaintext_sha256"]; s.refresh_aggregate(); s.rp(); return "duplicate retention segment content"
  if c=="coordseg": s.plan["segments"][0]["storage_owner"]="coord"; s.rp(); return "independent"
  if c=="sameimage": s.plan["successor_image_sha256"]=s.plan["predecessor_image_sha256"]; s.rp(); return "distinct"
  if c=="expired": s.plan["expires_at"]=s.now; s.rp(); return "expired"
@@ -84,5 +85,5 @@ def make(c):
   else: s.assertRaisesRegex(ValueError,e or ".+",s.rec)
  return test
 
-for n in ("missing pending independent predates signer wrongplan revoked setdigest count rows endpoint chain ordinal reverse overlap single v2 dupid dupdigest overlapdigest coordseg sameimage expired oversize method receiptfirst receiptlast plain segrows rbset unresolved cut published integrity source frontier future status").split(): setattr(T,"test_"+n,make(n))
+for n in ("missing pending independent predates signer wrongplan revoked setdigest count rows endpoint chain ordinal reverse overlap single v2 dupid dupdigest dupplaintext overlapdigest coordseg sameimage expired oversize method receiptfirst receiptlast plain segrows rbset unresolved cut published integrity source frontier future status").split(): setattr(T,"test_"+n,make(n))
 if __name__=="__main__": unittest.main()
