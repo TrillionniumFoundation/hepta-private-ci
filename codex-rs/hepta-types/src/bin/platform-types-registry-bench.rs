@@ -14,8 +14,10 @@ use codex_hepta_types::{
 #[derive(Clone, Copy)]
 struct BenchmarkResult {
     entry_count: usize,
+    construction_elapsed_ns: u128,
     identity_elapsed_ns: u128,
     digest_elapsed_ns: u128,
+    registry_identity_elapsed_ns: u128,
 }
 
 fn invalid_input(message: impl Into<String>) -> io::Error {
@@ -59,7 +61,9 @@ fn benchmark_case(
     let target = entries[entry_count / 2].clone();
     let target_id = target.id().clone();
     let target_digest = target.digest();
+    let construction_started = Instant::now();
     let registry = ContractRegistryV1::new(entries)?;
+    let construction_elapsed_ns = construction_started.elapsed().as_nanos();
 
     let identity_started = Instant::now();
     for _ in 0..iterations {
@@ -79,10 +83,18 @@ fn benchmark_case(
     }
     let digest_elapsed_ns = digest_started.elapsed().as_nanos();
 
+    let registry_identity_started = Instant::now();
+    for _ in 0..iterations {
+        black_box(registry.registry_digest()?);
+    }
+    let registry_identity_elapsed_ns = registry_identity_started.elapsed().as_nanos();
+
     Ok(BenchmarkResult {
         entry_count,
+        construction_elapsed_ns,
         identity_elapsed_ns,
         digest_elapsed_ns,
+        registry_identity_elapsed_ns,
     })
 }
 
@@ -97,18 +109,22 @@ fn main() -> Result<(), Box<dyn Error>> {
         .iter()
         .map(|result| {
             format!(
-                "    {{\"entryCount\":{},\"identityElapsedNs\":{},\"identityNsPerLookup\":{},\"digestElapsedNs\":{},\"digestNsPerLookup\":{}}}",
+                "    {{\"entryCount\":{},\"constructionElapsedNs\":{},\"constructionNsPerEntry\":{},\"identityElapsedNs\":{},\"identityNsPerLookup\":{},\"digestElapsedNs\":{},\"digestNsPerLookup\":{},\"registryIdentityElapsedNs\":{},\"registryIdentityNsPerLookup\":{}}}",
                 result.entry_count,
+                result.construction_elapsed_ns,
+                result.construction_elapsed_ns / result.entry_count as u128,
                 result.identity_elapsed_ns,
                 result.identity_elapsed_ns / divisor,
                 result.digest_elapsed_ns,
                 result.digest_elapsed_ns / divisor,
+                result.registry_identity_elapsed_ns,
+                result.registry_identity_elapsed_ns / divisor,
             )
         })
         .collect::<Vec<_>>()
         .join(",\n");
     let document = format!(
-        "{{\n  \"schema\": \"hepta.platform-types.registry-lookup-benchmark.v1\",\n  \"schemaVersion\": 1,\n  \"iterationsPerLookup\": {iterations},\n  \"acceptanceThreshold\": null,\n  \"cases\": [\n{rows}\n  ]\n}}\n"
+        "{{\n  \"schema\": \"hepta.platform-types.registry-lookup-benchmark.v1\",\n  \"schemaVersion\": 1,\n  \"iterationsPerLookup\": {iterations},\n  \"acceptanceThreshold\": null,\n  \"claimBoundary\": \"same-candidate measurement only; no target-host threshold or release claim\",\n  \"cases\": [\n{rows}\n  ]\n}}\n"
     );
     if let Some(parent) = output.parent() {
         fs::create_dir_all(parent)?;
