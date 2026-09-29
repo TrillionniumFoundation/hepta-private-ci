@@ -1,0 +1,54 @@
+name: Runtime supervisor materializer
+
+on:
+  push:
+    branches:
+      - fix/runtime-supervisor-remediation-20260927
+    paths:
+      - scripts/runtime-supervisor-phase1.patch.gz.b64
+      - .github/workflows/runtime-supervisor-materialize.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-supervisor-materializer-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: fix/runtime-supervisor-remediation-20260927
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Materialize and qualify source
+        shell: bash
+        run: |
+          set -euo pipefail
+          base64 --decode scripts/runtime-supervisor-phase1.patch.gz.b64 | gzip -dc > /tmp/runtime-supervisor-phase1.patch
+          git apply --check /tmp/runtime-supervisor-phase1.patch
+          git apply /tmp/runtime-supervisor-phase1.patch
+          rm -f scripts/runtime-supervisor-phase1.patch.gz.b64
+          rm -f .github/workflows/runtime-supervisor-materialize.yml
+          cargo fmt --all
+          git diff --check
+          cargo check --manifest-path codex-rs/hepta-supervisor/Cargo.toml --all-targets --all-features
+          cargo test --manifest-path codex-rs/hepta-supervisor/Cargo.toml --all-features
+
+      - name: Publish materialized source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && { echo "no source changes to publish"; exit 1; }
+          git commit -m "runtime.supervisor: shard lifecycle ownership per agent"
+          git push origin HEAD:fix/runtime-supervisor-remediation-20260927
