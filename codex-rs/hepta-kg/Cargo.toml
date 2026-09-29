@@ -10,6 +10,11 @@ name = "codex_hepta_kg"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+default = []
+legacy-v1 = []
+fixture = ["legacy-v1"]
+
 [lints]
 workspace = true
 

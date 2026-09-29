@@ -3,16 +3,15 @@
 #![forbid(unsafe_code)]
 
 mod generation;
+mod incremental;
+#[cfg(feature = "legacy-v1")]
+mod legacy_v1;
 mod prompt_factor;
+mod publication;
+mod resource;
 
-use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
-
-use codex_hepta_types::AuthorityPosture;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::Generation;
-use codex_hepta_types::StableId;
 
 pub use generation::KnowledgeEdgeIdentityV2;
 pub use generation::KnowledgeEdgeV2;
@@ -37,9 +36,62 @@ pub use generation::build_complete_generation;
 pub use generation::publish_generation;
 pub use generation::query_relations;
 pub use generation::query_relations_with_work;
+pub use incremental::KnowledgeDependencyIndexV2;
+pub use incremental::KnowledgeImpactClosureV2;
+pub use incremental::KnowledgeIncrementalErrorV2;
+pub use incremental::KnowledgeIncrementalPlanV2;
+pub use incremental::KnowledgeMutationFrontierV2;
+pub use incremental::KnowledgeStorageDeltaV2;
+pub use incremental::KnowledgeSupportIdentityV2;
+pub use incremental::compute_impact_closure_v2;
+pub use incremental::plan_incremental_publication_v2;
+pub use incremental::should_run_full_rebuild_audit_v2;
+pub use incremental::verify_incremental_equivalence_v2;
+#[cfg(feature = "legacy-v1")]
+pub use legacy_v1::Error;
+#[cfg(feature = "legacy-v1")]
+pub use legacy_v1::Error as LegacyKnowledgeProjectionErrorV1;
+#[cfg(feature = "legacy-v1")]
+pub use legacy_v1::KnowledgeEdge;
+#[cfg(feature = "legacy-v1")]
+pub use legacy_v1::KnowledgeProjection;
+#[cfg(feature = "legacy-v1")]
+#[allow(deprecated)]
+pub use legacy_v1::rebuild;
 pub use prompt_factor::PromptFactorProjectionErrorV1;
 pub use prompt_factor::PromptFactorProjectionV1;
 pub use prompt_factor::build_prompt_factor_projection_v1;
+pub use publication::KnowledgeCommitOutcomeV2;
+pub use publication::KnowledgePublicationErrorCodeV2;
+pub use publication::KnowledgePublicationErrorV2;
+pub use publication::KnowledgeReconciliationStateV2;
+pub use publication::KnowledgeTransactionalPublicationV2;
+pub use publication::KnowledgeTransactionalStorageV2;
+pub use publication::publish_transactionally;
+pub use resource::KnowledgeCacheErrorV2;
+pub use resource::KnowledgeCancellationV2;
+pub use resource::KnowledgeGenerationCacheV2;
+pub use resource::KnowledgeJsonShapeV2;
+pub use resource::KnowledgeOperationGuardV2;
+pub use resource::KnowledgePhysicalLimitsV2;
+pub use resource::KnowledgePhysicalUsageV2;
+pub use resource::KnowledgePublicationLimiterV2;
+pub use resource::KnowledgePublicationPermitV2;
+pub use resource::KnowledgeResourceErrorCodeV2;
+pub use resource::KnowledgeResourceErrorV2;
+pub use resource::MAX_KNOWLEDGE_FIELD_BYTES_V2;
+pub use resource::MAX_KNOWLEDGE_GENERATION_BYTES_V2;
+pub use resource::MAX_KNOWLEDGE_JSON_BYTES_V2;
+pub use resource::MAX_KNOWLEDGE_JSON_DEPTH_V2;
+pub use resource::MAX_KNOWLEDGE_JSON_ELEMENTS_V2;
+pub use resource::MAX_KNOWLEDGE_QUERY_OUTPUT_BYTES_V2;
+pub use resource::measure_generation_v2;
+pub use resource::measure_projection_input_v2;
+pub use resource::measure_query_result_bytes_v2;
+pub use resource::validate_generation_physical_limits_v2;
+pub use resource::validate_json_shape_v2;
+pub use resource::validate_projection_input_physical_limits_v2;
+pub use resource::validate_query_output_physical_limits_v2;
 
 /// Default support-inspection/copy budget for the bounded external query entry.
 ///
@@ -117,96 +169,3 @@ pub fn query_relations_reference_unbounded(
 ) -> Result<KnowledgeRelationResultV2, KnowledgeGenerationErrorV2> {
     generation::query_relations(generation, query)
 }
-
-const MAX_EDGES: usize = 65_536;
-
-#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
-pub struct KnowledgeEdge {
-    pub source_id: StableId,
-    pub relation_id: StableId,
-    pub target_id: StableId,
-    pub source_fact_digest: Digest32,
-    pub live: bool,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct KnowledgeProjection {
-    pub generation: Generation,
-    pub source_snapshot_digest: Digest32,
-    pub edges: Vec<KnowledgeEdge>,
-    pub projection_digest: Digest32,
-    pub authority: AuthorityPosture,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub enum Error {
-    EmptySourceSnapshot,
-    EdgeLimitExceeded,
-    EmptyFactDigest(String),
-    DuplicateEdge(String),
-}
-
-impl fmt::Display for Error {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(formatter, "{self:?}")
-    }
-}
-
-impl StdError for Error {}
-
-pub fn rebuild(
-    generation: Generation,
-    source_snapshot_digest: Digest32,
-    mut edges: Vec<KnowledgeEdge>,
-) -> Result<KnowledgeProjection, Error> {
-    if source_snapshot_digest.is_zero() {
-        return Err(Error::EmptySourceSnapshot);
-    }
-    if edges.len() > MAX_EDGES {
-        return Err(Error::EdgeLimitExceeded);
-    }
-    edges.sort();
-    let mut seen = BTreeSet::new();
-    for edge in &edges {
-        if edge.source_fact_digest.is_zero() {
-            return Err(Error::EmptyFactDigest(edge.source_id.to_string()));
-        }
-        let identity = (
-            edge.source_id.clone(),
-            edge.relation_id.clone(),
-            edge.target_id.clone(),
-        );
-        if !seen.insert(identity) {
-            return Err(Error::DuplicateEdge(edge.source_id.to_string()));
-        }
-    }
-    edges.retain(|edge| edge.live);
-
-    let mut bytes = Vec::new();
-    bytes.extend_from_slice(b"hepta.knowledge.projection.v1");
-    bytes.extend_from_slice(&generation.get().to_be_bytes());
-    bytes.extend_from_slice(source_snapshot_digest.as_array());
-    for edge in &edges {
-        push_id(&mut bytes, &edge.source_id);
-        push_id(&mut bytes, &edge.relation_id);
-        push_id(&mut bytes, &edge.target_id);
-        bytes.extend_from_slice(edge.source_fact_digest.as_array());
-    }
-    Ok(KnowledgeProjection {
-        generation,
-        source_snapshot_digest,
-        edges,
-        projection_digest: Digest32::of_bytes(&bytes),
-        authority: AuthorityPosture::DENY_ALL,
-    })
-}
-
-fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
-    let raw = value.as_str().as_bytes();
-    bytes.extend_from_slice(&u32::try_from(raw.len()).unwrap_or(u32::MAX).to_be_bytes());
-    bytes.extend_from_slice(raw);
-}
-
-#[cfg(test)]
-#[path = "lib_tests.rs"]
-mod tests;
