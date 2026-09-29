@@ -1,0 +1,76 @@
+name: Prompt registry generated truth v6
+
+on:
+  push:
+    branches: [ops/prompt-registry-full-closeout-author-20260929]
+    paths:
+      - .github/workflows/prompt-registry-full-closeout-truth-v6.yml
+
+permissions:
+  contents: write
+
+jobs:
+  truth:
+    runs-on: ubuntu-slim
+    timeout-minutes: 15
+    env:
+      TARGET_BRANCH: codex/prompt-registry-full-closeout-20260929
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.TARGET_BRANCH }}
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Verify workflow and Python source shape
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "4d71d19c556cd4dbbefb067de49626f911245b10"
+          python3 - <<'PY'
+          from pathlib import Path
+          for name in [
+              'scripts/hepta-prompt-registry-map.py',
+              'scripts/hepta-prompt-registry-status.py',
+              'scripts/hepta-prompt-registry-qualify.py',
+              'scripts/hepta-prompt-registry-aggregate.py',
+              'scripts/hepta-prompt-registry-harness-tests.py',
+              'scripts/hepta-prompt-registry-accept.py',
+          ]:
+              compile(Path(name).read_text(encoding='utf-8'), name, 'exec')
+          PY
+          python3 scripts/hepta-prompt-registry-harness-tests.py
+      - name: Generate and verify exact implementation truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-prompt-registry-map.py --write
+          python3 scripts/hepta-prompt-registry-map.py --check
+          python3 scripts/hepta-prompt-registry-status.py --check
+          git diff --check
+          changed=$(git diff --name-only | sort)
+          expected=$(printf '%s\n' \
+            docs/modules/prompt.registry/IMPLEMENTATION_MAP.json \
+            docs/modules/prompt.registry/QUALIFICATION_STATUS.md | sort)
+          test "$changed" = "$expected"
+      - name: Commit and publish exact generated truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git config commit.gpgsign false
+          git add \
+            docs/modules/prompt.registry/IMPLEMENTATION_MAP.json \
+            docs/modules/prompt.registry/QUALIFICATION_STATUS.md
+          git diff --cached --check
+          git -c commit.gpgsign=false commit --no-verify -m 'docs(prompt.registry): regenerate exact source truth'
+          git push origin "HEAD:$TARGET_BRANCH"
+          printf 'delivery_sha=%s\ndelivery_tree=%s\n' \
+            "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})" | tee "$RUNNER_TEMP/prompt-registry-truth-v6.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-registry-truth-v6-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/prompt-registry-truth-v6.txt
+          if-no-files-found: error
+          retention-days: 30
