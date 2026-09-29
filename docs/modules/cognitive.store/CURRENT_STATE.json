@@ -184,6 +184,21 @@
       "scope": "Default, host-unified and qualification visibility; not runtime authorization or OS isolation"
     },
     {
+      "id": "CS-FILE-002",
+      "invariant": "A current-cut witness leaves the exact SQLite owner image and existing sidecars private and identity-stable for descriptor recovery",
+      "sources": [
+        "codex-rs/hepta-memory/src/cognitive_store.rs",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs"
+      ],
+      "tests": [
+        "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs::current_cut_capture_hardens_existing_sqlite_sidecars_without_replacing_them"
+      ],
+      "records": [
+        "memory-tests.json"
+      ],
+      "scope": "Owner-controlled DB/WAL/SHM/journal identity; selected-host filesystem qualification pending"
+    },
+    {
       "id": "CS-PERF-001",
       "invariant": "Release recovery reports wait, held time and sampled resource growth separately",
       "sources": [

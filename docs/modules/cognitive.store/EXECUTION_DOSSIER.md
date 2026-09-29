@@ -44,8 +44,8 @@ and recomputes the merge tree. Every command has an exclusive record and bounded
 | `normal-read-page-tests.json` | `codex-rs` | `cargo test --locked -p codex-hepta-agentd --test cognitive_store_read_pages` | 3 |
 | `normal-host-read-page-tests.json` | `codex-rs` | `cargo test --locked -p codex-hepta-agentd --test cognitive_store_host_read_pages` | 1 |
 | `crash-reopen.json` | `codex-rs` | `cargo test --locked -p codex-hepta-memory local_lease_outbox_tests::qualification_durable_writer_crash_reopen_probe -- --ignored --exact` | 1 |
-| `perf-256.json` | `codex-rs` | `cargo run --locked -p codex-hepta-memory --example cognitive_store_perf` | 0 |
-| `perf-16384.json` | `codex-rs` | `cargo run --locked -p codex-hepta-memory --example cognitive_store_perf` | 0 |
+| `perf-256.json` | `codex-rs` | `cargo run --locked --release -p codex-hepta-memory --example cognitive_store_perf` | 0 |
+| `perf-16384.json` | `codex-rs` | `cargo run --locked --release -p codex-hepta-memory --example cognitive_store_perf` | 0 |
 | `history-64-16.json` | `codex-rs` | `cargo run --locked -p codex-hepta-memory --example cognitive_store_history_perf` | 0 |
 | `history-128-64.json` | `codex-rs` | `cargo run --locked -p codex-hepta-memory --example cognitive_store_history_perf` | 0 |
 | `recovery-release-256.json` | `codex-rs` | `cargo run --locked --release -p codex-hepta-memory --example cognitive_store_recovery_perf` | 0 |

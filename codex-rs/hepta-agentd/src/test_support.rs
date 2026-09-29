@@ -115,7 +115,8 @@ impl CognitiveTestHost {
             EVENT_CAPACITY,
         )?);
         let store = Arc::new(CognitiveStore::open(&identity.layout).await?);
-        state.attach_cognitive_store(Arc::clone(&store))?;
+        let runtime = CognitiveRuntime::Available(Arc::clone(&store));
+        state.attach_cognitive_runtime(&runtime)?;
         registry.compare_and_transition(&agent_id, 1, AgentLifecycle::Running)?;
         state.refresh_generation()?;
 

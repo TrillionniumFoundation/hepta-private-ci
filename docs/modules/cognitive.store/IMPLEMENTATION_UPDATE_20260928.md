@@ -43,9 +43,10 @@ The named physical owner and trusted host still require deployment access contro
 
 ## Complete recovery measurement
 
-The existing debug `PERF-DURABLE` and history profiles remain correctness/growth
-workloads. New `--release` commands run `cognitive_store_recovery_perf` with 256 and
-16,384 records and three independently fenced recoveries each. The program seeds
+The `PERF-DURABLE` profiles now execute optimized `--release` binaries at 256 and
+16,384 records; history profiles remain separate correctness/growth workloads. The
+release recovery commands run `cognitive_store_recovery_perf` with three independently
+fenced recoveries each. The program seeds
 only a temporary owner and invokes the actual descriptor-backed recovery function.
 Each run compares the exact cut and exhausts the bounded page reader.
 
@@ -116,8 +117,9 @@ in `lifecycle.py` and `test_lifecycle.py` for the versioned envelope contract.
 
 ## Qualification and remaining work
 
-The original source-head and deterministic base-merge workflow now runs 33 independent
-commands, including normal Agentd compilation, actual host paging, final-use recovery,
+The source-head and deterministic base-merge workflow executes every command in the
+committed qualification plan independently, including normal Agentd compilation, actual
+host paging, final-use recovery,
 expired operational CLI, three-profile API probes, release recovery and lifecycle
 receipt tests. Each command keeps its own result and log. All original package,
 bootstrap, crash, history, performance and strict Clippy checks remain required.
@@ -146,11 +148,35 @@ owner cut before encrypted publication and after cold restore. Detailed framing,
 independent trust/key/binary bindings and recovery behavior are in `ARCHIVE_RUNBOOK.md`.
 It does not prune hot history or physically erase retained generations.
 
-The qualification plan now has 36 independent commands. The 45 archive protocol and
-filesystem tests were executed locally using actual Ed25519/OpenSSL, HKDF and AES-GCM;
+The qualification plan retains independent archive protocol, publication-observation,
+owner integration and filesystem commands. The 45 archive protocol and filesystem tests
+were executed locally using actual Ed25519/OpenSSL, HKDF and AES-GCM;
 most protocol tests substitute native owner admission, which is explicitly not counted
 as native validation. A separately required Rust cross-process test uses the real owner,
 correction/tombstone history and the native cold-image oracle. No local Rust toolchain
 was available, so that integration and the final exact-candidate CI remain unproved until
 their terminal results exist. Existing checked-in Rust formatting is normalized using
 the fixed-source authoring artifact, not by weakening qualification or skipping checks.
+## Exact-candidate qualification closure
+
+The latest closure removes the normal Agentd dependency on the qualification-only raw
+durable alias. Agentd opens the one physical owner through
+`CognitiveRuntime::open_local_owner`, then passes only the process-scoped runtime or the
+bounded read capability onward. Qualification helpers attach that same runtime instead
+of using a test-only `AgentdState` mutation method. This preserves one owner and does not
+introduce another product path.
+
+A coherent current-cut capture now normalizes the database and every existing
+recovery-relevant SQLite sidecar through retained, no-follow descriptors. It accepts the
+ordinary SQLite `0644` umask result only when the file is a same-owner, single-link,
+non-writable regular file, changes it to `0600`, synchronizes it and rechecks both the
+descriptor and pathname identity. Group/world-writable, hard-linked, redirected,
+special-bit, owner-mismatched or replaced files remain failures. Descriptor recovery's
+strict identity validation is unchanged.
+
+The real archive-owner test installs a fresh single-link native verifier before crossing
+the Python archive boundary; production verifier checks are not relaxed to accommodate
+Cargo target hard links. Durable 256/16,384 performance profiles now use optimized
+binaries, and the bounded 16,384-record command windows reflect the measured workload
+rather than treating a debug-process kill as a latency result. These changes still do
+not establish target-host qualification, independent acceptance, activation or release.

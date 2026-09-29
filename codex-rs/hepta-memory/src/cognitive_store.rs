@@ -1649,13 +1649,89 @@ fn create_private_directory(path: &Path) -> Result<PathBuf, CognitiveStoreError>
     Ok(canonical)
 }
 
-fn protect_database_file(_path: &Path) -> Result<(), CognitiveStoreError> {
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        fs::set_permissions(_path, fs::Permissions::from_mode(0o600)).map_err(unavailable)?;
+/// Normalize the SQLite owner image and any existing recovery-relevant
+/// sidecars to private, single-link files after a coherent current-cut
+/// transaction commits. SQLite may initially create WAL/SHM with the process
+/// umask; descriptor recovery must never weaken its exact `0600` requirement.
+/// A group-writable, redirected, hard-linked, cross-owner, or replaced path is
+/// rejected rather than repaired.
+pub(crate) fn protect_sqlite_recovery_files(path: &Path) -> Result<(), CognitiveStoreError> {
+    protect_private_sqlite_file(path, /*required*/ true)?;
+    for suffix in ["-wal", "-shm", "-journal"] {
+        let mut name = path.as_os_str().to_os_string();
+        name.push(suffix);
+        protect_private_sqlite_file(&PathBuf::from(name), /*required*/ false)?;
     }
     Ok(())
+}
+
+fn protect_database_file(path: &Path) -> Result<(), CognitiveStoreError> {
+    protect_private_sqlite_file(path, /*required*/ true)
+}
+
+#[cfg(unix)]
+fn protect_private_sqlite_file(path: &Path, required: bool) -> Result<(), CognitiveStoreError> {
+    use std::os::unix::fs::MetadataExt;
+    use std::os::unix::fs::OpenOptionsExt;
+    use std::os::unix::fs::PermissionsExt;
+
+    let file = match OpenOptions::new()
+        .read(true)
+        .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW | libc::O_NONBLOCK)
+        .open(path)
+    {
+        Ok(file) => file,
+        Err(error) if !required && error.kind() == std::io::ErrorKind::NotFound => return Ok(()),
+        Err(error) => return Err(unavailable(error)),
+    };
+    let parent = path.parent().ok_or_else(|| {
+        CognitiveStoreError::Invalid("SQLite owner file has no private parent".to_string())
+    })?;
+    let parent_metadata = fs::metadata(parent).map_err(unavailable)?;
+    let before = file.metadata().map_err(unavailable)?;
+    if !before.is_file()
+        || before.nlink() != 1
+        || before.uid() != parent_metadata.uid()
+        || before.mode() & 0o7133 != 0
+    {
+        return Err(CognitiveStoreError::Corrupt(
+            "SQLite owner file is not one owner-controlled regular file".to_string(),
+        ));
+    }
+
+    file.set_permissions(fs::Permissions::from_mode(0o600))
+        .map_err(unavailable)?;
+    file.sync_all().map_err(unavailable)?;
+
+    let after = file.metadata().map_err(unavailable)?;
+    let current = fs::symlink_metadata(path).map_err(unavailable)?;
+    if !current.is_file()
+        || current.nlink() != 1
+        || current.uid() != parent_metadata.uid()
+        || after.dev() != before.dev()
+        || after.ino() != before.ino()
+        || current.dev() != after.dev()
+        || current.ino() != after.ino()
+        || after.mode() & 0o7777 != 0o600
+        || current.mode() & 0o7777 != 0o600
+    {
+        return Err(CognitiveStoreError::Corrupt(
+            "SQLite owner file identity changed while enforcing private permissions".to_string(),
+        ));
+    }
+    Ok(())
+}
+
+#[cfg(not(unix))]
+fn protect_private_sqlite_file(path: &Path, required: bool) -> Result<(), CognitiveStoreError> {
+    match fs::metadata(path) {
+        Ok(metadata) if metadata.is_file() => Ok(()),
+        Ok(_) => Err(CognitiveStoreError::Corrupt(
+            "SQLite owner path is not a regular file".to_string(),
+        )),
+        Err(error) if !required && error.kind() == std::io::ErrorKind::NotFound => Ok(()),
+        Err(error) => Err(unavailable(error)),
+    }
 }
 
 #[cfg(test)]

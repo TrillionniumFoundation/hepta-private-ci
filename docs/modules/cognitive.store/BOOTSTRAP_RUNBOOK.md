@@ -18,8 +18,8 @@ The trusted deployment host also supplies `CognitiveProductionSourceIdentityV1` 
 
 ## Initial admission
 
-1. Quiesce or establish a new store and capture `CognitiveRecoveryAnchor` from one coherent transaction.
-2. Persist and authenticate that witness outside the rollback domain.
+1. Quiesce or establish a new store and capture `CognitiveRecoveryAnchor` from one coherent transaction. After the transaction commits, the owner normalizes the exact database and existing WAL/SHM/journal descriptors to private `0600`, single-link files. Redirected, cross-owner, hard-linked, special-bit or group/world-writable inputs fail closed rather than being repaired.
+2. Persist and authenticate that witness outside the rollback domain. Permission normalization does not sign the cut, prove currentness or grant recovery authority.
 3. An external authority service chooses a nonzero authority epoch, owner epoch, writer generation, lease expiry and opaque token.
 4. Hash the raw token into `tokenSha256`; keep token bytes in the separate `0600` file.
 5. Build authority-state revision 1 with no predecessor and sign `cognitive_authority_state_signing_bytes` using the trusted Ed25519 key.

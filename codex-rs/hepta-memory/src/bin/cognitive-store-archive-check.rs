@@ -25,7 +25,8 @@ fn inspect() -> Result<ExitCode, Box<dyn Error>> {
     let mut args = std::env::args_os().skip(1);
     if args.next().as_deref() != Some(std::ffi::OsStr::new("--image")) {
         return Err(
-            "usage: cognitive-store-archive-check --image ABSOLUTE_PATH < current-anchor.json".into(),
+            "usage: cognitive-store-archive-check --image ABSOLUTE_PATH < current-anchor.json"
+                .into(),
         );
     }
     let path = PathBuf::from(args.next().ok_or("missing cold image path")?);

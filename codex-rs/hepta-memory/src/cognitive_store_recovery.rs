@@ -31,6 +31,7 @@ use super::CognitiveStoreOpenGuard;
 use super::REQUIRED_SCHEMA_OBJECTS;
 use super::REQUIRED_SCHEMA_ORACLE_SHA256;
 use super::protect_database_file;
+use super::protect_sqlite_recovery_files;
 use super::publish_active_database;
 use super::recovered_database_filename;
 use super::resolve_active_database_path;
@@ -125,7 +126,9 @@ impl CognitiveStore {
         let held = std::time::Instant::now();
         let anchor = capture(&mut transaction, &self.owner_agent_id).await?;
         transaction.commit().await.map_err(unavailable)?;
-        Ok((anchor, acquisition_duration, held.elapsed()))
+        let held_duration = held.elapsed();
+        protect_sqlite_recovery_files(self.path())?;
+        Ok((anchor, acquisition_duration, held_duration))
     }
 
     /// Recover one exact current owner cut into a new writable generation.

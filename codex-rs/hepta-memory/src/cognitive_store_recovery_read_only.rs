@@ -201,6 +201,9 @@ mod archive_tests {
             CognitiveRecoveryRequirement::Revoked,
         )
         .await;
-        assert!(matches!(result, Err(CognitiveRecoveryError::AccessDenied(_))));
+        assert!(matches!(
+            result,
+            Err(CognitiveRecoveryError::AccessDenied(_))
+        ));
     }
 }

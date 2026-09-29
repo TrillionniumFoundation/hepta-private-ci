@@ -132,6 +132,14 @@ pub enum CognitiveRuntime {
 }
 
 impl CognitiveRuntime {
+    /// Open the one Agent-local physical owner and retain it behind the
+    /// process-scoped runtime capability. Product composition can derive
+    /// bounded read capabilities from this runtime without importing the raw
+    /// mutable owner through another facade.
+    pub async fn open_local_owner(layout: &HeptaAgentLayout) -> Self {
+        Self::from_open_result(CognitiveStore::open(layout).await)
+    }
+
     pub fn from_open_result(result: Result<CognitiveStore, CognitiveStoreError>) -> Self {
         match result {
             Ok(store) => Self::Available(Arc::new(store)),

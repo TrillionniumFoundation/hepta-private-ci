@@ -23,7 +23,8 @@ use tempfile::TempDir;
 
 #[tokio::test]
 #[ignore = "requires the archive Python dependencies; explicitly run by cognitive qualification"]
-async fn signed_archive_restores_real_correction_and_tombstone_history() -> Result<(), Box<dyn Error>> {
+async fn signed_archive_restores_real_correction_and_tombstone_history()
+-> Result<(), Box<dyn Error>> {
     let temp = TempDir::new()?;
     let root = temp.path().canonicalize()?;
     let fleet = root.join("fleet");
@@ -96,6 +97,17 @@ async fn signed_archive_restores_real_correction_and_tombstone_history() -> Resu
     if !Path::new(&python).is_absolute() {
         return Err("archive qualification Python must be an absolute path".into());
     }
+    let verifier = root.join("cognitive-store-archive-check");
+    std::fs::copy(
+        env!("CARGO_BIN_EXE_cognitive-store-archive-check"),
+        &verifier,
+    )?;
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(&verifier, std::fs::Permissions::from_mode(0o700))?;
+    }
+    std::fs::File::open(&verifier)?.sync_all()?;
     let output = Command::new(python)
         .arg(repository.join("tools/cognitive-store-host-bootstrap/test_archive.py"))
         .arg("--owner-image")
@@ -103,7 +115,7 @@ async fn signed_archive_restores_real_correction_and_tombstone_history() -> Resu
         .arg("--anchor")
         .arg(witness)
         .arg("--verifier")
-        .arg(env!("CARGO_BIN_EXE_cognitive-store-archive-check"))
+        .arg(&verifier)
         .output()?;
     assert!(
         output.status.success(),

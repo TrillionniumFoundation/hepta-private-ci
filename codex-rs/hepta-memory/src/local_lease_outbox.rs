@@ -2615,6 +2615,7 @@ impl LocalLeaseOutbox {
         .await
     }
 
+    #[allow(clippy::too_many_arguments)]
     async fn append_outcome_in_transaction(
         &self,
         transaction: &mut Transaction<'_, Sqlite>,

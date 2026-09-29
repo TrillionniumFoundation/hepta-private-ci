@@ -94,6 +94,39 @@ async fn seeded(
     (store, access, receipt.memory)
 }
 
+#[cfg(unix)]
+#[tokio::test]
+async fn current_cut_capture_hardens_existing_sqlite_sidecars_without_replacing_them() {
+    let temp = TempDir::new().expect("temp dir");
+    let owner = agent_id(92);
+    let (store, _, _) = seeded(&temp, &owner).await;
+    let sidecars = ["-wal", "-shm"].map(|suffix| {
+        let mut value = store.path().as_os_str().to_os_string();
+        value.push(suffix);
+        PathBuf::from(value)
+    });
+    let mut identities = Vec::new();
+    for path in &sidecars {
+        let metadata = std::fs::metadata(path).expect("SQLite sidecar exists");
+        assert_eq!(metadata.nlink(), 1);
+        identities.push((metadata.dev(), metadata.ino()));
+        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o644))
+            .expect("simulate SQLite umask sidecar mode");
+    }
+
+    store
+        .recovery_anchor()
+        .await
+        .expect("capture hardens descriptor recovery inputs");
+
+    for (path, expected_identity) in sidecars.iter().zip(identities) {
+        let metadata = std::fs::symlink_metadata(path).expect("retained sidecar");
+        assert_eq!((metadata.dev(), metadata.ino()), expected_identity);
+        assert_eq!(metadata.mode() & 0o7777, 0o600);
+        assert_eq!(metadata.nlink(), 1);
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 struct RecoveryTreeImage {
     directory: MetadataImage,

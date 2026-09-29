@@ -121,12 +121,14 @@ fn runtime_fixture() -> RuntimeFixture {
 }
 
 async fn attach_runtime_prerequisites(fixture: &RuntimeFixture) {
-    let store = codex_hepta_cognitive_store::DurableCognitiveStore::open(&fixture.identity.layout)
-        .await
-        .expect("real cognitive owner");
+    let runtime = CognitiveRuntime::open_local_owner(&fixture.identity.layout).await;
+    assert!(
+        runtime.available_store().is_some(),
+        "real cognitive owner must be available"
+    );
     fixture
         .state
-        .attach_cognitive_store(Arc::new(store))
+        .attach_cognitive_runtime(&runtime)
         .expect("owner attachment");
     fixture
         .state
@@ -311,9 +313,9 @@ async fn duplicate_automation_attachment_does_not_replace_the_live_store() {
 async fn unavailable_cognitive_store_degrades_without_leaking_open_error() {
     let fixture = runtime_fixture();
     let runtime = open_cognitive_runtime_after_generation_fence(&fixture.state, || async {
-        Err(CognitiveStoreError::Unavailable(
+        CognitiveRuntime::from_open_result(Err(CognitiveStoreError::Unavailable(
             "/private/raw/cognitive.sqlite: secret detail".to_string(),
-        ))
+        )))
     })
     .await
     .expect("store outage must not block agent execution");
@@ -1010,7 +1012,9 @@ async fn stale_generation_is_fenced_before_cognitive_store_open() {
     let result =
         open_cognitive_runtime_after_generation_fence(&fixture.state, move || async move {
             opened_by_call.store(true, Ordering::SeqCst);
-            Err(CognitiveStoreError::Unavailable("must not run".to_string()))
+            CognitiveRuntime::from_open_result(Err(CognitiveStoreError::Unavailable(
+                "must not run".to_string(),
+            )))
         })
         .await;
 
