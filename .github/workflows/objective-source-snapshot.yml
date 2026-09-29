@@ -1,4 +1,4 @@
-name: Objective repair materializer
+name: Objective guarded repair
 
 on:
   push:
@@ -6,26 +6,37 @@ on:
       - automation/objective-source-snapshot-20260929
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: objective-repair-materializer
   cancel-in-progress: true
 
+env:
+  EXPECTED_TARGET_SHA: d171dbca34ac8a9146a6e1b6f1579b95bcba2be4
+  TARGET_BRANCH: work/objective-compiler-production-convergence-20260927
+
 jobs:
-  materialize:
+  repair:
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: d171dbca34ac8a9146a6e1b6f1579b95bcba2be4
+          ref: ${{ env.EXPECTED_TARGET_SHA }}
           fetch-depth: 0
-          persist-credentials: false
+          persist-credentials: true
+      - name: Bind unchanged target
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_TARGET_SHA"
+          remote_head="$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | awk '{print $1}')"
+          test "$remote_head" = "$EXPECTED_TARGET_SHA"
       - name: Apply exact guarded repair
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = d171dbca34ac8a9146a6e1b6f1579b95bcba2be4
           python3 - <<'PY'
           from pathlib import Path
 
@@ -138,11 +149,24 @@ jobs:
           cd ..
           git diff --check
           git diff --stat
-      - name: Pack repaired files
+      - name: Verify repaired product path
         shell: bash
         run: |
           set -euo pipefail
-          tar -czf "$RUNNER_TEMP/objective-repair-files.tar.gz" \
+          cd codex-rs
+          cargo test --locked -p codex-hepta-agentd --test objective_product_e2e -- --nocapture
+          cargo clippy --locked \
+            -p codex-hepta-objective \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-agentd \
+            --all-targets --no-deps -- -D warnings
+      - name: Commit and push only over the unchanged target
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Hepta objective repair"
+          git config user.email "objective-repair@localhost"
+          git add \
             codex-rs/hepta-agentd/tests/objective_product_e2e.rs \
             codex-rs/hepta-agentd/src/browser_servo.rs \
             codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs \
@@ -153,9 +177,8 @@ jobs:
             codex-rs/hepta-agentd/src/intelligence_product.rs \
             codex-rs/hepta-agentd/src/objective_runtime.rs \
             codex-rs/hepta-agentd/src/plasticity_host.rs
-      - name: Upload repaired files
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: objective-repair-files
-          path: ${{ runner.temp }}/objective-repair-files.tar.gz
-          retention-days: 1
+          test -n "$(git diff --cached --name-only)"
+          git commit -m "fix(objective): close exact product qualification blockers"
+          remote_head="$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | awk '{print $1}')"
+          test "$remote_head" = "$EXPECTED_TARGET_SHA"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
