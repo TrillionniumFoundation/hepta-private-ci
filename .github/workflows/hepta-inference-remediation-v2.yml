@@ -19,7 +19,7 @@ concurrency:
 
 env:
   PATCH_PATH: .github/remediation/inference-control-remediation.patch.gz
-  PATCH_SHA256: 049de18e2f9fcd8591416cf1a09364f33acd66b46c9238b547b23d0cfc0ddfda
+  PATCH_SHA256: c0203786c2f593746d8a230b4d7ed333fd42f63f92c96dc2631364ae587c2419
   TEMP_WORKFLOW: .github/workflows/hepta-inference-remediation-v2.yml
   WORKFLOW_PATH: .github/workflows/hepta-inference-source-export.yml
   RESTORE_COMMIT: a80f50a552d2608f238a9e934bf6fade66876912
