@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Reject incoherent Rama selections in platform.types qualification.
 
-The product-facing network-proxy manifest pins the public prerelease crates it
-uses directly.  The published 0.3.0-alpha.4 graph intentionally depends on the
-stable 0.3.0 support crates (`rama-error`, `rama-macros`, and `rama-utils`).
-Treating every `rama-*` package as if it shared one version rejects the upstream
-release that Cargo actually resolves, so the lock check models the complete
-published graph instead of a prefix-wide version assumption.
+Cargo's ordinary prerelease requirement semantics permit upgrading
+`0.3.0-alpha.4` requirements to the stable `0.3.0` release. That resolution is
+not source-compatible for this graph: `rama-core 0.3.0-alpha.4` imports APIs
+that are absent from `rama-error 0.3.0`. The product manifest therefore pins
+all directly relevant product and support crates exactly, and this guard checks
+the complete reviewed alpha.4 graph rather than accepting a mixed release.
 """
 
 from __future__ import annotations
@@ -18,47 +18,47 @@ from pathlib import Path
 from typing import Any
 
 EXPECTED_VERSION = "0.3.0-alpha.4"
-SUPPORT_VERSION = "0.3.0"
 
-# Only these packages are declared by codex-network-proxy. They must remain
-# exact constraints so a future Cargo resolution cannot silently move the
-# product boundary to another prerelease.
+# These packages are declared directly by codex-network-proxy. The three
+# support crates are intentionally present even though most symbols are reached
+# transitively: their exact constraints prevent Cargo from replacing the
+# prerelease APIs with the incompatible stable 0.3.0 releases.
 DIRECT_MANIFEST_PACKAGES = (
     "rama-core",
+    "rama-error",
     "rama-http",
     "rama-http-backend",
+    "rama-macros",
     "rama-net",
     "rama-socks5",
     "rama-tcp",
     "rama-tls-rustls",
     "rama-unix",
+    "rama-utils",
 )
 
-# Exact package versions selected by the published 0.3.0-alpha.4 dependency
-# graph. Support crates are stable 0.3.0 releases by upstream design; accepting
-# any other `rama-*` package or version is fail-closed.
-LOCK_EXPECTED_VERSIONS = {
-    "rama-core": EXPECTED_VERSION,
-    "rama-dns": EXPECTED_VERSION,
-    "rama-error": SUPPORT_VERSION,
-    "rama-http": EXPECTED_VERSION,
-    "rama-http-backend": EXPECTED_VERSION,
-    "rama-http-core": EXPECTED_VERSION,
-    "rama-http-headers": EXPECTED_VERSION,
-    "rama-http-types": EXPECTED_VERSION,
-    "rama-macros": SUPPORT_VERSION,
-    "rama-net": EXPECTED_VERSION,
-    "rama-socks5": EXPECTED_VERSION,
-    "rama-tcp": EXPECTED_VERSION,
-    "rama-tls-rustls": EXPECTED_VERSION,
-    "rama-udp": EXPECTED_VERSION,
-    "rama-unix": EXPECTED_VERSION,
-    "rama-utils": SUPPORT_VERSION,
-}
+LOCK_PACKAGES = (
+    "rama-core",
+    "rama-dns",
+    "rama-error",
+    "rama-http",
+    "rama-http-backend",
+    "rama-http-core",
+    "rama-http-headers",
+    "rama-http-types",
+    "rama-macros",
+    "rama-net",
+    "rama-socks5",
+    "rama-tcp",
+    "rama-tls-rustls",
+    "rama-udp",
+    "rama-unix",
+    "rama-utils",
+)
+LOCK_EXPECTED_VERSIONS = {package: EXPECTED_VERSION for package in LOCK_PACKAGES}
 
-# Compatibility alias for scripts that historically imported this name. It now
-# denotes the complete lock graph, not the set of direct manifest constraints.
-REQUIRED_PACKAGES = tuple(LOCK_EXPECTED_VERSIONS)
+# Compatibility alias for scripts that historically imported this name.
+REQUIRED_PACKAGES = LOCK_PACKAGES
 
 
 class RamaLockError(RuntimeError):
@@ -164,7 +164,7 @@ def main() -> int:
     print(
         "platform.types Rama lock guard: coherent "
         f"({len(DIRECT_MANIFEST_PACKAGES)} exact direct pins; "
-        f"{len(LOCK_EXPECTED_VERSIONS)} reviewed lock packages)"
+        f"{len(LOCK_EXPECTED_VERSIONS)} exact lock packages at {EXPECTED_VERSION})"
     )
     return 0
 
