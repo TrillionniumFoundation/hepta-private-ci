@@ -251,3 +251,35 @@ selection, current calibration trust or production activation. Single-backend
 `run`, `summarize` and `verify` commands keep their existing explicit semantics.
 
 Dependency-free runner regressions: `python3 -m unittest -v test_bakeoff_panel`.
+
+## External teacher connectivity is not training permission
+
+`teacher_connectivity.py` inspects retained `openclaw models list --plain`,
+Gateway JSON and diagnostics without reading credentials, changing configuration,
+calling a provider or retrying. Bind the exact requested provider/model and nonce.
+A missing configured model, model fallback, missing transport-owned identity,
+incomplete/aborted result, changed nonce or non-boolean flags cannot establish
+connectivity. Preserve a returned Gateway run ID after an error for reconciliation;
+a local CLI exit is not proof a remote run never started. Reports retain hashes,
+not raw diagnostics, prompt text, account identifiers or secrets.
+
+Even a valid connectivity observation leaves provider qualification, tool isolation,
+training-data admission, training rights, operator acceptance and activation false.
+A model's self-description is not provider identity, and repository administration
+rights do not grant third-party output-training rights. Determine the actual account
+agreement and any written permission before admitting teacher outputs to training.
+The [Services Agreement](https://openai.com/policies/services-agreement/) and
+[consumer Terms](https://openai.com/policies/terms-of-use/) have different scope;
+neither an OAuth login nor this diagnostic decides which agreement applies.
+
+```sh
+python3 -m unittest -v test_teacher_connectivity
+python3 teacher_connectivity.py --catalog /observed/models.txt \
+  --response /observed/gateway.json --diagnostics /observed/gateway.stderr \
+  --expected-model openai/gpt-6-luna --nonce frozen-request-nonce \
+  --output /observed/teacher-connectivity.json
+```
+
+This package-local observation is not a cross-module authority protocol. Exit 2
+means connectivity was not established; it is not permission to change models,
+copy tokens, switch agents or reissue an uncertain provider request.
