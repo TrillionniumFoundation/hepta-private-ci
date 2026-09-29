@@ -1,0 +1,64 @@
+name: control.runtime crash and recovery regression
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'codex-rs/hepta-control-plane/**'
+      - 'docs/modules/control.runtime/**'
+      - 'docs/readiness/CONTROL_RUNTIME_*.md'
+      - 'scripts/control_runtime_validate_state.py'
+      - '.github/workflows/control-runtime-crash-recovery.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: control-runtime-crash-recovery-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_INCREMENTAL: '0'
+  CARGO_BUILD_JOBS: '2'
+  CARGO_PROFILE_TEST_DEBUG: '0'
+  CARGO_PROFILE_DEV_DEBUG: '0'
+
+jobs:
+  source-and-process-recovery:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-14]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+
+      - name: Install Linux native prerequisites
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libcap-dev
+
+      - name: Formatting
+        working-directory: codex-rs
+        run: cargo fmt -p codex-hepta-control-plane -- --check
+
+      - name: Pending reconciliation inventory regressions
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-control-plane pending_dispatch_inventory
+
+      - name: Abnormal process and restore regressions
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-control-plane --test planner_store_process_recovery -- --nocapture
+
+      - name: All-target compilation
+        working-directory: codex-rs
+        run: cargo check --locked --all-targets -p codex-hepta-control-plane
+
+      - name: Strict lint
+        working-directory: codex-rs
+        run: cargo clippy --locked --all-targets -p codex-hepta-control-plane -- -D warnings

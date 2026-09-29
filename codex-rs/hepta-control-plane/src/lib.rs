@@ -59,6 +59,38 @@ pub trait PlannerDispatchClaimSinkV1: PlannerTerminalReceiptSinkV1 {
     ) -> Result<PlannerDispatchClaimOutcomeV1, PlannerExecutionError>;
 }
 
+/// Maximum number of unresolved durable claims returned by one recovery page.
+pub const MAX_PENDING_DISPATCH_PAGE_ITEMS_V1: usize = 256;
+
+/// Read-only evidence for one operation that owns a durable dispatch claim but
+/// does not yet have a conclusive terminal observation.
+///
+/// This projection never carries authority to dispatch. The original grant
+/// digest may bind only a reconciliation query for the exact operation.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PlannerPendingDispatchV1 {
+    pub claim_sequence: u64,
+    pub claim_record_digest: codex_hepta_types::Digest32,
+    pub operation_identity_digest: codex_hepta_types::Digest32,
+    pub request_digest: codex_hepta_types::Digest32,
+    pub original_grant_digest: codex_hepta_types::Digest32,
+    pub final_payload_digest: codex_hepta_types::Digest32,
+    pub authority: codex_hepta_types::AuthorityPosture,
+}
+
+/// Bounded round-robin projection of unresolved durable dispatch claims.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PlannerPendingDispatchPageV1 {
+    pub items: Vec<PlannerPendingDispatchV1>,
+    /// Pass this value back as `after_sequence` to continue from the next
+    /// unresolved claim. `None` means no unresolved claim exists.
+    pub next_after_sequence: Option<u64>,
+    /// True when this page crossed the end of the unresolved-claim order and
+    /// resumed from its beginning.
+    pub wrapped: bool,
+    pub authority: codex_hepta_types::AuthorityPosture,
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum OrganTargetDeliveryDispositionV1 {
     Delivered,

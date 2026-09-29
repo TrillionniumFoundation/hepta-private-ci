@@ -10,6 +10,8 @@ mod core;
 mod codec;
 #[path = "planner_execution_durable.rs"]
 mod durable;
+#[path = "planner_execution_pending.rs"]
+mod pending;
 
 pub use core::PlannerAuthorizationDecisionV1;
 pub use core::PlannerAuthorityConsumerV1;
