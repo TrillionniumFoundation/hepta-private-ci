@@ -16,9 +16,11 @@ failed=0
 run_step() {
   local name="$1"; shift
   local rc=0 start=$SECONDS
+  local count="$EVIDENCE/$name-count.json"
+  local count_tmp="$count.tmp"
   printf '\n=== %s ===\n' "$name"
-  # Do not reuse an earlier test count after a failed or empty native command.
-  rm -f "$EVIDENCE/$name-count.json" || rc=$?
+  # A failed or empty native command must leave no reusable count evidence.
+  rm -f "$count" "$count_tmp" || rc=$?
   if (( rc == 0 )); then
     "$@" > "$EVIDENCE/$name.log" 2>&1 || rc=$?
   fi
@@ -27,7 +29,14 @@ run_step() {
     manifest-rust|types-tests|wire-tests|ndu-tests|prompt-producer|prompt-ledger|topology-consumer|manifest-owners)
       if (( rc == 0 )); then
         python3 scripts/platform_types_nonempty_tests.py "$EVIDENCE/$name.log" \
-          > "$EVIDENCE/$name-count.json" || rc=$?
+          > "$count_tmp"
+        local count_rc=$?
+        if (( count_rc == 0 )); then
+          mv "$count_tmp" "$count" || rc=$?
+        else
+          rc=$count_rc
+          rm -f "$count_tmp" "$count"
+        fi
       fi
       ;;
   esac
