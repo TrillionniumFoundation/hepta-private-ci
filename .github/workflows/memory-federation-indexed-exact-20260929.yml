@@ -1,0 +1,110 @@
+name: memory federation indexed immutable qualification 20260929
+on:
+  push:
+    branches: [ops/memory-federation-source-review-20260929]
+    paths: [.github/workflows/memory-federation-indexed-exact-20260929.yml]
+permissions:
+  contents: read
+jobs:
+  qualify:
+    name: canonical ${{ matrix.lane }}
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, deterministic-merge]
+    env:
+      SOURCE_SHA: d3c0aed52200abd44122bdbbe0f9a66a67f4b4ec
+      BASE_SHA: a126987b84737dbc2ee2592442a314117bddb4a2
+      LANE: ${{ matrix.lane }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: d3c0aed52200abd44122bdbbe0f9a66a67f4b4ec
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify fixed source and current base
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git fetch --no-tags origin main
+          test "$(git rev-parse refs/remotes/origin/main)" = "$BASE_SHA"
+      - name: Construct canonical deterministic merge
+        if: ${{ matrix.lane == 'deterministic-merge' }}
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: a126987b84737dbc2ee2592442a314117bddb4a2
+          source-sha: d3c0aed52200abd44122bdbbe0f9a66a67f4b4ec
+          pr-number: '1083'
+          author-name: Hepta Memory Federation CI
+          author-email: hepta-memory-federation-ci@users.noreply.github.com
+          message: Memory federation synthetic merge
+      - name: Resolve tested identity
+        id: tested
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "tree=$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
+      - name: Install repository toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
+          rustup default 1.95.0
+      - name: Self-test retained qualification tooling
+        run: python3 scripts/memory_federation_full_attestation.py self-test
+      - name: Execute existing canonical qualification matrix
+        id: matrix
+        run: bash scripts/run_memory_federation_qualification.sh
+      - name: Emit and verify actual payload
+        if: ${{ always() && steps.tested.outputs.sha != '' }}
+        env:
+          TESTED_SHA: ${{ steps.tested.outputs.sha }}
+          TESTED_TREE: ${{ steps.tested.outputs.tree }}
+          OUTCOME: ${{ steps.matrix.outcome }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          CONCLUSION=failure
+          if test "$OUTCOME" = success; then CONCLUSION=success; fi
+          ARGS=()
+          if test "$LANE" = deterministic-merge; then
+            ARGS+=(--base-sha "$BASE_SHA" --merge-sha "$TESTED_SHA" --merge-tree "$TESTED_TREE")
+          fi
+          python3 scripts/memory_federation_full_attestation.py emit-payload --output "$RUNNER_TEMP/payload" --lane "$LANE" --conclusion "$CONCLUSION" --source-sha "$SOURCE_SHA" --tested-sha "$TESTED_SHA" --tested-tree "$TESTED_TREE" "${ARGS[@]}"
+          python3 scripts/memory_federation_full_attestation.py verify "$RUNNER_TEMP/payload/attestation.json"
+      - name: Upload canonical evidence
+        if: ${{ always() }}
+        id: payload
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-federation-indexed-${{ matrix.lane }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/payload
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 30
+      - name: Bind artifact digest without accepting the capability
+        if: ${{ always() && steps.payload.outputs.artifact-id != '' }}
+        env:
+          OUTCOME: ${{ steps.matrix.outcome }}
+          ARTIFACT_ID: ${{ steps.payload.outputs.artifact-id }}
+          ARTIFACT_DIGEST: ${{ steps.payload.outputs.artifact-digest }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          CONCLUSION=failure
+          if test "$OUTCOME" = success; then CONCLUSION=success; fi
+          mkdir -p "$RUNNER_TEMP/envelope"
+          python3 scripts/memory_federation_full_attestation.py emit-envelope --output "$RUNNER_TEMP/envelope/envelope.json" --payload "$RUNNER_TEMP/payload/attestation.json" --lane "$LANE" --conclusion "$CONCLUSION" --artifact-name "memory-federation-indexed-${LANE}-${GITHUB_RUN_ID}" --artifact-id "$ARTIFACT_ID" --artifact-digest "$ARTIFACT_DIGEST"
+          python3 scripts/memory_federation_full_attestation.py verify "$RUNNER_TEMP/envelope/envelope.json" --payload "$RUNNER_TEMP/payload/attestation.json"
+      - name: Upload artifact envelope
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-federation-indexed-${{ matrix.lane }}-envelope-${{ github.run_id }}
+          path: ${{ runner.temp }}/envelope
+          if-no-files-found: error
+          retention-days: 30
