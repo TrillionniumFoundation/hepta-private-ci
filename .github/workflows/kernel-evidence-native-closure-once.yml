@@ -1,0 +1,344 @@
+name: kernel.evidence native closure once
+
+on:
+  pull_request:
+    types: [reopened]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kernel-evidence-native-closure-once
+  cancel-in-progress: false
+
+jobs:
+  close-native-blockers:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'fix/kernel-evidence-production-closure'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Check out convergence branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: fix/kernel-evidence-production-closure
+          fetch-depth: 0
+          persist-credentials: true
+
+      - uses: ./.github/actions/setup-ci
+
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          components: rustfmt, clippy
+
+      - name: Apply native correctness and strict-lint fixes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          def read(path: str) -> str:
+              return Path(path).read_text(encoding="utf-8")
+
+          def write(path: str, value: str) -> None:
+              Path(path).write_text(value, encoding="utf-8")
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              text = read(path)
+              if new in text:
+                  return
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"{path}: expected one exact match, observed {count}: {old[:120]!r}")
+              write(path, text.replace(old, new, 1))
+
+          def replace_regex_once(path: str, pattern: str, replacement: str) -> None:
+              text = read(path)
+              if re.search(pattern, text, flags=re.S) is None:
+                  if replacement in text:
+                      return
+                  raise SystemExit(f"{path}: regex did not match: {pattern}")
+              updated, count = re.subn(pattern, replacement, text, count=1, flags=re.S)
+              if count != 1:
+                  raise SystemExit(f"{path}: expected one regex replacement, observed {count}")
+              write(path, updated)
+
+          replace_once(
+              "codex-rs/hepta-evidence/src/store/runtime.rs",
+              '''        transaction
+                  .rollback()
+                  .await
+                  .expect("rollback failed disk-full transaction");''',
+              '''        // SQLITE_FULL may atomically roll back the transaction itself.  An
+                  // explicit rollback is therefore best-effort; the authoritative
+                  // postcondition is proved below by the empty table and quick-check.
+                  let _ = transaction.rollback().await;''',
+          )
+
+          replace_regex_once(
+              "codex-rs/hepta-evidence/tests/verified_trust_boundary.rs",
+              r'''fn registry\(path: &Path, revoked: bool\) -> Sha256Digest \{.*?\n\}''',
+              '''fn registry(path: &Path, revoked: bool) -> Sha256Digest {
+              let key = SigningKey::from_bytes(&[7_u8; 32]).verifying_key();
+              let hex = key
+                  .as_bytes()
+                  .iter()
+                  .map(|byte| format!("{byte:02x}"))
+                  .collect::<String>();
+              // Production-pinned trust must exercise the monotonic V2 format.
+              // The field order is canonical JSON order, matching the runtime
+              // verifier rather than relying on a map implementation detail.
+              let bytes = format!(
+                  "{{\\\"agent_id\\\":\\\"agent:test\\\",\\\"generation\\\":1,\\\"issuers\\\":[{{\\\"issuer_id\\\":\\\"issuer:test\\\",\\\"key_epoch\\\":1,\\\"public_key_hex\\\":\\\"{hex}\\\",\\\"revoked\\\":{revoked},\\\"roles\\\":[\\\"evaluator\\\"]}}],\\\"predecessor_sha256\\\":null,\\\"schema_version\\\":2}}"
+              )
+              .into_bytes();
+              std::fs::write(path, &bytes).expect("registry bytes");
+              std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))
+                  .expect("private registry");
+              Sha256Digest::for_bytes(&bytes)
+          }''',
+          )
+
+          product = "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs"
+          replace_once(product, "use codex_hepta_authbus::IssuerRegistration;\n", "")
+          replace_once(
+              product,
+              "use codex_hepta_evidence::QualificationEvidenceEnvelopeV1;\n",
+              "use codex_hepta_evidence::QualificationEvidenceEnvelopeV1;\nuse codex_hepta_evidence::VerifiedEvidenceTrustSnapshot;\n",
+          )
+          replace_once(product, "use codex_hepta_types::Generation;\n", "")
+          replace_once(product, "use codex_hepta_types::StableId;\n", "")
+          replace_regex_once(
+              product,
+              r'''async fn append_direct_evidence\(.*?\n\}\n\nfn write_recovery_frontier''',
+              '''async fn append_direct_evidence(
+              store: &HeptaEvidenceStore,
+              issuer_id: &str,
+              key: &SigningKey,
+              sequence: u64,
+              envelope: &QualificationEvidenceEnvelopeV1,
+          ) -> Result<()> {
+              let claims = kernel_evidence_claims(
+                  issuer_id,
+                  1,
+                  &format!("message:recovery:{issuer_id}:{sequence}"),
+                  sequence,
+                  now_ms()?.saturating_add(120_000),
+                  envelope,
+              )?;
+              let message = SignedMessage {
+                  signature: key.sign(&claims.signing_bytes()).to_bytes(),
+                  claims,
+              };
+              let trust_home = store.path().parent().context("evidence store home missing")?;
+              let trust_token = Sha256Digest::for_bytes(
+                  format!("{issuer_id}:{}", envelope.issuer_role.as_str()).as_bytes(),
+              );
+              let trust_file = trust_home.join(format!(
+                  "kernel-evidence-direct-trust-{}.json",
+                  trust_token.as_str()
+              ));
+              let role = envelope.issuer_role.as_str();
+              write_trust(
+                  &trust_file,
+                  "agent:kernel-evidence-direct-test",
+                  &[TrustEntry {
+                      issuer_id,
+                      key,
+                      revoked: false,
+                      roles: &[role],
+                  }],
+              )?;
+              let trust = VerifiedEvidenceTrustSnapshot::load_owner_registry(
+                  store,
+                  &trust_file,
+                  "agent:kernel-evidence-direct-test",
+                  None,
+              )?;
+              let issuer = trust.issuer_for(issuer_id, 1, envelope.issuer_role)?;
+              store
+                  .qualification()
+                  .append_receipt(&issuer, &message, envelope)
+                  .await?;
+              Ok(())
+          }
+
+          fn write_recovery_frontier''',
+          )
+
+          replace_once(
+              "codex-rs/hepta-evidence/src/lib.rs",
+              "    mod recovery;\n",
+              "    #[cfg(test)]\n    mod recovery;\n",
+          )
+
+          publication = "codex-rs/hepta-evidence/src/publication.rs"
+          replace_regex_once(
+              publication,
+              r'''impl EvidencePublicationBatchStateV1 \{\n    fn as_str\(self\) -> &'static str \{.*?\n    \}\n\n    fn parse''',
+              '''impl EvidencePublicationBatchStateV1 {
+              fn parse''',
+          )
+          replace_regex_once(
+              publication,
+              r'''        let first_intent_seq = positive_u64_from_i64\(.*?        let last_operation: String = rows\n            \.last\(\)\n            \.expect\("non-empty publication intent rows"\)\n            \.try_get\("operation_id"\)\n            \.map_err\(classify_sqlx_error\)\?;''',
+              '''        let first = rows.first().ok_or_else(|| {
+              EvidenceError::Corrupt("publication query returned no first intent".to_string())
+          })?;
+          let last = rows.last().ok_or_else(|| {
+              EvidenceError::Corrupt("publication query returned no last intent".to_string())
+          })?;
+          let first_intent_seq = positive_u64_from_i64(
+              first.try_get("seq").map_err(classify_sqlx_error)?,
+              "publication intent sequence",
+          )?;
+          let last_intent_seq = positive_u64_from_i64(
+              last.try_get("seq").map_err(classify_sqlx_error)?,
+              "publication intent sequence",
+          )?;
+          let last_qualification_seq: i64 = last
+              .try_get("qualification_seq")
+              .map_err(classify_sqlx_error)?;
+          let first_operation: String = first
+              .try_get("operation_id")
+              .map_err(classify_sqlx_error)?;
+          let last_operation: String = last
+              .try_get("operation_id")
+              .map_err(classify_sqlx_error)?;''',
+          )
+
+          replace_once(
+              "codex-rs/hepta-evidence/src/frontier_backend_file/segmented/inherent_2.rs",
+              '''        let last = state.active_records.last().expect("non-empty active records");''',
+              '''        let Some(last) = state.active_records.last() else {
+                  return Err(invalid("cannot archive an empty frontier journal tail"));
+              };''',
+          )
+          replace_once(
+              "codex-rs/hepta-evidence/src/frontier_backend_file/segmented/inherent_2.rs",
+              "            segment_file_name: segment_file_name.clone(),\n",
+              "            segment_file_name,\n",
+          )
+          replace_once(
+              "codex-rs/hepta-evidence/src/frontier_backend_file/segmented/inherent_4.rs",
+              '''        let last = records.last().expect("non-empty segment records");''',
+              '''        let Some(last) = records.last() else {
+                  return Err(corrupt("frontier segment is empty"));
+              };''',
+          )
+          replace_once(
+              "codex-rs/hepta-evidence/src/frontier_backend_file/segmented/trait.rs",
+              "            record.record_sha256.clone(),\n",
+              "            record.record_sha256,\n",
+          )
+          replace_once(
+              "codex-rs/hepta-evidence/src/frontier_backend_file/segmented/helpers_1.rs",
+              "fn build_index(\n",
+              '''#[expect(
+              clippy::too_many_arguments,
+              reason = "the canonical latest-index constructor keeps every authority and durability pin explicit"
+          )]
+          fn build_index(
+          ''',
+          )
+
+          replace_once(
+              "codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs",
+              "    pub(crate) async fn correct_with_kg_tx(\n",
+              '''    #[expect(
+                  clippy::too_many_arguments,
+                  reason = "the transaction-scoped correction boundary keeps access, revision, source, draft, and fact authority explicit"
+              )]
+              pub(crate) async fn correct_with_kg_tx(
+          ''',
+          )
+          replace_once(
+              "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+              "    async fn append_outcome_in_transaction(\n",
+              '''    #[expect(
+                  clippy::too_many_arguments,
+                  reason = "the durable outcome transition keeps identity, payload, allowed states, result state, and replay policy explicit"
+              )]
+              async fn append_outcome_in_transaction(
+          ''',
+          )
+
+          trust = "codex-rs/hepta-agentd/src/evidence_trust.rs"
+          replace_regex_once(
+              trust,
+              r'''use std::collections::BTreeSet;.*?impl EvidenceTrust \{.*?\n\}\n\n(?=#\[cfg\(unix\)\]\npub\(crate\) fn read_owner_file)''',
+              '''#[cfg(unix)]
+          use std::fs::File;
+          #[cfg(unix)]
+          use std::io::Read;
+          use std::path::Path;
+
+          use crate::AgentdError;
+          use crate::AgentdIdentity;
+
+          const MAX_EVIDENCE_TRUST_FILE_BYTES: u64 = 32_768;
+
+          ''',
+          )
+
+          replace_regex_once(
+              "codex-rs/hepta-agentd/src/evidence_production.rs",
+              r'''pub\(crate\) fn is_production_evidence_profile\(.*?\n\}\n\n''',
+              "",
+          )
+          PY
+
+      - name: Format source and repository Python
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all
+          uv run --frozen --project scripts ruff format scripts
+          git diff --check
+
+      - name: Run evidence package
+        shell: bash
+        working-directory: codex-rs
+        run: just test --locked -p codex-hepta-evidence
+
+      - name: Run Agentd evidence product targets
+        shell: bash
+        working-directory: codex-rs
+        run: >-
+          just test --locked -p codex-hepta-agentd --lib
+          --test kernel_evidence_product
+          --test kernel_evidence_profile
+          --test kernel_evidence_paging_product
+          --test kernel_evidence_publication_cli
+
+      - name: Run evidence doctests
+        shell: bash
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-evidence --doc
+
+      - name: Run strict scoped Clippy
+        shell: bash
+        run: >-
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked
+          -p codex-hepta-evidence -p codex-hepta-agentd --all-targets
+          -- -D warnings
+
+      - name: Build Agentd product binary
+        shell: bash
+        run: >-
+          cargo build --manifest-path codex-rs/Cargo.toml --locked
+          -p codex-hepta-agentd --bin codex-hepta-agentd
+
+      - name: Commit verified closure and remove one-shot workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/kernel-evidence-native-closure-once.yml
+          git diff --check
+          git config user.name "kernel-evidence-closure"
+          git config user.email "kernel-evidence-closure@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "fix(kernel.evidence): close native test and lint blockers [kernel-evidence-closure]"
+          git push origin HEAD:fix/kernel-evidence-production-closure
