@@ -13,10 +13,10 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 use crate::ArtifactAdmissionError;
-use crate::ArtifactKind;
 use crate::ArtifactManifest;
 use crate::LearningArtifactOwnerService;
 use crate::LearningArtifactOwnerServiceError;
+use crate::ValidatedArtifactManifestV2;
 use crate::VerifiedCurrentRegistryViewV1;
 use crate::WithdrawalBoundArtifactAdmissionV3;
 use crate::validate_artifact_publication_v3;
@@ -81,13 +81,13 @@ impl LearningArtifactOwnerService {
     ) -> Result<VerifiedCurrentArtifactUseV1, CurrentArtifactUseError> {
         validate_artifact_publication_v3(&admission, self.withdrawal_registry(), now)?;
         let current = self.current_registry_view(now)?;
-        let v2 = &admission.validated_manifest.manifest;
+        let v2 = &admission.validated_manifest;
         let projected = current
             .registry()
-            .manifest(&v2.artifact_id)
+            .manifest(&v2.manifest.artifact_id)
             .ok_or(CurrentArtifactUseError::ProjectionMismatch)?;
         if !projection_matches(projected, v2)
-            || !current.registry().is_eligible(&v2.artifact_id)
+            || !current.registry().is_eligible(&v2.manifest.artifact_id)
         {
             return Err(CurrentArtifactUseError::ProjectionMismatch);
         }
@@ -101,25 +101,18 @@ impl LearningArtifactOwnerService {
 
 pub(crate) fn projection_matches(
     projected: &ArtifactManifest,
-    admitted: &crate::LearningArtifactManifestV2,
+    admitted: &ValidatedArtifactManifestV2,
 ) -> bool {
-    projected.artifact_id == admitted.artifact_id
-        && projected.kind == admitted.kind
-        && projected.generation == admitted.generation
-        && projected.content_digest == admitted.bytes_digest
-        && projected.producer_id == admitted.producer_id
-        && projected.compatibility_digest == admitted.compatibility_digest
-        && projected.encoded_size_bytes == admitted.encoded_size_bytes
-        && projected.objective_digest == admitted.objective_class_digest
-        && projected.support_digest == admitted_manifest_support_digest(admitted)
-}
-
-fn admitted_manifest_support_digest(admitted: &crate::LearningArtifactManifestV2) -> Digest32 {
-    // The V1 compatibility projection stores the canonical V2 manifest digest
-    // as support_digest. Re-run the public validator at its own creation time so
-    // this comparison cannot be satisfied by caller-mutated fields.
-    crate::validate_artifact_manifest_v2(admitted.clone(), admitted.created_at)
-        .map_or(Digest32::ZERO, |validated| validated.manifest_digest)
+    let v2 = &admitted.manifest;
+    projected.artifact_id == v2.artifact_id
+        && projected.kind == v2.kind
+        && projected.generation == v2.generation
+        && projected.content_digest == v2.bytes_digest
+        && projected.producer_id == v2.producer_id
+        && projected.compatibility_digest == v2.compatibility_digest
+        && projected.encoded_size_bytes == v2.encoded_size_bytes
+        && projected.objective_digest == v2.objective_class_digest
+        && projected.support_digest == admitted.manifest_digest
 }
 
 #[derive(Debug)]
@@ -164,6 +157,3 @@ impl From<ArtifactAdmissionError> for CurrentArtifactUseError {
         Self::Admission(value)
     }
 }
-
-#[allow(dead_code)]
-const _: fn(ArtifactKind) = |_: ArtifactKind| {};
