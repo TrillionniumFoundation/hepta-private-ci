@@ -65,12 +65,31 @@ Roll out with a canary Agent and bounded room set. Require current exact-head an
 
 Every qualification/runbook execution retains exact source/tree, source blob hashes, workflow/run/job identity, binary/container digests, configuration digest, homeserver image/version/Git SHA, authority/binding identities, structured result, failure-injection parameters, bounded redacted logs and artifact-manifest digest. `skip` is not pass, and a successful unit test is not a real homeserver, encrypted-room, restore, operator-acceptance or release receipt.
 
+Target-host and independent-acceptance evidence must use the out-of-tree,
+scope-specific signed receipt contract in
+[Governed evidence receipts](GOVERNED_EVIDENCE.md). A valid receipt changes only
+its evidence state; it never grants activation, release or send authority.
+
 ## 8. Executable diagnostics and alert policy
 
-Run the read-only diagnostic tool on the private owner database:
+Create a read-only durable snapshot outside the checkout, then evaluate it
+against the explicit closed policy:
 
 ```sh
-python3 scripts/channel_matrix_diagnostics.py --database /private/matrix_1.sqlite3
+evidence_dir="$(mktemp -d)"
+python3 scripts/channel_matrix_diagnostics.py \
+  --database /private/matrix_1.sqlite3 \
+  > "$evidence_dir/diagnostics.json"
+
+python3 scripts/channel_matrix_alerts.py \
+  --snapshot "$evidence_dir/diagnostics.json" \
+  --policy docs/modules/channel.matrix/ALERT_POLICY.json \
+  --check
+```
+
+For a focused investigation, the snapshot generator also accepts:
+
+```sh
 python3 scripts/channel_matrix_diagnostics.py --database /private/matrix_1.sqlite3 --transaction EXACT_TXN_ID
 python3 scripts/channel_matrix_diagnostics.py --database /private/matrix_1.sqlite3 --event EXACT_EVENT_ID
 python3 scripts/channel_matrix_diagnostics.py --database /private/matrix_1.sqlite3 --format prometheus --check
@@ -86,30 +105,35 @@ current revocation frontier. `remote_result_not_yet_reconciled`, legacy holds an
 parked work preserve the same transaction and require authenticated `/sync`
 reconciliation; none authorizes a new transaction or manual SQL repair.
 
-The tool uses `mode=ro`, `query_only`, a consistent read transaction and a bounded
-SQLite instruction budget. It performs no migrations, writes, retries, grant
-issuance or automatic remediation. It reads only counts/timestamps and explicitly
-selected state fields; payloads and credential material are never queried.
-`--transaction` is parameterized and its value is not echoed. Diagnostic schema
-checks are not a substitute for the native store-open integrity validator.
+The snapshot tool uses `mode=ro`, `query_only`, a consistent read transaction and
+a bounded SQLite instruction budget. It performs no migrations, writes, retries,
+grant issuance or automatic remediation. It reads only counts/timestamps and
+explicitly selected state fields; payloads and credential material are never
+queried. `--transaction` is parameterized and its value is not echoed.
+Diagnostic schema checks are not a substitute for the native store-open
+integrity validator.
 
-Default policy (tune to a measured deployment, not a claimed SLO): warning when
-unresolved capacity reaches 80%, queue age exceeds 300s or a claim is expired;
-critical at capacity or when pending outbound work has no sync checkpoint or a
-checkpoint older than 120s. A slow/idle checkpoint is a freshness warning, not
-a claim that the network is disconnected. Capacity is a policy input and must
-match the deployed owner configuration. Prometheus labels are closed enums only.
-The `--check` exit status is 0 healthy, 1 warning, 2 critical/error. Transport
-window counters come from the production sender's ten-second structured stderr
-events (`hepta.channel-matrix-runtime-metrics.v1`); the normal log collector must
-retain them before an external dashboard can display the measurements.
+The policy evaluator binds the snapshot and policy SHA-256 values, rejects
+open-ended labels and inconsistent counts, and pages when sync is stale while
+either queue work or an unresolved dispatch exists. It also makes old unknown
+effects, repeated rate limiting, authority denial, response loss and ingress
+dependency failure actionable. See
+[Alerting and diagnostic policy](ALERTING_AND_DIAGNOSTICS.md) for field and
+action semantics.
+
+The repository policy is a conservative default, not a measured production SLO.
+The `--check` exit status is 0 healthy, 1 warning, and 2 critical/error.
+Transport window counters come from the production sender's ten-second
+structured stderr events (`hepta.channel-matrix-runtime-metrics.v1`); the normal
+log collector must retain them before an external dashboard can display the
+measurements.
 
 Unmeasured live broker/revocation freshness, redaction propagation latency,
 supervisor restart counts and encrypted-session continuity remain explicitly
 `not_in_snapshot`, never zero-valued green signals. Missing metrics require
-independent live probes/receipts; the tool does not authorize rollout.
+independent live probes/receipts; neither tool authorizes rollout.
 
-## Ingress recovery diagnostic workflow
+## 9. Ingress recovery diagnostic workflow
 
 See [Recovery and diagnostics](RECOVERY_DIAGNOSTICS.md) for exact-event selectors,
 quarantine/backoff classifications, gate metrics and the cooperative budget.
