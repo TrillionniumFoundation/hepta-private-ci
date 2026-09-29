@@ -87,7 +87,7 @@ Wire and storage identities are versioned and bounded. Unknown critical fields, 
 
 ## 6. Data authority, persistence and migrations
 
-`MatrixDurableStore` owns one private per-Agent SQLite database. Migrations 1-5 own the existing room/inbox/outbox/sync/control surfaces. Migration 6 adds the immutable dispatch ledger, observations and authority claims. Migration 7 adds random-capability attempt claims, active claim phases, verified-use/revocation-head witnesses and append-only attempt events. Migration 8 pins canonical Matrix content and scope, migration 9 seals inherited unpinned attempts, migration 10 persists the non-constructible entered-use proof, and migration 11 parks every legacy hold behind authenticated reconciliation while materializing its unresolved durable ledger state. Migration 12 qualifies delayed stable-transaction observations against prior entered attempts. Migration 13 persists inbox recovery scheduling, safe failure classes and monotone quarantine without changing admission authority. Migration 12 qualifies a stable transaction against any matching entered attempt no newer than the current attempt.
+`MatrixDurableStore` owns one private per-Agent SQLite database. Migrations 1-5 own the existing room/inbox/outbox/sync/control surfaces. Migration 6 adds the immutable dispatch ledger, observations and authority claims. Migration 7 adds random-capability attempt claims, active claim phases, verified-use/revocation-head witnesses and append-only attempt events. Migration 8 pins canonical Matrix content and scope, migration 9 seals inherited unpinned attempts, migration 10 persists the non-constructible entered-use proof, and migration 11 parks every legacy hold behind authenticated reconciliation while materializing its unresolved durable ledger state. Migration 12 qualifies delayed stable-transaction observations against prior entered attempts. Migration 13 persists inbox recovery scheduling, safe failure classes and monotone quarantine without changing admission authority.
 
 Operation ID, stable transaction ID and event IDs are independently unique. Logical identity columns are immutable; audit rows cannot be deleted. Store open validates migration history, exact table/index/view/trigger SQL, constraints, foreign keys, integrity and legacy-hold parking before work.
 
@@ -115,7 +115,7 @@ Credentials, session keys, raw grants/tokens, signing material, raw claim capabi
 
 ## 10. Performance, capacity and hot-path policy
 
-Current enforced bounds include unresolved dispatch capacity 4,096, claim batch 1-256, attempts 1-64, bounded broker frames/timeouts, bounded sync timeline and physical deadline below lease. Backoff is exponential and capped. Matrix `Retry-After` delay/date hints are normalized and receive stable transaction-derived jitter; hints outside policy park for reconciliation.
+Current enforced bounds include unresolved dispatch capacity 4,096, work-per-pass limit 1-256 with one just-in-time lease, attempts 1-64, bounded broker frames/timeouts, bounded sync timeline and physical deadline below lease. Backoff is exponential and capped. Matrix `Retry-After` delay/date hints are normalized and receive stable transaction-derived jitter; hints outside policy park for reconciliation.
 
 Target-host latency, throughput, queue-age, database-growth and sustained-recovery SLOs require measured receipts; design ceilings are not measurements.
 
