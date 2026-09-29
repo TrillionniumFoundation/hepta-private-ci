@@ -2,6 +2,16 @@
 
 This document is the entry point for the **current executable** `platform.wire` contract. The broader target architecture remains in `docs/modules/platform.wire/TECHNICAL.md`; production security and evidence rules are normative in [`SECURITY_AND_QUALIFICATION.md`](../../modules/platform.wire/SECURITY_AND_QUALIFICATION.md).
 
+## 2026-09-29 resource-contract update
+
+The current managed ingress owner is `ManagedRecordStream`, constructed by `ManagedAuthenticatedWireSession::into_record_stream`. Its normal `feed` delegates to `feed_with_budget`; the shared, non-Clone `RecordStreamBudget` charges accepted source bytes, full-record authentication attempts and full serialized-frame work, including failed attempts. The existing plain/offline reader has bounded read-call and Interrupted accounting. See [`FRAME_AND_IO_BUDGETS_20260929.md`](../../modules/platform.wire/FRAME_AND_IO_BUDGETS_20260929.md) and [`BUDGET_AND_STAGING_20260929.md`](../../modules/platform.wire/BUDGET_AND_STAGING_20260929.md).
+
+Commit `188821153bac9fde971124fefd5ba2e8390e63b8` introduced an idle staging-capacity ceiling on that same managed feed path, plus owner-controlled pressure reclamation and ten ordinary crate regressions. The default idle limit is `min(max_feed_bytes, max_record_bytes)` (64 KiB with default limits). Small allocations remain reusable; excessive empty staging capacity is released. Partial headers/bodies, exact consumed offsets, accepted prefixes, authenticated sequence state, egress identity and consuming EOF semantics are preserved. See [`IDLE_RETENTION_20260929.md`](../../modules/platform.wire/IDLE_RETENTION_20260929.md) for API, exact implementation/test blob identities, tests and performance tradeoffs.
+
+The commit above identifies introduction of the code, not a reusable qualification receipt for every descendant. The authoritative current candidate is the full source/tree in the PR's current-candidate section and the actual source/ordered-merge/target-host workflow receipts. Documentation-only descendants still need applicable exact-source checks; queued, running, skipped, cancelled or historical results are not passes. No local Rust compilation or benchmark pass was available in the editing environment.
+
+Idle staging bounds and serialized-frame work budgets do not independently bound active fragments, caller-retained output across turns, transport queues, connection count, allocator overhead or process RSS. Those remain obligations of the existing product/transport owners. This update does not introduce a second authenticator, executor, authority owner or replay journal. It does not grant RustOK, Ready, handoff, activation or release, and it does not replace the unchanged five-path package-size ratio <= 0.70 or p99 ratio <= 0.80 qualification gates.
+
 ## Current executable contract
 
 | Capability | Source state | Current evidence |
@@ -15,6 +25,7 @@ This document is the entry point for the **current executable** `platform.wire` 
 | Frozen schema/policy registry | implemented | bounded producer/role/capability policies and deterministic snapshot digest in `src/registry.rs` |
 | Envelope-coupled typed payload API | implemented | `WireSession::{encode_typed_envelope,decode_typed_envelope}` |
 | Bounded streaming decode | implemented | header-first admission, byte and frame-work budgets, valid-prefix/error batches and terminal poison state |
+| Managed record idle retention | implemented source, current receipt required | same `ManagedRecordStream` feed path, configurable idle ceiling, non-destructive pressure API and ten retention regressions |
 | Authenticated transcript/session | implemented source | ordered HPTN offers, selected posture, registry snapshot and authenticated channel binding in `src/secure_session.rs` |
 | Direction-separated HPTM records | implemented source | initiator/responder key derivation, independent directional sequences and reflection rejection in `src/directional_session.rs` |
 | Property testing and fuzz target | implemented source evidence | `src/property_tests.rs`, `fuzz/fuzz_targets/decode_frames.rs` |
@@ -40,6 +51,7 @@ V1 continues to use its frozen payload-only digest. V2 binds schema, producer, g
 - authenticated transcript and immutable session: `src/secure_session.rs` — `NegotiationTranscript`, `WireSession`.
 - direction-separated public record layer: `src/directional_session.rs` — `AuthenticatedWireSession`, `SessionMacKey`, `SessionEndpoint`.
 - streaming decoder: `src/stream.rs` — `StreamingDecoder`, `StreamDecodeBatch`.
+- managed authenticated ingress and retention: `src/record_stream.rs` — `ManagedRecordStream`, `RecordStreamBudget`, `idle_buffer_limit_bytes`, `set_idle_buffer_limit_bytes`, `release_idle_buffer`.
 - read-only caller: `codex-rs/hepta-runtime/src/lib.rs` — `HeptaRuntime::status_wire_v2`.
 - read-only transport surface: `codex-rs/hepta-native-gateway/src/lib.rs`.
 - registered `context.compiler` adapter: `codex-rs/hepta-context-compiler/src/wire.rs`.
