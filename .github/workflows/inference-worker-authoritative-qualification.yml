@@ -1,0 +1,365 @@
+name: Inference worker authoritative qualification
+
+on:
+  push:
+    branches:
+      - main
+      - codex/inference-worker-authoritative-20260929
+    paths:
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/Cargo.lock"
+      - "scripts/hepta_ci_exec.py"
+      - "scripts/inference_worker_command_receipt.py"
+      - "scripts/test_inference_worker_command_receipt.py"
+      - ".github/actions/hepta-synthetic-merge/**"
+      - ".github/workflows/inference-worker-authoritative-qualification.yml"
+  pull_request:
+    paths:
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/Cargo.lock"
+      - "scripts/hepta_ci_exec.py"
+      - "scripts/inference_worker_command_receipt.py"
+      - "scripts/test_inference_worker_command_receipt.py"
+      - ".github/actions/hepta-synthetic-merge/**"
+      - ".github/workflows/inference-worker-authoritative-qualification.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: inference-worker-authoritative-qualification-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  PYTHONDONTWRITEBYTECODE: "1"
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  RUST_BACKTRACE: "1"
+
+jobs:
+  receipt-generator:
+    name: Qualification receipt generator
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind exact source candidate
+        run: test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+      - name: Exercise command and aggregate receipt semantics
+        run: python3 -m unittest -v scripts/test_inference_worker_command_receipt.py
+      - name: Assert unchanged source
+        if: always()
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+  qualification:
+    name: ${{ matrix.lane }} / ${{ matrix.package }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+        package:
+          - codex-hepta-infer-core
+          - codex-hepta-infer-worker-host
+          - codex-hepta-agentd
+    env:
+      CARGO_TARGET_DIR: ${{ runner.temp }}/inference-worker-${{ matrix.lane }}-${{ matrix.package }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Resolve current target base
+        id: base
+        env:
+          BASE_REF: ${{ github.base_ref || github.event.repository.default_branch }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$BASE_REF"
+          base_sha="$(git rev-parse "refs/remotes/origin/${BASE_REF}^{commit}")"
+          [[ "$base_sha" =~ ^[0-9a-f]{40}$ ]]
+          git cat-file -e "$base_sha^{commit}"
+          printf 'sha=%s\n' "$base_sha" >> "$GITHUB_OUTPUT"
+          printf 'BASE_SHA=%s\n' "$base_sha" >> "$GITHUB_ENV"
+
+      - name: Construct deterministic synthetic merge
+        id: merge
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ steps.base.outputs.sha }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta inference worker qualification
+          author-email: hepta-inference-worker-ci@users.noreply.github.com
+          message: Synthetic inference.worker qualification merge
+
+      - name: Bind exact tested identity
+        env:
+          TESTED: ${{ steps.merge.outputs.sha || env.SOURCE_SHA }}
+          LANE: ${{ matrix.lane }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED"
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          printf 'TESTED_SHA=%s\n' "$TESTED" >> "$GITHUB_ENV"
+          printf 'HEPTA_CI_LANE=%s\n' "$LANE" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/inference-worker-command-records"
+
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: nextest@0.9.103
+
+      - name: Verify workspace graph
+        run: python3 scripts/hepta_workspace.py
+
+      - name: Resolve verified sandboxed V8 artifacts
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+
+      - name: Run package library tests
+        id: library
+        continue-on-error: true
+        working-directory: codex-rs
+        env:
+          PACKAGE: ${{ matrix.package }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          features=()
+          if [[ "$PACKAGE" == "codex-hepta-infer-worker-host" ]]; then
+            features=(--features experimental-local-model)
+          fi
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/inference-worker-command-records/library.json" \
+            --minimum-tests 1 -- \
+            cargo nextest run --locked --package "$PACKAGE" "${features[@]}" --lib
+
+      - name: Exercise package binaries
+        id: binaries
+        continue-on-error: true
+        working-directory: codex-rs
+        env:
+          PACKAGE: ${{ matrix.package }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          features=()
+          if [[ "$PACKAGE" == "codex-hepta-infer-worker-host" ]]; then
+            features=(--features experimental-local-model)
+          fi
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/inference-worker-command-records/binaries.json" -- \
+            cargo test --locked --package "$PACKAGE" "${features[@]}" --bins
+
+      - name: Check all package targets
+        id: check
+        continue-on-error: true
+        working-directory: codex-rs
+        env:
+          PACKAGE: ${{ matrix.package }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          features=()
+          if [[ "$PACKAGE" == "codex-hepta-infer-worker-host" ]]; then
+            features=(--features experimental-local-model)
+          fi
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/inference-worker-command-records/check.json" -- \
+            cargo check --locked --package "$PACKAGE" "${features[@]}" --all-targets
+
+      - name: Run strict package lint
+        id: clippy
+        continue-on-error: true
+        working-directory: codex-rs
+        env:
+          PACKAGE: ${{ matrix.package }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          features=()
+          if [[ "$PACKAGE" == "codex-hepta-infer-worker-host" ]]; then
+            features=(--features experimental-local-model)
+          fi
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/inference-worker-command-records/clippy.json" -- \
+            cargo clippy --locked --package "$PACKAGE" "${features[@]}" \
+              --all-targets --no-deps -- -D warnings
+
+      - name: Run explicit Agentd/App Server product E2E
+        id: product
+        if: matrix.package == 'codex-hepta-infer-worker-host'
+        continue-on-error: true
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/inference-worker-command-records/product-e2e.json" \
+            --minimum-tests 1 --timeout-seconds 1800 -- \
+            cargo test --locked --package codex-hepta-infer-worker-host \
+              --features experimental-local-model \
+              real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone \
+              -- --nocapture --test-threads=1
+
+      - name: Emit exact command receipt
+        if: always()
+        env:
+          PACKAGE: ${{ matrix.package }}
+          LANE: ${{ matrix.lane }}
+          RUNNER_OS_VALUE: ${{ runner.os }}
+          RUNNER_ARCH_VALUE: ${{ runner.arch }}
+          RUNNER_NAME_VALUE: ${{ runner.name }}
+          RUNNER_ENVIRONMENT_VALUE: ${{ runner.environment }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/inference-worker-command-records"
+          args=(
+            emit
+            --repo-root "$GITHUB_WORKSPACE"
+            --source-sha "$SOURCE_SHA"
+            --base-sha "$BASE_SHA"
+            --tested-sha "$TESTED_SHA"
+            --lane "$LANE"
+            --package "$PACKAGE"
+            --runner-os "$RUNNER_OS_VALUE"
+            --runner-arch "$RUNNER_ARCH_VALUE"
+            --runner-name "$RUNNER_NAME_VALUE"
+            --runner-environment "$RUNNER_ENVIRONMENT_VALUE"
+            --expected-label library
+            --expected-label binaries
+            --expected-label check
+            --expected-label clippy
+            --record "library=$records/library.json"
+            --record "binaries=$records/binaries.json"
+            --record "check=$records/check.json"
+            --record "clippy=$records/clippy.json"
+            --output "$records/qualification-receipt.json"
+          )
+          if [[ "$PACKAGE" == "codex-hepta-infer-worker-host" ]]; then
+            args+=(--expected-label product-e2e)
+            args+=(--record "product-e2e=$records/product-e2e.json")
+          fi
+          python3 scripts/inference_worker_command_receipt.py "${args[@]}"
+
+      - name: Retain exact command receipts
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: inference-worker-command-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}-${{ matrix.package }}
+          path: ${{ runner.temp }}/inference-worker-command-records/*
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Assert exact unchanged candidate
+        if: always()
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+  aggregate:
+    name: Exact inference.worker qualification aggregate
+    if: always()
+    needs:
+      - receipt-generator
+      - qualification
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Resolve current target base
+        env:
+          BASE_REF: ${{ github.base_ref || github.event.repository.default_branch }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          base_sha="$(git rev-parse "refs/remotes/origin/${BASE_REF}^{commit}")"
+          [[ "$base_sha" =~ ^[0-9a-f]{40}$ ]]
+          printf 'BASE_SHA=%s\n' "$base_sha" >> "$GITHUB_ENV"
+
+      - name: Download all command receipts
+        id: download
+        if: always()
+        continue-on-error: true
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          pattern: inference-worker-command-${{ github.run_id }}-${{ github.run_attempt }}-*
+          path: ${{ runner.temp }}/inference-worker-command-receipts
+          merge-multiple: false
+
+      - name: Build exact aggregate
+        id: aggregate
+        if: always()
+        env:
+          GENERATOR_RESULT: ${{ needs.receipt-generator.result }}
+          MATRIX_RESULT: ${{ needs.qualification.result }}
+          DOWNLOAD_RESULT: ${{ steps.download.outcome }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=(
+            aggregate
+            --receipt-dir "$RUNNER_TEMP/inference-worker-command-receipts"
+            --source-sha "$SOURCE_SHA"
+            --base-sha "$BASE_SHA"
+            --expected-lane source-head
+            --expected-package codex-hepta-infer-core
+            --expected-package codex-hepta-infer-worker-host
+            --expected-package codex-hepta-agentd
+            --output "$RUNNER_TEMP/inference-worker-qualification-aggregate.json"
+          )
+          if [[ "${{ github.event_name }}" == pull_request ]]; then
+            args+=(--expected-lane base-merge)
+          fi
+          aggregate_result=0
+          python3 scripts/inference_worker_command_receipt.py "${args[@]}" || aggregate_result=$?
+          test -f "$RUNNER_TEMP/inference-worker-qualification-aggregate.json"
+          test "$GENERATOR_RESULT" = success
+          test "$MATRIX_RESULT" = success
+          test "$DOWNLOAD_RESULT" = success
+          test "$aggregate_result" -eq 0
+
+      - name: Retain aggregate receipt
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: inference-worker-qualification-aggregate-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/inference-worker-qualification-aggregate.json
+          if-no-files-found: error
+          retention-days: 30
