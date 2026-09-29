@@ -1,6 +1,7 @@
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::Mutex;
+use std::sync::TryLockError;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -76,7 +77,10 @@ impl FederationProductClockV1 for SystemFederationProductClockV1 {
 }
 
 /// Canonical V2 transport backed by the authenticated packet bridge. This is
-/// not a second scheduler, authority owner, or retry loop.
+/// not a second scheduler, authority owner, or retry loop. Async attempt polls
+/// never wait for the client mutex: contention is fail-closed backpressure.
+/// Synchronous recovery-store calls still require a bounded host execution
+/// policy; this adapter does not claim to interrupt a blocking disk commit.
 pub struct FederationWireTransportV2<S, T, C = SystemFederationProductClockV1>
 where
     S: FederationRecoveryStoreV1,
@@ -139,15 +143,23 @@ where
     fn send_once<'a>(&'a self, query: &'a FederatedQueryV2) -> FederationTransportFuture<'a> {
         Box::pin(async move {
             let (started_unix_ms, request_packet) = {
-                let mut client = self
-                    .client
-                    .lock()
-                    .map_err(|_| FederationV2Error::TransportRejected)?;
+                let mut client = match self.client.try_lock() {
+                    Ok(client) => client,
+                    Err(TryLockError::WouldBlock) => {
+                        return Ok(FederationTransportResultV2::NonTerminal(
+                            FederationTransportOutcomeV2::Unavailable,
+                        ));
+                    }
+                    Err(TryLockError::Poisoned(_)) => {
+                        return Err(FederationV2Error::TransportRejected);
+                    }
+                };
                 if self.transport.transport_profile_id() != client.profile().transport_profile_id()
                 {
                     return Err(FederationV2Error::TransportRejected);
                 }
-                // Sample after acquiring the owner, not before waiting for it.
+                // Contention is backpressure, not admission or a blocking wait.
+                // Only the successful owner acquisition samples the clock.
                 let started_unix_ms = self
                     .clock
                     .now_unix_ms()
@@ -202,12 +214,20 @@ where
                 }
             };
             let (received_unix_ms, response) = {
-                let mut client = self
-                    .client
-                    .lock()
-                    .map_err(|_| FederationV2Error::TransportRejected)?;
-                // A contended owner lock must not reuse an observation made
-                // before waiting. Admission receives a fresh local timestamp.
+                let mut client = match self.client.try_lock() {
+                    Ok(client) => client,
+                    Err(TryLockError::WouldBlock) => {
+                        return Ok(FederationTransportResultV2::NonTerminal(
+                            FederationTransportOutcomeV2::NoTerminalObservation,
+                        ));
+                    }
+                    Err(TryLockError::Poisoned(_)) => {
+                        return Err(FederationV2Error::TransportRejected);
+                    }
+                };
+                // After network entry, contention is indeterminate coverage.
+                // Preserve pending intent; do not replay or admit stale bytes.
+                // Successful acquisition still receives a fresh local timestamp.
                 let received_unix_ms = self
                     .clock
                     .now_unix_ms()
@@ -250,3 +270,7 @@ where
         })
     }
 }
+
+#[cfg(test)]
+#[path = "transport_contention_tests.rs"]
+mod contention_tests;

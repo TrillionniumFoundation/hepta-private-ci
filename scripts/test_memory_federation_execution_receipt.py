@@ -4,8 +4,12 @@ import copy
 import hashlib
 import os
 import pathlib
+import shlex
+import signal
+import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from unittest import mock
 
@@ -247,6 +251,161 @@ class CapacityTests(unittest.TestCase):
         metrics["profile"] = "production-slo"
         with self.assertRaises(full.base.AttestationError):
             full.require_metrics(metrics)
+
+
+CANDIDATE = {"sha": "a" * 40, "tree": "b" * 40}
+INPUTS = {"fixture": "recorder-only"}
+
+
+class ProcessTests(unittest.TestCase):
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temporary.cleanup)
+        self.root = pathlib.Path(self.temporary.name)
+        self.environment = mock.patch.dict(os.environ, {"GITHUB_ACTIONS": "false"})
+        self.environment.start()
+        self.addCleanup(self.environment.stop)
+
+    def transcript(self, entry, commands):
+        document = {
+            "schema": execution.SCHEMA, "candidate": CANDIDATE,
+            "inputs": INPUTS, "finalInputs": INPUTS,
+            "commandManifestSha256": hashlib.sha256(execution.canonical(commands)).hexdigest(),
+            "commands": [entry], "conclusion": "failure", "github": {},
+        }
+        path = self.root / "execution.json"
+        path.write_bytes(execution.canonical(document))
+        return path, document
+
+    def interrupt_runner(self, signum, child_exits_zero=False):
+        marker = self.root / "ready"
+        program = (
+            "import os,pathlib,signal,sys,time; "
+            f"signal.signal({int(signum)}, "
+            + ("lambda *_: sys.exit(0)); " if child_exits_zero else "signal.SIG_DFL); ")
+            + f"pathlib.Path({str(marker)!r}).write_text(str(os.getpid())); time.sleep(30)"
+        )
+        command = shlex.join([sys.executable, "-c", program])
+        commands = [command, "printf should-not-run"]
+        harness = (
+            "import sys,types; "
+            f"sys.path.insert(0, {str(pathlib.Path(execution.__file__).parent)!r}); "
+            "import memory_federation_execution_receipt as execution; "
+            f"candidate={CANDIDATE!r}; inputs={INPUTS!r}; "
+            "sys.modules['memory_federation_execution_guard']=types.SimpleNamespace("
+            "_candidate=lambda: candidate, _snapshot=lambda *_: inputs); "
+            "sys.modules['memory_federation_full_attestation']=types.SimpleNamespace("
+            f"base=types.SimpleNamespace(COMMANDS={commands!r})); "
+            "raise SystemExit(execution.run())"
+        )
+        env = dict(os.environ, RUNNER_TEMP=str(self.root), GITHUB_ACTIONS="false")
+        with (self.root / "runner.log").open("wb") as log:
+            process = subprocess.Popen([sys.executable, "-c", harness], env=env,
+                                       stdout=log, stderr=subprocess.STDOUT)
+            try:
+                deadline = time.monotonic() + 5
+                while not marker.exists() and time.monotonic() < deadline:
+                    if process.poll() is not None:
+                        self.fail((self.root / "runner.log").read_text())
+                    time.sleep(0.01)
+                self.assertTrue(marker.exists(), "child never reached ready boundary")
+                process.send_signal(signum)
+                self.assertEqual(process.wait(timeout=8), 1)
+            finally:
+                if process.poll() is None:
+                    process.kill()
+                    process.wait()
+                if marker.exists():
+                    try:
+                        os.kill(int(marker.read_text()), signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
+        path = self.root / execution.DIRECTORY / "execution.json"
+        record = execution.validate(path, commands, CANDIDATE, INPUTS, False)
+        self.assertEqual(record["conclusion"], "failure")
+        self.assertEqual(len(record["commands"]), 1)
+        self.assertEqual(record["commands"][0]["interruptedSignal"], signum)
+        self.assertFalse(record["commands"][0]["timedOut"])
+        self.assertFalse((path.parent / "command-001.log").exists())
+        with self.assertRaises(execution.ExecutionError):
+            execution.validate(path, commands, CANDIDATE, INPUTS, True)
+        return record
+
+    def test_term_retains_failure_and_stops_the_matrix(self):
+        self.interrupt_runner(signal.SIGTERM)
+
+    def test_int_retains_failure_and_stops_the_matrix(self):
+        self.interrupt_runner(signal.SIGINT)
+
+    def test_trapped_signal_exit_zero_is_still_failure(self):
+        record = self.interrupt_runner(signal.SIGTERM, child_exits_zero=True)
+        self.assertEqual(record["commands"][0]["exitCode"], 0)
+
+    def test_successful_leader_cannot_leave_a_live_descendant(self):
+        program = (
+            "import subprocess,sys; "
+            "p=subprocess.Popen([sys.executable,'-c','import time; time.sleep(30)']); "
+            "print(p.pid, flush=True)"
+        )
+        command = shlex.join([sys.executable, "-c", program])
+        entry = execution.command_record(0, command, command, self.root, self.root)
+        self.assertEqual(entry["exitCode"], 0)
+        self.assertTrue(entry["orphanedChildren"])
+        self.assertTrue(execution.command_failed(entry))
+        path, document = self.transcript(entry, [command])
+        execution.validate(path, [command], CANDIDATE, INPUTS, False)
+        document["conclusion"] = "success"
+        path.write_bytes(execution.canonical(document))
+        with self.assertRaises(execution.ExecutionError):
+            execution.validate(path, [command], CANDIDATE, INPUTS, True)
+
+    def test_normal_command_remains_a_pass(self):
+        entry = execution.command_record(0, "printf real-output", "printf real-output",
+                                         self.root, self.root)
+        self.assertFalse(execution.command_failed(entry))
+        self.assertIsNone(entry["interruptedSignal"])
+        self.assertFalse(entry["orphanedChildren"])
+        path, document = self.transcript(entry, ["printf real-output"])
+        document["conclusion"] = "success"
+        path.write_bytes(execution.canonical(document))
+        execution.validate(path, ["printf real-output"], CANDIDATE, INPUTS, True)
+
+    def test_nonzero_exit_is_not_a_pass(self):
+        entry = execution.command_record(0, "exit 7", "exit 7", self.root, self.root)
+        self.assertEqual(entry["exitCode"], 7)
+        self.assertTrue(execution.command_failed(entry))
+
+    def test_child_signal_is_distinct_from_recorder_interruption(self):
+        entry = execution.command_record(0, "kill -TERM $$", "kill -TERM $$", self.root, self.root)
+        self.assertEqual(entry["exitCode"], -signal.SIGTERM)
+        self.assertIsNone(entry["interruptedSignal"])
+
+    def test_timeout_is_distinct_from_recorder_interruption(self):
+        entry = execution.command_record(0, "sleep 30", "sleep 30", self.root, self.root, timeout=0.03)
+        self.assertTrue(entry["timedOut"])
+        self.assertIsNone(entry["interruptedSignal"])
+        self.assertTrue(execution.command_failed(entry))
+
+    def test_invalid_interruption_and_descendant_fields_are_rejected(self):
+        entry = execution.command_record(0, "true", "true", self.root, self.root)
+        path, original = self.transcript(entry, ["true"])
+        for field, invalid in (("interruptedSignal", True), ("interruptedSignal", 9),
+                               ("interruptedSignal", "15"), ("orphanedChildren", 0)):
+            with self.subTest(field=field, invalid=invalid):
+                document = copy.deepcopy(original)
+                document["commands"][0][field] = invalid
+                path.write_bytes(execution.canonical(document))
+                with self.assertRaises(execution.ExecutionError):
+                    execution.validate(path, ["true"], CANDIDATE, INPUTS, False)
+
+    def test_legacy_record_without_new_fields_remains_readable(self):
+        entry = execution.command_record(0, "true", "true", self.root, self.root)
+        del entry["interruptedSignal"]
+        del entry["orphanedChildren"]
+        path, document = self.transcript(entry, ["true"])
+        document["conclusion"] = "success"
+        path.write_bytes(execution.canonical(document))
+        execution.validate(path, ["true"], CANDIDATE, INPUTS, True)
 
 
 if __name__ == "__main__":
