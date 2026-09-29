@@ -16,7 +16,7 @@ The active convergence branch is `work/ui-control-authoritative-closure-20260927
 | `dependencyLock` | `exact_npm_lock_committed_qualification_pending` |
 | `sessionLifecycle` | `identity_permission_revision_and_shutdown_fenced` |
 | `terminalEvidence` | `authenticated_backend_observation_projection_implemented` |
-| `localRecovery` | `bounded_best_effort_storage_without_authority_claim` |
+| `localRecovery` | `crash_consistent_scoped_directory_fail_closed_without_authority_claim` |
 | `authentication` | `same_origin_session_adapter_implemented_deployment_unbound` |
 | `transport` | `same_origin_http_adapter_implemented_deployment_unbound` |
 | `serverIdempotency` | `contract_defined_backend_enforcement_unobserved` |
@@ -69,6 +69,8 @@ The transition validator enforces:
 1. Local recovery storage failure is visible but cannot wedge or authorize a control request.
 1. Session, operation, audit-trace, snapshot, semantic, and outcome correlation identifiers are rendered only in deterministic redacted form; full values remain outside DOM text and attributes.
 1. Control actions are disabled while the displayed view is stale or the session lacks the required permission.
+1. Independent accessibility and security reviewers are distinct from one another and from deployment, release, and security approval authorities.
+1. Production approval cannot predate deployment, real-backend, independent review, or operational evidence; accepted bundles expose only domain-separated principal digests.
 
 The browser persists only bounded recovery metadata. It never persists credentials, CSRF tokens, backend responses containing secrets, or a claim that a mutation succeeded.
 
@@ -146,7 +148,7 @@ Callers branch on `code` and `retryable`; parsing message text is unsupported. U
 
 - **Observed outcome:** A concrete check ran and emitted a pass or failure observation for one exact subject. A later failure does not erase an earlier observation.
 - **Accepted evidence:** A receipt was validated against its exact candidate, tree, deployment, and authority rules. Accepted stage evidence is monotone within an evidence bundle.
-- **Overall acceptance:** The bundle is accepted only when every required stage and the final production approval are accepted. A failed bundle may retain earlier accepted stage evidence without authorizing production or release.
+- **Overall acceptance:** The bundle is accepted only when every required stage, five distinct assurance principals, evidence-before-approval chronology, and the final production approval are accepted. A failed bundle may retain earlier accepted stage evidence without authorizing production or release.
 
 Receipt schemas are sourced from the same manifest:
 
@@ -157,6 +159,7 @@ Receipt schemas are sourced from the same manifest:
 - `independentSecurity`: `hepta.ui-control.independent-security-review-receipt.v1`
 - `operationalExercise`: `hepta.ui-control.operational-exercise-receipt.v1`
 - `productionApproval`: `hepta.ui-control.production-approval-receipt.v1`
+- `assuranceChain`: `hepta.ui-control.assurance-chain.v1`
 - `externalEvidenceBundle`: `hepta.ui-control.external-evidence-bundle.v1`
 
 ## 11. Qualification
@@ -183,6 +186,7 @@ The dedicated workflow binds checkout SHA and tree, runs unit/contract/build/bro
 - deployed CSP/CSRF/TLS/reverse-proxy observation
 - production monitoring, alert routing, and rollback exercise
 - independent assistive-technology and operator acceptance signature
+- five-principal review/approval separation and evidence-before-approval chronology
 
 ## 13. Definition of done
 

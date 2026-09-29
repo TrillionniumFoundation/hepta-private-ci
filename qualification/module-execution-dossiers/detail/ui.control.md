@@ -53,7 +53,7 @@
 
 - **Observed outcome:** A concrete check ran and emitted a pass or failure observation for one exact subject. A later failure does not erase an earlier observation.
 - **Accepted evidence:** A receipt was validated against its exact candidate, tree, deployment, and authority rules. Accepted stage evidence is monotone within an evidence bundle.
-- **Overall acceptance:** The bundle is accepted only when every required stage and the final production approval are accepted. A failed bundle may retain earlier accepted stage evidence without authorizing production or release.
+- **Overall acceptance:** The bundle is accepted only when every required stage, five distinct assurance principals, evidence-before-approval chronology, and the final production approval are accepted. A failed bundle may retain earlier accepted stage evidence without authorizing production or release.
 
 - `repositoryReceipts`: `hepta.ui-control.qualification-receipt.v2`
 - `realBackend`: `hepta.ui-control.real-backend-receipt.v2`
@@ -62,6 +62,7 @@
 - `independentSecurity`: `hepta.ui-control.independent-security-review-receipt.v1`
 - `operationalExercise`: `hepta.ui-control.operational-exercise-receipt.v1`
 - `productionApproval`: `hepta.ui-control.production-approval-receipt.v1`
+- `assuranceChain`: `hepta.ui-control.assurance-chain.v1`
 - `externalEvidenceBundle`: `hepta.ui-control.external-evidence-bundle.v1`
 
 The CI repository receipt records exact SHA/tree, runner/Node identity, check outcomes, and browser build-manifest digest. It sets production deployment, identity-provider, deployed CSP, independent acceptance, and release authorization to false unless separately observed and accepted. The tracked repository does not pre-claim those facts.
@@ -73,3 +74,4 @@ The CI repository receipt records exact SHA/tree, runner/Node identity, check ou
 - deployed CSP/CSRF/TLS/reverse-proxy observation
 - production monitoring, alert routing, and rollback exercise
 - independent assistive-technology and operator acceptance signature
+- five-principal review/approval separation and evidence-before-approval chronology

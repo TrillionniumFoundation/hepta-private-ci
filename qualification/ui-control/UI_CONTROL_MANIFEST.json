@@ -24,7 +24,7 @@
     "dependencyLock": "exact_npm_lock_committed_qualification_pending",
     "sessionLifecycle": "identity_permission_revision_and_shutdown_fenced",
     "terminalEvidence": "authenticated_backend_observation_projection_implemented",
-    "localRecovery": "bounded_best_effort_storage_without_authority_claim",
+    "localRecovery": "crash_consistent_scoped_directory_fail_closed_without_authority_claim",
     "authentication": "same_origin_session_adapter_implemented_deployment_unbound",
     "transport": "same_origin_http_adapter_implemented_deployment_unbound",
     "serverIdempotency": "contract_defined_backend_enforcement_unobserved",
@@ -35,7 +35,7 @@
   "evidenceSemantics": {
     "observedOutcome": "A concrete check ran and emitted a pass or failure observation for one exact subject. A later failure does not erase an earlier observation.",
     "acceptedEvidence": "A receipt was validated against its exact candidate, tree, deployment, and authority rules. Accepted stage evidence is monotone within an evidence bundle.",
-    "overallAcceptance": "The bundle is accepted only when every required stage and the final production approval are accepted. A failed bundle may retain earlier accepted stage evidence without authorizing production or release."
+    "overallAcceptance": "The bundle is accepted only when every required stage, five distinct assurance principals, evidence-before-approval chronology, and the final production approval are accepted. A failed bundle may retain earlier accepted stage evidence without authorizing production or release."
   },
   "receiptSchemas": {
     "repositoryReceipts": "hepta.ui-control.qualification-receipt.v2",
@@ -45,6 +45,7 @@
     "independentSecurity": "hepta.ui-control.independent-security-review-receipt.v1",
     "operationalExercise": "hepta.ui-control.operational-exercise-receipt.v1",
     "productionApproval": "hepta.ui-control.production-approval-receipt.v1",
+    "assuranceChain": "hepta.ui-control.assurance-chain.v1",
     "externalEvidenceBundle": "hepta.ui-control.external-evidence-bundle.v1"
   },
   "verificationStages": {
@@ -86,9 +87,9 @@
     },
     "productionDeploymentApproved": {
       "repositoryState": "external_authority_absent",
-      "observationAuthority": "deployment-security, independent accessibility, independent security, and operational exercise receipts",
-      "acceptanceAuthority": "non-expired production approval bound to all prerequisite evidence digests and an accepted external-evidence bundle",
-      "passAuthority": "deployment and release authority"
+      "observationAuthority": "deployment-security, real-backend, independent accessibility, independent security, operational exercise, and production approval receipts",
+      "acceptanceAuthority": "non-expired production approval bound to all prerequisite evidence digests, five distinct review and approval principals, evidence-before-approval chronology, and an accepted external-evidence bundle",
+      "passAuthority": "deployment, release, and security authorities after trusted assurance-chain validation"
     }
   },
   "publicApi": [
@@ -132,7 +133,9 @@
     "Revoke, close, and stopped refresh paths remove local control authority even when transport cleanup fails.",
     "Local recovery storage failure is visible but cannot wedge or authorize a control request.",
     "Session, operation, audit-trace, snapshot, semantic, and outcome correlation identifiers are rendered only in deterministic redacted form; full values remain outside DOM text and attributes.",
-    "Control actions are disabled while the displayed view is stale or the session lacks the required permission."
+    "Control actions are disabled while the displayed view is stale or the session lacks the required permission.",
+    "Independent accessibility and security reviewers are distinct from one another and from deployment, release, and security approval authorities.",
+    "Production approval cannot predate deployment, real-backend, independent review, or operational evidence; accepted bundles expose only domain-separated principal digests."
   ],
   "verification": {
     "node": "22",
@@ -160,6 +163,7 @@
     "deployed backend operation-id uniqueness and durable lookup evidence",
     "deployed CSP/CSRF/TLS/reverse-proxy observation",
     "production monitoring, alert routing, and rollback exercise",
-    "independent assistive-technology and operator acceptance signature"
+    "independent assistive-technology and operator acceptance signature",
+    "five-principal review/approval separation and evidence-before-approval chronology"
   ]
 }
