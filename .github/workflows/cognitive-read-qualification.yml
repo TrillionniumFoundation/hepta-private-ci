@@ -9,21 +9,21 @@ on:
       - .github/scripts/cognitive_read_maintenance_closure.sh
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: cognitive-read-maintenance-closure-${{ github.event.pull_request.number }}
-  cancel-in-progress: false
+  group: cognitive-read-maintenance-artifact-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 
 jobs:
-  maintenance-closure:
-    name: Repair exact candidate blockers
+  maintenance-artifact:
+    name: Build exact maintenance artifact
     if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'work/cognitive-read-production-convergence-20260927'
     runs-on: ubuntu-24.04
     timeout-minutes: 180
     env:
       RUST_MIN_STACK: "8388608"
-      EXPECTED_PARENT: bd87a1a7387d5227c3670e5bb7afa4e006e4a718
+      EXPECTED_PARENT: 42a7a0daca57aa373b559705ad64e48a32e966c8
       RESTORE_COMMIT: c20035266afa1cd08570b021632ba71dcb7766b7
       TARGET_BRANCH: work/cognitive-read-production-convergence-20260927
     steps:
@@ -32,9 +32,17 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
-          persist-credentials: true
+          persist-credentials: false
       - name: Prepare repository CI tools
         uses: ./.github/actions/setup-ci
-      - name: Run bounded maintenance closure
+      - name: Build and verify bounded maintenance candidate
         shell: bash
         run: bash .github/scripts/cognitive_read_maintenance_closure.sh
+      - name: Retain exact maintenance artifact
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cognitive-read-maintenance-${{ github.event.pull_request.head.sha }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/cognitive-read-maintenance-artifact
+          if-no-files-found: error
+          retention-days: 30
