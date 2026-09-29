@@ -72,6 +72,8 @@ def validate_plan(plan: object, trust: dict, now: int) -> dict:
                  "tombstone_frontier", "source_frontier", "fact_frontier", "kg_frontier",
                  "policy_sha256", "hold_state_sha256", "pending_operations_sha256",
                  "predecessor_image_sha256", "successor_image_sha256", "successor_image_bytes",
+                 "segment_set_sha256", "segment_count", "segment_row_count",
+                 "first_segment_manifest_sha256", "last_segment_manifest_sha256",
                  "rebuild_owner", "created_at", "expires_at", "segments"})
     require(plan["schema"] == PLAN_SCHEMA, "unsupported retention checkpoint plan")
     identifier(plan["request_id"])
@@ -83,7 +85,8 @@ def validate_plan(plan: object, trust: dict, now: int) -> dict:
     integer(plan["writer_generation"])
     for field in ("schema_sha256", "current_cut_sha256", "head_set_sha256", "policy_sha256",
                   "hold_state_sha256", "pending_operations_sha256", "predecessor_image_sha256",
-                  "successor_image_sha256"):
+                  "successor_image_sha256", "segment_set_sha256",
+                  "first_segment_manifest_sha256", "last_segment_manifest_sha256"):
         digest(plan[field])
     require(plan["predecessor_image_sha256"] != plan["successor_image_sha256"],
             "retention rebuild did not create a distinct successor image")
@@ -92,6 +95,8 @@ def validate_plan(plan: object, trust: dict, now: int) -> dict:
     integer(plan["successor_image_bytes"])
     require(plan["successor_image_bytes"] <= MAX_IMAGE_BYTES,
             "retention successor exceeds the existing owner profile")
+    integer(plan["segment_count"])
+    integer(plan["segment_row_count"])
     integer(plan["created_at"])
     integer(plan["expires_at"])
     require(plan["created_at"] <= now < plan["expires_at"],
@@ -108,6 +113,7 @@ def validate_plan(plan: object, trust: dict, now: int) -> dict:
     identities = set()
     digests = set()
     previous = None
+    total_rows = 0
     for ordinal, segment in enumerate(segments):
         validate_segment(segment, ordinal, previous, trusted, coordinator)
         require(segment["segment_id"] not in identities, "duplicate retention segment identity")
@@ -117,16 +123,31 @@ def validate_plan(plan: object, trust: dict, now: int) -> dict:
         identities.add(segment["segment_id"])
         digests.update((segment["manifest_sha256"], segment["ciphertext_sha256"]))
         previous = segment["manifest_sha256"]
+        total_rows += segment["row_count"]
+    require(plan["segment_set_sha256"] == sha256(segments),
+            "retention segment-set digest does not match the signed segment inventory")
+    require(plan["segment_count"] == len(segments),
+            "retention segment count does not match the signed segment inventory")
+    require(plan["segment_row_count"] == total_rows,
+            "retention row count does not match the signed segment inventory")
+    require(plan["first_segment_manifest_sha256"] == segments[0]["manifest_sha256"]
+            and plan["last_segment_manifest_sha256"] == segments[-1]["manifest_sha256"],
+            "retention segment chain endpoints do not match the signed inventory")
+    require(plan["rebuild_owner"] not in {row["storage_owner"] for row in segments},
+            "retention rebuild owner must be independent of every segment owner")
     return plan
 
 
 def validate_segment_receipt(receipt: object, plan: dict, segment: dict, now: int) -> dict:
-    exact(receipt, {"schema", "plan_sha256", "segment_id", "storage_owner", "manifest_sha256",
-                    "ciphertext_sha256", "status", "method", "observed_at", "evidence_sha256"})
+    exact(receipt, {"schema", "plan_sha256", "segment_id", "storage_owner", "ordinal",
+                    "row_count", "plaintext_sha256", "manifest_sha256", "ciphertext_sha256",
+                    "predecessor_manifest_sha256", "status", "method", "observed_at",
+                    "evidence_sha256"})
     require(receipt["schema"] == SEGMENT_RECEIPT_SCHEMA,
             "unsupported retention segment receipt")
     require(receipt["plan_sha256"] == sha256(plan), "segment receipt binds another plan")
-    for field in ("segment_id", "storage_owner", "manifest_sha256", "ciphertext_sha256"):
+    for field in ("segment_id", "storage_owner", "ordinal", "row_count", "plaintext_sha256",
+                  "manifest_sha256", "ciphertext_sha256", "predecessor_manifest_sha256"):
         require(receipt[field] == segment[field], "segment receipt identity mismatch: " + field)
     require(receipt["status"] in {"completed", "pending", "indeterminate", "failed"},
             "unknown retention segment status")
@@ -147,30 +168,34 @@ def validate_rebuild_receipt(receipt: object, plan: dict, now: int) -> dict:
                     "predecessor_image_sha256", "successor_image_sha256", "successor_image_bytes",
                     "before_cut_sha256", "after_cut_sha256", "head_set_sha256",
                     "tombstone_frontier", "source_frontier", "fact_frontier", "kg_frontier",
-                    "integrity_check", "foreign_key_check", "projection_check",
-                    "pending_operation_check", "published", "status", "observed_at",
-                    "evidence_sha256"})
+                    "segment_set_sha256", "segment_count", "segment_row_count",
+                    "first_segment_manifest_sha256", "last_segment_manifest_sha256",
+                    "segments_resolved", "integrity_check", "foreign_key_check",
+                    "projection_check", "pending_operation_check", "published", "status",
+                    "observed_at", "evidence_sha256"})
     require(receipt["schema"] == REBUILD_RECEIPT_SCHEMA,
             "unsupported retention rebuild receipt")
     require(receipt["plan_sha256"] == sha256(plan), "rebuild receipt binds another plan")
     for field in ("rebuild_owner", "owner_agent_id", "source_commit", "source_tree",
                   "writer_generation", "schema_sha256", "predecessor_image_sha256",
                   "successor_image_sha256", "successor_image_bytes", "head_set_sha256",
-                  "tombstone_frontier", "source_frontier", "fact_frontier", "kg_frontier"):
+                  "tombstone_frontier", "source_frontier", "fact_frontier", "kg_frontier",
+                  "segment_set_sha256", "segment_count", "segment_row_count",
+                  "first_segment_manifest_sha256", "last_segment_manifest_sha256"):
         require(receipt[field] == plan[field], "rebuild receipt identity mismatch: " + field)
     require(receipt["before_cut_sha256"] == plan["current_cut_sha256"]
             and receipt["after_cut_sha256"] == plan["current_cut_sha256"],
             "retention rebuild changed the authenticated semantic cut")
-    for field in ("integrity_check", "foreign_key_check", "projection_check",
-                  "pending_operation_check"):
+    for field in ("segments_resolved", "integrity_check", "foreign_key_check",
+                  "projection_check", "pending_operation_check"):
         require(type(receipt[field]) is bool, "invalid rebuild check flag")
     require(type(receipt["published"]) is bool, "invalid rebuild publication flag")
     require(receipt["status"] in {"completed", "pending", "indeterminate", "failed"},
             "unknown retention rebuild status")
     if receipt["status"] == "completed":
         require(all(receipt[field] is True for field in
-                    ("integrity_check", "foreign_key_check", "projection_check",
-                     "pending_operation_check")),
+                    ("segments_resolved", "integrity_check", "foreign_key_check",
+                     "projection_check", "pending_operation_check")),
                 "completed retention rebuild failed an oracle check")
         require(receipt["published"] is False,
                 "readiness evidence must not publish the successor generation")
@@ -217,6 +242,9 @@ def reconcile(plan_envelope: object, receipt_bundle: object, trust: dict,
             "retention rebuild signer is not the planned owner")
     rebuild = validate_rebuild_receipt(
         verify_signature(rebuild_envelope, rebuild_signer), plan, now)
+    if rebuild["status"] == "completed" and observed:
+        require(rebuild["observed_at"] >= max(row["observed_at"] for row in observed.values()),
+                "retention rebuild predates an observed segment publication")
 
     rows = []
     for segment in plan["segments"]:
@@ -234,6 +262,9 @@ def reconcile(plan_envelope: object, receipt_bundle: object, trust: dict,
         "plan_sha256": sha256(plan),
         "trust_sha256": sha256(trust),
         "observed_at": now,
+        "segment_set_sha256": plan["segment_set_sha256"],
+        "segment_count": plan["segment_count"],
+        "segment_row_count": plan["segment_row_count"],
         "segments": rows,
         "rebuild_status": rebuild["status"],
         "verified_rebuild_receipt_sha256": sha256(rebuild),

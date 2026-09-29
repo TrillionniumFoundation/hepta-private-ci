@@ -18,21 +18,21 @@ The coordinator signs `hepta.cognitive.retention-checkpoint-plan.v1`. The plan b
 - predecessor and private successor image identities;
 - a bounded successor image size;
 - an independent rebuild owner;
-- an ordered list of immutable encrypted segments;
+- an ordered list of immutable encrypted segments plus the canonical segment-set digest, count, total row count and first/last manifest identities;
 - a bounded validity interval.
 
-Each segment binds its storage owner, ordinal, declared key range, row count, plaintext/ciphertext/manifest digests and the previous segment manifest. The first segment has no predecessor; every later segment must continue the exact manifest chain. Duplicate identities and content digests are rejected.
+Each segment binds its storage owner, ordinal, declared key range, row count, plaintext/ciphertext/manifest digests and the previous segment manifest. The first segment has no predecessor; every later segment must continue the exact manifest chain. Duplicate identities and content digests are rejected. The signed aggregate must exactly equal the canonical segment inventory, so a rebuild receipt cannot silently refer to another count, row total or chain endpoint.
 
 ## Segment and rebuild receipts
 
-Each segment owner signs `hepta.cognitive.retention-segment-receipt.v1`. Only a completed `immutable_encrypted_segment` observation satisfies the segment obligation. Missing, pending, indeterminate or failed publication remains incomplete.
+Each segment owner signs `hepta.cognitive.retention-segment-receipt.v1`, explicitly attesting the ordinal, row count, plaintext digest, ciphertext digest, manifest digest and predecessor link. Only a completed `immutable_encrypted_segment` observation satisfies the segment obligation. Missing, pending, indeterminate or failed publication remains incomplete.
 
 The rebuild owner signs `hepta.cognitive.retention-rebuild-receipt.v1`. A completed receipt must prove:
 
 - the exact source, owner, generation, schema, image identities and frontiers from the plan;
 - identical before and after semantic cuts;
 - identical current head set and tombstone frontier;
-- successful SQLite integrity, foreign-key, projection and pending-operation checks;
+- successful segment-resolution, SQLite integrity, foreign-key, projection and pending-operation checks;
 - a distinct private successor image;
 - `published=false`.
 
@@ -64,3 +64,5 @@ python3 tools/cognitive-store-host-bootstrap/retention_readiness.py \
 ```
 
 Exit code 0 authenticates a complete readiness evidence set. Exit code 2 means at least one segment or rebuild obligation is incomplete. Neither result authorizes data deletion or generation publication.
+
+The rebuild owner must be distinct from every segment storage owner. A completed rebuild observation must be no earlier than every supplied segment publication receipt, preventing a pre-segment rebuild assertion from being combined with later archive receipts.

@@ -337,7 +337,7 @@
     },
     {
       "id": "CS-HOST-001",
-      "invariant": "Selected-host receipts bind the exact source, host, filesystem, cut and independent executor",
+      "invariant": "Selected-host receipts bind the exact evidence profile and one coherent cut ceremony",
       "sources": [
         "tools/cognitive-store-host-bootstrap/host_qualification.py"
       ],
@@ -347,11 +347,11 @@
       "records": [
         "host-qualification-tests.json"
       ],
-      "scope": "Real Ed25519 fixture receipts and final-use trust checks; actual selected-host execution and acceptance remain external"
+      "scope": "Real Ed25519 fixture receipts, cut-chain and final-use trust checks; actual selected-host execution and acceptance remain external"
     },
     {
       "id": "CS-RET-001",
-      "invariant": "Retention readiness requires a complete chained segment set and an unpublished same-cut successor",
+      "invariant": "Retention readiness binds the complete segment aggregate, independent owners and a temporally subsequent unpublished same-cut rebuild",
       "sources": [
         "tools/cognitive-store-host-bootstrap/retention_readiness.py"
       ],
@@ -361,7 +361,21 @@
       "records": [
         "retention-readiness-tests.json"
       ],
-      "scope": "Signed readiness evidence only; checkpoint-aware schema/read migration, publication, pruning and erasure remain unclaimed"
+      "scope": "Signed readiness evidence with owner separation and final-use ordering only; publication, pruning and erasure remain unclaimed"
+    },
+    {
+      "id": "CS-ACC-001",
+      "invariant": "Independent acceptance binds the exact source/evidence set, distinct review roles and monotone approval order without performing effects",
+      "sources": [
+        "tools/cognitive-store-host-bootstrap/acceptance_governance.py"
+      ],
+      "tests": [
+        "tools/cognitive-store-host-bootstrap/test_acceptance_governance.py"
+      ],
+      "records": [
+        "acceptance-governance-tests.json"
+      ],
+      "scope": "Real Ed25519 fixture approvals and final-use trust checks; actual independent reviewers and release execution remain external"
     }
   ],
   "externalEvidence": [

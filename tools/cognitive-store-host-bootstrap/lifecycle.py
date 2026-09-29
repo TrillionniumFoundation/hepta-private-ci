@@ -249,8 +249,9 @@ def load_bounded(path: Path) -> object:
             "signed-file admission requires the POSIX descriptor profile")
     require(path.is_absolute() and ".." not in path.parts and
             path.name not in {"", ".", ".."}, "input path must be absolute and normalized")
-    parent_descriptor = open_directory(path.parent)
+    parent_descriptor = None
     try:
+        parent_descriptor = open_directory(path.parent)
         parent_before = os.fstat(parent_descriptor)
         descriptor = os.open(path.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK |
                              os.O_CLOEXEC, dir_fd=parent_descriptor)
@@ -272,8 +273,18 @@ def load_bounded(path: Path) -> object:
                     "input parent directory changed during read")
         finally:
             os.close(current_parent)
+    except FileNotFoundError:
+        # Preserve the ordinary missing-input disposition for callers that must
+        # distinguish absent evidence from a present but unsafe object.
+        raise
+    except OSError as error:
+        # Symlinks, special files, descriptor/path replacement and unsupported
+        # filesystem identity operations are all fail-closed contract denials,
+        # not raw platform exceptions exposed to the CLI.
+        raise ValueError("signed input path or identity is unsafe") from error
     finally:
-        os.close(parent_descriptor)
+        if parent_descriptor is not None:
+            os.close(parent_descriptor)
     require(len(content) <= MAX_INPUT_BYTES, "input exceeds byte budget")
     return json.loads(content, object_pairs_hook=no_duplicates, parse_float=no_float,
                       parse_constant=no_float)

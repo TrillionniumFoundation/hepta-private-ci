@@ -67,9 +67,17 @@ class HostQualificationTests(unittest.TestCase):
         }
         self.plan_envelope = self.sign(self.plan, "coordinator", self.coordinator)
         self.receipts = []
-        for index, name in enumerate(module.STEP_DISPOSITIONS):
-            before = format(100 + index, "064x")[-64:]
-            after = format(200 + index, "064x")[-64:] if name in module.ADVANCING_STEPS else before
+        initial = self.plan["recovery_anchor"]["state_digest"]
+        current = "a" * 64
+        for index, name in enumerate(module.STEP_ORDER):
+            if name in {"bootstrap", "publication_fsync_fault"}:
+                before = after = initial
+            elif name == "canary":
+                before, after = initial, current
+            elif name == "witness_gap_reconcile":
+                before, after = initial, current
+            else:
+                before = after = current
             payload = {
                 "schema": module.RECEIPT_SCHEMA,
                 "plan_sha256": lifecycle.sha256(self.plan),
@@ -80,11 +88,12 @@ class HostQualificationTests(unittest.TestCase):
                 "writer_generation": self.plan["writer_generation"],
                 "host_identity_sha256": self.plan["host_identity_sha256"],
                 "filesystem_identity_sha256": self.plan["filesystem_identity_sha256"],
+                "evidence_profile_sha256": self.plan["steps"][index]["evidence_profile_sha256"],
                 "before_cut_sha256": before,
                 "after_cut_sha256": after,
                 "status": "completed",
                 "disposition": module.STEP_DISPOSITIONS[name],
-                "observed_at": self.now,
+                "observed_at": self.plan["created_at"] + index + 1,
                 "evidence_sha256": format(300 + index, "064x")[-64:],
                 "metrics_sha256": format(400 + index, "064x")[-64:],
             }
@@ -116,6 +125,8 @@ class HostQualificationTests(unittest.TestCase):
         report = self.reconcile()
         self.assertEqual(report["result"], "owner_attested_complete")
         self.assertTrue(report["all_required_owner_receipts_verified"])
+        self.assertEqual(report["initial_cut_sha256"], self.plan["recovery_anchor"]["state_digest"])
+        self.assertEqual(report["qualified_cut_sha256"], "a" * 64)
         for field in ("target_host_qualified", "slo_accepted", "activation_authorized",
                       "release_authorized"):
             self.assertIs(report[field], False)
@@ -145,6 +156,41 @@ class HostQualificationTests(unittest.TestCase):
     def test_nonadvancing_step_cannot_change_cut(self):
         self.resign_receipt(0, after_cut_sha256="f" * 64)
         with self.assertRaisesRegex(ValueError, "changed the semantic cut"):
+            self.reconcile()
+
+
+    def test_receipt_evidence_profile_mismatch_rejects(self):
+        self.resign_receipt(0, evidence_profile_sha256="f" * 64)
+        with self.assertRaisesRegex(ValueError, "evidence profile"):
+            self.reconcile()
+
+    def test_bootstrap_must_bind_authenticated_anchor(self):
+        self.resign_receipt(0, before_cut_sha256="e" * 64, after_cut_sha256="e" * 64)
+        with self.assertRaisesRegex(ValueError, "initial cut"):
+            self.reconcile()
+
+    def test_post_canary_step_must_bind_canary_successor(self):
+        index = list(module.STEP_ORDER).index("crash_restart")
+        self.resign_receipt(index, before_cut_sha256="e" * 64, after_cut_sha256="e" * 64)
+        with self.assertRaisesRegex(ValueError, "canary successor"):
+            self.reconcile()
+
+    def test_witness_gap_binds_stale_and_current_cuts(self):
+        index = list(module.STEP_ORDER).index("witness_gap_reconcile")
+        self.resign_receipt(index, before_cut_sha256="e" * 64)
+        with self.assertRaisesRegex(ValueError, "stale and current"):
+            self.reconcile()
+
+    def test_ceremony_time_regression_rejects(self):
+        index = list(module.STEP_ORDER).index("crash_restart")
+        self.resign_receipt(index, observed_at=self.plan["created_at"] + 1)
+        with self.assertRaisesRegex(ValueError, "time order"):
+            self.reconcile()
+
+    def test_later_completed_step_requires_completed_canary(self):
+        index = list(module.STEP_ORDER).index("canary")
+        self.resign_receipt(index, status="pending", disposition="pending")
+        with self.assertRaisesRegex(ValueError, "without a completed canary"):
             self.reconcile()
 
     def test_receipt_source_identity_mismatch_rejects(self):

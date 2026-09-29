@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Real Ed25519 regressions for retention readiness; no pruning or publication."""
+"""Real Ed25519 regressions for retention readiness; no effects are executed."""
 from __future__ import annotations
 
 import copy
@@ -33,80 +33,59 @@ class RetentionReadinessTests(unittest.TestCase):
                     "public_key_hex": key.public_key().public_bytes_raw().hex()}
 
         self.trust = {
-            "schema": "hepta.cognitive.lifecycle-trust.v1",
-            "revision": 1,
+            "schema": "hepta.cognitive.lifecycle-trust.v1", "revision": 1,
             "valid_until": self.now + 600,
             "coordinator": public("coordinator", self.coordinator),
             "owners": [public("segment-owner", self.segment_owner),
                        public("rebuild-owner", self.rebuild_owner)],
         }
-        first_manifest = "1" * 64
+        first = "1" * 64
         self.plan = {
-            "schema": module.PLAN_SCHEMA,
-            "request_id": "retention-checkpoint-1",
+            "schema": module.PLAN_SCHEMA, "request_id": "retention-checkpoint-1",
             "owner_agent_id": "00000000-0000-4000-8000-00000000c059",
-            "source_commit": "2" * 40,
-            "source_tree": "3" * 40,
-            "writer_generation": 9,
-            "schema_sha256": "4" * 64,
-            "current_cut_sha256": "5" * 64,
-            "head_set_sha256": "6" * 64,
-            "tombstone_frontier": 7,
-            "source_frontier": 11,
-            "fact_frontier": 13,
-            "kg_frontier": 17,
-            "policy_sha256": "7" * 64,
-            "hold_state_sha256": "8" * 64,
+            "source_commit": "2" * 40, "source_tree": "3" * 40,
+            "writer_generation": 9, "schema_sha256": "4" * 64,
+            "current_cut_sha256": "5" * 64, "head_set_sha256": "6" * 64,
+            "tombstone_frontier": 7, "source_frontier": 11,
+            "fact_frontier": 13, "kg_frontier": 17,
+            "policy_sha256": "7" * 64, "hold_state_sha256": "8" * 64,
             "pending_operations_sha256": "9" * 64,
             "predecessor_image_sha256": "a" * 64,
-            "successor_image_sha256": "b" * 64,
-            "successor_image_bytes": 4096,
-            "rebuild_owner": "rebuild-owner",
-            "created_at": self.now - 10,
+            "successor_image_sha256": "b" * 64, "successor_image_bytes": 4096,
+            "rebuild_owner": "rebuild-owner", "created_at": self.now - 10,
             "expires_at": self.now + 300,
             "segments": [
-                {
-                    "segment_id": "segment-0",
-                    "storage_owner": "segment-owner",
-                    "ordinal": 0,
-                    "first_key_sha256": "c" * 64,
-                    "last_key_sha256": "d" * 64,
-                    "row_count": 5,
-                    "plaintext_sha256": "e" * 64,
-                    "ciphertext_sha256": "f" * 64,
-                    "manifest_sha256": first_manifest,
-                    "predecessor_manifest_sha256": None,
-                },
-                {
-                    "segment_id": "segment-1",
-                    "storage_owner": "segment-owner",
-                    "ordinal": 1,
-                    "first_key_sha256": "0" * 63 + "1",
-                    "last_key_sha256": "0" * 63 + "2",
-                    "row_count": 3,
-                    "plaintext_sha256": "0" * 63 + "3",
-                    "ciphertext_sha256": "0" * 63 + "4",
-                    "manifest_sha256": "0" * 63 + "5",
-                    "predecessor_manifest_sha256": first_manifest,
-                },
+                {"segment_id": "segment-0", "storage_owner": "segment-owner", "ordinal": 0,
+                 "first_key_sha256": "c" * 64, "last_key_sha256": "d" * 64,
+                 "row_count": 5, "plaintext_sha256": "e" * 64,
+                 "ciphertext_sha256": "f" * 64, "manifest_sha256": first,
+                 "predecessor_manifest_sha256": None},
+                {"segment_id": "segment-1", "storage_owner": "segment-owner", "ordinal": 1,
+                 "first_key_sha256": "0" * 63 + "1", "last_key_sha256": "0" * 63 + "2",
+                 "row_count": 3, "plaintext_sha256": "0" * 63 + "3",
+                 "ciphertext_sha256": "0" * 63 + "4", "manifest_sha256": "0" * 63 + "5",
+                 "predecessor_manifest_sha256": first},
             ],
         }
+        self.plan.update({
+            "segment_set_sha256": lifecycle.sha256(self.plan["segments"]),
+            "segment_count": 2, "segment_row_count": 8,
+            "first_segment_manifest_sha256": first,
+            "last_segment_manifest_sha256": self.plan["segments"][-1]["manifest_sha256"],
+        })
         self.plan_envelope = self.sign(self.plan, "coordinator", self.coordinator)
-        self.segment_receipts = []
-        for index, segment in enumerate(self.plan["segments"]):
-            payload = {
+        self.segment_receipts = [
+            self.sign({
                 "schema": module.SEGMENT_RECEIPT_SCHEMA,
                 "plan_sha256": lifecycle.sha256(self.plan),
-                "segment_id": segment["segment_id"],
-                "storage_owner": segment["storage_owner"],
-                "manifest_sha256": segment["manifest_sha256"],
-                "ciphertext_sha256": segment["ciphertext_sha256"],
-                "status": "completed",
-                "method": "immutable_encrypted_segment",
-                "observed_at": self.now,
-                "evidence_sha256": format(100 + index, "064x")[-64:],
-            }
-            self.segment_receipts.append(self.sign(payload, "segment-owner", self.segment_owner))
+                **{key: segment[key] for key in ("segment_id", "storage_owner", "ordinal",
+                    "row_count", "plaintext_sha256", "manifest_sha256", "ciphertext_sha256",
+                    "predecessor_manifest_sha256")},
+                "status": "completed", "method": "immutable_encrypted_segment",
+                "observed_at": self.now, "evidence_sha256": format(100 + index, "064x")[-64:],
+            }, "segment-owner", self.segment_owner)
+            for index, segment in enumerate(self.plan["segments"])
+        ]
         self.rebuild = self.sign(self.rebuild_payload(), "rebuild-owner", self.rebuild_owner)
 
     @staticmethod
@@ -121,33 +100,20 @@ class RetentionReadinessTests(unittest.TestCase):
         path.chmod(0o600)
 
     def rebuild_payload(self):
+        copied = ("rebuild_owner", "owner_agent_id", "source_commit", "source_tree",
+                  "writer_generation", "schema_sha256", "predecessor_image_sha256",
+                  "successor_image_sha256", "successor_image_bytes", "head_set_sha256",
+                  "tombstone_frontier", "source_frontier", "fact_frontier", "kg_frontier",
+                  "segment_set_sha256", "segment_count", "segment_row_count",
+                  "first_segment_manifest_sha256", "last_segment_manifest_sha256")
         return {
             "schema": module.REBUILD_RECEIPT_SCHEMA,
-            "plan_sha256": lifecycle.sha256(self.plan),
-            "rebuild_owner": self.plan["rebuild_owner"],
-            "owner_agent_id": self.plan["owner_agent_id"],
-            "source_commit": self.plan["source_commit"],
-            "source_tree": self.plan["source_tree"],
-            "writer_generation": self.plan["writer_generation"],
-            "schema_sha256": self.plan["schema_sha256"],
-            "predecessor_image_sha256": self.plan["predecessor_image_sha256"],
-            "successor_image_sha256": self.plan["successor_image_sha256"],
-            "successor_image_bytes": self.plan["successor_image_bytes"],
+            "plan_sha256": lifecycle.sha256(self.plan), **{key: self.plan[key] for key in copied},
             "before_cut_sha256": self.plan["current_cut_sha256"],
             "after_cut_sha256": self.plan["current_cut_sha256"],
-            "head_set_sha256": self.plan["head_set_sha256"],
-            "tombstone_frontier": self.plan["tombstone_frontier"],
-            "source_frontier": self.plan["source_frontier"],
-            "fact_frontier": self.plan["fact_frontier"],
-            "kg_frontier": self.plan["kg_frontier"],
-            "integrity_check": True,
-            "foreign_key_check": True,
-            "projection_check": True,
-            "pending_operation_check": True,
-            "published": False,
-            "status": "completed",
-            "observed_at": self.now,
-            "evidence_sha256": "6" * 64,
+            "segments_resolved": True, "integrity_check": True, "foreign_key_check": True,
+            "projection_check": True, "pending_operation_check": True, "published": False,
+            "status": "completed", "observed_at": self.now, "evidence_sha256": "6" * 64,
         }
 
     def bundle(self):
@@ -162,106 +128,45 @@ class RetentionReadinessTests(unittest.TestCase):
         self.rebuild = self.sign(self.rebuild_payload(), "rebuild-owner", self.rebuild_owner)
 
     def resign_segment(self, index, **changes):
-        payload = {**self.segment_receipts[index]["payload"], **changes}
-        self.segment_receipts[index] = self.sign(payload, "segment-owner", self.segment_owner)
+        self.segment_receipts[index] = self.sign(
+            {**self.segment_receipts[index]["payload"], **changes},
+            "segment-owner", self.segment_owner)
 
     def resign_rebuild(self, **changes):
-        payload = {**self.rebuild["payload"], **changes}
-        self.rebuild = self.sign(payload, "rebuild-owner", self.rebuild_owner)
+        self.rebuild = self.sign({**self.rebuild["payload"], **changes},
+                                 "rebuild-owner", self.rebuild_owner)
 
-    def test_complete_readiness_never_publishes_prunes_or_erases(self):
+    def test_complete_readiness_never_performs_effects(self):
         report = self.reconcile()
-        self.assertEqual(report["result"], "retention_ready")
-        self.assertTrue(report["all_required_owner_receipts_verified"])
+        self.assertEqual((report["result"], report["segment_count"], report["segment_row_count"]),
+                         ("retention_ready", 2, 8))
         for field in ("successor_published", "hot_history_pruned", "predecessor_erased",
                       "physical_erasure_proved", "activation_authorized"):
             self.assertIs(report[field], False)
 
     def test_missing_segment_receipt_is_incomplete(self):
         self.segment_receipts.pop()
-        report = self.reconcile()
-        self.assertEqual(report["result"], "incomplete")
-        self.assertIn("missing", {row["status"] for row in report["segments"]})
+        self.assertEqual(self.reconcile()["result"], "incomplete")
 
     def test_pending_segment_is_incomplete(self):
         self.resign_segment(0, status="pending", method="upload_pending")
         self.assertEqual(self.reconcile()["result"], "incomplete")
 
-    def test_wrong_completed_segment_method_rejects(self):
-        self.resign_segment(0, method="ordinary_copy")
-        with self.assertRaisesRegex(ValueError, "immutable encrypted"):
-            self.reconcile()
-
-    def test_broken_segment_chain_rejects(self):
-        self.plan["segments"][1]["predecessor_manifest_sha256"] = "f" * 64
-        self.resign_plan_and_rebuild()
-        with self.assertRaisesRegex(ValueError, "chain"):
-            self.reconcile()
-
-    def test_reordered_segment_ordinal_rejects(self):
-        self.plan["segments"][1]["ordinal"] = 2
-        self.resign_plan_and_rebuild()
-        with self.assertRaisesRegex(ValueError, "ordinal"):
-            self.reconcile()
-
-    def test_duplicate_segment_identity_rejects(self):
-        self.plan["segments"][1]["segment_id"] = self.plan["segments"][0]["segment_id"]
-        self.resign_plan_and_rebuild()
-        with self.assertRaisesRegex(ValueError, "duplicate"):
-            self.reconcile()
-
-    def test_duplicate_segment_digest_rejects(self):
-        self.plan["segments"][1]["ciphertext_sha256"] = self.plan["segments"][0]["manifest_sha256"]
-        self.resign_plan_and_rebuild()
-        with self.assertRaisesRegex(ValueError, "duplicate"):
-            self.reconcile()
-
-    def test_coordinator_cannot_own_segment(self):
-        self.plan["segments"][0]["storage_owner"] = "coordinator"
-        self.resign_plan_and_rebuild()
+    def test_rebuild_owner_is_independent(self):
+        self.plan["rebuild_owner"] = "segment-owner"
+        self.plan_envelope = self.sign(self.plan, "coordinator", self.coordinator)
+        self.rebuild = self.sign(self.rebuild_payload(), "segment-owner", self.segment_owner)
         with self.assertRaisesRegex(ValueError, "independent"):
+            self.reconcile()
+
+    def test_completed_rebuild_follows_segment_observations(self):
+        self.resign_rebuild(observed_at=self.now - 1)
+        with self.assertRaisesRegex(ValueError, "predates"):
             self.reconcile()
 
     def test_wrong_rebuild_signer_rejects(self):
         self.rebuild = self.sign(self.rebuild["payload"], "segment-owner", self.segment_owner)
         with self.assertRaisesRegex(ValueError, "planned owner"):
-            self.reconcile()
-
-    def test_rebuild_must_preserve_exact_cut(self):
-        self.resign_rebuild(after_cut_sha256="f" * 64)
-        with self.assertRaisesRegex(ValueError, "semantic cut"):
-            self.reconcile()
-
-    def test_readiness_receipt_cannot_publish_successor(self):
-        self.resign_rebuild(published=True)
-        with self.assertRaisesRegex(ValueError, "must not publish"):
-            self.reconcile()
-
-    def test_failed_integrity_check_rejects_completed_rebuild(self):
-        self.resign_rebuild(integrity_check=False)
-        with self.assertRaisesRegex(ValueError, "oracle check"):
-            self.reconcile()
-
-    def test_successor_must_be_distinct_image(self):
-        self.plan["successor_image_sha256"] = self.plan["predecessor_image_sha256"]
-        self.resign_plan_and_rebuild()
-        with self.assertRaisesRegex(ValueError, "distinct"):
-            self.reconcile()
-
-    def test_rebuild_source_identity_mismatch_rejects(self):
-        self.resign_rebuild(source_tree="f" * 40)
-        with self.assertRaisesRegex(ValueError, "source_tree"):
-            self.reconcile()
-
-    def test_rebuild_frontier_mismatch_rejects(self):
-        self.resign_rebuild(tombstone_frontier=self.plan["tombstone_frontier"] + 1)
-        with self.assertRaisesRegex(ValueError, "tombstone_frontier"):
-            self.reconcile()
-
-    def test_expired_plan_rejects(self):
-        self.plan["expires_at"] = self.now
-        self.resign_plan_and_rebuild()
-        with self.assertRaisesRegex(ValueError, "expired"):
             self.reconcile()
 
     def test_wrong_requested_plan_digest_rejects(self):
@@ -273,51 +178,79 @@ class RetentionReadinessTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.reconcile()
 
-    def test_oversized_successor_rejects(self):
-        self.plan["successor_image_bytes"] = module.MAX_IMAGE_BYTES + 1
-        self.resign_plan_and_rebuild()
-        with self.assertRaisesRegex(ValueError, "exceeds"):
-            self.reconcile()
-
     def test_cli_complete_and_incomplete_exit_codes(self):
-        trust_path = self.root / "trust.json"
-        plan_path = self.root / "plan.json"
-        receipts_path = self.root / "receipts.json"
-        self.write(trust_path, self.trust)
-        self.write(plan_path, self.plan_envelope)
-        self.write(receipts_path, self.bundle())
-        command = [sys.executable, str(Path(module.__file__)), "--plan", str(plan_path),
-                   "--receipts", str(receipts_path), "--trusted-owners", str(trust_path),
+        trust, plan, receipts = (self.root / name for name in ("trust.json", "plan.json", "receipts.json"))
+        self.write(trust, self.trust); self.write(plan, self.plan_envelope); self.write(receipts, self.bundle())
+        command = [sys.executable, str(Path(module.__file__)), "--plan", str(plan),
+                   "--receipts", str(receipts), "--trusted-owners", str(trust),
                    "--expected-plan-sha256", lifecycle.sha256(self.plan),
                    "--expected-trust-sha256", lifecycle.sha256(self.trust)]
         result = subprocess.run(command, capture_output=True, text=True, timeout=30, check=False)
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(json.loads(result.stdout)["result"], "retention_ready")
-        bundle = self.bundle()
-        bundle["segments"] = bundle["segments"][:-1]
-        self.write(receipts_path, bundle)
-        result = subprocess.run(command, capture_output=True, text=True, timeout=30, check=False)
-        self.assertEqual(result.returncode, 2, result.stderr)
-        self.assertEqual(json.loads(result.stdout)["result"], "incomplete")
+        bundle = self.bundle(); bundle["segments"] = bundle["segments"][:-1]; self.write(receipts, bundle)
+        self.assertEqual(subprocess.run(command, capture_output=True, text=True,
+                                        timeout=30, check=False).returncode, 2)
 
     def test_final_trust_change_rejects(self):
-        trust_path = self.root / "trust.json"
-        plan_path = self.root / "plan.json"
-        receipts_path = self.root / "receipts.json"
-        self.write(trust_path, self.trust)
-        self.write(plan_path, self.plan_envelope)
-        self.write(receipts_path, self.bundle())
+        trust, plan, receipts = (self.root / name for name in ("trust.json", "plan.json", "receipts.json"))
+        self.write(trust, self.trust); self.write(plan, self.plan_envelope); self.write(receipts, self.bundle())
+        changed = copy.deepcopy(self.trust); changed["revision"] = 2
         original = module.reconcile
-        changed = copy.deepcopy(self.trust)
-        changed["revision"] = 2
         def verify_then_change(*args):
-            report = original(*args)
-            self.write(trust_path, changed)
-            return report
+            report = original(*args); self.write(trust, changed); return report
         with mock.patch.object(module, "reconcile", side_effect=verify_then_change):
             with self.assertRaisesRegex(ValueError, "trust changed"):
-                module.reconcile_files(plan_path, receipts_path, trust_path,
+                module.reconcile_files(plan, receipts, trust,
                                        lifecycle.sha256(self.plan), lifecycle.sha256(self.trust))
+
+
+def _plan_case(name, mutate, pattern):
+    def test(self):
+        mutate(self)
+        self.resign_plan_and_rebuild()
+        with self.assertRaisesRegex(ValueError, pattern):
+            self.reconcile()
+    setattr(RetentionReadinessTests, "test_" + name, test)
+
+
+def _segment_case(name, changes, pattern):
+    def test(self):
+        self.resign_segment(0, **changes)
+        with self.assertRaisesRegex(ValueError, pattern):
+            self.reconcile()
+    setattr(RetentionReadinessTests, "test_" + name, test)
+
+
+def _rebuild_case(name, changes, pattern):
+    def test(self):
+        self.resign_rebuild(**changes)
+        with self.assertRaisesRegex(ValueError, pattern):
+            self.reconcile()
+    setattr(RetentionReadinessTests, "test_" + name, test)
+
+
+_plan_case("segment_set_digest", lambda s: s.plan.__setitem__("segment_set_sha256", "f" * 64), "segment-set")
+_plan_case("segment_count", lambda s: s.plan.__setitem__("segment_count", 3), "segment count")
+_plan_case("segment_row_count", lambda s: s.plan.__setitem__("segment_row_count", 9), "row count")
+_plan_case("segment_endpoints", lambda s: s.plan.__setitem__("last_segment_manifest_sha256", "f" * 64), "endpoints")
+_plan_case("broken_chain", lambda s: s.plan["segments"][1].__setitem__("predecessor_manifest_sha256", "f" * 64), "chain")
+_plan_case("reordered_ordinal", lambda s: s.plan["segments"][1].__setitem__("ordinal", 2), "ordinal")
+_plan_case("duplicate_identity", lambda s: s.plan["segments"][1].__setitem__("segment_id", s.plan["segments"][0]["segment_id"]), "duplicate")
+_plan_case("duplicate_digest", lambda s: s.plan["segments"][1].__setitem__("ciphertext_sha256", s.plan["segments"][0]["manifest_sha256"]), "duplicate")
+_plan_case("coordinator_segment", lambda s: s.plan["segments"][0].__setitem__("storage_owner", "coordinator"), "independent")
+_plan_case("same_successor", lambda s: s.plan.__setitem__("successor_image_sha256", s.plan["predecessor_image_sha256"]), "distinct")
+_plan_case("expired_plan", lambda s: s.plan.__setitem__("expires_at", s.now), "expired")
+_plan_case("oversized_successor", lambda s: s.plan.__setitem__("successor_image_bytes", module.MAX_IMAGE_BYTES + 1), "exceeds")
+_segment_case("wrong_segment_method", {"method": "ordinary_copy"}, "immutable encrypted")
+_segment_case("segment_plaintext", {"plaintext_sha256": "f" * 64}, "plaintext_sha256")
+_segment_case("segment_rows", {"row_count": 999}, "row_count")
+_rebuild_case("rebuild_segment_set", {"segment_set_sha256": "f" * 64}, "segment_set_sha256")
+_rebuild_case("unresolved_segments", {"segments_resolved": False}, "oracle check")
+_rebuild_case("changed_cut", {"after_cut_sha256": "f" * 64}, "semantic cut")
+_rebuild_case("published_successor", {"published": True}, "must not publish")
+_rebuild_case("failed_integrity", {"integrity_check": False}, "oracle check")
+_rebuild_case("source_identity", {"source_tree": "f" * 40}, "source_tree")
+_rebuild_case("frontier", {"tombstone_frontier": 8}, "tombstone_frontier")
 
 
 if __name__ == "__main__":

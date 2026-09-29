@@ -35,7 +35,15 @@ STEP_DISPOSITIONS = {
     "recovery_slo_256": "measurement_complete",
     "recovery_slo_16384": "measurement_complete",
 }
+STEP_ORDER = tuple(STEP_DISPOSITIONS)
 ADVANCING_STEPS = frozenset({"canary", "witness_gap_reconcile"})
+POST_CANARY_STEPS = (
+    "crash_restart",
+    "revocation",
+    "rollback",
+    "recovery_slo_256",
+    "recovery_slo_16384",
+)
 
 
 def git_oid(value: object, label: str) -> str:
@@ -104,22 +112,27 @@ def validate_plan(plan: object, trust: dict, now: int) -> dict:
 def validate_receipt(receipt: object, plan: dict, step: dict, now: int) -> dict:
     exact(receipt, {"schema", "plan_sha256", "step", "executor", "source_commit", "source_tree",
                     "writer_generation", "host_identity_sha256", "filesystem_identity_sha256",
-                    "before_cut_sha256", "after_cut_sha256", "status", "disposition",
-                    "observed_at", "evidence_sha256", "metrics_sha256"})
+                    "evidence_profile_sha256", "before_cut_sha256", "after_cut_sha256",
+                    "status", "disposition", "observed_at", "evidence_sha256",
+                    "metrics_sha256"})
     require(receipt["schema"] == RECEIPT_SCHEMA, "unsupported host qualification receipt")
     require(receipt["plan_sha256"] == sha256(plan), "receipt binds another qualification plan")
     require(receipt["step"] == step["step"] and receipt["executor"] == step["executor"],
             "receipt step or executor differs from the signed plan")
+    require(receipt["evidence_profile_sha256"] == step["evidence_profile_sha256"],
+            "receipt evidence profile differs from the signed plan")
     for field in ("source_commit", "source_tree", "writer_generation",
                   "host_identity_sha256", "filesystem_identity_sha256"):
         require(receipt[field] == plan[field], "receipt identity differs from the signed plan: " + field)
-    for field in ("before_cut_sha256", "after_cut_sha256", "evidence_sha256", "metrics_sha256"):
+    for field in ("before_cut_sha256", "after_cut_sha256", "evidence_profile_sha256",
+                  "evidence_sha256", "metrics_sha256"):
         digest(receipt[field])
     integer(receipt["observed_at"])
     require(plan["created_at"] <= receipt["observed_at"] <= now,
             "host qualification receipt is stale or from the future")
     require(receipt["status"] in {"completed", "pending", "indeterminate", "failed"},
             "unknown host qualification status")
+    identifier(receipt["disposition"])
     if receipt["status"] == "completed":
         require(receipt["disposition"] == STEP_DISPOSITIONS[receipt["step"]],
                 "completed host step has the wrong disposition")
@@ -130,6 +143,50 @@ def validate_receipt(receipt: object, plan: dict, step: dict, now: int) -> dict:
             require(receipt["before_cut_sha256"] == receipt["after_cut_sha256"],
                     "non-advancing host step changed the semantic cut")
     return receipt
+
+
+def validate_ceremony_chain(plan: dict, observed: dict[str, dict]) -> str | None:
+    """Bind individually valid receipts into one coherent selected-host ceremony."""
+    initial = plan["recovery_anchor"]["state_digest"]
+    for name in ("bootstrap", "publication_fsync_fault"):
+        receipt = observed.get(name)
+        if receipt is not None and receipt["status"] == "completed":
+            require(receipt["before_cut_sha256"] == initial
+                    and receipt["after_cut_sha256"] == initial,
+                    f"{name} receipt is not bound to the authenticated initial cut")
+
+    canary = observed.get("canary")
+    current = None
+    if canary is not None and canary["status"] == "completed":
+        require(canary["before_cut_sha256"] == initial,
+                "canary does not start from the authenticated initial cut")
+        current = canary["after_cut_sha256"]
+
+    for name in POST_CANARY_STEPS:
+        receipt = observed.get(name)
+        if receipt is not None and receipt["status"] == "completed":
+            require(current is not None, f"{name} completed without a completed canary")
+            require(receipt["before_cut_sha256"] == current
+                    and receipt["after_cut_sha256"] == current,
+                    f"{name} receipt is not bound to the canary successor cut")
+
+    witness = observed.get("witness_gap_reconcile")
+    if witness is not None and witness["status"] == "completed":
+        require(current is not None, "witness reconciliation completed without a completed canary")
+        require(witness["before_cut_sha256"] == initial
+                and witness["after_cut_sha256"] == current,
+                "witness reconciliation does not bind the stale and current cuts")
+
+    last_observed = None
+    for name in STEP_ORDER:
+        receipt = observed.get(name)
+        if receipt is None:
+            continue
+        if last_observed is not None:
+            require(receipt["observed_at"] >= last_observed,
+                    "host qualification receipts regress in ceremony time order")
+        last_observed = receipt["observed_at"]
+    return current
 
 
 def reconcile(plan_envelope: object, receipt_envelopes: object, trust: dict,
@@ -158,8 +215,9 @@ def reconcile(plan_envelope: object, receipt_envelopes: object, trust: dict,
                 "host receipt signer is not the planned executor")
         observed[step_name] = validate_receipt(receipt, plan, expected[step_name], now)
 
+    qualified_cut = validate_ceremony_chain(plan, observed)
     rows = []
-    for name in STEP_DISPOSITIONS:
+    for name in STEP_ORDER:
         receipt = observed.get(name)
         rows.append({
             "step": name,
@@ -173,6 +231,8 @@ def reconcile(plan_envelope: object, receipt_envelopes: object, trust: dict,
         "plan_sha256": sha256(plan),
         "trust_sha256": sha256(trust),
         "observed_at": now,
+        "initial_cut_sha256": plan["recovery_anchor"]["state_digest"],
+        "qualified_cut_sha256": qualified_cut if complete else None,
         "steps": rows,
         "all_required_owner_receipts_verified": complete,
         "result": "owner_attested_complete" if complete else "incomplete",
