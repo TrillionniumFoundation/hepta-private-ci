@@ -6,6 +6,7 @@ on:
       - codex/runtime-codex-full-closure-20260929-r2
     paths:
       - .github/workflows/runtime-codex-materialize-once.yml
+      - scripts/runtime-codex-process-crash-migration.py
       - scripts/runtime-codex-terminal-outbox-migration.py
       - scripts/runtime-codex-final-closure.py
 
@@ -40,14 +41,15 @@ jobs:
           python3 scripts/runtime-codex-deadline-migration.py
           python3 scripts/runtime-codex-cleanup-migration.py
           python3 scripts/runtime-codex-storage-fixup.py
-          python3 scripts/runtime-codex-process-crash-migration.py
-          python3 scripts/runtime-codex-terminal-outbox-migration.py
-          python3 scripts/runtime-codex-qualification-fixup.py
-          python3 scripts/runtime-codex-finalize-map.py
-          python3 scripts/runtime-codex-finalize-map-followup.py
-          python3 scripts/runtime-codex-final-closure.py
-          git diff --check
+          echo '--- generated process-crash migration identity ---'
+          wc -l scripts/runtime-codex-process-crash-migration.py
+          grep -n -E 'current-lease guarded run|def patch_native_execution|unguarded =|guarded_with_existing_lease' scripts/runtime-codex-process-crash-migration.py || true
+          nl -ba scripts/runtime-codex-process-crash-migration.py | sed -n '430,525p'
+          echo '--- generator diff ---'
+          git diff -- scripts/runtime-codex-process-crash-migration.py
+          exit 42
       - name: Commit exactly the materialized source
+        if: ${{ success() }}
         shell: bash
         env:
           BRANCH: codex/runtime-codex-full-closure-20260929-r2
