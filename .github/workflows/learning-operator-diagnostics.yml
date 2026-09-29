@@ -57,6 +57,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
+          mkdir -p .ci-artifacts
           (
             set -euxo pipefail
             test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
@@ -73,20 +74,18 @@ jobs:
               -p codex-hepta-agentd
             python scripts/hepta-learning-operator-contract.py verify
             git diff --check
-            git status --short > "$RUNNER_TEMP/transformed-status.txt"
+            git status --short > .ci-artifacts/transformed-status.txt
             tar --exclude=.git --exclude=target --exclude=codex-rs/target \
-              -czf "$RUNNER_TEMP/learning-operator-transformed-source.tar.gz" .
-          ) 2>&1 | tee "$RUNNER_TEMP/transform.log"
+              --exclude=.ci-artifacts \
+              -czf .ci-artifacts/learning-operator-transformed-source.tar.gz .
+          ) 2>&1 | tee .ci-artifacts/transform.log
       - name: Upload transformed source and transform log
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: learning-operator-transformed-${{ env.SOURCE_SHA }}
-          path: |
-            ${{ runner.temp }}/learning-operator-transformed-source.tar.gz
-            ${{ runner.temp }}/transformed-status.txt
-            ${{ runner.temp }}/transform.log
-          if-no-files-found: warn
+          path: .ci-artifacts/
+          if-no-files-found: error
           retention-days: 14
       - name: Stop after transform failure
         if: steps.transform.outcome == 'failure'
@@ -124,13 +123,13 @@ jobs:
               -p codex-hepta-learning-artifacts \
               -p codex-hepta-agentd -- --check
             git diff --check
-          ) 2>&1 | tee "$RUNNER_TEMP/rust.log"
+          ) 2>&1 | tee .ci-artifacts/rust.log
       - name: Upload Rust evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: learning-operator-windows-rust-${{ env.SOURCE_SHA }}
-          path: ${{ runner.temp }}/rust.log
+          path: .ci-artifacts/rust.log
           if-no-files-found: warn
           retention-days: 14
       - name: Stop after compile or test failure
