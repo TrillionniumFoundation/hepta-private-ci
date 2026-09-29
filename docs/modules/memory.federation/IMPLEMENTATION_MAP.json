@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "c08586f63c23166f11c03b93dc28896690119d98",
-    "tree": "b70ed7747291ab525e94b2d2e7f600b60df3da1d"
+    "commit": "1c6706b18692ba9626998c608239cc9315a83921",
+    "tree": "5db1f2f2803c533e17ce683654648071de61d421"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.federation",
@@ -87,8 +87,8 @@
   "headAttestation": {
     "candidateBranch": "feat/memory-federation-full-closure-20260927",
     "baseCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
-    "candidateHead": "c08586f63c23166f11c03b93dc28896690119d98",
-    "candidateTree": "b70ed7747291ab525e94b2d2e7f600b60df3da1d",
+    "candidateHead": "1c6706b18692ba9626998c608239cc9315a83921",
+    "candidateTree": "5db1f2f2803c533e17ce683654648071de61d421",
     "headMeaning": "canonical_v2 bounded_discovery_reserved_read_budget deterministic_peer_selection final_use_revalidation private_verified_frame monotonic_partitioned_replay authenticated_transport_identity durable_replay_attempt_recovery restart_surviving_cancellation owner_cut_witness scoped_canonical_map_verification pre_post_execution_guard canonical_capability_status retained_logical_capacity_metrics terminal_request_credential_currentness issuing_host_token_binding actual_command_execution locked_input_revalidation ordered_merge_parents authenticated_product_body_bridge atomic_product_preflight retry_safe_client_inbound_commit v4_combined_attachment_partial_peer_evidence single_pr_qualification_owner_required_fanin issuer_attested_transport_context_before_packet_replay local_owner_bound_transport_context stale_public_constructor_regression_removed context_self_encoded_attestation_payload",
     "status": "pending_exact_current_head_and_merge_candidate_execution",
     "scope": [
@@ -205,8 +205,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "c08586f63c23166f11c03b93dc28896690119d98",
-    "tree": "b70ed7747291ab525e94b2d2e7f600b60df3da1d"
+    "commit": "1c6706b18692ba9626998c608239cc9315a83921",
+    "tree": "5db1f2f2803c533e17ce683654648071de61d421"
   },
   "observedSourcePaths": [
     ".github/workflows/blocking-ci.yml",
@@ -238,6 +238,7 @@
     "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs",
     "docs/modules/memory.federation/CAPABILITY_STATE.json",
     "docs/modules/memory.federation/DEPLOYMENT_PROFILE.json",
+    "docs/modules/memory.federation/INDEXED_ADMISSION.md",
     "docs/modules/memory.federation/PRODUCT_BRIDGE_V1.md",
     "docs/modules/memory.federation/TECHNICAL.md",
     "docs/modules/memory.federation/V2_HARDENING.md",
@@ -249,7 +250,9 @@
     "scripts/memory_federation_execution_guard.py",
     "scripts/memory_federation_execution_receipt.py",
     "scripts/memory_federation_full_attestation.py",
+    "scripts/prepare_memory_federation_observation.py",
     "scripts/run_memory_federation_qualification.sh",
+    "scripts/test_memory_federation_entrypoints.py",
     "scripts/test_memory_federation_execution_receipt.py",
     "scripts/verify_memory_federation_implementation.py",
     "scripts/verify_memory_federation_status.py"
@@ -301,7 +304,7 @@
     },
     {
       "path": "codex-rs/hepta-memory-federation-wire",
-      "object": "19d7f313a5b87b97a8aeac3ce145e0266bd36ce9"
+      "object": "c2de297c3b5e868c73e68935ed6a080ed8255532"
     },
     {
       "path": "codex-rs/hepta-memory-federation-wire/Cargo.toml",
@@ -325,7 +328,7 @@
     },
     {
       "path": "codex-rs/hepta-memory-federation-wire/src/host.rs",
-      "object": "633ea8ee7d8d527fcca6e31db0232fa18133f2ce"
+      "object": "ee50a3fc72c785521840eb7c1160bb9f02173489"
     },
     {
       "path": "codex-rs/hepta-memory-federation-wire/src/host_tests.rs",
@@ -384,6 +387,10 @@
       "object": "a5ed56a595a5804e62c3c9b877d4788a3f60565d"
     },
     {
+      "path": "docs/modules/memory.federation/INDEXED_ADMISSION.md",
+      "object": "2cf1d00ff69b19ef8571eb833572db04a1b292d7"
+    },
+    {
       "path": "docs/modules/memory.federation/PRODUCT_BRIDGE_V1.md",
       "object": "35781882311c7028291d55191f200014bf603d10"
     },
@@ -428,8 +435,16 @@
       "object": "cd271cb07eb533be06ecbe883a639875b1c8113e"
     },
     {
+      "path": "scripts/prepare_memory_federation_observation.py",
+      "object": "8cabf7f20420da84696505feee0e45f9fb3d65d8"
+    },
+    {
       "path": "scripts/run_memory_federation_qualification.sh",
       "object": "cbfac9b931307b0a9ba04e9f14deb6e6e3e9233d"
+    },
+    {
+      "path": "scripts/test_memory_federation_entrypoints.py",
+      "object": "8cfc69df4f2aee37740b35bd38c1887d0348f23a"
     },
     {
       "path": "scripts/test_memory_federation_execution_receipt.py",
