@@ -1,0 +1,5 @@
+# Two owner-local durable transaction helpers intentionally carry eight
+# authority/state arguments so identity, revision, payload and replay policy
+# remain explicit at the SQL boundary. Keep the exception crate-local; the
+# workspace default remains strict and functions above eight arguments fail.
+too-many-arguments-threshold = 8
