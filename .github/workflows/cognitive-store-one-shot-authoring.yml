@@ -1,0 +1,126 @@
+name: Cognitive store one-shot authoring transport
+
+on:
+  push:
+    branches:
+      - codex/cognitive-store-one-shot-authoring-20260930
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cognitive-store-one-shot-authoring-20260930
+  cancel-in-progress: false
+
+env:
+  TARGET_BRANCH: codex/cognitive-store-full-closure-20260927
+  EXPECTED_TARGET_SHA: a7cfdefa6643855d6a3735bf36a37cd7193a633d
+  PATCH_SHA256: d080b9dcb6b7d8d6ec257b4b3d4375111e3f07cd1d357962f1b3224963c36501
+
+jobs:
+  author:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+
+      - name: Admit exact target and apply reviewed patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          base64 --decode scripts/cognitive_store_exact_candidate_fix.patch.gz.b64 \
+            | gzip --decompress > "$RUNNER_TEMP/cognitive-store-fix.patch"
+          echo "$PATCH_SHA256  $RUNNER_TEMP/cognitive-store-fix.patch" | sha256sum --check --strict
+          git fetch --no-tags origin "+refs/heads/$TARGET_BRANCH:refs/remotes/origin/$TARGET_BRANCH"
+          test "$(git rev-parse "origin/$TARGET_BRANCH")" = "$EXPECTED_TARGET_SHA"
+          git checkout --detach "$EXPECTED_TARGET_SHA"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          git apply --check "$RUNNER_TEMP/cognitive-store-fix.patch"
+          git apply "$RUNNER_TEMP/cognitive-store-fix.patch"
+          git diff --check
+
+      - name: Format and validate focused native closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-cognitive-store \
+            --package codex-hepta-memory \
+            --package codex-hepta-agentd
+          python3 scripts/cognitive_store_status.py --check
+          python3 scripts/test_cognitive_store_map.py -v
+          python3 scripts/test_cognitive_plan_binding.py -v
+          cargo test --locked -p codex-hepta-agentd \
+            --test cognitive_store_product_writer \
+            --features qualification-cognitive-write
+          cargo test --locked -p codex-hepta-agentd \
+            --test cognitive_store_host_read_pages
+          cargo test --locked -p codex-hepta-agentd \
+            --test cognitive_recovery_boundary \
+            --features qualification-cognitive-write
+          cargo test --locked -p codex-hepta-memory \
+            cognitive_schema_tests
+          cargo test --locked -p codex-hepta-memory \
+            --test cognitive_recovery_publication_fault
+          cargo clippy --locked \
+            -p codex-hepta-cognitive-store \
+            -p codex-hepta-memory \
+            -p codex-hepta-agentd \
+            --all-targets --all-features --no-deps -- -D warnings
+          HEPTA_COGNITIVE_RECOVERY_RECORDS=256 \
+          HEPTA_COGNITIVE_RECOVERY_REPETITIONS=3 \
+            cargo run --locked --release -p codex-hepta-memory \
+              --example cognitive_store_recovery_perf
+          git diff --check
+
+      - name: Commit source and exact object map
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Tomasrgbsf"
+          git config user.email "tomasbraynt@gmail.com"
+          git add \
+            codex-rs/hepta-agentd/tests/cognitive_recovery_boundary.rs \
+            codex-rs/hepta-agentd/tests/cognitive_store_host_read_pages.rs \
+            codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs \
+            codex-rs/hepta-memory/examples/cognitive_store_recovery_perf.rs \
+            codex-rs/hepta-memory/src/cognitive_schema_tests.rs \
+            codex-rs/hepta-memory/src/cognitive_store_recovery.rs \
+            codex-rs/hepta-memory/src/lib.rs \
+            codex-rs/hepta-memory/tests/cognitive_recovery_publication_fault.rs \
+            docs/modules/cognitive.store/IMPLEMENTATION_MAP.json
+          git commit --signoff -m "fix(cognitive-store): close exact qualification failures" \
+            -m "Preserve the single SQLite owner, unresolved-occurrence fencing and reconcile-first recovery semantics. Close pooled owner handles before descriptor recovery, retain redirected-root indeterminacy, use bounded fixture expiries, and align product tests with durable lease admission. Keep strict Clippy through narrowly scoped test allowances."
+          SOURCE_COMMIT="$(git rev-parse HEAD)"
+          SOURCE_TREE="$(git rev-parse HEAD^{tree})"
+          test "$(git rev-parse "$SOURCE_COMMIT^")" = "$EXPECTED_TARGET_SHA"
+          python3 scripts/cognitive_store_map_generate.py \
+            --source-commit "$SOURCE_COMMIT" \
+            > "$RUNNER_TEMP/IMPLEMENTATION_MAP.generated.json"
+          mv "$RUNNER_TEMP/IMPLEMENTATION_MAP.generated.json" \
+            docs/modules/cognitive.store/IMPLEMENTATION_MAP.json
+          git add docs/modules/cognitive.store/IMPLEMENTATION_MAP.json
+          git commit --signoff -m "docs(cognitive-store): bind exact qualification repair snapshot" \
+            -m "Bind the reviewed source commit and exact Git objects without advancing product execution, target-host qualification, erasure, acceptance, activation or release claims."
+          FINAL_COMMIT="$(git rev-parse HEAD)"
+          FINAL_TREE="$(git rev-parse HEAD^{tree})"
+          python3 scripts/cognitive_store_map_verify.py \
+            --expected-sha "$FINAL_COMMIT" \
+            --expected-tree "$FINAL_TREE"
+          python3 scripts/cognitive_store_status.py --check
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          git push origin "$FINAL_COMMIT:refs/heads/$TARGET_BRANCH"
+          printf 'source_commit=%s\nsource_tree=%s\nfinal_commit=%s\nfinal_tree=%s\n' \
+            "$SOURCE_COMMIT" "$SOURCE_TREE" "$FINAL_COMMIT" "$FINAL_TREE" \
+            | tee "$RUNNER_TEMP/cognitive-store-authored-identities.txt"
+
+      - name: Retain exact authored identities
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cognitive-store-one-shot-authoring-${{ github.sha }}
+          path: ${{ runner.temp }}/cognitive-store-authored-identities.txt
+          if-no-files-found: warn
+          retention-days: 3
