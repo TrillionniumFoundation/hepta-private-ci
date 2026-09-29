@@ -17,6 +17,13 @@ on:
       - qualification/memory-retrieval/quality-performance-policy.json
       - qualification/memory-retrieval/production-qualification.json
       - scripts/validate_memory_retrieval_closure.py
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 permissions:
   contents: write
