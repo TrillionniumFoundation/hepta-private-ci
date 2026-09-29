@@ -3,7 +3,9 @@ set -euo pipefail
 
 platform="${1:?platform is required}"
 expected_runner="${2:-}"
-branch="work/kg-abc-evidence-hardening-20260928"
+target_branch="work/kg-abc-evidence-hardening-20260928"
+executor_branch="ops/kg-remaining-five-executor-20260929"
+target_head="1ce0c9ce28081239e452ec08621eedc5d567a848"
 root="$(git rev-parse --show-toplevel)"
 cd "$root"
 
@@ -11,10 +13,14 @@ if [[ -n "$expected_runner" ]]; then
   test "$RUNNER_NAME" = "$expected_runner"
 fi
 test "$GITHUB_EVENT_NAME" = "push"
-test "$GITHUB_REF_NAME" = "$branch"
+test "$GITHUB_REF_NAME" = "$executor_branch"
 test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
 git diff --quiet
 git diff --cached --quiet
+
+git fetch origin "$target_branch"
+test "$(git rev-parse "origin/$target_branch")" = "$target_head"
+git merge-base --is-ancestor "$target_head" HEAD
 
 case "$platform" in
   linux)
@@ -108,6 +114,7 @@ git diff --quiet
 git diff --cached --quiet
 test -z "$(git status --porcelain --untracked-files=no)"
 
-git fetch origin "$branch"
-test "$(git rev-parse "origin/$branch")" = "$GITHUB_SHA"
-git push origin "HEAD:refs/heads/$branch"
+git fetch origin "$target_branch"
+test "$(git rev-parse "origin/$target_branch")" = "$target_head"
+git merge-base --is-ancestor "$target_head" HEAD
+git push origin "HEAD:refs/heads/$target_branch"
