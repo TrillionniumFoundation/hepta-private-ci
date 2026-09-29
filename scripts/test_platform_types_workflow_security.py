@@ -55,6 +55,10 @@ class PlatformTypesWorkflowSecurityTests(unittest.TestCase):
             self.assertNotIn(forbidden, text)
         self.assertIn("ref: ${{ github.event.pull_request.head.sha || github.sha }}", text)
         self.assertIn('test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"', text)
+        self.assertIn(
+            '--expected-sha "${{ github.event.pull_request.head.sha || github.sha }}"',
+            text,
+        )
         self.assertIn("persist-credentials: false", text)
         self.assertIn("permissions:\n  contents: read", text)
 

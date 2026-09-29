@@ -81,7 +81,7 @@ jobs:
             scripts/test_platform_types_rustdoc_api.py \
             scripts/test_platform_types_implementation_map_binding.py
           python3 scripts/platform_types_public_api.py
-          python3 scripts/platform_types_implementation_map.py --expected-sha "${{ github.sha }}"
+          python3 scripts/platform_types_implementation_map.py --expected-sha "${{ github.event.pull_request.head.sha || github.sha }}"
           cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
           cargo check --locked --manifest-path codex-rs/Cargo.toml \
             -p codex-hepta-types -p codex-hepta-wire -p codex-network-proxy --all-targets
