@@ -7,6 +7,11 @@
 /// Reusable state machine; does not install a second runtime owner.
 pub mod durable_control;
 mod neuron_feature;
+mod cognitive_delivery;
+
+pub use cognitive_delivery::CognitiveContextDeliveryError;
+pub use cognitive_delivery::CognitiveContextDeliveryStateV1;
+pub use cognitive_delivery::CognitiveContextDeliveryV1;
 
 pub use neuron_feature::NeuronFeatureContractError;
 pub use neuron_feature::NeuronFeatureObservationV1;
