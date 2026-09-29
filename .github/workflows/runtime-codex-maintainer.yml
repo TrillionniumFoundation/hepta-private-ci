@@ -90,7 +90,7 @@ jobs:
           mkdir -p "$LOG_DIR"
           cd codex-rs
 
-          cargo check --locked \
+          cargo check \
             -p codex-hepta-agent-protocol \
             -p codex-hepta-infer-core \
             -p codex-hepta-codex-adapter \
@@ -154,8 +154,6 @@ jobs:
           git config user.name 'runtime.codex maintainer'
           git config user.email 'runtime-codex-maintainer@invalid'
           git add \
-            .github/workflows/runtime-codex-qualification.yml \
-            scripts/runtime-codex-qualification.py \
             codex-rs/Cargo.lock \
             codex-rs/hepta-infer-core \
             codex-rs/hepta-infer-worker-host \
