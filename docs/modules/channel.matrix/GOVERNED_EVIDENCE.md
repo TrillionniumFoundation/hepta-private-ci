@@ -9,7 +9,9 @@ them as activation or release authority.
 ## 1. Trust boundary
 
 The governance policy and public keys must be canonical regular files outside
-the candidate checkout. The status command never auto-discovers a trust policy:
+the candidate checkout. The evidence directory itself must also be a canonical
+non-symlink directory outside the checkout. The status command never
+auto-discovers a trust policy:
 
 ```sh
 python3 scripts/channel_matrix_status.py \
@@ -34,9 +36,12 @@ A policy has the closed schema:
 }
 ```
 
-The two scopes require distinct Ed25519 public keys. Key paths are sibling file
-names; symlinks, checkout-local trust roots, duplicate JSON fields, path
-traversal and oversized inputs fail closed.
+The two scopes require distinct **canonical Ed25519 SubjectPublicKeyInfo**
+values. Distinct filenames or bytewise-different PEM encodings are not enough:
+the verifier normalizes each public key to DER SPKI and rejects equal underlying
+keys. RSA, EC and other key algorithms are rejected before any receipt is
+accepted. Key paths are sibling file names; symlinks, checkout-local trust
+roots, duplicate JSON fields, path traversal and oversized inputs fail closed.
 
 ## 2. Exact receipt identity
 
@@ -76,21 +81,24 @@ Each JSON receipt has schema
 
 The candidate commit and tree must exactly match `source.json`. The manifest must
 be a sibling regular file with the declared byte count and SHA-256. Check names
-are closed-format identifiers, not free-form logs or secrets.
+are closed-format identifiers, not free-form logs or secrets. Policy, keys,
+receipts, signatures and manifests are read into bounded byte snapshots and
+rejected if their file identity changes during the read.
 
 ## 3. Signature contract
 
-The detached signature is raw Ed25519 over:
+The detached signature is a raw, exactly 64-byte Ed25519 signature over:
 
 ```text
 "hepta.channel-matrix-governed-attestation.v1\0"
 || namespace || "\0" || scope || "\0" || exact_receipt_bytes
 ```
 
-Verification uses the scope-specific public key through `openssl pkeyutl`.
-Changing whitespace, candidate identity, manifest digest, checks, result,
-principal or any denial flag invalidates the signature. Independent acceptance
-is rejected unless target qualification is also present and valid.
+Verification uses the scope-specific canonical Ed25519 key through
+`openssl pkeyutl`. Changing whitespace, candidate identity, manifest digest,
+checks, result, principal or any denial flag invalidates the signature.
+Independent acceptance is rejected unless target qualification is also present
+and valid.
 
 Private signing keys and signing operations belong to separately protected
 target/operator workflows. They must never be stored in the repository, emitted
@@ -100,10 +108,11 @@ to artifacts or made available to a candidate-authored workflow.
 
 A valid receipt changes only the matching evidence state to `passed`.
 `activation`, `release` and `authority_granted` remain `false`. Missing receipts
-remain `not_proved`; malformed, tampered, wrongly signed, wrong-candidate or
-wrong-principal receipts fail the status command rather than degrading to a
-green or ambiguous state.
+remain `not_proved`; malformed, tampered, wrongly signed, wrong-candidate,
+wrong-principal, wrong-algorithm or same-key-cross-scope receipts fail the status
+command rather than degrading to a green or ambiguous state.
 
-The evidence status output records the policy digest, public-key digests,
-receipt/signature digests, evidence-manifest digest, principal and check
-identities. It does not reproduce target logs or message content.
+The evidence status output records the policy digest, bytewise public-key
+digests, canonical SPKI digests, receipt/signature digests,
+evidence-manifest digest, principal and check identities. It does not reproduce
+target logs or message content.
