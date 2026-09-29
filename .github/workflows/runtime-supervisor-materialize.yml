@@ -6,6 +6,7 @@ on:
       - fix/runtime-supervisor-remediation-20260927
     paths:
       - scripts/runtime-supervisor-phase1.patch.gz.b64
+      - 'scripts/runtime-supervisor-phase1.patch.gz.b64.part-*'
       - .github/workflows/runtime-supervisor-materialize.yml
 
 permissions:
@@ -32,15 +33,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          cat scripts/runtime-supervisor-phase1.patch.gz.b64.part-* > /tmp/runtime-supervisor-phase1.patch.gz.b64
           python3 - <<'PY_PATCH'
           import base64, gzip
           from pathlib import Path
-          encoded = Path('scripts/runtime-supervisor-phase1.patch.gz.b64').read_bytes()
+          encoded = Path('/tmp/runtime-supervisor-phase1.patch.gz.b64').read_bytes()
           Path('/tmp/runtime-supervisor-phase1.patch').write_bytes(gzip.decompress(base64.b64decode(encoded)))
           PY_PATCH
           git apply --check /tmp/runtime-supervisor-phase1.patch
           git apply /tmp/runtime-supervisor-phase1.patch
           rm -f scripts/runtime-supervisor-phase1.patch.gz.b64
+          rm -f scripts/runtime-supervisor-phase1.patch.gz.b64.part-*
           rm -f .github/workflows/runtime-supervisor-materialize.yml
           cargo fmt --all
           git diff --check
