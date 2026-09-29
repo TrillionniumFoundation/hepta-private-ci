@@ -6,7 +6,6 @@ import argparse
 import ast
 import hashlib
 import json
-import re
 import subprocess
 import sys
 from collections import defaultdict, deque
@@ -16,7 +15,7 @@ from typing import Any
 try:
     from scripts.hepta_metadata import has_object_keys
     from scripts.hepta_metadata import (
-        AUTHORITY_KEYS,
+        AUTHORITY_KEYS as AUTHORITY_KEYS,
         has_schema_version,
         has_deny_all_authority,
     )
@@ -25,7 +24,7 @@ except ModuleNotFoundError as error:
         raise
     from hepta_metadata import has_object_keys
     from hepta_metadata import (
-        AUTHORITY_KEYS,
+        AUTHORITY_KEYS as AUTHORITY_KEYS,
         has_schema_version,
         has_deny_all_authority,
     )

@@ -16,7 +16,7 @@ from typing import Any
 try:
     from scripts.hepta_metadata import has_object_keys
     from scripts.hepta_metadata import (
-        AUTHORITY_KEYS,
+        AUTHORITY_KEYS as AUTHORITY_KEYS,
         has_schema_version,
         has_deny_all_authority,
     )
@@ -26,7 +26,7 @@ except ModuleNotFoundError as error:
         raise
     from hepta_metadata import has_object_keys
     from hepta_metadata import (
-        AUTHORITY_KEYS,
+        AUTHORITY_KEYS as AUTHORITY_KEYS,
         has_schema_version,
         has_deny_all_authority,
     )
@@ -1060,7 +1060,6 @@ def verify() -> int:
 
     dedicated_workflow = (ROOT / WORKFLOW_PATH).read_text(encoding="utf-8")
     global_workflow = (ROOT / GLOBAL_WORKFLOW).read_text(encoding="utf-8")
-    global_verifier = (ROOT / GLOBAL_VERIFIER).read_text(encoding="utf-8")
     for workflow, label in (
         (dedicated_workflow, "dedicated workflow"),
         (global_workflow, "global workflow"),
