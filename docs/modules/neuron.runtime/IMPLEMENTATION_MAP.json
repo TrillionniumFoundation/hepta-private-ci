@@ -252,8 +252,13 @@
   "productCallers": [
     {
       "state": "compiled_v2_owner_and_restart_generation_controller_not_product_activated",
-      "sourcePath": "codex-rs/hepta-agentd/src/neuron_runtime_v2.rs",
-      "nativeSymbol": "ProductNeuronOwnerV2 / AgentdNeuronGenerationControllerV2"
+      "sourcePath": "codex-rs/hepta-agentd/src/neuron_runtime_v2_base.rs",
+      "nativeSymbol": "ProductNeuronOwnerV2"
+    },
+    {
+      "state": "compiled_v2_owner_and_restart_generation_controller_not_product_activated",
+      "sourcePath": "codex-rs/hepta-agentd/src/neuron_runtime_v2_errors.rs",
+      "nativeSymbol": "AgentdNeuronGenerationControllerV2"
     },
     {
       "state": "typed_intelligence_caller_source_implemented",
