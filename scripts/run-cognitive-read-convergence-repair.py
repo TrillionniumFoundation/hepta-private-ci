@@ -2,9 +2,9 @@
 """Run the reviewed cognitive.read convergence repair with narrow shape fixes.
 
 The authored repair intentionally rejects semantic source drift. This launcher
-normalizes only the presence or absence of one terminal newline and applies the
-reviewed strict single-line nextest-version validation before the ordinary
-non-force authoring commits are created.
+normalizes only the presence or absence of one terminal newline and upgrades the
+nextest-version gate to parse the exact structured metadata emitted by the
+pinned runner before ordinary non-force authoring commits are created.
 """
 from __future__ import annotations
 
@@ -61,12 +61,43 @@ def harden_pinned_runner_validation() -> None:
                 problems.append("test-runner: missing or unexpected pinned nextest version")
 '''
     new = '''        if label == "test-runner":
-            runner_lines = log.read_text(errors="replace").splitlines()
-            first_line = runner_lines[0].strip() if runner_lines else ""
+            runner_lines = [
+                line.strip()
+                for line in log.read_text(errors="replace").splitlines()
+                if line.strip()
+            ]
             version = re.escape(NEXTEST_VERSION)
-            if len(runner_lines) != 1 or re.fullmatch(
-                rf"cargo-nextest {version}(?:[ \\t][^\\r\\n]*)?", first_line
-            ) is None:
+            valid_runner = len(runner_lines) == 5
+            first = None
+            full_hash = None
+            commit_date = None
+            if valid_runner:
+                first = re.fullmatch(
+                    rf"cargo-nextest {version} \\((?P<short>[0-9a-f]{{7,40}}) "
+                    r"(?P<date>[0-9]{4}-[0-9]{2}-[0-9]{2})\\)",
+                    runner_lines[0],
+                )
+                release = re.fullmatch(rf"release: {version}", runner_lines[1])
+                full_hash = re.fullmatch(
+                    r"commit-hash: (?P<hash>[0-9a-f]{40})", runner_lines[2]
+                )
+                commit_date = re.fullmatch(
+                    r"commit-date: (?P<date>[0-9]{4}-[0-9]{2}-[0-9]{2})",
+                    runner_lines[3],
+                )
+                host = re.fullmatch(
+                    r"host: [A-Za-z0-9_.-]+", runner_lines[4]
+                )
+                valid_runner = all(
+                    item is not None
+                    for item in (first, release, full_hash, commit_date, host)
+                )
+            if valid_runner and first is not None and full_hash is not None and commit_date is not None:
+                valid_runner = (
+                    full_hash.group("hash").startswith(first.group("short"))
+                    and commit_date.group("date") == first.group("date")
+                )
+            if not valid_runner:
                 problems.append("test-runner: missing or unexpected pinned nextest version")
 '''
     replace_once_tolerating_terminal_newline(EVIDENCE, old, new)
