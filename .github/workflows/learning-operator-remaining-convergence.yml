@@ -1,5 +1,10 @@
 name: Learning operator remaining convergence
 
+# Single authoritative writer for the frozen learning.operator qualification head.
+# It applies the deterministic source convergence, qualifies exact source and
+# current-main synthetic merge, binds immutable evidence, and removes all
+# temporary writer/dispatch surfaces before pushing the final branch head.
+
 on:
   push:
     branches: [codex/learning-operator-full-convergence-20260926]
@@ -159,7 +164,10 @@ jobs:
           set -euo pipefail
           git config user.name "OpenAI"
           git config user.email "openai@users.noreply.github.com"
-          git rm -f --ignore-unmatch .github/workflows/learning-operator-final-convergence.yml
+          git rm -f --ignore-unmatch \
+            .github/workflows/learning-operator-final-convergence.yml \
+            .github/workflows/learning-operator-source-apply.yml \
+            .github/workflows/learning-operator-authoritative-dispatch.yml
           git add -A
           git commit \
             -m "feat(learning.operator): close V4 production qualification path" \
