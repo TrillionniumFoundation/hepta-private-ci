@@ -1,6 +1,9 @@
 //! Exact-ID materialization through the existing owner page implementation.
 //! This is a read-only value, not another store, authorization cache or lease.
 
+#[path = "cognitive_read_compact_product.rs"]
+mod compact_product;
+
 use std::collections::BTreeSet;
 
 use codex_hepta_cognitive_read::MAX_READ_IDS_V1;
