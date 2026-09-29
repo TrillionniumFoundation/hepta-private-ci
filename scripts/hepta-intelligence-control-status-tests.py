@@ -129,6 +129,24 @@ class SourceMappingTests(unittest.TestCase):
         )
         self.assertIn("with_hard_timeout_process_exit", signed_tests)
 
+    def test_current_generation_run_start_recovery_uses_the_product_route(self) -> None:
+        objective = (
+            STATUS.ROOT / "codex-rs/hepta-agentd/src/objective_runtime.rs"
+        ).read_text(encoding="utf-8")
+        runtime = (STATUS.ROOT / "codex-rs/hepta-agentd/src/runtime.rs").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("pub(crate) async fn reconcile", objective)
+        self.assertIn(".records()", objective)
+        self.assertIn(".cloned()", objective)
+        self.assertIn(".start_canonical_intelligence(&record)", objective)
+        self.assertIn("complete_canonical_intelligence(ready).await", objective)
+        self.assertIn("host.reconcile(", runtime)
+        self.assertIn(".await?;", runtime)
+        self.assertNotIn(
+            "must wait for the authenticated ObjectiveStart retry", objective
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

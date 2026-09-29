@@ -17,6 +17,34 @@ an existing immutable object. Equal concurrent content is idempotent; different
 content under the same identity conflicts. Operation state and final-use fencing
 remain owned by kernel.operations, not by an intelligence shadow journal.
 
+## Durable RunStart to ContextAttached obligation
+
+After App Server readiness, `ObjectiveRuntimeHost::reconcile` scans the durable
+RunStart journal for compiled records whose generation, objective fence,
+deadline and authenticated issuer are still current. It clones the bounded
+eligible records while holding the journal mutex, releases that mutex before any
+owner or model work, and then reuses the ordinary canonical route:
+
+```text
+durable RunStart -> host-owned seven-owner invocation
+-> final currentness fence -> bound Agentd admission -> ContextAttached
+-> configured physical execution host
+```
+
+A configured canonical profile must not silently fall back to compatibility.
+The same native dispatch journal and Agentd revision fence therefore remain the
+only authority to decide whether a selected run may cross `turn/start`; an
+unknown acknowledgement is reconcile-only and cannot authorize redispatch.
+Abstain and slow-path remain authority-free and never enter physical execution.
+
+This source recovery is deliberately exact-generation only. It does not rewrite
+an old signed spawn/generation identity, substitute a new fence, or infer that a
+successor process may reuse expired authority. Cross-generation adoption after a
+Supervisor replacement requires an explicit successor-generation protocol and
+fresh final-use authorization; target-host crash-cut qualification for that
+protocol remains an acceptance gate. The source presence described here is not
+a claim that every process-loss cut has been executed successfully.
+
 ## Two distinct clocks
 
 `payload.now` is immutable historical event/enqueue time in Unix milliseconds.
