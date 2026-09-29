@@ -165,14 +165,18 @@ fn publish_request(
     }
 }
 
-#[test]
-fn named_owner_service_publishes_retries_and_reopens_from_current_head() {
+fn service_and_request() -> (
+    TestDir,
+    SigningKey,
+    DatasetWithdrawalRegistry,
+    LearningArtifactOwnerService,
+    LearningArtifactPublishRequestV1,
+) {
     let directory = TestDir::new();
     let key = key();
     let withdrawals = DatasetWithdrawalRegistry::new_scoped(scope());
     let scope_digest = withdrawals.scope_digest().fixture("scope digest");
-
-    let mut service = LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
+    let service = LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
         root: directory.0.clone(),
         trust: trust(&key, scope_digest),
         writer_lease: lease(&key, scope_digest),
@@ -182,7 +186,6 @@ fn named_owner_service_publishes_retries_and_reopens_from_current_head() {
         now: 20,
     })
     .fixture("open service");
-
     let predecessor = service.registry().snapshot().head_digest;
     let admission =
         admit_manifest_at_withdrawal_head_v3(&withdrawals, withdrawals.head_digest(), manifest(), 20)
@@ -202,6 +205,13 @@ fn named_owner_service_publishes_retries_and_reopens_from_current_head() {
         .stage_compatibility_registration(&preview, &mut staged, 20)
         .fixture("preview registration");
     let request = publish_request(&key, &withdrawals, predecessor, staged.snapshot().head_digest);
+    (directory, key, withdrawals, service, request)
+}
+
+#[test]
+fn named_owner_service_publishes_retries_and_reopens_from_current_head() {
+    let (directory, key, withdrawals, mut service, request) = service_and_request();
+    let scope_digest = withdrawals.scope_digest().fixture("scope digest");
 
     let receipt = service.publish(request.clone()).fixture("publish");
     let retry = service.publish(request.clone()).fixture("terminal retry");
@@ -245,7 +255,8 @@ fn named_owner_service_publishes_retries_and_reopens_from_current_head() {
         changed_signature,
         changed_witness,
     ] {
-        assert!(service.publish(changed).is_err());
+        let error = service.publish(changed).expect_err("semantic drift must reject");
+        assert_eq!(error.code(), LearningArtifactOwnerErrorCodeV1::IdentityConflict);
         assert_eq!(
             service.registry().snapshot().head_digest,
             receipt.registry_head_digest
@@ -295,25 +306,14 @@ fn named_owner_service_publishes_retries_and_reopens_from_current_head() {
 }
 
 #[test]
-fn rejected_payload_before_prepare_leaves_no_checkpoint() {
-    let directory = TestDir::new();
-    let key = key();
-    let withdrawals = DatasetWithdrawalRegistry::new_scoped(scope());
-    let scope_digest = withdrawals.scope_digest().fixture("scope digest");
-    let mut service = LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
-        root: directory.0.clone(),
-        trust: trust(&key, scope_digest),
-        writer_lease: lease(&key, scope_digest),
-        required_current_head: None,
-        withdrawal_registry: withdrawals.clone(),
-        storage_binding: digest("binding"),
-        now: 20,
-    })
-    .fixture("open service");
+fn rejected_payload_before_prepare_leaves_no_checkpoint_or_request_identity() {
+    let (directory, _key, _withdrawals, mut service, mut request) = service_and_request();
     let predecessor = service.registry().snapshot().head_digest;
-    let mut request = publish_request(&key, &withdrawals, predecessor, digest("preview"));
     request.payload[0] ^= 1;
-    assert!(service.publish(request).is_err());
+    let error = service
+        .publish(request.clone())
+        .expect_err("invalid payload must reject");
+    assert_eq!(error.code(), LearningArtifactOwnerErrorCodeV1::IdentityConflict);
     assert!(
         service
             .host
@@ -323,28 +323,74 @@ fn rejected_payload_before_prepare_leaves_no_checkpoint() {
     );
     assert!(service.recovery_required().is_none());
     assert_eq!(service.registry().snapshot().head_digest, predecessor);
+    let identity = directory.0.join("writer/request-identities-v1");
+    assert!(!identity.exists() || fs::read_dir(identity).fixture("identity directory").next().is_none());
 }
 
 #[test]
-fn uncertain_checkpoint_fences_unrelated_requests_and_current_reads() {
-    let directory = TestDir::new();
-    let key = key();
-    let withdrawals = DatasetWithdrawalRegistry::new_scoped(scope());
+fn checkpoint_without_canonical_request_identity_fails_closed() {
+    let (directory, key, withdrawals, service, request) = service_and_request();
+    service
+        .host
+        .begin_publication(
+            request.operation_id.clone(),
+            request.admission.clone(),
+            &withdrawals,
+            service.registry(),
+            request.expected_registry_predecessor_head,
+            request.now,
+        )
+        .fixture("legacy checkpoint without identity");
+    drop(service);
     let scope_digest = withdrawals.scope_digest().fixture("scope digest");
-    let mut service = LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
+    let mut reopened = LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
         root: directory.0.clone(),
         trust: trust(&key, scope_digest),
         writer_lease: lease(&key, scope_digest),
         required_current_head: None,
-        withdrawal_registry: withdrawals.clone(),
+        withdrawal_registry: withdrawals,
         storage_binding: digest("binding"),
-        now: 20,
+        now: 21,
     })
-    .fixture("open service");
-    let predecessor = service.registry().snapshot().head_digest;
-    let request = publish_request(&key, &withdrawals, predecessor, digest("preview"));
+    .fixture("reopen service");
+    let error = reopened
+        .publish(request)
+        .expect_err("missing request identity must not be adopted");
+    assert_eq!(error.code(), LearningArtifactOwnerErrorCodeV1::IdentityMissing);
+    assert!(reopened.recovery_required().is_some());
+}
+
+#[test]
+fn operational_state_reports_recovery_and_drain_age() {
+    let (_directory, _key, _withdrawals, mut service, request) = service_and_request();
+    let initial = service.operational_state(20);
+    assert_eq!(initial.registry_records, 0);
+    assert_eq!(initial.withdrawal_records, 0);
+    assert!(!initial.draining);
+    assert!(initial.withdrawal_frontier_durable);
+
     let operation = request.operation_id.clone();
-    let path = directory.0.join("transactions").join(format!(
+    let path = service.root.join("transactions").join(format!(
+        "{}-0.checkpoint",
+        Digest32::of_bytes(operation.as_str().as_bytes())
+    ));
+    fs::write(path, b"truncated").fixture("inject uncertain checkpoint");
+    assert!(service.publish(request).is_err());
+    service.begin_drain_at(25);
+    let state = service.operational_state(30);
+    assert_eq!(state.recovery_operation_id, Some(operation));
+    assert_eq!(state.recovery_observed_age_seconds, Some(10));
+    assert_eq!(state.drain_observed_age_seconds, Some(5));
+    assert!(state.draining);
+    assert!(!service.is_drained());
+}
+
+#[test]
+fn uncertain_checkpoint_fences_unrelated_requests_and_current_reads() {
+    let (_directory, _key, _withdrawals, mut service, request) = service_and_request();
+    let predecessor = service.registry().snapshot().head_digest;
+    let operation = request.operation_id.clone();
+    let path = service.root.join("transactions").join(format!(
         "{}-0.checkpoint",
         Digest32::of_bytes(operation.as_str().as_bytes())
     ));
@@ -362,6 +408,26 @@ fn uncertain_checkpoint_fences_unrelated_requests_and_current_reads() {
         Err(LearningArtifactOwnerServiceError::RecoveryRequired(_))
     ));
     assert_eq!(service.registry().snapshot().head_digest, predecessor);
+}
+
+#[test]
+fn stable_error_codes_separate_retry_and_operator_actions() {
+    assert_eq!(
+        LearningArtifactOwnerServiceError::RequestIdentityConflict.code().as_str(),
+        "identity_conflict"
+    );
+    assert_eq!(
+        LearningArtifactOwnerServiceError::StaleOwner.code().as_str(),
+        "stale_owner"
+    );
+    assert_eq!(
+        LearningArtifactOwnerServiceError::PersistenceUnknown.code().as_str(),
+        "persistence_unknown"
+    );
+    assert_eq!(
+        LearningArtifactOwnerServiceError::CapacityExhausted.code().as_str(),
+        "capacity_exhausted"
+    );
 }
 
 #[cfg(unix)]
