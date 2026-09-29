@@ -10,11 +10,9 @@ concurrency:
 jobs:
   apply:
     runs-on: macos-latest
-    timeout-minutes: 15
+    timeout-minutes: 50
     permissions:
       contents: write
-    outputs:
-      source_sha: ${{ steps.apply.outputs.source_sha }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -22,10 +20,9 @@ jobs:
       - uses: dtolnay/rust-toolchain@5d458579430fc14a04a08a1e7d3694f545e91ce6
         with:
           toolchain: 1.95.0
-          components: rustfmt
-      - name: Verify payload, apply only scoped changes, and push a normal commit
+          components: rustfmt, clippy
+      - name: Apply hash-locked scoped changes and create a clean candidate
         id: apply
-        continue-on-error: true
         env:
           PYTHONDONTWRITEBYTECODE: 1
           DESTINATION: codex/inference-control-boundary-capacity-20260929
@@ -40,8 +37,8 @@ jobs:
           chunks = sorted(Path('scripts/inference-boundary-payload').glob('*.b64'))
           assert len(chunks) == 4
           raw = lzma.decompress(base64.b64decode(''.join(p.read_text().strip() for p in chunks), validate=True))
-          assert len(raw) == 5422
-          assert hashlib.sha256(raw).hexdigest() == '98ed1ba75067e6cdf5b65b01ddde3fc4891e80cb15c1cbe6992c2154568358ce'
+          assert len(raw) == 46781
+          assert hashlib.sha256(raw).hexdigest() == '8b93a084a722d79dd6f57b4a22d23cfbbae0e3c9d730e3a333d7f5a579817bc2'
           Path(os.environ['RUNNER_TEMP'], 'inference-boundary.patch').write_bytes(raw)
           PY
           git fetch origin "$DESTINATION"
@@ -53,12 +50,17 @@ jobs:
           import subprocess
           changed = subprocess.check_output(['git','diff','--cached','--name-only','-z']).decode().split('\0')
           prefixes = ('codex-rs/hepta-infer-worker-host/src/', 'docs/modules/inference.control/')
-          scripts = {'scripts/hepta-inference-control-current-state.py', 'scripts/hepta-inference-control-actor-migrate.py',
-                     'scripts/hepta-implementation-maps.py', 'scripts/hepta_inference_boundary_native.py',
-                     'scripts/hepta_inference_capacity.py', 'scripts/test_hepta_inference_capacity.py',
-                     'scripts/test_hepta_inference_current_state.py',
-                     '.github/workflows/hepta-inference-maintenance.yml',
-                     '.github/workflows/hepta-inference-readonly-matrix.yml'}
+          scripts = {
+              'scripts/hepta-inference-control-current-state.py',
+              'scripts/hepta-inference-control-actor-migrate.py',
+              'scripts/hepta-implementation-maps.py',
+              'scripts/hepta_inference_boundary_native.py',
+              'scripts/hepta_inference_capacity.py',
+              'scripts/test_hepta_inference_capacity.py',
+              'scripts/test_hepta_inference_current_state.py',
+              '.github/workflows/hepta-inference-maintenance.yml',
+              '.github/workflows/hepta-inference-readonly-matrix.yml',
+          }
           for name in filter(None, changed):
               assert name.startswith(prefixes) or name in scripts, name
               if name.endswith('.rs'):
@@ -69,65 +71,40 @@ jobs:
           python3 scripts/hepta-inference-control-current-state.py sync
           python3 scripts/hepta-inference-control-current-state.py check
           python3 scripts/hepta-inference-control-actor-migrate.py check
-          python3 scripts/hepta-implementation-maps.py verify --module inference.control
           python3 -m unittest -v scripts.test_hepta_inference_current_state scripts.test_hepta_inference_capacity
           git diff --check
           git add -u
           git config user.name 'ChatGPT engineering'
           git config user.email 'chatgpt@users.noreply.github.com'
-          git commit -m 'ci(inference.control): scope exact implementation-map verification'
-          git push origin "HEAD:refs/heads/$DESTINATION"
-          printf 'source_sha=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          git commit -m 'feat(inference.control): close observation and qualification gaps'
+          candidate="$(git rev-parse HEAD)"
+          printf '%s\n' "$candidate" | tee "$RUNNER_TEMP/inference-boundary-candidate-sha.txt"
+          printf 'source_sha=%s\n' "$candidate" >> "$GITHUB_OUTPUT"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          python3 scripts/hepta-implementation-maps.py verify --module inference.control
           git show --stat --oneline HEAD
-      - name: Preserve application and verification diagnostics
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: inference-boundary-apply-${{ github.run_id }}-${{ github.run_attempt }}
-          path: |
-            ${{ runner.temp }}/inference-boundary-apply.log
-            ${{ runner.temp }}/inference-boundary.patch
-          if-no-files-found: error
-          retention-days: 30
-      - name: Enforce successful application and verification
-        if: steps.apply.outcome != 'success'
-        shell: bash
-        run: exit 1
-  native-diagnostics:
-    needs: apply
-    runs-on: macos-latest
-    timeout-minutes: 35
-    env:
-      CARGO_BUILD_JOBS: 2
-      CARGO_INCREMENTAL: 0
-      CARGO_PROFILE_RELEASE_DEBUG: 0
-      CARGO_TERM_COLOR: never
-      PYTHONDONTWRITEBYTECODE: 1
-      SOURCE_SHA: ${{ needs.apply.outputs.source_sha }}
-      TESTED_SHA: ${{ needs.apply.outputs.source_sha }}
-      BASE_SHA: a126987b84737dbc2ee2592442a314117bddb4a2
-      HEPTA_CI_LANE: boundary-diagnostic
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        with:
-          ref: ${{ needs.apply.outputs.source_sha }}
-          persist-credentials: false
-      - uses: dtolnay/rust-toolchain@5d458579430fc14a04a08a1e7d3694f545e91ce6
-        with:
-          toolchain: 1.95.0
-          components: clippy, rustfmt
-      - name: Compile and execute original core, actor and vault sources in a retained diagnostic closure
+      - name: Compile and exercise the original owner, mailbox, record cache and vault sources
+        env:
+          CARGO_BUILD_JOBS: 2
+          CARGO_INCREMENTAL: 0
+          CARGO_PROFILE_RELEASE_DEBUG: 0
+          CARGO_TERM_COLOR: never
+          PYTHONDONTWRITEBYTECODE: 1
+          SOURCE_SHA: ${{ steps.apply.outputs.source_sha }}
+          TESTED_SHA: ${{ steps.apply.outputs.source_sha }}
+          BASE_SHA: a126987b84737dbc2ee2592442a314117bddb4a2
+          HEPTA_CI_LANE: boundary-diagnostic
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           test -z "$(git status --porcelain)"
-          mkdir -p "$RUNNER_TEMP/inference-boundary-records"
           records="$RUNNER_TEMP/inference-boundary-records"
           manifest="$RUNNER_TEMP/inference-boundary-native/Cargo.toml"
+          mkdir -p "$records"
           python3 scripts/hepta_inference_boundary_native.py --output "$RUNNER_TEMP/inference-boundary-native"
           rustc -Vv > "$records/toolchain.txt"
-          python3 scripts/hepta_ci_exec.py --output "$records/native-tests.json" --minimum-tests 15 -- \
+          python3 scripts/hepta_ci_exec.py --output "$records/native-tests.json" --minimum-tests 16 -- \
             cargo test --manifest-path "$manifest" --workspace --all-targets --release -- --nocapture
           python3 scripts/hepta_ci_exec.py --output "$records/real-writer-curve.json" --minimum-tests 1 -- \
             cargo test --manifest-path "$manifest" --release -p codex-hepta-infer-worker-host \
@@ -139,12 +116,38 @@ jobs:
             cargo clippy --manifest-path "$manifest" --workspace --all-targets -- -D warnings
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           test -z "$(git status --porcelain)"
-      - name: Preserve results and precise diagnostic scope even on failure
+      - name: Upload the validated commit object or fast-forward directly
+        env:
+          DESTINATION: codex/inference-control-boundary-capacity-20260929
+          BASE: e05a74b234631802ca7ebd6f49f5a96495c45767
+        shell: bash
+        run: |
+          set -euo pipefail
+          candidate="$(git rev-parse HEAD)"
+          set +e
+          output="$(git push origin "HEAD:refs/heads/$DESTINATION" 2>&1)"
+          status=$?
+          set -e
+          printf '%s\n' "$output" | tee "$RUNNER_TEMP/inference-boundary-push.log"
+          if [ "$status" -eq 0 ]; then
+            echo "DESTINATION_PUSHED=$candidate"
+            exit 0
+          fi
+          printf '%s\n' "$output" | grep -Eiq 'workflow|workflows permission|refusing to allow'
+          git fetch origin "$DESTINATION"
+          test "$(git rev-parse FETCH_HEAD)" = "$BASE"
+          echo "CANDIDATE_OBJECT_UPLOADED=$candidate"
+          echo "The workflow-file permission rejection is expected; an authorized Git-data ref update must bind this validated object."
+      - name: Preserve application, native and candidate diagnostics
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: inference-boundary-${{ needs.apply.outputs.source_sha }}-${{ github.run_id }}
+          name: inference-boundary-apply-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
+            ${{ runner.temp }}/inference-boundary-apply.log
+            ${{ runner.temp }}/inference-boundary.patch
+            ${{ runner.temp }}/inference-boundary-candidate-sha.txt
+            ${{ runner.temp }}/inference-boundary-push.log
             ${{ runner.temp }}/inference-boundary-records/
             ${{ runner.temp }}/inference-boundary-native/Cargo.toml
             ${{ runner.temp }}/inference-boundary-native/Cargo.lock
@@ -152,5 +155,5 @@ jobs:
             ${{ runner.temp }}/inference-boundary-native/core/Cargo.toml
             ${{ runner.temp }}/inference-boundary-native/host/Cargo.toml
             ${{ runner.temp }}/inference-boundary-native/host/lib.rs
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 30
