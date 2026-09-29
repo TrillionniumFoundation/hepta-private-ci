@@ -142,3 +142,44 @@ async fn signed_input_cannot_install_host_trust_or_change_actual_context() {
         ))
     ));
 }
+
+#[test]
+#[ignore = "qualification-host timing probe"]
+fn qualification_authority_signature_verification_profile() {
+    const ITERATIONS_ENV: &str = "HEPTA_INTELLIGENCE_SIGNATURE_PROFILE_ITERATIONS";
+    const OUTPUT_ENV: &str = "HEPTA_INTELLIGENCE_SIGNATURE_PROFILE_OUTPUT";
+
+    let (value, _) = signed_fixture();
+    let directory = tempfile::tempdir().expect("directory");
+    let (path, _guard) = signed_authority_profile(&directory, &value);
+    let manifest: IntelligenceAuthorityFileV1 =
+        serde_json::from_slice(&std::fs::read(path).expect("manifest bytes")).expect("manifest");
+    let verifier = authority_verifier();
+    let requested = id("objective.compiler");
+    let iterations = std::env::var(ITERATIONS_ENV)
+        .ok()
+        .and_then(|value| value.parse::<usize>().ok())
+        .unwrap_or(1_000)
+        .clamp(1, 100_000);
+    let mut samples_nanos = Vec::with_capacity(iterations);
+    for _ in 0..iterations {
+        let started = std::time::Instant::now();
+        verify_authority_file(&manifest, &verifier, &requested).expect("strict verification");
+        samples_nanos.push(
+            u64::try_from(started.elapsed().as_nanos()).expect("verification duration fits u64"),
+        );
+    }
+    assert_eq!(samples_nanos.len(), iterations);
+    if let Some(path) = std::env::var_os(OUTPUT_ENV) {
+        let record = serde_json::json!({
+            "schema": "hepta.intelligence-control.signature-profile.v1",
+            "iterations": iterations,
+            "samplesNanos": samples_nanos,
+        });
+        std::fs::write(
+            path,
+            serde_json::to_vec_pretty(&record).expect("encode signature profile"),
+        )
+        .expect("write signature profile");
+    }
+}
