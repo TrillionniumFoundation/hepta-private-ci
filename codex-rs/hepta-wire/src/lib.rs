@@ -57,6 +57,7 @@ pub use managed_session::ManagedSessionError;
 pub use managed_session::SessionLifecycleState;
 pub use record_stream::ManagedRecordStream;
 pub use record_stream::RecordStreamBatch;
+pub use record_stream::RecordStreamBudget;
 pub use record_stream::RecordStreamError;
 pub use record_stream::RecordStreamLimits;
 pub use registry::CanonicalizationProfile;

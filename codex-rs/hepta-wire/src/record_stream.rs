@@ -37,6 +37,40 @@ impl Default for RecordStreamLimits {
     }
 }
 
+/// Caller-owned allowance shared by streams during one scheduling turn.
+///
+/// This is work accounting, not authorization, a queue, or a scheduler. Charge
+/// admitted source bytes and every full-record authentication attempt, including
+/// a failing attempt. Drain returned frames before allocating the next turn's
+/// allowance. Transport buffers, retained frames, connection count and I/O retry
+/// attempts require independent bounds in their existing owners.
+///
+/// The allowance is deliberately not `Clone` or `Copy`. Exhaustion is a yield,
+/// never permission to discard the unconsumed suffix or reset session state.
+#[derive(Debug, Eq, PartialEq)]
+pub struct RecordStreamBudget {
+    remaining_bytes: usize,
+    remaining_records: usize,
+}
+
+impl RecordStreamBudget {
+    /// Zero allowances are valid and cause a nonterminal, zero-consumption yield.
+    pub const fn new(bytes: usize, records: usize) -> Self {
+        Self {
+            remaining_bytes: bytes,
+            remaining_records: records,
+        }
+    }
+
+    pub const fn remaining_bytes(&self) -> usize {
+        self.remaining_bytes
+    }
+
+    pub const fn remaining_records(&self) -> usize {
+        self.remaining_records
+    }
+}
+
 /// Frames before a terminal suffix remain deliverable, exactly once.
 #[must_use = "deliver the accepted prefix before acting on the terminal error"]
 pub struct RecordStreamBatch {
@@ -182,61 +216,119 @@ impl ManagedRecordStream {
             .map_err(|_| RecordStreamError::Allocation)
     }
 
+    // Both fragmented and contiguous records use the same admission checks.
+    // These checks never replace the owner's MAC, sequence and schema checks.
+    fn admitted_record_length(&self, prefix: &[u8]) -> Result<usize, RecordStreamError> {
+        if prefix[..4] != *b"HPTM" || prefix[4..6] != [0, 1] {
+            return Err(RecordStreamError::InvalidPrefix);
+        }
+        if &prefix[6..38] != self.owner.session_id().as_array() {
+            return Err(RecordStreamError::SessionIdentityMismatch);
+        }
+        let length = u32::from_be_bytes([prefix[46], prefix[47], prefix[48], prefix[49]]);
+        let length = usize::try_from(length).map_err(|_| RecordStreamError::RecordLimit)?;
+        if !(WIRE_HEADER_BYTES..=MAX_WIRE_FRAME_BYTES).contains(&length)
+            || length > self.limits.max_record_bytes - PREFIX_BYTES - TAG_BYTES
+        {
+            return Err(RecordStreamError::RecordLimit);
+        }
+        Ok(PREFIX_BYTES + length + TAG_BYTES)
+    }
+
+    /// Process one turn under the stream's configured limits.
     pub fn feed(&mut self, input: &[u8]) -> DecodeFeed<RecordStreamBatch> {
+        let mut allowance = RecordStreamBudget::new(
+            self.limits.max_feed_bytes,
+            self.limits.max_records_per_feed,
+        );
+        self.feed_with_budget(input, &mut allowance)
+    }
+
+    /// Process under both this stream's limits and a shared scheduling allowance.
+    ///
+    /// Retain the suffix after `bytes_consumed()` and yield the executor on
+    /// exhaustion. Passing one allowance across peers bounds aggregate admitted
+    /// bytes and authentication attempts without transferring session ownership.
+    /// A terminal error never refunds work already performed. Cancellation and
+    /// EOF remain available independently of this allowance.
+    pub fn feed_with_budget(
+        &mut self,
+        input: &[u8],
+        allowance: &mut RecordStreamBudget,
+    ) -> DecodeFeed<RecordStreamBatch> {
         let mut batch = RecordStreamBatch {
             frames: Vec::new(),
             terminal_error: None,
             yielded: false,
         };
         if self.is_terminal() {
+            self.retire();
             batch.terminal_error = Some(RecordStreamError::Terminated);
             return DecodeFeed::new(batch, 0);
         }
-        let budget = input.len().min(self.limits.max_feed_bytes);
+        let budget = input
+            .len()
+            .min(self.limits.max_feed_bytes)
+            .min(allowance.remaining_bytes);
+        let record_budget = self
+            .limits
+            .max_records_per_feed
+            .min(allowance.remaining_records);
         let mut consumed = 0;
-        while consumed < budget && batch.frames.len() < self.limits.max_records_per_feed {
+        let mut attempted = 0;
+        while consumed < budget && attempted < record_budget {
+            // Complete, contiguous records can be authenticated directly from
+            // the caller's slice. Only framing staging is avoided: decoding may
+            // still allocate and the returned envelopes remain owned values.
+            if self.pending.is_empty() && budget - consumed >= PREFIX_BYTES {
+                let length = match self
+                    .admitted_record_length(&input[consumed..consumed + PREFIX_BYTES])
+                {
+                    Ok(length) => length,
+                    Err(error) => {
+                        consumed += PREFIX_BYTES;
+                        batch.terminal_error = Some(error);
+                        break;
+                    }
+                };
+                if length <= budget - consumed {
+                    let start = consumed;
+                    consumed += length;
+                    attempted += 1;
+                    match self.owner.open_record(&input[start..consumed]) {
+                        Ok(frame) => batch.frames.push(frame),
+                        Err(error) => {
+                            batch.terminal_error = Some(RecordStreamError::Session(error));
+                            break;
+                        }
+                    }
+                    continue;
+                }
+            }
+
             let target = self.expected.unwrap_or(PREFIX_BYTES);
             let count = (target - self.pending.len()).min(budget - consumed);
             if let Err(error) = self.reserve_admitted(count) {
                 batch.terminal_error = Some(error);
                 break;
             }
-            self.pending.extend_from_slice(&input[consumed..consumed + count]);
+            self.pending
+                .extend_from_slice(&input[consumed..consumed + count]);
             consumed += count;
             if self.pending.len() != target {
                 continue;
             }
             if self.expected.is_none() {
-                if self.pending[..4] != *b"HPTM" || self.pending[4..6] != [0, 1] {
-                    batch.terminal_error = Some(RecordStreamError::InvalidPrefix);
-                    break;
+                match self.admitted_record_length(&self.pending) {
+                    Ok(length) => self.expected = Some(length),
+                    Err(error) => {
+                        batch.terminal_error = Some(error);
+                        break;
+                    }
                 }
-                // Reject a known-wrong session before accepting its body. This
-                // is admission only: the owner still verifies the entire MAC,
-                // sequence and schema policy before publishing any frame.
-                if &self.pending[6..38] != self.owner.session_id().as_array() {
-                    batch.terminal_error = Some(RecordStreamError::SessionIdentityMismatch);
-                    break;
-                }
-                let length = u32::from_be_bytes([
-                    self.pending[46],
-                    self.pending[47],
-                    self.pending[48],
-                    self.pending[49],
-                ]);
-                let Ok(length) = usize::try_from(length) else {
-                    batch.terminal_error = Some(RecordStreamError::RecordLimit);
-                    break;
-                };
-                if !(WIRE_HEADER_BYTES..=MAX_WIRE_FRAME_BYTES).contains(&length)
-                    || length > self.limits.max_record_bytes - PREFIX_BYTES - TAG_BYTES
-                {
-                    batch.terminal_error = Some(RecordStreamError::RecordLimit);
-                    break;
-                }
-                self.expected = Some(PREFIX_BYTES + length + TAG_BYTES);
                 continue;
             }
+            attempted += 1;
             match self.owner.open_record(&self.pending) {
                 Ok(frame) => batch.frames.push(frame),
                 Err(error) => {
@@ -247,6 +339,8 @@ impl ManagedRecordStream {
             self.pending.clear();
             self.expected = None;
         }
+        allowance.remaining_bytes -= consumed;
+        allowance.remaining_records -= attempted;
         if batch.terminal_error.is_some() {
             self.retire();
         } else {
@@ -337,3 +431,7 @@ impl Error for RecordStreamError {
 #[cfg(test)]
 #[path = "record_stream_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "record_stream_budget_tests.rs"]
+mod budget_tests;
