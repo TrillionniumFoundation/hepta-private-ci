@@ -1,10 +1,22 @@
 {
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "mappingSourceIdentityMode": "path_only",
   "sourceBase": {
-    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
-    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
+    "commit": "a6191e88ef96a2755d57d2034dc9780f6f75163e",
+    "tree": "ffec5f0d153e6239571399a19806060dc4f4fb56"
   },
+  "observedAtHead": {
+    "commit": "a6191e88ef96a2755d57d2034dc9780f6f75163e",
+    "tree": "ffec5f0d153e6239571399a19806060dc4f4fb56"
+  },
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-authbus",
+    "codex-rs/hepta-authbus-p1-3-qualification"
+  ],
   "laneId": "LANE-A-FOUNDATION",
   "module": "auth.authbus",
   "owner": "identity-access",
@@ -18,56 +30,324 @@
     "codex-rs/hepta-authbus",
     "codex-rs/hepta-authbus-p1-3-qualification"
   ],
+  "sourceRoot": [
+    "codex-rs/hepta-authbus",
+    "codex-rs/hepta-authbus-p1-3-qualification"
+  ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "agentd_and_bao_source_composed_exact_execution_pending",
+  "productCallerBindingPolicy": "closed_world",
+  "productCallerBindings": [
+    {
+      "callerPath": "codex-rs/hepta-agentd/src/authbus_ingress.rs",
+      "mustContain": "enqueue_authbus_message"
+    },
+    {
+      "callerPath": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "mustContain": "consume_kv_v2_with_authbus"
+    }
+  ],
+  "productCallers": [
+    {
+      "name": "agentd_signed_text",
+      "sourcePath": "codex-rs/hepta-agentd/src/authbus_ingress.rs",
+      "nativeSymbol": "signed-text ingress and durable outbox submission",
+      "state": "source_composed_exact_execution_pending_final_sha"
+    },
+    {
+      "name": "bao_kv_v2_read",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "nativeSymbol": "BaoClient::consume_kv_v2_with_authbus",
+      "state": "source_composed_exact_execution_pending_final_sha"
+    }
+  ],
+  "productionWriterState": "durable_single_owner_source_implemented_target_host_pending",
+  "productionWriterBindingPolicy": "closed_world",
+  "productionWriterBindings": [
+    {
+      "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
+      "mustContain": "pub struct AuthBusAuthorityHost"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-authbus/src/authority_store.rs",
+      "mustContain": "pub(crate) struct AuthBusAuthorityStore"
+    }
+  ],
   "operations": [
     {
-      "operation": "authenticate",
-      "nativeSymbol": "authenticate",
+      "operation": "signed_authenticate",
+      "designOperation": "signed_authenticate",
+      "nativeSymbol": "SignedMessage::authenticate",
       "sourcePath": "codex-rs/hepta-authbus/src/signed.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "state": "source_implemented_product_composed",
+      "authority": "deny_all_receipt",
+      "tests": [
+        "codex-rs/hepta-authbus/src/signed_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "authenticate",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "admit_authbus_message",
-      "nativeSymbol": "admit_authbus_message",
-      "sourcePath": "codex-rs/hepta-evidence/src/authbus_store.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
-      "sourcePathExists": true,
-      "designOperation": "admit_authbus_message",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
-    },
-    {
-      "operation": "enqueue_authbus_message",
-      "nativeSymbol": "enqueue_authbus_message",
+      "operation": "durable_message_enqueue",
+      "designOperation": "durable_message_enqueue",
+      "nativeSymbol": "HeptaEvidenceStore::enqueue_authbus_message",
       "sourcePath": "codex-rs/hepta-evidence/src/authbus_outbox.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "state": "source_implemented_agentd_product_composed",
+      "authority": "evidence_owner_replay_and_outbox",
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs",
+        "codex-rs/hepta-evidence/src/authbus_recovery_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "enqueue_authbus_message",
+      "mappingClass": "delegated_owner",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "authority_owner_open_bootstrap",
+      "designOperation": "authority_owner_open_bootstrap",
+      "nativeSymbol": "AuthBusAuthorityHost::{open,bootstrap}",
+      "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
+      "state": "durable_single_owner_source_implemented",
+      "authority": "sole_authority_writer",
+      "tests": [
+        "codex-rs/hepta-authbus/src/host_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-authbus/src/owner_fence.rs"
+      ]
+    },
+    {
+      "operation": "owner_fence",
+      "designOperation": "owner_fence",
+      "nativeSymbol": "OwnerFence::acquire",
+      "sourcePath": "codex-rs/hepta-authbus/src/owner_fence.rs",
+      "state": "linux_ofd_cross_process_fence_source_implemented",
+      "authority": "single_writer_fence",
+      "tests": [
+        "codex-rs/hepta-authbus/src/host_tests.rs",
+        "codex-rs/hepta-authbus/tests/owner_lock_compat.rs"
+      ],
+      "sourcePathExists": true,
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "issuer_lifecycle",
+      "designOperation": "issuer_lifecycle",
+      "nativeSymbol": "AuthBusAdminPort::{enroll_issuer,rotate_issuer,revoke_issuer,retire_issuer_epoch}",
+      "sourcePath": "codex-rs/hepta-authbus/src/trust_store.rs",
+      "state": "durable_registry_source_implemented",
+      "authority": "admin_port_only",
+      "tests": [
+        "codex-rs/hepta-authbus/src/trust_store_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-authbus/src/ports.rs"
+      ]
+    },
+    {
+      "operation": "policy_authorization",
+      "designOperation": "policy_authorization",
+      "nativeSymbol": "AuthBusExecutionPort::authorize",
+      "sourcePath": "codex-rs/hepta-authbus/src/authority_store.rs",
+      "state": "durable_exact_scope_policy_source_implemented",
+      "authority": "deny_all_decision",
+      "tests": [
+        "codex-rs/hepta-authbus/src/authority_store_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-authbus/src/ports.rs"
+      ]
+    },
+    {
+      "operation": "quota_reservation",
+      "designOperation": "quota_reservation",
+      "nativeSymbol": "AuthBusExecutionPort::reserve",
+      "sourcePath": "codex-rs/hepta-authbus/src/quota_store.rs",
+      "state": "conservation_safe_reservation_source_implemented",
+      "authority": "execution_port_reservation_only",
+      "tests": [
+        "codex-rs/hepta-authbus/src/quota_store_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-authbus/src/ports.rs"
+      ]
+    },
+    {
+      "operation": "dispatch_and_settlement",
+      "designOperation": "dispatch_and_settlement",
+      "nativeSymbol": "AuthBusExecutionPort::{mark_dispatch_attempted,settle}",
+      "sourcePath": "codex-rs/hepta-authbus/src/settlement_store.rs",
+      "state": "durable_dispatch_and_registry_resolved_settlement_source_implemented",
+      "authority": "execution_port_no_admin",
+      "tests": [
+        "codex-rs/hepta-authbus/src/settlement_store_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-authbus/src/settlement.rs",
+        "codex-rs/hepta-authbus/src/ports.rs"
+      ]
+    },
+    {
+      "operation": "checkpoint_recovery_incremental_frontier",
+      "designOperation": "checkpoint_recovery_incremental_frontier",
+      "nativeSymbol": "AuthBusAuthorityHost::sync_checkpoint",
+      "sourcePath": "codex-rs/hepta-authbus/src/recovery.rs",
+      "state": "incremental_frontier_and_rollback_recovery_source_implemented",
+      "authority": "maintenance_port_single_owner",
+      "tests": [
+        "codex-rs/hepta-authbus/src/recovery_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-authbus/migrations/0004_recovery_retention.sql",
+        "codex-rs/hepta-authbus/migrations/0005_immutable_history.sql",
+        "codex-rs/hepta-authbus/migrations/0006_incremental_frontier.sql"
+      ]
+    },
+    {
+      "operation": "exact_schema_verification",
+      "designOperation": "exact_schema_verification",
+      "nativeSymbol": "authority_schema::verify_schema",
+      "sourcePath": "codex-rs/hepta-authbus/src/authority_schema.rs",
+      "state": "exact_live_schema_source_implemented",
+      "authority": "startup_fail_closed",
+      "tests": [
+        "codex-rs/hepta-authbus/src/authority_schema_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "capability_scoped_ports",
+      "designOperation": "capability_scoped_ports",
+      "nativeSymbol": "AuthBusAuthorityHost::{admin,execution,read,maintenance}",
+      "sourcePath": "codex-rs/hepta-authbus/src/ports.rs",
+      "state": "closed_world_capability_ports_source_implemented",
+      "authority": "least_authority_borrowed_ports",
+      "tests": [
+        "scripts/check-authbus-closed-world.py"
+      ],
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "maintenance_and_observability",
+      "designOperation": "maintenance_and_observability",
+      "nativeSymbol": "AuthBusAuthorityWorker",
+      "sourcePath": "codex-rs/hepta-authbus/src/worker.rs",
+      "state": "bounded_periodic_owner_source_implemented",
+      "authority": "maintenance_port_only",
+      "tests": [
+        "codex-rs/hepta-authbus/src/host_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-authbus/src/operations.rs"
+      ]
+    },
+    {
+      "operation": "administration_bootstrap_backup_restore_check",
+      "designOperation": "administration_bootstrap_backup_restore_check",
+      "nativeSymbol": "hepta-authbus-admin",
+      "sourcePath": "codex-rs/hepta-authbus/src/bin/hepta-authbus-admin.rs",
+      "state": "offline_owner_fenced_administration_source_implemented",
+      "authority": "operator_tool_no_raw_writer",
+      "tests": [
+        "codex-rs/hepta-authbus/src/bin/hepta-authbus-admin.rs"
+      ],
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "docs/modules/auth.authbus/ADMINISTRATION.md",
+        "docs/modules/auth.authbus/RECOVERY.md"
+      ]
+    },
+    {
+      "operation": "agentd_product_composition",
+      "designOperation": "agentd_product_composition",
+      "nativeSymbol": "Agentd signed-text ingress",
+      "sourcePath": "codex-rs/hepta-agentd/src/authbus_ingress.rs",
+      "state": "source_composed_exact_product_execution_pending_final_sha",
+      "authority": "evidence_owner_then_app_server_queue",
+      "tests": [
+        "codex-rs/hepta-agentd/tests/authbus_text_product.rs"
+      ],
+      "sourcePathExists": true,
+      "mappingClass": "product_caller",
+      "delegatedCallees": [
+        "codex-rs/hepta-evidence/src/authbus_outbox.rs"
+      ]
+    },
+    {
+      "operation": "bao_product_composition",
+      "designOperation": "bao_product_composition",
+      "nativeSymbol": "BaoClient::consume_kv_v2_with_authbus",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "state": "source_composed_exact_product_execution_pending_final_sha",
+      "authority": "execution_port_and_kernel_final_use",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "mappingClass": "product_caller",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "authority_qualification_runner",
+      "designOperation": "authority_qualification_runner",
+      "nativeSymbol": "qualify_authority",
+      "sourcePath": "codex-rs/hepta-authbus-p1-3-qualification/src/lib.rs",
+      "state": "executable_negative_matrix_source_implemented",
+      "authority": "deny_all_qualification_receipt",
+      "tests": [
+        "codex-rs/hepta-authbus-p1-3-qualification/src/lib_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "target_host_fault_evidence_validation",
+      "designOperation": "target_host_fault_evidence_validation",
+      "nativeSymbol": "authbus-target-host-evidence.py",
+      "sourcePath": "scripts/authbus-target-host-evidence.py",
+      "state": "source_implemented_real_target_execution_pending",
+      "authority": "evidence_validation_only",
+      "tests": [],
+      "sourcePathExists": true,
+      "mappingClass": "qualification_adapter",
+      "delegatedCallees": [
+        ".github/workflows/authbus-target-host-qualification.yml",
+        "docs/modules/auth.authbus/TARGET_HOST_QUALIFICATION.md"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Obtain terminal-success exact-head and deterministic synthetic-merge receipts for the final unchanged candidate SHA.",
+    "Integrate a selected durable kernel.operations owner as the production source of operation identity; the current Bao path binds a caller-supplied stable identity.",
+    "Execute the protected self-hosted ENOSPC, real power-loss, permission-loss and restored-old-snapshot harnesses and retain their raw immutable receipts."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
-    "operator acceptance, canary, promotion and release"
+    "Provision independently governed checkpoint, trusted-time and issuer-signing services on the selected target.",
+    "Independent security identity review and signature over exact-candidate and target-host evidence.",
+    "Operator acceptance, activation decision, canary, promotion and release."
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
@@ -78,9 +358,5 @@
     "activation": false,
     "release": false,
     "implementedOperationMappingComplete": true
-  },
-  "sourceRoot": [
-    "codex-rs/hepta-authbus",
-    "codex-rs/hepta-authbus-p1-3-qualification"
-  ]
+  }
 }
