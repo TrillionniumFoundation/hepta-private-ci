@@ -1,0 +1,33 @@
+name: Dispatch learning.operator authoritative convergence
+
+on:
+  push:
+    branches: [codex/learning-operator-full-convergence-20260926]
+    paths:
+      - '.github/workflows/learning-operator-authoritative-dispatch.yml'
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: learning-operator-authoritative-dispatch
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Dispatch the single authoritative convergence writer
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run learning-operator-remaining-convergence.yml \
+            --repo "$GH_REPO" \
+            --ref codex/learning-operator-full-convergence-20260926
+          echo "Dispatched learning-operator-remaining-convergence.yml on the authoritative branch."
