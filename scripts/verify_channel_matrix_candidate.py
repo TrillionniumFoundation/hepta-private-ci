@@ -40,7 +40,7 @@ SOURCE_MARKERS = {
         "entered: &EnteredSend<'_>", "finish_outbox_transport_accepted(",
         "finish_outbox_indeterminate("),
     "codex-rs/hepta-matrix-sdk/src/outbound_v2/gate.rs": (
-        "enter_verified_use(token, binding)", "MatrixSendPermit::new(",
+        "pub(super) async fn enter_verified_use(", "MatrixSendPermit::new(",
         "send_authorized(self.record, permit)", "outbound_payload_digest(self.record)",
         "async fn continue_entered(", ") -> EnteredSend<'claim> {",
         "let mut permit = Some(permit)", "let mut send: Option<MatrixSendFuture<'_>> = None",
