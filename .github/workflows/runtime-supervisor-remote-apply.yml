@@ -1,0 +1,58 @@
+name: runtime.supervisor remote qualification apply
+
+on:
+  push:
+    branches:
+      - codex/runtime-supervisor-qualification-20260930
+    paths:
+      - "qualification/runtime-supervisor/bootstrap/apply.py"
+      - ".github/workflows/runtime-supervisor-remote-apply.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  apply-and-qualify:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - name: Apply bounded source patches
+        run: python3 qualification/runtime-supervisor/bootstrap/apply.py
+      - name: Format
+        working-directory: codex-rs
+        run: cargo fmt --all
+      - name: Check generated diff
+        run: git diff --check
+      - name: Default library tests
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-supervisor --lib
+      - name: Qualification library tests
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-supervisor --features qualification --lib
+      - name: Product and qualification binaries
+        working-directory: codex-rs
+        run: cargo check -p codex-hepta-supervisor --bins --features production-authority,qualification
+      - name: Authority distribution and SIGKILL
+        working-directory: codex-rs
+        run: >-
+          cargo test -p codex-hepta-supervisor --features qualification
+          --test authority_distribution --test sigkill_crash_matrix -- --nocapture
+      - name: 256-instance HOL qualification
+        working-directory: codex-rs
+        run: >-
+          cargo test -p codex-hepta-supervisor --features qualification
+          --test supervisor_hol_qualification -- --nocapture
+      - name: Commit qualified source
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "feat(supervisor): qualify HOL durability and authority recovery"
+          git push origin HEAD:${GITHUB_REF_NAME}
