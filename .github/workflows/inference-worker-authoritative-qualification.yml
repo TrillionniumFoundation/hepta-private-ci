@@ -37,7 +37,7 @@ jobs:
   materialize:
     name: Materialize reviewed inference.worker source
     if: github.event_name != 'pull_request' || github.event.pull_request.head.ref == 'codex/inference-worker-authoritative-20260929'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 180
     steps:
       - name: Check out exact setup commit
