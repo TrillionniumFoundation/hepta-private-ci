@@ -101,6 +101,9 @@ class NativeFinalUseGateTests(unittest.TestCase):
 
 
 class PinnedRunnerGateTests(unittest.TestCase):
+    COMMIT = "d2e7b879fb79975e8b47a8e3ce569b651e6381c0"
+    DATE = "2025-08-25"
+
     def check_version(self, version: str, code: int = 0) -> list[str]:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -110,23 +113,58 @@ class PinnedRunnerGateTests(unittest.TestCase):
             (root / "test-runner.exit-code").write_text(str(code))
             return evidence.validate_evidence(root, {"test-runner": argv})
 
-    def test_exact_runner_with_optional_build_metadata(self) -> None:
-        for suffix in ("", " (example-build 2025-01-01)"):
-            with self.subTest(suffix=suffix):
-                self.assertEqual(
-                    self.check_version(f"cargo-nextest {evidence.NEXTEST_VERSION}{suffix}\n"),
-                    [],
-                )
+    def structured_version(
+        self,
+        *,
+        short: str | None = None,
+        full: str | None = None,
+        first_date: str | None = None,
+        commit_date: str | None = None,
+        release: str | None = None,
+        extra: str = "",
+    ) -> str:
+        full_hash = full or self.COMMIT
+        short_hash = short or full_hash[:9]
+        header_date = first_date or self.DATE
+        metadata_date = commit_date or self.DATE
+        release_version = release or evidence.NEXTEST_VERSION
+        return (
+            f"cargo-nextest {evidence.NEXTEST_VERSION} ({short_hash} {header_date})\n"
+            f"release: {release_version}\n"
+            f"commit-hash: {full_hash}\n"
+            f"commit-date: {metadata_date}\n"
+            "host: x86_64-unknown-linux-gnu\n"
+            f"{extra}"
+        )
+
+    def test_exact_structured_runner_metadata_is_accepted(self) -> None:
+        self.assertEqual(self.check_version(self.structured_version()), [])
 
     def test_absent_wrong_or_prefixed_version_is_rejected(self) -> None:
-        for value in ("", "cargo 1.95.0", "cargo-nextest 0.9.10", "cargo-nextest 0.9.1030", "cargo-nextest 0.9.103\nerror"):
+        for value in (
+            "",
+            "cargo 1.95.0",
+            "cargo-nextest 0.9.10",
+            "cargo-nextest 0.9.1030",
+            f"cargo-nextest {evidence.NEXTEST_VERSION}\n",
+        ):
+            with self.subTest(value=value):
+                self.assertTrue(self.check_version(value))
+
+    def test_extra_or_mismatched_structured_metadata_is_rejected(self) -> None:
+        cases = (
+            self.structured_version(extra="unexpected: injected evidence\n"),
+            self.structured_version(commit_date="2025-08-26"),
+            self.structured_version(release="0.9.102"),
+            self.structured_version(short="aaaaaaaaa"),
+            self.structured_version(full="not-a-commit"),
+        )
+        for value in cases:
             with self.subTest(value=value):
                 self.assertTrue(self.check_version(value))
 
     def test_failed_probe_cannot_pass(self) -> None:
-        self.assertTrue(
-            self.check_version(f"cargo-nextest {evidence.NEXTEST_VERSION}", code=127)
-        )
+        self.assertTrue(self.check_version(self.structured_version(), code=127))
 
 
 if __name__ == "__main__":
