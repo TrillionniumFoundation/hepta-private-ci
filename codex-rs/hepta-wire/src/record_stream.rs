@@ -40,10 +40,13 @@ impl Default for RecordStreamLimits {
 /// Caller-owned allowance shared by streams during one scheduling turn.
 ///
 /// This is work accounting, not authorization, a queue, or a scheduler. Charge
-/// admitted source bytes and every full-record authentication attempt, including
-/// a failing attempt. Drain returned frames before allocating the next turn's
-/// allowance. Transport buffers, retained frames, connection count and I/O retry
-/// attempts require independent bounds in their existing owners.
+/// admitted source bytes, full-record authentication attempts and the complete
+/// serialized HPTA bytes covered by those attempts, including failing attempts.
+/// The third ceiling also bounds serialized bytes represented by returned frames:
+/// a one-byte suffix can finish a much larger record buffered on an earlier turn.
+/// Drain/account for returned frames before allocating another allowance.
+/// Allocator overhead, caller-retained frames, transport queues, connection count
+/// and I/O retries require independent bounds in their existing owners.
 ///
 /// The allowance is deliberately not `Clone` or `Copy`. Exhaustion is a yield,
 /// never permission to discard the unconsumed suffix or reset session state.
@@ -51,14 +54,26 @@ impl Default for RecordStreamLimits {
 pub struct RecordStreamBudget {
     remaining_bytes: usize,
     remaining_records: usize,
+    remaining_frame_bytes: usize,
 }
 
 impl RecordStreamBudget {
-    /// Zero allowances are valid and cause a nonterminal, zero-consumption yield.
+    /// Zero source/record allowances cause a nonterminal, zero-consumption yield.
     pub const fn new(bytes: usize, records: usize) -> Self {
+        Self::with_frame_bytes(bytes, records, MAX_WIRE_FRAME_BYTES)
+    }
+
+    /// Set an explicit aggregate serialized-envelope allowance for this turn.
+    ///
+    /// This counts the full HPTA frame, not just newly supplied source bytes or
+    /// payload bytes. It is not an allocator/RSS measurement. Zero is valid and
+    /// blocks body admission without retiring the session. A valid next frame
+    /// that does not fit yields; inspect `required_frame_bytes()` before retrying.
+    pub const fn with_frame_bytes(bytes: usize, records: usize, frame_bytes: usize) -> Self {
         Self {
             remaining_bytes: bytes,
             remaining_records: records,
+            remaining_frame_bytes: frame_bytes,
         }
     }
 
@@ -69,6 +84,10 @@ impl RecordStreamBudget {
     pub const fn remaining_records(&self) -> usize {
         self.remaining_records
     }
+
+    pub const fn remaining_frame_bytes(&self) -> usize {
+        self.remaining_frame_bytes
+    }
 }
 
 /// Frames before a terminal suffix remain deliverable, exactly once.
@@ -77,6 +96,7 @@ pub struct RecordStreamBatch {
     frames: Vec<DecodedEnvelope>,
     terminal_error: Option<RecordStreamError>,
     yielded: bool,
+    required_frame_bytes: Option<usize>,
 }
 
 impl RecordStreamBatch {
@@ -92,6 +112,13 @@ impl RecordStreamBatch {
         self.yielded
     }
 
+    /// Full serialized HPTA size of the next record blocked by frame capacity.
+    /// This is an admitted but unauthenticated length, never trusted payload or
+    /// authorization. Free/reserve capacity before retrying the exact suffix.
+    pub const fn required_frame_bytes(&self) -> Option<usize> {
+        self.required_frame_bytes
+    }
+
     pub fn into_parts(self) -> (Vec<DecodedEnvelope>, Option<RecordStreamError>) {
         (self.frames, self.terminal_error)
     }
@@ -104,6 +131,7 @@ impl fmt::Debug for RecordStreamBatch {
             .field("frame_count", &self.frames.len())
             .field("terminal_error", &self.terminal_error)
             .field("yielded", &self.yielded)
+            .field("required_frame_bytes", &self.required_frame_bytes)
             .finish()
     }
 }
@@ -248,9 +276,9 @@ impl ManagedRecordStream {
     ///
     /// Retain the suffix after `bytes_consumed()` and yield the executor on
     /// exhaustion. Passing one allowance across peers bounds aggregate admitted
-    /// bytes and authentication attempts without transferring session ownership.
-    /// A terminal error never refunds work already performed. Cancellation and
-    /// EOF remain available independently of this allowance.
+    /// bytes, authentication attempts and complete serialized-frame work without
+    /// transferring session ownership. A terminal error never refunds completed
+    /// work. Cancellation and EOF remain independent of this allowance.
     pub fn feed_with_budget(
         &mut self,
         input: &[u8],
@@ -260,6 +288,7 @@ impl ManagedRecordStream {
             frames: Vec::new(),
             terminal_error: None,
             yielded: false,
+            required_frame_bytes: None,
         };
         if self.is_terminal() {
             self.retire();
@@ -276,6 +305,7 @@ impl ManagedRecordStream {
             .min(allowance.remaining_records);
         let mut consumed = 0;
         let mut attempted = 0;
+        let mut frame_bytes = 0;
         while consumed < budget && attempted < record_budget {
             // Complete, contiguous records can be authenticated directly from
             // the caller's slice. Only framing staging is avoided: decoding may
@@ -291,10 +321,16 @@ impl ManagedRecordStream {
                         break;
                     }
                 };
+                let required = length - PREFIX_BYTES - TAG_BYTES;
+                if required > allowance.remaining_frame_bytes - frame_bytes {
+                    batch.required_frame_bytes = Some(required);
+                    break;
+                }
                 if length <= budget - consumed {
                     let start = consumed;
                     consumed += length;
                     attempted += 1;
+                    frame_bytes += required;
                     match self.owner.open_record(&input[start..consumed]) {
                         Ok(frame) => batch.frames.push(frame),
                         Err(error) => {
@@ -307,6 +343,13 @@ impl ManagedRecordStream {
             }
 
             let target = self.expected.unwrap_or(PREFIX_BYTES);
+            if self.expected.is_some() {
+                let required = target - PREFIX_BYTES - TAG_BYTES;
+                if required > allowance.remaining_frame_bytes - frame_bytes {
+                    batch.required_frame_bytes = Some(required);
+                    break;
+                }
+            }
             let count = (target - self.pending.len()).min(budget - consumed);
             if let Err(error) = self.reserve_admitted(count) {
                 batch.terminal_error = Some(error);
@@ -329,6 +372,7 @@ impl ManagedRecordStream {
                 continue;
             }
             attempted += 1;
+            frame_bytes += target - PREFIX_BYTES - TAG_BYTES;
             match self.owner.open_record(&self.pending) {
                 Ok(frame) => batch.frames.push(frame),
                 Err(error) => {
@@ -341,6 +385,7 @@ impl ManagedRecordStream {
         }
         allowance.remaining_bytes -= consumed;
         allowance.remaining_records -= attempted;
+        allowance.remaining_frame_bytes -= frame_bytes;
         if batch.terminal_error.is_some() {
             self.retire();
         } else {
@@ -435,3 +480,7 @@ mod tests;
 #[cfg(test)]
 #[path = "record_stream_budget_tests.rs"]
 mod budget_tests;
+
+#[cfg(test)]
+#[path = "record_stream_output_tests.rs"]
+mod output_tests;

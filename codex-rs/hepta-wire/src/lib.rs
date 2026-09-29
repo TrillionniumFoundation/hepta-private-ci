@@ -9,6 +9,7 @@
 #![forbid(unsafe_code)]
 
 mod authentication;
+mod bounded_read;
 mod codec_binding;
 mod directional_session;
 mod envelope;
@@ -25,6 +26,10 @@ mod session;
 mod stream;
 mod version;
 
+pub use bounded_read::ReadFrameBudget;
+pub use bounded_read::ReadFrameBudgetExceeded;
+pub use bounded_read::read_frame;
+pub use bounded_read::read_frame_with_budget;
 pub use codec_binding::BoundPayloadCodec;
 pub use codec_binding::BoundWireSessionError;
 pub use codec_binding::CodecBindingError;
@@ -97,7 +102,6 @@ pub use stream::ReadFrameError;
 pub use stream::StreamDecodeBatch;
 pub use stream::StreamDecodeError;
 pub use stream::StreamingDecoder;
-pub use stream::read_frame;
 pub use version::MAX_NEGOTIATION_VERSIONS;
 pub use version::NegotiatedWire;
 pub use version::NegotiationError;
