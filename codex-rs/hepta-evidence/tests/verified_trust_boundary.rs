@@ -32,12 +32,13 @@ fn registry(path: &Path, revoked: bool) -> Sha256Digest {
         .iter()
         .map(|byte| format!("{byte:02x}"))
         .collect::<String>();
-    let bytes = serde_json::to_vec(&serde_json::json!({
-        "schema_version": 1, "agent_id": "agent:test",
-        "issuers": [{"issuer_id": "issuer:test", "key_epoch": 1,
-            "public_key_hex": hex, "revoked": revoked, "roles": ["evaluator"]}]
-    }))
-    .expect("registry JSON");
+    // Production-pinned trust must exercise the monotonic V2 format. Keep the
+    // field order canonical so this fixture tests the same bytes admitted by
+    // `VerifiedEvidenceTrustSnapshot` rather than serde map ordering.
+    let bytes = format!(
+        "{{\"agent_id\":\"agent:test\",\"generation\":1,\"issuers\":[{{\"issuer_id\":\"issuer:test\",\"key_epoch\":1,\"public_key_hex\":\"{hex}\",\"revoked\":{revoked},\"roles\":[\"evaluator\"]}}],\"predecessor_sha256\":null,\"schema_version\":2}}"
+    )
+    .into_bytes();
     std::fs::write(path, &bytes).expect("registry bytes");
     std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))
         .expect("private registry");
