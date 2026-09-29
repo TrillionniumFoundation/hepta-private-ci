@@ -125,7 +125,6 @@ jobs:
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
       KG_QUALIFICATION_LANE: ${{ matrix.lane }}
-      KG_EVIDENCE_DIR: ${{ runner.temp }}/knowledge-graph-${{ matrix.lane }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -231,6 +230,8 @@ jobs:
 
       - name: Execute full lane and preserve all results
         shell: bash
+        env:
+          KG_EVIDENCE_DIR: ${{ runner.temp }}/knowledge-graph-${{ matrix.lane }}
         run: |
           set -o pipefail
           "$RUNNER_TEMP/hepta_kg_qualification_lane.sh" "$GITHUB_WORKSPACE"
