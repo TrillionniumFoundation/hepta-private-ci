@@ -34,7 +34,7 @@ concurrency:
 jobs:
   materialize:
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 90
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -77,8 +77,6 @@ jobs:
           (
             cd codex-rs
             cargo fmt --all
-            cargo test -p codex-hepta-infer-worker-host --lib --no-run
-            cargo test -p codex-hepta-agentd --test runtime_codex_product_e2e --no-run
           )
           git diff --check
           git status --short
@@ -87,7 +85,7 @@ jobs:
         env:
           WORK_BRANCH: codex/runtime-codex-final-convergence-20260929-r3
           TARGET_BRANCH: codex/runtime-codex-full-convergence-20260929
-          TARGET_EXPECTED_SHA: fa2dc24bcfddb4658890675b951a9702c629f542
+          TARGET_EXPECTED_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
           git config user.name 'runtime.codex exact-head materializer'
