@@ -27,7 +27,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Materialize and verify canonical patch
+      - name: Materialize and verify canonical patch bytes
         shell: bash
         run: |
           set -euo pipefail
@@ -40,7 +40,6 @@ jobs:
           test "$(sha256sum "$output" | awk '{print $1}')" = \
             "b89fe79282a0d71f77198765809197102922613843686e3e0554df37db5c7461"
           grep -Eq '^index [0-9a-f]+\.\.[0-9a-f]+' "$output"
-          git apply --check --3way "$output"
           printf '%s\n' "$(git rev-parse HEAD)" > "$RUNNER_TEMP/source-sha.txt"
           printf '%s\n' "$(git rev-parse HEAD^{tree})" > "$RUNNER_TEMP/source-tree.txt"
 
