@@ -31,6 +31,55 @@ pub struct NativeIntelligenceRunBinding {
 }
 
 impl AppServerModelDriver {
+    /// Correlate an exact read-RPC preparation with this driver's existing
+    /// native journal, without dispatching, rewriting either ledger, or granting
+    /// training access. The host independently pins both request identities.
+    ///
+    /// This synchronous inspection retains the learning-owner lock while it
+    /// borrows the native owner. Unknown acceptance remains unknown; refusal is
+    /// distinguished from a proven pre-send stop. The returned pair contains
+    /// the observed state and a domain-separated join digest, not a wire token
+    /// or current authorization. Reacquire owners before later learning use.
+    pub fn inspect_cognitive_assignment(
+        &self,
+        control: &DurableInferenceControl,
+        learning: &codex_hepta_agentd::CognitiveRetrievalLearningSink,
+        expected_request: &NativeRequest,
+        read_request_id: u64,
+        expected_context_digest: codex_hepta_types::Digest32,
+    ) -> Result<(
+        codex_hepta_infer_core::CognitiveContextDeliveryStateV1,
+        codex_hepta_types::Digest32,
+    )> {
+        if expected_request.principal_id != self.config.agent_id.as_str()
+            || expected_request.worker_generation != self.config.generation
+            || expected_request.model != self.config.model
+        {
+            return Err("cognitive delivery request belongs to another driver".into());
+        }
+        learning
+            .with_prepared_assignment(
+                &self.config.agent_id,
+                self.config.generation,
+                read_request_id,
+                expected_context_digest,
+                |assignment, record| {
+                    let delivery = control
+                        .cognitive_context_delivery(expected_request, expected_context_digest)
+                        .map_err(|error| error.to_string())?
+                        .ok_or_else(|| "no context-bound native dispatch was observed".to_string())?;
+                    let mut bytes = b"hepta.native.cognitive-assignment-join.v1".to_vec();
+                    bytes.extend_from_slice(record.event_digest.as_array());
+                    bytes.extend_from_slice(record.chain_digest.as_array());
+                    bytes.extend_from_slice(&record.sequence.get().to_be_bytes());
+                    bytes.extend_from_slice(assignment.support_digest.as_array());
+                    bytes.extend_from_slice(delivery.binding_digest().as_array());
+                    Ok((delivery.state(), codex_hepta_types::Digest32::of_bytes(&bytes)))
+                },
+            )
+            .map_err(Into::into)
+    }
+
     /// Reserves before any provider call, journals dispatch before `turn/start`,
     /// and commits real observations before returning them to the caller.
     /// Reopening a possibly dispatched run never invokes a model again.
