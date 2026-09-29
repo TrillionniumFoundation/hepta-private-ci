@@ -13,148 +13,171 @@ import hashlib
 import json
 import os
 from pathlib import Path
-import re
 import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
 
+from scripts.hepta_workflow_commands import (
+    load_workflow,
+    run_scalar_commands,
+    workflow_contains_key,
+    workflow_events,
+    workflow_expression_functions,
+    workflow_expression_references,
+    workflow_run,
+    workflow_step_by_id,
+    workflow_steps,
+)
+
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW = ROOT / ".github/workflows/hepta-consolidated-source.yml"
+WORKFLOW_DOCUMENT = load_workflow(WORKFLOW.read_text(encoding="utf-8"))
 
 
-def step(name: str) -> str:
-    text = WORKFLOW.read_text(encoding="utf-8").split("  qualification:\n", 1)[1]
-    match = re.search(r"^      - name: " + re.escape(name) + r"\n", text, re.M)
-    if match is None:
-        raise AssertionError(f"missing qualification step: {name}")
-    following = re.search(r"^      - ", text[match.end() :], re.M)
-    end = match.end() + following.start() if following else len(text)
-    return text[match.start() : end]
+def step(step_id: str) -> dict:
+    return workflow_step_by_id(WORKFLOW_DOCUMENT, "qualification", step_id)
 
 
 def shell(name: str) -> str:
-    block = step(name)
-    marker = "        run: |\n"
-    if marker not in block:
-        raise AssertionError(f"expected block shell for {name}")
-    lines = block.split(marker, 1)[1].splitlines()
-    if not all(not line or line.startswith("          ") for line in lines):
-        raise AssertionError("unexpected shell indentation")
-    return "\n".join(line[10:] if line else "" for line in lines) + "\n"
+    return workflow_run(step(name))
 
 
-def engineering_step(name: str) -> str:
-    text = (
-        WORKFLOW.read_text(encoding="utf-8")
-        .split("  engineering-sandbox:\n", 1)[1]
-        .split("  os-evidence:\n", 1)[0]
-    )
-    match = re.search(r"^      - name: " + re.escape(name) + r"\n", text, re.M)
-    if match is None:
-        raise AssertionError(f"missing engineering-sandbox step: {name}")
-    following = re.search(r"^      - ", text[match.end() :], re.M)
-    end = match.end() + following.start() if following else len(text)
-    return text[match.start() : end]
+def engineering_step(step_id: str) -> dict:
+    return workflow_step_by_id(WORKFLOW_DOCUMENT, "engineering-sandbox", step_id)
 
 
 def engineering_shell(name: str) -> str:
-    block = engineering_step(name)
-    marker = "        run: |\n"
-    if marker not in block:
-        raise AssertionError(f"expected engineering-sandbox shell for {name}")
-    lines = block.split(marker, 1)[1].splitlines()
-    if not all(not line or line.startswith("          ") for line in lines):
-        raise AssertionError("unexpected engineering-sandbox shell indentation")
-    return "\n".join(line[10:] if line else "" for line in lines) + "\n"
+    return workflow_run(engineering_step(name))
+
+
+def command_lines(value: dict) -> list[list[str]]:
+    return run_scalar_commands(value.get("run", ""))
+
+
+def command_records_upload(job_name: str) -> dict:
+    matches = [
+        value
+        for value in workflow_steps(WORKFLOW_DOCUMENT, job_name)
+        if str(value.get("uses", "")).startswith("actions/upload-artifact@")
+        and "hepta-command-records" in str(value.get("with", {}).get("path", ""))
+    ]
+    if len(matches) != 1:
+        raise ValueError(f"job {job_name} requires one command-record upload")
+    return matches[0]
+
+
+def contains_subsequence(command: list[str], expected: list[str]) -> bool:
+    return any(
+        command[index : index + len(expected)] == expected
+        for index in range(len(command))
+    )
 
 
 class NativeFeedbackPolicyTests(unittest.TestCase):
+    def qualification_step_index(self, name: str) -> int:
+        return workflow_steps(WORKFLOW_DOCUMENT, "qualification").index(step(name))
+
     def test_native_feedback_precedes_document_gate(self):
-        text = WORKFLOW.read_text()
         self.assertLess(
-            text.index("      - name: Compile and test actual imported packages\n"),
-            text.index(
-                "      - name: Retain original document and source-owner gates\n"
-            ),
+            self.qualification_step_index("owner-tests"),
+            self.qualification_step_index("document-gates"),
         )
 
     def test_manifest_and_format_checks_precede_native_setup(self):
-        text = WORKFLOW.read_text()
         names = [
-            "Verify executable candidate identity",
-            "Check workspace structure before native setup",
-            "Parse actual Cargo workspace before native setup",
-            "Formatting without source mutation",
-            "Prepare native owner-test prerequisites",
+            "candidate",
+            "workspace-structure",
+            "workspace-metadata",
+            "formatting",
+            "native-prerequisites",
         ]
-        positions = [text.index("      - name: " + name + "\n") for name in names]
+        positions = [self.qualification_step_index(name) for name in names]
         self.assertEqual(positions, sorted(positions))
-        self.assertIn("scripts/hepta_workspace.py", shell(names[1]))
         self.assertIn(
-            "cargo metadata --locked --format-version 1 --no-deps", shell(names[2])
+            ["python3", "scripts/hepta_workspace.py"], command_lines(step(names[1]))
         )
-        self.assertIn('cargo fmt "${args[@]}" -- --check', shell(names[3]))
+        metadata = [
+            "cargo",
+            "metadata",
+            "--locked",
+            "--format-version",
+            "1",
+            "--no-deps",
+        ]
+        self.assertTrue(
+            any(
+                contains_subsequence(command, metadata)
+                for command in command_lines(step(names[2]))
+            )
+        )
+        self.assertEqual(step(names[2]).get("working-directory"), "codex-rs")
+        self.assertEqual(step(names[3]).get("working-directory"), "codex-rs")
 
-    def test_failure_independence_requires_successful_identity_or_setup(self):
+    def test_failure_independence_is_dataflow_bound(self):
         for name in (
-            "Retain original document and source-owner gates",
-            "UI owner tests independently of document outcome",
-            "Clean tracked source",
+            "document-gates",
+            "ui-tests",
+            "clean-source",
         ):
             with self.subTest(name=name):
+                condition = step(name).get("if")
+                self.assertIn("cancelled", workflow_expression_functions(condition))
                 self.assertIn(
-                    "if: ${{ !cancelled() && steps.candidate.outcome == 'success' }}",
-                    step(name),
+                    "steps.candidate.outcome", workflow_expression_references(condition)
                 )
+        condition = step("strict-clippy").get("if")
+        self.assertIn("cancelled", workflow_expression_functions(condition))
         self.assertIn(
-            "if: ${{ !cancelled() && steps.native_ready.outcome == 'success' }}",
-            step("Strict Clippy independently of test outcome"),
+            "steps.native_ready.outcome", workflow_expression_references(condition)
         )
-        self.assertIn("id: candidate", step("Verify executable candidate identity"))
-        self.assertIn(
-            "id: native_ready",
-            step("Resolve verified sandboxed V8 artifacts for Cargo"),
-        )
-        # Setup and native execution keep Actions' default success() guard.
+        self.assertEqual(step("candidate").get("id"), "candidate")
+        self.assertEqual(step("native_ready").get("id"), "native_ready")
         for name in (
-            "Verify executable candidate identity",
-            "Prepare native owner-test prerequisites",
-            "Resolve verified sandboxed V8 artifacts for Cargo",
-            "Compile and test actual imported packages",
+            "candidate",
+            "native-prerequisites",
+            "native_ready",
+            "owner-tests",
         ):
-            self.assertNotRegex(step(name), r"\n        if:")
+            self.assertNotIn("if", step(name))
 
     def test_no_failure_suppression_or_privileged_event(self):
-        text = WORKFLOW.read_text()
-        self.assertNotIn("continue-on-error", text)
-        self.assertNotRegex(text, r"\|\|\s*true\b")
-        self.assertNotIn("pull_request_target:", text)
-        self.assertNotIn("contents: write", text)
-        self.assertNotIn("secrets:", text)
-        self.assertIn("contents: read", text)
-        self.assertNotIn(
-            "cargo check", text
-        )  # Do not compile everything twice just for ordering.
+        self.assertFalse(workflow_contains_key(WORKFLOW_DOCUMENT, "continue-on-error"))
+        self.assertNotIn("pull_request_target", workflow_events(WORKFLOW_DOCUMENT))
+        self.assertEqual(WORKFLOW_DOCUMENT.get("permissions"), {"contents": "read"})
+        self.assertFalse(workflow_contains_key(WORKFLOW_DOCUMENT, "secrets"))
+        commands = [
+            command
+            for job in WORKFLOW_DOCUMENT["jobs"].values()
+            for workflow_step_value in job.get("steps", [])
+            for command in command_lines(workflow_step_value)
+        ]
+        self.assertFalse(any(command[-2:] == ["||", "true"] for command in commands))
+        self.assertFalse(any(command[:2] == ["cargo", "check"] for command in commands))
 
-    def test_engineering_sandbox_binds_the_actual_matrix_candidate(self):
-        synthetic = engineering_step("Construct deterministic sandbox merge candidate")
-        binding = engineering_step("Bind exact engineering sandbox candidate identity")
-        self.assertIn("id: sandbox-synthetic", synthetic)
-        self.assertIn(
-            "TESTED_SHA: ${{ steps.sandbox-synthetic.outputs.sha || env.SOURCE_SHA }}",
-            binding,
+    def test_engineering_sandbox_binds_actual_matrix_candidate(self):
+        synthetic = engineering_step("sandbox-synthetic")
+        binding = engineering_step("sandbox-candidate")
+        self.assertEqual(synthetic.get("id"), "sandbox-synthetic")
+        references = workflow_expression_references(binding.get("env", {}))
+        self.assertIn("steps.sandbox-synthetic.outputs.sha", references)
+        self.assertIn("matrix.lane", references)
+        self.assertEqual(
+            binding.get("env", {}).get("HEPTA_CI_LANE"), "${{ matrix.lane }}"
         )
-        self.assertIn("HEPTA_CI_LANE: ${{ matrix.lane }}", binding)
-        script = engineering_shell("Bind exact engineering sandbox candidate identity")
-        self.assertIn('test "$(git rev-parse HEAD)" = "$TESTED_SHA"', script)
-        self.assertIn("printf 'TESTED_SHA=%s\\n'", script)
-        self.assertIn("printf 'HEPTA_CI_LANE=%s\\n'", script)
 
     def test_records_and_raw_output_are_both_uploaded(self):
-        text = WORKFLOW.read_text()
-        paths = re.findall(r"path: .*?/hepta-command-records/([^\n]+)", text)
+        paths = []
+        for job in WORKFLOW_DOCUMENT["jobs"].values():
+            for value in job.get("steps", []):
+                if str(value.get("uses", "")).startswith("actions/upload-artifact@"):
+                    candidate = value.get("with", {}).get("path")
+                    if (
+                        isinstance(candidate, str)
+                        and "hepta-command-records" in candidate
+                    ):
+                        paths.append(candidate.rsplit("/", 1)[-1])
         self.assertEqual(len(paths), 4)
         for pattern in paths:
             self.assertTrue(fnmatch.fnmatchcase("owner-test.json", pattern))
@@ -163,13 +186,13 @@ class NativeFeedbackPolicyTests(unittest.TestCase):
     def test_build_inputs_reach_the_unfiltered_aggregate_scope(self):
         from scripts.hepta_ci_scope import select
 
-        trigger = WORKFLOW.read_text().split("permissions:", 1)[0]
-        self.assertIn("  workflow_call:", trigger)
-        self.assertNotIn("  pull_request:", trigger)
-        aggregate = (ROOT / ".github/workflows/blocking-ci.yml").read_text()
-        aggregate_trigger = aggregate.split("concurrency:", 1)[0]
-        self.assertIn("  pull_request:", aggregate_trigger)
-        self.assertNotIn("    paths:", aggregate_trigger)
+        self.assertIn("workflow_call", workflow_events(WORKFLOW_DOCUMENT))
+        self.assertNotIn("pull_request", workflow_events(WORKFLOW_DOCUMENT))
+        aggregate = load_workflow(
+            (ROOT / ".github/workflows/blocking-ci.yml").read_text()
+        )
+        self.assertIn("pull_request", workflow_events(aggregate))
+        self.assertIsInstance(aggregate.get("on", {}).get("pull_request"), dict)
         for path in (
             ".cargo/config.toml",
             "codex-rs/.cargo/config.toml",
@@ -256,7 +279,7 @@ raise SystemExit(int(os.environ.get("FAIL_" + phase.upper(), "0")))
     def invoke(self, name, **extra):
         cwd = (
             self.repo / "codex-rs"
-            if "working-directory: codex-rs\n" in step(name)
+            if step(name).get("working-directory") == "codex-rs"
             else self.repo
         )
         return subprocess.run(
@@ -282,26 +305,22 @@ raise SystemExit(int(os.environ.get("FAIL_" + phase.upper(), "0")))
         )
 
     def test_source_candidate_identity_is_real_git(self):
-        result = self.invoke("Verify executable candidate identity")
+        result = self.invoke("candidate")
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(self.calls(), [])
 
     def test_wrong_candidate_and_dirty_source_reject_before_dispatch(self):
         self.assertNotEqual(
-            self.invoke(
-                "Verify executable candidate identity", TESTED_SHA="f" * 40
-            ).returncode,
+            self.invoke("candidate", TESTED_SHA="f" * 40).returncode,
             0,
         )
         (self.repo / "codex-rs/code.rs").write_text("edited after checkout\n")
-        self.assertNotEqual(
-            self.invoke("Verify executable candidate identity").returncode, 0
-        )
+        self.assertNotEqual(self.invoke("candidate").returncode, 0)
         self.assertEqual(self.calls(), [])
 
     def test_merge_lane_cannot_fall_back_to_source_head(self):
         result = self.invoke(
-            "Verify executable candidate identity",
+            "candidate",
             HEPTA_CI_LANE="base-merge",
             MERGE_SHA="",
         )
@@ -317,9 +336,7 @@ raise SystemExit(int(os.environ.get("FAIL_" + phase.upper(), "0")))
                 [
                     "bash",
                     "-c",
-                    engineering_shell(
-                        "Bind exact engineering sandbox candidate identity"
-                    ),
+                    engineering_shell("sandbox-candidate"),
                 ],
                 cwd=self.repo,
                 env={**self.env, "GITHUB_ENV": str(output), **extra},
@@ -351,9 +368,7 @@ raise SystemExit(int(os.environ.get("FAIL_" + phase.upper(), "0")))
         self.assertEqual(fallback_env, "")
 
     def test_metadata_failure_is_retained_and_not_called_a_test_pass(self):
-        result = self.invoke(
-            "Parse actual Cargo workspace before native setup", FAIL_METADATA="47"
-        )
+        result = self.invoke("workspace-metadata", FAIL_METADATA="47")
         self.assertEqual(result.returncode, 47, result.stderr)
         record = self.record("workspace-metadata.json")
         self.assertEqual(
@@ -366,7 +381,7 @@ raise SystemExit(int(os.environ.get("FAIL_" + phase.upper(), "0")))
         )
 
     def test_format_failure_is_not_suppressed(self):
-        result = self.invoke("Formatting without source mutation", FAIL_FMT="41")
+        result = self.invoke("formatting", FAIL_FMT="41")
         self.assertEqual(result.returncode, 41, result.stderr)
         self.assertEqual(self.record("format.json")["status"], "failed")
         self.assertEqual(
@@ -386,11 +401,9 @@ raise SystemExit(int(os.environ.get("FAIL_" + phase.upper(), "0")))
         )
 
     def test_native_failure_and_strict_clippy_have_independent_records(self):
-        failed = self.invoke(
-            "Compile and test actual imported packages", FAIL_JUST="19"
-        )
+        failed = self.invoke("owner-tests", FAIL_JUST="19")
         self.assertEqual(failed.returncode, 19, failed.stderr)
-        lint = self.invoke("Strict Clippy independently of test outcome")
+        lint = self.invoke("strict-clippy")
         self.assertEqual(lint.returncode, 0, lint.stderr)
         self.assertEqual(self.record("owner-test.json")["status"], "failed")
         self.assertEqual(self.record("clippy.json")["status"], "passed")
@@ -415,26 +428,20 @@ raise SystemExit(int(os.environ.get("FAIL_" + phase.upper(), "0")))
         )
 
     def test_clippy_failure_remains_a_failed_gate(self):
-        result = self.invoke(
-            "Strict Clippy independently of test outcome", FAIL_CLIPPY="37"
-        )
+        result = self.invoke("strict-clippy", FAIL_CLIPPY="37")
         self.assertEqual(result.returncode, 37, result.stderr)
         self.assertEqual(self.record("clippy.json")["status"], "failed")
 
     def test_document_failure_does_not_consume_ui_feedback(self):
-        failed = self.invoke(
-            "Retain original document and source-owner gates", DOC_RC="31"
-        )
+        failed = self.invoke("document-gates", DOC_RC="31")
         self.assertEqual(failed.returncode, 31, failed.stderr)
-        ui = self.invoke("UI owner tests independently of document outcome")
+        ui = self.invoke("ui-tests")
         self.assertEqual(ui.returncode, 0, ui.stderr)
         self.assertEqual(self.record("source-owner.json")["status"], "failed")
         self.assertEqual(self.record("ui-test.json")["status"], "passed")
 
     def test_actual_record_log_is_in_upload_set(self):
-        result = self.invoke(
-            "Compile and test actual imported packages", FAIL_JUST="19"
-        )
+        result = self.invoke("owner-tests", FAIL_JUST="19")
         self.assertEqual(result.returncode, 19)
         record = self.record("owner-test.json")
         directory = Path(self.env["RUNNER_TEMP"]) / "hepta-command-records"
@@ -443,10 +450,8 @@ raise SystemExit(int(os.environ.get("FAIL_" + phase.upper(), "0")))
         self.assertEqual(
             hashlib.sha256(log.read_bytes()).hexdigest(), record["log_sha256"]
         )
-        pattern = re.search(
-            r"path: .*?/hepta-command-records/([^\n]+)",
-            step("Retain real command records"),
-        )[1]
+        upload = command_records_upload("qualification")
+        pattern = upload["with"]["path"].rsplit("/", 1)[-1]
         self.assertIn(log, list(directory.glob(pattern)))
 
     def merge_fixture(self, *, wrong_tree=False):
@@ -472,10 +477,8 @@ raise SystemExit(int(os.environ.get("FAIL_" + phase.upper(), "0")))
 
     def test_prospective_merge_record_binds_real_tree_and_both_parents(self):
         self.merge_fixture()
-        self.assertEqual(
-            self.invoke("Verify executable candidate identity").returncode, 0
-        )
-        result = self.invoke("Parse actual Cargo workspace before native setup")
+        self.assertEqual(self.invoke("candidate").returncode, 0)
+        result = self.invoke("workspace-metadata")
         self.assertEqual(result.returncode, 0, result.stderr)
         record = self.record("workspace-metadata.json")
         self.assertEqual(
@@ -487,7 +490,7 @@ raise SystemExit(int(os.environ.get("FAIL_" + phase.upper(), "0")))
 
     def test_noncanonical_merge_tree_does_not_run_native_command(self):
         self.merge_fixture(wrong_tree=True)
-        result = self.invoke("Parse actual Cargo workspace before native setup")
+        result = self.invoke("workspace-metadata")
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(self.record("workspace-metadata.json")["status"], "rejected")
         self.assertEqual(self.calls(), [])

@@ -11,8 +11,18 @@ from hepta_workflow_commands import (
     verify_synthetic_merge,
     verify_owner_self_tests,
     workflow_commands,
+    workflow_contains_key,
+    workflow_events,
+    workflow_expression_functions,
     workflow_expression_references,
+    workflow_job,
     workflow_literal_collection_values,
+    workflow_needs,
+    workflow_run,
+    workflow_step,
+    workflow_step_by_id,
+    workflow_steps,
+    load_workflow,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -83,6 +93,52 @@ steps:
             workflow_literal_collection_values("${{ fromJSON(inputs.dynamic) }}"),
             set(),
         )
+
+    def test_structured_workflow_helpers_ignore_yaml_presentation(self):
+        document = load_workflow(
+            """on: {workflow_dispatch: {}}
+jobs:
+  verify:
+    needs: [plan, source]
+    steps:
+      - id: candidate
+        name: Check candidate
+        if: ${{ !cancelled() && needs.plan.result == 'success' }}
+        run: echo verified
+"""
+        )
+        self.assertEqual(workflow_events(document), {"workflow_dispatch"})
+        self.assertEqual(
+            workflow_needs(workflow_job(document, "verify")), {"plan", "source"}
+        )
+        self.assertEqual(len(workflow_steps(document, "verify")), 1)
+        by_name = workflow_step(document, "verify", "Check candidate")
+        self.assertIs(by_name, workflow_step_by_id(document, "verify", "candidate"))
+        self.assertEqual(workflow_run(by_name), "echo verified\n")
+        self.assertEqual(workflow_expression_functions(by_name["if"]), {"cancelled"})
+        self.assertEqual(
+            workflow_expression_references(by_name["if"]), {"needs.plan.result"}
+        )
+        self.assertFalse(workflow_contains_key(document, "continue-on-error"))
+
+    def test_structured_workflow_helpers_reject_ambiguous_or_missing_shape(self):
+        duplicate = load_workflow(
+            """on: workflow_dispatch
+jobs:
+  verify:
+    steps:
+      - {name: Same, run: echo one}
+      - {name: Same, run: echo two}
+"""
+        )
+        with self.assertRaisesRegex(ValueError, "requires one step"):
+            workflow_step(duplicate, "verify", "Same")
+        with self.assertRaisesRegex(ValueError, "missing workflow job"):
+            workflow_job(duplicate, "missing")
+        with self.assertRaisesRegex(ValueError, "no executable run"):
+            workflow_run({"uses": "actions/checkout@" + "a" * 40})
+        with self.assertRaisesRegex(ValueError, "needs"):
+            workflow_needs({"needs": {"dynamic": True}})
 
     def test_owner_self_test_is_executable_and_not_required_twice(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -157,9 +213,13 @@ steps:
 
 class SyntheticMergeExecutionTests(unittest.TestCase):
     def test_shared_action_builds_ordered_repeatable_candidate(self):
-        action = (ROOT / ".github/actions/hepta-synthetic-merge/action.yml").read_text()
-        script = action.split("      run: |\n", 1)[1]
-        script = "\n".join(line[8:] for line in script.splitlines())
+        action = load_workflow(
+            (ROOT / ".github/actions/hepta-synthetic-merge/action.yml").read_text()
+        )
+        steps = action.get("runs", {}).get("steps", [])
+        matches = [step for step in steps if step.get("id") == "merge"]
+        self.assertEqual(len(matches), 1)
+        script = workflow_run(matches[0])
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
 

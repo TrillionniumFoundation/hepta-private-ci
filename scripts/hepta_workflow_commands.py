@@ -201,6 +201,97 @@ def workflow_events(document: dict) -> set[str]:
     raise ValueError("invalid workflow event declaration")
 
 
+def workflow_jobs(document: dict) -> dict[str, dict]:
+    """Return validated executable jobs from an already parsed workflow."""
+    jobs = document.get("jobs")
+    if not isinstance(jobs, dict) or not jobs:
+        raise ValueError("workflow jobs must be a nonempty object")
+    if any(
+        not isinstance(name, str) or not isinstance(job, dict)
+        for name, job in jobs.items()
+    ):
+        raise ValueError("workflow job entries must be named objects")
+    return jobs
+
+
+def workflow_job(document: dict, name: str) -> dict:
+    try:
+        return workflow_jobs(document)[name]
+    except KeyError as error:
+        raise ValueError(f"missing workflow job: {name}") from error
+
+
+def workflow_steps(document: dict, job_name: str) -> list[dict]:
+    steps = workflow_job(document, job_name).get("steps")
+    if (
+        not isinstance(steps, list)
+        or not steps
+        or any(not isinstance(step, dict) for step in steps)
+    ):
+        raise ValueError(f"workflow job {job_name} must contain object steps")
+    return steps
+
+
+def _unique_step(document: dict, job_name: str, key: str, value: str) -> dict:
+    matches = [
+        step for step in workflow_steps(document, job_name) if step.get(key) == value
+    ]
+    if len(matches) != 1:
+        raise ValueError(
+            f"workflow job {job_name} requires one step with {key}={value!r}"
+        )
+    return matches[0]
+
+
+def workflow_step(document: dict, job_name: str, name: str) -> dict:
+    return _unique_step(document, job_name, "name", name)
+
+
+def workflow_step_by_id(document: dict, job_name: str, step_id: str) -> dict:
+    return _unique_step(document, job_name, "id", step_id)
+
+
+def workflow_run(step: dict) -> str:
+    value = step.get("run")
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError("workflow step has no executable run scalar")
+    return value if value.endswith("\n") else value + "\n"
+
+
+def workflow_needs(job: dict) -> set[str]:
+    value = job.get("needs", [])
+    if isinstance(value, str):
+        return {value}
+    if isinstance(value, list) and all(isinstance(item, str) for item in value):
+        return set(value)
+    raise ValueError("workflow needs must be a string or string list")
+
+
+def workflow_contains_key(value: object, key: str) -> bool:
+    if isinstance(value, dict):
+        return key in value or any(
+            workflow_contains_key(item, key) for item in value.values()
+        )
+    if isinstance(value, list):
+        return any(workflow_contains_key(item, key) for item in value)
+    return False
+
+
+def workflow_expression_functions(value: object) -> set[str]:
+    """Return function calls from GitHub expression bodies, ignoring quoted text."""
+    functions: set[str] = set()
+    if not isinstance(value, str):
+        return functions
+    expressions = re.findall(r"\$\{\{(.*?)\}\}", value, flags=re.S) or [value]
+    for expression in expressions:
+        expression = re.sub(r"'(?:[^']|'')*'", "''", expression)
+        expression = re.sub(r'"(?:[^"\\]|\\.)*"', '""', expression)
+        functions.update(
+            re.findall(r"(?<![\w.])([A-Za-z_][A-Za-z0-9_]*)\s*\(", expression)
+        )
+    return functions
+
+
 def workflow_expression_references(
     value: object, *, implicit: bool = False
 ) -> set[str]:
