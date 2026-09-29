@@ -15,13 +15,13 @@ use crate::CanonicalRunOutcomeV1;
 use crate::IntelligenceHostEnvelopeV1;
 
 #[cfg(test)]
-use codex_hepta_types::AuthorityPosture;
-#[cfg(test)]
 use crate::AdvisoryDecisionReceiptV1;
 #[cfg(test)]
 use crate::AdvisoryDecisionV1;
 #[cfg(test)]
 use crate::CanonicalTerminalReceiptV1;
+#[cfg(test)]
+use codex_hepta_types::AuthorityPosture;
 
 const RECALL_POLICY_DOMAIN_V1: &[u8] = b"hepta.intelligence.recall-product-policy.v1\0";
 const RECALL_TRACE_DOMAIN_V1: &[u8] = b"hepta.intelligence.recall-policy-trace.v1\0";
@@ -163,19 +163,15 @@ mod tests {
             .expect("first policy");
         let second = canonical_recall_absence_policy_digest_v1(digest("reason:second"))
             .expect("second policy");
-        let CanonicalRunOutcomeV1::Abstained(first_outcome) = bind_recall_policy_outcome_v1(
-            CanonicalRunOutcomeV1::Abstained(terminal()),
-            first,
-        )
-        .expect("first outcome")
+        let CanonicalRunOutcomeV1::Abstained(first_outcome) =
+            bind_recall_policy_outcome_v1(CanonicalRunOutcomeV1::Abstained(terminal()), first)
+                .expect("first outcome")
         else {
             panic!("terminal")
         };
-        let CanonicalRunOutcomeV1::Abstained(second_outcome) = bind_recall_policy_outcome_v1(
-            CanonicalRunOutcomeV1::Abstained(terminal()),
-            second,
-        )
-        .expect("second outcome")
+        let CanonicalRunOutcomeV1::Abstained(second_outcome) =
+            bind_recall_policy_outcome_v1(CanonicalRunOutcomeV1::Abstained(terminal()), second)
+                .expect("second outcome")
         else {
             panic!("terminal")
         };

@@ -116,29 +116,27 @@ fn every_registered_consumer_requires_registry_authorized_migration_posture() {
             ConsumerConvergenceStateV1::CanonicalShadow
                 | ConsumerConvergenceStateV1::RegisteredPendingCutover
         ));
-        authorize_migration_posture_v1(
-            consumer,
-            CanonicalMigrationPostureV1::CompatibilityBound,
-        )
-        .expect("compatibility-bound migration remains authorized");
+        authorize_migration_posture_v1(consumer, CanonicalMigrationPostureV1::CompatibilityBound)
+            .expect("compatibility-bound migration remains authorized");
         assert_eq!(
             authorize_migration_posture_v1(consumer, CanonicalMigrationPostureV1::Native),
-            Err(CanonicalConsumerBindingError::MigrationPostureNotAuthorized {
-                consumer,
-                posture: CanonicalMigrationPostureV1::Native,
-                state: registration.state,
-            })
+            Err(
+                CanonicalConsumerBindingError::MigrationPostureNotAuthorized {
+                    consumer,
+                    posture: CanonicalMigrationPostureV1::Native,
+                    state: registration.state,
+                }
+            )
         );
         assert_eq!(
-            authorize_migration_posture_v1(
-                consumer,
-                CanonicalMigrationPostureV1::LegacyRetired,
-            ),
-            Err(CanonicalConsumerBindingError::MigrationPostureNotAuthorized {
-                consumer,
-                posture: CanonicalMigrationPostureV1::LegacyRetired,
-                state: registration.state,
-            })
+            authorize_migration_posture_v1(consumer, CanonicalMigrationPostureV1::LegacyRetired,),
+            Err(
+                CanonicalConsumerBindingError::MigrationPostureNotAuthorized {
+                    consumer,
+                    posture: CanonicalMigrationPostureV1::LegacyRetired,
+                    state: registration.state,
+                }
+            )
         );
     }
 }
@@ -155,11 +153,13 @@ fn binding_constructor_cannot_self_promote_a_pending_consumer() {
             None,
             CanonicalMigrationPostureV1::Native,
         ),
-        Err(CanonicalConsumerBindingError::MigrationPostureNotAuthorized {
-            consumer: CanonicalConsumerV1::MemoryRetrieval,
-            posture: CanonicalMigrationPostureV1::Native,
-            state: ConsumerConvergenceStateV1::RegisteredPendingCutover,
-        })
+        Err(
+            CanonicalConsumerBindingError::MigrationPostureNotAuthorized {
+                consumer: CanonicalConsumerV1::MemoryRetrieval,
+                posture: CanonicalMigrationPostureV1::Native,
+                state: ConsumerConvergenceStateV1::RegisteredPendingCutover,
+            }
+        )
     );
 }
 
@@ -230,9 +230,8 @@ fn compatibility_posture_cannot_omit_or_hide_legacy_digest() {
 #[test]
 fn raw_shadow_digest_equality_is_diagnostic_not_cutover_evidence() {
     let same = digest('8').digest();
-    let comparison =
-        CanonicalShadowComparisonV1::new(&COGNITIVE_STORE_CONSUMER_V1, same, same)
-            .expect("shadow diagnostic");
+    let comparison = CanonicalShadowComparisonV1::new(&COGNITIVE_STORE_CONSUMER_V1, same, same)
+        .expect("shadow diagnostic");
 
     comparison.validate().expect("valid shadow diagnostic");
     assert!(comparison.matched());
