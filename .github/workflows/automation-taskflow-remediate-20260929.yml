@@ -40,13 +40,15 @@ jobs:
             codex-rs/hepta-automation/tests/durable_neural_circuit_recovery.rs
             docs/modules/automation.taskflow/SCHEMA_CONTRACT.json
             scripts/automation_taskflow_remediation_20260929.patch.b64
+            scripts/automation_taskflow_remediation_parts
 
       - name: Materialize and apply reviewed source patch
         shell: bash
         run: |
           set -euo pipefail
           patch_file="$RUNNER_TEMP/automation-taskflow-remediation.patch"
-          tr -d '\r\n\t ' < scripts/automation_taskflow_remediation_20260929.patch.b64 \
+          cat scripts/automation_taskflow_remediation_parts/part-*.b64 \
+            | tr -d '\r\n\t ' \
             | base64 --decode \
             | gzip --decompress --stdout > "$patch_file"
           test "$(sha256sum "$patch_file" | awk '{print $1}')" = \
@@ -78,6 +80,7 @@ jobs:
           rm -f .github/workflows/automation-taskflow-export-final-patch.yml
           rm -f .github/workflows/automation-taskflow-remediate-20260929.yml
           rm -f scripts/automation_taskflow_remediation_20260929.patch.b64
+          rm -rf scripts/automation_taskflow_remediation_parts
           git diff --check
           git config user.name "hepta-automation-remediation"
           git config user.email "automation-remediation@users.noreply.github.com"
