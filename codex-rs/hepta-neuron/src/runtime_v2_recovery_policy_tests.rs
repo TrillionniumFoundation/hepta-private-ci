@@ -503,10 +503,117 @@ fn quiesce_recovery_closes_reserved_not_executed_without_provider_call() {
     };
 
     assert_eq!(
-        checked(runtime.recover_operation(&mut model, &request)),
+        checked(runtime.close_unexecuted_operation(&mut model, &request)),
         NeuronOperationStatusV2::Failed(NeuronOperationFailureV2::AdmissionDenied)
     );
     assert_eq!(execute_calls.load(Ordering::SeqCst), 0);
     assert_eq!(reconcile_calls.load(Ordering::SeqCst), 0);
     assert_eq!(checked(runtime.pending_operation_status()), None);
+}
+
+struct ResumeAfterNotStartedModel {
+    execute_calls: Arc<AtomicUsize>,
+    reconcile_calls: Arc<AtomicUsize>,
+}
+
+impl NeuronModelPort for ResumeAfterNotStartedModel {
+    fn execute(
+        &mut self,
+        request: &NeuronModelRequestV1,
+    ) -> Result<NeuronModelOutputV1, NeuronModelError> {
+        self.execute_calls.fetch_add(1, Ordering::SeqCst);
+        Ok(valid_output(request))
+    }
+}
+
+impl DurableNeuronModelPort for ResumeAfterNotStartedModel {
+    fn reconcile(
+        &mut self,
+        _request: &NeuronModelRequestV1,
+    ) -> Result<NeuronModelResolutionV2, NeuronModelError> {
+        self.reconcile_calls.fetch_add(1, Ordering::SeqCst);
+        Ok(NeuronModelResolutionV2::NotStarted)
+    }
+}
+
+#[test]
+fn serving_recovery_preserves_reserved_not_executed_for_live_admission() {
+    let fixture = Fixture::new();
+    let mut runtime = bootstrap(&fixture);
+    let request = input();
+    let key = NeuronOperationKeyV2 {
+        tick_id: request.tick_id.clone(),
+        input_semantic_digest: checked(request.semantic_digest()),
+    };
+    checked(runtime.index.prepare(key, None));
+
+    let execute_calls = Arc::new(AtomicUsize::new(0));
+    let reconcile_calls = Arc::new(AtomicUsize::new(0));
+    let mut recovery_model = CountingNotStartedModel {
+        execute_calls: Arc::clone(&execute_calls),
+        reconcile_calls: Arc::clone(&reconcile_calls),
+    };
+    assert_eq!(
+        checked(runtime.recover_operation(&mut recovery_model, &request)),
+        NeuronOperationStatusV2::NotExecuted
+    );
+    assert_eq!(execute_calls.load(Ordering::SeqCst), 0);
+    assert_eq!(reconcile_calls.load(Ordering::SeqCst), 0);
+    assert_eq!(
+        checked(runtime.query_input_operation(&request)),
+        NeuronOperationStatusV2::NotExecuted
+    );
+
+    let live_execute_calls = Arc::new(AtomicUsize::new(0));
+    let mut live_model = ValidModel {
+        execute_calls: Arc::clone(&live_execute_calls),
+    };
+    assert!(
+        runtime
+            .tick_guarded(&mut live_model, request.clone(), &mut Allow)
+            .is_ok()
+    );
+    assert_eq!(live_execute_calls.load(Ordering::SeqCst), 1);
+    assert!(matches!(
+        checked(runtime.query_input_operation(&request)),
+        NeuronOperationStatusV2::Committed { .. }
+    ));
+}
+
+#[test]
+fn serving_recovery_preserves_provider_not_started_for_guarded_resume() {
+    let fixture = Fixture::new();
+    let mut runtime = bootstrap(&fixture);
+    let request = input();
+    let key = NeuronOperationKeyV2 {
+        tick_id: request.tick_id.clone(),
+        input_semantic_digest: checked(request.semantic_digest()),
+    };
+    checked(runtime.index.prepare(key.clone(), None));
+    checked(runtime.index.mark_dispatched(&key));
+
+    let execute_calls = Arc::new(AtomicUsize::new(0));
+    let reconcile_calls = Arc::new(AtomicUsize::new(0));
+    let mut model = ResumeAfterNotStartedModel {
+        execute_calls: Arc::clone(&execute_calls),
+        reconcile_calls: Arc::clone(&reconcile_calls),
+    };
+    assert_eq!(
+        checked(runtime.recover_operation(&mut model, &request)),
+        NeuronOperationStatusV2::OutcomeUnknown
+    );
+    assert_eq!(execute_calls.load(Ordering::SeqCst), 0);
+    assert_eq!(reconcile_calls.load(Ordering::SeqCst), 1);
+
+    assert!(
+        runtime
+            .tick_guarded(&mut model, request.clone(), &mut Allow)
+            .is_ok()
+    );
+    assert_eq!(execute_calls.load(Ordering::SeqCst), 1);
+    assert_eq!(reconcile_calls.load(Ordering::SeqCst), 2);
+    assert!(matches!(
+        checked(runtime.query_input_operation(&request)),
+        NeuronOperationStatusV2::Committed { .. }
+    ));
 }

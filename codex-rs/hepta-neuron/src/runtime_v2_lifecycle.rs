@@ -3,6 +3,12 @@
 use super::*;
 use crate::NeuronOperationFailureV2;
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum NeuronRecoveryDispositionV2 {
+    PreserveUnexecuted,
+    CloseUnexecuted,
+}
+
 include!("runtime_v2_lifecycle_status.rs");
 include!("runtime_v2_lifecycle_query.rs");
 include!("runtime_v2_lifecycle_facade.rs");

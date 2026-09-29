@@ -3,6 +3,7 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
         &mut self,
         model: &mut impl DurableNeuronModelPort,
         input: &NeuronTickInputV1,
+        disposition: NeuronRecoveryDispositionV2,
         phases: &mut PhaseMeasurementV2,
     ) -> Result<NeuronOperationStatusV2, NeuronRuntimeV2Error> {
         let phase_started = Instant::now();
@@ -37,16 +38,23 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
         }
         self.require_expected_checkpoint(input, pending.expected_anchor)?;
         self.preflight_new_tick(input)?;
-        let mut request = self.model_request(input)?;
-        request.input_digest = input_digest;
 
         if !self.index.dispatched()? {
-            self.record_failure(&key, NeuronOperationFailureV2::AdmissionDenied)?;
-            return Ok(NeuronOperationStatusV2::Failed(
-                NeuronOperationFailureV2::AdmissionDenied,
-            ));
+            return match disposition {
+                NeuronRecoveryDispositionV2::PreserveUnexecuted => {
+                    Ok(NeuronOperationStatusV2::NotExecuted)
+                }
+                NeuronRecoveryDispositionV2::CloseUnexecuted => {
+                    self.record_failure(&key, NeuronOperationFailureV2::AdmissionDenied)?;
+                    Ok(NeuronOperationStatusV2::Failed(
+                        NeuronOperationFailureV2::AdmissionDenied,
+                    ))
+                }
+            };
         }
 
+        let mut request = self.model_request(input)?;
+        request.input_digest = input_digest;
         let provider_started = Instant::now();
         let phase_started = Instant::now();
         let resolution = model.reconcile(&request);
@@ -71,12 +79,17 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
                     witness_acknowledged: record.witness_acknowledged,
                 })
             }
-            Ok(NeuronModelResolutionV2::NotStarted) => {
-                self.record_failure(&key, NeuronOperationFailureV2::AdmissionDenied)?;
-                Ok(NeuronOperationStatusV2::Failed(
-                    NeuronOperationFailureV2::AdmissionDenied,
-                ))
-            }
+            Ok(NeuronModelResolutionV2::NotStarted) => match disposition {
+                NeuronRecoveryDispositionV2::PreserveUnexecuted => {
+                    Ok(NeuronOperationStatusV2::OutcomeUnknown)
+                }
+                NeuronRecoveryDispositionV2::CloseUnexecuted => {
+                    self.record_failure(&key, NeuronOperationFailureV2::AdmissionDenied)?;
+                    Ok(NeuronOperationStatusV2::Failed(
+                        NeuronOperationFailureV2::AdmissionDenied,
+                    ))
+                }
+            },
             Ok(NeuronModelResolutionV2::Unknown) => Ok(NeuronOperationStatusV2::OutcomeUnknown),
             Err(NeuronModelError::Rejected) => {
                 self.record_failure(&key, NeuronOperationFailureV2::ModelRejected)?;

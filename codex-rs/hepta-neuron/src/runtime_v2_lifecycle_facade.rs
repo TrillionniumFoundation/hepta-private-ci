@@ -59,12 +59,41 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
 
     /// Converge one exact reserved operation without admitting new work or
     /// releasing a result. This method never calls `execute`, never creates a
-    /// reservation and never changes the operation identity. A durable owner may
-    /// call it while normal admission is revoked or the daemon is quiescing.
+    /// reservation and never changes the operation identity. A durable proof
+    /// that the provider has not started work is preserved so a later
+    /// `tick_guarded` call may resume the same operation under live admission.
     pub fn recover_operation(
         &mut self,
         model: &mut impl DurableNeuronModelPort,
         input: &NeuronTickInputV1,
+    ) -> Result<NeuronOperationStatusV2, NeuronRuntimeV2Error> {
+        self.recover_operation_with_disposition(
+            model,
+            input,
+            NeuronRecoveryDispositionV2::PreserveUnexecuted,
+        )
+    }
+
+    /// Quiesce-only closure for a proven-unexecuted reservation. This performs
+    /// no provider execution and writes the terminal `AdmissionDenied` history
+    /// needed to seal a generation without silently dropping the operation.
+    pub fn close_unexecuted_operation(
+        &mut self,
+        model: &mut impl DurableNeuronModelPort,
+        input: &NeuronTickInputV1,
+    ) -> Result<NeuronOperationStatusV2, NeuronRuntimeV2Error> {
+        self.recover_operation_with_disposition(
+            model,
+            input,
+            NeuronRecoveryDispositionV2::CloseUnexecuted,
+        )
+    }
+
+    fn recover_operation_with_disposition(
+        &mut self,
+        model: &mut impl DurableNeuronModelPort,
+        input: &NeuronTickInputV1,
+        disposition: NeuronRecoveryDispositionV2,
     ) -> Result<NeuronOperationStatusV2, NeuronRuntimeV2Error> {
         let started = Instant::now();
         let store_before = self.store.storage_observation();
@@ -74,7 +103,7 @@ impl<W: AnchorWitnessStore> NeuronRuntimeV2<W> {
             recovery_only: true,
             ..PhaseMeasurementV2::default()
         };
-        let result = self.recover_operation_inner(model, input, &mut phases);
+        let result = self.recover_operation_inner(model, input, disposition, &mut phases);
         let store_after = self.store.storage_observation();
         let index_after = self.index.storage_observation();
         let witness_after = self.witness.io_metrics();

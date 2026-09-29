@@ -25,6 +25,7 @@ where
                 body_bundle_digest,
             }),
             config_digest,
+            lifecycle_gate: Arc::new(AgentdNeuronExecutionGateV2::standalone()),
         })
     }
 }
@@ -79,14 +80,26 @@ impl AgentdNeuronHandleV2 {
         self.query_operation(&input.tick_id, input.semantic_digest()?)
     }
 
-    /// Converge an already reserved operation while serving is revoked or the
-    /// daemon is quiescing. The report deliberately omits the model result.
+    /// Converge provider truth without closing a proven-unexecuted reservation.
+    /// This is the serving/startup-safe recovery boundary; the report omits the
+    /// model result and grants no result-use authority.
     pub fn recover_operation(
         &self,
         input: &NeuronTickInputV1,
     ) -> Result<AgentdNeuronRecoveryReportV2, AgentdNeuronControlErrorV2> {
+        self.recover_operation_with_policy(
+            input,
+            AgentdNeuronRecoveryPolicyV2::PreserveUnexecuted,
+        )
+    }
+
+    pub(crate) fn recover_operation_with_policy(
+        &self,
+        input: &NeuronTickInputV1,
+        policy: AgentdNeuronRecoveryPolicyV2,
+    ) -> Result<AgentdNeuronRecoveryReportV2, AgentdNeuronControlErrorV2> {
         self.owner
-            .recover_operation_control(input)
+            .recover_operation_control_with_policy(input, policy)
             .map(AgentdNeuronRecoveryReportV2::from_status)
     }
 
@@ -139,11 +152,37 @@ impl AgentdNeuronHandleV2 {
                 NeuronAdmissionError::BindingMismatch,
             ));
         }
+        let lifecycle_epoch = match self.lifecycle_gate.capture() {
+            Ok(epoch) => epoch,
+            Err(error) => {
+                self.owner.record_stale_invocation_rejection();
+                return Err(error);
+            }
+        };
         Ok(AgentdNeuronInvocationV2 {
             handle: self.clone(),
             run_id,
             runtime_body_digest,
             input,
+            lifecycle_epoch,
         })
+    }
+
+    pub(crate) fn close_lifecycle_gate(&self) -> Result<(), AgentdNeuronControlErrorV2> {
+        self.lifecycle_gate.close()
+    }
+
+    pub(crate) fn open_lifecycle_gate(&self) -> Result<(), AgentdNeuronControlErrorV2> {
+        self.lifecycle_gate.open()
+    }
+
+    pub(crate) fn try_drain_lifecycle_gate(
+        &self,
+    ) -> Result<RwLockWriteGuard<'_, ()>, AgentdNeuronControlErrorV2> {
+        self.lifecycle_gate.try_drain()
+    }
+
+    pub(crate) fn lifecycle_gate_snapshot(&self) -> (bool, u64) {
+        self.lifecycle_gate.snapshot()
     }
 }

@@ -1,9 +1,9 @@
 # Neuron V2 operations and generation handoff runbook
 
-This runbook is the operational companion to `V2_DEVELOPMENT.md`. It describes
-implemented inspection and recovery interfaces plus the safe procedure for a
-capacity-driven generation handoff. It does not grant release, activation,
-rollback or model-selection authority.
+This runbook is the operational companion to `V2_CONTROL_PLANE.md` and
+`V2_DEVELOPMENT.md`. It describes implemented inspection and recovery interfaces
+plus the safe procedure for a capacity-driven generation handoff. It does not
+grant release, activation, rollback or model-selection authority.
 
 ## Fixed identities
 
@@ -11,6 +11,7 @@ Every investigation records all of the following before changing process state:
 
 - exact source commit and integration-base commit;
 - runtime configuration digest and body-bundle digest;
+- controller lifecycle state, execution epoch and active/retained generations;
 - generation, subject scope and objective scope;
 - generation-store, runtime-index and witness paths;
 - current checkpoint anchor and the exact operation key `(tick_id, input digest)`;
@@ -25,7 +26,7 @@ canonical input digest is already retained.
 | Stable code | Meaning | Required action |
 | --- | --- | --- |
 | `not_recorded` | Healthy local histories contain no record for the exact key. | Re-run admission only when the caller still owns the original request and authorization. |
-| `reserved_not_executed` | A reservation exists without a dispatch fence. | Reconcile the same operation under the exclusive durable owner; never change the key. |
+| `reserved_not_executed` | A reservation exists without a dispatch fence. | In `Serving`, preserve it for the same live-admitted operation. In `Quiescing`, close it through controller recovery before seal. |
 | `outcome_unknown` | Physical execution may have crossed the dispatch boundary. | Query the durable provider ledger. Do not blindly execute again. |
 | `failed` | A durable terminal negative transition exists. | Return the recorded failure. Do not reuse the tick ID with changed input. |
 | `committed_witness_pending` | The local result is durable but external witness acknowledgement is incomplete. | Reconcile witness CAS and the local acknowledgement before handoff. |
@@ -35,6 +36,10 @@ canonical input digest is already retained.
 `store_outcome_unknown`, `index_outcome_unknown`, `witness_outcome_unknown` and
 `model_outcome_unknown` require operation-key reconciliation. They are not
 negative results and do not authorize a fresh operation ID.
+
+A stale invocation prepared before quiesce returns admission `Revoked`. Confirm
+that `stale_invocation_rejections` increased and do not reconstruct an execution
+path around the lifecycle controller.
 
 ## Capacity decision table
 
@@ -54,20 +59,27 @@ headroom instead of only the aggregate action code.
 
 ## Recovery procedure
 
-1. Stop new admission at the owning host; retain the process and all file handles.
-2. Query the exact affected operation before attempting a retry.
-3. Run local reconciliation. This may finish an already durable store commit,
+1. Query the exact affected operation before attempting recovery.
+2. Run local reconciliation. This may finish an already durable store commit,
    complete the discovery index and acknowledge an already observed witness.
-4. For `reserved_not_executed` or `outcome_unknown`, query the same durable
-   provider owner. Only its current authoritative `NotStarted` result permits
-   resuming the same operation.
-5. Query the operation again. A read, corruption or poisoning error remains an
+3. While the controller remains `Serving`, call ordinary recovery. It may query
+   the same durable provider operation, but it preserves a reservation or an
+   authoritative provider `NotStarted` result. It never calls provider `execute`.
+4. If the preserved operation should continue, invoke the same operation through
+   `tick_guarded` with current admission. Do not change its key or input.
+5. To retire the generation, call `begin_quiesce` first. This closes new work and
+   advances the execution epoch, invalidating all previously prepared invocations.
+6. In `Quiescing`, controller recovery may close a proven-unexecuted reservation
+   as terminal `AdmissionDenied`. Unknown provider outcomes remain pending and
+   must be resolved; they cannot be force-closed.
+7. Query the operation again. A read, corruption or poisoning error remains an
    error; never convert it to `not_recorded`.
-6. Retain the resulting status, source identity, file identities, capacity and
-   provider evidence with the incident record.
+8. Retain the resulting status, source identity, file identities, capacity,
+   execution epoch and provider evidence with the incident record.
 
 A process restart is not a retry policy. Reopen the exact generation-store,
-index, witness and provider histories, then follow the same decision table.
+index, witness and provider histories, reconstruct the active and retained handle
+topology, then follow the same decision table.
 
 ## Safe generation handoff
 
@@ -76,22 +88,32 @@ instead of deleting or compacting authoritative V2 operation history. Until a
 versioned unified V2 segment manifest is implemented and qualified, use this
 procedure:
 
-1. Enter maintenance mode and reject new operations for the current generation.
-2. Reconcile the runtime until there is no pending local witness work. Resolve
-   every reserved/dispatched provider operation; no `outcome_unknown` operation
-   may cross the handoff boundary.
-3. Record the final checkpoint anchor, configuration/body digests, capacity
+1. Call `begin_quiesce`. Confirm the controller snapshot reports `Quiescing` and
+   `accepting_new_work == false`. Do not rely on callers voluntarily discarding
+   old invocations; epoch validation rejects them at actual execution entry.
+2. Resolve every reserved/dispatched provider operation through controller
+   recovery. No `outcome_unknown` operation may cross the handoff boundary.
+3. Call `seal`. `controller_busy` means an invocation admitted by the previous
+   epoch is still in flight. Keep admission closed and retry after it drains;
+   never mark the generation sealed manually.
+4. Confirm there is no pending operation and no pending witness acknowledgement.
+   Record the final checkpoint anchor, configuration/body digests, capacity
    snapshot, source commit and independently retained witness frontier.
-4. Seal the old generation paths read-only and retain the provider execution
+5. Seal the old generation paths read-only and retain the provider execution
    ledger. Produce an authenticated archive digest; do not rename files into a
    new generation or reinterpret their headers.
-5. Bootstrap a strictly newer generation on distinct, empty paths with its own
+6. Construct a strictly newer generation on distinct, empty paths with its own
    authenticated model, calibration, OOD and body identities. Never reset the
    generation number to regain capacity.
-6. Execute the exact-source source-head and synthetic-merge qualification, then
+7. Call `reload`. The controller closes and drains the successor before replay
+   validation. A failed reload leaves the predecessor sealed and active; it does
+   not reopen old work.
+8. Execute the exact-source source-head and synthetic-merge qualification, then
    target-host canary checks. Promotion remains a separate authority decision.
-7. Route new requests only after the successor owner is installed. Historical
-   operation queries continue against the retained generation that owns the key.
+9. Route new requests only after the successor snapshot reports `Serving` and
+   `accepting_new_work == true`. Historical operation queries continue against
+   the retained generation that owns the key; retained handle clones remain
+   non-writable.
 
 Rollback is a pointer reversal only before the successor has accepted any
 operation and while the predecessor remains quiescent and fully retained. Once
@@ -109,6 +131,7 @@ must not be represented as a transparent rollback.
 | Partial final frame | Reopen through the qualified recovery path; only a verified incomplete tail may be truncated. |
 | Complete checksum/frontier mismatch | Treat as corruption, retain evidence and do not truncate through it. |
 | Sync result indeterminate or store poisoned | Query after reopening; never write a negative tombstone from absence that is not proven. |
+| Owner or controller poisoned | Stop serving, reconstruct from durable handles and histories, and resume only after reconciliation. |
 
 Parent directories are trusted host-owned namespaces in the current contract.
 An equally privileged actor replacing ancestor directories is outside this local
@@ -117,10 +140,16 @@ file-lock guarantee and belongs in the host threat model.
 ## Measurement and evidence
 
 The diagnostic lane records complete guarded-call p50/p95/p99, recovery time,
-store/index/witness sync time, request time minus measured sync calls, individual
-store/index growth and process high-water RSS where the platform exposes it.
-These are process observations from a deterministic fixture, not block-device
-write accounting, production-model quality evidence or a production SLA.
+receipt encoding and full-receipt materialization, store/index/witness sync time,
+request time minus measured sync calls, individual store/index growth and process
+high-water RSS where the platform exposes it. These are process observations from
+a deterministic fixture, not block-device write accounting, production-model
+quality evidence or a production SLA.
+
+Operational snapshots additionally expose the oldest current `OutcomeUnknown`
+lower-bound age, witness backlog age, capacity trends, stale invocation counts,
+owner busy/poisoned counts and preserving-versus-closing recovery counts. Age
+values reset on owner reconstruction; durable records remain authoritative.
 
 The only acceptable candidate evidence comes from the committed-source workflow
 for the exact source commit and fixed main integration base. Required commands

@@ -20,6 +20,7 @@ use codex_hepta_neuron::WitnessStoreError;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+use super::AgentdNeuronExecutionGateV2;
 use super::AgentdNeuronHandleV2;
 use super::AgentdNeuronOwnerV2;
 use super::ProductNeuronOwnerV2;
@@ -127,6 +128,7 @@ fn shared_handle_exposes_serialized_recovery_and_capacity_inspection() {
     let handle = AgentdNeuronHandleV2 {
         owner: owner.clone(),
         config_digest,
+        lifecycle_gate: Arc::new(AgentdNeuronExecutionGateV2::standalone()),
     };
 
     assert_eq!(handle.configuration_digest(), config_digest);

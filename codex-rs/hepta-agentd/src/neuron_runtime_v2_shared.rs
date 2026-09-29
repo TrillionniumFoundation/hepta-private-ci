@@ -175,13 +175,23 @@ where
         result
     }
 
-    fn recover_operation_control(
+    fn recover_operation_control_with_policy(
         &self,
         input: &NeuronTickInputV1,
+        policy: AgentdNeuronRecoveryPolicyV2,
     ) -> Result<NeuronOperationStatusV2, AgentdNeuronControlErrorV2> {
         self.counters
             .recovery_attempts
             .fetch_add(1, Ordering::Relaxed);
+        if policy == AgentdNeuronRecoveryPolicyV2::CloseUnexecuted {
+            self.counters
+                .recovery_close_requests
+                .fetch_add(1, Ordering::Relaxed);
+        } else {
+            self.counters
+                .recovery_preserve_requests
+                .fetch_add(1, Ordering::Relaxed);
+        }
         let result = (|| {
             let mut locked = self.lock_control()?;
             let AgentdNeuronOwnerV2 {
@@ -189,9 +199,12 @@ where
                 inference_control,
             } = &mut locked.owner;
             let mut model = DurableInferenceControlModelPort::new(inference_control);
-            runtime
-                .recover_operation(&mut model, input)
-                .map_err(AgentdNeuronControlErrorV2::Runtime)
+            let recovered = if policy == AgentdNeuronRecoveryPolicyV2::CloseUnexecuted {
+                runtime.close_unexecuted_operation(&mut model, input)
+            } else {
+                runtime.recover_operation(&mut model, input)
+            };
+            recovered.map_err(AgentdNeuronControlErrorV2::Runtime)
         })();
         match &result {
             Ok(status) if status.requires_reconciliation() => {
@@ -274,6 +287,15 @@ where
     fn record_entry_rejection(&self) {
         self.counters
             .entry_rejections_before_runtime
+            .fetch_add(1, Ordering::Relaxed);
+    }
+
+    fn record_stale_invocation_rejection(&self) {
+        self.counters
+            .entry_rejections_before_runtime
+            .fetch_add(1, Ordering::Relaxed);
+        self.counters
+            .stale_invocation_rejections
             .fetch_add(1, Ordering::Relaxed);
     }
 }

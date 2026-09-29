@@ -7,11 +7,26 @@ impl AgentdNeuronInvocationV2 {
         &self.run_id == run_id && self.input.body_generation == Some(body_generation)
     }
 
+    fn enter_lifecycle_gate(&self) -> Result<RwLockReadGuard<'_, ()>, NeuronRuntimeV2Error> {
+        match self.handle.lifecycle_gate.enter(self.lifecycle_epoch) {
+            Ok(guard) => Ok(guard),
+            Err(error @ NeuronRuntimeV2Error::Admission(_)) => {
+                self.handle.owner.record_stale_invocation_rejection();
+                Err(error)
+            }
+            Err(error) => Err(error),
+        }
+    }
+
     pub(crate) fn execute(
         &self,
         input: &codex_hepta_intelligence::CanonicalPortInputV1,
         guard: &mut dyn NeuronAdmissionGuard,
     ) -> Result<NeuronRuntimeCommitV2, NeuronRuntimeV2Error> {
+        // The read guard is held through the entire owner call. Quiesce first
+        // closes and advances the epoch; seal then waits for every invocation
+        // admitted by the prior epoch to leave this critical section.
+        let _lifecycle_guard = self.enter_lifecycle_gate()?;
         if input.run_id != self.run_id
             || input.objective_digest != self.input.objective_digest
             || input.predecessor_digest != self.input.ndu_snapshot_digest
@@ -52,8 +67,11 @@ pub struct AgentdNeuronOperationalCountersV2 {
     pub owner_busy_rejections: u64,
     pub owner_poisoned_failures: u64,
     pub entry_rejections_before_runtime: u64,
+    pub stale_invocation_rejections: u64,
     pub runtime_admission_denials: u64,
     pub recovery_attempts: u64,
+    pub recovery_preserve_requests: u64,
+    pub recovery_close_requests: u64,
     pub recovery_converged: u64,
     pub recovery_pending: u64,
     pub recovery_errors: u64,
@@ -92,6 +110,8 @@ pub struct AgentdNeuronGenerationControllerSnapshotV2 {
     pub lifecycle: AgentdNeuronLifecycleStateV2,
     pub active_generation: u64,
     pub retained_generations: Vec<u64>,
+    pub accepting_new_work: bool,
+    pub execution_epoch: u64,
     pub active: AgentdNeuronOperationalSnapshotV2,
 }
 

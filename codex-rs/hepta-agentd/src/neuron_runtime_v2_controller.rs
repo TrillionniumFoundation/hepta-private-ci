@@ -8,7 +8,7 @@ impl AgentdNeuronGenerationControllerV2 {
     ///
     /// Historical generations must be unique and strictly older than the
     /// active generation. They remain queryable but can never receive new work
-    /// through this controller.
+    /// through this controller or through a handle clone retained by a caller.
     pub fn from_recovered_generations(
         active: AgentdNeuronHandleV2,
         retained: impl IntoIterator<Item = AgentdNeuronHandleV2>,
@@ -22,6 +22,14 @@ impl AgentdNeuronGenerationControllerV2 {
             {
                 return Err(AgentdNeuronControlErrorV2::GenerationConflict);
             }
+        }
+
+        // Controller ownership immediately fences every reachable handle. The
+        // active generation opens only after start reconciliation; retained
+        // generations remain permanently non-writable.
+        active.close_lifecycle_gate()?;
+        for handle in retained_by_generation.values() {
+            handle.close_lifecycle_gate()?;
         }
         Ok(Self {
             state: Mutex::new(AgentdNeuronGenerationControllerStateV2 {
@@ -42,6 +50,15 @@ impl AgentdNeuronGenerationControllerV2 {
         })
     }
 
+    fn restore_sealed_after_reload_failure(&self, previous_generation: u64) {
+        if let Ok(mut state) = self.lock_state()
+            && state.lifecycle == AgentdNeuronLifecycleStateV2::Reloading
+            && state.active.generation().ok() == Some(previous_generation)
+        {
+            state.lifecycle = AgentdNeuronLifecycleStateV2::Sealed;
+        }
+    }
+
     pub fn state(&self) -> Result<AgentdNeuronLifecycleStateV2, AgentdNeuronControlErrorV2> {
         Ok(self.lock_state()?.lifecycle)
     }
@@ -55,7 +72,7 @@ impl AgentdNeuronGenerationControllerV2 {
     }
 
     pub fn start(&self) -> Result<(), AgentdNeuronControlErrorV2> {
-        let (active, retained) = {
+        let (active, retained, active_generation) = {
             let state = self.lock_state()?;
             if state.lifecycle != AgentdNeuronLifecycleStateV2::Starting {
                 return Err(AgentdNeuronControlErrorV2::InvalidTransition);
@@ -63,6 +80,7 @@ impl AgentdNeuronGenerationControllerV2 {
             (
                 state.active.clone(),
                 state.retained.values().cloned().collect::<Vec<_>>(),
+                state.active.generation()?,
             )
         };
 
@@ -79,10 +97,16 @@ impl AgentdNeuronGenerationControllerV2 {
         active.reconcile_control()?;
 
         let mut state = self.lock_state()?;
-        if state.lifecycle != AgentdNeuronLifecycleStateV2::Starting {
+        if state.lifecycle != AgentdNeuronLifecycleStateV2::Starting
+            || state.active.generation()? != active_generation
+        {
             return Err(AgentdNeuronControlErrorV2::InvalidTransition);
         }
         state.lifecycle = AgentdNeuronLifecycleStateV2::Serving;
+        if let Err(error) = state.active.open_lifecycle_gate() {
+            state.lifecycle = AgentdNeuronLifecycleStateV2::Failed;
+            return Err(error);
+        }
         Ok(())
     }
 
@@ -109,6 +133,10 @@ impl AgentdNeuronGenerationControllerV2 {
         let mut state = self.lock_state()?;
         match state.lifecycle {
             AgentdNeuronLifecycleStateV2::Serving => {
+                if let Err(error) = state.active.close_lifecycle_gate() {
+                    state.lifecycle = AgentdNeuronLifecycleStateV2::Failed;
+                    return Err(error);
+                }
                 state.lifecycle = AgentdNeuronLifecycleStateV2::Quiescing;
                 Ok(())
             }
@@ -121,18 +149,21 @@ impl AgentdNeuronGenerationControllerV2 {
         &self,
         input: &NeuronTickInputV1,
     ) -> Result<AgentdNeuronRecoveryReportV2, AgentdNeuronControlErrorV2> {
-        let active = {
+        let (active, policy) = {
             let state = self.lock_state()?;
-            if !matches!(
-                state.lifecycle,
-                AgentdNeuronLifecycleStateV2::Serving
-                    | AgentdNeuronLifecycleStateV2::Quiescing
-            ) {
-                return Err(AgentdNeuronControlErrorV2::InvalidTransition);
+            match state.lifecycle {
+                AgentdNeuronLifecycleStateV2::Serving => (
+                    state.active.clone(),
+                    AgentdNeuronRecoveryPolicyV2::PreserveUnexecuted,
+                ),
+                AgentdNeuronLifecycleStateV2::Quiescing => (
+                    state.active.clone(),
+                    AgentdNeuronRecoveryPolicyV2::CloseUnexecuted,
+                ),
+                _ => return Err(AgentdNeuronControlErrorV2::InvalidTransition),
             }
-            state.active.clone()
         };
-        active.recover_operation(input)
+        active.recover_operation_with_policy(input, policy)
     }
 
     pub fn seal(&self) -> Result<(), AgentdNeuronControlErrorV2> {
@@ -143,6 +174,9 @@ impl AgentdNeuronGenerationControllerV2 {
             }
             (state.active.clone(), state.active.generation()?)
         };
+        // Quiesce invalidates every captured epoch. The write guard proves that
+        // all invocations admitted by an earlier epoch have left the runtime.
+        let _drain = active.try_drain_lifecycle_gate()?;
         active.reconcile_control()?;
         let snapshot = active.operational_snapshot()?;
         if snapshot.pending_operation_code.is_some() || snapshot.pending_witness_count != 0 {
@@ -174,10 +208,20 @@ impl AgentdNeuronGenerationControllerV2 {
             {
                 return Err(AgentdNeuronControlErrorV2::GenerationConflict);
             }
+            // Invalidate invocations prepared from successor-handle clones before
+            // it is accepted as the active generation.
+            next.close_lifecycle_gate()?;
             state.lifecycle = AgentdNeuronLifecycleStateV2::Reloading;
             (state.active.clone(), previous_generation)
         };
 
+        let _next_drain = match next.try_drain_lifecycle_gate() {
+            Ok(guard) => guard,
+            Err(error) => {
+                self.restore_sealed_after_reload_failure(previous_generation);
+                return Err(error);
+            }
+        };
         let ready = next.reconcile_control().and_then(|_| {
             let snapshot = next.operational_snapshot()?;
             if snapshot.pending_operation_code.is_some() || snapshot.pending_witness_count != 0 {
@@ -187,15 +231,13 @@ impl AgentdNeuronGenerationControllerV2 {
             }
         });
         if let Err(error) = ready {
-            if let Ok(mut state) = self.lock_state()
-                && state.lifecycle == AgentdNeuronLifecycleStateV2::Reloading
-                && state.active.generation().ok() == Some(previous_generation)
-            {
-                state.lifecycle = AgentdNeuronLifecycleStateV2::Sealed;
-            }
+            self.restore_sealed_after_reload_failure(previous_generation);
             return Err(error);
         }
 
+        // The successor remains closed after the drain proof is released, so
+        // no invocation can enter between readiness validation and activation.
+        drop(_next_drain);
         let mut state = self.lock_state()?;
         if state.lifecycle != AgentdNeuronLifecycleStateV2::Reloading
             || state.active.generation()? != previous_generation
@@ -205,6 +247,10 @@ impl AgentdNeuronGenerationControllerV2 {
         state.retained.insert(previous_generation, previous);
         state.active = next;
         state.lifecycle = AgentdNeuronLifecycleStateV2::Serving;
+        if let Err(error) = state.active.open_lifecycle_gate() {
+            state.lifecycle = AgentdNeuronLifecycleStateV2::Failed;
+            return Err(error);
+        }
         Ok(())
     }
 
@@ -227,10 +273,13 @@ impl AgentdNeuronGenerationControllerV2 {
                 state.retained.keys().copied().collect(),
             )
         };
+        let (accepting_new_work, execution_epoch) = active.lifecycle_gate_snapshot();
         Ok(AgentdNeuronGenerationControllerSnapshotV2 {
             lifecycle,
             active_generation,
             retained_generations,
+            accepting_new_work,
+            execution_epoch,
             active: active.operational_snapshot()?,
         })
     }
