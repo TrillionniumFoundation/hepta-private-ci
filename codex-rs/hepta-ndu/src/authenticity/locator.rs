@@ -73,7 +73,9 @@ impl NduImmutableLocatorV2 {
             if address.is_empty()
                 || !address.contains('/')
                 || encoded_version.is_empty()
-                || encoded_version.contains(['&', '?', '#'])
+                || encoded_version
+                    .bytes()
+                    .any(|byte| matches!(byte, b'&' | b'?' | b'#'))
                 || object_version.as_deref() != Some(encoded_version)
             {
                 return Err(NduAuthenticityError::InvalidObjectVersion);
@@ -107,7 +109,8 @@ impl NduImmutableLocatorV2 {
             return Err(NduAuthenticityError::InvalidLocator);
         };
 
-        let binding_digest = digest_binding(kind, &locator, content_digest, object_version.as_deref());
+        let binding_digest =
+            digest_binding(kind, &locator, content_digest, object_version.as_deref());
         Ok(Self {
             kind,
             locator,
