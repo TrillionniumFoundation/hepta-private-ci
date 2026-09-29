@@ -17,7 +17,7 @@ jobs:
   synchronize:
     if: ${{ !contains(github.event.head_commit.message, '[kernel-evidence-status-sync]') }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - name: Check out exact triggering branch head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -38,18 +38,19 @@ jobs:
             *) echo "refusing unexpected status-sync branch: $GITHUB_REF_NAME" >&2; exit 2 ;;
           esac
           test -z "$(git status --porcelain)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Regenerate and verify canonical projections
+      - name: Regenerate canonical projections and derived indexes
         shell: bash
         run: |
           set -euo pipefail
           python3 scripts/kernel_evidence_status.py sync
           python3 scripts/kernel_evidence_status.py verify
           python3 scripts/hepta-module-docs.py refresh-indexes
-          python3 scripts/hepta-module-docs.py verify
           git diff --check
 
-      - name: Commit deterministic projections and indexes
+      - name: Commit deterministic projection state
         shell: bash
         run: |
           set -euo pipefail
@@ -63,13 +64,51 @@ jobs:
             qualification/kernel-evidence/RELEASE_DASHBOARD.md
           test -z "$(git diff --name-only)"
           test -z "$(git ls-files --others --exclude-standard)"
-          if git diff --cached --quiet; then
-            echo "Canonical projections and derived indexes already synchronized"
-            exit 0
+          if ! git diff --cached --quiet; then
+            git commit -m "docs(kernel.evidence): regenerate canonical status [kernel-evidence-status-sync]"
           fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "docs(kernel.evidence): regenerate canonical status [kernel-evidence-status-sync]"
+          test -z "$(git status --porcelain)"
+
+      - name: Rebind map on the clean projection commit and verify closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py migrate --module kernel.evidence
+          python3 scripts/hepta-implementation-maps.py verify
+          python3 scripts/kernel_evidence_status.py verify
+          python3 scripts/hepta-module-docs.py verify
+          python3 scripts/hepta-docs.py verify
+          python3 scripts/verify_lane_a_foundation.py verify
+          git diff --check
+          python3 - <<'PY'
+          import subprocess
+          changed = set(filter(None, subprocess.check_output(
+              ['git', 'diff', '--name-only', '-z'], text=True
+          ).split('\0')))
+          expected = {'docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json'}
+          if changed not in (set(), expected):
+              raise SystemExit(
+                  f'implementation-map migration changed {sorted(changed)}, expected only {sorted(expected)}'
+              )
+          PY
+          test -z "$(git ls-files --others --exclude-standard)"
+
+      - name: Commit map, reverify final tree, and push atomically
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json
+          if ! git diff --cached --quiet; then
+            git commit -m "docs(kernel.evidence): bind converged implementation map [kernel-evidence-status-sync]"
+          fi
+          test -z "$(git status --porcelain)"
+          python3 scripts/hepta-implementation-maps.py verify
+          python3 scripts/kernel_evidence_status.py verify
+          python3 scripts/hepta-module-docs.py verify
+          python3 scripts/hepta-docs.py verify
+          python3 scripts/verify_lane_a_foundation.py verify
           git fetch origin "refs/heads/$GITHUB_REF_NAME"
           test "$(git rev-parse "$GITHUB_SHA")" = "$(git rev-parse FETCH_HEAD)"
-          git push origin "HEAD:refs/heads/$GITHUB_REF_NAME"
+          if [ "$(git rev-parse HEAD)" != "$GITHUB_SHA" ]; then
+            git push origin "HEAD:refs/heads/$GITHUB_REF_NAME"
+          fi
