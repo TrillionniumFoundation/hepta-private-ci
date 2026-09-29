@@ -4,10 +4,10 @@
 
 #![forbid(unsafe_code)]
 
+mod cognitive_delivery;
 /// Reusable state machine; does not install a second runtime owner.
 pub mod durable_control;
 mod neuron_feature;
-mod cognitive_delivery;
 
 pub use cognitive_delivery::CognitiveContextDeliveryError;
 pub use cognitive_delivery::CognitiveContextDeliveryStateV1;

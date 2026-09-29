@@ -132,7 +132,9 @@ pub(super) fn verify_publication(
     let plan = response.plan.as_ref().ok_or_else(|| {
         CognitiveStoreError::Invalid("cognitive final use requires planning evidence".to_string())
     })?;
-    if bind(owner, body_generation, owner_read_digest, plan)? != parse_digest(&response.read_digest)? {
+    if bind(owner, body_generation, owner_read_digest, plan)?
+        != parse_digest(&response.read_digest)?
+    {
         return Err(CognitiveStoreError::Conflict(
             "cognitive publication owner, generation or plan receipt changed".to_string(),
         ));

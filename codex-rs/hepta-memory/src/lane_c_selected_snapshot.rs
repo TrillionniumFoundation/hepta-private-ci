@@ -76,16 +76,24 @@ impl DurableCognitiveSelectionSnapshot {
     /// Authorization/currentness are still rechecked by the physical owner.
     pub fn select_ids(&self, record_ids: &[StableId]) -> Result<Self, CognitiveStoreError> {
         let ids = checked_ids(record_ids)?;
-        if ids.iter().any(|id| self.record_ids.binary_search(id).is_err()) {
+        if ids
+            .iter()
+            .any(|id| self.record_ids.binary_search(id).is_err())
+        {
             return Err(CognitiveStoreError::Invalid(
                 "selected cognitive IDs are outside the acquired owner request".to_string(),
             ));
         }
-        let records = self.owner.snapshot.records.iter()
+        let records = self
+            .owner
+            .snapshot
+            .records
+            .iter()
             .filter(|record| ids.binary_search(&record.record_id).is_ok())
             .cloned()
             .collect();
-        let snapshot = build_snapshot(generation(&self.owner.frontiers)?, records).map_err(corrupt)?;
+        let snapshot =
+            build_snapshot(generation(&self.owner.frontiers)?, records).map_err(corrupt)?;
         Ok(Self {
             owner: DurableCognitiveSnapshot {
                 scope_id: self.owner.scope_id.clone(),
@@ -112,18 +120,21 @@ impl CognitiveStore {
     ) -> Result<DurableCognitiveSelectionSnapshot, CognitiveStoreError> {
         self.authorize(access, scope)?;
         let ids = checked_ids(record_ids)?;
-        let page = self.lane_c_snapshot_page_inner(
-            access,
-            scope,
-            now_unix_seconds,
-            MAX_LANE_C_SNAPSHOT_PAGE_HEADS as u32,
-            /*after*/ None,
-            Some(&ids),
-        ).await?;
+        let page = self
+            .lane_c_snapshot_page_inner(
+                access,
+                scope,
+                now_unix_seconds,
+                MAX_LANE_C_SNAPSHOT_PAGE_HEADS as u32,
+                /*after*/ None,
+                Some(&ids),
+            )
+            .await?;
         if !page.complete || page.after.is_some() || page.next.is_some() {
             return Err(corrupt("exact-ID owner materialization was incomplete"));
         }
-        let snapshot = build_snapshot(generation(&page.frontiers)?, page.records).map_err(corrupt)?;
+        let snapshot =
+            build_snapshot(generation(&page.frontiers)?, page.records).map_err(corrupt)?;
         Ok(DurableCognitiveSelectionSnapshot {
             owner: DurableCognitiveSnapshot {
                 scope_id: page.scope_id,
@@ -145,10 +156,16 @@ impl CognitiveStore {
     ) -> Result<DurableCognitiveSelectionSnapshot, CognitiveStoreError> {
         self.authorize(access, scope)?;
         if now_unix_seconds < expected.owner.observed_at_unix_seconds {
-            return Err(CognitiveStoreError::Invalid("snapshot clock regressed".to_string()));
+            return Err(CognitiveStoreError::Invalid(
+                "snapshot clock regressed".to_string(),
+            ));
         }
-        let current = self.lane_c_snapshot_ids(access, scope, now_unix_seconds, &expected.record_ids).await?;
-        if current.cut_digest() != expected.cut_digest() || current.snapshot() != expected.snapshot() {
+        let current = self
+            .lane_c_snapshot_ids(access, scope, now_unix_seconds, &expected.record_ids)
+            .await?;
+        if current.cut_digest() != expected.cut_digest()
+            || current.snapshot() != expected.snapshot()
+        {
             return Err(CognitiveStoreError::Conflict(
                 "selected cognitive owner cut changed or rolled back".to_string(),
             ));
@@ -165,14 +182,21 @@ fn checked_ids(record_ids: &[StableId]) -> Result<Vec<StableId>, CognitiveStoreE
     }
     let unique = record_ids.iter().cloned().collect::<BTreeSet<_>>();
     if unique.len() != record_ids.len() {
-        return Err(CognitiveStoreError::Invalid("duplicate exact owner read ID".to_string()));
+        return Err(CognitiveStoreError::Invalid(
+            "duplicate exact owner read ID".to_string(),
+        ));
     }
     Ok(unique.into_iter().collect())
 }
 
 fn generation(frontiers: &CognitiveOwnerFrontiers) -> Result<Generation, CognitiveStoreError> {
-    Generation::new(frontiers.memory.checked_add(1).ok_or_else(|| corrupt("memory frontier overflow"))?)
-        .map_err(corrupt)
+    Generation::new(
+        frontiers
+            .memory
+            .checked_add(1)
+            .ok_or_else(|| corrupt("memory frontier overflow"))?,
+    )
+    .map_err(corrupt)
 }
 
 /// Supplement the existing ID/revision head digest with current eligibility.
@@ -189,13 +213,17 @@ pub(super) fn advance_head_state(
     let digest: Digest32 = digest.parse().map_err(corrupt)?;
     let verification: String = row.try_get("verification").map_err(unavailable)?;
     let lifecycle: String = row.try_get("lifecycle").map_err(unavailable)?;
-    let valid_from: i64 = row.try_get("valid_from_unix_seconds").map_err(unavailable)?;
+    let valid_from: i64 = row
+        .try_get("valid_from_unix_seconds")
+        .map_err(unavailable)?;
     let valid_to: Option<i64> = row.try_get("valid_to_unix_seconds").map_err(unavailable)?;
     let eligible = match lifecycle.as_str() {
         "tombstoned" => true,
-        "active" => verification == "verified"
-            && valid_from <= now_unix_seconds
-            && valid_to.is_none_or(|until| now_unix_seconds < until),
+        "active" => {
+            verification == "verified"
+                && valid_from <= now_unix_seconds
+                && valid_to.is_none_or(|until| now_unix_seconds < until)
+        }
         _ => return Err(corrupt("invalid cognitive head lifecycle")),
     };
     if revision <= 0 || !matches!(verification.as_str(), "verified" | "provisional") {

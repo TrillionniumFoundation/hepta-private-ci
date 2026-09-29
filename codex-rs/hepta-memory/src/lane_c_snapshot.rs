@@ -278,7 +278,8 @@ impl CognitiveStore {
         maximum_heads: u32,
         after: Option<DurableCognitiveSnapshotCursor>,
     ) -> Result<DurableCognitiveSnapshotPage, CognitiveStoreError> {
-        self.lane_c_snapshot_page_inner(access, scope, now_unix_seconds, maximum_heads, after, None).await
+        self.lane_c_snapshot_page_inner(access, scope, now_unix_seconds, maximum_heads, after, None)
+            .await
     }
 
     async fn lane_c_snapshot_page_inner(
@@ -426,7 +427,8 @@ impl CognitiveStore {
                 step.extend_from_slice(memory_id.as_bytes());
                 step.extend_from_slice(&revision.to_be_bytes());
                 head_set_digest = Digest32::of_bytes(&step);
-                head_state_digest = selected::advance_head_state(head_state_digest, row, now_unix_seconds)?;
+                head_state_digest =
+                    selected::advance_head_state(head_state_digest, row, now_unix_seconds)?;
                 digest_after = memory_id;
             }
             if head_rows.len() < usize::try_from(LANE_C_HEAD_DIGEST_BATCH).unwrap_or(usize::MAX) {
@@ -459,9 +461,16 @@ impl CognitiveStore {
 
         let (head_ids, has_more) = if let Some(ids) = exact_ids {
             if after.is_some() || ids.len() > maximum_heads {
-                return Err(CognitiveStoreError::Invalid("invalid exact-ID owner page".to_string()));
+                return Err(CognitiveStoreError::Invalid(
+                    "invalid exact-ID owner page".to_string(),
+                ));
             }
-            (ids.iter().map(|id| id.as_str().to_string()).collect::<Vec<_>>(), false)
+            (
+                ids.iter()
+                    .map(|id| id.as_str().to_string())
+                    .collect::<Vec<_>>(),
+                false,
+            )
         } else {
             let after_memory_id = after
                 .as_ref()

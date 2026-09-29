@@ -24,11 +24,7 @@ fn id(value: &str) -> StableId {
 }
 
 fn percentile(samples: &[Duration], numerator: usize, denominator: usize) -> Duration {
-    let index = samples
-        .len()
-        .saturating_sub(1)
-        .saturating_mul(numerator)
-        / denominator;
+    let index = samples.len().saturating_sub(1).saturating_mul(numerator) / denominator;
     samples[index]
 }
 
@@ -83,8 +79,8 @@ fn main() {
     let started = Instant::now();
     for _ in 0..ITERATIONS {
         let iteration = Instant::now();
-        let result = read_ids_v1(black_box(&snapshot), black_box(request.clone()))
-            .expect("benchmark read");
+        let result =
+            read_ids_v1(black_box(&snapshot), black_box(request.clone())).expect("benchmark read");
         black_box(result);
         samples.push(iteration.elapsed());
     }

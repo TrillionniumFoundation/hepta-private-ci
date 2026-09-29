@@ -134,8 +134,14 @@ impl DurableInferenceControl {
             required_digest(digest)?;
         }
         if dispatch.protocol_id.as_deref() != Some("codex.app-server.v2")
-            || dispatch.app_server_version.as_deref().is_none_or(str::is_empty)
-            || dispatch.codex_session_id.as_deref().is_none_or(str::is_empty)
+            || dispatch
+                .app_server_version
+                .as_deref()
+                .is_none_or(str::is_empty)
+            || dispatch
+                .codex_session_id
+                .as_deref()
+                .is_none_or(str::is_empty)
             || dispatch.codex_connection_id.is_none()
             || dispatch.codex_deadline_ms.is_none_or(|value| value == 0)
             || dispatch.codex_authority_epoch.is_none()

@@ -178,10 +178,7 @@ fn canonical_event(source_revision: u64) -> MemoryEventV1 {
     }
 }
 
-fn binding(
-    read: &AuthoritativeReadResultV1,
-    source_revision: u64,
-) -> CanonicalReadRecordBindingV2 {
+fn binding(read: &AuthoritativeReadResultV1, source_revision: u64) -> CanonicalReadRecordBindingV2 {
     let record = &read.read_result.records()[0];
     CanonicalReadRecordBindingV2 {
         legacy_record_id: record.record_id.clone(),
@@ -233,10 +230,7 @@ fn revision_bound_shadow_rejects_missing_wrong_or_duplicate_source_revision() {
     let mut wrong_digest = binding(&read, 1);
     wrong_digest.source_revisions[0].source_digest = digest("other-source-digest");
     assert!(matches!(
-        adapt_authoritative_read_to_revision_bound_canonical_shadow_v2(
-            &read,
-            vec![wrong_digest],
-        ),
+        adapt_authoritative_read_to_revision_bound_canonical_shadow_v2(&read, vec![wrong_digest],),
         Err(CanonicalReadShadowV2Error::CitationProvenanceMismatch(_))
     ));
 
@@ -246,7 +240,9 @@ fn revision_bound_shadow_rejects_missing_wrong_or_duplicate_source_revision() {
         .push(duplicate.source_revisions[0].clone());
     assert!(matches!(
         adapt_authoritative_read_to_revision_bound_canonical_shadow_v2(&read, vec![duplicate]),
-        Err(CanonicalReadShadowV2Error::DuplicateSourceRevisionBinding(_))
+        Err(CanonicalReadShadowV2Error::DuplicateSourceRevisionBinding(
+            _
+        ))
     ));
 }
 

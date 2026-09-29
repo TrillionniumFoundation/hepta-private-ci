@@ -103,9 +103,7 @@ async fn cognitive_read_sqlite_capacity_report() -> Result<(), Box<dyn Error + S
 
     for _ in 0..ITERATIONS {
         let started = Instant::now();
-        let cut = store
-            .lane_c_snapshot(&access, &scope, OBSERVED_AT)
-            .await?;
+        let cut = store.lane_c_snapshot(&access, &scope, OBSERVED_AT).await?;
         acquire_snapshot_us.push(micros(started));
 
         let started = Instant::now();
@@ -143,13 +141,16 @@ async fn cognitive_read_sqlite_capacity_report() -> Result<(), Box<dyn Error + S
                 .read_only(true),
         )
         .await?;
-    let sqlite_page_count: i64 =
-        sqlx::query_scalar("PRAGMA page_count").fetch_one(&measurement_pool).await?;
-    let sqlite_page_size_bytes: i64 =
-        sqlx::query_scalar("PRAGMA page_size").fetch_one(&measurement_pool).await?;
-    let sqlite_memory_revision_rows: i64 = sqlx::query_scalar("SELECT count(*) FROM memory_revisions")
+    let sqlite_page_count: i64 = sqlx::query_scalar("PRAGMA page_count")
         .fetch_one(&measurement_pool)
         .await?;
+    let sqlite_page_size_bytes: i64 = sqlx::query_scalar("PRAGMA page_size")
+        .fetch_one(&measurement_pool)
+        .await?;
+    let sqlite_memory_revision_rows: i64 =
+        sqlx::query_scalar("SELECT count(*) FROM memory_revisions")
+            .fetch_one(&measurement_pool)
+            .await?;
     let sqlite_source_rows: i64 = sqlx::query_scalar("SELECT count(*) FROM source_ledger")
         .fetch_one(&measurement_pool)
         .await?;

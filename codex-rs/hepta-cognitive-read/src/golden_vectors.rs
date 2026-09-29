@@ -25,9 +25,8 @@ const EXPECTED_CANONICAL_HEX: &str = concat!(
     "2d24dd6740b939f3ab812490cb83a9388978476fa4887c053fd0f267c864e56a"
 );
 
-const EXTERNAL_GOLDEN_VECTOR: &str = include_str!(
-    "../../../qualification/cognitive-read/golden/cognitive_read_vectors.json"
-);
+const EXTERNAL_GOLDEN_VECTOR: &str =
+    include_str!("../../../qualification/cognitive-read/golden/cognitive_read_vectors.json");
 
 fn id(value: &str) -> StableId {
     StableId::new(value).expect("valid id")

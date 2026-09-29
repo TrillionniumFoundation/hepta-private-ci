@@ -44,7 +44,10 @@ fn snapshot(generation: u64) -> Result<CognitiveSnapshot, Box<dyn StdError>> {
 fn request(snapshot: &CognitiveSnapshot) -> Result<ReadIdsRequestV1, Box<dyn StdError>> {
     Ok(ReadIdsRequestV1 {
         snapshot_digest: snapshot.snapshot_digest,
-        record_ids: vec![StableId::new("memory:1099")?, StableId::new("memory:missing")?],
+        record_ids: vec![
+            StableId::new("memory:1099")?,
+            StableId::new("memory:missing")?,
+        ],
         fields: Vec::new(),
         maximum_encoded_bytes: 4096,
     })

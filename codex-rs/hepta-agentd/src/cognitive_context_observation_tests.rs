@@ -29,6 +29,12 @@ async fn dropping_a_polled_pending_final_use_future_records_failure() {
         let _unfinished = OperationObservation::start(Phase::FinalUse);
         std::future::pending::<()>().await;
     };
-    assert!(tokio::time::timeout(std::time::Duration::from_millis(1), attempt).await.is_err());
-    assert!(cognitive_context_metrics::snapshot().revalidation_failures > before.revalidation_failures);
+    assert!(
+        tokio::time::timeout(std::time::Duration::from_millis(1), attempt)
+            .await
+            .is_err()
+    );
+    assert!(
+        cognitive_context_metrics::snapshot().revalidation_failures > before.revalidation_failures
+    );
 }

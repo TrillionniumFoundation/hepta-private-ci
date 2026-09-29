@@ -100,9 +100,7 @@ fn deterministic_fuzz_corpus_never_escapes_declared_bounds() {
                 );
                 assert_eq!(result.canonical_bytes().len(), result.total_encoded_bytes());
                 assert_eq!(
-                    Digest32::of_bytes(
-                        &result.canonical_bytes()[..result.payload_encoded_bytes()]
-                    ),
+                    Digest32::of_bytes(&result.canonical_bytes()[..result.payload_encoded_bytes()]),
                     result.receipt_digest(),
                     "case {case}"
                 );

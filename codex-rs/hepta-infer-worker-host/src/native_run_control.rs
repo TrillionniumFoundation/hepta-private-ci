@@ -67,14 +67,19 @@ impl AppServerModelDriver {
                     let delivery = control
                         .cognitive_context_delivery(expected_request, expected_context_digest)
                         .map_err(|error| error.to_string())?
-                        .ok_or_else(|| "no context-bound native dispatch was observed".to_string())?;
+                        .ok_or_else(|| {
+                            "no context-bound native dispatch was observed".to_string()
+                        })?;
                     let mut bytes = b"hepta.native.cognitive-assignment-join.v1".to_vec();
                     bytes.extend_from_slice(record.event_digest.as_array());
                     bytes.extend_from_slice(record.chain_digest.as_array());
                     bytes.extend_from_slice(&record.sequence.get().to_be_bytes());
                     bytes.extend_from_slice(assignment.support_digest.as_array());
                     bytes.extend_from_slice(delivery.binding_digest().as_array());
-                    Ok((delivery.state(), codex_hepta_types::Digest32::of_bytes(&bytes)))
+                    Ok((
+                        delivery.state(),
+                        codex_hepta_types::Digest32::of_bytes(&bytes),
+                    ))
                 },
             )
             .map_err(Into::into)

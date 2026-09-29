@@ -24,14 +24,32 @@ fn unplanned() -> CognitiveContextSnapshot {
 fn publication_binds_receipt_owner_generation_and_ordered_payload() {
     let mut response = unplanned();
     let owner_read = parse_digest(&response.read_digest).unwrap();
-    let fresh = evaluate(&owner(), /*body_generation*/ 7, &response, /*observed_at_micros*/ 100).unwrap();
-    response.read_digest = bind(&owner(), /*body_generation*/ 7, owner_read, &fresh.plan).unwrap().to_string();
+    let fresh = evaluate(
+        &owner(),
+        /*body_generation*/ 7,
+        &response,
+        /*observed_at_micros*/ 100,
+    )
+    .unwrap();
+    response.read_digest = bind(
+        &owner(),
+        /*body_generation*/ 7,
+        owner_read,
+        &fresh.plan,
+    )
+    .unwrap()
+    .to_string();
     response.plan = Some(fresh.plan);
-    let recovered = verify_publication(&owner(), /*body_generation*/ 7, owner_read, &response).unwrap();
-    assert_eq!(serde_json::to_vec(&recovered).unwrap(), serde_json::to_vec(&unplanned()).unwrap());
+    let recovered =
+        verify_publication(&owner(), /*body_generation*/ 7, owner_read, &response).unwrap();
+    assert_eq!(
+        serde_json::to_vec(&recovered).unwrap(),
+        serde_json::to_vec(&unplanned()).unwrap()
+    );
 
     let mut changed = response.clone();
-    changed.plan.as_mut().unwrap().plan_receipt_digest = Digest32::of_bytes(b"substituted").to_string();
+    changed.plan.as_mut().unwrap().plan_receipt_digest =
+        Digest32::of_bytes(b"substituted").to_string();
     assert!(verify_publication(&owner(), /*body_generation*/ 7, owner_read, &changed).is_err());
     assert!(verify_publication(&owner(), /*body_generation*/ 8, owner_read, &response).is_err());
     let other = AgentId::parse("00000000-0000-4000-8000-000000000120").unwrap();
@@ -46,7 +64,13 @@ fn publication_binds_receipt_owner_generation_and_ordered_payload() {
 
 #[test]
 fn fresh_plan_deadline_is_half_open_and_rejects_clock_regression() {
-    let fresh = evaluate(&owner(), /*body_generation*/ 1, &unplanned(), /*observed_at_micros*/ 100).unwrap();
+    let fresh = evaluate(
+        &owner(),
+        /*body_generation*/ 1,
+        &unplanned(),
+        /*observed_at_micros*/ 100,
+    )
+    .unwrap();
     assert!(fresh.plan.read_allowed);
     assert!(fresh.ensure_current(/*now_micros*/ 100).is_ok());
     assert!(fresh.ensure_current(/*now_micros*/ 1_000_099).is_ok());
@@ -58,14 +82,38 @@ fn fresh_plan_deadline_is_half_open_and_rejects_clock_regression() {
 #[test]
 fn historical_plan_is_not_reused_as_a_future_plan() {
     let response = unplanned();
-    let old = evaluate(&owner(), /*body_generation*/ 1, &response, /*observed_at_micros*/ 100).unwrap();
+    let old = evaluate(
+        &owner(),
+        /*body_generation*/ 1,
+        &response,
+        /*observed_at_micros*/ 100,
+    )
+    .unwrap();
     assert!(old.ensure_current(/*now_micros*/ 2_000_100).is_err());
-    let current = evaluate(&owner(), /*body_generation*/ 1, &response, /*observed_at_micros*/ 2_000_100).unwrap();
+    let current = evaluate(
+        &owner(),
+        /*body_generation*/ 1,
+        &response,
+        /*observed_at_micros*/ 2_000_100,
+    )
+    .unwrap();
     assert!(current.ensure_current(/*now_micros*/ 2_000_100).is_ok());
-    assert_ne!(old.plan.plan_receipt_digest, current.plan.plan_receipt_digest);
-    assert_eq!(old.plan.evaluated_context_digest, current.plan.evaluated_context_digest);
+    assert_ne!(
+        old.plan.plan_receipt_digest,
+        current.plan.plan_receipt_digest
+    );
+    assert_eq!(
+        old.plan.evaluated_context_digest,
+        current.plan.evaluated_context_digest
+    );
     let mut empty = response;
     empty.items.clear();
-    let abstain = evaluate(&owner(), /*body_generation*/ 1, &empty, /*observed_at_micros*/ 2_000_100).unwrap();
+    let abstain = evaluate(
+        &owner(),
+        /*body_generation*/ 1,
+        &empty,
+        /*observed_at_micros*/ 2_000_100,
+    )
+    .unwrap();
     assert!(!abstain.plan.read_allowed);
 }

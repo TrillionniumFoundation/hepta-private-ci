@@ -1,13 +1,13 @@
 //! Connect the canonical SQLite owner to the newer bounded cognitive read port.
 
-#[path = "cognitive_read_view.rs"]
-mod read_view;
-#[path = "cognitive_context_plan.rs"]
-mod plan_binding;
-#[path = "cognitive_context_observation.rs"]
-mod observation;
 #[path = "cognitive_context_final_use.rs"]
 mod final_use;
+#[path = "cognitive_context_observation.rs"]
+mod observation;
+#[path = "cognitive_context_plan.rs"]
+mod plan_binding;
+#[path = "cognitive_read_view.rs"]
+mod read_view;
 
 use std::collections::BTreeMap;
 use std::time::SystemTime;
@@ -172,7 +172,10 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
     request_id: Option<u64>,
 ) -> Result<CognitiveContextSnapshot, CognitiveContextError> {
     let mut operation = OperationObservation::start(Phase::Read);
-    if query.is_empty() || query.len() > 2048 || !(1..=MAX_SELECTED_CONTEXT_RECORDS).contains(&limit) {
+    if query.is_empty()
+        || query.len() > 2048
+        || !(1..=MAX_SELECTED_CONTEXT_RECORDS).contains(&limit)
+    {
         return Err(CognitiveStoreError::Invalid(
             "context requires a 1..2048 byte query and a 1..4 result limit".to_string(),
         )
@@ -206,7 +209,9 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         .collect::<Result<Vec<_>, _>>()?;
     record_ids.sort();
     record_ids.dedup();
-    let cut = store.lane_c_snapshot_ids(&access, &scope, now, &record_ids).await?;
+    let cut = store
+        .lane_c_snapshot_ids(&access, &scope, now, &record_ids)
+        .await?;
     let read_view = OwnerCutReadView::new(cut.owner_snapshot()).map_err(map_read_ids_error)?;
     let admission_read = read_view
         .read_ids(ReadIdsRequestV1 {
@@ -417,14 +422,23 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         }
     }
 
-    let selected_ids = response.items.iter().map(|item| {
-        StableId::new(item.memory_id.as_str()).map_err(|error| CognitiveStoreError::Invalid(error.to_string()))
-    }).collect::<Result<Vec<_>, _>>()?;
+    let selected_ids = response
+        .items
+        .iter()
+        .map(|item| {
+            StableId::new(item.memory_id.as_str())
+                .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))
+        })
+        .collect::<Result<Vec<_>, _>>()?;
     let selected_cut = cut.select_ids(&selected_ids)?;
-    let selected_view = OwnerCutReadView::new(selected_cut.owner_snapshot()).map_err(map_read_ids_error)?;
+    let selected_view =
+        OwnerCutReadView::new(selected_cut.owner_snapshot()).map_err(map_read_ids_error)?;
     let selected_read = read_selected_items(&selected_view, &response.items)?;
-    let selected_read_binding =
-        bind_selected_read(&selected_cut, &selected_read, expected_retrieval_context_digest);
+    let selected_read_binding = bind_selected_read(
+        &selected_cut,
+        &selected_read,
+        expected_retrieval_context_digest,
+    );
     response.snapshot_digest = selected_read.snapshot_digest().to_string();
     response.read_digest = selected_read_binding.to_string();
     let fresh_plan = plan_binding::evaluate(
@@ -698,8 +712,8 @@ fn now_seconds() -> Result<i64, CognitiveStoreError> {
 }
 
 #[cfg(test)]
-#[path = "cognitive_context_tests.rs"]
-mod tests;
-#[cfg(test)]
 #[path = "cognitive_context_closure_tests.rs"]
 mod closure_tests;
+#[cfg(test)]
+#[path = "cognitive_context_tests.rs"]
+mod tests;

@@ -2,8 +2,7 @@ use super::*;
 
 const CONTRACT_LIMITS: &str =
     include_str!("../../../docs/modules/cognitive.read/CONTRACT_LIMITS.md");
-const COMPATIBILITY: &str =
-    include_str!("../../../docs/modules/cognitive.read/COMPATIBILITY.md");
+const COMPATIBILITY: &str = include_str!("../../../docs/modules/cognitive.read/COMPATIBILITY.md");
 const AGENT_PROTOCOL_SOURCE: &str = include_str!("../../hepta-agent-protocol/src/lib.rs");
 const AGENTD_CONTEXT_SOURCE: &str = include_str!("../../hepta-agentd/src/cognitive_context.rs");
 
@@ -15,10 +14,10 @@ fn documented_limits_match_compiled_contracts() {
     assert!(CONTRACT_LIMITS.contains("MAX_SELECTED_CONTEXT_RECORDS = 4"));
     assert_eq!(MAX_READ_IDS_V1, 512);
     assert_eq!(MAX_ENCODED_READ_RESULT_BYTES_V2, 1_048_576);
-    assert!(AGENT_PROTOCOL_SOURCE
-        .contains("pub const MAX_COGNITIVE_CONTEXT_BYTES: usize = 8 * 1024;"));
-    assert!(AGENTD_CONTEXT_SOURCE
-        .contains("const MAX_SELECTED_CONTEXT_RECORDS: u16 = 4;"));
+    assert!(
+        AGENT_PROTOCOL_SOURCE.contains("pub const MAX_COGNITIVE_CONTEXT_BYTES: usize = 8 * 1024;")
+    );
+    assert!(AGENTD_CONTEXT_SOURCE.contains("const MAX_SELECTED_CONTEXT_RECORDS: u16 = 4;"));
 }
 
 #[test]

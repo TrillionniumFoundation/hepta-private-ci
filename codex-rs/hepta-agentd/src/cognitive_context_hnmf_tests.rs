@@ -309,13 +309,19 @@ struct BlockingPublicationContext {
 }
 
 impl CurrentMemoryRetrievalContext for BlockingPublicationContext {
-    fn current(&self, owner: &AgentId, body_generation: u64) -> Result<RetrievalExecutionContextV1, String> {
+    fn current(
+        &self,
+        owner: &AgentId,
+        body_generation: u64,
+    ) -> Result<RetrievalExecutionContextV1, String> {
         if owner != &self.owner || body_generation != 1 {
             return Err("wrong publication test identity".to_string());
         }
         if self.calls.fetch_add(1, Ordering::SeqCst) == 1 {
             self.reached.notify_one();
-            self.release.lock().map_err(|_| "test barrier poisoned".to_string())?
+            self.release
+                .lock()
+                .map_err(|_| "test barrier poisoned".to_string())?
                 .recv_timeout(std::time::Duration::from_secs(5))
                 .map_err(|_| "publication test barrier timed out".to_string())?;
         }
@@ -337,21 +343,32 @@ async fn publication_rechecks_owner_after_last_awaited_dependency() {
     let provider: Arc<dyn CurrentMemoryRetrievalContext> = barrier.clone();
     let read = read_with_retrieval_context(&store, &owner, 1, "lemon", 4, None, Some(&provider));
     let mutation = async {
-        tokio::time::timeout(std::time::Duration::from_secs(5), barrier.reached.notified()).await.unwrap();
-        store.append_source(
-            &CognitiveAccess::agent_private(owner.clone()),
-            &SourceDraft {
-                scope: CognitiveScope::AgentPrivate,
-                kind: LedgerSourceKind::ExplicitMemoryDirective,
-                event_key: "publication-last-await-race".to_string(),
-                content: b"source frontier changed while dependency was awaited".to_vec(),
-                observed_at_unix_seconds: 200,
-            },
-        ).await.unwrap();
+        tokio::time::timeout(
+            std::time::Duration::from_secs(5),
+            barrier.reached.notified(),
+        )
+        .await
+        .unwrap();
+        store
+            .append_source(
+                &CognitiveAccess::agent_private(owner.clone()),
+                &SourceDraft {
+                    scope: CognitiveScope::AgentPrivate,
+                    kind: LedgerSourceKind::ExplicitMemoryDirective,
+                    event_key: "publication-last-await-race".to_string(),
+                    content: b"source frontier changed while dependency was awaited".to_vec(),
+                    observed_at_unix_seconds: 200,
+                },
+            )
+            .await
+            .unwrap();
         release.send(()).unwrap();
     };
     let (result, ()) = tokio::join!(read, mutation);
-    assert!(matches!(result, Err(CognitiveContextError::Store(
-        codex_hepta_memory::CognitiveStoreError::Conflict(_)
-    ))));
+    assert!(matches!(
+        result,
+        Err(CognitiveContextError::Store(
+            codex_hepta_memory::CognitiveStoreError::Conflict(_)
+        ))
+    ));
 }

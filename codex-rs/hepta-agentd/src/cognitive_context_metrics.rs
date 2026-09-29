@@ -13,10 +13,8 @@ const MISSING_IDS_METRIC: &str = "codex.hepta.cognitive_read.missing_ids";
 const PAYLOAD_BYTES_METRIC: &str = "codex.hepta.cognitive_read.payload_bytes";
 const TOTAL_BYTES_METRIC: &str = "codex.hepta.cognitive_read.total_bytes";
 const BUDGET_REJECTIONS_METRIC: &str = "codex.hepta.cognitive_read.budget_rejections";
-const REVALIDATION_FAILURES_METRIC: &str =
-    "codex.hepta.cognitive_read.revalidation_failures";
-const STALE_CUT_REJECTIONS_METRIC: &str =
-    "codex.hepta.cognitive_read.stale_cut_rejections";
+const REVALIDATION_FAILURES_METRIC: &str = "codex.hepta.cognitive_read.revalidation_failures";
+const STALE_CUT_REJECTIONS_METRIC: &str = "codex.hepta.cognitive_read.stale_cut_rejections";
 const REVALIDATION_ALERTS_METRIC: &str = "codex.hepta.cognitive_read.revalidation_alerts";
 const LATENCY_MICROS_METRIC: &str = "codex.hepta.cognitive_read.latency_us";
 

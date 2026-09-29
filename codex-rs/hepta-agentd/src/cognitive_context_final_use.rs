@@ -11,6 +11,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 use super::CognitiveContextError;
+use super::CognitiveContextRevalidation;
 use super::CognitiveStore;
 use super::CognitiveStoreError;
 use super::MAX_CONTEXT_JSON_BYTES;
@@ -25,7 +26,6 @@ use super::read_selected_items;
 use super::read_view::OwnerCutReadView;
 use crate::CognitiveContextItem;
 use crate::CognitiveContextPlan;
-use super::CognitiveContextRevalidation;
 use crate::CognitiveContextSnapshot;
 
 pub(crate) async fn revalidate_with_retrieval_context(
@@ -84,9 +84,13 @@ pub(crate) async fn revalidate_with_retrieval_context(
     }
     let access = CognitiveAccess::agent_private(owner.clone());
     let scope = CognitiveScope::AgentPrivate;
-    let record_ids = items.iter().map(|item| {
-        StableId::new(item.memory_id.as_str()).map_err(|error| CognitiveStoreError::Invalid(error.to_string()))
-    }).collect::<Result<Vec<_>, _>>()?;
+    let record_ids = items
+        .iter()
+        .map(|item| {
+            StableId::new(item.memory_id.as_str())
+                .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))
+        })
+        .collect::<Result<Vec<_>, _>>()?;
     let cut = store
         .lane_c_snapshot_ids(&access, &scope, now_seconds()?, &record_ids)
         .await?;
@@ -125,12 +129,8 @@ pub(crate) async fn revalidate_with_retrieval_context(
         )
         .into());
     }
-    let unplanned = plan_binding::verify_publication(
-        owner,
-        body_generation,
-        current_read_binding,
-        &response,
-    )?;
+    let unplanned =
+        plan_binding::verify_publication(owner, body_generation, current_read_binding, &response)?;
     if !read.missing_ids().is_empty() || read.records().len() != items.len() {
         return Err(CognitiveStoreError::Conflict(
             "cognitive context item set is stale".to_string(),

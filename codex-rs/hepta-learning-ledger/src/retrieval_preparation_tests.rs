@@ -1,5 +1,5 @@
-use crate as ledger;
 use super::*;
+use crate as ledger;
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::path::Path;
@@ -68,12 +68,17 @@ fn writer(root: &Path) -> ledger::LedgerWriter {
     let now = 50;
     let trust = ledger::activate_learning_trust(&root_trust, distribution, previous, now).unwrap();
     let open = |name: &str| {
-        OpenOptions::new().create_new(true).read(true).write(true)
-            .open(root.join(name)).unwrap()
+        OpenOptions::new()
+            .create_new(true)
+            .read(true)
+            .write(true)
+            .open(root.join(name))
+            .unwrap()
     };
     let binding = digest("delivery-ledger-binding");
     let capacity = 64;
-    let durable = ledger::DurableLedger::create(open("learning.journal"), binding, capacity).unwrap();
+    let durable =
+        ledger::DurableLedger::create(open("learning.journal"), binding, capacity).unwrap();
     let witness = ledger::LedgerWitnessStore::create(open("learning.witness"), binding).unwrap();
     let directory = File::open(root).unwrap();
     ledger::LedgerWriter::from_durable(durable, witness, trust, &directory, &directory).unwrap()
@@ -108,14 +113,22 @@ impl Fixture {
     fn new() -> Self {
         static NEXT: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
         let sequence = NEXT.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-        let nanos = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos();
-        let root = std::env::temp_dir().join(format!("hepta-retrieval-preparation-{}-{nanos}-{sequence}", std::process::id()));
+        let nanos = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let root = std::env::temp_dir().join(format!(
+            "hepta-retrieval-preparation-{}-{nanos}-{sequence}",
+            std::process::id()
+        ));
         std::fs::create_dir(&root).unwrap();
         Self(root)
     }
 }
 impl Drop for Fixture {
-    fn drop(&mut self) { let _ = std::fs::remove_dir_all(&self.0); }
+    fn drop(&mut self) {
+        let _ = std::fs::remove_dir_all(&self.0);
+    }
 }
 
 #[test]
@@ -123,15 +136,36 @@ fn preparation_read_is_indexed_bound_and_non_mutating() {
     let fixture = Fixture::new();
     let mut writer = writer(&fixture.0);
     let value = assignment(id("assignment"), id("episode"));
-    assert!(writer.read_current_retrieval_assignment(&value.record_id, &value.episode_id).is_err());
-    writer.append_retrieval_assignment_current(value.clone()).unwrap();
+    assert!(
+        writer
+            .read_current_retrieval_assignment(&value.record_id, &value.episode_id)
+            .is_err()
+    );
+    writer
+        .append_retrieval_assignment_current(value.clone())
+        .unwrap();
     let before = writer.witness_frontier().unwrap();
-    let record = writer.read_current_retrieval_assignment(&value.record_id, &value.episode_id).unwrap();
-    let indexed = writer.backend.core().unwrap().record_by_id(&value.record_id).unwrap().unwrap();
+    let record = writer
+        .read_current_retrieval_assignment(&value.record_id, &value.episode_id)
+        .unwrap();
+    let indexed = writer
+        .backend
+        .core()
+        .unwrap()
+        .record_by_id(&value.record_id)
+        .unwrap()
+        .unwrap();
     assert!(std::ptr::eq(record, indexed));
-    assert_eq!(&record.event, &ledger::LedgerEvent::RetrievalAssignment(value.clone()));
+    assert_eq!(
+        &record.event,
+        &ledger::LedgerEvent::RetrievalAssignment(value.clone())
+    );
     assert_eq!(writer.witness_frontier().unwrap(), before);
-    assert!(writer.read_current_retrieval_assignment(&value.record_id, &id("another-episode")).is_err());
+    assert!(
+        writer
+            .read_current_retrieval_assignment(&value.record_id, &id("another-episode"))
+            .is_err()
+    );
 }
 
 #[test]
@@ -140,19 +174,40 @@ fn witness_lag_and_revocation_never_become_delivery_preparation() {
     let mut writer = writer(&fixture.0);
     let value = assignment(id("assignment"), id("episode"));
     // Simulate a committed ledger event whose independent witness was not advanced.
-    writer.backend.append(Digest32::ZERO, ledger::LedgerEvent::RetrievalAssignment(value.clone())).unwrap();
+    writer
+        .backend
+        .append(
+            Digest32::ZERO,
+            ledger::LedgerEvent::RetrievalAssignment(value.clone()),
+        )
+        .unwrap();
     assert!(matches!(
         writer.read_current_retrieval_assignment(&value.record_id, &value.episode_id),
         Err(ProductionLedgerError::WitnessLag)
     ));
     // Only exact idempotent recovery may close the witness gap.
-    let repaired = writer.append_retrieval_assignment_current(value.clone()).unwrap();
-    assert!(writer.read_current_retrieval_assignment(&value.record_id, &value.episode_id).is_ok());
-    writer.commit(repaired.chain_digest, ledger::LedgerEvent::Revocation(ledger::Revocation {
-        record_id: id("revoke-assignment"),
-        target_record_id: value.record_id.clone(),
-        authority_id: id("privacy-owner"),
-        reason_digest: digest("withdrawn"),
-    })).unwrap();
-    assert!(writer.read_current_retrieval_assignment(&value.record_id, &value.episode_id).is_err());
+    let repaired = writer
+        .append_retrieval_assignment_current(value.clone())
+        .unwrap();
+    assert!(
+        writer
+            .read_current_retrieval_assignment(&value.record_id, &value.episode_id)
+            .is_ok()
+    );
+    writer
+        .commit(
+            repaired.chain_digest,
+            ledger::LedgerEvent::Revocation(ledger::Revocation {
+                record_id: id("revoke-assignment"),
+                target_record_id: value.record_id.clone(),
+                authority_id: id("privacy-owner"),
+                reason_digest: digest("withdrawn"),
+            }),
+        )
+        .unwrap();
+    assert!(
+        writer
+            .read_current_retrieval_assignment(&value.record_id, &value.episode_id)
+            .is_err()
+    );
 }

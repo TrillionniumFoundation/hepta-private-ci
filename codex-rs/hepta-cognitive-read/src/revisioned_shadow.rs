@@ -134,8 +134,9 @@ impl CanonicalAuthoritativeReadShadowV2 {
                 &row.source_revisions,
                 &row.event,
             )?;
-            let digest = canonical_contract_digest_v1(&row.event)
-                .map_err(|error| CanonicalReadShadowV2Error::CanonicalContract(error.to_string()))?;
+            let digest = canonical_contract_digest_v1(&row.event).map_err(|error| {
+                CanonicalReadShadowV2Error::CanonicalContract(error.to_string())
+            })?;
             if row.event_id != row.event.event_id || row.event_digest != digest {
                 return Err(CanonicalReadShadowV2Error::EventDigestMismatch(
                     row.legacy_record_id.to_string(),
@@ -207,11 +208,7 @@ pub fn adapt_authoritative_read_to_revision_bound_canonical_shadow_v2(
             ));
         };
         used[index] = true;
-        validate_read_record_event_binding_v2(
-            record,
-            &binding.source_revisions,
-            &binding.event,
-        )?;
+        validate_read_record_event_binding_v2(record, &binding.source_revisions, &binding.event)?;
         let event_digest = canonical_contract_digest_v1(&binding.event)
             .map_err(|error| CanonicalReadShadowV2Error::CanonicalContract(error.to_string()))?;
         let mut source_revisions = binding.source_revisions.clone();
@@ -278,8 +275,7 @@ fn validate_read_record_event_binding_v2(
         }
     }
 
-    let revision_sources =
-        source_revision_map(&record.record_id, source_revisions)?;
+    let revision_sources = source_revision_map(&record.record_id, source_revisions)?;
     let revision_digests = revision_sources
         .iter()
         .map(|(source_id, (_, digest))| (source_id.clone(), *digest))

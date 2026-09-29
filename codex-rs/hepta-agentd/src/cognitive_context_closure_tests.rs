@@ -59,9 +59,16 @@ async fn real_owner_rejects_plan_receipt_substitution_and_generation_replay() {
         )
         .await
         .unwrap();
-    let context = read(&store, &owner, /*body_generation*/ 1, "receipt closure", /*limit*/ 4, /*ranker*/ None)
-        .await
-        .unwrap();
+    let context = read(
+        &store,
+        &owner,
+        /*body_generation*/ 1,
+        "receipt closure",
+        /*limit*/ 4,
+        /*ranker*/ None,
+    )
+    .await
+    .unwrap();
     assert_eq!(context.items.len(), 1);
     revalidate(
         &store,
