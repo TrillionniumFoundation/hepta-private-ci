@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "fbf96bcea2bc2767dbb03880af7ebc0b8e1978d9",
-    "tree": "48c345e4d92eeb4efcdf8d927f565ae0852bea93"
+    "commit": "064c8d7b8c73d2ca2b25c6bda96cad0981a19d3e",
+    "tree": "0b9e6e51989c569268bca7d4254d9c9cb2eac4cd"
   },
   "laneId": "LANE-F-ADAPTIVE-POLICY",
   "module": "neuron.runtime",
@@ -20,7 +20,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "agentd_v2_owner_generation_controller_durable_handoff_descriptor_verified_state_and_actionable_operations_source_composed_not_product_activated",
+  "productCallerState": "agentd_v2_owner_generation_controller_durable_handoff_descriptor_verified_owner_private_state_and_actionable_operations_source_composed_not_product_activated",
   "productionWriterState": "durable_v2_generation_index_witness_terminal_history_and_non_authorizing_agentd_control_state_source_implemented_not_activated",
   "operations": [
     {
@@ -58,7 +58,7 @@
         {
           "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2_durable_state.rs",
           "symbol": "AgentdNeuronGenerationStateV2",
-          "role": "descriptor_verified_private_checksummed_non_authorizing_crash_visible_lifecycle_and_handoff_intent"
+          "role": "descriptor_verified_owner_private_checksummed_non_authorizing_crash_visible_lifecycle_and_handoff_intent"
         },
         {
           "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2_owner_handle.rs",
@@ -224,7 +224,7 @@
       "operation": "agentd_generation_control_state",
       "nativeSymbol": "AgentdNeuronGenerationStateV2",
       "sourcePath": "codex-rs/hepta-agentd/src/neuron_runtime_v2_durable_state.rs",
-      "state": "source_implemented_descriptor_verified_private_checksummed_atomic_non_authorizing_lifecycle_topology_state_not_product_activated",
+      "state": "source_implemented_descriptor_verified_owner_private_parent_and_file_checksummed_atomic_non_authorizing_lifecycle_topology_state_not_product_activated",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-agentd/src/neuron_runtime_v2_durable_state_tests.rs"
@@ -300,7 +300,7 @@
       "nativeSymbol": "AgentdNeuronGenerationControllerV2"
     },
     {
-      "state": "compiled_descriptor_verified_private_checksummed_durable_handoff_intent_not_product_activated",
+      "state": "compiled_descriptor_verified_owner_private_parent_and_file_checksummed_durable_handoff_intent_not_product_activated",
       "sourcePath": "codex-rs/hepta-agentd/src/neuron_runtime_v2_durable_state.rs",
       "nativeSymbol": "AgentdNeuronGenerationStateV2"
     },
@@ -342,11 +342,11 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2_durable_state.rs",
-      "object": "7814119ae25f7b82e5b76d137815e569bb40d279"
+      "object": "b4c8458cd8c002c24c14cec9a48d74ae8a8f21f8"
     },
     {
       "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2_durable_state_tests.rs",
-      "object": "8166de54a5e8dac2e5e68c5f522b5f7c1535a164"
+      "object": "247e8a7ab97b4701bc967d9fbf1c9bd2b852e50e"
     },
     {
       "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2_errors.rs",
@@ -478,11 +478,11 @@
     },
     {
       "path": "docs/modules/neuron.runtime/V2_DURABLE_CONTROL_STATE.md",
-      "object": "f907f67eae22a5c3056c35df6abf53567b493ecd"
+      "object": "5a39f86f97cfac3951802a1b844462a2ebd1d7ca"
     },
     {
       "path": "docs/modules/neuron.runtime/V2_RUNBOOK.md",
-      "object": "b1e76291f84b9b2568de394a3eaf593ff281903c"
+      "object": "caf3ade7319e4145376863ebd306286542319183"
     },
     {
       "path": "scripts/neuron/summarize_measurements.py",
