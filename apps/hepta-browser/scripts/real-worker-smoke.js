@@ -131,11 +131,35 @@ const app = await listen((request, response) => {
 <div id="native-result">native-pending</div>
 <div id="replacement-result">replacement-pending</div>
 <div id="policy-result">policy-pending</div>
+<div id="bridge-hook-state">bridge-hooks-clean</div>
 <div id="phase">initial</div>
 <script>
 setTimeout(() => {
+  const hookState = document.getElementById('bridge-hook-state');
+  const nativeLowerCase = String.prototype.toLowerCase;
+  const nativePush = Array.prototype.push;
   HTMLElement.prototype.click = function () {
     document.getElementById('native-result').textContent = 'malicious-prototype-fired';
+  };
+  String.prototype.toLowerCase = function () {
+    const value = String(this);
+    if (value === 'file') return 'text';
+    return Reflect.apply(nativeLowerCase, value, []);
+  };
+  Array.prototype.push = function (...items) {
+    for (const item of items) {
+      if (item && typeof item === 'object' && typeof item.handle === 'string') {
+        hookState.textContent = 'bridge-handle-leaked';
+      }
+    }
+    return Reflect.apply(nativePush, this, items);
+  };
+  Object.prototype.toJSON = function () {
+    if (this && this.ok === false) {
+      hookState.textContent = 'bridge-failure-forged';
+      return { ok: true, acted: true };
+    }
+    return this;
   };
   document.getElementById('phase').textContent = 'prototype-patched';
 }, 500);
@@ -252,6 +276,7 @@ try {
   });
   assert.match(page.semanticObservation.visibleText, /original-fired/);
   assert.doesNotMatch(page.semanticObservation.visibleText, /malicious-prototype-fired/);
+  assert.match(page.semanticObservation.visibleText, /bridge-hooks-clean/);
   const replacementTarget = page.semanticObservation.controls.find(
     (control) => control.ariaLabel === "Replacement target",
   );
@@ -360,12 +385,15 @@ try {
   });
   assert.match(finalPage.semanticObservation.visibleText, /node-replaced/);
   assert.match(finalPage.semanticObservation.visibleText, /policy-pending/);
+  assert.match(finalPage.semanticObservation.visibleText, /bridge-hooks-clean/);
   assert.doesNotMatch(finalPage.semanticObservation.visibleText, /replacement-fired/);
   assert.doesNotMatch(finalPage.semanticObservation.visibleText, /old-node-fired/);
   assert.doesNotMatch(finalPage.semanticObservation.visibleText, /readonly-mutated/);
   assert.doesNotMatch(finalPage.semanticObservation.visibleText, /checkbox-mutated/);
   assert.doesNotMatch(finalPage.semanticObservation.visibleText, /file-mutated/);
   assert.doesNotMatch(finalPage.semanticObservation.visibleText, /download-fired/);
+  assert.doesNotMatch(finalPage.semanticObservation.visibleText, /bridge-handle-leaked/);
+  assert.doesNotMatch(finalPage.semanticObservation.visibleText, /bridge-failure-forged/);
 
   const stopped = await host.closeProfile({
     profileId: "profile.smoke",
@@ -383,6 +411,9 @@ try {
       sandboxedStartStop: true,
       privateAtomicActionBridge: true,
       pageRealmMonkeypatchBypassed: true,
+      pagePrototypeHooksIsolated: true,
+      failureSerializationCannotForgeSuccess: true,
+      privateHandlesNotLeakedThroughArrayHooks: true,
       identicalShapeNodeReplacementRejected: true,
       nonTextTypeRejectedBeforeDispatch: true,
       readOnlyTypeRejectedBeforeDispatch: true,
