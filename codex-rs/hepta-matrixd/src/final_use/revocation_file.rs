@@ -93,14 +93,17 @@ impl PrivateFileStamp {
             changed_nanoseconds: metadata.ctime_nsec(),
         }
     }
+
+    fn same_file(self, other: Self) -> bool {
+        self.device == other.device && self.inode == other.inode
+    }
 }
 
 fn read_private_json_snapshot<T: DeserializeOwned>(
     path: &Path,
     maximum: usize,
 ) -> Result<PrivateJsonSnapshot<T>, MatrixFinalUseBrokerError> {
-    read_private_json_if_changed(path, maximum, None)?
-        .ok_or(MatrixFinalUseBrokerError::UnsafePath)
+    read_private_json_if_changed(path, maximum, None)?.ok_or(MatrixFinalUseBrokerError::UnsafePath)
 }
 
 fn read_private_json_if_changed<T: DeserializeOwned>(
@@ -109,9 +112,14 @@ fn read_private_json_if_changed<T: DeserializeOwned>(
     accepted_stamp: Option<PrivateFileStamp>,
 ) -> Result<Option<PrivateJsonSnapshot<T>>, MatrixFinalUseBrokerError> {
     let (file, before) = open_private_file(path, maximum)?;
-    if accepted_stamp == Some(before) {
-        verify_private_file(path, &file, maximum, before)?;
-        return Ok(None);
+    if let Some(accepted_stamp) = accepted_stamp {
+        if accepted_stamp == before {
+            verify_private_file(path, &file, maximum, before)?;
+            return Ok(None);
+        }
+        if accepted_stamp.same_file(before) {
+            return Err(MatrixFinalUseBrokerError::UnsafePath);
+        }
     }
 
     let mut bytes = Vec::new();

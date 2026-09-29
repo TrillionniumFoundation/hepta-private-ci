@@ -80,12 +80,12 @@ The production final-use broker also reopens and revalidates the private
 revocation feed on every poll. The fast path compares the opened regular file's
 device, inode, length, nanosecond modification/change times, owner, mode and link
 count with the last **semantically accepted** snapshot. An exact match skips only
-the bounded file read and JSON decode. A changed identity is read into one
-bounded snapshot, revalidated after the read, and admitted only by the existing
-monotonic epoch/revision/content rules. Rollback, same-revision drift, malformed
-JSON, unsafe paths and files that change during the read fail closed and do not
-advance the cached identity. This is an input-decoding optimization, not a
-cached authorization decision.
+the bounded file read and JSON decode. A fresh replacement inode is read into
+one bounded snapshot, revalidated after the read, and admitted only by the
+existing monotonic epoch/revision/content rules. Same-inode in-place mutation,
+rollback, same-revision drift, malformed JSON, unsafe paths and files that change
+during the read fail closed and do not advance the cached identity. This is an
+input-decoding optimization, not a cached authorization decision.
 
 ## 4. Operations without a second state owner
 
@@ -138,7 +138,7 @@ approve an older binary that only understands migrations 1-12.
 | Later messages have no speculative lease; work-per-pass bound remains | `final_poll_regressions/optimization.rs` | locked native test |
 | Cancellation after entry leaves current unknown and later attempts untouched | same fixture | locked native test |
 | Multiple polls retain one gate digest and fresh dynamic checks | `pending_poll_regressions.rs` | locked native test |
-| Unchanged revocation feed skips reread/decode; changed accepted feed is applied once; rejected identity is never cached | `hepta-matrixd/src/final_use/revocation_file_tests.rs` | locked native unit test |
+| Unchanged revocation feed skips reread/decode; atomic replacement is applied once; in-place or rejected identities are never cached | `hepta-matrixd/src/final_use/revocation_file_tests.rs` | locked native unit test |
 | Typed entered result preserves post-entry errors and exposes outcome read-only | gate/settlement plus `test_channel_matrix_transport_boundary.py` | Python boundary regression and locked native test |
 | Permit construction is infallible/non-validating; exactly one independent adapter-boundary validation remains | `test_channel_matrix_transport_boundary.py` plus native compilation | Python boundary regression and locked native compile |
 | Public transport cannot override permit validation; real future construction remains inside the first gated poll | `test_channel_matrix_transport_boundary.py` plus native compilation | Python boundary regression and locked native compile |

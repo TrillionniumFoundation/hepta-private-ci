@@ -81,6 +81,29 @@ fn changed_feed_is_applied_once_then_returns_to_fast_path() -> TestResult {
 }
 
 #[test]
+fn in_place_rewrite_fails_closed() -> TestResult {
+    let directory = private_directory()?;
+    let path = directory.path().canonicalize()?.join("revocations.json");
+    let initial = head(17, 1, &[]);
+    let rewritten = head(17, 2, &["revoked-with-a-longer-identity"]);
+    write_private_json(&path, &initial)?;
+    let (feed, observed) = RevocationFeed::open(path.clone(), 4096)?;
+    assert_eq!(observed, initial);
+
+    write_private_json(&path, &rewritten)?;
+    let called = Cell::new(false);
+    assert_eq!(
+        feed.refresh(|_| {
+            called.set(true);
+            Ok(())
+        }),
+        Err(MatrixAuthorityError::Unavailable),
+    );
+    assert!(!called.get());
+    Ok(())
+}
+
+#[test]
 fn rejected_feed_identity_is_not_cached() -> TestResult {
     let directory = private_directory()?;
     let path = directory.path().canonicalize()?.join("revocations.json");

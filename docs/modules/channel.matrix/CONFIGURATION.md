@@ -41,10 +41,10 @@ Updates are monotonic. Qualified publishers create a fresh private, single-linke
 file and atomically rename it over the canonical path; freshness does not rely
 on observing an in-place rewrite. Every final preflight reopens and validates
 the exact path/file identity. An unchanged, previously accepted identity skips
-only the bounded byte read and JSON decode; any identity change is read and
-revalidated before the monotonic authority update. Rollback, duplicate revision
-with drift, epoch regression, unsafe replacement and change-during-read all fail
-closed.
+only the bounded byte read and JSON decode; a fresh replacement inode is read
+and revalidated before the monotonic authority update. Same-inode mutation,
+rollback, duplicate revision with drift, epoch regression, unsafe replacement
+and change-during-read all fail closed.
 
 ### `final-use-authority-state/`
 
