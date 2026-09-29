@@ -85,8 +85,14 @@ impl MatrixFinalUseBroker {
             &layout.matrix_root().join(STATE_DIRECTORY),
             config.signer_id,
             config.verifying_key,
-            head,
+            head.clone(),
         )?;
+        // The durable authority may legitimately be stronger than a stale
+        // startup file. Such a file must not become the metadata fast-path
+        // identity: require the independently published feed to be current.
+        if authority.revocation_head()? != head {
+            return Err(MatrixFinalUseBrokerError::InvalidConfiguration);
+        }
         let broker = Self {
             authority,
             broker_socket,
