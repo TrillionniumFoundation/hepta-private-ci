@@ -101,7 +101,9 @@ fn read_immutable_file(path: &Path, max_bytes: u64) -> Vec<u8> {
         path.is_absolute(),
         "selected-host profile path must be absolute"
     );
-    let canonical = path.canonicalize().expect("canonical selected-host profile");
+    let canonical = path
+        .canonicalize()
+        .expect("canonical selected-host profile");
     assert_eq!(
         canonical, path,
         "profile path must be canonical and symlink-free"

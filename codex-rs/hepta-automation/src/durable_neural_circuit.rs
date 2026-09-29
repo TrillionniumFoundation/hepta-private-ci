@@ -12,6 +12,8 @@ use serde::Deserialize;
 use serde::Serialize;
 use sqlx::Row;
 
+use crate::AutomationError;
+use crate::AutomationStore;
 use crate::CircuitCancellationV1;
 use crate::CircuitDecisionCellV1;
 use crate::CircuitEffectResolutionV1;
@@ -29,6 +31,7 @@ use crate::TaskFlowError;
 use crate::TaskFlowFence;
 use crate::TaskFlowRunState;
 use crate::TaskFlowTransition;
+use crate::TimerPhase;
 use crate::checkpoint_for_circuit_outcome_v1;
 use crate::circuit_runtime_outcome_digest_v1;
 use crate::resume_neural_circuit_after_effect_v1;
@@ -36,9 +39,6 @@ use crate::resume_neural_circuit_v1;
 use crate::run_neural_circuit_v1;
 use crate::runtime_profile_digest_v1;
 use crate::validate_circuit_runtime_outcome_v1;
-use crate::AutomationError;
-use crate::AutomationStore;
-use crate::TimerPhase;
 
 const CIRCUIT_TASKFLOW_LEASE_MS: u64 = 30_000;
 const MAX_RUN_ID_BYTES: usize = 256;
@@ -315,7 +315,9 @@ impl AutomationStore {
         W: CircuitWaitJoinPortV1,
         C: CircuitCancellationV1,
     {
-        let stored = self.load_exact_circuit(run_id, candidate, event, profile).await?;
+        let stored = self
+            .load_exact_circuit(run_id, candidate, event, profile)
+            .await?;
         self.project_committed_circuit_outcome(run_id, fence, now_ms, &stored)
             .await?;
         if stored.state == DurableCircuitRunStateV1::Executing
@@ -391,7 +393,9 @@ impl AutomationStore {
         W: CircuitWaitJoinPortV1,
         C: CircuitCancellationV1,
     {
-        let stored = self.load_exact_circuit(run_id, candidate, event, profile).await?;
+        let stored = self
+            .load_exact_circuit(run_id, candidate, event, profile)
+            .await?;
         if stored.state == DurableCircuitRunStateV1::Executing
             || stored.state == DurableCircuitRunStateV1::RecoveryRequired
         {
@@ -460,7 +464,9 @@ impl AutomationStore {
     where
         R: CircuitRuntimeRecoveryObserverV1,
     {
-        let stored = self.load_exact_circuit(run_id, candidate, event, profile).await?;
+        let stored = self
+            .load_exact_circuit(run_id, candidate, event, profile)
+            .await?;
         if stored.state != DurableCircuitRunStateV1::Executing {
             if stored.state == DurableCircuitRunStateV1::RecoveryRequired {
                 return Err(DurableNeuralCircuitError::RecoveryRequired);
@@ -513,13 +519,8 @@ impl AutomationStore {
         self.validate_circuit_taskflow_fence(run_id, fence, now_ms)
             .await?;
         let Some(recovered) = observer.observe(&request)? else {
-            self.mark_circuit_recovery_required(
-                run_id,
-                stored.activation_seq,
-                fence,
-                now_ms,
-            )
-            .await?;
+            self.mark_circuit_recovery_required(run_id, stored.activation_seq, fence, now_ms)
+                .await?;
             return Ok(None);
         };
         validate_digest_text(&recovered.evidence_digest)?;
@@ -903,7 +904,9 @@ impl AutomationStore {
             tx.commit()
                 .await
                 .map_err(|_| DurableNeuralCircuitError::Unavailable)?;
-            let stored = self.load_exact_circuit(run_id, candidate, event, profile).await?;
+            let stored = self
+                .load_exact_circuit(run_id, candidate, event, profile)
+                .await?;
             self.project_committed_circuit_outcome(run_id, fence, now_ms, &stored)
                 .await?;
             return receipt_from_stored(
@@ -963,11 +966,7 @@ impl AutomationStore {
         .bind(&outcome_json)
         .bind(outcome_digest.as_str())
         .bind(to_i64(consumed_delta)?)
-        .bind(
-            recovery_evidence_digest
-                .as_ref()
-                .map(Sha256Digest::as_str),
-        )
+        .bind(recovery_evidence_digest.as_ref().map(Sha256Digest::as_str))
         .bind(to_i64(now_ms)?)
         .execute(&mut *tx)
         .await
@@ -1025,10 +1024,14 @@ impl AutomationStore {
         tx.commit()
             .await
             .map_err(|_| DurableNeuralCircuitError::Unavailable)?;
-        let stored = self.load_exact_circuit(run_id, candidate, event, profile).await?;
+        let stored = self
+            .load_exact_circuit(run_id, candidate, event, profile)
+            .await?;
         self.project_committed_circuit_outcome(run_id, fence, now_ms, &stored)
             .await?;
-        let projected = self.load_exact_circuit(run_id, candidate, event, profile).await?;
+        let projected = self
+            .load_exact_circuit(run_id, candidate, event, profile)
+            .await?;
         receipt_from_stored(run_id, status, &projected)
     }
 
@@ -1059,8 +1062,7 @@ impl AutomationStore {
         let receipt_digest: String = receipt
             .try_get("outcome_digest")
             .map_err(|_| corrupt("activation receipt digest column"))?;
-        if stored.outcome_digest.as_ref().map(Sha256Digest::as_str)
-            != Some(receipt_digest.as_str())
+        if stored.outcome_digest.as_ref().map(Sha256Digest::as_str) != Some(receipt_digest.as_str())
         {
             return Err(corrupt(
                 "committed circuit outcome does not match its activation receipt",
@@ -1069,7 +1071,9 @@ impl AutomationStore {
         validate_circuit_runtime_outcome_v1(candidate, event, profile, outcome)?;
         self.project_committed_circuit_outcome(run_id, fence, now_ms, stored)
             .await?;
-        let projected = self.load_exact_circuit(run_id, candidate, event, profile).await?;
+        let projected = self
+            .load_exact_circuit(run_id, candidate, event, profile)
+            .await?;
         receipt_from_stored(
             run_id,
             DurableCircuitCommitStatusV1::AlreadyCommitted,
@@ -1088,7 +1092,10 @@ impl AutomationStore {
             .taskflow_run(run_id)
             .await?
             .ok_or_else(|| corrupt("TaskFlow run is missing"))?;
-        if !matches!(run.state, TaskFlowRunState::Queued | TaskFlowRunState::Running) {
+        if !matches!(
+            run.state,
+            TaskFlowRunState::Queued | TaskFlowRunState::Running
+        ) {
             return Err(DurableNeuralCircuitError::Conflict(
                 "TaskFlow run is not executable".to_string(),
             ));
@@ -1171,11 +1178,11 @@ impl AutomationStore {
                     && run.wait_token.as_deref() == Some(boundary.boundary_digest.as_str())
                 {
                     self.clear_circuit_projection_pending(
-                    run_id,
-                    stored.activation_seq,
-                    fence,
-                    now_ms,
-                )
+                        run_id,
+                        stored.activation_seq,
+                        fence,
+                        now_ms,
+                    )
                     .await?;
                     return Ok(());
                 }
@@ -1201,11 +1208,11 @@ impl AutomationStore {
                         ));
                     }
                     self.clear_circuit_projection_pending(
-                    run_id,
-                    stored.activation_seq,
-                    fence,
-                    now_ms,
-                )
+                        run_id,
+                        stored.activation_seq,
+                        fence,
+                        now_ms,
+                    )
                     .await?;
                     return Ok(());
                 }
@@ -1222,17 +1229,15 @@ impl AutomationStore {
                 }
             }
             CircuitRuntimeOutcomeV1::EffectPending(_) => {
-                self.clear_circuit_projection_pending(
-                    run_id,
-                    stored.activation_seq,
-                    fence,
-                    now_ms,
-                )
+                self.clear_circuit_projection_pending(run_id, stored.activation_seq, fence, now_ms)
                     .await?;
                 return Ok(());
             }
         };
-        if run.lease_expires_at_ms.is_none_or(|expires| expires <= now_ms) {
+        if run
+            .lease_expires_at_ms
+            .is_none_or(|expires| expires <= now_ms)
+        {
             run = self
                 .claim_taskflow_run(run_id, fence, now_ms, CIRCUIT_TASKFLOW_LEASE_MS)
                 .await?;
@@ -1250,13 +1255,8 @@ impl AutomationStore {
             now_ms,
         )?)
         .await?;
-        self.clear_circuit_projection_pending(
-            run_id,
-            stored.activation_seq,
-            fence,
-            now_ms,
-        )
-        .await
+        self.clear_circuit_projection_pending(run_id, stored.activation_seq, fence, now_ms)
+            .await
     }
 
     async fn clear_circuit_projection_pending(
@@ -1390,11 +1390,9 @@ impl AutomationStore {
                 "succeeded",
                 TaskFlowTransition::Succeed { output_digest },
             ) => output_digest == receipt.receipt_digest,
-            (
-                CircuitTerminalStateV1::Failed,
-                "failed",
-                TaskFlowTransition::Fail { reason },
-            ) => reason == expected_reason,
+            (CircuitTerminalStateV1::Failed, "failed", TaskFlowTransition::Fail { reason }) => {
+                reason == expected_reason
+            }
             (
                 CircuitTerminalStateV1::Cancelled,
                 "cancelled",
@@ -1439,7 +1437,9 @@ impl AutomationStore {
     }
 }
 
-fn stored_from_row(row: &sqlx::sqlite::SqliteRow) -> Result<StoredCircuit, DurableNeuralCircuitError> {
+fn stored_from_row(
+    row: &sqlx::sqlite::SqliteRow,
+) -> Result<StoredCircuit, DurableNeuralCircuitError> {
     let state = DurableCircuitRunStateV1::parse(
         row.try_get::<String, _>("state")
             .map_err(|_| corrupt("circuit state column"))?
@@ -1601,11 +1601,9 @@ fn canonical_digest<T: Serialize>(
     value: &T,
 ) -> Result<Sha256Digest, DurableNeuralCircuitError> {
     let mut bytes = domain.to_vec();
-    bytes.extend_from_slice(
-        &serde_json::to_vec(value).map_err(|error| {
-            DurableNeuralCircuitError::Invalid(format!("canonical serialization: {error}"))
-        })?,
-    );
+    bytes.extend_from_slice(&serde_json::to_vec(value).map_err(|error| {
+        DurableNeuralCircuitError::Invalid(format!("canonical serialization: {error}"))
+    })?);
     Ok(Sha256Digest::for_bytes(&bytes))
 }
 

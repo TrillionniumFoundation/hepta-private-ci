@@ -25,7 +25,7 @@ PLAN = (
     ("cargo-toolchain", "codex-rs", ["cargo", "--version", "--verbose"], 0, False),
     ("format", "codex-rs", ["cargo", "fmt", "-p", "codex-hepta-operations", "-p", "codex-hepta-automation", "-p", "codex-hepta-agentd", "--", "--check"], 0, False),
     ("compile", "codex-rs", ["cargo", "check", "--locked", "-p", "codex-hepta-operations", "-p", "codex-hepta-automation", "-p", "codex-hepta-agentd", "--all-targets"], 0, False),
-    ("clippy", "codex-rs", ["cargo", "clippy", "--locked", "-p", "codex-hepta-automation", "-p", "codex-hepta-agentd", "--all-targets", "--all-features", "--", "-D", "warnings"], 0, True),
+    ("clippy", "codex-rs", ["cargo", "clippy", "--locked", "-p", "codex-hepta-automation", "-p", "codex-hepta-agentd", "--all-targets", "--all-features", "--no-deps", "--", "-D", "warnings"], 0, True),
     ("operations", "codex-rs", ["just", "test", "--locked", "-p", "codex-hepta-operations"], 1, True),
     ("automation", "codex-rs", ["just", "test", "--locked", "-p", "codex-hepta-automation"], 1, True),
     ("structural", "codex-rs", ["just", "test", "--locked", "-p", "codex-hepta-automation", "--features", "taskflow-structural-qualification"], 1, True),

@@ -327,7 +327,10 @@ async fn terminal_outcome_reopens_without_reexecuting_ports() {
         )
         .await
         .expect("replay");
-    assert_eq!(replay.status, DurableCircuitCommitStatusV1::AlreadyCommitted);
+    assert_eq!(
+        replay.status,
+        DurableCircuitCommitStatusV1::AlreadyCommitted
+    );
     assert_eq!(replay.outcome_digest, first.outcome_digest);
     assert_eq!(wait.calls.get(), 0);
     reopened.close().await;

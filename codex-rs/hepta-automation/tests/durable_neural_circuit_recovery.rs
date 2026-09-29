@@ -55,12 +55,10 @@ fn candidate() -> NeuralCircuitCandidateV1 {
             CircuitNodeV1::new("observe", CircuitNodeRoleV1::Observe),
             wait,
             CircuitNodeV1::new("success", CircuitNodeRoleV1::ExitSuccess),
-            CircuitNodeV1::new("failure", CircuitNodeRoleV1::ExitFailure),
         ],
         vec![
             CircuitEdgeV1::new("observe", "wait"),
             CircuitEdgeV1::new("wait", "success"),
-            CircuitEdgeV1::new("wait", "failure"),
         ],
         Vec::new(),
         digest("route-policy"),
@@ -243,7 +241,9 @@ async fn recovery_required_can_settle_later_without_reexecuting_the_wait_owner()
                 &mut must_not_observe,
             )
             .await,
-        Err(codex_hepta_automation::DurableNeuralCircuitError::Conflict(_))
+        Err(codex_hepta_automation::DurableNeuralCircuitError::Conflict(
+            _
+        ))
     ));
     let still_quarantined = store
         .durable_neural_circuit_snapshot_v1("run-recovery-required")

@@ -206,9 +206,7 @@ mod tests {
         AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("agent")
     }
 
-    fn fence(
-        uncertain_dispatches: u64,
-    ) -> (TimerDrainStatus, VerifiedAutomationHostFenceV1) {
+    fn fence(uncertain_dispatches: u64) -> (TimerDrainStatus, VerifiedAutomationHostFenceV1) {
         let signing_key = SigningKey::from_bytes(&[11_u8; 32]);
         let trust = AutomationHostFenceTrustV1 {
             schema_version: AUTOMATION_HOST_FENCE_SCHEMA_VERSION,
@@ -249,7 +247,10 @@ mod tests {
         )
     }
 
-    fn manifest() -> (AutomationCrossHostRecoveryManifestV1, VerifiedAutomationHostFenceV1) {
+    fn manifest() -> (
+        AutomationCrossHostRecoveryManifestV1,
+        VerifiedAutomationHostFenceV1,
+    ) {
         let (status, fence) = fence(0);
         let manifest = AutomationCrossHostRecoveryManifestV1::new(
             &owner(),

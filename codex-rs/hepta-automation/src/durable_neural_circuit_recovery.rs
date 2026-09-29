@@ -6,13 +6,13 @@
 use sqlx::Row;
 
 use crate::AutomationStore;
-use crate::CircuitRuntimeRecoveryObserverV1;
+use crate::CircuitEventIngressV1;
 use crate::CircuitRuntimeProfileV1;
+use crate::CircuitRuntimeRecoveryObserverV1;
 use crate::DurableCircuitExecutionReceiptV1;
 use crate::DurableCircuitRunStateV1;
 use crate::DurableNeuralCircuitError;
 use crate::NeuralCircuitCandidateV1;
-use crate::CircuitEventIngressV1;
 use crate::TaskFlowFence;
 
 impl AutomationStore {
@@ -61,14 +61,12 @@ impl AutomationStore {
                         "recovery-required circuit has no activation intent".to_string(),
                     )
                 })?;
-                let reserved = to_u64(
-                    row.try_get::<i64, _>("reserved_cost_units")
-                        .map_err(|_| {
-                            DurableNeuralCircuitError::Corrupt(
-                                "activation reservation column is invalid".to_string(),
-                            )
-                        })?,
-                )?;
+                let reserved =
+                    to_u64(row.try_get::<i64, _>("reserved_cost_units").map_err(|_| {
+                        DurableNeuralCircuitError::Corrupt(
+                            "activation reservation column is invalid".to_string(),
+                        )
+                    })?)?;
                 if reserved == 0
                     || stored
                         .consumed_cost_units

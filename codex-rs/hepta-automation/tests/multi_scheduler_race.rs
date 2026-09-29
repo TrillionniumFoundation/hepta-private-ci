@@ -7,6 +7,7 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use codex_hepta_automation::AutomationAdmission;
+use codex_hepta_automation::AutomationError;
 use codex_hepta_automation::AutomationFuture;
 use codex_hepta_automation::AutomationQueueReceipt;
 use codex_hepta_automation::AutomationSchedule;
@@ -115,14 +116,26 @@ async fn concurrent_schedulers_claim_one_occurrence_exactly_once() {
     .expect("second scheduler");
 
     let (left, right) = tokio::join!(first.tick(100), second.tick(100));
-    let ticks = [left.expect("first tick"), right.expect("second tick")];
-    assert_eq!(
-        ticks
-            .iter()
-            .filter(|tick| matches!(tick, AutomationTick::Submitted { .. }))
-            .count(),
-        1
-    );
+    let mut submitted = 0;
+    let mut unavailable = 0;
+    for result in [left, right] {
+        match result {
+            Ok(AutomationTick::Submitted { .. }) => submitted += 1,
+            Ok(AutomationTick::NoTask) => {}
+            Err(AutomationError::Unavailable) => unavailable += 1,
+            Ok(other) => panic!("unexpected concurrent scheduler result: {other:?}"),
+            Err(error) => panic!("unexpected concurrent scheduler error: {error:?}"),
+        }
+    }
+    assert_eq!(submitted, 1);
+    assert!(unavailable <= 1);
+    assert_eq!(queue.admissions.lock().await.len(), 1);
+
+    // A lock-contention loser is a proven pre-admission retry, not a second
+    // semantic outcome.  Once the winning transaction settles, another tick
+    // must converge without re-enqueueing the occurrence.
+    let retry = first.tick(101).await.expect("post-race retry");
+    assert!(matches!(retry, AutomationTick::NoTask));
     assert_eq!(queue.admissions.lock().await.len(), 1);
     assert!(
         store

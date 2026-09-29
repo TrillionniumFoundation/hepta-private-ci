@@ -95,12 +95,7 @@ fn verify_occurrence_row(
     let scheduled_for_ms = nonnegative(required::<i64>(row, "scheduled_for_ms")?)?;
     let occurrence_id: String = required(row, "occurrence_id")?;
     if occurrence_id
-        != deterministic_occurrence_id(
-            expected_owner,
-            task_id,
-            schedule_revision,
-            scheduled_for_ms,
-        )
+        != deterministic_occurrence_id(expected_owner, task_id, schedule_revision, scheduled_for_ms)
     {
         return Err(AutomationError::Corrupt);
     }
@@ -116,13 +111,7 @@ fn verify_occurrence_row(
     let state: String = required(row, "state")?;
     if !matches!(
         state.as_str(),
-        "claimed"
-            | "admitted"
-            | "running"
-            | "succeeded"
-            | "failed"
-            | "cancelled"
-            | "indeterminate"
+        "claimed" | "admitted" | "running" | "succeeded" | "failed" | "cancelled" | "indeterminate"
     ) {
         return Err(AutomationError::Corrupt);
     }
@@ -133,8 +122,7 @@ fn verify_occurrence_row(
     let _: String = required(row, "client_user_message_id")?;
     let _ = nonnegative(required::<i64>(row, "claim_generation")?)?;
     let _: String = required(row, "claim_token")?;
-    u32::try_from(required::<i64>(row, "step_attempt")?)
-        .map_err(|_| AutomationError::Corrupt)?;
+    u32::try_from(required::<i64>(row, "step_attempt")?).map_err(|_| AutomationError::Corrupt)?;
     let _: Option<String> = optional(row, "queued_submission_id")?;
     let _: Option<String> = optional(row, "provider_payload_sha256")?;
     let _: Option<String> = optional(row, "turn_id")?;
@@ -164,10 +152,7 @@ where
     row.try_get(name).map_err(|_| AutomationError::Corrupt)
 }
 
-fn optional<T>(
-    row: &sqlx::sqlite::SqliteRow,
-    name: &str,
-) -> Result<Option<T>, AutomationError>
+fn optional<T>(row: &sqlx::sqlite::SqliteRow, name: &str) -> Result<Option<T>, AutomationError>
 where
     for<'r> T: sqlx::Decode<'r, sqlx::Sqlite> + sqlx::Type<sqlx::Sqlite>,
 {
@@ -243,8 +228,7 @@ mod tests {
         task_ids.sort_by_key(ToString::to_string);
         for (index, task_id) in task_ids.iter().enumerate() {
             let scheduled_for_ms = u64::try_from(index + 1).expect("time");
-            let occurrence_id =
-                deterministic_occurrence_id(owner, *task_id, 1, scheduled_for_ms);
+            let occurrence_id = deterministic_occurrence_id(owner, *task_id, 1, scheduled_for_ms);
             let run_id = format!(
                 "automation-run:{}",
                 Sha256Digest::for_bytes(occurrence_id.as_bytes()).as_str()

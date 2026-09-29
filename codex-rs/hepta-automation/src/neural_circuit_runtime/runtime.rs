@@ -114,11 +114,14 @@ where
     validate_checkpoint(candidate, event, profile, checkpoint)?;
     validate_digest(&resolution.observation_digest, "effect observation digest")?;
     let nodes = node_map(candidate);
-    let node = nodes.get(checkpoint.node_id.as_str()).copied().ok_or_else(|| {
-        NeuralCircuitRuntimeError::Invalid(
-            "effect checkpoint node is absent from the admitted circuit".to_string(),
-        )
-    })?;
+    let node = nodes
+        .get(checkpoint.node_id.as_str())
+        .copied()
+        .ok_or_else(|| {
+            NeuralCircuitRuntimeError::Invalid(
+                "effect checkpoint node is absent from the admitted circuit".to_string(),
+            )
+        })?;
     if node.role != CircuitNodeRoleV1::Effect {
         return Err(NeuralCircuitRuntimeError::Invalid(
             "effect resolution does not match an Effect checkpoint".to_string(),
@@ -832,7 +835,10 @@ fn validate_checkpoint(
         ));
     }
     for choice in &checkpoint.recorded_choices {
-        validate_digest(&choice.source_decision_digest, "checkpoint choice source digest")?;
+        validate_digest(
+            &choice.source_decision_digest,
+            "checkpoint choice source digest",
+        )?;
         validate_digest(&choice.receipt_digest, "checkpoint choice receipt digest")?;
     }
     for digest in &checkpoint.observation_digests {

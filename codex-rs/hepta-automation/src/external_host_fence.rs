@@ -166,9 +166,7 @@ impl VerifiedAutomationHostFenceV1 {
 }
 
 fn validate_identifier(value: &str) -> Result<(), AutomationError> {
-    if value.is_empty()
-        || value.len() > MAX_IDENTIFIER_BYTES
-        || value.chars().any(char::is_control)
+    if value.is_empty() || value.len() > MAX_IDENTIFIER_BYTES || value.chars().any(char::is_control)
     {
         return Err(AutomationError::Invalid);
     }
@@ -269,7 +267,11 @@ mod tests {
             value["signature"] = serde_json::json!(vec![0_u8; length]);
             assert!(serde_json::from_value::<SignedAutomationHostFenceV1>(value).is_err());
         }
-        for invalid_byte in [serde_json::json!(-1), serde_json::json!(256), serde_json::json!(true)] {
+        for invalid_byte in [
+            serde_json::json!(-1),
+            serde_json::json!(256),
+            serde_json::json!(true),
+        ] {
             let mut value = serde_json::to_value(&signed).expect("signature JSON");
             value["signature"][0] = invalid_byte;
             assert!(serde_json::from_value::<SignedAutomationHostFenceV1>(value).is_err());
