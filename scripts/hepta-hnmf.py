@@ -14,6 +14,7 @@ try:
         AUTHORITY_KEYS as AUTHORITY_KEYS,
         has_schema_version,
         has_registry_ids,
+        has_repository_references,
         has_deny_all_authority,
     )
 except ModuleNotFoundError as error:
@@ -23,6 +24,7 @@ except ModuleNotFoundError as error:
         AUTHORITY_KEYS as AUTHORITY_KEYS,
         has_schema_version,
         has_registry_ids,
+        has_repository_references,
         has_deny_all_authority,
     )
 
@@ -76,27 +78,6 @@ WORK_PACKAGES = [
     "HNM-6-STRUCTURAL-EVOLUTION",
 ]
 
-# Required V1 behavioral obligations. Additional topics are not a protocol change.
-REQUIRED_GAP_TOPICS = {
-    "first_class_multimodal_event_contract",
-    "content_addressed_asset_and_span_binding",
-    "seven_population_functional_memory_model",
-    "bounded_sparse_recurrent_recall",
-    "lateral_inhibition_and_competition",
-    "adaptive_threshold_homeostasis",
-    "bounded_eligibility_trace",
-    "low_dimensional_neuromodulation",
-    "replay_priority_and_source_quota",
-    "world_prediction_error_input",
-    "candidate_only_next_snapshot_plasticity",
-    "topology_add_split_merge_retire_rewire",
-    "source_driven_unlearning_non_resurrection",
-    "explicit_resource_and_acceptance_thresholds",
-    "module_ownership_and_no_second_spine",
-    "machine_executable_closed_world_validation",
-    "determinism_and_order_independence",
-    "contradiction_aware_abstention",
-}
 
 TECHNICAL_HEADINGS = [
     "## 1. Authority, scope and non-goals",
@@ -508,10 +489,6 @@ def verify() -> int:
     gap_rows = gaps.get("gaps", [])
     need(has_registry_ids(gap_rows), "gap identities")
     need(
-        has_registry_ids(gap_rows, key="gap", required=REQUIRED_GAP_TOPICS),
-        "gap obligation coverage",
-    )
-    need(
         all(row.get("referenceState") == "closed_reference" for row in gap_rows),
         "gap reference states",
     )
@@ -522,7 +499,10 @@ def verify() -> int:
         ),
         "gap production states",
     )
-    need(all(row.get("evidence") for row in gap_rows), "gap evidence")
+    need(
+        all(has_repository_references(row.get("evidence"), ROOT) for row in gap_rows),
+        "gap evidence references",
+    )
     false_authority(gaps.get("authorityFlags"), "gaps")
 
     technical_path = "docs/hnmf/TECHNICAL.md"

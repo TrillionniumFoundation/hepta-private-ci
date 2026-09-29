@@ -7,6 +7,9 @@ JSON registries still carry explicit deny-all flags on their wire format so a
 reviewer can see the boundary without inferring it from verifier code.
 """
 
+from pathlib import Path, PurePosixPath
+
+
 AUTHORITY_KEYS = [
     "runtimeAuthority",
     "productionCaller",
@@ -91,3 +94,36 @@ def has_registry_ids(rows: object, *, required=(), key: str = "id") -> bool:
             return False
         identities.append(identity)
     return len(identities) == len(set(identities)) and set(required) <= set(identities)
+
+
+def has_repository_references(value: object, root: Path) -> bool:
+    """Require real repository-local evidence files, not particular prose labels.
+
+    Fragment names remain the format-specific consumer's responsibility. This
+    verifies file identity and containment, not test execution or acceptance.
+    """
+    if not isinstance(value, list) or not value:
+        return False
+    seen = set()
+    for reference in value:
+        if not isinstance(reference, str) or reference in seen:
+            return False
+        seen.add(reference)
+        target, separator, fragment = reference.partition("#")
+        path = PurePosixPath(target)
+        if (
+            not target
+            or "\\" in target
+            or path.is_absolute()
+            or str(path) != target
+            or ".." in path.parts
+            or (separator and not fragment.strip())
+        ):
+            return False
+        try:
+            resolved = (root / path).resolve()
+            if not resolved.is_relative_to(root.resolve()) or not resolved.is_file():
+                return False
+        except (OSError, RuntimeError):
+            return False
+    return True

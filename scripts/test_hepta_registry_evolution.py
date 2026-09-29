@@ -4,11 +4,12 @@ import contextlib
 import importlib.util
 import io
 import json
+import tempfile
 from pathlib import Path
 import unittest
 from unittest import mock
 
-from hepta_metadata import has_registry_ids
+from hepta_metadata import has_registry_ids, has_repository_references
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -117,7 +118,7 @@ class RegistryEvolutionTests(unittest.TestCase):
     def test_cns_rejects_equal_size_obligation_substitution_and_duplicate_ids(self):
         module = verifier("hepta-cns")
         for key, field in [
-            ("gaps", "gap"),
+            ("gaps", "id"),
             ("externalCapabilityGates", "gate"),
             ("externalCapabilityGates", "id"),
         ]:
@@ -146,7 +147,7 @@ class RegistryEvolutionTests(unittest.TestCase):
                     with self.assertRaisesRegex(SystemExit, "boolean boundary"):
                         check_metadata(module, substitute)
 
-    def test_hnmf_accepts_new_gap_but_rejects_lost_behavioral_obligation(self):
+    def test_hnmf_accepts_new_gap_but_rejects_missing_evidence(self):
         module = verifier("hepta-hnmf")
         gap_path = "docs/hnmf/GAPS.json"
         baseline = check_metadata(module, lambda path, value: None)
@@ -162,10 +163,76 @@ class RegistryEvolutionTests(unittest.TestCase):
 
         def substitute(path, value):
             if path == gap_path:
-                value["gaps"][0]["gap"] = "not_the_original_obligation"
+                value["gaps"][0]["evidence"] = ["docs/hnmf/missing-evidence.md"]
 
-        with self.assertRaisesRegex(SystemExit, "obligation"):
+        with self.assertRaisesRegex(SystemExit, "references"):
             check_metadata(module, substitute)
+
+    def test_gap_description_rewording_does_not_create_keyword_gates(self):
+        for name, gap_path in [
+            ("hepta-cns", "docs/cns/GAPS.json"),
+            ("hepta-hnmf", "docs/hnmf/GAPS.json"),
+        ]:
+            module = verifier(name)
+
+            def rewrite(path, value):
+                if path == gap_path:
+                    for row in value["gaps"]:
+                        row["gap"] = "A clearer human-readable explanation."
+
+            with self.subTest(verifier=name):
+                check_metadata(module, rewrite)
+
+    def test_required_protocol_cannot_be_substituted_at_equal_count(self):
+        module = verifier("hepta-cns")
+
+        def substitute(path, value):
+            if path == module.PROTOCOL_PATH:
+                value["protocols"][0]["id"] = "NotTheRequiredProtocolV1"
+
+        with self.assertRaisesRegex(SystemExit, "protocol identities"):
+            check_metadata(module, substitute)
+
+    def test_evidence_references_reject_missing_duplicate_and_escaping_files(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            target = root / "evidence.txt"
+            target.write_text("reference input")
+            self.assertTrue(has_repository_references(["evidence.txt#locator"], root))
+            for invalid in (
+                None,
+                [],
+                "evidence.txt",
+                [None],
+                [1],
+                ["evidence.txt", "evidence.txt"],
+                ["absent.txt"],
+                ["../outside.txt"],
+                [str(target)],
+                ["evidence.txt#"],
+            ):
+                with self.subTest(invalid=invalid):
+                    self.assertFalse(has_repository_references(invalid, root))
+            with tempfile.TemporaryDirectory() as outside:
+                foreign = Path(outside) / "foreign.txt"
+                foreign.write_text("not repository evidence")
+                (root / "link.txt").symlink_to(foreign)
+                self.assertFalse(has_repository_references(["link.txt"], root))
+        for name, gap_path in [
+            ("hepta-cns", "docs/cns/GAPS.json"),
+            ("hepta-hnmf", "docs/hnmf/GAPS.json"),
+        ]:
+            module = verifier(name)
+
+            def missing(path, value):
+                if path == gap_path:
+                    value["gaps"][0]["evidence"] = ["docs/missing-evidence-file.md"]
+
+            with (
+                self.subTest(verifier=name),
+                self.assertRaisesRegex(SystemExit, "references"),
+            ):
+                check_metadata(module, missing)
 
     def test_global_verifier_defers_collection_sizes_to_the_owning_verifier(self):
         module = verifier("hepta-docs")

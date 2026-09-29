@@ -13,7 +13,11 @@ from pathlib import Path
 from typing import Any
 
 try:
-    from scripts.hepta_metadata import has_object_keys, has_registry_ids
+    from scripts.hepta_metadata import (
+        has_object_keys,
+        has_registry_ids,
+        has_repository_references,
+    )
     from scripts.hepta_metadata import (
         AUTHORITY_KEYS as AUTHORITY_KEYS,
         has_schema_version,
@@ -22,7 +26,11 @@ try:
 except ModuleNotFoundError as error:
     if error.name != "scripts":
         raise
-    from hepta_metadata import has_object_keys, has_registry_ids
+    from hepta_metadata import (
+        has_object_keys,
+        has_registry_ids,
+        has_repository_references,
+    )
     from hepta_metadata import (
         AUTHORITY_KEYS as AUTHORITY_KEYS,
         has_schema_version,
@@ -101,31 +109,6 @@ REQUIRED_PROTOCOLS = [
     "HumanOverrideV1",
 ]
 
-# V1 semantic obligations, not a maximum size or serialization order.
-REQUIRED_GAP_TOPICS = {
-    "closed_world_organ_anatomy",
-    "organ_lifecycle_and_retirement",
-    "body_graph_dependency_cycle_rejection",
-    "essential_organ_fallback",
-    "constitutional_and_objective_immutability",
-    "no_central_rpc_on_local_hot_paths",
-    "homeostatic_resource_allocation",
-    "sensor_time_calibration_and_staleness",
-    "body_state_and_generation_binding",
-    "world_model_uncertainty_and_ood",
-    "complete_legal_action_gating",
-    "independent_reflex_veto",
-    "physical_effect_idempotency_and_terminal_observation",
-    "digital_twin_and_fault_injection",
-    "next_snapshot_structural_plasticity",
-    "generator_evaluator_operator_separation",
-    "sleep_consolidation_and_revocation_exclusion",
-    "human_emergency_override",
-    "deterministic_reference_vectors",
-    "machine_closed_world_validation",
-    "multimodal_hippocampal_memory_reference",
-    "paper_source_bytes_independent_replay",
-}
 REQUIRED_EXTERNAL_GATES = {
     "real_sensor_identity_and_calibration",
     "hardware_in_loop_actuation",
@@ -471,17 +454,15 @@ def verify() -> int:
     )
     grows = gaps["gaps"]
     need(has_registry_ids(grows), "gap identities")
-    need(
-        has_registry_ids(grows, key="gap", required=REQUIRED_GAP_TOPICS),
-        "gap obligation coverage",
-    )
     for row in grows:
         need(
             row["state"] == "closed_reference" and row["evidence"],
             row["id"] + " state/evidence",
         )
-        for path in row["evidence"]:
-            need((ROOT / path).exists(), row["id"] + " missing evidence " + path)
+        need(
+            has_repository_references(row["evidence"], ROOT),
+            row["id"] + " invalid evidence references",
+        )
     ext = gaps["externalCapabilityGates"]
     need(has_registry_ids(ext), "external gate identities")
     need(
