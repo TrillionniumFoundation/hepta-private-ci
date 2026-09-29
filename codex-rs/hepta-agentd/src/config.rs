@@ -660,7 +660,7 @@ impl AgentdConfig {
     ) -> Result<(), AgentdError> {
         if !runner.canonical_profile_ready() {
             return Err(AgentdError::Invalid(
-                "canonical intelligence requires an independent authority rollback guard"
+                "canonical intelligence requires an independent authority rollback guard and process hard-timeout fence"
                     .to_string(),
             ));
         }
