@@ -43,6 +43,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$MATERIALIZE_SHA"
+
           test "$(git hash-object scripts/.learning_plasticity_runtime_materializer.part00)" = "0a3e77db906b659595d28bfaf3d61764365df928"
           test "$(git hash-object scripts/.learning_plasticity_runtime_materializer.part01)" = "a36d920b0e85769b92ff275d9fe01477d2459ede"
           test "$(git hash-object scripts/.learning_plasticity_runtime_materializer.part02)" = "2c86ef886003b445b7662fcb6ed38cf2bb52be24"
@@ -53,7 +54,26 @@ jobs:
             > scripts/materialize_learning_plasticity_runtime_closure.py
           python3 -m py_compile scripts/materialize_learning_plasticity_runtime_closure.py
 
-      - name: Materialize exact source, recovery contract, and qualification driver
+          test "$(git hash-object scripts/.learning_plasticity_phase_timing.part00)" = "44194fbf03b24d700ee2b2f6083dbf7e31e05302"
+          test "$(git hash-object scripts/.learning_plasticity_phase_timing.part01)" = "68783839e39f70a3b0226f1bd7752b3cd6e878f5"
+          test "$(git hash-object scripts/.learning_plasticity_phase_timing.part02)" = "45670eaef38701d944e9c912ff26113ec34db741"
+          test "$(git hash-object scripts/.learning_plasticity_phase_timing.part03)" = "ef790f9701d49028d6b22c0c69cd4c75b432355c"
+          cat scripts/.learning_plasticity_phase_timing.part{00..03} \
+            > scripts/materialize_learning_plasticity_phase_timing.py
+          python3 -m py_compile scripts/materialize_learning_plasticity_phase_timing.py
+          python3 - <<'PY'
+          import hashlib
+          from pathlib import Path
+
+          expected = "3c4288133a7deeae984aca4fd7746ae42108969b578dc5e6d6940b0f9c096d47"
+          actual = hashlib.sha256(
+              Path("scripts/materialize_learning_plasticity_phase_timing.py").read_bytes()
+          ).hexdigest()
+          if actual != expected:
+              raise SystemExit(f"phase timing patch: expected {expected}, observed {actual}")
+          PY
+
+      - name: Materialize exact source, recovery contract, and detailed phase telemetry
         shell: bash
         run: |
           set -euo pipefail
@@ -72,23 +92,41 @@ jobs:
               if actual != digest:
                   raise SystemExit(f"{name}: expected {digest}, observed {actual}")
           PY
+          python3 scripts/materialize_learning_plasticity_phase_timing.py
           python3 -m py_compile scripts/qualify_learning_plasticity.py
           python3 scripts/test_learning_plasticity_grammar_contract.py
+          git diff --check
 
-      - name: Format and compile the authored Agentd source
+      - name: Verify development documents and implementation maps
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-docs.py verify
+          python3 scripts/hepta-module-docs.py refresh-derived --check
+          python3 scripts/hepta-implementation-maps.py verify
+
+      - name: Format and compile the authored intelligence and Agentd source
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          cargo fmt --manifest-path Cargo.toml --package codex-hepta-agentd
-          cargo fmt --manifest-path Cargo.toml --package codex-hepta-agentd -- --check
-          cargo check --locked --all-targets -p codex-hepta-agentd
+          cargo fmt --manifest-path Cargo.toml \
+            --package codex-hepta-intelligence \
+            --package codex-hepta-agentd
+          cargo fmt --manifest-path Cargo.toml \
+            --package codex-hepta-intelligence \
+            --package codex-hepta-agentd -- --check
+          cargo check --locked --all-targets \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-agentd
 
-      - name: Exercise resource, lifecycle, replay, and process recovery regressions
+      - name: Exercise product, resource, lifecycle, replay, and process recovery regressions
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
+          cargo test --locked -p codex-hepta-intelligence --lib \
+            plasticity -- --test-threads=1
           cargo test --locked -p codex-hepta-agentd --lib \
             plasticity_runtime::tests -- --test-threads=1
           cargo test --locked -p codex-hepta-agentd --lib \
@@ -97,9 +135,12 @@ jobs:
           cargo test --locked -p codex-hepta-agentd \
             --test plasticity_process_e2e -- --test-threads=1
 
-      - name: Enforce strict Agentd lint
+      - name: Enforce strict intelligence and Agentd lint
         working-directory: codex-rs
-        run: cargo clippy --locked --no-deps --all-targets -p codex-hepta-agentd -- -D warnings
+        run: |
+          cargo clippy --locked --no-deps --all-targets \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-agentd -- -D warnings
 
       - name: Publish normal source and remove every authoring-only path
         shell: bash
@@ -107,19 +148,28 @@ jobs:
           set -euo pipefail
           git show 4325a520da597972aa5930ec1293882bd62d904c:.github/workflows/learning-plasticity-exact-qualification.yml \
             > .github/workflows/learning-plasticity-exact-qualification.yml
-          rm -f scripts/materialize_learning_plasticity_runtime_closure.py
+          rm -f \
+            scripts/materialize_learning_plasticity_runtime_closure.py \
+            scripts/materialize_learning_plasticity_phase_timing.py
           find scripts -type d -name __pycache__ -prune -exec rm -rf {} +
           git rm scripts/.learning_plasticity_runtime_materializer.part{00..05}
+          git rm scripts/.learning_plasticity_phase_timing.part{00..03}
           git rm .github/workflows/learning-plasticity-runtime-materialize.yml
           git rm .github/workflows/learning-plasticity-source-materialize.yml
           git add \
             .github/workflows/learning-plasticity-exact-qualification.yml \
+            codex-rs/hepta-intelligence/src/lib.rs \
+            codex-rs/hepta-intelligence/src/plasticity_product.rs \
+            codex-rs/hepta-intelligence/src/topology_product.rs \
+            codex-rs/hepta-agentd/src/lib.rs \
+            codex-rs/hepta-agentd/src/plasticity_host.rs \
             codex-rs/hepta-agentd/src/plasticity_runtime.rs \
+            codex-rs/hepta-agentd/src/topology_plasticity_host.rs \
             docs/modules/learning.plasticity/RUNTIME_RESOURCE_RECOVERY.md \
             docs/modules/learning.plasticity/DEVELOPER_QUICKSTART.md \
             scripts/qualify_learning_plasticity.py
           git diff --cached --check
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "feat(plasticity): bound runtime resources and lifecycle"
+          git commit -m "feat(plasticity): bound runtime resources and phase telemetry"
           git push origin "HEAD:${MATERIALIZE_BRANCH}"
