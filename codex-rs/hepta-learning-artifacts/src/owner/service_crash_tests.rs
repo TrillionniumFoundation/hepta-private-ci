@@ -41,9 +41,13 @@ fn request_and_registry(
 ) -> (LearningArtifactPublishRequestV1, ArtifactRegistry) {
     let predecessor = service.registry().snapshot().head_digest;
     let withdrawals = service.withdrawal_registry();
-    let admission =
-        admit_manifest_at_withdrawal_head_v3(withdrawals, withdrawals.head_digest(), manifest(), 20)
-            .fixture("admission");
+    let admission = admit_manifest_at_withdrawal_head_v3(
+        withdrawals,
+        withdrawals.head_digest(),
+        manifest(),
+        20,
+    )
+    .fixture("admission");
     let mut staged = service.registry().clone();
     let preview = ArtifactPublicationTransactionV1::begin(
         id("operation"),
@@ -58,7 +62,12 @@ fn request_and_registry(
         .host
         .stage_compatibility_registration(&preview, &mut staged, 20)
         .fixture("preview registration");
-    let request = publish_request(&key(), withdrawals, predecessor, staged.snapshot().head_digest);
+    let request = publish_request(
+        &key(),
+        withdrawals,
+        predecessor,
+        staged.snapshot().head_digest,
+    );
     (request, staged)
 }
 
@@ -73,8 +82,8 @@ fn phase_worker() {
         .fixture("phase number");
     assert!(phase <= 4);
     let root = PathBuf::from(root);
-    let service =
-        LearningArtifactOwnerService::open(config(root.join("store"))).fixture("worker service");
+    let service = LearningArtifactOwnerService::open(config(root.join("store")))
+        .fixture("worker service");
     let (request, staged) = request_and_registry(&service);
     let request_digest = service
         .request_identity
@@ -105,13 +114,24 @@ fn phase_worker() {
     if phase >= 2 {
         service
             .host
-            .ensure_registry_durable(&mut transaction, &staged, withdrawals, digest("binding"), 20)
+            .ensure_registry_durable(
+                &mut transaction,
+                &staged,
+                withdrawals,
+                digest("binding"),
+                20,
+            )
             .fixture("registry");
     }
     if phase >= 3 {
         service
             .host
-            .ensure_witness_durable(&mut transaction, &request.signed_current_head, withdrawals, 20)
+            .ensure_witness_durable(
+                &mut transaction,
+                &request.signed_current_head,
+                withdrawals,
+                20,
+            )
             .fixture("witness");
     }
     if phase == 4 {
@@ -127,8 +147,6 @@ fn phase_worker() {
         .fixture("barrier");
     barrier.write_all(&[phase]).fixture("barrier write");
     barrier.sync_all().fixture("barrier sync");
-    // Bounded watchdog; the parent must terminate us while the writer lease
-    // is held. Normal return is a test failure, never a graceful crash model.
     thread::sleep(Duration::from_secs(30));
     panic!("parent did not terminate the phase worker");
 }
@@ -139,7 +157,6 @@ fn sigkill_every_durable_phase_reconciles_exactly_and_preserves_writer_exclusion
         let directory = TestDir::new();
         let store = directory.0.join("store");
         fs::create_dir(&store).fixture("store directory");
-        // Retain the independently computed expected request outside the child.
         let service = LearningArtifactOwnerService::open(config(store.clone())).fixture("preview");
         let (request, _) = request_and_registry(&service);
         drop(service);
@@ -164,7 +181,10 @@ fn sigkill_every_durable_phase_reconciles_exactly_and_preserves_writer_exclusion
                 break;
             }
             assert!(child.0.try_wait().fixture("worker status").is_none());
-            assert!(Instant::now() < deadline, "phase worker did not reach barrier");
+            assert!(
+                Instant::now() < deadline,
+                "phase worker did not reach barrier"
+            );
             thread::sleep(Duration::from_millis(5));
         }
         assert!(matches!(
@@ -181,7 +201,10 @@ fn sigkill_every_durable_phase_reconciles_exactly_and_preserves_writer_exclusion
         }
         let mut recovered = LearningArtifactOwnerService::open(recovery_config).fixture("reopen");
         if phase < 4 {
-            assert_eq!(recovered.recovery_required(), Some(&request.operation_id));
+            std::assert_eq!(
+                recovered.recovery_required(),
+                Some(&request.operation_id)
+            );
             assert!(matches!(
                 recovered.current_registry_view(20),
                 Err(LearningArtifactOwnerServiceError::RecoveryRequired(_))
@@ -193,13 +216,16 @@ fn sigkill_every_durable_phase_reconciles_exactly_and_preserves_writer_exclusion
         let receipt = recovered
             .publish(request.clone())
             .fixture("resume exact publication");
-        assert_eq!(
+        std::assert_eq!(
             receipt.registry_head_digest,
             request.signed_current_head.witness.head_digest
         );
-        assert_eq!(recovered.publish(request).fixture("terminal retry"), receipt);
+        std::assert_eq!(
+            recovered.publish(request).fixture("terminal retry"),
+            receipt
+        );
         assert!(recovered.recovery_required().is_none());
-        assert_eq!(
+        std::assert_eq!(
             recovered
                 .current_registry_view(20)
                 .fixture("ready current view")
