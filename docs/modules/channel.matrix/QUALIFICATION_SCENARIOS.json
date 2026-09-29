@@ -10,6 +10,11 @@
           "binary": "codex-hepta-matrix-sdk::final_poll_regressions",
           "test": "transport_acceptance_alone_never_counts_as_confirmed_delivery",
           "source": "codex-rs/hepta-matrix-sdk/tests/final_poll_regressions.rs"
+        },
+        {
+          "binary": "codex-hepta-matrix-sdk::final_poll_regressions",
+          "test": "normal_send_confirms_only_after_sync_and_survives_reopen",
+          "source": "codex-rs/hepta-matrix-sdk/tests/final_poll_regressions.rs"
         }
       ],
       "external_gates": []
