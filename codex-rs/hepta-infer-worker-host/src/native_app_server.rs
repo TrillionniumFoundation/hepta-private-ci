@@ -913,17 +913,16 @@ impl AppServerModelDriver {
         if let Err(reason) = result {
             output.boundary_status = classify_observation_failure(&reason);
             output.stop_reason = Some(reason.clone());
-            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
-                if let Ok(cancelled) = owner
+            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
+                && let Ok(cancelled) = owner
                     .run_cancel(
                         binding.run_id.clone(),
                         revision,
                         reason.chars().take(512).collect(),
                     )
                     .await
-                {
-                    intelligence_revision = Some(cancelled.receipt.revision);
-                }
+            {
+                intelligence_revision = Some(cancelled.receipt.revision);
             }
             // Persist cancellation intent, but still interrupt if that write
             // fails. A failed journal write fences later admission/settlement.
@@ -1453,6 +1452,21 @@ fn observe_event(
             let receipt = adapt_observed_event(&binding.intent, &binding.turn_id, observed)
                 .map_err(|error| format!("invalid App Server terminal witness: {error}"))?
                 .ok_or_else(|| "turn/completed did not produce terminal receipt".to_string())?;
+            // App Server may deliver a completed message without streaming text
+            // deltas. Its exact-turn terminal summary is observed output, not a
+            // new provider call. Do not append it again after streamed output.
+            if output.output.is_empty() {
+                let mut text = String::new();
+                for item in &completed.turn.items {
+                    if let ThreadItem::AgentMessage { text: message, .. } = item {
+                        if message.len() > MAX_OUTPUT_BYTES.saturating_sub(text.len()) {
+                            return Err("output byte limit exceeded".to_string());
+                        }
+                        text.push_str(message);
+                    }
+                }
+                output.output = text;
+            }
             let physical_boundary = match receipt.status {
                 AdapterStatus::Succeeded => {
                     output.status = NativeRunStatus::Completed;
