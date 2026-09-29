@@ -317,7 +317,7 @@ pub(crate) fn accept_file_input_result(
 
 pub(crate) fn accept_active_dropped_file(
     context: &egui::Context,
-    files: &[egui::DroppedFile],
+    files: &[egui::DroppedFileHandle],
 ) -> Result<(FileInputTarget, PathBuf), FileInputError> {
     let paths = files
         .iter()
