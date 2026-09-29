@@ -11,7 +11,7 @@ permissions:
 
 concurrency:
   group: kernel-evidence-status-sync-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   synchronize:
