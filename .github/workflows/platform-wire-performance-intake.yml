@@ -176,7 +176,7 @@ jobs:
                   {
                       "id": artifact["id"],
                       "name": artifact["name"],
-                      "size_in_bytes": artifact.get("size_in_bytes"),
+                      "size_in_bytes": size,
                       "digest": digest,
                       "created_at": artifact.get("created_at"),
                       "expires_at": artifact.get("expires_at"),
@@ -194,32 +194,104 @@ jobs:
               )
           PY
 
-      - name: Download exact paired-measurement artifact
+      - name: Download, verify and extract exact paired evidence
         id: download
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          name: ${{ inputs.measurement_artifact }}
-          path: ${{ env.INPUT_DIR }}
-          github-token: ${{ github.token }}
-          repository: ${{ github.repository }}
-          run-id: ${{ inputs.measurement_run_id }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from io import BytesIO
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import stat
+          import urllib.request
+          import zipfile
+
+          records = Path(os.environ["RECORDS"])
+          destination = Path(os.environ["INPUT_DIR"])
+          metadata = json.loads(
+              (records / "measurement-artifact.json").read_text(encoding="utf-8")
+          )
+          artifact_id = metadata.get("id")
+          if type(artifact_id) is not int or artifact_id <= 0:
+              raise SystemExit("measurement artifact id is invalid")
+          expected_digest = metadata.get("digest")
+          if not isinstance(expected_digest, str) or re.fullmatch(
+              r"sha256:[0-9a-f]{64}", expected_digest
+          ) is None:
+              raise SystemExit("measurement artifact digest is invalid")
+          maximum = int(os.environ["MAX_ARTIFACT_BYTES"])
+          request = urllib.request.Request(
+              f"https://api.github.com/repos/{os.environ['REPOSITORY']}"
+              f"/actions/artifacts/{artifact_id}/zip",
+              headers={
+                  "Authorization": f"Bearer {os.environ['GH_TOKEN']}",
+                  "Accept": "application/vnd.github+json",
+                  "X-GitHub-Api-Version": "2022-11-28",
+                  "User-Agent": "hepta-platform-wire-performance-intake",
+              },
+          )
+          chunks = []
+          total = 0
+          with urllib.request.urlopen(request, timeout=60) as response:
+              while True:
+                  chunk = response.read(min(1024 * 1024, maximum + 1 - total))
+                  if not chunk:
+                      break
+                  chunks.append(chunk)
+                  total += len(chunk)
+                  if total > maximum:
+                      raise SystemExit("measurement archive exceeded the bounded download size")
+          archive = b"".join(chunks)
+          actual_digest = hashlib.sha256(archive).hexdigest()
+          if actual_digest != expected_digest.removeprefix("sha256:"):
+              raise SystemExit("downloaded measurement archive digest mismatch")
+
+          limits = {
+              "performance-plan.json": 256 * 1024,
+              "paired-measurements.json": 16 * 1024 * 1024,
+          }
+          destination.mkdir(parents=True, exist_ok=True)
+          with zipfile.ZipFile(BytesIO(archive)) as package:
+              entries = package.infolist()
+              if sorted(entry.filename for entry in entries) != sorted(limits):
+                  raise SystemExit("measurement archive must contain exactly two root files")
+              if len(entries) != len(limits):
+                  raise SystemExit("measurement archive contains duplicate entries")
+              for entry in entries:
+                  if entry.is_dir() or entry.flag_bits & 0x1:
+                      raise SystemExit("measurement archive contains a directory or encrypted entry")
+                  mode = (entry.external_attr >> 16) & 0o170000
+                  if mode not in (0, stat.S_IFREG):
+                      raise SystemExit("measurement archive contains a non-regular entry")
+                  limit = limits[entry.filename]
+                  if not 0 < entry.file_size <= limit or entry.compress_size > maximum:
+                      raise SystemExit("measurement archive entry exceeds its byte limit")
+                  if entry.compress_type not in (zipfile.ZIP_STORED, zipfile.ZIP_DEFLATED):
+                      raise SystemExit("measurement archive uses an unsupported compression method")
+                  with package.open(entry, "r") as stream:
+                      content = stream.read(limit + 1)
+                      if len(content) != entry.file_size or len(content) > limit:
+                          raise SystemExit("measurement archive entry size is inconsistent")
+                  target = destination / entry.filename
+                  target.write_bytes(content)
+                  target.chmod(0o600)
+          (records / "measurement-archive.sha256").write_text(
+              f"{actual_digest}  measurement-artifact.zip\n", encoding="utf-8"
+          )
+          PY
 
       - name: Validate registered frozen five-path measurements
         id: validation
         shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-          import os
-          root = Path(os.environ["INPUT_DIR"])
-          entries = sorted(root.iterdir(), key=lambda item: item.name)
-          expected = ["paired-measurements.json", "performance-plan.json"]
-          if [item.name for item in entries] != expected:
-              raise SystemExit("measurement artifact must contain exactly the two registered root files")
-          if any(item.is_symlink() or not item.is_file() for item in entries):
-              raise SystemExit("measurement artifact contains a non-regular file")
-          PY
           plan="$INPUT_DIR/performance-plan.json"
           report="$INPUT_DIR/paired-measurements.json"
           test -f "$plan" && test ! -L "$plan"
@@ -387,7 +459,7 @@ jobs:
                       "paths": paths,
                       "scope": (
                           "protected intake of an exact-source, same-repository, "
-                          "registered paired-measurement artifact; independent "
+                          "registered paired-measurement archive; independent "
                           "benchmark review remains external"
                       ),
                   }
