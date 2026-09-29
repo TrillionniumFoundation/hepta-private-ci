@@ -1,7 +1,9 @@
 use std::path::PathBuf;
 
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_memory::H7ArtifactVerifier;
 use codex_hepta_paths::HeptaFleetRoot;
+use codex_hepta_supervisor::ProductionAuthorityBundle;
 use tokio_util::sync::CancellationToken;
 
 #[tokio::main]
@@ -37,6 +39,8 @@ fn parse_options() -> anyhow::Result<Options> {
     let mut h7_key_path = None;
     let mut h7_signer_id = None;
     let mut h7_signer_epoch = None;
+    let mut authority_bundle_path = None;
+    let mut authority_bundle_sha256 = None;
     while let Some(flag) = arguments.next() {
         let value = arguments
             .next()
@@ -49,53 +53,102 @@ fn parse_options() -> anyhow::Result<Options> {
             Some("--h7-verifier-key") if h7_key_path.is_none() => h7_key_path = Some(value),
             Some("--h7-signer-id") if h7_signer_id.is_none() => h7_signer_id = Some(value),
             Some("--h7-signer-epoch") if h7_signer_epoch.is_none() => h7_signer_epoch = Some(value),
-            _ => anyhow::bail!(
-                "usage: hepta-supervisord --fleet-root ABSOLUTE_PATH [--grant-verifier-key ABSOLUTE_PATH --grant-signer-id ID --grant-signer-epoch N --h7-verifier-key ABSOLUTE_PATH --h7-signer-id ID --h7-signer-epoch N]"
-            ),
+            Some("--production-authority-bundle") if authority_bundle_path.is_none() => {
+                authority_bundle_path = Some(value)
+            }
+            Some("--production-authority-bundle-sha256")
+                if authority_bundle_sha256.is_none() =>
+            {
+                authority_bundle_sha256 = Some(value)
+            }
+            _ => anyhow::bail!(usage()),
         }
     }
     let fleet_root = HeptaFleetRoot::parse(PathBuf::from(
         fleet_root.ok_or_else(|| anyhow::anyhow!("--fleet-root is required"))?,
     ))?;
-    let grant_verifier = match (
-        key_path,
-        signer_id,
-        signer_epoch,
-        h7_key_path,
-        h7_signer_id,
-        h7_signer_epoch,
-    ) {
-        (None, None, None, None, None, None) => None,
-        (
-            Some(key_path),
-            Some(signer_id),
-            Some(signer_epoch),
-            Some(h7_key_path),
-            Some(h7_signer_id),
-            Some(h7_signer_epoch),
-        ) => {
-            let grant_epoch = parse_epoch(signer_epoch, "grant signer epoch")?;
-            let h7_epoch = parse_epoch(h7_signer_epoch, "H7 signer epoch")?;
-            let h7_signer_id = h7_signer_id
-                .into_string()
-                .map_err(|_| anyhow::anyhow!("H7 signer id is not UTF-8"))?;
-            let h7_key = load_public_key(PathBuf::from(h7_key_path), "H7 verifier key")?;
-            let h7_verifier = H7ArtifactVerifier::from_bytes(h7_signer_id, h7_epoch, h7_key)?;
-            Some(load_grant_verifier(
-                PathBuf::from(key_path),
-                signer_id
-                    .into_string()
-                    .map_err(|_| anyhow::anyhow!("signer id is not UTF-8"))?,
-                grant_epoch,
-                h7_verifier,
-            )?)
+
+    let legacy_authority_present = key_path.is_some()
+        || signer_id.is_some()
+        || signer_epoch.is_some()
+        || h7_key_path.is_some()
+        || h7_signer_id.is_some()
+        || h7_signer_epoch.is_some();
+    let bundle_authority_present =
+        authority_bundle_path.is_some() || authority_bundle_sha256.is_some();
+    if legacy_authority_present && bundle_authority_present {
+        anyhow::bail!(
+            "the pinned authority bundle and legacy verifier tuples are mutually exclusive"
+        );
+    }
+
+    let grant_verifier = if bundle_authority_present {
+        let path = PathBuf::from(
+            authority_bundle_path
+                .ok_or_else(|| anyhow::anyhow!("--production-authority-bundle is required"))?,
+        );
+        if !path.is_absolute() {
+            anyhow::bail!("production authority bundle path must be absolute");
         }
-        _ => anyhow::bail!("grant and H7 verifier key/id/epoch triplets must be supplied together"),
+        let expected_sha256 = Sha256Digest::parse(
+            authority_bundle_sha256
+                .ok_or_else(|| {
+                    anyhow::anyhow!("--production-authority-bundle-sha256 is required")
+                })?
+                .into_string()
+                .map_err(|_| anyhow::anyhow!("authority bundle digest is not UTF-8"))?,
+        )
+        .map_err(|error| anyhow::anyhow!(error.to_string()))?;
+        let (_, verifier) = ProductionAuthorityBundle::load_pinned(&path, &expected_sha256)?;
+        Some(verifier)
+    } else {
+        match (
+            key_path,
+            signer_id,
+            signer_epoch,
+            h7_key_path,
+            h7_signer_id,
+            h7_signer_epoch,
+        ) {
+            (None, None, None, None, None, None) => None,
+            (
+                Some(key_path),
+                Some(signer_id),
+                Some(signer_epoch),
+                Some(h7_key_path),
+                Some(h7_signer_id),
+                Some(h7_signer_epoch),
+            ) => {
+                let grant_epoch = parse_epoch(signer_epoch, "grant signer epoch")?;
+                let h7_epoch = parse_epoch(h7_signer_epoch, "H7 signer epoch")?;
+                let h7_signer_id = h7_signer_id
+                    .into_string()
+                    .map_err(|_| anyhow::anyhow!("H7 signer id is not UTF-8"))?;
+                let h7_key = load_public_key(PathBuf::from(h7_key_path), "H7 verifier key")?;
+                let h7_verifier =
+                    H7ArtifactVerifier::from_bytes(h7_signer_id, h7_epoch, h7_key)?;
+                Some(load_grant_verifier(
+                    PathBuf::from(key_path),
+                    signer_id
+                        .into_string()
+                        .map_err(|_| anyhow::anyhow!("signer id is not UTF-8"))?,
+                    grant_epoch,
+                    h7_verifier,
+                )?)
+            }
+            _ => anyhow::bail!(
+                "grant and H7 verifier key/id/epoch triplets must be supplied together"
+            ),
+        }
     };
     Ok(Options {
         fleet_root,
         grant_verifier,
     })
+}
+
+fn usage() -> &'static str {
+    "usage: hepta-supervisord --fleet-root ABSOLUTE_PATH [--production-authority-bundle ABSOLUTE_PATH --production-authority-bundle-sha256 SHA256 | --grant-verifier-key ABSOLUTE_PATH --grant-signer-id ID --grant-signer-epoch N --h7-verifier-key ABSOLUTE_PATH --h7-signer-id ID --h7-signer-epoch N]"
 }
 
 fn load_grant_verifier(
