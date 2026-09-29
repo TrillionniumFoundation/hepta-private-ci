@@ -1,0 +1,115 @@
+
++                "runtime.codex supervisor closed after capacity reservation",
+             ));
+         }
+         if !self.installed.ready.load(Ordering::Acquire) {
+             self.installed
+                 .rejected_not_ready
+                 .fetch_add(1, Ordering::AcqRel);
+-            return Err(AgentdError::Protocol(
+-                "runtime.codex supervisor lost readiness after capacity reservation".to_string(),
++            return Err(AgentdError::runtime_codex(
++                readiness_failure(&self.installed),
++                "runtime.codex supervisor lost readiness after capacity reservation",
+             ));
+         }
+ 
+@@ -270,8 +285,9 @@ impl RuntimeCodexScheduleReservationV1 {
+                     self.installed
+                         .rejected_identity
+                         .fetch_add(1, Ordering::AcqRel);
+-                    return Err(AgentdError::Protocol(
+-                        "runtime.codex run identity has queued semantic drift".to_string(),
++                    return Err(AgentdError::runtime_codex(
++                        RuntimeCodexFailureClassV1::DurableIdentityConflict,
++                        "runtime.codex run identity has queued semantic drift",
+                     ));
+                 }
+                 None => {
+@@ -404,6 +420,8 @@ impl ProcessRuntimeCodexExecutorV1 {
+                 receiver: std::sync::Mutex::new(Some(receiver)),
+                 admission: std::sync::Mutex::new(AdmissionState::default()),
+                 active: std::sync::Mutex::new(BTreeMap::new()),
++                execution_slots: Arc::new(Semaphore::new(maximum_concurrent_jobs)),
++                maintenance_io: BoundedMaintenanceIoV1::new(),
+                 started: AtomicBool::new(false),
+                 ready: AtomicBool::new(false),
+                 degraded: AtomicBool::new(true),
+@@ -429,8 +447,9 @@ impl ProcessRuntimeCodexExecutorV1 {
+                 rejected_capacity: AtomicUsize::new(0),
+                 rejected_input: AtomicUsize::new(0),
+                 rejected_identity: AtomicUsize::new(0),
++                last_dispatch_wait_ms: AtomicU64::new(0),
++                maximum_dispatch_wait_ms: AtomicU64::new(0),
+                 terminal_failure: std::sync::Mutex::new(None),
+-                maximum_concurrent_jobs,
+                 recovery_interval,
+             }),
+         })
+@@ -455,34 +474,36 @@ impl RuntimeCodexSupervisorHandleV1 {
+             .filter(|job| !job.running)
+             .map(|job| duration_millis(now.saturating_duration_since(job.queued_at)))
+             .max();
+-        let terminal_failure = installed
++        let terminal_failure = *installed
+             .terminal_failure
+             .lock()
+             .map_err(|_| {
+                 AgentdError::Protocol("runtime.codex failure state is poisoned".to_string())
+-            })?
+-            .clone();
++            })?;
+         let closed = installed.closed.load(Ordering::Acquire);
+         let ready = installed.ready.load(Ordering::Acquire);
+         let recovery_in_progress = installed.recovery_in_progress.load(Ordering::Acquire);
+         let fenced_unresolved = installed.fenced_unresolved.load(Ordering::Acquire);
+         let unresolved = installed.unresolved.load(Ordering::Acquire);
+-        let admission_blocker = terminal_failure.or_else(|| {
++        let admission_failure = terminal_failure.or_else(|| {
+             if closed {
+-                Some("closed".to_string())
++                Some(RuntimeCodexFailureClassV1::AdmissionClosed)
+             } else if !ready && recovery_in_progress {
+-                Some("startup_reconciliation".to_string())
++                Some(RuntimeCodexFailureClassV1::StartupReconciliation)
+             } else if !ready && fenced_unresolved != 0 {
+-                Some("fenced_unresolved".to_string())
++                Some(RuntimeCodexFailureClassV1::FencedUnresolved)
+             } else if !ready {
+-                Some("not_ready".to_string())
++                Some(RuntimeCodexFailureClassV1::StartupReconciliation)
+             } else if installed.sender.capacity() == 0 {
+-                Some("queue_capacity".to_string())
++                Some(RuntimeCodexFailureClassV1::QueueCapacity)
+             } else {
+                 None
+             }
+         });
++        let recommended_action = admission_failure.map(RuntimeCodexFailureClassV1::caller_action);
++        let admission_blocker = admission_failure.map(|failure| failure.as_str().to_string());
+         let last_recovery_duration_ms = installed.last_recovery_duration_ms.load(Ordering::Acquire);
++        let maintenance_io = installed.maintenance_io.snapshot();
+         Ok(RuntimeCodexSupervisorSnapshotV1 {
+             ready,
+             degraded: installed.degraded.load(Ordering::Acquire),
+@@ -524,6 +545,14 @@ impl RuntimeCodexSupervisorHandleV1 {
+             rejected_capacity: installed.rejected_capacity.load(Ordering::Acquire),
+             rejected_input: installed.rejected_input.load(Ordering::Acquire),
+             rejected_identity: installed.rejected_identity.load(Ordering::Acquire),
++            last_dispatch_wait_ms: nonzero_metric(&installed.last_dispatch_wait_ms),
++            maximum_dispatch_wait_ms: nonzero_metric(&installed.maximum_dispatch_wait_ms),
++            maintenance_io_queue_wait_ms: maintenance_io.queue_wait_ms,
++            maintenance_io_duration_ms: maintenance_io.duration_ms,
++            maintenance_io_active: maintenance_io.active,
++            maintenance_io_completed_after_cancel: maintenance_io.completed_after_cancel,
++            admission_failure,
++            recommended_action,
+             admission_blocker,
+         })
+     }
+@@ -542,23 +571,26 @@ impl RuntimeCodexSupervisorHandleV1 {
+         })?;
+         if admission.closed || installed.closed.load(Ordering::Acquire) {
+             installed.rejected_closed.fetch_add(1, Ordering::AcqRel);
+-            return Err(AgentdError::Protocol(
+-                "runtime.codex supervi
