@@ -13,8 +13,12 @@
   "statusGuide": "docs/modules/memory.retrieval/STATUS.md",
   "qualificationPolicy": "qualification/memory-retrieval/qualification-policy.json",
   "runtimeStatusArtifact": "qualification-manifest.json",
-  "declaredRoots": ["codex-rs/hepta-memory-retrieval"],
-  "resolvedRoots": ["codex-rs/hepta-memory-retrieval"],
+  "declaredRoots": [
+    "codex-rs/hepta-memory-retrieval"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-memory-retrieval"
+  ],
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "source_composed_explicit_profile_not_product_qualified",
@@ -27,7 +31,9 @@
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/v2.rs",
       "state": "source_implemented_not_product_qualified",
       "authority": "none",
-      "tests": ["codex-rs/hepta-memory-retrieval/src/v2_tests.rs"]
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/v2_tests.rs"
+      ]
     },
     {
       "operation": "compile_cue",
@@ -35,7 +41,9 @@
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/generator.rs",
       "state": "source_implemented_not_product_qualified",
       "authority": "none",
-      "tests": ["codex-rs/hepta-memory-retrieval/src/generator_tests.rs"]
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/generator_tests.rs"
+      ]
     },
     {
       "operation": "build_candidate_union_from_generated",
@@ -54,7 +62,9 @@
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/engram.rs",
       "state": "source_implemented_not_product_qualified",
       "authority": "none",
-      "tests": ["codex-rs/hepta-memory-retrieval/src/engram_tests.rs"]
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/engram_tests.rs"
+      ]
     },
     {
       "operation": "recall_generated_with_engram",
@@ -73,7 +83,9 @@
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/decision.rs",
       "state": "source_implemented_not_product_qualified",
       "authority": "none",
-      "tests": ["codex-rs/hepta-memory-retrieval/src/decision_tests.rs"]
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/decision_tests.rs"
+      ]
     },
     {
       "operation": "generate_vector_batch_v1",
@@ -81,7 +93,9 @@
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/vector_owner.rs",
       "state": "source_implemented_index_owner_not_product_composed",
       "authority": "none",
-      "tests": ["codex-rs/hepta-memory-retrieval/src/vector_owner_tests.rs"]
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/vector_owner_tests.rs"
+      ]
     },
     {
       "operation": "build_candidate_union",
@@ -89,7 +103,9 @@
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": ["codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs"]
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs"
+      ]
     },
     {
       "operation": "recall",
@@ -97,7 +113,9 @@
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": ["codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs"]
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs"
+      ]
     },
     {
       "operation": "adapt_generation_bound_recall_to_canonical_shadow_v1",
@@ -105,7 +123,9 @@
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
       "state": "source_implemented_shadow_only_not_product_composed",
       "authority": "none",
-      "tests": ["codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs"]
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs"
+      ]
     }
   ],
   "repositoryControlledGaps": [
@@ -134,7 +154,9 @@
     "release": false,
     "implementedOperationMappingComplete": true
   },
-  "sourceRoot": ["codex-rs/hepta-memory-retrieval"],
+  "sourceRoot": [
+    "codex-rs/hepta-memory-retrieval"
+  ],
   "compositionRoots": [
     "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
     "codex-rs/hepta-memory/src/cognitive_retrieval_adapter.rs",
@@ -165,8 +187,8 @@
   ],
   "sourceIdentityPolicy": "exact_parent_observation_plus_runtime_manifest_v1",
   "observedAtHead": {
-    "commit": "486caa6653560f36ac96fc3811e186d1e3102ccc",
-    "tree": "055bcbb4a0690108fdd7aedbe73fd5e04b605a3c"
+    "commit": "3150cbbd89047d2b8578606b09e5adea771d4288",
+    "tree": "36531ead770ee22a86491f1879191abd98689aff"
   },
   "observedSourcePaths": [
     ".github/workflows",
@@ -181,7 +203,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-memory-retrieval",
-      "object": "1ff5e94881b1693e35222e9bbf8153579f1c45cb"
+      "object": "cc0a7fb758ef89ee8534d10047f4212ce45bbcb6"
     }
   ],
   "observedMissingPaths": []
