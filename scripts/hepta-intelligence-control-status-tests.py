@@ -116,6 +116,19 @@ class SourceMappingTests(unittest.TestCase):
         self.assertIn("HostOwnedAgentdIntelligenceInvocationProviderV1::new(factory)", config)
         self.assertFalse(implementation["statusMatrix"]["defaultBinaryProfileComposed"])
 
+    def test_canonical_profile_requires_rollback_and_process_containment(self) -> None:
+        runner = (
+            STATUS.ROOT / "codex-rs/hepta-agentd/src/intelligence_product_runner.rs"
+        ).read_text(encoding="utf-8")
+        signed_tests = (
+            STATUS.ROOT / "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            "self.authority_rollback.is_some() && self.hard_timeout_process_exit_grace.is_some()",
+            runner,
+        )
+        self.assertIn("with_hard_timeout_process_exit", signed_tests)
+
 
 if __name__ == "__main__":
     unittest.main()
