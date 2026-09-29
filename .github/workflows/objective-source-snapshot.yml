@@ -1,4 +1,4 @@
-name: Objective source snapshot
+name: Objective repair materializer
 
 on:
   push:
@@ -8,18 +8,141 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: objective-repair-materializer
+  cancel-in-progress: true
+
 jobs:
-  snapshot:
+  materialize:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
+          ref: d171dbca34ac8a9146a6e1b6f1579b95bcba2be4
+          fetch-depth: 0
           persist-credentials: false
-      - name: Pack fixed candidate sources
+      - name: Apply exact guarded repair
         shell: bash
         run: |
           set -euo pipefail
-          tar -czf "$RUNNER_TEMP/objective-source-snapshot.tar.gz" \
+          test "$(git rev-parse HEAD)" = d171dbca34ac8a9146a6e1b6f1579b95bcba2be4
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              target = Path(path)
+              text = target.read_text()
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"{path}: expected one match, found {count}: {old!r}")
+              target.write_text(text.replace(old, new, 1))
+
+          replace_once(
+              "codex-rs/hepta-agentd/tests/objective_product_e2e.rs",
+              '        "deadline": "2099-01-01T00:00:00.000001Z",',
+              '        "deadline": "2099-01-01T00:00:00.001Z",',
+          )
+          replace_once(
+              "codex-rs/hepta-agentd/src/browser_servo.rs",
+              "struct DecodedFrame {\n    sequence: u64,\n    kind: String,",
+              "struct DecodedFrame {\n    kind: String,",
+          )
+          replace_once(
+              "codex-rs/hepta-agentd/src/browser_servo.rs",
+              "    Ok(DecodedFrame {\n        sequence,\n        kind: kind.to_string(),",
+              "    Ok(DecodedFrame {\n        kind: kind.to_string(),",
+          )
+          replace_once(
+              "codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs",
+              "    pub(crate) fn append(\n",
+              "    #[expect(\n        dead_code,\n        reason = \"compatibility helper retained while Agentd composes the delivery-aware owner path\"\n    )]\n    pub(crate) fn append(\n",
+          )
+          replace_once(
+              "codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs",
+              "    pub(crate) fn append_with_delivery(\n",
+              "    #[expect(\n        dead_code,\n        reason = \"compatibility helper retained while policy-aware publication is the product path\"\n    )]\n    #[expect(\n        clippy::too_many_arguments,\n        reason = \"the compatibility boundary keeps every durable delivery identity explicit\"\n    )]\n    pub(crate) fn append_with_delivery(\n",
+          )
+          replace_once(
+              "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
+              "pub(crate) struct AgentdLearningPlasticityProducerV1 {\n    handle: PlasticityRuntimeHandleV1,",
+              "pub(crate) struct AgentdLearningPlasticityProducerV1 {\n    #[expect(\n        dead_code,\n        reason = \"the single product producer is retained before its governed caller is activated\"\n    )]\n    handle: PlasticityRuntimeHandleV1,",
+          )
+          replace_once(
+              "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
+              "    pub(crate) async fn submit_parameter(\n",
+              "    #[expect(\n        dead_code,\n        reason = \"the governed parameter producer is wired but not yet activated by product policy\"\n    )]\n    pub(crate) async fn submit_parameter(\n",
+          )
+          replace_once(
+              "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
+              "    pub(crate) async fn submit_topology(\n",
+              "    #[expect(\n        dead_code,\n        reason = \"the governed topology producer is wired but not yet activated by product policy\"\n    )]\n    pub(crate) async fn submit_topology(\n",
+          )
+          replace_once(
+              "codex-rs/hepta-agentd/src/state.rs",
+              "    pub(crate) async fn submit_parameter_plasticity_v1(\n",
+              "    #[expect(\n        dead_code,\n        reason = \"the sole Agentd producer boundary remains dormant until plasticity activation\"\n    )]\n    pub(crate) async fn submit_parameter_plasticity_v1(\n",
+          )
+          replace_once(
+              "codex-rs/hepta-agentd/src/state.rs",
+              "    pub(crate) async fn submit_topology_plasticity_v1(\n",
+              "    #[expect(\n        dead_code,\n        reason = \"the sole Agentd producer boundary remains dormant until plasticity activation\"\n    )]\n    pub(crate) async fn submit_topology_plasticity_v1(\n",
+          )
+          replace_once(
+              "codex-rs/hepta-agentd/src/state.rs",
+              "    pub(crate) fn start_current_run_start(\n",
+              "    #[expect(\n        dead_code,\n        reason = \"legacy journal recovery remains available while v2 record recovery is authoritative\"\n    )]\n    pub(crate) fn start_current_run_start(\n",
+          )
+          replace_once(
+              "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+              "#[derive(Clone, Debug)]\npub(crate) enum AgentdAutomationEffectReconcileOutcome {",
+              "#[derive(Clone, Debug)]\n#[expect(\n    clippy::large_enum_variant,\n    reason = \"the one-shot reconciliation result preserves the exact observed receipt without a second allocation\"\n)]\npub(crate) enum AgentdAutomationEffectReconcileOutcome {",
+          )
+          replace_once(
+              "codex-rs/hepta-agentd/src/cognitive_context.rs",
+              "pub(crate) async fn read_with_retrieval_context_and_learning(\n",
+              "#[expect(\n    clippy::too_many_arguments,\n    reason = \"the owner boundary keeps retrieval, learning, generation and request identities explicit\"\n)]\npub(crate) async fn read_with_retrieval_context_and_learning(\n",
+          )
+          replace_once(
+              "codex-rs/hepta-agentd/src/cognitive_context.rs",
+              "pub(crate) async fn revalidate_with_retrieval_context(\n",
+              "#[expect(\n    clippy::too_many_arguments,\n    reason = \"final-use revalidation keeps every signed snapshot and retrieval identity explicit\"\n)]\npub(crate) async fn revalidate_with_retrieval_context(\n",
+          )
+          replace_once(
+              "codex-rs/hepta-agentd/src/intelligence_product.rs",
+              "#[derive(Clone, Debug, Eq, PartialEq)]\npub enum AgentdIntelligenceProductOutcomeV1 {",
+              "#[derive(Clone, Debug, Eq, PartialEq)]\n#[expect(\n    clippy::large_enum_variant,\n    reason = \"the one-shot prepared run stays value-bound to its exact objective and owner snapshots\"\n)]\npub enum AgentdIntelligenceProductOutcomeV1 {",
+          )
+          replace_once(
+              "codex-rs/hepta-agentd/src/intelligence_product.rs",
+              "#[derive(Clone, Debug, Eq, PartialEq)]\npub enum AgentdIntelligenceAdmittedOutcomeV1 {",
+              "#[derive(Clone, Debug, Eq, PartialEq)]\n#[expect(\n    clippy::large_enum_variant,\n    reason = \"the admitted result keeps the prepared run and daemon receipt in one exact value\"\n)]\npub enum AgentdIntelligenceAdmittedOutcomeV1 {",
+          )
+          replace_once(
+              "codex-rs/hepta-agentd/src/intelligence_product.rs",
+              "#[derive(Debug)]\npub enum AgentdIntelligenceLedgerError {",
+              "#[derive(Debug)]\n#[expect(\n    clippy::large_enum_variant,\n    reason = \"indeterminate recovery must retain the complete pending append for fenced reconciliation\"\n)]\npub enum AgentdIntelligenceLedgerError {",
+          )
+          replace_once(
+              "codex-rs/hepta-agentd/src/objective_runtime.rs",
+              "pub(crate) enum ObjectiveStartResult {",
+              "#[expect(\n    clippy::large_enum_variant,\n    reason = \"the synchronous ObjectiveStart result preserves the exact durable admission value\"\n)]\npub(crate) enum ObjectiveStartResult {",
+          )
+          replace_once(
+              "codex-rs/hepta-agentd/src/plasticity_host.rs",
+              "pub fn propose_agentd_plasticity_v1(\n",
+              "#[expect(\n    clippy::too_many_arguments,\n    reason = \"the host boundary keeps each independent owner, verifier and rollback anchor explicit\"\n)]\npub fn propose_agentd_plasticity_v1(\n",
+          )
+          PY
+          cd codex-rs
+          cargo fmt -p codex-hepta-agentd
+          cd ..
+          git diff --check
+          git diff --stat
+      - name: Pack repaired files
+        shell: bash
+        run: |
+          set -euo pipefail
+          tar -czf "$RUNNER_TEMP/objective-repair-files.tar.gz" \
             codex-rs/hepta-agentd/tests/objective_product_e2e.rs \
             codex-rs/hepta-agentd/src/browser_servo.rs \
             codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs \
@@ -30,9 +153,9 @@ jobs:
             codex-rs/hepta-agentd/src/intelligence_product.rs \
             codex-rs/hepta-agentd/src/objective_runtime.rs \
             codex-rs/hepta-agentd/src/plasticity_host.rs
-      - name: Upload fixed candidate sources
+      - name: Upload repaired files
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: objective-source-snapshot
-          path: ${{ runner.temp }}/objective-source-snapshot.tar.gz
+          name: objective-repair-files
+          path: ${{ runner.temp }}/objective-repair-files.tar.gz
           retention-days: 1
