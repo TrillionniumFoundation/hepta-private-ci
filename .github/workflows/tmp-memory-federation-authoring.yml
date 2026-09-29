@@ -1,0 +1,157 @@
+name: temporary memory federation authoring
+
+on:
+  push:
+    branches:
+      - tmp/memory-federation-authoring-20260929
+
+permissions:
+  contents: write
+
+concurrency:
+  group: temporary-memory-federation-authoring
+  cancel-in-progress: false
+
+jobs:
+  author:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      TARGET_BRANCH: feat/memory-federation-full-closure-20260927
+      EXPECTED_HEAD: aee41125ce48fc1f264a9699339b2d8cffe0732b
+    steps:
+      - name: Check out target candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.TARGET_BRANCH }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify frozen authoring base
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+      - name: Route durable SQLite opens through codex-state
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          root = Path('.')
+
+          cargo = root / 'codex-rs/hepta-operations/Cargo.toml'
+          text = cargo.read_text()
+          old = '''[dependencies]\ncodex-hepta-contracts = { workspace = true }\ncodex-hepta-types = { workspace = true }\nsqlx = { workspace = true }\n'''
+          new = '''[dependencies]\ncodex-hepta-contracts = { workspace = true }\ncodex-hepta-types = { workspace = true }\ncodex-state = { workspace = true }\ncodex-utils-absolute-path = { workspace = true }\nsqlx = { workspace = true }\n'''
+          if text.count(old) != 1:
+              raise SystemExit('unexpected hepta-operations dependency block')
+          cargo.write_text(text.replace(old, new))
+
+          lib = root / 'codex-rs/hepta-operations/src/lib.rs'
+          text = lib.read_text()
+          old = 'mod outbox;\n'
+          new = 'mod outbox;\nmod sqlite_store;\n'
+          if text.count(old) != 1 or 'mod sqlite_store;' in text:
+              raise SystemExit('unexpected hepta-operations module list')
+          lib.write_text(text.replace(old, new))
+
+          helper = root / 'codex-rs/hepta-operations/src/sqlite_store.rs'
+          helper.write_text('''use std::path::Path;\nuse std::path::PathBuf;\n\nuse codex_state::SqliteConfig;\nuse codex_utils_absolute_path::AbsolutePathBuf;\nuse sqlx::SqlitePool;\n\nuse crate::DurableOperationError;\n\n/// Open an authoritative operations database through the repository-wide\n/// SQLite shim. The shim remains the single owner of connection policy while\n/// this module retains its migrations, quick checks and semantic recovery.\npub(crate) async fn open_durable_sqlite_pool(\n    path: &Path,\n) -> Result<SqlitePool, DurableOperationError> {\n    let absolute_path = absolute_store_path(path)?;\n    let parent = absolute_path.parent().ok_or_else(|| {\n        DurableOperationError::Unavailable(\n            "durable SQLite path has no parent directory".to_owned(),\n        )\n    })?;\n    std::fs::create_dir_all(parent)\n        .map_err(|error| DurableOperationError::Unavailable(error.to_string()))?;\n    let sqlite_home = AbsolutePathBuf::from_absolute_path(parent)\n        .map_err(|error| DurableOperationError::Unavailable(error.to_string()))?;\n    SqliteConfig::from_sqlite_home(sqlite_home)\n        .open_durable_evidence_pool(&absolute_path)\n        .await\n        .map_err(|error| DurableOperationError::Unavailable(error.to_string()))\n}\n\nfn absolute_store_path(path: &Path) -> Result<PathBuf, DurableOperationError> {\n    if path.is_absolute() {\n        return Ok(path.to_path_buf());\n    }\n    std::env::current_dir()\n        .map(|current| current.join(path))\n        .map_err(|error| DurableOperationError::Unavailable(error.to_string()))\n}\n\n#[cfg(test)]\nmod tests {\n    use super::absolute_store_path;\n    use std::path::Path;\n\n    #[test]\n    fn relative_store_path_is_resolved_once_under_current_directory() {\n        let resolved = absolute_store_path(Path::new("state/operations.sqlite"))\n            .expect("relative store path should resolve");\n        assert!(resolved.is_absolute());\n        assert!(resolved.ends_with("state/operations.sqlite"));\n    }\n}\n''')
+
+          destination = root / 'codex-rs/hepta-operations/src/destination_dedupe.rs'
+          text = destination.read_text()
+          for line in (
+              'use std::time::Duration;\n',
+              'use sqlx::sqlite::SqliteConnectOptions;\n',
+              'use sqlx::sqlite::SqliteJournalMode;\n',
+              'use sqlx::sqlite::SqlitePoolOptions;\n',
+              'use sqlx::sqlite::SqliteSynchronous;\n',
+          ):
+              if text.count(line) != 1:
+                  raise SystemExit(f'unexpected destination import: {line!r}')
+              text = text.replace(line, '')
+          old = '''        if let Some(parent) = path.parent() {\n            std::fs::create_dir_all(parent)\n                .map_err(|error| DurableOperationError::Unavailable(error.to_string()))?;\n        }\n        let options = SqliteConnectOptions::new()\n            .filename(path)\n            .create_if_missing(true)\n            .journal_mode(SqliteJournalMode::Wal)\n            .synchronous(SqliteSynchronous::Full)\n            .foreign_keys(true)\n            .busy_timeout(Duration::from_secs(5));\n        let pool = SqlitePoolOptions::new()\n            .max_connections(4)\n            .connect_with(options)\n            .await\n            .map_err(sqlx_error)?;\n'''
+          new = '''        let pool = crate::sqlite_store::open_durable_sqlite_pool(path).await?;\n'''
+          if text.count(old) != 1:
+              raise SystemExit('unexpected destination SQLite open block')
+          destination.write_text(text.replace(old, new))
+
+          durable = root / 'codex-rs/hepta-operations/src/durable_store.rs'
+          text = durable.read_text()
+          for line in (
+              'use sqlx::sqlite::SqliteConnectOptions;\n',
+              'use sqlx::sqlite::SqliteJournalMode;\n',
+              'use sqlx::sqlite::SqlitePoolOptions;\n',
+              'use sqlx::sqlite::SqliteSynchronous;\n',
+          ):
+              if text.count(line) != 1:
+                  raise SystemExit(f'unexpected durable import: {line!r}')
+              text = text.replace(line, '')
+          old = '''        if let Some(parent) = path.parent() {\n            std::fs::create_dir_all(parent)\n                .map_err(|error| DurableOperationError::Unavailable(error.to_string()))?;\n        }\n        let options = SqliteConnectOptions::new()\n            .filename(path)\n            .create_if_missing(true)\n            .journal_mode(SqliteJournalMode::Wal)\n            .synchronous(SqliteSynchronous::Full)\n            .foreign_keys(true)\n            .busy_timeout(Duration::from_secs(5));\n        let pool = SqlitePoolOptions::new()\n            .max_connections(4)\n            .connect_with(options)\n            .await\n            .map_err(sqlx_error)?;\n'''
+          new = '''        let pool = crate::sqlite_store::open_durable_sqlite_pool(path).await?;\n'''
+          if text.count(old) != 1:
+              raise SystemExit('unexpected durable SQLite open block')
+          text = text.replace(old, new)
+          old = '''        if let Some(status) = load_outbox_tx(\n            &mut tx,\n            &operation.intent.destination,\n            scope_id,\n            operation_id,\n        )\n        .await?\n        {\n            if status.state != DurableOutboxState::Acknowledged {\n'''
+          new = '''        if let Some(status) = load_outbox_tx(\n            &mut tx,\n            &operation.intent.destination,\n            scope_id,\n            operation_id,\n        )\n        .await?\n        .filter(|status| status.state != DurableOutboxState::Acknowledged)\n        {\n'''
+          if text.count(old) != 1:
+              raise SystemExit('unexpected nested outbox acknowledgement condition')
+          text = text.replace(old, new)
+          old = '''                .map_err(sqlx_error)?;\n            }\n        }\n        let operation = load_operation_tx(&mut tx, scope_id, operation_id)\n'''
+          new = '''                .map_err(sqlx_error)?;\n        }\n        let operation = load_operation_tx(&mut tx, scope_id, operation_id)\n'''
+          if text.count(old) != 1:
+              raise SystemExit('unexpected nested outbox acknowledgement close')
+          durable.write_text(text.replace(old, new))
+          PY
+
+          ! grep -R "SqlitePoolOptions::new" \
+            codex-rs/hepta-operations/src/destination_dedupe.rs \
+            codex-rs/hepta-operations/src/durable_store.rs
+
+      - name: Format and qualify dependency closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo fmt -p codex-hepta-operations
+          cargo check -p codex-hepta-operations
+          cargo test --locked -p codex-hepta-operations --lib
+          cargo clippy --locked -p codex-hepta-operations --all-targets -- -D warnings
+          cargo clippy --locked \
+            -p codex-hepta-memory-federation \
+            -p codex-hepta-memory \
+            -p codex-hepta-memory-extension \
+            -p codex-app-server \
+            --all-targets -- -D warnings
+
+      - name: Commit source candidate and rebind read-only map input
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "hepta-memory-federation-author"
+          git config user.email "memory-federation-author@users.noreply.github.com"
+          git add \
+            codex-rs/Cargo.lock \
+            codex-rs/hepta-operations/Cargo.toml \
+            codex-rs/hepta-operations/src/lib.rs \
+            codex-rs/hepta-operations/src/sqlite_store.rs \
+            codex-rs/hepta-operations/src/destination_dedupe.rs \
+            codex-rs/hepta-operations/src/durable_store.rs
+          git commit -m "fix(memory.federation): close product SQLite lint dependency"
+          SOURCE_SHA="$(git rev-parse HEAD)"
+          git fetch --no-tags origin main
+          BASE_SHA="$(git rev-parse origin/main)"
+          python3 scripts/prepare_memory_federation_observation.py \
+            --source-sha "$SOURCE_SHA" \
+            --base-sha "$BASE_SHA" \
+            --candidate-branch "$TARGET_BRANCH" \
+            --write
+          git diff --check
+          git add docs/modules/memory.federation/IMPLEMENTATION_MAP.json
+          git commit -m "chore(memory.federation): rebind final dependency closure candidate"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
