@@ -2,7 +2,7 @@
 
 **Plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0 ([canonical plan](../../DEVELOPMENT.md), selected by `docs/CURRENT.json`).
 
-**Current implementation contracts:** [API and failure policy](API_CONTRACT.md), [operations and retention](OPERATIONS.md), [performance measurement](PERFORMANCE.md).
+**Current implementation contracts:** [API and failure policy](API_CONTRACT.md), [operations and retention](OPERATIONS.md), [performance measurement](PERFORMANCE.md), [architecture and traceability](ARCHITECTURE.md), and [independent acceptance](ACCEPTANCE.md).
 
 **Module:** `prompt.registry`
 
@@ -130,7 +130,7 @@ Migrations are deterministic and checksum-bound. Store open verifies required sc
 
 Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
 
-### Native storage V4: immutable payload extents and complete semantic metadata
+### V4 semantic core with V4/V5 payload envelope
 
 `DurablePromptRegistry` publishes strict storage V4 through the existing single writer.
 `registry.json` contains the V4 semantic metadata image, including relations, plus bounded payload
@@ -230,7 +230,7 @@ For `prompt.registry`, this document grants no runtime, production, model, provi
 
 #### `PIM-0-PROMPT-INTERVENTION-CONTRACTS`
 
-- State: `planned`; priority: `1`; parallel class: `contract_first_parallel`.
+- State: `source_implemented_qualification_pending`; priority: `1`; parallel class: `contract_first_parallel`.
 - Owner/deputy: `intelligence-platform` / `cognitive-platform`.
 - Allowed write paths:
 - `codex-rs/hepta-prompt-registry/**`
@@ -262,7 +262,7 @@ For `prompt.registry`, this document grants no runtime, production, model, provi
 
 #### `PIM-1-PROMPT-FACTOR-REGISTRY`
 
-- State: `planned`; priority: `1`; parallel class: `contract_coordinated`.
+- State: `source_implemented_qualification_pending`; priority: `1`; parallel class: `contract_coordinated`.
 - Owner/deputy: `intelligence-platform` / `cognitive-platform`.
 - Allowed write paths:
 - `codex-rs/hepta-prompt-registry/**`
@@ -292,7 +292,7 @@ For `prompt.registry`, this document grants no runtime, production, model, provi
 
 #### `PIM-3-FACTOR-EVOLUTION`
 
-- State: `planned`; priority: `3`; parallel class: `contract_coordinated`.
+- State: `source_implemented_qualification_pending`; priority: `3`; parallel class: `contract_coordinated`.
 - Owner/deputy: `intelligence-platform` / `cognitive-platform`.
 - Allowed write paths:
 - `codex-rs/hepta-prompt-registry/**`

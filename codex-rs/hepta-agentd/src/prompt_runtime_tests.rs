@@ -34,6 +34,14 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
+
+fn test_nonce(label: &str) -> [u8; 32] {
+    let value = Digest32::of_bytes(
+        format!("hepta.prompt-registry.test-nonce.v1:{label}").as_bytes(),
+    );
+    *value.as_array()
+}
+
 fn attachment() -> PromptRuntimeAttachmentV1 {
     PromptRuntimeAttachmentV1::new(
         id("compilation:agentd-prompt"),
@@ -521,7 +529,7 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
         source: FactorSource::GovernedInternal,
         lifecycle: Lifecycle::Draft,
     };
-    let signing_key = SigningKey::from_bytes(&[61; 32]);
+    let signing_key = SigningKey::from_bytes(&test_nonce("agentd-prompt-signing-key"));
     let authority = FinalUseAuthority::open_state_dir(
         &authority_root,
         "review-authority:agentd-prompt".to_owned(),
@@ -548,7 +556,7 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
         signer_id: "review-authority:agentd-prompt".to_owned(),
         authority_epoch: 1,
         grant_id: "grant:agentd-prompt-admission".to_owned(),
-        nonce: [62; 32],
+        nonce: test_nonce("agentd-prompt-admission"),
         binding: admission_binding,
         not_before_unix_ms: wall_now.saturating_sub(1_000),
         expires_at_unix_ms: wall_now + 30_000,
@@ -630,7 +638,7 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
             signer_id: "review-authority:agentd-prompt".to_owned(),
             authority_epoch: 1,
             grant_id: "grant:agentd-prompt-realization".to_owned(),
-            nonce: [63; 32],
+            nonce: test_nonce("agentd-prompt-realization"),
             binding: realization_binding,
             not_before_unix_ms: wall_now.saturating_sub(1_000),
             expires_at_unix_ms: wall_now + 30_000,
@@ -777,7 +785,7 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
             signer_id: "review-authority:agentd-prompt".to_owned(),
             authority_epoch: 1,
             grant_id: "grant:agentd-prompt-revoke".to_owned(),
-            nonce: [64; 32],
+            nonce: test_nonce("agentd-prompt-revoke"),
             binding,
             not_before_unix_ms: wall_now.saturating_sub(1000),
             expires_at_unix_ms: wall_now + 30_000,

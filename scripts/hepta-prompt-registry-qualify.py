@@ -26,6 +26,20 @@ def git(*args: str) -> str:
     return subprocess.check_output(["git", *args], cwd=ROOT, text=True).strip()
 
 
+def file_sha256(value: Path) -> str:
+    return hashlib.sha256(value.read_bytes()).hexdigest()
+
+
+def rust_target_triple() -> str:
+    output = subprocess.check_output(["rustc", "--version", "--verbose"], text=True)
+    for line in output.splitlines():
+        if line.startswith("host: "):
+            target = line.removeprefix("host: ").strip()
+            if target:
+                return target
+    raise ValueError("rustc did not report a host target triple")
+
+
 def profile_rows(text: str) -> list[dict]:
     rows = []
     for line in text.splitlines():
@@ -106,13 +120,30 @@ def main() -> None:
     if args.lane == "base-merge":
         for ancestor in [base, source]:
             subprocess.run(["git", "merge-base", "--is-ancestor", ancestor, tested], cwd=ROOT, check=True)
+    workflow_sha = os.environ.get("PROMPT_REGISTRY_WORKFLOW_SHA", source)
+    workflow_ref = os.environ.get("PROMPT_REGISTRY_WORKFLOW_REF", "local/source-bound")
+    if not re.fullmatch(r"[a-f0-9]{40}", workflow_sha):
+        raise SystemExit("invalid qualification workflow SHA")
+    target_triple = rust_target_triple()
     receipt = {
         "schema": "hepta.prompt-registry.qualification-receipt.v2",
         "profile": args.profile, "lane": args.lane,
         "sourceSha": source, "baseSha": base, "testedSha": tested,
         "testedTree": git("rev-parse", "HEAD^{tree}"),
         "runId": os.environ.get("GITHUB_RUN_ID"), "runAttempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
-        "runner": {"system": platform.platform(), "machine": platform.machine()},
+        "workflowSha": workflow_sha,
+        "workflowRef": workflow_ref,
+        "dependencyLockSha256": file_sha256(CARGO / "Cargo.lock"),
+        "targetTriple": target_triple,
+        "runner": {
+            "system": platform.platform(),
+            "machine": platform.machine(),
+            "name": os.environ.get("RUNNER_NAME", "local"),
+            "os": os.environ.get("RUNNER_OS", platform.system()),
+            "arch": os.environ.get("RUNNER_ARCH", platform.machine()),
+            "environment": os.environ.get("RUNNER_ENVIRONMENT", "local"),
+            "targetTriple": target_triple,
+        },
         "checks": [], "allRequiredChecksPassed": False, "qualified": False,
         "productionReady": False, "productActivated": False, "accepted": False, "released": False,
         "sourceFiles": {},

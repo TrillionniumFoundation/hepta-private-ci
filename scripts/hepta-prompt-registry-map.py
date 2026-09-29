@@ -13,9 +13,11 @@ import json
 from pathlib import Path
 import re
 import subprocess
+import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 MAP = ROOT / "docs/modules/prompt.registry/IMPLEMENTATION_MAP.json"
+STATUS_TOOL = ROOT / "scripts/hepta-prompt-registry-status.py"
 CORE = "codex-rs/hepta-prompt-registry"
 DURABLE = CORE + "/src/durable.rs"
 MAINTENANCE = CORE + "/src/durable_maintenance.rs"
@@ -51,10 +53,16 @@ INPUTS = [
     "scripts/hepta-prompt-registry-qualify.py",
     "scripts/hepta-prompt-registry-harness-tests.py",
     "scripts/hepta-prompt-registry-aggregate.py",
+    "scripts/hepta-prompt-registry-status.py",
+    "scripts/hepta-prompt-registry-accept.py",
+    ".github/workflows/hepta-prompt-registry-qualification.yml",
+    ".github/workflows/hepta-prompt-registry-acceptance.yml",
     "docs/modules/prompt.registry/TECHNICAL.md",
     "docs/modules/prompt.registry/API_CONTRACT.md",
     "docs/modules/prompt.registry/OPERATIONS.md",
     "docs/modules/prompt.registry/PERFORMANCE.md",
+    "docs/modules/prompt.registry/ARCHITECTURE.md",
+    "docs/modules/prompt.registry/ACCEPTANCE.md",
 ]
 
 
@@ -189,7 +197,8 @@ def main() -> None:
         observation = {"commit": git("rev-parse", "HEAD"), "tree": git("rev-parse", "HEAD^{tree}")}
         row = build(observation)
         MAP.write_text(json.dumps(row, sort_keys=True, indent=2) + "\n", encoding="utf-8")
-        print("generated prompt.registry map; commit this map before qualification")
+        subprocess.run([sys.executable, str(STATUS_TOOL), "--write"], cwd=ROOT, check=True)
+        print("generated prompt.registry map and status; commit both before qualification")
     else:
         row = json.loads(MAP.read_text(encoding="utf-8"))
         observation = row.get("observedAtHead")
@@ -197,6 +206,7 @@ def main() -> None:
             raise ValueError("missing current source observation")
         if row != build(observation):
             raise ValueError("stale/incomplete prompt.registry implementation map")
+        subprocess.run([sys.executable, str(STATUS_TOOL), "--check"], cwd=ROOT, check=True)
         print(f"prompt.registry map verified read-only: {len(row['operations'])} operations, {len(row['exactSourceEvidence']['entries'])} source blobs")
 
 

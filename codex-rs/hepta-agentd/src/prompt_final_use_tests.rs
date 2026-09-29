@@ -24,6 +24,14 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
+
+fn test_nonce(label: &str) -> [u8; 32] {
+    let value = Digest32::of_bytes(
+        format!("hepta.prompt-registry.test-nonce.v1:{label}").as_bytes(),
+    );
+    *value.as_array()
+}
+
 fn sign(grant: FinalUseGrant, key: &SigningKey) -> SignedFinalUseGrant {
     let bytes = grant
         .signing_bytes()
@@ -38,7 +46,7 @@ fn fixture(directory: &Path) -> (DurablePromptRegistry, PromptFinalUseLeaseV1) {
     let mut registry = DurablePromptRegistry::open_state_dir(directory, 64)
         .unwrap_or_else(|error| panic!("registry: {error}"));
     let authority_root = tempfile::tempdir().unwrap_or_else(|error| panic!("tempdir: {error}"));
-    let key = SigningKey::from_bytes(&[79; 32]);
+    let key = SigningKey::from_bytes(&test_nonce("final-use-signing-key"));
     let authority = FinalUseAuthority::open_state_dir(
         &authority_root.path().join("authority"),
         "review-authority:final-use".to_owned(),
@@ -82,7 +90,7 @@ fn fixture(directory: &Path) -> (DurablePromptRegistry, PromptFinalUseLeaseV1) {
             signer_id: "review-authority:final-use".to_owned(),
             authority_epoch: 1,
             grant_id: "grant:admission".to_owned(),
-            nonce: [80; 32],
+            nonce: test_nonce("final-use-admission"),
             binding,
             not_before_unix_ms: now.saturating_sub(1000),
             expires_at_unix_ms: now + 120_000,
@@ -134,7 +142,7 @@ fn fixture(directory: &Path) -> (DurablePromptRegistry, PromptFinalUseLeaseV1) {
             signer_id: "review-authority:final-use".to_owned(),
             authority_epoch: 1,
             grant_id: "grant:payload".to_owned(),
-            nonce: [81; 32],
+            nonce: test_nonce("final-use-realization"),
             binding,
             not_before_unix_ms: now.saturating_sub(1000),
             expires_at_unix_ms: now + 120_000,
@@ -180,7 +188,7 @@ fn fixture(directory: &Path) -> (DurablePromptRegistry, PromptFinalUseLeaseV1) {
 
 fn revoke(registry: &mut DurablePromptRegistry, lease: &PromptFinalUseLeaseV1) {
     let temporary = tempfile::tempdir().unwrap_or_else(|error| panic!("tempdir: {error}"));
-    let key = SigningKey::from_bytes(&[82; 32]);
+    let key = SigningKey::from_bytes(&test_nonce("final-use-revoke-signing-key"));
     let authority = FinalUseAuthority::open_state_dir(
         &temporary.path().join("authority"),
         "revoke-authority:final-use".to_owned(),
@@ -211,7 +219,7 @@ fn revoke(registry: &mut DurablePromptRegistry, lease: &PromptFinalUseLeaseV1) {
             signer_id: "revoke-authority:final-use".to_owned(),
             authority_epoch: 1,
             grant_id: "grant:revoke".to_owned(),
-            nonce: [83; 32],
+            nonce: test_nonce("final-use-revoke"),
             binding,
             not_before_unix_ms: cutoff.saturating_sub(1000),
             expires_at_unix_ms: cutoff + 120_000,

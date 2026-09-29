@@ -32,6 +32,14 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
+
+fn test_nonce(label: &str) -> [u8; 32] {
+    let value = Digest32::of_bytes(
+        format!("hepta.prompt-registry.test-nonce.v1:{label}").as_bytes(),
+    );
+    *value.as_array()
+}
+
 fn now_unix_ms() -> u64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -44,7 +52,7 @@ fn register_admitted(
     authority: &FinalUseAuthority,
     key: &SigningKey,
     factor_id: &str,
-    nonce_byte: u8,
+    nonce_label: &str,
 ) {
     let factor = PromptFactor {
         factor_id: id(factor_id),
@@ -71,7 +79,7 @@ fn register_admitted(
         signer_id: "security-owner:durable-v4-test".to_owned(),
         authority_epoch: 1,
         grant_id: format!("grant:{factor_id}"),
-        nonce: [nonce_byte; 32],
+        nonce: test_nonce(nonce_label),
         binding,
         not_before_unix_ms: now.saturating_sub(1_000),
         expires_at_unix_ms: now + 60_000,
@@ -93,7 +101,7 @@ fn register_admitted(
 }
 
 fn populated_registry(root: &std::path::Path) -> Digest32 {
-    let key = SigningKey::from_bytes(&[81; 32]);
+    let key = SigningKey::from_bytes(&test_nonce("durable-relations-signing-key"));
     let authority = FinalUseAuthority::open_state_dir(
         &root.join("authority"),
         "security-owner:durable-v4-test".to_owned(),
@@ -108,8 +116,20 @@ fn populated_registry(root: &std::path::Path) -> Digest32 {
     let registry_path = root.join("registry");
     let mut registry = DurablePromptRegistry::open_state_dir(&registry_path, 64)
         .unwrap_or_else(|error| panic!("registry owner: {error}"));
-    register_admitted(&mut registry, &authority, &key, "factor:left", 1);
-    register_admitted(&mut registry, &authority, &key, "factor:right", 2);
+    register_admitted(
+        &mut registry,
+        &authority,
+        &key,
+        "factor:left",
+        "factor-left-admission",
+    );
+    register_admitted(
+        &mut registry,
+        &authority,
+        &key,
+        "factor:right",
+        "factor-right-admission",
+    );
     registry
         .register_factor_relation(PromptFactorRelation {
             relation_id: id("relation:left-right-conflict"),
