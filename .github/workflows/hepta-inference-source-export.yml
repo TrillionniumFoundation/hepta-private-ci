@@ -1,0 +1,68 @@
+name: Hepta inference exact-source export
+
+# The export is intentionally read-only; this comment also provides a reviewed
+# push trigger for exact-source remediation work on the active convergence line.
+on:
+  push:
+    branches:
+      - codex/inference-control-v2-closure-20260927
+    paths:
+      - '.github/workflows/hepta-inference-source-export.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-inference-source-export-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  export:
+    name: Export exact inference source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind exact checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+
+      - name: Create exact source archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/hepta-inference-source"
+          mkdir -p "$out"
+          git archive --format=tar.gz --output="$out/source.tar.gz" "$GITHUB_SHA" \
+            .github/workflows \
+            codex-rs/Cargo.toml \
+            codex-rs/Cargo.lock \
+            codex-rs/hepta-infer-core \
+            codex-rs/hepta-infer-worker-host \
+            codex-rs/hepta-types \
+            docs/modules \
+            docs/delivery \
+            docs/readiness \
+            qualification/lane-b \
+            qualification/module-execution-dossiers/detail \
+            scripts
+          printf '%s\n' "$GITHUB_SHA" > "$out/source-sha.txt"
+          git rev-parse "$GITHUB_SHA^{tree}" > "$out/source-tree.txt"
+          sha256sum "$out/source.tar.gz" > "$out/source.tar.gz.sha256"
+
+      - name: Retain exact source archive
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-inference-source-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-inference-source/*
+          if-no-files-found: error
+          retention-days: 3

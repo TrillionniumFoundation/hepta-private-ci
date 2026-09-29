@@ -12,6 +12,7 @@ use std::time::Duration;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use crate::control_port::NativeControlPort;
 use codex_app_server_client::AppServerEvent;
 use codex_app_server_client::RemoteAppServerClient;
 use codex_app_server_client::RemoteAppServerConnectArgs;
@@ -57,7 +58,6 @@ use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::EnteredUseToken;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::VerifiedUseToken;
-use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 pub use codex_hepta_infer_core::durable_control::native::NativeBoundaryStatus;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
 use codex_hepta_infer_core::durable_control::native::NativeDispatchRejection;
@@ -416,7 +416,7 @@ impl AppServerModelDriver {
     /// must never be automatically replayed as a fresh request.
     async fn run_once(
         &self,
-        control: &mut DurableInferenceControl,
+        control: &mut dyn NativeControlPort,
         request_id: &str,
         prompt: String,
         context_query: Option<String>,
@@ -567,6 +567,7 @@ impl AppServerModelDriver {
             .map_err(|_| "native execution timeout does not fit u64 milliseconds")?;
         let source_admission_digest: Digest32 = control
             .native_record(request_id)
+            .await?
             .ok_or("missing durable native admission")?
             .request
             .payload_digest
@@ -616,30 +617,32 @@ impl AppServerModelDriver {
             Digest32::from_array(verified_use.claimed_revocation_head_sha256()).to_string();
         let authority_witness = Digest32::from_array(verified_use.witness_sha256()).to_string();
 
-        let (_, pre_effect_abort) = control.dispatch_native_with_pre_effect_abort(
-            request_id,
-            NativeDispatch {
-                thread_id: started.thread.id.clone(),
-                model_provider: started.model_provider.clone(),
-                context_digest: control::digest(&serde_json::to_vec(
-                    &turn_params.additional_context,
-                )?),
-                owner_context_digest,
-                codex_payload_digest: Some(payload_digest.to_string()),
-                codex_request_digest: Some(request_receipt.request_digest.to_string()),
-                app_server_version: Some(app_server_version.clone()),
-                protocol_id: Some(APP_SERVER_V2_PROTOCOL_ID.to_string()),
-                codex_source_admission_digest: Some(source_admission_digest.to_string()),
-                codex_home_digest: Some(codex_home_digest.to_string()),
-                codex_connection_id: Some(connection_id),
-                codex_session_id: Some(started.thread.session_id.clone()),
-                codex_deadline_ms: Some(adapter_intent.deadline_ms),
-                codex_authority_epoch: Some(authority_epoch),
-                codex_revocation_revision: Some(revocation_revision),
-                codex_revocation_head_sha256: Some(revocation_head_digest.clone()),
-                codex_authority_witness_sha256: Some(authority_witness.clone()),
-            },
-        )?;
+        let (_, pre_effect_abort) = control
+            .dispatch_native_with_pre_effect_abort(
+                request_id,
+                NativeDispatch {
+                    thread_id: started.thread.id.clone(),
+                    model_provider: started.model_provider.clone(),
+                    context_digest: control::digest(&serde_json::to_vec(
+                        &turn_params.additional_context,
+                    )?),
+                    owner_context_digest,
+                    codex_payload_digest: Some(payload_digest.to_string()),
+                    codex_request_digest: Some(request_receipt.request_digest.to_string()),
+                    app_server_version: Some(app_server_version.clone()),
+                    protocol_id: Some(APP_SERVER_V2_PROTOCOL_ID.to_string()),
+                    codex_source_admission_digest: Some(source_admission_digest.to_string()),
+                    codex_home_digest: Some(codex_home_digest.to_string()),
+                    codex_connection_id: Some(connection_id),
+                    codex_session_id: Some(started.thread.session_id.clone()),
+                    codex_deadline_ms: Some(adapter_intent.deadline_ms),
+                    codex_authority_epoch: Some(authority_epoch),
+                    codex_revocation_revision: Some(revocation_revision),
+                    codex_revocation_head_sha256: Some(revocation_head_digest.clone()),
+                    codex_authority_witness_sha256: Some(authority_witness.clone()),
+                },
+            )
+            .await?;
         verify_persisted_dispatch_binding(
             control,
             request_id,
@@ -655,7 +658,8 @@ impl AppServerModelDriver {
             &revocation_head_digest,
             &authority_witness,
             &app_server_version,
-        )?;
+        )
+        .await?;
 
         if let Some(binding) = intelligence {
             let dispatched = match owner
@@ -670,7 +674,9 @@ impl AppServerModelDriver {
                     .chars()
                     .take(1024)
                     .collect();
-                    control.abort_native_before_effect(pre_effect_abort, reason.clone())?;
+                    control
+                        .abort_native_before_effect(pre_effect_abort, reason.clone())
+                        .await?;
                     let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                     return Err(reason.into());
                 }
@@ -687,7 +693,9 @@ impl AppServerModelDriver {
             {
                 let reason =
                     "Agentd did not newly commit this exact intelligence dispatch".to_string();
-                control.abort_native_before_effect(pre_effect_abort, reason.clone())?;
+                control
+                    .abort_native_before_effect(pre_effect_abort, reason.clone())
+                    .await?;
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                 return Err(reason.into());
             }
@@ -698,7 +706,9 @@ impl AppServerModelDriver {
             Ok(health) => health,
             Err(error) => {
                 let reason = format!("owner health failed before final-use entry: {error}");
-                control.abort_native_before_effect(pre_effect_abort, reason.clone())?;
+                control
+                    .abort_native_before_effect(pre_effect_abort, reason.clone())
+                    .await?;
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                 return Err(reason.into());
             }
@@ -707,7 +717,9 @@ impl AppServerModelDriver {
             Ok(ingress) => ingress,
             Err(error) => {
                 let reason = format!("owner ingress failed before final-use entry: {error}");
-                control.abort_native_before_effect(pre_effect_abort, reason.clone())?;
+                control
+                    .abort_native_before_effect(pre_effect_abort, reason.clone())
+                    .await?;
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                 return Err(reason.into());
             }
@@ -721,7 +733,9 @@ impl AppServerModelDriver {
             adapter_intent.deadline_ms,
         ) {
             let reason: String = error.to_string().chars().take(1024).collect();
-            control.abort_native_before_effect(pre_effect_abort, reason.clone())?;
+            control
+                .abort_native_before_effect(pre_effect_abort, reason.clone())
+                .await?;
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err(reason.into());
         }
@@ -738,7 +752,9 @@ impl AppServerModelDriver {
                             .chars()
                             .take(1024)
                             .collect();
-                    let stopped = control.abort_native_before_effect(pre_effect_abort, reason);
+                    let stopped = control
+                        .abort_native_before_effect(pre_effect_abort, reason)
+                        .await;
                     let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                     stopped?;
                     return Err(error.into());
@@ -748,10 +764,13 @@ impl AppServerModelDriver {
                 || revalidated.read_digest != snapshot.read_digest
                 || usize::from(revalidated.verified_item_count) != snapshot.items.len()
             {
-                let stopped = control.abort_native_before_effect(
-                    pre_effect_abort,
-                    "cognitive final-use revalidation returned a mismatched receipt".to_string(),
-                );
+                let stopped = control
+                    .abort_native_before_effect(
+                        pre_effect_abort,
+                        "cognitive final-use revalidation returned a mismatched receipt"
+                            .to_string(),
+                    )
+                    .await;
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                 stopped?;
                 return Err(
@@ -760,10 +779,12 @@ impl AppServerModelDriver {
             }
         }
         if cancellation.is_cancelled() {
-            let stopped = control.abort_native_before_effect(
-                pre_effect_abort,
-                "cancelled before model dispatch".to_string(),
-            );
+            let stopped = control
+                .abort_native_before_effect(
+                    pre_effect_abort,
+                    "cancelled before model dispatch".to_string(),
+                )
+                .await;
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             stopped?;
             return Err("cancelled before model dispatch".into());
@@ -774,13 +795,17 @@ impl AppServerModelDriver {
             Ok(entered) if entered.matches(&authority_binding) => entered,
             Ok(_) => {
                 let reason = "kernel.authority final-use binding mismatch at entry".to_string();
-                control.abort_native_before_effect(pre_effect_abort, reason.clone())?;
+                control
+                    .abort_native_before_effect(pre_effect_abort, reason.clone())
+                    .await?;
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                 return Err(reason.into());
             }
             Err(error) => {
                 let reason = format!("kernel.authority final-use entry denied: {error}");
-                control.abort_native_before_effect(pre_effect_abort, reason.clone())?;
+                control
+                    .abort_native_before_effect(pre_effect_abort, reason.clone())
+                    .await?;
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                 return Err(reason.into());
             }
@@ -810,15 +835,17 @@ impl AppServerModelDriver {
                         let response_digest = receipt
                             .response_digest
                             .ok_or("server rejection receipt omitted response digest")?;
-                        control.reject_native_before_start(
-                            request_id,
-                            NativeDispatchRejection {
-                                status,
-                                reason: reason.clone(),
-                                response_digest: response_digest.to_string(),
-                                retry_safe_before_admission,
-                            },
-                        )?;
+                        control
+                            .reject_native_before_start(
+                                request_id,
+                                NativeDispatchRejection {
+                                    status,
+                                    reason: reason.clone(),
+                                    response_digest: response_digest.to_string(),
+                                    retry_safe_before_admission,
+                                },
+                            )
+                            .await?;
                         let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                         return Err(format!("turn/start rejected by App Server: {reason}").into());
                     }
@@ -884,7 +911,10 @@ impl AppServerModelDriver {
             stop_reason: None,
             codex_terminal_correlation_digest: None,
         };
-        if let Err(error) = control.native_started(request_id, output.turn_id.clone()) {
+        if let Err(error) = control
+            .native_started(request_id, output.turn_id.clone())
+            .await
+        {
             if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
                 let _ = owner
                     .run_cancel(
@@ -933,11 +963,12 @@ impl AppServerModelDriver {
                 if matches!(output.owner_authority, NativeOwnerAuthority::Lost { .. }) {
                     control
                         .settle_native(request_id, output.clone())
+                        .await
                         .map(|_| ())
                 } else {
                     Ok(())
                 };
-            let cancel_recorded = control.cancel_native(request_id);
+            let cancel_recorded = control.cancel_native(request_id).await;
             interrupt(&mut client, &output).await;
             let grace = CancellationToken::new();
             let _ = self
@@ -1146,8 +1177,8 @@ async fn send_authorized_turn_start(
         .await
 }
 
-fn verify_persisted_dispatch_binding(
-    control: &DurableInferenceControl,
+async fn verify_persisted_dispatch_binding(
+    control: &dyn NativeControlPort,
     request_id: &str,
     payload_digest: Digest32,
     request_digest: Digest32,
@@ -1162,9 +1193,13 @@ fn verify_persisted_dispatch_binding(
     authority_witness: &str,
     app_server_version: &str,
 ) -> Result<()> {
-    let dispatch = control
+    let record = control
         .native_record(request_id)
-        .and_then(|record| record.dispatch.as_ref())
+        .await?
+        .ok_or("runtime.codex admission was not durably published")?;
+    let dispatch = record
+        .dispatch
+        .as_ref()
         .ok_or("runtime.codex dispatch binding was not durably published")?;
     let payload_digest = payload_digest.to_string();
     let request_digest = request_digest.to_string();

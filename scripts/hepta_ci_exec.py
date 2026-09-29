@@ -231,6 +231,9 @@ def run(
         if record["lane"] == "source-head":
             if record["tested_sha"] != record["source_sha"]:
                 raise ValueError("source lane does not test the source SHA")
+        elif record["lane"] == "native-host":
+            if record["tested_sha"] != record["source_sha"]:
+                raise ValueError("native-host lane must test the exact source SHA")
         elif record["lane"] == "base-merge":
             if re.fullmatch(r"[0-9a-f]{40}", record["base_sha"]) is None:
                 raise ValueError("invalid base_sha")
@@ -248,7 +251,9 @@ def run(
                 )
             record["recomputed_merge_tree"] = expected_tree
         else:
-            raise ValueError("an explicit source-head or base-merge lane is required")
+            raise ValueError(
+                "an explicit source-head, base-merge or native-host lane is required"
+            )
         log = output.with_name(output.name + "." + uuid.uuid4().hex + ".log")
         record["log_file"] = log.name
         execution = execute_logged(command, log, timeout_seconds=timeout_seconds)

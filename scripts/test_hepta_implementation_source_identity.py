@@ -185,6 +185,25 @@ class SourceIdentityTests(unittest.TestCase):
         self.rows["alpha"]["sourceIdentityPolicy"] = "permissive"
         self.rejects("unknown source identity policy")
 
+    def test_exact_ci_receipt_policy_validates_current_paths_without_self_attestation(self):
+        row = self.rows["alpha"]
+        row["sourceIdentityPolicy"] = "exact_ci_receipt_v1"
+        row.pop("observedAtHead")
+        row.pop("observedSourcePaths")
+        self.write("src/alpha/lib.rs", "pub fn changed_for_ci() {}\n")
+        self.commit("current exact CI candidate")
+        result = self.verify(strict=True)
+        self.assertEqual(result["exactCiReceiptMaps"], 1)
+        self.assertFalse(result["productionImplementationProved"])
+
+    def test_exact_ci_receipt_policy_rejects_self_asserted_execution(self):
+        row = self.rows["alpha"]
+        row["sourceIdentityPolicy"] = "exact_ci_receipt_v1"
+        row.pop("observedAtHead")
+        row.pop("observedSourcePaths")
+        row["claimBoundary"]["productExecutionProved"] = True
+        self.rejects("cannot self-assert execution or release claims")
+
     def test_old_candidate_without_observation_fails(self):
         for row in self.rows.values():
             row.pop("observedAtHead")

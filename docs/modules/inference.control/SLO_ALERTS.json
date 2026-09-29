@@ -1,0 +1,132 @@
+{
+  "schema": "hepta.inference-control-slo-alerts.v1",
+  "schemaVersion": 1,
+  "module": "inference.control",
+  "status": "operator_policy_not_activation_authority",
+  "metricSource": "DurableInferenceControl::native_metrics",
+  "journalMaximumBytes": 67108864,
+  "objectives": [
+    {
+      "id": "journal-headroom",
+      "objective": "active journal remains below 70 percent of its hard byte bound after maintenance",
+      "window": "continuous",
+      "measurement": "journal_bytes / 67108864",
+      "target": "< 0.70",
+      "warning": ">= 0.70",
+      "critical": ">= 0.85",
+      "owner": "inference-platform"
+    },
+    {
+      "id": "indeterminate-resolution",
+      "objective": "every indeterminate execution receives signed reconciliation or audited retirement within 30 minutes",
+      "window": "per_execution",
+      "measurement": "durable command/evidence timeline correlated by request_id",
+      "target": "<= 30m",
+      "critical": "> 30m",
+      "owner": "runtime-control"
+    },
+    {
+      "id": "capacity-not-exhausted-by-unknowns",
+      "objective": "indeterminate executions do not consume every configured in-flight slot",
+      "window": "continuous",
+      "measurement": "indeterminate / configured_maximum_in_flight",
+      "target": "< 1.0",
+      "critical": ">= 1.0",
+      "owner": "runtime-control"
+    },
+    {
+      "id": "expired-output-deletion",
+      "objective": "every expired encrypted output reference is confirmed deleted by the output vault within one hour",
+      "window": "per_reference",
+      "measurement": "compact receipt plus vault deletion evidence",
+      "target": "<= 1h",
+      "warning": "> 30m",
+      "critical": "> 1h",
+      "owner": "data-authority"
+    },
+    {
+      "id": "checkpoint-success",
+      "objective": "checkpoint/archive maintenance succeeds without two consecutive failures",
+      "window": "rolling_30d",
+      "measurement": "maintenance receipts and command records",
+      "target": ">= 99.9%",
+      "critical": "two consecutive failures",
+      "owner": "inference-platform"
+    },
+    {
+      "id": "plaintext-non-persistence",
+      "objective": "no production exact-plan journal, checkpoint, command record, or log contains plaintext model output",
+      "window": "continuous",
+      "measurement": "protected-output tests, security scans, and incident observation",
+      "target": "zero occurrences",
+      "critical": "> 0",
+      "owner": "security"
+    }
+  ],
+  "alerts": [
+    {
+      "id": "InferenceJournalHeadroomWarning",
+      "severity": "P2",
+      "condition": "journal_bytes >= 46976205",
+      "for": "5m",
+      "runbook": "OPERATIONS.md#5-crash-safe-checkpoint-and-archive-maintenance"
+    },
+    {
+      "id": "InferenceJournalHeadroomCritical",
+      "severity": "P1",
+      "condition": "journal_bytes >= 57042534 after a successful maintenance generation",
+      "for": "0m",
+      "runbook": "OPERATIONS.md#5-crash-safe-checkpoint-and-archive-maintenance"
+    },
+    {
+      "id": "InferenceIndeterminateCapacityExhausted",
+      "severity": "P1",
+      "condition": "indeterminate >= configured_maximum_in_flight",
+      "for": "0m",
+      "runbook": "OPERATIONS.md#6-reconcile-an-indeterminate-execution"
+    },
+    {
+      "id": "InferenceIndeterminateStale",
+      "severity": "P1",
+      "condition": "oldest unresolved indeterminate age > 30m according to the durable service timeline",
+      "for": "0m",
+      "runbook": "OPERATIONS.md#6-reconcile-an-indeterminate-execution"
+    },
+    {
+      "id": "InferenceExpiredOutputReference",
+      "severity": "P2",
+      "condition": "expired encrypted reference lacks vault deletion evidence for > 1h",
+      "for": "0m",
+      "runbook": "OPERATIONS.md#expired-encrypted-output-references"
+    },
+    {
+      "id": "InferenceMaintenanceRepeatedFailure",
+      "severity": "P2",
+      "condition": "two consecutive checkpoint/archive maintenance attempts fail",
+      "for": "0m",
+      "runbook": "OPERATIONS.md#10-corruption-or-permission-failure"
+    },
+    {
+      "id": "InferenceAuthorityAuthenticationBurst",
+      "severity": "P2",
+      "condition": "final-use, trust-store, reconciliation, retirement, or output-vault authentication failures > 5 per owner in 10m",
+      "for": "0m",
+      "runbook": "OPERATIONS.md#8-key-rotation-and-revocation"
+    },
+    {
+      "id": "InferencePlaintextPersistence",
+      "severity": "security_incident",
+      "condition": "plaintext model output observed in durable or qualification artifacts",
+      "for": "0m",
+      "runbook": "OPERATIONS.md#10-corruption-or-permission-failure"
+    }
+  ],
+  "forbiddenAutomaticActions": [
+    "force release an indeterminate reservation",
+    "retry a recovered external effect",
+    "truncate or edit a journal",
+    "downgrade an output data policy",
+    "delete an encrypted object without retaining deletion evidence",
+    "self-assert independent acceptance activation promotion or release"
+  ]
+}

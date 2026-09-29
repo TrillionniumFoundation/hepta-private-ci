@@ -1,0 +1,135 @@
+name: Hepta inference independent merge-tree acceptance
+
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-infer-core/**'
+      - 'codex-rs/hepta-infer-worker-host/**'
+      - 'codex-rs/hepta-types/**'
+      - 'codex-rs/Cargo.*'
+      - 'docs/modules/inference.control/**'
+      - 'scripts/*inference*'
+      - 'scripts/hepta-lane-b-truth.py'
+      - '.github/workflows/hepta-inference-*.yml'
+  workflow_dispatch:
+    inputs:
+      pull_request_number:
+        description: PR whose exact source and current-main merge artifacts are checked
+        required: true
+        type: string
+      execution_run_id:
+        description: Completed read-only matrix run; never a queued or skipped run
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+
+concurrency:
+  group: inference-artifact-acceptance-${{ github.event.pull_request.number || inputs.pull_request_number }}
+  cancel-in-progress: true
+
+jobs:
+  independent-merge-tree:
+    name: Independent inference merge-tree technical acceptance
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      # No checkout, candidate import, Cargo invocation, write credential or
+      # shared cache is present in this job. Native execution belongs to the
+      # existing untrusted read-only matrix, not to this artifact consumer.
+      - name: Resolve trusted base and completed immutable execution artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_REF: ${{ github.ref }}
+          EVENT_SOURCE: ${{ github.event.pull_request.head.sha }}
+          EVENT_PR: ${{ github.event.pull_request.number }}
+          INPUT_PR: ${{ inputs.pull_request_number }}
+          INPUT_RUN: ${{ inputs.execution_run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if test "$EVENT_NAME" = workflow_dispatch; then
+            test "$EVENT_REF" = refs/heads/main
+          fi
+          pr="${EVENT_PR:-${INPUT_PR:-}}"
+          [[ "$pr" =~ ^[1-9][0-9]*$ ]]
+          observation="$(gh api "repos/$REPO/pulls/$pr")"
+          source="$(jq -er '.head.sha' <<<"$observation")"
+          test "$(jq -er '.base.ref' <<<"$observation")" = main
+          test "$(jq -er '.head.repo.full_name' <<<"$observation")" = "$REPO"
+          if test "$EVENT_NAME" = pull_request; then test "$source" = "$EVENT_SOURCE"; fi
+          base="$(gh api "repos/$REPO/git/ref/heads/main" --jq .object.sha)"
+          merge="$(gh api "repos/$REPO/git/ref/pull/$pr/merge" --jq .object.sha)"
+          for value in "$source" "$base" "$merge"; do [[ "$value" =~ ^[0-9a-f]{40}$ ]]; done
+          merge_object="$(gh api "repos/$REPO/git/commits/$merge")"
+          test "$(jq -c '[.parents[].sha]' <<<"$merge_object")" = "[\"$base\",\"$source\"]"
+          merge_tree="$(jq -er '.tree.sha' <<<"$merge_object")"
+          source_tree="$(gh api "repos/$REPO/git/commits/$source" --jq .tree.sha)"
+          for value in "$source_tree" "$merge_tree"; do [[ "$value" =~ ^[0-9a-f]{40}$ ]]; done
+          run="${INPUT_RUN:-}"
+          if test -z "$run"; then
+            run="$(gh api "repos/$REPO/actions/runs?head_sha=$source&event=pull_request&per_page=100" \
+              --jq '[.workflow_runs[] | select(.path == ".github/workflows/hepta-inference-readonly-matrix.yml")] | sort_by(.id) | last | .id')"
+          fi
+          [[ "$run" =~ ^[1-9][0-9]*$ ]]
+          execution="$(gh api "repos/$REPO/actions/runs/$run")"
+          test "$(jq -er '.head_sha' <<<"$execution")" = "$source"
+          test "$(jq -er '.path' <<<"$execution")" = .github/workflows/hepta-inference-readonly-matrix.yml
+          test "$(jq -er '.event' <<<"$execution")" = pull_request
+          test "$(jq -er '.status' <<<"$execution")" = completed
+          test "$(jq -er '.conclusion' <<<"$execution")" = success
+          attempt="$(jq -er '.run_attempt' <<<"$execution")"
+          [[ "$attempt" =~ ^[1-9][0-9]*$ ]]
+          work="$RUNNER_TEMP/inference-artifact-acceptance"
+          mkdir -p "$work"
+          # An uninstalled or unreviewed verifier is a hard blocker. In particular,
+          # never fall back to the candidate's copy to make the bootstrap pass.
+          gh api "repos/$REPO/contents/scripts/hepta_inference_artifact_acceptor.py?ref=$base" \
+            --jq .content | base64 --decode > "$work/trusted_acceptor.py"
+          test -s "$work/trusted_acceptor.py"
+          printf '%s\n' "$execution" > "$work/execution-api.json"
+          printf '%s\n' "$merge_object" > "$work/merge-api.json"
+          artifacts="$(gh api "repos/$REPO/actions/runs/$run/artifacts?per_page=100")"
+          printf '%s\n' "$artifacts" > "$work/artifacts-api.json"
+          for lane in source-head base-merge; do
+            name="inference-readonly-$run-$attempt-$lane"
+            selection="$(jq -ce --arg name "$name" '[.artifacts[] | select(.name == $name and .expired == false)] | if length == 1 then .[0] else error("artifact identity ambiguity") end' <<<"$artifacts")"
+            id="$(jq -er .id <<<"$selection")"
+            digest="$(jq -er .digest <<<"$selection")"
+            [[ "$id" =~ ^[1-9][0-9]*$ ]]
+            [[ "$digest" =~ ^sha256:[0-9a-f]{64}$ ]]
+            test "$(jq -er '.workflow_run.head_sha' <<<"$selection")" = "$source"
+            gh api "repos/$REPO/actions/artifacts/$id/zip" > "$work/$lane.zip"
+            tested="$source"; tree="$source_tree"
+            if test "$lane" = base-merge; then
+              tree="$merge_tree"
+              tested="$(TREE="$tree" BASE="$base" SOURCE="$source" python3 -I - <<'PY'
+          import hashlib, os
+          identity = 'Hepta Inference CI <hepta-inference-ci@users.noreply.github.com> 946684800 +0000'
+          content = (f'tree {os.environ["TREE"]}\nparent {os.environ["BASE"]}\nparent {os.environ["SOURCE"]}\nauthor {identity}\ncommitter {identity}\n\nSynthetic inference.control merge\n').encode()
+          print(hashlib.sha1(b'commit ' + str(len(content)).encode() + b'\0' + content).hexdigest())
+          PY
+              )"
+            fi
+            env -u GH_TOKEN python3 -I "$work/trusted_acceptor.py" "$work/$lane.zip" \
+              --zip-sha256 "${digest#sha256:}" --lane "$lane" --source "$source" --base "$base" \
+              --tested "$tested" --tree "$tree" --run-id "$run" --attempt "$attempt" \
+              > "$work/$lane-integrity.json"
+          done
+          # No status document, source file, ref or workflow is changed. Integrity
+          # does not authorize independent acceptance, activation or release.
+      - name: Retain integrity observations and immutable API provenance
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: inference-artifact-integrity-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/inference-artifact-acceptance/*-integrity.json
+            ${{ runner.temp }}/inference-artifact-acceptance/*-api.json
+          if-no-files-found: warn
+          retention-days: 30

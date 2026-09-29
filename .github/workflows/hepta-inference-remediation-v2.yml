@@ -1,0 +1,145 @@
+name: Hepta inference remediation v2
+
+on:
+  push:
+    branches:
+      - codex/inference-control-v2-closure-20260927
+    paths:
+      - '.github/workflows/hepta-inference-remediation-v2.yml'
+      - '.github/remediation/inference-control-remediation.patch.gz'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: hepta-inference-remediation-v2-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PATCH_PATH: .github/remediation/inference-control-remediation.patch.gz
+  PATCH_SHA256: 1b71eee4a3314fa018854907b60e9c15c2de2a2c447d54bd9786e20239a449eb
+  TEMP_WORKFLOW: .github/workflows/hepta-inference-remediation-v2.yml
+  TARGET_BRANCH: codex/inference-control-v2-closure-20260927
+  CARGO_INCREMENTAL: '0'
+  CARGO_BUILD_JOBS: '2'
+  CARGO_PROFILE_TEST_DEBUG: '0'
+  CARGO_PROFILE_DEV_DEBUG: '0'
+
+jobs:
+  qualify-and-publish:
+    name: Qualify and publish inference correctness remediation
+    runs-on: ubuntu-22.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Bind exact transport source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = 'TrillionniumFoundation/hepta-private-ci'
+          test "$GITHUB_REF_NAME" = "$TARGET_BRANCH"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          test -f "$PATCH_PATH"
+          gzip -t "$PATCH_PATH"
+          test "$(sha256sum "$PATCH_PATH" | awk '{print $1}')" = "$PATCH_SHA256"
+          mkdir -p "$RUNNER_TEMP/inference-remediation-v2/logs"
+          printf 'transport_sha=%s\ntransport_tree=%s\ntransport_parent=%s\npatch_sha256=%s\n' \
+            "$GITHUB_SHA" "$(git rev-parse HEAD^{tree})" "$(git rev-parse HEAD^)" \
+            "$PATCH_SHA256" > "$RUNNER_TEMP/inference-remediation-v2/transport.txt"
+
+      - uses: dtolnay/rust-toolchain@5d458579430fc14a04a08a1e7d3694f545e91ce6
+        with:
+          toolchain: '1.95.0'
+          components: rustfmt, clippy
+
+      - name: Apply reviewed source patch and create local candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/inference-remediation-v2"
+          gzip -dc "$PATCH_PATH" > "$evidence/remediation.patch"
+          git apply --check --whitespace=error-all "$evidence/remediation.patch"
+          git apply --index --whitespace=error-all "$evidence/remediation.patch"
+          git rm -f "$PATCH_PATH" "$TEMP_WORKFLOW"
+          rmdir .github/remediation 2>/dev/null || true
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-infer-core --package codex-hepta-infer-worker-host
+          git add -A
+          git diff --cached --check
+          test ! -e "$PATCH_PATH"
+          test ! -e "$TEMP_WORKFLOW"
+          git config user.name 'Hepta Inference Remediation'
+          git config user.email 'hepta-inference-remediation@users.noreply.github.com'
+          git commit -m 'fix(inference): close owner and recovery correctness gaps'
+          candidate_sha="$(git rev-parse HEAD)"
+          candidate_tree="$(git rev-parse HEAD^{tree})"
+          printf 'CANDIDATE_SHA=%s\nCANDIDATE_TREE=%s\n' "$candidate_sha" "$candidate_tree" >> "$GITHUB_ENV"
+          printf 'candidate_sha=%s\ncandidate_tree=%s\n' "$candidate_sha" "$candidate_tree" \
+            > "$evidence/candidate.txt"
+          git show --stat --oneline --decorate=short HEAD > "$evidence/candidate-stat.txt"
+          git format-patch -1 --stdout --binary HEAD > "$evidence/candidate.patch"
+
+      - name: Execute exact native qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          logdir="$RUNNER_TEMP/inference-remediation-v2/logs"
+          run_logged() {
+            local name="$1"
+            shift
+            "$@" 2>&1 | tee "$logdir/$name.log"
+          }
+          run_logged 00-cargo-metadata \
+            cargo metadata --locked --manifest-path codex-rs/Cargo.toml --format-version 1
+          run_logged 01-package-tests \
+            cargo test --locked --manifest-path codex-rs/Cargo.toml \
+              -p codex-hepta-infer-core -p codex-hepta-infer-worker-host \
+              --all-targets --all-features
+          run_logged 02-process-crash \
+            cargo test --locked --manifest-path codex-rs/Cargo.toml \
+              -p codex-hepta-infer-core --test process_crash_recovery \
+              -- --nocapture --test-threads=1
+          run_logged 03-output-retention \
+            cargo test --locked --manifest-path codex-rs/Cargo.toml \
+              -p codex-hepta-infer-core --test output_retention \
+              -- --nocapture --test-threads=1
+          run_logged 04-recovery-after-expiry \
+            cargo test --locked --manifest-path codex-rs/Cargo.toml \
+              -p codex-hepta-infer-core --test recovery_after_expiry \
+              -- --nocapture --test-threads=1
+          run_logged 05-strict-clippy \
+            cargo clippy --locked --manifest-path codex-rs/Cargo.toml \
+              -p codex-hepta-infer-core -p codex-hepta-infer-worker-host \
+              --all-targets --all-features -- -D warnings
+          run_logged 06-format \
+            cargo fmt --manifest-path codex-rs/Cargo.toml \
+              --package codex-hepta-infer-core --package codex-hepta-infer-worker-host -- --check
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$CANDIDATE_TREE"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+
+      - name: Retain exact candidate evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: inference-remediation-v2-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/inference-remediation-v2/**
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Publish fast-forward source candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          remote_sha="$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | awk '{print $1}')"
+          test "$remote_sha" = "$GITHUB_SHA"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"

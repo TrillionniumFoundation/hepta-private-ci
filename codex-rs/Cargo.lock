@@ -3750,14 +3750,17 @@ name = "codex-hepta-infer-core"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
+ "ed25519-dalek",
  "serde",
  "serde_json",
+ "sha2 0.10.9",
 ]
 
 [[package]]
 name = "codex-hepta-infer-worker-host"
 version = "0.0.0"
 dependencies = [
+ "async-trait",
  "codex-app-server-client",
  "codex-app-server-protocol",
  "codex-hepta-agentd",
