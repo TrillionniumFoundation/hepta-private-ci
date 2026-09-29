@@ -39,17 +39,29 @@ CAPABILITIES = (
     ("productionFailClosedMode", "Fail-closed Agentd production mode"),
     ("immutableLocalFrontierAcceptance", "Immutable local frontier acceptance history"),
     ("thresholdSignerRotation", "Distinct-principal threshold and key-epoch rotation"),
-    ("productionReadOnlyMigrationPreflight", "Read-only production migration preflight"),
+    (
+        "productionReadOnlyMigrationPreflight",
+        "Read-only production migration preflight",
+    ),
     ("stableCursorPagination", "Stable append-sequence cursor pagination"),
     ("appendOnlyDatabaseTriggers", "Database update/delete denial triggers"),
     ("sqliteAuthorizer", "SQLite authorizer callback"),
     ("diskFullFaultInjection", "Disk-full fault injection"),
     ("multiProcessContentionBenchmark", "Multi-process contention benchmark"),
-    ("ownerControlledVerificationProfiles", "Owner-controlled non-degradable verification profiles"),
+    (
+        "ownerControlledVerificationProfiles",
+        "Owner-controlled non-degradable verification profiles",
+    ),
     ("verifiedMonotonicTrustSnapshots", "Sealed monotonic verified trust snapshots"),
-    ("transactionalRecoverySnapshotV2", "Single-transaction authenticated recovery snapshot V2"),
+    (
+        "transactionalRecoverySnapshotV2",
+        "Single-transaction authenticated recovery snapshot V2",
+    ),
     ("authenticatedAdmissionCommitment", "Complete authenticated-admission commitment"),
-    ("durablePublicationReconciliation", "Durable fenced publication and CAS reconciliation"),
+    (
+        "durablePublicationReconciliation",
+        "Durable fenced publication and CAS reconciliation",
+    ),
     ("boundedVerificationSummary", "Bounded product verification summaries"),
     ("realBackupObjectVerification", "Real backup-object byte verification"),
     ("governedBuildProvenance", "Governed source-to-executable build provenance"),
@@ -106,9 +118,7 @@ def validate_receipt(name: str, receipt: Any, status: dict[str, Any]) -> None:
     }
     if set(receipt) != required:
         raise ValueError(f"{name} receipt keys must be {sorted(required)}")
-    if not isinstance(receipt["sha256"], str) or not HEX64.fullmatch(
-        receipt["sha256"]
-    ):
+    if not isinstance(receipt["sha256"], str) or not HEX64.fullmatch(receipt["sha256"]):
         raise ValueError(f"{name} receipt digest must be lowercase SHA-256")
     if (
         not isinstance(receipt["issuerPrincipalId"], str)
@@ -117,9 +127,10 @@ def validate_receipt(name: str, receipt: Any, status: dict[str, Any]) -> None:
         or not receipt["observedAt"]
     ):
         raise ValueError(f"{name} receipt identity and observation are required")
-    if receipt["candidateCommit"] != status["asOfCommit"] or receipt[
-        "candidateTree"
-    ] != status["asOfTree"]:
+    if (
+        receipt["candidateCommit"] != status["asOfCommit"]
+        or receipt["candidateTree"] != status["asOfTree"]
+    ):
         raise ValueError(f"{name} receipt is not bound to the status source anchor")
 
 
@@ -147,7 +158,9 @@ def validate_status(status: dict[str, Any], *, check_git: bool = True) -> None:
     if set(status) != required:
         missing = sorted(required - set(status))
         extra = sorted(set(status) - required)
-        raise ValueError(f"canonical status keys differ; missing={missing}, extra={extra}")
+        raise ValueError(
+            f"canonical status keys differ; missing={missing}, extra={extra}"
+        )
     if (
         status["schema"] != "hepta.kernel-evidence-status-source.v1"
         or status["schemaVersion"] != 1
@@ -186,7 +199,9 @@ def validate_status(status: dict[str, Any], *, check_git: bool = True) -> None:
 
     qualified = status["exactSourceQualified"] and status["mergeCandidateQualified"]
     if status["exactSourceQualified"] != status["mergeCandidateQualified"]:
-        raise ValueError("persistent source and merge qualification must advance together")
+        raise ValueError(
+            "persistent source and merge qualification must advance together"
+        )
     if qualified:
         if (
             not isinstance(status["workflowRunId"], str)
@@ -195,9 +210,13 @@ def validate_status(status: dict[str, Any], *, check_git: bool = True) -> None:
             or not isinstance(status["artifactDigest"], str)
             or HEX64.fullmatch(status["artifactDigest"]) is None
         ):
-            raise ValueError("qualified status requires a workflow run and artifact digest")
+            raise ValueError(
+                "qualified status requires a workflow run and artifact digest"
+            )
     elif status["workflowRunId"] is not None or status["artifactDigest"] is not None:
-        raise ValueError("unqualified persistent status cannot retain workflow authority")
+        raise ValueError(
+            "unqualified persistent status cannot retain workflow authority"
+        )
 
     dependencies = {
         "independentAcceptance": qualified,
@@ -312,16 +331,16 @@ def project(text: str, block: str) -> str:
 def dashboard(block: str) -> str:
     return (
         "# kernel.evidence release dashboard\n\n"
-        "This file is wholly generated. Do not edit it directly.\n\n"
-        + block
-        + "\n"
+        "This file is wholly generated. Do not edit it directly.\n\n" + block + "\n"
     )
 
 
 def sync(status: dict[str, Any]) -> None:
     block = render_block(status)
     for path in PROJECTION_PATHS:
-        path.write_text(project(path.read_text(encoding="utf-8"), block), encoding="utf-8")
+        path.write_text(
+            project(path.read_text(encoding="utf-8"), block), encoding="utf-8"
+        )
     DASHBOARD_PATH.write_text(dashboard(block), encoding="utf-8")
 
 
@@ -361,7 +380,12 @@ def main() -> int:
         else:
             print(json.dumps(status, indent=2, sort_keys=True))
         return 0
-    except (OSError, ValueError, subprocess.CalledProcessError, json.JSONDecodeError) as error:
+    except (
+        OSError,
+        ValueError,
+        subprocess.CalledProcessError,
+        json.JSONDecodeError,
+    ) as error:
         print(f"kernel.evidence canonical status failed: {error}", file=sys.stderr)
         return 2
 

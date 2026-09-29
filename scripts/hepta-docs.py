@@ -814,7 +814,9 @@ def verify_document_inventory(system, required):
     declared path is still unique, exact, present and inside the repository.
     """
     paths = system.get("canonicalPaths")
-    need(isinstance(paths, list) and 0 < len(paths) <= 16384, "canonical path inventory")
+    need(
+        isinstance(paths, list) and 0 < len(paths) <= 16384, "canonical path inventory"
+    )
     normalized = [canonical_exact_path(path, "canonical path") for path in paths]
     need(len(normalized) == len(set(normalized)), "duplicate canonical path")
     missing = sorted(set(required) - set(normalized))
@@ -822,7 +824,10 @@ def verify_document_inventory(system, required):
     root = ROOT.resolve()
     for path in normalized:
         target = ROOT / path
-        need(target.resolve().is_relative_to(root), "canonical path escapes repository " + path)
+        need(
+            target.resolve().is_relative_to(root),
+            "canonical path escapes repository " + path,
+        )
         need(target.is_file(), "missing canonical path " + path)
 
 

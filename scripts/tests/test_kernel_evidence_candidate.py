@@ -30,7 +30,11 @@ class CandidateTests(unittest.TestCase):
 
     def git(self, *args, env=None):
         return subprocess.check_output(
-            ["git", *args], cwd=self.root, text=True, stderr=subprocess.PIPE, env=env,
+            ["git", *args],
+            cwd=self.root,
+            text=True,
+            stderr=subprocess.PIPE,
+            env=env,
         ).strip()
 
     def commit(self, filename, data):
@@ -112,13 +116,27 @@ class CandidateTests(unittest.TestCase):
     def test_deterministic_merge_has_both_distinct_parents(self):
         plan = self.plan()
         tree = self.git("merge-tree", "--write-tree", plan["baseCommit"], self.source)
-        env = dict(os.environ, GIT_AUTHOR_DATE="2000-01-01T00:00:00Z",
-                   GIT_COMMITTER_DATE="2000-01-01T00:00:00Z")
-        command = ("commit-tree", tree, "-p", self.base, "-p", self.source, "-m", "Evidence merge")
+        env = dict(
+            os.environ,
+            GIT_AUTHOR_DATE="2000-01-01T00:00:00Z",
+            GIT_COMMITTER_DATE="2000-01-01T00:00:00Z",
+        )
+        command = (
+            "commit-tree",
+            tree,
+            "-p",
+            self.base,
+            "-p",
+            self.source,
+            "-m",
+            "Evidence merge",
+        )
         first, second = self.git(*command, env=env), self.git(*command, env=env)
         self.assertEqual(first, second)
-        self.assertEqual(self.git("rev-list", "--parents", "-n", "1", first).split(),
-                         [first, self.base, self.source])
+        self.assertEqual(
+            self.git("rev-list", "--parents", "-n", "1", first).split(),
+            [first, self.base, self.source],
+        )
         self.assertEqual(tree, plan["sourceTree"])
 
     def test_divergent_base_tree_is_recomputed(self):
@@ -133,14 +151,27 @@ class CandidateTests(unittest.TestCase):
     def cli(self, *extra):
         diagnostic = Path(self.temp.name) / "candidate.json"
         result = subprocess.run(
-            [sys.executable, str(SCRIPT), "--root", str(self.root), "--source", self.source,
-             "--diagnostic", str(diagnostic), *extra], text=True, capture_output=True,
+            [
+                sys.executable,
+                str(SCRIPT),
+                "--root",
+                str(self.root),
+                "--source",
+                self.source,
+                "--diagnostic",
+                str(diagnostic),
+                *extra,
+            ],
+            text=True,
+            capture_output=True,
         )
         return result, diagnostic
 
     def test_cli_exports_same_base_to_runner_and_diagnostic(self):
         envfile, outfile = Path(self.temp.name) / "env", Path(self.temp.name) / "out"
-        result, diagnostic = self.cli("--github-env", str(envfile), "--github-output", str(outfile))
+        result, diagnostic = self.cli(
+            "--github-env", str(envfile), "--github-output", str(outfile)
+        )
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(json.loads(diagnostic.read_text())["baseCommit"], self.base)
         self.assertEqual(envfile.read_text(), f"BASE_SHA={self.base}\n")

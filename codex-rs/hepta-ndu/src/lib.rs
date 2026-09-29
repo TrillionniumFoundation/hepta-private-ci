@@ -47,6 +47,10 @@ pub use error::NduError;
 pub use evaluator::canonical_evaluation_policy_digest;
 pub use evaluator::canonical_scalarization_digest;
 pub use evaluator::canonical_utility_profile_digest;
+#[allow(
+    deprecated,
+    reason = "retain the registered legacy Rust export; new callers use evaluate_candidates_with_policy"
+)]
 pub use evaluator::evaluate_candidates;
 pub use evaluator::evaluate_candidates_with_policy;
 pub use evaluator::legacy_evaluation_policy;

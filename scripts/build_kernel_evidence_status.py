@@ -17,7 +17,10 @@ import tempfile
 from typing import Any
 from urllib.parse import urlsplit
 
-from kernel_evidence_record_validation import EXPECTED_COMMANDS, inspect_execution_record
+from kernel_evidence_record_validation import (
+    EXPECTED_COMMANDS,
+    inspect_execution_record,
+)
 
 EXPECTED_RECORDS = tuple(EXPECTED_COMMANDS)
 HEX_SHA = re.compile(r"^[0-9a-f]{40}(?:[0-9a-f]{24})?$")
@@ -49,18 +52,34 @@ def normalize_artifact(args: argparse.Namespace) -> dict[str, Any] | None:
         raise ValueError("artifact id must be a positive integer")
     repository = os.environ.get("GITHUB_REPOSITORY", "")
     run_id = os.environ.get("GITHUB_RUN_ID", "")
-    if REPOSITORY.fullmatch(repository) is None or POSITIVE_ID.fullmatch(run_id) is None:
+    if (
+        REPOSITORY.fullmatch(repository) is None
+        or POSITIVE_ID.fullmatch(run_id) is None
+    ):
         raise ValueError("artifact needs an explicit repository and workflow run")
-    if not isinstance(args.artifact_url, str) or not isinstance(args.artifact_digest, str):
+    if not isinstance(args.artifact_url, str) or not isinstance(
+        args.artifact_digest, str
+    ):
         raise ValueError("artifact URL and digest must be strings")
     url = urlsplit(args.artifact_url)
     expected_path = f"/{repository}/actions/runs/{run_id}/artifacts/{args.artifact_id}"
-    if url.scheme != "https" or url.netloc != "github.com" or url.path != expected_path or url.query or url.fragment:
-        raise ValueError("artifact URL does not belong to this repository, run and artifact id")
+    if (
+        url.scheme != "https"
+        or url.netloc != "github.com"
+        or url.path != expected_path
+        or url.query
+        or url.fragment
+    ):
+        raise ValueError(
+            "artifact URL does not belong to this repository, run and artifact id"
+        )
     if ARTIFACT_DIGEST.fullmatch(args.artifact_digest) is None:
         raise ValueError("artifact digest must be a SHA-256 digest")
-    return {"id": int(args.artifact_id), "url": args.artifact_url,
-            "sha256": args.artifact_digest.removeprefix("sha256:")}
+    return {
+        "id": int(args.artifact_id),
+        "url": args.artifact_url,
+        "sha256": args.artifact_digest.removeprefix("sha256:"),
+    }
 
 
 def build_status(
@@ -79,8 +98,12 @@ def build_status(
         "kernel_evidence_synthetic_merge": "base-merge",
     }[kind]
     identity_errors: list[str] = []
-    for label, value in (("sourceSha", source_sha), ("testedSha", tested_sha),
-                         ("commit", identity["commit"]), ("tree", identity["tree"])):
+    for label, value in (
+        ("sourceSha", source_sha),
+        ("testedSha", tested_sha),
+        ("commit", identity["commit"]),
+        ("tree", identity["tree"]),
+    ):
         if not isinstance(value, str) or HEX_SHA.fullmatch(value) is None:
             identity_errors.append(f"{label} is not a lowercase Git object id")
     if base_sha and HEX_SHA.fullmatch(base_sha) is None:
@@ -95,68 +118,111 @@ def build_status(
         identity_errors.append("exact-source testedSha differs from sourceSha")
     if kind == "kernel_evidence_synthetic_merge":
         if not base_sha or identity["parents"] != [base_sha, source_sha]:
-            identity_errors.append("synthetic merge must have exactly the base/source parents")
+            identity_errors.append(
+                "synthetic merge must have exactly the base/source parents"
+            )
         else:
             try:
-                if git("merge-tree", "--write-tree", base_sha, source_sha) != identity["tree"]:
-                    identity_errors.append("synthetic merge tree differs from the recomputed merge")
+                if (
+                    git("merge-tree", "--write-tree", base_sha, source_sha)
+                    != identity["tree"]
+                ):
+                    identity_errors.append(
+                        "synthetic merge tree differs from the recomputed merge"
+                    )
             except subprocess.SubprocessError as error:
                 identity_errors.append(f"cannot recompute deterministic merge: {error}")
     run_id = os.environ.get("GITHUB_RUN_ID", "")
     attempt = os.environ.get("GITHUB_RUN_ATTEMPT", "")
     job = os.environ.get("GITHUB_JOB", "")
     repository = os.environ.get("GITHUB_REPOSITORY", "")
-    if POSITIVE_ID.fullmatch(run_id) is None or POSITIVE_ID.fullmatch(attempt) is None or not job:
+    if (
+        POSITIVE_ID.fullmatch(run_id) is None
+        or POSITIVE_ID.fullmatch(attempt) is None
+        or not job
+    ):
         identity_errors.append("workflow run, attempt and job must be explicit")
     if REPOSITORY.fullmatch(repository) is None:
         identity_errors.append("repository identity is missing or invalid")
     artifact_valid = False
     if artifact is not None:
         try:
-            normalized = normalize_artifact(argparse.Namespace(
-                artifact_id=artifact["id"], artifact_url=artifact["url"],
-                artifact_digest=artifact["sha256"],
-            ))
+            normalized = normalize_artifact(
+                argparse.Namespace(
+                    artifact_id=artifact["id"],
+                    artifact_url=artifact["url"],
+                    artifact_digest=artifact["sha256"],
+                )
+            )
             artifact_valid = normalized == artifact
             if not artifact_valid:
                 identity_errors.append("artifact metadata is not normalized")
         except (KeyError, TypeError, ValueError) as error:
             identity_errors.append(f"invalid artifact metadata: {error}")
     expected = {
-        "source_sha": source_sha, "tested_sha": tested_sha, "base_sha": base_sha,
-        "lane": lane, "run_id": run_id, "run_attempt": attempt, "job": job,
+        "source_sha": source_sha,
+        "tested_sha": tested_sha,
+        "base_sha": base_sha,
+        "lane": lane,
+        "run_id": run_id,
+        "run_attempt": attempt,
+        "job": job,
     }
     working_directory = str(Path(git("rev-parse", "--show-toplevel")).resolve())
     checks = {
         name.removesuffix(".json"): inspect_execution_record(
-            records, name, expected=expected, identity=identity,
+            records,
+            name,
+            expected=expected,
+            identity=identity,
             working_directory=working_directory,
         )
         for name in EXPECTED_RECORDS
     }
-    execution_passed = not identity_errors and all(entry["passed"] for entry in checks.values())
+    execution_passed = not identity_errors and all(
+        entry["passed"] for entry in checks.values()
+    )
     # An unretained execution report is diagnostic, not final qualification.
     qualified = execution_passed and artifact_valid
     return {
-        "schemaVersion": 1, "module": "kernel.evidence", "kind": kind,
+        "schemaVersion": 1,
+        "module": "kernel.evidence",
+        "kind": kind,
         "generatedAt": datetime.now(timezone.utc).isoformat(),
         "candidate": {
-            "asOfCommit": identity["commit"], "asOfTree": identity["tree"],
-            "parents": identity["parents"], "sourceCommit": source_sha,
-            "baseCommit": base_sha or None, "testedCommit": tested_sha,
-            "lane": lane, "dirty": identity["dirty"], "identityErrors": identity_errors,
+            "asOfCommit": identity["commit"],
+            "asOfTree": identity["tree"],
+            "parents": identity["parents"],
+            "sourceCommit": source_sha,
+            "baseCommit": base_sha or None,
+            "testedCommit": tested_sha,
+            "lane": lane,
+            "dirty": identity["dirty"],
+            "identityErrors": identity_errors,
         },
         "workflow": {
-            "repository": repository, "workflow": os.environ.get("GITHUB_WORKFLOW"),
-            "workflowRunId": run_id, "workflowRunAttempt": attempt, "job": job,
+            "repository": repository,
+            "workflow": os.environ.get("GITHUB_WORKFLOW"),
+            "workflowRunId": run_id,
+            "workflowRunAttempt": attempt,
+            "job": job,
             "event": os.environ.get("GITHUB_EVENT_NAME"),
         },
-        "checks": checks, "artifact": artifact,
-        "executionPassed": bool(execution_passed), "receiptRetained": artifact_valid,
-        "exactSourceQualified": bool(kind == "kernel_evidence_exact_source" and qualified),
-        "mergeCandidateQualified": bool(kind == "kernel_evidence_synthetic_merge" and qualified),
-        "independentAcceptance": False, "externalFrontierActive": False,
-        "backupRestoreDrilled": False, "canaryAccepted": False, "releaseApproved": False,
+        "checks": checks,
+        "artifact": artifact,
+        "executionPassed": bool(execution_passed),
+        "receiptRetained": artifact_valid,
+        "exactSourceQualified": bool(
+            kind == "kernel_evidence_exact_source" and qualified
+        ),
+        "mergeCandidateQualified": bool(
+            kind == "kernel_evidence_synthetic_merge" and qualified
+        ),
+        "independentAcceptance": False,
+        "externalFrontierActive": False,
+        "backupRestoreDrilled": False,
+        "canaryAccepted": False,
+        "releaseApproved": False,
         "qualified": bool(qualified),
         "authority": {
             "selfIssuedReleaseAuthority": False,
@@ -167,7 +233,9 @@ def build_status(
 
 def atomic_write_json(path: Path, value: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    descriptor, name = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
+    descriptor, name = tempfile.mkstemp(
+        prefix=f".{path.name}.", suffix=".tmp", dir=path.parent
+    )
     pending = Path(name)
     try:
         with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
@@ -177,7 +245,9 @@ def atomic_write_json(path: Path, value: dict[str, Any]) -> None:
             os.fsync(stream.fileno())
         pending.replace(path)
         if os.name == "posix":
-            directory = os.open(path.parent, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0))
+            directory = os.open(
+                path.parent, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0)
+            )
             try:
                 os.fsync(directory)
             finally:
@@ -189,7 +259,11 @@ def atomic_write_json(path: Path, value: dict[str, Any]) -> None:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--records", type=Path, required=True)
-    parser.add_argument("--kind", choices=("kernel_evidence_exact_source", "kernel_evidence_synthetic_merge"), required=True)
+    parser.add_argument(
+        "--kind",
+        choices=("kernel_evidence_exact_source", "kernel_evidence_synthetic_merge"),
+        required=True,
+    )
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--artifact-id")
     parser.add_argument("--artifact-url")
@@ -211,7 +285,12 @@ def main() -> int:
         print(json.dumps(status, sort_keys=True))
         # Keep failed diagnostics, but do not let the final artifact-bearing
         # status step turn an invalid execution receipt into a green CI job.
-        return 1 if (args.require_qualified or artifact is not None) and not status["qualified"] else 0
+        return (
+            1
+            if (args.require_qualified or artifact is not None)
+            and not status["qualified"]
+            else 0
+        )
     except (OSError, ValueError, subprocess.SubprocessError) as error:
         print(f"kernel.evidence status construction failed: {error}", file=sys.stderr)
         return 2

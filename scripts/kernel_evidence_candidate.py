@@ -21,7 +21,10 @@ OID = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})\Z")
 
 def git(root: Path, *args: str) -> str:
     return subprocess.check_output(
-        ["git", *args], cwd=root, text=True, stderr=subprocess.PIPE,
+        ["git", *args],
+        cwd=root,
+        text=True,
+        stderr=subprocess.PIPE,
     ).strip()
 
 
@@ -44,15 +47,22 @@ def resolve_candidate(root: Path, source: str, base: str = "") -> dict[str, Any]
             raise ValueError("root source requires an explicit, distinct merge base")
         base, selection = parents[0], "source-first-parent"
     if len(base) != len(source) or base == source:
-        raise ValueError("base and source must be distinct commits in the same object format")
+        raise ValueError(
+            "base and source must be distinct commits in the same object format"
+        )
     if git(root, "cat-file", "-t", base) != "commit":
         raise ValueError("base object is not a commit")
     return {
-        "schemaVersion": 1, "module": "kernel.evidence",
-        "kind": "candidate-plan", "resolved": True,
-        "sourceCommit": source, "sourceTree": git(root, "rev-parse", f"{source}^{{tree}}"),
-        "baseCommit": base, "baseSelection": selection,
-        "expectedMergeParents": [base, source], "qualificationGranted": False,
+        "schemaVersion": 1,
+        "module": "kernel.evidence",
+        "kind": "candidate-plan",
+        "resolved": True,
+        "sourceCommit": source,
+        "sourceTree": git(root, "rev-parse", f"{source}^{{tree}}"),
+        "baseCommit": base,
+        "baseSelection": selection,
+        "expectedMergeParents": [base, source],
+        "qualificationGranted": False,
     }
 
 
@@ -84,12 +94,17 @@ def main() -> int:
         root = Path(git(args.root, "rev-parse", "--show-toplevel")).resolve()
         for output in (args.diagnostic, args.github_env, args.github_output):
             if output is not None and output.resolve().is_relative_to(root):
-                raise ValueError("candidate diagnostics and runner outputs must be outside source")
+                raise ValueError(
+                    "candidate diagnostics and runner outputs must be outside source"
+                )
         plan = resolve_candidate(root, args.source, args.base)
         write_diagnostic(args.diagnostic, plan)
         for path, content in (
             (args.github_env, f"BASE_SHA={plan['baseCommit']}\n"),
-            (args.github_output, f"base-sha={plan['baseCommit']}\nsource-sha={plan['sourceCommit']}\n"),
+            (
+                args.github_output,
+                f"base-sha={plan['baseCommit']}\nsource-sha={plan['sourceCommit']}\n",
+            ),
         ):
             if path is not None:
                 with path.open("a", encoding="utf-8") as stream:
@@ -98,8 +113,12 @@ def main() -> int:
         return 0
     except (OSError, ValueError, subprocess.SubprocessError) as error:
         failure = {
-            "schemaVersion": 1, "module": "kernel.evidence", "kind": "candidate-plan",
-            "resolved": False, "qualificationGranted": False, "error": str(error),
+            "schemaVersion": 1,
+            "module": "kernel.evidence",
+            "kind": "candidate-plan",
+            "resolved": False,
+            "qualificationGranted": False,
+            "error": str(error),
         }
         # Never write a diagnostic into the candidate whose cleanliness is being proved.
         try:
