@@ -35,6 +35,10 @@ mod supervisor_qualification;
 mod tick;
 mod writer_handoff;
 
+#[cfg(feature = "qualification")]
+#[path = "daemon_mutex.rs"]
+pub mod qualification_mutex;
+
 #[cfg(unix)]
 mod unix;
 
