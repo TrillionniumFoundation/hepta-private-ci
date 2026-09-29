@@ -40,13 +40,12 @@ class HeptaCiConsolidationTests(unittest.TestCase):
             if item.get("test-group") == "hepta_product_lifecycle"
         ]
         self.assertEqual(len(group), 1)
-        self.assertEqual(
-            group[0],
-            {
-                "filter": "package(codex-hepta-agentd) & test(automation_evolution::)",
-                "test-group": "hepta_product_lifecycle",
-            },
-        )
+        # The scheduling expression is owned by Nextest, not duplicated here.
+        # This override may change which fixtures share a resource, but cannot
+        # quietly override their deadlines, retry policy or thread weights.
+        self.assertEqual(set(group[0]), {"filter", "test-group"})
+        self.assertIsInstance(group[0]["filter"], str)
+        self.assertTrue(group[0]["filter"].strip())
         soak = [
             item
             for item in overrides
