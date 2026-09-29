@@ -148,6 +148,7 @@ pub struct ManagedRecordStream {
     pending: Vec<u8>,
     expected: Option<usize>,
     terminal: bool,
+    idle_buffer_limit_bytes: usize,
 }
 
 impl ManagedAuthenticatedWireSession {
@@ -173,6 +174,7 @@ impl ManagedAuthenticatedWireSession {
             pending: Vec::new(),
             expected: None,
             terminal: false,
+            idle_buffer_limit_bytes: limits.max_feed_bytes.min(limits.max_record_bytes),
         })
     }
 }
@@ -186,6 +188,53 @@ impl ManagedRecordStream {
     /// Completed frames and transport-owned buffers must be accounted separately.
     pub fn buffer_capacity_bytes(&self) -> usize {
         self.pending.capacity()
+    }
+
+    /// Maximum staging capacity retained at an idle record boundary.
+    ///
+    /// The default is the smaller of the per-feed and per-record byte limits.
+    /// This excludes an incomplete record, returned frames, allocator overhead
+    /// and transport buffers; it is not a connection-manager or RSS bound.
+    ///
+    /// Dependency classification: no-gRPC.
+    pub const fn idle_buffer_limit_bytes(&self) -> usize {
+        self.idle_buffer_limit_bytes
+    }
+
+    /// Change the idle staging limit without changing authentication or framing.
+    ///
+    /// The limit is clamped to the record ceiling. Zero disables idle retention.
+    /// An incomplete record is never discarded: the new limit takes effect when
+    /// that record completes. Return the capacity released immediately, if any.
+    ///
+    /// Dependency classification: no-gRPC.
+    pub fn set_idle_buffer_limit_bytes(&mut self, limit: usize) -> usize {
+        self.idle_buffer_limit_bytes = limit.min(self.limits.max_record_bytes);
+        self.trim_idle_buffer_to_limit()
+    }
+
+    /// Release an empty staging allocation under owner-controlled memory pressure.
+    ///
+    /// Return released Vec capacity, not process RSS. An in-flight prefix/body
+    /// makes this a no-op. Sequence, key, session identity, terminal state and
+    /// already-delivered frames are unchanged; this never restarts a connection.
+    ///
+    /// Dependency classification: no-gRPC.
+    pub fn release_idle_buffer(&mut self) -> usize {
+        if !self.pending.is_empty() || self.expected.is_some() {
+            return 0;
+        }
+        let released = self.pending.capacity();
+        self.pending = Vec::new();
+        released
+    }
+
+    fn trim_idle_buffer_to_limit(&mut self) -> usize {
+        if self.pending.capacity() > self.idle_buffer_limit_bytes {
+            self.release_idle_buffer()
+        } else {
+            0
+        }
     }
 
     pub fn is_terminal(&self) -> bool {
@@ -390,6 +439,7 @@ impl ManagedRecordStream {
             self.retire();
         } else {
             batch.yielded = consumed < input.len();
+            self.trim_idle_buffer_to_limit();
         }
         DecodeFeed::new(batch, consumed)
     }
@@ -419,6 +469,7 @@ impl fmt::Debug for ManagedRecordStream {
             .field("limits", &self.limits)
             .field("buffered_bytes", &self.pending.len())
             .field("buffer_capacity_bytes", &self.pending.capacity())
+            .field("idle_buffer_limit_bytes", &self.idle_buffer_limit_bytes)
             .field("terminal", &self.is_terminal())
             .finish()
     }
@@ -484,3 +535,7 @@ mod budget_tests;
 #[cfg(test)]
 #[path = "record_stream_output_tests.rs"]
 mod output_tests;
+
+#[cfg(test)]
+#[path = "record_stream_retention_tests.rs"]
+mod retention_tests;
