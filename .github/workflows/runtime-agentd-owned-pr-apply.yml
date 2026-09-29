@@ -21,6 +21,8 @@ env:
   MAIN_PATCH_SHA256: ca3d6b6550ec64fcfb9e1b376952edd6eae275cd11126a27ab5e5aa6c6011785
   AMENDMENT_SHA256: 06acddfa8baf2df088c789484c9dc9537095061d5062d3d0a1ad82df2043e938
   CARGO_INCREMENTAL: '0'
+  CARGO_PROFILE_DEV_DEBUG: '0'
+  CARGO_PROFILE_TEST_DEBUG: '0'
 
 jobs:
   validate:
@@ -38,6 +40,24 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
           persist-credentials: true
+      - name: Establish bounded build workspace
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "CARGO_TARGET_DIR=$RUNNER_TEMP/runtime-agentd-owned-target" >> "$GITHUB_ENV"
+          if [[ "$RUNNER_OS" == "Linux" ]]; then
+            echo 'Disk usage before hosted-runner cleanup:'
+            df -h /
+            sudo rm -rf \
+              /usr/local/lib/android \
+              /usr/share/dotnet \
+              /opt/ghc \
+              /usr/local/.ghcup \
+              /opt/hostedtoolcache/CodeQL
+            sudo docker system prune --all --force --volumes || true
+            echo 'Disk usage after hosted-runner cleanup:'
+            df -h /
+          fi
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: '3.12'
@@ -81,7 +101,9 @@ jobs:
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6
         with:
           workspaces: codex-rs
-          shared-key: runtime-agentd-owned-carrier-pr-v1-${{ matrix.os }}
+          cache-targets: false
+          cache-on-failure: false
+          shared-key: runtime-agentd-owned-carrier-pr-v2-${{ matrix.os }}
       - name: Verify formatting, isolated policy compilation, tests and strict lint
         shell: bash
         run: |
@@ -96,6 +118,7 @@ jobs:
             -p codex-hepta-agentd -p codex-hepta-supervisor \
             -p codex-hepta-infer-worker-host --all-targets --no-deps -- -D warnings
           git diff --check
+          df -h /
 
   publish:
     if: github.event.pull_request.head.repo.full_name == github.repository
