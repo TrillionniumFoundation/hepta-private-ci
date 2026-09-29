@@ -184,9 +184,24 @@ export class ScopedRecoveryStore {
         if (entry.state !== "ready") continue;
         const key = this.#recordKey(operationId);
         const raw = this.#directory.readStorage(key, "record_read_failed");
-        // Concurrent terminal cleanup may remove a ready key after the
-        // directory snapshot was read.
-        if (raw !== null) operations.push(this.#decodeRecord(key, raw));
+        if (raw !== null) {
+          operations.push(this.#decodeRecord(key, raw));
+          continue;
+        }
+
+        // Terminal cleanup writes `removing` before deleting the record. Re-read
+        // the exact directory entry so an unlocked load can distinguish that
+        // legitimate race from a missing ready record. A still-ready identity
+        // without its exact record is corruption and must disable mutation
+        // rather than silently hiding a possibly dispatched operation.
+        const current = this.#directory.read().get(operationId);
+        if (current?.state === "ready") {
+          throw storageFailure(
+            "Recovery directory identity exists without its exact record.",
+            undefined,
+            "directory_record_missing",
+          );
+        }
       }
       return { schema: LEGACY_SCHEMA, operations };
     } catch (cause) {

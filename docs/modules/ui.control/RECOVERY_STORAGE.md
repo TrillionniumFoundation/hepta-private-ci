@@ -27,6 +27,8 @@ The default scope capacity remains 1,024 records, with a hard configurable maxim
 
 A crash after the final `ready` write but before the caller observes `prepare()` is intentionally conservative: the record survives and is resolved by authoritative lookup. A crash before `ready` cannot create dispatch authority and is repaired as an uncompleted local reservation.
 
+A `ready` directory identity without its exact operation record is never interpreted as completed or harmless. An unlocked load re-reads the same directory entry after observing a missing record: it tolerates only a verified concurrent transition away from `ready`, such as terminal cleanup already marked `removing`. If the identity is still `ready`, loading fails closed with `directory_record_missing`, retains the directory for diagnosis, and prevents the browser from silently hiding a possibly dispatched operation.
+
 ## Admission sequence
 
 For a new operation, `prepare()` holds the scope Web Lock and performs the following order:
@@ -71,7 +73,7 @@ Do not delete the directory to “retry migration,” and do not clear local sto
 
 `ScopedRecoveryStore.diagnostics()` returns only bounded local maintenance counts: directory schema, entry count, capacity, counts by local directory state, and the number of keys examined by this instance during first migration. It exposes no operation IDs, reasons, credentials, session IDs, digests, or authority decisions.
 
-Storage errors include a stable `details.storageReason` suitable for redacted telemetry. Current categories distinguish endpoint/identity errors, unavailable storage or locks, migration inventory and enumeration failures, directory corruption or scope mismatch, record corruption or scope mismatch, capacity exhaustion, write/read-back failure, removal failure, and interrupted-transition repair failure. Raw storage values and unrestricted operation reasons must not be logged.
+Storage errors include a stable `details.storageReason` suitable for redacted telemetry. Current categories distinguish endpoint/identity errors, unavailable storage or locks, migration inventory and enumeration failures, directory corruption or scope mismatch, record corruption or scope mismatch, a ready directory identity with no exact record, capacity exhaustion, write/read-back failure, removal failure, and interrupted-transition repair failure. Raw storage values and unrestricted operation reasons must not be logged.
 
 ## Incident procedure
 
@@ -96,6 +98,7 @@ Repository tests cover:
 - cross-tab duplicate admission and capacity checks under the scope lock;
 - crashes before and after the final `ready` write;
 - interrupted removal and conservative restoration;
+- a missing record under a still-`ready` identity failing closed, while a verified concurrent `removing` transition remains readable;
 - corrupt directory and record retention;
 - existing-record ambiguity even when directory repair fails;
 - terminal cleanup of an exact unindexed legacy record;

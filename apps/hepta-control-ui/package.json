@@ -19,7 +19,7 @@
     "build": "node tools/build.mjs",
     "check": "npm run lint && npm test && npm run test:contract && npm run build",
     "lint": "node tools/lint.mjs",
-    "test": "node --test test/control.test.js test/canonical-profile.test.js test/runtime-client.test.js test/runtime-client-lifecycle.test.js test/browser-app-lifecycle.test.js test/browser-maintenance.test.js test/terminal-cleanup.test.js test/http-transport.test.js test/session-provider.test.js test/recovery-safety.test.js test/recovery-directory.test.js test/runtime-recovery-integration.test.js test/external-evidence.test.js",
+    "test": "node --test test/control.test.js test/canonical-profile.test.js test/runtime-client.test.js test/runtime-client-lifecycle.test.js test/browser-app-lifecycle.test.js test/browser-maintenance.test.js test/terminal-cleanup.test.js test/http-transport.test.js test/session-provider.test.js test/recovery-safety.test.js test/recovery-directory.test.js test/recovery-directory-integrity.test.js test/runtime-recovery-integration.test.js test/external-evidence.test.js",
     "test:contract": "node --test test/api-surface.test.js test/package-boundary.test.js",
     "test:e2e": "playwright test --config=playwright.config.mjs",
     "receipt": "node tools/write-receipt.mjs"
