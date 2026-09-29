@@ -53,12 +53,18 @@ jobs:
           python3 - <<'PY'
           import json, pathlib
           result = json.loads(pathlib.Path("journal-evidence/journal-scale.json").read_text())
-          assert result["operationCount"] == 128
-          assert result["totalDurableTransitions"] == 512
+          assert result["schema"] == "hepta.browser.journal-scale-receipt.v2"
+          assert result["operationCount"] == 192
+          assert result["terminalOperationCount"] == 128
+          assert result["unresolvedOperationCount"] == 64
+          assert result["totalDurableTransitions"] == 704
           assert result["incrementalIndexReused"] is True
           assert result["warmPathFullReloads"] == 1
           assert result["warmOwnerStatistics"]["diskReadBytes"] == 0
           assert result["restartSnapshotValidated"] is True
+          assert result["unresolvedBacklogSurvivedCompactionAndRestart"] is True
+          assert result["nearCapacityQualification"] is False
+          assert result["slowStorageQualification"] is False
           assert result["performanceQualification"] is False
           PY
 
