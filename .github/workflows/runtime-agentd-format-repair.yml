@@ -90,8 +90,10 @@ jobs:
           persistence = Path("codex-rs/hepta-agentd/src/runtime_codex_executor_persistence.rs").read_text(encoding="utf-8")
           assert "static INSTALLATION" not in supervisor, "process-global runtime.codex installation remains"
           assert "OnceLock" not in supervisor, "runtime.codex supervisor still owns a process-global OnceLock"
-          assert "run_installed_agentd_supervisor" in supervisor
+          assert "pub struct RuntimeCodexSupervisorHandleV1" in supervisor
+          assert "run_installed_agentd_supervisor" not in supervisor
           assert "runtime-codex-supervisor" in runtime
+          assert "supervisor.run(identity.clone(), cancellation.clone())" in runtime
           assert "archive_terminal_operations" in persistence
           assert "MAX_RECONCILE_OPERATIONS" in persistence
           print("PASS_RUNTIME_AGENTD_INSTANCE_OWNERSHIP_AND_BOUNDED_MAINTENANCE")
