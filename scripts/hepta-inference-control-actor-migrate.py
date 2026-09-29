@@ -3,12 +3,14 @@
 
 The former source-rewrite helper was intentionally retired after migration.
 Future changes are checked against explicit product invariants instead of
-silently rewriting Rust with stale textual anchors.
+silently rewriting Rust with stale textual anchors. Test-only fixtures may
+import the concrete durable implementation, but production code may not.
 """
 
 from __future__ import annotations
 
 import argparse
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -21,6 +23,7 @@ APP_SERVER = HOST / "native_app_server.rs"
 WORKER_CLI = HOST / "bin/hepta-infer-worker.rs"
 RECOVERY_CLI = HOST / "bin/hepta-infer-recovery.rs"
 MAINTENANCE_CLI = HOST / "bin/hepta-infer-maintenance.rs"
+DURABLE_IMPORT = "use codex_hepta_infer_core::durable_control::DurableInferenceControl;"
 
 
 def require(path: Path, markers: tuple[str, ...], failures: list[str]) -> None:
@@ -35,6 +38,21 @@ def forbid(path: Path, markers: tuple[str, ...], failures: list[str]) -> None:
     for marker in markers:
         if marker in text:
             failures.append(f"{path.relative_to(ROOT)} retains forbidden {marker!r}")
+
+
+def forbid_unless_cfg_test(path: Path, marker: str, failures: list[str]) -> None:
+    """Allow an exact import only when immediately guarded by #[cfg(test)]."""
+    text = path.read_text(encoding="utf-8")
+    guarded = re.compile(
+        r"(?m)^\s*#\s*\[\s*cfg\s*\(\s*test\s*\)\s*\]\s*\n\s*"
+        + re.escape(marker)
+        + r"\s*$"
+    )
+    production_text = guarded.sub("", text)
+    if marker in production_text:
+        failures.append(
+            f"{path.relative_to(ROOT)} retains production-visible forbidden {marker!r}"
+        )
 
 
 def check() -> None:
@@ -73,14 +91,8 @@ def check() -> None:
     )
     for path in (RUN_CONTROL, APP_SERVER):
         require(path, ("&mut dyn NativeControlPort", ".await"), failures)
-        forbid(
-            path,
-            (
-                "&mut DurableInferenceControl",
-                "use codex_hepta_infer_core::durable_control::DurableInferenceControl;",
-            ),
-            failures,
-        )
+        forbid(path, ("&mut DurableInferenceControl",), failures)
+        forbid_unless_cfg_test(path, DURABLE_IMPORT, failures)
     require(
         WORKER_CLI,
         (
@@ -123,7 +135,7 @@ def check() -> None:
             path,
             (
                 "DurableInferenceControl::open",
-                "use codex_hepta_infer_core::durable_control::DurableInferenceControl;",
+                DURABLE_IMPORT,
             ),
             failures,
         )
