@@ -16,7 +16,7 @@ concurrency:
 jobs:
   integrate-and-verify:
     if: github.actor != 'github-actions[bot]'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
