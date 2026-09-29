@@ -1,0 +1,42 @@
+name: runtime.codex maintainer
+
+on:
+  push:
+    branches:
+      - codex/runtime-codex-full-convergence-20260929
+    paths:
+      - .github/workflows/runtime-codex-maintainer.yml
+      - scripts/runtime-codex-maintainer.py
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  CARGO_INCREMENTAL: "0"
+
+jobs:
+  source-snapshot:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          ref: codex/runtime-codex-full-convergence-20260929
+          persist-credentials: true
+      - name: Bind source
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD
+          git rev-parse 'HEAD^{tree}'
+      - name: Archive source
+        run: |
+          set -euo pipefail
+          git archive --format=zip --output=runtime-codex-source.zip HEAD
+      - name: Upload source snapshot
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-codex-source-${{ github.sha }}
+          path: runtime-codex-source.zip
+          if-no-files-found: error
+          retention-days: 3
