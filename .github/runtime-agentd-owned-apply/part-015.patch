@@ -1,0 +1,116 @@
+ble"]).resolve(
++                strict=True
++            )
++
++    require(not fixture_root.exists(), "refuse to reuse a fixture snapshot directory")
++    fixture_root.mkdir(parents=True)
+     result: dict[str, dict[str, Any]] = {}
+     for role, names in ALIASES.items():
+         choices = [artifacts[name] for name in names if name in artifacts]
+         require(len(choices) == 1, f"missing or ambiguous Cargo executable for {role}")
+-        path = choices[0]
+-        require(path.is_file() and os.access(path, os.X_OK), f"non-executable fixture: {path}")
++        source = choices[0]
++        require(
++            source.is_file() and os.access(source, os.X_OK),
++            f"non-executable fixture: {source}",
++        )
++        path = fixture_root / f"{role.lower()}-{source.name}"
++        try:
++            # Keep exact tested bytes away from Cargo's relinkable target name.
++            os.link(source, path)
++        except OSError:
++            shutil.copy2(source, path)
++        path = path.resolve(strict=True)
++        require(
++            path.is_file() and os.access(path, os.X_OK),
++            f"invalid fixture snapshot: {path}",
++        )
+         env[f"HEPTA_{role}_BIN"] = str(path)
+-        # Legacy and current fixtures use different names; all resolve to the
+-        # very same compiler-artifact executable, never an inferred target path.
+         env[f"{role}_EXE_PATH"] = str(path)
+         for name in names:
+             env[f"CARGO_BIN_EXE_{name}"] = str(path)
+-        result[role] = {"path": str(path), "sha256": sha256(path), "size": path.stat().st_size}
++        if role == "APP_SERVER":
++            env["HEPTA_TEST_CODEX_EXE"] = str(path)
++        result[role] = {
++            "path": str(path),
++            "sha256": sha256(path),
++            "size": path.stat().st_size,
++        }
+     return result
+ 
+ 
+@@ -154,6 +188,7 @@ def run(args: argparse.Namespace) -> int:
+     env["CODEX_RS_DIR"] = str(root / "codex-rs")
+     env["CARGO_TARGET_DIR"] = str(root / "codex-rs" / "target")
+     env["CARGO_INCREMENTAL"] = "0"
++    fixture_root: Path | None = None
+     try:
+         require(re.fullmatch(r"[0-9a-f]{40}", args.sha) is not None, "expected SHA must be exact")
+         require(platform.system() == ("Linux" if args.os == "ubuntu-latest" else "Darwin"), "runner OS differs from matrix")
+@@ -174,7 +209,16 @@ def run(args: argparse.Namespace) -> int:
+             if argv[1] == "build":
+                 try:
+                     require(command["exit_code"] == 0, "fixture build failed")
+-                    record["binaries"] = fixture_environment(output / command["log"], env)
++                    fixture_root = (
++                        root
++                        / "codex-rs"
++                        / "target"
++                        / ".agentd-exact-fixtures"
++                        / f"{args.run_id}-{args.attempt}-{args.os}-{args.suite}"
++                    )
++                    record["binaries"] = fixture_environment(
++                        output / command["log"], env, fixture_root
++                    )
+                 except (OSError, ValueError, KeyError) as error:
+                     record["errors"].append(str(error))
+             # Every command is attempted, including after a failed build/test.
+@@ -189,6 +233,8 @@ def run(args: argparse.Namespace) -> int:
+     except (OSError, ValueError, subprocess.SubprocessError) as error:
+         record["errors"].append(f"{type(error).__name__}: {error}")
+     finally:
++        if fixture_root is not None:
++            shutil.rmtree(fixture_root, ignore_errors=True)
+         atomic_json(output / "receipt.json", record)
+     print(json.dumps({key: record[key] for key in ("source_sha", "os", "suite", "result", "errors")}))
+     return 0 if record["result"] == "success" else 1
+diff --git a/scripts/qualification/runtime_agentd_dependency_boundary.py b/scripts/qualification/runtime_agentd_dependency_boundary.py
+index 8a9d8de3fe53f7f67170a8e18b532c3e09634993..0d070c5771628237292805f1a0485f3902419aae 100755
+--- a/scripts/qualification/runtime_agentd_dependency_boundary.py
++++ b/scripts/qualification/runtime_agentd_dependency_boundary.py
+@@ -117,22 +117,55 @@ def verify(repository: Path) -> dict[str, Any]:
+     if status.get("defaultFeatureReadOnly") is not True:
+         fail("default read-only status disagrees with Cargo features")
+     target_feature = boundary.get("migration", {}).get("targetFeature")
+-    target_exists = isinstance(target_feature, str) and target_feature in features
+-    if status.get("productAdaptersOptionalized") is not target_exists:
+-        fail("product adapter optionalization status disagrees with Cargo features")
++    target_entries = features.get(target_feature, []) if isinstance(target_feature, str) else []
++    optionalized = bool(target_feature) and target_feature in features
++    if optionalized:
++        if not isinstance(target_entries, list):
++            fail("product-adapter feature must be a list")
++        expected_entries = {f"dep:{dependency}" for dependency in product}
++        if set(target_entries) != expected_entries:
++            optionalized = False
++        dependencies = cargo.get("dependencies", {})
++        if any(
++            not isinstance(dependencies.get(dependency), dict)
++            or dependencies[dependency].get("optional") is not True
++            for dependency in product
++        ):
++            optionalized = False
++    if status.get("productAdaptersOptionalized") is not optionalized:
++        fail("product adapter optionalization status disagrees with Cargo dependencies and feature")
++
++    core_policy_established = status.get("corePolicyBuildEstablished")
++    if core_policy_established not in (True, False):
++        fail("corePolicyBuildEstablished must be boolean")
++    core_qualification = repository / "qualification/runtime-agentd-core"
++    policy_source = crate / "src/runtime_codex_policy.rs"
++    if core_policy_established:
++        core_mani
