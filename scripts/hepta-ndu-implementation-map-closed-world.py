@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 """Fail closed when utility.ndu source or registry projections drift.
 
-This module validator treats the primary implementation map and its explicit
-extension as one closed world. It binds execution to the exact candidate
-SHA/tree, verifies unique operations, real native/test symbols, explicit source
-coverage and exact manual/generated TECHNICAL.md projections of the canonical
-module registry.
+The primary map, historical extension, and unified candidate overlay form one
+closed world. The unified overlay supplies exact object overrides for the
+current candidate while the older maps are preserved and hashed as inputs.
 """
 
 from __future__ import annotations
@@ -18,11 +16,19 @@ import re
 import subprocess
 from typing import Any
 
-from hepta_ndu_map_integrity import evidence_paths, executable_test_exists, rust_symbol_exists, verify_manifest
+from hepta_ndu_map_integrity import (
+    UNIFIED,
+    evidence_paths,
+    executable_test_exists,
+    merge_source_objects,
+    rust_symbol_exists,
+    verify_manifest,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 PRIMARY = ROOT / "docs/modules/utility.ndu/IMPLEMENTATION_MAP.json"
 EXTENSION = ROOT / "docs/modules/utility.ndu/IMPLEMENTATION_MAP_EXTENSIONS.json"
+UNIFIED_MAP = ROOT / UNIFIED
 MODULE_DOCS = ROOT / "docs/modules/MODULE_DOCS.json"
 TECHNICAL = ROOT / "docs/modules/utility.ndu/TECHNICAL.md"
 GENERATED_BEGIN = "<!-- BEGIN GENERATED EXACT REGISTRY PROJECTION -->"
@@ -83,8 +89,6 @@ def tracked_files(root: str) -> set[str]:
     return {line for line in output.splitlines() if line.endswith(".rs")}
 
 
-
-
 def symbol_exists(path: Path, symbol: str) -> bool:
     if path.suffix == ".rs":
         return rust_symbol_exists(path, symbol)
@@ -114,7 +118,9 @@ def registry_module(registry: dict[str, Any]) -> dict[str, Any]:
 
 def registry_string_list(module: dict[str, Any], field: str) -> list[str]:
     values = module.get(field)
-    if not isinstance(values, list) or any(not isinstance(value, str) for value in values):
+    if not isinstance(values, list) or any(
+        not isinstance(value, str) for value in values
+    ):
         raise ValueError(f"MODULE_DOCS utility.ndu {field} is not a string list")
     if values != sorted(set(values)):
         raise ValueError(
@@ -140,7 +146,8 @@ def markdown_code_list(text: str, start: str, end: str) -> list[str]:
         match = re.fullmatch(r"- `([^`]+)`", stripped)
         if match is None:
             raise ValueError(
-                f"TECHNICAL.md projection contains non-generated content between {start!r} and {end!r}: {stripped!r}"
+                "TECHNICAL.md projection contains non-generated content between "
+                f"{start!r} and {end!r}: {stripped!r}"
             )
         entries.append(match.group(1))
     if len(entries) != len(set(entries)):
@@ -153,12 +160,17 @@ def render_generated_projection(module: dict[str, Any]) -> str:
         GENERATED_BEGIN,
         "### Exact closed-world registry projection",
         "",
-        "This projection is generated from the canonical registries and is intentionally identical to Sections 5 and 6.",
+        (
+            "This projection is generated from the canonical registries and is "
+            "intentionally identical to Sections 5 and 6."
+        ),
         "",
     ]
     for title, field in GENERATED_FIELDS:
         lines.append(f"**{title}:**")
-        lines.extend(f"- `{value}`" for value in registry_string_list(module, field))
+        lines.extend(
+            f"- `{value}`" for value in registry_string_list(module, field)
+        )
         lines.append("")
     lines.append(GENERATED_END)
     return "\n".join(lines)
@@ -230,17 +242,38 @@ def validate_registry_projection(
             continue
         if actual != expected:
             errors.append(
-                f"TECHNICAL.md {field} differs from generated MODULE_DOCS projection: expected={expected!r} actual={actual!r}"
+                f"TECHNICAL.md {field} differs from generated MODULE_DOCS "
+                f"projection: expected={expected!r} actual={actual!r}"
             )
 
     expected_sha = sha256_text(expected_generated)
     actual_sha = sha256_text(actual_generated)
     if actual_generated != expected_generated:
         errors.append(
-            "TECHNICAL.md generated registry projection differs from canonical renderer: "
-            f"expected_sha256={expected_sha} actual_sha256={actual_sha}"
+            "TECHNICAL.md generated registry projection differs from canonical "
+            f"renderer: expected_sha256={expected_sha} actual_sha256={actual_sha}"
         )
     return counts, actual_sha
+
+
+def validate_map_metadata(
+    errors: list[str], mappings: list[tuple[str, dict[str, Any]]]
+) -> None:
+    for name, mapping in mappings:
+        if mapping.get("module") != "utility.ndu":
+            errors.append(f"{name} map module is not utility.ndu")
+    if mappings[1][1].get("extends") != str(EXTENSION.relative_to(ROOT)).replace(
+        "IMPLEMENTATION_MAP_EXTENSIONS.json", "IMPLEMENTATION_MAP.json"
+    ):
+        errors.append("extension map does not name the canonical primary map")
+    expected_unified_extends = [
+        str(PRIMARY.relative_to(ROOT)),
+        str(EXTENSION.relative_to(ROOT)),
+    ]
+    if mappings[2][1].get("extends") != expected_unified_extends:
+        errors.append(
+            "unified map must extend the canonical primary and historical extension"
+        )
 
 
 def main() -> int:
@@ -259,17 +292,24 @@ def main() -> int:
             raise ValueError("--expected-tree must be an exact Git object id")
         if candidate_sha != args.expected_sha:
             raise ValueError(
-                f"candidate SHA mismatch: expected={args.expected_sha} actual={candidate_sha}"
+                f"candidate SHA mismatch: expected={args.expected_sha} "
+                f"actual={candidate_sha}"
             )
         if candidate_tree != args.expected_tree:
             raise ValueError(
-                f"candidate tree mismatch: expected={args.expected_tree} actual={candidate_tree}"
+                f"candidate tree mismatch: expected={args.expected_tree} "
+                f"actual={candidate_tree}"
             )
         if git("status", "--porcelain", "--untracked-files=all"):
             raise ValueError("closed-world validation requires a clean checkout")
         primary = load(PRIMARY)
         extension = load(EXTENSION)
-        verify_manifest(ROOT, primary.get("sourceObjects"), evidence_paths(ROOT, primary, extension))
+        unified = load(UNIFIED_MAP)
+        verify_manifest(
+            ROOT,
+            merge_source_objects(primary, unified),
+            evidence_paths(ROOT, primary, extension, unified),
+        )
     except (
         OSError,
         json.JSONDecodeError,
@@ -282,14 +322,15 @@ def main() -> int:
         print(json.dumps({"passed": False, "errors": [str(error)]}, indent=2))
         return 1
 
-    for name, mapping in (("primary", primary), ("extension", extension)):
-        if mapping.get("module") != "utility.ndu":
-            errors.append(f"{name} map module is not utility.ndu")
-    if extension.get("extends") != "docs/modules/utility.ndu/IMPLEMENTATION_MAP.json":
-        errors.append("extension map does not name the canonical primary map")
+    mappings = [
+        ("primary", primary),
+        ("extension", extension),
+        ("unified", unified),
+    ]
+    validate_map_metadata(errors, mappings)
 
     operations: list[Any] = []
-    for name, mapping in (("primary", primary), ("extension", extension)):
+    for name, mapping in mappings:
         mapped = mapping.get("operations")
         if not isinstance(mapped, list) or not mapped:
             errors.append(f"{name} operations must be a non-empty list")
@@ -342,9 +383,6 @@ def main() -> int:
                 errors.append(f"{name!r} tests[{test_index}] missing path/symbol")
                 continue
             identity = (path, symbol)
-            # Composite regression tests may deliberately witness more than one
-            # adjacent operation. The set remains a unique executable-identity
-            # inventory; operation and native-symbol identities stay exclusive.
             seen_tests.add(identity)
             test_path = ROOT / path
             if not test_path.is_file():
@@ -356,7 +394,7 @@ def main() -> int:
     if not isinstance(roots, list) or not roots:
         errors.append("sourceRoot must be a non-empty list")
         roots = []
-    strings = all_strings(primary) | all_strings(extension)
+    strings = set().union(*(all_strings(mapping) for _name, mapping in mappings))
     tracked: set[str] = set()
     for root in roots:
         if not isinstance(root, str):
@@ -382,7 +420,7 @@ def main() -> int:
         errors.append(f"final candidate identity check failed: {error}")
 
     result = {
-        "schema": "hepta.ndu.closed-world-map-validation.v6",
+        "schema": "hepta.ndu.closed-world-map-validation.v7",
         "module": primary.get("module"),
         "sourceSha": candidate_sha,
         "sourceTree": candidate_tree,
@@ -391,7 +429,11 @@ def main() -> int:
         "trackedRustSourceCount": len(tracked),
         "registryProjectionCounts": registry_projection,
         "generatedRegistryProjectionSha256": generated_projection_sha,
-        "maps": [str(PRIMARY.relative_to(ROOT)), str(EXTENSION.relative_to(ROOT))],
+        "maps": [
+            str(PRIMARY.relative_to(ROOT)),
+            str(EXTENSION.relative_to(ROOT)),
+            str(UNIFIED_MAP.relative_to(ROOT)),
+        ],
         "registry": str(MODULE_DOCS.relative_to(ROOT)),
         "technicalGuide": str(TECHNICAL.relative_to(ROOT)),
         "passed": not errors,
