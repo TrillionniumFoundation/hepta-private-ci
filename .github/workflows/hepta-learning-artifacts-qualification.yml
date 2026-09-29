@@ -31,6 +31,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        profile:
+          - linux-x86_64-stable
+          - linux-aarch64-stable
+          - macos-aarch64-stable
+          - linux-x86_64-msrv
         lane: [exact-head, synthetic-merge]
         include:
           - profile: linux-x86_64-stable
