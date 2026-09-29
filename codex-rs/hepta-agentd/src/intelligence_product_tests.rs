@@ -1,4 +1,4 @@
-fn product_test_coordinator() -> AgentRunCoordinator {
+pub(crate) fn product_test_coordinator() -> AgentRunCoordinator {
     AgentRunCoordinator::compose_runtime(RuntimeComposition {
         agent_id: "agent.product".to_string(),
         supervisor_generation: 1,
@@ -91,11 +91,11 @@ const Q24: i64 = 1 << 24;
 const OBSERVED_MICROS: u64 = 1_788_861_600_000_000;
 const NOW_MICROS: u64 = OBSERVED_MICROS + 1_000_000;
 
-fn id(value: &str) -> StableId {
+pub(crate) fn id(value: &str) -> StableId {
     StableId::new(value).expect("valid id")
 }
 
-fn digest(value: &str) -> Digest32 {
+pub(crate) fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
@@ -327,7 +327,7 @@ fn authority_signing_key() -> SigningKey {
     SigningKey::from_bytes(&[7_u8; 32])
 }
 
-fn authority_verifier() -> IntelligenceAuthorityVerifierV1 {
+pub(crate) fn authority_verifier() -> IntelligenceAuthorityVerifierV1 {
     let signing = authority_signing_key();
     IntelligenceAuthorityVerifierV1 {
         signer_id: "qualification.intelligence-authority".to_string(),
@@ -335,7 +335,11 @@ fn authority_verifier() -> IntelligenceAuthorityVerifierV1 {
     }
 }
 
-fn write_authority_file(path: &std::path::Path, owners: &[OwnerBindingV1], frontier: Digest32) {
+pub(crate) fn write_authority_file(
+    path: &std::path::Path,
+    owners: &[OwnerBindingV1],
+    frontier: Digest32,
+) {
     let file = IntelligenceAuthorityFileV1 {
         schema_version: 1,
         authority_epoch: 11,
@@ -369,13 +373,13 @@ fn write_authority_file(path: &std::path::Path, owners: &[OwnerBindingV1], front
     }
 }
 
-struct Fixture {
-    request: CanonicalIntelligenceRunRequestV1,
-    inputs: AgentdIntelligenceOwnerInputsV1,
-    owners: Vec<OwnerBindingV1>,
+pub(crate) struct Fixture {
+    pub(crate) request: CanonicalIntelligenceRunRequestV1,
+    pub(crate) inputs: AgentdIntelligenceOwnerInputsV1,
+    pub(crate) owners: Vec<OwnerBindingV1>,
 }
 
-fn fixture() -> Fixture {
+pub(crate) fn fixture() -> Fixture {
     let profile = objective_profile();
     let envelope = objective_envelope();
     let objective_context = objective_context(&profile, &envelope);
@@ -659,9 +663,11 @@ fn fixture() -> Fixture {
             },
         },
         inputs: AgentdIntelligenceOwnerInputsV1 {
-            objective_envelope: envelope,
-            objective_profile: profile,
-            objective_context,
+            objective: AgentdObjectiveOwnerInputV1::Admission {
+                envelope,
+                profile,
+                context: objective_context,
+            },
             utility_contributions,
             utility_profile,
             utility_scalarization,

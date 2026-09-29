@@ -70,6 +70,8 @@ use codex_hepta_agent_components::intuition::decide_calibrated_v2;
 use codex_hepta_agent_components::learning_ledger::DurableLedger;
 use codex_hepta_agent_components::learning_ledger::DurableLedgerError;
 use codex_hepta_agent_components::learning_ledger::LedgerEvent;
+use codex_hepta_agent_components::learning_ledger::RunStartObjectiveDispositionV1;
+use codex_hepta_agent_components::learning_ledger::RunStartRecordV1;
 use codex_hepta_agent_components::ndu::ContributionSet;
 use codex_hepta_agent_components::ndu::EvaluationPolicyV1;
 use codex_hepta_agent_components::ndu::ScalarizationProfile;
@@ -84,6 +86,7 @@ use codex_hepta_agent_components::objective::ObjectiveAdmissionContextV1;
 use codex_hepta_agent_components::objective::ObjectiveAdmissionProfileV1;
 use codex_hepta_agent_components::objective::ObjectiveSourceEnvelopeV1;
 use codex_hepta_agent_components::objective::admit_and_compile_objective_v1;
+use codex_hepta_agent_components::objective::decode_objective_function_v1;
 use codex_hepta_agent_components::prompt_optimizer::OptimizationRequest;
 use codex_hepta_agent_components::prompt_optimizer::optimize;
 use codex_hepta_agent_components::types::AuthorityPosture;
@@ -126,13 +129,13 @@ pub struct IntelligenceAuthorityVerifierV1 {
 
 const MAX_INTELLIGENCE_AUTHORITY_FILE_BYTES: u64 = 64 * 1024;
 
-struct FileBackedFreshnessOracleV1 {
+pub(crate) struct FileBackedFreshnessOracleV1 {
     path: PathBuf,
     verifier: IntelligenceAuthorityVerifierV1,
 }
 
 impl FileBackedFreshnessOracleV1 {
-    fn new(path: PathBuf, verifier: IntelligenceAuthorityVerifierV1) -> Self {
+    pub(crate) fn new(path: PathBuf, verifier: IntelligenceAuthorityVerifierV1) -> Self {
         Self { path, verifier }
     }
 
@@ -210,10 +213,17 @@ impl CanonicalFreshnessOracleV1 for FileBackedFreshnessOracleV1 {
     }
 }
 
+pub enum AgentdObjectiveOwnerInputV1 {
+    Admission {
+        envelope: ObjectiveSourceEnvelopeV1,
+        profile: ObjectiveAdmissionProfileV1,
+        context: ObjectiveAdmissionContextV1,
+    },
+    DurableRunStart(Box<RunStartRecordV1>),
+}
+
 pub struct AgentdIntelligenceOwnerInputsV1 {
-    pub objective_envelope: ObjectiveSourceEnvelopeV1,
-    pub objective_profile: ObjectiveAdmissionProfileV1,
-    pub objective_context: ObjectiveAdmissionContextV1,
+    pub objective: AgentdObjectiveOwnerInputV1,
     pub utility_contributions: ContributionSet,
     pub utility_profile: UtilityProfile,
     pub utility_scalarization: Option<ScalarizationProfile>,
@@ -229,9 +239,7 @@ pub struct AgentdIntelligenceOwnerInputsV1 {
 }
 
 struct AgentdOwnerPortsV1 {
-    objective_envelope: Option<ObjectiveSourceEnvelopeV1>,
-    objective_profile: Option<ObjectiveAdmissionProfileV1>,
-    objective_context: Option<ObjectiveAdmissionContextV1>,
+    objective: Option<AgentdObjectiveOwnerInputV1>,
     utility_contributions: Option<ContributionSet>,
     utility_profile: Option<UtilityProfile>,
     utility_scalarization: Option<Option<ScalarizationProfile>>,
@@ -253,9 +261,7 @@ impl AgentdOwnerPortsV1 {
         evaluation_session: Option<AgentdEvaluationSessionV1>,
     ) -> Self {
         Self {
-            objective_envelope: Some(value.objective_envelope),
-            objective_profile: Some(value.objective_profile),
-            objective_context: Some(value.objective_context),
+            objective: Some(value.objective),
             utility_contributions: Some(value.utility_contributions),
             utility_profile: Some(value.utility_profile),
             utility_scalarization: Some(value.utility_scalarization),
@@ -336,40 +342,55 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
         &mut self,
         input: &CanonicalPortInputV1,
     ) -> Result<CanonicalPortReceiptV1, CanonicalPortFailureV1> {
-        let envelope = Self::take(
-            &mut self.objective_envelope,
-            input.stage,
-            "objective envelope",
-        )?;
-        let profile = Self::take(
-            &mut self.objective_profile,
-            input.stage,
-            "objective profile",
-        )?;
-        let context = Self::take(
-            &mut self.objective_context,
-            input.stage,
-            "objective context",
-        )?;
+        let objective = Self::take(&mut self.objective, input.stage, "objective input")?;
         let started = Instant::now();
-        let outcome = admit_and_compile_objective_v1(&envelope, &profile, &context)
-            .map_err(|_| Self::reject(input.stage, "objective admission"))?;
+        let digest = match objective {
+            AgentdObjectiveOwnerInputV1::Admission {
+                envelope,
+                profile,
+                context,
+            } => {
+                let outcome = admit_and_compile_objective_v1(&envelope, &profile, &context)
+                    .map_err(|_| Self::reject(input.stage, "objective admission"))?;
+                if outcome.receipt.authority.grants_any() {
+                    return Err(Self::reject(input.stage, "objective authority"));
+                }
+                let receipt = outcome
+                    .compile_result
+                    .map_err(|_| Self::reject(input.stage, "objective conflict"))?;
+                if receipt.disposition != CompileDisposition::Compiled
+                    || receipt.objective.semantic_digest != input.objective_digest
+                {
+                    return Err(Self::reject(input.stage, "objective binding"));
+                }
+                receipt.objective.semantic_digest
+            }
+            AgentdObjectiveOwnerInputV1::DurableRunStart(record) => {
+                if record.disposition != RunStartObjectiveDispositionV1::Compiled
+                    || record.snapshot.run_id != input.run_id
+                    || record.snapshot.objective_digest != input.objective_digest
+                    || record.admission.authority.grants_any()
+                    || record.objective_semantic_bytes.is_empty()
+                    || Digest32::of_bytes(&record.objective_semantic_bytes)
+                        != input.objective_digest
+                    || record.objective_function_v1_digest.is_zero()
+                    || record.objective_function_v1_bytes.is_empty()
+                {
+                    return Err(Self::reject(input.stage, "durable objective binding"));
+                }
+                let decoded = decode_objective_function_v1(&record.objective_function_v1_bytes)
+                    .map_err(|_| Self::reject(input.stage, "durable objective protocol"))?;
+                if decoded.protocol_digest() != record.objective_function_v1_digest {
+                    return Err(Self::reject(input.stage, "durable objective digest"));
+                }
+                input.objective_digest
+            }
+        };
         Self::within_budget(input, started)?;
-        if outcome.receipt.authority.grants_any() {
-            return Err(Self::reject(input.stage, "objective authority"));
-        }
-        let receipt = outcome
-            .compile_result
-            .map_err(|_| Self::reject(input.stage, "objective conflict"))?;
-        if receipt.disposition != CompileDisposition::Compiled
-            || receipt.objective.semantic_digest != input.objective_digest
-        {
-            return Err(Self::reject(input.stage, "objective binding"));
-        }
         Self::receipt(
             input,
             "objective.compiler",
-            receipt.objective.semantic_digest,
+            digest,
             CanonicalPortDecisionV1::Continue,
         )
     }
@@ -736,7 +757,7 @@ impl StdError for AgentdIntelligenceLedgerError {}
 
 #[cfg(test)]
 #[path = "intelligence_product_tests.rs"]
-mod tests;
+pub(crate) mod tests;
 
 #[cfg(test)]
 #[path = "intelligence_evaluation_tests.rs"]
