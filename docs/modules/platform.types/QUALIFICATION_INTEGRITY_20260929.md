@@ -22,6 +22,13 @@ and tracked-worktree checks. A failed admitted attempt removes its success
 report and retains `status.json` with the failing stage and nonzero exit code.
 Earlier diagnostics are not a current qualification receipt.
 
+Optional baseline comparison now binds the complete interpretation and
+publication method, not only the benchmark executable. The report names and
+hashes the benchmark executable, allocation observer, Python gate and shell
+runner. A change to sample interpretation, threshold enforcement, source
+fencing or report publication therefore invalidates an older baseline even
+when the measured Rust workload is unchanged.
+
 This output lock is an evidence-publication guard, not a product lock or runtime
 owner. Nothing here authenticates a registry snapshot, qualifies a host, mints
 an approval, or grants execution/activation authority.
@@ -39,6 +46,12 @@ count from the retained log, compares it with the count file, and commits both
 hashes into the existing V2 execution record. A stale, missing, boolean or altered
 count cannot turn successful command exits into `qualified=true`.
 
+The evidence-builder's own positive fixture uses the same paired `running N
+tests` marker and terminal summary required from retained command logs. A
+separate orphan-summary regression proves that an otherwise plausible terminal
+line without its active execution marker cannot qualify. Guard tests therefore
+exercise the rule they assert instead of succeeding through an obsolete fixture.
+
 The existing runner tests now execute the real parser and evidence builder over
 isolated Git fixtures. Their native command stand-ins emit real-shaped zero-test
 success, compiler-only success and tampered-count cases. They do not substitute
@@ -54,6 +67,12 @@ retains `qualification-guards.log` in the schema receipt's hash inventory.
 All previous schema, semantic-capacity, native, consumer, rustdoc, MSRV, Miri,
 fuzz, provenance and final-outcome requirements remain. No alternative success
 workflow or author-issued qualification path is introduced.
+
+The native bounded-capacity regression covers oversized owned reservations,
+ordinary owned allocation reuse, borrowed construction and cloned accepted
+values. It proves the Rust-visible retained `String`/`Vec` capacity remains
+within the declared logical maximum; it is not a claim about allocator
+bookkeeping, physical heap footprint or process RSS.
 
 Reproduce the non-native guards from the repository root:
 

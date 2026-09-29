@@ -2,7 +2,7 @@
 import copy
 import unittest
 
-from platform_types_resource_gate import CASES, evaluate
+from platform_types_resource_gate import CASES, METHODOLOGY_PATHS, evaluate
 
 
 def fixture():
@@ -27,6 +27,16 @@ def check(raw, **kwargs):
 
 
 class ResourceGateTests(unittest.TestCase):
+    def test_methodology_fingerprint_covers_measurement_and_interpretation(self):
+        expected = (
+            "codex-rs/hepta-types/src/bin/platform-types-semantic-bench.rs",
+            "codex-rs/hepta-types/src/bin/semantic_bench_support/allocator.rs",
+            "scripts/platform_types_resource_gate.py",
+            "scripts/run_platform_types_resource_qualification.sh",
+        )
+        self.assertEqual(METHODOLOGY_PATHS, expected)
+        self.assertEqual(check(fixture())["methodologyFiles"], list(expected))
+
     def test_valid_sample_shape_preserves_nonclaims(self):
         report = check(fixture())
         self.assertEqual(report["allocationGate"], "passed")
@@ -71,6 +81,10 @@ class ResourceGateTests(unittest.TestCase):
             changed[key] = value
             with self.assertRaises(ValueError):
                 check(fixture(), baseline=changed, maximum_ratio=1.15)
+        changed = copy.deepcopy(baseline)
+        changed["methodologyFiles"] = changed["methodologyFiles"][:-1]
+        with self.assertRaises(ValueError):
+            check(fixture(), baseline=changed, maximum_ratio=1.15)
         for ratio in (None, True, float("nan"), float("inf"), 0.5, 3):
             with self.assertRaises(ValueError):
                 check(fixture(), baseline=baseline, maximum_ratio=ratio)

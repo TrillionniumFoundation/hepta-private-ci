@@ -18,6 +18,12 @@ CASES = (
     + [f"registry-{operation}-{size}" for size in (8, 256) for operation in ("construct", "identity", "digest")]
     + [f"numeric-{operation}-{size}" for size in (8, 4096) for operation in ("convert", "verify")]
 )
+METHODOLOGY_PATHS = (
+    "codex-rs/hepta-types/src/bin/platform-types-semantic-bench.rs",
+    "codex-rs/hepta-types/src/bin/semantic_bench_support/allocator.rs",
+    "scripts/platform_types_resource_gate.py",
+    "scripts/run_platform_types_resource_qualification.sh",
+)
 SHA = re.compile(r"[0-9a-f]{40}\Z")
 
 
@@ -89,7 +95,9 @@ def evaluate(raw, source, tree, context, harness_digest, baseline=None, maximum_
         "schema": "hepta.platform-types.resource-gate.v1",
         "sourceHead": source, "sourceTree": tree,
         "environment": context, "environmentDigest": digest_json(context),
-        "harnessDigest": harness_digest, "raw": raw, "summary": summary,
+        "harnessDigest": harness_digest,
+        "methodologyFiles": list(METHODOLOGY_PATHS),
+        "raw": raw, "summary": summary,
         "allocationGate": "passed", "latencyGate": "not_requested",
         "targetHostQualified": False, "independentAcceptance": False,
         "productActivation": False,
@@ -100,6 +108,7 @@ def evaluate(raw, source, tree, context, harness_digest, baseline=None, maximum_
         require(SHA.fullmatch(baseline.get("sourceHead", "")), "baseline source")
         require(SHA.fullmatch(baseline.get("sourceTree", "")), "baseline tree")
         require(baseline.get("environment") == context and baseline.get("environmentDigest") == report["environmentDigest"], "baseline environment mismatch")
+        require(baseline.get("methodologyFiles") == report["methodologyFiles"], "baseline methodology file set mismatch")
         require(baseline.get("harnessDigest") == harness_digest, "baseline methodology mismatch")
         prior = summarize(baseline["raw"])
         ratios = {}
@@ -128,9 +137,10 @@ def main():
     require(git("rev-parse", "HEAD") == args.source_sha, "HEAD changed")
     require(git("rev-parse", "HEAD^{tree}") == args.tree_sha, "tree changed")
     require(not git("status", "--porcelain", "--untracked-files=no"), "tracked worktree dirty")
-    harness = [root / "codex-rs/hepta-types/src/bin/platform-types-semantic-bench.rs",
-               root / "codex-rs/hepta-types/src/bin/semantic_bench_support/allocator.rs"]
-    harness_digest = digest_json({str(path.relative_to(root)): hashlib.sha256(path.read_bytes()).hexdigest() for path in harness})
+    harness_digest = digest_json({
+        relative: hashlib.sha256((root / relative).read_bytes()).hexdigest()
+        for relative in METHODOLOGY_PATHS
+    })
     cpu = Path("/proc/cpuinfo")
     cpu_models = sorted(set(line for line in cpu.read_text().splitlines() if line.startswith(("model name", "vendor_id")))) if cpu.exists() else []
     context = {
