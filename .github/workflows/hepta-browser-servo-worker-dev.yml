@@ -130,6 +130,7 @@ jobs:
           node --test apps/hepta-browser/test/*.test.js 2>&1 | tee worker-evidence/node-tests.log
           node --check apps/hepta-browser/src/*.js
           for script in apps/hepta-browser/scripts/*.js; do node --check "$script"; done
+          node apps/hepta-browser/scripts/journal-scale-probe.js | tee worker-evidence/journal-scale-probe.json
 
       - name: Probe real Bubblewrap namespace and egress denial
         shell: bash
@@ -158,13 +159,21 @@ jobs:
           set -euo pipefail
           export SOURCE_DATE_EPOCH="$(git show -s --format=%ct HEAD)"
           export CARGO_INCREMENTAL=0
-          export RUSTFLAGS="--remap-path-prefix=${GITHUB_WORKSPACE}=/src -C debuginfo=0"
+          export RUSTFLAGS="--remap-path-prefix=${GITHUB_WORKSPACE}=/src --remap-path-prefix=${RUNNER_TEMP}=/runner-temp -C debuginfo=0 -C link-arg=-Wl,--build-id=none"
           export CARGO_TERM_COLOR=never
           printf '%s\n' "$SOURCE_DATE_EPOCH" > worker-evidence/source-date-epoch.txt
-          CARGO_TARGET_DIR="$RUNNER_TEMP/servo-worker-build-a" cargo build --release --locked --manifest-path "$WORKER_MANIFEST" 2>&1 | tee worker-evidence/build-a.log
-          CARGO_TARGET_DIR="$RUNNER_TEMP/servo-worker-build-b" cargo build --release --locked --manifest-path "$WORKER_MANIFEST" 2>&1 | tee worker-evidence/build-b.log
-          first="$RUNNER_TEMP/servo-worker-build-a/release/hepta-servo-worker"
-          second="$RUNNER_TEMP/servo-worker-build-b/release/hepta-servo-worker"
+
+          target="$RUNNER_TEMP/servo-worker-repro-target"
+          first="$RUNNER_TEMP/hepta-servo-worker-build-a"
+          second="$RUNNER_TEMP/hepta-servo-worker-build-b"
+          rm -rf "$target" "$first" "$second"
+          CARGO_TARGET_DIR="$target" cargo build --release --locked --manifest-path "$WORKER_MANIFEST" 2>&1 | tee worker-evidence/build-a.log
+          install -m 0555 "$target/release/hepta-servo-worker" "$first"
+
+          rm -rf "$target"
+          CARGO_TARGET_DIR="$target" cargo build --release --locked --manifest-path "$WORKER_MANIFEST" 2>&1 | tee worker-evidence/build-b.log
+          install -m 0555 "$target/release/hepta-servo-worker" "$second"
+
           test -x "$first"
           test -x "$second"
           sha256sum "$first" "$second" | tee worker-evidence/same-runner-reproducible-sha256.txt
@@ -179,6 +188,13 @@ jobs:
         run: |
           set -euo pipefail
           node apps/hepta-browser/scripts/real-worker-smoke.js worker-evidence/hepta-servo-worker | tee worker-evidence/real-worker-smoke.json
+          python3 - <<'PY'
+          import json, pathlib
+          result = json.loads(pathlib.Path("worker-evidence/real-worker-smoke.json").read_text())
+          assert result["pagePrototypeHooksIsolated"] is True
+          assert result["failureSerializationCannotForgeSuccess"] is True
+          assert result["privateHandlesNotLeakedThroughArrayHooks"] is True
+          PY
 
       - name: Run real Servo Browser lifecycle and egress E2E
         shell: bash
@@ -252,6 +268,7 @@ jobs:
               'independentRunnerBuildCount': 1,
               'signedProvenanceRequiredForDeployment': True,
               'linuxSandboxProbe': json.loads((root / 'linux-sandbox-probe.json').read_text()),
+              'journalScaleProbe': json.loads((root / 'journal-scale-probe.json').read_text()),
               'realWorkerSmoke': json.loads((root / 'real-worker-smoke.json').read_text()),
               'realBrowserE2E': json.loads((root / 'real-browser-e2e.json').read_text()),
               'realBrowserSoak': json.loads((root / 'real-browser-soak.json').read_text()),
