@@ -40,6 +40,12 @@ def observe_native(*, events: bytes, final: bytes, diagnostics: bytes,
     lines = events.splitlines()
     if len(lines) > MAX_EVENTS:
         raise ValueError("native event count exceeds bound")
+    decoded = []
+    for raw in lines:
+        event = strict_json(raw)
+        if not isinstance(event, dict) or not isinstance(event.get("type"), str):
+            raise ValueError("invalid native event object")
+        decoded.append(event)
     report = {
         "schema": "hepta.native-codex-nonce-observation.v1",
         "requested_model": requested_model, "exit_code": exit_code,
@@ -48,6 +54,12 @@ def observe_native(*, events: bytes, final: bytes, diagnostics: bytes,
         "diagnostics_sha256": hashlib.sha256(diagnostics).hexdigest(),
         "nonce_sha256": hashlib.sha256(nonce.encode()).hexdigest(),
         "thread_id": None, "event_count": len(lines), "turn_completed": False,
+        # Raw observations survive a rejected sequence; they do not certify it.
+        "terminal_event_observed": any(event["type"] == "turn.completed" for event in decoded),
+        "nonce_reply_observed": any(event["type"] == "item.completed" and
+            isinstance(event.get("item"), dict) and event["item"].get("type") == "agent_message" and
+            event["item"].get("text") == nonce for event in decoded),
+        "final_nonce_matched": final in (nonce.encode(), nonce.encode() + b"\n"),
         "nonce_matched": False, "connectivity_verified": False,
         "status": "native_observation_incomplete", "observed_item_types": [],
         "transport_observed_provider": None, "transport_observed_model": None,
@@ -57,10 +69,7 @@ def observe_native(*, events: bytes, final: bytes, diagnostics: bytes,
         "retry_authorized": False, "remote_nonexecution_proven": False,
     }
     phase, items, messages, kinds, problem = "before_thread", {}, [], set(), None
-    for raw in lines:
-        event = strict_json(raw)
-        if not isinstance(event, dict) or not isinstance(event.get("type"), str):
-            raise ValueError("invalid native event object")
+    for event in decoded:
         kind = event["type"]
         if kind in EVENT_FIELDS and set(event) != EVENT_FIELDS[kind]:
             problem = "native_event_shape_unsupported"
@@ -82,6 +91,9 @@ def observe_native(*, events: bytes, final: bytes, diagnostics: bytes,
                 break
             phase = "in_turn"
         elif kind in ("item.started", "item.updated", "item.completed"):
+            if isinstance(event.get("item"), dict) and event["item"].get("type") == "error":
+                problem = "native_error_reconcile_before_retry"
+                break
             if phase != "in_turn":
                 problem = "native_item_outside_turn"
                 break

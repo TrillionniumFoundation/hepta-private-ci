@@ -136,6 +136,18 @@ class NativeTeacherTests(unittest.TestCase):
         events[2]["item"]["isError"] = True
         self.rejected(events)
 
+    def test_pre_turn_error_retains_later_terminal_and_nonce_observations(self):
+        events = stream()
+        events.insert(1, {"type": "item.completed", "item": {
+            "id": "error_0", "type": "error", "message": "fixture startup dependency unavailable"}})
+        result = self.rejected(events)
+        self.assertEqual(result["status"], "native_error_reconcile_before_retry")
+        self.assertTrue(result["terminal_event_observed"])
+        self.assertTrue(result["nonce_reply_observed"])
+        self.assertTrue(result["final_nonce_matched"])
+        self.assertFalse(result["turn_completed"])
+        self.assertEqual(result["thread_id"], "thread-fixture")
+
     def test_typed_bounded_usage_and_local_exit(self):
         for value in (None, True, -1, 1.5, "12", 10**10):
             events = stream()

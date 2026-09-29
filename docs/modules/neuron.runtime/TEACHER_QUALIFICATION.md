@@ -66,7 +66,10 @@ not evidence of provider rejection or permission to retry.
 The report retains thread identity and input/validator hashes, not raw prompts,
 reasoning, diagnostics or credentials. An already observed completed turn remains
 visible when the local exit is missing or nonzero. This grants neither retry nor
-proof of remote nonexecution. The requested model is explicitly caller context:
+proof of remote nonexecution. Separate terminal-event, nonce-reply and final-file
+observations scan the whole bounded stream even when an earlier startup error
+rejects its sequence. They are observations, not a valid-turn or connectivity
+verdict; later success cannot erase an earlier error. The requested model is caller context:
 actual provider/model stay null; provider qualification, tool isolation, training
 rights, dataset admission and activation stay false even after a successful nonce.
 A lack of observed tool calls cannot prove that tool execution was impossible.
