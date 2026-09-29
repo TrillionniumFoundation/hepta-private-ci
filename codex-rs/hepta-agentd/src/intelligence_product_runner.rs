@@ -88,8 +88,9 @@ impl AgentdIntelligenceProductRunnerV1 {
         Ok(self)
     }
 
-    /// Opt-in process-level isolation. Supervision starts with the worker,
-    /// independent of whether its request future is polled, dropped or aborted.
+    /// Install process-level containment required by canonical product
+    /// composition. Supervision starts with the worker, independent of whether
+    /// its request future is polled, dropped or aborted.
     pub fn with_hard_timeout_process_exit(
         mut self,
         grace: Duration,
@@ -108,7 +109,7 @@ impl AgentdIntelligenceProductRunnerV1 {
 
     #[must_use]
     pub fn canonical_profile_ready(&self) -> bool {
-        self.authority_rollback.is_some()
+        self.authority_rollback.is_some() && self.hard_timeout_process_exit_grace.is_some()
     }
 
     #[must_use]
