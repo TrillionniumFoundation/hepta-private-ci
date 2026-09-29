@@ -1,3 +1,5 @@
+#![cfg(feature = "server")]
+
 use codex_hepta_agent_components::contracts::AgentId;
 use codex_hepta_agent_components::intelligence::IntuitionQualificationEvidenceV2;
 use codex_hepta_agent_components::intuition::AssignmentCommitmentV1;

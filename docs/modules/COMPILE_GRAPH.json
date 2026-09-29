@@ -29,6 +29,10 @@
       "toModule": "learning.ledger"
     },
     {
+      "fromModule": "inference.worker",
+      "toModule": "runtime.agentd"
+    },
+    {
       "fromModule": "intelligence.control",
       "toModule": "kernel.authority"
     },
@@ -357,6 +361,15 @@
       "toLayer": 5,
       "toModule": "runtime.supervisor",
       "toPackage": "codex-hepta-supervisor"
+    },
+    {
+      "dependencyKind": "dev",
+      "fromLayer": 8,
+      "fromModule": "inference.worker",
+      "fromPackage": "codex-hepta-infer-worker-host",
+      "toLayer": 7,
+      "toModule": "runtime.agentd",
+      "toPackage": "codex-hepta-agentd"
     }
   ],
   "externalHostConsumers": [
@@ -3560,6 +3573,33 @@
       "toLayer": 5,
       "toModule": "runtime.codex",
       "toPackage": "codex-hepta-app-bridge"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 7,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agentd",
+      "toLayer": 0,
+      "toModule": "kernel.authority",
+      "toPackage": "codex-hepta-contracts"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 7,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agentd",
+      "toLayer": 2,
+      "toModule": "automation.taskflow",
+      "toPackage": "codex-hepta-automation"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 7,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agentd",
+      "toLayer": 2,
+      "toModule": "kernel.evidence",
+      "toPackage": "codex-hepta-evidence"
     },
     {
       "dependencyKind": "normal",

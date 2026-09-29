@@ -427,3 +427,18 @@ This receipt records repository source bindings for the current documentation ca
 - Exact module-local source/test provenance is recorded as `currentSourceEvidence` and is verified by the Agentd process qualification workflow; the legacy repository-wide `sourceBase` remains a separate common baseline until the repository-wide migration.
 - Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
 - Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+
+### Client-only Cargo composition
+
+The default Agentd profile retains `server` and `production-cognitive-write`.
+`--no-default-features --lib` builds the existing bounded control client without
+the daemon composition, App Host or agent-components dependency. It does not
+start owners or grant additional authority. The inference worker's production
+dependency selects that client-only profile; its integration fixtures explicitly
+retain the full daemon. Client request/response identities, frame limits, paging
+and overload semantics remain shared, not reimplemented in a second transport.
+
+This is a Cargo client boundary, not general optional learning/automation profiles
+or a minimal inference runtime: App Server adapter dependencies remain. Default
+Bazel product targets keep the full server feature explicitly. Separate client-only
+Bazel deployment is not established by the Cargo dependency reduction.

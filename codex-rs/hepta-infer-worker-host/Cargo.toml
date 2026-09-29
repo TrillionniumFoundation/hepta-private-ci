@@ -17,7 +17,7 @@ workspace = true
 codex-hepta-types = { path = "../hepta-types" }
 codex-app-server-client = { workspace = true }
 codex-app-server-protocol = { workspace = true }
-codex-hepta-agentd = { workspace = true }
+codex-hepta-agentd = { path = "../hepta-agentd", default-features = false }
 codex-hepta-codex-adapter = { path = "../hepta-codex-adapter" }
 codex-hepta-contracts = { workspace = true }
 codex-utils-absolute-path = { workspace = true }
@@ -31,6 +31,8 @@ codex-hepta-infer-core = { path = "../hepta-infer-core" }
 sha2 = { workspace = true }
 
 [dev-dependencies]
+codex-utils-cargo-bin = { workspace = true }
+codex-hepta-agentd = { workspace = true }
 core_test_support = { workspace = true }
 
 ed25519-dalek = { workspace = true }

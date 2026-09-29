@@ -1,3 +1,4 @@
+#![cfg(feature = "server")]
 #![cfg(unix)]
 //! The original stateful/effect test belongs with an existing durable product host.
 //! Workload and assertions are retained; the pure control crate no longer builds SQLite.

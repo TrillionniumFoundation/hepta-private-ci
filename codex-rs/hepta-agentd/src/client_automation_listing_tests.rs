@@ -1,6 +1,6 @@
 use super::*;
-use codex_hepta_agent_components::automation::AutomationSchedule;
-use codex_hepta_agent_components::automation::AutomationTaskState;
+use codex_hepta_automation::AutomationSchedule;
+use codex_hepta_automation::AutomationTaskState;
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 

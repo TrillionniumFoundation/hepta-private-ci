@@ -1,3 +1,5 @@
+#![cfg(feature = "server")]
+
 //! A real optional service on the SAME RuntimeTasks used by Agentd, backed by
 //! AutomationStore, exercised in separate OS processes. Forty required echo
 //! services represent sibling liveness; these are not forty real Codex sessions.

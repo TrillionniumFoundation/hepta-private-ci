@@ -1,3 +1,5 @@
+#![cfg(feature = "server")]
+
 use codex_hepta_agent_components::bellman_operator::*;
 use codex_hepta_agent_components::types::Digest32;
 use codex_hepta_agent_components::types::Generation;

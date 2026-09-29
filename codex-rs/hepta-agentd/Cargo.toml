@@ -14,22 +14,46 @@ doctest = false
 # Agentd is the named Hepta product host for scoped cognitive mutations. This
 # default is local to the Agentd crate; ordinary Codex/App Server binaries do
 # not enable HeptaCognitiveWrite by default.
-default = ["production-cognitive-write"]
-production-cognitive-write = []
+default = ["server", "production-cognitive-write"]
+# Disabling defaults leaves the existing bounded control client, not a daemon.
+server = [
+    "dep:anyhow",
+    "dep:codex-app-server-client",
+    "dep:codex-app-server-protocol",
+    "dep:codex-arg0",
+    "dep:codex-hepta-app-bridge",
+    "dep:codex-hepta-app-host",
+    "dep:codex-config",
+    "dep:codex-features",
+    "dep:codex-hepta-agent-components",
+    "dep:codex-model-provider",
+    "dep:codex-protocol",
+    "dep:codex-utils-absolute-path",
+    "dep:codex-utils-cli",
+    "dep:codex-utils-home-dir",
+    "dep:codex-state",
+    "dep:ed25519-dalek",
+    "dep:http",
+    "dep:sha2",
+    "dep:tokio-util",
+]
+production-cognitive-write = ["server"]
 # Adds the qualification-only turn-lifecycle witness seam on top of the real
 # product mutation profile. It never substitutes for production authority.
 qualification-cognitive-write = ["production-cognitive-write"]
-qualification-legacy-learning-write = ["codex-hepta-agent-components/qualification-legacy-learning-write"]
+qualification-legacy-learning-write = ["server", "codex-hepta-agent-components/qualification-legacy-learning-write"]
 
 [[bin]]
 name = "codex-hepta-agentd"
 path = "src/main.rs"
 test = false
+required-features = ["server"]
 
 [[bin]]
 name = "hepta-agentd-browser"
 path = "src/bin/hepta-agentd-browser.rs"
 test = false
+required-features = ["server"]
 [[example]]
 name = "h4_persistent_writer"
 path = "examples/h4_persistent_writer.rs"
@@ -39,29 +63,29 @@ required-features = ["qualification-cognitive-write"]
 workspace = true
 
 [dependencies]
-anyhow = { workspace = true }
-codex-app-server-client = { workspace = true }
-codex-app-server-protocol = { workspace = true }
-codex-arg0 = { workspace = true }
-codex-hepta-app-bridge = { workspace = true }
-codex-hepta-app-host = { workspace = true }
-codex-config = { workspace = true }
-codex-features = { workspace = true }
+anyhow = { optional = true, workspace = true }
+codex-app-server-client = { optional = true, workspace = true }
+codex-app-server-protocol = { optional = true, workspace = true }
+codex-arg0 = { optional = true, workspace = true }
+codex-hepta-app-bridge = { optional = true, workspace = true }
+codex-hepta-app-host = { optional = true, workspace = true }
+codex-config = { optional = true, workspace = true }
+codex-features = { optional = true, workspace = true }
 codex-hepta-agent-protocol = { workspace = true }
 codex-hepta-agentd-core = { workspace = true }
-codex-hepta-agent-components = { workspace = true }
-codex-model-provider = { workspace = true }
-codex-protocol = { workspace = true }
+codex-hepta-agent-components = { optional = true, workspace = true }
+codex-model-provider = { optional = true, workspace = true }
+codex-protocol = { optional = true, workspace = true }
 codex-uds = { workspace = true }
-codex-utils-absolute-path = { workspace = true }
-codex-utils-cli = { workspace = true }
-codex-utils-home-dir = { workspace = true }
-codex-state = { workspace = true }
-ed25519-dalek = { workspace = true }
-http = { workspace = true }
+codex-utils-absolute-path = { optional = true, workspace = true }
+codex-utils-cli = { optional = true, workspace = true }
+codex-utils-home-dir = { optional = true, workspace = true }
+codex-state = { optional = true, workspace = true }
+ed25519-dalek = { optional = true, workspace = true }
+http = { optional = true, workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
-sha2 = { workspace = true }
+sha2 = { optional = true, workspace = true }
 thiserror = { workspace = true }
 tokio = { workspace = true, features = [
     "fs",
@@ -72,7 +96,11 @@ tokio = { workspace = true, features = [
     "sync",
     "time",
 ] }
-tokio-util = { workspace = true }
+tokio-util = { optional = true, workspace = true }
+
+codex-hepta-automation = { workspace = true }
+codex-hepta-contracts = { workspace = true }
+codex-hepta-evidence = { workspace = true }
 
 [dev-dependencies]
 # Restore the qualification-only ledger writer for Agentd tests through the

@@ -1,7 +1,7 @@
 //! Negotiated bounded reads reuse the existing client, owner and generation fence.
 use super::*;
-use codex_hepta_agent_components::automation::AutomationTaskCursorV1;
-use codex_hepta_agent_components::automation::AutomationTaskPageV1;
+use codex_hepta_automation::AutomationTaskCursorV1;
+use codex_hepta_automation::AutomationTaskPageV1;
 
 impl AgentdClient {
     /// Read at most `limit` live tasks in creation/identity order. This is not a

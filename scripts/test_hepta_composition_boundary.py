@@ -31,20 +31,57 @@ class HeptaCompositionBoundaryTests(unittest.TestCase):
             hepta_dependency_packages(manifest), {"codex-hepta-app-bridge"}
         )
 
-    def test_agentd_depends_on_stable_composition_boundaries(self) -> None:
+    def test_client_profile_omits_server_dependencies_but_default_retains_them(self):
         manifest = tomllib.loads(
-            (ROOT / "codex-rs/hepta-agentd/Cargo.toml").read_text(encoding="utf-8")
+            (ROOT / "codex-rs/hepta-agentd/Cargo.toml").read_text()
         )
-        self.assertEqual(
-            hepta_dependency_packages(manifest),
-            {
-                "codex-hepta-agent-protocol",
-                "codex-hepta-agentd-core",
-                "codex-hepta-agent-components",
-                "codex-hepta-app-bridge",
-                "codex-hepta-app-host",
-            },
+        dependencies = manifest["dependencies"]
+
+        def enabled(requested):
+            active = {
+                name
+                for name, row in dependencies.items()
+                if not isinstance(row, dict) or not row.get("optional", False)
+            }
+            seen = set()
+            pending = list(requested)
+            while pending:
+                name = pending.pop()
+                if name in seen:
+                    continue
+                seen.add(name)
+                if name.startswith("dep:"):
+                    self.assertIn(name[4:], dependencies)
+                    active.add(name[4:])
+                elif "/" in name:
+                    dependency = name.split("/", 1)[0]
+                    if not dependency.endswith("?"):
+                        active.add(dependency)
+                elif name in manifest["features"]:
+                    pending.extend(manifest["features"][name])
+                else:
+                    self.assertTrue(dependencies[name].get("optional"))
+                    active.add(name)
+            return active
+
+        client, product = enabled([]), enabled(["default"])
+        for dependency in (
+            "codex-hepta-agent-components",
+            "codex-hepta-app-host",
+            "codex-hepta-app-bridge",
+        ):
+            self.assertNotIn(dependency, client)
+            self.assertIn(dependency, product)
+        self.assertIn("codex-hepta-agent-protocol", client)
+        for binary in manifest["bin"]:
+            self.assertIn("server", binary["required-features"])
+        worker = tomllib.loads(
+            (ROOT / "codex-rs/hepta-infer-worker-host/Cargo.toml").read_text()
         )
+        self.assertIs(
+            worker["dependencies"]["codex-hepta-agentd"]["default-features"], False
+        )
+        self.assertIn("codex-hepta-agentd", worker["dev-dependencies"])
 
 
 class HeptaBuildProfileParityTests(unittest.TestCase):
@@ -82,7 +119,7 @@ class HeptaBuildProfileParityTests(unittest.TestCase):
             pending = list(names)
             while pending:
                 feature = pending.pop()
-                if feature in result or "/" in feature:
+                if feature in result or "/" in feature or feature.startswith("dep:"):
                     continue
                 self.assertIn(feature, features)
                 result.add(feature)

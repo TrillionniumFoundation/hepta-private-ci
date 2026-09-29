@@ -4,7 +4,10 @@ load("//:defs.bzl", "WINDOWS_RUSTC_LINK_FLAGS", "codex_rust_crate", "workspace_r
 
 codex_rust_crate(
     name = "hepta-agentd",
-    crate_features = ["production-cognitive-write"],
+    crate_features = [
+        "server",
+        "production-cognitive-write",
+    ],
     crate_name = "codex_hepta_agentd",
     integration_compile_data_extra = [
         "//codex-rs/hepta-automation:migration_test_inputs",
@@ -21,6 +24,7 @@ rust_library(
     testonly = True,
     srcs = glob(["src/**/*.rs"]),
     crate_features = [
+        "server",
         "production-cognitive-write",
         "qualification-cognitive-write",
     ],
@@ -35,6 +39,7 @@ rust_test(
     name = "hepta-agentd-cognitive-write-qualification-test-bin",
     crate = ":hepta-agentd-cognitive-write-qualification-lib",
     crate_features = [
+        "server",
         "production-cognitive-write",
         "qualification-cognitive-write",
     ],
@@ -70,6 +75,7 @@ rust_binary(
     testonly = True,
     srcs = glob(["src/**/*.rs"]),
     crate_features = [
+        "server",
         "production-cognitive-write",
         "qualification-cognitive-write",
     ],
@@ -94,6 +100,7 @@ rust_test(
     srcs = ["tests/cognitive_product_e2e.rs"] + glob(["tests/support/**/*.rs"]),
     compile_data = ["//codex-rs/hepta-automation:migration_test_inputs"],
     crate_features = [
+        "server",
         "production-cognitive-write",
         "qualification-cognitive-write",
     ],
