@@ -321,7 +321,7 @@ pub(crate) fn accept_active_dropped_file(
 ) -> Result<(FileInputTarget, PathBuf), FileInputError> {
     let paths = files
         .iter()
-        .map(|file| file.path().clone())
+        .map(|file| Some(file.path().to_path_buf()))
         .collect::<Vec<_>>();
     let ticket = active_file_input(context).ok_or(FileInputError::NoActiveIntent)?;
     let target = ticket.target();
