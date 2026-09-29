@@ -2,7 +2,6 @@ use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
-use std::str::FromStr;
 
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
