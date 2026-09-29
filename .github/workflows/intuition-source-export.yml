@@ -16,8 +16,8 @@ concurrency:
 jobs:
   apply-verify-push:
     name: Apply, format, verify, and publish source patch
-    runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    runs-on: macos-15
+    timeout-minutes: 75
     steps:
       - name: Check out exact authoring head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -42,8 +42,20 @@ jobs:
           test "$(git hash-object .github/intuition-authoring-patch/part-000.b64)" = "$part_000"
           test "$(git hash-object .github/intuition-authoring-patch/part-001.b64)" = "$part_001"
           test "$(git hash-object .github/intuition-authoring-patch/part-002.b64)" = "$part_002"
-          cat .github/intuition-authoring-patch/part-*.b64 | base64 --decode > "$RUNNER_TEMP/intuition-source.patch"
-          sha256sum "$RUNNER_TEMP/intuition-source.patch" | tee "$RUNNER_TEMP/intuition-source.patch.sha256"
+          python3 - <<'PY'
+          import base64
+          import hashlib
+          import pathlib
+
+          root = pathlib.Path('.github/intuition-authoring-patch')
+          encoded = b''.join((root / f'part-{index:03}.b64').read_bytes() for index in range(3))
+          patch = base64.b64decode(encoded, validate=True)
+          target = pathlib.Path(__import__('os').environ['RUNNER_TEMP']) / 'intuition-source.patch'
+          target.write_bytes(patch)
+          digest = hashlib.sha256(patch).hexdigest()
+          (target.parent / 'intuition-source.patch.sha256').write_text(f'{digest}  {target.name}\n')
+          print(digest)
+          PY
           git diff --quiet
           git apply --check "$RUNNER_TEMP/intuition-source.patch"
           git apply --index "$RUNNER_TEMP/intuition-source.patch"
