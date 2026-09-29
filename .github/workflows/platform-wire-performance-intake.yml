@@ -8,19 +8,19 @@ on:
         required: true
         type: string
       measurement_run_id:
-        description: Successful same-repository workflow run that produced the paired evidence artifact
+        description: Successful same-repository registered producer run
         required: true
         type: string
       measurement_workflow_path:
-        description: Exact producer workflow path, for example .github/workflows/platform-wire-five-path.yml
+        description: Exact registered producer workflow path
         required: true
         type: string
       measurement_artifact:
-        description: Exact artifact name containing performance-plan.json and paired-measurements.json
+        description: Exact registered artifact containing the frozen plan and paired report
         required: true
         type: string
       plan_sha256:
-        description: Lowercase SHA-256 of the frozen performance-plan.json bytes
+        description: Registered lowercase SHA-256 of performance-plan.json
         required: true
         type: string
 
@@ -45,6 +45,7 @@ jobs:
       MEASUREMENT_WORKFLOW_PATH: ${{ inputs.measurement_workflow_path }}
       MEASUREMENT_ARTIFACT: ${{ inputs.measurement_artifact }}
       PLAN_SHA256: ${{ inputs.plan_sha256 }}
+      REGISTRY: docs/modules/platform.wire/PERFORMANCE_PRODUCERS.json
       INPUT_DIR: ${{ runner.temp }}/platform-wire-performance-${{ github.run_id }}-${{ github.run_attempt }}/input
       RECORDS: ${{ runner.temp }}/platform-wire-performance-${{ github.run_id }}-${{ github.run_attempt }}/evidence
 
@@ -70,12 +71,14 @@ jobs:
           test "$MEASUREMENT_WORKFLOW_PATH" != ".github/workflows/platform-wire-performance-intake.yml"
           [[ "$MEASUREMENT_WORKFLOW_PATH" =~ ^\.github/workflows/[A-Za-z0-9._/-]+\.ya?ml$ ]]
           [[ "$MEASUREMENT_ARTIFACT" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$ ]]
+          test -f "$REGISTRY" && test ! -L "$REGISTRY"
+          test "$(stat -c %s "$REGISTRY")" -le $((256 * 1024))
           git diff --check
           test -z "$(git status --porcelain --untracked-files=all)"
           python3 scripts/platform_wire_performance_gate.py --self-test
           python3 scripts/platform_wire_status.py self-test
 
-      - name: Bind producer run and artifact metadata
+      - name: Bind registered producer run and artifact metadata
         id: metadata
         env:
           GH_TOKEN: ${{ github.token }}
@@ -122,6 +125,9 @@ jobs:
               raise SystemExit("measurement workflow path differs from the selected producer")
           if run.get("repository", {}).get("full_name") != repository:
               raise SystemExit("measurement run belongs to another repository")
+          attempt = run.get("run_attempt")
+          if type(attempt) is not int or attempt <= 0:
+              raise SystemExit("measurement run attempt is missing")
 
           artifacts = get(f"/actions/runs/{run_id}/artifacts?per_page=100").get("artifacts")
           if not isinstance(artifacts, list):
@@ -143,11 +149,12 @@ jobs:
               json.dumps(
                   {
                       "id": run["id"],
+                      "attempt": attempt,
+                      "repository": repository,
                       "name": run.get("name"),
                       "path": run["path"],
                       "event": run["event"],
                       "head_sha": run["head_sha"],
-                      "run_attempt": run.get("run_attempt"),
                       "status": run["status"],
                       "conclusion": run["conclusion"],
                       "created_at": run.get("created_at"),
@@ -174,6 +181,12 @@ jobs:
               ) + "\n",
               encoding="utf-8",
           )
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as environment:
+              environment.write(f"MEASUREMENT_RUN_ATTEMPT={attempt}\n")
+              environment.write(
+                  "MEASUREMENT_RUN_IDENTITY="
+                  f"github-actions:{repository}:{run_id}:{attempt}\n"
+              )
           PY
 
       - name: Download exact paired-measurement artifact
@@ -186,7 +199,7 @@ jobs:
           repository: ${{ github.repository }}
           run-id: ${{ inputs.measurement_run_id }}
 
-      - name: Validate frozen five-path measurements
+      - name: Validate registered frozen five-path measurements
         id: validation
         shell: bash
         run: |
@@ -198,6 +211,10 @@ jobs:
           test "$(stat -c %s "$plan")" -le $((256 * 1024))
           test "$(stat -c %s "$report")" -le $((16 * 1024 * 1024))
           python3 scripts/platform_wire_performance_gate.py \
+            --registry "$REGISTRY" \
+            --producer-workflow-path "$MEASUREMENT_WORKFLOW_PATH" \
+            --artifact-name "$MEASUREMENT_ARTIFACT" \
+            --producer-run-identity "$MEASUREMENT_RUN_IDENTITY" \
             --plan "$plan" \
             --plan-sha256 "$PLAN_SHA256" \
             --report "$report" \
@@ -211,6 +228,7 @@ jobs:
           METADATA_OUTCOME: ${{ steps.metadata.outcome }}
           DOWNLOAD_OUTCOME: ${{ steps.download.outcome }}
           VALIDATION_OUTCOME: ${{ steps.validation.outcome }}
+          REPOSITORY: ${{ github.repository }}
         shell: bash
         run: |
           set -euo pipefail
@@ -232,7 +250,11 @@ jobs:
               "download": os.environ.get("DOWNLOAD_OUTCOME"),
               "validation": os.environ.get("VALIDATION_OUTCOME"),
           }
-          errors = [f"{name} outcome was {value}" for name, value in outcomes.items() if value != "success"]
+          errors = [
+              f"{name} outcome was {value}"
+              for name, value in outcomes.items()
+              if value != "success"
+          ]
 
           def read_json(path: Path, limit: int):
               if path.is_symlink():
@@ -243,23 +265,36 @@ jobs:
               return json.loads(raw), raw
 
           artifact_meta = {}
+          run_meta = {}
           try:
-              artifact_meta, _ = read_json(records / "measurement-artifact.json", 64 * 1024)
+              artifact_meta, _ = read_json(
+                  records / "measurement-artifact.json", 64 * 1024
+              )
+              run_meta, _ = read_json(records / "measurement-run.json", 64 * 1024)
           except (OSError, ValueError, json.JSONDecodeError) as error:
-              errors.append(f"artifact metadata: {error}")
+              errors.append(f"producer metadata: {error}")
 
           check = None
           report = None
+          registry_digest = None
           plan_digest = None
           report_digest = None
           try:
-              _, plan_raw = read_json(input_dir / "performance-plan.json", 256 * 1024)
+              _, registry_raw = read_json(Path(os.environ["REGISTRY"]), 256 * 1024)
+              registry_digest = hashlib.sha256(registry_raw).hexdigest()
+              _, plan_raw = read_json(
+                  input_dir / "performance-plan.json", 256 * 1024
+              )
               plan_digest = hashlib.sha256(plan_raw).hexdigest()
               if plan_digest != os.environ["PLAN_SHA256"]:
                   raise ValueError("plan digest differs from the selected plan")
-              report, report_raw = read_json(input_dir / "paired-measurements.json", 16 * 1024 * 1024)
+              report, report_raw = read_json(
+                  input_dir / "paired-measurements.json", 16 * 1024 * 1024
+              )
               report_digest = hashlib.sha256(report_raw).hexdigest()
-              check, _ = read_json(records / "performance-check.json", 1024 * 1024)
+              check, _ = read_json(
+                  records / "performance-check.json", 1024 * 1024
+              )
           except (OSError, ValueError, json.JSONDecodeError) as error:
               errors.append(f"paired evidence: {error}")
 
@@ -268,11 +303,17 @@ jobs:
               artifact_digest = artifact_digest.removeprefix("sha256:")
           else:
               artifact_digest = None
-          if artifact_digest is not None and re.fullmatch(r"[0-9a-f]{64}", artifact_digest) is None:
+          if (
+              artifact_digest is not None
+              and re.fullmatch(r"[0-9a-f]{64}", artifact_digest) is None
+          ):
               errors.append("artifact digest is malformed")
               artifact_digest = None
 
           status = "passed" if not errors else "failed"
+          run_attempt = run_meta.get("attempt")
+          if type(run_attempt) is not int or run_attempt <= 0:
+              run_attempt = 0
           receipt = {
               "schema": "hepta.platform-wire.receipt.v2",
               "kind": "platform-wire-performance",
@@ -288,7 +329,13 @@ jobs:
               "event": os.environ.get("GITHUB_EVENT_NAME"),
               "generated_at": datetime.now(timezone.utc).isoformat(),
               "environment": "platform-wire-performance",
-              "measurement_run_id": int(os.environ["MEASUREMENT_RUN_ID"]) if os.environ["MEASUREMENT_RUN_ID"].isdigit() else 0,
+              "measurement_repository": os.environ["REPOSITORY"],
+              "measurement_run_id": (
+                  int(os.environ["MEASUREMENT_RUN_ID"])
+                  if os.environ["MEASUREMENT_RUN_ID"].isdigit()
+                  else 0
+              ),
+              "measurement_run_attempt": run_attempt,
               "measurement_workflow_path": os.environ["MEASUREMENT_WORKFLOW_PATH"],
               "measurement_artifact": os.environ["MEASUREMENT_ARTIFACT"],
               "path_count": 0,
@@ -299,11 +346,16 @@ jobs:
           if status == "passed":
               assert isinstance(check, dict) and isinstance(report, dict)
               paths = check.get("paths")
+              registration = check.get("registration")
               if not isinstance(paths, list) or len(paths) != 5:
                   raise SystemExit("validated output did not retain five paths")
+              if not isinstance(registration, dict):
+                  raise SystemExit("validated output did not retain registration")
               receipt.update(
                   {
                       "measurement_artifact_digest": artifact_digest,
+                      "registry_sha256": registry_digest,
+                      "registered_owner": registration.get("owner"),
                       "plan_sha256": plan_digest,
                       "report_sha256": report_digest,
                       "host_profile": report.get("host_profile"),
@@ -317,7 +369,11 @@ jobs:
                       "p99_ratio_numerator": 80,
                       "p99_ratio_denominator": 100,
                       "paths": paths,
-                      "scope": "protected intake of an exact-source, same-repository paired measurement artifact; benchmark provenance remains owned by the registered producer workflow",
+                      "scope": (
+                          "protected intake of an exact-source, same-repository, "
+                          "registered paired-measurement artifact; independent "
+                          "benchmark review remains external"
+                      ),
                   }
               )
           (records / "platform-wire-performance.json").write_text(

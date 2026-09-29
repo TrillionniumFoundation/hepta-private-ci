@@ -14,18 +14,40 @@ The production performance contract remains per path, not an average across path
 - each candidate/reference pair must retain at least 100 raw latency observations;
 - failed operations, missing samples, path substitution, workload drift or candidate/reference artifact reuse fail closed.
 
-`scripts/platform_wire_performance_gate.py` recomputes p99 from retained raw samples and uses exact integer comparisons. It now also requires distinct measured artifact digests for the candidate and gRPC reference, preventing a report from presenting one binary as both sides of a comparison.
+`scripts/platform_wire_performance_gate.py` recomputes p99 from retained raw samples and uses exact integer comparisons. It requires distinct measured artifact digests for the candidate and gRPC reference, preventing a report from presenting one binary as both sides of a comparison.
+
+## Closed producer registry
+
+`PERFORMANCE_PRODUCERS.json` is the only producer/plan registry accepted by the protected intake. A registration binds:
+
+- one exact same-repository workflow path;
+- one exact artifact name;
+- one immutable plan SHA-256;
+- one host profile;
+- the `grpc` reference transport;
+- one accountable owner;
+- an explicit enabled flag.
+
+The registry is intentionally empty in this source candidate. The existing cloud throughput workflow and in-process release profiles are not silently promoted into production benchmark producers. Enabling a producer requires an ordinary reviewed source commit that registers the real paired product-path workflow, artifact, plan and host profile. Duplicate, disabled, unregistered or context-drifting selections fail closed.
+
+A dispatch input is therefore only a selector. It cannot create a registration or widen the allowed performance surface.
 
 ## Producer artifact contract
 
-The benchmark/transport owner must first register one producer workflow and one frozen performance plan. A successful operator-dispatched run of that workflow uploads one artifact containing these exact regular files at its root:
+A registered benchmark/transport owner uploads one artifact containing these exact regular files at its root:
 
 - `performance-plan.json`, schema `hepta.platform-wire.performance-plan.v1`;
 - `paired-measurements.json`, schema `hepta.platform-wire.paired-measurements.v1`.
 
-The plan contains exactly five unique `path_id` values, one immutable workload digest per path and a bounded minimum sample count. The report binds the exact candidate source SHA and the exact bytes of the plan. It names the release profile, gRPC reference, host profile, runner identity, toolchain and producer run identity. Every path retains candidate and reference package sizes, distinct artifact SHA-256 identities, raw latency samples, completed-operation counts and zero failed operations.
+The plan contains exactly five unique `path_id` values, one immutable workload digest per path and a bounded minimum sample count. The report binds the exact candidate source SHA and the exact bytes of the plan. It names the release profile, gRPC reference, registered host profile, runner identity, toolchain and canonical producer run identity:
 
-The producer owns the truth of its host, transport, packaging boundary, deployed binaries and workload execution. The repository validator checks internal consistency and thresholds; it cannot infer those external facts from JSON alone.
+```text
+github-actions:<owner/repository>:<run-id>:<run-attempt>
+```
+
+Every path retains candidate and reference package sizes, distinct artifact SHA-256 identities, raw latency samples, completed-operation counts and zero failed operations.
+
+The producer owns the truth of its host, transport, packaging boundary, deployed binaries and workload execution. The repository validator checks registration, internal consistency and thresholds; it cannot infer those external facts from JSON alone.
 
 ## Protected intake workflow
 
@@ -34,27 +56,28 @@ The producer owns the truth of its host, transport, packaging boundary, deployed
 1. the exact candidate SHA, which must equal the dispatched ref head;
 2. the successful same-repository producer run ID;
 3. the exact registered producer workflow path;
-4. the exact artifact name;
-5. the frozen plan SHA-256.
+4. the exact registered artifact name;
+5. the registered frozen plan SHA-256.
 
 The intake runs in the `platform-wire-performance` environment. It verifies that the producer run:
 
 - belongs to this repository;
 - was started with `workflow_dispatch`;
 - completed successfully;
-- names the selected producer workflow path;
+- names the selected registered producer workflow path;
 - has the same exact candidate SHA;
-- exposes one unexpired artifact with an immutable SHA-256 and the same source identity.
+- exposes one unexpired artifact with an immutable SHA-256 and the same source identity;
+- has a positive run attempt matching the report's canonical run identity.
 
-It then downloads that exact artifact, applies byte and symlink bounds, runs the five-path validator and emits a `hepta.platform-wire.receipt.v2` receipt of kind `platform-wire-performance`. The receipt binds the source, producer run, producer workflow, artifact identity, plan and report digests, paired environment, thresholds and all five reduced path results. Failed intake attempts retain a failed receipt and available metadata; they never become acceptance.
+It then downloads that exact artifact, applies byte and symlink bounds, validates the registry selection and runs the five-path gate. It emits a `hepta.platform-wire.receipt.v2` receipt of kind `platform-wire-performance`. The receipt binds the source, registry, registered owner, producer repository/run/attempt/workflow, artifact identity, plan and report digests, paired environment, thresholds and all five reduced path results. Failed intake attempts retain a failed receipt and available metadata; they never become acceptance.
 
-The workflow does not accept arbitrary refs, average away a bad path, substitute the ordinary in-process probes, or use a fixture as a production measurement.
+The workflow does not accept arbitrary refs, arbitrary same-repository workflows, unregistered plans, averages that hide a bad path, the ordinary in-process probes, or fixtures as production measurements.
 
 ## Lifecycle integration
 
 Source qualification is unchanged: `Qualified` still requires exact-head, deterministic synthetic-merge and protected target-host receipts for one source candidate.
 
-Production acceptance is now stricter. `scripts/platform_wire_status.py` requires all of the following before `Accepted` can become true:
+Production acceptance is stricter. `scripts/platform_wire_status.py` requires all of the following before `Accepted` can become true:
 
 - `Qualified` is true;
 - one passed `platform-wire-performance` receipt for the same source;
@@ -67,7 +90,7 @@ Production acceptance is now stricter. `scripts/platform_wire_status.py` require
 
 Adding this intake closes a repository-controlled evidence gap; it does not supply the evidence itself. The following facts still require their existing owners and real execution:
 
-- registration of the five product paths and gRPC reference artifacts;
+- review and registration of the five product paths and gRPC reference artifacts;
 - a producer workflow that performs the actual paired runs on the selected target host;
 - real authenticated ingress with independently established peer, exporter/channel-binding and key-domain provenance;
 - integrated gateway/provider queues, deadlines, cancellation, backpressure and connection limits;
