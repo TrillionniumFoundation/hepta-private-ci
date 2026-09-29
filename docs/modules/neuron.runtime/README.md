@@ -8,20 +8,24 @@ from being mistaken for the current implementation contract.
    the four permission boundaries, preserving versus quiesce-closing recovery,
    invocation epoch fencing, daemon restart reconstruction, generation handoff
    and actionable signals.
-2. [`V2_DEVELOPMENT.md`](V2_DEVELOPMENT.md) — durable operation lifecycle,
+2. [`V2_DURABLE_CONTROL_STATE.md`](V2_DURABLE_CONTROL_STATE.md) — checksummed
+   Agentd lifecycle/topology state, atomic publication ordering and interrupted
+   generation-handoff restart resolution.
+3. [`V2_DEVELOPMENT.md`](V2_DEVELOPMENT.md) — durable operation lifecycle,
    filesystem boundary, measurement model and backend qualification details.
-3. [`V2_RUNBOOK.md`](V2_RUNBOOK.md) — operation-state handling, capacity actions,
+4. [`V2_RUNBOOK.md`](V2_RUNBOOK.md) — operation-state handling, capacity actions,
    incident recovery and safe generation handoff without history deletion.
-4. [`TECHNICAL.md`](TECHNICAL.md) — Sparse Q24 mechanism, core data structures,
+5. [`TECHNICAL.md`](TECHNICAL.md) — Sparse Q24 mechanism, core data structures,
    model/body binding and the broader technical reference.
-5. [`../../../qualification/module-execution-dossiers/detail/neuron.runtime.md`](../../../qualification/module-execution-dossiers/detail/neuron.runtime.md)
+6. [`../../../qualification/module-execution-dossiers/detail/neuron.runtime.md`](../../../qualification/module-execution-dossiers/detail/neuron.runtime.md)
    — qualification scope and claim boundary.
 
 `V2_CONTROL_PLANE.md` is authoritative where an older lifecycle paragraph in a
-broader development note is less specific. `GAP_ANALYSIS.md` was a historical
-working ledger and is not present on the current convergence head. Do not treat
-links or checkboxes from an earlier head as current implementation or execution
-evidence.
+broader development note is less specific. `V2_DURABLE_CONTROL_STATE.md` is
+authoritative for Agentd state-file publication and restart resolution.
+`GAP_ANALYSIS.md` was a historical working ledger and is not present on the
+current convergence head. Do not treat links or checkboxes from an earlier head
+as current implementation or execution evidence.
 
 ## Current authority boundary
 
@@ -62,6 +66,12 @@ remain separate evidence and decision gates.
 - `AgentdNeuronGenerationControllerV2::from_recovered_generations`: rebuilds the
   active and sealed historical topology after daemon restart and rejects
   duplicate, active or future retained generations;
+- `new_with_state_path` and `from_recovered_generations_with_state_path`: publish
+  and recover the checksummed lifecycle/topology record without changing runtime
+  operation formats;
+- `generation_state`, `read_agentd_neuron_generation_state_v2` and
+  `write_agentd_neuron_generation_state_v2`: read-only projection and validated
+  atomic control-state persistence; none grants execution or result-use authority;
 - `AgentdNeuronGenerationControllerSnapshotV2`: lifecycle, active generation,
   retained-generation topology, live admission state, execution epoch and the
   active operational snapshot;
