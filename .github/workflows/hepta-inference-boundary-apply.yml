@@ -5,11 +5,11 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: inference-boundary-apply-arm-20260929
-  cancel-in-progress: false
+  group: inference-boundary-apply-20260929
+  cancel-in-progress: true
 jobs:
   apply:
-    runs-on: ubuntu-24.04-arm
+    runs-on: macos-latest
     timeout-minutes: 15
     permissions:
       contents: write
@@ -48,7 +48,6 @@ jobs:
           git apply --check --index "$RUNNER_TEMP/inference-boundary.patch"
           git apply --index "$RUNNER_TEMP/inference-boundary.patch"
           python3 - <<'PY'
-          from pathlib import Path
           import subprocess
           changed = subprocess.check_output(['git','diff','--cached','--name-only','-z']).decode().split('\0')
           prefixes = ('codex-rs/hepta-infer-worker-host/src/', 'docs/modules/inference.control/')
@@ -76,7 +75,7 @@ jobs:
           git show --stat --oneline HEAD
   native-diagnostics:
     needs: apply
-    runs-on: ubuntu-24.04-arm
+    runs-on: macos-latest
     timeout-minutes: 35
     env:
       CARGO_BUILD_JOBS: 2
