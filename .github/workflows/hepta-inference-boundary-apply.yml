@@ -32,7 +32,7 @@ jobs:
           exec > >(tee "$RUNNER_TEMP/inference-boundary-apply.log") 2>&1
           set -euo pipefail
           python3 - <<'PY'
-          import base64, hashlib, lzma, os
+          import base64, hashlib, lzma, os, re
           from pathlib import Path
           chunks = sorted(Path('scripts/inference-boundary-payload').glob('*.b64'))
           assert len(chunks) == 4
@@ -58,9 +58,19 @@ jobs:
               marker = f'--- a/{target}\n+++ b/{target}\n'
               assert header not in patch and marker in patch, target
               patch = patch.replace(marker, header + marker, 1)
+          target = 'docs/modules/inference.control/WRITER_BOUNDARIES.md'
+          section_start = patch.index(f'diff --git a/{target} b/{target}')
+          section_end = patch.find('\ndiff --git ', section_start + 1)
+          section = patch[section_start:section_end]
+          first_hunk = section.index('@@ ')
+          header = section[:first_hunk]
+          hunks = [value for value in re.split(r'(?=^@@ )', section[first_hunk:], flags=re.MULTILINE) if value]
+          hunks.sort(key=lambda value: int(re.search(r'^@@ -(\d+)', value).group(1)))
+          section = (header + ''.join(hunks)).rstrip('\n')
+          patch = patch[:section_start] + section + patch[section_end:]
           raw = patch.encode('utf-8')
           assert len(raw) == 47066
-          assert hashlib.sha256(raw).hexdigest() == 'b81eaf61648986516716ef961d20addf00e360c06def00ebe700433aaefd7ade'
+          assert hashlib.sha256(raw).hexdigest() == '31b498d7b24122ac458b12aac854458adeacf0bdef2e1750d7fe0418a9d4bee8'
           Path(os.environ['RUNNER_TEMP'], 'inference-boundary.patch').write_bytes(raw)
           PY
           git fetch origin "$DESTINATION"
