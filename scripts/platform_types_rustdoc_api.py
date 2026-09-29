@@ -45,7 +45,9 @@ class _Normalizer:
     Rustdoc serializes `Id` as a JSON number while object-map keys are strings.
     Treating every integer as an item ID is unsafe because rustdoc also contains
     ordinary numeric values. IDs are therefore resolved only in schema fields
-    that carry `Id` or `Vec<Id>` values.
+    that carry `Id` or `Vec<Id>` values. `Visibility::Restricted.parent` is an
+    `Id` as well: leaving it raw makes unchanged tuple-variant fields drift when
+    unrelated items are added and rustdoc renumbers its internal index.
 
     Public paths are compared independently. Parent items intentionally do not
     recursively absorb implementation blocks, module/trait item rosters, or the
@@ -56,7 +58,7 @@ class _Normalizer:
     not assign them an independent public path.
     """
 
-    ID_SINGLE_KEYS = frozenset({"id"})
+    ID_SINGLE_KEYS = frozenset({"id", "parent"})
     ID_LIST_KEYS = frozenset({"fields", "variants"})
     ITEM_IGNORED_KEYS = frozenset(
         {"id", "crate_id", "span", "docs", "links", "deprecation"}
