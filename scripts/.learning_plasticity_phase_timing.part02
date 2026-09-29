@@ -1,0 +1,294 @@
+t',
+    )
+    text = replace_once(
+        text,
+        'pub use plasticity_product::PlasticityWriterStateV1;\n',
+        'pub use plasticity_product::PlasticityWriterStateV1;\npub use plasticity_product::TimedParameterPlasticityProductReceiptV1;\n',
+        'parameter timed receipt export',
+    )
+    text = replace_once(
+        text,
+        'pub use plasticity_product::propose_authenticated_parameter_plasticity_v1;\n',
+        'pub use plasticity_product::propose_authenticated_parameter_plasticity_timed_v1;\npub use plasticity_product::propose_authenticated_parameter_plasticity_v1;\n',
+        'parameter timed function export',
+    )
+    text = replace_once(
+        text,
+        'pub use topology_product::TopologyPlasticityProductRequestV1;\n',
+        'pub use topology_product::TopologyPlasticityProductRequestV1;\npub use topology_product::TopologyPlasticityProductTimingV1;\npub use topology_product::TimedTopologyPlasticityProductReceiptV1;\n',
+        'topology timing exports',
+    )
+    text = replace_once(
+        text,
+        'pub use topology_product::propose_authenticated_topology_plasticity_v1;\n',
+        'pub use topology_product::propose_authenticated_topology_plasticity_timed_v1;\npub use topology_product::propose_authenticated_topology_plasticity_v1;\n',
+        'topology timed function export',
+    )
+    write(path, text)
+
+    path = 'codex-rs/hepta-agentd/src/lib.rs'
+    text = read(path)
+    text = replace_once(
+        text,
+        'pub use plasticity_host::AgentdPlasticityHostErrorV1;\n',
+        'pub use plasticity_host::AgentdPlasticityHostErrorV1;\npub use plasticity_host::AgentdPlasticityHostTimingV1;\npub use plasticity_host::TimedAgentdPlasticityHostReceiptV1;\n',
+        'parameter host timing exports',
+    )
+    text = replace_once(
+        text,
+        'pub use plasticity_host::propose_agentd_plasticity_v1;\n',
+        'pub use plasticity_host::propose_agentd_plasticity_timed_v1;\npub use plasticity_host::propose_agentd_plasticity_v1;\n',
+        'parameter host timed function export',
+    )
+    text = replace_once(
+        text,
+        'pub use topology_plasticity_host::AgentdTopologyHostErrorV1;\n',
+        'pub use topology_plasticity_host::AgentdTopologyHostErrorV1;\npub use topology_plasticity_host::AgentdTopologyHostTimingV1;\npub use topology_plasticity_host::TimedAgentdTopologyHostReceiptV1;\n',
+        'topology host timing exports',
+    )
+    text = replace_once(
+        text,
+        'pub use topology_plasticity_host::propose_agentd_topology_plasticity_v1;\n',
+        'pub use topology_plasticity_host::propose_agentd_topology_plasticity_timed_v1;\npub use topology_plasticity_host::propose_agentd_topology_plasticity_v1;\n',
+        'topology host timed function export',
+    )
+    write(path, text)
+
+
+def patch_runtime() -> None:
+    path = 'codex-rs/hepta-agentd/src/plasticity_runtime.rs'
+    text = read(path)
+    text = replace_once(
+        text,
+        'use crate::propose_agentd_plasticity_v1;\nuse crate::propose_agentd_topology_plasticity_v1;\n',
+        'use crate::propose_agentd_plasticity_timed_v1;\nuse crate::propose_agentd_topology_plasticity_timed_v1;\n',
+        'runtime timed host imports',
+    )
+    text = replace_once(
+        text,
+        'const DEFAULT_PLASTICITY_DEADLINE_SECONDS: u64 = 30;\n',
+        'const DEFAULT_PLASTICITY_DEADLINE_SECONDS: u64 = 30;\nconst PLASTICITY_QUEUE_WAIT_ALERT_MICROS: u64 = 5_000_000;\nconst PLASTICITY_BLOCKING_EXECUTION_ALERT_MICROS: u64 = 30_000_000;\n',
+        'runtime alert thresholds',
+    )
+    old_timing = '''pub struct PlasticityRuntimeTimingV1 {
+    pub static_validation_micros: u64,
+    pub quota_admission_micros: u64,
+    pub queue_wait_micros: u64,
+    pub blocking_execution_micros: u64,
+    pub total_micros: u64,
+    pub encoded_bytes: u32,
+    pub estimated_work_units: u32,
+    pub static_validation_cache_hit: bool,
+}
+'''
+    new_timing = '''pub struct PlasticityRuntimeTimingV1 {
+    pub static_validation_micros: u64,
+    pub quota_admission_micros: u64,
+    pub queue_wait_micros: u64,
+    pub frontier_resolution_micros: u64,
+    pub final_validation_micros: u64,
+    pub evidence_verification_micros: u64,
+    pub proposal_construction_micros: u64,
+    pub registry_append_micros: u64,
+    pub anchor_commit_micros: u64,
+    pub receipt_composition_micros: u64,
+    pub blocking_execution_micros: u64,
+    pub total_micros: u64,
+    pub encoded_bytes: u32,
+    pub estimated_work_units: u32,
+    pub static_validation_cache_hit: bool,
+    pub queue_wait_alert: bool,
+    pub blocking_execution_alert: bool,
+    pub completed_after_deadline: bool,
+}
+
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+struct PlasticityExecutionPhaseTimingV1 {
+    frontier_resolution_micros: u64,
+    final_validation_micros: u64,
+    evidence_verification_micros: u64,
+    proposal_construction_micros: u64,
+    registry_append_micros: u64,
+    anchor_commit_micros: u64,
+    receipt_composition_micros: u64,
+}
+'''
+    text = replace_once(text, old_timing, new_timing, 'runtime timing fields')
+    text = replace_once(
+        text,
+        '                Ok(true) => propose_agentd_plasticity_v1(\n',
+        '                Ok(true) => propose_agentd_plasticity_timed_v1(\n',
+        'parameter timed host call',
+    )
+    text = replace_once(
+        text,
+        '                Ok(true) => propose_agentd_topology_plasticity_v1(\n',
+        '                Ok(true) => propose_agentd_topology_plasticity_timed_v1(\n',
+        'topology timed host call',
+    )
+    parameter_tail = '''        let timing = timing(
+            submitted_at,
+            queued_at,
+            execution_started,
+            blocking_execution,
+            static_validation_micros,
+            quota_admission_micros,
+            required_budget,
+            static_validation_cache_hit,
+        );
+        let _ = response.send(result.map(|receipt| PlasticityRuntimeOutcomeV1 {
+            receipt,
+            timing,
+        }));
+'''
+    parameter_new = '''        let deadline_unix_seconds = context.deadline_unix_seconds;
+        let _ = response.send(result.map(|outcome| {
+            let product = outcome.timing.product;
+            let timing = timing(
+                submitted_at,
+                queued_at,
+                execution_started,
+                blocking_execution,
+                static_validation_micros,
+                quota_admission_micros,
+                required_budget,
+                static_validation_cache_hit,
+                deadline_unix_seconds,
+                PlasticityExecutionPhaseTimingV1 {
+                    frontier_resolution_micros: outcome.timing.frontier_resolution_micros,
+                    final_validation_micros: product.final_validation_micros,
+                    evidence_verification_micros: product.evidence_verification_micros,
+                    proposal_construction_micros: product.proposal_construction_micros,
+                    registry_append_micros: product.registry_append_micros,
+                    anchor_commit_micros: product.anchor_commit_micros,
+                    receipt_composition_micros: product.receipt_composition_micros,
+                },
+            );
+            PlasticityRuntimeOutcomeV1 {
+                receipt: outcome.receipt,
+                timing,
+            }
+        }));
+'''
+    text = replace_once(text, parameter_tail, parameter_new, 'parameter phase timing response')
+    topology_tail = parameter_tail
+    topology_new = '''        let deadline_unix_seconds = context.deadline_unix_seconds;
+        let _ = response.send(result.map(|outcome| {
+            let product = outcome.timing.product;
+            let timing = timing(
+                submitted_at,
+                queued_at,
+                execution_started,
+                blocking_execution,
+                static_validation_micros,
+                quota_admission_micros,
+                required_budget,
+                static_validation_cache_hit,
+                deadline_unix_seconds,
+                PlasticityExecutionPhaseTimingV1 {
+                    frontier_resolution_micros: outcome.timing.frontier_resolution_micros,
+                    final_validation_micros: product.final_validation_micros,
+                    evidence_verification_micros: product.evidence_verification_micros,
+                    proposal_construction_micros: product.proposal_construction_micros,
+                    registry_append_micros: product.registry_append_micros,
+                    anchor_commit_micros: outcome.timing.anchor_commit_micros,
+                    receipt_composition_micros: product.receipt_composition_micros,
+                },
+            );
+            PlasticityRuntimeOutcomeV1 {
+                receipt: outcome.receipt,
+                timing,
+            }
+        }));
+'''
+    text = replace_once(text, topology_tail, topology_new, 'topology phase timing response')
+    old_fn = '''fn timing(
+    submitted_at: Instant,
+    queued_at: Instant,
+    execution_started: Instant,
+    blocking_execution: Duration,
+    static_validation_micros: u64,
+    quota_admission_micros: u64,
+    budget: PlasticityRuntimeBudgetV1,
+    static_validation_cache_hit: bool,
+) -> PlasticityRuntimeTimingV1 {
+    PlasticityRuntimeTimingV1 {
+        static_validation_micros,
+        quota_admission_micros,
+        queue_wait_micros: duration_micros(execution_started.saturating_duration_since(queued_at)),
+        blocking_execution_micros: duration_micros(blocking_execution),
+        total_micros: duration_micros(submitted_at.elapsed()),
+        encoded_bytes: budget.encoded_bytes,
+        estimated_work_units: budget.estimated_work_units,
+        static_validation_cache_hit,
+    }
+}
+'''
+    new_fn = '''fn timing(
+    submitted_at: Instant,
+    queued_at: Instant,
+    execution_started: Instant,
+    blocking_execution: Duration,
+    static_validation_micros: u64,
+    quota_admission_micros: u64,
+    budget: PlasticityRuntimeBudgetV1,
+    static_validation_cache_hit: bool,
+    deadline_unix_seconds: u64,
+    phases: PlasticityExecutionPhaseTimingV1,
+) -> PlasticityRuntimeTimingV1 {
+    let queue_wait_micros =
+        duration_micros(execution_started.saturating_duration_since(queued_at));
+    let blocking_execution_micros = duration_micros(blocking_execution);
+    PlasticityRuntimeTimingV1 {
+        static_validation_micros,
+        quota_admission_micros,
+        queue_wait_micros,
+        frontier_resolution_micros: phases.frontier_resolution_micros,
+        final_validation_micros: phases.final_validation_micros,
+        evidence_verification_micros: phases.evidence_verification_micros,
+        proposal_construction_micros: phases.proposal_construction_micros,
+        registry_append_micros: phases.registry_append_micros,
+        anchor_commit_micros: phases.anchor_commit_micros,
+        receipt_composition_micros: phases.receipt_composition_micros,
+        blocking_execution_micros,
+        total_micros: duration_micros(submitted_at.elapsed()),
+        encoded_bytes: budget.encoded_bytes,
+        estimated_work_units: budget.estimated_work_units,
+        static_validation_cache_hit,
+        queue_wait_alert: queue_wait_micros >= PLASTICITY_QUEUE_WAIT_ALERT_MICROS,
+        blocking_execution_alert:
+            blocking_execution_micros >= PLASTICITY_BLOCKING_EXECUTION_ALERT_MICROS,
+        completed_after_deadline: deadline_expired(deadline_unix_seconds),
+    }
+}
+'''
+    text = replace_once(text, old_fn, new_fn, 'runtime timing function')
+    write(path, text)
+
+
+def patch_docs() -> None:
+    path = 'docs/modules/learning.plasticity/RUNTIME_RESOURCE_RECOVERY.md'
+    text = read(path)
+    old = '''`PlasticityRuntimeTimingV1` records:
+
+```text
+static_validation_micros
+quota_admission_micros
+queue_wait_micros
+blocking_execution_micros
+total_micros
+encoded_bytes
+estimated_work_units
+static_validation_cache_hit
+```
+
+`blocking_execution_micros` covers final frontier/evidence resolution, trusted
+signature checks, registry append, external anchor commit, and synchronous fsync
+work. Store-specific receipts remain the authoritative evidence for append and
+anchor success; runtime timing is operational telemetry, not a replacement for
+those receipts.
+
+Operators should alert on sustained overload, queue-wait growth, or blocking
+execution growth. The owner must not add a second writer merely to hide a slow
+fsync or evidence source. Read-only/static work may occur before queue insertion;
+final use and du
