@@ -140,6 +140,14 @@ def _capture(argv, wire, timeout):
             if remaining <= 0:
                 raise ProbeError("probe deadline exceeded")
             returncode = process.wait(timeout=remaining)
+            # Closed pipes and a zero leader exit do not close descendants that
+            # redirected their own output. Cleanup in finally is not success.
+            try:
+                os.killpg(process.pid, 0)
+            except ProcessLookupError:
+                pass
+            else:
+                raise ProbeError("probe leader exited with residual descendants")
         return returncode, bytes(captured["stdout"]), bytes(captured["stderr"])
     finally:
         try:
