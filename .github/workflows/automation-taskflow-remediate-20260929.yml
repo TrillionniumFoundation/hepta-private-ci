@@ -106,3 +106,5 @@ jobs:
           git add -A
           git commit -m "fix(automation): fence durable circuit recovery and projection"
           git push origin HEAD:work/automation-taskflow-full-closure-2026-09-27
+
+# Triggered after the workflow file became visible to the Actions service.
