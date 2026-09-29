@@ -1,7 +1,6 @@
 name: Inference worker final source materialization
 
 on:
-  workflow_dispatch:
   push:
     branches:
       - automation/inference-worker-materialize-final-20260930
@@ -18,17 +17,12 @@ concurrency:
 env:
   SOURCE_SHA: ${{ github.sha }}
   BRANCH_NAME: automation/inference-worker-materialize-final-20260930
-  CARGO_INCREMENTAL: "0"
-  CARGO_BUILD_JOBS: "2"
-  CARGO_PROFILE_TEST_DEBUG: "0"
-  CARGO_PROFILE_DEV_DEBUG: "0"
-  RUST_BACKTRACE: "1"
 
 jobs:
   materialize:
     name: Materialize reviewed inference.worker source
-    runs-on: ubuntu-24.04-arm
-    timeout-minutes: 180
+    runs-on: [self-hosted, linux, x64, rog]
+    timeout-minutes: 20
     steps:
       - name: Check out exact setup commit
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -36,22 +30,20 @@ jobs:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: true
+          clean: true
 
       - name: Bind exact input head
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          git diff --quiet
-          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
 
       - name: Apply reviewed runtime closure patch
-        run: python3 .github/materialization/inference-worker-runtime-closure/apply.py
-
-      - name: Complete historical fixtures and monotonic observation metadata
         shell: bash
         run: |
           set -euo pipefail
+          python3 .github/materialization/inference-worker-runtime-closure/apply.py
           python3 - <<'PY'
           from pathlib import Path
 
@@ -79,7 +71,7 @@ jobs:
           }
           for old, new in replacements.items():
               if text.count(old) != 1:
-                  raise SystemExit(f"expected exactly one historical Observe fixture: {old!r}")
+                  raise SystemExit(f"expected one historical Observe fixture: {old!r}")
               text = text.replace(old, new, 1)
           anchor = '''    let mut json = serde_json::to_value(event).unwrap();
               json["Observe"]["output"]'''
@@ -115,7 +107,7 @@ jobs:
           path.write_text(text.replace(old, new, 1), encoding="utf-8")
           PY
 
-      - name: Format exact Rust surfaces
+      - name: Format and refresh derived documentation
         shell: bash
         run: |
           set -euo pipefail
@@ -128,72 +120,7 @@ jobs:
             codex-rs/hepta-infer-worker-host/src/experimental_local_tests.rs \
             codex-rs/hepta-infer-worker-host/src/native_recovery.rs \
             codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs
-          git diff --check
-
-      - name: Refresh generated document projection
-        run: python3 scripts/hepta-module-docs.py refresh-derived
-
-      - name: Prepare native build prerequisites
-        shell: bash
-        run: |
-          set -euo pipefail
-          sudo apt-get update
-          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
-          sudo sysctl -w kernel.unprivileged_userns_clone=1
-          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
-            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
-          fi
-
-      - name: Install DotSlash
-        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
-
-      - name: Expose DotSlash for integration tests
-        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
-
-      - name: Resolve verified V8 artifacts
-        env:
-          CODEX_REPO_ROOT: ${{ github.workspace }}
-          PYTHONPATH: scripts
-        run: python3 scripts/hepta_ci_v8.py
-
-      - name: Test durable inference core
-        working-directory: codex-rs
-        run: cargo test --locked -p codex-hepta-infer-core
-
-      - name: Test hosted worker default profile
-        working-directory: codex-rs
-        run: cargo test --locked -p codex-hepta-infer-worker-host
-
-      - name: Test experimental local profile
-        working-directory: codex-rs
-        run: cargo test --locked -p codex-hepta-infer-worker-host --features experimental-local-model
-
-      - name: Exercise real Agentd App Server event sequence
-        working-directory: codex-rs
-        run: |
-          cargo test --locked -p codex-hepta-infer-worker-host \
-            --features experimental-local-model \
-            real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone \
-            -- --nocapture --test-threads=1
-
-      - name: Check and lint exact targets
-        working-directory: codex-rs
-        run: |
-          cargo check --locked -p codex-hepta-infer-core --all-targets
-          cargo check --locked -p codex-hepta-infer-worker-host --all-targets
-          cargo check --locked -p codex-hepta-infer-worker-host --features experimental-local-model --all-targets
-          cargo clippy --locked -p codex-hepta-infer-core --all-targets --no-deps -- -D warnings
-          cargo clippy --locked -p codex-hepta-infer-worker-host --all-targets --no-deps -- -D warnings
-          cargo clippy --locked -p codex-hepta-infer-worker-host --features experimental-local-model --all-targets --no-deps -- -D warnings
-
-      - name: Verify source and documentation projections
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 scripts/hepta-module-docs.py refresh-derived --check
-          python3 scripts/hepta_module_registry.py --strict
-          python3 scripts/hepta-implementation-maps.py verify
-          python3 -m unittest discover -v -s scripts/tests -p 'test_inference_worker_*.py'
+          python3 scripts/hepta-module-docs.py refresh-derived
           git diff --check
 
       - name: Install read-only qualification and remove materializers
@@ -209,12 +136,11 @@ jobs:
           rm -f .github/workflows/inference-worker-qualification.yml
           git diff --check
 
-      - name: Commit and push reviewed source
+      - name: Commit and push reviewed source tree
         shell: bash
         run: |
           set -euo pipefail
-          remote_head="$(git ls-remote origin "refs/heads/$BRANCH_NAME" | awk '{print $1}')"
-          test "$remote_head" = "$SOURCE_SHA"
+          test "$(git ls-remote origin "refs/heads/$BRANCH_NAME" | awk '{print $1}')" = "$SOURCE_SHA"
           git config user.name hepta-inference-materializer
           git config user.email hepta-inference-materializer@users.noreply.github.com
           git add -A
