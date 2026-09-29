@@ -12,6 +12,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::NumericSignalV1;
 use codex_hepta_types::StableId;
 use codex_hepta_types::canonical_digest_v1;
+use codex_hepta_types::numeric_registry_v2::RegistrySnapshotIdentityV1;
 
 use crate::ContributionSet;
 use crate::EvaluationPolicyV1;
@@ -29,6 +30,10 @@ use crate::canonical_evaluation_policy_digest;
 use crate::canonical_scalarization_digest;
 use crate::canonical_utility_profile_digest;
 use crate::evaluate_candidates_with_policy;
+
+#[path = "owner_numeric_snapshot.rs"]
+mod numeric_snapshot;
+pub use numeric_snapshot::NduRegisteredUtilitySignalV2;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NduOwnerContextV1 {
@@ -175,6 +180,7 @@ pub struct NduAuthenticatedOwnerV1 {
     policy: NduProductionPolicyV1,
     production_policy_digest: Digest32,
     numeric_registry: Option<NduNumericRegistryV1>,
+    numeric_snapshot: Option<RegistrySnapshotIdentityV1>,
     authority: FinalUseAuthority,
     store: NduProjectionStoreV1,
 }
@@ -186,7 +192,14 @@ impl NduAuthenticatedOwnerV1 {
         context: NduOwnerContextV1,
         policy: NduProductionPolicyV1,
     ) -> Result<Self, NduOwnerError> {
-        Self::open_inner(root, authority, context, policy, None)
+        Self::open_inner(
+            root,
+            authority,
+            context,
+            policy,
+            /*numeric_registry*/ None,
+            /*numeric_snapshot*/ None,
+        )
     }
 
     /// Open an owner with one immutable, caller-provisioned platform.types
@@ -199,7 +212,14 @@ impl NduAuthenticatedOwnerV1 {
         policy: NduProductionPolicyV1,
         numeric_registry: NduNumericRegistryV1,
     ) -> Result<Self, NduOwnerError> {
-        Self::open_inner(root, authority, context, policy, Some(numeric_registry))
+        Self::open_inner(
+            root,
+            authority,
+            context,
+            policy,
+            Some(numeric_registry),
+            /*numeric_snapshot*/ None,
+        )
     }
 
     fn open_inner(
@@ -208,13 +228,22 @@ impl NduAuthenticatedOwnerV1 {
         context: NduOwnerContextV1,
         policy: NduProductionPolicyV1,
         numeric_registry: Option<NduNumericRegistryV1>,
+        numeric_snapshot: Option<RegistrySnapshotIdentityV1>,
     ) -> Result<Self, NduOwnerError> {
         validate_context(&context)?;
-        let production_policy_digest = match numeric_registry.as_ref() {
-            Some(registry) => {
+        let production_policy_digest = match (numeric_registry.as_ref(), numeric_snapshot) {
+            (Some(registry), Some(snapshot)) => {
+                numeric_snapshot::snapshot_policy_digest(&policy, registry, snapshot)?
+            }
+            (None, Some(_)) => {
+                return Err(NduOwnerError::InvalidContext(
+                    "numeric snapshot without registry",
+                ));
+            }
+            (Some(registry), None) => {
                 production_policy_digest_with_numeric_registry(&policy, registry.registry_digest())?
             }
-            None => production_policy_digest(&policy)?,
+            (None, None) => production_policy_digest(&policy)?,
         };
         let store = NduProjectionStoreV1::open(root)?;
         Ok(Self {
@@ -222,6 +251,7 @@ impl NduAuthenticatedOwnerV1 {
             policy,
             production_policy_digest,
             numeric_registry,
+            numeric_snapshot,
             authority,
             store,
         })
@@ -248,6 +278,11 @@ impl NduAuthenticatedOwnerV1 {
         &self,
         source: &NumericSignalV1,
     ) -> Result<NduRegisteredUtilitySignalV1, NduOwnerError> {
+        if self.numeric_snapshot.is_some() {
+            return Err(NduOwnerError::InvalidContext(
+                "V2 snapshot requires V2 admission",
+            ));
+        }
         let registry = self
             .numeric_registry
             .as_ref()
@@ -269,7 +304,9 @@ impl NduAuthenticatedOwnerV1 {
         if contributions.contributions.len() > crate::evaluator::MAX_CONTRIBUTIONS {
             return Err(NduError::ContributionLimitExceeded.into());
         }
-        if let Some(registry) = &self.numeric_registry {
+        if self.numeric_snapshot.is_some() {
+            self.admit_snapshot_contributions(&mut contributions)?;
+        } else if let Some(registry) = &self.numeric_registry {
             let support_type = StableId::new("utility.ndu:registered-contribution-support-v1")
                 .map_err(|_| NduOwnerError::InvalidContext("numeric support type"))?;
             for contribution in &mut contributions.contributions {

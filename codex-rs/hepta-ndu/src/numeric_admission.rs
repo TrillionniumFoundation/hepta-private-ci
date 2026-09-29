@@ -77,6 +77,10 @@ impl NduNumericRegistryV1 {
         self.registry_digest
     }
 
+    pub(crate) fn registry(&self) -> &ContractRegistryV1 {
+        &self.registry
+    }
+
     /// Admit the existing typed Q32 contribution surface. This checks numeric
     /// representation and normalization, not FixedQ32 arithmetic compatibility.
     pub(crate) fn admit_utility_axes(
@@ -84,34 +88,8 @@ impl NduNumericRegistryV1 {
         profile: &UtilityProfile,
         axes: &[AxisValue],
     ) -> Result<NduRegisteredUtilitySignalV1, NduNumericAdmissionErrorV1> {
-        if axes.len() != profile.dimensions.len() || axes.len() > 8 {
-            return Err(NduNumericAdmissionErrorV1::AxisCountMismatch);
-        }
-        let mut values = Vec::with_capacity(axes.len());
-        for (axis, _) in &profile.dimensions {
-            let mut matches = axes.iter().filter(|value| value.axis == *axis);
-            let value = matches
-                .next()
-                .ok_or(NduNumericAdmissionErrorV1::AxisIdentityMismatch)?;
-            if matches.next().is_some() {
-                return Err(NduNumericAdmissionErrorV1::AxisIdentityMismatch);
-            }
-            values.push(value.value.raw());
-        }
-        self.admit_utility_signal(
-            profile,
-            &NumericSignalV1 {
-                schema: NumericSignalSchemaV1 {
-                    profile: NumericProfileV1::SignedQ32NearestTiesEven,
-                    unit: SignalUnitV1::Utility,
-                    shape: vec![values.len()],
-                    minimum_raw: i64::MIN,
-                    maximum_raw: i64::MAX,
-                    normalization_digest: profile.normalization_manifest_digest,
-                },
-                values,
-            },
-        )
+        let source = utility_signal_from_axes(profile, axes)?;
+        self.admit_utility_signal(profile, &source)
     }
 
     pub fn admit_utility_signal(
@@ -119,41 +97,13 @@ impl NduNumericRegistryV1 {
         utility_profile: &UtilityProfile,
         source: &NumericSignalV1,
     ) -> Result<NduRegisteredUtilitySignalV1, NduNumericAdmissionErrorV1> {
-        if source.schema.normalization_digest != utility_profile.normalization_manifest_digest {
-            return Err(NduNumericAdmissionErrorV1::NormalizationMismatch);
-        }
-        if source.schema.unit != SignalUnitV1::Utility {
-            return Err(NduNumericAdmissionErrorV1::UnitMismatch);
-        }
-        if source.values.len() != utility_profile.dimensions.len() {
-            return Err(NduNumericAdmissionErrorV1::AxisCountMismatch);
-        }
-        if source.schema.shape != [utility_profile.dimensions.len()] {
-            return Err(NduNumericAdmissionErrorV1::ShapeMismatch);
-        }
-
-        let target = NumericSignalSchemaV1 {
-            profile: NumericProfileV1::SignedQ32NearestTiesEven,
-            unit: SignalUnitV1::Utility,
-            shape: source.schema.shape.clone(),
-            minimum_raw: i64::MIN,
-            maximum_raw: i64::MAX,
-            normalization_digest: utility_profile.normalization_manifest_digest,
-        };
+        let target = utility_target_schema(utility_profile, source)?;
         let (signal, admission) =
             rescale_signal_registered_receipt_v1(source, &target, &self.registry)?;
         if admission.registry_digest != self.registry_digest {
             return Err(NduNumericAdmissionErrorV1::RegistryDigestMismatch);
         }
-        let axis_values = utility_profile
-            .dimensions
-            .iter()
-            .zip(signal.values.iter())
-            .map(|((axis, _), value)| AxisValue {
-                axis: axis.clone(),
-                value: codex_hepta_types::FixedQ32::from_raw(*value),
-            })
-            .collect();
+        let axis_values = utility_axis_values(utility_profile, &signal);
         Ok(NduRegisteredUtilitySignalV1 {
             signal,
             axis_values,
@@ -163,10 +113,84 @@ impl NduNumericRegistryV1 {
     }
 }
 
+// Shared V1/V2 projection rules; neither path implements another converter.
+pub(crate) fn utility_signal_from_axes(
+    profile: &UtilityProfile,
+    axes: &[AxisValue],
+) -> Result<NumericSignalV1, NduNumericAdmissionErrorV1> {
+    if axes.len() != profile.dimensions.len() || axes.len() > 8 {
+        return Err(NduNumericAdmissionErrorV1::AxisCountMismatch);
+    }
+    let mut values = Vec::with_capacity(axes.len());
+    for (axis, _) in &profile.dimensions {
+        let mut matches = axes.iter().filter(|value| value.axis == *axis);
+        let value = matches
+            .next()
+            .ok_or(NduNumericAdmissionErrorV1::AxisIdentityMismatch)?;
+        if matches.next().is_some() {
+            return Err(NduNumericAdmissionErrorV1::AxisIdentityMismatch);
+        }
+        values.push(value.value.raw());
+    }
+    Ok(NumericSignalV1 {
+        schema: NumericSignalSchemaV1 {
+            profile: NumericProfileV1::SignedQ32NearestTiesEven,
+            unit: SignalUnitV1::Utility,
+            shape: vec![values.len()],
+            minimum_raw: i64::MIN,
+            maximum_raw: i64::MAX,
+            normalization_digest: profile.normalization_manifest_digest,
+        },
+        values,
+    })
+}
+
+pub(crate) fn utility_target_schema(
+    utility_profile: &UtilityProfile,
+    source: &NumericSignalV1,
+) -> Result<NumericSignalSchemaV1, NduNumericAdmissionErrorV1> {
+    if source.schema.normalization_digest != utility_profile.normalization_manifest_digest {
+        return Err(NduNumericAdmissionErrorV1::NormalizationMismatch);
+    }
+    if source.schema.unit != SignalUnitV1::Utility {
+        return Err(NduNumericAdmissionErrorV1::UnitMismatch);
+    }
+    if source.values.len() != utility_profile.dimensions.len() {
+        return Err(NduNumericAdmissionErrorV1::AxisCountMismatch);
+    }
+    if source.schema.shape != [utility_profile.dimensions.len()] {
+        return Err(NduNumericAdmissionErrorV1::ShapeMismatch);
+    }
+
+    Ok(NumericSignalSchemaV1 {
+        profile: NumericProfileV1::SignedQ32NearestTiesEven,
+        unit: SignalUnitV1::Utility,
+        shape: source.schema.shape.clone(),
+        minimum_raw: i64::MIN,
+        maximum_raw: i64::MAX,
+        normalization_digest: utility_profile.normalization_manifest_digest,
+    })
+}
+
+pub(crate) fn utility_axis_values(
+    utility_profile: &UtilityProfile,
+    signal: &NumericSignalV1,
+) -> Vec<AxisValue> {
+    utility_profile
+        .dimensions
+        .iter()
+        .zip(signal.values.iter())
+        .map(|((axis, _), value)| AxisValue {
+            axis: axis.clone(),
+            value: codex_hepta_types::FixedQ32::from_raw(*value),
+        })
+        .collect()
+}
+
 /// NDU utility-axis values with a distinct registry-admission receipt.
 ///
 /// `admission.conversion` remains the pure arithmetic receipt.  The outer type
-/// additionally carries the immutable registry generation and admission digest,
+/// additionally carries the immutable registry content digest and admission digest,
 /// so downstream code cannot treat a plain conversion as owner admission.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NduRegisteredUtilitySignalV1 {

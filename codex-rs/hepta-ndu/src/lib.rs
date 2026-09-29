@@ -86,6 +86,7 @@ pub use owner::NduOwnerContextV1;
 pub use owner::NduOwnerError;
 pub use owner::NduOwnerMutationV1;
 pub use owner::NduProductionPolicyV1;
+pub use owner::NduRegisteredUtilitySignalV2;
 pub use preference::NduSolverIterationReceipt;
 pub use preference::NduSolverTerminationReceipt;
 pub use preference::PreferenceState;
