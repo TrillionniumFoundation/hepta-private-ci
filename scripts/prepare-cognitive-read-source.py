@@ -18,9 +18,12 @@ BASE = "a126987b84737dbc2ee2592442a314117bddb4a2"
 MAP = "docs/modules/cognitive.read/IMPLEMENTATION_MAP.json"
 SUPPLEMENT = "docs/modules/cognitive.read/FINAL_USE_CLOSURE.md"
 AGENTD = "codex-rs/hepta-agentd/src/"
+MEMORY = "codex-rs/hepta-memory/src/"
+CAPACITY_GUIDE = "docs/modules/cognitive.read/SELECTED_OWNER_CUT.md"
+INTEGRATION_PATHS = [MEMORY + "lane_c_snapshot.rs", MEMORY + "lib.rs", AGENTD + "cognitive_context.rs", AGENTD + "cognitive_context_final_use.rs"]
 NEW_PATHS = [AGENTD + "cognitive_context_" + suffix + ".rs" for suffix in (
     "final_use", "plan", "plan_tests", "observation", "observation_tests", "closure_tests",
-)]
+)] + [MEMORY + "lane_c_selected_snapshot.rs", MEMORY + "lane_c_selected_snapshot_tests.rs"]
 
 
 def git(*args: str) -> str:
@@ -41,6 +44,7 @@ def replace_once(path: Path, old: str, new: str) -> None:
 
 
 def prepare_sources() -> None:
+    run("python3", "scripts/apply-cognitive-read-selected-cut.py", "--expected-sha", git("rev-parse", "HEAD"))
     replace_once(
         ROOT / (AGENTD + "cognitive_context_final_use.rs"),
         "use crate::CognitiveContextRevalidation;\n",
@@ -59,8 +63,6 @@ def prepare_sources() -> None:
             raise ValueError("unexpected Agentd Cargo.lock stanza")
         match = matches[0]
         stanza = match.group().replace("dependencies = [\n", 'dependencies = [\n "codex-otel",\n', 1)
-        # Preserve Cargo's lexical dependency ordering without touching any
-        # registry package, checksum, source URL or dependency version.
         start = stanza.index("dependencies = [\n") + len("dependencies = [\n")
         end = stanza.index("\n]", start)
         deps = sorted(stanza[start:end].splitlines())
@@ -76,6 +78,7 @@ def prepare_sources() -> None:
         lock.write_text(after_text)
     allowed = set(git("diff", "--name-only", BASE, "HEAD", "--", "codex-rs").splitlines())
     allowed.add("codex-rs/Cargo.lock")
+    allowed.update(INTEGRATION_PATHS)
     run("cargo", "fmt", "--manifest-path", "codex-rs/Cargo.toml", "--all")
     changed = git("diff", "--name-only").splitlines()
     for path in changed:
@@ -84,7 +87,7 @@ def prepare_sources() -> None:
     run("git", "diff", "--check")
     if changed:
         run("git", "add", "--", *changed)
-        run("git", "commit", "-m", "fix(cognitive.read): prepare locked and formatted closure source")
+        run("git", "commit", "-m", "fix(cognitive.read): integrate selected owner cuts and prepare locked source")
 
 
 def refresh_map() -> None:
@@ -101,7 +104,7 @@ def refresh_map() -> None:
     for identity in ("sourceBase", "observedAtHead"):
         mapping[identity] = {"commit": source, "tree": tree}
     objects = {entry["path"]: entry for entry in mapping["sourceObjects"]}
-    for name in NEW_PATHS + [SUPPLEMENT]:
+    for name in NEW_PATHS + INTEGRATION_PATHS + [SUPPLEMENT, CAPACITY_GUIDE, "scripts/apply-cognitive-read-selected-cut.py"]:
         if not (ROOT / name).is_file():
             raise ValueError(f"required closure source is absent: {name}")
         objects.setdefault(name, {"path": name})
@@ -112,12 +115,26 @@ def refresh_map() -> None:
     if isinstance(exact, dict):
         for entry in exact.get("entries", []):
             entry["blobSha"] = objects[entry["path"]]["object"]
+    if not any(op["operation"] == "durable_cognitive_selection_snapshot" for op in mapping["operations"]):
+        mapping["operations"].append({
+            "operation": "durable_cognitive_selection_snapshot",
+            "nativeSymbol": "lane_c_snapshot_ids",
+            "sourcePath": MEMORY + "lane_c_selected_snapshot.rs",
+            "state": "source_implemented_product_composed",
+            "authority": "none",
+            "tests": [MEMORY + "lane_c_selected_snapshot_tests.rs"],
+            "sourcePathExists": True,
+            "designOperation": "acquire_snapshot",
+            "mappingClass": "existing_owner_adapter",
+            "delegatedCallees": [MEMORY + "lane_c_snapshot.rs"],
+            "sourceBlob": git("rev-parse", f"{source}:{MEMORY}lane_c_selected_snapshot.rs"),
+        })
     for operation in mapping["operations"]:
         if operation["operation"] == "final_use_revalidate":
             operation["sourcePath"] = AGENTD + "cognitive_context_final_use.rs"
             operation["tests"] = sorted(set(operation["tests"] + [p for p in NEW_PATHS if p.endswith("_tests.rs")]))
             callees = operation.setdefault("delegatedCallees", [])
-            for name in [AGENTD + "cognitive_context.rs", AGENTD + "cognitive_context_plan.rs", AGENTD + "cognitive_context_observation.rs"]:
+            for name in [AGENTD + "cognitive_context.rs", AGENTD + "cognitive_context_plan.rs", AGENTD + "cognitive_context_observation.rs", MEMORY + "lane_c_selected_snapshot.rs"]:
                 if name not in callees:
                     callees.append(name)
         if "sourceBlob" in operation:
@@ -126,10 +143,11 @@ def refresh_map() -> None:
         if caller["role"] == "owner_final_use_revalidation":
             caller["sourcePath"] = AGENTD + "cognitive_context_final_use.rs"
         caller["blobSha"] = git("rev-parse", f'{source}:{caller["sourcePath"]}')
-    mapping["observedSourcePaths"] = sorted(set(mapping.get("observedSourcePaths", []) + NEW_PATHS + [SUPPLEMENT]))
+    mapping["observedSourcePaths"] = sorted(set(mapping.get("observedSourcePaths", []) + NEW_PATHS + INTEGRATION_PATHS + [SUPPLEMENT, CAPACITY_GUIDE]))
     supplements = mapping.setdefault("technicalSupplements", [])
-    if SUPPLEMENT not in supplements:
-        supplements.append(SUPPLEMENT)
+    for guide in [SUPPLEMENT, CAPACITY_GUIDE]:
+        if guide not in supplements:
+            supplements.append(guide)
     if json.dumps(mapping.get("claimBoundary"), sort_keys=True) != before_flags:
         raise ValueError("preparation changed evidence claims")
     path.write_text(json.dumps(mapping, indent=2) + "\n")
