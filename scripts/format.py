@@ -333,18 +333,47 @@ def formatting_configuration_changed(path: str, base: str | None = None) -> bool
     return previous != current
 
 
+def rust_configuration_scope(paths: list[str]) -> list[str]:
+    """Expand changed Rust configuration to its subtree, never unrelated crates.
+
+    Include tracked and untracked source, but never generated/ignored build
+    output or deleted files. A removed configuration still changes its subtree.
+    Explicit --all remains the Cargo-workspace formatting entry point.
+    """
+    roots = {
+        Path(path).parent
+        for path in paths
+        if Path(path).name in {"rustfmt.toml", ".rustfmt.toml"}
+    }
+    selected = {path for path in paths if path.endswith(".rs")}
+    if roots:
+        inventory = subprocess.check_output(
+            ["git", "ls-files", "-z", "--cached", "--others", "--exclude-standard"],
+            cwd=REPO_ROOT,
+        )
+        for raw in inventory.split(b"\0"):
+            value = os.fsdecode(raw)
+            source = Path(value)
+            if source.suffix != ".rs" or not any(
+                source.is_relative_to(root) for root in roots
+            ):
+                continue
+            target = REPO_ROOT / source
+            if not target.resolve().is_relative_to(REPO_ROOT.resolve()):
+                raise ValueError(f"Rust format input escapes repository: {value!r}")
+            if target.is_file():
+                selected.add(value)
+    return sorted(selected)
+
+
 def scoped_formatter_groups(
     paths: list[str], *, check: bool, base: str | None = None
 ) -> tuple[FormatterGroup, ...]:
     groups = []
     if "justfile" in paths:
         groups.append(just_formatter_group(check=check))
-    rust = [
-        path for path in paths if path.startswith("codex-rs/") and path.endswith(".rs")
-    ]
-    if any(Path(path).name in {"rustfmt.toml", ".rustfmt.toml"} for path in paths):
-        groups.append(rust_formatter_group(check=check))
-    elif rust:
+    rust = rust_configuration_scope(paths)
+    if rust:
         groups.append(
             FormatterGroup(
                 "Rust", tuple(rust_file_command(path, check=check) for path in rust)
