@@ -1,0 +1,92 @@
+       "path": "docs/modules/runtime.agentd/TECHNICAL.md",
+-      "object": "2922425d215e1928d0d72c80789261f4198cb3e5"
++      "object": "6314de33a60a2a433aed558c8b12eee8b86dd1dd"
+     }
+   ]
+ }
+--- a/qualification/module-execution-dossiers/detail/runtime.agentd.md
++++ b/qualification/module-execution-dossiers/detail/runtime.agentd.md
+@@ -53,6 +53,7 @@
+ - **Instance lifecycle and maintenance:** the canonical bootstrap returns one explicit `RuntimeCodexSupervisorHandleV1`; no process-global `OnceLock` owns the executor. The same handle is attached to state for readiness/cancellation and consumed by the required `RuntimeTasks` owner after fallible startup. Periodic recovery and archival are separately joined, use cancellation-aware keyed locks and bounded cursor pages, and preserve witness/fsync/no-replay ordering. Shutdown closes admission, accounts for reservations and dequeued work, joins jobs and maintenance, and retains cleanup failure.
+ - **Operational diagnosis:** the supervisor snapshot separates reservations, queue, running jobs, oldest queued age, recovery scan/duration/lock wait, unresolved ages, pending archive, archive progress, persistence/shutdown failures and rejection causes. These are source surfaces; exporter delivery and target thresholds still require a selected host.
+ - **Dependency boundary:** `DEPENDENCY_BOUNDARY.json` and its verifier freeze the current broad product-adapter inventory without falsely claiming it is optional. Default write authority remains off, while core-only compilation remains an explicit future gate rather than a renamed `--no-default-features` result.
++- **Exact-candidate fixture integrity:** the qualification runner builds the real App Server, Agentd, Supervisor, Codex and inference-worker executables from Cargo JSON output, snapshots the exact bytes away from Cargo's relinkable target names, binds all test aliases to those snapshots and verifies them after the suite. This removes false mutation reports without weakening binary-drift detection.
+ - **Source tests:** [codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs](../../../codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs), [codex-rs/hepta-agentd/src/state_isolation_tests.rs](../../../codex-rs/hepta-agentd/src/state_isolation_tests.rs), [codex-rs/hepta-agentd/src/runtime_tests.rs](../../../codex-rs/hepta-agentd/src/runtime_tests.rs), [codex-rs/hepta-agentd/src/cognitive_context_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_tests.rs). These are test identities, not execution receipts for this documentation revision.
+ - **Implementation and operating references:** [docs/readiness/LANE_B_NATIVE_HOST.md](../../../docs/readiness/LANE_B_NATIVE_HOST.md), [codex-rs/hepta-agentd/AUTHBUS_TEXT.md](../../../codex-rs/hepta-agentd/AUTHBUS_TEXT.md).
+ - **Durable run-start projection:** `AgentRunCoordinator::start_revalidated_run_start` accepts only a product-revalidated `RunStartRecordV1` and projects the canonical durable tuple into the sole daemon coordinator: `admitted_source_digest` is the runtime request identity; runtime body, artifact set, authority epoch, generation, fence and deadline are exact durable fields. `ExplicitAbstain` never enters runtime admission. The bridge deliberately does not authenticate a raw retained journal record; current AuthBus/trust revalidation is a mandatory caller precondition.
+--- a/scripts/qualification/agentd_exact_head.py
++++ b/scripts/qualification/agentd_exact_head.py
+@@ -15,6 +15,7 @@
+ from pathlib import Path
+ import re
+ import signal
++import shutil
+ import subprocess
+ import sys
+ import time
+@@ -24,8 +25,8 @@
+ OSES = ("ubuntu-latest", "macos-latest")
+ SUITES = ("owner-libraries", "native-library", "native-process", "daemon-process",
+           "product-process", "strict-clippy", "read-only-profile")
+-PACKAGES = ("codex-cli", "codex-hepta-agentd", "codex-hepta-supervisor",
+-            "codex-hepta-infer-worker-host")
++PACKAGES = ("codex-cli", "codex-app-server", "codex-hepta-agentd",
++            "codex-hepta-supervisor", "codex-hepta-infer-worker-host")
+ COMMANDS = {
+     "owner-libraries": [["test", "-p", "codex-hepta-agentd", "--lib"],
+                         ["test", "-p", "codex-hepta-supervisor", "--lib"]],
+@@ -34,11 +35,12 @@
+     "daemon-process": [["test", "-p", "codex-hepta-agentd", "--test", "supervisord_product_e2e"]],
+     "product-process": [["test", "-p", "codex-hepta-agentd", "--test", "runtime_codex_product_e2e"]],
+     "strict-clippy": [["clippy", "-p", "codex-hepta-agentd", "-p", "codex-hepta-supervisor",
+-                       "-p", "codex-hepta-infer-worker-host", "--all-targets", "--", "-D", "warnings"]],
++                       "-p", "codex-hepta-infer-worker-host", "--all-targets", "--no-deps", "--", "-D", "warnings"]],
+     "read-only-profile": [["test", "-p", "codex-hepta-agentd", "--no-default-features", "--lib"]],
+ }
+ ALIASES = {
+     "CODEX": ("codex",),
++    "APP_SERVER": ("codex-app-server",),
+     "AGENTD": ("codex-hepta-agentd",),
+     "SUPERVISOR": ("hepta-supervisord",),
+     "INFER_WORKER": ("hepta-infer-worker",),
+@@ -115,28 +117,59 @@
+             "log": log.name, "log_sha256": sha256(log)}
+ 
+ 
+-def fixture_environment(log: Path, env: dict[str, str]) -> dict[str, dict[str, Any]]:
++def fixture_environment(
++    log: Path, env: dict[str, str], fixture_root: Path
++) -> dict[str, dict[str, Any]]:
+     artifacts: dict[str, Path] = {}
+     for line in log.read_text(encoding="utf-8", errors="replace").splitlines():
+         try:
+             event = json.loads(line)
+         except ValueError:
+             continue
+-        if isinstance(event, dict) and event.get("reason") == "compiler-artifact" and event.get("executable"):
+-            artifacts[event["target"]["name"]] = Path(event["executable"]).resolve(strict=True)
++        if (
++            isinstance(event, dict)
++            and event.get("reason") == "compiler-artifact"
++            and event.get("executable")
++        ):
++            artifacts[event["target"]["name"]] = Path(event["executable"]).resolve(
++                strict=True
++            )
++
++    require(not fixture_root.exists(), "refuse to reuse a fixture snapshot directory")
++    fixture_root.mkdir(parents=True)
+     result: dict[str, dict[str, Any]] = {}
+     for role, names in ALIASES.items():
+         choices = [artifacts[name] for name in names if name in artifacts]
+         require(len(choices) == 1, f"missing or ambiguous Cargo executable for {role}")
+-        path = choices[0]
+-        require(path.is_file() and os.access(path, os.X_OK), f"non-executable fixture: {path}")
++        source = choices[0]
++        require(
++            source.is_file() and os.access(source, os.X_OK),
++            f"non-executable fixture: {source}",
++        )
++        path = fixture_root / f"{role.lower()}-{source.name}"
++        try:
++            # The snapshot lives below the Cargo target filesystem. A hard link
