@@ -28,6 +28,7 @@ jobs:
       - name: Materialize candidate
         run: |
           python3 .github/scripts/runtime_supervisor_source.py
+          python3 .github/scripts/runtime_supervisor_pre_integration.py
           python3 .github/scripts/runtime_supervisor_integration.py
           python3 .github/scripts/runtime_supervisor_fixups.py
 
