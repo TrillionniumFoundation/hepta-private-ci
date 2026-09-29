@@ -1,138 +1,178 @@
 # utility.ndu production hardening
 
-Status: source candidate; production activation remains gated.
+Status: unified source candidate; production selection, activation and release remain gated.
 
-This document is normative for the hardening layer added after the V1 projection journal. It distinguishes repository-controlled source obligations from external evidence that cannot be inferred from source presence.
+This document is normative for the hardening layer of the unified `utility.ndu` candidate. It distinguishes repository-controlled source obligations from external deployment evidence that cannot be inferred from source presence.
 
-## Qualification order
+## 1. Qualification order
 
-The module is qualified in this order:
+Qualification is monotone and ordered:
 
-1. exact-source and synthetic-merge compilation and regression tests;
-2. strict Clippy and formatting on the same source SHA;
-3. named-host qualification receipt on that same SHA;
-4. production-filesystem crash/recovery qualification;
-5. authenticated production owner and writer composition;
-6. learned FBSDE shadow evidence and staged promotion.
+1. exact-head source policy, format, lockfile and closed-world object validation;
+2. deterministic core, authority, migration, replay and public-API tests;
+3. real Control and Agentd product caller regressions;
+4. strict Clippy and all-target compilation;
+5. deterministic synthetic-merge repetition of the same gates;
+6. named-host fault, capacity and recovery receipts on the same source identity;
+7. target production filesystem and shared-volume qualification;
+8. authenticated production composition and external service enrollment;
+9. independent stochastic acceptance and staged rollout.
 
-A later item never compensates for a missing earlier item.
+A later item never compensates for a missing earlier item. Parent-branch receipts do not qualify a descendant.
 
-## Authority and hierarchy
+## 2. Authority and authenticity
 
-`NduHierarchySnapshotProofV1` binds every staged update to:
+The deterministic V1 hierarchy proof remains a path/snapshot consistency object. Authenticated use requires `NduSignedHierarchyProofV2`, which binds:
 
-- one hierarchy identifier;
-- one canonical root-to-subject path;
-- one authoritative snapshot digest;
-- one proof digest over those values.
+- hierarchy identifier and complete canonical path;
+- snapshot and proof digests;
+- subject, parent, class and generation;
+- issuance and expiry;
+- revocation epoch and current frontier digest;
+- policy digest and signer key identity;
+- Ed25519 signature and canonical receipt digest.
 
-`validate_authoritative_staged_updates` rejects any ancestor/descendant pair in the same generation, including a grandparent/grandchild pair for which the intermediate node is not in the batch. Siblings remain independently admissible. Different snapshots for one hierarchy in one generation fail closed.
+The signer is admitted only through `NduAuthorityTrustBindingV2`, which binds the exact verifying key, validity interval, trust revision and policy. Trusted time, key identity, policy, epoch and frontier are checked at verification time. Source code never mints an external authority.
 
-The legacy direct-parent helper remains available only for compatibility. Production admission must use the snapshot-proof API.
+## 3. Immutable artifact location
 
-## Projection catalog V2
+Production admission uses `NduImmutableLocatorV2`. The accepted closed schemes are:
 
-`NduProjectionCatalogV2` separates event action from projection type. The selection key is:
+- `artifact://sha256/<digest>`;
+- `s3+version://<bucket>/<key>?versionId=<exact-version>#sha256=<digest>`;
+- `https+sha256://<address>#sha256=<digest>`;
+- `file+sha256:///<absolute-path>#sha256=<digest>`.
+
+A plain mutable URL, missing content digest, missing S3 object version, path traversal, locator/content mismatch or object-version mismatch fails closed.
+
+`NduAuthenticatedProjectionArtifactV3` signs the validated durable artifact binding and immutable-locator binding together. A valid signature cannot authorize different bytes, a different locator or a different durable binding.
+
+## 4. Projection catalog and migration
+
+`NduProjectionCatalogV2` separates event action from the closed artifact kinds `preference`, `utility` and `coefficient`. The selection key is:
 
 ```text
 (objective_digest, subject_digest, projection_kind)
 ```
 
-The closed projection-kind set is:
+Operation identity is resolved before mutable current-state checks. Therefore an identical replay returns the original terminal entry after a later revocation, while a new selection against the revoked artifact is rejected.
 
-- preference;
-- utility;
-- coefficient.
+V1 migration requires an explicit resolver for every legacy preference or utility payload. Migration never invents an immutable locator. Missing, conflicting or ambiguous legacy kind fails closed. Coefficient has no implicit V1 migration.
 
-Publishing requires `NduDurableProjectionArtifactV2`, which binds the projection digest to an immutable locator, byte size, schema revision, policy digest, provenance digest and retention epoch. Its fields are private and the binding digest is recomputed by validation.
+Before the first acknowledged V2 store mutation, the production writer must retain an immutable, externally acknowledged V1 backup. A V1 binary must never open or truncate a V2 image. After any V2 acknowledgement, recovery is forward-only from the V2 snapshot/WAL or its acknowledged backup.
 
-Operation identity is resolved before current-state checks. Therefore:
+## 5. Evidence compatibility and sealing
 
-- replay of an already successful selection returns its original terminal entry even after a later revocation;
-- a new selection operation against the same revoked artifact is rejected;
-- reuse of an operation identity for different semantics is an identity conflict.
+V1 receipt source compatibility is frozen by `PUBLIC_API_BASELINE_V1.json` and an external-crate compile fixture.
 
-V1 migration requires an explicit resolver that maps every legacy preference or utility payload to a validated durable artifact. Migration does not invent an artifact locator. A legacy selected/revoked digest that is absent or ambiguous across projection kinds fails closed. Coefficient projection has no implicit V1 migration because V1 did not represent that kind.
+`NduIterationReceiptV2` and `ZQ24ConversionReceiptV2` are sealed additive types. Migration requires independent V1 canonical recomputation. The Z migration also requires the original source matrix and admitted conversion profile; the implementation does not infer missing source input from converted output.
 
-### Rollback rule
+Every V2 receipt digest is recomputed from the complete canonical field set. Floating-point digest inputs normalize negative zero and reject non-finite values.
 
-A V2 production writer must preserve an immutable V1 backup before its first V2 commit. A V1 binary must not open or truncate a V2 image. Rollback is permitted only before any V2 mutation is acknowledged; after acknowledgement, recovery is forward-only from the V2 snapshot/WAL or its externally acknowledged backup. The source-level catalog and migration fixture do not by themselves establish that production backup transport exists.
+## 6. Historical replay versus current use
 
-## Evidence sealing
+Historical operation outcome is not present authorization.
 
-`NduIterationReceiptV1`, `NduSolverIterationReceipt` and `ZQ24ConversionReceiptV1` do not expose externally constructible evidence fields. Canonical iteration receipts provide validation and read-only accessors. Z-conversion receipts expose read-only accessors and validate dimensions, Q24 reconstruction, profile binding, digest presence and deny-all authority posture.
+`NduHistoricalReplayReceiptV2` is deny-all evidence of a previous terminal catalog entry. It permits lost-response reconciliation.
 
-Floating-point digest inputs normalize negative zero before hashing. Non-finite values remain rejected.
+Current use requires a separate `validate_current_use_v2` call that revalidates:
 
-## Production capabilities
+- current catalog selection;
+- authenticated artifact and durable binding equality;
+- authenticated artifact expiry;
+- trusted-time receipt;
+- current revocation frontier;
+- artifact availability receipt;
+- final-use grant binding;
+- current production policy.
 
-The hardening layer defines minimal ports for:
+Revocation removes the current selection. The historical outcome remains queryable but cannot be consumed as a final-use grant.
 
-- grant refresh;
-- revocation frontier reads;
-- trusted-time receipts;
-- durable artifact availability verification.
+## 7. Production composition
 
-These ports do not mint authority. The production owner must be the only holder of the mutable journal/store capability. Read-only planner code may consume a validated selected artifact but must not receive a store handle, journal mutation API or authority-administration capability.
+The production composition is incomplete unless concrete bindings exist for every role:
 
-## Required operational metrics
+- persistent projection store;
+- authenticated owner/writer;
+- process fence;
+- cross-host fence;
+- trusted time;
+- revocation frontier;
+- artifact registry;
+- encrypted remote backup;
+- restore executor;
+- metrics exporter;
+- real product caller.
 
-`NduAuditMetricsV1` carries the following bounded observations:
+Each binding includes adapter identity, implementation/configuration digest, policy digest and revision, deployment-instance digest and capability receipt. Duplicate identity, duplicate role or missing role is rejected.
 
-- oldest pending operation age;
-- journal utilization;
-- compaction duration;
-- replay duration;
-- poisoned owner count;
-- indeterminate commit count;
-- revocation lag;
-- artifact unavailable count;
-- grant refresh failure count;
-- restore monotonicity failure count.
+A readiness receipt additionally binds exact-head and synthetic-merge qualification, target host/filesystem, shared-volume fence, backup readback, restore drill, metrics delivery, real caller and independent stochastic acceptance. The receipt remains `DENY_ALL`; it is not activation authority.
 
-The presence of the metric type is not evidence that a production exporter or alert route is deployed.
+## 8. Persistence completion gate
 
-## Persistence completion gate
-
-Production persistence is not complete until one exact source SHA has evidence for all of the following:
+Production persistence is not complete until one exact source identity has retained evidence for:
 
 - private directory ownership and mode;
-- no-follow/dirfd-safe path handling appropriate to the target operating system;
-- stage-classified I/O failures;
-- process kill before and after write, file sync, rename and directory sync;
-- disk-full and quota exhaustion;
-- rename and sync failure injection;
-- recovery from valid snapshot plus bounded WAL;
-- index reconstruction and bounded compaction;
-- encrypted backup transport, retention and external acknowledgement;
-- monotonic restore drill on the target filesystem;
-- a retained recovery receipt naming source SHA, source tree, host and filesystem profile.
+- no-follow/dirfd-safe handling appropriate to the target OS;
+- root, lock and state device/inode stability;
+- single writer and cross-host fencing;
+- write, file-sync, rename and directory-sync cuts;
+- SIGKILL before and after every durability boundary;
+- ENOSPC, EDQUOT, EROFS, permission, symlink and hard-link failures;
+- indeterminate-commit poisoning and reconciliation;
+- valid snapshot plus bounded WAL recovery;
+- index reconstruction, checkpoint and bounded compaction;
+- archive-before-rotation and non-resurrection;
+- encrypted off-host copy, immutable version and exact readback;
+- monotonic restore drill;
+- retained host/kernel/filesystem/source receipt.
 
-The repository V1 store remains a bounded source candidate. It must not be described as production-qualified merely because injected persistence tests pass.
+Hosted CI and mounted fault fixtures do not prove physical power-loss behavior on the production filesystem.
 
-## Learned FBSDE gate
+## 9. Operational evidence
 
-The following source contracts exist without claiming model efficacy:
+The source defines bounded observations for evaluation, uncertainty, rejections, persistence stages, lock/fence behavior, corruption, recovery, replay, capacity, revocation lag, artifact availability, grant refresh and restore monotonicity.
 
-- `NduImmutableTrainingDataBindingV1` for immutable data, provenance and authorization;
-- `NduFiltrationContractV1` for trusted time, information set and a no-future-data receipt;
-- `NduShadowPromotionPolicyV1` for minimum shadow samples and independent runs, with mandatory convergence, calibration, utility-improvement and regression acceptance.
+Production closure additionally requires:
 
-Promotion requires independent reference implementations for covariance, Z conversion and recursive utility, plus retained evidence for convergence, calibration, utility improvement and regressions. Shadow numerical primitives are not a learned production model. Advice-only, restricted-write and production-use stages must be separate and monotone.
+- a named exporter adapter and deployment instance;
+- bounded labels and stable metric schema;
+- dashboards and SLO thresholds;
+- alert delivery receipt;
+- operator runbook acceptance;
+- paging tests for corruption, poisoned owner, stale fence, backup age and restore failure.
 
-## External evidence still required
+A metric type in source is not proof that monitoring is deployed.
 
-The following cannot be closed by this source change and remain explicit activation blockers:
+## 10. Independent FBSDE gate
 
-- selection of the actual production owner and writer;
-- deployment of the four capability-port adapters;
-- target production filesystem recovery qualification;
-- backup transport, encryption, retention and restore monitoring;
-- production metric export and alerting;
-- immutable training dataset registration;
-- complete time discretization and training loop;
-- independent numerical reference runs;
-- convergence, calibration and utility-improvement acceptance;
-- sufficient shadow sample volume and staged promotion approval.
+The bounded FBSDE candidate includes dataset admission, filtration/leakage rejection, fixed-horizon backward training, Q24 artifact sealing, independent reference recomputation and shadow stages.
 
-No readiness document or CI receipt may convert one of these external blockers to complete without the named retained evidence.
+Independent acceptance requires candidate-bound evidence for:
+
+- registered immutable dataset and locator binding;
+- filtration and leakage audit;
+- independent numerical oracle;
+- convergence envelope;
+- calibration, utility-improvement and regression acceptance;
+- sufficient shadow episode and decision volume;
+- advisory and restricted-write runtime receipts;
+- target-host receipt;
+- deterministic rollback policy and current non-triggered rollback receipt.
+
+Rollback thresholds cover holdout RMSE, calibration error, utility improvement, failure count and minimum decision count. Any violation blocks acceptance. Independent acceptance remains deny-all and does not register, select, promote, activate or release a model.
+
+## 11. External activation blockers
+
+The following cannot be closed by source changes alone:
+
+- enrollment of the actual production host, filesystem and shared volume;
+- selected production owner/writer and all concrete adapter deployments;
+- protected clock and independent anti-rollback/revocation provider;
+- approved cloud account, bucket, KMS policy, immutable object version and readback;
+- off-host copy count, restore, retention and deletion execution;
+- monitoring and operator-response installation;
+- registered production dataset and independent model-governance approval;
+- canary, promotion, activation and release authority.
+
+No document, source type or hosted-CI result may convert these external gates to complete without the named retained evidence.
