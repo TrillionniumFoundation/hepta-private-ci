@@ -47,6 +47,8 @@ run_step teacher-connectivity python3 -m unittest discover \
 run_step decision-cell-count-support python3 -m unittest discover \
   -s codex-rs/hepta-neuron/qualification -p 'test_binomial_support.py' -v
 run_step native-model-selection node --test apps/hepta-native/test/model-decision.test.js
+run_step native-evidence python3 -m unittest discover \
+  -s codex-rs/hepta-neuron/qualification -p 'test_native*evidence.py' -v
 run_step decision-cell-metrics python3 -m unittest discover \
   -s codex-rs/hepta-neuron/qualification -p 'test_decision_cell_metrics.py' -v
 run_step decision-cell-snapshot python3 -m unittest discover \

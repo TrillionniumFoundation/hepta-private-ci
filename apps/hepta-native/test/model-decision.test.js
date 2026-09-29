@@ -56,3 +56,55 @@ test("sparse probability arrays and nonstring identifiers reject", () => {
   value.probabilities.target = one(4, 1); value.requestId = 12;
   assert.throws(() => clipboardChoiceFromModel(value, 1), /identity/);
 });
+
+test("own array reducers cannot bypass probability validation", () => {
+  const value = input();
+  value.probabilities.action = [NaN, 0, 1, 0, 0, 0];
+  value.probabilities.action.some = () => false;
+  value.probabilities.action.reduce = (_fn, initial) => initial === 0 ? 1 : 2;
+  assert.throws(() => clipboardChoiceFromModel(value, 1), /probability|array/);
+});
+test("array method accessors are rejected without being executed", () => {
+  const value = input(); let calls = 0;
+  Object.defineProperty(value.probabilities.action, "some", { get() { calls++; return () => false; } });
+  assert.throws(() => clipboardChoiceFromModel(value, 1), /probability|array/);
+  assert.equal(calls, 0);
+});
+test("target array getters never run even when returning a legal target", () => {
+  const value = input(); const target = value.targets[3]; let calls = 0;
+  Object.defineProperty(value.targets, "3", { get() { calls++; return target; }, enumerable: true });
+  assert.throws(() => clipboardChoiceFromModel(value, 1), /target|array/);
+  assert.equal(calls, 0);
+});
+test("target iterators cannot hide duplicate or stale targets", () => {
+  const value = input(); const allowed = value.targets.map((target) => ({ ...target }));
+  value.targets[3].generation = 2;
+  value.targets[Symbol.iterator] = function* () { yield* allowed; };
+  assert.throws(() => clipboardChoiceFromModel(value, 1), /target|array/);
+});
+test("custom prototypes and non-data records are not admitted", () => {
+  for (const record of ["packet", "probabilities", "target"]) {
+    const value = input();
+    Object.setPrototypeOf(record === "packet" ? value : record === "target" ? value.targets[0] : value.probabilities, { hidden: true });
+    assert.throws(() => clipboardChoiceFromModel(value, 1), /plain|data/);
+  }
+});
+test("returned choices keep validated snapshots after caller mutations", () => {
+  const value = input(); const selected = clipboardChoiceFromModel(value, 1);
+  value.targets[3].text = "substituted"; value.probabilities.target[3] = 0;
+  assert.equal(selected.text, "nonsecret-3"); assert.ok(Object.isFrozen(selected));
+  value.probabilities.target = [.25, .25, .25, .25];
+  const abstained = clipboardChoiceFromModel(value, 1);
+  assert.ok(Object.isFrozen(abstained.predicted));
+});
+test("proxies are rejected before any reflective trap can run", () => {
+  for (const field of ["packet", "action", "targets"]) {
+    let value = input(); let traps = 0;
+    const proxy = (target) => new Proxy(target, { getPrototypeOf() { traps++; throw new Error("trap ran"); }, ownKeys() { traps++; throw new Error("trap ran"); } });
+    if (field === "packet") value = proxy(value);
+    else if (field === "action") value.probabilities.action = proxy(value.probabilities.action);
+    else value.targets = proxy(value.targets);
+    assert.throws(() => clipboardChoiceFromModel(value, 1), /data|array/);
+    assert.equal(traps, 0);
+  }
+});

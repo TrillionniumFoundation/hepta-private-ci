@@ -19,6 +19,7 @@ import time
 import uuid
 
 import decision_cell_bakeoff as panel
+from native_probe_evidence import PROFILE as NATIVE_EVALUATION_PROFILE, evaluate_native_receipt
 
 WORKER = Path(__file__).resolve().parents[2] / "hepta-infer-worker-host/python"
 ROOT = Path(__file__).resolve().parents[3]
@@ -113,33 +114,22 @@ def probe(receipt_path: Path, model_path: Path, output: Path, count: int) -> dic
             native_path = output / f"native-{index}.json"
             code, timed_out = run_native(["node", str(ROOT / "apps/hepta-native/qualification/x11-clipboard.mjs"),
                 str(native_path), str(packet_path), packet_digest], output, index)
-            native = json.loads(native_path.read_text()) if native_path.is_file() and native_path.stat().st_size <= 32768 else None
             item.update(native_exit=code, timed_out=timed_out, packet_sha256=packet_digest,
                         base_forward_passes=observed["base_forward_passes"], model_latency_ns=observed["latency_ns"])
-            if timed_out or native is None:
-                item.update(status="native_indeterminate", task_passed=False, external_effect=None)
-            elif code == 3:
-                item.update(status="abstained", task_passed=bool(example.ood), external_effect=False)
-            elif code == 0:
-                choice = native["modelChoice"]
-                selected = choice["targetIndex"]
-                actual_text = packet["targets"][selected]["text"]
-                readback_matches = native["readbackSha256"] == hashlib.sha256(actual_text.encode()).hexdigest()
-                binding_matches = choice["replySha256"] == reply_digest
-                item.update(status="observed", selected_target_index=selected, external_effect=True,
-                    readback_matches_selected=readback_matches, model_receipt_bound=binding_matches,
-                    task_passed=not example.ood and selected == example.target and readback_matches and binding_matches,
-                    frame_sha256=native["frameSha256"], outcome_digest=native["outcomeDigest"])
-            else:
-                item.update(status="native_rejected", task_passed=False, external_effect=False)
+            item.update(evaluate_native_receipt(native_path, exit_code=code, timed_out=timed_out,
+                packet=packet, source=source, expected_target=example.target,
+                expected_ood=bool(example.ood)))
             records.append(item)
     if panel.repository_source() != source:
         raise ValueError("source changed during qualification")
-    report = {"schema": "hepta.model-native-execution-probe.v1", "source": source,
+    report = {"schema": "hepta.model-native-execution-probe.v2", "source": source,
+        "native_evaluation_profile": NATIVE_EVALUATION_PROFILE,
+        "native_evaluator_sha256": hashlib.sha256((Path(__file__).parent / "native_probe_evidence.py").read_bytes()).hexdigest(),
         "training_receipt_sha256": digest, "head_manifest_sha256": artifact["manifest_sha256"],
         "profile": "synthetic-heldout-command-to-isolated-real-X11-clipboard",
         "records": records, "passed": all(row["task_passed"] for row in records),
         "actual_native_effects": sum(row["external_effect"] is True for row in records),
+        "indeterminate_native_effects": sum(row["external_effect"] is None for row in records),
         "model_process_reaped": child._process.poll() is not None,
         "calibration_trust_granted": False, "backend_and_authority_are_fixtures": True,
         "general_gui_competence": False, "durable_cross_process_recovery": False,
