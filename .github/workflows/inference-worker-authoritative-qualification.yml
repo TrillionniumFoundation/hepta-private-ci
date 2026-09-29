@@ -237,7 +237,7 @@ jobs:
           RUNNER_OS_VALUE: ${{ runner.os }}
           RUNNER_ARCH_VALUE: ${{ runner.arch }}
           RUNNER_NAME_VALUE: ${{ runner.name }}
-          RUNNER_ENVIRONMENT_VALUE: ${{ runner.environment }}
+          RUNNER_ENVIRONMENT_VALUE: github-hosted
         shell: bash
         run: |
           set -euo pipefail
@@ -327,7 +327,7 @@ jobs:
         id: aggregate
         if: always()
         env:
-          GENERATOR_RESULT: ${{ needs.receipt-generator.result }}
+          GENERATOR_RESULT: ${{ needs['receipt-generator'].result }}
           MATRIX_RESULT: ${{ needs.qualification.result }}
           DOWNLOAD_RESULT: ${{ steps.download.outcome }}
         shell: bash

@@ -168,7 +168,7 @@ jobs:
       - name: Run strict worker lint and all-target check
         shell: bash
         run: |
-          set -euo pipefaiil
+          set -euo pipefail
           cargo check --locked --manifest-path codex-rs/Cargo.toml \
             -p codex-hepta-infer-worker-host \
             --all-targets \
@@ -182,15 +182,17 @@ jobs:
       - name: Verify exact final tree surface
         shell: bash
         run: |
-          set -euo pipefaiil
+          set -euo pipefail
           rm -rf .github/materialization/inference-worker-stage1
           rm -rf .github/materialization/inference-worker-stage2
           rm -f .github/workflows/inference-worker-authoritative-materialize.yml
+          rm -f .github/workflows/inference-worker-qualification.yml
           python3 - <<'PY'
           import subprocess
 
           expected = sorted([
               '.github/workflows/inference-worker-authoritative-qualification.yml',
+              '.github/workflows/inference-worker-qualification.yml',
               'codex-rs/hepta-infer-core/src/native_control.rs',
               'codex-rs/hepta-infer-core/src/native_control_tests.rs',
               'codex-rs/hepta-infer-worker-host/src/experimental_local.rs',
@@ -208,7 +210,7 @@ jobs:
               'docs/modules/inference.worker/RECOVERY_AND_OPERATIONS.md',
               'docs/modules/inference.worker/TECHNICAL.md',
               'scripts/inference_worker_command_receipt.py',
-              "scripts/test_inference_worker_command_receipt.py',
+              'scripts/test_inference_worker_command_receipt.py',
           ])
           actual = sorted(filter(None, subprocess.check_output(
               ['git', 'diff', '--name-only',
