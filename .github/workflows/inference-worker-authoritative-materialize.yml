@@ -27,7 +27,7 @@ env:
 jobs:
   converge:
     name: Materialize resource and deadline closure
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     timeout-minutes: 90
     steps:
       - name: Check out exact transfer head
