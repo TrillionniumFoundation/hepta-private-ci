@@ -78,16 +78,18 @@ Each artifact retains:
 
 The aggregate verifier requires the exact ten-artifact pull-request matrix,
 recomputes every inventory and digest, reparses the Cargo listing, and rejects
-missing, extra, renamed, symlinked, modified or resealed evidence.
+missing, extra, renamed, symlinked, modified or resealed evidence. Sealed
+`receipt.json` and `receipt.sha256` sidecars use the same bounded no-symlink,
+stable-file-identity reader as command logs and auxiliary JSON.
 
 ## Executed verifier regressions
 
 Before the files were pushed, Python 3.13.5 compiled the verifier and executed
-11 focused unit tests successfully. The fixtures cover a complete ten-artifact
+12 focused unit tests successfully. The fixtures cover a complete ten-artifact
 matrix, exact-head-only manual behavior, zero-test success, wrong-module
 listing, nonzero Rust-test exit, modified logs, missing or renamed artifacts,
-resealed claim/source substitution, duplicate JSON keys, symlinked logs and
-synthetic-merge parent reversal.
+resealed claim/source substitution, duplicate JSON keys, symlinked logs or
+sealed receipts/checksums, and synthetic-merge parent reversal.
 
 These are verifier-fixture results, not Rust entrypoint execution. The actual
 Rust tests and their exact-head/merge artifacts must be produced by the remote
