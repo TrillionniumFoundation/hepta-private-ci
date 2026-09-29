@@ -60,8 +60,7 @@ impl DurableOperationClock for ManualClock {
 #[test]
 fn recovery_disposition_is_effect_boundary_aware() {
     assert_eq!(
-        DurableOperationError::Conflict(stable_id("operation:conflict"))
-            .recovery_disposition(),
+        DurableOperationError::Conflict(stable_id("operation:conflict")).recovery_disposition(),
         RecoveryDisposition::Reject
     );
     assert_eq!(
