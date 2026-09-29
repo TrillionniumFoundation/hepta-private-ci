@@ -11,7 +11,7 @@ permissions:
 
 concurrency:
   group: intuition-one-shot-authoring-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   apply-verify-push:
