@@ -130,6 +130,13 @@ jobs:
           git commit -m 'feat(ui.native): bound durable history and journal writes' \
             -m 'Add a checkpoint-bound retirement disk index, exact active-operation index, checksummed fsynced WAL, bounded checkpointing and recovery tests while preserving Prepared/Invoking durability, final-use ownership and unknown-result replay fences. Normalize the native Rust source with the pinned formatter and remove the consumed binary patch capsule.'
 
+      - name: Publish the noncanonical exact verification candidate
+        run: |
+          set -euo pipefail
+          candidate_branch="work/ui-native-verification-${TARGET_SHA:0:12}-${SOURCE_SHA:0:12}"
+          git push origin "HEAD:refs/heads/$candidate_branch"
+          printf 'verification candidate: %s at %s\n' "$candidate_branch" "$(git rev-parse HEAD)"
+
       - name: Verify the exact committed source
         run: |
           set -euo pipefail
