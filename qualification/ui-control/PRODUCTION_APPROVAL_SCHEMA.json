@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "hepta.ui-control.production-approval-receipt.v1",
   "title": "ui.control production deployment and release approval",
+  "description": "Each authority records its own approval time after reviewing the exact prerequisite evidence set. The top-level approvedAt is the latest individual authority approval time.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -23,7 +24,11 @@
     "candidateCommit": { "$ref": "#/$defs/sha1" },
     "candidateTree": { "$ref": "#/$defs/sha1" },
     "backendDeploymentDigest": { "$ref": "#/$defs/sha256" },
-    "approvedAt": { "type": "string", "format": "date-time" },
+    "approvedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp of the latest individual authority approval."
+    },
     "expiresAt": { "type": "string", "format": "date-time" },
     "approvals": {
       "type": "array",
@@ -32,10 +37,15 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["role", "identity"],
+        "required": ["role", "identity", "approvedAt"],
         "properties": {
           "role": { "enum": ["deployment-authority", "release-authority", "security-authority"] },
-          "identity": { "type": "string", "minLength": 1, "maxLength": 256 }
+          "identity": { "type": "string", "minLength": 1, "maxLength": 256 },
+          "approvedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Time this authority approved the exact bound evidence set."
+          }
         }
       }
     },

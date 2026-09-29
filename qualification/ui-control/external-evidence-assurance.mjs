@@ -60,6 +60,7 @@ export function validateAssuranceChain(receipts) {
     "assurance chain requires exactly the three production approval roles",
   );
   const approvalPrincipals = new Map();
+  const approvalTimes = new Map();
   const observedPrincipals = new Set();
   for (const approval of approvals) {
     const role = boundedText(approval?.role, "approval.role", 96);
@@ -80,6 +81,10 @@ export function validateAssuranceChain(receipts) {
       "an independent reviewer was reused as a production approval authority",
     );
     approvalPrincipals.set(role, principal);
+    approvalTimes.set(
+      role,
+      normalizedTimestamp(approval?.approvedAt, `${role}.approvedAt`),
+    );
     observedPrincipals.add(principal);
   }
   assertEvidence(
@@ -114,14 +119,37 @@ export function validateAssuranceChain(receipts) {
       "productionApproval.approvedAt",
     ),
   });
-  for (const [name, evidence] of Object.entries(timeline)) {
-    if (name === "productionApprovedAt") continue;
+  const prerequisiteTimeline = Object.entries(timeline)
+    .filter(([name]) => name !== "productionApprovedAt");
+  for (const [name, evidence] of prerequisiteTimeline) {
     assertEvidence(
       timeline.productionApprovedAt.timestamp >= evidence.timestamp,
       "UI_CONTROL_APPROVAL_PREMATURE",
       `production approval predates accepted evidence: ${name}`,
     );
   }
+  for (const [role, approvalTime] of approvalTimes) {
+    for (const [name, evidence] of prerequisiteTimeline) {
+      assertEvidence(
+        approvalTime.timestamp >= evidence.timestamp,
+        "UI_CONTROL_APPROVAL_PREMATURE",
+        `${role} approval predates accepted evidence: ${name}`,
+      );
+    }
+    assertEvidence(
+      approvalTime.timestamp <= timeline.productionApprovedAt.timestamp,
+      "UI_CONTROL_APPROVAL_AFTER_SUMMARY",
+      `${role} approval is later than productionApproval.approvedAt`,
+    );
+  }
+  const latestApproval = Math.max(
+    ...[...approvalTimes.values()].map(value => value.timestamp),
+  );
+  assertEvidence(
+    timeline.productionApprovedAt.timestamp === latestApproval,
+    "UI_CONTROL_APPROVAL_SUMMARY_TIME",
+    "productionApproval.approvedAt must equal the latest individual authority approval",
+  );
 
   return Object.freeze({
     schema: "hepta.ui-control.assurance-chain.v1",

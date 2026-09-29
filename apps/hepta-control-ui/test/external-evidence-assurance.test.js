@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { validateAssuranceChain } from "../../../qualification/ui-control/external-evidence-assurance.mjs";
 
 const baseReceipts = () => ({
@@ -23,11 +24,34 @@ const baseReceipts = () => ({
   productionApprovalReceipt: {
     approvedAt: "2026-09-29T09:50:00.000Z",
     approvals: [
-      { role: "deployment-authority", identity: "deployment@example.test" },
-      { role: "release-authority", identity: "release@example.test" },
-      { role: "security-authority", identity: "security-approval@example.test" },
+      {
+        role: "deployment-authority",
+        identity: "deployment@example.test",
+        approvedAt: "2026-09-29T09:45:00.000Z",
+      },
+      {
+        role: "release-authority",
+        identity: "release@example.test",
+        approvedAt: "2026-09-29T09:47:00.000Z",
+      },
+      {
+        role: "security-authority",
+        identity: "security-approval@example.test",
+        approvedAt: "2026-09-29T09:50:00.000Z",
+      },
     ],
   },
+});
+
+const approvalSchema = JSON.parse(readFileSync(
+  new URL("../../../qualification/ui-control/PRODUCTION_APPROVAL_SCHEMA.json", import.meta.url),
+  "utf8",
+));
+
+test("production approval schema requires an approval time for every authority", () => {
+  const required = approvalSchema.properties.approvals.items.required;
+  assert.deepEqual(required, ["role", "identity", "approvedAt"]);
+  assert.equal(approvalSchema.properties.approvals.items.additionalProperties, false);
 });
 
 test("assurance chain binds distinct reviewers and approvers without exposing raw identities", () => {
@@ -66,11 +90,29 @@ test("assurance chain rejects an independent reviewer reused as an approval auth
   );
 });
 
-test("assurance chain rejects approval that predates any accepted prerequisite evidence", () => {
+test("assurance chain rejects aggregate approval that predates accepted evidence", () => {
   const receipts = baseReceipts();
   receipts.productionApprovalReceipt.approvedAt = "2026-09-29T09:39:59.999Z";
   assert.throws(
     () => validateAssuranceChain(receipts),
     error => error?.code === "UI_CONTROL_APPROVAL_PREMATURE",
+  );
+});
+
+test("assurance chain rejects any individual authority approval that predates evidence", () => {
+  const receipts = baseReceipts();
+  receipts.productionApprovalReceipt.approvals[0].approvedAt = "2026-09-29T09:39:59.999Z";
+  assert.throws(
+    () => validateAssuranceChain(receipts),
+    error => error?.code === "UI_CONTROL_APPROVAL_PREMATURE",
+  );
+});
+
+test("assurance chain rejects a summary timestamp padded beyond the last authority approval", () => {
+  const receipts = baseReceipts();
+  receipts.productionApprovalReceipt.approvedAt = "2026-09-29T09:51:00.000Z";
+  assert.throws(
+    () => validateAssuranceChain(receipts),
+    error => error?.code === "UI_CONTROL_APPROVAL_SUMMARY_TIME",
   );
 });

@@ -215,9 +215,9 @@ test("bundle validation accepts one exact, mutually bound evidence set on main",
       rawEvidenceDigest: evidenceRaw,
       signature: { kind: "sigstore-bundle", digest: evidenceRaw },
       approvals: [
-        { role: "deployment-authority", identity: "Deployment authority" },
-        { role: "release-authority", identity: "Release authority" },
-        { role: "security-authority", identity: "Security authority" },
+        { role: "deployment-authority", identity: "Deployment authority", approvedAt: observedAt },
+        { role: "release-authority", identity: "Release authority", approvedAt: observedAt },
+        { role: "security-authority", identity: "Security authority", approvedAt: observedAt },
       ],
       evidenceDigests: approvalEvidenceDigests,
     });
@@ -248,6 +248,7 @@ test("bundle validation accepts one exact, mutually bound evidence set on main",
     assert.equal(bundle.status, "accepted");
     assert.equal(bundle.claims.productionDeploymentApproved, true);
     assert.equal(bundle.claims.releaseAuthorized, true);
+    assert.equal(bundle.claims.evidenceChronologyBound, true);
     assert.equal(bundle.stageResults["main-ancestry"].acceptedEvidence, true);
     assert.equal(bundle.stageResults["production-approval"].observedOutcome, "passed");
     assert.equal(bundle.stageResults["production-approval"].acceptedEvidence, true);
