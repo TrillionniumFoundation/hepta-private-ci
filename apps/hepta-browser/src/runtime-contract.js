@@ -15,10 +15,22 @@ export const DEFAULT_DRIVER_CALL_TIMEOUT_MS = 30_000;
 export const MAX_DRIVER_CALL_TIMEOUT_MS = 120_000;
 export const REPLAY_PROBE_ABSENCE_CODE =
   "hepta.browser.operation-not-crossed.v1";
+const REPLAY_PROBE_ABSENCE_BRAND = Symbol(
+  "hepta.browser.operation-not-crossed.brand.v1",
+);
 
 const STABLE_ID = /^[A-Za-z0-9._:-]{1,128}$/;
 const DIGEST = /^[0-9a-f]{64}$/;
 const ZERO_DIGEST = "0".repeat(64);
+
+export function isReplayProbeAbsence(error) {
+  return Boolean(
+    error !== null &&
+      typeof error === "object" &&
+      error.code === REPLAY_PROBE_ABSENCE_CODE &&
+      error[REPLAY_PROBE_ABSENCE_BRAND] === true,
+  );
+}
 
 export function requireRecord(value, name) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
@@ -127,16 +139,25 @@ export function admitNewOperation(state, input, now) {
   // resolved by BrowserProfileHost before this function. Reaching this point
   // proves that no operation exists, so fail with the one typed absence result
   // consumed by the Browser replay adapter; never authorize or dispatch a new
-  // effect. The human message is diagnostic only. Callers must use `code`.
+  // effect. The human message and public code are diagnostics/protocol output;
+  // the module-private symbol proves that this exact owner path created it.
   if (input.replayOnly === true) {
     const error = new TypeError(
       "operation has not crossed the browser effect boundary",
     );
-    Object.defineProperty(error, "code", {
-      value: REPLAY_PROBE_ABSENCE_CODE,
-      writable: false,
-      enumerable: false,
-      configurable: false,
+    Object.defineProperties(error, {
+      code: {
+        value: REPLAY_PROBE_ABSENCE_CODE,
+        writable: false,
+        enumerable: false,
+        configurable: false,
+      },
+      [REPLAY_PROBE_ABSENCE_BRAND]: {
+        value: true,
+        writable: false,
+        enumerable: false,
+        configurable: false,
+      },
     });
     throw error;
   }

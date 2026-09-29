@@ -87,6 +87,7 @@ function queueState(lockMap) {
       active: 0,
       admitted: 0,
       completed: 0,
+      startFailures: 0,
       perKeyRejects: 0,
       aggregateRejects: 0,
       maxTotal: 0,
@@ -112,6 +113,7 @@ export function exclusiveQueueSnapshot(lockMap) {
   return Object.freeze({
     admitted: state.admitted,
     completed: state.completed,
+    startFailures: state.startFailures,
     active: state.active,
     waiting: state.total - state.active,
     admittedButUnsettled: state.total,
@@ -179,24 +181,32 @@ export async function exclusive(
   lockMap.set(key, tail);
   await prior.catch(() => {});
 
-  const startedAt = Number(now());
-  if (!Number.isFinite(startedAt)) {
-    release();
-    throw new TypeError("exclusive now must return a finite number");
-  }
-  state.maxWaitMs = Math.max(state.maxWaitMs, Math.max(0, startedAt - enqueuedAt));
-  state.active += 1;
-  state.maxActive = Math.max(state.maxActive, state.active);
-
+  let active = false;
   try {
+    const startedAt = Number(now());
+    if (!Number.isFinite(startedAt)) {
+      throw new TypeError("exclusive now must return a finite number");
+    }
+    state.maxWaitMs = Math.max(
+      state.maxWaitMs,
+      Math.max(0, startedAt - enqueuedAt),
+    );
+    state.active += 1;
+    state.maxActive = Math.max(state.maxActive, state.active);
+    active = true;
     return await operation();
   } finally {
-    // Capacity remains charged until the admitted operation has actually
-    // settled. Caller cancellation or a requested process termination is not a
-    // cleanup receipt and therefore cannot release aggregate capacity early.
-    state.active -= 1;
+    // Every admitted slot is released only after its predecessor and the
+    // admitted operation path have settled. This also covers failures while
+    // obtaining the post-queue clock: a telemetry failure must not poison the
+    // serialization tail or leak aggregate capacity forever.
+    if (active) {
+      state.active -= 1;
+      state.completed += 1;
+    } else {
+      state.startFailures += 1;
+    }
     state.total -= 1;
-    state.completed += 1;
     release();
     if (lockMap.get(key) === tail) lockMap.delete(key);
     const nextDepth = (state.depths.get(key) ?? 1) - 1;

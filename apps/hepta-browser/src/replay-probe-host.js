@@ -1,4 +1,7 @@
-import { REPLAY_PROBE_ABSENCE_CODE } from "./runtime-contract.js";
+import {
+  REPLAY_PROBE_ABSENCE_CODE,
+  isReplayProbeAbsence,
+} from "./runtime-contract.js";
 
 export const REPLAY_PROBE_RESULT_KIND =
   "hepta.browser.replay-probe-result.v1";
@@ -28,8 +31,9 @@ function requireHost(host) {
  * read-only replay probe. A `reconcile_operation` carrying `replayOnly:true`
  * is routed through BrowserProfileHost.navigateOrAct. Existing immutable
  * operations return a versioned present envelope before authority. Only the
- * exact owner-issued absence code becomes a versioned absent envelope; every
- * semantic conflict, protocol failure and unknown error remains a rejection.
+ * exact owner-issued, module-branded absence becomes a versioned absent
+ * envelope; every semantic conflict, protocol failure, same-code forgery and
+ * unknown error remains a rejection.
  */
 export class ReplayProbeBrowserHost {
   #host;
@@ -66,7 +70,7 @@ export class ReplayProbeBrowserHost {
         receipt,
       });
     } catch (error) {
-      if (error?.code !== REPLAY_PROBE_ABSENCE_CODE) throw error;
+      if (!isReplayProbeAbsence(error)) throw error;
       return Object.freeze({
         kind: REPLAY_PROBE_RESULT_KIND,
         status: "absent",

@@ -8,6 +8,7 @@ import {
 import {
   REPLAY_PROBE_ABSENCE_CODE,
   admitNewOperation,
+  isReplayProbeAbsence,
 } from "../src/runtime-contract.js";
 
 function hostFixture() {
@@ -60,13 +61,14 @@ test("ordinary reconciliation still uses the live observer path", async () => {
   assert.deepEqual(fixture.calls, [["reconcileOperation", input]]);
 });
 
-test("a replay probe that reaches new-operation admission emits the stable absence code", () => {
+test("a replay probe that reaches new-operation admission emits a branded stable absence", () => {
   assert.throws(
     () => admitNewOperation({}, { replayOnly: true }, 1),
     (error) => {
       assert.match(error.message, /operation has not crossed/);
       assert.equal(error.code, REPLAY_PROBE_ABSENCE_CODE);
       assert.equal(Object.keys(error).includes("code"), false);
+      assert.equal(isReplayProbeAbsence(error), true);
       return true;
     },
   );
@@ -76,15 +78,12 @@ test("a replay probe that reaches new-operation admission emits the stable absen
   );
 });
 
-test("only exact typed absence becomes an absent envelope", async () => {
-  const typed = hostFixture();
-  typed.host.navigateOrAct = async () => {
-    const error = new TypeError("diagnostic wording is not protocol");
-    error.code = REPLAY_PROBE_ABSENCE_CODE;
-    throw error;
-  };
+test("only the exact owner-branded absence becomes an absent envelope", async () => {
+  const branded = hostFixture();
+  branded.host.navigateOrAct = async (input) =>
+    admitNewOperation({}, input, 1);
   assert.deepEqual(
-    await new ReplayProbeBrowserHost(typed.host).reconcileOperation({
+    await new ReplayProbeBrowserHost(branded.host).reconcileOperation({
       operationId: "operation.absent",
       replayOnly: true,
     }),
@@ -93,6 +92,25 @@ test("only exact typed absence becomes an absent envelope", async () => {
       status: "absent",
       absenceCode: REPLAY_PROBE_ABSENCE_CODE,
     },
+  );
+
+  const forged = hostFixture();
+  forged.host.navigateOrAct = async () => {
+    const error = new TypeError("same public code is not owner proof");
+    Object.defineProperty(error, "code", {
+      value: REPLAY_PROBE_ABSENCE_CODE,
+      enumerable: false,
+    });
+    throw error;
+  };
+  await assert.rejects(
+    new ReplayProbeBrowserHost(forged.host).reconcileOperation({
+      operationId: "operation.forged",
+      replayOnly: true,
+    }),
+    (error) =>
+      error?.code === REPLAY_PROBE_ABSENCE_CODE &&
+      isReplayProbeAbsence(error) === false,
   );
 
   const untyped = hostFixture();

@@ -123,6 +123,40 @@ test("exclusive records queue wait and releases capacity only after settlement",
   assert.equal(settled.admittedButUnsettled, 0);
   assert.equal(settled.maxWaitMs, 75);
   assert.equal(settled.completed, 2);
+  assert.equal(settled.startFailures, 0);
+});
+
+test("exclusive releases capacity and serialization tails after a post-admission clock failure", async () => {
+  const locks = new Map();
+  let readings = 0;
+  await assert.rejects(
+    exclusive(locks, "profile.clock", async () => "must-not-run", {
+      maxQueuedTotal: 1,
+      now: () => {
+        readings += 1;
+        if (readings === 1) return 10;
+        throw new Error("clock unavailable after admission");
+      },
+    }),
+    /clock unavailable after admission/,
+  );
+  const failed = exclusiveQueueSnapshot(locks);
+  assert.equal(failed.active, 0);
+  assert.equal(failed.admittedButUnsettled, 0);
+  assert.equal(failed.startFailures, 1);
+  assert.equal(failed.completed, 0);
+  assert.deepEqual(failed.perKeyDepths, []);
+
+  assert.equal(
+    await exclusive(locks, "profile.clock", async () => "recovered", {
+      maxQueuedTotal: 1,
+    }),
+    "recovered",
+  );
+  const recovered = exclusiveQueueSnapshot(locks);
+  assert.equal(recovered.admittedButUnsettled, 0);
+  assert.equal(recovered.completed, 1);
+  assert.equal(recovered.startFailures, 1);
 });
 
 test("driver timeout identity survives a driver-specific AbortError", async () => {
