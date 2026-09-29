@@ -4,7 +4,11 @@ import tomllib
 import unittest
 from pathlib import Path
 
-from scripts.hepta_workflow_commands import load_workflow, workflow_events
+from scripts.hepta_workflow_commands import (
+    load_workflow,
+    workflow_events,
+    declared_commands,
+)
 from scripts.hepta_ci_risk import project
 from scripts.hepta_ci_scope import select
 
@@ -100,6 +104,29 @@ class HeptaCiConsolidationTests(unittest.TestCase):
                     self.assertEqual(result["require_exact_source"], qualified)
         with self.assertRaises(ValueError):
             project(scope, qualification_requested="true")
+
+    def test_learning_lane_executes_independent_reference_workspaces(self):
+        workflow = load_workflow(
+            (WORKFLOWS / "hepta-architecture-convergence.yml").read_text()
+        )
+        commands = declared_commands(
+            (WORKFLOWS / "hepta-architecture-convergence.yml").read_text(), ROOT
+        )
+        for package in (
+            "hnmf-reference",
+            "hnmf-contract-reference",
+            "hnmf-adversarial-reference",
+        ):
+            manifest = "../qualification/" + package + "/Cargo.toml"
+            matching = [command for command in commands if manifest in command]
+            self.assertEqual(len(matching), 1)
+            command = matching[0]
+            self.assertIn("--locked", command)
+            position = command.index("just")
+            self.assertEqual(command[position + 1], "test")
+            self.assertEqual(command[command.index("--manifest-path") + 1], manifest)
+            self.assertEqual(command[command.index("--profile") + 1], "default")
+        self.assertIn("qualification", workflow["jobs"])
 
     def test_aggregators_use_stable_required_job_names(self):
         for filename, name in (

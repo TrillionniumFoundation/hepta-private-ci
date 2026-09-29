@@ -5,6 +5,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import shlex
+import tomllib
 import sys
 from pathlib import Path
 from typing import Any
@@ -126,78 +128,6 @@ REQUIRED_FILES = [
     ".github/workflows/hnmf-qualification.yml",
 ]
 
-CANONICAL_RUST_TOKENS = [
-    "pub struct ModalitySpanRefV1",
-    "pub struct MemoryEventV1",
-    "pub struct CrossModalBindingV1",
-    "pub struct EngramNodeV1",
-    "pub struct SynapseV1",
-    "pub struct MemoryCueV1",
-    "pub struct RecallPacketV1",
-    "pub struct OutcomeSignalV1",
-    "pub struct ReplaySelectionReceiptV1",
-    "pub struct PlasticityBatchV1",
-    "pub struct TopologyProposalV1",
-    "pub struct ForgetPropagationReceiptV1",
-    "pub fn encode_wire_v1",
-    "pub fn decode_wire_v1",
-    "pub fn canonical_contract_digest_v1",
-    "pub fn validate_cross_modal_binding_against_event_v1",
-    "pub valid_from_unix_ms: u64",
-    "pub eligibility_ppm: i32",
-    "pub const Q16_ONE: i32 = 65_536",
-    "abstaining recall contains selected events",
-    "selectedEvent.revision",
-    "weight proposal delta",
-    "threshold proposal delta",
-]
-
-REFERENCE_RUST_TOKENS = [
-    "ModalityKindV1 as ReferenceModalityKind",
-    "EngramPopulationV1 as ReferenceEngramPopulation",
-    "PrivacyClassV1 as ReferencePrivacyClass",
-    "SynapseRelationV1 as ReferenceSynapseRelation",
-    "pub fn from_canonical",
-    "pub struct ReferenceEventFeatures",
-    "pub struct ReferenceEngramState",
-    "pub struct ReferenceSynapseState",
-    "pub struct ReferenceRecallState",
-    "pub struct ReferenceOutcomeFeatures",
-    "pub struct ReferencePlasticityProposalSet",
-    "pub enum ReferenceTopologyOperation",
-    "pub struct ReferenceForgetPlan",
-    "pub fn recall",
-    "pub fn propose_plasticity",
-    "pub fn apply_plasticity",
-    "pub fn propose_forget",
-    "pub fn apply_forget",
-    "pub fn select_replay",
-    "fn sparse_select",
-    "CURRENT_RUN_MUTATION_ALLOWED: bool = false",
-    "ONLINE_TOPOLOGY_ACTIVATION_ALLOWED: bool = false",
-    "PRODUCTION_AUTHORITY: bool = false",
-    "EXTERNAL_EFFECTS_ALLOWED: bool = false",
-]
-
-FORBIDDEN_REFERENCE_CONTRACT_TOKENS = [
-    "pub enum ReferenceModalityKind",
-    "pub enum ReferenceEngramPopulation",
-    "pub enum ReferenceSynapseRelation",
-    "pub enum ReferencePrivacyClass",
-    "pub enum ModalityKind",
-    "pub enum EngramPopulation",
-    "pub enum SynapseRelation",
-    "pub struct MemoryEvent",
-    "pub struct EngramNode",
-    "pub struct Synapse",
-    "pub struct MemoryCue",
-    "pub struct RecallPacket",
-    "pub struct OutcomeSignal",
-    "pub struct PlasticityBatch",
-    "pub enum TopologyOperation",
-    "pub struct ForgetBatch",
-]
-
 EXPECTED_PORT_TARGETS = {
     "ModulePort::cognitive.types::cognitive.read": "cognitive.read",
     "ModulePort::cognitive.types::cognitive.store": "cognitive.store",
@@ -227,22 +157,6 @@ EXPECTED_LEGACY_CONSUMER_SURFACES = [
     "memory.retrieval: generation_bound::RecallPacketV1 compatibility contract",
     "compact.engine: MemoryRecord and Lane C compaction surface",
     "intelligence.control: CognitiveSnapshot compatibility surface",
-]
-
-RUST_TESTS = [
-    "cross_modal_pattern_completion_recalls_episode",
-    "sparse_competition_is_bounded",
-    "contradiction_forces_abstention",
-    "plasticity_does_not_mutate_current_snapshot",
-    "applying_plasticity_creates_exact_next_generation",
-    "homeostasis_raises_threshold_for_active_node",
-    "eligibility_trace_decays_without_new_coactivation",
-    "modulator_is_risk_and_ood_bounded",
-    "replay_selection_enforces_source_quota",
-    "forgetting_prevents_recall_resurrection",
-    "insertion_order_does_not_change_recall",
-    "topology_proposal_cannot_self_activate",
-    "hard_bounds_fail_closed",
 ]
 
 
@@ -524,61 +438,46 @@ def verify() -> int:
                 file=sys.stderr,
             )
 
-    canonical_rust = "\n".join(
-        (ROOT / path).read_text(encoding="utf-8")
-        for path in [
-            "codex-rs/hepta-cognitive-types/src/hnmf.rs",
-            "codex-rs/hepta-cognitive-types/src/hnmf_learning.rs",
-            "codex-rs/hepta-cognitive-types/src/wire.rs",
-        ]
-    )
-    for token in CANONICAL_RUST_TOKENS:
-        need(token in canonical_rust, f"canonical cognitive contract token {token}")
-
-    fuzz_source = (
-        ROOT / "codex-rs/hepta-cognitive-types/fuzz/fuzz_targets/decode_contracts.rs"
-    ).read_text(encoding="utf-8")
-    for protocol_id in PROTOCOLS:
+    # This is the fast registry/reference check, not a Rust parser or a test run.
+    # Concrete type/codec ownership is compiled by the existing contract-reference
+    # target; wire and algorithm behavior is exercised by its native test targets.
+    for source in (
+        "codex-rs/hepta-cognitive-types/src/hnmf.rs",
+        "codex-rs/hepta-cognitive-types/src/hnmf_learning.rs",
+        "codex-rs/hepta-cognitive-types/src/wire.rs",
+        "codex-rs/hepta-cognitive-types/fuzz/fuzz_targets/decode_contracts.rs",
+        "qualification/hnmf-reference/src/lib.rs",
+        "qualification/hnmf-contract-reference/src/lib.rs",
+        "qualification/hnmf-adversarial-reference/src/lib.rs",
+    ):
+        need((ROOT / source).is_file(), "missing Rust reference input " + source)
         need(
-            f"decode_wire_v1::<{protocol_id}>" in fuzz_source,
-            protocol_id + " fuzz decoder coverage",
+            bool((ROOT / source).read_text(encoding="utf-8").strip()),
+            "empty Rust reference input " + source,
         )
-
-    rust_path = "qualification/hnmf-reference/src/lib.rs"
-    rust = (ROOT / rust_path).read_text(encoding="utf-8")
-    # A smaller equivalent implementation is valid. Keep canonical contract,
-    # decoder, reference-test and forbidden-ownership checks, not a byte quota.
-    need(bool(rust.strip()), "empty algorithm reference runtime")
-    for token in REFERENCE_RUST_TOKENS + RUST_TESTS:
-        need(token in rust, f"algorithm reference token {token}")
-    for token in FORBIDDEN_REFERENCE_CONTRACT_TOKENS:
-        need(token not in rust, f"reference redefines canonical contract token {token}")
-    need(
-        "canonical cognitive/memory contracts" in rust
-        and "codex-rs/hepta-cognitive-types" in rust,
-        "reference canonical owner declaration",
-    )
-    need(
-        "unsafe" not in rust.replace("#![forbid(unsafe_code)]", ""), "unsafe code token"
-    )
-
-    contract_reference = (
-        ROOT / "qualification/hnmf-contract-reference/src/lib.rs"
-    ).read_text(encoding="utf-8")
-    for token in FORBIDDEN_REFERENCE_CONTRACT_TOKENS:
+    for package in (
+        "hnmf-reference",
+        "hnmf-contract-reference",
+        "hnmf-adversarial-reference",
+    ):
+        manifest = tomllib.loads(
+            (ROOT / "qualification" / package / "Cargo.toml").read_text()
+        )
         need(
-            token not in contract_reference,
-            f"contract reference redefines canonical contract token {token}",
+            manifest.get("lints", {}).get("rust", {}).get("unsafe_code") == "forbid",
+            package + " must retain the compiler-enforced unsafe-code boundary",
         )
-    need(
-        "CANONICAL_CRATE_PATH" in contract_reference
-        and "PRODUCTION_AUTHORITY: bool = false" in contract_reference,
-        "contract reference ownership shim",
-    )
 
     workflow = (ROOT / ".github/workflows/hnmf-qualification.yml").read_text(
         encoding="utf-8"
     )
+    try:
+        from scripts.hepta_workflow_commands import declared_commands
+    except ModuleNotFoundError as error:
+        if error.name != "scripts":
+            raise
+        from hepta_workflow_commands import declared_commands
+    commands = declared_commands(workflow, ROOT)
     for command in [
         "python3 scripts/hepta-hnmf.py verify",
         "cargo fmt --manifest-path qualification/hnmf-reference/Cargo.toml -- --check",
@@ -591,12 +490,16 @@ def verify() -> int:
         "cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types",
         "cargo check --manifest-path codex-rs/hepta-cognitive-types/fuzz/Cargo.toml --all-targets",
     ]:
-        need(command in workflow, f"workflow command {command}")
+        need(
+            shlex.split(command) in commands, f"missing declared native check {command}"
+        )
 
     print(
         json.dumps(
             {
                 "status": "PASS_HEPTA_HNMF_REFERENCE_CLOSED_WORLD",
+                "verificationScope": "registry_and_declared_native_checks",
+                "nativeExecutionVerified": False,
                 "modalities": len(MODALITIES),
                 "populations": len(POPULATIONS),
                 "protocols": len(PROTOCOLS),

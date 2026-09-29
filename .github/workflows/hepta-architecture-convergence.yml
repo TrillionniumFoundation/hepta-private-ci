@@ -281,6 +281,15 @@ jobs:
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/final-use.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-contracts --test final_use_linearization
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/browser.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd browser_servo
+      - name: Canonical HNMF contract and adversarial behavior
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.learning == 'true'
+        run: |
+          set -euo pipefail
+          # These independent workspaces are not included by Cargo's main workspace
+          # tests. Reuse the selected learning lane and exact execution recorder.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/hnmf-contract.json" --minimum-tests 1 -- just test --locked --profile default --manifest-path ../qualification/hnmf-contract-reference/Cargo.toml
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/hnmf-reference.json" --minimum-tests 1 -- just test --locked --profile default --manifest-path ../qualification/hnmf-reference/Cargo.toml
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/hnmf-adversarial.json" --minimum-tests 1 -- just test --locked --profile default --manifest-path ../qualification/hnmf-adversarial-reference/Cargo.toml
       - name: Selected-artifact adoption and explicit rollback
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.learning == 'true'
         run: |

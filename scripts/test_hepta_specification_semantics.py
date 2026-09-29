@@ -69,24 +69,44 @@ class SpecificationSemanticsTests(unittest.TestCase):
             with self.subTest(path=path), self.assertRaisesRegex(SystemExit, "empty"):
                 self.verify_with_prose(verifier, {path: " \n"})
 
-    def test_missing_canonical_decoder_does_not_pass_as_concise_code(self):
-        with self.assertRaisesRegex(SystemExit, "canonical cognitive contract token"):
-            self.verify_with_prose(
-                HNMF,
-                {
-                    "codex-rs/hepta-cognitive-types/src/hnmf.rs": "// omitted",
-                    "codex-rs/hepta-cognitive-types/src/hnmf_learning.rs": "// omitted",
-                    "codex-rs/hepta-cognitive-types/src/wire.rs": "// omitted",
-                },
-            )
+    def test_source_comments_and_declaration_formatting_are_not_implementation_proof(
+        self,
+    ):
+        source = "qualification/hnmf-reference/src/lib.rs"
+        original = READ_TEXT(HNMF.ROOT / source)
+        rewritten = original.replace(
+            "canonical cognitive/memory contracts", "owner-provided data types"
+        ).replace("codex-rs/hepta-cognitive-types", "the canonical contract crate")
+        rewritten = "// Never execute unsafe examples from documentation.\n" + rewritten
+        self.verify_with_prose(HNMF, {source: rewritten})
+
+    def test_missing_native_command_cannot_be_supplied_by_prose_or_echo(self):
+        path = ".github/workflows/hnmf-qualification.yml"
+        original = READ_TEXT(HNMF.ROOT / path)
+        command = "cargo test --manifest-path qualification/hnmf-reference/Cargo.toml --locked"
+        for inert in (
+            "run: echo '" + command + "'",
+            "run: |\n          cat <<'DATA'\n          " + command + "\n          DATA",
+        ):
+            replacement = original.replace("run: " + command, inert)
+            with (
+                self.subTest(inert=inert),
+                self.assertRaisesRegex(SystemExit, "missing declared native check"),
+            ):
+                self.verify_with_prose(HNMF, {path: replacement})
+
+    def test_native_checks_allow_equivalent_yaml_quoting_and_layout(self):
+        path = ".github/workflows/hnmf-qualification.yml"
+        from scripts.hepta_workflow_commands import load_workflow
+        import json
+
+        original = load_workflow(READ_TEXT(HNMF.ROOT / path))
+        self.verify_with_prose(HNMF, {path: json.dumps(original)})
 
     def test_empty_reference_implementation_still_rejects(self):
-        with self.assertRaisesRegex(SystemExit, "empty algorithm reference runtime"):
+        with self.assertRaisesRegex(SystemExit, "empty Rust reference input"):
             self.verify_with_prose(
-                HNMF,
-                {
-                    "qualification/hnmf-reference/src/lib.rs": " \n",
-                },
+                HNMF, {"qualification/hnmf-reference/src/lib.rs": " \n"}
             )
 
     def test_authority_key_order_is_editorial_but_identity_is_not(self):
