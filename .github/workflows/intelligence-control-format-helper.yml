@@ -1,0 +1,46 @@
+name: intelligence.control isolated rustfmt helper
+
+on:
+  push:
+    branches:
+      - codex/intelligence-control-format-c935
+
+permissions:
+  contents: write
+
+concurrency:
+  group: intelligence-control-format-helper
+  cancel-in-progress: true
+
+jobs:
+  format:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Install pinned rustfmt
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')"
+          rustup toolchain install "$VERSION" --profile minimal --component rustfmt
+      - name: Format and push helper result
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF_NAME}" = "codex/intelligence-control-format-c935"
+          (cd codex-rs && cargo fmt --all)
+          if git diff --quiet; then
+            echo "No formatting delta."
+            exit 0
+          fi
+          git diff --check
+          git config user.name "hepta-qualification"
+          git config user.email "qualification@invalid"
+          git add codex-rs
+          git commit -m "style(intelligence-control): apply pinned rustfmt"
+          git push origin HEAD:codex/intelligence-control-format-c935
