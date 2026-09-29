@@ -46,6 +46,13 @@ class AlgorithmSemanticTests(unittest.TestCase):
         self.row.pop("blobSha")
         self.assertTrue(DOCS.verify_specification(self.row, self.papers))
 
+    def test_empty_source_does_not_satisfy_registered_specification(self):
+        for text in ("", " \n\t"):
+            with self.subTest(text=text):
+                self.path.write_text(text)
+                with self.assertRaisesRegex(SystemExit, "empty specification"):
+                    DOCS.verify_specification(self.row, self.papers)
+
     def test_missing_source_is_rejected(self):
         self.path.unlink()
         with self.assertRaisesRegex(SystemExit, "missing"):

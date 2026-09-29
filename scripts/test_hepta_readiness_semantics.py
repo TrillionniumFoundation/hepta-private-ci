@@ -72,7 +72,7 @@ class ReadinessSemanticsTests(unittest.TestCase):
         with self.assertRaisesRegex(SystemExit, "empty document"):
             self.verify()
 
-    def test_unknown_or_uncited_protocol_and_gap_still_reject(self):
+    def test_unknown_protocol_and_gap_still_reject(self):
         for protocols, gaps, message in [
             (set(), {"GAP-TEST"}, "unknown protocol"),
             ({"FixtureProtocolV1"}, set(), "unknown gap"),
@@ -80,14 +80,47 @@ class ReadinessSemanticsTests(unittest.TestCase):
             with self.subTest(message=message):
                 with self.assertRaisesRegex(SystemExit, message):
                     self.verify(protocols, gaps)
-        for omitted, message in [
-            ("FixtureProtocolV1", "protocol not cited"),
-            ("GAP-TEST", "gap not cited"),
-        ]:
-            self.path.write_text(self.text.replace(omitted, "omitted"))
-            with self.subTest(omitted=omitted):
-                with self.assertRaisesRegex(SystemExit, message):
+
+    def test_registry_references_need_not_be_duplicated_in_prose(self):
+        self.path.write_text("# Owner contract\nSee the registered protocol mapping.\n")
+        with patch("sys.stderr") as diagnostics:
+            self.verify()
+        output = "".join(call.args[0] for call in diagnostics.write.call_args_list)
+        self.assertIn("FixtureProtocolV1", output)
+        self.assertIn("GAP-TEST", output)
+
+    def test_reference_shape_and_duplicate_identity_still_reject(self):
+        for field in ("protocols", "gapIds"):
+            original = self.row[field]
+            for invalid in (None, {}, "FixtureProtocolV1", [None], [""], original * 2):
+                with self.subTest(field=field, invalid=invalid):
+                    self.row[field] = invalid
+                    with self.assertRaisesRegex(SystemExit, "invalid .* references"):
+                        self.verify()
+            self.row[field] = original
+
+    def test_document_path_escape_and_noncanonical_paths_reject(self):
+        for path in (
+            "/tmp/outside.md",
+            "../outside.md",
+            "docs/../guide.md",
+            "docs//guide.md",
+            "docs\\guide.md",
+            "docs/\x00.md",
+        ):
+            with self.subTest(path=path):
+                self.row["path"] = path
+                with self.assertRaisesRegex(SystemExit, "invalid document path"):
                     self.verify()
+
+    def test_document_symlink_escape_rejects(self):
+        with tempfile.TemporaryDirectory() as outside:
+            target = Path(outside) / "outside.md"
+            target.write_text(self.text)
+            self.path.unlink()
+            self.path.symlink_to(target)
+            with self.assertRaisesRegex(SystemExit, "escaped document path"):
+                self.verify()
 
     def test_module_guide_edit_needs_no_prose_digest_or_section_inventory(self):
         self.path.write_text(

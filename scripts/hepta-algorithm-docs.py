@@ -395,6 +395,7 @@ def verify_specification(row: dict[str, Any], paper_ids: set[str]) -> list[str]:
         doc_id + " invalid paper references",
     )
     text = target.read_text(encoding="utf-8")
+    need(bool(text.strip()), doc_id + " empty specification")
     advice = []
     positions = [text.find(heading) for heading in HEADINGS]
     if any(position < 0 for position in positions) or positions != sorted(positions):

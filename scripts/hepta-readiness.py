@@ -12,7 +12,7 @@ from typing import Any
 
 try:
     from scripts.hepta_metadata import (
-        AUTHORITY_KEYS,
+        AUTHORITY_KEYS as AUTHORITY_KEYS,
         has_schema_version,
         has_deny_all_authority,
     )
@@ -20,7 +20,7 @@ except ModuleNotFoundError as error:
     if error.name != "scripts":
         raise
     from hepta_metadata import (
-        AUTHORITY_KEYS,
+        AUTHORITY_KEYS as AUTHORITY_KEYS,
         has_schema_version,
         has_deny_all_authority,
     )
@@ -489,7 +489,21 @@ def validate_module_guide(path: Path, module_id: str) -> None:
 def validate_markdown_document(
     row: dict[str, Any], protocol_ids: set[str], gap_ids: set[str]
 ) -> None:
-    path = ROOT / row["path"]
+    relative = row.get("path")
+    need(
+        isinstance(relative, str)
+        and relative.endswith(".md")
+        and not relative.startswith("/")
+        and "\\" not in relative
+        and "\x00" not in relative
+        and not any(part in {"", ".", ".."} for part in relative.split("/")),
+        row["id"] + " invalid document path",
+    )
+    path = ROOT / relative
+    need(
+        path.resolve().is_relative_to(ROOT.resolve()),
+        row["id"] + " escaped document path",
+    )
     need(path.is_file(), row["id"] + " document missing")
     text = path.read_text(encoding="utf-8")
     # Registries own the contract and gap identities. Editorial headings are
@@ -508,14 +522,32 @@ def validate_markdown_document(
             + ", ".join(missing),
             file=sys.stderr,
         )
-    for protocol_id in row["protocols"]:
+    # The registry owns these references. Repeating an identifier in prose is
+    # navigation advice, not a second source of protocol or gap ownership.
+    for field, known, label in (
+        ("protocols", protocol_ids, "protocol"),
+        ("gapIds", gap_ids, "gap"),
+    ):
+        references = row.get(field)
         need(
-            protocol_id in protocol_ids, row["id"] + " unknown protocol " + protocol_id
+            isinstance(references, list)
+            and all(isinstance(value, str) and value for value in references)
+            and len(references) == len(set(references)),
+            row["id"] + " invalid " + label + " references",
         )
-        need(protocol_id in text, row["id"] + " protocol not cited " + protocol_id)
-    for gap_id in row["gapIds"]:
-        need(gap_id in gap_ids, row["id"] + " unknown gap " + gap_id)
-        need(gap_id in text, row["id"] + " gap not cited " + gap_id)
+        for reference in references:
+            need(reference in known, row["id"] + " unknown " + label + " " + reference)
+        uncited = [reference for reference in references if reference not in text]
+        if uncited:
+            print(
+                "ADVISORY_HEPTA_READINESS: "
+                + row["id"]
+                + " consider explaining registered "
+                + label
+                + " references: "
+                + ", ".join(uncited),
+                file=sys.stderr,
+            )
 
 
 def verify() -> int:
