@@ -1,7 +1,8 @@
 name: Diagnose learning.operator V4 source convergence
 
-# Read-only diagnostic rerun for the frozen convergence wrapper. The authoritative
-# Ubuntu writer remains the only workflow allowed to publish the source/evidence head.
+# Read-only Windows qualification for the frozen convergence wrapper. The
+# authoritative Ubuntu writer remains the only workflow allowed to publish the
+# source/evidence head.
 
 on:
   push:
@@ -15,7 +16,7 @@ permissions:
   actions: read
 
 concurrency:
-  group: learning-operator-source-diagnostics-windows-v4
+  group: learning-operator-source-diagnostics-windows-v5
   cancel-in-progress: true
 
 jobs:
@@ -26,6 +27,7 @@ jobs:
       CARGO_BUILD_JOBS: 2
       CARGO_PROFILE_DEV_DEBUG: 0
       CARGO_PROFILE_TEST_DEBUG: 0
+      CARGO_TARGET_DIR: D:\t\learning-operator
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -53,7 +55,11 @@ jobs:
               scripts/hepta-learning-operator-contract.py \
               scripts/hepta-learning-operator-receipt.py \
               scripts/hepta-implementation-maps.py
-            cargo fmt --manifest-path codex-rs/Cargo.toml --all
+            cargo fmt --manifest-path codex-rs/Cargo.toml \
+              -p codex-hepta-learning-ledger \
+              -p codex-hepta-bellman-operator \
+              -p codex-hepta-learning-artifacts \
+              -p codex-hepta-agentd
             python scripts/hepta-learning-operator-contract.py verify
             git diff --check
           ) 2>&1 | tee "$RUNNER_TEMP/learning-operator-convergence.log"
@@ -89,5 +95,9 @@ jobs:
           cargo test --manifest-path codex-rs/Cargo.toml --locked \
             -p codex-hepta-agentd --lib \
             immutable_candidate_supports_concurrent_current_reads_and_metrics -- --nocapture
-          cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-bellman-operator \
+            -p codex-hepta-learning-artifacts \
+            -p codex-hepta-agentd -- --check
           git diff --check
