@@ -18,6 +18,7 @@ mod recovery;
 mod settlement;
 mod settlement_store;
 mod signed;
+mod sqlite_owner;
 mod trust;
 mod trust_store;
 pub use authority::AuthBusAuthorityError;
