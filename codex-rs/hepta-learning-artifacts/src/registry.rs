@@ -32,7 +32,7 @@ struct ArtifactEntry {
 #[derive(Clone, Debug, Default)]
 pub struct ArtifactRegistry {
     records: Vec<ArtifactRecord>,
-    event_digests: BTreeMap<StableId, Digest32>,
+    event_digests: BTreeMap<StableId, (Digest32, usize)>,
     artifacts: BTreeMap<StableId, ArtifactEntry>,
 }
 
@@ -48,7 +48,7 @@ impl ArtifactRegistry {
     ) -> Result<RegistryAppendReceipt, ArtifactRegistryError> {
         let event_id = event.event_id().clone();
         let event_digest = digest_event(&event);
-        if let Some(existing_digest) = self.event_digests.get(&event_id) {
+        if let Some((existing_digest, position)) = self.event_digests.get(&event_id) {
             if *existing_digest != event_digest {
                 return Err(ArtifactRegistryError::IdentityConflict(
                     event_id.to_string(),
@@ -56,8 +56,8 @@ impl ArtifactRegistry {
             }
             let existing = self
                 .records
-                .iter()
-                .find(|record| record.event.event_id() == &event_id)
+                .get(*position)
+                .filter(|record| record.event.event_id() == &event_id)
                 .ok_or(ArtifactRegistryError::InternalInvariant)?;
             return Ok(receipt(
                 existing,
@@ -135,14 +135,20 @@ impl ArtifactRegistry {
         &self.records
     }
 
+    /// Current validated head without copying historical payloads. This reads
+    /// the owner's existing tail; it is not a cached or independently trusted witness.
+    #[must_use]
+    pub fn head_digest(&self) -> Digest32 {
+        self.records
+            .last()
+            .map_or(Digest32::ZERO, |record| record.chain_digest)
+    }
+
     #[must_use]
     pub fn snapshot(&self) -> ArtifactRegistrySnapshot {
         ArtifactRegistrySnapshot {
             records: self.records.clone(),
-            head_digest: self
-                .records
-                .last()
-                .map_or(Digest32::ZERO, |record| record.chain_digest),
+            head_digest: self.head_digest(),
         }
     }
 
@@ -271,8 +277,10 @@ impl ArtifactRegistry {
     }
 
     fn index_record(&mut self, record: &ArtifactRecord) -> Result<(), ArtifactRegistryError> {
-        self.event_digests
-            .insert(record.event.event_id().clone(), record.event_digest);
+        self.event_digests.insert(
+            record.event.event_id().clone(),
+            (record.event_digest, self.records.len()),
+        );
         match &record.event {
             ArtifactEvent::Register { manifest, .. } => {
                 self.artifacts.insert(

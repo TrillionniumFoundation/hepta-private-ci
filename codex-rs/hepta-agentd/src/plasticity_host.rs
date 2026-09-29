@@ -665,7 +665,7 @@ pub fn resolve_agentd_plasticity_admission_v1(
     {
         return Err(AgentdPlasticityHostErrorV1::ArtifactBinding);
     }
-    let artifact_registry_head_digest = artifacts.snapshot().head_digest;
+    let artifact_registry_head_digest = artifacts.head_digest();
     let ledger_snapshot = ledger.snapshot()?;
     if artifact_registry_head_digest.is_zero() || ledger_snapshot.head_digest.is_zero() {
         return Err(AgentdPlasticityHostErrorV1::ArtifactBinding);

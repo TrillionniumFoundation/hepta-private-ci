@@ -193,3 +193,108 @@ fn event_identity_reuse_with_drift_fails() {
         ArtifactRegistryError::IdentityConflict("event-a".to_owned())
     );
 }
+
+#[test]
+fn indexed_historical_replay_and_head_survive_growth_revocation_and_restore() {
+    let mut registry = ArtifactRegistry::new();
+    assert_eq!(registry.head_digest(), Digest32::ZERO);
+    let mut probes = Vec::new();
+    for index in 0..4095 {
+        let event = register(
+            &format!("event-{index}"),
+            manifest(&format!("artifact-{index}"), 1),
+        );
+        let receipt = must(registry.append(event.clone()));
+        assert_eq!(registry.head_digest(), receipt.chain_digest);
+        if [0, 2048, 4094].contains(&index) {
+            probes.push((event, receipt));
+        }
+    }
+    let revoke = ArtifactEvent::Revoke(StateChange {
+        event_id: id("revoke-first"),
+        artifact_id: id("artifact-0"),
+        evaluator_id: id("independent-evaluator"),
+        reason_digest: Digest32::of_bytes(b"withdrawn"),
+    });
+    let receipt = must(registry.append(revoke.clone()));
+    probes.push((revoke, receipt));
+    assert_eq!(
+        registry.records().len(),
+        crate::limits::MAX_DURABLE_ARTIFACT_RECORDS
+    );
+    assert_eq!(
+        must_err(registry.append(register("over-capacity", manifest("over-capacity", 1)))),
+        ArtifactRegistryError::RecordLimitExceeded
+    );
+    let snapshot = registry.snapshot();
+    assert_eq!(registry.head_digest(), snapshot.head_digest);
+    let restored = must(ArtifactRegistry::from_snapshot(snapshot.clone()));
+    for mut owner in [registry, restored] {
+        for (event, original) in &probes {
+            let replay = must(owner.append(event.clone()));
+            let mut expected = original.clone();
+            expected.disposition = RegistryAppendDisposition::IdempotentReplay;
+            assert_eq!(replay, expected);
+        }
+        assert_eq!(owner.head_digest(), snapshot.head_digest);
+        assert_eq!(owner.snapshot(), snapshot);
+        assert_eq!(owner.state(&id("artifact-0")), Some(ArtifactState::Revoked));
+        assert_eq!(
+            must_err(owner.append(register("event-0", manifest("different-payload", 1)))),
+            ArtifactRegistryError::IdentityConflict("event-0".to_owned())
+        );
+        assert_eq!(owner.head_digest(), snapshot.head_digest);
+        assert_eq!(owner.snapshot(), snapshot);
+    }
+}
+
+#[test]
+#[ignore = "explicit local registry growth diagnostic; not a latency acceptance gate"]
+fn registry_growth_curve_compares_head_read_with_snapshot_and_historical_retry() {
+    use std::hint::black_box;
+    use std::time::Instant;
+
+    let mut owner = ArtifactRegistry::new();
+    let first = register("first-event", manifest("first-artifact", 1));
+    let first_receipt = must(owner.append(first.clone()));
+    let mut count = 1;
+    for records in [64_usize, 256, 1024, 4096] {
+        for index in count..records {
+            must(owner.append(register(
+                &format!("event-{index}"),
+                manifest(&format!("artifact-{index}"), 1),
+            )));
+        }
+        let expected = owner.snapshot();
+        let started = Instant::now();
+        for _ in 0..256 {
+            assert_eq!(black_box(&owner).head_digest(), expected.head_digest);
+        }
+        let head_ns = started.elapsed().as_nanos();
+        let started = Instant::now();
+        for _ in 0..256 {
+            assert_eq!(
+                black_box(&owner).snapshot().head_digest,
+                expected.head_digest
+            );
+        }
+        let snapshot_head_ns = started.elapsed().as_nanos();
+        let started = Instant::now();
+        for _ in 0..256 {
+            assert_eq!(
+                must(owner.append(first.clone())).chain_digest,
+                first_receipt.chain_digest
+            );
+        }
+        let retry_ns = started.elapsed().as_nanos();
+        assert_eq!(owner.snapshot(), expected);
+        let started = Instant::now();
+        let restored = must(ArtifactRegistry::from_snapshot(expected.clone()));
+        let restore_ns = started.elapsed().as_nanos();
+        assert_eq!(restored.snapshot(), expected);
+        println!(
+            "HEPTA_ARTIFACT_GROWTH_V1 {{\"records\":{records},\"samples\":256,\"head_total_ns\":{head_ns},\"snapshot_head_total_ns\":{snapshot_head_ns},\"retry_total_ns\":{retry_ns},\"restore_ns\":{restore_ns}}}"
+        );
+        count = records;
+    }
+}

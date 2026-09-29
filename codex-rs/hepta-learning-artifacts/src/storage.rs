@@ -192,7 +192,7 @@ pub fn write_registry_snapshot_beneath(
     let bytes = encode_snapshot(registry, binding)?;
     let receipt = RegistrySnapshotReceipt {
         binding,
-        head_digest: registry.snapshot().head_digest,
+        head_digest: registry.head_digest(),
         file_digest: Digest32::of_bytes(&bytes),
         records: registry.records().len(),
         encoded_bytes: bytes.len(),
@@ -263,7 +263,7 @@ pub fn write_registry_snapshot(
     let bytes = encode_snapshot(registry, binding)?;
     let receipt = RegistrySnapshotReceipt {
         binding,
-        head_digest: registry.snapshot().head_digest,
+        head_digest: registry.head_digest(),
         file_digest: Digest32::of_bytes(&bytes),
         records: registry.records().len(),
         encoded_bytes: bytes.len(),
@@ -379,7 +379,7 @@ pub fn read_registry_snapshot(
         }
     }
     if registry.records().len() != expected.records
-        || registry.snapshot().head_digest != expected.head_digest
+        || registry.head_digest() != expected.head_digest
         || encode_snapshot(&registry, expected.binding)? != bytes
     {
         return Err(ArtifactStorageError::Corrupt);

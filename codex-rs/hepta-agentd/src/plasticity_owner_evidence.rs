@@ -121,7 +121,7 @@ impl ConcretePlasticityOwnerEvidenceResolverV1 {
         &self,
         query: &PlasticityOwnerEvidenceQueryV1,
     ) -> Result<VerifiedPlasticityOwnerEvidenceV1, PlasticityOwnerEvidenceErrorV1> {
-        let current_head = self.artifacts.snapshot().head_digest;
+        let current_head = self.artifacts.head_digest();
         if current_head.is_zero() || current_head != query.artifact_registry_head_digest {
             return Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch);
         }
@@ -379,7 +379,7 @@ impl PlasticityDynamicOwnerEvidenceResolverV1 {
         &self,
         artifact_registry_head_digest: Digest32,
     ) -> Result<(Digest32, StableId, Digest32), PlasticityOwnerEvidenceErrorV1> {
-        let head = self.broadcast_artifacts.snapshot().head_digest;
+        let head = self.broadcast_artifacts.head_digest();
         if head.is_zero() || head != artifact_registry_head_digest {
             return Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch);
         }
@@ -894,7 +894,7 @@ mod tests {
                 })
                 .expect("artifact append");
         }
-        let artifact_head = artifacts.snapshot().head_digest;
+        let artifact_head = artifacts.head_digest();
         let resolver = ConcretePlasticityOwnerEvidenceResolverV1::new(
             dataset,
             artifacts,
@@ -1126,7 +1126,7 @@ mod tests {
                 ),
             })
             .expect("broadcast artifact");
-        let artifact_head = artifacts.snapshot().head_digest;
+        let artifact_head = artifacts.head_digest();
 
         let modulator = modulator_values[0];
         let learning_rate = FixedQ32::from_raw(1_i64 << 20);

@@ -34,7 +34,7 @@ pub fn inspect_artifact_owner_status_v1(
     withdrawal: &DatasetWithdrawalRegistry,
     lifecycle: &ArtifactLifecycleJournalV2,
 ) -> ArtifactOwnerStatusV1 {
-    let registry_head_digest = registry.snapshot().head_digest;
+    let registry_head_digest = registry.head_digest();
     let registry_records = registry.records().len();
     let withdrawal_snapshot = withdrawal.snapshot();
     let withdrawal_scope_digest = withdrawal.scope_digest();
