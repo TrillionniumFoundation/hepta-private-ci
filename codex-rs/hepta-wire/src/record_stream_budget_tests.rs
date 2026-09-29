@@ -56,7 +56,7 @@ fn owner(channel: u8, endpoint: SessionEndpoint) -> TestResult<ManagedAuthentica
     )?)
 }
 
-fn records(channel: u8, count: u64) -> TestResult<(Vec<DecodedEnvelope>, Vec<u8>)> {
+fn records(channel: u8, count: u32) -> TestResult<(Vec<DecodedEnvelope>, Vec<u8>)> {
     let mut sender = owner(channel, SessionEndpoint::Initiator)?;
     let mut expected = Vec::new();
     let mut bytes = Vec::new();
