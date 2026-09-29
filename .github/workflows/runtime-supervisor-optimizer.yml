@@ -1,0 +1,117 @@
+name: runtime-supervisor-optimizer
+
+on:
+  push:
+    branches:
+      - work/runtime-supervisor-qualification-20260929
+    paths:
+      - .github/scripts/runtime_supervisor_source.py
+      - .github/scripts/runtime_supervisor_integration.py
+      - .github/workflows/runtime-supervisor-optimizer.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-supervisor-optimizer-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  optimize-and-qualify:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, 'bootstrap(runtime-supervisor)')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          ref: work/runtime-supervisor-qualification-20260929
+
+      - name: Apply runtime supervisor source changes
+        run: |
+          python3 .github/scripts/runtime_supervisor_source.py
+          python3 .github/scripts/runtime_supervisor_integration.py
+
+      - name: Format runtime supervisor
+        working-directory: codex-rs
+        run: |
+          cargo fmt -p codex-hepta-supervisor
+          cargo fmt -p codex-hepta-supervisor -- --check
+
+      - name: Check all supervisor targets and authority profile
+        working-directory: codex-rs
+        run: cargo check -p codex-hepta-supervisor --all-targets --features "qualification production-authority"
+
+      - name: Test supervisor library and crash matrix
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-supervisor --lib --features "qualification production-authority" -- --test-threads=1
+
+      - name: Test supervisor product integrations
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-supervisor --tests --features "qualification production-authority" -- --test-threads=1
+
+      - name: Produce bounded lock qualification receipt
+        working-directory: codex-rs
+        run: |
+          mkdir -p ../qualification/runtime-supervisor
+          cargo run -p codex-hepta-supervisor \
+            --features qualification \
+            --bin hepta-supervisor-lock-qualification \
+            > ../qualification/runtime-supervisor/lock-qualification-source.json
+          python3 -m json.tool \
+            ../qualification/runtime-supervisor/lock-qualification-source.json \
+            >/dev/null
+
+      - name: Record crash matrix source receipt
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          target = Path("qualification/runtime-supervisor/fault-matrix-source.json")
+          target.parent.mkdir(parents=True, exist_ok=True)
+          target.write_text(json.dumps({
+              "schema": "hepta.runtime-supervisor.fault-matrix-source.v1",
+              "candidate": "derived_from_committed_tree",
+              "test": "crash_qualification::tests",
+              "faults": [
+                  "lease.after_publish=kill",
+                  "restart_journal.fsync=fsync",
+                  "signed_intent.storage_full=storage_full",
+                  "signed_intent.after_publish=kill",
+                  "release_transaction.rename=rename",
+                  "release_transaction.after_publish=kill",
+                  "lease_truncation",
+                  "restart_journal_truncation",
+                  "signed_intent_truncation",
+                  "release_transaction_truncation"
+              ],
+              "invariants": [
+                  "prior_valid_record_survives_prepublication_failure",
+                  "postpublication_sigkill_leaves_only_valid_old_or_new_record",
+                  "truncated_control_state_fails_closed"
+              ],
+              "sourceTestsPassed": True,
+              "targetHostEvidence": False,
+              "deploymentQualification": False
+          }, indent=2) + "\n")
+          PY
+
+      - name: Verify patch and commit exact tested tree
+        run: |
+          git diff --check
+          git status --short
+          git config user.name "runtime-supervisor-optimizer"
+          git config user.email "runtime-supervisor-optimizer@users.noreply.github.com"
+          git add \
+            codex-rs/hepta-supervisor \
+            qualification/runtime-supervisor
+          git commit -m "feat(runtime.supervisor): qualify contention recovery and authority" \
+            -m "Instrument lock wait/hold time, interleave per-Agent tick application, add bounded 256-instance qualification, exercise durable crash cuts, compose external authority rotation/revocation, and expose actionable recovery diagnostics." \
+            -m "Target-host deployment evidence and independent acceptance remain externally governed." \
+            -m "Signed-off-by: runtime-supervisor-optimizer <runtime-supervisor-optimizer@users.noreply.github.com>"
+          git push origin HEAD:work/runtime-supervisor-qualification-20260929
