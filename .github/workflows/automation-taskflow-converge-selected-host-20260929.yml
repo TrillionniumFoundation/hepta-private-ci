@@ -1,7 +1,8 @@
-name: Automation TaskFlow schema-22 selected-host convergence
+name: Automation TaskFlow schema-22 self-hosted convergence
 
-# Exact carrier revision uses the canonical codex-state SQLite shim and does not
-# consume deployment secrets, so source convergence is not environment-gated.
+# This source-only convergence consumes no deployment secrets. Any online
+# self-hosted runner may execute it; exact-SHA checkout and remote-CAS push keep
+# the candidate immutable and prevent a stale job from overwriting the branch.
 on:
   push:
     branches:
@@ -14,12 +15,12 @@ permissions:
   contents: write
 
 concurrency:
-  group: automation-taskflow-schema22-selected-host-finalize-20260929
+  group: automation-taskflow-schema22-self-hosted-finalize-20260929
   cancel-in-progress: true
 
 jobs:
   converge:
-    runs-on: [self-hosted, hepta-automation-selected-host]
+    runs-on: self-hosted
     timeout-minutes: 150
     steps:
       - name: Check out exact isolated candidate
