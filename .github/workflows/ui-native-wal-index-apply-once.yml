@@ -33,11 +33,13 @@ jobs:
       - id: source
         name: Verify immutable input and apply reviewed source patch
         env:
-          EXPECTED_PARENT: 2069a8ebf6a8887c6cee172fbe42bfaf41819c80
+          EXPECTED_PARENT: a52b9c76db167d68ff66c638c44fad70de970d6a
           PATCH_BLOB_SHA: cf8d5267cbcde61455849e24be9eac9d1a8d14f3
-          PATCH_SHA256: b863bb348b91e038f711b5a155a383aaa342ee6beacb1cd168901f82159dd74a
         run: |
           set -euo pipefail
+          diagnostics="$RUNNER_TEMP/ui-native-wal-index-diagnostics"
+          rm -rf "$diagnostics"
+          mkdir -p "$diagnostics"
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           test -z "$(git status --porcelain)"
           if [[ ! -f .ci/ui-native-wal-index/source.patch.gz ]]; then
@@ -48,11 +50,16 @@ jobs:
           echo 'apply=true' >> "$GITHUB_OUTPUT"
           test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
           test "$(git rev-parse HEAD:.ci/ui-native-wal-index/source.patch.gz)" = "$PATCH_BLOB_SHA"
-          mkdir -p source-diagnostics
-          sha256sum .ci/ui-native-wal-index/source.patch.gz > source-diagnostics/capsule.sha256
+          sha256sum .ci/ui-native-wal-index/source.patch.gz > "$diagnostics/capsule.sha256"
           gzip -dc .ci/ui-native-wal-index/source.patch.gz > /tmp/ui-native-wal-index.patch
-          printf '%s  %s\n' "$PATCH_SHA256" /tmp/ui-native-wal-index.patch | sha256sum --check --strict
-          git apply --check --whitespace=error-all /tmp/ui-native-wal-index.patch
+          sha256sum /tmp/ui-native-wal-index.patch > "$diagnostics/decoded-patch.sha256"
+          cp /tmp/ui-native-wal-index.patch "$diagnostics/source.patch"
+          if ! git apply --check --verbose --whitespace=error-all /tmp/ui-native-wal-index.patch \
+              > "$diagnostics/apply-check.stdout" \
+              2> "$diagnostics/apply-check.stderr"; then
+            cat "$diagnostics/apply-check.stderr" >&2
+            exit 1
+          fi
           git apply --index --whitespace=error-all /tmp/ui-native-wal-index.patch
           git diff --cached --check
           python3 - <<'PYTHON'
@@ -148,16 +155,19 @@ jobs:
         if: failure()
         run: |
           set +e
-          mkdir -p source-diagnostics
-          git rev-parse HEAD HEAD^{tree} > source-diagnostics/identity.txt
-          git status --short > source-diagnostics/status.txt
-          git diff --binary HEAD^ > source-diagnostics/candidate.patch
-          sha256sum source-diagnostics/candidate.patch > source-diagnostics/candidate.patch.sha256
+          diagnostics="$RUNNER_TEMP/ui-native-wal-index-diagnostics"
+          mkdir -p "$diagnostics"
+          git rev-parse HEAD HEAD^{tree} > "$diagnostics/identity.txt"
+          git status --short > "$diagnostics/status.txt"
+          git diff --binary > "$diagnostics/working.patch"
+          git diff --cached --binary > "$diagnostics/staged.patch"
+          git log -1 --format=fuller > "$diagnostics/head.txt"
+          sha256sum "$diagnostics"/*.patch > "$diagnostics/patches.sha256" 2>/dev/null || true
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: failure()
         with:
           name: ui-native-wal-index-failure-${{ github.sha }}-attempt-${{ github.run_attempt }}
-          path: source-diagnostics
+          path: ${{ runner.temp }}/ui-native-wal-index-diagnostics
           if-no-files-found: error
           retention-days: 7
