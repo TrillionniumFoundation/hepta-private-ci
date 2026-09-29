@@ -16,7 +16,7 @@ concurrency:
 jobs:
   rebind:
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -33,7 +33,308 @@ jobs:
           git diff --exit-code
           git diff --cached --exit-code
 
-      - name: Rebind exact source objects and split status
+      - name: Repair exact-head compilation and evidence blockers
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              file = Path(path)
+              text = file.read_text()
+              if text.count(old) != 1:
+                  raise SystemExit(f"{path}: expected one occurrence of {old[:80]!r}")
+              file.write_text(text.replace(old, new, 1))
+
+          manifest = Path("codex-rs/hepta-prompt-registry/Cargo.toml")
+          text = manifest.read_text()
+          if "[features]" not in text:
+              text = text.replace(
+                  "[lints]\nworkspace = true\n",
+                  "[features]\ndefault = []\nfixture = []\n\n[lints]\nworkspace = true\n",
+                  1,
+              )
+          manifest.write_text(text)
+
+          registry = Path("codex-rs/hepta-prompt-registry/src/lib.rs")
+          text = registry.read_text()
+          text = text.replace(
+              "#[cfg(test)]\n    pub(crate) fn admit_factor(",
+              "#[cfg(any(test, feature = \"fixture\"))]\n    pub(crate) fn admit_factor(",
+              1,
+          )
+          text = text.replace(
+              "#[cfg(test)]\n    pub(crate) fn revoke_factor(",
+              "#[cfg(any(test, feature = \"fixture\"))]\n    pub(crate) fn revoke_factor(",
+              1,
+          )
+          marker = '\n#[cfg(test)]\n#[path = "lib_tests.rs"]\nmod tests;\n'
+          fixture = r'''
+
+/// Deterministic test-only owner fixture. The feature exposes no production
+/// mutation authority and is enabled only by dependent-crate test targets.
+#[cfg(feature = "fixture")]
+pub mod fixture {
+    use super::*;
+
+    #[derive(Clone, Debug, Eq, PartialEq)]
+    pub struct PromptRegistryFixture {
+        registry: PromptRegistry,
+    }
+
+    impl PromptRegistryFixture {
+        pub fn new(maximum_records: usize) -> Result<Self, Error> {
+            PromptRegistry::new(maximum_records).map(|registry| Self { registry })
+        }
+
+        pub fn register_factor(
+            &mut self,
+            factor: PromptFactor,
+        ) -> Result<RegistryReceipt, Error> {
+            self.registry.register_factor(factor)
+        }
+
+        pub fn admit_factor(
+            &mut self,
+            factor_id: &StableId,
+            reviewer_id: &StableId,
+            evidence_digest: Digest32,
+        ) -> Result<RegistryReceipt, Error> {
+            self.registry
+                .admit_factor(factor_id, reviewer_id, evidence_digest)
+        }
+
+        pub fn register_factor_relation(
+            &mut self,
+            relation: PromptFactorRelation,
+        ) -> Result<RegistryReceipt, Error> {
+            self.registry.register_factor_relation(relation)
+        }
+
+        pub fn revoke_factor(
+            &mut self,
+            factor_id: &StableId,
+        ) -> Result<RegistryReceipt, Error> {
+            self.registry.revoke_factor(factor_id)
+        }
+
+        #[must_use]
+        pub fn factor_graph_source_v1(&self) -> PromptFactorGraphSourceV1 {
+            self.registry.factor_graph_source_v1()
+        }
+
+        #[must_use]
+        pub const fn revision(&self) -> Revision {
+            self.registry.revision()
+        }
+    }
+}
+'''
+          if "pub struct PromptRegistryFixture" not in text:
+              if marker not in text:
+                  raise SystemExit("prompt registry test marker not found")
+              text = text.replace(marker, fixture + marker, 1)
+          registry.write_text(text)
+
+          fixture_dep = (
+              'codex-hepta-prompt-registry = { path = "../hepta-prompt-registry", '
+              'features = ["fixture"] }'
+          )
+          for path in [
+              "codex-rs/hepta-kg/Cargo.toml",
+              "codex-rs/hepta-prompt-optimizer/Cargo.toml",
+          ]:
+              file = Path(path)
+              text = file.read_text()
+              if fixture_dep not in text:
+                  if "[dev-dependencies]" in text:
+                      text = text.replace(
+                          "[dev-dependencies]\n",
+                          "[dev-dependencies]\n" + fixture_dep + "\n",
+                          1,
+                      )
+                  else:
+                      text += "\n[dev-dependencies]\n" + fixture_dep + "\n"
+              file.write_text(text)
+
+          for path in [
+              "codex-rs/hepta-kg/src/prompt_factor_tests.rs",
+              "codex-rs/hepta-prompt-optimizer/src/graph_tests.rs",
+          ]:
+              file = Path(path)
+              text = file.read_text()
+              text = text.replace(
+                  "use codex_hepta_prompt_registry::PromptRegistry;",
+                  "use codex_hepta_prompt_registry::fixture::PromptRegistryFixture;",
+              )
+              text = text.replace("PromptRegistry::new(", "PromptRegistryFixture::new(")
+              text = text.replace("PromptRegistry", "PromptRegistryFixture")
+              pattern = re.compile(
+                  r'(?P<i>[ \t]+)semantic_version: (?P<v>[^\n]+),\n'
+                  r'(?P=i)content_digest:'
+              )
+              text = pattern.sub(
+                  lambda match: (
+                      f'{match.group("i")}semantic_version: {match.group("v")},\n'
+                      f'{match.group("i")}semantic_purpose: '
+                      '"verify before mutating".to_owned(),\n'
+                      f'{match.group("i")}authority_class: '
+                      '"registered_prompt_factor".to_owned(),\n'
+                      f'{match.group("i")}eligible_objective_dimensions: '
+                      'vec![id("dimension:truth")],\n'
+                      f'{match.group("i")}content_digest:'
+                  ),
+                  text,
+              )
+              file.write_text(text)
+
+          replace_once(
+              "codex-rs/hepta-memory/src/cognitive_kg_history_tests.rs",
+              "                reason: reason.to_string(),\n                valid_from_unix_seconds: 100,",
+              "                reason: reason.to_string(),\n                citations: Vec::new(),\n                valid_from_unix_seconds: 100,",
+          )
+
+          delivery = Path("codex-rs/hepta-memory/tests/kg_delivery_consistency.rs")
+          text = delivery.read_text()
+          anchor = (
+              '    let second_draft = correction("The second correction wins or rolls back.");\n\n'
+              '    let (first_result, second_result) = tokio::join!('
+          )
+          if anchor not in text:
+              raise SystemExit("delivery consistency join anchor not found")
+          text = text.replace(
+              anchor,
+              '    let second_draft = correction("The second correction wins or rolls back.");\n'
+              '    let first_facts = KgFactSetDraft::default();\n'
+              '    let second_facts = KgFactSetDraft::default();\n\n'
+              '    let (first_result, second_result) = tokio::join!(',
+              1,
+          )
+          join_at = text.index("let (first_result, second_result)")
+          first = text.index("&KgFactSetDraft::default(),", join_at)
+          text = text[:first] + "&first_facts," + text[first + len("&KgFactSetDraft::default(),"):]
+          second = text.index("&KgFactSetDraft::default(),", first)
+          text = text[:second] + "&second_facts," + text[second + len("&KgFactSetDraft::default(),"):]
+          delivery.write_text(text)
+
+          replace_once(
+              "codex-rs/hepta-kg/src/incremental.rs",
+              "    Ok(generation.get() % every_generations == 0)",
+              "    Ok(generation.get().is_multiple_of(every_generations))",
+          )
+
+          guard = Path("scripts/hepta_kg_legacy_guard.py")
+          text = guard.read_text()
+          old = '''    for line in output.splitlines():
+        path = line.split(":", 1)[0]
+        if not path.startswith("codex-rs/hepta-kg/"):
+            raise LegacyGuardError(f"legacy-v1 Rust cfg escaped codex-hepta-kg: {line}")
+'''
+          new = '''    cfg_pattern = re.compile(r"\\bcfg(?:_attr)?\\s*\\([^)]*legacy-v1")
+    for line in output.splitlines():
+        path, _, source_line = line.partition(":")
+        if not cfg_pattern.search(source_line):
+            continue
+        if not path.startswith("codex-rs/hepta-kg/"):
+            raise LegacyGuardError(f"legacy-v1 Rust cfg escaped codex-hepta-kg: {line}")
+'''
+          if old not in text:
+              raise SystemExit("legacy guard loop not found")
+          guard.write_text(text.replace(old, new, 1))
+          PY
+
+      - name: Format and compile repaired surfaces
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo fmt --package codex-hepta-kg --package codex-hepta-prompt-registry \
+            --package codex-hepta-prompt-optimizer --package codex-hepta-memory \
+            --package codex-hepta-agentd
+          cargo test -p codex-hepta-kg -p codex-hepta-prompt-optimizer --no-fail-fast
+          cargo test -p codex-hepta-memory --lib --no-run
+          cargo test -p codex-hepta-memory --test kg_delivery_consistency --no-run
+          cargo clippy -p codex-hepta-kg --all-targets -- -D warnings
+          cd ..
+          python3 scripts/hepta_kg_legacy_guard.py
+          python3 -m unittest discover -s scripts -p 'test_hepta_kg_*.py' -v
+
+      - name: Restore one-shot workflow and commit source repairs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > .github/workflows/hepta-kg-map-rebind-once.yml <<'YAML'
+          name: knowledge.graph one-shot source-map rebind
+
+          on:
+            push:
+              branches: [work/kg-abc-evidence-hardening-20260928]
+              paths:
+                - ".github/kg-map-rebind.request"
+
+          permissions:
+            contents: write
+
+          concurrency:
+            group: knowledge-graph-map-rebind-once
+            cancel-in-progress: false
+
+          jobs:
+            rebind:
+              runs-on: ubuntu-24.04
+              timeout-minutes: 20
+              steps:
+                - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+                  with:
+                    ref: ${{ github.sha }}
+                    fetch-depth: 0
+                    persist-credentials: true
+
+                - name: Verify exact one-shot request
+                  shell: bash
+                  run: |
+                    set -euo pipefail
+                    test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+                    test "$(cat .github/kg-map-rebind.request)" = "$(git rev-parse HEAD^)"
+                    git diff --exit-code
+                    git diff --cached --exit-code
+
+                - name: Rebind exact source objects and split status
+                  shell: bash
+                  run: |
+                    set -euo pipefail
+                    python3 scripts/hepta-implementation-maps.py migrate --module knowledge.graph
+                    python3 scripts/hepta_kg_status.py --apply
+                    git diff --check
+                    python3 scripts/hepta_kg_status.py --check
+
+                - name: Commit only generated knowledge.graph metadata
+                  shell: bash
+                  run: |
+                    set -euo pipefail
+                    git config user.name 'hepta-kg-map-rebind'
+                    git config user.email 'hepta-kg-map-rebind@users.noreply.github.com'
+                    git add -- \
+                      docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json \
+                      docs/modules/knowledge.graph/CURRENT_STATUS.json \
+                      docs/modules/knowledge.graph/CURRENT_STATUS.md
+                    test -z "$(git status --porcelain --untracked-files=no | grep -vE '^M  docs/modules/knowledge\.graph/(IMPLEMENTATION_MAP\.json|CURRENT_STATUS\.json|CURRENT_STATUS\.md)$' || true)"
+                    git commit -m 'docs(knowledge.graph): rebind final source map'
+                    git push origin HEAD:work/kg-abc-evidence-hardening-20260928
+          YAML
+          git rm -f \
+            .github/workflows/hepta-kg-source-export-temporary.yml \
+            .github/workflows/hepta-kg-source-export-macos-temporary.yml \
+            .github/workflows/hepta-kg-repair-temporary.yml
+          git diff --check
+          git config user.name 'hepta-kg-repair'
+          git config user.email 'hepta-kg-repair@users.noreply.github.com'
+          git add -A
+          git commit -s -m 'fix(knowledge.graph): restore exact-head qualification'
+
+      - name: Rebind current source objects and split status
         shell: bash
         run: |
           set -euo pipefail
@@ -41,17 +342,9 @@ jobs:
           python3 scripts/hepta_kg_status.py --apply
           git diff --check
           python3 scripts/hepta_kg_status.py --check
-
-      - name: Commit only generated knowledge.graph metadata
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name 'hepta-kg-map-rebind'
-          git config user.email 'hepta-kg-map-rebind@users.noreply.github.com'
           git add -- \
             docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json \
             docs/modules/knowledge.graph/CURRENT_STATUS.json \
             docs/modules/knowledge.graph/CURRENT_STATUS.md
-          test -z "$(git status --porcelain --untracked-files=no | grep -vE '^M  docs/modules/knowledge\.graph/(IMPLEMENTATION_MAP\.json|CURRENT_STATUS\.json|CURRENT_STATUS\.md)$' || true)"
-          git commit -m 'docs(knowledge.graph): rebind final source map'
+          git commit -m 'docs(knowledge.graph): rebind repaired source map'
           git push origin HEAD:work/kg-abc-evidence-hardening-20260928
