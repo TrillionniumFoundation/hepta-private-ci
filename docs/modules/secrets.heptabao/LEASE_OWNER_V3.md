@@ -7,7 +7,8 @@ activate a daemon, certify an external provider, or grant release authority.
 ## Owners and executable entrypoints
 
 `DurableLeaseRegistryV1` remains the single metadata writer. The historical type
-name is retained for source compatibility; its persistent document is schema 3.
+and document names are retained for source compatibility; its current persistent
+document is schema 4.
 It owns lease records, lease operation history and secret-consumption operation
 history. It never contains a provider token or secret value.
 
@@ -75,14 +76,19 @@ network mutation authority. Provider-native dynamic endpoints remain gated.
 
 ## Migration and missing historical facts
 
-Schema 1 and 2 are read deterministically and upgraded in memory to schema 3;
-the next successful write publishes schema 3. A previous snapshot never proves
-the original operation result. No singleton issue/lease association is inferred.
-Old terminal results and old mutations without a provable generation are marked
-`legacy_binding_incomplete`. Their historical result query returns
-`LegacyRequalificationRequired`. Records remain visible for controlled external
-reconciliation. This is an explicit migration boundary, not silent data loss,
-not an invented success and not permission to reissue an unknown lease.
+Schemas 1, 2 and 3 are read deterministically and upgraded in memory to schema
+4; the next successful write publishes schema 4. A previous mutable lease
+snapshot never proves the original operation result. No singleton issue/lease
+association is inferred. Old terminal lease results and mutations without a
+provable generation are marked `legacy_binding_incomplete` and require external
+requalification.
+
+For schema-3 consumption rows, only an immutable stored receipt may reconstruct
+the terminal success digest and observed amount. Missing provider/consumer facts
+are never invented. Migration also assigns conservative store-revision lineage
+for operational aging. Records remain visible for controlled reconciliation.
+This is an explicit migration boundary, not silent data loss and not permission
+to replay an unknown effect.
 
 ## Single-writer and storage protocol
 
@@ -119,16 +125,21 @@ external monotonic trust/epoch frontier and an operator recovery procedure.
 
 Maximum encoded store size is 8 MiB. Individual lease metadata is at most 16 KiB;
 operation/lease/consumption maps each retain a 65,536-record hard ceiling. Issue
-and renewal admission retain control headroom; pending lease and consumption
-results reserve future encoding space on every commit. Exceeding the limit
-rejects before replacement and preserves the previously reopenable image.
+and renewal admission retain control headroom; nonterminal lease and consumption
+results reserve future encoding space on every commit. `Succeeded` and `Failed`
+consumption rows preserve their complete history but reserve no impossible
+future result. Exceeding the limit rejects before replacement and preserves the
+previously reopenable image.
 
 The owner deliberately remains a bounded JSON-snapshot pilot. It copies and
 validates history and rewrites the file for each commit. No unbounded-history,
 constant-cost append, automatic retention, safe archival or high-throughput
-claim is made. Archival must preserve operation deduplication, immutable results
-and revocation history before increasing the pilot ceiling. Deleting records to
-make room is not an acceptable recovery method.
+claim is made. `diagnostics()` reports encoded/reserved bytes, recovery-state
+counts, pending quota, dispatch-fenced rows without receipts, writer fences and
+bounded commit latency/byte counters. These process-local metrics are diagnostic,
+not durable audit evidence. Archival must preserve operation deduplication,
+immutable results and revocation history before increasing the pilot ceiling.
+Deleting records to make room is not an acceptable recovery method.
 
 ## Registered consumption and recovery
 
@@ -213,7 +224,10 @@ request for the registered host. `BaoAuthorizedReadV1` groups the corresponding
 low-level authority tuple; it is not a minted authorization. The grouped APIs
 replace long positional argument lists without dropping any signed fields.
 
-Native feedback executes adapter and lightweight SQLite-owner tests, their
-strict all-target Clippy, formatting and the AuthBus live-schema regressions.
+Native feedback executes adapter and lightweight AuthBus SQLite-owner tests,
+the registered-saga SIGKILL matrix, strict all-target Clippy, formatting and the
+AuthBus live-schema regressions. The Bao metadata owner in this document remains
+the JSON reference owner; an AuthBus SQLite dependency is not a Bao production
+writer.
 The Python qualification tests prove exit propagation and receipt binding only;
 they must not be counted as Rust/provider execution.

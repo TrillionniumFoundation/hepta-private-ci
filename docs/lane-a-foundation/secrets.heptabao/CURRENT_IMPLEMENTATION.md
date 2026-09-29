@@ -46,9 +46,12 @@ Secret values remain owned by the external Bao service. Local durability covers
 kernel authority nonce/revocation state and the metadata-only lease registry.
 The registry persists operation identity, semantic digest, provider lease identity,
 scope, expiry, generation and explicit Unknown states; it never stores raw secrets.
-Source composition binds consumer identity to a registered callback and separates
-issuer, approver and revocation-distributor trust. No production process caller is
-selected in the current candidate.
+The current reference format is schema 4. It proof-preservingly upgrades schema-3
+success from immutable receipts, derives phase/recovery/capacity from one state
+model and retains terminal history without reserving impossible future-result
+bytes. Source composition binds consumer identity to a registered callback and
+separates issuer, approver and revocation-distributor trust. No production
+process caller is selected in the current candidate.
 
 Activation requires protected host configuration, provider token, pinned issuer,
 approver and revocation trust, an independently provisioned consumer registry,
@@ -89,6 +92,9 @@ deny unregistered identities or forged approvals before network dispatch;
 kernel control tests cover independent grant approval, signed monotonic
 revocation ingestion and forged-feed rejection.
 
+The source includes process-local full-operation and commit latency/byte metrics,
+secret-free recovery/capacity diagnostics and a 26-cut Unix SIGKILL fixture.
+These surfaces are described in `docs/modules/secrets.heptabao/OPERATIONS_AND_CAPACITY_V1.md`.
 Recorded bounded evidence is not production acceptance. Exact-head and
 synthetic-merge receipts for the current candidate are the relevant execution
 evidence.

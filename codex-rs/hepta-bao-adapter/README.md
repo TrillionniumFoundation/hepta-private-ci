@@ -64,11 +64,18 @@ checks, write-and-fsync replacement, rename and parent-directory fsync. A
 post-rename durability failure fences the handle. It retains no provider token
 or secret value.
 
-The JSON owner is deliberately not a high-throughput production ledger. The
-SQLite owner and migration/anti-rollback contract are described in
-`docs/modules/secrets.heptabao/SQLITE_OWNER_V1.md`; production activation remains
-false until target-host qualification and an external monotonic checkpoint
-service are complete.
+The JSON owner is deliberately not a high-throughput production ledger. Its
+schema-4 migration preserves provable schema-3 success from immutable receipts,
+keeps terminal history, and stops reserving future-result bytes for closed
+failures. `diagnostics()` reports state/recovery counts, pending quota, encoded
+and reserved bytes, writer fencing, commit bytes and bounded latency percentiles.
+
+The operation and production-store gates are specified in
+`docs/modules/secrets.heptabao/OPERATIONS_AND_CAPACITY_V1.md`. A production SQLite
+owner is still target-only: no truncated staging payload or SQLite-wrapped JSON
+blob is treated as implementation. Production activation remains false until a
+complete transactional owner, external monotonic checkpoint, target-host
+qualification and nonblocking host integration exist.
 
 ## Secret handling
 
@@ -80,7 +87,9 @@ from general telemetry and apply bounded retention.
 
 Registered consumers must be synchronous and bounded, must not re-enter the
 authority while inside the final-use callback, and must never copy secret bytes
-into prompts, logs, learning records or ordinary receipts.
+into prompts, logs, learning records or ordinary receipts. Request, receipt and
+durable-operation `Debug` output redacts secret digests and secret path
+components; process-local metrics expose only bounded operational metadata.
 
 ## Verification
 
@@ -102,6 +111,9 @@ The isolated real-service read fixture remains available through
 `qa/real_service_smoke.py`; the dynamic-contract probe is
 `qa/probe_dynamic_lease_contract.py`. Neither may contact an existing production
 service. Unsupported dynamic endpoints are a blocker and must exit nonzero.
+The Unix native suite also contains a 26-cut SIGKILL matrix for the registered
+TLS/AuthBus/reference-owner saga; it is synthetic crash/reopen evidence, not an
+external provider or storage-device power-loss result.
 
 ## Nonclaims
 

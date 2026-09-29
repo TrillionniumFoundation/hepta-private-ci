@@ -38,6 +38,24 @@
       "symbol": "DurableLeaseRegistryV1",
       "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
       "class": "json_reference_owner"
+    },
+    {
+      "operation": "registry_diagnostics",
+      "symbol": "DurableLeaseRegistryV1::diagnostics",
+      "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
+      "class": "secret_free_reference_owner_diagnostics"
+    },
+    {
+      "operation": "operation_metrics",
+      "symbol": "BaoFinalUseHost::operation_metrics",
+      "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+      "class": "bounded_process_local_full_operation_metrics"
+    },
+    {
+      "operation": "registered_saga_sigkill_matrix",
+      "symbol": "registered_saga_sigkill_matrix",
+      "path": "codex-rs/hepta-bao-adapter/src/saga_crash_tests.rs",
+      "class": "synthetic_unix_crash_recovery_qualification_fixture"
     }
   ],
   "sourceAnchors": [
@@ -48,7 +66,11 @@
         "Reserved",
         "DispatchFenced",
         "record_provider_failure",
-        "observe_consumption_not_applied"
+        "observe_consumption_not_applied",
+        "BaoConsumptionPhaseV1",
+        "BaoConsumptionRecoveryActionV1",
+        "requires_future_capacity",
+        "migrate_schema_three_consumptions"
       ]
     },
     {
@@ -57,7 +79,10 @@
         "consume_kv_v2_with_authbus",
         "reconcile_consumption",
         "NotAppliedWithEvidence",
-        "seal_unreserved_operation"
+        "seal_unreserved_operation",
+        "operation_metrics",
+        "BaoProductErrorClassV1",
+        "validate_product_admission"
       ]
     },
     {
@@ -82,6 +107,23 @@
         "claimed_reserved_and_dispatch_fenced_are_distinct_durable_states",
         "deterministic_provider_failure_is_immutable_and_terminal",
         "proved_not_applied_settles_as_terminal_negative_without_reentry"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
+      "mustContain": [
+        "LeaseRegistryDiagnosticsV1",
+        "future_reserve_bytes",
+        "SCHEMA_VERSION: u32 = 4",
+        "commit_metrics"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/saga_crash_tests.rs",
+      "mustContain": [
+        "registered_saga_sigkill_matrix",
+        "post_dispatch_without_receipt",
+        "recovery reentered consumer"
       ]
     }
   ]

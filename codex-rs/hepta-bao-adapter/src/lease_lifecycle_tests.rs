@@ -420,8 +420,66 @@ fn legacy_v1_store_migrates_without_inventing_ambiguous_provider_facts() {
     drop(registry);
 
     let stored: serde_json::Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
-    assert_eq!(stored["schema_version"], 3);
+    assert_eq!(stored["schema_version"], 4);
     assert!(stored["revision"].as_u64().unwrap() >= 2);
+    DurableLeaseRegistryV1::open(&path).unwrap();
+}
+
+#[test]
+fn schema_three_success_migrates_from_immutable_receipt_without_inventing_facts() {
+    let directory = private_directory().unwrap();
+    let path = directory.path().join("lease-registry.json");
+    let legacy = serde_json::json!({
+        "schema_version": 3,
+        "revision": 9,
+        "time_frontier_unix_ms": 0,
+        "operations": {},
+        "leases": {},
+        "consumptions": {
+            "operation:schema-three-success": {
+                "operation_id": "operation:schema-three-success",
+                "semantic_sha256": vec![1; 32],
+                "effect_sha256": vec![2; 32],
+                "request_sha256": vec![3; 32],
+                "consumer_id": "model-provider",
+                "consumer_configuration_sha256": vec![4; 32],
+                "amount": 1,
+                "reservation_id": "reservation:schema-three-success",
+                "state": "succeeded",
+                "receipt": {
+                    "request_sha256": vec![3; 32],
+                    "response_sha256": vec![5; 32],
+                    "secret_sha256": vec![6; 32],
+                    "version": 7,
+                    "secret_bytes": 8
+                }
+            }
+        }
+    });
+    std::fs::write(&path, serde_json::to_vec(&legacy).unwrap()).unwrap();
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600)).unwrap();
+    }
+
+    let mut registry = DurableLeaseRegistryV1::open(&path).unwrap();
+    let row = registry
+        .consumption_result("operation:schema-three-success")
+        .unwrap();
+    assert_eq!(row.state, BaoConsumptionStateV1::Succeeded);
+    assert_eq!(row.terminal_kind.as_deref(), Some("success"));
+    assert_eq!(row.terminal_observed_cost, Some(1));
+    assert_eq!(row.created_revision, 9);
+    assert_eq!(row.updated_revision, 9);
+    assert_eq!(registry.diagnostics().unwrap().schema_version, 4);
+
+    registry
+        .prepare_issue("op:publish-schema-four".into(), [47; 32])
+        .unwrap();
+    drop(registry);
+    let stored: serde_json::Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
+    assert_eq!(stored["schema_version"], 4);
     DurableLeaseRegistryV1::open(&path).unwrap();
 }
 

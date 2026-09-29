@@ -4,7 +4,7 @@
   "generatedFrom": "docs/modules/secrets.heptabao/MODULE_MANIFEST_V1.json",
   "states": {
     "source": "implemented_candidate",
-    "implementation": "registered_read_saga_and_json_reference_owner",
+    "implementation": "registered_read_saga_schema4_json_reference_owner",
     "durability": "json_reference_owner_sqlite_production_owner_pending",
     "qualification": "exact_source_and_synthetic_merge_required",
     "activation": "not_product_activated",
@@ -19,14 +19,22 @@
     "operation-ID reservation lookup and restart reconciliation without blind redispatch",
     "immutable provider-failure and proved consumer-NotApplied terminal evidence",
     "metadata-only receipts and secret-buffer best-effort zeroization",
-    "bounded single-writer JSON reference owner with fsync and fencing"
+    "bounded single-writer JSON reference owner with fsync and fencing",
+    "proof-preserving schema-3 to schema-4 migration for durable consumption history",
+    "single-sourced durable phase recovery-action and future-capacity classification",
+    "secret-free state recovery capacity and commit-cost diagnostics",
+    "bounded full-forward and recovery latency/error-class metrics",
+    "26-cut Unix SIGKILL restart-reconciliation qualification fixture",
+    "redacted Debug surfaces for secret paths and secret-related digests"
   ],
   "targetOnlyCapabilities": [
-    "SQLite production owner activation and migration from the JSON reference model",
+    "transactional SQLite production owner with migration from the schema-4 JSON reference model",
     "selected Agentd or App Server production bootstrap",
     "independently operated trusted-time settlement and key-rotation services",
     "external anti-rollback checkpoint service and disaster-recovery ceremony",
     "target-host power-loss and long-history archival qualification",
+    "bounded fair recovery worker and nonblocking async-host storage integration",
+    "selected-host metrics export alerting and retention policy",
     "independent operator acceptance promotion and release"
   ],
   "provider": {

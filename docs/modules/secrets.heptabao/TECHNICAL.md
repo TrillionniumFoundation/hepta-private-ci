@@ -18,11 +18,15 @@ This stable document is the implementation guide for `secrets.heptabao`. Normati
 
 ## Current candidate implementation contract
 
-The current lease schema, immutable results, writer fencing, bounded capacity,
-registered AuthBus product ingress and recovery semantics are specified in
-[LEASE_OWNER_V3.md](LEASE_OWNER_V3.md). This current contract supersedes older
-metadata-only lifecycle descriptions where they differ. Provider-native dynamic
-lease dispatch and normal daemon activation remain unqualified.
+The current registered consumption state machine is specified in
+[CONSUMPTION_SAGA_V4.md](CONSUMPTION_SAGA_V4.md); the schema-4 JSON reference
+owner and migration protocol are specified in
+[LEASE_OWNER_V3.md](LEASE_OWNER_V3.md). Executable diagnostics, full-operation
+latency and the production-store replacement gate are specified in
+[OPERATIONS_AND_CAPACITY_V1.md](OPERATIONS_AND_CAPACITY_V1.md). These contracts
+supersede older metadata-only lifecycle descriptions where they differ.
+Provider-native dynamic lease dispatch and normal daemon activation remain
+unqualified.
 
 ## 1. Identity, mission and ownership
 
@@ -165,13 +169,17 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-bao-adapter/src/https_consumer.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md) specifies this module's algorithm and pilot ceilings. Current executable measurement belongs to `BaoFinalUseHost::operation_metrics` and `DurableLeaseRegistryV1::diagnostics`, as described in [OPERATIONS_AND_CAPACITY_V1.md](OPERATIONS_AND_CAPACITY_V1.md). They cover full forward/recovery calls and reference-owner commit cost; process-local samples are not target-host qualification.
+
+A production replacement must preserve deduplication, immutable results, compare-and-swap transitions, recovery fairness, archive semantics and external anti-rollback. It must also remove synchronous snapshot work from async runtime workers. Merely changing the container format to SQLite is insufficient.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-Use the host-enrolled BaoClient consumer behind a registered trusted callback. The current integration supports the KV v2 read contract and a durable metadata-only lease lifecycle/reconciliation owner. Provider-native lease issuance/renew/revoke dispatch remains gated by the OpenBao compatibility blocker and must stay fail-closed until the exact endpoint contract is qualified. Configure CA, issuer, epoch and persistent authority state through the host, pass the provider token through the dedicated channel, and retain indeterminate consumer outcomes without blind retry.
+Use the host-enrolled BaoClient consumer behind a registered trusted callback. The current integration supports the KV v2 read contract and a durable metadata-only lease lifecycle/reconciliation owner. Export state/recovery counts, pending quota, post-dispatch rows without receipts, settlement/observer backlog, owner fencing, encoded/reserved bytes and forward/recovery latency from the approved host. Debug and ordinary telemetry must not contain secret digests or path components.
+
+Provider-native lease issuance/renew/revoke dispatch remains gated by the OpenBao compatibility blocker and must stay fail-closed until the exact endpoint contract is qualified. Configure CA, issuer, epoch and persistent authority state through the host, pass the provider token through the dedicated channel, and retain indeterminate consumer outcomes without blind retry.
 
 Current operating and state-format references:
 
@@ -187,7 +195,8 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs); named case: `real_tls_read_uses_headers_exact_version_and_secret_only_consumer`.
 - [codex-rs/hepta-bao-adapter/src/lib_tests.rs](../../../codex-rs/hepta-bao-adapter/src/lib_tests.rs); named case: `exact_reference_returns_only_opaque_digest`.
-- [codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs](../../../codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs); covers idempotency conflict, unknown outcome reconciliation, renew/revoke and restart durability.
+- [codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs](../../../codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs); covers idempotency conflict, proof-preserving schema-3 migration, capacity, unknown outcome reconciliation, renew/revoke and restart durability.
+- [codex-rs/hepta-bao-adapter/src/saga_crash_tests.rs](../../../codex-rs/hepta-bao-adapter/src/saga_crash_tests.rs); exercises 26 named SIGKILL cuts and restart reconciliation without a `BaoClient`.
 
 In `codex-rs`, run `just test -p codex-hepta-bao-adapter`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md) separately labels target acceptance designs.
 

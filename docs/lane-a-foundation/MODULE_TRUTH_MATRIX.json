@@ -587,7 +587,7 @@
       "implementationDetail": "docs/modules/secrets.heptabao/CONSUMPTION_SAGA_V4.md",
       "states": {
         "source": "implemented_candidate",
-        "implementation": "registered_read_saga_and_json_reference_owner",
+        "implementation": "registered_read_saga_schema4_json_reference_owner",
         "durability": "json_reference_owner_sqlite_production_owner_pending",
         "qualification": "exact_source_and_synthetic_merge_required",
         "activation": "not_product_activated",
@@ -602,14 +602,22 @@
         "operation-ID reservation lookup and restart reconciliation without blind redispatch",
         "immutable provider-failure and proved consumer-NotApplied terminal evidence",
         "metadata-only receipts and secret-buffer best-effort zeroization",
-        "bounded single-writer JSON reference owner with fsync and fencing"
+        "bounded single-writer JSON reference owner with fsync and fencing",
+        "proof-preserving schema-3 to schema-4 migration for durable consumption history",
+        "single-sourced durable phase recovery-action and future-capacity classification",
+        "secret-free state recovery capacity and commit-cost diagnostics",
+        "bounded full-forward and recovery latency/error-class metrics",
+        "26-cut Unix SIGKILL restart-reconciliation qualification fixture",
+        "redacted Debug surfaces for secret paths and secret-related digests"
       ],
       "targetOnlyCapabilities": [
-        "SQLite production owner activation and migration from the JSON reference model",
+        "transactional SQLite production owner with migration from the schema-4 JSON reference model",
         "selected Agentd or App Server production bootstrap",
         "independently operated trusted-time settlement and key-rotation services",
         "external anti-rollback checkpoint service and disaster-recovery ceremony",
         "target-host power-loss and long-history archival qualification",
+        "bounded fair recovery worker and nonblocking async-host storage integration",
+        "selected-host metrics export alerting and retention policy",
         "independent operator acceptance promotion and release"
       ],
       "sourceAnchors": [
@@ -620,7 +628,11 @@
             "Reserved",
             "DispatchFenced",
             "record_provider_failure",
-            "observe_consumption_not_applied"
+            "observe_consumption_not_applied",
+            "BaoConsumptionPhaseV1",
+            "BaoConsumptionRecoveryActionV1",
+            "requires_future_capacity",
+            "migrate_schema_three_consumptions"
           ]
         },
         {
@@ -629,7 +641,10 @@
             "consume_kv_v2_with_authbus",
             "reconcile_consumption",
             "NotAppliedWithEvidence",
-            "seal_unreserved_operation"
+            "seal_unreserved_operation",
+            "operation_metrics",
+            "BaoProductErrorClassV1",
+            "validate_product_admission"
           ]
         },
         {
@@ -654,6 +669,23 @@
             "claimed_reserved_and_dispatch_fenced_are_distinct_durable_states",
             "deterministic_provider_failure_is_immutable_and_terminal",
             "proved_not_applied_settles_as_terminal_negative_without_reentry"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
+          "mustContain": [
+            "LeaseRegistryDiagnosticsV1",
+            "future_reserve_bytes",
+            "SCHEMA_VERSION: u32 = 4",
+            "commit_metrics"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/saga_crash_tests.rs",
+          "mustContain": [
+            "registered_saga_sigkill_matrix",
+            "post_dispatch_without_receipt",
+            "recovery reentered consumer"
           ]
         }
       ],

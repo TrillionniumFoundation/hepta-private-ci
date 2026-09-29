@@ -109,14 +109,58 @@
       "designOperation": "lease_lifecycle_reference",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "registry_diagnostics",
+      "nativeSymbol": "DurableLeaseRegistryV1::diagnostics",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
+      "state": "secret_free_reference_owner_diagnostics",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "registry_diagnostics",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "operation_metrics",
+      "nativeSymbol": "BaoFinalUseHost::operation_metrics",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+      "state": "bounded_process_local_full_operation_metrics",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "operation_metrics",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "registered_saga_sigkill_matrix",
+      "nativeSymbol": "registered_saga_sigkill_matrix",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/saga_crash_tests.rs",
+      "state": "synthetic_unix_crash_recovery_qualification_fixture",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/saga_crash_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "registered_saga_sigkill_matrix",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "SQLite production owner activation and migration from the JSON reference model",
+    "transactional SQLite production owner with migration from the schema-4 JSON reference model",
     "selected Agentd or App Server production bootstrap",
     "independently operated trusted-time settlement and key-rotation services",
     "external anti-rollback checkpoint service and disaster-recovery ceremony",
     "target-host power-loss and long-history archival qualification",
+    "bounded fair recovery worker and nonblocking async-host storage integration",
+    "selected-host metrics export alerting and retention policy",
     "independent operator acceptance promotion and release"
   ],
   "externalEvidenceGates": [
@@ -159,6 +203,7 @@
     "docs/modules/secrets.heptabao/CONSUMPTION_SAGA_V4.md",
     "docs/modules/secrets.heptabao/LEASE_OWNER_V3.md",
     "docs/modules/secrets.heptabao/MODULE_MANIFEST_V1.json",
+    "docs/modules/secrets.heptabao/OPERATIONS_AND_CAPACITY_V1.md",
     "docs/modules/secrets.heptabao/TECHNICAL.md",
     "external/HeptaBao",
     "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json",

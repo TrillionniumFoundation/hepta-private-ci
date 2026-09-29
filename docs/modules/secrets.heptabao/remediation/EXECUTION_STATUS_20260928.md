@@ -43,26 +43,32 @@ therefore remain open. Source presence is not a passing gate.
 
 ## Remaining work
 
-Phase 1 is not fully crash-qualified. Post-dispatch records without a response
-receipt still need a real provider-side observer or another qualified original-
-operation terminal-evidence path. The complete forward/recovery crash matrix,
-including AuthBus publication races and consumer/settlement boundaries, remains
-an acceptance requirement. Pre-reserve InvalidRequest handling also needs a
-forward-path regression: recovery can seal it, but direct error handling can
-currently return an invalid-transition store error rather than its final abort.
+Phase 1 source now contains a 26-cut Unix SIGKILL/reopen matrix spanning claim,
+AuthBus publication, provider response, consumer and settlement boundaries.
+Pre-reserve invalid admission is rejected before a durable claim, and the
+provider-error branch no longer attempts an invalid terminal transition from
+`Claimed`. This source still requires exact-head and synthetic-merge native
+execution before the matrix can be reported as passed.
+
+Post-dispatch records without a response receipt still need a real provider-side
+observer or another qualified original-operation terminal-evidence path. They
+remain explicit pending states, retain quota and are never redispatched or
+silently refunded.
 
 Phase 2 still needs exact-candidate native logs, per-execution toolchain binding
 and independently trusted attestation. Documentation projections and test-count
 validation do not establish those facts.
 
-Phase 3 remains incomplete: the actual Bao owner is the bounded JSON owner. An
+Phase 3 remains incomplete: the actual Bao owner is the bounded schema-4 JSON
+owner. It now exposes complete-operation and commit cost metrics, actionable
+recovery/capacity diagnostics and proof-preserving schema-3 migration. The
 unapplied/truncated phase-3 staging payload is not a SQLite production writer.
-Separate operation/lease/consumption tables, event history, CAS, recovery queue,
-archive, anti-rollback service, retention and nonblocking host integration still
-need implementation and native qualification.
+Separate operation/lease/consumption tables, event history, CAS, a fair recovery
+queue, archive, anti-rollback service, retention and nonblocking host integration
+still need complete implementation and native qualification.
 
 Phase 4 remains incomplete: the supported fixed-provider slice is exact KV-v2
 read-only. Generic dynamic issue/lookup/renew/revoke/expiry E2E is not established.
 No normal Agentd/App Server caller, protected production trust-service bootstrap,
-key-rotation deployment or deployed metrics is established by this increment.
+key-rotation deployment or deployed metrics export is established by this increment.
 Provider mutation, activation, acceptance and release flags remain false.

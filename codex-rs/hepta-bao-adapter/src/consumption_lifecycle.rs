@@ -11,7 +11,7 @@ const TERMINAL_CONSUMER_NOT_APPLIED: &str = "consumer_not_applied";
 const TERMINAL_ABORTED_BEFORE_RESERVATION: &str = "aborted_before_reservation";
 const TERMINAL_ABORTED_BEFORE_DISPATCH: &str = "aborted_before_dispatch";
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Clone, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct BaoSecretReceipt {
     pub request_sha256: [u8; 32],
@@ -21,7 +21,37 @@ pub struct BaoSecretReceipt {
     pub secret_bytes: usize,
 }
 
-#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+/// Digest-free, bounded telemetry fields; version and size remain sensitive metadata.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct BaoSecretTelemetryV1 {
+    pub version: u64,
+    pub secret_bytes: usize,
+}
+
+impl BaoSecretReceipt {
+    #[must_use]
+    pub const fn telemetry(&self) -> BaoSecretTelemetryV1 {
+        BaoSecretTelemetryV1 {
+            version: self.version,
+            secret_bytes: self.secret_bytes,
+        }
+    }
+}
+
+impl std::fmt::Debug for BaoSecretReceipt {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        formatter
+            .debug_struct("BaoSecretReceipt")
+            .field("request_sha256", &"[SENSITIVE DIGEST]")
+            .field("response_sha256", &"[SENSITIVE DIGEST]")
+            .field("secret_sha256", &"[SENSITIVE DIGEST]")
+            .field("version", &self.version)
+            .field("secret_bytes", &self.secret_bytes)
+            .finish()
+    }
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum BaoConsumptionStateV1 {
     Claimed,
@@ -38,7 +68,83 @@ pub enum BaoConsumptionStateV1 {
     DispatchAttempted,
 }
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+/// Coarse durable phase used consistently by admission, recovery and capacity code.
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+pub enum BaoConsumptionPhaseV1 {
+    Unreserved,
+    Reserved,
+    DispatchFenced,
+    TerminalEvidence,
+    Terminal,
+}
+
+/// The only recovery action permitted for a durable consumption state.
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+pub enum BaoConsumptionRecoveryActionV1 {
+    SealOrBindReservation,
+    CancelOrExpireReservation,
+    BindLegacyReservation,
+    ObserveOriginalOutcome,
+    SettleTerminalEvidence,
+    ReturnHistoricalSuccess,
+    ReturnHistoricalFailure,
+}
+
+impl BaoConsumptionStateV1 {
+    #[must_use]
+    pub const fn phase(self) -> BaoConsumptionPhaseV1 {
+        match self {
+            Self::Claimed => BaoConsumptionPhaseV1::Unreserved,
+            Self::Reserved | Self::DispatchAttempted => BaoConsumptionPhaseV1::Reserved,
+            Self::DispatchFenced | Self::DeliveryPrepared | Self::Indeterminate => {
+                BaoConsumptionPhaseV1::DispatchFenced
+            }
+            Self::ConsumerSucceeded | Self::ConsumerNotApplied | Self::ProviderFailed => {
+                BaoConsumptionPhaseV1::TerminalEvidence
+            }
+            Self::Succeeded | Self::Failed => BaoConsumptionPhaseV1::Terminal,
+        }
+    }
+
+    #[must_use]
+    pub const fn recovery_action(self) -> BaoConsumptionRecoveryActionV1 {
+        match self {
+            Self::Claimed => BaoConsumptionRecoveryActionV1::SealOrBindReservation,
+            Self::Reserved => BaoConsumptionRecoveryActionV1::CancelOrExpireReservation,
+            Self::DispatchAttempted => BaoConsumptionRecoveryActionV1::BindLegacyReservation,
+            Self::DispatchFenced | Self::DeliveryPrepared | Self::Indeterminate => {
+                BaoConsumptionRecoveryActionV1::ObserveOriginalOutcome
+            }
+            Self::ConsumerSucceeded | Self::ConsumerNotApplied | Self::ProviderFailed => {
+                BaoConsumptionRecoveryActionV1::SettleTerminalEvidence
+            }
+            Self::Succeeded => BaoConsumptionRecoveryActionV1::ReturnHistoricalSuccess,
+            Self::Failed => BaoConsumptionRecoveryActionV1::ReturnHistoricalFailure,
+        }
+    }
+
+    #[must_use]
+    pub const fn is_terminal(self) -> bool {
+        matches!(self, Self::Succeeded | Self::Failed)
+    }
+
+    #[must_use]
+    pub const fn has_dispatch_fence(self) -> bool {
+        matches!(
+            self.phase(),
+            BaoConsumptionPhaseV1::DispatchFenced
+                | BaoConsumptionPhaseV1::TerminalEvidence
+                | BaoConsumptionPhaseV1::Terminal
+        )
+    }
+
+    #[must_use]
+    pub const fn requires_future_capacity(self) -> bool {
+        !self.is_terminal()
+    }
+}
+
+#[derive(Clone, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct BaoConsumptionOperationV1 {
     pub operation_id: String,
@@ -53,6 +159,12 @@ pub struct BaoConsumptionOperationV1 {
     pub state: BaoConsumptionStateV1,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub receipt: Option<BaoSecretReceipt>,
+    /// Store revision at first durable publication. Zero is accepted only before commit.
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub created_revision: u64,
+    /// Store revision of the most recent durable transition.
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub updated_revision: u64,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub terminal_kind: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -61,6 +173,30 @@ pub struct BaoConsumptionOperationV1 {
     pub terminal_evidence_sha256: Option<[u8; 32]>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub terminal_observed_cost: Option<u64>,
+}
+
+impl std::fmt::Debug for BaoConsumptionOperationV1 {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        formatter
+            .debug_struct("BaoConsumptionOperationV1")
+            .field("operation_id", &self.operation_id)
+            .field("semantic_sha256", &"[SENSITIVE DIGEST]")
+            .field("effect_sha256", &"[SENSITIVE DIGEST]")
+            .field("request_sha256", &"[SENSITIVE DIGEST]")
+            .field("consumer_id", &self.consumer_id)
+            .field("consumer_configuration_sha256", &"[SENSITIVE DIGEST]")
+            .field("amount", &self.amount)
+            .field("reservation_id", &self.reservation_id)
+            .field("state", &self.state)
+            .field("receipt", &self.receipt)
+            .field("created_revision", &self.created_revision)
+            .field("updated_revision", &self.updated_revision)
+            .field("terminal_kind", &self.terminal_kind)
+            .field("terminal_code", &self.terminal_code)
+            .field("terminal_evidence_sha256", &"[SENSITIVE DIGEST]")
+            .field("terminal_observed_cost", &self.terminal_observed_cost)
+            .finish()
+    }
 }
 
 impl DurableLeaseRegistryV1 {
@@ -379,10 +515,7 @@ impl DurableLeaseRegistryV1 {
         evidence_sha256: [u8; 32],
         observed_cost: u64,
     ) -> Result<(), LeaseRegistryErrorV1> {
-        if !provider_error_code(error_code)
-            || evidence_sha256 == [0; 32]
-            || observed_cost == 0
-        {
+        if !provider_error_code(error_code) || evidence_sha256 == [0; 32] || observed_cost == 0 {
             return Err(LeaseRegistryErrorV1::InvalidInput);
         }
         let current = self
@@ -551,6 +684,43 @@ impl DurableLeaseRegistryV1 {
     }
 }
 
+fn is_default<T>(value: &T) -> bool
+where
+    T: Default + PartialEq,
+{
+    value == &T::default()
+}
+
+pub(super) fn migrate_schema_three_consumptions(
+    rows: &mut BTreeMap<String, BaoConsumptionOperationV1>,
+    migration_revision: u64,
+) -> Result<(), LeaseRegistryErrorV1> {
+    for row in rows.values_mut() {
+        if matches!(
+            row.state,
+            BaoConsumptionStateV1::ConsumerSucceeded | BaoConsumptionStateV1::Succeeded
+        ) && !has_terminal(row)
+        {
+            let receipt = row
+                .receipt
+                .as_ref()
+                .ok_or(LeaseRegistryErrorV1::CorruptState)?;
+            validate_receipt_for_request(receipt, Some(row.request_sha256))?;
+            let terminal = receipt_digest(receipt)?;
+            let amount = row.amount;
+            set_terminal(row, TERMINAL_SUCCESS, None, terminal, amount);
+        }
+        if row.created_revision == 0 {
+            row.created_revision = migration_revision.max(1);
+        }
+        if row.updated_revision == 0 {
+            row.updated_revision = row.created_revision;
+        }
+        validate_consumption(row)?;
+    }
+    Ok(())
+}
+
 fn set_terminal(
     row: &mut BaoConsumptionOperationV1,
     kind: &str,
@@ -687,7 +857,9 @@ pub(super) fn validate_consumption(
                 && row.receipt.is_some()
                 && row.terminal_kind.as_deref() == Some(TERMINAL_CONSUMER_NOT_APPLIED)
                 && row.terminal_code.as_deref() == Some("consumer_not_applied")
-                && row.terminal_evidence_sha256.is_some_and(|value| value != [0; 32])
+                && row
+                    .terminal_evidence_sha256
+                    .is_some_and(|value| value != [0; 32])
                 && row.terminal_observed_cost == Some(0)
         }
         BaoConsumptionStateV1::ProviderFailed => {
@@ -698,7 +870,9 @@ pub(super) fn validate_consumption(
                     .terminal_code
                     .as_deref()
                     .is_some_and(provider_error_code)
-                && row.terminal_evidence_sha256.is_some_and(|value| value != [0; 32])
+                && row
+                    .terminal_evidence_sha256
+                    .is_some_and(|value| value != [0; 32])
                 && row
                     .terminal_observed_cost
                     .is_some_and(|cost| cost != 0 && cost <= row.amount)
@@ -714,7 +888,9 @@ pub(super) fn validate_consumption(
 }
 
 fn validate_failed_terminal(row: &BaoConsumptionOperationV1) -> bool {
-    let evidence = row.terminal_evidence_sha256.is_some_and(|value| value != [0; 32]);
+    let evidence = row
+        .terminal_evidence_sha256
+        .is_some_and(|value| value != [0; 32]);
     match row.terminal_kind.as_deref() {
         Some(TERMINAL_PROVIDER_FAILURE) => {
             row.reservation_id.is_some()
@@ -747,11 +923,7 @@ fn validate_failed_terminal(row: &BaoConsumptionOperationV1) -> bool {
                 && row.receipt.is_none()
                 && matches!(
                     row.terminal_code.as_deref(),
-                    Some(
-                        "reservation_cancelled"
-                            | "reservation_released"
-                            | "reservation_expired"
-                    )
+                    Some("reservation_cancelled" | "reservation_released" | "reservation_expired")
                 )
                 && evidence
                 && row.terminal_observed_cost == Some(0)

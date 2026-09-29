@@ -8,6 +8,7 @@
 //! fences the open writer until it is reopened.
 
 use std::collections::BTreeMap;
+use std::collections::VecDeque;
 use std::fs;
 use std::fs::File;
 use std::fs::OpenOptions;
@@ -18,21 +19,28 @@ use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
+use std::time::Instant;
 
 use serde::Deserialize;
 use serde::Serialize;
 
 #[path = "consumption_lifecycle.rs"]
 mod consumption;
-pub use consumption::{BaoConsumptionOperationV1, BaoConsumptionStateV1, BaoSecretReceipt};
+pub use consumption::{
+    BaoConsumptionOperationV1, BaoConsumptionPhaseV1, BaoConsumptionRecoveryActionV1,
+    BaoConsumptionStateV1, BaoSecretReceipt, BaoSecretTelemetryV1,
+};
 
 const LEGACY_SCHEMA_VERSION: u32 = 1;
-const PREVIOUS_SCHEMA_VERSION: u32 = 2;
-const SCHEMA_VERSION: u32 = 3;
+const INTERMEDIATE_SCHEMA_VERSION: u32 = 2;
+const PREVIOUS_SCHEMA_VERSION: u32 = 3;
+const SCHEMA_VERSION: u32 = 4;
 const MAX_RECORDS: usize = 65_536;
 const MAX_METADATA_BYTES: usize = 16 * 1024;
 const MAX_STORE_BYTES: usize = 8 * 1024 * 1024;
 const CONTROL_RESERVE_BYTES: usize = 64 * 1024;
+const CONSUMPTION_FUTURE_RESERVE_BYTES: usize = 4096;
+const COMMIT_DURATION_SAMPLE_LIMIT: usize = 256;
 const INITIALIZED_MARKER: &[u8] = b"hepta.secret-lease-registry.initialized.v1\n";
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -168,6 +176,111 @@ impl LeaseRegistryPersistenceV1 for FsLeaseRegistryPersistenceV1 {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct LeaseRegistryCommitMetricsV1 {
+    pub attempts: u64,
+    pub confirmed_commits: u64,
+    pub rejected_commits: u64,
+    pub unavailable_commits: u64,
+    pub indeterminate_commits: u64,
+    pub writer_fence_events: u64,
+    pub attempted_bytes: u64,
+    pub confirmed_bytes: u64,
+    pub last_duration_micros: u64,
+    pub max_duration_micros: u64,
+    pub p50_duration_micros: u64,
+    pub p95_duration_micros: u64,
+    pub p99_duration_micros: u64,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct LeaseRegistryDiagnosticsV1 {
+    pub schema_version: u32,
+    pub revision: u64,
+    pub lease_operation_count: usize,
+    pub lease_count: usize,
+    pub consumption_count: usize,
+    pub consumption_by_state: BTreeMap<BaoConsumptionStateV1, usize>,
+    pub pending_by_recovery_action: BTreeMap<BaoConsumptionRecoveryActionV1, usize>,
+    pub pending_quota_amount: u64,
+    pub post_dispatch_without_receipt: usize,
+    pub observer_pending: usize,
+    pub settlement_pending: usize,
+    pub oldest_pending_age_revisions: u64,
+    pub encoded_bytes: usize,
+    pub lease_future_reserve_bytes: usize,
+    pub consumption_future_reserve_bytes: usize,
+    pub max_store_bytes: usize,
+    pub available_bytes: usize,
+    pub fenced: bool,
+    pub commit_metrics: LeaseRegistryCommitMetricsV1,
+}
+
+#[derive(Default)]
+struct LeaseRegistryRuntimeMetricsV1 {
+    attempts: u64,
+    confirmed_commits: u64,
+    rejected_commits: u64,
+    unavailable_commits: u64,
+    indeterminate_commits: u64,
+    writer_fence_events: u64,
+    attempted_bytes: u64,
+    confirmed_bytes: u64,
+    last_duration_micros: u64,
+    max_duration_micros: u64,
+    duration_samples_micros: VecDeque<u64>,
+}
+
+impl LeaseRegistryRuntimeMetricsV1 {
+    fn record_duration(&mut self, started: Instant) {
+        let micros = u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX);
+        self.last_duration_micros = micros;
+        self.max_duration_micros = self.max_duration_micros.max(micros);
+        if self.duration_samples_micros.len() == COMMIT_DURATION_SAMPLE_LIMIT {
+            self.duration_samples_micros.pop_front();
+        }
+        self.duration_samples_micros.push_back(micros);
+    }
+
+    fn snapshot(&self) -> LeaseRegistryCommitMetricsV1 {
+        let mut samples = self
+            .duration_samples_micros
+            .iter()
+            .copied()
+            .collect::<Vec<_>>();
+        samples.sort_unstable();
+        LeaseRegistryCommitMetricsV1 {
+            attempts: self.attempts,
+            confirmed_commits: self.confirmed_commits,
+            rejected_commits: self.rejected_commits,
+            unavailable_commits: self.unavailable_commits,
+            indeterminate_commits: self.indeterminate_commits,
+            writer_fence_events: self.writer_fence_events,
+            attempted_bytes: self.attempted_bytes,
+            confirmed_bytes: self.confirmed_bytes,
+            last_duration_micros: self.last_duration_micros,
+            max_duration_micros: self.max_duration_micros,
+            p50_duration_micros: percentile(&samples, 50),
+            p95_duration_micros: percentile(&samples, 95),
+            p99_duration_micros: percentile(&samples, 99),
+        }
+    }
+}
+
+fn percentile(samples: &[u64], percentile: usize) -> u64 {
+    if samples.is_empty() {
+        return 0;
+    }
+    let last = samples.len() - 1;
+    let index = last
+        .checked_mul(percentile)
+        .and_then(|value| value.checked_add(99))
+        .map(|value| value / 100)
+        .unwrap_or(last)
+        .min(last);
+    samples[index]
+}
+
 pub struct DurableLeaseRegistryV1 {
     executions: crate::operation_execution::OperationExecutionSet,
     path: PathBuf,
@@ -175,6 +288,7 @@ pub struct DurableLeaseRegistryV1 {
     state: StoredRegistryV1,
     persistence: Arc<dyn LeaseRegistryPersistenceV1>,
     fenced: bool,
+    runtime_metrics: LeaseRegistryRuntimeMetricsV1,
 }
 
 impl std::fmt::Debug for DurableLeaseRegistryV1 {
@@ -186,7 +300,9 @@ impl std::fmt::Debug for DurableLeaseRegistryV1 {
             .field("revision", &self.state.revision)
             .field("operation_count", &self.state.operations.len())
             .field("lease_count", &self.state.leases.len())
+            .field("consumption_count", &self.state.consumptions.len())
             .field("fenced", &self.fenced)
+            .field("commit_attempts", &self.runtime_metrics.attempts)
             .finish()
     }
 }
@@ -218,7 +334,10 @@ impl std::fmt::Display for LeaseRegistryErrorV1 {
 impl std::error::Error for LeaseRegistryErrorV1 {}
 
 impl DurableLeaseRegistryV1 {
-    pub(crate) fn enter_consumption_execution(&self, id: &str) -> Result<crate::operation_execution::OperationExecutionGuard, LeaseRegistryErrorV1> {
+    pub(crate) fn enter_consumption_execution(
+        &self,
+        id: &str,
+    ) -> Result<crate::operation_execution::OperationExecutionGuard, LeaseRegistryErrorV1> {
         self.ensure_writable()?;
         self.executions.enter(id)
     }
@@ -340,12 +459,87 @@ impl DurableLeaseRegistryV1 {
             state,
             persistence,
             fenced: false,
+            runtime_metrics: Default::default(),
         })
     }
 
     #[must_use]
     pub const fn is_fenced(&self) -> bool {
         self.fenced
+    }
+
+    /// Process-local storage cost and recovery diagnostics. No secret digest or
+    /// provider credential is exposed by this snapshot.
+    pub fn diagnostics(&self) -> Result<LeaseRegistryDiagnosticsV1, LeaseRegistryErrorV1> {
+        let encoded_bytes = serde_json::to_vec(&self.state)
+            .map_err(|_| LeaseRegistryErrorV1::Unavailable)?
+            .len();
+        let (lease_future_reserve_bytes, consumption_future_reserve_bytes) =
+            future_reserve_bytes(&self.state)?;
+        let required = encoded_bytes
+            .saturating_add(lease_future_reserve_bytes)
+            .saturating_add(consumption_future_reserve_bytes);
+        let mut consumption_by_state = BTreeMap::new();
+        let mut pending_by_recovery_action = BTreeMap::new();
+        let mut pending_quota_amount = 0u64;
+        let mut post_dispatch_without_receipt = 0usize;
+        let mut observer_pending = 0usize;
+        let mut settlement_pending = 0usize;
+        let mut oldest_pending_revision = None::<u64>;
+        for row in self.state.consumptions.values() {
+            *consumption_by_state.entry(row.state).or_insert(0) += 1;
+            if !row.state.is_terminal() {
+                let recovery = row.state.recovery_action();
+                *pending_by_recovery_action.entry(recovery).or_insert(0) += 1;
+                if row.reservation_id.is_some() {
+                    pending_quota_amount = pending_quota_amount.saturating_add(row.amount);
+                }
+                if row.state.has_dispatch_fence() && row.receipt.is_none() {
+                    post_dispatch_without_receipt = post_dispatch_without_receipt.saturating_add(1);
+                }
+                if recovery == BaoConsumptionRecoveryActionV1::ObserveOriginalOutcome
+                    && row.receipt.is_some()
+                {
+                    observer_pending = observer_pending.saturating_add(1);
+                }
+                if recovery == BaoConsumptionRecoveryActionV1::SettleTerminalEvidence {
+                    settlement_pending = settlement_pending.saturating_add(1);
+                }
+                let created = if row.created_revision == 0 {
+                    self.state.revision
+                } else {
+                    row.created_revision
+                };
+                oldest_pending_revision = Some(
+                    oldest_pending_revision
+                        .map(|current| current.min(created))
+                        .unwrap_or(created),
+                );
+            }
+        }
+        Ok(LeaseRegistryDiagnosticsV1 {
+            schema_version: self.state.schema_version,
+            revision: self.state.revision,
+            lease_operation_count: self.state.operations.len(),
+            lease_count: self.state.leases.len(),
+            consumption_count: self.state.consumptions.len(),
+            consumption_by_state,
+            pending_by_recovery_action,
+            pending_quota_amount,
+            post_dispatch_without_receipt,
+            observer_pending,
+            settlement_pending,
+            oldest_pending_age_revisions: oldest_pending_revision
+                .map(|revision| self.state.revision.saturating_sub(revision))
+                .unwrap_or(0),
+            encoded_bytes,
+            lease_future_reserve_bytes,
+            consumption_future_reserve_bytes,
+            max_store_bytes: MAX_STORE_BYTES,
+            available_bytes: MAX_STORE_BYTES.saturating_sub(required),
+            fenced: self.fenced,
+            commit_metrics: self.runtime_metrics.snapshot(),
+        })
     }
 
     pub fn lease(&self, lease_id: &str) -> Option<&SecretLeaseMetadataV1> {
@@ -839,24 +1033,71 @@ impl DurableLeaseRegistryV1 {
         mut next: StoredRegistryV1,
         required_reserve: usize,
     ) -> Result<(), LeaseRegistryErrorV1> {
-        self.ensure_writable()?;
+        let started = Instant::now();
+        self.runtime_metrics.attempts = self.runtime_metrics.attempts.saturating_add(1);
+        if let Err(error) = self.ensure_writable() {
+            self.runtime_metrics.unavailable_commits =
+                self.runtime_metrics.unavailable_commits.saturating_add(1);
+            self.runtime_metrics.record_duration(started);
+            return Err(error);
+        }
         next.schema_version = SCHEMA_VERSION;
-        next.revision = self
-            .state
-            .revision
-            .checked_add(1)
-            .ok_or(LeaseRegistryErrorV1::InvalidTransition)?;
-        validate_state(&next)?;
-        let bytes = encode_state(&next, required_reserve)?;
+        next.revision = match self.state.revision.checked_add(1) {
+            Some(revision) => revision,
+            None => {
+                self.runtime_metrics.rejected_commits =
+                    self.runtime_metrics.rejected_commits.saturating_add(1);
+                self.runtime_metrics.record_duration(started);
+                return Err(LeaseRegistryErrorV1::InvalidTransition);
+            }
+        };
+        stamp_consumption_revisions(&self.state, &mut next);
+        if let Err(error) = validate_state(&next) {
+            self.runtime_metrics.rejected_commits =
+                self.runtime_metrics.rejected_commits.saturating_add(1);
+            self.runtime_metrics.record_duration(started);
+            return Err(error);
+        }
+        let bytes = match encode_state(&next, required_reserve) {
+            Ok(bytes) => bytes,
+            Err(error) => {
+                self.runtime_metrics.rejected_commits =
+                    self.runtime_metrics.rejected_commits.saturating_add(1);
+                self.runtime_metrics.record_duration(started);
+                return Err(error);
+            }
+        };
+        let attempted_bytes = u64::try_from(bytes.len()).unwrap_or(u64::MAX);
+        self.runtime_metrics.attempted_bytes = self
+            .runtime_metrics
+            .attempted_bytes
+            .saturating_add(attempted_bytes);
         match persist_bytes(&self.path, &bytes, self.persistence.as_ref()) {
             Ok(()) => {
                 self.state = next;
+                self.runtime_metrics.confirmed_commits =
+                    self.runtime_metrics.confirmed_commits.saturating_add(1);
+                self.runtime_metrics.confirmed_bytes = self
+                    .runtime_metrics
+                    .confirmed_bytes
+                    .saturating_add(attempted_bytes);
+                self.runtime_metrics.record_duration(started);
                 Ok(())
             }
-            Err(PersistFailure::NotApplied) => Err(LeaseRegistryErrorV1::Unavailable),
+            Err(PersistFailure::NotApplied) => {
+                self.runtime_metrics.unavailable_commits =
+                    self.runtime_metrics.unavailable_commits.saturating_add(1);
+                self.runtime_metrics.record_duration(started);
+                Err(LeaseRegistryErrorV1::Unavailable)
+            }
             Err(PersistFailure::Indeterminate) => {
                 self.state = next;
                 self.fenced = true;
+                self.runtime_metrics.indeterminate_commits =
+                    self.runtime_metrics.indeterminate_commits.saturating_add(1);
+                self.runtime_metrics.writer_fence_events =
+                    self.runtime_metrics.writer_fence_events.saturating_add(1);
+                self.runtime_metrics.record_duration(started);
                 Err(LeaseRegistryErrorV1::CommitIndeterminate)
             }
         }
@@ -1007,24 +1248,28 @@ fn migrate_state(mut state: StoredRegistryV1) -> Result<StoredRegistryV1, LeaseR
     }
     if !matches!(
         state.schema_version,
-        LEGACY_SCHEMA_VERSION | PREVIOUS_SCHEMA_VERSION
+        LEGACY_SCHEMA_VERSION | INTERMEDIATE_SCHEMA_VERSION | PREVIOUS_SCHEMA_VERSION
     ) {
         return Err(LeaseRegistryErrorV1::CorruptState);
     }
-    state.schema_version = SCHEMA_VERSION;
+    let source_schema = state.schema_version;
     state.revision = state.revision.max(1);
-    for operation in state.operations.values_mut() {
-        // An old mutable lease row is not the original operation result. Neither
-        // a singleton nor the current generation proves a lost historical fact.
-        if matches!(
-            operation.state,
-            LeaseOperationStateV1::Applied | LeaseOperationStateV1::Denied
-        ) || (operation.kind != LeaseOperationKindV1::Issue
-            && operation.expected_generation.is_none())
-        {
-            operation.legacy_binding_incomplete = true;
+    if source_schema != PREVIOUS_SCHEMA_VERSION {
+        for operation in state.operations.values_mut() {
+            // An old mutable lease row is not the original operation result. Neither
+            // a singleton nor the current generation proves a lost historical fact.
+            if matches!(
+                operation.state,
+                LeaseOperationStateV1::Applied | LeaseOperationStateV1::Denied
+            ) || (operation.kind != LeaseOperationKindV1::Issue
+                && operation.expected_generation.is_none())
+            {
+                operation.legacy_binding_incomplete = true;
+            }
         }
     }
+    consumption::migrate_schema_three_consumptions(&mut state.consumptions, state.revision)?;
+    state.schema_version = SCHEMA_VERSION;
     Ok(state)
 }
 
@@ -1046,7 +1291,12 @@ fn validate_state(state: &StoredRegistryV1) -> Result<(), LeaseRegistryErrorV1> 
     }
 
     for (id, row) in &state.consumptions {
-        if id != &row.operation_id || state.operations.contains_key(id) {
+        if id != &row.operation_id
+            || state.operations.contains_key(id)
+            || row.created_revision == 0
+            || row.updated_revision < row.created_revision
+            || row.updated_revision > state.revision
+        {
             return Err(LeaseRegistryErrorV1::CorruptState);
         }
         consumption::validate_consumption(row)?;
@@ -1275,11 +1525,24 @@ fn validate_persisted_lease(lease: &SecretLeaseMetadataV1) -> Result<(), LeaseRe
     Ok(())
 }
 
-fn encode_state(
-    state: &StoredRegistryV1,
-    required_reserve: usize,
-) -> Result<Vec<u8>, LeaseRegistryErrorV1> {
-    let pending_reserve = state
+fn stamp_consumption_revisions(current: &StoredRegistryV1, next: &mut StoredRegistryV1) {
+    for (operation_id, row) in &mut next.consumptions {
+        let previous = current.consumptions.get(operation_id);
+        let changed = previous.is_none_or(|value| value != row);
+        if row.created_revision == 0 {
+            row.created_revision = previous
+                .map(|value| value.created_revision)
+                .filter(|value| *value != 0)
+                .unwrap_or(next.revision);
+        }
+        if changed || row.updated_revision == 0 {
+            row.updated_revision = next.revision;
+        }
+    }
+}
+
+fn future_reserve_bytes(state: &StoredRegistryV1) -> Result<(usize, usize), LeaseRegistryErrorV1> {
+    let lease_reserve = state
         .operations
         .values()
         .filter(|operation| {
@@ -1300,12 +1563,20 @@ fn encode_state(
     let consumption_reserve = state
         .consumptions
         .values()
-        .filter(|row| row.state != BaoConsumptionStateV1::Succeeded)
+        .filter(|row| row.state.requires_future_capacity())
         .count()
-        .checked_mul(4096)
+        .checked_mul(CONSUMPTION_FUTURE_RESERVE_BYTES)
         .ok_or(LeaseRegistryErrorV1::CapacityExceeded)?;
+    Ok((lease_reserve, consumption_reserve))
+}
+
+fn encode_state(
+    state: &StoredRegistryV1,
+    required_reserve: usize,
+) -> Result<Vec<u8>, LeaseRegistryErrorV1> {
+    let (lease_reserve, consumption_reserve) = future_reserve_bytes(state)?;
     let required_reserve = required_reserve.max(
-        pending_reserve
+        lease_reserve
             .checked_add(consumption_reserve)
             .ok_or(LeaseRegistryErrorV1::CapacityExceeded)?,
     );

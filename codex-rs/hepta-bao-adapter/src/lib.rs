@@ -16,14 +16,19 @@ use codex_hepta_types::StableId;
 
 mod authbus_saga;
 mod final_use_host;
-mod operation_execution;
 mod https_consumer;
 mod lease_lifecycle;
+mod operation_execution;
+#[cfg(all(test, unix))]
+mod saga_crash;
 mod secret_boundary_v1;
 
 pub use final_use_host::BaoConsumerCallback;
 pub use final_use_host::BaoFinalUseHost;
 pub use final_use_host::BaoFinalUseHostError;
+pub use final_use_host::BaoOperationLatencyMetricsV1;
+pub use final_use_host::BaoOperationMetricsV1;
+pub use final_use_host::BaoProductErrorClassV1;
 pub use final_use_host::BaoProductHostError;
 pub use final_use_host::RegisteredBaoConsumer;
 pub use final_use_host::{
@@ -43,11 +48,16 @@ pub use lease_lifecycle::LeaseOperationKindV1;
 pub use lease_lifecycle::LeaseOperationResultV1;
 pub use lease_lifecycle::LeaseOperationStateV1;
 pub use lease_lifecycle::LeaseOperationV1;
+pub use lease_lifecycle::LeaseRegistryCommitMetricsV1;
+pub use lease_lifecycle::LeaseRegistryDiagnosticsV1;
 pub use lease_lifecycle::LeaseRegistryErrorV1;
 pub use lease_lifecycle::ProviderLeaseObservationV1;
 pub use lease_lifecycle::SecretLeaseMetadataV1;
 pub use lease_lifecycle::SecretLeaseStateV1;
-pub use lease_lifecycle::{BaoConsumptionOperationV1, BaoConsumptionStateV1};
+pub use lease_lifecycle::{
+    BaoConsumptionOperationV1, BaoConsumptionPhaseV1, BaoConsumptionRecoveryActionV1,
+    BaoConsumptionStateV1, BaoSecretTelemetryV1,
+};
 
 pub use secret_boundary_v1::AUTHBUS_POLICY_PRODUCER_ID;
 pub use secret_boundary_v1::HEPTABAO_BACKEND_ID;

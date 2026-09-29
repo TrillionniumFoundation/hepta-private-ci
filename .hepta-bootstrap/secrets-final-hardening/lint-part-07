@@ -1,8 +1,0 @@
-         &root.join("inputs.json"),
-         &serde_json::to_vec(&inputs).unwrap(),
--    );
-+    )
-+    .unwrap();
-     let result = host
-         .consume_kv_v2_with_authbus(
-             &client,

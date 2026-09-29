@@ -121,8 +121,10 @@ def operation_tests(name: str) -> list[str]:
             "codex-rs/hepta-bao-adapter/src/consumption_lifecycle_saga_tests.rs",
             "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
         ]
-    if name == "lease_lifecycle_reference":
+    if name in {"lease_lifecycle_reference", "registry_diagnostics"}:
         return ["codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs"]
+    if name == "registered_saga_sigkill_matrix":
+        return ["codex-rs/hepta-bao-adapter/src/saga_crash_tests.rs"]
     return ["codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"]
 
 
@@ -141,6 +143,7 @@ def implementation_projection(m: dict, existing: dict, *, rebind: bool) -> dict:
             "codex-rs/hepta-bao-adapter",
             "docs/modules/secrets.heptabao/MODULE_MANIFEST_V1.json",
             "docs/modules/secrets.heptabao/CONSUMPTION_SAGA_V4.md",
+            "docs/modules/secrets.heptabao/OPERATIONS_AND_CAPACITY_V1.md",
             "docs/modules/secrets.heptabao/TECHNICAL.md",
             "docs/lane-a-foundation/secrets.heptabao/CURRENT_IMPLEMENTATION.md",
             "scripts/generate_secrets_heptabao_module.py",

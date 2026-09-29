@@ -1249,3 +1249,76 @@ async fn consumer_configuration_is_inside_the_independently_signed_request() {
     ));
     task.abort();
 }
+
+#[tokio::test]
+async fn registered_product_rejects_invalid_admission_before_durable_claim() {
+    let (endpoint, ca, server_task) = server(200, body(), || async {}).await.unwrap();
+    let client = BaoClient::new(
+        &endpoint,
+        ca.as_bytes(),
+        BaoToken::new("synthetic-invalid-admission-token".into()).unwrap(),
+        Duration::from_secs(3),
+    )
+    .unwrap();
+    let mut request = read_request();
+    request.consumer_configuration_sha256 = Some([97; 32]);
+    let now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_millis() as u64;
+    let (_db, _checkpoint, authbus, mut evidence, mut admission) =
+        authbus_host_with_lifetime(180_000, &client, &request, now)
+            .await
+            .unwrap();
+    admission.policy_revision = 0;
+    let (authority, grant, _authority_root) = product_grant(&client, &request).unwrap();
+    let (host, approval) = registered_product_host(
+        authority,
+        &grant,
+        Arc::new(|_, _, _| panic!("invalid admission entered consumer")),
+        Arc::new(|_, _| Ok(crate::BaoConsumerObservationV1::Unknown)),
+        [97; 32],
+    )
+    .unwrap();
+    let (_owner_root, registry) = product_registry().unwrap();
+
+    let result = host
+        .consume_kv_v2_with_authbus(
+            &client,
+            &authbus,
+            &registry,
+            crate::BaoApprovedReadV1 {
+                admission: &admission,
+                grant: &grant,
+                approval: &approval,
+                request: &request,
+            },
+            &mut evidence,
+        )
+        .await;
+    assert!(matches!(
+        result,
+        Err(crate::BaoProductHostError::Host(
+            crate::BaoFinalUseHostError::Client(BaoClientError::InvalidRequest)
+        ))
+    ));
+    assert_eq!(
+        registry
+            .lock()
+            .unwrap()
+            .consumption_result(admission.operation_id.as_str()),
+        Err(crate::LeaseRegistryErrorV1::OperationNotFound)
+    );
+    let quota = authbus.quota_snapshot(&admission.quota_key).await.unwrap();
+    assert_eq!((quota.available, quota.reserved, quota.consumed), (1, 0, 0));
+    let metrics = host.operation_metrics();
+    assert_eq!(metrics.forward.attempts, 1);
+    assert_eq!(metrics.forward.admission_rejected, 1);
+    assert_eq!(metrics.forward.succeeded, 0);
+    server_task.abort();
+    let _ = server_task.await;
+}
+
+#[cfg(all(test, unix))]
+#[path = "saga_crash_tests.rs"]
+mod saga_crash_tests;

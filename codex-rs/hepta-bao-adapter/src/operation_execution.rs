@@ -2,9 +2,9 @@
 //! Single flight is shared by all hosts using the same durable registry. A
 //! cancelled task releases it; the AuthBus admission tombstone separately fences
 //! a reserve whose SQLite commit may finish after cancellation.
+use crate::LeaseRegistryErrorV1;
 use std::collections::BTreeSet;
 use std::sync::{Arc, Mutex};
-use crate::LeaseRegistryErrorV1;
 
 #[derive(Default)]
 pub(crate) struct OperationExecutionSet {
@@ -12,7 +12,10 @@ pub(crate) struct OperationExecutionSet {
 }
 impl OperationExecutionSet {
     pub(crate) fn enter(&self, id: &str) -> Result<OperationExecutionGuard, LeaseRegistryErrorV1> {
-        let mut active = self.active.lock().map_err(|_| LeaseRegistryErrorV1::Fenced)?;
+        let mut active = self
+            .active
+            .lock()
+            .map_err(|_| LeaseRegistryErrorV1::Fenced)?;
         if active.contains(id) {
             return Err(LeaseRegistryErrorV1::WriterBusy);
         }
@@ -20,7 +23,10 @@ impl OperationExecutionSet {
             return Err(LeaseRegistryErrorV1::CapacityExceeded);
         }
         active.insert(id.to_owned());
-        Ok(OperationExecutionGuard { active: Arc::clone(&self.active), id: id.to_owned() })
+        Ok(OperationExecutionGuard {
+            active: Arc::clone(&self.active),
+            id: id.to_owned(),
+        })
     }
 }
 pub(crate) struct OperationExecutionGuard {

@@ -51,7 +51,7 @@ impl fmt::Debug for BaoToken {
 }
 
 /// One exact KV v2 version and string field, bound to one named consumer.
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct BaoReadRequest {
     pub subject_id: String,
@@ -64,6 +64,23 @@ pub struct BaoReadRequest {
     pub field: String,
     pub version: u64,
     pub expected_secret_sha256: [u8; 32],
+}
+
+impl fmt::Debug for BaoReadRequest {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("BaoReadRequest")
+            .field("subject_id", &self.subject_id)
+            .field("consumer_id", &self.consumer_id)
+            .field("consumer_configuration_sha256", &"[SENSITIVE DIGEST]")
+            .field("namespace", &"[SENSITIVE IDENTIFIER]")
+            .field("mount", &"[SENSITIVE IDENTIFIER]")
+            .field("path", &"[SENSITIVE IDENTIFIER]")
+            .field("field", &"[SENSITIVE IDENTIFIER]")
+            .field("version", &self.version)
+            .field("expected_secret_sha256", &"[SENSITIVE DIGEST]")
+            .finish()
+    }
 }
 
 pub use crate::lease_lifecycle::BaoSecretReceipt;
@@ -463,6 +480,8 @@ impl BaoClient {
         }
         let verified =
             claim_final_use(authority, grant, &binding).map_err(BaoClientError::Authority)?;
+        #[cfg(all(test, unix))]
+        crate::saga_crash::cut("provider_response.before");
         let mut response = network_request.send().await.map_err(transport_error)?;
         match response.status() {
             StatusCode::OK => {}
@@ -506,12 +525,23 @@ impl BaoClient {
             version: request.version,
             secret_bytes: secret.len(),
         };
+        #[cfg(all(test, unix))]
+        crate::saga_crash::cut("provider_response.after");
+        #[cfg(all(test, unix))]
+        crate::saga_crash::cut("delivery_preparation.before");
         if let Err(error) = prepare_delivery(&receipt) {
             return Ok(Err(error));
         }
+        #[cfg(all(test, unix))]
+        crate::saga_crash::cut("delivery_preparation.after");
         // Durable delivery preparation happens before the final authority check.
         match deliver_final_use(authority, verified, &binding, || {
-            consumer(secret.as_bytes(), &receipt)
+            #[cfg(all(test, unix))]
+            crate::saga_crash::cut("consumer_entry.before");
+            let result = consumer(secret.as_bytes(), &receipt);
+            #[cfg(all(test, unix))]
+            crate::saga_crash::cut("consumer_entry.after");
+            result
         })
         .map_err(BaoClientError::Authority)?
         {
@@ -589,6 +619,8 @@ pub(crate) async fn settle_observed<E: BaoAuthBusEvidenceProvider>(
             });
         }
     };
+    #[cfg(all(test, unix))]
+    crate::saga_crash::cut("settlement.before");
     if let Err(error) = authbus.settle(&issuer, &signed, time).await {
         return Err(BaoAuthBusError::SettlementPending {
             reservation_id: reservation.reservation_id.clone(),
@@ -596,6 +628,8 @@ pub(crate) async fn settle_observed<E: BaoAuthBusEvidenceProvider>(
             control_error: error.to_string(),
         });
     }
+    #[cfg(all(test, unix))]
+    crate::saga_crash::cut("settlement.after");
     Ok(receipt)
 }
 

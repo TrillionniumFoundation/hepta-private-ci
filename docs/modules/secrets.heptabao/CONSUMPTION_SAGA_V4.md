@@ -33,6 +33,23 @@ a durable response receipt cannot currently query a provider-side operation
 observer; they remain pending. Unknown facts do not become success, refund or a
 fresh attempt.
 
+## Unified phase and recovery classification
+
+The implementation derives phase, permitted recovery and capacity from
+`BaoConsumptionStateV1`; callers must not maintain independent state lists.
+
+| Derived phase | States | Safe action |
+|---|---|---|
+| `Unreserved` | `Claimed` | atomically seal non-admission or bind the original reservation |
+| `Reserved` | `Reserved`, legacy `DispatchAttempted` | cancel/expire a held reservation, or bind and classify the legacy reservation |
+| `DispatchFenced` | `DispatchFenced`, `DeliveryPrepared`, `Indeterminate` | observe the original effect only; never redispatch |
+| `TerminalEvidence` | `ConsumerSucceeded`, `ConsumerNotApplied`, `ProviderFailed` | settle the original reservation from immutable evidence |
+| `Terminal` | `Succeeded`, `Failed` | return historical result only |
+
+Only fully terminal states stop reserving future-result bytes. This retains the
+operation identity and audit history while preventing closed failures from
+permanently consuming speculative capacity.
+
 ## Forward sequence
 
 1. Verify registered consumer profile, independent approval and revocation-feed freshness.
@@ -107,18 +124,31 @@ the durable owners:
 - signed settlement;
 - local terminal commit.
 
-The oracle is not merely “no duplicate receipt.” It must prove no blind
-redispatch, no orphan reservation, no semantic drift, no invented negative
-outcome and an explicit recovery action for the resulting state.
+The Unix native fixture materializes all 26 before/after cuts above using a
+child process and SIGKILL, reopens both durable owners, and reconciles without a
+`BaoClient`. The oracle is not merely “no duplicate receipt.” It proves no blind
+redispatch, no orphan reservation when a terminal fact is provable, no semantic
+drift, no invented outcome and idempotent repeated reconciliation. A
+post-dispatch row without a receipt remains explicitly pending because no
+qualified original-provider observer exists.
 
 ## Storage profiles
 
 `DurableLeaseRegistryV1` remains a bounded JSON reference owner and migration
-oracle. It is not the production throughput target. A production SQLite replacement is still pending in this source candidate.
-Staged or partially recovered patches are not an executable owner. Migration,
-independently retained anti-rollback state, bounded archival, nonblocking writer
-integration and target-host power-loss qualification remain open. No missing
-`SQLITE_OWNER_V1.md` or staged payload is evidence that this work is complete.
+oracle. Its current persistent schema is 4. Schema-3 success rows are upgraded
+only when an immutable receipt proves the result; the migration does not infer a
+lost provider or consumer fact. The next successful write publishes schema 4.
+
+The owner exposes secret-free storage diagnostics and bounded commit latency/
+byte counters. `BaoFinalUseHost` separately measures complete forward and
+recovery calls. See `OPERATIONS_AND_CAPACITY_V1.md` for the exact surfaces and
+production replacement gate.
+
+A production SQLite replacement is still pending in this source candidate.
+Staged, truncated or partially recovered patches are not an executable owner.
+Migration, independently retained anti-rollback state, bounded archival,
+nonblocking writer integration and target-host power-loss qualification remain
+open.
 
 ## Nonclaims
 

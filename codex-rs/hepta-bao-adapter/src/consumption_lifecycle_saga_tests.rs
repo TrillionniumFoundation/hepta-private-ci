@@ -1,12 +1,11 @@
 use super::*;
 use std::os::unix::fs::PermissionsExt;
 
-fn registry_path() -> (tempfile::TempDir, std::path::PathBuf) {
-    let directory = tempfile::tempdir().expect("temporary directory");
-    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
-        .expect("private directory");
+fn registry_path() -> std::io::Result<(tempfile::TempDir, std::path::PathBuf)> {
+    let directory = tempfile::tempdir()?;
+    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
     let path = directory.path().join("consumption-owner.json");
-    (directory, path)
+    Ok((directory, path))
 }
 
 fn operation() -> BaoConsumptionOperationV1 {
@@ -21,6 +20,8 @@ fn operation() -> BaoConsumptionOperationV1 {
         reservation_id: None,
         state: BaoConsumptionStateV1::Claimed,
         receipt: None,
+        created_revision: 0,
+        updated_revision: 0,
         terminal_kind: None,
         terminal_code: None,
         terminal_evidence_sha256: None,
@@ -38,18 +39,18 @@ fn receipt() -> BaoSecretReceipt {
     }
 }
 
-fn reopen(path: &std::path::Path) -> DurableLeaseRegistryV1 {
-    DurableLeaseRegistryV1::open(path).expect("reopen durable owner")
+fn reopen(path: &std::path::Path) -> Result<DurableLeaseRegistryV1, LeaseRegistryErrorV1> {
+    DurableLeaseRegistryV1::open(path)
 }
 
 #[test]
 fn claimed_reserved_and_dispatch_fenced_are_distinct_durable_states() {
-    let (_directory, path) = registry_path();
-    let mut owner = reopen(&path);
+    let (_directory, path) = registry_path().expect("create private registry fixture");
+    let mut owner = reopen(&path).expect("reopen durable owner");
     owner.claim_consumption(operation()).expect("durable claim");
     drop(owner);
 
-    let mut owner = reopen(&path);
+    let mut owner = reopen(&path).expect("reopen durable owner");
     assert_eq!(
         owner
             .consumption_result("operation:consumption-saga")
@@ -65,7 +66,7 @@ fn claimed_reserved_and_dispatch_fenced_are_distinct_durable_states() {
         .expect("bind reservation");
     drop(owner);
 
-    let mut owner = reopen(&path);
+    let mut owner = reopen(&path).expect("reopen durable owner");
     assert_eq!(
         owner
             .consumption_result("operation:consumption-saga")
@@ -81,7 +82,7 @@ fn claimed_reserved_and_dispatch_fenced_are_distinct_durable_states() {
         .expect("commit dispatch fence");
     drop(owner);
 
-    let owner = reopen(&path);
+    let owner = reopen(&path).expect("reopen durable owner");
     assert_eq!(
         owner
             .consumption_result("operation:consumption-saga")
@@ -93,8 +94,8 @@ fn claimed_reserved_and_dispatch_fenced_are_distinct_durable_states() {
 
 #[test]
 fn every_success_boundary_reopens_without_redispatch() {
-    let (_directory, path) = registry_path();
-    let mut owner = reopen(&path);
+    let (_directory, path) = registry_path().expect("create private registry fixture");
+    let mut owner = reopen(&path).expect("reopen durable owner");
     owner.claim_consumption(operation()).unwrap();
     owner
         .mark_consumption_reserved(
@@ -113,7 +114,7 @@ fn every_success_boundary_reopens_without_redispatch() {
         .unwrap();
     drop(owner);
 
-    let mut owner = reopen(&path);
+    let mut owner = reopen(&path).expect("reopen durable owner");
     assert_eq!(
         owner
             .consumption_result("operation:consumption-saga")
@@ -126,7 +127,7 @@ fn every_success_boundary_reopens_without_redispatch() {
         .unwrap();
     drop(owner);
 
-    let mut owner = reopen(&path);
+    let mut owner = reopen(&path).expect("reopen durable owner");
     assert_eq!(
         owner
             .consumption_result("operation:consumption-saga")
@@ -140,7 +141,7 @@ fn every_success_boundary_reopens_without_redispatch() {
     assert_eq!(stored, receipt());
     drop(owner);
 
-    let mut owner = reopen(&path);
+    let mut owner = reopen(&path).expect("reopen durable owner");
     assert_eq!(
         owner
             .settle_consumption("operation:consumption-saga")
@@ -158,8 +159,8 @@ fn every_success_boundary_reopens_without_redispatch() {
 
 #[test]
 fn deterministic_provider_failure_is_immutable_and_terminal() {
-    let (_directory, path) = registry_path();
-    let mut owner = reopen(&path);
+    let (_directory, path) = registry_path().expect("create private registry fixture");
+    let mut owner = reopen(&path).expect("reopen durable owner");
     owner.claim_consumption(operation()).unwrap();
     owner
         .mark_consumption_reserved(
@@ -174,30 +175,15 @@ fn deterministic_provider_failure_is_immutable_and_terminal() {
         )
         .unwrap();
     owner
-        .record_provider_failure(
-            "operation:consumption-saga",
-            "provider_denied",
-            [9; 32],
-            1,
-        )
+        .record_provider_failure("operation:consumption-saga", "provider_denied", [9; 32], 1)
         .unwrap();
     let revision = owner.state.revision;
     owner
-        .record_provider_failure(
-            "operation:consumption-saga",
-            "provider_denied",
-            [9; 32],
-            1,
-        )
+        .record_provider_failure("operation:consumption-saga", "provider_denied", [9; 32], 1)
         .unwrap();
     assert_eq!(owner.state.revision, revision);
     assert_eq!(
-        owner.record_provider_failure(
-            "operation:consumption-saga",
-            "not_found",
-            [10; 32],
-            1,
-        ),
+        owner.record_provider_failure("operation:consumption-saga", "not_found", [10; 32], 1,),
         Err(LeaseRegistryErrorV1::InvalidTransition)
     );
     owner
@@ -205,7 +191,7 @@ fn deterministic_provider_failure_is_immutable_and_terminal() {
         .unwrap();
     drop(owner);
 
-    let mut owner = reopen(&path);
+    let mut owner = reopen(&path).expect("reopen durable owner");
     let row = owner
         .settle_consumption_failure("operation:consumption-saga")
         .unwrap();
@@ -216,8 +202,8 @@ fn deterministic_provider_failure_is_immutable_and_terminal() {
 
 #[test]
 fn proved_not_applied_settles_as_terminal_negative_without_reentry() {
-    let (_directory, path) = registry_path();
-    let mut owner = reopen(&path);
+    let (_directory, path) = registry_path().expect("create private registry fixture");
+    let mut owner = reopen(&path).expect("reopen durable owner");
     owner.claim_consumption(operation()).unwrap();
     owner
         .mark_consumption_reserved(
@@ -242,7 +228,7 @@ fn proved_not_applied_settles_as_terminal_negative_without_reentry() {
         .unwrap();
     drop(owner);
 
-    let mut owner = reopen(&path);
+    let mut owner = reopen(&path).expect("reopen durable owner");
     let row = owner
         .settle_consumption_failure("operation:consumption-saga")
         .unwrap();
@@ -253,8 +239,8 @@ fn proved_not_applied_settles_as_terminal_negative_without_reentry() {
 
 #[test]
 fn exact_transition_retries_are_noops_and_semantic_drift_conflicts() {
-    let (_directory, path) = registry_path();
-    let mut owner = reopen(&path);
+    let (_directory, path) = registry_path().expect("create private registry fixture");
+    let mut owner = reopen(&path).expect("reopen durable owner");
     owner.claim_consumption(operation()).unwrap();
     let revision = owner.state.revision;
     assert!(owner.claim_consumption(operation()).unwrap().is_some());
@@ -281,18 +267,15 @@ fn exact_transition_retries_are_noops_and_semantic_drift_conflicts() {
         .unwrap();
     assert_eq!(owner.state.revision, revision);
     assert_eq!(
-        owner.mark_consumption_reserved(
-            "operation:consumption-saga",
-            "reservation:other".into(),
-        ),
+        owner.mark_consumption_reserved("operation:consumption-saga", "reservation:other".into(),),
         Err(LeaseRegistryErrorV1::OperationConflict)
     );
 }
 
 #[test]
 fn predispatch_crash_recovery_can_close_claimed_or_reserved_rows() {
-    let (_directory, path) = registry_path();
-    let mut owner = reopen(&path);
+    let (_directory, path) = registry_path().expect("create private registry fixture");
+    let mut owner = reopen(&path).expect("reopen durable owner");
     owner.claim_consumption(operation()).unwrap();
     owner
         .record_consumption_abort(
@@ -333,5 +316,73 @@ fn predispatch_crash_recovery_can_close_claimed_or_reserved_rows() {
             .unwrap()
             .state,
         BaoConsumptionStateV1::Failed
+    );
+}
+
+#[test]
+fn durable_phase_recovery_and_capacity_rules_are_single_sourced() {
+    assert_eq!(
+        BaoConsumptionStateV1::Claimed.phase(),
+        BaoConsumptionPhaseV1::Unreserved
+    );
+    assert_eq!(
+        BaoConsumptionStateV1::Reserved.recovery_action(),
+        BaoConsumptionRecoveryActionV1::CancelOrExpireReservation
+    );
+    assert!(BaoConsumptionStateV1::DispatchFenced.has_dispatch_fence());
+    assert_eq!(
+        BaoConsumptionStateV1::ProviderFailed.phase(),
+        BaoConsumptionPhaseV1::TerminalEvidence
+    );
+    assert!(BaoConsumptionStateV1::ProviderFailed.requires_future_capacity());
+    assert!(BaoConsumptionStateV1::Failed.is_terminal());
+    assert!(!BaoConsumptionStateV1::Failed.requires_future_capacity());
+    assert_eq!(
+        BaoConsumptionStateV1::Succeeded.recovery_action(),
+        BaoConsumptionRecoveryActionV1::ReturnHistoricalSuccess
+    );
+}
+
+#[test]
+fn terminal_failure_releases_future_capacity_but_preserves_history() {
+    let (_directory, path) = registry_path().expect("create private registry fixture");
+    let mut owner = reopen(&path).expect("reopen durable owner");
+    owner.claim_consumption(operation()).unwrap();
+    let before = owner.diagnostics().unwrap();
+    assert_eq!(before.consumption_future_reserve_bytes, 4096);
+
+    owner
+        .record_consumption_abort(
+            "operation:consumption-saga",
+            false,
+            "no_reservation",
+            [15; 32],
+        )
+        .unwrap();
+    let after = owner.diagnostics().unwrap();
+    assert_eq!(after.consumption_count, 1);
+    assert_eq!(after.consumption_future_reserve_bytes, 0);
+    assert_eq!(
+        after
+            .consumption_by_state
+            .get(&BaoConsumptionStateV1::Failed),
+        Some(&1)
+    );
+    assert!(after.commit_metrics.confirmed_commits >= 2);
+    assert!(after.commit_metrics.confirmed_bytes > 0);
+}
+
+#[test]
+fn receipt_debug_and_telemetry_do_not_expose_sensitive_digests() {
+    let receipt = receipt();
+    let debug = format!("{receipt:?}");
+    assert!(debug.contains("[SENSITIVE DIGEST]"));
+    assert!(!debug.contains("6, 6, 6"));
+    assert_eq!(
+        receipt.telemetry(),
+        BaoSecretTelemetryV1 {
+            version: 7,
+            secret_bytes: 8,
+        }
     );
 }
