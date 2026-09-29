@@ -1,0 +1,46 @@
+name: Hepta objective source snapshot
+
+on:
+  push:
+    branches:
+      - work/objective-compiler-production-convergence-20260927
+    paths:
+      - .github/workflows/hepta-objective-source-snapshot.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Collect exact source inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/objective-source-snapshot"
+          mkdir -p "$out/codex-rs/hepta-agentd/tests/support"
+          mkdir -p "$out/codex-rs/hepta-intelligence/src"
+          mkdir -p "$out/codex-rs/hepta-objective/src"
+          mkdir -p "$out/scripts"
+          mkdir -p "$out/.github/workflows"
+          cp codex-rs/hepta-agentd/tests/objective_product_e2e.rs "$out/codex-rs/hepta-agentd/tests/"
+          cp codex-rs/hepta-agentd/tests/support/fleet.rs "$out/codex-rs/hepta-agentd/tests/support/"
+          cp codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs "$out/codex-rs/hepta-intelligence/src/"
+          cp codex-rs/hepta-objective/src/lib.rs "$out/codex-rs/hepta-objective/src/"
+          cp scripts/hepta-objective-target-measure.py "$out/scripts/"
+          cp .github/workflows/hepta-objective-target-measurement.yml "$out/.github/workflows/"
+          git rev-parse HEAD > "$out/source-commit.txt"
+          git rev-parse HEAD^{tree} > "$out/source-tree.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: objective-source-snapshot-${{ github.sha }}
+          path: ${{ runner.temp }}/objective-source-snapshot
+          if-no-files-found: error
+          retention-days: 1
