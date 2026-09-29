@@ -11,7 +11,6 @@ use crate::QuotaReservation;
 use crate::QuotaSnapshot;
 use crate::ReservationState;
 use crate::Settlement;
-use crate::SettlementIssuerRegistration;
 use crate::SettlementStatus;
 use crate::SignedSettlementEvidence;
 use crate::TrustedTimeSample;
@@ -23,6 +22,7 @@ use crate::authority_store::storage;
 use crate::authority_store::u64_bytes;
 use crate::quota_store::load_quota;
 use crate::quota_store::load_reservation;
+use crate::trust_store::load_settlement_issuer;
 
 impl AuthBusAuthorityStore {
     pub async fn mark_dispatch_attempted(
@@ -182,7 +182,6 @@ impl AuthBusAuthorityStore {
 
     pub async fn settle(
         &self,
-        issuer: &SettlementIssuerRegistration,
         evidence: &SignedSettlementEvidence,
         time: TrustedTimeSample,
     ) -> Result<Settlement, AuthBusAuthorityError> {
@@ -212,8 +211,14 @@ impl AuthBusAuthorityStore {
         ) {
             return Err(AuthBusAuthorityError::InvalidTransition);
         }
+        let issuer = load_settlement_issuer(
+            &mut tx,
+            &evidence.claims.issuer_id,
+            evidence.claims.key_epoch,
+        )
+        .await?;
         let authenticated = evidence.authenticate(
-            issuer,
+            &issuer,
             &reservation.reservation_id,
             &reservation.operation_id,
             time.wall_time_ms,
@@ -297,13 +302,12 @@ fn settle_completed(
     amount: u64,
     observed_cost: u64,
 ) -> Result<(), AuthBusAuthorityError> {
-    quota.reserved =
-        quota
-            .reserved
-            .checked_sub(amount)
-            .ok_or(AuthBusAuthorityError::CorruptState(
-                "reserved quota underflow",
-            ))?;
+    quota.reserved = quota
+        .reserved
+        .checked_sub(amount)
+        .ok_or(AuthBusAuthorityError::CorruptState(
+            "reserved quota underflow",
+        ))?;
     quota.consumed = quota
         .consumed
         .checked_add(observed_cost)
@@ -317,13 +321,12 @@ fn settle_completed(
 }
 
 fn release_reserved(quota: &mut QuotaSnapshot, amount: u64) -> Result<(), AuthBusAuthorityError> {
-    quota.reserved =
-        quota
-            .reserved
-            .checked_sub(amount)
-            .ok_or(AuthBusAuthorityError::CorruptState(
-                "reserved quota underflow",
-            ))?;
+    quota.reserved = quota
+        .reserved
+        .checked_sub(amount)
+        .ok_or(AuthBusAuthorityError::CorruptState(
+            "reserved quota underflow",
+        ))?;
     quota.available = quota
         .available
         .checked_add(amount)
