@@ -1,0 +1,57 @@
+name: knowledge.graph one-shot source-map rebind
+
+on:
+  push:
+    branches: [work/kg-abc-evidence-hardening-20260928]
+    paths:
+      - ".github/kg-map-rebind.request"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: knowledge-graph-map-rebind-once
+  cancel-in-progress: false
+
+jobs:
+  rebind:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify exact one-shot request
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(cat .github/kg-map-rebind.request)" = "$GITHUB_SHA"
+          git diff --exit-code
+          git diff --cached --exit-code
+
+      - name: Rebind exact source objects and split status
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py migrate --module knowledge.graph
+          python3 scripts/hepta_kg_status.py --apply
+          git diff --check
+          python3 scripts/hepta_kg_status.py --check
+
+      - name: Commit only generated knowledge.graph metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'hepta-kg-map-rebind'
+          git config user.email 'hepta-kg-map-rebind@users.noreply.github.com'
+          git add -- \
+            docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json \
+            docs/modules/knowledge.graph/CURRENT_STATUS.json \
+            docs/modules/knowledge.graph/CURRENT_STATUS.md
+          test -z "$(git status --porcelain --untracked-files=no | grep -vE '^M  docs/modules/knowledge\.graph/(IMPLEMENTATION_MAP\.json|CURRENT_STATUS\.json|CURRENT_STATUS\.md)$' || true)"
+          git commit -m 'docs(knowledge.graph): rebind final source map'
+          git push origin HEAD:work/kg-abc-evidence-hardening-20260928
