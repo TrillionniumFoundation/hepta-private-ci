@@ -5,23 +5,36 @@ on:
     branches: [codex/intuition-policy-final-use-recovery-20260929]
     paths:
       - ".github/workflows/intuition-carrier-export.yml"
+  pull_request:
+    branches: [codex/intuition-policy-authoring-base-20260929]
+    types: [opened, synchronize, reopened]
+    paths:
+      - ".github/workflows/intuition-carrier-export.yml"
+      - ".github/intuition-authoring-patch/READY"
+      - ".github/intuition-authoring-patch/part-000.b64"
+      - ".github/intuition-authoring-patch/part-001.b64"
+      - ".github/intuition-authoring-patch/part-002.b64"
 
 permissions:
   contents: read
 
 concurrency:
-  group: intuition-carrier-export-${{ github.ref }}
+  group: intuition-carrier-export-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
+
+env:
+  CARRIER_HEAD: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
 
 jobs:
   export:
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: macos-15
     timeout-minutes: 10
     steps:
       - name: Check out exact carrier
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ env.CARRIER_HEAD }}
           fetch-depth: 0
           persist-credentials: false
 
@@ -53,7 +66,7 @@ jobs:
       - name: Upload immutable carrier
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: intuition-immutable-carrier-${{ github.sha }}
+          name: intuition-immutable-carrier-${{ env.CARRIER_HEAD }}
           path: ${{ runner.temp }}/intuition-carrier/
           if-no-files-found: error
           retention-days: 3
