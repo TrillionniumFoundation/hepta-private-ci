@@ -17,7 +17,6 @@ use codex_hepta_wire::SessionMacKey;
 use codex_hepta_wire::WireCapabilities;
 use codex_hepta_wire::WireEnvelopeV2;
 use codex_hepta_wire::WireSession;
-use codex_hepta_wire::WireVersion;
 use codex_hepta_wire::negotiate;
 
 use super::*;
