@@ -1,0 +1,137 @@
+name: Inference boundary source application and native diagnostics
+on:
+  push:
+    branches: [ops/inference-control-boundary-apply-20260929]
+permissions:
+  contents: read
+concurrency:
+  group: inference-boundary-apply-20260929
+  cancel-in-progress: false
+jobs:
+  apply:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    outputs:
+      source_sha: ${{ steps.apply.outputs.source_sha }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+      - uses: dtolnay/rust-toolchain@5d458579430fc14a04a08a1e7d3694f545e91ce6
+        with:
+          toolchain: 1.95.0
+          components: rustfmt
+      - name: Verify payload, apply only scoped changes, and push a normal commit
+        id: apply
+        env:
+          PYTHONDONTWRITEBYTECODE: 1
+          DESTINATION: codex/inference-control-boundary-capacity-20260929
+          BASE: a9fa9b4d0629bcab149026ac76a5f1470ee8363d
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64, hashlib, lzma, os
+          from pathlib import Path
+          chunks = sorted(Path('scripts/inference-boundary-payload').glob('*.b64'))
+          assert len(chunks) == 4
+          raw = lzma.decompress(base64.b64decode(''.join(p.read_text().strip() for p in chunks), validate=True))
+          assert len(raw) == 169197
+          assert hashlib.sha256(raw).hexdigest() == 'd04657495bf2766a302c7c649104f9d98e66623dd17ac0c069408e508abd83c4'
+          Path(os.environ['RUNNER_TEMP'], 'inference-boundary.patch').write_bytes(raw)
+          PY
+          git fetch origin "$DESTINATION"
+          test "$(git rev-parse FETCH_HEAD)" = "$BASE"
+          git checkout -B "$DESTINATION" "$BASE"
+          git apply --check --index "$RUNNER_TEMP/inference-boundary.patch"
+          git apply --index "$RUNNER_TEMP/inference-boundary.patch"
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+          changed = subprocess.check_output(['git','diff','--cached','--name-only','-z']).decode().split('\0')
+          prefixes = ('codex-rs/hepta-infer-worker-host/src/', 'docs/modules/inference.control/')
+          scripts = {'scripts/hepta-inference-control-current-state.py', 'scripts/hepta_inference_boundary_native.py',
+                     'scripts/hepta_inference_capacity.py', 'scripts/test_hepta_inference_capacity.py',
+                     'scripts/test_hepta_inference_current_state.py', '.github/workflows/hepta-inference-maintenance.yml'}
+          for name in filter(None, changed):
+              assert name.startswith(prefixes) or name in scripts, name
+              if name.endswith('.rs'):
+                  subprocess.run(['rustfmt','--edition','2024','--config','skip_children=true',name], check=True)
+          extra = set(subprocess.check_output(['git','diff','--name-only','HEAD','-z']).decode().split('\0')) - set(changed)
+          assert not extra, f'formatter touched unrelated files: {extra}'
+          PY
+          python3 scripts/hepta-inference-control-current-state.py sync
+          python3 scripts/hepta-inference-control-current-state.py check
+          python3 scripts/hepta-inference-control-actor-migrate.py check
+          python3 -m unittest -v scripts.test_hepta_inference_current_state scripts.test_hepta_inference_capacity
+          git diff --check
+          git add -u
+          git config user.name 'ChatGPT engineering'
+          git config user.email 'chatgpt@users.noreply.github.com'
+          git commit -m 'fix(inference.control): bound admitted replies, reserve terminal capacity, and retain exact evidence'
+          git push origin "HEAD:refs/heads/$DESTINATION"
+          printf 'source_sha=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          git show --stat --oneline HEAD
+  native-diagnostics:
+    needs: apply
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      CARGO_BUILD_JOBS: 2
+      CARGO_INCREMENTAL: 0
+      CARGO_PROFILE_RELEASE_DEBUG: 0
+      CARGO_TERM_COLOR: never
+      PYTHONDONTWRITEBYTECODE: 1
+      SOURCE_SHA: ${{ needs.apply.outputs.source_sha }}
+      TESTED_SHA: ${{ needs.apply.outputs.source_sha }}
+      BASE_SHA: a126987b84737dbc2ee2592442a314117bddb4a2
+      HEPTA_CI_LANE: boundary-diagnostic
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.apply.outputs.source_sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@5d458579430fc14a04a08a1e7d3694f545e91ce6
+        with:
+          toolchain: 1.95.0
+          components: clippy, rustfmt
+      - name: Compile and execute original core, actor and vault sources in a retained diagnostic closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          mkdir -p "$RUNNER_TEMP/inference-boundary-records"
+          records="$RUNNER_TEMP/inference-boundary-records"
+          manifest="$RUNNER_TEMP/inference-boundary-native/Cargo.toml"
+          python3 scripts/hepta_inference_boundary_native.py --output "$RUNNER_TEMP/inference-boundary-native"
+          rustc -Vv > "$records/toolchain.txt"
+          python3 scripts/hepta_ci_exec.py --output "$records/native-tests.json" --minimum-tests 15 -- \
+            cargo test --manifest-path "$manifest" --workspace --all-targets --release -- --nocapture
+          python3 scripts/hepta_ci_exec.py --output "$records/real-writer-curve.json" --minimum-tests 1 -- \
+            cargo test --manifest-path "$manifest" --release -p codex-hepta-infer-worker-host \
+            real_writer_mixed_query_terminal_contention_curve -- --ignored --nocapture --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$records/fifo-curve.json" --minimum-tests 1 -- \
+            cargo test --manifest-path "$manifest" --release -p codex-hepta-infer-worker-host \
+            mixed_fifo_contention_curve -- --ignored --nocapture --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$records/clippy.json" -- \
+            cargo clippy --manifest-path "$manifest" --workspace --all-targets -- -D warnings
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+      - name: Preserve results and precise diagnostic scope even on failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: inference-boundary-${{ needs.apply.outputs.source_sha }}-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/inference-boundary-records/
+            ${{ runner.temp }}/inference-boundary-native/Cargo.toml
+            ${{ runner.temp }}/inference-boundary-native/Cargo.lock
+            ${{ runner.temp }}/inference-boundary-native/source-scope.json
+            ${{ runner.temp }}/inference-boundary-native/core/Cargo.toml
+            ${{ runner.temp }}/inference-boundary-native/host/Cargo.toml
+            ${{ runner.temp }}/inference-boundary-native/host/lib.rs
+          if-no-files-found: error
+          retention-days: 30
