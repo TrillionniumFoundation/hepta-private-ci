@@ -1,0 +1,298 @@
+name: control.runtime verified rustfmt application
+
+on:
+  pull_request:
+    types: [synchronize]
+    branches: [main]
+    paths:
+      - '.github/workflows/control-runtime-apply-rustfmt.yml'
+
+permissions:
+  actions: read
+  contents: write
+  pull-requests: read
+
+concurrency:
+  group: control-runtime-apply-rustfmt-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+env:
+  EXPECTED_PARENT: 23474f7cf1103b92e1a978106081c5bd71c85c81
+  EXPECTED_ARTIFACT_ID: '11010773885'
+  EXPECTED_ARCHIVE_SHA256: b18843cb9d9aa519bf0d27518b2ee7eec05fecde89e86289e94ba895e34eeff6
+  EXPECTED_BRANCH: codex/control-runtime-convergence-v1
+  CARGO_INCREMENTAL: '0'
+  CARGO_BUILD_JOBS: '2'
+  CARGO_PROFILE_TEST_DEBUG: '0'
+  CARGO_PROFILE_DEV_DEBUG: '0'
+
+jobs:
+  apply-and-verify:
+    if: >-
+      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
+      github.event.pull_request.head.ref == 'codex/control-runtime-convergence-v1'
+    runs-on: macos-14
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 2
+          persist-credentials: true
+
+      - name: Verify the one-file bootstrap commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
+          test "$(git diff --name-only HEAD^..HEAD)" = ".github/workflows/control-runtime-apply-rustfmt.yml"
+          test "$(git ls-remote origin "refs/heads/$EXPECTED_BRANCH" | awk '{print $1}')" = "$(git rev-parse HEAD)"
+
+      - name: Download and verify the exact formatting artifact
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          archive="$RUNNER_TEMP/control-runtime-rustfmt.zip"
+          bundle="$RUNNER_TEMP/control-runtime-rustfmt"
+          curl --fail --location --retry 3 \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header "Accept: application/vnd.github+json" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/$EXPECTED_ARTIFACT_ID/zip" \
+            --output "$archive"
+          echo "$EXPECTED_ARCHIVE_SHA256  $archive" | shasum -a 256 -c -
+          mkdir -p "$bundle"
+          unzip -q "$archive" -d "$bundle"
+          test "$(tr -d '\r\n' < "$bundle/source-head.txt")" = "$EXPECTED_PARENT"
+          test -s "$bundle/rustfmt.patch"
+          test -d "$bundle/files"
+
+          cat > "$RUNNER_TEMP/expected-rustfmt-paths.txt" <<'EOF'
+          codex-rs/hepta-control-plane/src/bin/planner_store_process_fixture.rs
+          codex-rs/hepta-control-plane/src/lib.rs
+          codex-rs/hepta-control-plane/src/organ_fanout_recovery.rs
+          codex-rs/hepta-control-plane/src/organ_runtime.rs
+          codex-rs/hepta-control-plane/src/planner_execution.rs
+          codex-rs/hepta-control-plane/src/planner_execution_codec.rs
+          codex-rs/hepta-control-plane/src/planner_execution_core.rs
+          codex-rs/hepta-control-plane/src/planner_execution_durable.rs
+          codex-rs/hepta-control-plane/src/planner_execution_pending.rs
+          codex-rs/hepta-control-plane/src/planner_execution_recovery_tests.rs
+          codex-rs/hepta-control-plane/src/planner_execution_tests.rs
+          codex-rs/hepta-control-plane/src/planner_hardening_tests.rs
+          codex-rs/hepta-control-plane/src/planner_store.rs
+          codex-rs/hepta-control-plane/src/planner_store_core.rs
+          codex-rs/hepta-control-plane/tests/organ_fanout_receipts.rs
+          codex-rs/hepta-control-plane/tests/planner_durable_hardening.rs
+          codex-rs/hepta-control-plane/tests/planner_store_process_recovery.rs
+          EOF
+          LC_ALL=C sort -o "$RUNNER_TEMP/expected-rustfmt-paths.txt" "$RUNNER_TEMP/expected-rustfmt-paths.txt"
+          LC_ALL=C sort "$bundle/paths.txt" > "$RUNNER_TEMP/actual-rustfmt-paths.txt"
+          diff -u "$RUNNER_TEMP/expected-rustfmt-paths.txt" "$RUNNER_TEMP/actual-rustfmt-paths.txt"
+          rsync -a "$bundle/files/" "$GITHUB_WORKSPACE/"
+          LC_ALL=C git diff --name-only | sort > "$RUNNER_TEMP/applied-rustfmt-paths.txt"
+          diff -u "$RUNNER_TEMP/expected-rustfmt-paths.txt" "$RUNNER_TEMP/applied-rustfmt-paths.txt"
+
+      - name: Synchronize the implementation map and restore read-only qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from __future__ import annotations
+
+          import json
+          from pathlib import Path
+
+          map_path = Path("docs/modules/control.runtime/IMPLEMENTATION_MAP.json")
+          implementation = json.loads(map_path.read_text(encoding="utf-8"))
+          pending_operation = {
+              "operation": "PlannerStoreV1::pending_dispatches_page",
+              "nativeSymbol": "codex_hepta_control_plane::PlannerStoreV1::pending_dispatches_page",
+              "sourcePath": "codex-rs/hepta-control-plane/src/planner_execution_pending.rs",
+              "inputs": [
+                  "optional claim-sequence cursor",
+                  "bounded page limit",
+              ],
+              "outputs": [
+                  "round-robin DENY_ALL unresolved dispatch evidence",
+              ],
+              "state": "source_candidate_boundary_uncomposed",
+              "authority": "deny_all",
+              "nonClaim": "inventory is not redispatch authority and no product recovery controller is composed",
+              "tests": [
+                  {
+                      "path": "codex-rs/hepta-control-plane/src/planner_execution_pending.rs",
+                      "symbol": "pending_dispatch_inventory_is_bounded_and_round_robin",
+                  },
+                  {
+                      "path": "codex-rs/hepta-control-plane/src/planner_execution_pending.rs",
+                      "symbol": "pending_dispatch_inventory_excludes_conclusive_and_keeps_indeterminate",
+                  },
+                  {
+                      "path": "codex-rs/hepta-control-plane/src/planner_execution_pending.rs",
+                      "symbol": "pending_dispatch_inventory_rejects_invalid_bounds_and_poisoned_state",
+                  },
+                  {
+                      "path": "codex-rs/hepta-control-plane/tests/planner_store_process_recovery.rs",
+                      "symbol": "synced_frame_survives_abort_without_drop_or_in_memory_publish",
+                  },
+              ],
+              "designOperation": "bounded_pending_dispatch_inventory",
+              "mappingClass": "owner_boundary",
+              "delegatedCallees": [
+                  "PlannerStoreV1 records",
+                  "canonical dispatch-claim and terminal-receipt codecs",
+              ],
+              "sourcePathExists": True,
+          }
+          operations = implementation.get("operations")
+          if not isinstance(operations, list):
+              raise SystemExit("implementation map operations must be a list")
+          operations[:] = [
+              operation
+              for operation in operations
+              if operation.get("operation") != pending_operation["operation"]
+          ]
+          insert_at = next(
+              (
+                  index
+                  for index, operation in enumerate(operations)
+                  if operation.get("operation")
+                  == "OrganHostV1::dispatch_once_with_receipt"
+              ),
+              len(operations),
+          )
+          operations.insert(insert_at, pending_operation)
+
+          owner_types = implementation.get("ownerLocalTypes")
+          if not isinstance(owner_types, list):
+              raise SystemExit("implementation map ownerLocalTypes must be a list")
+          for name in ("PlannerPendingDispatchV1", "PlannerPendingDispatchPageV1"):
+              if name not in owner_types:
+                  owner_types.append(name)
+
+          completion = implementation.get("completion")
+          if not isinstance(completion, dict):
+              raise SystemExit("implementation map completion must be an object")
+          completion["pendingDispatchInventory"] = "source_candidate_boundary_uncomposed"
+          map_path.write_text(
+              json.dumps(implementation, indent=2, ensure_ascii=False) + "\n",
+              encoding="utf-8",
+          )
+
+          validator_path = Path("scripts/control_runtime_validate_state.py")
+          validator = validator_path.read_text(encoding="utf-8")
+          operation_line = '    "PlannerStoreV1::pending_dispatches_page",\n'
+          if operation_line not in validator:
+              anchor = '    "reconcile_planner_request_v1",\n'
+              if anchor not in validator:
+                  raise SystemExit("validator operation insertion anchor is missing")
+              validator = validator.replace(anchor, anchor + operation_line, 1)
+          validator_path.write_text(validator, encoding="utf-8")
+
+          workflow = """name: control.runtime crash and recovery regression
+
+          on:
+            pull_request:
+              branches: [main]
+              paths:
+                - 'codex-rs/hepta-control-plane/**'
+                - 'docs/modules/control.runtime/**'
+                - 'docs/readiness/CONTROL_RUNTIME_*.md'
+                - 'scripts/control_runtime_validate_state.py'
+                - '.github/workflows/control-runtime-crash-recovery.yml'
+            workflow_dispatch:
+
+          permissions:
+            contents: read
+
+          concurrency:
+            group: control-runtime-crash-recovery-${{ github.event.pull_request.number || github.ref }}
+            cancel-in-progress: true
+
+          env:
+            CARGO_INCREMENTAL: '0'
+            CARGO_BUILD_JOBS: '2'
+            CARGO_PROFILE_TEST_DEBUG: '0'
+            CARGO_PROFILE_DEV_DEBUG: '0'
+
+          jobs:
+            source-and-process-recovery:
+              strategy:
+                fail-fast: false
+                matrix:
+                  os: [ubuntu-24.04, macos-14]
+              runs-on: ${{ matrix.os }}
+              timeout-minutes: 45
+              steps:
+                - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+                  with:
+                    persist-credentials: false
+
+                - name: Install Linux native prerequisites
+                  if: runner.os == 'Linux'
+                  run: |
+                    sudo apt-get update
+                    sudo apt-get install -y build-essential pkg-config libcap-dev
+
+                - name: Canonical state validation
+                  run: python3 scripts/control_runtime_validate_state.py --output "$RUNNER_TEMP/control-runtime-state.json"
+
+                - name: Formatting
+                  working-directory: codex-rs
+                  run: cargo fmt -p codex-hepta-control-plane -- --check
+
+                - name: Pending reconciliation inventory regressions
+                  working-directory: codex-rs
+                  run: cargo test --locked -p codex-hepta-control-plane pending_dispatch_inventory
+
+                - name: Abnormal process and restore regressions
+                  working-directory: codex-rs
+                  run: cargo test --locked -p codex-hepta-control-plane --test planner_store_process_recovery -- --nocapture
+
+                - name: All-target compilation
+                  working-directory: codex-rs
+                  run: cargo check --locked --all-targets -p codex-hepta-control-plane
+
+                - name: Strict lint
+                  working-directory: codex-rs
+                  run: cargo clippy --locked --all-targets -p codex-hepta-control-plane -- -D warnings
+          """
+          workflow = "\n".join(
+              line[10:] if line.startswith("          ") else line
+              for line in workflow.splitlines()
+          ) + "\n"
+          Path(".github/workflows/control-runtime-crash-recovery.yml").write_text(
+              workflow,
+              encoding="utf-8",
+          )
+          Path(".github/workflows/control-runtime-apply-rustfmt.yml").unlink()
+          PY
+
+      - name: Validate source, recovery tests and strict package gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/control_runtime_validate_state.py --output "$RUNNER_TEMP/control-runtime-state.json"
+          cd codex-rs
+          cargo fmt -p codex-hepta-control-plane -- --check
+          cargo test --locked -p codex-hepta-control-plane
+          cargo check --locked --all-targets -p codex-hepta-control-plane
+          cargo clippy --locked --all-targets -p codex-hepta-control-plane -- -D warnings
+
+      - name: Commit and push only the verified source
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$GITHUB_WORKSPACE"
+          test ! -e .github/workflows/control-runtime-apply-rustfmt.yml
+          git diff --check
+          test "$(git ls-remote origin "refs/heads/$EXPECTED_BRANCH" | awk '{print $1}')" = "$(git rev-parse HEAD)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -s -m "feat(control.runtime): finalize bounded recovery qualification"
+          git push origin "HEAD:refs/heads/$EXPECTED_BRANCH"
