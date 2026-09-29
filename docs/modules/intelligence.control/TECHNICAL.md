@@ -52,10 +52,14 @@ Input admission is `intelligence_ingress.rs`; durable learning is
 `intelligence_learning.rs` with payload, clock and scheduling companions.
 
 The authenticated `ObjectiveStart` route invokes the runner only for an
-explicitly configured runner/provider profile. Ordinary CLI bootstrap does not
-construct an authorized seven-owner factory. `ContextAttached` is not proof that
-Decision publication, physical App Server execution and Outcome recovery form
-one complete product episode. Those edges remain acceptance work.
+atomically configured runner/provider profile. That profile also requires the
+independent authority rollback witness and process hard-timeout fence. Ordinary
+CLI bootstrap neither constructs an authorized seven-owner factory nor accepts
+a runner-only pseudo-profile; product embeddings use
+`AgentdConfig::with_canonical_intelligence_profile`. `ContextAttached` is not
+proof that Decision publication, physical App Server execution and Outcome
+recovery formed one observed product episode. Those live edges remain acceptance
+work.
 
 Historical `compose`, read-only vertical and shadow/evaluated-shadow entrypoints
 remain compatibility or qualification APIs, not parallel product choices.
@@ -164,9 +168,11 @@ The sidecar retains the original operation identity, predecessor, evidence,
 principal/controller/key/credential/scope/epoch bindings and event time.
 V2 serialization and digest grammars remain unchanged by the code split.
 
-Sidecar publication uses a same-directory temporary file and no-replace hard
-link, not overwrite rename. Reads check the opened handle and limit actual bytes.
-Full parent-anchored no-follow open, orphan retention and process-loss boundary
+Sidecar publication uses a same-directory temporary file and atomic no-replace
+publication rather than overwrite. Unix reads and publication walk an opened
+parent-directory handle without following links; the opened leaf is checked for
+regular-file identity, permissions, link count and actual byte bounds. Orphan
+retention, host-root write-side replacement, disk-full and complete process-loss
 qualification remain separate obligations. Migration must preserve old V2 bytes
 and the ability to identify acknowledged, rejected, quarantined and unresolved
 operations. Never clear a journal to regain capacity or erase uncertainty.
@@ -181,18 +187,33 @@ or generation rather than modifying a current run.
 The runner uses four slots. Actual blocking work retains its permit even if the
 request times out or is dropped. A worker-owned completion guard starts an
 independent OS-thread watchdog; request-future cancellation cannot disarm it.
-The guard joins its watchdog before releasing the worker permit. Explicit
-hard-timeout policy may exit Agentd with code 70; a fresh Supervisor generation
-and durable reconciliation are still required afterward.
+The guard joins its watchdog before releasing the worker permit. The advertised
+canonical profile requires a nonzero process hard-timeout grace; an overrun exits
+Agentd with code 70 so Supervisor must create a fresh generation and durable
+reconciliation must classify every unknown operation. Compatibility-only direct
+preparation may omit this fence, but cannot be advertised as
+`intelligence.canonical_v1`.
 
-Signed-evaluation manifest reads and final all-owner revalidation run inside
-supervised work and share the remaining monotonic cognition budget. Owner call
-latency is recorded before propagating either success or failure.
+The host-owned invocation factory has its own bounded in-flight policy and
+absolute deadline derived from the durable RunStart. It runs inside the runner's
+supervised lifetime, so a detached or stuck factory cannot evade the canonical
+process fence. Signed-evaluation manifest reads and final all-owner revalidation
+also run inside supervised work and share the remaining monotonic cognition
+budget. Owner call latency is recorded before propagating either success or
+failure.
 
-**Not yet a complete end-to-end bound:** the synchronous invocation factory and
-synchronous learning grant/file/writer work still need a separately bounded,
-supervised owner lifetime. A thread timeout is not safe cancellation of an
-arbitrary synchronous instruction. Do not advertise complete hard isolation.
+Deadlines are not conflated. The durable RunStart deadline bounds invocation and
+admission; the cognition budget is the minimum of its requested total and the
+remaining RunStart time; the native App Server driver retains its own physical
+request timeout and reconciliation semantics. None of these clocks converts an
+unknown physical result into safe replay.
+
+Learning file/grant/writer operations use bounded blocking slots and retain real
+capacity until completion after request detachment. Arbitrary synchronous storage
+I/O is not claimed to be safely interruptible in-process; its unknown outcomes
+remain durable reconcile-only work. Supervisor replacement for cognition exit 70
+and learning-I/O crash cuts remain target-host qualification, not missing source
+interfaces.
 
 [Shared concurrency requirements](../README.md#shared-concurrency-and-transactions)
 remain mandatory at every owner boundary.
@@ -245,11 +266,17 @@ replay, file replacement, source substitution and privacy boundaries.
 
 The manifest is verified with an externally configured Ed25519 key, strict
 signature checks and weak-key rejection. It has exactly seven owner rows;
-actual file reads are capped at 64 KiB and Unix opened-object identity and
-write permissions are checked. A signed old file is still old: the current
-oracle does not establish an independently durable anti-rollback floor.
-Atomic no-follow/nonblocking open and trusted parent-directory identity also
-remain required before complete file-boundary qualification.
+actual file reads are capped at 64 KiB and the opened Unix object, permissions,
+link count and parent identity are checked without following path components.
+Every signature-verified manifest is admitted through an independently retained
+`IntelligenceAuthorityRollbackGuardV1` before it can satisfy a canonical
+currentness read. Lower authority epochs and same-epoch digest substitution fail
+closed across reopen. The witness grants no authority and must live outside the
+Agent home and run roots.
+
+Target-host backup separation, privileged parent replacement, non-Unix handle
+parity and crash injection remain qualification gates. They are not reasons to
+relabel the implemented no-follow reader or durable rollback floor as absent.
 
 No secrets or credentials belong in ordinary logs, prompt factors or learning
 datasets. Runtime grants remain short-lived, payload-bound and revocation-aware.
@@ -282,9 +309,10 @@ stage latency/failure class, currentness/identity rejection, advisory outcomes
 and run-phase dwell. Kernel.operations exposes queued, leased, acknowledged,
 indeterminate and terminal backlog counts.
 
-`capability_profile_digest` now uses the versioned v2 domain, length-delimited
-path/signer and full hard-timeout precision. It identifies configuration, not
-an activation grant. Old profile digests are historical qualification identities.
+`capability_profile_digest` uses the versioned v2 domain, length-delimited
+path/signer, rollback profile and full hard-timeout precision. It identifies a
+configuration, not an activation grant. Old profile digests are historical
+qualification identities.
 
 Operators must distinguish source declaration, ContextAttached, physical
 Dispatching, observed terminal, ledger commit and witness acknowledgement.
@@ -302,10 +330,12 @@ an automatically promoted count of functions or a complete repository inventory.
 
 `scripts/hepta-intelligence-control-status.py --check-tracked` validates them.
 The companion Python tests reject wrong-head, failed/queued, changed-checkout,
-missing-log and missing/ambiguous-test evidence. Native workflow projection
-requires exact command arrays, exit codes, source/lane identity, unchanged log
-hashes and each explicitly mapped test observed passing. All package tests,
-including unrelated tests within those packages, still run.
+missing-log and missing/ambiguous-test evidence. They also reject a standalone
+runner-only startup and a canonical profile that lacks rollback or process hard
+containment. Native workflow projection requires exact command arrays, exit
+codes, source/lane identity, unchanged log hashes and each explicitly mapped
+test observed passing. All package tests, including unrelated tests within those
+packages, still run.
 
 The independent workflow runs source-head and deterministic base-merge lanes:
 formatting; intelligence and operations package tests; default Agentd library
@@ -326,16 +356,19 @@ Packages are `INTELLIGENCE-A0-Q0.63`, `C1-PROMPTED-MEMORY-RETRIEVAL-RANK` and
 evidence DAGs. Ordinary owner-authorized implementation does not require a
 handwritten deployment grant. Cross-owner changes retain explicit owners.
 
-Finish actual stage data and time semantics, compose one executable product
-host, close concurrency/recovery/file boundaries, then qualify one exact
-candidate. Do not substitute another facade or a larger intelligence plane.
+Qualify the existing stage data/time semantics and executable product host on one
+exact candidate, run the full process-loss and acknowledgement matrix, then
+collect selected-host resource and quality evidence. Do not substitute another
+facade or a larger intelligence plane.
 
 ## 14. Activation, compatibility and retirement
 
-Runner/provider configuration advertises only the configured capability.
-Default CLI composition, physical provider execution, accepted owner trust,
-operator approval, activation, promotion and release remain separate. Legacy
-learning writes remain feature-gated and cannot qualify the default writer.
+The configured capability requires an atomic runner/provider profile, an
+independent rollback guard and process hard-timeout fence. The ordinary Agentd
+binary rejects the legacy authority-only runner tuple and advertises no canonical
+profile. Physical provider execution, accepted owner trust, operator approval,
+activation, promotion and release remain separate. Legacy learning writes remain
+feature-gated and cannot qualify the default writer.
 
 Retire a compatibility path only after all its named callers migrate, applicable
 oracle parity and rollback are rehearsed, and independent acceptance exists.
@@ -460,10 +493,10 @@ source work. This overlay grants no selection, activation, acceptance or release
 
 Current immutable identity is obtained from Git and actual workflow records,
 not cached branch names or prior passes. The named authenticated daemon route,
-canonical owner adapters, formal writer/outbox and watchdog have source.
-The [implementation map](IMPLEMENTATION_MAP.json) and
-[test traceability](TEST_TRACEABILITY.json) retain pending execution in tracked
-files. Exact workflow projections may certify only their executed lane.
+canonical owner adapters, formal writer/outbox, rollback guard and mandatory
+product watchdog have source. The [implementation map](IMPLEMENTATION_MAP.json)
+and [test traceability](TEST_TRACEABILITY.json) retain pending execution in
+tracked files. Exact workflow projections may certify only their executed lane.
 
 ## 18. Product acceptance boundary
 
@@ -477,25 +510,26 @@ The default binary still supplies no owner factory, execution host or evidence.
 The effective source, setup and remaining evidence contract is
 [PRODUCT_CLOSURE.md](PRODUCT_CLOSURE.md), including Section 12.
 
-The following obligations describe live conformance/qualification, not absence
-of the source mechanisms just described.
-
-Remaining obligations are actual prompt/context/request materialization;
-authorized executable host factory; durable Decision and physical terminal
-Outcome wiring; complete factory/learning-I/O supervision; trusted no-follow
-file access and rollback floor; witness-aware historical acknowledgement;
-process crash/recovery, current native checks, target-host performance, quality
-baselines and independent acceptance. Do not relabel these as external paperwork
-or infer their completion from the presence of an interface.
+The remaining obligations are live evidence, not absent repository mechanisms:
+supply the selected authenticated owner/evidence sources; execute
+ObjectiveStart through canonical preparation, Decision, App Server terminal and
+Outcome across restart, outage, cancellation and acknowledgement-loss cuts;
+qualify Supervisor replacement after exit 70 and learning-I/O crash recovery;
+run exact source-head and synthetic-merge checks; measure target-host latency,
+RSS, CPU, signature cost, saturation, recovery and hard-kill time; and obtain
+independent semantic/security and operator acceptance. Do not relabel these as
+source-complete or infer them from an interface.
 
 ### Independent authority-manifest rollback floor
 
-The configured canonical profile is fail-closed unless the runner carries an independently
-retained `IntelligenceAuthorityRollbackGuardV1`. The witness path must be canonical and outside
-both Agent home and run roots. Each signature-verified authority manifest is then checked against
-the durable maximum epoch and exact same-epoch digest before its owner bindings can satisfy a
-currentness read. Compatibility-only runner construction may omit the witness, but such a runner
-cannot be advertised or entered as `intelligence.canonical_v1`.
+The configured canonical profile is fail-closed unless the runner carries both
+an independently retained `IntelligenceAuthorityRollbackGuardV1` and a nonzero
+process hard-timeout fence. The witness path must be canonical and outside both
+Agent home and run roots. Each signature-verified authority manifest is checked
+against the durable maximum epoch and exact same-epoch digest before its owner
+bindings can satisfy a currentness read. Compatibility-only runner construction
+may omit either requirement, but such a runner cannot be advertised or entered
+as `intelligence.canonical_v1`.
 
 ### Blocking work and no-follow reads
 
