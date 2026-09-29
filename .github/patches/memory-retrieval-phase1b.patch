@@ -1,0 +1,186 @@
+diff --git a/codex-rs/hepta-operations/src/destination_dedupe.rs b/codex-rs/hepta-operations/src/destination_dedupe.rs
+index cf230b4ad4fdefad637b50f4e1a4c10561f452ba..4a93bbbfb859d0a6655044829381a9d2ff4f53e1 100644
+--- a/codex-rs/hepta-operations/src/destination_dedupe.rs
++++ b/codex-rs/hepta-operations/src/destination_dedupe.rs
+@@ -1,6 +1,5 @@
+ use std::path::Path;
+ use std::path::PathBuf;
+-use std::time::Duration;
+ use std::time::SystemTime;
+ use std::time::UNIX_EPOCH;
+ 
+@@ -8,16 +7,13 @@ use sqlx::Row;
+ use sqlx::Sqlite;
+ use sqlx::SqlitePool;
+ use sqlx::Transaction;
+-use sqlx::sqlite::SqliteConnectOptions;
+-use sqlx::sqlite::SqliteJournalMode;
+-use sqlx::sqlite::SqlitePoolOptions;
+-use sqlx::sqlite::SqliteSynchronous;
+ 
+ use crate::DestinationApplyDisposition;
+ use crate::DestinationApplyReceipt;
+ use crate::DestinationOperationIdentity;
+ use crate::DurableOperationError;
+ use crate::MAX_DURABLE_PENDING_OPERATIONS;
++use crate::sqlite::open_durable_pool;
+ use codex_hepta_types::Digest32;
+ use codex_hepta_types::StableId;
+ 
+@@ -37,18 +33,7 @@ impl DestinationDedupeStore {
+             std::fs::create_dir_all(parent)
+                 .map_err(|error| DurableOperationError::Unavailable(error.to_string()))?;
+         }
+-        let options = SqliteConnectOptions::new()
+-            .filename(path)
+-            .create_if_missing(true)
+-            .journal_mode(SqliteJournalMode::Wal)
+-            .synchronous(SqliteSynchronous::Full)
+-            .foreign_keys(true)
+-            .busy_timeout(Duration::from_secs(5));
+-        let pool = SqlitePoolOptions::new()
+-            .max_connections(4)
+-            .connect_with(options)
+-            .await
+-            .map_err(sqlx_error)?;
++        let pool = open_durable_pool(path).await?;
+         if let Err(error) = DESTINATION_MIGRATOR.run(&pool).await {
+             pool.close().await;
+             return Err(DurableOperationError::Corrupt(format!(
+diff --git a/codex-rs/hepta-operations/src/durable_store.rs b/codex-rs/hepta-operations/src/durable_store.rs
+index 69fefb69a80d79c80caf96a56d528d74732ab939..2ee52443ffbafe0cccd7e2393a0fc2f905645b99 100644
+--- a/codex-rs/hepta-operations/src/durable_store.rs
++++ b/codex-rs/hepta-operations/src/durable_store.rs
+@@ -1,6 +1,5 @@
+ use std::path::Path;
+ use std::path::PathBuf;
+-use std::time::Duration;
+ use std::time::SystemTime;
+ use std::time::UNIX_EPOCH;
+ 
+@@ -15,10 +14,6 @@ use sqlx::Row;
+ use sqlx::Sqlite;
+ use sqlx::SqlitePool;
+ use sqlx::Transaction;
+-use sqlx::sqlite::SqliteConnectOptions;
+-use sqlx::sqlite::SqliteJournalMode;
+-use sqlx::sqlite::SqlitePoolOptions;
+-use sqlx::sqlite::SqliteSynchronous;
+ 
+ use crate::DestinationApplyReceipt;
+ use crate::DispatchClaim;
+@@ -38,6 +33,7 @@ use crate::PrepareDisposition;
+ use crate::PreparedIntent;
+ use crate::ReconciliationOutcome;
+ use crate::ReconciliationReceiptV1;
++use crate::sqlite::open_durable_pool;
+ 
+ static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
+ 
+@@ -81,18 +77,7 @@ impl DurableOperationStore {
+             std::fs::create_dir_all(parent)
+                 .map_err(|error| DurableOperationError::Unavailable(error.to_string()))?;
+         }
+-        let options = SqliteConnectOptions::new()
+-            .filename(path)
+-            .create_if_missing(true)
+-            .journal_mode(SqliteJournalMode::Wal)
+-            .synchronous(SqliteSynchronous::Full)
+-            .foreign_keys(true)
+-            .busy_timeout(Duration::from_secs(5));
+-        let pool = SqlitePoolOptions::new()
+-            .max_connections(4)
+-            .connect_with(options)
+-            .await
+-            .map_err(sqlx_error)?;
++        let pool = open_durable_pool(path).await?;
+         if let Err(error) = verify_quick_check(&pool).await {
+             pool.close().await;
+             return Err(error);
+@@ -909,29 +894,28 @@ impl DurableOperationStore {
+             operation_id,
+         )
+         .await?
++            && status.state != DurableOutboxState::Acknowledged
+         {
+-            if status.state != DurableOutboxState::Acknowledged {
+-                let fence = status
+-                    .fence
+-                    .checked_add(1)
+-                    .ok_or(DurableOperationError::Capacity)?;
+-                sqlx::query(
++            let fence = status
++                .fence
++                .checked_add(1)
++                .ok_or(DurableOperationError::Capacity)?;
++            sqlx::query(
+                     "UPDATE cross_owner_outbox SET state = 'acked', fence = ?, worker_id = NULL,
+                      lease_until_ms = NULL, acknowledgement_digest = ?, updated_at_ms = ?,
+                      terminal_at_ms = COALESCE(terminal_at_ms, ?)
+                      WHERE destination = ? AND scope_id = ? AND operation_id = ?",
+-                )
+-                .bind(to_i64(fence)?)
+-                .bind(receipt.evidence_digest.as_array().as_slice())
+-                .bind(now)
+-                .bind(now)
+-                .bind(operation.intent.destination.as_str())
+-                .bind(scope_id.as_str())
+-                .bind(operation_id.as_str())
+-                .execute(&mut *tx)
+-                .await
+-                .map_err(sqlx_error)?;
+-            }
++            )
++            .bind(to_i64(fence)?)
++            .bind(receipt.evidence_digest.as_array().as_slice())
++            .bind(now)
++            .bind(now)
++            .bind(operation.intent.destination.as_str())
++            .bind(scope_id.as_str())
++            .bind(operation_id.as_str())
++            .execute(&mut *tx)
++            .await
++            .map_err(sqlx_error)?;
+         }
+         let operation = load_operation_tx(&mut tx, scope_id, operation_id)
+             .await?
+diff --git a/codex-rs/hepta-operations/src/lib.rs b/codex-rs/hepta-operations/src/lib.rs
+index 9ae3d7b0dd5e2225794bc857525ee287d02b68d7..77adcf32a7d538e8097900a48f2d360f82c3959f 100644
+--- a/codex-rs/hepta-operations/src/lib.rs
++++ b/codex-rs/hepta-operations/src/lib.rs
+@@ -19,6 +19,7 @@ mod exact_claim;
+ mod ledger;
+ mod model;
+ mod outbox;
++mod sqlite;
+ 
+ pub use destination_dedupe::DestinationApplyStart;
+ pub use destination_dedupe::DestinationApplyTransaction;
+diff --git a/codex-rs/hepta-operations/src/sqlite.rs b/codex-rs/hepta-operations/src/sqlite.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..f9f1cd5271d772ca5a3fe7c31594dda09c075ce4
+--- /dev/null
++++ b/codex-rs/hepta-operations/src/sqlite.rs
+@@ -0,0 +1,22 @@
++use std::path::Path;
++
++use codex_state::SqliteConfig;
++use codex_utils_absolute_path::AbsolutePathBuf;
++use sqlx::SqlitePool;
++
++use crate::DurableOperationError;
++
++pub(crate) async fn open_durable_pool(
++    path: &Path,
++) -> Result<SqlitePool, DurableOperationError> {
++    let sqlite_home = path
++        .parent()
++        .filter(|parent| !parent.as_os_str().is_empty())
++        .unwrap_or_else(|| Path::new("."));
++    let sqlite_home = AbsolutePathBuf::relative_to_current_dir(sqlite_home)
++        .map_err(|error| DurableOperationError::Unavailable(error.to_string()))?;
++    SqliteConfig::from_sqlite_home(sqlite_home)
++        .open_durable_evidence_pool(path)
++        .await
++        .map_err(|error| DurableOperationError::Unavailable(error.to_string()))
++}
