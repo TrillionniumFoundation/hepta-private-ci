@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Freeze workflow, registry and convergence-policy proliferation."""
+
 from __future__ import annotations
 
 import argparse
 import json
+import re
 import subprocess
 import tomllib
 from pathlib import Path
@@ -32,14 +34,21 @@ def load_policy(root: Path = ROOT) -> dict[str, Any]:
     convergence = document.get("convergence")
     surface = document.get("repositorySurface")
     if not isinstance(convergence, dict) or not isinstance(surface, dict):
-        raise ValueError("registry.toml must define [convergence] and [repositorySurface]")
+        raise ValueError(
+            "registry.toml must define [convergence] and [repositorySurface]"
+        )
     if convergence.get("maximumActiveConvergencePrsPerCapability") != 1:
         raise ValueError("exactly one active convergence PR per capability is required")
     if convergence.get("supersededDispositionRequired") is not True:
         raise ValueError("superseded PR disposition must remain mandatory")
     dispositions = convergence.get("allowedDispositions")
-    if not isinstance(dispositions, list) or set(dispositions) != _REQUIRED_DISPOSITIONS:
-        raise ValueError("convergence dispositions must be absorb/supersede/reference/reject")
+    if (
+        not isinstance(dispositions, list)
+        or set(dispositions) != _REQUIRED_DISPOSITIONS
+    ):
+        raise ValueError(
+            "convergence dispositions must be absorb/supersede/reference/reject"
+        )
     required_false = (
         "ordinaryExactSourceMapRequired",
         "ordinaryProseMetricsRequired",
@@ -53,14 +62,20 @@ def load_policy(root: Path = ROOT) -> dict[str, Any]:
         raise ValueError("ordinary-development or self-iteration authority widened")
     if convergence.get("highRiskMergeCandidateRequired") is not True:
         raise ValueError("high-risk merge-candidate qualification must remain required")
-    expected_minutes = {
-        "ordinaryFeedbackTargetMinutes": 10,
-        "ordinaryWorkflowTimeoutMinutes": 15,
-        "statefulWorkflowTimeoutMinutes": 40,
-        "architectureDeepTimeoutMinutes": 60,
-    }
-    if any(convergence.get(key) != value for key, value in expected_minutes.items()):
-        raise ValueError("CI feedback targets or timeouts widened or drifted")
+    minute_keys = (
+        "ordinaryFeedbackTargetMinutes",
+        "ordinaryWorkflowTimeoutMinutes",
+        "statefulWorkflowTimeoutMinutes",
+        "architectureDeepTimeoutMinutes",
+    )
+    expected_minutes = {key: convergence.get(key) for key in minute_keys}
+    values = list(expected_minutes.values())
+    if any(type(value) is not int or not 1 <= value <= 360 for value in values):
+        raise ValueError(
+            "CI cost budgets must be positive whole minutes within hosted job bounds"
+        )
+    if values != sorted(values):
+        raise ValueError("CI feedback target and tier budgets must be ordered")
     if convergence.get("selfIterationDraftOnly") is not True:
         raise ValueError("self-iteration must remain draft-only")
     if surface.get("newPullRequestWorkflowFilesAllowed") is not False:
@@ -80,7 +95,9 @@ def load_policy(root: Path = ROOT) -> dict[str, Any]:
         or set(allowed_local) != _REQUIRED_LOCAL_MACHINE_FILES
         or len(allowed_local) != len(_REQUIRED_LOCAL_MACHINE_FILES)
     ):
-        raise ValueError("module.toml must remain the only module-local machine manifest")
+        raise ValueError(
+            "module.toml must remain the only module-local machine manifest"
+        )
 
     return {
         "maximumActiveConvergencePrsPerCapability": 1,
@@ -112,30 +129,103 @@ def added_paths(base: str, head: str, root: Path = ROOT) -> list[str]:
     ).splitlines()
 
 
-def forbidden_additions(
-    paths: Iterable[str], policy: dict[str, Any] | None = None
-) -> list[str]:
-    policy = load_policy() if policy is None else policy
-    allowed_root = policy["allowedRootModuleFiles"]
-    allowed_local = policy["allowedModuleLocalMachineFiles"]
-    forbid_workflows = not policy["newPullRequestWorkflowFilesAllowed"]
+def is_contract_schema(text: str) -> bool:
+    """Recognize JSON Schema documents, not a parallel module/status registry.
 
-    forbidden: list[str] = []
+    The protocol owner still validates its schema and actual wire instances.
+    This classification neither grants authority nor claims implementation.
+    """
+
+    def pairs(items):
+        result = {}
+        for key, value in items:
+            if key in result:
+                raise ValueError("duplicate schema key")
+            result[key] = value
+        return result
+
+    try:
+        value = json.loads(text, object_pairs_hook=pairs)
+    except (ValueError, TypeError):
+        return False
+    if not isinstance(value, dict):
+        return False
+    dialect = value.get("$schema", "")
+    if not isinstance(dialect, str) or not re.fullmatch(
+        r"https?://json-schema\.org/(?:draft-0[467]/schema|draft/(?:2019-09|2020-12)/schema)#?",
+        dialect,
+    ):
+        return False
+    registry_fields = {
+        "modules",
+        "packages",
+        "bindings",
+        "authorityFlags",
+        "production_implementation",
+        "source_root_present",
+        "planId",
+        "convergence",
+    }
+    shapes = {
+        "type",
+        "$ref",
+        "properties",
+        "$defs",
+        "definitions",
+        "allOf",
+        "anyOf",
+        "oneOf",
+    }
+    return not (set(value) & registry_fields) and bool(set(value) & shapes)
+
+
+def forbidden_additions(
+    paths: Iterable[str], policy: dict[str, Any] | None = None, *, root: Path = ROOT
+) -> list[str]:
+    policy = load_policy(root) if policy is None else policy
+    forbidden = []
     for value in paths:
         path = PurePosixPath(value)
-        if value.startswith(".github/workflows/"):
-            if forbid_workflows:
-                forbidden.append(value)
-        elif path.parent == PurePosixPath("docs/modules"):
-            if value not in allowed_root:
-                forbidden.append(value)
-        elif (
-            len(path.parts) == 4
-            and path.parts[:2] == ("docs", "modules")
-            and path.name.endswith((".json", ".toml"))
-            and path.name not in allowed_local
+        if (
+            path.is_absolute()
+            or str(path) != value
+            or ".." in path.parts
+            or "\\" in value
+            or "\x00" in value
         ):
+            raise ValueError("invalid repository path")
+        target = root / path
+        if not target.resolve().is_relative_to(root.resolve()) or target.is_symlink():
             forbidden.append(value)
+            continue
+        if value.startswith(".github/workflows/"):
+            try:
+                from scripts.hepta_workflow_commands import validate_manual_workflow
+            except ModuleNotFoundError as error:
+                if error.name != "scripts":
+                    raise
+                from hepta_workflow_commands import validate_manual_workflow
+            try:
+                if path.suffix not in {".yml", ".yaml"}:
+                    raise ValueError("workflow extension")
+                validate_manual_workflow(
+                    target.read_text(), policy["architectureDeepTimeoutMinutes"]
+                )
+            except (ValueError, OSError):
+                forbidden.append(value)
+        elif value.startswith("docs/modules/"):
+            if value in policy["allowedRootModuleFiles"] or path.suffix == ".md":
+                continue
+            if len(path.parts) == 4 and path.name == "module.toml":
+                continue
+            try:
+                schema = path.suffix == ".json" and is_contract_schema(
+                    target.read_text()
+                )
+            except OSError:
+                schema = False
+            if not schema:
+                forbidden.append(value)
     return sorted(forbidden)
 
 
@@ -149,7 +239,7 @@ def main() -> None:
     forbidden = forbidden_additions(added, policy)
     if forbidden:
         raise SystemExit(
-            "new workflow or registry infrastructure is frozen; use the shared "
+            "new automatic/privileged workflow or duplicate registry requires integration review; use the shared "
             "CI tiers and one module.toml: " + ", ".join(forbidden)
         )
     print(

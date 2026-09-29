@@ -112,7 +112,11 @@ def verify_owner_self_tests(registries: list[dict], root: Path) -> None:
     """Each subordinate self-test must run in its owner workflow, not twice globally."""
     for registry in registries:
         validator = shlex.split(registry["validator"])
-        if len(validator) != 3 or validator[0] != "python3" or validator[-1] != "verify":
+        if (
+            len(validator) != 3
+            or validator[0] != "python3"
+            or validator[-1] != "verify"
+        ):
             raise ValueError("unsupported subordinate validator command")
         path = (root / registry["workflow"]).resolve()
         if not path.is_relative_to(root.resolve()) or not path.is_file():
@@ -120,4 +124,157 @@ def verify_owner_self_tests(registries: list[dict], root: Path) -> None:
         expected = [*validator[:-1], "self-test"]
         commands = declared_commands(path.read_text(encoding="utf-8"), root)
         if expected not in commands:
-            raise ValueError(f"owner workflow {registry['workflow']} must invoke {' '.join(expected)}")
+            raise ValueError(
+                f"owner workflow {registry['workflow']} must invoke {' '.join(expected)}"
+            )
+
+
+def load_workflow(text: str) -> dict:
+    """Parse workflow data without YAML key coercion, duplicate keys or recursion.
+
+    Parsing is not approval of arbitrary commands. Callers separately validate
+    event, credential and runner envelopes; normal source review still applies.
+    """
+    import yaml
+
+    if len(text.encode("utf-8")) > 262144:
+        raise ValueError("workflow input exceeds 256 KiB")
+    try:
+        node = yaml.compose(text, Loader=yaml.BaseLoader)
+    except yaml.YAMLError as error:
+        raise ValueError(f"invalid workflow YAML: {error}") from error
+    budget = 16384
+    active = set()
+
+    def convert(value, depth=0):
+        nonlocal budget
+        budget -= 1
+        if budget < 0 or depth > 64 or id(value) in active:
+            raise ValueError("workflow nesting or alias expansion exceeds bounds")
+        active.add(id(value))
+        try:
+            if isinstance(value, yaml.ScalarNode):
+                if value.tag not in {
+                    "tag:yaml.org,2002:str",
+                    "tag:yaml.org,2002:null",
+                    "tag:yaml.org,2002:bool",
+                    "tag:yaml.org,2002:int",
+                }:
+                    raise ValueError("unsupported workflow scalar tag")
+                return value.value
+            if isinstance(value, yaml.SequenceNode):
+                return [convert(item, depth + 1) for item in value.value]
+            if isinstance(value, yaml.MappingNode):
+                result = {}
+                for key, item in value.value:
+                    key = convert(key, depth + 1)
+                    if not isinstance(key, str) or key in result or key == "<<":
+                        raise ValueError("duplicate or ambiguous workflow key")
+                    result[key] = convert(item, depth + 1)
+                return result
+            raise ValueError("invalid workflow node")
+        finally:
+            active.remove(id(value))
+
+    result = convert(node)
+    if not isinstance(result, dict):
+        raise ValueError("workflow must be an object")
+    return result
+
+
+def workflow_events(document: dict) -> set[str]:
+    value = document.get("on")
+    if isinstance(value, str):
+        return {value} if value else set()
+    if isinstance(value, (dict, list)) and all(isinstance(item, str) for item in value):
+        if len(value) != len(set(value)):
+            raise ValueError("duplicate workflow event")
+        return set(value)
+    raise ValueError("invalid workflow event declaration")
+
+
+def validate_manual_workflow(text: str, maximum_minutes: int) -> None:
+    """Admit a bounded, credential-free hosted manual diagnostic envelope.
+
+    Automatic events, privileged runners and secret-bearing workflows require
+    the existing reviewed integration path; no filename can authorize them.
+    """
+    document = load_workflow(text)
+    events = workflow_events(document)
+    if not events or not events <= {"workflow_dispatch", "workflow_call"}:
+        raise ValueError("new automatic workflow requires integration review")
+
+    def permissions(value):
+        if not isinstance(value, dict) or any(
+            not isinstance(item, str) or item not in {"read", "none"}
+            for item in value.values()
+        ):
+            raise ValueError(
+                "manual diagnostic requires explicit read-only permissions"
+            )
+
+    permissions(document.get("permissions"))
+    jobs = document.get("jobs")
+    if not isinstance(jobs, dict) or not 1 <= len(jobs) <= 16:
+        raise ValueError("manual diagnostic requires bounded jobs")
+
+    def credentials(value):
+        if isinstance(value, dict):
+            if any(
+                key in value
+                for key in ("secrets", "environment", "container", "services")
+            ):
+                raise ValueError(
+                    "manual diagnostic cannot acquire deployment credentials"
+                )
+            for item in value.values():
+                credentials(item)
+        elif isinstance(value, list):
+            for item in value:
+                credentials(item)
+        elif isinstance(value, str):
+            for expression in re.findall(r"\$\{\{(.*?)\}\}", value, flags=re.S):
+                # Ignore quoted text, not identifiers: toJSON(secrets) is as
+                # credential-bearing as secrets.KEY or secrets['KEY'].
+                expression = re.sub(r"'(?:[^']|'')*'", "''", expression)
+                if re.search(r"(?<![\w.])secrets\b", expression, flags=re.I):
+                    raise ValueError("manual diagnostic cannot reference secrets")
+
+    credentials(document)
+    for job in jobs.values():
+        if not isinstance(job, dict) or "uses" in job:
+            raise ValueError("opaque reusable job requires integration review")
+        permissions(job.get("permissions", document["permissions"]))
+        runner = job.get("runs-on")
+        if not isinstance(runner, str) or not re.fullmatch(
+            r"(?:ubuntu|windows|macos)-(?:latest|[0-9.]+)", runner
+        ):
+            raise ValueError("manual diagnostic requires a static hosted runner")
+        minutes = job.get("timeout-minutes", "")
+        if (
+            not isinstance(minutes, str)
+            or not minutes.isdecimal()
+            or not 1 <= int(minutes) <= maximum_minutes
+        ):
+            raise ValueError(
+                "manual diagnostic needs a timeout within the reviewed cost budget"
+            )
+        steps = job.get("steps")
+        if not isinstance(steps, list) or not steps:
+            raise ValueError("manual diagnostic needs executable steps")
+        for step in steps:
+            if not isinstance(step, dict):
+                raise ValueError("invalid diagnostic step")
+            use = step.get("uses")
+            if use is not None and (
+                not isinstance(use, str)
+                or not re.fullmatch(
+                    r"[A-Za-z0-9_.-]+/[A-Za-z0-9_./-]+@[0-9a-f]{40}", use
+                )
+            ):
+                raise ValueError(
+                    "diagnostic actions must be pinned; opaque local actions require review"
+                )
+            if isinstance(use, str) and use.startswith("actions/checkout@"):
+                if step.get("with", {}).get("persist-credentials") != "false":
+                    raise ValueError("diagnostic checkout must not persist credentials")
