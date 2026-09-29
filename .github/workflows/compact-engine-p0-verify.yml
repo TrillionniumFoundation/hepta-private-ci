@@ -7,17 +7,18 @@ on:
       - ".github/workflows/compact-engine-p0-verify.yml"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: compact-engine-p0-exact-source-verification
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   verify:
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     env:
+      TARGET_BRANCH: fix/compact-engine-current-main-convergence-20260925
       TARGET_SHA: 668372aa409710e17ebc7c2b6668d6552059dd35
       PATCH_SHA256: 293cc2ab4a03b596629c92a2bc5e15dda83ecd44454777526087386c7cc19156
     steps:
@@ -33,7 +34,7 @@ jobs:
           ref: ${{ env.TARGET_SHA }}
           path: source
           fetch-depth: 0
-          persist-credentials: false
+          persist-credentials: true
       - name: Apply exact bounded remediation
         shell: bash
         run: |
@@ -87,3 +88,19 @@ jobs:
           path: ${{ runner.temp }}/compact-p0-evidence/
           retention-days: 7
           if-no-files-found: error
+      - name: Commit verified tree to PR convergence branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git -C source fetch origin "$TARGET_BRANCH"
+          test "$(git -C source rev-parse FETCH_HEAD)" = "$TARGET_SHA"
+          git -C source config user.name "compact.engine remediation"
+          git -C source config user.email "compact-engine-remediation@invalid.example"
+          git -C source add \
+            .github/workflows/compact-engine-remediation-apply.yml \
+            codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs \
+            codex-rs/hepta-compact-engine/src/durable.rs \
+            codex-rs/hepta-compact-engine/src/product_e2e_tests.rs \
+            codex-rs/hepta-memory/src/cognitive_store_recovery.rs
+          git -C source commit -m "fix(compact.engine): close generation and exact-cut recovery"
+          git -C source push origin HEAD:"$TARGET_BRANCH"
