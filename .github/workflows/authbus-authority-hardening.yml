@@ -10,13 +10,13 @@ permissions:
 
 concurrency:
   group: authbus-authority-hardening-v1
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   generate-and-qualify:
     if: ${{ !contains(github.event.head_commit.message, '[authbus-generated]') }}
-    runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    runs-on: macos-15
+    timeout-minutes: 120
     steps:
       - name: Check out exact branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
