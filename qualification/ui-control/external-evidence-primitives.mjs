@@ -78,14 +78,20 @@ export function safeFailure(error, stage) {
 export function validateCommonReceipt(receipt, schema, expected, now, maxAgeMs) {
   assertEvidence(receipt && typeof receipt === "object" && !Array.isArray(receipt), "UI_CONTROL_EXTERNAL_RECEIPT", "external receipt must be an object");
   assertEvidence(receipt.schema === schema, "UI_CONTROL_EXTERNAL_SCHEMA", `expected ${schema}`);
-  const acceptedStatus =
-    schema === "hepta.ui-control.production-approval-receipt.v1"
-      ? "approved"
-      : "passed";
+  const productionApproval =
+    schema === "hepta.ui-control.production-approval-receipt.v1";
+  const acceptedStatus = productionApproval ? "approved" : "passed";
+  const timestampField = productionApproval ? "approvedAt" : "executedAt";
+  const forbiddenTimestampField = productionApproval ? "executedAt" : "approvedAt";
   assertEvidence(
     receipt.status === acceptedStatus,
     "UI_CONTROL_EXTERNAL_STATUS",
     `${schema} must have status ${acceptedStatus}`,
+  );
+  assertEvidence(
+    receipt[forbiddenTimestampField] === undefined,
+    "UI_CONTROL_EXTERNAL_TIMESTAMP_FIELD",
+    `${schema} must not carry ${forbiddenTimestampField}`,
   );
   exactSha(receipt.candidateCommit, "candidateCommit", SHA1);
   exactSha(receipt.candidateTree, "candidateTree", SHA1);
@@ -93,6 +99,11 @@ export function validateCommonReceipt(receipt, schema, expected, now, maxAgeMs) 
   assertEvidence(receipt.candidateCommit === expected.candidateCommit, "UI_CONTROL_EXTERNAL_COMMIT", `${schema} is bound to another candidate commit`);
   assertEvidence(receipt.candidateTree === expected.candidateTree, "UI_CONTROL_EXTERNAL_TREE", `${schema} is bound to another candidate tree`);
   assertEvidence(receipt.backendDeploymentDigest === expected.backendDeploymentDigest, "UI_CONTROL_EXTERNAL_DEPLOYMENT", `${schema} is bound to another deployment`);
-  parseTimestamp(receipt.executedAt ?? receipt.approvedAt, "receipt timestamp", now, maxAgeMs);
+  parseTimestamp(
+    receipt[timestampField],
+    `receipt.${timestampField}`,
+    now,
+    maxAgeMs,
+  );
   exactSha(receipt.rawEvidenceDigest, "rawEvidenceDigest", SHA256);
 }

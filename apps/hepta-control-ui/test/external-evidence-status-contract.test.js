@@ -8,6 +8,7 @@ const expected = Object.freeze({
   backendDeploymentDigest: "3".repeat(64),
 });
 const now = Date.parse("2026-09-29T12:00:00.000Z");
+const maxAgeMs = 24 * 60 * 60_000;
 
 function receipt(schema, status) {
   const timestampField =
@@ -31,7 +32,7 @@ test("non-approval evidence accepts only the exact passed status", () => {
       schema,
       expected,
       now,
-      24 * 60 * 60_000,
+      maxAgeMs,
     ));
 
   assert.throws(
@@ -41,7 +42,7 @@ test("non-approval evidence accepts only the exact passed status", () => {
         schema,
         expected,
         now,
-        24 * 60 * 60_000,
+        maxAgeMs,
       ),
     error => error?.code === "UI_CONTROL_EXTERNAL_STATUS",
   );
@@ -55,7 +56,7 @@ test("production approval accepts only the exact approved status", () => {
       schema,
       expected,
       now,
-      24 * 60 * 60_000,
+      maxAgeMs,
     ));
 
   assert.throws(
@@ -65,8 +66,50 @@ test("production approval accepts only the exact approved status", () => {
         schema,
         expected,
         now,
-        24 * 60 * 60_000,
+        maxAgeMs,
       ),
     error => error?.code === "UI_CONTROL_EXTERNAL_STATUS",
+  );
+});
+
+test("production approval cannot substitute executedAt for approvedAt", () => {
+  const schema = "hepta.ui-control.production-approval-receipt.v1";
+  const value = receipt(schema, "approved");
+  value.approvedAt = "2026-09-01T11:00:00.000Z";
+  value.executedAt = "2026-09-29T11:00:00.000Z";
+  assert.throws(
+    () => validateCommonReceipt(value, schema, expected, now, maxAgeMs),
+    error => error?.code === "UI_CONTROL_EXTERNAL_TIMESTAMP_FIELD",
+  );
+});
+
+test("non-approval evidence cannot substitute approvedAt for executedAt", () => {
+  const schema = "hepta.ui-control.independent-security-review-receipt.v1";
+  const value = receipt(schema, "passed");
+  delete value.executedAt;
+  value.approvedAt = "2026-09-29T11:00:00.000Z";
+  assert.throws(
+    () => validateCommonReceipt(value, schema, expected, now, maxAgeMs),
+    error => error?.code === "UI_CONTROL_EXTERNAL_TIMESTAMP_FIELD",
+  );
+});
+
+test("production approval freshness is measured from approvedAt", () => {
+  const schema = "hepta.ui-control.production-approval-receipt.v1";
+  const value = receipt(schema, "approved");
+  value.approvedAt = "2026-09-01T11:00:00.000Z";
+  assert.throws(
+    () => validateCommonReceipt(value, schema, expected, now, maxAgeMs),
+    error => error?.code === "UI_CONTROL_EVIDENCE_EXPIRED",
+  );
+});
+
+test("non-approval freshness is measured from executedAt", () => {
+  const schema = "hepta.ui-control.independent-security-review-receipt.v1";
+  const value = receipt(schema, "passed");
+  value.executedAt = "2026-09-01T11:00:00.000Z";
+  assert.throws(
+    () => validateCommonReceipt(value, schema, expected, now, maxAgeMs),
+    error => error?.code === "UI_CONTROL_EVIDENCE_EXPIRED",
   );
 });

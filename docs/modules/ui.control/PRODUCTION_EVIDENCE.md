@@ -72,6 +72,8 @@ Raw logs, screenshots, recordings, traces, credentials, tokens, and signatures s
 
 Receipt status is schema-exact rather than interchangeable: real-backend support evidence, independent acceptance, independent security, and operational evidence must carry `passed`; only the production approval receipt may carry `approved`. The runtime validator rejects status substitution even when every other common field is well formed.
 
+Timestamp ownership is schema-exact as well: production approval is fresh only by `approvedAt`, prerequisite evidence only by `executedAt`, and the opposite timestamp field is rejected rather than used as a fallback.
+
 Every evidence-bearing stage must attach the exact SHA-256 digest of its receipt before that stage can be accepted. Deployment identity and main ancestry are the only non-receipt stages. A failed bundle always projects `productionDeploymentApproved=false` and `releaseAuthorized=false`, including a failure after every evidence stage was individually accepted. Earlier accepted stages remain visible for diagnosis, but a failed final bundle is never release authority.
 
 A missing field, failed observation, stale candidate, mismatched deployment, reused authority, premature approval, or absent prerequisite leaves the bundle failed. No workflow or maintainer should edit `productionDeploymentApproved` or `releaseAuthorized` directly.
