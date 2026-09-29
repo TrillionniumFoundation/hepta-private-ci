@@ -9,13 +9,22 @@ permissions:
   contents: write
 
 concurrency:
-  group: kg-remaining-four-rog-${{ github.sha }}
+  group: kg-remaining-four-self-hosted-${{ github.sha }}
   cancel-in-progress: false
 
 jobs:
   close:
+    name: close (${{ matrix.runner }})
     if: startsWith(github.event.head_commit.message, 'kg remaining-four closure')
-    runs-on: [self-hosted, linux, x64, rog]
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [rog, pocket4]
+    runs-on:
+      - self-hosted
+      - linux
+      - x64
+      - ${{ matrix.runner }}
     timeout-minutes: 180
     env:
       CARGO_INCREMENTAL: "0"
@@ -35,7 +44,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$RUNNER_NAME" = "rog"
+          test "$RUNNER_NAME" = "${{ matrix.runner }}"
           test "$GITHUB_EVENT_NAME" = "push"
           test "$GITHUB_REF_NAME" = "$BRANCH"
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
