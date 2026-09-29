@@ -2,9 +2,14 @@
 
 #[path = "cognitive_read_view.rs"]
 mod read_view;
+#[path = "cognitive_context_plan.rs"]
+mod plan_binding;
+#[path = "cognitive_context_observation.rs"]
+mod observation;
+#[path = "cognitive_context_final_use.rs"]
+mod final_use;
 
 use std::collections::BTreeMap;
-use std::time::Instant;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -17,9 +22,6 @@ use codex_hepta_cognitive_read::ReadProjectionRecordV1;
 use codex_hepta_cognitive_store::DurableCognitiveStore as CognitiveStore;
 use codex_hepta_cognitive_store::DurableCognitiveStoreError as CognitiveStoreError;
 use codex_hepta_contracts::AgentId;
-use codex_hepta_contracts::Sha256Digest;
-use codex_hepta_control_plane::ObservedContextV1;
-use codex_hepta_control_plane::plan_observed_context;
 use codex_hepta_memory::CognitiveAccess;
 use codex_hepta_memory::CognitiveScope;
 use codex_hepta_memory::DurableCognitiveSnapshot;
@@ -29,10 +31,12 @@ use codex_hepta_memory::RetrievalRequest;
 use codex_hepta_memory::RevalidationStatus;
 use codex_hepta_memory::execute_owner_observation;
 use codex_hepta_types::Digest32;
-use codex_hepta_types::Generation;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
+pub(crate) use self::final_use::revalidate_with_retrieval_context;
+use self::observation::OperationObservation;
+use self::observation::Phase;
 use self::read_view::OwnerCutReadView;
 use crate::CognitiveContextItem;
 use crate::CognitiveContextPlan;
@@ -167,8 +171,7 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
     learning_sink: Option<&std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
     request_id: Option<u64>,
 ) -> Result<CognitiveContextSnapshot, CognitiveContextError> {
-    let started = Instant::now();
-    cognitive_context_metrics::record_request();
+    let mut operation = OperationObservation::start(Phase::Read);
     if query.is_empty() || query.len() > 2048 || !(1..=MAX_SELECTED_CONTEXT_RECORDS).contains(&limit) {
         return Err(CognitiveStoreError::Invalid(
             "context requires a 1..2048 byte query and a 1..4 result limit".to_string(),
@@ -419,39 +422,24 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         bind_selected_read(&cut, &selected_read, expected_retrieval_context_digest);
     response.snapshot_digest = selected_read.snapshot_digest().to_string();
     response.read_digest = selected_read_binding.to_string();
-    let encoded_context = serde_json::to_vec(&response)
-        .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
-    let now_micros = u64::try_from(
-        SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?
-            .as_micros(),
-    )
-    .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?;
-    let plan = plan_observed_context(ObservedContextV1 {
-        owner_id: StableId::new(owner.as_str())
-            .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?,
-        body_generation: Generation::new(body_generation)
-            .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?,
-        source_snapshot_digest: selected_read.snapshot_digest(),
-        read_digest: selected_read_binding,
-        verified_item_count: response.items.len() as u32,
-        encoded_context: &encoded_context,
-        maximum_context_bytes: MAX_CONTEXT_JSON_BYTES as u32,
-        observed_at_micros: now_micros,
-        expires_at_micros: now_micros.checked_add(1_000_000).ok_or_else(|| {
-            CognitiveStoreError::Invalid("context plan expiry overflow".to_string())
-        })?,
-    })
-    .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?;
-    if !plan.read_allowed {
+    let fresh_plan = plan_binding::evaluate(
+        owner,
+        body_generation,
+        &response,
+        plan_binding::now_micros()?,
+    )?;
+    fresh_plan.ensure_current(plan_binding::now_micros()?)?;
+    if !fresh_plan.plan.read_allowed {
         response.items.clear();
     }
-    response.plan = Some(CognitiveContextPlan {
-        evaluated_context_digest: plan.context_digest.to_string(),
-        plan_receipt_digest: plan.evaluation.plan.receipt_digest().to_string(),
-        read_allowed: plan.read_allowed,
-    });
+    response.read_digest = plan_binding::bind(
+        owner,
+        body_generation,
+        selected_read_binding,
+        &fresh_plan.plan,
+    )?
+    .to_string();
+    response.plan = Some(fresh_plan.plan);
     if serde_json::to_vec(&response)
         .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?
         .len()
@@ -515,6 +503,9 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
                     .ok_or(CognitiveContextError::RetrievalLearningUnavailable)
             })
             .collect::<Result<Vec<RetrievalCandidateIdentityV1>, _>>()?;
+        // This is a write-ahead publication candidate, not a socket receipt
+        // or model exposure. Actual use requires the same digest in the
+        // existing native inference dispatch/started journal.
         let context_exposed = !delivered_candidates.is_empty();
         let published_context_digest = if context_exposed {
             Some(Digest32::of_bytes(&serde_json::to_vec(&response).map_err(
@@ -543,7 +534,7 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         .map_err(|_| CognitiveContextError::RetrievalLearningUnavailable)?;
     }
     cognitive_context_metrics::record_selected(response.items.len());
-    cognitive_context_metrics::record_latency(started.elapsed().as_micros());
+    operation.succeed();
     Ok(response)
 }
 
@@ -613,148 +604,10 @@ pub(crate) async fn revalidate(
     .await
 }
 
-pub(crate) async fn revalidate_with_retrieval_context(
-    store: &CognitiveStore,
-    owner: &AgentId,
-    snapshot_digest: &str,
-    read_digest: &str,
-    omitted_records: u64,
-    items: &[CognitiveContextItem],
-    plan: Option<&CognitiveContextPlan>,
-    ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
-    body_generation: u64,
-    current_retrieval: Option<&std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
-) -> Result<CognitiveContextRevalidation, CognitiveContextError> {
-    if items.len() > 4 {
-        return Err(CognitiveStoreError::Invalid(
-            "context revalidation accepts at most four items".to_string(),
-        )
-        .into());
-    }
-    let expected_snapshot: Digest32 = snapshot_digest.parse().map_err(|error| {
-        CognitiveStoreError::Invalid(format!("invalid snapshot digest: {error}"))
-    })?;
-    let expected_read: Digest32 = read_digest
-        .parse()
-        .map_err(|error| CognitiveStoreError::Invalid(format!("invalid read digest: {error}")))?;
-    let plan = plan.ok_or_else(|| {
-        CognitiveStoreError::Invalid("cognitive context final use requires a plan".to_string())
-    })?;
-    if plan.read_allowed == items.is_empty() {
-        return Err(CognitiveStoreError::Conflict(
-            "cognitive context plan/item disposition mismatch".to_string(),
-        )
-        .into());
-    }
-    if plan.read_allowed {
-        let pre_plan = CognitiveContextSnapshot {
-            snapshot_digest: snapshot_digest.to_string(),
-            read_digest: read_digest.to_string(),
-            omitted_records,
-            items: items.to_vec(),
-            plan: None,
-        };
-        let encoded = serde_json::to_vec(&pre_plan)
-            .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
-        if Digest32::of_bytes(&encoded).to_string() != plan.evaluated_context_digest {
-            return Err(CognitiveStoreError::Conflict(
-                "cognitive context ordered payload changed before final use".to_string(),
-            )
-            .into());
-        }
-    }
-    let access = CognitiveAccess::agent_private(owner.clone());
-    let scope = CognitiveScope::AgentPrivate;
-    let cut = store
-        .lane_c_snapshot(&access, &scope, now_seconds()?)
-        .await?;
-    if cut.snapshot().snapshot_digest != expected_snapshot {
-        return Err(CognitiveStoreError::Conflict(
-            "cognitive context snapshot is stale".to_string(),
-        )
-        .into());
-    }
-
-    // This view is new for the freshly reacquired cut. The publication view
-    // never crosses the request boundary or supplies final-use authorization.
-    let read_view = OwnerCutReadView::new(&cut).map_err(map_read_ids_error)?;
-    let read = read_selected_items(&read_view, items)?;
-    let retrieval_context_digest = match current_retrieval {
-        Some(current) => Some(
-            load_retrieval_context(current, owner, body_generation)
-                .await?
-                .binding_digest(),
-        ),
-        None => None,
-    };
-    let current_read_binding = bind_selected_read(&cut, &read, retrieval_context_digest);
-    if current_read_binding != expected_read {
-        return Err(CognitiveStoreError::Conflict(
-            "cognitive context owner cut or read receipt is stale".to_string(),
-        )
-        .into());
-    }
-    if !read.missing_ids().is_empty() || read.records().len() != items.len() {
-        return Err(CognitiveStoreError::Conflict(
-            "cognitive context item set is stale".to_string(),
-        )
-        .into());
-    }
-    let records = read
-        .records()
-        .iter()
-        .map(|record| (record.record_id.as_str(), record))
-        .collect::<BTreeMap<_, _>>();
-    for item in items {
-        let content_digest = Sha256Digest::for_bytes(item.content.as_bytes());
-        if content_digest.as_str() != item.content_sha256.as_str() {
-            return Err(CognitiveStoreError::Invalid(
-                "cognitive context content hash mismatch".to_string(),
-            )
-            .into());
-        }
-        let expected_content: Digest32 = item.content_sha256.parse().map_err(|error| {
-            CognitiveStoreError::Invalid(format!("invalid cognitive content digest: {error}"))
-        })?;
-        let current = records.get(item.memory_id.as_str()).ok_or_else(|| {
-            CognitiveStoreError::Conflict("cognitive context item disappeared".to_string())
-        })?;
-        if !current.is_live()
-            || current.revision.get() != item.revision
-            || current.content_digest != Some(expected_content)
-        {
-            return Err(CognitiveStoreError::Conflict(
-                "cognitive context item changed before final use".to_string(),
-            )
-            .into());
-        }
-    }
-
-    // Ranking is part of the selected context semantics. A registry/model
-    // revocation after response publication must close final use even when the
-    // underlying memory rows remain unchanged.
-    if let Some(ranker) = ranker {
-        let ranker = std::sync::Arc::clone(ranker);
-        tokio::task::spawn_blocking(move || ranker.revalidate())
-            .await
-            .map_err(|_| CognitiveContextError::RankerUnavailable)?
-            .map_err(|_| CognitiveContextError::RankerUnavailable)?;
-    }
-
-    Ok(CognitiveContextRevalidation {
-        snapshot_digest: expected_snapshot.to_string(),
-        read_digest: current_read_binding.to_string(),
-        verified_item_count: u16::try_from(items.len()).map_err(|error| {
-            CognitiveStoreError::Invalid(format!("invalid context item count: {error}"))
-        })?,
-    })
-}
-
 /// Bind the selected exact-ID receipt to the complete durable owner cut.
 ///
-/// The public Agentd response keeps its existing read_digest field, but that
-/// field now invalidates on source/tombstone/KG frontier drift even when the
-/// selected memory heads themselves remain byte-identical.
+/// The opaque product read digest additionally binds the publication plan in
+/// plan_binding::bind. The core V1 read receipt and canonical bytes stay intact.
 fn bind_selected_read(
     cut: &DurableCognitiveSnapshot,
     read: &ReadIdsResultV1,
@@ -838,3 +691,6 @@ fn now_seconds() -> Result<i64, CognitiveStoreError> {
 #[cfg(test)]
 #[path = "cognitive_context_tests.rs"]
 mod tests;
+#[cfg(test)]
+#[path = "cognitive_context_closure_tests.rs"]
+mod closure_tests;
