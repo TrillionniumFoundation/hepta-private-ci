@@ -18,6 +18,7 @@ on:
       - 'qualification/cognitive-types-*/**'
       - 'docs/modules/cognitive.types/**'
       - '.github/workflows/cognitive-types-qualification.yml'
+      - '.github/workflows/cognitive-types-depth-evidence.yml'
   push:
     branches: ['codex/cognitive-types-full-closure-20260927']
     paths:
@@ -35,13 +36,14 @@ on:
       - 'qualification/cognitive-types-*/**'
       - 'docs/modules/cognitive.types/**'
       - '.github/workflows/cognitive-types-qualification.yml'
+      - '.github/workflows/cognitive-types-depth-evidence.yml'
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: cognitive-types-qualification-${{ github.event.pull_request.number || github.ref }}
+  group: cognitive-types-qualification-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
 
 env:
