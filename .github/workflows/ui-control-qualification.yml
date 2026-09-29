@@ -14,7 +14,7 @@ on:
       - "scripts/test_hepta_lane_b_path_guard.py"
       - "scripts/hepta-lane-b-truth.py"
       - "scripts/test_hepta_lane_b_truth.py"
-      - ".github/workflows/ui-control-qualification.yml"
+      - ".github/workflows/ui-control-*.yml"
   pull_request:
     paths:
       - "apps/hepta-control-ui/**"
@@ -26,7 +26,7 @@ on:
       - "scripts/test_hepta_lane_b_path_guard.py"
       - "scripts/hepta-lane-b-truth.py"
       - "scripts/test_hepta_lane_b_truth.py"
-      - ".github/workflows/ui-control-qualification.yml"
+      - ".github/workflows/ui-control-*.yml"
   workflow_dispatch:
 permissions:
   contents: read

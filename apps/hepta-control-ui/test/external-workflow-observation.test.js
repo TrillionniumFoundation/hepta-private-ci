@@ -10,6 +10,7 @@ import {
 
 const root = fileURLToPath(new URL("../../../", import.meta.url));
 const observerWorkflow = readFileSync(`${root}.github/workflows/ui-control-external-observer.yml`, "utf8");
+const qualificationWorkflow = readFileSync(`${root}.github/workflows/ui-control-qualification.yml`, "utf8");
 const schema = JSON.parse(readFileSync(`${root}qualification/ui-control/EXTERNAL_WORKFLOW_OBSERVATION_SCHEMA.json`, "utf8"));
 const candidate = "a".repeat(40);
 const workflowSha = "b".repeat(40);
@@ -189,4 +190,10 @@ test("observer workflow is secretless, default-branch trusted, and always upload
   for (const property of Object.values(schema.properties.claims.properties)) {
     assert.equal(property.const, false);
   }
+});
+
+test("every ui.control workflow change triggers exact-tree requalification", () => {
+  const trigger = /- "\.github\/workflows\/ui-control-\*\.yml"/gu;
+  assert.equal(qualificationWorkflow.match(trigger)?.length, 2);
+  assert.doesNotMatch(qualificationWorkflow, /ui-control-qualification\.yml/u);
 });
