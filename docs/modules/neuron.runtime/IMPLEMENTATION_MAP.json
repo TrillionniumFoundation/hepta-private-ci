@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "05bd9524aba117119650f771deabc9e50b279f6c",
-    "tree": "28dbc1c09b125659ad28f0f1de4c524e0e311fae"
+    "commit": "cedf0edb6a8bcbe61642dfb7d53deba36678e811",
+    "tree": "abc84677debe1599d420665b3066682e0b560599"
   },
   "laneId": "LANE-F-ADAPTIVE-POLICY",
   "module": "neuron.runtime",
@@ -105,7 +105,8 @@
           "symbol": "NeuronStoreManifestV1",
           "role": "generation_handoff_manifest_source"
         }
-      ]
+      ],
+      "delegatedCallees": []
     },
     {
       "operation": "anchor_witness_store",
@@ -148,7 +149,8 @@
       "sourcePathExists": true,
       "designOperation": "deletion_rebuild_admission",
       "mappingClass": "owner_native",
-      "delegatedCalleees": []
+      "delegatedCalleees": [],
+      "delegatedCallees": []
     },
     {
       "operation": "qualification_surfaces",
@@ -257,6 +259,156 @@
       "state": "typed_intelligence_caller_source_implemented",
       "sourcePath": "codex-rs/hepta-intelligence/src/neuron_runtime.rs",
       "nativeSymbol": "run_neuron_tick_v1"
+    }
+  ],
+  "sourceObjects": [
+    {
+      "path": ".github/workflows/neuron-runtime-closure.yml",
+      "object": "10271285ac3dc18bc5d31128cf315bafe290bfe2"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2.rs",
+      "object": "8fa4e6efe95a3c3184a77122040b635dc3220063"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2_control_tests.rs",
+      "object": "7c91809b3f4cf2a1e1c2cb84391d7df5732bb097"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2_controller.rs",
+      "object": "f5b7465fa4b0079e0cb35166d01de67bbba7e05e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2_errors.rs",
+      "object": "21d7606a537992827b23d014bcbdcc0d6033ea4e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2_operational.rs",
+      "object": "4eceb0a8bd86bed5f984f4057fc76f61a8034766"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2_owner_handle.rs",
+      "object": "9976e9e1d20f9c848aba2629e130b47e53ff1973"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/neuron_feature.rs",
+      "object": "b8e380656fb7e4f3faaafe6181f25b4e603d132b"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/neuron_runtime.rs",
+      "object": "1405c0ced8fa858a776ef980e5b76f4fe970a4b3"
+    },
+    {
+      "path": "codex-rs/hepta-neuron",
+      "object": "76831ed78eddd22dd777528a5a23aeedd3cd5ae9"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/qualification/bakeoff_panel.py",
+      "object": "e2ea7b847fda8ccc96bc92b192a70afd6a0b3bf7"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/qualification/test_bakeoff_panel.py",
+      "object": "8516d3e43338bb6e2679e6c9254776b8fe6fa132"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/deletion.rs",
+      "object": "4c7d8a6d22b7daabc65e80e2d4f39b03737c6bf5"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/deletion_tests.rs",
+      "object": "d3a39d590a251f971c50d2162385ed498ebe8433"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/generation_store_v2.rs",
+      "object": "869f91a5008084ad5ac9c0eee5124518a43394a6"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/generation_store_v2_process_tests.rs",
+      "object": "d50b7e2408bfd3b2452fdfc2a59acf5f902ccc83"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/generation_store_v2_tests.rs",
+      "object": "2f507bbee25a599f95bcb31f3d94bc1a13199a07"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/plasticity.rs",
+      "object": "0bcfab2466d4b03161e6f4c4eb66fcbcf110b6ec"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/plasticity_tests.rs",
+      "object": "5c9a3d33895e647b3666b12f27c0239ad150d6fe"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/population_v2.rs",
+      "object": "2222068405ee85e2adf0f550ae626f7f8fc1ea08"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/population_v2_tests.rs",
+      "object": "5dec0a2793fd1dab221c67864cf3a4cff326155c"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/runtime_index_v2_tests.rs",
+      "object": "edecd5a61d402f8fbf00ba8dc94b1375952cb3e9"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/runtime_observation_v2.rs",
+      "object": "70c132530b05ecc156da1db85815dcb8ec6d4a02"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/runtime_v2.rs",
+      "object": "ba4c835ef901d33b0270fede9b26b764d772ffee"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/runtime_v2_closure_tests.rs",
+      "object": "13864d8910463c57f400253205b73cda7274d9b7"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/runtime_v2_lifecycle_facade.rs",
+      "object": "60ea19ac91343f34e222f41599423359516c25ad"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/runtime_v2_lifecycle_query.rs",
+      "object": "c1ef585a842dc9d54a1e6e45d8b31b3c1924e2e3"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/runtime_v2_lifecycle_recover.rs",
+      "object": "d4514953abe032943f70eef628b936e95484f347"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/runtime_v2_lifecycle_status.rs",
+      "object": "4119f5bc59d5cc38c00be56bf515d53c9b70ab71"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/runtime_v2_process_closure_tests.rs",
+      "object": "a13027713111107ed0f015ec196c8e1dffb07f80"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/runtime_v2_tests.rs",
+      "object": "8bed243fdf7ba4522167ef1e596a3c8a3e6e9430"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/witness.rs",
+      "object": "9601c19957022995f21bca741dc857c14116ae09"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/witness_tests.rs",
+      "object": "d7ac77954afd9c31fe20aa099e9c47b87fccacda"
+    },
+    {
+      "path": "docs/modules/neuron.runtime/V2_CONTROL_PLANE.md",
+      "object": "b54d569e4ad53d1c6c6dc39f6df150d3d68c7e9a"
+    },
+    {
+      "path": "scripts/neuron/summarize_measurements.py",
+      "object": "19ce008f60e93366e23b11a5aa6b7b48d0666f62"
+    },
+    {
+      "path": "scripts/neuron/test_measurements.py",
+      "object": "c9b1ae077b03cee8d30c14fe2bec71264bebddab"
+    },
+    {
+      "path": "scripts/neuron/test_qualification_scope.py",
+      "object": "62f995dd0ce72258835dd941a65cdf829a08464d"
     }
   ]
 }
