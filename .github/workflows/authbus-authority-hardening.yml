@@ -1,0 +1,79 @@
+name: AuthBus authority hardening generator
+
+on:
+  push:
+    branches:
+      - authbus/authority-hardening-v1
+
+permissions:
+  contents: write
+
+concurrency:
+  group: authbus-authority-hardening-v1
+  cancel-in-progress: false
+
+jobs:
+  generate-and-qualify:
+    if: ${{ !contains(github.event.head_commit.message, '[authbus-generated]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Check out exact branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Rebuild hardened candidate from exact main base
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE=a126987b84737dbc2ee2592442a314117bddb4a2
+          git checkout "$BASE" -- \
+            codex-rs/hepta-authbus/Cargo.toml \
+            codex-rs/hepta-authbus/src/lib.rs \
+            codex-rs/hepta-authbus/src/authority.rs \
+            codex-rs/hepta-authbus/src/authority_store.rs \
+            codex-rs/hepta-authbus/src/host.rs \
+            codex-rs/hepta-authbus/src/settlement.rs \
+            codex-rs/hepta-authbus/src/settlement_store.rs \
+            codex-rs/hepta-authbus/src/settlement_store_tests.rs \
+            codex-rs/hepta-authbus/src/trust_store.rs \
+            codex-rs/hepta-bao-adapter/src/https_consumer.rs \
+            codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs \
+            codex-rs/hepta-authbus-p1-3-qualification/Cargo.toml
+          python3 scripts/apply_authbus_authority_hardening.py
+          cd codex-rs
+          cargo fmt --all
+
+      - name: Push generated candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "AuthBus Hardening Bot"
+          git config user.email "authbus-hardening@users.noreply.github.com"
+          git add \
+            codex-rs/hepta-authbus \
+            codex-rs/hepta-authbus-p1-3-qualification \
+            codex-rs/hepta-bao-adapter/src/https_consumer.rs \
+            codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs
+          if git diff --cached --quiet; then
+            echo "generated candidate already current"
+          else
+            git commit -m "auth.authbus: close authority mutation boundary [authbus-generated]"
+            git push origin HEAD:authbus/authority-hardening-v1
+          fi
+
+      - name: Focused AuthBus qualification
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test -p codex-hepta-authbus --all-targets
+          cargo test -p codex-hepta-authbus-p1-3-qualification --all-targets
+          cargo test -p codex-hepta-bao-adapter --all-targets
+          cargo clippy \
+            -p codex-hepta-authbus \
+            -p codex-hepta-authbus-p1-3-qualification \
+            -p codex-hepta-bao-adapter \
+            --all-targets -- -D warnings
