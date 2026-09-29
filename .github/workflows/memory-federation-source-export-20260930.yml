@@ -1,0 +1,56 @@
+name: memory federation source export
+
+on:
+  push:
+    branches:
+      - fix/memory-federation-host-semantics-20260930-r1
+  pull_request:
+    branches:
+      - feat/memory-federation-full-closure-20260927
+
+permissions:
+  contents: read
+
+concurrency:
+  group: memory-federation-source-export-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  export:
+    runs-on:
+      group: trillionnium-android-gpu
+      labels: [self-hosted, linux, x64]
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Record source identity
+        run: |
+          set -euo pipefail
+          printf '%s\n' "$(git rev-parse HEAD)" > SOURCE_SHA
+          printf '%s\n' "$(git rev-parse HEAD^{tree})" > SOURCE_TREE
+      - name: Upload review source
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-federation-source-export-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            SOURCE_SHA
+            SOURCE_TREE
+            codex-rs/Cargo.toml
+            codex-rs/Cargo.lock
+            codex-rs/hepta-memory/**
+            codex-rs/hepta-memory-federation/**
+            codex-rs/ext/hepta-memory/**
+            docs/modules/memory.federation/**
+            qualification/memory-federation/**
+            qualification/module-execution-dossiers/detail/memory.federation.md
+            scripts/hepta-implementation-maps.py
+            scripts/*memory_federation*
+            scripts/verify_memory_federation_implementation.py
+            scripts/verify_memory_federation_status.py
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 7
