@@ -1,0 +1,84 @@
+diff --git a/codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs b/codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs
+--- a/codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs
++++ b/codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs
+@@ -407,7 +407,7 @@
+         .find("owner.revalidate_cognitive_context(snapshot).await")
+         .expect("final-use cognitive revalidation");
+     let turn_start = source
+-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
++        .find("send_authorized_turn_start(&mut client, entered_use, turn_params)")
+         .expect("physical turn start");
+     let durable_stop = source
+         .find("control.abort_native_before_effect(")
+diff --git a/codex-rs/hepta-agentd/src/test_support.rs b/codex-rs/hepta-agentd/src/test_support.rs
+--- a/codex-rs/hepta-agentd/src/test_support.rs
++++ b/codex-rs/hepta-agentd/src/test_support.rs
+@@ -116,6 +116,7 @@
+         )?);
+         let store = Arc::new(CognitiveStore::open(&identity.layout).await?);
+         state.attach_cognitive_store(Arc::clone(&store))?;
++        state.mark_runtime_prerequisites_ready()?;
+         registry.compare_and_transition(&agent_id, 1, AgentLifecycle::Running)?;
+         state.refresh_generation()?;
+ 
+diff --git a/codex-rs/hepta-authbus/src/authority_schema.rs b/codex-rs/hepta-authbus/src/authority_schema.rs
+--- a/codex-rs/hepta-authbus/src/authority_schema.rs
++++ b/codex-rs/hepta-authbus/src/authority_schema.rs
+@@ -11,6 +11,10 @@
+ use crate::AuthBusAuthorityError;
+ use crate::authority_store::storage;
+ 
++#[expect(
++    clippy::disallowed_methods,
++    reason = "bounded transient schema reference is not an authoritative owner pool"
++)]
+ pub(crate) async fn verify_schema(
+     pool: &SqlitePool,
+     migrator: &Migrator,
+diff --git a/codex-rs/hepta-authbus/src/authority_store.rs b/codex-rs/hepta-authbus/src/authority_store.rs
+--- a/codex-rs/hepta-authbus/src/authority_store.rs
++++ b/codex-rs/hepta-authbus/src/authority_store.rs
+@@ -28,6 +28,10 @@
+ }
+ 
+ impl AuthBusAuthorityStore {
++    #[expect(
++        clippy::disallowed_methods,
++        reason = "the AuthBus owner migration to codex-state is tracked separately"
++    )]
+     pub async fn open(path: &Path) -> Result<Self, AuthBusAuthorityError> {
+         let options = SqliteConnectOptions::new()
+             .filename(path)
+@@ -521,7 +525,7 @@
+ fn is_unique_violation(error: &sqlx::Error) -> bool {
+     error
+         .as_database_error()
+-        .is_some_and(|database| database.is_unique_violation())
++        .is_some_and(sqlx::error::DatabaseError::is_unique_violation)
+ }
+ 
+ pub(crate) fn storage(error: impl ToString) -> AuthBusAuthorityError {
+diff --git a/codex-rs/hepta-authbus/src/quota_store.rs b/codex-rs/hepta-authbus/src/quota_store.rs
+--- a/codex-rs/hepta-authbus/src/quota_store.rs
++++ b/codex-rs/hepta-authbus/src/quota_store.rs
+@@ -67,7 +67,7 @@
+         if let Err(error) = result {
+             if error
+                 .as_database_error()
+-                .is_some_and(|database| database.is_unique_violation())
++                .is_some_and(sqlx::error::DatabaseError::is_unique_violation)
+             {
+                 return Err(AuthBusAuthorityError::AlreadyExists);
+             }
+diff --git a/codex-rs/hepta-authbus/src/trust_store.rs b/codex-rs/hepta-authbus/src/trust_store.rs
+--- a/codex-rs/hepta-authbus/src/trust_store.rs
++++ b/codex-rs/hepta-authbus/src/trust_store.rs
+@@ -238,7 +238,7 @@
+     .map_err(|error| {
+         if error
+             .as_database_error()
+-            .is_some_and(|database| database.is_unique_violation())
++            .is_some_and(sqlx::error::DatabaseError::is_unique_violation)
+         {
+             AuthBusAuthorityError::AlreadyExists
+         } else {
