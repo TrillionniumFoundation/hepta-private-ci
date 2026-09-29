@@ -1722,6 +1722,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     all_models = subparsers.add_parser("all", help="run each model in a fresh process, then summarize and verify")
     all_models.add_argument("--models", nargs="+", choices=sorted(MODEL_SPECS), default=sorted(MODEL_SPECS))
+    all_models.add_argument("--model-timeout-seconds", type=float, default=900)
     all_models.set_defaults(handler=command_all)
     return parser
 
@@ -1828,27 +1829,25 @@ def command_verify(args: argparse.Namespace) -> int:
 
 
 def command_all(args: argparse.Namespace) -> int:
-    command_prepare(args)
-    script = Path(__file__).resolve()
-    for model_name in args.models:
-        subprocess.check_call(
-            [
-                sys.executable,
-                str(script),
-                "--output-dir",
-                str(args.output_dir),
-                "--model-root",
-                str(args.model_root),
-                "--device",
-                args.device,
-                "run",
-                "--model",
-                model_name,
-            ]
-        )
-    command_summarize(args)
-    command_verify(args)
-    return 0
+    from bakeoff_panel import run_panel
+
+    if any(model not in MODEL_SPECS for model in args.models):
+        raise ValueError("unknown backend in comparison panel")
+    source = repository_source()
+    panel, execution = run_panel(
+        script=Path(__file__), output_dir=args.output_dir,
+        model_root=args.model_root, models=args.models,
+        device=resolved_device(args.device), source=source,
+        timeout_seconds=args.model_timeout_seconds,
+    )
+    if not execution["all_executed_successfully"]:
+        return 1
+    if repository_source() != source:
+        raise RuntimeError("source changed during backend panel")
+    panel_args = argparse.Namespace(**vars(args))
+    panel_args.output_dir = panel
+    summarized = command_summarize(panel_args)
+    return summarized if summarized else command_verify(panel_args)
 
 
 def main() -> int:

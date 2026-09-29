@@ -231,3 +231,23 @@ child's `finally` cleanup. If exit or cleanup is unconfirmed, new calls remain
 closed and a later close can finish cleanup; the directory is not deleted while a
 child may still be running. Host crash/power-loss cleanup requires the deployment
 supervisor's own retained launch inventory and is not claimed by these tests.
+
+## Complete batch execution, not partial-success selection
+
+The existing `all` command creates a fresh `panel-*` directory beneath
+`--output-dir`; it never borrows `.current.json` receipts from an earlier panel.
+`--model-timeout-seconds` bounds each child (default 900, maximum 3600 seconds).
+Every requested backend is attempted once, in a separate process, even after an
+ordinary backend failure. Logs, exit codes, elapsed time, source/runner digests
+and started/finished events are retained in that panel. Timeout terminates and
+reaps the private process; user interruption stops subsequent backend launches.
+Duplicate backend names and invalid deadlines reject before execution.
+
+Any failed, timed-out or unlaunched backend makes `all` exit nonzero without
+comparing partial results or recycling a prior recommendation. Only a complete
+successful execution panel with unchanged source reaches the existing full
+receipt/summary verification. Execution success is not a quality pass, artifact
+selection, current calibration trust or production activation. Single-backend
+`run`, `summarize` and `verify` commands keep their existing explicit semantics.
+
+Dependency-free runner regressions: `python3 -m unittest -v test_bakeoff_panel`.
