@@ -29,7 +29,7 @@ jobs:
       github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
       (github.event_name == 'workflow_dispatch' ||
        github.event.pull_request.head.ref == 'codex/control-runtime-convergence-v1')
-    runs-on: ubuntu-24.04
+    runs-on: macos-14
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -51,7 +51,8 @@ jobs:
           test "$checked_head" = "$remote_head"
           echo "CHECKED_HEAD=$checked_head" >> "$GITHUB_ENV"
 
-      - name: Install native prerequisites
+      - name: Install Linux native prerequisites
+        if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential pkg-config libcap-dev
