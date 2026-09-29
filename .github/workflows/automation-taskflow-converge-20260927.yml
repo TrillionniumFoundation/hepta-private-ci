@@ -1,10 +1,10 @@
 name: Automation TaskFlow current-source schema-22 convergence
 
-# Owner-authorized convergence trigger for the exact current branch head.
+# Owner-authorized convergence trigger for the exact isolated execution branch.
 on:
   push:
     branches:
-      - work/automation-taskflow-full-closure-2026-09-27
+      - ci/automation-taskflow-schema22-finalize-20260929
     paths:
       - .github/workflows/automation-taskflow-converge-20260927.yml
   workflow_dispatch:
@@ -13,7 +13,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: automation-taskflow-schema22-current-source-convergence
+  group: automation-taskflow-schema22-isolated-finalize-20260929
   cancel-in-progress: true
 
 jobs:
@@ -24,7 +24,7 @@ jobs:
       - name: Check out exact branch head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: work/automation-taskflow-full-closure-2026-09-27
+          ref: ci/automation-taskflow-schema22-finalize-20260929
           fetch-depth: 0
           persist-credentials: true
 
@@ -33,7 +33,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          remote="$(git ls-remote origin refs/heads/work/automation-taskflow-full-closure-2026-09-27 | awk '{print $1}')"
+          remote="$(git ls-remote origin refs/heads/ci/automation-taskflow-schema22-finalize-20260929 | awk '{print $1}')"
           test "$remote" = "$GITHUB_SHA"
 
       - name: Verify current schema-22 source anchors
@@ -176,7 +176,7 @@ jobs:
 
       - name: Push only if remote still names the trigger commit
         env:
-          TARGET_BRANCH: work/automation-taskflow-full-closure-2026-09-27
+          TARGET_BRANCH: ci/automation-taskflow-schema22-finalize-20260929
         shell: bash
         run: |
           set -euo pipefail
