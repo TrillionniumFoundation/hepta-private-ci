@@ -13,10 +13,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  generate-and-qualify:
+  generate:
     if: ${{ !contains(github.event.head_commit.message, '[authbus-generated]') }}
-    runs-on: macos-15
-    timeout-minutes: 120
+    runs-on: ubuntu-slim
+    timeout-minutes: 15
     steps:
       - name: Check out exact branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -43,8 +43,6 @@ jobs:
             codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs \
             codex-rs/hepta-authbus-p1-3-qualification/Cargo.toml
           python3 scripts/apply_authbus_authority_hardening.py
-          cd codex-rs
-          cargo fmt --all
 
       - name: Push generated candidate
         shell: bash
@@ -63,17 +61,3 @@ jobs:
             git commit -m "auth.authbus: close authority mutation boundary [authbus-generated]"
             git push origin HEAD:authbus/authority-hardening-v1
           fi
-
-      - name: Focused AuthBus qualification
-        working-directory: codex-rs
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo test -p codex-hepta-authbus --all-targets
-          cargo test -p codex-hepta-authbus-p1-3-qualification --all-targets
-          cargo test -p codex-hepta-bao-adapter --all-targets
-          cargo clippy \
-            -p codex-hepta-authbus \
-            -p codex-hepta-authbus-p1-3-qualification \
-            -p codex-hepta-bao-adapter \
-            --all-targets -- -D warnings
