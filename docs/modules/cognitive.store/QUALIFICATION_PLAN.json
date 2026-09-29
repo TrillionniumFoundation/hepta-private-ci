@@ -82,9 +82,9 @@
       "env":{"HEPTA_COGNITIVE_RECOVERY_RECORDS":"16384","HEPTA_COGNITIVE_RECOVERY_REPETITIONS":"3","HEPTA_COGNITIVE_RECOVERY_OUTPUT":"$RUNNER_TEMP/cognitive-recovery-perf-16384.json"}
     },
     {"record":"recovery-release-16384-report.json","command":["python3","scripts/cognitive_store_recovery_report.py","--report","$RUNNER_TEMP/cognitive-recovery-perf-16384.json","--source-commit","$SOURCE_SHA","--tested-commit","$TESTED_SHA","--tested-tree","$TESTED_TREE","--records","16384","--minimum-repetitions","3","--require-rss"],"cwd":".","minimumTests":0,"native":false,"timeoutSeconds":1800},
-    {"record":"host-qualification-tests.json","command":["python3","tools/cognitive-store-host-bootstrap/test_host_qualification.py","-v"],"cwd":".","minimumTests":25,"native":false,"timeoutSeconds":1800},
-    {"record":"retention-readiness-tests.json","command":["python3","tools/cognitive-store-host-bootstrap/test_retention_readiness.py","-v"],"cwd":".","minimumTests":32,"native":false,"timeoutSeconds":1800},
-    {"record":"acceptance-governance-tests.json","command":["python3","tools/cognitive-store-host-bootstrap/test_acceptance_governance.py","-v"],"cwd":".","minimumTests":20,"native":false,"timeoutSeconds":1800},
+    {"record":"host-qualification-tests.json","command":["python3","tools/cognitive-store-host-bootstrap/test_host_qualification.py","-v"],"cwd":".","minimumTests":34,"native":false,"timeoutSeconds":1800},
+    {"record":"retention-readiness-tests.json","command":["python3","tools/cognitive-store-host-bootstrap/test_retention_readiness.py","-v"],"cwd":".","minimumTests":36,"native":false,"timeoutSeconds":1800},
+    {"record":"acceptance-governance-tests.json","command":["python3","tools/cognitive-store-host-bootstrap/test_acceptance_governance.py","-v"],"cwd":".","minimumTests":23,"native":false,"timeoutSeconds":1800},
     {"record":"clippy.json","command":["cargo","clippy","--locked","-p","codex-hepta-cognitive-store","-p","codex-hepta-memory","-p","codex-hepta-agentd","--all-targets","--all-features","--no-deps","--","-D","warnings"],"cwd":"codex-rs","minimumTests":0,"native":true,"timeoutSeconds":1800},
     {"record":"clean-source.json","command":["git","diff","--exit-code","HEAD","--"],"cwd":".","minimumTests":0,"native":false,"timeoutSeconds":1800}
   ],

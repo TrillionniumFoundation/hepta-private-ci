@@ -8,7 +8,7 @@ The contract preserves the existing owner and product path. Reviewers evaluate e
 
 ## Signed acceptance plan
 
-The coordinator signs `hepta.cognitive.acceptance-plan.v1`. The plan binds:
+The coordinator signs `hepta.cognitive.acceptance-plan.v2`. The plan binds:
 
 - canonical Agent identity;
 - exact source commit and tree;
@@ -24,7 +24,7 @@ The required roles are semantic review, durability review, security review, oper
 
 ## Review receipts
 
-Each reviewer signs `hepta.cognitive.acceptance-receipt.v1`. The receipt repeats the exact source and all five evidence digests, binds the role-specific criteria and records one of `approved`, `rejected`, `pending` or `indeterminate`. Missing or non-approved decisions keep the report incomplete. Changed source, evidence, reviewer, criteria, trust or validity fails closed.
+Each reviewer signs `hepta.cognitive.acceptance-receipt.v2`. The receipt repeats the exact source and all five evidence digests, binds the role-specific criteria and records one of `approved`, `rejected`, `pending` or `indeterminate`. Missing or non-approved decisions keep the report incomplete. An approval cannot follow a supplied earlier review that is pending, rejected or indeterminate; in particular, release approval cannot sit on top of non-approved operator acceptance. Missing earlier receipts keep the set incomplete rather than manufacturing a prerequisite. Changed source, evidence, reviewer, criteria, trust or validity fails closed. V1 artifacts are not silently reinterpreted under this ordered-decision contract.
 
 A complete report is named `external_approval_set_verified`. It may report that the supplied external signatures form a complete independent approval set, but it always keeps:
 

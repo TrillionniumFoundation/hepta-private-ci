@@ -18,9 +18,9 @@ import uuid
 from lifecycle import digest, exact, identifier, integer, load_bounded, require
 from lifecycle import sha256, validate_trust, verify_signature
 
-PLAN_SCHEMA = "hepta.cognitive.host-qualification-plan.v1"
-RECEIPT_SCHEMA = "hepta.cognitive.host-qualification-receipt.v1"
-REPORT_SCHEMA = "hepta.cognitive.host-qualification-report.v1"
+PLAN_SCHEMA = "hepta.cognitive.host-qualification-plan.v2"
+RECEIPT_SCHEMA = "hepta.cognitive.host-qualification-receipt.v2"
+REPORT_SCHEMA = "hepta.cognitive.host-qualification-report.v2"
 MAX_STEPS = 32
 GIT_OID = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})\Z")
 
@@ -44,6 +44,7 @@ POST_CANARY_STEPS = (
     "recovery_slo_256",
     "recovery_slo_16384",
 )
+POST_ROLLBACK_STEPS = frozenset({"recovery_slo_256", "recovery_slo_16384"})
 
 
 def git_oid(value: object, label: str) -> str:
@@ -70,7 +71,8 @@ def validate_anchor(anchor: object, owner: str) -> dict:
 
 def validate_plan(plan: object, trust: dict, now: int) -> dict:
     exact(plan, {"schema", "request_id", "owner_agent_id", "source_commit", "source_tree",
-                 "writer_generation", "authority_grant_sha256", "recovery_anchor",
+                 "writer_generation", "authority_grant_sha256", "rollback_writer_generation",
+                 "rollback_generation_floor", "rollback_authority_grant_sha256", "recovery_anchor",
                  "witness_custody_sha256", "host_identity_sha256", "filesystem_identity_sha256",
                  "slo_profile_sha256", "created_at", "expires_at", "steps"})
     require(plan["schema"] == PLAN_SCHEMA, "unsupported host qualification plan")
@@ -81,9 +83,18 @@ def validate_plan(plan: object, trust: dict, now: int) -> dict:
     require(len(plan["source_commit"]) == len(plan["source_tree"]),
             "source commit and tree use different object formats")
     integer(plan["writer_generation"])
-    for field in ("authority_grant_sha256", "witness_custody_sha256",
+    integer(plan["rollback_generation_floor"])
+    integer(plan["rollback_writer_generation"])
+    require(plan["rollback_generation_floor"] > plan["writer_generation"],
+            "rollback generation floor must strictly exceed the initial writer generation")
+    require(plan["rollback_writer_generation"] >= plan["rollback_generation_floor"],
+            "rollback writer generation is below the signed rollback floor")
+    for field in ("authority_grant_sha256", "rollback_authority_grant_sha256",
+                  "witness_custody_sha256",
                   "host_identity_sha256", "filesystem_identity_sha256", "slo_profile_sha256"):
         digest(plan[field])
+    require(plan["rollback_authority_grant_sha256"] != plan["authority_grant_sha256"],
+            "rollback must use a fresh authority grant")
     validate_anchor(plan["recovery_anchor"], owner)
     integer(plan["created_at"])
     integer(plan["expires_at"])
@@ -109,9 +120,23 @@ def validate_plan(plan: object, trust: dict, now: int) -> dict:
     return plan
 
 
+def expected_writer_context(plan: dict, step_name: str) -> tuple[int, int, str, str]:
+    initial_generation = plan["writer_generation"]
+    rollback_generation = plan["rollback_writer_generation"]
+    initial_grant = plan["authority_grant_sha256"]
+    rollback_grant = plan["rollback_authority_grant_sha256"]
+    if step_name == "rollback":
+        return initial_generation, rollback_generation, initial_grant, rollback_grant
+    if step_name in POST_ROLLBACK_STEPS:
+        return rollback_generation, rollback_generation, rollback_grant, rollback_grant
+    return initial_generation, initial_generation, initial_grant, initial_grant
+
+
 def validate_receipt(receipt: object, plan: dict, step: dict, now: int) -> dict:
     exact(receipt, {"schema", "plan_sha256", "step", "executor", "source_commit", "source_tree",
-                    "writer_generation", "host_identity_sha256", "filesystem_identity_sha256",
+                    "before_writer_generation", "after_writer_generation",
+                    "before_authority_grant_sha256", "after_authority_grant_sha256",
+                    "host_identity_sha256", "filesystem_identity_sha256",
                     "evidence_profile_sha256", "before_cut_sha256", "after_cut_sha256",
                     "status", "disposition", "observed_at", "evidence_sha256",
                     "metrics_sha256"})
@@ -121,12 +146,21 @@ def validate_receipt(receipt: object, plan: dict, step: dict, now: int) -> dict:
             "receipt step or executor differs from the signed plan")
     require(receipt["evidence_profile_sha256"] == step["evidence_profile_sha256"],
             "receipt evidence profile differs from the signed plan")
-    for field in ("source_commit", "source_tree", "writer_generation",
-                  "host_identity_sha256", "filesystem_identity_sha256"):
+    for field in ("source_commit", "source_tree", "host_identity_sha256",
+                  "filesystem_identity_sha256"):
         require(receipt[field] == plan[field], "receipt identity differs from the signed plan: " + field)
-    for field in ("before_cut_sha256", "after_cut_sha256", "evidence_profile_sha256",
+    for field in ("before_writer_generation", "after_writer_generation"):
+        integer(receipt[field])
+    for field in ("before_authority_grant_sha256", "after_authority_grant_sha256",
+                  "before_cut_sha256", "after_cut_sha256", "evidence_profile_sha256",
                   "evidence_sha256", "metrics_sha256"):
         digest(receipt[field])
+    expected = expected_writer_context(plan, receipt["step"])
+    observed = (receipt["before_writer_generation"], receipt["after_writer_generation"],
+                receipt["before_authority_grant_sha256"],
+                receipt["after_authority_grant_sha256"])
+    require(observed == expected,
+            "receipt writer generation or authority grant differs from the signed ceremony")
     integer(receipt["observed_at"])
     require(plan["created_at"] <= receipt["observed_at"] <= now,
             "host qualification receipt is stale or from the future")
@@ -176,6 +210,17 @@ def validate_ceremony_chain(plan: dict, observed: dict[str, dict]) -> str | None
         require(witness["before_cut_sha256"] == initial
                 and witness["after_cut_sha256"] == current,
                 "witness reconciliation does not bind the stale and current cuts")
+
+    revocation = observed.get("revocation")
+    rollback = observed.get("rollback")
+    if rollback is not None and rollback["status"] == "completed":
+        require(revocation is not None and revocation["status"] == "completed",
+                "rollback completed without completed live revocation")
+    for name in POST_ROLLBACK_STEPS:
+        receipt = observed.get(name)
+        if receipt is not None and receipt["status"] == "completed":
+            require(rollback is not None and rollback["status"] == "completed",
+                    f"{name} completed without completed fresh-generation rollback")
 
     last_observed = None
     for name in STEP_ORDER:
@@ -233,6 +278,15 @@ def reconcile(plan_envelope: object, receipt_envelopes: object, trust: dict,
         "observed_at": now,
         "initial_cut_sha256": plan["recovery_anchor"]["state_digest"],
         "qualified_cut_sha256": qualified_cut if complete else None,
+        "initial_writer_generation": plan["writer_generation"],
+        "rollback_generation_floor": plan["rollback_generation_floor"],
+        "rollback_writer_generation": plan["rollback_writer_generation"],
+        "qualified_writer_generation": plan["rollback_writer_generation"] if complete else None,
+        "initial_authority_grant_sha256": plan["authority_grant_sha256"],
+        "rollback_authority_grant_sha256": plan["rollback_authority_grant_sha256"],
+        "qualified_authority_grant_sha256": (
+            plan["rollback_authority_grant_sha256"] if complete else None
+        ),
         "steps": rows,
         "all_required_owner_receipts_verified": complete,
         "result": "owner_attested_complete" if complete else "incomplete",

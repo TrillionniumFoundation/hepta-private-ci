@@ -19,9 +19,9 @@ import uuid
 from lifecycle import digest, exact, identifier, integer, load_bounded, require
 from lifecycle import sha256, validate_trust, verify_signature
 
-PLAN_SCHEMA = "hepta.cognitive.acceptance-plan.v1"
-RECEIPT_SCHEMA = "hepta.cognitive.acceptance-receipt.v1"
-REPORT_SCHEMA = "hepta.cognitive.acceptance-report.v1"
+PLAN_SCHEMA = "hepta.cognitive.acceptance-plan.v2"
+RECEIPT_SCHEMA = "hepta.cognitive.acceptance-receipt.v2"
+REPORT_SCHEMA = "hepta.cognitive.acceptance-report.v2"
 GIT_OID = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})\Z")
 REQUIRED_ROLES = (
     "semantic_review",
@@ -142,10 +142,17 @@ def reconcile(plan_envelope: object, receipt_envelopes: object, trust: dict,
         observed[role_name] = validate_receipt(receipt, plan, expected[role_name], now)
 
     last_observed = None
-    for name in REQUIRED_ROLES:
+    for index, name in enumerate(REQUIRED_ROLES):
         receipt = observed.get(name)
         if receipt is None:
             continue
+        if receipt["decision"] == "approved":
+            for predecessor_name in REQUIRED_ROLES[:index]:
+                predecessor = observed.get(predecessor_name)
+                if predecessor is not None:
+                    require(predecessor["decision"] == "approved",
+                            f"{name} approval follows non-approved prerequisite "
+                            f"{predecessor_name}")
         if last_observed is not None:
             require(receipt["observed_at"] >= last_observed,
                     "acceptance approvals regress in required review order")

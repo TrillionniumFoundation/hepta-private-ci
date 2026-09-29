@@ -10,11 +10,12 @@ A complete report is deliberately named `owner_attested_complete`. The report ke
 
 ## Signed plan
 
-The coordinator signs `hepta.cognitive.host-qualification-plan.v1`. The plan binds:
+The coordinator signs `hepta.cognitive.host-qualification-plan.v2`. The plan binds:
 
 - canonical Agent identity;
 - exact deployed source commit and tree;
-- writer generation and authority-grant digest;
+- the initial writer generation and authority-grant digest;
+- a rollback generation floor strictly above the initial generation, a rollback writer generation at or above that floor, and a distinct rollback authority-grant digest;
 - exact-current-cut recovery witness and independent custody digest;
 - host and filesystem identities;
 - the selected SLO profile;
@@ -37,9 +38,11 @@ The host independently pins the expected plan digest and current trust digest. N
 
 ## Owner receipts
 
-Each planned executor signs `hepta.cognitive.host-qualification-receipt.v1`. A receipt binds the exact plan, source objects, writer generation, host/filesystem identities, the planned evidence-profile digest, before/after cuts, disposition, observation time and evidence/metrics digests. An executor cannot substitute a different evidence schema while keeping the same step name.
+Each planned executor signs `hepta.cognitive.host-qualification-receipt.v2`. A receipt binds the exact plan, source objects, before/after writer generations, before/after authority-grant digests, host/filesystem identities, the planned evidence-profile digest, before/after cuts, disposition, observation time and evidence/metrics digests. An executor cannot substitute a different evidence schema while keeping the same step name.
 
 The verifier also joins the receipts into one coherent ceremony. Bootstrap and the injected publication fault must bind the authenticated initial cut; the canary must advance exactly from that cut; crash/restart, revocation, rollback and both recovery profiles must preserve the canary successor; witness-gap reconciliation must bind the stale initial cut to that same successor; and receipt times cannot regress in step order. Individually valid receipts from unrelated runs therefore cannot be assembled into a complete result.
+
+Generation and authority continuity are checked separately from semantic-cut continuity. Bootstrap through live revocation must remain on the initial writer generation and grant. Rollback must transition exactly from that context to the signed strictly newer generation and distinct grant. Both optimized recovery profiles must then execute under the rollback generation and grant. A completed rollback without completed revocation, or a completed post-rollback profile without the rollback receipt, is rejected rather than reported as a coherent partial ceremony. The v1 plan/receipt shapes are not silently reinterpreted as v2.
 
 Completed canary and witness-gap steps must advance their cut. Every other completed step must preserve the semantic cut. In particular, the expected `Indeterminate` result of the injected publication fault is a successful qualification observation only when the candidate was retained; it is not rewritten as an ordinary successful recovery.
 

@@ -18,10 +18,10 @@ import uuid
 from lifecycle import digest, exact, identifier, integer, load_bounded, require
 from lifecycle import sha256, validate_trust, verify_signature
 
-PLAN_SCHEMA = "hepta.cognitive.retention-checkpoint-plan.v1"
-SEGMENT_RECEIPT_SCHEMA = "hepta.cognitive.retention-segment-receipt.v1"
-REBUILD_RECEIPT_SCHEMA = "hepta.cognitive.retention-rebuild-receipt.v1"
-REPORT_SCHEMA = "hepta.cognitive.retention-readiness-report.v1"
+PLAN_SCHEMA = "hepta.cognitive.retention-checkpoint-plan.v2"
+SEGMENT_RECEIPT_SCHEMA = "hepta.cognitive.retention-segment-receipt.v2"
+REBUILD_RECEIPT_SCHEMA = "hepta.cognitive.retention-rebuild-receipt.v2"
+REPORT_SCHEMA = "hepta.cognitive.retention-readiness-report.v2"
 MAX_SEGMENTS = 128
 MAX_IMAGE_BYTES = 128 * 1024 * 1024
 GIT_OID = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})\Z")
@@ -40,7 +40,7 @@ def canonical_agent(value: object) -> str:
 
 
 def validate_segment(segment: object, ordinal: int, previous_manifest: str | None,
-                     trusted: dict, coordinator: str) -> dict:
+                     previous_last_key: str | None, trusted: dict, coordinator: str) -> dict:
     exact(segment, {"segment_id", "storage_owner", "ordinal", "first_key_sha256",
                     "last_key_sha256", "row_count", "plaintext_sha256", "ciphertext_sha256",
                     "manifest_sha256", "predecessor_manifest_sha256"})
@@ -54,9 +54,15 @@ def validate_segment(segment: object, ordinal: int, previous_manifest: str | Non
     for field in ("first_key_sha256", "last_key_sha256", "plaintext_sha256",
                   "ciphertext_sha256", "manifest_sha256"):
         digest(segment[field])
-    require(segment["first_key_sha256"] != segment["last_key_sha256"]
-            or segment["row_count"] == 1,
-            "multi-row segment has a degenerate declared key range")
+    if segment["row_count"] == 1:
+        require(segment["first_key_sha256"] == segment["last_key_sha256"],
+                "single-row segment must bind one exact key")
+    else:
+        require(segment["first_key_sha256"] < segment["last_key_sha256"],
+                "multi-row segment has an invalid declared key range")
+    if previous_last_key is not None:
+        require(previous_last_key < segment["first_key_sha256"],
+                "retention segment key ranges are not strictly ordered and disjoint")
     if previous_manifest is None:
         require(segment["predecessor_manifest_sha256"] is None,
                 "first retention segment unexpectedly has a predecessor")
@@ -113,9 +119,10 @@ def validate_plan(plan: object, trust: dict, now: int) -> dict:
     identities = set()
     digests = set()
     previous = None
+    previous_last_key = None
     total_rows = 0
     for ordinal, segment in enumerate(segments):
-        validate_segment(segment, ordinal, previous, trusted, coordinator)
+        validate_segment(segment, ordinal, previous, previous_last_key, trusted, coordinator)
         require(segment["segment_id"] not in identities, "duplicate retention segment identity")
         require(segment["manifest_sha256"] not in digests
                 and segment["ciphertext_sha256"] not in digests,
@@ -123,6 +130,7 @@ def validate_plan(plan: object, trust: dict, now: int) -> dict:
         identities.add(segment["segment_id"])
         digests.update((segment["manifest_sha256"], segment["ciphertext_sha256"]))
         previous = segment["manifest_sha256"]
+        previous_last_key = segment["last_key_sha256"]
         total_rows += segment["row_count"]
     require(plan["segment_set_sha256"] == sha256(segments),
             "retention segment-set digest does not match the signed segment inventory")

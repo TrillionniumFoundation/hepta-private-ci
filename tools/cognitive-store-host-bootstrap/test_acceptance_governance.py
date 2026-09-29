@@ -124,12 +124,32 @@ class AcceptanceGovernanceTests(unittest.TestCase):
         self.assertIn("missing", {row["decision"] for row in report["roles"]})
 
     def test_pending_receipt_is_incomplete(self):
-        self.resign_receipt(0, decision="pending")
+        for index in range(len(self.receipts)):
+            self.resign_receipt(index, decision="pending")
         self.assertEqual(self.reconcile()["result"], "incomplete")
 
     def test_rejected_receipt_is_incomplete(self):
         self.resign_receipt(0, decision="rejected")
+        for index in range(1, len(self.receipts)):
+            self.resign_receipt(index, decision="pending")
         self.assertEqual(self.reconcile()["result"], "incomplete")
+
+    def test_approved_role_cannot_follow_pending_prerequisite(self):
+        self.resign_receipt(0, decision="pending")
+        with self.assertRaisesRegex(ValueError, "non-approved prerequisite"):
+            self.reconcile()
+
+    def test_release_approval_requires_approved_operator_acceptance(self):
+        operator = list(module.REQUIRED_ROLES).index("operator_acceptance")
+        self.resign_receipt(operator, decision="rejected")
+        with self.assertRaisesRegex(ValueError, "operator_acceptance"):
+            self.reconcile()
+
+    def test_v1_plan_schema_is_not_silently_reinterpreted(self):
+        self.plan["schema"] = "hepta.cognitive.acceptance-plan.v1"
+        self.resign_plan()
+        with self.assertRaisesRegex(ValueError, "unsupported acceptance plan"):
+            self.reconcile()
 
     def test_duplicate_receipt_rejects(self):
         self.receipts[-1] = self.receipts[0]

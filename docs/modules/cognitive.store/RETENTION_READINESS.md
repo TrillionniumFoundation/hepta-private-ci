@@ -8,7 +8,7 @@ This distinction is intentional. The current v1 exact-cut digest covers complete
 
 ## Signed checkpoint plan
 
-The coordinator signs `hepta.cognitive.retention-checkpoint-plan.v1`. The plan binds:
+The coordinator signs `hepta.cognitive.retention-checkpoint-plan.v2`. The plan binds:
 
 - canonical Agent, exact source commit/tree and writer generation;
 - schema and exact current-cut digests;
@@ -21,13 +21,13 @@ The coordinator signs `hepta.cognitive.retention-checkpoint-plan.v1`. The plan b
 - an ordered list of immutable encrypted segments plus the canonical segment-set digest, count, total row count and first/last manifest identities;
 - a bounded validity interval.
 
-Each segment binds its storage owner, ordinal, declared key range, row count, plaintext/ciphertext/manifest digests and the previous segment manifest. The first segment has no predecessor; every later segment must continue the exact manifest chain. Duplicate identities and content digests are rejected. The signed aggregate must exactly equal the canonical segment inventory, so a rebuild receipt cannot silently refer to another count, row total or chain endpoint.
+Each segment binds its storage owner, ordinal, declared key range, row count, plaintext/ciphertext/manifest digests and the previous segment manifest. The first segment has no predecessor; every later segment must continue the exact manifest chain. A one-row segment must bind one exact key; a multi-row range must be increasing; adjacent segment ranges must be strictly ordered and disjoint. Duplicate identities and content digests are rejected. The signed aggregate must exactly equal the canonical segment inventory, so a rebuild receipt cannot silently refer to another count, row total or chain endpoint. V1 artifacts are not silently reinterpreted under these stronger range semantics.
 
 ## Segment and rebuild receipts
 
-Each segment owner signs `hepta.cognitive.retention-segment-receipt.v1`, explicitly attesting the ordinal, row count, plaintext digest, ciphertext digest, manifest digest and predecessor link. Only a completed `immutable_encrypted_segment` observation satisfies the segment obligation. Missing, pending, indeterminate or failed publication remains incomplete.
+Each segment owner signs `hepta.cognitive.retention-segment-receipt.v2`, explicitly attesting the ordinal, row count, plaintext digest, ciphertext digest, manifest digest and predecessor link. Only a completed `immutable_encrypted_segment` observation satisfies the segment obligation. Missing, pending, indeterminate or failed publication remains incomplete.
 
-The rebuild owner signs `hepta.cognitive.retention-rebuild-receipt.v1`. A completed receipt must prove:
+The rebuild owner signs `hepta.cognitive.retention-rebuild-receipt.v2`. A completed receipt must prove:
 
 - the exact source, owner, generation, schema, image identities and frontiers from the plan;
 - identical before and after semantic cuts;
