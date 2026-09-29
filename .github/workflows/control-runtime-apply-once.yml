@@ -61,8 +61,12 @@ jobs:
           target.write_bytes(payload)
           PY
           echo "edc2303f0b0f22a38eb04af352f6d43c7c821558ad2285f6d94e7e75e40831d9  $RUNNER_TEMP/control-runtime-next.patch" | shasum -a 256 -c -
-          git apply --check "$RUNNER_TEMP/control-runtime-next.patch"
-          git apply "$RUNNER_TEMP/control-runtime-next.patch"
+          git apply --stat "$RUNNER_TEMP/control-runtime-next.patch"
+          if ! git apply --3way --whitespace=fix "$RUNNER_TEMP/control-runtime-next.patch"; then
+            git status --short
+            git diff --name-only --diff-filter=U
+            exit 1
+          fi
           git diff --check
 
       - name: Validate canonical module state before compilation
