@@ -1,6 +1,7 @@
 name: Inference worker reviewed source materialization
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - codex/inference-worker-authoritative-20260929
