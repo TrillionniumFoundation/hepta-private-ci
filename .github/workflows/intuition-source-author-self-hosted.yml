@@ -7,6 +7,7 @@ on:
       - ".github/intuition-authoring-patch/READY"
       - ".github/workflows/intuition-source-export.yml"
       - ".github/workflows/intuition-source-author-self-hosted.yml"
+      - ".github/workflows/intuition-source-author-pocket4.yml"
 
 permissions:
   contents: write
@@ -111,6 +112,7 @@ jobs:
           rm -rf .github/intuition-authoring-patch
           rm -f .github/workflows/intuition-source-export.yml
           rm -f .github/workflows/intuition-source-author-self-hosted.yml
+          rm -f .github/workflows/intuition-source-author-pocket4.yml
 
       - name: Set up repository CI dependencies
         uses: ./.github/actions/setup-ci
@@ -154,7 +156,7 @@ jobs:
           git config user.name "OpenAI source authoring"
           git config user.email "assistant@openai.invalid"
           git add -A
-          test -z "$(git diff --cached --name-only | grep -E '^\.github/(intuition-authoring-patch|workflows/intuition-source-(export|author-self-hosted)\.yml)' || true)"
+          test -z "$(git diff --cached --name-only | grep -E '^\.github/(intuition-authoring-patch|workflows/intuition-source-(export|author-self-hosted|author-pocket4)\.yml)' || true)"
           tree="$(git write-tree)"
           commit="$(printf '%s\n\n%s\n' \
             'fix(intuition): revalidate authority at final use' \
