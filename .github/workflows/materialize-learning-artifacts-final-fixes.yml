@@ -1,0 +1,125 @@
+name: Materialize learning.artifacts final compile fixes
+
+on:
+  push:
+    branches:
+      - codex/learning-artifacts-convergence-20260929
+
+permissions:
+  contents: write
+
+concurrency:
+  group: materialize-learning-artifacts-final-fixes
+  cancel-in-progress: true
+
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+          ref: codex/learning-artifacts-convergence-20260929
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+      - name: Apply exact source fixes and refresh source seal
+        env:
+          TRIGGER_SHA: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TRIGGER_SHA"
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def replace(path: str, old: str, new: str) -> None:
+              target = Path(path)
+              text = target.read_text(encoding="utf-8")
+              if old not in text:
+                  raise SystemExit(f"missing expected source in {path}: {old!r}")
+              target.write_text(text.replace(old, new), encoding="utf-8")
+
+          replace(
+              "codex-rs/hepta-learning-artifacts/src/owner/bootstrap.rs",
+              "return Err(ArtifactOwnerConfigError::InvalidValue(prefix));",
+              "return Err(ArtifactOwnerConfigError::InvalidEntry(prefix.to_owned()));",
+          )
+          replace(
+              "codex-rs/hepta-learning-artifacts/src/owner/capability_validation.rs",
+              "use std::str::FromStr;\n",
+              "",
+          )
+          replace(
+              "codex-rs/hepta-learning-artifacts/src/owner/publication_coordination.rs",
+              "use codex_hepta_types::StableId;\n",
+              "#[cfg(test)]\nuse codex_hepta_types::StableId;\n",
+          )
+          replace(
+              "scripts/hepta_artifact_qualification.py",
+              '"--retries", "0", "--no-fail-fast"',
+              '"--retries", "0"',
+          )
+
+          service = Path("codex-rs/hepta-learning-artifacts/src/owner_service.rs")
+          text = service.read_text(encoding="utf-8")
+          if "pub const fn authority(&self) -> AuthorityPosture" not in text:
+              text = text.replace(
+                  "use codex_hepta_types::Digest32;\n",
+                  "use codex_hepta_types::AuthorityPosture;\nuse codex_hepta_types::Digest32;\n",
+                  1,
+              )
+              marker = "    #[must_use]\n    pub fn registry(&self) -> &ArtifactRegistry {\n"
+              method = (
+                  "    /// This owner persists eligibility and evidence only; it never grants\n"
+                  "    /// selection, activation, promotion, or release authority.\n"
+                  "    #[must_use]\n"
+                  "    pub const fn authority(&self) -> AuthorityPosture {\n"
+                  "        AuthorityPosture::DENY_ALL\n"
+                  "    }\n\n"
+              )
+              if marker not in text:
+                  raise SystemExit("owner service authority insertion point missing")
+              service.write_text(text.replace(marker, method + marker, 1), encoding="utf-8")
+          PY
+
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-artifacts
+          git add \
+            codex-rs/hepta-learning-artifacts/src/owner/bootstrap.rs \
+            codex-rs/hepta-learning-artifacts/src/owner/capability_validation.rs \
+            codex-rs/hepta-learning-artifacts/src/owner/publication_coordination.rs \
+            codex-rs/hepta-learning-artifacts/src/owner_service.rs \
+            scripts/hepta_artifact_qualification.py
+          candidate_tree="$(git write-tree)"
+          python3 scripts/hepta_artifact_source_binding.py \
+            --tree "$candidate_tree" \
+            --include codex-rs/hepta-learning-artifacts/src/owner/bootstrap.rs \
+            --include codex-rs/hepta-learning-artifacts/src/owner/capability_validation.rs \
+            --include codex-rs/hepta-learning-artifacts/src/owner/publication_coordination.rs \
+            --include codex-rs/hepta-learning-artifacts/src/owner_service.rs \
+            --include scripts/hepta_artifact_qualification.py \
+            --write
+          git add docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json
+
+          cargo check --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-learning-artifacts --all-targets
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-learning-artifacts --all-targets -- -D warnings
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-learning-artifacts -- --check
+          git diff --check
+      - name: Commit the static candidate and remove this one-shot workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'learning.artifacts candidate materializer'
+          git config user.email 'artifact-candidate@users.noreply.github.com'
+          rm .github/workflows/materialize-learning-artifacts-final-fixes.yml
+          git add -A
+          git diff --cached --check
+          git commit -m 'learning.artifacts: seal compile-clean convergence candidate'
+          git push origin HEAD:codex/learning-artifacts-convergence-20260929
