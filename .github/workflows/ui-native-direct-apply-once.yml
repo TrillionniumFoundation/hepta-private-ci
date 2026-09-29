@@ -93,26 +93,47 @@ jobs:
         run: |
           set -euo pipefail
           cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml
-          git add apps/hepta-native/src/journal.rs \
-            apps/hepta-native/src/journal_storage.rs \
-            apps/hepta-native/src/journal_storage_tests.rs \
-            apps/hepta-native/src/journal_wal_tests.rs \
-            apps/hepta-native/src/retirement.rs \
-            apps/hepta-native/src/ui/operations_view.rs
+          git add apps/hepta-native
           git rm -f .ci/ui-native-wal-index/source.patch.gz || true
-          git rm -f .github/workflows/ui-native-wal-index-apply-once.yml || true
-          git rm -f .github/workflows/ui-native-wal-index-export-pr.yml || true
-          git rm -f .github/workflows/ui-native-source-export-pr.yml || true
-          git rm -f .github/workflows/ui-native-direct-apply-once.yml
           git diff --cached --check
+          python3 - <<'PYTHON'
+          import subprocess
+          semantic = {
+              'apps/hepta-native/src/journal.rs',
+              'apps/hepta-native/src/journal_storage.rs',
+              'apps/hepta-native/src/journal_storage_tests.rs',
+              'apps/hepta-native/src/journal_wal_tests.rs',
+              'apps/hepta-native/src/retirement.rs',
+              'apps/hepta-native/src/ui/operations_view.rs',
+          }
+          observed = set(subprocess.check_output(
+              ['git', 'diff', '--cached', '--name-only'], text=True,
+              encoding='utf-8', errors='strict'
+          ).splitlines())
+          missing = semantic - observed
+          if missing:
+              raise SystemExit(f'missing semantic source paths: {sorted(missing)}')
+          allowed_non_rust = {'.ci/ui-native-wal-index/source.patch.gz'}
+          unexpected = {
+              path for path in observed
+              if path not in allowed_non_rust
+              and not (path.startswith('apps/hepta-native/') and path.endswith('.rs'))
+          }
+          if unexpected:
+              raise SystemExit(f'unexpected formatted paths: {sorted(unexpected)}')
+          print('staged source paths:')
+          for path in sorted(observed):
+              print(path)
+          PYTHON
           git config user.name 'hepta-native-source-bot'
           git config user.email 'hepta-native-source-bot@users.noreply.github.com'
           git commit -m 'feat(ui.native): bound durable history and journal writes' \
-            -m 'Add a checkpoint-bound retirement disk index, exact active-operation index, checksummed fsynced WAL, bounded checkpointing and recovery tests while preserving Prepared/Invoking durability, final-use ownership and unknown-result replay fences. Remove consumed temporary source transport.'
+            -m 'Add a checkpoint-bound retirement disk index, exact active-operation index, checksummed fsynced WAL, bounded checkpointing and recovery tests while preserving Prepared/Invoking durability, final-use ownership and unknown-result replay fences. Normalize the native Rust source with the pinned formatter and remove the consumed binary patch capsule.'
 
       - name: Verify the exact committed source
         run: |
           set -euo pipefail
+          git status --short
           test -z "$(git status --porcelain)"
           cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml --check
           cargo +1.95.0 check --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets --all-features
