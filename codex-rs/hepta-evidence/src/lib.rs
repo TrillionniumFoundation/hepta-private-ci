@@ -10,7 +10,14 @@ mod frontier_acceptance;
 mod frontier_backend;
 mod frontier_backend_file {
     include!("frontier_backend_file.rs");
+    #[cfg(test)]
     mod recovery;
+    #[expect(
+        clippy::expect_used,
+        clippy::redundant_clone,
+        clippy::too_many_arguments,
+        reason = "segmented frontier code keeps audited archive invariants explicit; follow-up refactors must preserve the on-disk format"
+    )]
     mod segmented;
     pub use segmented::EvidenceFrontierCapacityAlertV1;
     pub use segmented::EvidenceFrontierCapacityV1;
@@ -27,6 +34,11 @@ mod provider_effect_store;
 mod provider_insert;
 mod provider_record;
 mod provider_store;
+#[expect(
+    dead_code,
+    clippy::expect_used,
+    reason = "publication retains explicit state decoding and bounded non-empty query invariants while the product publisher is qualified"
+)]
 mod publication;
 mod qualification {
     /// SQLx 0.9 requires an explicit safety witness for runtime-owned SQL text.
