@@ -52,7 +52,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           exec > >(tee "$RUNNER_TEMP/intuition-authoring-validate.log") 2>&1
-          set -euxo pipefail
+          set -euo pipefail
           ready=.github/intuition-authoring-patch/READY
           base="$(sed -n 's/^base=//p' "$ready" | tr -d '\r')"
           part_000="$(sed -n 's/^part-000=//p' "$ready" | tr -d '\r')"
@@ -80,6 +80,7 @@ jobs:
           done
           python3 - <<'PY'
           import base64
+          import binascii
           import hashlib
           import pathlib
 
@@ -88,27 +89,29 @@ jobs:
               b"".join(pathlib.Path(f".git/part-{index:03d}.b64").read_bytes().split())
               for index in range(3)
           ]
-          print("compact lengths:", [len(part) for part in parts])
-          matches = []
           direct = b"".join(parts)
-          candidates = [("direct", None, direct)]
-          if len(direct) % 4 == 1 and len(parts[1]) == 12001:
-              candidates.extend(
-                  (
-                      "part-001-single-byte-removal",
-                      index,
-                      parts[0] + parts[1][:index] + parts[1][index + 1:] + parts[2],
-                  )
-                  for index in range(len(parts[1]))
-              )
-          for method, index, encoded in candidates:
+          print("compact lengths:", [len(part) for part in parts], "total:", len(direct))
+
+          def candidates():
+              yield "direct", None, direct
+              if len(direct) % 4 == 1:
+                  for index in range(len(direct)):
+                      yield (
+                          "single-byte-removal",
+                          index,
+                          direct[:index] + direct[index + 1 :],
+                      )
+
+          matches = []
+          for method, index, encoded in candidates():
               try:
                   patch = base64.b64decode(encoded, validate=True)
-              except ValueError:
+              except (ValueError, binascii.Error):
                   continue
-              digest = hashlib.sha256(patch).hexdigest()
-              if digest == expected:
+              if hashlib.sha256(patch).hexdigest() == expected:
                   matches.append((method, index, patch))
+                  if len(matches) > 1:
+                      break
           if len(matches) != 1:
               raise SystemExit(f"expected one exact reviewed reconstruction, found {len(matches)}")
           method, index, patch = matches[0]
