@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render platform.wire lifecycle status from source and evidence receipts."""
+"""Render platform.wire lifecycle status from source-bound evidence receipts."""
 
 from __future__ import annotations
 
@@ -17,6 +17,7 @@ RECEIPT_SCHEMA = "hepta.platform-wire.receipt.v2"
 SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 DIGEST_RE = re.compile(r"^[0-9a-f]{64}$")
 PASS_VALUES = {"pass", "passed", "success", "qualified", "accepted", "released"}
+PERFORMANCE_KIND = "platform-wire-performance"
 
 DESIGN_FILES = (
     "docs/modules/platform.wire/TECHNICAL.md",
@@ -46,6 +47,7 @@ WORKFLOW_RECEIPT_KINDS = {
     "platform-wire-exact-head",
     "platform-wire-synthetic-merge",
     "platform-wire-target-host",
+    PERFORMANCE_KIND,
 }
 ACCEPTANCE_KINDS = {
     "platform-wire-reviewer-acceptance": "independent-reviewer",
@@ -86,6 +88,13 @@ def require_sha(payload: dict[str, Any], field: str) -> str:
     return value
 
 
+def require_digest(payload: dict[str, Any], field: str) -> str:
+    value = require_string(payload, field)
+    if DIGEST_RE.fullmatch(value) is None:
+        raise ValueError(f"receipt field {field!r} is not a lowercase 64-hex digest")
+    return value
+
+
 def require_positive_int(payload: dict[str, Any], field: str) -> int:
     value = payload.get(field)
     if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
@@ -93,13 +102,56 @@ def require_positive_int(payload: dict[str, Any], field: str) -> int:
     return value
 
 
+def require_nonnegative_int(payload: dict[str, Any], field: str) -> int:
+    value = payload.get(field)
+    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+        raise ValueError(f"receipt field {field!r} must be a non-negative integer")
+    return value
+
+
+def validate_performance_paths(payload: dict[str, Any]) -> None:
+    if require_string(payload, "reference_transport") != "grpc":
+        raise ValueError("performance receipt must use the registered gRPC reference")
+    if require_positive_int(payload, "path_count") != 5:
+        raise ValueError("performance receipt must contain exactly five paths")
+    if (
+        require_positive_int(payload, "size_ratio_numerator") != 70
+        or require_positive_int(payload, "size_ratio_denominator") != 100
+        or require_positive_int(payload, "p99_ratio_numerator") != 80
+        or require_positive_int(payload, "p99_ratio_denominator") != 100
+    ):
+        raise ValueError("performance receipt threshold policy drifted")
+    rows = payload.get("paths")
+    if not isinstance(rows, list) or len(rows) != 5:
+        raise ValueError("performance receipt must retain five path results")
+    seen: set[str] = set()
+    for row in rows:
+        if not isinstance(row, dict):
+            raise ValueError("performance path result must be an object")
+        path_id = require_string(row, "path_id")
+        if path_id in seen:
+            raise ValueError("performance path identities must be unique")
+        seen.add(path_id)
+        if require_positive_int(row, "sample_count") < 100:
+            raise ValueError("performance path has fewer than 100 paired samples")
+        candidate_size = require_positive_int(row, "candidate_package_bytes")
+        reference_size = require_positive_int(row, "reference_package_bytes")
+        candidate_p99 = require_positive_int(row, "candidate_p99_ns")
+        reference_p99 = require_positive_int(row, "reference_p99_ns")
+        if candidate_size * 100 > reference_size * 70:
+            raise ValueError(f"{path_id}: package-size ratio exceeds 0.70")
+        if candidate_p99 * 100 > reference_p99 * 80:
+            raise ValueError(f"{path_id}: p99 ratio exceeds 0.80")
+
+
 def validate_workflow_receipt(payload: dict[str, Any], kind: str) -> None:
     require_string(payload, "workflow")
     require_string(payload, "workflow_ref")
     require_positive_int(payload, "run_id")
     require_positive_int(payload, "run_attempt")
-    require_string(payload, "event")
+    event = require_string(payload, "event")
     require_string(payload, "generated_at")
+    status = require_string(payload, "status")
 
     source_sha = require_sha(payload, "source_sha")
     tested_sha = require_sha(payload, "tested_sha")
@@ -118,7 +170,7 @@ def validate_workflow_receipt(payload: dict[str, Any], kind: str) -> None:
     elif kind == "platform-wire-target-host":
         if tested_sha != source_sha:
             raise ValueError("target-host receipt must test its exact source SHA")
-        if require_string(payload, "event") != "workflow_dispatch":
+        if event != "workflow_dispatch":
             raise ValueError("target-host receipt must come from workflow_dispatch")
         if require_string(payload, "environment") != "platform-wire-target-host":
             raise ValueError(
@@ -128,6 +180,32 @@ def validate_workflow_receipt(payload: dict[str, Any], kind: str) -> None:
         require_string(payload, "runner_name")
         require_string(payload, "runner_os")
         require_string(payload, "runner_arch")
+    elif kind == PERFORMANCE_KIND:
+        if tested_sha != source_sha:
+            raise ValueError("performance receipt must validate its exact source SHA")
+        if event != "workflow_dispatch":
+            raise ValueError("performance receipt must come from workflow_dispatch")
+        if require_string(payload, "environment") != "platform-wire-performance":
+            raise ValueError(
+                "performance receipt must name the protected platform-wire-performance environment"
+            )
+        if status.lower() in PASS_VALUES:
+            require_positive_int(payload, "measurement_run_id")
+        else:
+            require_nonnegative_int(payload, "measurement_run_id")
+        require_string(payload, "measurement_workflow_path")
+        require_string(payload, "measurement_artifact")
+        if status.lower() in PASS_VALUES:
+            require_digest(payload, "measurement_artifact_digest")
+            require_digest(payload, "plan_sha256")
+            require_digest(payload, "report_sha256")
+            require_string(payload, "host_profile")
+            require_string(payload, "runner_identity")
+            require_string(payload, "toolchain")
+            require_string(payload, "measurement_run_identity")
+            validate_performance_paths(payload)
+        else:
+            require_nonnegative_int(payload, "path_count")
 
 
 def validate_acceptance_receipt(payload: dict[str, Any], kind: str) -> None:
@@ -154,9 +232,7 @@ def validate_release_receipt(payload: dict[str, Any]) -> None:
     if source_sha != tested_sha:
         raise ValueError("release receipt must bind the exact released source SHA")
     require_string(payload, "release_id")
-    artifact_digest = require_string(payload, "artifact_digest")
-    if DIGEST_RE.fullmatch(artifact_digest) is None:
-        raise ValueError("release artifact_digest must be lowercase 64-hex")
+    require_digest(payload, "artifact_digest")
     require_string(payload, "approved_by")
     evidence_url = require_string(payload, "evidence_url")
     if not evidence_url.startswith("https://github.com/"):
@@ -168,8 +244,6 @@ def load_receipt(path: str | None, expected_kind: str) -> Receipt | None:
         return None
     receipt_path = Path(path)
     payload = read_receipt(receipt_path)
-    if not isinstance(payload, dict):
-        raise ValueError(f"receipt {receipt_path} must be a JSON object")
     if payload.get("schema") != RECEIPT_SCHEMA:
         raise ValueError(
             f"receipt {receipt_path} schema {payload.get('schema')!r} does not match {RECEIPT_SCHEMA!r}"
@@ -191,7 +265,6 @@ def load_receipt(path: str | None, expected_kind: str) -> Receipt | None:
         validate_release_receipt(payload)
     else:
         raise ValueError(f"unsupported receipt kind {kind!r}")
-
     return Receipt(kind, source_sha, tested_sha, status, str(receipt_path), payload)
 
 
@@ -214,6 +287,7 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
     exact = load_receipt(args.exact_head, "platform-wire-exact-head")
     merge = load_receipt(args.synthetic_merge, "platform-wire-synthetic-merge")
     target = load_receipt(args.target_host, "platform-wire-target-host")
+    performance = load_receipt(args.performance, PERFORMANCE_KIND)
     reviewer = load_receipt(
         args.reviewer_acceptance, "platform-wire-reviewer-acceptance"
     )
@@ -221,7 +295,7 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
         args.operations_acceptance, "platform-wire-operations-acceptance"
     )
     release = load_receipt(args.release, "platform-wire-release")
-    all_receipts = [exact, merge, target, reviewer, operations, release]
+    all_receipts = [exact, merge, target, performance, reviewer, operations, release]
     source_sha = common_source_sha(all_receipts)
     if source_sha is not None:
         require_selected_source(root, source_sha, getattr(args, "expected_source_sha", None))
@@ -241,6 +315,8 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
     )
     accepted = (
         qualified
+        and performance is not None
+        and performance.passed
         and reviewer is not None
         and reviewer.passed
         and operations is not None
@@ -262,21 +338,11 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
             "path": receipt.path,
         }
         for field in (
-            "run_id",
-            "run_attempt",
-            "workflow",
-            "workflow_ref",
-            "lane",
-            "base_sha",
-            "host_profile",
-            "runner_name",
-            "runner_os",
-            "runner_arch",
-            "approver",
-            "approver_role",
-            "approved_at",
-            "release_id",
-            "artifact_digest",
+            "run_id", "run_attempt", "workflow", "workflow_ref", "lane", "base_sha",
+            "environment", "host_profile", "runner_name", "runner_os", "runner_arch",
+            "measurement_run_id", "measurement_workflow_path", "measurement_artifact",
+            "measurement_artifact_digest", "plan_sha256", "report_sha256", "path_count",
+            "approver", "approver_role", "approved_at", "release_id", "artifact_digest",
             "evidence_url",
         ):
             if field in receipt.payload:
@@ -301,6 +367,7 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
             "exact_head": receipt_state(exact),
             "synthetic_merge": receipt_state(merge),
             "target_host": receipt_state(target),
+            "performance": receipt_state(performance),
             "reviewer_acceptance": receipt_state(reviewer),
             "operations_acceptance": receipt_state(operations),
             "release": receipt_state(release),
@@ -315,14 +382,12 @@ def render_markdown(status: dict[str, Any]) -> str:
         ("Designed", states["designed"], "repository design/document closure"),
         ("Implemented", states["implemented"], "required native source closure"),
         (
-            "Qualified",
-            states["qualified"],
+            "Qualified", states["qualified"],
             "exact-head + synthetic-merge + protected target-host receipts",
         ),
         (
-            "Accepted",
-            states["accepted"],
-            "qualified state + distinct independent reviewer and operations receipts",
+            "Accepted", states["accepted"],
+            "qualified state + passed five-path paired performance receipt + distinct independent reviewer and operations receipts",
         ),
         ("Released", states["released"], "accepted state + release receipt"),
     ]
@@ -340,12 +405,8 @@ def render_markdown(status: dict[str, Any]) -> str:
     )
     lines.extend(["", "## Evidence inputs", ""])
     for name in (
-        "exact_head",
-        "synthetic_merge",
-        "target_host",
-        "reviewer_acceptance",
-        "operations_acceptance",
-        "release",
+        "exact_head", "synthetic_merge", "target_host", "performance",
+        "reviewer_acceptance", "operations_acceptance", "release",
     ):
         receipt = evidence[name]
         if receipt is None:
@@ -357,7 +418,9 @@ def render_markdown(status: dict[str, Any]) -> str:
     lines.extend(
         [
             "",
-            "Absent, malformed, failing or source-inconsistent receipts fail closed. Reviewer and operations acceptance must be issued by distinct identities independent of the implementation author; source code and ordinary CI cannot self-attest either receipt.",
+            "The protected performance-artifact contract is documented in [PERFORMANCE_INTAKE_20260929.md](PERFORMANCE_INTAKE_20260929.md).",
+            "",
+            "Absent, malformed, failing or source-inconsistent receipts fail closed. A performance receipt is mandatory for Accepted/Released and must retain all five paired paths at package-size ratio <= 0.70 and p99 ratio <= 0.80 against gRPC. Reviewer and operations acceptance must be issued by distinct identities independent of the implementation author; source code and ordinary CI cannot self-attest either receipt.",
             "",
         ]
     )
@@ -382,10 +445,32 @@ def workflow_receipt(kind: str, source: str, tested: str, **extra: Any) -> dict[
         "run_id": 1,
         "run_attempt": 1,
         "event": "pull_request",
-        "generated_at": "2026-09-27T00:00:00Z",
+        "generated_at": "2026-09-29T00:00:00Z",
     }
     payload.update(extra)
     return payload
+
+
+def performance_fixture(source: str) -> dict[str, Any]:
+    rows = []
+    for index in range(5):
+        rows.append({
+            "path_id": f"path-{index}", "sample_count": 100,
+            "candidate_package_bytes": 70, "reference_package_bytes": 100,
+            "candidate_p99_ns": 80, "reference_p99_ns": 100,
+        })
+    return workflow_receipt(
+        PERFORMANCE_KIND, source, source, event="workflow_dispatch",
+        environment="platform-wire-performance", measurement_run_id=7,
+        measurement_workflow_path=".github/workflows/registered-five-path.yml",
+        measurement_artifact="platform-wire-five-path-fixture",
+        measurement_artifact_digest="1" * 64, plan_sha256="2" * 64,
+        report_sha256="3" * 64, host_profile="target-profile",
+        runner_identity="target-runner", toolchain="rustc-fixture",
+        measurement_run_identity="fixture-run-7", reference_transport="grpc",
+        path_count=5, size_ratio_numerator=70, size_ratio_denominator=100,
+        p99_ratio_numerator=80, p99_ratio_denominator=100, paths=rows,
+    )
 
 
 def self_test() -> None:
@@ -401,62 +486,40 @@ def self_test() -> None:
 
         payloads = {
             "platform-wire-exact-head": workflow_receipt(
-                "platform-wire-exact-head",
-                source,
-                source,
-                base_sha=base_sha,
-                lane="source-head",
+                "platform-wire-exact-head", source, source,
+                base_sha=base_sha, lane="source-head",
             ),
             "platform-wire-synthetic-merge": workflow_receipt(
-                "platform-wire-synthetic-merge",
-                source,
-                merge_sha,
-                base_sha=base_sha,
-                lane="synthetic-merge",
+                "platform-wire-synthetic-merge", source, merge_sha,
+                base_sha=base_sha, lane="synthetic-merge",
             ),
             "platform-wire-target-host": workflow_receipt(
-                "platform-wire-target-host",
-                source,
-                source,
-                event="workflow_dispatch",
-                environment="platform-wire-target-host",
-                host_profile="hepta-target-host",
-                runner_name="fixture-runner",
-                runner_os="Linux",
-                runner_arch="X64",
+                "platform-wire-target-host", source, source,
+                event="workflow_dispatch", environment="platform-wire-target-host",
+                host_profile="hepta-target-host", runner_name="fixture-runner",
+                runner_os="Linux", runner_arch="X64",
             ),
+            PERFORMANCE_KIND: performance_fixture(source),
             "platform-wire-reviewer-acceptance": {
-                "schema": RECEIPT_SCHEMA,
-                "kind": "platform-wire-reviewer-acceptance",
-                "source_sha": source,
-                "tested_sha": source,
-                "status": "accepted",
-                "approver": "reviewer",
-                "approver_role": "independent-reviewer",
+                "schema": RECEIPT_SCHEMA, "kind": "platform-wire-reviewer-acceptance",
+                "source_sha": source, "tested_sha": source, "status": "accepted",
+                "approver": "reviewer", "approver_role": "independent-reviewer",
                 "implementation_author": "implementer",
-                "approved_at": "2026-09-27T00:00:00Z",
+                "approved_at": "2026-09-29T00:00:00Z",
                 "evidence_url": "https://github.com/example/repo/pull/1",
             },
             "platform-wire-operations-acceptance": {
-                "schema": RECEIPT_SCHEMA,
-                "kind": "platform-wire-operations-acceptance",
-                "source_sha": source,
-                "tested_sha": source,
-                "status": "accepted",
-                "approver": "operator",
-                "approver_role": "operations",
+                "schema": RECEIPT_SCHEMA, "kind": "platform-wire-operations-acceptance",
+                "source_sha": source, "tested_sha": source, "status": "accepted",
+                "approver": "operator", "approver_role": "operations",
                 "implementation_author": "implementer",
-                "approved_at": "2026-09-27T00:00:00Z",
+                "approved_at": "2026-09-29T00:00:00Z",
                 "evidence_url": "https://github.com/example/repo/pull/1",
             },
             "platform-wire-release": {
-                "schema": RECEIPT_SCHEMA,
-                "kind": "platform-wire-release",
-                "source_sha": source,
-                "tested_sha": source,
-                "status": "released",
-                "release_id": "release-fixture",
-                "artifact_digest": "d" * 64,
+                "schema": RECEIPT_SCHEMA, "kind": "platform-wire-release",
+                "source_sha": source, "tested_sha": source, "status": "released",
+                "release_id": "release-fixture", "artifact_digest": "d" * 64,
                 "approved_by": "release-operator",
                 "evidence_url": "https://github.com/example/repo/releases/tag/v1",
             },
@@ -468,39 +531,63 @@ def self_test() -> None:
             receipt_paths[kind] = str(path)
 
         args = argparse.Namespace(
-            root=str(root),
-            expected_source_sha=source,
+            root=str(root), expected_source_sha=source,
             exact_head=receipt_paths["platform-wire-exact-head"],
             synthetic_merge=receipt_paths["platform-wire-synthetic-merge"],
             target_host=receipt_paths["platform-wire-target-host"],
-            reviewer_acceptance=receipt_paths[
-                "platform-wire-reviewer-acceptance"
-            ],
-            operations_acceptance=receipt_paths[
-                "platform-wire-operations-acceptance"
-            ],
+            performance=receipt_paths[PERFORMANCE_KIND],
+            reviewer_acceptance=receipt_paths["platform-wire-reviewer-acceptance"],
+            operations_acceptance=receipt_paths["platform-wire-operations-acceptance"],
             release=receipt_paths["platform-wire-release"],
         )
         status = evaluate(args)
         if not all(status["states"].values()):
             raise AssertionError(status)
 
+        saved_performance = args.performance
+        args.performance = None
+        status = evaluate(args)
+        if not status["states"]["qualified"]:
+            raise AssertionError("performance intake must not redefine source qualification")
+        if status["states"]["accepted"] or status["states"]["released"]:
+            raise AssertionError("missing performance evidence must block acceptance and release")
+        args.performance = saved_performance
+
         payloads["platform-wire-operations-acceptance"]["approver"] = "reviewer"
         Path(receipt_paths["platform-wire-operations-acceptance"]).write_text(
-            json.dumps(payloads["platform-wire-operations-acceptance"]),
-            encoding="utf-8",
+            json.dumps(payloads["platform-wire-operations-acceptance"]), encoding="utf-8",
         )
         status = evaluate(args)
         if status["states"]["accepted"] or status["states"]["released"]:
             raise AssertionError("duplicate acceptance identities must fail closed")
 
+        payloads["platform-wire-operations-acceptance"]["approver"] = "operator"
+        Path(receipt_paths["platform-wire-operations-acceptance"]).write_text(
+            json.dumps(payloads["platform-wire-operations-acceptance"]), encoding="utf-8",
+        )
+        performance = payloads[PERFORMANCE_KIND]
+        performance["paths"][4]["candidate_p99_ns"] = 81
+        Path(receipt_paths[PERFORMANCE_KIND]).write_text(
+            json.dumps(performance), encoding="utf-8",
+        )
+        try:
+            evaluate(args)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("performance threshold drift must fail receipt validation")
+
 
 def add_evidence_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--root", default=".")
-    parser.add_argument("--expected-source-sha", help="Required for an archive; must match Git HEAD in a checkout")
+    parser.add_argument(
+        "--expected-source-sha",
+        help="Required for an archive; must match Git HEAD in a checkout",
+    )
     parser.add_argument("--exact-head")
     parser.add_argument("--synthetic-merge")
     parser.add_argument("--target-host")
+    parser.add_argument("--performance")
     parser.add_argument("--reviewer-acceptance")
     parser.add_argument("--operations-acceptance")
     parser.add_argument("--release")
@@ -519,13 +606,8 @@ def parse_args() -> argparse.Namespace:
     validate = subparsers.add_parser("validate-receipt")
     validate.add_argument("--path", required=True)
     validate.add_argument(
-        "--kind",
-        required=True,
-        choices=sorted(
-            WORKFLOW_RECEIPT_KINDS
-            | set(ACCEPTANCE_KINDS)
-            | {"platform-wire-release"}
-        ),
+        "--kind", required=True,
+        choices=sorted(WORKFLOW_RECEIPT_KINDS | set(ACCEPTANCE_KINDS) | {"platform-wire-release"}),
     )
     subparsers.add_parser("self-test")
     return parser.parse_args()
@@ -549,12 +631,8 @@ def main() -> int:
         write_output(args.output, content)
         return 0
     status_args = argparse.Namespace(
-        root=args.root,
-        exact_head=None,
-        synthetic_merge=None,
-        target_host=None,
-        reviewer_acceptance=None,
-        operations_acceptance=None,
+        root=args.root, exact_head=None, synthetic_merge=None, target_host=None,
+        performance=None, reviewer_acceptance=None, operations_acceptance=None,
         release=None,
     )
     expected = render_markdown(evaluate(status_args))

@@ -84,11 +84,14 @@ def validate(plan: Any, report: Any, source: str, plan_digest: str) -> list[dict
             raise ValueError("candidate/reference workload drift")
         samples = {}
         sizes = {}
+        artifacts = {}
         for side in ("candidate", "reference"):
             entry = row.get(side)
             if not isinstance(entry, dict):
                 raise ValueError("missing benchmark side")
-            digest(entry.get("artifact_sha256"), HEX64, "measured artifact digest")
+            artifacts[side] = digest(
+                entry.get("artifact_sha256"), HEX64, "measured artifact digest"
+            )
             sizes[side] = integer(entry.get("package_bytes"), "package_bytes")
             values = entry.get("latency_ns")
             if not isinstance(values, list) or not minimum <= len(values) <= 100000:
@@ -100,6 +103,8 @@ def validate(plan: Any, report: Any, source: str, plan_digest: str) -> list[dict
             if integer(entry.get("failed_operations"), "failed_operations", 0) != 0:
                 raise ValueError("failed benchmark operations cannot qualify")
             samples[side] = values
+        if artifacts["candidate"] == artifacts["reference"]:
+            raise ValueError("candidate and gRPC reference must be distinct measured artifacts")
         if len(samples["candidate"]) != len(samples["reference"]):
             raise ValueError("candidate and reference sample counts differ")
         candidate_p99, reference_p99 = p99(samples["candidate"]), p99(samples["reference"])
@@ -139,9 +144,13 @@ def fixture() -> tuple[dict, dict]:
     }
     for path in paths:
         row = dict(path)
-        for side, size, latency in (("candidate", 70, 80), ("reference", 100, 100)):
+        for side, artifact, size, latency in (
+            ("candidate", "c" * 64, 70, 80),
+            ("reference", "d" * 64, 100, 100),
+        ):
             row[side] = {
-                "artifact_sha256": "c" * 64, "package_bytes": size, "latency_ns": [latency] * 100,
+                "artifact_sha256": artifact, "package_bytes": size,
+                "latency_ns": [latency] * 100,
                 "completed_operations": 100, "failed_operations": 0,
             }
         report["paths"].append(row)
@@ -181,6 +190,12 @@ class PerformanceGateTests(unittest.TestCase):
                 report[field] = "f" * 64
             with self.subTest(field=field), self.assertRaises(ValueError):
                 validate(plan, report, "a" * 40, "b" * 64)
+
+    def test_candidate_and_reference_artifacts_must_differ(self):
+        plan, report = fixture()
+        report["paths"][0]["reference"]["artifact_sha256"] = report["paths"][0]["candidate"]["artifact_sha256"]
+        with self.assertRaises(ValueError):
+            validate(plan, report, "a" * 40, "b" * 64)
 
     def test_invalid_samples_reject(self):
         for value in (0, -1, True, 1.0, None):
