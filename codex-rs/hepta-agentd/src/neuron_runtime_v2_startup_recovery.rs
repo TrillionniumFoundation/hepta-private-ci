@@ -227,10 +227,8 @@ mod startup_recovery_tests {
             AgentdNeuronGenerationControllerV2::new(active).expect("controller");
         let request = input(1);
 
-        assert_eq!(
-            controller.start().expect_err("pending startup must fail"),
-            AgentdNeuronControlErrorV2::PendingRecovery
-        );
+        let start_error = controller.start().expect_err("pending startup must fail");
+        assert_eq!(start_error.stable_code(), "pending_recovery");
         assert_eq!(
             controller.state().expect("starting state"),
             AgentdNeuronLifecycleStateV2::Starting
@@ -254,12 +252,10 @@ mod startup_recovery_tests {
         assert_eq!(preserved.status_code, "reserved_not_executed");
         assert!(!preserved.terminal);
         assert_eq!(owner.preserve_recoveries.load(Ordering::SeqCst), 1);
-        assert_eq!(
-            controller
-                .start()
-                .expect_err("preserved work still blocks start"),
-            AgentdNeuronControlErrorV2::PendingRecovery
-        );
+        let preserved_error = controller
+            .start()
+            .expect_err("preserved work still blocks start");
+        assert_eq!(preserved_error.stable_code(), "pending_recovery");
 
         let closed = controller
             .close_unexecuted_operation(&request)
@@ -321,11 +317,9 @@ mod startup_recovery_tests {
         let controller =
             AgentdNeuronGenerationControllerV2::new(active).expect("controller");
         controller.start().expect("start");
-        assert_eq!(
-            controller
-                .close_unexecuted_operation(&input(3))
-                .expect_err("serving closure must be rejected"),
-            AgentdNeuronControlErrorV2::InvalidTransition
-        );
+        let error = controller
+            .close_unexecuted_operation(&input(3))
+            .expect_err("serving closure must be rejected");
+        assert_eq!(error.stable_code(), "invalid_lifecycle_transition");
     }
 }
