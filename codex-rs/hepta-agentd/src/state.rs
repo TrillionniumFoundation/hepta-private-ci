@@ -586,6 +586,10 @@ impl AgentdState {
             return Ok(None);
         };
 
+        // Authenticate the durable owner and current Fleet fence before any
+        // provider is allowed to derive seven-owner inputs. This applies to
+        // abstain and slow-path outcomes as well as a Ready continuation.
+        let first_now = self.require_current_run_start(record)?;
         let invocation = provider.build(&self.identity, record)?;
         invocation.validate(&self.identity, record)?;
 
@@ -607,14 +611,13 @@ impl AgentdState {
                 ))
             })?;
 
+        // Owner preparation is asynchronous. Revalidate the durable signed
+        // Objective and Fleet fence after it completes before reporting any
+        // canonical disposition or mutating the run coordinator.
+        let second_now = self.require_current_run_start(record)?;
+        let now_ms = first_now.max(second_now);
         match outcome {
             crate::AgentdIntelligenceProductOutcomeV1::Ready(prepared) => {
-                // Owner preparation is asynchronous. Revalidate the durable
-                // signed Objective and Fleet fence again after it completes,
-                // twice as the compatibility path does at its final boundary.
-                let first_now = self.require_current_run_start(record)?;
-                let second_now = self.require_current_run_start(record)?;
-                let now_ms = first_now.max(second_now);
                 let snapshot = prepared.run_snapshot();
                 let attachment = prepared.context_attachment();
                 let mut runs = self.runs.lock().map_err(poisoned_state)?;

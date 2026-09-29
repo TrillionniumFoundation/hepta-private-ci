@@ -105,9 +105,6 @@ mod tests {
             expected,
             objective_run_fence_digest_v1("agent.example", 7, 9)
         );
-        assert_ne!(
-            expected,
-            objective_run_fence_digest_v1("agent.other", 7, 8)
-        );
+        assert_ne!(expected, objective_run_fence_digest_v1("agent.other", 7, 8));
     }
 }

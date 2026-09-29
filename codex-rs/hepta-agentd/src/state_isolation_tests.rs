@@ -27,6 +27,18 @@ use crate::AgentdPayload;
 use crate::LifecycleSnapshot;
 use crate::RunPhase;
 
+struct MustNotBuildCanonicalInvocation;
+
+impl crate::AgentdIntelligenceInvocationProviderV1 for MustNotBuildCanonicalInvocation {
+    fn build(
+        &self,
+        _identity: &crate::AgentdIdentity,
+        _record: &RunStartRecordV1,
+    ) -> Result<crate::AgentdIntelligenceInvocationV1, crate::AgentdError> {
+        panic!("provider must not run before durable owner currentness validation")
+    }
+}
+
 fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> {
     let temp = tempfile::tempdir()?;
     let root = temp.path().canonicalize()?;
@@ -583,6 +595,26 @@ async fn current_durable_run_start_requires_live_owner_trust() {
     assert_eq!(admitted.generation, 2);
 
     write_trust(true);
+    let intelligence_signer = SigningKey::from_bytes(&[78; 32]);
+    let intelligence_runner = crate::AgentdIntelligenceProductRunnerV1::new(
+        temp.path().join("unopened-intelligence-authority.json"),
+        crate::IntelligenceAuthorityVerifierV1 {
+            signer_id: "intelligence.owner".to_string(),
+            verifying_key: intelligence_signer.verifying_key().to_bytes(),
+        },
+    )
+    .expect("bounded runner");
+    state
+        .intelligence_product
+        .set(Arc::new(intelligence_runner))
+        .map_err(|_| ())
+        .expect("attach intelligence runner");
+    state
+        .intelligence_invocation
+        .set(Arc::new(MustNotBuildCanonicalInvocation))
+        .map_err(|_| ())
+        .expect("attach intelligence provider");
+
     let second_id = StableId::new("run.durable.revoked").expect("run id");
     let mut second = journal
         .get(&run_id)
@@ -603,6 +635,10 @@ async fn current_durable_run_start_requires_live_owner_trust() {
         expires_at_ms: second.authentication.expires_at_ms,
     };
     second.authentication.signature = key.sign(&second_claims.signing_bytes()).to_bytes();
+    assert!(
+        state.start_canonical_intelligence(&second).await.is_err(),
+        "revoked durable owner must fail before the provider can run"
+    );
     let predecessor = journal.head_digest();
     journal
         .append(predecessor, second)
