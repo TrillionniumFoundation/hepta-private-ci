@@ -26,75 +26,143 @@ on:
       - codex-rs/hepta-infer-worker-host/src/native_run_control.rs
   workflow_dispatch:
 
-# This is an explicitly scoped SOURCE AUTHORING job, not qualification.
-# The cognitive-read-qualification workflow remains read-only and unchanged.
+# Mutable repair is deliberately separated from immutable qualification. This
+# job may author a proposal in its local checkout, but it has no repository
+# write credential and can only publish a reviewable artifact.
 permissions:
   contents: read
 
 concurrency:
   group: cognitive-read-source-preparation-${{ github.ref }}
-  # A superseded authoring candidate may not hold the latest one in the queue.
-  # The remote SHA checks and non-force push still reject concurrent authors.
   cancel-in-progress: true
 
 jobs:
   prepare:
     if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/work/cognitive-read-production-convergence-20260927'
-    # Source authoring remains on a standard GitHub-hosted runner. The
-    # repository's self-hosted target machines are not exposed to branch-authored
-    # code, and qualification/target-host acceptance remain separate workflows.
     runs-on: macos-14
-    timeout-minutes: 45
+    timeout-minutes: 60
     permissions:
-      contents: write
+      contents: read
     env:
       SOURCE_BRANCH: work/cognitive-read-production-convergence-20260927
+      PROPOSAL_DIR: ${{ runner.temp }}/cognitive-read-preparation
     steps:
-      - name: Check out exact authored source
+      - name: Check out exact authored source without persistent credentials
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
           fetch-depth: 0
-          persist-credentials: true
+          persist-credentials: false
 
       - name: Prepare repository CI tools
         uses: ./.github/actions/setup-ci
 
-      - name: Prepare ordinary source and map commits
+      - name: Build a local-only source proposal
+        id: proposal
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          test "$(git ls-remote origin "refs/heads/$SOURCE_BRANCH" | cut -f1)" = "$GITHUB_SHA"
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          python3 scripts/run-cognitive-read-convergence-repair.py --expected-sha "$GITHUB_SHA"
+          test -z "$(git status --porcelain)"
+          mkdir -p "$PROPOSAL_DIR/files"
+
+          # Local commits make the proposal reproducible and preserve the
+          # existing repair helper's exact-source invariants. No remote write
+          # credential exists in this job.
+          git config user.name 'cognitive.read source proposal'
+          git config user.email 'cognitive-read-proposal@invalid.example'
+          python3 scripts/run-cognitive-read-convergence-repair.py \
+            --expected-sha "$GITHUB_SHA" \
+            >"$PROPOSAL_DIR/repair.log" 2>&1
           repaired_head="$(git rev-parse HEAD)"
-          python3 scripts/prepare-cognitive-read-durable-handoff.py --expected-sha "$repaired_head"
-          cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
-          test -z "$(git status --porcelain --untracked-files=no)"
-          mkdir -p "$RUNNER_TEMP/cognitive-read-preparation"
-          git diff --binary "$GITHUB_SHA" HEAD > "$RUNNER_TEMP/cognitive-read-preparation/source.patch"
-          git log --format=fuller "$GITHUB_SHA"..HEAD > "$RUNNER_TEMP/cognitive-read-preparation/commits.txt"
-          git rev-parse HEAD > "$RUNNER_TEMP/cognitive-read-preparation/prepared-head.txt"
-          # A concurrent author is never overwritten. No force push or lease
-          # overrides are used; qualification must run on the resulting HEAD.
-          test "$(git ls-remote origin "refs/heads/$SOURCE_BRANCH" | cut -f1)" = "$GITHUB_SHA"
-          git push origin "HEAD:refs/heads/$SOURCE_BRANCH"
+          python3 scripts/prepare-cognitive-read-durable-handoff.py \
+            --expected-sha "$repaired_head" \
+            >"$PROPOSAL_DIR/durable-handoff.log" 2>&1
+
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check \
+            >"$PROPOSAL_DIR/rustfmt.log" 2>&1
+          test -z "$(git status --porcelain)"
+
+          prepared_head="$(git rev-parse HEAD)"
+          git diff --binary "$GITHUB_SHA" "$prepared_head" \
+            >"$PROPOSAL_DIR/source.patch"
+          git diff --name-status "$GITHUB_SHA" "$prepared_head" \
+            >"$PROPOSAL_DIR/changed-files.txt"
+          git log --format=fuller "$GITHUB_SHA".."$prepared_head" \
+            >"$PROPOSAL_DIR/commits.txt"
+
+          python3 - "$GITHUB_SHA" "$prepared_head" "$PROPOSAL_DIR" <<'PY'
+          from __future__ import annotations
+          import hashlib
+          import json
+          from pathlib import Path
+          import shutil
+          import subprocess
+          import sys
+
+          source, prepared, proposal = sys.argv[1:]
+          root = Path.cwd()
+          out = Path(proposal)
+          changed = subprocess.check_output(
+              ["git", "diff", "--name-only", "-z", source, prepared]
+          ).decode().split("\0")
+          copied: list[str] = []
+          deleted: list[str] = []
+          for item in changed:
+              if not item:
+                  continue
+              path = root / item
+              if path.is_file():
+                  destination = out / "files" / item
+                  destination.parent.mkdir(parents=True, exist_ok=True)
+                  shutil.copyfile(path, destination)
+                  copied.append(item)
+              else:
+                  deleted.append(item)
+
+          lock = root / "codex-rs" / "Cargo.lock"
+          manifest = {
+              "schema": 1,
+              "kind": "cognitive-read-local-source-proposal",
+              "qualification": False,
+              "source_sha": source,
+              "source_tree": subprocess.check_output(
+                  ["git", "rev-parse", f"{source}^{{tree}}"], text=True
+              ).strip(),
+              "prepared_sha": prepared,
+              "prepared_tree": subprocess.check_output(
+                  ["git", "rev-parse", f"{prepared}^{{tree}}"], text=True
+              ).strip(),
+              "cargo_lock_sha256": hashlib.sha256(lock.read_bytes()).hexdigest(),
+              "copied_files": copied,
+              "deleted_files": deleted,
+              "toolchain": {
+                  "rustc": subprocess.check_output(["rustc", "--version"], text=True).strip(),
+                  "cargo": subprocess.check_output(["cargo", "--version"], text=True).strip(),
+              },
+          }
+          (out / "manifest.json").write_text(
+              json.dumps(manifest, indent=2) + "\n", encoding="utf-8"
+          )
+          PY
+
+          # Credential-free and clean after local authoring. Qualification will
+          # run only after a normal reviewed commit applies this artifact.
+          test -z "$(git config --local --get-regexp 'http\..*extraheader|credential\.|includeif\..*credentials' || true)"
+          echo "prepared_head=$prepared_head" >> "$GITHUB_OUTPUT"
           {
-            echo '## Source preparation, not qualification'
-            echo "Authored input: $GITHUB_SHA"
-            echo "Prepared head: $(git rev-parse HEAD)"
-            echo 'Deterministic qualification drift, the selected owner integration and durable read-request handoff are authored only through existing owners.'
-            echo 'Preparation verifies exact source shape, refreshes Cargo.lock through the ordinary workspace manifest, formats reviewed paths and refreshes the immutable map without replaying selected-cut edits.'
-            echo 'No package, product, acceptance, activation or release pass is claimed.'
+            echo '## Local-only cognitive.read source proposal'
+            echo "Input SHA: $GITHUB_SHA"
+            echo "Prepared local SHA: $prepared_head"
+            echo 'The job had contents:read, persisted no checkout credential, and did not commit or push to any remote branch.'
+            echo 'This artifact is a mutable repair proposal, not qualification, acceptance, activation, promotion or release evidence.'
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Retain source-authoring patch
+      - name: Retain the reviewable proposal artifact
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: cognitive-read-source-preparation-${{ github.sha }}
           path: ${{ runner.temp }}/cognitive-read-preparation
-          if-no-files-found: warn
-          retention-days: 7
+          if-no-files-found: error
+          retention-days: 14
