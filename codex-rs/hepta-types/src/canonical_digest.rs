@@ -6,6 +6,11 @@ use crate::IdProfileV1;
 use crate::StableId;
 use crate::identity::validate_id_profile_raw;
 
+#[path = "canonical_sink.rs"]
+mod sink;
+use sink::CanonicalSink;
+use sink::DigestSink;
+
 pub const MAX_CANONICAL_BYTES_V1: usize = 262_144;
 pub const MAX_CANONICAL_CONTAINER_ITEMS_V1: usize = 4_096;
 pub const MAX_CANONICAL_DEPTH_V1: usize = 16;
@@ -47,6 +52,30 @@ pub fn canonical_encode_v1(
     schema_version: u32,
     fields: &[CanonicalFieldV1<'_>],
 ) -> Result<Vec<u8>, CanonicalDigestError> {
+    let mut output = Vec::new();
+    encode_fields(type_id, schema_version, fields, &mut output)?;
+    Ok(output)
+}
+
+/// Domain-separated, length-framed canonical SHA-256 digest. Uses the same
+/// encoder as `canonical_encode_v1`, without allocating the complete preimage.
+/// An encoding error discards the partial hasher and never publishes a digest.
+pub fn canonical_digest_v1(
+    type_id: &StableId,
+    schema_version: u32,
+    fields: &[CanonicalFieldV1<'_>],
+) -> Result<Digest32, CanonicalDigestError> {
+    let mut output = DigestSink::new();
+    encode_fields(type_id, schema_version, fields, &mut output)?;
+    Ok(output.finish())
+}
+
+fn encode_fields(
+    type_id: &StableId,
+    schema_version: u32,
+    fields: &[CanonicalFieldV1<'_>],
+    output: &mut impl CanonicalSink,
+) -> Result<(), CanonicalDigestError> {
     if schema_version == 0 {
         return Err(CanonicalDigestError::InvalidSchemaVersion);
     }
@@ -55,15 +84,13 @@ pub fn canonical_encode_v1(
     if fields.len() > MAX_CANONICAL_CONTAINER_ITEMS_V1 {
         return Err(CanonicalDigestError::TooManyItems);
     }
-
-    let mut output = Vec::new();
-    append(&mut output, &MAGIC)?;
-    append_u16(&mut output, ENCODING_VERSION)?;
-    append_len_u16(&mut output, DOMAIN)?;
-    append_len_u16(&mut output, type_id.as_str().as_bytes())?;
-    append_u32(&mut output, schema_version)?;
+    append(output, &MAGIC)?;
+    append_u16(output, ENCODING_VERSION)?;
+    append_len_u16(output, DOMAIN)?;
+    append_len_u16(output, type_id.as_str().as_bytes())?;
+    append_u32(output, schema_version)?;
     append_u32(
-        &mut output,
+        output,
         u32::try_from(fields.len()).map_err(|_| CanonicalDigestError::TooManyItems)?,
     )?;
 
@@ -76,19 +103,10 @@ pub fn canonical_encode_v1(
             return Err(CanonicalDigestError::DuplicateField);
         }
         previous = Some(field.name.as_bytes());
-        append_len_u16(&mut output, field.name.as_bytes())?;
-        encode_value(field.value, &mut output, 0)?;
+        append_len_u16(output, field.name.as_bytes())?;
+        encode_value(field.value, output, /*depth*/ 0)?;
     }
-    Ok(output)
-}
-
-/// Domain-separated, length-framed canonical SHA-256 digest.
-pub fn canonical_digest_v1(
-    type_id: &StableId,
-    schema_version: u32,
-    fields: &[CanonicalFieldV1<'_>],
-) -> Result<Digest32, CanonicalDigestError> {
-    canonical_encode_v1(type_id, schema_version, fields).map(|encoded| Digest32::of_bytes(&encoded))
+    Ok(())
 }
 
 /// Validates exact canonical V1 bytes without constructing domain objects or
@@ -135,7 +153,7 @@ pub fn canonical_validate_v1(encoded: &[u8]) -> Result<Digest32, CanonicalDigest
             }
         }
         previous = Some(name_bytes);
-        validate_encoded_value(&mut reader, 0)?;
+        validate_encoded_value(&mut reader, /*depth*/ 0)?;
     }
     if !reader.is_complete() {
         return Err(CanonicalDigestError::TrailingBytes);
@@ -273,43 +291,43 @@ impl<'a> Reader<'a> {
 
 fn encode_value(
     value: CanonicalValueV1<'_>,
-    output: &mut Vec<u8>,
+    output: &mut impl CanonicalSink,
     depth: usize,
 ) -> Result<(), CanonicalDigestError> {
     match value {
         CanonicalValueV1::Bool(value) => {
-            append_u8(output, 0x01)?;
+            append_u8(output, /*value*/ 0x01)?;
             append_u8(output, u8::from(value))
         }
         CanonicalValueV1::U64(value) => {
-            append_u8(output, 0x02)?;
+            append_u8(output, /*value*/ 0x02)?;
             append(output, &value.to_be_bytes())
         }
         CanonicalValueV1::U128(value) => {
-            append_u8(output, 0x03)?;
+            append_u8(output, /*value*/ 0x03)?;
             append(output, &value.to_be_bytes())
         }
         CanonicalValueV1::I64(value) => {
-            append_u8(output, 0x04)?;
+            append_u8(output, /*value*/ 0x04)?;
             append(output, &value.to_be_bytes())
         }
         CanonicalValueV1::Bytes(value) => {
-            append_u8(output, 0x05)?;
+            append_u8(output, /*value*/ 0x05)?;
             append_len_u32(output, value)
         }
         CanonicalValueV1::Text(value) => {
             if value.contains('\0') {
                 return Err(CanonicalDigestError::InvalidText);
             }
-            append_u8(output, 0x06)?;
+            append_u8(output, /*value*/ 0x06)?;
             append_len_u32(output, value.as_bytes())
         }
         CanonicalValueV1::Digest(value) => {
-            append_u8(output, 0x07)?;
+            append_u8(output, /*value*/ 0x07)?;
             append(output, value.as_array())
         }
         CanonicalValueV1::StableId(value) => {
-            append_u8(output, 0x08)?;
+            append_u8(output, /*value*/ 0x08)?;
             append_len_u16(output, value.as_str().as_bytes())
         }
         CanonicalValueV1::Array(values) => {
@@ -319,7 +337,7 @@ fn encode_value(
             if values.len() > MAX_CANONICAL_CONTAINER_ITEMS_V1 {
                 return Err(CanonicalDigestError::TooManyItems);
             }
-            append_u8(output, 0x09)?;
+            append_u8(output, /*value*/ 0x09)?;
             append_u32(
                 output,
                 u32::try_from(values.len()).map_err(|_| CanonicalDigestError::TooManyItems)?,
@@ -336,7 +354,7 @@ fn encode_value(
             if entries.len() > MAX_CANONICAL_CONTAINER_ITEMS_V1 {
                 return Err(CanonicalDigestError::TooManyItems);
             }
-            append_u8(output, 0x0a)?;
+            append_u8(output, /*value*/ 0x0a)?;
             append_u32(
                 output,
                 u32::try_from(entries.len()).map_err(|_| CanonicalDigestError::TooManyItems)?,
@@ -375,7 +393,7 @@ fn validate_label(value: &str) -> Result<(), CanonicalDigestError> {
     Ok(())
 }
 
-fn append(output: &mut Vec<u8>, value: &[u8]) -> Result<(), CanonicalDigestError> {
+fn append(output: &mut impl CanonicalSink, value: &[u8]) -> Result<(), CanonicalDigestError> {
     let length = output
         .len()
         .checked_add(value.len())
@@ -387,25 +405,25 @@ fn append(output: &mut Vec<u8>, value: &[u8]) -> Result<(), CanonicalDigestError
     Ok(())
 }
 
-fn append_u8(output: &mut Vec<u8>, value: u8) -> Result<(), CanonicalDigestError> {
+fn append_u8(output: &mut impl CanonicalSink, value: u8) -> Result<(), CanonicalDigestError> {
     append(output, &[value])
 }
 
-fn append_u16(output: &mut Vec<u8>, value: u16) -> Result<(), CanonicalDigestError> {
+fn append_u16(output: &mut impl CanonicalSink, value: u16) -> Result<(), CanonicalDigestError> {
     append(output, &value.to_be_bytes())
 }
 
-fn append_u32(output: &mut Vec<u8>, value: u32) -> Result<(), CanonicalDigestError> {
+fn append_u32(output: &mut impl CanonicalSink, value: u32) -> Result<(), CanonicalDigestError> {
     append(output, &value.to_be_bytes())
 }
 
-fn append_len_u16(output: &mut Vec<u8>, value: &[u8]) -> Result<(), CanonicalDigestError> {
+fn append_len_u16(output: &mut impl CanonicalSink, value: &[u8]) -> Result<(), CanonicalDigestError> {
     let length = u16::try_from(value.len()).map_err(|_| CanonicalDigestError::TooLarge)?;
     append_u16(output, length)?;
     append(output, value)
 }
 
-fn append_len_u32(output: &mut Vec<u8>, value: &[u8]) -> Result<(), CanonicalDigestError> {
+fn append_len_u32(output: &mut impl CanonicalSink, value: &[u8]) -> Result<(), CanonicalDigestError> {
     let length = u32::try_from(value.len()).map_err(|_| CanonicalDigestError::TooLarge)?;
     append_u32(output, length)?;
     append(output, value)

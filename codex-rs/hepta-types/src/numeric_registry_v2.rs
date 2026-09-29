@@ -219,9 +219,13 @@ pub fn rescale_signal_registered_v2(
     }
     let normalization_definition =
         registry.require_normalization(source.schema.normalization_digest)?;
-    let (output, registered_v1) = rescale_signal_registered_receipt_v1(source, target, registry)?;
+    // The immutable definitions above admit both profiles and the shared
+    // normalization. The pure converter still validates both schemas, shape,
+    // unit, bounds, rounding, and overflow. Avoid repeated registry lookups and
+    // the unused V1 admission hash, not current authorization or snapshot checks.
+    let (output, conversion) = rescale_signal(source, target)?;
     let registry_snapshot = RegistrySnapshotIdentityV1::from_registry(generation, registry)?;
-    let conversion_receipt_digest = conversion_receipt_digest(&registered_v1.conversion)?;
+    let conversion_receipt_digest = conversion_receipt_digest(&conversion)?;
     let source_profile_definition_digest = source_definition.digest();
     let target_profile_definition_digest = target_definition.digest();
     let normalization_definition_digest = normalization_definition.digest();
@@ -235,7 +239,7 @@ pub fn rescale_signal_registered_v2(
     Ok((
         output,
         RegisteredNumericConversionReceiptV2 {
-            conversion: registered_v1.conversion,
+            conversion,
             registry_snapshot,
             source_profile_definition_digest,
             target_profile_definition_digest,
@@ -491,5 +495,52 @@ mod tests {
             receipt.verify_for_snapshot(&source, &target, &registry, wrong_digest),
             Err(NumericRegistryV2Error::ReceiptMismatch)
         );
+    }
+
+    #[test]
+    fn optimized_v2_matches_the_previous_v1_intermediate_path() {
+        let (registry, mut source, target) = fixture();
+        for raw in [-1_000_000, -500_001, -1, 0, 1, 500_001, 1_000_000] {
+            source.values = vec![raw, -raw];
+            let (old_output, old) =
+                rescale_signal_registered_receipt_v1(&source, &target, &registry)
+                    .expect("old path");
+            for generation in [1, 7, 8] {
+                let generation = Generation::new(generation).expect("generation");
+                let (output, receipt) =
+                    rescale_signal_registered_v2(&source, &target, &registry, generation)
+                        .expect("new path");
+                let snapshot = RegistrySnapshotIdentityV1::from_registry(generation, &registry)
+                    .expect("snapshot");
+                let conversion_digest =
+                    conversion_receipt_digest(&old.conversion).expect("conversion digest");
+                let source_definition = registry
+                    .require_numeric_profile(source.schema.profile)
+                    .expect("source definition")
+                    .digest();
+                let target_definition = registry
+                    .require_numeric_profile(target.profile)
+                    .expect("target definition")
+                    .digest();
+                let expected = RegisteredNumericConversionReceiptV2 {
+                    conversion: old.conversion.clone(),
+                    registry_snapshot: snapshot,
+                    source_profile_definition_digest: source_definition,
+                    target_profile_definition_digest: target_definition,
+                    normalization_definition_digest: source.schema.normalization_digest,
+                    conversion_receipt_digest: conversion_digest,
+                    admission_digest: admission_digest_v2(
+                        snapshot,
+                        source_definition,
+                        target_definition,
+                        source.schema.normalization_digest,
+                        conversion_digest,
+                    )
+                    .expect("prior V2 digest"),
+                    authority: NonAuthorizingPosture::DENY_ALL,
+                };
+                assert_eq!((output, receipt), (old_output.clone(), expected));
+            }
+        }
     }
 }

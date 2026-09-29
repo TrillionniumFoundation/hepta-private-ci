@@ -1,14 +1,22 @@
 use std::error::Error;
 use std::fmt;
 
-/// UTF-8 text whose encoded byte length is bounded at construction.
+/// UTF-8 text whose encoded byte length and retained String capacity are
+/// bounded at construction. Allocator overhead is not a physical RSS bound.
 #[derive(Clone, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct BoundedText<const MAX_BYTES: usize>(String);
 
 impl<const MAX_BYTES: usize> BoundedText<MAX_BYTES> {
+    /// Accept owned input. For untrusted borrowed input use `try_from_str`:
+    /// `Into<String>` may allocate before this function can inspect the length.
     pub fn new(value: impl Into<String>) -> Result<Self, BoundedValueError> {
         let value = value.into();
         validate_text(&value, MAX_BYTES)?;
+        let value = if value.capacity() > MAX_BYTES {
+            value.into_boxed_str().into_string()
+        } else {
+            value
+        };
         Ok(Self(value))
     }
 
@@ -39,13 +47,19 @@ impl<const MAX_BYTES: usize> fmt::Display for BoundedText<MAX_BYTES> {
     }
 }
 
-/// Opaque bytes whose size is bounded at construction.
+/// Opaque bytes whose length and retained Vec capacity are bounded at
+/// construction. This does not bound allocations made by the caller beforehand.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct BoundedBytes<const MAX_BYTES: usize>(Vec<u8>);
 
 impl<const MAX_BYTES: usize> BoundedBytes<MAX_BYTES> {
     pub fn new(value: Vec<u8>) -> Result<Self, BoundedValueError> {
         validate_length(value.len(), MAX_BYTES)?;
+        let value = if value.capacity() > MAX_BYTES {
+            value.into_boxed_slice().into_vec()
+        } else {
+            value
+        };
         Ok(Self(value))
     }
 
