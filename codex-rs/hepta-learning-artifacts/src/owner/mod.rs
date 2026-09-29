@@ -29,6 +29,7 @@ pub use capability_validation::ArtifactOwnerCapabilityError;
 pub use capability_validation::ArtifactOwnerClientGrantV1;
 pub use capability_validation::ArtifactOwnerKeyringV1;
 pub use capability_validation::SignedArtifactOwnerRequestV1;
+pub(crate) use durable_contract::DurableCommitInputsV1;
 pub use durable_contract::DurableCommitReceiptV1;
 pub use durable_contract::DurableContractErrorV1;
 pub use durable_contract::DurableHeadReceiptV1;
