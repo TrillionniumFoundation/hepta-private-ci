@@ -2,20 +2,26 @@
 //!
 //! The supervisor does not execute turns or forward messages, models, or tokens.
 
+mod authority_bundle;
 mod authority_signer;
 mod control;
 mod daemon;
 mod daemon_client;
 mod daemon_protocol;
 mod driver;
+mod durability;
 mod durable_publish;
 mod error;
 mod lease;
+mod lock_telemetry;
 mod matrix;
 mod model;
 mod module_runtime;
 mod process_deadline;
+#[cfg(feature = "qualification")]
+mod qualification_faults;
 mod recovery;
+mod recovery_diagnostics;
 mod release;
 mod release_transaction;
 mod restart_budget;
@@ -33,9 +39,16 @@ mod supervisor_qualification;
 mod tick;
 mod writer_handoff;
 
+#[cfg(all(test, feature = "qualification"))]
+mod durability_qualification_tests;
+
 #[cfg(unix)]
 mod unix;
 
+pub use authority_bundle::PRODUCTION_AUTHORITY_BUNDLE_NAMESPACE;
+pub use authority_bundle::PRODUCTION_AUTHORITY_BUNDLE_SCHEMA_VERSION;
+pub use authority_bundle::ProductionAuthorityBundle;
+pub use authority_bundle::ProductionAuthorityBundleError;
 pub use authority_signer::ExternalSignerError;
 pub use authority_signer::MAX_SIGNING_KEY_INPUT_BYTES;
 pub use authority_signer::MAX_SIGNING_REQUEST_BYTES;
@@ -76,6 +89,8 @@ pub use driver::SpawnSpec;
 pub use driver::SpawnedProcess;
 pub use error::ProcessDriverError;
 pub use error::SupervisorError;
+pub use lock_telemetry::LockTelemetrySnapshot;
+pub use lock_telemetry::MeasuredMutex;
 pub use model::AgentCommand;
 pub use model::AgentFault;
 pub use model::AgentRelease;
@@ -102,6 +117,20 @@ pub use process_deadline::ProcessDeadlinePolicyV1;
 pub use process_deadline::ProcessTerminationOutcomeV1;
 pub use process_deadline::enforce_process_deadline_v1;
 pub use process_deadline::enforce_process_termination_deadline_v1;
+#[cfg(feature = "qualification")]
+pub use qualification_faults::QualificationCrashProbeError;
+#[cfg(feature = "qualification")]
+pub use qualification_faults::QualificationCrashProbeReceipt;
+#[cfg(feature = "qualification")]
+pub use qualification_faults::inspect_qualification_crash_probe;
+#[cfg(feature = "qualification")]
+pub use qualification_faults::publish_qualification_crash_probe;
+pub use recovery_diagnostics::RecoveryBlockerDiagnostic;
+pub use recovery_diagnostics::RecoveryBlockerKind;
+pub use recovery_diagnostics::RecoveryDiagnostic;
+pub use recovery_diagnostics::RecoveryDiagnosticContext;
+pub use recovery_diagnostics::RecoveryOperatorAction;
+pub use recovery_diagnostics::diagnose_recovery;
 pub use release_transaction::DurableReleaseTransaction;
 pub use release_transaction::ReleaseTransactionKind;
 pub use release_transaction::ReleaseTransactionPhase;
@@ -128,6 +157,7 @@ pub use signed_authority::H7H89ProductionGrantVerifier;
 pub use signed_authority::H7H89ProductionTransition;
 pub use signed_authority::PRODUCTION_RECOVERY_NAMESPACE;
 pub use signed_authority::PRODUCTION_RECOVERY_SCHEMA_VERSION;
+pub use signed_authority::ProductionAuthorityError;
 pub use signed_authority::ProductionMutationReceipt;
 pub use signed_authority::ProductionMutationState;
 pub use signed_authority::ProductionMutationStatus;
