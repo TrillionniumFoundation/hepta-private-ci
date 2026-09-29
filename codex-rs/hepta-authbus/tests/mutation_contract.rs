@@ -1,7 +1,4 @@
-#![cfg(all(
-    unix,
-    not(any(target_os = "illumos", target_os = "solaris"))
-))]
+#![cfg(all(unix, not(any(target_os = "illumos", target_os = "solaris"))))]
 
 use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;
@@ -131,10 +128,7 @@ async fn deterministic_rejection_does_not_claim_separately_observed_time_was_rol
         )
         .await
         .expect_err("stale revision must reject replacement");
-    assert!(matches!(
-        &rejected,
-        AuthBusAuthorityError::RevisionConflict
-    ));
+    assert!(matches!(&rejected, AuthBusAuthorityError::RevisionConflict));
     assert_eq!(
         rejected.mutation_disposition(),
         AuthBusMutationDisposition::NotCommitted

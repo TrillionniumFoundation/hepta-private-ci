@@ -213,9 +213,7 @@ fn acquire_process_lock(file: &File) -> Result<(), AuthBusAuthorityError> {
     let lock = whole_file_lock(nix::libc::F_WRLCK as nix::libc::c_short);
     match nix::fcntl::fcntl(file, nix::fcntl::FcntlArg::F_OFD_SETLK(&lock)) {
         Ok(_) => Ok(()),
-        Err(error)
-            if error == nix::errno::Errno::EAGAIN || error == nix::errno::Errno::EACCES =>
-        {
+        Err(error) if error == nix::errno::Errno::EAGAIN || error == nix::errno::Errno::EACCES => {
             Err(AuthBusAuthorityError::OwnerAlreadyActive)
         }
         Err(error) => Err(AuthBusAuthorityError::Storage(format!(

@@ -46,10 +46,7 @@ fn owner_lock_path(database: &Path) -> PathBuf {
         .expect("database file name")
         .to_os_string();
     name.push(".authbus-owner-lock.sqlite");
-    database
-        .parent()
-        .expect("database parent")
-        .join(name)
+    database.parent().expect("database parent").join(name)
 }
 
 fn test_command(test_name: &str) -> Command {
@@ -173,12 +170,9 @@ async fn legacy_posix_owner_blocks_new_ofd_owner_during_rolling_replacement() {
     let child = command.spawn().expect("spawn legacy POSIX holder");
     wait_for_path(&ready);
 
-    let blocked = AuthBusAuthorityHost::bootstrap(
-        &paths.database,
-        paths.checkpoint.clone(),
-        "new-ofd-owner",
-    )
-    .await;
+    let blocked =
+        AuthBusAuthorityHost::bootstrap(&paths.database, paths.checkpoint.clone(), "new-ofd-owner")
+            .await;
     std::fs::write(&release, b"release").expect("release legacy POSIX holder");
     wait_for_child(child, "legacy POSIX holder");
     assert!(matches!(
@@ -186,13 +180,9 @@ async fn legacy_posix_owner_blocks_new_ofd_owner_during_rolling_replacement() {
         Err(AuthBusAuthorityError::OwnerAlreadyActive)
     ));
 
-    AuthBusAuthorityHost::bootstrap(
-        &paths.database,
-        paths.checkpoint.clone(),
-        "new-ofd-owner",
-    )
-    .await
-    .expect("new OFD owner after legacy release");
+    AuthBusAuthorityHost::bootstrap(&paths.database, paths.checkpoint.clone(), "new-ofd-owner")
+        .await
+        .expect("new OFD owner after legacy release");
 }
 
 #[tokio::test]
@@ -220,8 +210,7 @@ fn legacy_posix_probe_process() {
     if std::env::var_os("AUTHBUS_LEGACY_POSIX_PROBE").is_none() {
         return;
     }
-    let lock_path =
-        PathBuf::from(std::env::var_os("AUTHBUS_OWNER_LOCK").expect("child lock path"));
+    let lock_path = PathBuf::from(std::env::var_os("AUTHBUS_OWNER_LOCK").expect("child lock path"));
     let marker =
         PathBuf::from(std::env::var_os("AUTHBUS_OWNER_MARKER").expect("child marker path"));
     let file = OpenOptions::new()
@@ -229,18 +218,16 @@ fn legacy_posix_probe_process() {
         .write(true)
         .open(lock_path)
         .expect("open owner lock");
-    let state = match rustix::fs::fcntl_lock(
-        &file,
-        rustix::fs::FlockOperation::NonBlockingLockExclusive,
-    ) {
-        Ok(()) => "acquired",
-        Err(error)
-            if error == rustix::io::Errno::AGAIN || error == rustix::io::Errno::ACCES =>
-        {
-            "blocked"
-        }
-        Err(error) => panic!("unexpected legacy POSIX probe result: {error}"),
-    };
+    let state =
+        match rustix::fs::fcntl_lock(&file, rustix::fs::FlockOperation::NonBlockingLockExclusive) {
+            Ok(()) => "acquired",
+            Err(error)
+                if error == rustix::io::Errno::AGAIN || error == rustix::io::Errno::ACCES =>
+            {
+                "blocked"
+            }
+            Err(error) => panic!("unexpected legacy POSIX probe result: {error}"),
+        };
     std::fs::write(marker, state).expect("write legacy POSIX probe result");
 }
 
@@ -249,10 +236,8 @@ fn legacy_posix_holder_process() {
     if std::env::var_os("AUTHBUS_LEGACY_POSIX_HOLDER").is_none() {
         return;
     }
-    let lock_path =
-        PathBuf::from(std::env::var_os("AUTHBUS_OWNER_LOCK").expect("child lock path"));
-    let ready =
-        PathBuf::from(std::env::var_os("AUTHBUS_OWNER_READY").expect("child ready path"));
+    let lock_path = PathBuf::from(std::env::var_os("AUTHBUS_OWNER_LOCK").expect("child lock path"));
+    let ready = PathBuf::from(std::env::var_os("AUTHBUS_OWNER_READY").expect("child ready path"));
     let release =
         PathBuf::from(std::env::var_os("AUTHBUS_OWNER_RELEASE").expect("child release path"));
     let file = OpenOptions::new()
