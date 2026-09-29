@@ -1,0 +1,38 @@
+name: Objective source snapshot
+
+on:
+  push:
+    branches:
+      - automation/objective-source-snapshot-20260929
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Pack fixed candidate sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          tar -czf "$RUNNER_TEMP/objective-source-snapshot.tar.gz" \
+            codex-rs/hepta-agentd/tests/objective_product_e2e.rs \
+            codex-rs/hepta-agentd/src/browser_servo.rs \
+            codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs \
+            codex-rs/hepta-agentd/src/plasticity_learning_producer.rs \
+            codex-rs/hepta-agentd/src/state.rs \
+            codex-rs/hepta-agentd/src/automation_effect_host.rs \
+            codex-rs/hepta-agentd/src/cognitive_context.rs \
+            codex-rs/hepta-agentd/src/intelligence_product.rs \
+            codex-rs/hepta-agentd/src/objective_runtime.rs \
+            codex-rs/hepta-agentd/src/plasticity_host.rs
+      - name: Upload fixed candidate sources
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: objective-source-snapshot
+          path: ${{ runner.temp }}/objective-source-snapshot.tar.gz
+          retention-days: 1
