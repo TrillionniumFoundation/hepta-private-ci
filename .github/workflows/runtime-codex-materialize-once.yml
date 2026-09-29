@@ -11,12 +11,12 @@ permissions:
   contents: write
 
 concurrency:
-  group: runtime-codex-materialize-once-arm-${{ github.ref }}
+  group: runtime-codex-materialize-once-rog-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   materialize:
-    runs-on: ubuntu-24.04-arm
+    runs-on: [self-hosted, linux, x64, rog]
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
