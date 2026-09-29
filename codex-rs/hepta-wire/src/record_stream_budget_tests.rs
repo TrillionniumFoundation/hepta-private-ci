@@ -64,7 +64,7 @@ fn records(channel: u8, count: u32) -> TestResult<(Vec<DecodedEnvelope>, Vec<u8>
         let frame = DecodedEnvelope::V2(WireEnvelopeV2::new(
             StableId::new("schema.record-budget.v1")?,
             StableId::new("producer.record-budget")?,
-            Generation::new(generation)?,
+            Generation::new(u64::from(generation))?,
             format!("private-payload-{generation}").into_bytes(),
         )?);
         bytes.extend(sender.seal_envelope(&frame)?);

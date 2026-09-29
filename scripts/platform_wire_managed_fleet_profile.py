@@ -103,7 +103,8 @@ def validate(report: Any, rounds: int = 32) -> None:
             "last completion turn",
             first,
         )
-        gap = integer(row.get("scheduler_fairness_gap_turns_max"), "fairness gap", 1)
+        # Equal completion turns are valid. Zero is not missing evidence.
+        gap = integer(row.get("scheduler_fairness_gap_turns_max"), "fairness gap")
         if gap != last - first:
             raise ValueError("fleet fairness-gap accounting is inconsistent")
         timing = row.get("round_elapsed")
@@ -218,6 +219,26 @@ class FleetProfileTests(unittest.TestCase):
             report = fixture()
             report["scenarios"][0][field] = value
             with self.assertRaises(ValueError):
+                validate(report)
+
+    def test_accepts_same_turn_completion(self) -> None:
+        report = fixture()
+        for row in report["scenarios"]:
+            row["scheduler_turns_to_last_completion_max"] = row[
+                "scheduler_turns_to_first_completion_max"
+            ]
+            row["scheduler_fairness_gap_turns_max"] = 0
+        validate(report)
+
+    def test_rejects_invalid_or_false_zero_gap(self) -> None:
+        for value in (-1, True, False, 0, None, 0.0):
+            report = fixture()
+            row = report["scenarios"][0]
+            row["scheduler_turns_to_last_completion_max"] = row[
+                "scheduler_turns_to_first_completion_max"
+            ] + 1
+            row["scheduler_fairness_gap_turns_max"] = value
+            with self.subTest(value=value), self.assertRaises(ValueError):
                 validate(report)
 
     def test_rejects_debug_profile_and_wrong_schema(self) -> None:

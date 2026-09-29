@@ -60,7 +60,7 @@ fn envelope(generation: u32, size: usize) -> TestResult<DecodedEnvelope> {
     Ok(DecodedEnvelope::V2(WireEnvelopeV2::new(
         StableId::new("schema.output-budget.v1")?,
         StableId::new("producer.output-budget")?,
-        Generation::new(generation)?,
+        Generation::new(u64::from(generation))?,
         vec![b'x'; size],
     )?))
 }
