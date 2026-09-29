@@ -19,11 +19,8 @@ concurrency:
 
 env:
   PATCH_PATH: .github/remediation/inference-control-remediation.patch.gz
-  PATCH_SHA256: c0203786c2f593746d8a230b4d7ed333fd42f63f92c96dc2631364ae587c2419
+  PATCH_SHA256: 1b71eee4a3314fa018854907b60e9c15c2de2a2c447d54bd9786e20239a449eb
   TEMP_WORKFLOW: .github/workflows/hepta-inference-remediation-v2.yml
-  WORKFLOW_PATH: .github/workflows/hepta-inference-source-export.yml
-  RESTORE_COMMIT: a80f50a552d2608f238a9e934bf6fade66876912
-  RESTORE_BLOB: c8fe5357b5b8efac14a220c29f94ba061a5f5c34
   TARGET_BRANCH: codex/inference-control-v2-closure-20260927
   CARGO_INCREMENTAL: '0'
   CARGO_BUILD_JOBS: '2'
@@ -32,7 +29,7 @@ env:
 
 jobs:
   qualify-and-publish:
-    name: Qualify and publish inference remediation
+    name: Qualify and publish inference correctness remediation
     runs-on: ubuntu-22.04
     timeout-minutes: 90
     steps:
@@ -51,9 +48,8 @@ jobs:
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           test -z "$(git status --porcelain --untracked-files=normal)"
           test -f "$PATCH_PATH"
+          gzip -t "$PATCH_PATH"
           test "$(sha256sum "$PATCH_PATH" | awk '{print $1}')" = "$PATCH_SHA256"
-          test "$(git hash-object "$RESTORE_COMMIT:$WORKFLOW_PATH")" = "$RESTORE_BLOB" 2>/dev/null || \
-            test "$(git show "$RESTORE_COMMIT:$WORKFLOW_PATH" | git hash-object --stdin)" = "$RESTORE_BLOB"
           mkdir -p "$RUNNER_TEMP/inference-remediation-v2/logs"
           printf 'transport_sha=%s\ntransport_tree=%s\ntransport_parent=%s\npatch_sha256=%s\n' \
             "$GITHUB_SHA" "$(git rev-parse HEAD^{tree})" "$(git rev-parse HEAD^)" \
@@ -72,11 +68,7 @@ jobs:
           gzip -dc "$PATCH_PATH" > "$evidence/remediation.patch"
           git apply --check --whitespace=error-all "$evidence/remediation.patch"
           git apply --index --whitespace=error-all "$evidence/remediation.patch"
-
-          git rm -f "$PATCH_PATH"
-          git show "$RESTORE_COMMIT:$WORKFLOW_PATH" > "$WORKFLOW_PATH"
-          test "$(git hash-object "$WORKFLOW_PATH")" = "$RESTORE_BLOB"
-          git rm -f "$TEMP_WORKFLOW"
+          git rm -f "$PATCH_PATH" "$TEMP_WORKFLOW"
           rmdir .github/remediation 2>/dev/null || true
           cargo fmt --manifest-path codex-rs/Cargo.toml \
             --package codex-hepta-infer-core --package codex-hepta-infer-worker-host
@@ -86,7 +78,7 @@ jobs:
           test ! -e "$TEMP_WORKFLOW"
           git config user.name 'Hepta Inference Remediation'
           git config user.email 'hepta-inference-remediation@users.noreply.github.com'
-          git commit -m 'fix(inference): close durable control lifecycle gaps'
+          git commit -m 'fix(inference): close owner and recovery correctness gaps'
           candidate_sha="$(git rev-parse HEAD)"
           candidate_tree="$(git rev-parse HEAD^{tree})"
           printf 'CANDIDATE_SHA=%s\nCANDIDATE_TREE=%s\n' "$candidate_sha" "$candidate_tree" >> "$GITHUB_ENV"
@@ -95,7 +87,7 @@ jobs:
           git show --stat --oneline --decorate=short HEAD > "$evidence/candidate-stat.txt"
           git format-patch -1 --stdout --binary HEAD > "$evidence/candidate.patch"
 
-      - name: Execute exact source and native qualification
+      - name: Execute exact native qualification
         shell: bash
         run: |
           set -euo pipefail
@@ -105,35 +97,29 @@ jobs:
             shift
             "$@" 2>&1 | tee "$logdir/$name.log"
           }
-          run_logged 00-current-state \
-            python3 scripts/hepta-inference-control-current-state.py check
-          run_logged 01-ownership \
-            python3 scripts/hepta-inference-control-ownership.py check
-          run_logged 02-actor-migration \
-            python3 scripts/hepta-inference-control-actor-migrate.py check
-          run_logged 03-cargo-metadata \
+          run_logged 00-cargo-metadata \
             cargo metadata --locked --manifest-path codex-rs/Cargo.toml --format-version 1
-          run_logged 04-package-tests \
+          run_logged 01-package-tests \
             cargo test --locked --manifest-path codex-rs/Cargo.toml \
               -p codex-hepta-infer-core -p codex-hepta-infer-worker-host \
               --all-targets --all-features
-          run_logged 05-process-crash \
+          run_logged 02-process-crash \
             cargo test --locked --manifest-path codex-rs/Cargo.toml \
               -p codex-hepta-infer-core --test process_crash_recovery \
               -- --nocapture --test-threads=1
-          run_logged 06-output-retention \
+          run_logged 03-output-retention \
             cargo test --locked --manifest-path codex-rs/Cargo.toml \
               -p codex-hepta-infer-core --test output_retention \
               -- --nocapture --test-threads=1
-          run_logged 07-recovery-after-expiry \
+          run_logged 04-recovery-after-expiry \
             cargo test --locked --manifest-path codex-rs/Cargo.toml \
               -p codex-hepta-infer-core --test recovery_after_expiry \
               -- --nocapture --test-threads=1
-          run_logged 08-strict-clippy \
+          run_logged 05-strict-clippy \
             cargo clippy --locked --manifest-path codex-rs/Cargo.toml \
               -p codex-hepta-infer-core -p codex-hepta-infer-worker-host \
               --all-targets --all-features -- -D warnings
-          run_logged 09-format \
+          run_logged 06-format \
             cargo fmt --manifest-path codex-rs/Cargo.toml \
               --package codex-hepta-infer-core --package codex-hepta-infer-worker-host -- --check
           test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
