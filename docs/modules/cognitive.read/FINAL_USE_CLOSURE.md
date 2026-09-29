@@ -2,7 +2,8 @@
 
 Status: source changes and regression definitions; exact-head and deterministic
 merge execution remain required. All production, activation, independent
-acceptance and release flags remain false.
+acceptance and release flags remain false. See `README.md` for the current
+source identity and the distinction between executed checks and authored tests.
 
 ## Preserved ownership and budgets
 
@@ -105,17 +106,22 @@ mandatory, not replaced by these narrower tests.
 The source-preparation workflow is an explicitly scoped authoring operation. It
 may format already reviewed Rust paths, repair only Agentd's declared direct
 `codex-otel` dependency in Cargo.lock, and make an ordinary source commit followed
-by a documentation-only exact-map child. It refuses concurrent branch drift,
-non-fast-forward pushes, unrelated source edits and elevated acceptance flags.
-It does not mutate the read-only qualifier or issue a qualification pass.
+by a documentation-only exact-map child. The selected-cut integration is already
+materialized directly in ordinary Rust source. It refuses concurrent branch
+drift, non-fast-forward pushes, unrelated source edits and elevated acceptance
+flags. It does not mutate the read-only qualifier or issue a qualification pass.
 
 ## Remaining product work
 
-The global owner snapshot history cap and the per-page whole-head digest scan
-are not removed by this correctness patch. Selected-ID owner materialization
-must still be integrated and tested with large history, deep ancestry and
-concurrent mutation, without reducing owner currentness. The seven registered
-consumers retain the distinct states in `CONSUMER_EXECUTION.json`; no registered
-port, source-only canonical shadow or package pass is relabeled as a completed
-normal-product migration. Exact source/merge CI, target-host measurements,
+`SELECTED_OWNER_CUT.md` describes the now-materialized normal Agentd exact-ID
+path, which avoids whole-scope history materialization while preserving bounded
+selected ancestry and global currentness witnesses. Global ledger counts and
+whole-head metadata scanning remain; a transactional owner-maintained root is
+not implemented or qualified by this patch. Large-history and deep-ancestry
+Rust tests are authored, not yet observed passing.
+
+The seven registered consumers retain their distinct states in
+`CONSUMER_EXECUTION.json`; no registered port, source-only canonical shadow or
+package pass is relabeled as a completed normal-product migration. Delivery/use
+learning correlation, exact source/merge CI, target-host measurements,
 independent review and controlled acceptance remain required.

@@ -1,8 +1,8 @@
 # Selected-ID durable owner cuts
 
-Status: authored implementation and regression candidate. Normal-path integration
-is materialized by the exact source-preparation commit; that resulting source
-and its deterministic merge still require qualification. No activation,
+Status: source implementation and ordinary product integration materialized in
+`fb6d8dc76579ac2b00e23c15cc4508e684c335b8`; regression tests are authored, while
+exact source and deterministic merge execution remain pending. No activation,
 independent acceptance, target-host performance or complete consumer migration
 is claimed by this supplement.
 
@@ -51,7 +51,7 @@ recovery admission or a proof against arbitrary offline database forgery.
 
 ## Ordinary product composition
 
-The reviewed integration updates the existing Agentd handler in place:
+The existing Agentd handler now uses this sequence:
 
 1. observe the owner's bounded retrieval candidates;
 2. acquire their exact-ID owner cut;
@@ -90,7 +90,8 @@ snapshot refuses its global ceiling, and verifies the exact small selection can
 be read and revalidated. Requesting the 17,000-deep record itself must still
 fail the bounded selected-ancestry gate.
 
-That fixture is an owner-capacity regression, not an independent deployment or
-all-consumer migration receipt. Existing Agentd and physical native worker cases
-must execute against the materialized ordinary integration on both exact source
-and deterministic merge candidates. Acceptance flags remain false.
+These are authored test expectations, not observed Rust test passes. The local
+fixture SQL check and its narrower interpretation are recorded in `README.md`.
+Existing Agentd and physical native worker cases must execute against this
+ordinary integration on both exact source and deterministic merge candidates.
+Acceptance flags remain false.

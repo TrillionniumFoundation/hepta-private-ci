@@ -7,6 +7,11 @@ on:
     paths:
       - .github/workflows/cognitive-read-lock-refresh.yml
       - scripts/prepare-cognitive-read-source.py
+      - scripts/apply-cognitive-read-selected-cut.py
+      - codex-rs/hepta-memory/src/lane_c_snapshot.rs
+      - codex-rs/hepta-memory/src/lane_c_selected_snapshot.rs
+      - codex-rs/hepta-agentd/src/cognitive_context.rs
+      - codex-rs/hepta-agentd/src/cognitive_context_final_use.rs
   workflow_dispatch:
 
 # This is an explicitly scoped SOURCE AUTHORING job, not qualification.
@@ -16,7 +21,9 @@ permissions:
 
 concurrency:
   group: cognitive-read-source-preparation-${{ github.ref }}
-  cancel-in-progress: false
+  # A superseded authoring candidate may not hold the latest one in the queue.
+  # The remote SHA checks and non-force push still reject concurrent authors.
+  cancel-in-progress: true
 
 jobs:
   prepare:
@@ -61,7 +68,8 @@ jobs:
             echo '## Source preparation, not qualification'
             echo "Authored input: $GITHUB_SHA"
             echo "Prepared head: $(git rev-parse HEAD)"
-            echo 'Only reviewed Rust formatting, the Agentd direct lock dependency and the exact-source map were prepared.'
+            echo 'Selected owner integration is already present in ordinary Rust source.'
+            echo 'Preparation verifies its idempotent source shape, formats reviewed paths, repairs the scoped direct lock dependency and refreshes the immutable map.'
             echo 'No package, product, acceptance, activation or release pass is claimed.'
           } >> "$GITHUB_STEP_SUMMARY"
 
