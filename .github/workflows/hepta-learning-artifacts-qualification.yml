@@ -2,7 +2,11 @@ name: Hepta learning.artifacts qualification
 
 on:
   push:
-    branches: [main, 'codex/learning-artifacts-qualification-recovery-*', 'codex/learning-artifacts-qualified-host-*']
+    branches:
+      - main
+      - 'codex/learning-artifacts-qualification-recovery-*'
+      - 'codex/learning-artifacts-qualified-host-*'
+      - 'codex/learning-artifacts-convergence-*'
   pull_request:
   merge_group:
   workflow_dispatch:
