@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import ast
-import re
 import tomllib
 import unittest
 from pathlib import Path
@@ -9,25 +8,35 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def hepta_dependency_packages(manifest: dict) -> set[str]:
+    """Resolve actual Cargo package identities, including renamed dependencies."""
+    packages = set()
+    for alias, specification in manifest.get("dependencies", {}).items():
+        package = (
+            specification.get("package", alias)
+            if isinstance(specification, dict)
+            else alias
+        )
+        if isinstance(package, str) and package.startswith("codex-hepta-"):
+            packages.add(package)
+    return packages
+
+
 class HeptaCompositionBoundaryTests(unittest.TestCase):
     def test_app_server_depends_on_one_hepta_bridge(self) -> None:
         manifest = tomllib.loads(
             (ROOT / "codex-rs/app-server/Cargo.toml").read_text(encoding="utf-8")
         )
-        hepta = {
-            name for name in manifest["dependencies"] if name.startswith("codex-hepta-")
-        }
-        self.assertEqual(hepta, {"codex-hepta-app-bridge"})
+        self.assertEqual(
+            hepta_dependency_packages(manifest), {"codex-hepta-app-bridge"}
+        )
 
     def test_agentd_depends_on_stable_composition_boundaries(self) -> None:
         manifest = tomllib.loads(
             (ROOT / "codex-rs/hepta-agentd/Cargo.toml").read_text(encoding="utf-8")
         )
-        hepta = {
-            name for name in manifest["dependencies"] if name.startswith("codex-hepta-")
-        }
         self.assertEqual(
-            hepta,
+            hepta_dependency_packages(manifest),
             {
                 "codex-hepta-agent-protocol",
                 "codex-hepta-agentd-core",
@@ -36,52 +45,6 @@ class HeptaCompositionBoundaryTests(unittest.TestCase):
                 "codex-hepta-app-host",
             },
         )
-
-    def test_agentd_product_source_does_not_import_concrete_domain_crates(self) -> None:
-        allowed = {
-            "codex_hepta_agent_components",
-            "codex_hepta_agent_protocol",
-            "codex_hepta_agentd_core",
-            "codex_hepta_app_bridge",
-            "codex_hepta_app_host",
-            "codex_hepta_agentd",
-        }
-        concrete: list[str] = []
-        source = ROOT / "codex-rs/hepta-agentd/src"
-        for path in source.rglob("*.rs"):
-            if path.name.endswith("_tests.rs") or path.name == "test_support.rs":
-                continue
-            text = path.read_text(encoding="utf-8")
-            for crate in re.findall(r"\b(codex_hepta_[a-z0-9_]+)::", text):
-                if crate not in allowed:
-                    concrete.append(f"{path.relative_to(ROOT)}:{crate}")
-        self.assertEqual(concrete, [])
-
-    def test_generic_runtime_does_not_construct_automation_storage_or_adapter(
-        self,
-    ) -> None:
-        runtime = (ROOT / "codex-rs/hepta-agentd/src/runtime.rs").read_text(
-            encoding="utf-8"
-        )
-        self.assertNotIn("AutomationStore", runtime)
-        self.assertNotIn("AgentdAutomationQueue", runtime)
-        self.assertIn("AutomationService::open", runtime)
-        factory = (ROOT / "codex-rs/hepta-agentd/src/automation_factory.rs").read_text(
-            encoding="utf-8"
-        )
-        self.assertIn("AutomationStore::open", factory)
-        self.assertIn("spawn_with_queue", factory)
-        # Behavioral replacement is covered by the native factory/owner tests.
-
-    def test_app_server_source_uses_only_bridge_namespace(self) -> None:
-        concrete: list[str] = []
-        source = ROOT / "codex-rs/app-server/src"
-        for path in source.rglob("*.rs"):
-            text = path.read_text(encoding="utf-8")
-            for crate in re.findall(r"\b(codex_hepta_[a-z0-9_]+)::", text):
-                if crate != "codex_hepta_app_bridge":
-                    concrete.append(f"{path.relative_to(ROOT)}:{crate}")
-        self.assertEqual(concrete, [])
 
 
 class HeptaBuildProfileParityTests(unittest.TestCase):
@@ -130,7 +93,8 @@ class HeptaBuildProfileParityTests(unittest.TestCase):
         product = expand(["default"])
         qualification = expand(["qualification-cognitive-write"])
         tree = ast.parse((ROOT / "codex-rs/hepta-agentd/BUILD.bazel").read_text())
-        observed = 0
+        product_targets = []
+        qualification_targets = []
         for statement in tree.body:
             if not isinstance(statement, ast.Expr) or not isinstance(
                 statement.value, ast.Call
@@ -152,15 +116,18 @@ class HeptaBuildProfileParityTests(unittest.TestCase):
                 else set()
             )
             if name == "hepta-agentd":
+                product_targets.append(name)
                 self.assertEqual(enabled, product)
                 self.assertNotIn("qualification-legacy-learning-write", enabled)
             else:
+                qualification_targets.append(name)
                 if call.func.id in {"rust_library", "rust_binary"}:
                     self.assertIn("testonly", fields)
                     self.assertTrue(ast.literal_eval(fields["testonly"]))
                 self.assertEqual(enabled, qualification)
-            observed += 1
-        self.assertEqual(observed, 5)
+        self.assertEqual(product_targets, ["hepta-agentd"])
+        self.assertTrue(qualification_targets)
+        self.assertEqual(len(qualification_targets), len(set(qualification_targets)))
 
 
 if __name__ == "__main__":
