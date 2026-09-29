@@ -5,11 +5,11 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: inference-boundary-apply-20260929
+  group: inference-boundary-apply-arm-20260929
   cancel-in-progress: false
 jobs:
   apply:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 15
     permissions:
       contents: write
@@ -76,7 +76,7 @@ jobs:
           git show --stat --oneline HEAD
   native-diagnostics:
     needs: apply
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 35
     env:
       CARGO_BUILD_JOBS: 2
