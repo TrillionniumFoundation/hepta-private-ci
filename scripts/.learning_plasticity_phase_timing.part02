@@ -170,7 +170,11 @@ struct PlasticityExecutionPhaseTimingV1 {
             }
         }));
 '''
-    text = replace_once(text, parameter_tail, parameter_new, 'parameter phase timing response')
+    if text.count(parameter_tail) != 2:
+        raise RuntimeError(
+            f'parameter/topology phase timing response: expected two matches, observed {text.count(parameter_tail)}'
+        )
+    text = text.replace(parameter_tail, parameter_new, 1)
     topology_tail = parameter_tail
     topology_new = '''        let deadline_unix_seconds = context.deadline_unix_seconds;
         let _ = response.send(result.map(|outcome| {
@@ -289,6 +293,4 @@ anchor success; runtime timing is operational telemetry, not a replacement for
 those receipts.
 
 Operators should alert on sustained overload, queue-wait growth, or blocking
-execution growth. The owner must not add a second writer merely to hide a slow
-fsync or evidence source. Read-only/static work may occur before queue insertion;
-final use and du
+execution growth. Th
