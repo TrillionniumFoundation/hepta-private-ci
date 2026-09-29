@@ -308,3 +308,7 @@ impl RevalidatingCandidate {
 #[cfg(test)]
 #[path = "pinned_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "pinned_current_use_tests.rs"]
+mod current_use_tests;
