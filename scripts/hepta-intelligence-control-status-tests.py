@@ -106,6 +106,16 @@ class SourceMappingTests(unittest.TestCase):
         self.assertTrue(trace["ordinaryProductTests"])
         self.assertTrue(trace["qualificationOnlyTests"])
 
+    def test_standalone_binary_cannot_install_a_runner_only_profile(self) -> None:
+        main = (STATUS.ROOT / "codex-rs/hepta-agentd/src/main.rs").read_text(encoding="utf-8")
+        config = (STATUS.ROOT / "codex-rs/hepta-agentd/src/config.rs").read_text(encoding="utf-8")
+        implementation = STATUS.load_json(STATUS.DOCS / "IMPLEMENTATION_MAP.json")
+        self.assertNotIn("config.with_intelligence_product_runner", main)
+        self.assertIn("with_canonical_intelligence_profile", main)
+        self.assertIn("pub fn with_canonical_intelligence_profile", config)
+        self.assertIn("HostOwnedAgentdIntelligenceInvocationProviderV1::new(factory)", config)
+        self.assertFalse(implementation["statusMatrix"]["defaultBinaryProfileComposed"])
+
 
 if __name__ == "__main__":
     unittest.main()
