@@ -1,4 +1,4 @@
-name: Cognitive read lock refresh
+name: Cognitive read source preparation
 
 on:
   push:
@@ -6,123 +6,70 @@ on:
       - work/cognitive-read-production-convergence-20260927
     paths:
       - .github/workflows/cognitive-read-lock-refresh.yml
+      - scripts/prepare-cognitive-read-source.py
   workflow_dispatch:
 
+# This is an explicitly scoped SOURCE AUTHORING job, not qualification.
+# The cognitive-read-qualification workflow remains read-only and unchanged.
 permissions:
   contents: read
 
 concurrency:
-  group: cognitive-read-lock-refresh-${{ github.ref }}
-  cancel-in-progress: true
+  group: cognitive-read-source-preparation-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  refresh:
+  prepare:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/work/cognitive-read-production-convergence-20260927'
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    env:
+      SOURCE_BRANCH: work/cognitive-read-production-convergence-20260927
     steps:
-      - name: Check out exact candidate
+      - name: Check out exact authored source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
           fetch-depth: 0
-          persist-credentials: false
+          persist-credentials: true
 
       - name: Prepare repository CI tools
         uses: ./.github/actions/setup-ci
 
-      - name: Repair evidence gate and refresh locked Rust candidate
+      - name: Prepare ordinary source and map commits
         shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git ls-remote origin "refs/heads/$SOURCE_BRANCH" | cut -f1)" = "$GITHUB_SHA"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python3 scripts/prepare-cognitive-read-source.py --expected-sha "$GITHUB_SHA"
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+          mkdir -p "$RUNNER_TEMP/cognitive-read-preparation"
+          git diff --binary "$GITHUB_SHA" HEAD > "$RUNNER_TEMP/cognitive-read-preparation/source.patch"
+          git log --format=fuller "$GITHUB_SHA"..HEAD > "$RUNNER_TEMP/cognitive-read-preparation/commits.txt"
+          git rev-parse HEAD > "$RUNNER_TEMP/cognitive-read-preparation/prepared-head.txt"
+          # A concurrent author is never overwritten. No force push or lease
+          # overrides are used; qualification must run on the resulting HEAD.
+          test "$(git ls-remote origin "refs/heads/$SOURCE_BRANCH" | cut -f1)" = "$GITHUB_SHA"
+          git push origin "HEAD:refs/heads/$SOURCE_BRANCH"
+          {
+            echo '## Source preparation, not qualification'
+            echo "Authored input: $GITHUB_SHA"
+            echo "Prepared head: $(git rev-parse HEAD)"
+            echo 'Only reviewed Rust formatting, the Agentd direct lock dependency and the exact-source map were prepared.'
+            echo 'No package, product, acceptance, activation or release pass is claimed.'
+          } >> "$GITHUB_STEP_SUMMARY"
 
-          path = Path("scripts/cognitive_read_evidence.py")
-          body = path.read_text(encoding="utf-8")
-          old = (
-              '            runner_lines = log.read_text(errors="replace").splitlines()\n'
-              '            first_line = runner_lines[0].strip() if runner_lines else ""\n'
-          )
-          new = (
-              '            runner_lines = log.read_text(errors="replace").splitlines()\n'
-              '            first_line = runner_lines[0].strip() if len(runner_lines) == 1 else ""\n'
-          )
-          if body.count(old) != 1:
-              raise SystemExit("pinned nextest gate source shape drifted")
-          path.write_text(body.replace(old, new), encoding="utf-8")
-          PY
-          python3 -m unittest scripts/test_cognitive_read_native_gate.py
-          cargo metadata \
-            --manifest-path codex-rs/Cargo.toml \
-            --format-version=1 \
-            --all-features \
-            --filter-platform x86_64-unknown-linux-gnu >/dev/null
-          cargo metadata \
-            --manifest-path codex-rs/Cargo.toml \
-            --format-version=1 \
-            --all-features \
-            --filter-platform aarch64-unknown-linux-gnu >/dev/null
-          cargo fmt --manifest-path codex-rs/Cargo.toml --all
-          git add -- codex-rs scripts/cognitive_read_evidence.py
-          python3 - <<'PY'
-          from __future__ import annotations
-
-          import json
-          from pathlib import Path
-          import subprocess
-
-          path = Path("docs/modules/cognitive.read/IMPLEMENTATION_MAP.json")
-          mapping = json.loads(path.read_text(encoding="utf-8"))
-
-          def git(*args: str) -> str:
-              return subprocess.check_output(["git", *args], text=True).strip()
-
-          staged_tree = git("write-tree")
-
-          def object_at(candidate_path: str) -> str:
-              return git("rev-parse", f"{staged_tree}:{candidate_path}")
-
-          for entry in mapping.get("sourceObjects", []):
-              entry["object"] = object_at(entry["path"])
-
-          exact = mapping.get("exactSourceEvidence")
-          if isinstance(exact, dict):
-              for entry in exact.get("entries", []):
-                  entry["blobSha"] = object_at(entry["path"])
-
-          for operation in mapping.get("operations", []):
-              source_path = operation.get("sourcePath")
-              if isinstance(source_path, str) and "sourceBlob" in operation:
-                  operation["sourceBlob"] = object_at(source_path)
-
-          for caller in mapping.get("productCallers", []):
-              source_path = caller.get("sourcePath")
-              if isinstance(source_path, str) and "blobSha" in caller:
-                  caller["blobSha"] = object_at(source_path)
-
-          head = git("rev-parse", "HEAD")
-          mapping["observedAtHead"] = {
-              "commit": head,
-              "tree": git("rev-parse", "HEAD^{tree}"),
-          }
-          path.write_text(json.dumps(mapping, indent=2) + "\n", encoding="utf-8")
-          PY
-          git add -- docs/modules/cognitive.read/IMPLEMENTATION_MAP.json
-          git diff --cached --check
-          mkdir -p "$RUNNER_TEMP/cognitive-read-refresh"
-          git diff --cached --binary > "$RUNNER_TEMP/cognitive-read-refresh/refresh.patch"
-          git diff --cached --name-only > "$RUNNER_TEMP/cognitive-read-refresh/changed-files.txt"
-          while IFS= read -r path; do
-            test -n "$path" || continue
-            mkdir -p "$RUNNER_TEMP/cognitive-read-refresh/$(dirname "$path")"
-            cp "$path" "$RUNNER_TEMP/cognitive-read-refresh/$path"
-          done < "$RUNNER_TEMP/cognitive-read-refresh/changed-files.txt"
-          test -s "$RUNNER_TEMP/cognitive-read-refresh/refresh.patch"
-
-      - name: Upload refresh payload
+      - name: Retain source-authoring patch
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: cognitive-read-refresh-${{ github.sha }}
-          path: ${{ runner.temp }}/cognitive-read-refresh
-          if-no-files-found: error
+          name: cognitive-read-source-preparation-${{ github.sha }}
+          path: ${{ runner.temp }}/cognitive-read-preparation
+          if-no-files-found: warn
           retention-days: 7
