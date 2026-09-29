@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: kernel-authority-exact-remote-apply-slim
+  group: kernel-authority-exact-remote-apply-slim-shallow
   cancel-in-progress: false
 
 jobs:
@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: work/kernel-authority-convergence-20260925
-          fetch-depth: 0
+          fetch-depth: 1
           path: target
           persist-credentials: true
       - name: Verify, apply, validate and fast-forward
