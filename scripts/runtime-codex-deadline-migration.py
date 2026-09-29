@@ -253,10 +253,10 @@ def execution(text: str) -> str:
     for old, new, marker in replacements:
         text = replace_once(text, old, new, marker)
 
-    if "async fn await_before_effect" not in text:
+    if "pub(super) async fn await_before_effect" not in text:
         helper = r'''
 
-async fn await_before_effect<T, E, F>(
+pub(super) async fn await_before_effect<T, E, F>(
     clock: &crate::native_deadline::NativeDeadline,
     per_hop_cap: Duration,
     operation: &'static str,
