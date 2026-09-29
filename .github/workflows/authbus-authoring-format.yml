@@ -14,8 +14,8 @@ concurrency:
 
 jobs:
   format:
-    if: "github.event.head_commit.message != 'style(auth.authbus): apply canonical formatting'"
     runs-on: ubuntu-24.04
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         with:
@@ -34,6 +34,7 @@ jobs:
             echo 'AuthBus source is already formatted.'
             exit 0
           fi
+          git diff --cached --check
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git commit -s -m 'style(auth.authbus): apply canonical formatting'
