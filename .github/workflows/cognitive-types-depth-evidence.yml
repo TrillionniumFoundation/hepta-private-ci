@@ -136,9 +136,13 @@ jobs:
         continue-on-error: true
         run: |
           set -o pipefail
-          cargo fmt --manifest-path codex-rs/Cargo.toml \
-            --package "${{ steps.select.outputs.package }}" -- --check \
-            2>&1 | tee "$RUNNER_TEMP/cognitive-types-depth/format.log"
+          {
+            status=0
+            cargo fmt --manifest-path codex-rs/Cargo.toml \
+              --package "${{ steps.select.outputs.package }}" -- --check || status=$?
+            printf 'cargo fmt exit=%s\n' "$status"
+            exit "$status"
+          } 2>&1 | tee "$RUNNER_TEMP/cognitive-types-depth/format.log"
 
       - name: Check the complete consumer target set
         id: check
@@ -393,7 +397,7 @@ jobs:
           cargo +"$FUZZ_TOOLCHAIN" install --locked --version 0.13.2 cargo-fuzz
           mkdir -p "$RUNNER_TEMP/cognitive-types-fuzz/corpus"
           mkdir -p "$RUNNER_TEMP/cognitive-types-fuzz/artifacts"
-          mkdir -p "$RUNNER_TEMP/cognitive-types-fuzz/target"
+          mkdir -p "$RUNNER_TEMP/cognitive-types-fuzz-target"
           chmod a-w codex-rs/hepta-cognitive-types/fuzz/Cargo.lock
           {
             rustc +"$FUZZ_TOOLCHAIN" --version --verbose
@@ -433,7 +437,7 @@ jobs:
           FUZZ_TOOLCHAIN: nightly-2026-09-15
           FUZZ_CORPUS: ${{ runner.temp }}/cognitive-types-fuzz/corpus
           FUZZ_ARTIFACTS: ${{ runner.temp }}/cognitive-types-fuzz/artifacts
-          CARGO_TARGET_DIR: ${{ runner.temp }}/cognitive-types-fuzz/target
+          CARGO_TARGET_DIR: ${{ runner.temp }}/cognitive-types-fuzz-target
         run: |
           set -euo pipefail
           case "${{ github.event_name }}" in
