@@ -4,6 +4,8 @@ use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 
 use super::*;
+use crate::IssuerPurpose;
+use crate::IssuerSpec;
 use crate::PolicyDecision;
 use crate::PolicySpec;
 use crate::QuotaSpec;
@@ -93,13 +95,18 @@ async fn configured() -> (
     (root, store, decision, reservation)
 }
 
-fn issuer(key: &SigningKey) -> SettlementIssuerRegistration {
-    SettlementIssuerRegistration {
-        issuer_id: id("issuer:settlement"),
-        key_epoch: Generation::new(1).expect("generation"),
-        verifying_key: key.verifying_key(),
-        revoked: false,
-    }
+async fn enroll_settlement_issuer(store: &AuthBusAuthorityStore, key: &SigningKey) {
+    store
+        .enroll_issuer(
+            IssuerPurpose::Settlement,
+            IssuerSpec {
+                issuer_id: id("issuer:settlement"),
+                key_epoch: Generation::new(1).expect("generation"),
+                verifying_key: key.verifying_key(),
+            },
+        )
+        .await
+        .expect("enroll settlement issuer");
 }
 
 fn evidence(
@@ -159,9 +166,10 @@ async fn completed_settlement_is_conservative_and_idempotent() {
         .await
         .expect("mark dispatch");
     let key = SigningKey::from_bytes(&[9; 32]);
+    enroll_settlement_issuer(&store, &key).await;
     let signed = evidence(&key, &dispatched, SettlementStatus::Completed, 5, 1_600);
     let settled = store
-        .settle(&issuer(&key), &signed, sample(6, 1_600))
+        .settle(&signed, sample(6, 1_600))
         .await
         .expect("settle");
     assert_eq!(settled.state, ReservationState::Settled);
@@ -187,18 +195,46 @@ async fn completed_settlement_is_conservative_and_idempotent() {
     );
     assert_eq!(
         store
-            .settle(&issuer(&key), &signed, sample(7, 1_700))
+            .settle(&signed, sample(7, 1_700))
             .await
             .expect("exact settlement retry"),
         settled
     );
     let changed = evidence(&key, &dispatched, SettlementStatus::Completed, 4, 1_600);
     assert!(matches!(
-        store
-            .settle(&issuer(&key), &changed, sample(8, 1_800))
-            .await,
+        store.settle(&changed, sample(8, 1_800)).await,
         Err(AuthBusAuthorityError::IdempotencyConflict)
     ));
+}
+
+#[tokio::test]
+async fn settlement_uses_the_transactional_registry_key() {
+    let (_root, store, _decision, reservation) = configured().await;
+    let dispatched = store
+        .mark_dispatch_attempted(
+            &reservation.reservation_id,
+            reservation.revision,
+            reservation.effect_digest,
+            sample(5, 1_500),
+        )
+        .await
+        .expect("mark dispatch");
+    let registered = SigningKey::from_bytes(&[41; 32]);
+    let forged = SigningKey::from_bytes(&[42; 32]);
+    enroll_settlement_issuer(&store, &registered).await;
+    let signed = evidence(&forged, &dispatched, SettlementStatus::Completed, 5, 1_600);
+    assert!(matches!(
+        store.settle(&signed, sample(6, 1_600)).await,
+        Err(AuthBusAuthorityError::InvalidSettlementSignature)
+    ));
+    assert_eq!(
+        store
+            .reservation(&reservation.reservation_id)
+            .await
+            .expect("reservation")
+            .state,
+        ReservationState::DispatchAttempted
+    );
 }
 
 #[tokio::test]
@@ -229,9 +265,10 @@ async fn unknown_expired_effect_keeps_reserve_until_signed_terminal_evidence() {
     assert_eq!((held.available, held.reserved, held.consumed), (3, 7, 0));
 
     let key = SigningKey::from_bytes(&[10; 32]);
+    enroll_settlement_issuer(&store, &key).await;
     let signed = evidence(&key, &dispatched, SettlementStatus::Completed, 5, 5_200);
     store
-        .settle(&issuer(&key), &signed, sample(7, 5_200))
+        .settle(&signed, sample(7, 5_200))
         .await
         .expect("late terminal settlement");
     let closed = store
@@ -350,9 +387,10 @@ async fn terminal_compaction_preserves_operation_idempotency_without_lifetime_ca
         .await
         .expect("mark dispatch");
     let key = SigningKey::from_bytes(&[33; 32]);
+    enroll_settlement_issuer(&store, &key).await;
     let signed = evidence(&key, &dispatched, SettlementStatus::Completed, 5, 1_600);
     store
-        .settle(&issuer(&key), &signed, sample(6, 1_600))
+        .settle(&signed, sample(6, 1_600))
         .await
         .expect("settle");
     assert_eq!(
