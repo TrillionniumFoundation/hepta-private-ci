@@ -26,6 +26,7 @@ except ModuleNotFoundError as error:
     )
 
 try:
+    from scripts.hepta_workflow_commands import verify_document_workflow
     from scripts.hepta_module_catalog import (
         covers_module_ids,
         has_module_count,
@@ -34,6 +35,7 @@ try:
 except ModuleNotFoundError as error:
     if error.name != "scripts":
         raise
+    from hepta_workflow_commands import verify_document_workflow
     from hepta_module_catalog import (
         covers_module_ids,
         has_module_count,
@@ -1044,32 +1046,10 @@ def verify() -> int:
         )
 
     workflow = (ROOT / WORKFLOW_PATH).read_text(encoding="utf-8")
-    for token in [
-        "source-head:",
-        "merge-candidate:",
-        "github.event.pull_request.head.sha",
-        "github.event.pull_request.base.sha",
-        "persist-credentials: false",
-        "python3 scripts/hepta-readiness.py self-test",
-        "python3 scripts/hepta-readiness.py generate-status --check",
-        "python3 scripts/hepta-readiness.py verify",
-        "contents: read",
-    ]:
-        need(token in workflow, "workflow missing " + token)
-    need(
-        "git merge-tree --write-tree" in workflow
-        or ".github/actions/hepta-synthetic-merge" in workflow,
-        "workflow missing deterministic synthetic merge construction",
-    )
-    for token in [
-        "contents: write",
-        "pull-requests: write",
-        "git push",
-        "update-ref",
-        "paths-ignore:",
-        "github.event.pull_request.merge_commit_sha",
-    ]:
-        need(token not in workflow, "workflow mutation/stale identity " + token)
+    try:
+        verify_document_workflow(workflow, ROOT, "scripts/hepta-readiness.py")
+    except ValueError as error:
+        die("readiness workflow: " + str(error))
 
     need(
         (ROOT / STATUS_PATH).read_text(encoding="utf-8")

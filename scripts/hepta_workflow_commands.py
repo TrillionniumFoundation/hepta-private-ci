@@ -402,6 +402,127 @@ def workflow_literal_collection_values(value: object) -> set[str]:
     return values
 
 
+def verify_document_workflow(
+    text: str, root: Path, validator: str, *, recorded: bool = False
+) -> None:
+    """Check declared validation wiring, not YAML spelling or execution success.
+
+    Commands may be direct or wrapped in the existing execution recorder. Actual
+    hosted success, arbitrary shell behavior and independent acceptance remain
+    outside this static check; comments and data are never execution evidence.
+    """
+    document = load_workflow(text)
+    workflow_events(document)
+    jobs = workflow_jobs(document)
+
+    def readonly(value):
+        if not isinstance(value, dict) or any(
+            not isinstance(v, str) or v not in {"read", "none"} for v in value.values()
+        ):
+            raise ValueError(
+                "document workflow requires explicit read-only permissions"
+            )
+
+    readonly(document.get("permissions"))
+    events = document.get("on")
+    if isinstance(events, dict) and any(
+        isinstance(v, dict) and "paths-ignore" in v for v in events.values()
+    ):
+        raise ValueError("document workflow cannot ignore required paths")
+    if "github.event.pull_request.merge_commit_sha" in workflow_expression_references(
+        document
+    ):
+        raise ValueError("document workflow uses stale merge identity")
+
+    for job in jobs.values():
+        readonly(job.get("permissions", document["permissions"]))
+
+    for lane in ("source-head", "merge-candidate"):
+        job = workflow_job(document, lane)
+        steps = workflow_steps(document, lane)
+        environment = {**document.get("env", {}), **job.get("env", {})}
+        checkouts = [
+            s for s in steps if str(s.get("uses", "")).startswith("actions/checkout@")
+        ]
+        if not checkouts:
+            raise ValueError("document workflow requires source checkout")
+        for checkout in checkouts:
+            if not re.fullmatch(r"actions/checkout@[0-9a-f]{40}", checkout["uses"]):
+                raise ValueError("document checkout must use a pinned action")
+            inputs = checkout.get("with", {})
+            if inputs.get("persist-credentials") != "false":
+                raise ValueError("document checkout must not persist credentials")
+            checkout_env = {**environment, **checkout.get("env", {})}
+            refs = workflow_expression_references(inputs.get("ref"))
+            pending = [ref[4:] for ref in refs if ref.startswith("env.")]
+            seen = set()
+            while pending:
+                name = pending.pop()
+                if name in seen:
+                    continue
+                seen.add(name)
+                indirect = workflow_expression_references(checkout_env.get(name))
+                refs.update(indirect)
+                pending.extend(ref[4:] for ref in indirect if ref.startswith("env."))
+            if "github.event.pull_request.head.sha" not in refs:
+                raise ValueError("document checkout must bind the exact source head")
+        commands = declared_commands(json.dumps({"jobs": {lane: job}}), root)
+        targets = []
+        for command in commands:
+            if (
+                command[:2] == ["python3", "scripts/hepta_ci_exec.py"]
+                and "--" in command
+            ):
+                command = command[command.index("--") + 1 :]
+            targets.append(command)
+        if ["python3", validator, "verify"] not in targets:
+            raise ValueError("document workflow must execute verifier in " + lane)
+        if lane == "source-head" and ["python3", validator, "self-test"] not in targets:
+            raise ValueError("document workflow must execute source self-test")
+        for command in commands:
+            if command[0] in {"echo", "printf", "true"}:
+                continue
+            if "git" in command:
+                tail = command[command.index("git") + 1 :]
+                if any(word in {"push", "update-ref"} for word in tail):
+                    raise ValueError(
+                        "document validation cannot mutate repository refs"
+                    )
+        if recorded:
+            if not any(
+                command[:2] == ["python3", "scripts/hepta_ci_exec.py"]
+                for command in commands
+            ):
+                raise ValueError("document validation must retain its execution record")
+            if not any(
+                re.fullmatch(
+                    r"actions/upload-artifact@[0-9a-f]{40}", str(step.get("uses", ""))
+                )
+                for step in steps
+            ):
+                raise ValueError("document validation must retain execution artifacts")
+    merge_job = workflow_job(document, "merge-candidate")
+    merge_steps = workflow_steps(document, "merge-candidate")
+    bindings = [
+        s
+        for s in merge_steps
+        if s.get("uses") == "./.github/actions/hepta-synthetic-merge"
+    ]
+    if len(bindings) != 1:
+        raise ValueError("document workflow requires its shared synthetic merge action")
+    inputs = bindings[0].get("with", {})
+    for key, reference in (
+        ("base-sha", "github.event.pull_request.base.sha"),
+        ("source-sha", "github.event.pull_request.head.sha"),
+    ):
+        if reference not in workflow_expression_references(inputs.get(key)):
+            raise ValueError("synthetic merge input must bind " + reference)
+    output = "steps." + str(bindings[0].get("id", "")) + ".outputs.sha"
+    if output not in workflow_expression_references(merge_job):
+        raise ValueError("merge validation must consume the constructed candidate")
+    verify_synthetic_merge(text, root)
+
+
 def validate_manual_workflow(text: str, maximum_minutes: int) -> None:
     """Admit a bounded, credential-free hosted manual diagnostic envelope.
 

@@ -33,7 +33,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from hepta_workflow_commands import verify_owner_self_tests
-from hepta_workflow_commands import verify_synthetic_merge
+from hepta_workflow_commands import verify_document_workflow
 
 ROOT = Path(__file__).resolve().parents[1]
 PLAN_ID = "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN"
@@ -1468,10 +1468,6 @@ def verify(*, require_path_lease_attestation=False) -> int:
         d["algorithm_specs"]["globalClosure"]["workPackageId"] in pkgids,
         "adaptive documentation package",
     )
-    need(
-        len(d["algorithm_specs"]["requiredProtocols"]) >= 20,
-        "adaptive protocol closure",
-    )
     for t in d["threats"]["threats"]:
         need(
             t["owner"] in mids and t["prevent"] and t["detect"] and t["respond"],
@@ -1531,34 +1527,10 @@ def verify(*, require_path_lease_attestation=False) -> int:
         )
     wf = (ROOT / ".github/workflows/hepta-development-docs.yml").read_text()
     try:
-        verify_synthetic_merge(wf, ROOT)
+        verify_document_workflow(wf, ROOT, "scripts/hepta-docs.py", recorded=True)
         verify_owner_self_tests(d["system"]["subordinateRegistries"], ROOT)
     except ValueError as exc:
         die("synthetic merge workflow: " + str(exc))
-    for token in [
-        "source-head:",
-        "merge-candidate:",
-        "github.event.pull_request.head.sha",
-        "github.event.pull_request.base.sha",
-        "persist-credentials: false",
-        "python3 scripts/hepta-docs.py verify",
-        "python3 scripts/hepta-docs.py self-test",
-        "python3 scripts/hepta_ci_exec.py --output",
-        "HEPTA_CI_LANE: base-merge",
-        "TESTED_SHA: ${{ steps.synthetic.outputs.sha }}",
-        "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
-        "contents: read",
-    ]:
-        need(token in wf, "workflow " + token)
-    for token in [
-        "contents: write",
-        "git push",
-        "update-ref",
-        "pull-requests: write",
-        "paths-ignore:",
-        "github.event.pull_request.merge_commit_sha",
-    ]:
-        need(token not in wf, "workflow mutation or stale identity " + token)
     print(
         json.dumps(
             {

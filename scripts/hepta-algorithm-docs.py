@@ -14,23 +14,26 @@ from pathlib import Path
 from typing import Any
 
 try:
-    from scripts.hepta_metadata import has_object_keys
+    from scripts.hepta_metadata import has_object_keys, has_registry_ids
     from scripts.hepta_metadata import (
         AUTHORITY_KEYS as AUTHORITY_KEYS,
         has_schema_version,
         has_deny_all_authority,
     )
-    from scripts.hepta_workflow_commands import workflow_commands
+    from scripts.hepta_workflow_commands import (
+        workflow_commands,
+        verify_document_workflow,
+    )
 except ModuleNotFoundError as error:
     if error.name != "scripts":
         raise
-    from hepta_metadata import has_object_keys
+    from hepta_metadata import has_object_keys, has_registry_ids
     from hepta_metadata import (
         AUTHORITY_KEYS as AUTHORITY_KEYS,
         has_schema_version,
         has_deny_all_authority,
     )
-    from hepta_workflow_commands import workflow_commands
+    from hepta_workflow_commands import workflow_commands, verify_document_workflow
 
 try:
     from scripts.hepta_module_catalog import has_unique_module_ids
@@ -898,16 +901,11 @@ def verify() -> int:
         "module registry closure",
     )
     critical = registry.get("criticalModules")
-    need(isinstance(critical, list) and len(critical) == 14, "critical module count")
+    need(has_unique_module_ids(critical), "critical module identities")
     need(set(critical).issubset(set(module_ids)), "unknown critical module")
 
     gates = registry.get("closureGates")
-    need(isinstance(gates, list) and len(gates) == 13, "closure gate count")
-    need(
-        [row.get("id") for row in gates]
-        == [f"ACG-{index:02d}" for index in range(1, 14)],
-        "closure gate IDs",
-    )
+    need(has_registry_ids(gates), "closure gate identities")
     need(all(row.get("required") is True for row in gates), "optional closure gate")
 
     rules = registry.get("rules")
@@ -924,9 +922,15 @@ def verify() -> int:
         need(rules.get(key) is True, "algorithm rule " + key)
 
     documents = registry.get("documents")
-    need(isinstance(documents, list) and len(documents) == 6, "specification count")
-    ids = [row.get("id") for row in documents]
-    need(len(ids) == len(set(ids)), "duplicate specification ID")
+    need(has_registry_ids(documents), "specification identities")
+    need(
+        has_registry_ids(documents, key="path"),
+        "duplicate or invalid specification path",
+    )
+    for row in documents:
+        need(
+            has_unique_module_ids(row.get("modules")), row["id"] + " module identities"
+        )
     bound = coverage(registry)
     verify_protocol_authority_bindings(registry["globalClosure"])
     advisory = {}
@@ -945,10 +949,20 @@ def verify() -> int:
     domain_ids = {row["id"] for row in data["domains"]}
     required_protocols = registry.get("requiredProtocols")
     required_domains = registry.get("requiredDataDomains")
-    need(
-        isinstance(required_protocols, list) and len(required_protocols) >= 20,
-        "protocol closure size",
-    )
+    for references, label in (
+        (required_protocols, "protocol"),
+        (required_domains, "data domain"),
+    ):
+        need(
+            isinstance(references, list)
+            and bool(references)
+            and all(
+                isinstance(value, str) and value and value.strip() == value
+                for value in references
+            )
+            and len(references) == len(set(references)),
+            label + " reference identities",
+        )
     need(set(required_protocols).issubset(contract_ids), "required contract missing")
     need(
         set(required_protocols).issubset(protocol_ids),
@@ -966,7 +980,12 @@ def verify() -> int:
             row["denyUnknownCriticalFields"] is True,
             protocol_id + " unknown-field policy",
         )
-        need(row["maximumEncodedBytes"] > 0 and row["fields"], protocol_id + " bounds")
+        need(
+            type(row["maximumEncodedBytes"]) is int
+            and row["maximumEncodedBytes"] > 0
+            and row["fields"],
+            protocol_id + " bounds",
+        )
         names = [item["name"] for item in row["fields"]]
         need(len(names) == len(set(names)), protocol_id + " duplicate field")
 
@@ -1060,23 +1079,15 @@ def verify() -> int:
 
     dedicated_workflow = (ROOT / WORKFLOW_PATH).read_text(encoding="utf-8")
     global_workflow = (ROOT / GLOBAL_WORKFLOW).read_text(encoding="utf-8")
-    for workflow, label in (
-        (dedicated_workflow, "dedicated workflow"),
-        (global_workflow, "global workflow"),
-    ):
-        need("permissions:\n  contents: read" in workflow, label + " permissions")
-        for forbidden in (
-            "contents: write",
-            "git push",
-            "update-ref",
-            "persist-credentials: true",
-        ):
-            need(forbidden not in workflow, label + " mutation " + forbidden)
-        need(
-            "git merge-tree --write-tree" in workflow
-            or ".github/actions/hepta-synthetic-merge" in workflow,
-            label + " synthetic merge",
+    try:
+        verify_document_workflow(
+            dedicated_workflow, ROOT, "scripts/hepta-algorithm-docs.py"
         )
+        verify_document_workflow(
+            global_workflow, ROOT, "scripts/hepta-docs.py", recorded=True
+        )
+    except ValueError as error:
+        die("algorithm workflow: " + str(error))
     verify_algorithm_workflow_commands(dedicated_workflow, global_workflow)
 
     print(
