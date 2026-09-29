@@ -8,8 +8,11 @@ on:
       - qualification/objective.compiler/receipts/**
       - scripts/hepta-objective-release-gate.py
       - scripts/test_hepta_objective_release_gate.py
-      - .github/workflows/hepta-objective-release-gate.yml
-      - .github/workflows/hepta-objective-target-host.yml
+      - scripts/hepta-objective-release-surface.py
+      - scripts/test_hepta_objective_release_surface.py
+      - scripts/hepta-objective-materialize-closure.py
+      - ".github/workflows/*objective*.yml"
+      - ".github/workflows/*objective*.yaml"
   push:
     branches: [main]
     paths:
@@ -18,8 +21,11 @@ on:
       - qualification/objective.compiler/receipts/**
       - scripts/hepta-objective-release-gate.py
       - scripts/test_hepta_objective_release_gate.py
-      - .github/workflows/hepta-objective-release-gate.yml
-      - .github/workflows/hepta-objective-target-host.yml
+      - scripts/hepta-objective-release-surface.py
+      - scripts/test_hepta_objective_release_surface.py
+      - scripts/hepta-objective-materialize-closure.py
+      - ".github/workflows/*objective*.yml"
+      - ".github/workflows/*objective*.yaml"
   workflow_dispatch:
     inputs:
       candidate_sha:
@@ -45,12 +51,17 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Verify fail-closed source truth and gate tests
+      - name: Verify fail-closed source truth and read-only release surface
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m py_compile scripts/hepta-objective-release-gate.py
-          python3 -m unittest -v scripts.test_hepta_objective_release_gate
+          python3 -m py_compile \
+            scripts/hepta-objective-release-gate.py \
+            scripts/hepta-objective-release-surface.py
+          python3 -m unittest -v \
+            scripts.test_hepta_objective_release_gate \
+            scripts.test_hepta_objective_release_surface
+          python3 scripts/hepta-objective-release-surface.py verify
           python3 scripts/hepta-objective-release-gate.py verify-source
           git diff --check
           test -z "$(git status --porcelain)"
@@ -76,6 +87,7 @@ jobs:
           test "${#CANDIDATE_SHA}" = 40
           test "$(git rev-parse HEAD)" = "${CANDIDATE_SHA}"
           CANDIDATE_TREE="$(git rev-parse HEAD^{tree})"
+          python3 scripts/hepta-objective-release-surface.py verify
           python3 scripts/hepta-objective-release-gate.py verify-release \
             --receipts qualification/objective.compiler/receipts \
             --expected-sha "${CANDIDATE_SHA}" \
