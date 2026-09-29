@@ -6,7 +6,10 @@ pub(super) const HISTORY_PAGE_SIZE: usize = 64;
 pub(super) fn history_page_range(total: usize, requested: usize) -> (usize, Range<usize>) {
     let page = requested.min(total.saturating_sub(1) / HISTORY_PAGE_SIZE);
     let start = page * HISTORY_PAGE_SIZE;
-    (page, start..start.saturating_add(HISTORY_PAGE_SIZE).min(total))
+    (
+        page,
+        start..start.saturating_add(HISTORY_PAGE_SIZE).min(total),
+    )
 }
 
 #[cfg(test)]

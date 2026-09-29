@@ -547,9 +547,10 @@ impl NativeShellRuntime {
     }
 
     fn require_session(&self) -> Result<&SessionIncarnation, ShellError> {
-        let session = self.session.as_ref().ok_or_else(|| {
-            ShellError::State("native shell is not connected".to_owned())
-        })?;
+        let session = self
+            .session
+            .as_ref()
+            .ok_or_else(|| ShellError::State("native shell is not connected".to_owned()))?;
         if self.manifest.is_none() {
             return Err(ShellError::State(
                 "native session is closing; its identity is retained only for cleanup".to_owned(),

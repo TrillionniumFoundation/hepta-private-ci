@@ -34,13 +34,15 @@ impl HeptaNativeApp {
         if let Ok(runtime) = self.runtime.try_lock() {
             let capacity = runtime.journal_capacity();
             ui.label(format!(
-                "active={}/{} pending={} closed={} retired={} segments={}",
+                "active={}/{} pending={} closed={} retired={} segments={} wal_entries={} wal_bytes={}",
                 capacity.active_records,
                 capacity.active_limit,
                 capacity.pending_records,
                 capacity.closed_observations,
                 capacity.retired_identities,
-                capacity.retirement_segments
+                capacity.retirement_segments,
+                capacity.wal_entries,
+                capacity.wal_bytes
             ));
             if capacity.active_records >= capacity.active_limit * 4 / 5 {
                 ui.label(self.locale.text(
@@ -94,10 +96,22 @@ impl HeptaNativeApp {
         let grant_response = ui
             .horizontal(|ui| {
                 let response = ui.text_edit_singleline(&mut self.operation_grant_path);
-                if ui.add_enabled(!self.is_busy(), egui::Button::new(self.locale.text("Choose file", "选择文件"))).clicked() {
+                if ui
+                    .add_enabled(
+                        !self.is_busy(),
+                        egui::Button::new(self.locale.text("Choose file", "选择文件")),
+                    )
+                    .clicked()
+                {
                     self.pick_file_input_target(ui.ctx(), FileInputTarget::OperationGrant);
                 }
-                if ui.button(self.locale.text("Use next dropped file", "使用下一个拖放文件")).clicked() {
+                if ui
+                    .button(
+                        self.locale
+                            .text("Use next dropped file", "使用下一个拖放文件"),
+                    )
+                    .clicked()
+                {
                     self.arm_file_input_target(ui.ctx(), FileInputTarget::OperationGrant);
                 }
                 response
@@ -109,16 +123,42 @@ impl HeptaNativeApp {
         self.render_file_input_intent_status(ui);
         let busy = self.is_busy();
         ui.horizontal(|ui| {
-            if ui.add_enabled(!busy && self.view_revision.is_some(), egui::Button::new(self.locale.text("Prepare exact binding", "生成精确 binding"))).clicked() {
+            if ui
+                .add_enabled(
+                    !busy && self.view_revision.is_some(),
+                    egui::Button::new(
+                        self.locale
+                            .text("Prepare exact binding", "生成精确 binding"),
+                    ),
+                )
+                .clicked()
+            {
                 self.prepare_operation_binding();
             }
-            if ui.add_enabled(!busy && self.view_revision.is_some(), egui::Button::new(self.locale.text("Execute with signed grant", "使用签名 grant 执行"))).clicked() {
+            if ui
+                .add_enabled(
+                    !busy && self.view_revision.is_some(),
+                    egui::Button::new(
+                        self.locale
+                            .text("Execute with signed grant", "使用签名 grant 执行"),
+                    ),
+                )
+                .clicked()
+            {
                 self.execute_operation();
             }
         });
         if let Some(binding) = &mut self.operation_binding {
-            ui.label(self.locale.text("Binding for the independent issuer:", "交给独立签发方的 binding："));
-            ui.add(egui::TextEdit::multiline(binding).font(egui::TextStyle::Monospace).desired_rows(10).interactive(false));
+            ui.label(self.locale.text(
+                "Binding for the independent issuer:",
+                "交给独立签发方的 binding：",
+            ));
+            ui.add(
+                egui::TextEdit::multiline(binding)
+                    .font(egui::TextStyle::Monospace)
+                    .desired_rows(10)
+                    .interactive(false),
+            );
         }
         if let Some(message) = &self.operation_message {
             ui.label(message);
@@ -128,13 +168,26 @@ impl HeptaNativeApp {
             "Indeterminate operations are never automatically replayed. Reconcile asks the platform adapter for a trustworthy terminal observation.",
             "不确定操作绝不会自动重放。对账只接受平台适配器提供的可信终态观察。",
         ));
-        if ui.add_enabled(!busy, egui::Button::new(self.locale.text("Archive closed history (retain last 256)", "归档已结案历史（保留最近 256 条）"))).clicked() {
+        if ui
+            .add_enabled(
+                !busy,
+                egui::Button::new(self.locale.text(
+                    "Archive closed history (retain last 256)",
+                    "归档已结案历史（保留最近 256 条）",
+                )),
+            )
+            .clicked()
+        {
             let runtime = Arc::clone(&self.runtime);
             self.start_task(UiTaskKind::Reconcile, move |admission| {
                 let mut runtime = lock_runtime_for_task(&admission, &runtime)?;
-                admission.begin().map_err(|message| ShellError::State(message.to_owned()))?;
+                admission
+                    .begin()
+                    .map_err(|message| ShellError::State(message.to_owned()))?;
                 runtime.compact_closed_history(256)?;
-                Ok(UiTaskOutput::Reconcile { operations: runtime.operation_history() })
+                Ok(UiTaskOutput::Reconcile {
+                    operations: runtime.operation_history(),
+                })
             });
         }
         if self.operations.is_empty() {
@@ -147,11 +200,28 @@ impl HeptaNativeApp {
         self.history_page = page;
         let last_page = total.saturating_sub(1) / HISTORY_PAGE_SIZE;
         ui.horizontal(|ui| {
-            if ui.add_enabled(self.history_page > 0, egui::Button::new(self.locale.text("Previous page", "上一页"))).clicked() {
+            if ui
+                .add_enabled(
+                    self.history_page > 0,
+                    egui::Button::new(self.locale.text("Previous page", "上一页")),
+                )
+                .clicked()
+            {
                 self.history_page -= 1;
             }
-            ui.label(format!("{} / {} · {}", self.history_page + 1, last_page + 1, total));
-            if ui.add_enabled(self.history_page < last_page, egui::Button::new(self.locale.text("Next page", "下一页"))).clicked() {
+            ui.label(format!(
+                "{} / {} · {}",
+                self.history_page + 1,
+                last_page + 1,
+                total
+            ));
+            if ui
+                .add_enabled(
+                    self.history_page < last_page,
+                    egui::Button::new(self.locale.text("Next page", "下一页")),
+                )
+                .clicked()
+            {
                 self.history_page += 1;
             }
         });
@@ -193,20 +263,33 @@ impl HeptaNativeApp {
             let runtime = Arc::clone(&self.runtime);
             self.start_task(UiTaskKind::Reconcile, move |admission| {
                 let mut runtime = lock_runtime_for_task(&admission, &runtime)?;
-                admission.begin().map_err(|message| ShellError::State(message.to_owned()))?;
+                admission
+                    .begin()
+                    .map_err(|message| ShellError::State(message.to_owned()))?;
                 runtime.close_operation_observation(&key)?;
                 runtime.compact_closed_history(256)?;
-                Ok(UiTaskOutput::Reconcile { operations: runtime.operation_history() })
+                Ok(UiTaskOutput::Reconcile {
+                    operations: runtime.operation_history(),
+                })
             });
         }
     }
 
     fn operation_payload(&self) -> Result<PlatformPayload, ShellError> {
         let payload = match self.operation_action {
-            PlatformAction::OpenPath => PlatformPayload::OpenPath { path: PathBuf::from(self.operation_path.trim()) },
-            PlatformAction::RevealPath => PlatformPayload::RevealPath { path: PathBuf::from(self.operation_path.trim()) },
-            PlatformAction::CopyText => PlatformPayload::CopyText { text: self.operation_text.clone() },
-            PlatformAction::Notify => PlatformPayload::Notify { title: self.notification_title.clone(), body: self.notification_body.clone() },
+            PlatformAction::OpenPath => PlatformPayload::OpenPath {
+                path: PathBuf::from(self.operation_path.trim()),
+            },
+            PlatformAction::RevealPath => PlatformPayload::RevealPath {
+                path: PathBuf::from(self.operation_path.trim()),
+            },
+            PlatformAction::CopyText => PlatformPayload::CopyText {
+                text: self.operation_text.clone(),
+            },
+            PlatformAction::Notify => PlatformPayload::Notify {
+                title: self.notification_title.clone(),
+                body: self.notification_body.clone(),
+            },
         };
         payload.validate()?;
         Ok(payload)
@@ -215,8 +298,14 @@ impl HeptaNativeApp {
     fn prepare_operation_binding(&mut self) {
         let outcome = (|| -> Result<String, ShellError> {
             let payload = self.operation_payload()?;
-            let runtime = self.runtime.try_lock().map_err(|_| ShellError::State("native runtime is busy; retry after the current task".to_owned()))?;
-            let binding = runtime.prepare_platform_binding(self.operation_subject_id.trim(), self.operation_id.trim(), &payload)?;
+            let runtime = self.runtime.try_lock().map_err(|_| {
+                ShellError::State("native runtime is busy; retry after the current task".to_owned())
+            })?;
+            let binding = runtime.prepare_platform_binding(
+                self.operation_subject_id.trim(),
+                self.operation_id.trim(),
+                &payload,
+            )?;
             serde_json::to_string_pretty(&binding).map_err(ShellError::from)
         })();
         match outcome {
@@ -240,9 +329,13 @@ impl HeptaNativeApp {
         let outcome = (|| -> Result<(PathBuf, u64, PlatformPayload), ShellError> {
             let grant_path = PathBuf::from(self.operation_grant_path.trim());
             if !grant_path.is_absolute() {
-                return Err(ShellError::InvalidInput("signed final-use grant path must be absolute".to_owned()));
+                return Err(ShellError::InvalidInput(
+                    "signed final-use grant path must be absolute".to_owned(),
+                ));
             }
-            let displayed_revision = self.view_revision.ok_or_else(|| ShellError::State("native runtime view is unavailable".to_owned()))?;
+            let displayed_revision = self.view_revision.ok_or_else(|| {
+                ShellError::State("native runtime view is unavailable".to_owned())
+            })?;
             Ok((grant_path, displayed_revision, self.operation_payload()?))
         })();
         match outcome {
@@ -252,13 +345,30 @@ impl HeptaNativeApp {
                 let operation_id = self.operation_id.trim().to_owned();
                 self.operation_message = None;
                 self.start_task(UiTaskKind::Execute, move |admission| {
-                    let grant: SignedFinalUseGrant = crate::file_input::read_json_file(&grant_path, 16 * 1024)?;
-                    let request = PlatformRequest { subject_id, operation_id, displayed_revision, payload, grant };
+                    let grant: SignedFinalUseGrant =
+                        crate::file_input::read_json_file(&grant_path, 16 * 1024)?;
+                    let request = PlatformRequest {
+                        subject_id,
+                        operation_id,
+                        displayed_revision,
+                        payload,
+                        grant,
+                    };
                     let mut runtime = lock_runtime_for_task(&admission, &runtime)?;
-                    admission.begin().map_err(|message| ShellError::State(message.to_owned()))?;
+                    admission
+                        .begin()
+                        .map_err(|message| ShellError::State(message.to_owned()))?;
                     let receipt = runtime.request_platform_capability(request)?;
-                    let message = format!("{}: terminal={} status={:?}", receipt.key.operation_id, receipt.terminal_observed, receipt.terminal_status);
-                    Ok(UiTaskOutput::Execute { message, operations: runtime.operation_history() })
+                    let message = format!(
+                        "{}: terminal={} status={:?}",
+                        receipt.key.operation_id,
+                        receipt.terminal_observed,
+                        receipt.terminal_status
+                    );
+                    Ok(UiTaskOutput::Execute {
+                        message,
+                        operations: runtime.operation_history(),
+                    })
                 });
             }
             Err(error) => {
@@ -276,9 +386,21 @@ mod projection_tests {
 
     #[test]
     fn operation_projection_has_one_unambiguous_state() {
-        assert_eq!(project_operation_presentation(true, true, true), OperationPresentation::TerminalObserved);
-        assert_eq!(project_operation_presentation(false, false, false), OperationPresentation::PreparedNotDispatched);
-        assert_eq!(project_operation_presentation(false, true, false), OperationPresentation::AwaitingObservation);
-        assert_eq!(project_operation_presentation(false, true, true), OperationPresentation::ObservationClosedUnknown);
+        assert_eq!(
+            project_operation_presentation(true, true, true),
+            OperationPresentation::TerminalObserved
+        );
+        assert_eq!(
+            project_operation_presentation(false, false, false),
+            OperationPresentation::PreparedNotDispatched
+        );
+        assert_eq!(
+            project_operation_presentation(false, true, false),
+            OperationPresentation::AwaitingObservation
+        );
+        assert_eq!(
+            project_operation_presentation(false, true, true),
+            OperationPresentation::ObservationClosedUnknown
+        );
     }
 }

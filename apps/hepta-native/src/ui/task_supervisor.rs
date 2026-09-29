@@ -61,8 +61,7 @@ impl TaskAdmission {
                 }
                 Err(TryLockError::WouldBlock) => {
                     std::thread::sleep(
-                        Duration::from_millis(2)
-                            .min(maximum.saturating_sub(started.elapsed())),
+                        Duration::from_millis(2).min(maximum.saturating_sub(started.elapsed())),
                     );
                 }
             }
@@ -204,9 +203,7 @@ impl std::fmt::Display for FileInputError {
             Self::MissingFilesystemPath => formatter.write_str(
                 "the dropped item has no filesystem path; in-memory or URI drops are rejected",
             ),
-            Self::RelativePath => {
-                formatter.write_str("the selected file path must be absolute")
-            }
+            Self::RelativePath => formatter.write_str("the selected file path must be absolute"),
         }
     }
 }
