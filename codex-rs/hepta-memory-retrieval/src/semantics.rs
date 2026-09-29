@@ -28,14 +28,22 @@ pub enum PropositionPolarityV2 {
 /// `contradiction_group_digest(s)` field names are retained during the source
 /// migration, but their values are now structured claims rather than opaque
 /// hashes. Old opaque groups cannot be upgraded by guessing a polarity.
+///
+/// The fields are private so callers cannot construct or later mutate a
+/// proposition/generation pair independently. Owners that already maintain a
+/// canonical proposition digest use [`Self::new`]; callers holding canonical
+/// value bytes use [`Self::from_canonical_value`], which derives the digest.
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub struct ContradictionEvidenceV2 {
-    pub proposition_digest: Digest32,
-    pub generation_vector_digest: Digest32,
-    pub polarity: PropositionPolarityV2,
+    proposition_digest: Digest32,
+    generation_vector_digest: Digest32,
+    polarity: PropositionPolarityV2,
 }
 
 impl ContradictionEvidenceV2 {
+    /// Bind a digest already derived by the authoritative proposition owner.
+    /// This constructor does not accept a separate value, so no value/digest
+    /// pair can disagree inside this type.
     pub fn new(
         proposition_digest: Digest32,
         generation_vector_digest: Digest32,
@@ -48,6 +56,38 @@ impl ContradictionEvidenceV2 {
         };
         value.validate(generation_vector_digest)?;
         Ok(value)
+    }
+
+    /// Derive the proposition digest from the canonical value bytes inside the
+    /// constructor. Empty values are rejected before they can become evidence.
+    pub fn from_canonical_value(
+        canonical_value: &[u8],
+        generation_vector_digest: Digest32,
+        polarity: PropositionPolarityV2,
+    ) -> Result<Self, RecallErrorV1> {
+        if canonical_value.is_empty() {
+            return Err(RecallErrorV1::EmptyDigest("canonical_proposition_value"));
+        }
+        Self::new(
+            Digest32::of_bytes(canonical_value),
+            generation_vector_digest,
+            polarity,
+        )
+    }
+
+    #[must_use]
+    pub fn proposition_digest(&self) -> Digest32 {
+        self.proposition_digest
+    }
+
+    #[must_use]
+    pub fn generation_vector_digest(&self) -> Digest32 {
+        self.generation_vector_digest
+    }
+
+    #[must_use]
+    pub fn polarity(&self) -> PropositionPolarityV2 {
+        self.polarity
     }
 
     pub fn validate(&self, expected_generation: Digest32) -> Result<(), RecallErrorV1> {
