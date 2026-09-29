@@ -55,7 +55,7 @@ jobs:
       - name: Apply reviewed runtime closure patch
         run: python3 .github/materialization/inference-worker-runtime-closure/apply.py
 
-      - name: Complete historical Observe fixtures
+      - name: Complete historical fixtures and monotonic observation metadata
         shell: bash
         run: |
           set -euo pipefail
@@ -103,6 +103,23 @@ jobs:
           if text.count(anchor) != 1:
               raise SystemExit("legacy Observe JSON anchor drifted")
           path.write_text(text.replace(anchor, replacement, 1), encoding="utf-8")
+
+          path = Path("codex-rs/hepta-infer-core/src/native_control.rs")
+          text = path.read_text(encoding="utf-8")
+          old = '''        if record.observation.as_ref() == Some(&output)
+                  && usage_units.is_none_or(|usage| record.observed_usage_units == Some(usage))
+              {
+                  return Ok(record.clone());
+              }'''
+          new = '''        if record.observation.as_ref() == Some(&output)
+                  && usage_units.is_none_or(|usage| record.observed_usage_units == Some(usage))
+                  && record.last_observed_at_unix_ms == Some(observed_at_unix_ms)
+              {
+                  return Ok(record.clone());
+              }'''
+          if text.count(old) != 1:
+              raise SystemExit("observation idempotency anchor drifted")
+          path.write_text(text.replace(old, new, 1), encoding="utf-8")
           PY
 
       - name: Format exact Rust surfaces
