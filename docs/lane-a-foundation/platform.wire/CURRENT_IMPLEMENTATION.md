@@ -4,7 +4,7 @@ This document is the entry point for the **current executable** `platform.wire` 
 
 ## 2026-09-29 validation convergence follow-up
 
-See [`PRODUCTION_VALIDATION_20260929.md`](../../modules/platform.wire/PRODUCTION_VALIDATION_20260929.md) for the generation-test and fleet-validator fixes, real-emitter contract tests, per-record idle reclamation, current-source receipt selection, protected-host failure evidence, and the five-path paired-measurement intake. Core, integrated exact/merge, protected-host, paired performance, and independent acceptance remain distinct evidence scopes. A matching historical receipt set does not qualify the current checkout. No deployed authenticated ingress, gRPC threshold result, independent acceptance or release is asserted without its actual evidence.
+See [`PRODUCTION_VALIDATION_20260929.md`](../../modules/platform.wire/PRODUCTION_VALIDATION_20260929.md) for the generation-test and fleet-validator fixes, real-emitter contract tests, per-record idle reclamation, current-source receipt selection, protected-host failure evidence, and the five-path paired-measurement intake. The separately registered eight-scenario production-composition intake is defined in [`PRODUCTION_INTAKE_20260929.md`](../../modules/platform.wire/PRODUCTION_INTAKE_20260929.md). Core, integrated exact/merge, protected-host, paired performance, production composition and independent acceptance remain distinct evidence scopes. A matching historical receipt set does not qualify the current checkout. No deployed authenticated ingress, gRPC threshold result, production-composition observation, independent acceptance or release is asserted without its actual evidence.
 
 ## 2026-09-29 resource-contract update
 
@@ -38,6 +38,8 @@ Idle staging bounds and serialized-frame work budgets do not independently bound
 | Product-bound runtime.codex caller | source-composed | `hepta-infer-worker-host` admits its normal bound `turn/start` intent through HPTA V2 plus `hepta.codex-operation-intent.v3` before final-use claim |
 | Exact-head / synthetic-merge evidence | workflow implemented, current receipt required | Lane A source-head and deterministic merge jobs emit schema-v2 receipts |
 | Protected target-host evidence | workflow implemented, execution pending | fixed self-hosted label, protected environment and exact dispatched SHA |
+| Protected five-path performance intake | contract and workflow implemented, producer evidence absent | registered exact-source paired candidate/gRPC measurements are required; the producer registry is intentionally empty until a real workflow and immutable plan are reviewed |
+| Protected production-composition intake | contract and workflow implemented, producer evidence absent | registered exact-source eight-scenario deployment observations are required; the producer registry is intentionally empty until a real workflow and immutable plan are reviewed |
 | Independent acceptance / release | externally governed, absent until issued | distinct reviewer and operations receipts, then release receipt |
 
 V1 continues to use its frozen payload-only digest. V2 binds schema, producer, generation, encoded lengths and payload into a domain-separated SHA-256 frame digest. Neither digest is a MAC or signature. Authentication begins only when an authenticated transport channel binding is included in the negotiation transcript and either the transport itself supplies equivalent directional authenticated encryption or HPTM records are used.
@@ -72,7 +74,7 @@ The frame, negotiation, registry and session owners are deterministic in-memory 
 
 A poisoned decoder, authenticated record session or retired key is terminal for its connection/session. Reuse requires a new authenticated transport, fresh transcript, fresh session identifier and a newly admitted registry snapshot. Process restart does not transform an old receipt or old session into current authority.
 
-Source composition is not activation. Product activation remains fail-closed until exact-head, synthetic-merge and protected target-host evidence agree for the same candidate and independent reviewer and operations acceptance are present. `productionImplementation`, `activation` and `release` therefore remain false until those external conditions are satisfied.
+Source composition is not activation. Product activation remains fail-closed until exact-head, synthetic-merge and protected target-host evidence agree for the same candidate, the same-source five-path performance and eight-scenario production-composition receipts pass, and distinct independent reviewer and operations acceptance receipts are present. `productionImplementation`, `activation` and `release` therefore remain false until those external conditions are satisfied.
 
 ## Negotiation, session and admission invariants
 
@@ -115,12 +117,12 @@ Successful negotiation, decode, schema admission, MAC verification, re-encode or
 1. `Designed` from required design documents;
 2. `Implemented` from required native source files;
 3. `Qualified` from source-consistent exact-head, synthetic-merge and protected target-host receipts;
-4. `Accepted` from qualified state plus distinct independent-reviewer and operations receipts;
+4. `Accepted` from qualified state plus same-source passed five-path performance and eight-scenario production-composition receipts and distinct independent-reviewer and operations receipts;
 5. `Released` from accepted state plus a source-bound release receipt and artifact digest.
 
 The Lane A workflow emits exact-head and deterministic synthetic-merge receipts even when wider Lane A work later fails. Test floors are bound to the current named suites; a zero-test filter does not qualify. The target-host workflow never checks out an input ref: it checks out `github.sha`, requires the operator-supplied expected SHA to match, uses the fixed `hepta-target-host` self-hosted label and the `platform-wire-target-host` environment, and removes temporary build products after evidence upload.
 
-Source code cannot issue reviewer, operations or release acceptance for itself.
+The protected performance and production intake workflows admit only enabled, reviewed producer registrations for the same source. Their registries are intentionally empty until real paired benchmark and deployment-observation workflows, immutable plans and selected profiles are reviewed. Source code cannot issue production observations, reviewer, operations or release acceptance for itself.
 
 ## Target-only design
 
@@ -135,7 +137,7 @@ Additional actuation schemas, transport substitutions and authenticated-encrypti
 - The transport owner must provide an authenticated channel binding and protect key creation, storage, rotation and destruction.
 - Additional product-domain schemas require registered strict codecs and frozen policies before admission.
 - Exact-head, synthetic-merge and target-host receipts are current only for the exact SHA named in each artifact.
-- Protected-environment configuration, independent review, operator acceptance, canary, promotion and release remain external governance facts.
+- Protected-environment configuration, real producer registration and execution, independent review, operator acceptance, canary, promotion and release remain external governance facts.
 
 ## Verification
 
@@ -152,9 +154,11 @@ Current source/test identities include:
 - bidirectional raw-binary Rust↔Python HPTN/HPTA V2 tests with strict malformed-payload rejection;
 - native-gateway content negotiation, `context.compiler` producer/schema checks, runtime.codex V2 compatibility and V3 complete-binding tests;
 - runtime.codex product E2E through the normal inference-worker path;
+- five-path performance plan/report/producer-registry validation and threshold negative tests;
+- eight-scenario production plan/report/producer-registry validation, resource/recovery negative tests and exact-source intake contracts;
 - schema-v2 lifecycle receipt validation and evidence-derived status self-tests.
 
-These are source/test identities until the exact candidate and required merge/target-host workflows pass and their artifacts are retained. Independent acceptance and release remain separate even after qualification is green.
+These are source/test identities until the exact candidate and required merge/target-host workflows pass and their artifacts are retained. Performance and production contracts are not the corresponding external measurements. Independent acceptance and release remain separate even after qualification is green.
 
 ## Integration prerequisites
 
@@ -162,4 +166,4 @@ A production transport integration must construct one immutable registry snapsho
 
 Every product schema must have a strict codec plus registered schema revision, producer allowlist, runtime-role allowlist, generation policy, canonicalization profile and payload/resource bounds. The product owner must retain final-use authority and revalidate immediately before the physical effect; wire admission never mints that authority.
 
-Activation requires current exact-head, deterministic synthetic-merge and protected target-host receipts for the same source candidate, followed by distinct independent-reviewer and operations acceptance. Rolling upgrade and mixed-version evidence, key-rotation and retirement evidence, canary/rollback evidence and a source-bound release receipt are required before release can be asserted.
+Activation requires current exact-head, deterministic synthetic-merge and protected target-host receipts for the same source candidate, same-source passed five-path performance and eight-scenario production-composition receipts, followed by distinct independent-reviewer and operations acceptance. Rolling upgrade and mixed-version evidence, key-rotation and retirement evidence, canary/rollback evidence and a source-bound release receipt are required before release can be asserted.
