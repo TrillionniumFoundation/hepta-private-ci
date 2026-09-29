@@ -116,22 +116,24 @@ only when every required outcome succeeds for the same exact candidate.
 Uploaded logs, historical green runs and a successful artifact-upload step are
 not receipts.
 
-The Rama dependency guard models the actual reviewed published graph. Product
-crates used directly by `codex-network-proxy` remain exact
-`0.3.0-alpha.4` pins, while the upstream graph's support crates
-`rama-error`, `rama-macros` and `rama-utils` are exactly `0.3.0`. Prefix-wide
-version assumptions are rejected because they misdescribe the dependency graph;
-unreviewed Rama packages or version drift still fail closed.
+The Rama dependency guard models one coherent reviewed prerelease graph. Every
+Rama product and support crate selected by `codex-network-proxy`, including
+`rama-error`, `rama-macros` and `rama-utils`, is fixed to exact
+`0.3.0-alpha.4`. This explicit support-crate pin is necessary because Cargo's
+ordinary prerelease range may otherwise advance those dependencies to stable
+`0.3.0`, whose API is not source-compatible with `rama-core 0.3.0-alpha.4`.
+Mixed releases, unreviewed Rama packages and version drift fail closed.
 
 ## 6. Public API evidence
 
 The committed exact-`pub use` inventory is a narrow ownership projection. Full
 compatibility is derived from rustdoc JSON. Rustdoc numeric item identifiers,
-including `Visibility::Restricted.parent`, are normalized to stable structural
-references before comparison. This prevents unrelated additive items from
-renumbering an unchanged private/restricted child and creating a false breaking
-change. Actual public removals, kind changes, field/variant changes, signature
-changes or changes to the referenced restricted parent still fail closed.
+including `Visibility::Restricted.parent` and tuple-variant payload IDs, are
+normalized to stable structural references before comparison. This prevents
+unrelated additive items from renumbering an unchanged private/restricted child
+and creating a false breaking change. Actual public removals, kind changes,
+field/variant changes, signature changes, payload changes or changes to the
+referenced restricted parent still fail closed.
 
 ## 7. Current non-claims
 
