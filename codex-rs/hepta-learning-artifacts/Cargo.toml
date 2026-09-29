@@ -10,6 +10,12 @@ name = "codex_hepta_learning_artifacts"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+default = []
+# Enables fault-injection hooks used only by native crash/recovery qualification.
+# Production compositions must not enable this feature.
+artifact_test_hooks = []
+
 [lints]
 workspace = true
 
