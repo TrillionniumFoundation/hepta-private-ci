@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   materialize:
-    runs-on: macos-15
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -35,9 +35,14 @@ jobs:
           test -z "$(git status --porcelain=v1)"
           fingerprint() {
             local label="$1"
-            printf '%s ' "$label"
-            shasum -a 256 scripts/runtime-codex-process-crash-migration.py
-            wc -l scripts/runtime-codex-process-crash-migration.py
+            python3 - "$label" <<'PY'
+          import hashlib
+          import pathlib
+          import sys
+          path = pathlib.Path("scripts/runtime-codex-process-crash-migration.py")
+          print(sys.argv[1], hashlib.sha256(path.read_bytes()).hexdigest(), path)
+          print(sum(1 for _ in path.open(encoding="utf-8")), path)
+          PY
           }
           fingerprint initial
           python3 scripts/runtime-codex-maintainer.py
