@@ -6,6 +6,10 @@
 
 #![forbid(unsafe_code)]
 
+#[allow(
+    clippy::large_enum_variant,
+    reason = "CanonicalRunOutcomeV1 is an exported workspace contract; boxing its Ready variant would be a source-breaking migration, while each outcome is constructed and consumed once per run"
+)]
 mod canonical;
 
 pub use canonical::AdvisoryDecisionReceiptV1;
