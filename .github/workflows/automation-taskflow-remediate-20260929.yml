@@ -28,9 +28,6 @@ jobs:
           persist-credentials: true
           sparse-checkout-cone-mode: false
           sparse-checkout: |
-            .github/workflows/automation-taskflow-export-final-patch.yml
-            .github/workflows/automation-taskflow-remediate-20260929.yml
-            .github/workflows/automation-taskflow-selected-host.yml
             codex-rs/hepta-automation/migrations/0022_durable_neural_circuit.sql
             codex-rs/hepta-automation/src/durable_neural_circuit.rs
             codex-rs/hepta-automation/src/durable_neural_circuit_recovery.rs
@@ -55,30 +52,13 @@ jobs:
             "d0a48c30545262f63fc22587e36c03376cd9112eea626cf363ffc1a9d8ff844c"
           git apply --check "$patch_file"
           git apply "$patch_file"
-
-      - name: Select real durable Circuit integration tests
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-          path = Path('.github/workflows/automation-taskflow-selected-host.yml')
-          body = path.read_text(encoding='utf-8')
-          old = "          cargo test -p codex-hepta-automation durable_neural_circuit -- --nocapture\n          cargo test -p codex-hepta-automation external_host_fence -- --nocapture\n"
-          new = "          cargo test -p codex-hepta-automation --test durable_neural_circuit -- --nocapture\n          cargo test -p codex-hepta-automation --test durable_neural_circuit_recovery -- --nocapture\n          cargo test -p codex-hepta-automation external_host_fence -- --nocapture\n"
-          if body.count(old) != 1:
-              raise SystemExit('selected-host durable Circuit command anchor changed')
-          path.write_text(body.replace(old, new, 1), encoding='utf-8')
-          PY
           python3 -m json.tool docs/modules/automation.taskflow/SCHEMA_CONTRACT.json >/dev/null
           git diff --check
 
-      - name: Remove temporary transport files and push source
+      - name: Remove source-patch transport and push ordinary source
         shell: bash
         run: |
           set -euo pipefail
-          rm -f .github/workflows/automation-taskflow-export-final-patch.yml
-          rm -f .github/workflows/automation-taskflow-remediate-20260929.yml
           rm -f scripts/automation_taskflow_remediation_20260929.patch.b64
           rm -rf scripts/automation_taskflow_remediation_parts
           git diff --check
