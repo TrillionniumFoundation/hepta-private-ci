@@ -975,14 +975,17 @@ async fn aborted_owner_work_retains_its_budget_until_computation_finishes() {
         workers.push(worker);
     }
     assert_eq!(runner.worker_slots.available_permits(), 0);
-    let fixture = fixture();
-    let result = runner
-        .prepare(&product_test_coordinator(), fixture.request, fixture.inputs)
-        .await;
-    assert!(matches!(result, Err(AgentdIntelligenceProductError::Busy)));
+    let saturated = matches!(
+        runner.spawn_owner_work(|| ()),
+        Err(AgentdIntelligenceProductError::Busy)
+    );
     for release in releases {
         release.send(()).expect("release real worker");
     }
+    assert!(
+        saturated,
+        "a fifth owner worker must fail closed while aborted work still runs"
+    );
     for worker in workers {
         timeout(Duration::from_secs(5), worker)
             .await
