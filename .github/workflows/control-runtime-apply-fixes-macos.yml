@@ -61,3 +61,5 @@ jobs:
                   .github/workflows/control-runtime-apply-fixes-macos.yml
           git commit -m "fix(control-runtime): close journal and strict lint gaps"
           git push origin "HEAD:${GITHUB_REF_NAME}"
+
+# Dispatch marker: apply the exact source patch on the branch head.
