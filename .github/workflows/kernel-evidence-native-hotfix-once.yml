@@ -1,0 +1,133 @@
+name: kernel.evidence one-shot native blocker repair
+
+on:
+  push:
+    branches:
+      - fix/kernel-evidence-production-closure
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kernel-evidence-native-hotfix-once
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    if: ${{ !contains(github.event.head_commit.message, '[kernel-evidence-native-hotfix]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out convergence branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: fix/kernel-evidence-production-closure
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Land native qualification fixes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import json
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              target = Path(path)
+              text = target.read_text(encoding="utf-8")
+              if new in text:
+                  return
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"{path}: expected one match, observed {count}")
+              target.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          replace_once(
+              "codex-rs/hepta-evidence/src/frontier_backend.rs",
+              "#[derive(Clone, Debug, Eq, PartialEq)]\npub struct EvidenceFrontierDurableAckV1 {",
+              "#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]\n"
+              "#[serde(rename_all = \"camelCase\", deny_unknown_fields)]\n"
+              "pub struct EvidenceFrontierDurableAckV1 {",
+          )
+
+          replace_once(
+              "codex-rs/hepta-evidence/src/frontier_backend_file/segmented/inherent_4.rs",
+              "            previous_generation: metadata.first_generation.checked_sub(1),",
+              "            previous_generation: metadata\n"
+              "                .first_generation\n"
+              "                .checked_sub(1)\n"
+              "                .filter(|generation| *generation > 0),",
+          )
+
+          replace_once(
+              "codex-rs/hepta-evidence/src/qualification_paging_tests.rs",
+              "details.contains(\"idx_qualification_evidence_candidate_claim\")",
+              "details.contains(\"qualification_evidence_candidate_claim_seq\")",
+          )
+
+          replace_once(
+              "codex-rs/hepta-evidence/src/store/runtime.rs",
+              '''        let page_count: i64 = sqlx::query_scalar("PRAGMA page_count")
+                      .fetch_one(&store.pool)
+                      .await
+                      .expect("read current page count");
+                  let requested_limit = page_count.checked_add(1).expect("page-count headroom");
+                  let configured_limit: i64 = sqlx::query_scalar(sqlx::AssertSqlSafe(format!(
+                      "PRAGMA max_page_count = {requested_limit}"
+                  )))
+                  .fetch_one(&store.pool)
+                  .await
+                  .expect("install disk-full injection ceiling");
+                  assert_eq!(configured_limit, requested_limit);
+
+                  let mut transaction = store.pool.begin().await.expect("begin injected write");
+          ''',
+              '''        // `max_page_count` is connection-scoped. Install the fault ceiling on
+                  // the same pooled connection and transaction that performs the injected
+                  // write; otherwise another pool connection can legitimately commit.
+                  let mut transaction = store.pool.begin().await.expect("begin injected write");
+                  let page_count: i64 = sqlx::query_scalar("PRAGMA page_count")
+                      .fetch_one(&mut *transaction)
+                      .await
+                      .expect("read current page count");
+                  let requested_limit = page_count.checked_add(1).expect("page-count headroom");
+                  let configured_limit: i64 = sqlx::query_scalar(sqlx::AssertSqlSafe(format!(
+                      "PRAGMA max_page_count = {requested_limit}"
+                  )))
+                  .fetch_one(&mut *transaction)
+                  .await
+                  .expect("install disk-full injection ceiling");
+                  assert_eq!(configured_limit, requested_limit);
+
+          ''',
+          )
+
+          matrix_path = Path("docs/lane-a-foundation/MODULE_TRUTH_MATRIX.json")
+          matrix = json.loads(matrix_path.read_text(encoding="utf-8"))
+          order = [
+              "platform.types",
+              "platform.wire",
+              "kernel.authority",
+              "kernel.operations",
+              "kernel.evidence",
+              "auth.authbus",
+              "secrets.heptabao",
+          ]
+          by_name = {row["module"]: row for row in matrix["modules"]}
+          if set(by_name) != set(order):
+              raise SystemExit("Lane-A module inventory drifted")
+          matrix["modules"] = [by_name[name] for name in order]
+          matrix_path.write_text(json.dumps(matrix, indent=2) + "\n", encoding="utf-8")
+          PY
+
+          rm -f .github/workflows/kernel-evidence-native-hotfix-once.yml
+          git diff --check
+          git config user.name "kernel-evidence-closure"
+          git config user.email "kernel-evidence-closure@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "fix(kernel.evidence): close native qualification blockers [kernel-evidence-closure] [kernel-evidence-native-hotfix]"
+          git push origin HEAD:fix/kernel-evidence-production-closure
