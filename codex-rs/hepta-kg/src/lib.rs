@@ -3,6 +3,7 @@
 #![forbid(unsafe_code)]
 
 mod generation;
+mod guarded_query;
 mod incremental;
 #[cfg(feature = "legacy-v1")]
 mod legacy_v1;
@@ -36,6 +37,9 @@ pub use generation::build_complete_generation;
 pub use generation::publish_generation;
 pub use generation::query_relations;
 pub use generation::query_relations_with_work;
+pub use guarded_query::KnowledgePhysicalQueryErrorV2;
+pub use guarded_query::KnowledgePhysicalQueryObservationV2;
+pub use guarded_query::KnowledgePhysicalQueryViewV2;
 pub use incremental::KnowledgeDependencyIndexV2;
 pub use incremental::KnowledgeImpactClosureV2;
 pub use incremental::KnowledgeIncrementalErrorV2;
