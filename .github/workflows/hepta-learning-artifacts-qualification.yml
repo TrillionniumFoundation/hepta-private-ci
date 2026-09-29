@@ -1,0 +1,122 @@
+name: Hepta learning.artifacts qualification
+
+on:
+  push:
+    branches: [main, 'codex/learning-artifacts-qualification-recovery-*', 'codex/learning-artifacts-qualified-host-*']
+  pull_request:
+  merge_group:
+  workflow_dispatch:
+    inputs:
+      base_commit:
+        description: Optional full integration-base commit; otherwise resolve origin/main
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: learning-artifacts-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || inputs.base_commit }}
+  PUSH_BEFORE: ${{ github.event.before }}
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  qualify:
+    name: learning.artifacts (${{ matrix.os }}, ${{ matrix.lane }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15]
+        lane: [exact-head, synthetic-merge]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 100
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ env.SOURCE_SHA }}
+      - name: Bind source and actual integration base
+        id: identity
+        env:
+          LANE: ${{ matrix.lane }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          if [[ -z "$BASE_SHA" ]]; then
+            if [[ "$GITHUB_EVENT_NAME" == push && "$GITHUB_REF" == refs/heads/main ]]; then
+              BASE_SHA="$PUSH_BEFORE"
+            else
+              BASE_SHA=$(git rev-parse refs/remotes/origin/main)
+            fi
+          fi
+          [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$BASE_SHA" != 0000000000000000000000000000000000000000
+          git cat-file -e "$BASE_SHA^{commit}"
+          echo "BASE_SHA=$BASE_SHA" >> "$GITHUB_ENV"
+          if [[ "$LANE" == synthetic-merge ]]; then
+            tree=$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")
+            [[ "$tree" =~ ^[0-9a-f]{40}$ ]]
+            git config user.name 'Artifact qualification'
+            git config user.email 'artifact-qualification@users.noreply.github.com'
+            candidate=$(printf '%s\n' 'Ephemeral qualification merge; not a publication.' | git commit-tree "$tree" -p "$BASE_SHA" -p "$SOURCE_SHA")
+            git checkout --detach "$candidate"
+          fi
+      - name: Install test runner
+        id: runner
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Install pinned Rust
+        id: rust
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+      - name: Evidence verifier regression tests
+        run: python3 -m unittest discover -s scripts -p 'test_hepta_artifact_*.py' -v
+      - name: Execute every native gate and retain each outcome
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' && steps.runner.outcome == 'success' && steps.rust.outcome == 'success' }}
+        env:
+          LANE: ${{ matrix.lane }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_artifact_qualification.py \
+            --source "$SOURCE_SHA" --base "$BASE_SHA" --lane "$LANE" \
+            --out "$RUNNER_TEMP/artifact-evidence"
+      - name: Recompute receipt claims from independently bound source
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' && steps.runner.outcome == 'success' && steps.rust.outcome == 'success' }}
+        env:
+          LANE: ${{ matrix.lane }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_artifact_receipt_guard.py \
+            --source "$SOURCE_SHA" --base "$BASE_SHA" --lane "$LANE" \
+            --out "$RUNNER_TEMP/artifact-evidence"
+      - name: Retain failure or success evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-artifacts-${{ env.SOURCE_SHA }}-${{ matrix.os }}-${{ matrix.lane }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/artifact-evidence
+          if-no-files-found: error
+          retention-days: 14
+
+  required:
+    name: Lane E artifacts required
+    if: always()
+    needs: [qualify]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Reject failures, cancellation and skipped qualification
+        env:
+          RESULT: ${{ needs.qualify.result }}
+        run: test "$RESULT" = success

@@ -1,20 +1,16 @@
 //! Named product writer service for the immutable learning-artifact store.
 //!
-//! This is the single product caller of LearningArtifactOwnerHost. The service
-//! serializes publications under one writer fence, owns the in-process artifact
-//! registry and current withdrawal frontier, and blocks unrelated work while a
-//! prior operation has a non-terminal durable checkpoint.
+//! The service owns the in-process registry, durable withdrawal floor, durable
+//! drain state, canonical request identity and one recovery-required fence.
 
 use std::error::Error as StdError;
 use std::fmt;
 use std::path::PathBuf;
 
-use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 use crate::ArtifactOwnerHostError;
-use crate::ArtifactOwnerPublicationCheckpointV1;
 use crate::ArtifactOwnerTrustV1;
 use crate::ArtifactPublicationError;
 use crate::ArtifactPublicationPhaseV1;
@@ -23,11 +19,36 @@ use crate::ArtifactPublicationTransactionV1;
 use crate::ArtifactRegistry;
 use crate::DatasetWithdrawalRegistry;
 use crate::LearningArtifactOwnerHost;
-use crate::RegistryHeadRequirementV1;
 use crate::SignedArtifactWriterLeaseV1;
 use crate::SignedCurrentArtifactHeadV1;
 use crate::VerifiedCurrentRegistryViewV1;
 use crate::WithdrawalBoundArtifactAdmissionV3;
+
+#[path = "owner/durable_control.rs"]
+mod durable_control;
+#[path = "owner/durable_inputs.rs"]
+mod durable_inputs;
+#[path = "owner/durable_withdrawals.rs"]
+mod durable_withdrawals;
+#[path = "owner/operational_metrics.rs"]
+mod operational_metrics;
+#[path = "owner/publication_recovery.rs"]
+mod publication_recovery;
+#[path = "owner/request_identity.rs"]
+mod request_identity;
+
+use durable_control::DurableDrain;
+use durable_inputs::verify_durable_inputs;
+use durable_withdrawals::DurableWithdrawalFloor;
+pub use operational_metrics::ArtifactOwnerBlockReasonV1;
+pub use operational_metrics::ArtifactOwnerOperationalMetricsV1;
+pub use operational_metrics::ArtifactOwnerOperationalSnapshotV1;
+pub use operational_metrics::ArtifactOwnerStageSummaryV1;
+pub use operational_metrics::ArtifactOwnerStageV1;
+use publication_recovery::rebuild_transaction;
+use publication_recovery::receipt_from_checkpoint;
+use publication_recovery::validate_request_against_checkpoint;
+use request_identity::RequestIdentityVerifier;
 
 #[derive(Clone, Debug)]
 pub struct LearningArtifactOwnerServiceConfigV1 {
@@ -52,10 +73,19 @@ pub struct LearningArtifactPublishRequestV1 {
 
 pub struct LearningArtifactOwnerService {
     host: LearningArtifactOwnerHost,
+    root: PathBuf,
+    durable_drain: DurableDrain,
+    durable_withdrawals: DurableWithdrawalFloor,
+    withdrawal_persistence_uncertain: bool,
     withdrawal_registry: DatasetWithdrawalRegistry,
     registry: ArtifactRegistry,
     storage_binding: Digest32,
+    request_identity: RequestIdentityVerifier,
     recovery_required: Option<StableId>,
+    draining: bool,
+    drain_durable: bool,
+    drain_persistence_uncertain: bool,
+    operational_metrics: ArtifactOwnerOperationalMetricsV1,
 }
 
 impl fmt::Debug for LearningArtifactOwnerService {
@@ -67,6 +97,10 @@ impl fmt::Debug for LearningArtifactOwnerService {
             .field("withdrawal_head", &self.withdrawal_registry.head_digest())
             .field("storage_binding", &self.storage_binding)
             .field("recovery_required", &self.recovery_required)
+            .field("withdrawal_persistence_uncertain", &self.withdrawal_persistence_uncertain)
+            .field("draining", &self.draining)
+            .field("drain_durable", &self.drain_durable)
+            .field("drain_persistence_uncertain", &self.drain_persistence_uncertain)
             .finish()
     }
 }
@@ -81,6 +115,11 @@ impl LearningArtifactOwnerService {
         {
             return Err(LearningArtifactOwnerServiceError::InvalidConfiguration);
         }
+        let operational_metrics = ArtifactOwnerOperationalMetricsV1::default();
+        let _startup_timer = operational_metrics.start_stage(ArtifactOwnerStageV1::StartupRecoveryScan);
+        let request_identity = RequestIdentityVerifier::new(&config.trust);
+        let registry_id = config.trust.registry_id.clone();
+        let scope = config.trust.withdrawal_scope_digest;
         let host = match config.required_current_head {
             Some(current) => LearningArtifactOwnerHost::open_with_required_current_head(
                 &config.root,
@@ -96,6 +135,23 @@ impl LearningArtifactOwnerService {
                 config.now,
             )?,
         };
+        let root = std::fs::canonicalize(&config.root)
+            .map_err(LearningArtifactOwnerServiceError::ControlIo)?;
+        let durable_drain = DurableDrain::new(&root, &registry_id, scope, config.storage_binding);
+        let draining = durable_drain
+            .requested()
+            .map_err(LearningArtifactOwnerServiceError::ControlIo)?;
+        if draining {
+            durable_drain
+                .persist()
+                .map_err(LearningArtifactOwnerServiceError::ControlIo)?;
+            operational_metrics.begin_drain();
+        }
+        if let Some(current) = host.discover_current_head(config.now)?
+            && current.signed.binding != config.storage_binding
+        {
+            return Err(LearningArtifactOwnerServiceError::InvalidConfiguration);
+        }
         let registry = host.recover_current_registry(config.now)?;
         let recovery = host.recovery_required_operations()?;
         if recovery.len() > 1 {
@@ -104,12 +160,29 @@ impl LearningArtifactOwnerService {
         let recovery_required = recovery
             .first()
             .map(|checkpoint| checkpoint.operation_id.clone());
+        if let Some(operation_id) = recovery_required.clone() {
+            operational_metrics.mark_recovery_required(operation_id);
+        }
+        let durable_withdrawals =
+            DurableWithdrawalFloor::new(&root, &registry_id, scope, config.storage_binding);
+        durable_withdrawals
+            .persist(&config.withdrawal_registry)
+            .map_err(LearningArtifactOwnerServiceError::ControlIo)?;
         Ok(Self {
             host,
+            root,
+            durable_drain,
+            durable_withdrawals,
+            withdrawal_persistence_uncertain: false,
             withdrawal_registry: config.withdrawal_registry,
             registry,
             storage_binding: config.storage_binding,
+            request_identity,
             recovery_required,
+            draining,
+            drain_durable: draining,
+            drain_persistence_uncertain: false,
+            operational_metrics,
         })
     }
 
@@ -118,14 +191,26 @@ impl LearningArtifactOwnerService {
         &self.registry
     }
 
-    /// Return the exact authenticated CURRENT registry view for read-only
-    /// product consumers. This delegates current-head discovery, signature
-    /// validation and snapshot binding to the fenced artifact owner.
     pub fn current_registry_view(
         &self,
         now: u64,
     ) -> Result<VerifiedCurrentRegistryViewV1, LearningArtifactOwnerServiceError> {
-        Ok(self.host.current_registry_view(now)?)
+        let _timer = self
+            .operational_metrics
+            .start_stage(ArtifactOwnerStageV1::PinnedAcquire);
+        let result = (|| {
+            self.require_durable_withdrawals()?;
+            if let Some(operation_id) = &self.recovery_required {
+                return Err(LearningArtifactOwnerServiceError::RecoveryRequired(
+                    operation_id.clone(),
+                ));
+            }
+            Ok(self.host.current_registry_view(now)?)
+        })();
+        if let Err(error) = &result {
+            self.record_error(error);
+        }
+        result
     }
 
     #[must_use]
@@ -138,55 +223,143 @@ impl LearningArtifactOwnerService {
         self.recovery_required.as_ref()
     }
 
-    /// Install an authenticated newer withdrawal frontier. The service accepts
-    /// only an exact monotonic prefix extension in the same scope.
+    #[must_use]
+    pub fn operational_metrics(&self) -> ArtifactOwnerOperationalSnapshotV1 {
+        self.operational_metrics.snapshot()
+    }
+
+    #[must_use]
+    pub fn operational_metrics_handle(&self) -> ArtifactOwnerOperationalMetricsV1 {
+        self.operational_metrics.clone()
+    }
+
+    pub fn begin_drain(&mut self) {
+        self.draining = true;
+        self.operational_metrics.begin_drain();
+    }
+
+    pub fn begin_drain_durable(&mut self) -> Result<(), LearningArtifactOwnerServiceError> {
+        self.begin_drain();
+        self.drain_persistence_uncertain = true;
+        let result = {
+            let _timer = self
+                .operational_metrics
+                .start_stage(ArtifactOwnerStageV1::CheckpointPersist);
+            self.durable_drain.persist()
+        };
+        if let Err(error) = result {
+            let service_error = LearningArtifactOwnerServiceError::ControlIo(error);
+            self.record_error(&service_error);
+            return Err(service_error);
+        }
+        self.drain_durable = true;
+        self.drain_persistence_uncertain = false;
+        Ok(())
+    }
+
+    #[must_use]
+    pub fn durable_drain_requested(&self) -> bool {
+        self.drain_durable && !self.drain_persistence_uncertain
+    }
+
+    #[must_use]
+    pub fn is_drained(&self) -> bool {
+        self.draining
+            && !self.drain_persistence_uncertain
+            && !self.withdrawal_persistence_uncertain
+            && self.recovery_required.is_none()
+    }
+
     pub fn install_withdrawal_frontier(
         &mut self,
         next: DatasetWithdrawalRegistry,
     ) -> Result<(), LearningArtifactOwnerServiceError> {
         if next.scope_digest() != self.withdrawal_registry.scope_digest() {
-            return Err(LearningArtifactOwnerServiceError::WithdrawalFrontierConflict);
+            let error = LearningArtifactOwnerServiceError::WithdrawalFrontierConflict;
+            self.record_error(&error);
+            return Err(error);
         }
         let current = self.withdrawal_registry.snapshot();
         let next_snapshot = next.snapshot();
         if next_snapshot.records().len() < current.records().len()
             || &next_snapshot.records()[..current.records().len()] != current.records()
         {
-            return Err(LearningArtifactOwnerServiceError::WithdrawalFrontierConflict);
+            let error = LearningArtifactOwnerServiceError::WithdrawalFrontierConflict;
+            self.record_error(&error);
+            return Err(error);
         }
         self.withdrawal_registry = next;
+        self.withdrawal_persistence_uncertain = true;
+        let result = {
+            let _timer = self
+                .operational_metrics
+                .start_stage(ArtifactOwnerStageV1::CheckpointPersist);
+            self.durable_withdrawals.persist(&self.withdrawal_registry)
+        };
+        if let Err(error) = result {
+            let service_error = LearningArtifactOwnerServiceError::ControlIo(error);
+            self.record_error(&service_error);
+            return Err(service_error);
+        }
+        self.withdrawal_persistence_uncertain = false;
+        self.operational_metrics.clear_withdrawal_block();
         Ok(())
     }
 
-    /// Execute or reconcile one complete immutable publication.
-    ///
-    /// Exact retries of an acknowledged operation return the same terminal
-    /// receipt. A non-terminal retry reconstructs the transaction from the
-    /// durable checkpoint and predecessor registry before continuing.
+    #[must_use]
+    pub fn withdrawal_frontier_is_durable(&self) -> bool {
+        !self.withdrawal_persistence_uncertain
+    }
+
+    fn require_durable_withdrawals(&self) -> Result<(), LearningArtifactOwnerServiceError> {
+        if self.withdrawal_persistence_uncertain {
+            return Err(LearningArtifactOwnerServiceError::WithdrawalDurabilityUnknown);
+        }
+        Ok(())
+    }
+
     pub fn publish(
         &mut self,
         request: LearningArtifactPublishRequestV1,
     ) -> Result<ArtifactPublicationReceiptV1, LearningArtifactOwnerServiceError> {
+        if let Err(error) = self.require_durable_withdrawals() {
+            self.record_error(&error);
+            return Err(error);
+        }
         if let Some(blocked) = &self.recovery_required
             && blocked != &request.operation_id
         {
-            return Err(LearningArtifactOwnerServiceError::RecoveryRequired(
-                blocked.clone(),
-            ));
+            let error = LearningArtifactOwnerServiceError::RecoveryRequired(blocked.clone());
+            self.record_error(&error);
+            return Err(error);
         }
         let operation_id = request.operation_id.clone();
         let result = self.publish_inner(&request);
         match result {
             Ok(receipt) => {
                 self.recovery_required = None;
+                self.operational_metrics.clear_recovery_required();
                 Ok(receipt)
             }
             Err(error) => {
-                if let Some(recovery) = self.host.recover_publication(&operation_id)?
-                    && recovery.checkpoint.phase != ArtifactPublicationPhaseV1::Acknowledged
-                {
-                    self.recovery_required = Some(operation_id);
+                match self.host.recover_publication(&operation_id) {
+                    Ok(Some(recovery))
+                        if recovery.checkpoint.phase != ArtifactPublicationPhaseV1::Acknowledged =>
+                    {
+                        self.recovery_required = Some(operation_id.clone());
+                        self.operational_metrics.mark_recovery_required(operation_id);
+                    }
+                    Ok(_) => {}
+                    Err(recovery_error) => {
+                        self.recovery_required = Some(operation_id.clone());
+                        self.operational_metrics.mark_recovery_required(operation_id);
+                        self.operational_metrics.record_recovery_failure();
+                        let service_error = LearningArtifactOwnerServiceError::from(recovery_error);
+                        self.record_error(&service_error);
+                        return Err(service_error);
+                    }
                 }
+                self.record_error(&error);
                 Err(error)
             }
         }
@@ -202,22 +375,43 @@ impl LearningArtifactOwnerService {
             || request.signed_current_head.withdrawal_scope_digest
                 != request.admission.withdrawal_scope_digest
         {
-            return Err(LearningArtifactOwnerServiceError::RequestMismatch);
+            return Err(LearningArtifactOwnerServiceError::IdentityConflict);
         }
-
-        let checkpoint = self.host.recover_publication(&request.operation_id)?;
+        {
+            let _timer = self
+                .operational_metrics
+                .start_stage(ArtifactOwnerStageV1::RequestIdentityAndPayloadHash);
+            self.request_identity.verify(request)?;
+        }
+        let checkpoint = {
+            let _timer = self
+                .operational_metrics
+                .start_stage(ArtifactOwnerStageV1::RecoveryReconciliation);
+            self.host.recover_publication(&request.operation_id)?
+        };
         if let Some(recovery) = checkpoint.as_ref() {
             validate_request_against_checkpoint(request, &recovery.checkpoint)?;
             if recovery.checkpoint.phase == ArtifactPublicationPhaseV1::Acknowledged {
                 return receipt_from_checkpoint(&recovery.checkpoint);
             }
         }
-
+        if request.admission.validated_manifest.manifest.predecessor_ids.len() > 1 {
+            return Err(LearningArtifactOwnerServiceError::IdentityConflict);
+        }
+        if self.draining && checkpoint.is_none() {
+            return Err(LearningArtifactOwnerServiceError::Draining);
+        }
+        if checkpoint.is_none() {
+            let current = self.host.recover_current_registry(request.now)?;
+            if current.snapshot().head_digest != request.expected_registry_predecessor_head {
+                return Err(LearningArtifactOwnerServiceError::StaleOwner);
+            }
+        }
         let predecessor = self
             .host
             .recover_registry_by_head(request.expected_registry_predecessor_head)?;
         let mut staged = predecessor.clone();
-        let mut transaction = self.host.begin_publication(
+        let preview = ArtifactPublicationTransactionV1::begin(
             request.operation_id.clone(),
             request.admission.clone(),
             &self.withdrawal_registry,
@@ -226,9 +420,33 @@ impl LearningArtifactOwnerService {
             request.now,
         )?;
         self.host
-            .stage_compatibility_registration(&transaction, &mut staged, request.now)?;
-
+            .stage_compatibility_registration(&preview, &mut staged, request.now)?;
+        if staged.snapshot().head_digest != request.signed_current_head.witness.head_digest {
+            return Err(LearningArtifactOwnerServiceError::IdentityConflict);
+        }
+        if let Some(recovery) = checkpoint.as_ref() {
+            let _timer = self
+                .operational_metrics
+                .start_stage(ArtifactOwnerStageV1::RecoveryReconciliation);
+            verify_durable_inputs(&self.root, &staged, request, &recovery.checkpoint)?;
+        }
+        let mut transaction = {
+            let _timer = self
+                .operational_metrics
+                .start_stage(ArtifactOwnerStageV1::CheckpointPersist);
+            self.host.begin_publication(
+                request.operation_id.clone(),
+                request.admission.clone(),
+                &self.withdrawal_registry,
+                &predecessor,
+                request.expected_registry_predecessor_head,
+                request.now,
+            )?
+        };
         if let Some(recovery) = checkpoint {
+            let _timer = self
+                .operational_metrics
+                .start_stage(ArtifactOwnerStageV1::RecoveryReconciliation);
             transaction = rebuild_transaction(
                 transaction,
                 &staged,
@@ -240,8 +458,10 @@ impl LearningArtifactOwnerService {
                 .host
                 .resume_publication(transaction.snapshot(), request.now)?;
         }
-
         if transaction.phase() == ArtifactPublicationPhaseV1::Prepared {
+            let _timer = self
+                .operational_metrics
+                .start_stage(ArtifactOwnerStageV1::PayloadWriteAndSync);
             self.host.ensure_payload_durable(
                 &mut transaction,
                 &staged,
@@ -250,6 +470,9 @@ impl LearningArtifactOwnerService {
             )?;
         }
         if transaction.phase() == ArtifactPublicationPhaseV1::PayloadDurable {
+            let _timer = self
+                .operational_metrics
+                .start_stage(ArtifactOwnerStageV1::RegistrySnapshotAndSync);
             self.host.ensure_registry_durable(
                 &mut transaction,
                 &staged,
@@ -259,6 +482,9 @@ impl LearningArtifactOwnerService {
             )?;
         }
         if transaction.phase() == ArtifactPublicationPhaseV1::RegistryDurable {
+            let _timer = self
+                .operational_metrics
+                .start_stage(ArtifactOwnerStageV1::CurrentSwitchAndSync);
             self.host.ensure_witness_durable(
                 &mut transaction,
                 &request.signed_current_head,
@@ -267,6 +493,9 @@ impl LearningArtifactOwnerService {
             )?;
         }
         let receipt = if transaction.phase() == ArtifactPublicationPhaseV1::WitnessDurable {
+            let _timer = self
+                .operational_metrics
+                .start_stage(ArtifactOwnerStageV1::CheckpointPersist);
             self.host
                 .acknowledge(&mut transaction, &self.withdrawal_registry, request.now)?
         } else {
@@ -275,137 +504,195 @@ impl LearningArtifactOwnerService {
         self.registry = staged;
         Ok(receipt)
     }
-}
 
-fn validate_request_against_checkpoint(
-    request: &LearningArtifactPublishRequestV1,
-    checkpoint: &ArtifactOwnerPublicationCheckpointV1,
-) -> Result<(), LearningArtifactOwnerServiceError> {
-    if checkpoint.operation_id != request.operation_id
-        || checkpoint.admission_digest != request.admission.admission_digest
-        || checkpoint.withdrawal_scope_digest != request.admission.withdrawal_scope_digest
-        || checkpoint.withdrawal_head_digest != request.admission.withdrawal_head_digest
-        || checkpoint.expected_registry_predecessor_head
-            != request.expected_registry_predecessor_head
-    {
-        return Err(LearningArtifactOwnerServiceError::RequestMismatch);
-    }
-    Ok(())
-}
-
-fn rebuild_transaction(
-    mut transaction: ArtifactPublicationTransactionV1,
-    staged: &ArtifactRegistry,
-    withdrawals: &DatasetWithdrawalRegistry,
-    request: &LearningArtifactPublishRequestV1,
-    checkpoint: &ArtifactOwnerPublicationCheckpointV1,
-) -> Result<ArtifactPublicationTransactionV1, LearningArtifactOwnerServiceError> {
-    if phase_at_least(checkpoint.phase, ArtifactPublicationPhaseV1::PayloadDurable) {
-        let manifest = &request.admission.validated_manifest.manifest;
-        transaction.record_payload_durable(manifest.bytes_digest, manifest.encoded_size_bytes)?;
-    }
-    if phase_at_least(
-        checkpoint.phase,
-        ArtifactPublicationPhaseV1::RegistryDurable,
-    ) {
-        transaction.record_registry_durable(
-            staged,
-            checkpoint
-                .registry_receipt
-                .ok_or(LearningArtifactOwnerServiceError::CheckpointShape)?,
-            withdrawals,
-            request.now,
-        )?;
-    }
-    if phase_at_least(checkpoint.phase, ArtifactPublicationPhaseV1::WitnessDurable) {
-        let witness = &request.signed_current_head.witness;
-        let requirement = RegistryHeadRequirementV1 {
-            registry_id: witness.registry_id.clone(),
-            minimum_generation: witness.generation,
-            expected_predecessor_head_digest: request.expected_registry_predecessor_head,
-            minimum_authority_epoch: witness.authority_epoch,
-            now: request.now,
+    fn record_error(&self, error: &LearningArtifactOwnerServiceError) {
+        let reason = match error.code() {
+            LearningArtifactOwnerServiceErrorCodeV1::IdentityConflict => {
+                ArtifactOwnerBlockReasonV1::IdentityConflict
+            }
+            LearningArtifactOwnerServiceErrorCodeV1::StaleOwner => {
+                self.operational_metrics.record_owner_epoch_conflict();
+                ArtifactOwnerBlockReasonV1::StaleOwner
+            }
+            LearningArtifactOwnerServiceErrorCodeV1::WithdrawalFrontierInsufficient => {
+                self.operational_metrics.record_withdrawal_epoch_conflict();
+                self.operational_metrics.mark_withdrawal_block();
+                ArtifactOwnerBlockReasonV1::WithdrawalFrontierInsufficient
+            }
+            LearningArtifactOwnerServiceErrorCodeV1::PersistenceUnknown => {
+                self.operational_metrics.mark_withdrawal_block();
+                ArtifactOwnerBlockReasonV1::PersistenceUnknown
+            }
+            LearningArtifactOwnerServiceErrorCodeV1::CapacityExceeded => {
+                ArtifactOwnerBlockReasonV1::CapacityExceeded
+            }
+            LearningArtifactOwnerServiceErrorCodeV1::RecoveryRequired => {
+                ArtifactOwnerBlockReasonV1::RecoveryRequired
+            }
+            LearningArtifactOwnerServiceErrorCodeV1::Draining => {
+                ArtifactOwnerBlockReasonV1::Draining
+            }
+            LearningArtifactOwnerServiceErrorCodeV1::WriterBusy => {
+                ArtifactOwnerBlockReasonV1::WriterBusy
+            }
+            LearningArtifactOwnerServiceErrorCodeV1::InvalidConfiguration
+            | LearningArtifactOwnerServiceErrorCodeV1::CorruptState
+            | LearningArtifactOwnerServiceErrorCodeV1::Internal => return,
         };
-        transaction.record_witness_durable(
-            witness,
-            &requirement,
-            checkpoint
-                .witness_receipt
-                .ok_or(LearningArtifactOwnerServiceError::CheckpointShape)?,
-            withdrawals,
-            request.now,
-        )?;
+        self.operational_metrics.record_block(reason);
     }
-    if checkpoint.phase == ArtifactPublicationPhaseV1::Acknowledged {
-        transaction.acknowledge(
-            withdrawals,
-            checkpoint
-                .acknowledged_at
-                .ok_or(LearningArtifactOwnerServiceError::CheckpointShape)?,
-        )?;
-    }
-    if transaction.state_digest() != checkpoint.state_digest {
-        return Err(LearningArtifactOwnerServiceError::CheckpointMismatch);
-    }
-    Ok(transaction)
 }
 
-fn receipt_from_checkpoint(
-    checkpoint: &ArtifactOwnerPublicationCheckpointV1,
-) -> Result<ArtifactPublicationReceiptV1, LearningArtifactOwnerServiceError> {
-    let registry = checkpoint
-        .registry_receipt
-        .ok_or(LearningArtifactOwnerServiceError::CheckpointShape)?;
-    let witness = checkpoint
-        .witness_receipt
-        .ok_or(LearningArtifactOwnerServiceError::CheckpointShape)?;
-    Ok(ArtifactPublicationReceiptV1 {
-        operation_id: checkpoint.operation_id.clone(),
-        admission_digest: checkpoint.admission_digest,
-        registry_head_digest: registry.head_digest,
-        witness_digest: witness.witness_digest,
-        state_digest: checkpoint.state_digest,
-        acknowledged_at: checkpoint
-            .acknowledged_at
-            .ok_or(LearningArtifactOwnerServiceError::CheckpointShape)?,
-        authority: AuthorityPosture::DENY_ALL,
-    })
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum LearningArtifactOwnerServiceErrorCodeV1 {
+    IdentityConflict,
+    StaleOwner,
+    WithdrawalFrontierInsufficient,
+    PersistenceUnknown,
+    CapacityExceeded,
+    RecoveryRequired,
+    Draining,
+    WriterBusy,
+    InvalidConfiguration,
+    CorruptState,
+    Internal,
 }
 
-const fn phase_at_least(
-    actual: ArtifactPublicationPhaseV1,
-    expected: ArtifactPublicationPhaseV1,
-) -> bool {
-    phase_rank(actual) >= phase_rank(expected)
-}
-
-const fn phase_rank(phase: ArtifactPublicationPhaseV1) -> u8 {
-    match phase {
-        ArtifactPublicationPhaseV1::Prepared => 0,
-        ArtifactPublicationPhaseV1::PayloadDurable => 1,
-        ArtifactPublicationPhaseV1::RegistryDurable => 2,
-        ArtifactPublicationPhaseV1::WitnessDurable => 3,
-        ArtifactPublicationPhaseV1::Acknowledged => 4,
+impl LearningArtifactOwnerServiceErrorCodeV1 {
+    #[must_use]
+    pub const fn as_str(self) -> &'static str {
+        match self {
+            Self::IdentityConflict => "identity_conflict",
+            Self::StaleOwner => "stale_owner",
+            Self::WithdrawalFrontierInsufficient => "withdrawal_frontier_insufficient",
+            Self::PersistenceUnknown => "persistence_unknown",
+            Self::CapacityExceeded => "capacity_exceeded",
+            Self::RecoveryRequired => "recovery_required",
+            Self::Draining => "draining",
+            Self::WriterBusy => "writer_busy",
+            Self::InvalidConfiguration => "invalid_configuration",
+            Self::CorruptState => "corrupt_state",
+            Self::Internal => "internal",
+        }
     }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum LearningArtifactOwnerRetryClassV1 {
+    Never,
+    ExactOperationOnly,
+    AfterReauthorization,
+    AfterWithdrawalAdvance,
+    AfterReconciliation,
+    AfterCapacityReleased,
+    AfterContention,
 }
 
 #[derive(Debug)]
 pub enum LearningArtifactOwnerServiceError {
     Host(ArtifactOwnerHostError),
     Publication(ArtifactPublicationError),
+    ControlIo(std::io::Error),
     InvalidConfiguration,
     WithdrawalFrontierConflict,
+    WithdrawalDurabilityUnknown,
     RecoveryConflict,
     RecoveryRequired(StableId),
     RequestMismatch,
+    IdentityConflict,
+    StaleOwner,
+    CapacityExceeded,
     CheckpointShape,
     CheckpointMismatch,
     UnexpectedPhase,
+    Draining,
+}
+
+impl LearningArtifactOwnerServiceError {
+    #[must_use]
+    pub fn code(&self) -> LearningArtifactOwnerServiceErrorCodeV1 {
+        match self {
+            Self::RequestMismatch | Self::IdentityConflict => {
+                LearningArtifactOwnerServiceErrorCodeV1::IdentityConflict
+            }
+            Self::StaleOwner
+            | Self::Host(
+                ArtifactOwnerHostError::UnknownSigner
+                | ArtifactOwnerHostError::SignerContext
+                | ArtifactOwnerHostError::SignerRevoked
+                | ArtifactOwnerHostError::WriterLeaseContext
+                | ArtifactOwnerHostError::CurrentHeadExpired
+                | ArtifactOwnerHostError::CurrentHeadRollback,
+            ) => LearningArtifactOwnerServiceErrorCodeV1::StaleOwner,
+            Self::WithdrawalFrontierConflict => {
+                LearningArtifactOwnerServiceErrorCodeV1::WithdrawalFrontierInsufficient
+            }
+            Self::WithdrawalDurabilityUnknown
+            | Self::ControlIo(_)
+            | Self::Host(ArtifactOwnerHostError::Indeterminate) => {
+                LearningArtifactOwnerServiceErrorCodeV1::PersistenceUnknown
+            }
+            Self::CapacityExceeded | Self::Host(ArtifactOwnerHostError::Capacity) => {
+                LearningArtifactOwnerServiceErrorCodeV1::CapacityExceeded
+            }
+            Self::RecoveryRequired(_) => LearningArtifactOwnerServiceErrorCodeV1::RecoveryRequired,
+            Self::Draining => LearningArtifactOwnerServiceErrorCodeV1::Draining,
+            Self::Host(ArtifactOwnerHostError::WriterFenceBusy) => {
+                LearningArtifactOwnerServiceErrorCodeV1::WriterBusy
+            }
+            Self::InvalidConfiguration => {
+                LearningArtifactOwnerServiceErrorCodeV1::InvalidConfiguration
+            }
+            Self::RecoveryConflict
+            | Self::CheckpointShape
+            | Self::CheckpointMismatch
+            | Self::UnexpectedPhase
+            | Self::Host(
+                ArtifactOwnerHostError::CheckpointMissing
+                | ArtifactOwnerHostError::CheckpointGap
+                | ArtifactOwnerHostError::CheckpointMismatch
+                | ArtifactOwnerHostError::CurrentHeadFork,
+            ) => LearningArtifactOwnerServiceErrorCodeV1::CorruptState,
+            Self::Host(_)
+            | Self::Publication(_) => LearningArtifactOwnerServiceErrorCodeV1::Internal,
+        }
+    }
+
+    #[must_use]
+    pub fn retry_class(&self) -> LearningArtifactOwnerRetryClassV1 {
+        match self.code() {
+            LearningArtifactOwnerServiceErrorCodeV1::IdentityConflict
+            | LearningArtifactOwnerServiceErrorCodeV1::InvalidConfiguration
+            | LearningArtifactOwnerServiceErrorCodeV1::CorruptState
+            | LearningArtifactOwnerServiceErrorCodeV1::Internal => {
+                LearningArtifactOwnerRetryClassV1::Never
+            }
+            LearningArtifactOwnerServiceErrorCodeV1::StaleOwner => {
+                LearningArtifactOwnerRetryClassV1::AfterReauthorization
+            }
+            LearningArtifactOwnerServiceErrorCodeV1::WithdrawalFrontierInsufficient => {
+                LearningArtifactOwnerRetryClassV1::AfterWithdrawalAdvance
+            }
+            LearningArtifactOwnerServiceErrorCodeV1::PersistenceUnknown => {
+                LearningArtifactOwnerRetryClassV1::AfterReconciliation
+            }
+            LearningArtifactOwnerServiceErrorCodeV1::CapacityExceeded => {
+                LearningArtifactOwnerRetryClassV1::AfterCapacityReleased
+            }
+            LearningArtifactOwnerServiceErrorCodeV1::RecoveryRequired
+            | LearningArtifactOwnerServiceErrorCodeV1::Draining => {
+                LearningArtifactOwnerRetryClassV1::ExactOperationOnly
+            }
+            LearningArtifactOwnerServiceErrorCodeV1::WriterBusy => {
+                LearningArtifactOwnerRetryClassV1::AfterContention
+            }
+        }
+    }
 }
 
 impl fmt::Display for LearningArtifactOwnerServiceError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(formatter, "{self:?}")
+        write!(formatter, "{}: {self:?}", self.code().as_str())
     }
 }
 
@@ -424,261 +711,9 @@ impl From<ArtifactPublicationError> for LearningArtifactOwnerServiceError {
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
+#[path = "owner_service_tests.rs"]
+mod tests;
 
-    use std::fs;
-    use std::sync::atomic::AtomicU64;
-    use std::sync::atomic::Ordering;
-
-    use codex_hepta_types::Generation;
-    use ed25519_dalek::Signer;
-    use ed25519_dalek::SigningKey;
-
-    use crate::ArtifactKind;
-    use crate::DatasetWithdrawalScopeV1;
-    use crate::LearningArtifactManifestV2;
-    use crate::ProvenanceModeV1;
-    use crate::RegistryHeadWitnessV1;
-    use crate::TrustedArtifactSignerV1;
-    use crate::admit_manifest_at_withdrawal_head_v3;
-    use crate::test_support::FixtureValue;
-
-    static NEXT_TEST_DIR: AtomicU64 = AtomicU64::new(1);
-
-    struct TestDir(PathBuf);
-
-    impl TestDir {
-        fn new() -> Self {
-            let id = NEXT_TEST_DIR.fetch_add(1, Ordering::Relaxed);
-            let path = std::env::temp_dir().join(format!(
-                "hepta-learning-artifact-service-{}-{id}",
-                std::process::id()
-            ));
-            let _ = fs::remove_dir_all(&path);
-            fs::create_dir_all(&path).fixture("create service test dir");
-            Self(path)
-        }
-    }
-
-    impl Drop for TestDir {
-        fn drop(&mut self) {
-            let _ = fs::remove_dir_all(&self.0);
-        }
-    }
-
-    fn id(value: &str) -> StableId {
-        StableId::new(value.to_owned()).fixture("stable id")
-    }
-
-    fn digest(value: &str) -> Digest32 {
-        Digest32::of_bytes(value.as_bytes())
-    }
-
-    fn key() -> SigningKey {
-        SigningKey::from_bytes(&[9u8; 32])
-    }
-
-    fn scope() -> DatasetWithdrawalScopeV1 {
-        DatasetWithdrawalScopeV1 {
-            authority_domain_id: id("dataset-authority"),
-            registry_id: id("withdrawals"),
-            scope_id: id("scope"),
-        }
-    }
-
-    fn signer(key: &SigningKey) -> TrustedArtifactSignerV1 {
-        TrustedArtifactSignerV1 {
-            signer_id: id("owner-authority"),
-            verifying_key: key.verifying_key().to_bytes(),
-            minimum_authority_epoch: 1,
-            maximum_authority_epoch: 10,
-            valid_from: 1,
-            expires_at: 10_000,
-            revoked_at: None,
-        }
-    }
-
-    fn trust(key: &SigningKey, scope_digest: Digest32) -> ArtifactOwnerTrustV1 {
-        ArtifactOwnerTrustV1 {
-            registry_id: id("learning-artifacts"),
-            withdrawal_scope_digest: scope_digest,
-            minimum_registry_generation: Generation::new(1).fixture("generation"),
-            genesis_predecessor_head_digest: Digest32::ZERO,
-            minimum_authority_epoch: 1,
-            writer_signers: vec![signer(key)],
-            head_signers: vec![signer(key)],
-        }
-    }
-
-    fn lease(key: &SigningKey, scope_digest: Digest32) -> SignedArtifactWriterLeaseV1 {
-        let mut lease = SignedArtifactWriterLeaseV1 {
-            lease_id: id("writer-lease"),
-            producer_id: id("trainer"),
-            registry_id: id("learning-artifacts"),
-            withdrawal_scope_digest: scope_digest,
-            signer_id: id("owner-authority"),
-            signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
-            authority_epoch: 1,
-            lease_generation: 1,
-            issued_at: 10,
-            expires_at: 1_000,
-            signature: [0; 64],
-        };
-        lease.signature = key.sign(&lease.signing_bytes()).to_bytes();
-        lease
-    }
-
-    fn manifest() -> LearningArtifactManifestV2 {
-        LearningArtifactManifestV2 {
-            artifact_id: id("candidate"),
-            kind: ArtifactKind::Model,
-            generation: Generation::new(1).fixture("generation"),
-            provenance_mode: ProvenanceModeV1::DatasetDerived,
-            source_dataset_digests: vec![digest("dataset")],
-            lineage_digests: vec![digest("lineage")],
-            predecessor_ids: Vec::new(),
-            rollback_predecessor: None,
-            bytes_digest: digest("payload"),
-            encoded_size_bytes: 7,
-            training_code_digest: digest("code"),
-            runtime_tuple_digest: digest("runtime"),
-            device_profile_digest: digest("device"),
-            objective_class_digest: digest("objective"),
-            compatibility_digest: digest("compatibility"),
-            schema_profile_digest: digest("schema"),
-            normalization_digest: digest("normalization"),
-            producer_id: id("trainer"),
-            created_at: 10,
-            expires_at: 1_000,
-        }
-    }
-
-    fn publish_request(
-        key: &SigningKey,
-        withdrawals: &DatasetWithdrawalRegistry,
-        predecessor: Digest32,
-        head: Digest32,
-    ) -> LearningArtifactPublishRequestV1 {
-        let admission = admit_manifest_at_withdrawal_head_v3(
-            withdrawals,
-            withdrawals.head_digest(),
-            manifest(),
-            20,
-        )
-        .fixture("admission");
-        let mut signed = SignedCurrentArtifactHeadV1 {
-            withdrawal_scope_digest: withdrawals.scope_digest().fixture("scope digest"),
-            binding: digest("binding"),
-            witness: RegistryHeadWitnessV1 {
-                registry_id: id("learning-artifacts"),
-                generation: Generation::new(1).fixture("generation"),
-                head_digest: head,
-                predecessor_head_digest: predecessor,
-                authority_epoch: 1,
-                signer_id: id("owner-authority"),
-                signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
-                issued_at: 20,
-                expires_at: 1_000,
-            },
-            signature: [0; 64],
-        };
-        signed.signature = key.sign(&signed.signing_bytes()).to_bytes();
-        LearningArtifactPublishRequestV1 {
-            operation_id: id("operation"),
-            admission,
-            payload: b"payload".to_vec(),
-            signed_current_head: signed,
-            expected_registry_predecessor_head: predecessor,
-            now: 20,
-        }
-    }
-
-    #[test]
-    fn named_owner_service_publishes_retries_and_reopens_from_current_head() {
-        let directory = TestDir::new();
-        let key = key();
-        let withdrawals = DatasetWithdrawalRegistry::new_scoped(scope());
-        let scope_digest = withdrawals.scope_digest().fixture("scope digest");
-
-        let mut service =
-            LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
-                root: directory.0.clone(),
-                trust: trust(&key, scope_digest),
-                writer_lease: lease(&key, scope_digest),
-                required_current_head: None,
-                withdrawal_registry: withdrawals.clone(),
-                storage_binding: digest("binding"),
-                now: 20,
-            })
-            .fixture("open service");
-
-        let predecessor = service.registry().snapshot().head_digest;
-        let admission = admit_manifest_at_withdrawal_head_v3(
-            &withdrawals,
-            withdrawals.head_digest(),
-            manifest(),
-            20,
-        )
-        .fixture("admission for head calculation");
-        let mut staged = ArtifactRegistry::new();
-        let preview = ArtifactPublicationTransactionV1::begin(
-            id("operation"),
-            admission,
-            &withdrawals,
-            &staged,
-            predecessor,
-            20,
-        )
-        .fixture("preview");
-        service
-            .host
-            .stage_compatibility_registration(&preview, &mut staged, 20)
-            .fixture("preview registration");
-        let request = publish_request(
-            &key,
-            &withdrawals,
-            predecessor,
-            staged.snapshot().head_digest,
-        );
-
-        let receipt = service.publish(request.clone()).fixture("publish");
-        let retry = service.publish(request.clone()).fixture("terminal retry");
-        assert_eq!(retry, receipt);
-        let current_view = service
-            .current_registry_view(20)
-            .fixture("authenticated current registry view");
-        assert_eq!(
-            current_view.receipt().head_digest,
-            receipt.registry_head_digest
-        );
-        assert!(!current_view.witness_digest().is_zero());
-        assert!(!current_view.trust_digest().is_zero());
-        let current = request.signed_current_head;
-        drop(service);
-
-        let reopened = LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
-            root: directory.0.clone(),
-            trust: trust(&key, scope_digest),
-            writer_lease: lease(&key, scope_digest),
-            required_current_head: Some(current),
-            withdrawal_registry: withdrawals,
-            storage_binding: digest("binding"),
-            now: 21,
-        })
-        .fixture("reopen service");
-        assert_eq!(
-            reopened.registry().snapshot().head_digest,
-            receipt.registry_head_digest
-        );
-        assert!(reopened.recovery_required().is_none());
-        assert_eq!(
-            reopened
-                .current_registry_view(21)
-                .fixture("reopened authenticated current view")
-                .receipt()
-                .head_digest,
-            receipt.registry_head_digest
-        );
-    }
-}
+#[cfg(all(test, unix))]
+#[path = "owner/withdrawal_service_tests.rs"]
+mod withdrawal_tests;
