@@ -45,23 +45,26 @@ jobs:
           set -euo pipefail
           python3 scripts/kernel_evidence_status.py sync
           python3 scripts/kernel_evidence_status.py verify
-          python3 scripts/hepta-module-docs.py sync
+          python3 scripts/hepta-module-docs.py refresh-indexes
           python3 scripts/hepta-module-docs.py verify
           git diff --check
 
-      - name: Commit deterministic projections and index
+      - name: Commit deterministic projections and indexes
         shell: bash
         run: |
           set -euo pipefail
           git add \
             docs/modules/MODULE_DOCS.json \
+            qualification/module-execution-dossiers/DETAILS.json \
             docs/modules/kernel.evidence/TECHNICAL.md \
             docs/lane-a-foundation/kernel.evidence/CURRENT_IMPLEMENTATION.md \
             qualification/kernel-evidence/TRACEABILITY.md \
             qualification/module-execution-dossiers/detail/kernel.evidence.md \
             qualification/kernel-evidence/RELEASE_DASHBOARD.md
+          test -z "$(git diff --name-only)"
+          test -z "$(git ls-files --others --exclude-standard)"
           if git diff --cached --quiet; then
-            echo "Canonical projections and module document index already synchronized"
+            echo "Canonical projections and derived indexes already synchronized"
             exit 0
           fi
           git config user.name "github-actions[bot]"
