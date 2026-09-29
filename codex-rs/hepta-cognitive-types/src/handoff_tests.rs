@@ -47,6 +47,14 @@ fn assert_common_semantic_comparison<T: crate::wire::CognitiveContractV1>(
         binding.compatibility_payload_sha256.expect("legacy"),
         binding.canonical_payload_sha256
     );
+    let (frozen, bound) = crate::wire::canonical_contract_digests_v1(&value)
+        .expect("both profiles from one checked encoding");
+    assert_eq!(frozen, canonical_contract_digest_v1(&value).expect("frozen"));
+    assert_eq!(
+        bound,
+        canonical_contract_digest_bound_v1(&value).expect("schema bound")
+    );
+    assert_ne!(frozen, bound);
     // These are deterministic contract fixtures, not evidence that an actual
     // product owner independently produced or authenticated the projection.
     let expected = Validated::new(value.clone()).expect("owner projection fixture");
@@ -55,6 +63,7 @@ fn assert_common_semantic_comparison<T: crate::wire::CognitiveContractV1>(
         .compare_canonical_projection_v1(&expected, &wire)
         .expect("common domain comparison");
     assert_eq!(comparison.parity(), CanonicalParityV1::Matched);
+    assert_eq!(comparison.observed_semantic_digest(), bound);
     assert_eq!(
         comparison.expected_semantic_digest(),
         comparison.observed_semantic_digest()
@@ -165,7 +174,7 @@ fn assert_handoff_rejects_resealed_substitutions<T: crate::wire::CognitiveContra
     let comparison = binding
         .compare_canonical_projection_v1(&expected, &wire)
         .expect("comparison");
-    for field in 0..5 {
+    for field in 0..6 {
         let mut current = binding.clone();
         match field {
             0 => current.operation_id = id("op:substituted"),
@@ -173,9 +182,13 @@ fn assert_handoff_rejects_resealed_substitutions<T: crate::wire::CognitiveContra
             2 => current.source_identity_sha256 = digest('c'),
             3 => current.source_snapshot_sha256 = digest('d'),
             4 => current.compatibility_payload_sha256 = Some(digest('e')),
+            5 => current.canonical_payload_sha256 = digest('f'),
             _ => unreachable!("bounded substitution inventory"),
         }
-        assert_ne!(current, binding, "the fixture must actually change field {field}");
+        assert_ne!(
+            current, binding,
+            "the fixture must actually change field {field}"
+        );
         // A malformed digest would exercise only structural validation. These
         // substitutions must remain individually valid and be refused at use.
         current.binding_sha256 = current.compute_binding_sha256().expect("reseal");
