@@ -1,4 +1,7 @@
+use codex_extension_api::ModelProviderOutputBatch;
+use codex_extension_api::ModelProviderOutputDecision;
 use codex_extension_api::ModelProviderPolicyError;
+use codex_extension_api::ModelProviderSha256Digest;
 use codex_extension_api::ModelProviderTerminal;
 use codex_protocol::models::ResponseItem;
 use serde::Serialize;
@@ -9,6 +12,8 @@ use super::binding::canonical_sha256;
 
 pub(crate) struct ProviderResponseTerminal {
     state: TerminalState,
+    next_output_sequence: u64,
+    output_fence: Option<(String, String)>,
 }
 
 impl ProviderResponseTerminal {
@@ -18,11 +23,54 @@ impl ProviderResponseTerminal {
                 Some(owner) => TerminalState::Pending(owner),
                 None => TerminalState::Inactive,
             },
+            next_output_sequence: 1,
+            output_fence: None,
         }
     }
 
     pub(crate) fn is_pending(&self) -> bool {
         matches!(self.state, TerminalState::Pending(_))
+    }
+
+    pub(crate) fn output_fence(&self) -> Option<(&str, &str)> {
+        self.output_fence
+            .as_ref()
+            .map(|(reason_code, message)| (reason_code.as_str(), message.as_str()))
+    }
+
+    pub(crate) async fn authorize_output(
+        &mut self,
+        event_sha256: ModelProviderSha256Digest,
+        encoded_bytes: u64,
+    ) -> Result<ModelProviderOutputDecision, ModelProviderPolicyError> {
+        let sequence = self.next_output_sequence;
+        let batch = ModelProviderOutputBatch {
+            sequence,
+            event_sha256,
+            encoded_bytes,
+        };
+        batch.validate()?;
+        let decision = match &self.state {
+            TerminalState::Inactive => ModelProviderOutputDecision::Allow,
+            TerminalState::Pending(owner) => owner.authorize_output(batch).await?,
+            TerminalState::Committed => return Err(already_finished_error()),
+            TerminalState::CommitFailed => return Err(commit_failed_error()),
+        };
+        self.next_output_sequence = self.next_output_sequence.checked_add(1).ok_or_else(|| {
+            ModelProviderPolicyError::new(
+                "model_provider_output_sequence_overflow",
+                "provider output sequence exhausted",
+            )
+        })?;
+        if let ModelProviderOutputDecision::Drop {
+            reason_code,
+            message,
+        } = &decision
+            && self.output_fence.is_none()
+        {
+            self.output_fence = Some((reason_code.clone(), message.clone()));
+        }
+        Ok(decision)
     }
 
     pub(crate) async fn finish_completed<T: Serialize>(

@@ -2,6 +2,8 @@ use codex_extension_api::ExtensionData;
 use codex_extension_api::ExtensionRegistry;
 use codex_extension_api::ModelProviderAttemptLease;
 use codex_extension_api::ModelProviderInvocationInput;
+use codex_extension_api::ModelProviderOutputBatch;
+use codex_extension_api::ModelProviderOutputDecision;
 use codex_extension_api::ModelProviderPolicyDecision;
 use codex_extension_api::ModelProviderPolicyError;
 use codex_extension_api::ModelProviderPolicyFuture;
@@ -161,6 +163,13 @@ struct CompositeModelProviderAttemptLease {
 }
 
 impl ModelProviderAttemptLease for CompositeModelProviderAttemptLease {
+    fn authorize_output<'a>(
+        &'a mut self,
+        batch: ModelProviderOutputBatch,
+    ) -> ModelProviderPolicyFuture<'a, ModelProviderOutputDecision> {
+        Box::pin(self.supervisor.authorize_output(batch))
+    }
+
     fn finish(
         self: Box<Self>,
         terminal: ModelProviderTerminal,
@@ -195,6 +204,28 @@ impl LeaseSupervisor {
         })
     }
 
+    async fn authorize_output(
+        &self,
+        batch: ModelProviderOutputBatch,
+    ) -> Result<ModelProviderOutputDecision, ModelProviderPolicyError> {
+        batch.validate()?;
+        let (acknowledge, acknowledged) = oneshot::channel();
+        self.commands
+            .send(LeaseCommand::AuthorizeOutput { batch, acknowledge })
+            .map_err(|_| {
+                ModelProviderPolicyError::new(
+                    "model_provider_policy_lease_supervisor_stopped",
+                    "provider policy lease supervisor stopped before output authorization",
+                )
+            })?;
+        acknowledged.await.map_err(|_| {
+            ModelProviderPolicyError::new(
+                "model_provider_policy_lease_supervisor_stopped",
+                "provider policy lease supervisor stopped before acknowledging output authorization",
+            )
+        })?
+    }
+
     async fn finish(
         self,
         terminal: ModelProviderTerminal,
@@ -224,6 +255,10 @@ impl LeaseSupervisor {
 
 enum LeaseCommand {
     Add(Box<dyn ModelProviderAttemptLease>),
+    AuthorizeOutput {
+        batch: ModelProviderOutputBatch,
+        acknowledge: oneshot::Sender<Result<ModelProviderOutputDecision, ModelProviderPolicyError>>,
+    },
     Finish {
         terminal: ModelProviderTerminal,
         aggregate_reason_code: &'static str,
@@ -236,6 +271,9 @@ async fn run_lease_supervisor(mut commands: mpsc::UnboundedReceiver<LeaseCommand
     while let Some(command) = commands.recv().await {
         match command {
             LeaseCommand::Add(lease) => leases.push(lease),
+            LeaseCommand::AuthorizeOutput { batch, acknowledge } => {
+                let _ = acknowledge.send(authorize_output_leases(&mut leases, batch).await);
+            }
             LeaseCommand::Finish {
                 terminal,
                 aggregate_reason_code,
@@ -266,6 +304,24 @@ async fn run_lease_supervisor(mut commands: mpsc::UnboundedReceiver<LeaseCommand
             "failed to close provider policy leases after begin cancellation"
         );
     }
+}
+
+async fn authorize_output_leases(
+    leases: &mut [Box<dyn ModelProviderAttemptLease>],
+    batch: ModelProviderOutputBatch,
+) -> Result<ModelProviderOutputDecision, ModelProviderPolicyError> {
+    let mut first_drop = None;
+    for lease in leases {
+        match lease.authorize_output(batch.clone()).await? {
+            ModelProviderOutputDecision::Allow => {}
+            decision @ ModelProviderOutputDecision::Drop { .. } => {
+                if first_drop.is_none() {
+                    first_drop = Some(decision);
+                }
+            }
+        }
+    }
+    Ok(first_drop.unwrap_or(ModelProviderOutputDecision::Allow))
 }
 
 async fn finish_leases(
