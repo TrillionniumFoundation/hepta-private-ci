@@ -141,6 +141,59 @@ def document(offset: int = 0, *, add_function: bool = False) -> dict:
     }
 
 
+def with_tuple_variant(value: dict, offset: int, primitive: str = "u64") -> dict:
+    result = copy.deepcopy(value)
+    root = offset
+    enum_id = offset + 6
+    variant_id = offset + 7
+    field_id = offset + 8
+    result["index"][str(root)]["inner"]["module"]["items"].append(enum_id)
+    result["index"][str(enum_id)] = {
+        "id": enum_id,
+        "crate_id": 0,
+        "name": "TupleError",
+        "visibility": "public",
+        "inner": {
+            "enum": {
+                "generics": {"params": [], "where_predicates": []},
+                "has_stripped_variants": False,
+                "variants": [variant_id],
+                "impls": [],
+            }
+        },
+    }
+    result["index"][str(variant_id)] = {
+        "id": variant_id,
+        "crate_id": 0,
+        "name": "Wrapped",
+        "visibility": "default",
+        "inner": {
+            "variant": {
+                "kind": {"tuple": [field_id]},
+                "discriminant": None,
+            }
+        },
+    }
+    result["index"][str(field_id)] = {
+        "id": field_id,
+        "crate_id": 0,
+        "name": None,
+        "visibility": "default",
+        "inner": {"struct_field": {"primitive": primitive}},
+    }
+    result["paths"][str(enum_id)] = {
+        "crate_id": 0,
+        "path": ["codex_hepta_types", "TupleError"],
+        "kind": "enum",
+    }
+    result["paths"][str(variant_id)] = {
+        "crate_id": 0,
+        "path": ["codex_hepta_types", "TupleError", "Wrapped"],
+        "kind": "variant",
+    }
+    return result
+
+
 class RustdocApiTests(unittest.TestCase):
     def test_numeric_item_ids_normalize_to_identical_structural_snapshots(self):
         first = _Normalizer(document(0)).snapshot()
@@ -178,6 +231,21 @@ class RustdocApiTests(unittest.TestCase):
         self.assertTrue(result["breaking"])
         changed = {row["path"] for row in result["changed"]}
         self.assertIn("codex_hepta_types::Foo", changed)
+
+    def test_tuple_variant_item_ids_normalize_to_owned_signatures(self):
+        first = _Normalizer(with_tuple_variant(document(0), 0)).snapshot()
+        shifted = _Normalizer(with_tuple_variant(document(100), 100)).snapshot()
+        self.assertEqual(first["items"], shifted["items"])
+        self.assertEqual(first["snapshotSha256"], shifted["snapshotSha256"])
+
+    def test_tuple_variant_payload_change_is_breaking(self):
+        base = _Normalizer(with_tuple_variant(document(0), 0, "u64")).snapshot()
+        candidate = _Normalizer(with_tuple_variant(document(0), 0, "bool")).snapshot()
+        result = diff(base, candidate)
+        self.assertTrue(result["breaking"])
+        changed = {row["path"] for row in result["changed"]}
+        self.assertIn("codex_hepta_types::TupleError", changed)
+        self.assertIn("codex_hepta_types::TupleError::Wrapped", changed)
 
     def test_additive_public_path_does_not_mutate_existing_items(self):
         base = _Normalizer(document()).snapshot()
