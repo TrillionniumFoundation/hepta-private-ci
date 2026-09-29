@@ -1,0 +1,145 @@
+diff --git a/.github/workflows/hepta-agentd-exact-head.yml b/.github/workflows/hepta-agentd-exact-head.yml
+index 69d7cec459fbfd505d43ca2eb681d2ab45465b2e..f72660344e9d77032da53348385e3c6c2b9f8e7b 100644
+--- a/.github/workflows/hepta-agentd-exact-head.yml
++++ b/.github/workflows/hepta-agentd-exact-head.yml
+@@ -1,51 +1,138 @@
+-name: Agentd exact-head engineering
++name: Agentd source-head engineering
+ 
+ on:
+   workflow_call:
+   workflow_dispatch:
+   pull_request:
++    paths:
++      - 'codex-rs/**'
++      - 'docs/delivery/PATH_OWNERSHIP.json'
++      - 'docs/modules/runtime.agentd/**'
++      - 'qualification/module-execution-dossiers/detail/runtime.agentd.md'
++      - 'qualification/runtime-agentd-core/**'
++      - 'scripts/hepta*agentd*'
++      - 'scripts/hepta-module-docs.py'
++      - 'scripts/hepta-implementation-maps.py'
++      - 'scripts/hepta_module_registry.py'
++      - 'scripts/qualification/*agentd*'
++      - '.github/workflows/hepta-agentd-exact-head.yml'
++      - '.github/workflows/hepta-agentd-prospective-merge.yml'
++      - '.github/workflows/runtime-agentd-*.yml'
+   push:
+     branches:
+       - main
+       - work/runtime-agentd-remediation-20260926
+       - work/runtime-agentd-remediation-20260927
++      - work/runtime-agentd-production-closure-20260928
+       - work/product-convergence-20260923
+       - integrate/agentd-product-sweep-20260829
++    paths:
++      - 'codex-rs/**'
++      - 'docs/delivery/PATH_OWNERSHIP.json'
++      - 'docs/modules/runtime.agentd/**'
++      - 'qualification/module-execution-dossiers/detail/runtime.agentd.md'
++      - 'qualification/runtime-agentd-core/**'
++      - 'scripts/hepta*agentd*'
++      - 'scripts/hepta-module-docs.py'
++      - 'scripts/hepta-implementation-maps.py'
++      - 'scripts/hepta_module_registry.py'
++      - 'scripts/qualification/*agentd*'
++      - '.github/workflows/hepta-agentd-exact-head.yml'
++      - '.github/workflows/hepta-agentd-prospective-merge.yml'
++      - '.github/workflows/runtime-agentd-*.yml'
+ 
+ permissions:
+   contents: read
+ 
+ concurrency:
+-  group: agentd-exact-${{ github.event.pull_request.number || github.ref }}-${{ github.workflow_ref }}
+-  cancel-in-progress: false
++  group: agentd-source-${{ github.event.pull_request.number || github.ref }}-${{ github.workflow_ref }}
++  cancel-in-progress: true
+ 
+ env:
+   EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+   CARGO_INCREMENTAL: '0'
+ 
+ jobs:
+-  contract:
+-    runs-on: ubuntu-latest
+-    timeout-minutes: 15
++  scope:
++    name: Agentd source ownership
++    runs-on: ubuntu-24.04
++    timeout-minutes: 10
++    outputs:
++      applicable: ${{ steps.select.outputs.applicable }}
++      reason: ${{ steps.select.outputs.reason }}
+     steps:
+-      - uses: actions/checkout@v4
++      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+         with:
+           ref: ${{ env.EXPECTED_SHA }}
++          fetch-depth: 0
+           persist-credentials: false
+-      - uses: actions/setup-python@v5
++      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+         with:
+           python-version: '3.12'
+-      - uses: actions/setup-node@v4
++      - id: select
++        name: Select from owned module and direct local dependencies
++        shell: bash
++        env:
++          EVENT_NAME: ${{ github.event_name }}
++          BASE_SHA: ${{ github.event.pull_request.base.sha }}
++          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
++        run: |
++          set -euo pipefail
++          if [ "$EVENT_NAME" = pull_request ]; then
++            python3 scripts/qualification/runtime_agentd_scope.py \
++              --repository . --base "$BASE_SHA" --head "$SOURCE_SHA" \
++              --output "$RUNNER_TEMP/runtime-agentd-scope.json"
++          else
++            printf '%s\n' codex-rs/hepta-agentd > "$RUNNER_TEMP/runtime-agentd-paths"
++            python3 scripts/qualification/runtime_agentd_scope.py \
++              --repository . --paths-file "$RUNNER_TEMP/runtime-agentd-paths" \
++              --output "$RUNNER_TEMP/runtime-agentd-scope.json"
++          fi
++      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+         with:
+-          node-version: '20'
+-      - name: Receipt verifier adversarial tests
+-        run: python3 -B -m unittest discover -s scripts/qualification -p 'test_agentd_exact_head.py' -v
+-      - name: Derived projections and source ownership
+-        if: ${{ always() }}
+-        run: node scripts/architecture/ci-source-ownership.mjs
++          name: agentd-source-scope-${{ github.run_id }}-${{ github.run_attempt }}
++          path: ${{ runner.temp }}/runtime-agentd-scope.json
++          if-no-files-found: error
++          retention-days: 14
++
++  contract:
++    name: Agentd source contract
++    needs: scope
++    if: needs.scope.outputs.applicable == 'true'
++    runs-on: ubuntu-24.04
++    timeout-minutes: 20
++    steps:
++      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
++        with:
++          ref: ${{ env.EXPECTED_SHA }}
++          fetch-depth: 0
++          persist-credentials: false
++      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
++        with:
++          python-version: '3.12'
++      - name: Qualification and scope verifier tests
++        run: |
++          python3 -B -m unittest discover -s scripts/qualification -p 'test_agentd_exact_head.py' -v
++          python3 -B -m unittest scripts.qualification.test_runtime_agentd_scope -v
++          python3 -B -m unittest scripts.qualification.test_runtime_agentd_current_status -v
++          python3 -B -m unittest scripts.qualification.test_runtime_agentd_dependency_boundary -v
++          python3 -B -m unittest scripts.test_hepta_agentd_trust_boundary -v
++      - name: Derived projections and explicit boundaries
++        shell: bash
++        run: |
++          set -euo pipefail
++          python3 scripts/hepta-module-docs.py refresh-derived --check
++          python3 scripts/hepta_module_
