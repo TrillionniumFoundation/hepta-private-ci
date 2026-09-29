@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   export:
-    runs-on: ubuntu-24.04
+    runs-on: macos-15
     timeout-minutes: 10
     steps:
       - name: Check out the immutable event source
@@ -36,7 +36,7 @@ jobs:
           git rev-parse HEAD > "$out/SOURCE_SHA"
           git rev-parse 'HEAD^{tree}' > "$out/SOURCE_TREE"
           git ls-tree -r HEAD > "$out/SOURCE_FILES"
-          (cd "$out" && sha256sum source.tar.gz SOURCE_SHA SOURCE_TREE SOURCE_FILES > SHA256SUMS)
+          (cd "$out" && shasum -a 256 source.tar.gz SOURCE_SHA SOURCE_TREE SOURCE_FILES > SHA256SUMS)
           printf '%s\n' 'Tracked source export only. Not an execution, native, target-host, acceptance, activation or release receipt.' > "$out/SCOPE.txt"
       - name: Preserve the exact source for independent verification
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
