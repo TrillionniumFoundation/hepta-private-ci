@@ -35,6 +35,7 @@ mod runtime_policy;
 mod schedule_v2;
 mod scheduler;
 mod store;
+#[path = "taskflow_bounded.rs"]
 mod taskflow;
 mod taskflow_execution_boundary;
 #[cfg(feature = "taskflow-structural-qualification")]
