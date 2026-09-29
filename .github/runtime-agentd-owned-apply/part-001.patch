@@ -1,0 +1,126 @@
+registry.py --strict
++          python3 scripts/hepta-implementation-maps.py verify
++          python3 scripts/hepta_agentd_trust_boundary.py
++          python3 scripts/qualification/runtime_agentd_dependency_boundary.py --repository .
++          git diff --check
++          git diff --exit-code
+ 
+   suite:
+-    name: Agentd ${{ matrix.os }} / ${{ matrix.suite }}
++    name: Agentd source ${{ matrix.os }} / ${{ matrix.suite }}
++    needs: scope
++    if: needs.scope.outputs.applicable == 'true'
+     runs-on: ${{ matrix.os }}
+     timeout-minutes: 120
+     strategy:
+@@ -55,11 +142,11 @@ jobs:
+         os: [ubuntu-latest, macos-latest]
+         suite: [owner-libraries, native-library, native-process, daemon-process, product-process, strict-clippy, read-only-profile]
+     steps:
+-      - uses: actions/checkout@v4
++      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+         with:
+           ref: ${{ env.EXPECTED_SHA }}
+           persist-credentials: false
+-      - uses: actions/setup-python@v5
++      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+         with:
+           python-version: '3.12'
+       - name: Install repository toolchain
+@@ -68,11 +155,11 @@ jobs:
+           set -euo pipefail
+           toolchain=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
+           rustup toolchain install "$toolchain" --profile minimal --component clippy
+-      - uses: Swatinem/rust-cache@v2
++      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6
+         with:
+           workspaces: codex-rs
+-          shared-key: agentd-exact-v1
+-      - name: Execute suite and record actual source, commands, logs and binary digests
++          shared-key: agentd-source-v4
++      - name: Execute suite and record exact source, commands, logs and binary digests
+         if: ${{ always() }}
+         shell: bash
+         env:
+@@ -83,55 +170,80 @@ jobs:
+             --workspace "$GITHUB_WORKSPACE" --sha "$EXPECTED_SHA" \
+             --run-id "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT" \
+             --os "$QUALIFICATION_OS" --suite "$QUALIFICATION_SUITE" \
+-            --output "$RUNNER_TEMP/agentd-exact-receipt"
+-      - name: Upload evidence including failures
++            --output "$RUNNER_TEMP/agentd-source-receipt"
++      - name: Upload source-head evidence including failures
+         if: ${{ always() }}
+-        uses: actions/upload-artifact@v4
++        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+         with:
+-          name: agentd-exact-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.os }}-${{ matrix.suite }}
+-          path: ${{ runner.temp }}/agentd-exact-receipt
++          name: agentd-source-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.os }}-${{ matrix.suite }}
++          path: ${{ runner.temp }}/agentd-source-receipt
+           if-no-files-found: error
+           retention-days: 14
+ 
+   qualification-result:
+     name: Agentd exact-head required
+     if: ${{ always() }}
+-    needs: [contract, suite]
+-    runs-on: ubuntu-latest
+-    timeout-minutes: 15
++    needs: [scope, contract, suite]
++    runs-on: ubuntu-24.04
++    timeout-minutes: 20
+     steps:
+-      - uses: actions/checkout@v4
++      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+         with:
+           ref: ${{ env.EXPECTED_SHA }}
+           persist-credentials: false
+-      - uses: actions/setup-python@v5
++      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+         with:
+           python-version: '3.12'
+-      - uses: actions/download-artifact@v4
++      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
++        if: needs.scope.outputs.applicable == 'true'
+         with:
+-          pattern: agentd-exact-${{ github.run_id }}-${{ github.run_attempt }}-*
+-          path: ${{ runner.temp }}/agentd-evidence
+-      - name: Reject missing, stale, skipped, failed or tampered receipts
+-        if: ${{ always() }}
++          pattern: agentd-source-${{ github.run_id }}-${{ github.run_attempt }}-*
++          path: ${{ runner.temp }}/agentd-source-evidence
++      - name: Verify complete exact-source receipt set
++        if: needs.scope.outputs.applicable == 'true'
+         env:
+           CONTRACT_RESULT: ${{ needs.contract.result }}
+           SUITE_RESULT: ${{ needs.suite.result }}
+         run: |
+           python3 -B scripts/qualification/agentd_exact_head.py verify \
+             --sha "$EXPECTED_SHA" --run-id "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT" \
+-            --evidence "$RUNNER_TEMP/agentd-evidence" --output "$RUNNER_TEMP/agentd-engineering-result.json" \
++            --evidence "$RUNNER_TEMP/agentd-source-evidence" \
++            --output "$RUNNER_TEMP/agentd-source-result.json" \
+             --contract-result "$CONTRACT_RESULT" --suite-result "$SUITE_RESULT"
+-      - name: Require every independent job to succeed
+-        if: ${{ always() }}
++      - name: Record non-applicable source result
++        if: needs.scope.result == 'success' && needs.scope.outputs.applicable != 'true'
++        shell: bash
+         env:
++          SCOPE_REASON: ${{ needs.scope.outputs.reason }}
++        run: |
++          python3 - <<'PY'
++          import json, os
++          from pathlib import Path
++          Path(os.environ['RUNNER_TEMP'], 'agentd-source-result.json').write_text(
++              json.dumps({'engineering_result': 'not-applicable', 'scope_reason': os.environ['SCOPE_REASON'],
++                          'production_activation': False}, indent=2, sort_keys=True) + '\n')
++          PY
++      - name: Require applicable jobs to succeed and irrelevant jobs to remain skipped
++        shell: bash
++        env:
++          SCOPE_RESULT: ${{ needs.scope.result }}
++          APPLICABLE: ${{ needs.scope.outputs.applicable }}
+           CONTRACT_RESULT: ${{ needs.contract.result }}
+           SUITE_RESUL
