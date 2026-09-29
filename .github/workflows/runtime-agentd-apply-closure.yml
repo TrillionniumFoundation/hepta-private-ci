@@ -1,0 +1,108 @@
+name: Runtime Agentd verified closure apply
+
+on:
+  push:
+    branches:
+      - work/runtime-agentd-closure-apply-20260929
+
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-agentd-verified-closure-apply
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - name: Verify and apply the exact source delta
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          cat > "$RUNNER_TEMP/patch-sha256" <<'EOF'
+          fe8d7b9e3d6135fe4e8d90726591193d58f86a179ae30faa4dc12e9ac3c78de8  .github/runtime-agentd-closure/part-00.patch
+          8b44f2204adb32c0922bebd90c8d8e5ca2659bc861d0cd24136dcad717eca7ed  .github/runtime-agentd-closure/part-01.patch
+          3ddc221eb064101d06541ca2e783462b6856c64876486c4a2fcb04f907149b7d  .github/runtime-agentd-closure/part-02.patch
+          8ca3d0a3470ae6409e70abe8e49904293c04f704dc96ac2edf0d1ee3bc4bf7ee  .github/runtime-agentd-closure/part-03.patch
+          2ef69aa7679ce11aa81b1b632a12692d5c1588fd8fd5e4939309a83c9855e567  .github/runtime-agentd-closure/part-04.patch
+          ac3409289e83d595df3372915b723c7d5789f207583ccec4539b45b6bed40f9f  .github/runtime-agentd-closure/part-05.patch
+          df46fe426710454daf92bd5e88b2106512a980709375dcd56e75583a0b2c3753  .github/runtime-agentd-closure/part-06.patch
+          EOF
+          sha256sum -c "$RUNNER_TEMP/patch-sha256"
+          cat .github/runtime-agentd-closure/part-*.patch > "$RUNNER_TEMP/runtime-agentd-final.patch"
+          echo '744a745f707cb1741ea84c0c8125b64791e8b81a5ce42dcdf87284b65d2332d4  '"$RUNNER_TEMP/runtime-agentd-final.patch" | sha256sum -c -
+          git apply --check --whitespace=error "$RUNNER_TEMP/runtime-agentd-final.patch"
+          git apply --whitespace=error "$RUNNER_TEMP/runtime-agentd-final.patch"
+          rm -rf .github/runtime-agentd-closure
+          rm .github/workflows/runtime-agentd-apply-closure.yml
+      - name: Verify the candidate before publication
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          python3 -B -m unittest discover -s scripts/qualification -p 'test_agentd_exact_head.py' -v
+          python3 -B -m unittest \
+            scripts.qualification.test_runtime_agentd_current_status \
+            scripts.qualification.test_runtime_agentd_dependency_boundary \
+            scripts.test_hepta_agentd_trust_boundary -v
+          python3 scripts/hepta-module-docs.py refresh-derived --check
+          python3 scripts/hepta_module_registry.py --strict
+          python3 scripts/hepta-implementation-maps.py verify
+          python3 scripts/hepta_agentd_trust_boundary.py
+          python3 scripts/qualification/runtime_agentd_dependency_boundary.py --repository .
+          python3 -m py_compile \
+            scripts/qualification/agentd_exact_head.py \
+            scripts/qualification/test_agentd_exact_head.py \
+            scripts/qualification/runtime_agentd_current_status.py \
+            scripts/qualification/runtime_agentd_dependency_boundary.py
+          python3 - <<'PY'
+          import subprocess
+          expected = {
+              '.github/workflows/hepta-agentd-exact-head.yml',
+              'codex-rs/hepta-agentd/src/state.rs',
+              'codex-rs/hepta-agentd/src/runtime_codex_executor_process_base.rs',
+              'codex-rs/hepta-agentd/src/runtime_codex_executor_persistence.rs',
+              'codex-rs/hepta-agentd/src/state_isolation_tests.rs',
+              'codex-rs/hepta-infer-worker-host/tests/native_host_process_e2e.rs',
+              'docs/modules/runtime.agentd/TECHNICAL.md',
+              'docs/modules/runtime.agentd/REMEDIATION_EXECUTION_20260927.md',
+              'docs/modules/runtime.agentd/IMPLEMENTATION_MAP.json',
+              'qualification/module-execution-dossiers/detail/runtime.agentd.md',
+              'scripts/qualification/agentd_exact_head.py',
+              'scripts/qualification/test_agentd_exact_head.py',
+              '.github/workflows/runtime-agentd-apply-closure.yml',
+              *{f'.github/runtime-agentd-closure/part-{i:02d}.patch' for i in range(7)},
+          }
+          observed = set(subprocess.check_output(['git', 'diff', '--name-only'], text=True).splitlines())
+          if observed != expected:
+              raise SystemExit(f'unexpected closure delta: missing={sorted(expected-observed)} extra={sorted(observed-expected)}')
+          PY
+      - name: Verify exact Rust formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          toolchain=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
+          rustup toolchain install "$toolchain" --profile minimal --component rustfmt
+          cd codex-rs
+          cargo fmt --manifest-path Cargo.toml --package codex-hepta-agentd --package codex-hepta-infer-worker-host -- --check
+      - name: Publish the final clean candidate on the isolated branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'runtime.agentd: close exact-candidate qualification blockers'
+          git push origin HEAD:${{ github.ref_name }}
