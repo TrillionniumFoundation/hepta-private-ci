@@ -1,0 +1,143 @@
+fest = tomllib.loads(
++            (core_qualification / "Cargo.toml").read_text(encoding="utf-8")
++        )
++        if core_manifest.get("dependencies") not in (None, {}):
++            fail("core policy qualification must not load product dependencies")
++        core_source = (core_qualification / "src/lib.rs").read_text(encoding="utf-8")
++        if "codex-rs/hepta-agentd/src/runtime_codex_policy.rs" not in core_source:
++            fail("core policy qualification is not bound to the Agentd policy source")
++        if not policy_source.is_file() or not (core_qualification / "Cargo.lock").is_file():
++            fail("core policy qualification source or lock is missing")
++
+     core_only_established = status.get("coreOnlyBuildEstablished")
+     if core_only_established not in (True, False):
+         fail("coreOnlyBuildEstablished must be boolean")
+-    if core_only_established and not target_exists:
+-        fail("core-only build cannot be claimed before the product-adapter feature exists")
++    if core_only_established and not optionalized:
++        fail("core-only build cannot be claimed before product adapters are genuinely optional")
+ 
+     return {
+         "schema": SCHEMA,
+         "normalDependencies": len(actual),
+         "productAdapters": len(product),
+         "developmentDependencies": len(development),
++        "corePolicyBuildEstablished": core_policy_established,
+         "coreOnlyBuildEstablished": core_only_established,
+-        "productAdaptersOptionalized": target_exists,
++        "productAdaptersOptionalized": optionalized,
+     }
+ 
+ 
+diff --git a/scripts/qualification/runtime_agentd_scope.py b/scripts/qualification/runtime_agentd_scope.py
+new file mode 100755
+index 0000000000000000000000000000000000000000..cff75459366a18d1c9428abb34e16a6a01c480b8
+--- /dev/null
++++ b/scripts/qualification/runtime_agentd_scope.py
+@@ -0,0 +1,264 @@
++#!/usr/bin/env python3
++"""Select runtime.agentd qualification from repository-owned paths.
++
++The selector derives the module root from PATH_OWNERSHIP.json and the direct
++repository-local Cargo dependency roots declared by the Agentd manifest. Deeper
++owners retain their own qualification receipts; Cargo.lock and the workspace
++manifest remain explicit inputs for third-party or transitive graph changes.
++"""
++import argparse
++import json
++import os
++from pathlib import Path, PurePosixPath
++import subprocess
++import sys
++import tomllib
++from typing import Any, Iterable
++
++MODULE = "runtime.agentd"
++SCHEMA = "hepta.runtime-agentd-scope.v1"
++
++EXPLICIT_PATHS = (
++    ".github/workflows/hepta-agentd-exact-head.yml",
++    ".github/workflows/hepta-agentd-prospective-merge.yml",
++    ".github/workflows/runtime-agentd-format-repair.yml",
++    ".github/workflows/runtime-agentd-source-capsule.yml",
++    ".github/workflows/runtime-agentd-trust-boundary.yml",
++    "codex-rs/Cargo.lock",
++    "codex-rs/Cargo.toml",
++    "codex-rs/rust-toolchain.toml",
++    "docs/delivery/PATH_OWNERSHIP.json",
++    "docs/modules/runtime.agentd",
++    "qualification/module-execution-dossiers/detail/runtime.agentd.md",
++    "qualification/runtime-agentd-core",
++    "scripts/hepta_agentd_trust_boundary.py",
++    "scripts/hepta_module_registry.py",
++    "scripts/hepta-implementation-maps.py",
++    "scripts/hepta-module-docs.py",
++    "scripts/qualification/agentd_exact_head.py",
++    "scripts/qualification/runtime_agentd_current_status.py",
++    "scripts/qualification/runtime_agentd_dependency_boundary.py",
++    "scripts/qualification/runtime_agentd_scope.py",
++    "scripts/qualification/test_agentd_exact_head.py",
++    "scripts/qualification/test_runtime_agentd_current_status.py",
++    "scripts/qualification/test_runtime_agentd_dependency_boundary.py",
++    "scripts/qualification/test_runtime_agentd_scope.py",
++    "scripts/test_hepta_agentd_trust_boundary.py",
++)
++
++
++def fail(message: str) -> None:
++    raise ValueError(message)
++
++
++def normalize(value: str) -> str:
++    candidate = value.replace("\\", "/").strip()
++    path = PurePosixPath(candidate)
++    if (
++        not candidate
++        or any(character in candidate for character in ("\0", "\r", "\n"))
++        or path.is_absolute()
++        or ".." in path.parts
++    ):
++        fail(f"unsafe repository path: {value!r}")
++    normalized = path.as_posix().rstrip("/")
++    if normalized in ("", "."):
++        fail(f"empty repository path: {value!r}")
++    return normalized
++
++
++def read_json(path: Path) -> Any:
++    def unique(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
++        result: dict[str, Any] = {}
++        for key, value in pairs:
++            if key in result:
++                fail(f"duplicate JSON key: {key}")
++            result[key] = value
++        return result
++
++    return json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=unique)
++
++
++def module_roots(repository: Path) -> set[str]:
++    ownership = read_json(repository / "docs/delivery/PATH_OWNERSHIP.json")
++    namespaces = ownership.get("moduleNamespaces")
++    if not isinstance(namespaces, list):
++        fail("PATH_OWNERSHIP.json has no moduleNamespaces list")
++    roots: set[str] = set()
++    for namespace in namespaces:
++        if not isinstance(namespace, dict) or namespace.get("module") != MODULE:
++            continue
++        bindings = namespace.get("rootBindings")
++        if not isinstance(bindings, list):
++            fail("runtime.agentd rootBindings must be a list")
++        for binding in bindings:
++            if not isinstance(binding, dict) or not isinstance(binding.get("path"), str):
++                fail("runtime.agentd root binding is malformed")
++            roots.add(normalize(binding["path"]))
++    if not roots:
++        fail("runtime.agentd has no repository-owned root")
++    return roots
++
++
++def dependency_tables(manifest: dict[str, Any]) -> Iterable[dict[str, Any]]:
++    for table_name in ("dependencies", "dev-dependencies", "build-dependencies"):
++        table = manifest.get(table_name, {})
++  
