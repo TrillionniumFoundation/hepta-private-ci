@@ -31,7 +31,7 @@ COMMANDS = {
     "compile": ["cargo", "check", "--locked", *PACKAGE_ARGS, "--all-targets"],
     "focused-tests": ["just", "test", "--locked", *PACKAGE_ARGS],
     "clippy": ["cargo", "clippy",
-               "--locked", *PACKAGE_ARGS, "--all-targets", "--", "-D", "warnings"],
+               "--locked", "--no-deps", *PACKAGE_ARGS, "--all-targets", "--", "-D", "warnings"],
     "format": ["cargo", "fmt",
                *[item for package in PACKAGES for item in ("--package", package)], "--", "--check"],
 }
@@ -53,7 +53,7 @@ def exact_commit(root: Path, value: str) -> str:
 
 def clean(root: Path) -> None:
     git(root, "diff", "--exit-code", "HEAD", "--")
-    git(root, "diff", "--cached", "--exit-code", "--")
+    git(root, "diff", "--cached", "--exit-code", "HEAD", "--")
     if git(root, "ls-files", "--others", "-z", "--", *SOURCE_ROOTS):
         raise ValueError("untracked (including ignored) Matrix source/evidence inputs exist")
 
