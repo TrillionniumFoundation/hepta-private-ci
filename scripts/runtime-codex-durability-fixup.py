@@ -4,6 +4,7 @@
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+# Touch marker: the branch-local maintainer workflow is intentionally re-runnable.
 
 
 def main() -> None:
