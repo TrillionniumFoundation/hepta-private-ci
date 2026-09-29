@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "b546ca5a8be7f1542bbbe62a1bb2ee9f32b6d5e4",
-    "tree": "aa5fae91071b501be57a00edda10fb07938ec8ff"
+    "commit": "de6bfea76ab71d17b29ad45f24693224ab14b388",
+    "tree": "71bafea3b6f02b28eaa0eb35309ec04e1f2aeaa0"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.read",
@@ -17,7 +17,10 @@
     "docs/modules/cognitive.read/CONSUMER_EXECUTION.json",
     "docs/modules/cognitive.read/CONTRACT_LIMITS.md",
     "docs/modules/cognitive.read/COMPATIBILITY.md",
-    "docs/modules/cognitive.read/QUALIFICATION_CLOSURE.md"
+    "docs/modules/cognitive.read/QUALIFICATION_CLOSURE.md",
+    "docs/modules/cognitive.read/FINAL_USE_CLOSURE.md",
+    "docs/modules/cognitive.read/SELECTED_OWNER_CUT.md",
+    "docs/modules/cognitive.read/DELIVERY_EVIDENCE.md"
   ],
   "declaredRoots": [
     "codex-rs/hepta-cognitive-read"
@@ -101,22 +104,30 @@
       "designOperation": "acquire_snapshot",
       "mappingClass": "existing_owner_adapter",
       "delegatedCallees": [],
-      "sourceBlob": "af66a5195f8a65635abe6c2abaf7b8e265bb6e9d"
+      "sourceBlob": "594cbeeabc0977b161be36b583aac4b074d0ddca"
     },
     {
       "operation": "final_use_revalidate",
       "nativeSymbol": "revalidate_with_retrieval_context",
-      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context_final_use.rs",
       "state": "source_implemented_product_composed",
       "authority": "none",
       "tests": [
+        "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs",
+        "codex-rs/hepta-agentd/src/cognitive_context_closure_tests.rs",
+        "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
+        "codex-rs/hepta-agentd/src/cognitive_context_observation_tests.rs",
+        "codex-rs/hepta-agentd/src/cognitive_context_plan_tests.rs",
         "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
         "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs",
+        "codex-rs/hepta-agentd/src/cognitive_retrieval_delivery_tests.rs",
+        "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+        "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+        "codex-rs/hepta-infer-core/src/cognitive_delivery_tests.rs",
         "codex-rs/hepta-infer-core/src/native_control_tests.rs",
         "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
-        "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
-        "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs",
-        "codex-rs/hepta-agentd/src/state_isolation_tests.rs"
+        "codex-rs/hepta-learning-ledger/src/retrieval_preparation_tests.rs",
+        "codex-rs/hepta-memory/src/lane_c_selected_snapshot_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "revalidate",
@@ -127,9 +138,13 @@
         "codex-rs/hepta-infer-core/src/native_control.rs",
         "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
         "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
-        "codex-rs/hepta-agentd/src/cognitive_read_view.rs"
+        "codex-rs/hepta-agentd/src/cognitive_read_view.rs",
+        "codex-rs/hepta-agentd/src/cognitive_context.rs",
+        "codex-rs/hepta-agentd/src/cognitive_context_plan.rs",
+        "codex-rs/hepta-agentd/src/cognitive_context_observation.rs",
+        "codex-rs/hepta-memory/src/lane_c_selected_snapshot.rs"
       ],
-      "sourceBlob": "2fd20515ac72c3dd44b84b5b92927ce28e5de6d9"
+      "sourceBlob": "fd86042d7507059bd7667311c7a4546efd124c96"
     },
     {
       "operation": "adapt_authoritative_read_to_canonical_shadow_v1",
@@ -173,7 +188,24 @@
           "path": "codex-rs/hepta-cognitive-types/src/hnmf.rs"
         }
       ],
-      "sourceBlob": "9d538ade62d9bb7776419c239fae9e4942c525e4"
+      "sourceBlob": "b6a6b6c6008253e4098dd691c5547909b3104108"
+    },
+    {
+      "operation": "durable_cognitive_selection_snapshot",
+      "nativeSymbol": "lane_c_snapshot_ids",
+      "sourcePath": "codex-rs/hepta-memory/src/lane_c_selected_snapshot.rs",
+      "state": "source_implemented_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-memory/src/lane_c_selected_snapshot_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "acquire_snapshot",
+      "mappingClass": "existing_owner_adapter",
+      "delegatedCallees": [
+        "codex-rs/hepta-memory/src/lane_c_snapshot.rs"
+      ],
+      "sourceBlob": "54d32506061ab56c2df9a906a18efd8de82196c4"
     }
   ],
   "repositoryControlledGaps": [
@@ -212,74 +244,394 @@
   },
   "sourceIdentityMode": "repository_baseline_plus_exact_head_objects",
   "sourceObjects": [
-    {"path":"codex-rs/Cargo.lock","object":"cd6650b68a815d69038166b7de50c2857f358641"},
-    {"path":"codex-rs/Cargo.toml","object":"3bad9efdcb5ed9a5e4590a280bd1aba8058c021a"},
-    {"path":"codex-rs/hepta-agent-protocol/src/lib.rs","object":"2379d7a33ac80ccb60fa381373537b5dcfac6b54"},
-    {"path":"codex-rs/hepta-agentd/Cargo.toml","object":"341a0ab99fc708d0990f86c0cc874b67f7827170"},
-    {"path":"codex-rs/hepta-agentd/src/client.rs","object":"cbafcfb553ee8d7a2699878e12c7eda5f91a4a95"},
-    {"path":"codex-rs/hepta-agentd/src/cognitive_context.rs","object":"2fd20515ac72c3dd44b84b5b92927ce28e5de6d9"},
-    {"path":"codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs","object":"d6347cc9be5255e2b64dc07558f8efa31a87266d"},
-    {"path":"codex-rs/hepta-agentd/src/cognitive_context_tests.rs","object":"21b5cb0e03f66fc86645a73fd978626ce1e9638a"},
-    {"path":"codex-rs/hepta-agentd/src/cognitive_read_view.rs","object":"518f0adccf5c0e7c7b5d28aef192b1d7b89e4268"},
-    {"path":"codex-rs/hepta-agentd/src/cognitive_ranker.rs","object":"28e565a3569f9148e3d371b0150a02e14bf2fde4"},
-    {"path":"codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs","object":"eb4bb55f02209c7c52939e8004b9e1f560e632d3"},
-    {"path":"codex-rs/hepta-agentd/src/state_control.rs","object":"e7c2f88a5dd4c4414ce13a3060b7b8ccea934e28"},
-    {"path":"codex-rs/hepta-agentd/src/state_isolation_tests.rs","object":"4abb3ded6c18ff0deb6bc3a2b8aa417c512be3d0"},
-    {"path":"codex-rs/hepta-agentd/src/test_support.rs","object":"acd350012b1af7dd1092d4688d85f5accd779f33"},
-    {"path":"codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs","object":"28f1e1c2a6b499ffe56b3b3e1e1af25c5cd30873"},
-    {"path":"codex-rs/hepta-cognitive-read","object":"2cb0c40a663f8dca0e759636481aee082b635674"},
-    {"path":"codex-rs/hepta-cognitive-read/src/authoritative.rs","object":"7b84d401b71d24f547a8c2de0e4d5c4117253ecb"},
-    {"path":"codex-rs/hepta-cognitive-read/src/authoritative_tests.rs","object":"c0d68c09a48e8862c73cf45555688989cec76dab"},
-    {"path":"codex-rs/hepta-cognitive-read/src/ids.rs","object":"31f30f9b097a6bc51206030fae7588617941056f"},
-    {"path":"codex-rs/hepta-cognitive-read/src/ids_tests.rs","object":"6d7aca75a1fe1a588e4c6a4d424c639fa90e92bc"},
-    {"path":"codex-rs/hepta-cognitive-read/src/lib.rs","object":"311a4534dd6ee0f5c2446381b71323a42cb018e5"},
-    {"path":"codex-rs/hepta-cognitive-read/src/prepared.rs","object":"f82dbc31f812752d27d08d6c545fd263d07d5b50"},
-    {"path":"codex-rs/hepta-cognitive-read/src/prepared_tests.rs","object":"824e058475612e8c8001e9526cb9fdc8dd820f70"},
-    {"path":"codex-rs/hepta-cognitive-read/src/revisioned_shadow.rs","object":"9d538ade62d9bb7776419c239fae9e4942c525e4"},
-    {"path":"codex-rs/hepta-cognitive-read/src/revisioned_shadow_tests.rs","object":"51bc69440d9533bba1b48ffd027c4bf68c09a3d6"},
-    {"path":"codex-rs/hepta-cognitive-read/src/v2.rs","object":"67135f3f56c4779fbd27568ee69c389a38522e5c"},
-    {"path":"codex-rs/hepta-cognitive-read/src/v2_tests.rs","object":"ef0e9b6837e591c1047065be5e6e87a180cc92ad"},
-    {"path":"codex-rs/hepta-cognitive-read/examples/cognitive_read_prepared_bench.rs","object":"45aa6d384c5a02a8a812b73d9e389726e3ba8619"},
-    {"path":"codex-rs/hepta-infer-core/src/native_control.rs","object":"d92b748a22b19046465bcfe0b4fd9f58cc0c09fa"},
-    {"path":"codex-rs/hepta-infer-core/src/native_control_tests.rs","object":"60094e54bdeb0f35d5004b1579c7fc5f71b740c3"},
-    {"path":"codex-rs/hepta-infer-worker-host/src/native_app_server.rs","object":"3f4c9682e4e899c86c7ad14503c3ae222ed80cb0"},
-    {"path":"codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs","object":"e96da1855228f1bb27c3aec7431631e5018e89ac"},
-    {"path":"codex-rs/hepta-memory/src/lane_c_snapshot.rs","object":"af66a5195f8a65635abe6c2abaf7b8e265bb6e9d"},
-    {"path":"codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs","object":"94422ac7f6ac92064608f178d4a6b7879bd8c9ba"},
-    {"path":"codex-rs/hepta-memory/tests/cognitive_read_capacity.rs","object":"aaf08c774dbeca0d29ab41ed39d72772245b8d16"},
-    {"path":"docs/modules/cognitive.read/TECHNICAL.md","object":"20db7fccd7f41e3513f67dbfc8fe6a695689be81"},
-    {"path":"docs/modules/cognitive.read/STRUCTURAL_REUSE.md","object":"1851595618a1162277cbdd4945dae401cce5ebf2"},
-    {"path":"docs/modules/cognitive.read/CONSUMERS.md","object":"9326631e4bd088c9a69b0664219404a15f15bc75"},
-    {"path":"docs/modules/cognitive.read/CONSUMER_POLICY.json","object":"250016237cbd4c56871a21a8b22adf01fdded11f"},
-    {"path":"docs/modules/cognitive.read/CONSUMER_EXECUTION.json","object":"0ef269e090fb8a45271d7df2198dbe278ce5942a"},
-    {"path":"docs/modules/cognitive.read/CONTRACT_LIMITS.md","object":"2c00606a2f6e236a1bb16e08aeea65cee6771082"},
-    {"path":"docs/modules/cognitive.read/COMPATIBILITY.md","object":"9c94e259f98eab73efdee3111bc68c8bf8a2483d"},
-    {"path":"docs/modules/cognitive.read/QUALIFICATION_CLOSURE.md","object":"ec2c49cdb7e45b1436ac330a0c28e09d54f483c7"},
-    {"path":"docs/contracts/CONTRACTS.json","object":"a779872578ebce3dc61205b43519854133812ac2"},
-    {"path":"scripts/hepta-implementation-maps.py","object":"2b2d3071b82c73b965e3cd66ded398ae69d9d35b"},
-    {"path":"scripts/verify-cognitive-read-map.py","object":"fc0505f33abab68fe00fe961ec6ec295425244df"},
-    {"path":"scripts/verify-cognitive-read-constants.py","object":"3911fa9444b876dc8619ae7c1745374beb1284e9"},
-    {"path":"scripts/cognitive_read_consumers.py","object":"a8092491ea5628ca8ba146e1577e5f9fde834233"},
-    {"path":"scripts/test_cognitive_read_consumers.py","object":"56a2d924817427f275f0aa2ca378b8a887946d43"},
-    {"path":"scripts/cognitive_read_evidence.py","object":"38126ebb3328481214e194f0b8eb694a97664ac0"},
-    {"path":"scripts/test_cognitive_read_evidence.py","object":"a90b5397f257baf6742f57999aded6befba861c8"},
-    {"path":"scripts/cognitive_read_full_evidence.py","object":"3d81b3c87cf0a64de0c7ad04bf53af53c374bf71"},
-    {"path":"scripts/test_cognitive_read_full_evidence.py","object":"63d2f93061434fad87138920e0e54ef59dac2dae"},
-    {"path":"scripts/cognitive_read_sqlite_capacity.py","object":"ff68fd1cfcbea340a3e6c3fbd2fad66d34a7b209"},
-    {"path":"scripts/test_cognitive_read_native_gate.py","object":"645ba6d730f0ba3771174aff696e49b336fc78ac"},
-    {"path":"scripts/emit-cognitive-read-qualification.py","object":"ca844e1a2cf062ef746c6829dcda8d6e4bf767b4"},
-    {"path":"scripts/run-cognitive-read-qualification.sh","object":"d4fee01e2de2853dd439ac4e11723261af5327fa"},
-    {"path":".github/workflows/cognitive-read-qualification.yml","object":"50f5128d8b5a1710a01faae07a9cde1c6dfefe5b"},
-    {"path":".github/actions/hepta-synthetic-merge/action.yml","object":"905fc5039016ac7aaadbb857c0a7b94bb594f7ce"}
+    {
+      "path": ".github/actions/hepta-synthetic-merge/action.yml",
+      "object": "905fc5039016ac7aaadbb857c0a7b94bb594f7ce"
+    },
+    {
+      "path": ".github/workflows/cognitive-read-qualification.yml",
+      "object": "50f5128d8b5a1710a01faae07a9cde1c6dfefe5b"
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "object": "b51747fef6708ec8572ab06adfdf4710fd972506"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "object": "3bad9efdcb5ed9a5e4590a280bd1aba8058c021a"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+      "object": "2379d7a33ac80ccb60fa381373537b5dcfac6b54"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/Cargo.toml",
+      "object": "341a0ab99fc708d0990f86c0cc874b67f7827170"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/client.rs",
+      "object": "cbafcfb553ee8d7a2699878e12c7eda5f91a4a95"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "object": "c445ad65c5d69414935e2156c72f014a894c8b89"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs",
+      "object": "d6347cc9be5255e2b64dc07558f8efa31a87266d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_closure_tests.rs",
+      "object": "19a7f0b3343cf0387edd8394ed994abd161174d6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_final_use.rs",
+      "object": "fd86042d7507059bd7667311c7a4546efd124c96"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
+      "object": "e78e14756a4a9d371166fabb148eca58ff2ea643"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_observation.rs",
+      "object": "c7698c4c439e35a6f92db819651814cf7798e9eb"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_observation_tests.rs",
+      "object": "54c4caf6099bb6e1df022dafcf4c7c598e2f7e58"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_plan.rs",
+      "object": "d8b21ec39bdbda60e671090b6b761e70eb7b09a5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_plan_tests.rs",
+      "object": "f6fc2b0f5479fa2f9be48e4613c216aaacaaeb55"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+      "object": "21b5cb0e03f66fc86645a73fd978626ce1e9638a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+      "object": "28e565a3569f9148e3d371b0150a02e14bf2fde4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs",
+      "object": "eb4bb55f02209c7c52939e8004b9e1f560e632d3"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_read_view.rs",
+      "object": "518f0adccf5c0e7c7b5d28aef192b1d7b89e4268"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_delivery_tests.rs",
+      "object": "1a937fea8c387037d4190816f5dfb980e9f2ad3b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs",
+      "object": "8e59db97860259ebce5984328b740b9c3519637e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "object": "e7c2f88a5dd4c4414ce13a3060b7b8ccea934e28"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+      "object": "4abb3ded6c18ff0deb6bc3a2b8aa417c512be3d0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/test_support.rs",
+      "object": "acd350012b1af7dd1092d4688d85f5accd779f33"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/cognitive_delivery_join.rs",
+      "object": "5c54885203610ebec490a9491fde08965cae43cc"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+      "object": "28f1e1c2a6b499ffe56b3b3e1e1af25c5cd30873"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read",
+      "object": "ce3d0bc5be4b6b725e477f36815f3c5ae1e1f4e0"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/examples/cognitive_read_prepared_bench.rs",
+      "object": "45aa6d384c5a02a8a812b73d9e389726e3ba8619"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/authoritative.rs",
+      "object": "7b84d401b71d24f547a8c2de0e4d5c4117253ecb"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/authoritative_tests.rs",
+      "object": "c0d68c09a48e8862c73cf45555688989cec76dab"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/ids.rs",
+      "object": "31f30f9b097a6bc51206030fae7588617941056f"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/ids_tests.rs",
+      "object": "6d7aca75a1fe1a588e4c6a4d424c639fa90e92bc"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/lib.rs",
+      "object": "311a4534dd6ee0f5c2446381b71323a42cb018e5"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/prepared.rs",
+      "object": "f82dbc31f812752d27d08d6c545fd263d07d5b50"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/prepared_tests.rs",
+      "object": "14b5acf5d828c3f05c29843631f1590deb814315"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/revisioned_shadow.rs",
+      "object": "b6a6b6c6008253e4098dd691c5547909b3104108"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/revisioned_shadow_tests.rs",
+      "object": "e5fe953708d94f5d9d38e6410ab5b7c1483faf9a"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/v2.rs",
+      "object": "67135f3f56c4779fbd27568ee69c389a38522e5c"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/src/v2_tests.rs",
+      "object": "ef0e9b6837e591c1047065be5e6e87a180cc92ad"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/cognitive_delivery.rs",
+      "object": "9eed3714a30cd8565180adee097cdfb4746f5033"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/cognitive_delivery_tests.rs",
+      "object": "b10ded0c9c904462b67129a8fedb9b13e813ac07"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/lib.rs",
+      "object": "2f48d5f745ab10c5b0a31087f7ad93bf140e982e"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_control.rs",
+      "object": "d92b748a22b19046465bcfe0b4fd9f58cc0c09fa"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_control_tests.rs",
+      "object": "60094e54bdeb0f35d5004b1579c7fc5f71b740c3"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "object": "3f4c9682e4e899c86c7ad14503c3ae222ed80cb0"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "object": "e96da1855228f1bb27c3aec7431631e5018e89ac"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
+      "object": "704426c9a7ece0d1a4ba679379809338b3997d10"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/production.rs",
+      "object": "2c2c1d1872622109f3294035d19a7fe70fd771f4"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/retrieval_preparation.rs",
+      "object": "3ec51287de3605a2f34f2a4ce74da856761dc88c"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/retrieval_preparation_tests.rs",
+      "object": "e3948a251ebe78a3425bdddbe17fce79a978b34c"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lane_c_selected_snapshot.rs",
+      "object": "54d32506061ab56c2df9a906a18efd8de82196c4"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lane_c_selected_snapshot_tests.rs",
+      "object": "5f386c3c582f4251abf7229b7034b55e41766136"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
+      "object": "594cbeeabc0977b161be36b583aac4b074d0ddca"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs",
+      "object": "94422ac7f6ac92064608f178d4a6b7879bd8c9ba"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lib.rs",
+      "object": "7ed2932d7204cadb27c54029a965ad00c49974e7"
+    },
+    {
+      "path": "codex-rs/hepta-memory/tests/cognitive_read_capacity.rs",
+      "object": "4a042030cf670ec9c0cd5384ecf7fbc6a733f715"
+    },
+    {
+      "path": "docs/contracts/CONTRACTS.json",
+      "object": "a779872578ebce3dc61205b43519854133812ac2"
+    },
+    {
+      "path": "docs/modules/cognitive.read/COMPATIBILITY.md",
+      "object": "9c94e259f98eab73efdee3111bc68c8bf8a2483d"
+    },
+    {
+      "path": "docs/modules/cognitive.read/CONSUMERS.md",
+      "object": "fa03628756f16d2b5d20a2ee0f6fdd044863f01b"
+    },
+    {
+      "path": "docs/modules/cognitive.read/CONSUMER_EXECUTION.json",
+      "object": "0ef269e090fb8a45271d7df2198dbe278ce5942a"
+    },
+    {
+      "path": "docs/modules/cognitive.read/CONSUMER_POLICY.json",
+      "object": "250016237cbd4c56871a21a8b22adf01fdded11f"
+    },
+    {
+      "path": "docs/modules/cognitive.read/CONTRACT_LIMITS.md",
+      "object": "2c00606a2f6e236a1bb16e08aeea65cee6771082"
+    },
+    {
+      "path": "docs/modules/cognitive.read/DELIVERY_EVIDENCE.md",
+      "object": "622f6082295b35a706ba29df6219c63e99da2008"
+    },
+    {
+      "path": "docs/modules/cognitive.read/FINAL_USE_CLOSURE.md",
+      "object": "1885a07a6cd471e08165192273236ed643c33c9a"
+    },
+    {
+      "path": "docs/modules/cognitive.read/QUALIFICATION_CLOSURE.md",
+      "object": "ec2c49cdb7e45b1436ac330a0c28e09d54f483c7"
+    },
+    {
+      "path": "docs/modules/cognitive.read/SELECTED_OWNER_CUT.md",
+      "object": "822f86726022774ac7dae977d7538ea83f2ae3a4"
+    },
+    {
+      "path": "docs/modules/cognitive.read/STRUCTURAL_REUSE.md",
+      "object": "1851595618a1162277cbdd4945dae401cce5ebf2"
+    },
+    {
+      "path": "docs/modules/cognitive.read/TECHNICAL.md",
+      "object": "20db7fccd7f41e3513f67dbfc8fe6a695689be81"
+    },
+    {
+      "path": "scripts/apply-cognitive-read-selected-cut.py",
+      "object": "d77cecd82cb8c0b2d8781d2174d06c622abc20ae"
+    },
+    {
+      "path": "scripts/cognitive_read_consumers.py",
+      "object": "a8092491ea5628ca8ba146e1577e5f9fde834233"
+    },
+    {
+      "path": "scripts/cognitive_read_delivery_gates.py",
+      "object": "77e1ff982a1a12fc7aae2d19cba40cc5d4315d57"
+    },
+    {
+      "path": "scripts/cognitive_read_evidence.py",
+      "object": "38126ebb3328481214e194f0b8eb694a97664ac0"
+    },
+    {
+      "path": "scripts/cognitive_read_full_evidence.py",
+      "object": "d67fcf98a5e9b373d6168ad74afd8b87c34cfea7"
+    },
+    {
+      "path": "scripts/cognitive_read_sqlite_capacity.py",
+      "object": "95db80f47620676f4683dc38983b42f436d4a26a"
+    },
+    {
+      "path": "scripts/emit-cognitive-read-qualification.py",
+      "object": "ca844e1a2cf062ef746c6829dcda8d6e4bf767b4"
+    },
+    {
+      "path": "scripts/hepta-implementation-maps.py",
+      "object": "2b2d3071b82c73b965e3cd66ded398ae69d9d35b"
+    },
+    {
+      "path": "scripts/prepare-cognitive-read-source.py",
+      "object": "db03b7d01a47f2e950465f333fe3dc642f20a6f5"
+    },
+    {
+      "path": "scripts/run-cognitive-read-qualification.sh",
+      "object": "d4fee01e2de2853dd439ac4e11723261af5327fa"
+    },
+    {
+      "path": "scripts/test_cognitive_read_consumers.py",
+      "object": "56a2d924817427f275f0aa2ca378b8a887946d43"
+    },
+    {
+      "path": "scripts/test_cognitive_read_delivery_gates.py",
+      "object": "d93a1feadd7fbf4f412816b551d04123b81cec9a"
+    },
+    {
+      "path": "scripts/test_cognitive_read_evidence.py",
+      "object": "a90b5397f257baf6742f57999aded6befba861c8"
+    },
+    {
+      "path": "scripts/test_cognitive_read_full_evidence.py",
+      "object": "63d2f93061434fad87138920e0e54ef59dac2dae"
+    },
+    {
+      "path": "scripts/test_cognitive_read_native_gate.py",
+      "object": "645ba6d730f0ba3771174aff696e49b336fc78ac"
+    },
+    {
+      "path": "scripts/verify-cognitive-read-constants.py",
+      "object": "e4040b66b2af713ee25a4fd840b97839794760a7"
+    },
+    {
+      "path": "scripts/verify-cognitive-read-map.py",
+      "object": "fc0505f33abab68fe00fe961ec6ec295425244df"
+    }
   ],
   "productCallers": [
-    {"role":"owner_read_adapter","blobSha":"2fd20515ac72c3dd44b84b5b92927ce28e5de6d9","sourcePath":"codex-rs/hepta-agentd/src/cognitive_context.rs","nativeSymbol":"pub(crate) async fn read_with_retrieval_context_and_learning("},
-    {"role":"owner_final_use_revalidation","blobSha":"2fd20515ac72c3dd44b84b5b92927ce28e5de6d9","sourcePath":"codex-rs/hepta-agentd/src/cognitive_context.rs","nativeSymbol":"pub(crate) async fn revalidate_with_retrieval_context("},
-    {"role":"request_local_owner_cut_view","blobSha":"518f0adccf5c0e7c7b5d28aef192b1d7b89e4268","sourcePath":"codex-rs/hepta-agentd/src/cognitive_read_view.rs","nativeSymbol":"pub(super) struct OwnerCutReadView"},
-    {"role":"control_protocol","blobSha":"2379d7a33ac80ccb60fa381373537b5dcfac6b54","sourcePath":"codex-rs/hepta-agent-protocol/src/lib.rs","nativeSymbol":"CognitiveContextRevalidate {"},
-    {"role":"control_client","blobSha":"cbafcfb553ee8d7a2699878e12c7eda5f91a4a95","sourcePath":"codex-rs/hepta-agentd/src/client.rs","nativeSymbol":"pub async fn revalidate_cognitive_context("},
-    {"role":"model_effect_consumer","blobSha":"3f4c9682e4e899c86c7ad14503c3ae222ed80cb0","sourcePath":"codex-rs/hepta-infer-worker-host/src/native_app_server.rs","nativeSymbol":"owner.revalidate_cognitive_context(snapshot).await"},
-    {"role":"durable_pre_turn_stop","blobSha":"d92b748a22b19046465bcfe0b4fd9f58cc0c09fa","sourcePath":"codex-rs/hepta-infer-core/src/native_control.rs","nativeSymbol":"pub fn stop_native_before_turn_start("}
+    {
+      "role": "owner_read_adapter",
+      "blobSha": "c445ad65c5d69414935e2156c72f014a894c8b89",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "nativeSymbol": "pub(crate) async fn read_with_retrieval_context_and_learning("
+    },
+    {
+      "role": "owner_final_use_revalidation",
+      "blobSha": "fd86042d7507059bd7667311c7a4546efd124c96",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context_final_use.rs",
+      "nativeSymbol": "pub(crate) async fn revalidate_with_retrieval_context("
+    },
+    {
+      "role": "request_local_owner_cut_view",
+      "blobSha": "518f0adccf5c0e7c7b5d28aef192b1d7b89e4268",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_read_view.rs",
+      "nativeSymbol": "pub(super) struct OwnerCutReadView"
+    },
+    {
+      "role": "control_protocol",
+      "blobSha": "2379d7a33ac80ccb60fa381373537b5dcfac6b54",
+      "sourcePath": "codex-rs/hepta-agent-protocol/src/lib.rs",
+      "nativeSymbol": "CognitiveContextRevalidate {"
+    },
+    {
+      "role": "control_client",
+      "blobSha": "cbafcfb553ee8d7a2699878e12c7eda5f91a4a95",
+      "sourcePath": "codex-rs/hepta-agentd/src/client.rs",
+      "nativeSymbol": "pub async fn revalidate_cognitive_context("
+    },
+    {
+      "role": "model_effect_consumer",
+      "blobSha": "3f4c9682e4e899c86c7ad14503c3ae222ed80cb0",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "nativeSymbol": "owner.revalidate_cognitive_context(snapshot).await"
+    },
+    {
+      "role": "durable_pre_turn_stop",
+      "blobSha": "d92b748a22b19046465bcfe0b4fd9f58cc0c09fa",
+      "sourcePath": "codex-rs/hepta-infer-core/src/native_control.rs",
+      "nativeSymbol": "pub fn stop_native_before_turn_start("
+    }
   ],
   "exactCandidateEvidence": {
     "mode": "runtime_verifier",
@@ -287,8 +639,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "b546ca5a8be7f1542bbbe62a1bb2ee9f32b6d5e4",
-    "tree": "aa5fae91071b501be57a00edda10fb07938ec8ff"
+    "commit": "de6bfea76ab71d17b29ad45f24693224ab14b388",
+    "tree": "71bafea3b6f02b28eaa0eb35309ec04e1f2aeaa0"
   },
   "canonicalMemoryEventReadMigration": {
     "state": "revision_bound_shadow_v2_source_candidate",
@@ -381,23 +733,50 @@
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
+    "codex-rs/hepta-agentd/src/cognitive_context.rs",
+    "codex-rs/hepta-agentd/src/cognitive_context_closure_tests.rs",
+    "codex-rs/hepta-agentd/src/cognitive_context_final_use.rs",
+    "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
+    "codex-rs/hepta-agentd/src/cognitive_context_observation.rs",
+    "codex-rs/hepta-agentd/src/cognitive_context_observation_tests.rs",
+    "codex-rs/hepta-agentd/src/cognitive_context_plan.rs",
+    "codex-rs/hepta-agentd/src/cognitive_context_plan_tests.rs",
+    "codex-rs/hepta-agentd/src/cognitive_read_view.rs",
+    "codex-rs/hepta-agentd/src/cognitive_retrieval_delivery_tests.rs",
+    "codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs",
+    "codex-rs/hepta-agentd/tests/cognitive_delivery_join.rs",
     "codex-rs/hepta-cognitive-read",
     "codex-rs/hepta-cognitive-read/src/revisioned_shadow.rs",
     "codex-rs/hepta-cognitive-read/src/revisioned_shadow_tests.rs",
+    "codex-rs/hepta-infer-core/src/cognitive_delivery.rs",
+    "codex-rs/hepta-infer-core/src/cognitive_delivery_tests.rs",
+    "codex-rs/hepta-infer-core/src/lib.rs",
+    "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
+    "codex-rs/hepta-learning-ledger/src/production.rs",
+    "codex-rs/hepta-learning-ledger/src/retrieval_preparation.rs",
+    "codex-rs/hepta-learning-ledger/src/retrieval_preparation_tests.rs",
+    "codex-rs/hepta-memory/src/lane_c_selected_snapshot.rs",
+    "codex-rs/hepta-memory/src/lane_c_selected_snapshot_tests.rs",
+    "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
+    "codex-rs/hepta-memory/src/lib.rs",
     "codex-rs/hepta-memory/tests/cognitive_read_capacity.rs",
-    "codex-rs/hepta-agentd/src/cognitive_context.rs",
-    "codex-rs/hepta-agentd/src/cognitive_read_view.rs",
-    "docs/modules/cognitive.read/CONSUMERS.md",
-    "docs/modules/cognitive.read/CONSUMER_POLICY.json",
-    "docs/modules/cognitive.read/CONSUMER_EXECUTION.json",
     "docs/modules/cognitive.read/COMPATIBILITY.md",
+    "docs/modules/cognitive.read/CONSUMERS.md",
+    "docs/modules/cognitive.read/CONSUMER_EXECUTION.json",
+    "docs/modules/cognitive.read/CONSUMER_POLICY.json",
+    "docs/modules/cognitive.read/DELIVERY_EVIDENCE.md",
+    "docs/modules/cognitive.read/FINAL_USE_CLOSURE.md",
     "docs/modules/cognitive.read/QUALIFICATION_CLOSURE.md",
+    "docs/modules/cognitive.read/SELECTED_OWNER_CUT.md",
     "scripts/cognitive_read_consumers.py",
-    "scripts/test_cognitive_read_consumers.py",
+    "scripts/cognitive_read_delivery_gates.py",
     "scripts/cognitive_read_evidence.py",
-    "scripts/test_cognitive_read_evidence.py",
     "scripts/cognitive_read_full_evidence.py",
-    "scripts/test_cognitive_read_full_evidence.py",
-    "scripts/cognitive_read_sqlite_capacity.py"
+    "scripts/cognitive_read_sqlite_capacity.py",
+    "scripts/prepare-cognitive-read-source.py",
+    "scripts/test_cognitive_read_consumers.py",
+    "scripts/test_cognitive_read_delivery_gates.py",
+    "scripts/test_cognitive_read_evidence.py",
+    "scripts/test_cognitive_read_full_evidence.py"
   ]
 }
