@@ -538,3 +538,238 @@ fn secret_digests_are_not_rendered_by_debug() {
     assert!(rendered_receipt.contains("[SENSITIVE DIGEST]"));
     assert!(!rendered_receipt.contains("6, 6, 6"));
 }
+
+#[tokio::test]
+async fn reference_snapshot_import_is_atomic_idempotent_and_preserves_legacy_history() {
+    let (_directory, path) = private_database();
+    let owner = SqliteBaoOwnerV1::open(&path, None).await.unwrap();
+    let lease = active_lease(1, 60_000);
+    let legacy_operation = LeaseOperationV1 {
+        operation_id: "operation:legacy:issue".to_owned(),
+        kind: LeaseOperationKindV1::Issue,
+        semantic_sha256: [71; 32],
+        lease_id: Some(lease.lease_id.clone()),
+        expected_generation: None,
+        observed_at_unix_ms: None,
+        resulting_generation: None,
+        legacy_binding_incomplete: true,
+        result_lease: None,
+        result_observation: None,
+        state: LeaseOperationStateV1::Applied,
+    };
+    let mut pending = consumption("operation:import:pending");
+    pending.created_revision = 7;
+    pending.updated_revision = 7;
+    let snapshot = LeaseRegistryMigrationSnapshotV1 {
+        schema_version: 4,
+        revision: 7,
+        time_frontier_unix_ms: 900,
+        operations: vec![legacy_operation.clone()],
+        leases: vec![lease.clone()],
+        consumptions: vec![pending.clone()],
+    };
+
+    let receipt = owner
+        .import_reference_snapshot(&snapshot, 1_000)
+        .await
+        .unwrap();
+    assert_eq!(receipt.source_revision, 7);
+    assert_ne!(receipt.source_sha256, [0; 32]);
+    assert_eq!(receipt.imported_at_unix_ms, 1_000);
+    assert_eq!(owner.lease(&lease.lease_id).await.unwrap(), Some(lease));
+    assert_eq!(
+        owner
+            .consumption_result(&pending.operation_id)
+            .await
+            .unwrap()
+            .operation
+            .state,
+        BaoConsumptionStateV1::Claimed
+    );
+    let imported_legacy: Vec<u8> =
+        sqlx::query_scalar("SELECT row_json FROM bao_lease_operation WHERE operation_id = ?")
+            .bind(&legacy_operation.operation_id)
+            .fetch_one(&owner.pool)
+            .await
+            .unwrap();
+    assert_eq!(
+        serde_json::from_slice::<LeaseOperationV1>(&imported_legacy).unwrap(),
+        legacy_operation
+    );
+
+    let retry = owner
+        .import_reference_snapshot(&snapshot, 2_000)
+        .await
+        .unwrap();
+    assert_eq!(retry, receipt);
+
+    let mut drift = snapshot.clone();
+    drift.revision = 8;
+    assert!(matches!(
+        owner.import_reference_snapshot(&drift, 2_000).await,
+        Err(SqliteBaoOwnerErrorV1::MigrationConflict)
+    ));
+
+    let rendered = format!("{receipt:?}");
+    assert!(rendered.contains("[SENSITIVE DIGEST]"));
+    assert!(!rendered.contains("71, 71, 71"));
+}
+
+#[tokio::test]
+async fn reconciliation_claims_are_cross_process_fenced_expiring_and_observable() {
+    let (_directory, path) = private_database();
+    let owner = SqliteBaoOwnerV1::open(&path, None).await.unwrap();
+    let claimed = owner
+        .claim_consumption(consumption("operation:recovery-claim"), 1_000)
+        .await
+        .unwrap();
+    let checkpoint_before_claim = owner.checkpoint().await.unwrap();
+
+    let first = owner
+        .claim_due_reconciliation("worker:first", 1_000, 100, 8)
+        .await
+        .unwrap();
+    assert_eq!(first.len(), 1);
+    assert_eq!(first[0].claim_generation, 1);
+    assert_eq!(first[0].claim_until_unix_ms, 1_100);
+    assert!(
+        owner
+            .claim_due_reconciliation("worker:second", 1_050, 100, 8)
+            .await
+            .unwrap()
+            .is_empty()
+    );
+    assert!(matches!(
+        owner
+            .record_reconciliation_failure(
+                "operation:recovery-claim",
+                claimed.record.revision,
+                1_050,
+                2_000,
+                [72; 32],
+            )
+            .await,
+        Err(SqliteBaoOwnerErrorV1::WriterBusy)
+    ));
+    assert!(matches!(
+        owner
+            .record_claimed_reconciliation_failure(
+                &SqliteReconciliationClaimV1 {
+                    worker_id: "worker:second".to_owned(),
+                    ..first[0].clone()
+                },
+                1_050,
+                2_000,
+                [72; 32],
+            )
+            .await,
+        Err(SqliteBaoOwnerErrorV1::WriterBusy)
+    ));
+
+    let rescheduled = owner
+        .record_claimed_reconciliation_failure(&first[0], 1_050, 2_000, [72; 32])
+        .await
+        .unwrap();
+    assert_eq!(rescheduled.operation.state, BaoConsumptionStateV1::Claimed);
+    let metrics = owner.metrics(1_500).await.unwrap();
+    assert_eq!(metrics.claimed_reconciliation_count, 0);
+    assert_eq!(metrics.oldest_due_reconciliation_age_ms, None);
+    assert_eq!(metrics.max_reconciliation_attempts, 1);
+    assert!(metrics.runtime.confirmed_transactions >= 3);
+
+    let checkpoint_before_second_claim = owner.checkpoint().await.unwrap();
+    let second = owner
+        .claim_due_reconciliation("worker:second", 2_000, 100, 8)
+        .await
+        .unwrap();
+    assert_eq!(second.len(), 1);
+    assert_eq!(second[0].claim_generation, 2);
+    assert!(matches!(
+        owner
+            .release_reconciliation_claim(
+                "worker:first",
+                "operation:recovery-claim",
+                first[0].claim_generation,
+            )
+            .await,
+        Err(SqliteBaoOwnerErrorV1::WriterBusy)
+    ));
+    owner
+        .release_reconciliation_claim(
+            "worker:second",
+            "operation:recovery-claim",
+            second[0].claim_generation,
+        )
+        .await
+        .unwrap();
+
+    // Claim ownership is operational coordination, not an authoritative fact.
+    assert_ne!(checkpoint_before_second_claim, checkpoint_before_claim);
+    assert_eq!(
+        owner.checkpoint().await.unwrap(),
+        checkpoint_before_second_claim
+    );
+}
+
+#[tokio::test]
+async fn checkpoint_publication_is_cas_bound_and_failure_fences_the_writer() {
+    let (_directory, path) = private_database();
+    let owner = SqliteBaoOwnerV1::open(&path, None).await.unwrap();
+    let expected = owner.checkpoint().await.unwrap();
+    let published = owner
+        .publish_checkpoint_with(Some(expected), |previous, current| async move {
+            assert_eq!(previous, Some(expected));
+            assert_eq!(current, expected);
+            Ok::<(), ()>(())
+        })
+        .await
+        .unwrap();
+    assert_eq!(published, expected);
+    assert!(!owner.is_fenced());
+
+    let failure = owner
+        .publish_checkpoint_with(Some(expected), |_previous, _current| async {
+            Err::<(), ()>(())
+        })
+        .await;
+    assert!(matches!(
+        failure,
+        Err(SqliteBaoOwnerErrorV1::ExternalCheckpointUnavailable)
+    ));
+    assert!(owner.is_fenced());
+    assert!(matches!(
+        owner
+            .claim_consumption(consumption("operation:fenced"), 2_000)
+            .await,
+        Err(SqliteBaoOwnerErrorV1::Fenced)
+    ));
+    let metrics = owner.metrics(2_000).await.unwrap();
+    assert!(metrics.runtime.writer_fence_events >= 1);
+}
+
+#[tokio::test]
+async fn compiled_schema_is_v2_and_contains_recovery_claims_and_import_receipt() {
+    let (_directory, path) = private_database();
+    let owner = SqliteBaoOwnerV1::open(&path, None).await.unwrap();
+    let schema_version: i64 =
+        sqlx::query_scalar("SELECT schema_version FROM bao_owner_meta WHERE singleton = 1")
+            .fetch_one(&owner.pool)
+            .await
+            .unwrap();
+    assert_eq!(schema_version, 2);
+    let claim_generation_column: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM pragma_table_info('bao_reconciliation_queue')
+         WHERE name = 'claim_generation'",
+    )
+    .fetch_one(&owner.pool)
+    .await
+    .unwrap();
+    assert_eq!(claim_generation_column, 1);
+    let receipt_table: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM sqlite_schema WHERE type = 'table' AND name = 'bao_reference_import'",
+    )
+    .fetch_one(&owner.pool)
+    .await
+    .unwrap();
+    assert_eq!(receipt_table, 1);
+}

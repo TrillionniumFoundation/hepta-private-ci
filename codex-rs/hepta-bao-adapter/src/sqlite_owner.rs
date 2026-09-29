@@ -6,11 +6,16 @@
 //! stores no provider token or secret value.
 
 use std::collections::BTreeMap;
+use std::collections::BTreeSet;
+use std::collections::VecDeque;
 use std::fs;
+use std::future::Future;
 use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
+use std::sync::Mutex;
 use std::sync::atomic::{AtomicBool, Ordering};
+use std::time::Instant;
 
 use codex_hepta_types::Digest32;
 use serde::Serialize;
@@ -23,6 +28,7 @@ use crate::BaoConsumptionOperationV1;
 use crate::BaoConsumptionStateV1;
 use crate::LeaseOperationStateV1;
 use crate::LeaseOperationV1;
+use crate::LeaseRegistryMigrationSnapshotV1;
 use crate::SecretLeaseMetadataV1;
 use crate::SecretLeaseStateV1;
 
@@ -30,7 +36,9 @@ const MAX_ACTIVE_OPERATIONS: i64 = 65_536;
 const MAX_RECONCILIATION_ROWS: i64 = 65_536;
 const MAX_ARCHIVED_TERMINALS: i64 = 1_048_576;
 const MAX_ROW_BYTES: usize = 128 * 1024;
-const SCHEMA_VERSION: u32 = 1;
+const SCHEMA_VERSION: u32 = 2;
+const RUNTIME_SAMPLE_LIMIT: usize = 256;
+const MAX_RECOVERY_LEASE_MS: u64 = 5 * 60 * 1000;
 
 static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
 
@@ -63,6 +71,53 @@ pub struct SqliteLeaseOperationRecordV1 {
     pub updated_at_unix_ms: u64,
 }
 
+#[derive(Clone, Eq, PartialEq)]
+pub struct SqliteBaoOwnerImportReceiptV1 {
+    pub source_revision: u64,
+    pub source_sha256: [u8; 32],
+    pub imported_at_unix_ms: u64,
+    pub checkpoint: BaoOwnerCheckpointV1,
+}
+
+impl std::fmt::Debug for SqliteBaoOwnerImportReceiptV1 {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        formatter
+            .debug_struct("SqliteBaoOwnerImportReceiptV1")
+            .field("source_revision", &self.source_revision)
+            .field("source_sha256", &"[SENSITIVE DIGEST]")
+            .field("imported_at_unix_ms", &self.imported_at_unix_ms)
+            .field("checkpoint_generation", &self.checkpoint.generation)
+            .field("checkpoint_state_sha256", &"[SENSITIVE DIGEST]")
+            .finish()
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct SqliteReconciliationClaimV1 {
+    pub worker_id: String,
+    pub record: SqliteConsumptionRecordV1,
+    pub claim_generation: u64,
+    pub claim_until_unix_ms: u64,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct SqliteBaoOwnerRuntimeMetricsV1 {
+    pub transaction_attempts: u64,
+    pub confirmed_transactions: u64,
+    pub indeterminate_transactions: u64,
+    pub writer_fence_events: u64,
+    pub last_begin_wait_micros: u64,
+    pub max_begin_wait_micros: u64,
+    pub p50_begin_wait_micros: u64,
+    pub p95_begin_wait_micros: u64,
+    pub p99_begin_wait_micros: u64,
+    pub last_commit_duration_micros: u64,
+    pub max_commit_duration_micros: u64,
+    pub p50_commit_duration_micros: u64,
+    pub p95_commit_duration_micros: u64,
+    pub p99_commit_duration_micros: u64,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SqliteBaoOwnerMetricsV1 {
     pub operation_count: u64,
@@ -70,6 +125,9 @@ pub struct SqliteBaoOwnerMetricsV1 {
     pub terminal_archive_count: u64,
     pub transition_count: u64,
     pub reconciliation_queue_count: u64,
+    pub claimed_reconciliation_count: u64,
+    pub oldest_due_reconciliation_age_ms: Option<u64>,
+    pub max_reconciliation_attempts: u64,
     pub pending_by_state: BTreeMap<BaoConsumptionStateV1, u64>,
     pub pending_by_recovery_action: BTreeMap<crate::BaoConsumptionRecoveryActionV1, u64>,
     pub pending_quota_amount: u64,
@@ -82,6 +140,7 @@ pub struct SqliteBaoOwnerMetricsV1 {
     pub shm_bytes: u64,
     pub fenced: bool,
     pub provider_dynamic_execution_blocked: bool,
+    pub runtime: SqliteBaoOwnerRuntimeMetricsV1,
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -100,6 +159,14 @@ pub enum SqliteBaoOwnerErrorV1 {
     ObservationMismatch,
     #[error("owner capacity exceeded")]
     CapacityExceeded,
+    #[error("another worker is already executing this operation")]
+    WriterBusy,
+    #[error("transaction commit outcome is indeterminate: {0}")]
+    CommitIndeterminate(String),
+    #[error("external checkpoint publication failed")]
+    ExternalCheckpointUnavailable,
+    #[error("reference-owner migration conflicts with existing SQLite state")]
+    MigrationConflict,
     #[error("owner state is corrupt: {0}")]
     CorruptState(&'static str),
     #[error("external checkpoint does not match local authoritative state")]
@@ -114,11 +181,70 @@ pub enum SqliteBaoOwnerErrorV1 {
     Storage(String),
 }
 
+#[derive(Default)]
+struct SqliteBaoOwnerRuntimeMetricsOwnerV1 {
+    transaction_attempts: u64,
+    confirmed_transactions: u64,
+    indeterminate_transactions: u64,
+    writer_fence_events: u64,
+    last_begin_wait_micros: u64,
+    max_begin_wait_micros: u64,
+    begin_wait_samples_micros: VecDeque<u64>,
+    last_commit_duration_micros: u64,
+    max_commit_duration_micros: u64,
+    commit_duration_samples_micros: VecDeque<u64>,
+}
+
+impl SqliteBaoOwnerRuntimeMetricsOwnerV1 {
+    fn record_begin_wait(&mut self, started: Instant) {
+        let micros = elapsed_micros(started);
+        self.last_begin_wait_micros = micros;
+        self.max_begin_wait_micros = self.max_begin_wait_micros.max(micros);
+        push_sample(&mut self.begin_wait_samples_micros, micros);
+    }
+
+    fn record_commit(&mut self, started: Instant, confirmed: bool) {
+        self.transaction_attempts = self.transaction_attempts.saturating_add(1);
+        if confirmed {
+            self.confirmed_transactions = self.confirmed_transactions.saturating_add(1);
+        } else {
+            self.indeterminate_transactions = self.indeterminate_transactions.saturating_add(1);
+            self.writer_fence_events = self.writer_fence_events.saturating_add(1);
+        }
+        let micros = elapsed_micros(started);
+        self.last_commit_duration_micros = micros;
+        self.max_commit_duration_micros = self.max_commit_duration_micros.max(micros);
+        push_sample(&mut self.commit_duration_samples_micros, micros);
+    }
+
+    fn snapshot(&self) -> SqliteBaoOwnerRuntimeMetricsV1 {
+        let begin = sorted_samples(&self.begin_wait_samples_micros);
+        let commit = sorted_samples(&self.commit_duration_samples_micros);
+        SqliteBaoOwnerRuntimeMetricsV1 {
+            transaction_attempts: self.transaction_attempts,
+            confirmed_transactions: self.confirmed_transactions,
+            indeterminate_transactions: self.indeterminate_transactions,
+            writer_fence_events: self.writer_fence_events,
+            last_begin_wait_micros: self.last_begin_wait_micros,
+            max_begin_wait_micros: self.max_begin_wait_micros,
+            p50_begin_wait_micros: percentile(&begin, 50),
+            p95_begin_wait_micros: percentile(&begin, 95),
+            p99_begin_wait_micros: percentile(&begin, 99),
+            last_commit_duration_micros: self.last_commit_duration_micros,
+            max_commit_duration_micros: self.max_commit_duration_micros,
+            p50_commit_duration_micros: percentile(&commit, 50),
+            p95_commit_duration_micros: percentile(&commit, 95),
+            p99_commit_duration_micros: percentile(&commit, 99),
+        }
+    }
+}
+
 #[derive(Clone)]
 pub struct SqliteBaoOwnerV1 {
     pool: SqlitePool,
     path: Arc<PathBuf>,
     fenced: Arc<AtomicBool>,
+    runtime_metrics: Arc<Mutex<SqliteBaoOwnerRuntimeMetricsOwnerV1>>,
 }
 
 impl std::fmt::Debug for SqliteBaoOwnerV1 {
@@ -183,6 +309,7 @@ impl SqliteBaoOwnerV1 {
             pool,
             path: Arc::new(path.to_path_buf()),
             fenced: Arc::new(AtomicBool::new(false)),
+            runtime_metrics: Arc::new(Mutex::new(Default::default())),
         };
         if let Some(expected) = external_checkpoint
             && owner.checkpoint().await? != expected
@@ -202,6 +329,255 @@ impl SqliteBaoOwnerV1 {
         self.pool.close().await;
     }
 
+    pub async fn import_reference_snapshot(
+        &self,
+        snapshot: &LeaseRegistryMigrationSnapshotV1,
+        imported_at_unix_ms: u64,
+    ) -> Result<SqliteBaoOwnerImportReceiptV1, SqliteBaoOwnerErrorV1> {
+        self.ensure_writable()?;
+        if snapshot.schema_version != 4
+            || snapshot.revision == 0
+            || imported_at_unix_ms == 0
+            || imported_at_unix_ms < snapshot.time_frontier_unix_ms
+            || snapshot.operations.len()
+                > usize::try_from(MAX_ACTIVE_OPERATIONS).unwrap_or(usize::MAX)
+            || snapshot.consumptions.len()
+                > usize::try_from(MAX_ACTIVE_OPERATIONS).unwrap_or(usize::MAX)
+        {
+            return Err(SqliteBaoOwnerErrorV1::InvalidInput);
+        }
+        let source_bytes =
+            serde_json::to_vec(snapshot).map_err(|_| SqliteBaoOwnerErrorV1::InvalidInput)?;
+        let source_sha256 = Digest32::of_bytes(&source_bytes).into_array();
+        let mut identities = BTreeSet::new();
+        for operation in &snapshot.operations {
+            validate_lease_operation(operation)?;
+            if !identities.insert(operation.operation_id.as_str()) {
+                return Err(SqliteBaoOwnerErrorV1::OperationConflict);
+            }
+        }
+        for operation in &snapshot.consumptions {
+            validate_consumption_input(operation)?;
+            if !identities.insert(operation.operation_id.as_str()) {
+                return Err(SqliteBaoOwnerErrorV1::OperationConflict);
+            }
+        }
+        let mut lease_ids = BTreeSet::new();
+        for lease in &snapshot.leases {
+            validate_lease(lease)?;
+            if !lease_ids.insert(lease.lease_id.as_str()) {
+                return Err(SqliteBaoOwnerErrorV1::OperationConflict);
+            }
+        }
+
+        let mut tx = self.begin().await?;
+        if let Some(existing) = sqlx::query(
+            "SELECT source_revision, source_sha256, imported_at_unix_ms
+             FROM bao_reference_import WHERE singleton = 1",
+        )
+        .fetch_optional(&mut *tx)
+        .await
+        .map_err(storage)?
+        {
+            let existing_revision = fixed_u64(
+                &existing
+                    .try_get::<Vec<u8>, _>("source_revision")
+                    .map_err(storage)?,
+            )?;
+            let existing_sha: [u8; 32] = existing
+                .try_get::<Vec<u8>, _>("source_sha256")
+                .map_err(storage)?
+                .try_into()
+                .map_err(|_| SqliteBaoOwnerErrorV1::CorruptState("invalid import source digest"))?;
+            let existing_imported_at = fixed_u64(
+                &existing
+                    .try_get::<Vec<u8>, _>("imported_at_unix_ms")
+                    .map_err(storage)?,
+            )?;
+            tx.rollback().await.map_err(storage)?;
+            if existing_revision != snapshot.revision || existing_sha != source_sha256 {
+                return Err(SqliteBaoOwnerErrorV1::MigrationConflict);
+            }
+            return Ok(SqliteBaoOwnerImportReceiptV1 {
+                source_revision: existing_revision,
+                source_sha256: existing_sha,
+                imported_at_unix_ms: existing_imported_at,
+                checkpoint: self.checkpoint().await?,
+            });
+        }
+        let operation_count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM bao_operation")
+            .fetch_one(&mut *tx)
+            .await
+            .map_err(storage)?;
+        let lease_count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM bao_lease")
+            .fetch_one(&mut *tx)
+            .await
+            .map_err(storage)?;
+        if operation_count != 0 || lease_count != 0 {
+            return Err(SqliteBaoOwnerErrorV1::MigrationConflict);
+        }
+        advance_time(&mut tx, imported_at_unix_ms).await?;
+        let mut revision = meta_revision(&mut tx).await?;
+
+        for lease in &snapshot.leases {
+            let row_json = encode_row(lease)?;
+            sqlx::query(
+                "INSERT INTO bao_lease
+                 (lease_id, generation, state, row_json, updated_at_unix_ms)
+                 VALUES (?, ?, ?, ?, ?)",
+            )
+            .bind(&lease.lease_id)
+            .bind(u64_bytes(lease.generation).as_slice())
+            .bind(lease_state_text(lease.state))
+            .bind(&row_json)
+            .bind(u64_bytes(imported_at_unix_ms).as_slice())
+            .execute(&mut *tx)
+            .await
+            .map_err(map_write_error)?;
+        }
+
+        for operation in &snapshot.operations {
+            revision = revision
+                .checked_add(1)
+                .ok_or(SqliteBaoOwnerErrorV1::CapacityExceeded)?;
+            let row_json = encode_row(operation)?;
+            let terminal = matches!(
+                operation.state,
+                LeaseOperationStateV1::Applied | LeaseOperationStateV1::Denied
+            );
+            let terminal_result = terminal.then(|| Digest32::of_bytes(&row_json).into_array());
+            sqlx::query(
+                "INSERT INTO bao_operation
+                 (operation_id, domain, kind, semantic_sha256, created_at_unix_ms,
+                  updated_at_unix_ms, terminal)
+                 VALUES (?, 'lease', ?, ?, ?, ?, ?)",
+            )
+            .bind(&operation.operation_id)
+            .bind(lease_operation_kind_text(operation.kind))
+            .bind(operation.semantic_sha256.as_slice())
+            .bind(u64_bytes(imported_at_unix_ms).as_slice())
+            .bind(u64_bytes(imported_at_unix_ms).as_slice())
+            .bind(if terminal { 1_i64 } else { 0_i64 })
+            .execute(&mut *tx)
+            .await
+            .map_err(map_write_error)?;
+            sqlx::query(
+                "INSERT INTO bao_lease_operation
+                 (operation_id, operation_kind, lease_id, expected_generation,
+                  resulting_generation, state, row_json, terminal_result_sha256)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            )
+            .bind(&operation.operation_id)
+            .bind(lease_operation_kind_text(operation.kind))
+            .bind(operation.lease_id.as_deref())
+            .bind(
+                operation
+                    .expected_generation
+                    .map(|value| u64_bytes(value).to_vec()),
+            )
+            .bind(
+                operation
+                    .resulting_generation
+                    .map(|value| u64_bytes(value).to_vec()),
+            )
+            .bind(lease_operation_state_text(operation.state))
+            .bind(&row_json)
+            .bind(terminal_result.map(|value| value.to_vec()))
+            .execute(&mut *tx)
+            .await
+            .map_err(map_write_error)?;
+            insert_transition(
+                &mut tx,
+                revision,
+                &operation.operation_id,
+                None,
+                lease_operation_state_text(operation.state),
+                Digest32::of_bytes(&row_json).into_array(),
+                imported_at_unix_ms,
+            )
+            .await?;
+        }
+
+        for operation in &snapshot.consumptions {
+            revision = revision
+                .checked_add(1)
+                .ok_or(SqliteBaoOwnerErrorV1::CapacityExceeded)?;
+            let mut operation = operation.clone();
+            operation.created_revision = revision;
+            operation.updated_revision = revision;
+            validate_consumption_input(&operation)?;
+            let row_json = encode_row(&operation)?;
+            sqlx::query(
+                "INSERT INTO bao_operation
+                 (operation_id, domain, kind, semantic_sha256, created_at_unix_ms,
+                  updated_at_unix_ms, terminal)
+                 VALUES (?, 'consumption', 'read', ?, ?, ?, ?)",
+            )
+            .bind(&operation.operation_id)
+            .bind(operation.semantic_sha256.as_slice())
+            .bind(u64_bytes(imported_at_unix_ms).as_slice())
+            .bind(u64_bytes(imported_at_unix_ms).as_slice())
+            .bind(if operation.state.is_terminal() {
+                1_i64
+            } else {
+                0_i64
+            })
+            .execute(&mut *tx)
+            .await
+            .map_err(map_write_error)?;
+            insert_consumption(
+                &mut tx,
+                &operation,
+                revision,
+                imported_at_unix_ms,
+                imported_at_unix_ms,
+                &row_json,
+            )
+            .await?;
+            insert_transition(
+                &mut tx,
+                revision,
+                &operation.operation_id,
+                None,
+                state_text(operation.state),
+                Digest32::of_bytes(&row_json).into_array(),
+                imported_at_unix_ms,
+            )
+            .await?;
+            if !operation.state.is_terminal() {
+                upsert_reconciliation(
+                    &mut tx,
+                    &operation.operation_id,
+                    operation.state,
+                    imported_at_unix_ms,
+                )
+                .await?;
+            }
+        }
+
+        sqlx::query(
+            "INSERT INTO bao_reference_import
+             (singleton, source_schema_version, source_revision,
+              source_time_frontier_unix_ms, source_sha256, imported_at_unix_ms)
+             VALUES (1, 4, ?, ?, ?, ?)",
+        )
+        .bind(u64_bytes(snapshot.revision).as_slice())
+        .bind(u64_bytes(snapshot.time_frontier_unix_ms).as_slice())
+        .bind(source_sha256.as_slice())
+        .bind(u64_bytes(imported_at_unix_ms).as_slice())
+        .execute(&mut *tx)
+        .await
+        .map_err(map_write_error)?;
+        write_meta(&mut tx, revision, imported_at_unix_ms).await?;
+        self.commit(tx).await?;
+        Ok(SqliteBaoOwnerImportReceiptV1 {
+            source_revision: snapshot.revision,
+            source_sha256,
+            imported_at_unix_ms,
+            checkpoint: self.checkpoint().await?,
+        })
+    }
+
     pub async fn claim_consumption(
         &self,
         mut operation: BaoConsumptionOperationV1,
@@ -217,7 +593,7 @@ impl SqliteBaoOwnerV1 {
         {
             return Err(SqliteBaoOwnerErrorV1::InvalidInput);
         }
-        let mut tx = begin(&self.pool).await?;
+        let mut tx = self.begin().await?;
         advance_time(&mut tx, now_unix_ms).await?;
         if let Some(existing) = load_consumption_any_tx(&mut tx, &operation.operation_id).await? {
             if existing.operation.same_identity(&operation) {
@@ -327,7 +703,7 @@ impl SqliteBaoOwnerV1 {
         {
             return Err(SqliteBaoOwnerErrorV1::InvalidInput);
         }
-        let mut tx = begin(&self.pool).await?;
+        let mut tx = self.begin().await?;
         advance_time(&mut tx, now_unix_ms).await?;
         let current = load_consumption_current_tx(&mut tx, operation_id)
             .await?
@@ -727,10 +1103,13 @@ impl SqliteBaoOwnerV1 {
     ) -> Result<SqliteLeaseOperationRecordV1, SqliteBaoOwnerErrorV1> {
         self.ensure_writable()?;
         validate_lease_operation(&operation)?;
-        if operation.state != LeaseOperationStateV1::Prepared || now_unix_ms == 0 {
+        if operation.state != LeaseOperationStateV1::Prepared
+            || operation.legacy_binding_incomplete
+            || now_unix_ms == 0
+        {
             return Err(SqliteBaoOwnerErrorV1::InvalidInput);
         }
-        let mut tx = begin(&self.pool).await?;
+        let mut tx = self.begin().await?;
         advance_time(&mut tx, now_unix_ms).await?;
         if let Some(existing) = load_lease_operation_tx(&mut tx, &operation.operation_id).await? {
             if same_lease_operation_claim_identity(&existing.operation, &operation) {
@@ -815,7 +1194,7 @@ impl SqliteBaoOwnerV1 {
         if expected_revision == 0 || evidence_sha256 == [0; 32] || now_unix_ms == 0 {
             return Err(SqliteBaoOwnerErrorV1::InvalidInput);
         }
-        let mut tx = begin(&self.pool).await?;
+        let mut tx = self.begin().await?;
         advance_time(&mut tx, now_unix_ms).await?;
         let current = load_lease_operation_tx(&mut tx, operation_id)
             .await?
@@ -831,6 +1210,9 @@ impl SqliteBaoOwnerV1 {
         }
         if current.revision != expected_revision {
             return Err(SqliteBaoOwnerErrorV1::RevisionConflict);
+        }
+        if current.operation.legacy_binding_incomplete {
+            return Err(SqliteBaoOwnerErrorV1::InvalidTransition);
         }
         if current.operation.state != LeaseOperationStateV1::Prepared {
             return Err(SqliteBaoOwnerErrorV1::InvalidTransition);
@@ -891,7 +1273,8 @@ impl SqliteBaoOwnerV1 {
         if !matches!(
             operation.state,
             LeaseOperationStateV1::Applied | LeaseOperationStateV1::Denied
-        ) || expected_revision == 0
+        ) || operation.legacy_binding_incomplete
+            || expected_revision == 0
             || evidence_sha256 == [0; 32]
             || now_unix_ms == 0
         {
@@ -900,7 +1283,7 @@ impl SqliteBaoOwnerV1 {
         if operation.state == LeaseOperationStateV1::Applied && lease.is_none() {
             return Err(SqliteBaoOwnerErrorV1::InvalidInput);
         }
-        let mut tx = begin(&self.pool).await?;
+        let mut tx = self.begin().await?;
         advance_time(&mut tx, now_unix_ms).await?;
         let current = load_lease_operation_tx(&mut tx, &operation.operation_id)
             .await?
@@ -1028,8 +1411,10 @@ impl SqliteBaoOwnerV1 {
         let ids: Vec<String> = sqlx::query_scalar(
             "SELECT operation_id FROM bao_reconciliation_queue
              WHERE next_attempt_at_unix_ms <= ?
-             ORDER BY next_attempt_at_unix_ms, operation_id LIMIT ?",
+               AND (claim_owner IS NULL OR claim_until_unix_ms <= ?)
+             ORDER BY next_attempt_at_unix_ms, attempt_count, operation_id LIMIT ?",
         )
+        .bind(u64_bytes(now_unix_ms).as_slice())
         .bind(u64_bytes(now_unix_ms).as_slice())
         .bind(i64::from(limit))
         .fetch_all(&mut *tx)
@@ -1045,6 +1430,120 @@ impl SqliteBaoOwnerV1 {
         Ok(rows)
     }
 
+    /// Atomically lease a fair, bounded batch of due recovery work. Claims are
+    /// operational coordination state and expire automatically after a worker
+    /// crash; they do not enter the authoritative checkpoint digest.
+    pub async fn claim_due_reconciliation(
+        &self,
+        worker_id: &str,
+        now_unix_ms: u64,
+        lease_ms: u64,
+        limit: u32,
+    ) -> Result<Vec<SqliteReconciliationClaimV1>, SqliteBaoOwnerErrorV1> {
+        self.ensure_writable()?;
+        validate_identifier(worker_id)?;
+        if now_unix_ms == 0
+            || lease_ms == 0
+            || lease_ms > MAX_RECOVERY_LEASE_MS
+            || limit == 0
+            || limit > 1024
+        {
+            return Err(SqliteBaoOwnerErrorV1::InvalidInput);
+        }
+        let claim_until_unix_ms = now_unix_ms
+            .checked_add(lease_ms)
+            .ok_or(SqliteBaoOwnerErrorV1::CapacityExceeded)?;
+        let mut tx = self.begin().await?;
+        advance_time(&mut tx, now_unix_ms).await?;
+        let ids: Vec<String> = sqlx::query_scalar(
+            "SELECT operation_id FROM bao_reconciliation_queue
+             WHERE next_attempt_at_unix_ms <= ?
+               AND (claim_owner IS NULL OR claim_until_unix_ms <= ?)
+             ORDER BY next_attempt_at_unix_ms, attempt_count, operation_id LIMIT ?",
+        )
+        .bind(u64_bytes(now_unix_ms).as_slice())
+        .bind(u64_bytes(now_unix_ms).as_slice())
+        .bind(i64::from(limit))
+        .fetch_all(&mut *tx)
+        .await
+        .map_err(storage)?;
+        let mut claims = Vec::with_capacity(ids.len());
+        for operation_id in ids {
+            let generation_bytes: Vec<u8> = sqlx::query_scalar(
+                "SELECT claim_generation FROM bao_reconciliation_queue WHERE operation_id = ?",
+            )
+            .bind(&operation_id)
+            .fetch_one(&mut *tx)
+            .await
+            .map_err(storage)?;
+            let claim_generation = fixed_u64_allow_zero(&generation_bytes)?
+                .checked_add(1)
+                .ok_or(SqliteBaoOwnerErrorV1::CapacityExceeded)?;
+            let changed = sqlx::query(
+                "UPDATE bao_reconciliation_queue
+                 SET claim_owner = ?, claim_until_unix_ms = ?, claim_generation = ?
+                 WHERE operation_id = ?
+                   AND (claim_owner IS NULL OR claim_until_unix_ms <= ?)",
+            )
+            .bind(worker_id)
+            .bind(u64_bytes(claim_until_unix_ms).as_slice())
+            .bind(u64_bytes(claim_generation).as_slice())
+            .bind(&operation_id)
+            .bind(u64_bytes(now_unix_ms).as_slice())
+            .execute(&mut *tx)
+            .await
+            .map_err(map_write_error)?
+            .rows_affected();
+            if changed != 1 {
+                return Err(SqliteBaoOwnerErrorV1::WriterBusy);
+            }
+            let record = load_consumption_current_tx(&mut tx, &operation_id)
+                .await?
+                .ok_or(SqliteBaoOwnerErrorV1::CorruptState(
+                    "claimed reconciliation row is missing",
+                ))?;
+            claims.push(SqliteReconciliationClaimV1 {
+                worker_id: worker_id.to_owned(),
+                record,
+                claim_generation,
+                claim_until_unix_ms,
+            });
+        }
+        self.commit(tx).await?;
+        Ok(claims)
+    }
+
+    pub async fn release_reconciliation_claim(
+        &self,
+        worker_id: &str,
+        operation_id: &str,
+        claim_generation: u64,
+    ) -> Result<(), SqliteBaoOwnerErrorV1> {
+        self.ensure_writable()?;
+        validate_identifier(worker_id)?;
+        validate_identifier(operation_id)?;
+        if claim_generation == 0 {
+            return Err(SqliteBaoOwnerErrorV1::InvalidInput);
+        }
+        let mut tx = self.begin().await?;
+        let changed = sqlx::query(
+            "UPDATE bao_reconciliation_queue
+             SET claim_owner = NULL, claim_until_unix_ms = NULL
+             WHERE operation_id = ? AND claim_owner = ? AND claim_generation = ?",
+        )
+        .bind(operation_id)
+        .bind(worker_id)
+        .bind(u64_bytes(claim_generation).as_slice())
+        .execute(&mut *tx)
+        .await
+        .map_err(map_write_error)?
+        .rows_affected();
+        if changed != 1 {
+            return Err(SqliteBaoOwnerErrorV1::WriterBusy);
+        }
+        self.commit(tx).await
+    }
+
     pub async fn record_reconciliation_failure(
         &self,
         operation_id: &str,
@@ -1052,6 +1551,48 @@ impl SqliteBaoOwnerV1 {
         observed_at_unix_ms: u64,
         next_attempt_at_unix_ms: u64,
         error_sha256: [u8; 32],
+    ) -> Result<SqliteConsumptionRecordV1, SqliteBaoOwnerErrorV1> {
+        self.record_reconciliation_failure_inner(
+            operation_id,
+            expected_revision,
+            observed_at_unix_ms,
+            next_attempt_at_unix_ms,
+            error_sha256,
+            None,
+        )
+        .await
+    }
+
+    pub async fn record_claimed_reconciliation_failure(
+        &self,
+        claim: &SqliteReconciliationClaimV1,
+        observed_at_unix_ms: u64,
+        next_attempt_at_unix_ms: u64,
+        error_sha256: [u8; 32],
+    ) -> Result<SqliteConsumptionRecordV1, SqliteBaoOwnerErrorV1> {
+        validate_identifier(&claim.worker_id)?;
+        if claim.claim_generation == 0 {
+            return Err(SqliteBaoOwnerErrorV1::InvalidInput);
+        }
+        self.record_reconciliation_failure_inner(
+            &claim.record.operation.operation_id,
+            claim.record.revision,
+            observed_at_unix_ms,
+            next_attempt_at_unix_ms,
+            error_sha256,
+            Some((&claim.worker_id, claim.claim_generation)),
+        )
+        .await
+    }
+
+    async fn record_reconciliation_failure_inner(
+        &self,
+        operation_id: &str,
+        expected_revision: u64,
+        observed_at_unix_ms: u64,
+        next_attempt_at_unix_ms: u64,
+        error_sha256: [u8; 32],
+        claim: Option<(&str, u64)>,
     ) -> Result<SqliteConsumptionRecordV1, SqliteBaoOwnerErrorV1> {
         self.ensure_writable()?;
         validate_identifier(operation_id)?;
@@ -1062,7 +1603,7 @@ impl SqliteBaoOwnerV1 {
         {
             return Err(SqliteBaoOwnerErrorV1::InvalidInput);
         }
-        let mut tx = begin(&self.pool).await?;
+        let mut tx = self.begin().await?;
         advance_time(&mut tx, observed_at_unix_ms).await?;
         let current = load_consumption_current_tx(&mut tx, operation_id)
             .await?
@@ -1074,6 +1615,45 @@ impl SqliteBaoOwnerV1 {
             )
         {
             return Err(SqliteBaoOwnerErrorV1::RevisionConflict);
+        }
+        let claim_row = sqlx::query(
+            "SELECT claim_owner, claim_until_unix_ms, claim_generation
+             FROM bao_reconciliation_queue WHERE operation_id = ?",
+        )
+        .bind(operation_id)
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(storage)?;
+        let claim_owner = claim_row
+            .try_get::<Option<String>, _>("claim_owner")
+            .map_err(storage)?;
+        let claim_until = claim_row
+            .try_get::<Option<Vec<u8>>, _>("claim_until_unix_ms")
+            .map_err(storage)?
+            .as_deref()
+            .map(fixed_u64)
+            .transpose()?;
+        let persisted_generation = fixed_u64_allow_zero(
+            &claim_row
+                .try_get::<Vec<u8>, _>("claim_generation")
+                .map_err(storage)?,
+        )?;
+        match claim {
+            Some((worker_id, claim_generation)) => {
+                if claim_owner.as_deref() != Some(worker_id)
+                    || persisted_generation != claim_generation
+                    || claim_until.is_none_or(|until| until < observed_at_unix_ms)
+                {
+                    return Err(SqliteBaoOwnerErrorV1::WriterBusy);
+                }
+            }
+            None => {
+                if claim_owner.is_some()
+                    && claim_until.is_some_and(|until| until > observed_at_unix_ms)
+                {
+                    return Err(SqliteBaoOwnerErrorV1::WriterBusy);
+                }
+            }
         }
         let count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM bao_reconciliation_queue")
             .fetch_one(&mut *tx)
@@ -1100,19 +1680,23 @@ impl SqliteBaoOwnerV1 {
         let row_json = encode_row(&operation)?;
         sqlx::query(
             "INSERT INTO bao_reconciliation_queue
-             (operation_id, reason, next_attempt_at_unix_ms, attempt_count, last_error_sha256)
-             VALUES (?, ?, ?, ?, ?)
+             (operation_id, reason, next_attempt_at_unix_ms, attempt_count,
+              last_error_sha256, claim_owner, claim_until_unix_ms, claim_generation)
+             VALUES (?, ?, ?, ?, ?, NULL, NULL, ?)
              ON CONFLICT(operation_id) DO UPDATE SET
              reason = excluded.reason,
              next_attempt_at_unix_ms = excluded.next_attempt_at_unix_ms,
              attempt_count = excluded.attempt_count,
-             last_error_sha256 = excluded.last_error_sha256",
+             last_error_sha256 = excluded.last_error_sha256,
+             claim_owner = NULL,
+             claim_until_unix_ms = NULL",
         )
         .bind(operation_id)
         .bind(state_text(current.operation.state))
         .bind(u64_bytes(next_attempt_at_unix_ms).as_slice())
         .bind(u64_bytes(attempts).as_slice())
         .bind(error_sha256.as_slice())
+        .bind(u64_bytes(persisted_generation).as_slice())
         .execute(&mut *tx)
         .await
         .map_err(map_write_error)?;
@@ -1169,7 +1753,7 @@ impl SqliteBaoOwnerV1 {
         {
             return Err(SqliteBaoOwnerErrorV1::InvalidInput);
         }
-        let mut tx = begin(&self.pool).await?;
+        let mut tx = self.begin().await?;
         advance_time(&mut tx, archived_at_unix_ms).await?;
         let archived: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM bao_terminal_archive")
             .fetch_one(&mut *tx)
@@ -1330,6 +1914,14 @@ impl SqliteBaoOwnerV1 {
         .await?;
         append_query_rows_tx(
             &mut tx,
+            "SELECT singleton, source_schema_version, source_revision,
+                    source_time_frontier_unix_ms, source_sha256, imported_at_unix_ms
+             FROM bao_reference_import ORDER BY singleton",
+            &mut bytes,
+        )
+        .await?;
+        append_query_rows_tx(
+            &mut tx,
             "SELECT sequence, revision, operation_id, COALESCE(from_state, ''),
                     to_state, evidence_sha256, observed_at_unix_ms
              FROM bao_transition ORDER BY sequence",
@@ -1341,6 +1933,32 @@ impl SqliteBaoOwnerV1 {
             generation,
             state_sha256: Digest32::of_bytes(&bytes).into_array(),
         })
+    }
+
+    /// Publish the current authoritative checkpoint through a caller-owned,
+    /// asynchronous compare-and-swap service. Publication failure fences this
+    /// owner so later local commits cannot outrun the external anti-rollback
+    /// frontier. The callback receives the previously trusted checkpoint and
+    /// the new exact checkpoint; it must reject stale predecessors.
+    pub async fn publish_checkpoint_with<F, Fut, E>(
+        &self,
+        expected_previous: Option<BaoOwnerCheckpointV1>,
+        publisher: F,
+    ) -> Result<BaoOwnerCheckpointV1, SqliteBaoOwnerErrorV1>
+    where
+        F: FnOnce(Option<BaoOwnerCheckpointV1>, BaoOwnerCheckpointV1) -> Fut,
+        Fut: Future<Output = Result<(), E>>,
+    {
+        self.ensure_writable()?;
+        let checkpoint = self.checkpoint().await?;
+        if publisher(expected_previous, checkpoint).await.is_err() {
+            self.fenced.store(true, Ordering::Release);
+            if let Ok(mut metrics) = self.runtime_metrics.lock() {
+                metrics.writer_fence_events = metrics.writer_fence_events.saturating_add(1);
+            }
+            return Err(SqliteBaoOwnerErrorV1::ExternalCheckpointUnavailable);
+        }
+        Ok(checkpoint)
     }
 
     pub async fn metrics(
@@ -1356,6 +1974,27 @@ impl SqliteBaoOwnerV1 {
         let terminal_archive_count = count_tx(&mut tx, "bao_terminal_archive").await?;
         let transition_count = count_tx(&mut tx, "bao_transition").await?;
         let reconciliation_queue_count = count_tx(&mut tx, "bao_reconciliation_queue").await?;
+        let claimed_reconciliation_count: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM bao_reconciliation_queue
+             WHERE claim_owner IS NOT NULL AND claim_until_unix_ms > ?",
+        )
+        .bind(u64_bytes(now_unix_ms).as_slice())
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(storage)?;
+        let oldest_due_reconciliation: Option<Vec<u8>> = sqlx::query_scalar(
+            "SELECT MIN(next_attempt_at_unix_ms) FROM bao_reconciliation_queue
+             WHERE next_attempt_at_unix_ms <= ?",
+        )
+        .bind(u64_bytes(now_unix_ms).as_slice())
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(storage)?;
+        let max_reconciliation_attempts: Option<Vec<u8>> =
+            sqlx::query_scalar("SELECT MAX(attempt_count) FROM bao_reconciliation_queue")
+                .fetch_one(&mut *tx)
+                .await
+                .map_err(storage)?;
         let rows = sqlx::query(
             "SELECT row_json, updated_at_unix_ms FROM bao_consumption
              WHERE state NOT IN ('succeeded', 'failed')
@@ -1416,6 +2055,21 @@ impl SqliteBaoOwnerV1 {
         tx.commit().await.map_err(storage)?;
         let oldest_pending_age_ms =
             oldest_pending_at.map(|value| now_unix_ms.saturating_sub(value));
+        let oldest_due_reconciliation_age_ms = oldest_due_reconciliation
+            .as_deref()
+            .map(fixed_u64)
+            .transpose()?
+            .map(|value| now_unix_ms.saturating_sub(value));
+        let max_reconciliation_attempts = max_reconciliation_attempts
+            .as_deref()
+            .map(fixed_u64_allow_zero)
+            .transpose()?
+            .unwrap_or(0);
+        let runtime = self
+            .runtime_metrics
+            .lock()
+            .map(|metrics| metrics.snapshot())
+            .unwrap_or_else(|_| SqliteBaoOwnerRuntimeMetricsOwnerV1::default().snapshot());
         let database_bytes = metadata_len(self.path.as_path())?;
         let wal_bytes = metadata_len(&sidecar_path(self.path.as_path(), "-wal"))?;
         let shm_bytes = metadata_len(&sidecar_path(self.path.as_path(), "-shm"))?;
@@ -1425,6 +2079,10 @@ impl SqliteBaoOwnerV1 {
             terminal_archive_count,
             transition_count,
             reconciliation_queue_count,
+            claimed_reconciliation_count: u64::try_from(claimed_reconciliation_count)
+                .map_err(|_| SqliteBaoOwnerErrorV1::CorruptState("negative claim count"))?,
+            oldest_due_reconciliation_age_ms,
+            max_reconciliation_attempts,
             pending_by_state,
             pending_by_recovery_action,
             pending_quota_amount,
@@ -1437,6 +2095,7 @@ impl SqliteBaoOwnerV1 {
             shm_bytes,
             fenced: self.is_fenced(),
             provider_dynamic_execution_blocked: true,
+            runtime,
         })
     }
 
@@ -1448,17 +2107,40 @@ impl SqliteBaoOwnerV1 {
         }
     }
 
-    async fn commit(&self, tx: Transaction<'static, Sqlite>) -> Result<(), SqliteBaoOwnerErrorV1> {
-        if let Err(error) = tx.commit().await {
-            self.fenced.store(true, Ordering::Release);
-            return Err(SqliteBaoOwnerErrorV1::Storage(error.to_string()));
+    async fn begin(&self) -> Result<Transaction<'static, Sqlite>, SqliteBaoOwnerErrorV1> {
+        self.ensure_writable()?;
+        let started = Instant::now();
+        let result = self
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(storage);
+        if let Ok(mut metrics) = self.runtime_metrics.lock() {
+            metrics.record_begin_wait(started);
         }
-        Ok(())
+        result
     }
-}
 
-async fn begin(pool: &SqlitePool) -> Result<Transaction<'static, Sqlite>, SqliteBaoOwnerErrorV1> {
-    pool.begin_with("BEGIN IMMEDIATE").await.map_err(storage)
+    async fn commit(&self, tx: Transaction<'static, Sqlite>) -> Result<(), SqliteBaoOwnerErrorV1> {
+        let started = Instant::now();
+        match tx.commit().await {
+            Ok(()) => {
+                if let Ok(mut metrics) = self.runtime_metrics.lock() {
+                    metrics.record_commit(started, true);
+                }
+                Ok(())
+            }
+            Err(error) => {
+                self.fenced.store(true, Ordering::Release);
+                if let Ok(mut metrics) = self.runtime_metrics.lock() {
+                    metrics.record_commit(started, false);
+                }
+                Err(SqliteBaoOwnerErrorV1::CommitIndeterminate(
+                    error.to_string(),
+                ))
+            }
+        }
+    }
 }
 
 async fn verify_schema(pool: &SqlitePool) -> Result<(), SqliteBaoOwnerErrorV1> {
@@ -2071,6 +2753,37 @@ fn metadata_len(path: &Path) -> Result<u64, SqliteBaoOwnerErrorV1> {
     }
 }
 
+fn elapsed_micros(started: Instant) -> u64 {
+    u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX)
+}
+
+fn push_sample(samples: &mut VecDeque<u64>, value: u64) {
+    if samples.len() == RUNTIME_SAMPLE_LIMIT {
+        samples.pop_front();
+    }
+    samples.push_back(value);
+}
+
+fn sorted_samples(samples: &VecDeque<u64>) -> Vec<u64> {
+    let mut values = samples.iter().copied().collect::<Vec<_>>();
+    values.sort_unstable();
+    values
+}
+
+fn percentile(samples: &[u64], percentile: usize) -> u64 {
+    if samples.is_empty() {
+        return 0;
+    }
+    let last = samples.len() - 1;
+    let index = last
+        .checked_mul(percentile)
+        .and_then(|value| value.checked_add(99))
+        .map(|value| value / 100)
+        .unwrap_or(last)
+        .min(last);
+    samples[index]
+}
+
 fn append_value(bytes: &mut Vec<u8>, value: &[u8]) {
     bytes.extend_from_slice(&u64::try_from(value.len()).unwrap_or(u64::MAX).to_be_bytes());
     bytes.extend_from_slice(value);
@@ -2118,12 +2831,14 @@ fn validate_lease_operation(operation: &LeaseOperationV1) -> Result<(), SqliteBa
         operation.state,
         LeaseOperationStateV1::Applied | LeaseOperationStateV1::Denied
     );
-    if terminal != operation.result_observation.is_some()
-        || (!terminal
-            && (operation.result_lease.is_some()
-                || operation.observed_at_unix_ms.is_some()
-                || operation.resulting_generation.is_some()))
-        || (operation.state == LeaseOperationStateV1::Applied && operation.result_lease.is_none())
+    if !operation.legacy_binding_incomplete
+        && (terminal != operation.result_observation.is_some()
+            || (!terminal
+                && (operation.result_lease.is_some()
+                    || operation.observed_at_unix_ms.is_some()
+                    || operation.resulting_generation.is_some()))
+            || (operation.state == LeaseOperationStateV1::Applied
+                && operation.result_lease.is_none()))
     {
         return Err(SqliteBaoOwnerErrorV1::InvalidInput);
     }

@@ -193,6 +193,31 @@ pub struct LeaseRegistryCommitMetricsV1 {
     pub p99_duration_micros: u64,
 }
 
+#[derive(Clone, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct LeaseRegistryMigrationSnapshotV1 {
+    pub schema_version: u32,
+    pub revision: u64,
+    pub time_frontier_unix_ms: u64,
+    pub operations: Vec<LeaseOperationV1>,
+    pub leases: Vec<SecretLeaseMetadataV1>,
+    pub consumptions: Vec<BaoConsumptionOperationV1>,
+}
+
+impl std::fmt::Debug for LeaseRegistryMigrationSnapshotV1 {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        formatter
+            .debug_struct("LeaseRegistryMigrationSnapshotV1")
+            .field("schema_version", &self.schema_version)
+            .field("revision", &self.revision)
+            .field("time_frontier_unix_ms", &self.time_frontier_unix_ms)
+            .field("operation_count", &self.operations.len())
+            .field("lease_count", &self.leases.len())
+            .field("consumption_count", &self.consumptions.len())
+            .finish()
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct LeaseRegistryDiagnosticsV1 {
     pub schema_version: u32,
@@ -539,6 +564,24 @@ impl DurableLeaseRegistryV1 {
             available_bytes: MAX_STORE_BYTES.saturating_sub(required),
             fenced: self.fenced,
             commit_metrics: self.runtime_metrics.snapshot(),
+        })
+    }
+
+    /// Immutable, metadata-only export used for one-time migration into the
+    /// transactional owner. Map ordering is canonical; no provider token or
+    /// secret value can enter this snapshot.
+    pub fn migration_snapshot(
+        &self,
+    ) -> Result<LeaseRegistryMigrationSnapshotV1, LeaseRegistryErrorV1> {
+        self.ensure_writable()?;
+        validate_state(&self.state)?;
+        Ok(LeaseRegistryMigrationSnapshotV1 {
+            schema_version: self.state.schema_version,
+            revision: self.state.revision,
+            time_frontier_unix_ms: self.state.time_frontier_unix_ms,
+            operations: self.state.operations.values().cloned().collect(),
+            leases: self.state.leases.values().cloned().collect(),
+            consumptions: self.state.consumptions.values().cloned().collect(),
         })
     }
 

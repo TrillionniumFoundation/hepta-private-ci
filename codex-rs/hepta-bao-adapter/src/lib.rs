@@ -52,6 +52,7 @@ pub use lease_lifecycle::LeaseOperationV1;
 pub use lease_lifecycle::LeaseRegistryCommitMetricsV1;
 pub use lease_lifecycle::LeaseRegistryDiagnosticsV1;
 pub use lease_lifecycle::LeaseRegistryErrorV1;
+pub use lease_lifecycle::LeaseRegistryMigrationSnapshotV1;
 pub use lease_lifecycle::ProviderLeaseObservationV1;
 pub use lease_lifecycle::SecretLeaseMetadataV1;
 pub use lease_lifecycle::SecretLeaseStateV1;
@@ -80,11 +81,14 @@ pub use secret_boundary_v1::secret_boundary_request_digest_v1;
 
 pub use sqlite_owner::BaoOwnerCheckpointV1;
 pub use sqlite_owner::SqliteBaoOwnerErrorV1;
+pub use sqlite_owner::SqliteBaoOwnerImportReceiptV1;
 pub use sqlite_owner::SqliteBaoOwnerMetricsV1;
+pub use sqlite_owner::SqliteBaoOwnerRuntimeMetricsV1;
 pub use sqlite_owner::SqliteBaoOwnerV1;
 pub use sqlite_owner::SqliteConsumptionClaimV1;
 pub use sqlite_owner::SqliteConsumptionRecordV1;
 pub use sqlite_owner::SqliteLeaseOperationRecordV1;
+pub use sqlite_owner::SqliteReconciliationClaimV1;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SecretReference {
