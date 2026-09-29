@@ -22,6 +22,7 @@ mod operation_execution;
 #[cfg(all(test, unix))]
 mod saga_crash;
 mod secret_boundary_v1;
+mod sqlite_owner;
 
 pub use final_use_host::BaoConsumerCallback;
 pub use final_use_host::BaoFinalUseHost;
@@ -76,6 +77,14 @@ pub use secret_boundary_v1::SecretPermissionObservationV1;
 pub use secret_boundary_v1::SecretPermissionStatusV1;
 pub use secret_boundary_v1::assess_secret_boundary_v1;
 pub use secret_boundary_v1::secret_boundary_request_digest_v1;
+
+pub use sqlite_owner::BaoOwnerCheckpointV1;
+pub use sqlite_owner::SqliteBaoOwnerErrorV1;
+pub use sqlite_owner::SqliteBaoOwnerMetricsV1;
+pub use sqlite_owner::SqliteBaoOwnerV1;
+pub use sqlite_owner::SqliteConsumptionClaimV1;
+pub use sqlite_owner::SqliteConsumptionRecordV1;
+pub use sqlite_owner::SqliteLeaseOperationRecordV1;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SecretReference {

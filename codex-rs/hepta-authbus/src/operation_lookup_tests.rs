@@ -100,8 +100,12 @@ async fn operation_lookup_finds_hot_reservation_and_reports_missing() {
     );
 }
 
-
-async fn admission_fixture() -> (tempfile::TempDir, AuthBusAuthorityStore, crate::PolicyDecision, ReservationRequest) {
+async fn admission_fixture() -> (
+    tempfile::TempDir,
+    AuthBusAuthorityStore,
+    crate::PolicyDecision,
+    ReservationRequest,
+) {
     let root = tempfile::tempdir().expect("temporary authority root");
     let store = AuthBusAuthorityStore::open(&root.path().join("authority.sqlite"))
         .await
@@ -162,17 +166,37 @@ async fn admission_fixture() -> (tempfile::TempDir, AuthBusAuthorityStore, crate
 async fn sealed_absence_is_idempotent_durable_and_rejects_late_reserve() {
     let (root, store, decision, request) = admission_fixture().await;
     let before = store.authority_frontier_digest().await.unwrap();
-    assert_eq!(store.seal_unreserved_operation(&request.operation_id, request.effect_digest).await.unwrap(), None);
+    assert_eq!(
+        store
+            .seal_unreserved_operation(&request.operation_id, request.effect_digest)
+            .await
+            .unwrap(),
+        None
+    );
     let sealed = store.authority_frontier_digest().await.unwrap();
     assert_ne!(before, sealed);
-    assert_eq!(store.seal_unreserved_operation(&request.operation_id, request.effect_digest).await.unwrap(), None);
+    assert_eq!(
+        store
+            .seal_unreserved_operation(&request.operation_id, request.effect_digest)
+            .await
+            .unwrap(),
+        None
+    );
     assert_eq!(store.authority_frontier_digest().await.unwrap(), sealed);
-    assert!(matches!(store.seal_unreserved_operation(&request.operation_id, Digest32::of_bytes(b"changed")).await,
-        Err(AuthBusAuthorityError::IdempotencyConflict)));
+    assert!(matches!(
+        store
+            .seal_unreserved_operation(&request.operation_id, Digest32::of_bytes(b"changed"))
+            .await,
+        Err(AuthBusAuthorityError::IdempotencyConflict)
+    ));
     drop(store);
-    let store = AuthBusAuthorityStore::open(&root.path().join("authority.sqlite")).await.unwrap();
-    assert!(matches!(store.reserve(&decision, request, time(4, 1_400)).await,
-        Err(AuthBusAuthorityError::IdempotencyConflict)));
+    let store = AuthBusAuthorityStore::open(&root.path().join("authority.sqlite"))
+        .await
+        .unwrap();
+    assert!(matches!(
+        store.reserve(&decision, request, time(4, 1_400)).await,
+        Err(AuthBusAuthorityError::IdempotencyConflict)
+    ));
 }
 
 #[tokio::test]
@@ -180,8 +204,17 @@ async fn admission_seal_returns_original_reservation_without_cancelling_it() {
     let (_root, store, decision, request) = admission_fixture().await;
     let operation = request.operation_id.clone();
     let effect = request.effect_digest;
-    let reservation = store.reserve(&decision, request, time(4, 1_400)).await.unwrap();
-    assert_eq!(store.seal_unreserved_operation(&operation, effect).await.unwrap(), Some(reservation));
+    let reservation = store
+        .reserve(&decision, request, time(4, 1_400))
+        .await
+        .unwrap();
+    assert_eq!(
+        store
+            .seal_unreserved_operation(&operation, effect)
+            .await
+            .unwrap(),
+        Some(reservation)
+    );
 }
 
 #[tokio::test]
@@ -196,7 +229,7 @@ async fn concurrent_seal_and_reserve_have_one_serializable_outcome() {
         );
         match (reserved, sealed.unwrap()) {
             (Ok(reservation), Some(observed)) => assert_eq!(reservation, observed),
-            (Err(AuthBusAuthorityError::IdempotencyConflict), None) => {},
+            (Err(AuthBusAuthorityError::IdempotencyConflict), None) => {}
             other => panic!("non-serializable admission outcome: {other:?}"),
         }
     }
@@ -205,7 +238,10 @@ async fn concurrent_seal_and_reserve_have_one_serializable_outcome() {
 #[tokio::test]
 async fn admission_seal_cannot_be_removed_or_rebound_by_sql() {
     let (_root, store, _decision, request) = admission_fixture().await;
-    store.seal_unreserved_operation(&request.operation_id, request.effect_digest).await.unwrap();
+    store
+        .seal_unreserved_operation(&request.operation_id, request.effect_digest)
+        .await
+        .unwrap();
     for sql in [
         "DELETE FROM authbus_operation_admission_fence",
         "UPDATE authbus_operation_admission_fence SET effect_digest = zeroblob(32)",

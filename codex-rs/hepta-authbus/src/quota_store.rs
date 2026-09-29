@@ -175,7 +175,11 @@ impl AuthBusAuthorityStore {
         }
         let sealed: i64 = sqlx::query_scalar(
             "SELECT COUNT(*) FROM authbus_operation_admission_fence WHERE operation_id = ?",
-        ).bind(request.operation_id.as_str()).fetch_one(&mut *tx).await.map_err(storage)?;
+        )
+        .bind(request.operation_id.as_str())
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(storage)?;
         if sealed != 0 {
             return Err(AuthBusAuthorityError::IdempotencyConflict);
         }

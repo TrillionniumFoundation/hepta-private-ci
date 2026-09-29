@@ -36,6 +36,10 @@ impl BaoSecretReceipt {
             secret_bytes: self.secret_bytes,
         }
     }
+
+    pub(crate) fn evidence_digest(&self) -> Result<[u8; 32], LeaseRegistryErrorV1> {
+        receipt_digest(self)
+    }
 }
 
 impl std::fmt::Debug for BaoSecretReceipt {
@@ -142,6 +146,35 @@ impl BaoConsumptionStateV1 {
     pub const fn requires_future_capacity(self) -> bool {
         !self.is_terminal()
     }
+
+    /// Closed durable transition graph shared by every storage profile.
+    #[must_use]
+    pub(crate) const fn allows_transition_to(self, next: Self) -> bool {
+        use BaoConsumptionStateV1 as S;
+        matches!(
+            (self, next),
+            (S::Claimed, S::Reserved | S::Failed)
+                | (S::Reserved, S::DispatchFenced | S::Failed)
+                | (
+                    S::DispatchFenced,
+                    S::DeliveryPrepared | S::ProviderFailed | S::Indeterminate
+                )
+                | (
+                    S::DeliveryPrepared,
+                    S::ConsumerSucceeded | S::ConsumerNotApplied | S::Indeterminate
+                )
+                | (
+                    S::Indeterminate,
+                    S::ConsumerSucceeded | S::ConsumerNotApplied | S::ProviderFailed
+                )
+                | (S::ConsumerSucceeded, S::Succeeded)
+                | (S::ConsumerNotApplied | S::ProviderFailed, S::Failed)
+                | (
+                    S::DispatchAttempted,
+                    S::Reserved | S::DispatchFenced | S::Indeterminate | S::Failed
+                )
+        )
+    }
 }
 
 #[derive(Clone, Deserialize, Eq, PartialEq, Serialize)]
@@ -173,6 +206,31 @@ pub struct BaoConsumptionOperationV1 {
     pub terminal_evidence_sha256: Option<[u8; 32]>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub terminal_observed_cost: Option<u64>,
+}
+
+impl BaoConsumptionOperationV1 {
+    pub(crate) fn validate_for_persistence(&self) -> Result<(), LeaseRegistryErrorV1> {
+        validate_consumption(self)
+    }
+
+    #[must_use]
+    pub(crate) fn same_identity(&self, other: &Self) -> bool {
+        same_consumption_identity(self, other)
+    }
+
+    #[must_use]
+    pub(crate) fn has_terminal_fields(&self) -> bool {
+        has_terminal(self)
+    }
+
+    #[must_use]
+    pub(crate) fn terminal_fields_differ(&self, other: &Self) -> bool {
+        self.has_terminal_fields()
+            && (self.terminal_kind != other.terminal_kind
+                || self.terminal_code != other.terminal_code
+                || self.terminal_evidence_sha256 != other.terminal_evidence_sha256
+                || self.terminal_observed_cost != other.terminal_observed_cost)
+    }
 }
 
 impl std::fmt::Debug for BaoConsumptionOperationV1 {

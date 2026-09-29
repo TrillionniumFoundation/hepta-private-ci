@@ -19,7 +19,8 @@ impl AuthBusAuthorityStore {
         operation_id: &StableId,
     ) -> Result<Option<QuotaReservation>, AuthBusAuthorityError> {
         let mut tx = crate::authority_store::begin(&self.pool).await?;
-        let result = crate::quota_store::load_reservation_by_operation(&mut tx, operation_id).await?;
+        let result =
+            crate::quota_store::load_reservation_by_operation(&mut tx, operation_id).await?;
         tx.commit().await.map_err(storage)?;
         Ok(result)
     }
@@ -32,10 +33,14 @@ impl AuthBusAuthorityStore {
         effect_digest: codex_hepta_types::Digest32,
     ) -> Result<Option<QuotaReservation>, AuthBusAuthorityError> {
         if effect_digest.is_zero() {
-            return Err(AuthBusAuthorityError::InvalidInput("empty operation effect"));
+            return Err(AuthBusAuthorityError::InvalidInput(
+                "empty operation effect",
+            ));
         }
         let mut tx = crate::authority_store::begin(&self.pool).await?;
-        if let Some(existing) = crate::quota_store::load_reservation_by_operation(&mut tx, operation_id).await? {
+        if let Some(existing) =
+            crate::quota_store::load_reservation_by_operation(&mut tx, operation_id).await?
+        {
             if existing.effect_digest != effect_digest {
                 return Err(AuthBusAuthorityError::IdempotencyConflict);
             }
@@ -44,14 +49,21 @@ impl AuthBusAuthorityStore {
         }
         let existing: Option<Vec<u8>> = sqlx::query_scalar(
             "SELECT effect_digest FROM authbus_operation_admission_fence WHERE operation_id = ?",
-        ).bind(operation_id.as_str()).fetch_optional(&mut *tx).await.map_err(storage)?;
+        )
+        .bind(operation_id.as_str())
+        .fetch_optional(&mut *tx)
+        .await
+        .map_err(storage)?;
         if let Some(existing) = existing {
             if existing.as_slice() != effect_digest.as_array() {
                 return Err(AuthBusAuthorityError::IdempotencyConflict);
             }
         } else {
-            let count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM authbus_operation_admission_fence")
-                .fetch_one(&mut *tx).await.map_err(storage)?;
+            let count: i64 =
+                sqlx::query_scalar("SELECT COUNT(*) FROM authbus_operation_admission_fence")
+                    .fetch_one(&mut *tx)
+                    .await
+                    .map_err(storage)?;
             if count >= 65_536 {
                 return Err(AuthBusAuthorityError::CapacityExceeded);
             }
@@ -62,7 +74,6 @@ impl AuthBusAuthorityStore {
         tx.commit().await.map_err(storage)?;
         Ok(None)
     }
-
 }
 
 #[cfg(test)]

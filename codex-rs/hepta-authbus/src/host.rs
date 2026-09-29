@@ -360,7 +360,10 @@ impl AuthBusAuthorityHost {
         operation_id: &StableId,
         effect_digest: Digest32,
     ) -> Result<Option<QuotaReservation>, AuthBusAuthorityError> {
-        let result = self.store.seal_unreserved_operation(operation_id, effect_digest).await;
+        let result = self
+            .store
+            .seal_unreserved_operation(operation_id, effect_digest)
+            .await;
         self.finish(result).await
     }
 
