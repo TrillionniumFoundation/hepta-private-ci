@@ -1,0 +1,148 @@
+       if not isinstance(table, dict):
++            fail(f"Cargo {table_name} must be a table")
++        yield table
++    targets = manifest.get("target", {})
++    if not isinstance(targets, dict):
++        fail("Cargo target section must be a table")
++    for target, configuration in targets.items():
++        if not isinstance(configuration, dict):
++            fail(f"Cargo target {target} must be a table")
++        for table_name in ("dependencies", "dev-dependencies", "build-dependencies"):
++            table = configuration.get(table_name, {})
++            if not isinstance(table, dict):
++                fail(f"Cargo target {target} {table_name} must be a table")
++            yield table
++
++
++def local_dependency_roots(repository: Path) -> set[str]:
++    repository = repository.resolve()
++    workspace_root = repository / "codex-rs"
++    workspace = tomllib.loads((workspace_root / "Cargo.toml").read_text(encoding="utf-8"))
++    workspace_dependencies = workspace.get("workspace", {}).get("dependencies", {})
++    if not isinstance(workspace_dependencies, dict):
++        fail("workspace dependencies must be a table")
++
++    manifest_path = workspace_root / "hepta-agentd/Cargo.toml"
++    manifest = tomllib.loads(manifest_path.read_text(encoding="utf-8"))
++    roots: set[str] = set()
++    for table in dependency_tables(manifest):
++        for name, specification in table.items():
++            path_value: str | None = None
++            base = manifest_path.parent
++            if isinstance(specification, dict):
++                if isinstance(specification.get("path"), str):
++                    path_value = specification["path"]
++                elif specification.get("workspace") is True:
++                    inherited = workspace_dependencies.get(name)
++                    if isinstance(inherited, dict) and isinstance(
++                        inherited.get("path"), str
++                    ):
++                        path_value = inherited["path"]
++                        base = workspace_root
++            if path_value is None:
++                continue
++            resolved = (base / path_value).resolve()
++            try:
++                relative = resolved.relative_to(repository)
++            except ValueError as error:
++                raise ValueError(f"local dependency escapes repository: {name}") from error
++            roots.add(normalize(relative.as_posix()))
++    return roots
++
++
++def qualification_roots(repository: Path) -> tuple[str, ...]:
++    roots = module_roots(repository) | local_dependency_roots(repository)
++    roots.update(normalize(path) for path in EXPLICIT_PATHS)
++    return tuple(sorted(roots))
++
++
++def path_matches(path: str, root: str) -> bool:
++    return path == root or path.startswith(f"{root}/")
++
++
++def evaluate(repository: Path, changed_paths: Iterable[str]) -> dict[str, Any]:
++    roots = qualification_roots(repository)
++    changed = tuple(sorted({normalize(path) for path in changed_paths if path.strip()}))
++    matches: list[dict[str, str]] = []
++    for path in changed:
++        matching = next((root for root in roots if path_matches(path, root)), None)
++        if matching is not None:
++            matches.append({"path": path, "root": matching})
++    return {
++        "schema": SCHEMA,
++        "module": MODULE,
++        "applicable": bool(matches),
++        "changedPaths": list(changed),
++        "matchedPaths": matches,
++        "qualificationRoots": list(roots),
++    }
++
++
++def parse_name_status(output: bytes) -> list[str]:
++    try:
++        fields = output.decode("utf-8").split("\0")
++    except UnicodeDecodeError as error:
++        raise ValueError("changed repository path is not UTF-8") from error
++    if fields and fields[-1] == "":
++        fields.pop()
++    changed: list[str] = []
++    index = 0
++    while index < len(fields):
++        status = fields[index]
++        index += 1
++        if not status or status[0] not in "ACDMRTUXB":
++            fail(f"unexpected Git name-status entry: {status!r}")
++        path_count = 2 if status[0] in "RC" else 1
++        if index + path_count > len(fields):
++            fail("truncated Git name-status output")
++        changed.extend(fields[index : index + path_count])
++        index += path_count
++    return changed
++
++
++def git_changed_paths(repository: Path, base: str, head: str) -> list[str]:
++    if not base or not head:
++        fail("both base and head refs are required")
++    output = subprocess.check_output(
++        [
++            "git",
++            "diff",
++            "--name-status",
++            "-z",
++            "--diff-filter=ACDMRTUXB",
++            f"{base}...{head}",
++        ],
++        cwd=repository,
++    )
++    return parse_name_status(output)
++
++
++def write_github_output(result: dict[str, Any]) -> None:
++    target = os.environ.get("GITHUB_OUTPUT")
++    if not target:
++        return
++    matched = result["matchedPaths"]
++    reason = "none" if not matched else ",".join(item["path"] for item in matched[:8])
++    with Path(target).open("a", encoding="utf-8") as stream:
++        stream.write(f"applicable={'true' if result['applicable'] else 'false'}\n")
++        stream.write(f"matched_count={len(matched)}\n")
++        stream.write(f"reason={reason}\n")
++
++
++def main() -> int:
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--repository", type=Path, default=Path.cwd())
++    parser.add_argument("--base")
++    parser.add_argument("--head")
++    parser.add_argument("--paths-file", type=Path)
++    parser.add_argument("--output", type=Path)
++    args = parser.parse_args()
++    try:
++        repository = args.repository.resolve()
++        if args.paths_file is not None:
++            changed = args.paths_file.read_text(encoding="utf-8").splitlines()
++        else:
++            changed = git_changed_paths(repository, args.base or "", args.head or "")
++        result = evaluate(repository, changed)
++        write_github_output(result)
++        text = 
