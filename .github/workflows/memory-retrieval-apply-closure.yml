@@ -1,0 +1,52 @@
+name: Apply memory retrieval closure patch
+
+on:
+  push:
+    branches:
+      - chatgpt/memory-retrieval-full-closure-20260929
+    paths:
+      - .github/patches/memory-retrieval-phase1a.patch
+      - .github/patches/memory-retrieval-phase1b.patch
+      - .github/workflows/memory-retrieval-apply-closure.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: chatgpt/memory-retrieval-full-closure-20260929
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Apply, format and commit the exact closure patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git apply --index .github/patches/memory-retrieval-phase1a.patch
+          git apply --index .github/patches/memory-retrieval-phase1b.patch
+
+          cd codex-rs
+          cargo fmt --all -- --config imports_granularity=Item
+          cargo fmt --all -- --check --config imports_granularity=Item
+          cargo metadata --locked --no-deps --format-version 1 >/dev/null
+          cd ..
+
+          git diff --check
+          git diff --cached --check
+
+          rm .github/patches/memory-retrieval-phase1a.patch
+          rm .github/patches/memory-retrieval-phase1b.patch
+          rm .github/workflows/memory-retrieval-apply-closure.yml
+          git add -A
+          git diff --cached --check
+          test -n "$(git status --porcelain)"
+
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git commit -m "fix(memory-retrieval): close exact-head source blockers"
+          git push origin HEAD:chatgpt/memory-retrieval-full-closure-20260929
