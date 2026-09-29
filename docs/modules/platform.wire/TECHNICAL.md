@@ -42,7 +42,7 @@ bind them to native source.
 | Read-only runtime/gateway caller | source-composed | explicit V2 `Accept` on existing runtime status route |
 | Product-bound runtime.codex caller | source-composed | normal `hepta-infer-worker-host` path uses HPTA V2 plus payload schema V3 before final-use claim |
 | Evidence-derived lifecycle | implemented source | `scripts/platform_wire_status.py`, Lane A receipts and protected target-host workflow |
-| Exact-head, merge, target-host, acceptance and release | externally evidenced | current source does not self-grant qualification, independent acceptance, activation or release |
+| Exact-head, merge, target-host, performance, production, acceptance and release | externally evidenced | current source does not self-grant qualification, production observation, independent acceptance, activation or release |
 
 V1 continues to use a payload-only digest. V2 binds schema, producer,
 generation, lengths and payload in a domain-separated unkeyed SHA-256 digest.
@@ -268,13 +268,17 @@ Current focused test sources (source references, not pass receipts):
 - `codex-rs/hepta-context-compiler/src/wire_tests.rs`: strict schema, payload and wrong-producer rejection.
 - `codex-rs/hepta-codex-adapter/src/wire_tests.rs`: V2 compatibility rejection plus V3 complete-binding round trip, mutation and producer tests.
 - `codex-rs/hepta-infer-worker-host/src/native_app_server.rs` and the existing runtime.codex product E2E: normal product caller source and target-host test path.
-- `scripts/platform_wire_status.py`: receipt-v2 validation, source consistency, distinct acceptance identities and fail-closed lifecycle derivation.
+- `scripts/platform_wire_performance_gate.py`: five-path plan/report/producer-registry validation and threshold negative tests.
+- `scripts/platform_wire_production_gate.py`: eight-scenario production plan/report/producer-registry validation, resource/recovery negative tests and exact-source intake contracts.
+- `scripts/platform_wire_status.py`: receipt-v2 validation, source consistency, performance/production prerequisites, distinct acceptance identities and fail-closed lifecycle derivation.
 - `.github/workflows/lane-a-foundation.yml`: exact-head and deterministic synthetic-merge receipts with current test floors.
 - `.github/workflows/platform-wire-target-host.yml`: exact dispatched SHA, fixed protected host profile, locked/offline target-host qualification and retained receipt.
+- `.github/workflows/platform-wire-performance-intake.yml`: protected registered five-path paired-measurement intake.
+- `.github/workflows/platform-wire-production-intake.yml`: protected registered eight-scenario deployment-observation intake.
 
 In `codex-rs`, run `just test --locked -p codex-hepta-wire`. The exact candidate's Lane A receipt requires the current 41-test wire floor, eight registered adapter-port tests, two bidirectional cross-runtime tests and strict Clippy. Those numbers are admission floors, not stored success claims. Inspect the exact-candidate output and retained command records for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.wire.md) separately labels target acceptance designs.
 
-Qualification is true only when source-consistent exact-head, synthetic-merge and protected target-host receipt-v2 artifacts all pass. Acceptance additionally requires distinct independent-reviewer and operations receipts, each independent of the implementation author. Release additionally requires a source-bound release receipt and artifact digest. Source code, ordinary CI and this guide cannot self-issue those external facts.
+Qualification is true only when source-consistent exact-head, synthetic-merge and protected target-host receipt-v2 artifacts all pass. Acceptance additionally requires same-source passed five-path performance and eight-scenario production-composition receipts plus distinct independent-reviewer and operations receipts, each independent of the implementation author. Release additionally requires a source-bound release receipt and artifact digest. Source code, ordinary CI and this guide cannot self-issue those external facts.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -296,7 +300,7 @@ Compatibility adapters are temporary. Retirement requires all named callers migr
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. `scripts/platform_wire_status.py` then derives five monotonic, fail-closed states: Designed, Implemented, Qualified, Accepted and Released. Qualified requires current exact-head, synthetic-merge and protected target-host evidence; Accepted additionally requires distinct independent-reviewer and operations receipts; Released additionally requires a source-bound release receipt and artifact digest. Selection, activation, canary and promotion remain separate externally governed facts.
+Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. `scripts/platform_wire_status.py` then derives five monotonic, fail-closed states: Designed, Implemented, Qualified, Accepted and Released. Qualified requires current exact-head, synthetic-merge and protected target-host evidence; Accepted additionally requires same-source passed five-path performance and eight-scenario production-composition receipts plus distinct independent-reviewer and operations receipts; Released additionally requires a source-bound release receipt and artifact digest. Selection, activation, canary and promotion remain separate externally governed facts.
 
 For `platform.wire`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
 
@@ -384,8 +388,10 @@ This receipt records repository source bindings for the current documentation ca
 | `authenticated_session` | `WireSession` / `NegotiationTranscript` | `codex-rs/hepta-wire/src/secure_session.rs` | transcript/channel binding, replay and cross-session tests |
 | `authenticated_record` | `AuthenticatedWireSession` / `SessionEndpoint` | `codex-rs/hepta-wire/src/directional_session.rs` | bidirectional, reflection and direction-mismatch tests |
 | `runtime_codex_v3` | `adapt_product_wire_v3` | `codex-rs/hepta-codex-adapter/src/wire.rs` | complete-binding round-trip/mutation tests and normal worker callsite |
-| `qualification_lifecycle` | `platform_wire_status.py` | `scripts/platform_wire_status.py` | receipt-v2 validation and fail-closed lifecycle self-test |
+| `performance_evidence` | `platform_wire_performance_gate.py` | `scripts/platform_wire_performance_gate.py` | five-path thresholds, plan/report and closed producer registry tests |
+| `production_evidence` | `platform_wire_production_gate.py` | `scripts/platform_wire_production_gate.py` | eight-scenario observation, resource/recovery and closed producer registry tests |
+| `qualification_lifecycle` | `platform_wire_status.py` | `scripts/platform_wire_status.py` | receipt-v2 validation, performance/production prerequisites and fail-closed lifecycle self-test |
 
 - Source identity and exact Git objects are recorded in `IMPLEMENTATION_MAP.json`; rebinding navigation evidence does not grant execution.
 - The read-only runtime status path and the normal inference-worker runtime.codex V3 admission path are named source-composed callers. Registered context/compiler and runtime/Codex adapters pin canonical producer identities; these source facts are not target-host execution, deployment or operator acceptance.
-- Exact-head, deterministic synthetic-merge and protected target-host execution remain separate qualification receipts. Independent reviewer and operations acceptance must be distinct external receipts, followed by a separate release receipt. Activation, canary and promotion remain outside this source map.
+- Exact-head, deterministic synthetic-merge and protected target-host execution remain separate qualification receipts. Same-source passed performance and production-composition receipts plus independent reviewer and operations acceptance must be distinct external receipts, followed by a separate release receipt. Activation, canary and promotion remain outside this source map.
