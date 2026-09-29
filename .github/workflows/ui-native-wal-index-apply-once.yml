@@ -2,12 +2,12 @@ name: ui.native WAL and retirement-index source applicator
 
 on:
   push:
-    branches: [work/ui-native-qualified-integration-20260928]
+    branches: [work/ui-native-full-convergence-20260929]
     paths:
       - .ci/ui-native-wal-index/source.patch.gz
       - .github/workflows/ui-native-wal-index-apply-once.yml
   pull_request:
-    branches: [work/ui-native-qualified-integration-20260928]
+    branches: [work/ui-native-full-convergence-20260929]
     paths:
       - .ci/ui-native-wal-index-trigger/**
   workflow_dispatch:
@@ -22,7 +22,7 @@ concurrency:
 env:
   CARGO_TERM_COLOR: always
   CARGO_INCREMENTAL: "0"
-  TARGET_BRANCH: work/ui-native-qualified-integration-20260928
+  TARGET_BRANCH: work/ui-native-full-convergence-20260929
   TARGET_SHA: ${{ github.event.pull_request.base.sha || github.sha }}
 
 jobs:
