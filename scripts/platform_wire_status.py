@@ -11,6 +11,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from platform_wire_receipt_subject import read_receipt, require_selected_source
+
 RECEIPT_SCHEMA = "hepta.platform-wire.receipt.v2"
 SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 DIGEST_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -165,7 +167,7 @@ def load_receipt(path: str | None, expected_kind: str) -> Receipt | None:
     if not path:
         return None
     receipt_path = Path(path)
-    payload = json.loads(receipt_path.read_text(encoding="utf-8"))
+    payload = read_receipt(receipt_path)
     if not isinstance(payload, dict):
         raise ValueError(f"receipt {receipt_path} must be a JSON object")
     if payload.get("schema") != RECEIPT_SCHEMA:
@@ -221,6 +223,8 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
     release = load_receipt(args.release, "platform-wire-release")
     all_receipts = [exact, merge, target, reviewer, operations, release]
     source_sha = common_source_sha(all_receipts)
+    if source_sha is not None:
+        require_selected_source(root, source_sha, getattr(args, "expected_source_sha", None))
 
     designed = not missing_design
     implemented = designed and not missing_implementation
@@ -465,6 +469,7 @@ def self_test() -> None:
 
         args = argparse.Namespace(
             root=str(root),
+            expected_source_sha=source,
             exact_head=receipt_paths["platform-wire-exact-head"],
             synthetic_merge=receipt_paths["platform-wire-synthetic-merge"],
             target_host=receipt_paths["platform-wire-target-host"],
@@ -492,6 +497,7 @@ def self_test() -> None:
 
 def add_evidence_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--root", default=".")
+    parser.add_argument("--expected-source-sha", help="Required for an archive; must match Git HEAD in a checkout")
     parser.add_argument("--exact-head")
     parser.add_argument("--synthetic-merge")
     parser.add_argument("--target-host")
