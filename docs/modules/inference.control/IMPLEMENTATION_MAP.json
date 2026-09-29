@@ -1,1 +1,477 @@
-{"schema":"hepta.module-implementation-map.v3","schemaVersion":3,"sourceBase":{"commit":"a126987b84737dbc2ee2592442a314117bddb4a2","tree":"a22fd0074c45ae6f3cef2092cd6e273bf9c26c30","kind":"integration_provenance_anchor"},"sourceIdentityPolicy":"exact_ci_receipt_v1","laneId":"LANE-B-RUNTIME","module":"inference.control","owner":"inference-platform","deputy":"runtime-control","technicalGuide":"docs/modules/inference.control/TECHNICAL.md","generatedStatus":"docs/modules/inference.control/TECHNICAL_STATUS.generated.md","currentState":"docs/modules/inference.control/CURRENT_STATE.json","declaredRoots":["codex-rs/hepta-infer-core","codex-rs/hepta-infer-worker-host","codex-rs/hepta-inferd"],"resolvedRoots":["codex-rs/hepta-infer-core","codex-rs/hepta-infer-worker-host","codex-rs/hepta-inferd"],"sourceRoot":["codex-rs/hepta-infer-core","codex-rs/hepta-infer-worker-host","codex-rs/hepta-inferd"],"sourceRootPresent":true,"sourceEvidenceRoots":["codex-rs/hepta-infer-core","codex-rs/hepta-infer-worker-host","codex-rs/hepta-inferd",".github/workflows/hepta-inference-maintenance.yml",".github/workflows/hepta-inference-x64-smoke.yml","scripts/hepta-inference-control-current-state.py","scripts/hepta-inference-control-ownership.py","docs/modules/inference.control/OPERATIONS.md","docs/modules/inference.control/SLO_ALERTS.json","scripts/hepta_inference_capacity.py","scripts/test_hepta_inference_capacity.py","scripts/test_hepta_inference_current_state.py","docs/modules/inference.control/WRITER_BOUNDARIES.md","scripts/hepta_inference_boundary_native.py"],"productionImplementation":false,"productCallerState":"composed_exact_signed_plan_required_unique_writer_actor","productionWriterState":"single_durable_owner_actor_composed_for_worker_recovery_and_maintenance","productCallerBindingPolicy":"closed_world","productCallerBindings":[{"callerPath":"codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs","mustContain":"run_authorized"},{"callerPath":"codex-rs/hepta-infer-worker-host/src/native_run_control.rs","mustContain":"bind_native_execution"}],"productionWriterBindingPolicy":"closed_world","productionWriterBindings":[{"sourcePath":"codex-rs/hepta-infer-core/src/durable_control.rs","mustContain":"DurableInferenceControl"},{"sourcePath":"codex-rs/hepta-infer-core/src/native_control_v2_control_c.rs","mustContain":"compact_native_journal_inner"}],"operations":[{"operation":"verify_execution_plan","state":"source_implemented","nativeSymbol":"verify_execution_plan","sourcePath":"codex-rs/hepta-infer-core/src/control_contracts.rs","tests":["codex-rs/hepta-infer-core/src/control_contracts.rs::four_independent_authorities_bind_one_exact_execution","codex-rs/hepta-infer-core/src/control_contracts.rs::key_rotation_window_and_revocation_are_enforced"],"designOperation":"verify_execution_plan","mappingClass":"owner_native","sourcePathExists":true,"authority":"none_minted_by_execution_owner"},{"operation":"post_lease_recovery_verification","state":"source_implemented","nativeSymbol":"verify_execution_plan_for_recovery","sourcePath":"codex-rs/hepta-infer-core/src/recovery_contracts.rs","tests":["codex-rs/hepta-infer-core/tests/recovery_after_expiry.rs::fresh_rotated_terminal_receipt_releases_after_dispatch_lease_expiry","codex-rs/hepta-infer-core/tests/recovery_after_expiry.rs::fresh_rotated_dual_control_retirement_releases_after_lease_expiry"],"designOperation":"post_lease_recovery_verification","mappingClass":"owner_native","sourcePathExists":true,"authority":"none_minted_by_execution_owner"},{"operation":"reserve_and_bind_native_execution","state":"source_implemented","nativeSymbol":"DurableInferenceControl::bind_native_execution","sourcePath":"codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs","tests":["codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::authorized_settlement_never_persists_raw_output"],"designOperation":"reserve_and_bind_native_execution","mappingClass":"owner_native","sourcePathExists":true,"authority":"none_minted_by_execution_owner"},{"operation":"write_ahead_dispatch","state":"product_composed","nativeSymbol":"DurableInferenceControl::dispatch_native_with_pre_effect_abort","sourcePath":"codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs","tests":["codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::signed_reconciliation_releases_indeterminate_without_blind_replay"],"designOperation":"write_ahead_dispatch","mappingClass":"owner_native","sourcePathExists":true,"authority":"none_minted_by_execution_owner"},{"operation":"protected_terminal_settlement","state":"product_composed","nativeSymbol":"DurableInferenceControl::settle_native_authorized","sourcePath":"codex-rs/hepta-infer-core/src/native_control_v2_control_b.rs","tests":["codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::authorized_settlement_never_persists_raw_output"],"designOperation":"protected_terminal_settlement","mappingClass":"owner_native","sourcePathExists":true,"authority":"none_minted_by_execution_owner"},{"operation":"signed_terminal_usage_reconciliation","state":"source_implemented","nativeSymbol":"DurableInferenceControl::reconcile_native_recovery","sourcePath":"codex-rs/hepta-infer-core/src/native_control_v2_recovery.rs","tests":["codex-rs/hepta-infer-core/tests/recovery_after_expiry.rs::fresh_rotated_terminal_receipt_releases_after_dispatch_lease_expiry"],"designOperation":"signed_terminal_usage_reconciliation","mappingClass":"owner_native","sourcePathExists":true,"authority":"none_minted_by_execution_owner"},{"operation":"dual_control_indeterminate_retirement","state":"source_implemented","nativeSymbol":"DurableInferenceControl::retire_native_indeterminate_recovery","sourcePath":"codex-rs/hepta-infer-core/src/native_control_v2_recovery.rs","tests":["codex-rs/hepta-infer-core/tests/recovery_after_expiry.rs::fresh_rotated_dual_control_retirement_releases_after_lease_expiry"],"designOperation":"dual_control_indeterminate_retirement","mappingClass":"owner_native","sourcePathExists":true,"authority":"none_minted_by_execution_owner"},{"operation":"checkpoint_archive_generation","state":"source_implemented","nativeSymbol":"DurableInferenceControl::compact_native_journal_with_failpoint","sourcePath":"codex-rs/hepta-infer-core/src/native_control_v2_control_b.rs","tests":["codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::compaction_preserves_indeterminate_capacity_and_exact_state","codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::every_compaction_failpoint_reopens_a_complete_generation","codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::checkpoint_tampering_is_rejected_on_reopen","codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::post_compaction_multi_generation_curve"],"designOperation":"checkpoint_archive_generation","mappingClass":"owner_native","sourcePathExists":true,"authority":"none_minted_by_execution_owner"},{"operation":"process_kill_and_torn_tail_recovery","state":"source_implemented","nativeSymbol":"sigkill_at_every_maintenance_boundary_recovers_one_complete_generation","sourcePath":"codex-rs/hepta-infer-core/tests/process_crash_recovery.rs","tests":["codex-rs/hepta-infer-core/tests/process_crash_recovery.rs::sigkill_at_every_maintenance_boundary_recovers_one_complete_generation","codex-rs/hepta-infer-core/tests/process_crash_recovery.rs::an_incomplete_torn_tail_is_rejected_instead_of_replayed_or_truncated"],"designOperation":"process_kill_and_torn_tail_recovery","mappingClass":"owner_native","sourcePathExists":true,"authority":"none_minted_by_execution_owner"},{"operation":"exact_plan_native_app_server_execution","state":"product_composed_unique_writer_actor_exact_head_qualification_pending","nativeSymbol":"AppServerModelDriver::run_authorized","sourcePath":"codex-rs/hepta-infer-worker-host/src/native_run_control.rs","tests":["codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs::success_requires_both_matching_completion_and_final_ready_owner"],"designOperation":"exact_plan_native_app_server_execution","mappingClass":"owner_native","sourcePathExists":true,"authority":"none_minted_by_execution_owner"},{"operation":"unique_writer_effect_reconciler_actor_boundary","state":"product_composed_exact_head_qualification_pending","nativeSymbol":"NativeJournalWriterActor","sourcePath":"codex-rs/hepta-infer-worker-host/src/control_actor.rs","tests":["codex-rs/hepta-infer-worker-host/src/control_actor_compat_tests.rs::one_writer_owns_the_journal_and_effect_capability_is_one_shot"],"designOperation":"unique_writer_effect_reconciler_actor_boundary","mappingClass":"owner_native","sourcePathExists":true,"authority":"none_minted_by_execution_owner"},{"operation":"external_encrypted_output","state":"product_composed_vault_target_qualification_pending","nativeSymbol":"UnixOutputProtector::protect","sourcePath":"codex-rs/hepta-infer-worker-host/src/unix_output_protector.rs","tests":["codex-rs/hepta-infer-worker-host/src/unix_output_protector_boundary_tests.rs::vault_uid_socket_and_parent_permissions_fail_closed","codex-rs/hepta-infer-worker-host/src/unix_output_protector_boundary_tests.rs::vault_config_rejects_symlinks_hardlinks_and_oversize_files"],"designOperation":"external_encrypted_output","mappingClass":"owner_native","sourcePathExists":true,"authority":"none_minted_by_execution_owner"},{"operation":"signed_operator_recovery_cli","state":"product_composed_unique_writer_actor","nativeSymbol":"NativeReconcilerActor::new","sourcePath":"codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-recovery.rs","tests":["codex-rs/hepta-infer-core/tests/recovery_after_expiry.rs::fresh_rotated_terminal_receipt_releases_after_dispatch_lease_expiry"],"designOperation":"signed_operator_recovery_cli","mappingClass":"owner_native","sourcePathExists":true,"authority":"none_minted_by_execution_owner"},{"operation":"bounded_maintenance_cli","state":"product_composed_unique_writer_actor","nativeSymbol":"control.compact()","sourcePath":"codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-maintenance.rs","tests":["codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::compaction_preserves_indeterminate_capacity_and_exact_state"],"designOperation":"bounded_maintenance_cli","mappingClass":"owner_native","sourcePathExists":true,"authority":"none_minted_by_execution_owner"},{"operation":"native_control_metrics","state":"source_implemented","nativeSymbol":"DurableInferenceControl::native_metrics","sourcePath":"codex-rs/hepta-infer-core/src/native_control_v2_control_b.rs","tests":["codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::compaction_preserves_indeterminate_capacity_and_exact_state"],"designOperation":"native_control_metrics","mappingClass":"owner_native","sourcePathExists":true,"authority":"none_minted_by_execution_owner"},{"operation":"operator_slo_alert_policy","state":"documentation_implemented_runtime_export_pending","nativeSymbol":"metricSource","sourcePath":"docs/modules/inference.control/SLO_ALERTS.json","tests":["scripts/test_hepta_inference_current_state.py"],"designOperation":"operator_slo_alert_policy","mappingClass":"owner_native","sourcePathExists":true,"authority":"none_minted_by_execution_owner"},{"operation":"bounded_terminal_admission_and_fifo_fairness","state":"source_implemented_execution_pending","nativeSymbol":"send_terminal","sourcePath":"codex-rs/hepta-infer-worker-host/src/actor_mailbox.rs","tests":["codex-rs/hepta-infer-worker-host/src/actor_mailbox_boundary_tests.rs::terminal_reserve_preserves_fifo_and_shutdown_when_every_quota_is_full","codex-rs/hepta-infer-worker-host/src/actor_mailbox_boundary_tests.rs::mixed_fifo_contention_curve","codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs::real_writer_mixed_query_terminal_contention_curve"],"designOperation":"bounded_terminal_admission_and_fifo_fairness","mappingClass":"owner_native","sourcePathExists":true,"authority":"none_minted_by_execution_owner"},{"operation":"accepted_response_loss_and_post_commit_observation","state":"source_implemented_execution_pending","nativeSymbol":"receive_value","sourcePath":"codex-rs/hepta-infer-worker-host/src/control_actor.rs","tests":["codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs::accepted_deadline_does_not_cancel_commit_or_license_duplicate_dispatch","codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs::lost_terminal_reply_remains_durable_and_survives_restart","codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs::signed_post_effect_terminal_reply_loss_keeps_exact_durable_result","codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs::caller_cancellation_after_admission_cannot_erase_the_owner_command","codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs::shutdown_deadline_retains_lock_until_the_real_owner_exits"],"designOperation":"accepted_response_loss_and_post_commit_observation","mappingClass":"owner_native","sourcePathExists":true,"authority":"none_minted_by_execution_owner"},{"operation":"immutable_observational_metrics","state":"source_implemented_execution_pending","nativeSymbol":"published_metrics","sourcePath":"codex-rs/hepta-infer-worker-host/src/control_actor.rs","tests":["codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs::published_metrics_are_immutable_stale_and_do_not_queue_reads"],"designOperation":"immutable_observational_metrics","mappingClass":"owner_native","sourcePathExists":true,"authority":"none_minted_by_execution_owner"}],"claimBoundary":{"implementedOperationMappingComplete":true,"nativeSourceMappingComplete":true,"repositoryControlledSourceBoundaryGapsClosed":false,"sourceRootPresent":true,"productionImplementation":false,"productExecutionProved":false,"targetHostQualification":false,"independentAcceptance":false,"activation":false,"release":false},"repositoryControlledGaps":["obtain green exact-source-head and deterministic base-merge receipts for the final commit","retain native-host process-kill, disk-fault, torn-write, vault and App Server command records as CI artifacts","complete signed output-vault deletion confirmation rather than treating a maintenance receipt as deletion proof","export runtime metrics to the selected telemetry backend and qualify alert delivery","qualify host-selected mailbox, response and shutdown limits under real provider and storage contention","deliver last-published and queue metrics to the selected telemetry backend; cached observations are not authority"],"externalEvidenceGates":["independent semantic and security review","selected target-host qualification with a real provider-compatible endpoint and output vault","operator acceptance, canary, activation, promotion and release"],"productCallers":[{"sourcePath":"codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs","nativeSymbol":"run_authorized"},{"sourcePath":"codex-rs/hepta-infer-worker-host/src/native_run_control.rs","nativeSymbol":"AppServerModelDriver::run_authorized"}],"sourceObjects":[{"path":"codex-rs/hepta-infer-core","object":"b8317ee8e47ca3fbbd3da63ee95688ecf8eafdc0"},{"path":"codex-rs/hepta-infer-core/src/control_contracts.rs","object":"b15b233bf084a4282af93b8be1a49eb3d1cf56ed"},{"path":"codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs","object":"21a8da6f0e401b699acce96b475c8a0ce6fcf50e"},{"path":"codex-rs/hepta-infer-core/src/native_control_v2_control_b.rs","object":"6b41a073fa51fedd08ece5d4c5f5ffb5aced26bc"},{"path":"codex-rs/hepta-infer-core/src/native_control_v2_recovery.rs","object":"f09713c5de7ba74e7e89ed7baa662e9acf854b6d"},{"path":"codex-rs/hepta-infer-core/src/native_control_v2_tests.rs","object":"02b6f853341bcfda8ec537d9340995da4f0029d4"},{"path":"codex-rs/hepta-infer-core/src/recovery_contracts.rs","object":"0abaf016d814214a6cbe041b64673a0220c4d287"},{"path":"codex-rs/hepta-infer-core/tests/process_crash_recovery.rs","object":"f8214e7f27960a626defdaa55f18c96851836acd"},{"path":"codex-rs/hepta-infer-core/tests/recovery_after_expiry.rs","object":"9e7c534abcf2afe1407f847a76f10b88303e8d9f"},{"path":"codex-rs/hepta-infer-worker-host","object":"f47f6d4fe4ca88ddccd0512db354f9b066e6dfaf"},{"path":"codex-rs/hepta-infer-worker-host/src/actor_mailbox.rs","object":"1cae5a98ac9b8e85cc05fc638c44c98ecf1db16f"},{"path":"codex-rs/hepta-infer-worker-host/src/actor_mailbox_boundary_tests.rs","object":"76dd7e648f82d32a9c79ed86737829bd0e117ce8"},{"path":"codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-maintenance.rs","object":"51f48af20d82bc4a554953420809c62336d67d10"},{"path":"codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-recovery.rs","object":"90819ba94315dec505dea3f76b328eabed8256b4"},{"path":"codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs","object":"d7a179fd9ebf9d54ad3b6c5854a1c3ed15525e40"},{"path":"codex-rs/hepta-infer-worker-host/src/control_actor.rs","object":"c61b31fa4c2589f093854feb2356f4db9398a8ce"},{"path":"codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs","object":"3c8a6eb2d9b9b6bddac6cbdbae62178f8923f5a6"},{"path":"codex-rs/hepta-infer-worker-host/src/control_actor_compat_tests.rs","object":"155a905646c9d608a1797ba6e2f6b55cd6716540"},{"path":"codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs","object":"e96da1855228f1bb27c3aec7431631e5018e89ac"},{"path":"codex-rs/hepta-infer-worker-host/src/native_run_control.rs","object":"00ea489d22150c16399b9807f12a201d16cc0e20"},{"path":"codex-rs/hepta-infer-worker-host/src/unix_output_protector.rs","object":"e86555da993ed18b18983142c6509442bae3b8eb"},{"path":"codex-rs/hepta-infer-worker-host/src/unix_output_protector_boundary_tests.rs","object":"eabea5b9dda08fc67bd928b05c3dc79d85d7d4d2"},{"path":"codex-rs/hepta-inferd","object":"803e2f4c6efc0dafbea8ea0beff338270b0d1b1b"},{"path":"docs/modules/inference.control/SLO_ALERTS.json","object":"a66ab9e86700851005b91d5ccd0530d6461fa7de"},{"path":"docs/modules/inference.control/TECHNICAL.md","object":"dc551107a335eb1b594465b75dcf5e2a10aadc5e"},{"path":"scripts/test_hepta_inference_current_state.py","object":"66e6925347f49d81fa37baa6d1e6e5c981010c6b"}]}
+{
+  "schema": "hepta.module-implementation-map.v3",
+  "schemaVersion": 3,
+  "sourceBase": {
+    "commit": "a126987b84737dbc2ee2592442a314117bddb4a2",
+    "tree": "a22fd0074c45ae6f3cef2092cd6e273bf9c26c30",
+    "kind": "integration_provenance_anchor"
+  },
+  "sourceIdentityPolicy": "exact_ci_receipt_v1",
+  "laneId": "LANE-B-RUNTIME",
+  "module": "inference.control",
+  "owner": "inference-platform",
+  "deputy": "runtime-control",
+  "technicalGuide": "docs/modules/inference.control/TECHNICAL.md",
+  "generatedStatus": "docs/modules/inference.control/TECHNICAL_STATUS.generated.md",
+  "currentState": "docs/modules/inference.control/CURRENT_STATE.json",
+  "declaredRoots": [
+    "codex-rs/hepta-infer-core",
+    "codex-rs/hepta-infer-worker-host",
+    "codex-rs/hepta-inferd"
+  ],
+  "resolvedRoots": [
+    "codex-rs/hepta-infer-core",
+    "codex-rs/hepta-infer-worker-host",
+    "codex-rs/hepta-inferd"
+  ],
+  "sourceRoot": [
+    "codex-rs/hepta-infer-core",
+    "codex-rs/hepta-infer-worker-host",
+    "codex-rs/hepta-inferd"
+  ],
+  "sourceRootPresent": true,
+  "sourceEvidenceRoots": [
+    "codex-rs/hepta-infer-core",
+    "codex-rs/hepta-infer-worker-host",
+    "codex-rs/hepta-inferd",
+    ".github/workflows/hepta-inference-maintenance.yml",
+    ".github/workflows/hepta-inference-x64-smoke.yml",
+    "scripts/hepta-inference-control-current-state.py",
+    "scripts/hepta-inference-control-ownership.py",
+    "docs/modules/inference.control/OPERATIONS.md",
+    "docs/modules/inference.control/SLO_ALERTS.json",
+    "scripts/hepta_inference_capacity.py",
+    "scripts/test_hepta_inference_capacity.py",
+    "scripts/test_hepta_inference_current_state.py",
+    "docs/modules/inference.control/WRITER_BOUNDARIES.md",
+    "scripts/hepta_inference_boundary_native.py"
+  ],
+  "productionImplementation": false,
+  "productCallerState": "composed_exact_signed_plan_required_unique_writer_actor",
+  "productionWriterState": "single_durable_owner_actor_composed_for_worker_recovery_and_maintenance",
+  "productCallerBindingPolicy": "closed_world",
+  "productCallerBindings": [
+    {
+      "callerPath": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs",
+      "mustContain": "run_authorized"
+    },
+    {
+      "callerPath": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
+      "mustContain": "bind_native_execution"
+    }
+  ],
+  "productionWriterBindingPolicy": "closed_world",
+  "productionWriterBindings": [
+    {
+      "sourcePath": "codex-rs/hepta-infer-core/src/durable_control.rs",
+      "mustContain": "DurableInferenceControl"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_control_c.rs",
+      "mustContain": "compact_native_journal_inner"
+    }
+  ],
+  "operations": [
+    {
+      "operation": "verify_execution_plan",
+      "state": "source_implemented",
+      "nativeSymbol": "verify_execution_plan",
+      "sourcePath": "codex-rs/hepta-infer-core/src/control_contracts.rs",
+      "tests": [
+        "codex-rs/hepta-infer-core/src/control_contracts.rs::four_independent_authorities_bind_one_exact_execution",
+        "codex-rs/hepta-infer-core/src/control_contracts.rs::key_rotation_window_and_revocation_are_enforced"
+      ],
+      "designOperation": "verify_execution_plan",
+      "mappingClass": "owner_native",
+      "sourcePathExists": true,
+      "authority": "none_minted_by_execution_owner"
+    },
+    {
+      "operation": "post_lease_recovery_verification",
+      "state": "source_implemented",
+      "nativeSymbol": "verify_execution_plan_for_recovery",
+      "sourcePath": "codex-rs/hepta-infer-core/src/recovery_contracts.rs",
+      "tests": [
+        "codex-rs/hepta-infer-core/tests/recovery_after_expiry.rs::fresh_rotated_terminal_receipt_releases_after_dispatch_lease_expiry",
+        "codex-rs/hepta-infer-core/tests/recovery_after_expiry.rs::fresh_rotated_dual_control_retirement_releases_after_lease_expiry"
+      ],
+      "designOperation": "post_lease_recovery_verification",
+      "mappingClass": "owner_native",
+      "sourcePathExists": true,
+      "authority": "none_minted_by_execution_owner"
+    },
+    {
+      "operation": "reserve_and_bind_native_execution",
+      "state": "source_implemented",
+      "nativeSymbol": "DurableInferenceControl::bind_native_execution",
+      "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs",
+      "tests": [
+        "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::authorized_settlement_never_persists_raw_output"
+      ],
+      "designOperation": "reserve_and_bind_native_execution",
+      "mappingClass": "owner_native",
+      "sourcePathExists": true,
+      "authority": "none_minted_by_execution_owner"
+    },
+    {
+      "operation": "write_ahead_dispatch",
+      "state": "product_composed",
+      "nativeSymbol": "DurableInferenceControl::dispatch_native_with_pre_effect_abort",
+      "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs",
+      "tests": [
+        "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::signed_reconciliation_releases_indeterminate_without_blind_replay"
+      ],
+      "designOperation": "write_ahead_dispatch",
+      "mappingClass": "owner_native",
+      "sourcePathExists": true,
+      "authority": "none_minted_by_execution_owner"
+    },
+    {
+      "operation": "protected_terminal_settlement",
+      "state": "product_composed",
+      "nativeSymbol": "DurableInferenceControl::settle_native_authorized",
+      "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_control_b.rs",
+      "tests": [
+        "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::authorized_settlement_never_persists_raw_output"
+      ],
+      "designOperation": "protected_terminal_settlement",
+      "mappingClass": "owner_native",
+      "sourcePathExists": true,
+      "authority": "none_minted_by_execution_owner"
+    },
+    {
+      "operation": "signed_terminal_usage_reconciliation",
+      "state": "source_implemented",
+      "nativeSymbol": "DurableInferenceControl::reconcile_native_recovery",
+      "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_recovery.rs",
+      "tests": [
+        "codex-rs/hepta-infer-core/tests/recovery_after_expiry.rs::fresh_rotated_terminal_receipt_releases_after_dispatch_lease_expiry"
+      ],
+      "designOperation": "signed_terminal_usage_reconciliation",
+      "mappingClass": "owner_native",
+      "sourcePathExists": true,
+      "authority": "none_minted_by_execution_owner"
+    },
+    {
+      "operation": "dual_control_indeterminate_retirement",
+      "state": "source_implemented",
+      "nativeSymbol": "DurableInferenceControl::retire_native_indeterminate_recovery",
+      "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_recovery.rs",
+      "tests": [
+        "codex-rs/hepta-infer-core/tests/recovery_after_expiry.rs::fresh_rotated_dual_control_retirement_releases_after_lease_expiry"
+      ],
+      "designOperation": "dual_control_indeterminate_retirement",
+      "mappingClass": "owner_native",
+      "sourcePathExists": true,
+      "authority": "none_minted_by_execution_owner"
+    },
+    {
+      "operation": "checkpoint_archive_generation",
+      "state": "source_implemented",
+      "nativeSymbol": "DurableInferenceControl::compact_native_journal_with_failpoint",
+      "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_control_b.rs",
+      "tests": [
+        "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::compaction_preserves_indeterminate_capacity_and_exact_state",
+        "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::every_compaction_failpoint_reopens_a_complete_generation",
+        "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::checkpoint_tampering_is_rejected_on_reopen",
+        "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::post_compaction_multi_generation_curve"
+      ],
+      "designOperation": "checkpoint_archive_generation",
+      "mappingClass": "owner_native",
+      "sourcePathExists": true,
+      "authority": "none_minted_by_execution_owner"
+    },
+    {
+      "operation": "process_kill_and_torn_tail_recovery",
+      "state": "source_implemented",
+      "nativeSymbol": "sigkill_at_every_maintenance_boundary_recovers_one_complete_generation",
+      "sourcePath": "codex-rs/hepta-infer-core/tests/process_crash_recovery.rs",
+      "tests": [
+        "codex-rs/hepta-infer-core/tests/process_crash_recovery.rs::sigkill_at_every_maintenance_boundary_recovers_one_complete_generation",
+        "codex-rs/hepta-infer-core/tests/process_crash_recovery.rs::an_incomplete_torn_tail_is_rejected_instead_of_replayed_or_truncated"
+      ],
+      "designOperation": "process_kill_and_torn_tail_recovery",
+      "mappingClass": "owner_native",
+      "sourcePathExists": true,
+      "authority": "none_minted_by_execution_owner"
+    },
+    {
+      "operation": "exact_plan_native_app_server_execution",
+      "state": "product_composed_unique_writer_actor_exact_head_qualification_pending",
+      "nativeSymbol": "AppServerModelDriver::run_authorized",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
+      "tests": [
+        "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs::success_requires_both_matching_completion_and_final_ready_owner"
+      ],
+      "designOperation": "exact_plan_native_app_server_execution",
+      "mappingClass": "owner_native",
+      "sourcePathExists": true,
+      "authority": "none_minted_by_execution_owner"
+    },
+    {
+      "operation": "unique_writer_effect_reconciler_actor_boundary",
+      "state": "product_composed_exact_head_qualification_pending",
+      "nativeSymbol": "NativeJournalWriterActor",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/control_actor.rs",
+      "tests": [
+        "codex-rs/hepta-infer-worker-host/src/control_actor_compat_tests.rs::one_writer_owns_the_journal_and_effect_capability_is_one_shot"
+      ],
+      "designOperation": "unique_writer_effect_reconciler_actor_boundary",
+      "mappingClass": "owner_native",
+      "sourcePathExists": true,
+      "authority": "none_minted_by_execution_owner"
+    },
+    {
+      "operation": "external_encrypted_output",
+      "state": "product_composed_vault_target_qualification_pending",
+      "nativeSymbol": "UnixOutputProtector::protect",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/unix_output_protector.rs",
+      "tests": [
+        "codex-rs/hepta-infer-worker-host/src/unix_output_protector_boundary_tests.rs::vault_uid_socket_and_parent_permissions_fail_closed",
+        "codex-rs/hepta-infer-worker-host/src/unix_output_protector_boundary_tests.rs::vault_config_rejects_symlinks_hardlinks_and_oversize_files"
+      ],
+      "designOperation": "external_encrypted_output",
+      "mappingClass": "owner_native",
+      "sourcePathExists": true,
+      "authority": "none_minted_by_execution_owner"
+    },
+    {
+      "operation": "signed_operator_recovery_cli",
+      "state": "product_composed_unique_writer_actor",
+      "nativeSymbol": "NativeReconcilerActor::new",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-recovery.rs",
+      "tests": [
+        "codex-rs/hepta-infer-core/tests/recovery_after_expiry.rs::fresh_rotated_terminal_receipt_releases_after_dispatch_lease_expiry"
+      ],
+      "designOperation": "signed_operator_recovery_cli",
+      "mappingClass": "owner_native",
+      "sourcePathExists": true,
+      "authority": "none_minted_by_execution_owner"
+    },
+    {
+      "operation": "bounded_maintenance_cli",
+      "state": "product_composed_unique_writer_actor",
+      "nativeSymbol": "control.compact()",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-maintenance.rs",
+      "tests": [
+        "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::compaction_preserves_indeterminate_capacity_and_exact_state"
+      ],
+      "designOperation": "bounded_maintenance_cli",
+      "mappingClass": "owner_native",
+      "sourcePathExists": true,
+      "authority": "none_minted_by_execution_owner"
+    },
+    {
+      "operation": "native_control_metrics",
+      "state": "source_implemented",
+      "nativeSymbol": "DurableInferenceControl::native_metrics",
+      "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_control_b.rs",
+      "tests": [
+        "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::compaction_preserves_indeterminate_capacity_and_exact_state"
+      ],
+      "designOperation": "native_control_metrics",
+      "mappingClass": "owner_native",
+      "sourcePathExists": true,
+      "authority": "none_minted_by_execution_owner"
+    },
+    {
+      "operation": "operator_slo_alert_policy",
+      "state": "documentation_implemented_runtime_export_pending",
+      "nativeSymbol": "metricSource",
+      "sourcePath": "docs/modules/inference.control/SLO_ALERTS.json",
+      "tests": [
+        "scripts/test_hepta_inference_current_state.py"
+      ],
+      "designOperation": "operator_slo_alert_policy",
+      "mappingClass": "owner_native",
+      "sourcePathExists": true,
+      "authority": "none_minted_by_execution_owner"
+    },
+    {
+      "operation": "bounded_terminal_admission_and_fifo_fairness",
+      "state": "source_implemented_execution_pending",
+      "nativeSymbol": "send_terminal",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/actor_mailbox.rs",
+      "tests": [
+        "codex-rs/hepta-infer-worker-host/src/actor_mailbox_boundary_tests.rs::terminal_reserve_preserves_fifo_and_shutdown_when_every_quota_is_full",
+        "codex-rs/hepta-infer-worker-host/src/actor_mailbox_boundary_tests.rs::mixed_fifo_contention_curve",
+        "codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs::real_writer_mixed_query_terminal_contention_curve"
+      ],
+      "designOperation": "bounded_terminal_admission_and_fifo_fairness",
+      "mappingClass": "owner_native",
+      "sourcePathExists": true,
+      "authority": "none_minted_by_execution_owner"
+    },
+    {
+      "operation": "accepted_response_loss_and_post_commit_observation",
+      "state": "source_implemented_execution_pending",
+      "nativeSymbol": "receive_value",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/control_actor.rs",
+      "tests": [
+        "codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs::accepted_deadline_does_not_cancel_commit_or_license_duplicate_dispatch",
+        "codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs::lost_terminal_reply_remains_durable_and_survives_restart",
+        "codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs::signed_post_effect_terminal_reply_loss_keeps_exact_durable_result",
+        "codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs::caller_cancellation_after_admission_cannot_erase_the_owner_command",
+        "codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs::shutdown_deadline_retains_lock_until_the_real_owner_exits"
+      ],
+      "designOperation": "accepted_response_loss_and_post_commit_observation",
+      "mappingClass": "owner_native",
+      "sourcePathExists": true,
+      "authority": "none_minted_by_execution_owner"
+    },
+    {
+      "operation": "immutable_observational_metrics",
+      "state": "source_implemented_execution_pending",
+      "nativeSymbol": "published_metrics",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/control_actor.rs",
+      "tests": [
+        "codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs::published_metrics_are_immutable_stale_and_do_not_queue_reads"
+      ],
+      "designOperation": "immutable_observational_metrics",
+      "mappingClass": "owner_native",
+      "sourcePathExists": true,
+      "authority": "none_minted_by_execution_owner"
+    }
+  ],
+  "claimBoundary": {
+    "implementedOperationMappingComplete": true,
+    "nativeSourceMappingComplete": true,
+    "repositoryControlledSourceBoundaryGapsClosed": false,
+    "sourceRootPresent": true,
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "targetHostQualification": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false
+  },
+  "repositoryControlledGaps": [
+    "obtain green exact-source-head and deterministic base-merge receipts for the final commit",
+    "retain native-host process-kill, disk-fault, torn-write, vault and App Server command records as CI artifacts",
+    "complete signed output-vault deletion confirmation rather than treating a maintenance receipt as deletion proof",
+    "export runtime metrics to the selected telemetry backend and qualify alert delivery",
+    "qualify host-selected mailbox, response and shutdown limits under real provider and storage contention",
+    "deliver last-published and queue metrics to the selected telemetry backend; cached observations are not authority"
+  ],
+  "externalEvidenceGates": [
+    "independent semantic and security review",
+    "selected target-host qualification with a real provider-compatible endpoint and output vault",
+    "operator acceptance, canary, activation, promotion and release"
+  ],
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs",
+      "nativeSymbol": "run_authorized"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
+      "nativeSymbol": "AppServerModelDriver::run_authorized"
+    }
+  ],
+  "sourceObjects": [
+    {
+      "path": "codex-rs/hepta-infer-core",
+      "object": "b8317ee8e47ca3fbbd3da63ee95688ecf8eafdc0"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/control_contracts.rs",
+      "object": "b15b233bf084a4282af93b8be1a49eb3d1cf56ed"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs",
+      "object": "21a8da6f0e401b699acce96b475c8a0ce6fcf50e"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_control_v2_control_b.rs",
+      "object": "6b41a073fa51fedd08ece5d4c5f5ffb5aced26bc"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_control_v2_recovery.rs",
+      "object": "f09713c5de7ba74e7e89ed7baa662e9acf854b6d"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs",
+      "object": "02b6f853341bcfda8ec537d9340995da4f0029d4"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/recovery_contracts.rs",
+      "object": "0abaf016d814214a6cbe041b64673a0220c4d287"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/tests/process_crash_recovery.rs",
+      "object": "f8214e7f27960a626defdaa55f18c96851836acd"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/tests/recovery_after_expiry.rs",
+      "object": "9e7c534abcf2afe1407f847a76f10b88303e8d9f"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host",
+      "object": "f47f6d4fe4ca88ddccd0512db354f9b066e6dfaf"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/actor_mailbox.rs",
+      "object": "1cae5a98ac9b8e85cc05fc638c44c98ecf1db16f"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/actor_mailbox_boundary_tests.rs",
+      "object": "76dd7e648f82d32a9c79ed86737829bd0e117ce8"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-maintenance.rs",
+      "object": "51f48af20d82bc4a554953420809c62336d67d10"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-recovery.rs",
+      "object": "90819ba94315dec505dea3f76b328eabed8256b4"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs",
+      "object": "d7a179fd9ebf9d54ad3b6c5854a1c3ed15525e40"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/control_actor.rs",
+      "object": "c61b31fa4c2589f093854feb2356f4db9398a8ce"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs",
+      "object": "3c8a6eb2d9b9b6bddac6cbdbae62178f8923f5a6"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/control_actor_compat_tests.rs",
+      "object": "155a905646c9d608a1797ba6e2f6b55cd6716540"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "object": "e96da1855228f1bb27c3aec7431631e5018e89ac"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
+      "object": "00ea489d22150c16399b9807f12a201d16cc0e20"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/unix_output_protector.rs",
+      "object": "e86555da993ed18b18983142c6509442bae3b8eb"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/unix_output_protector_boundary_tests.rs",
+      "object": "eabea5b9dda08fc67bd928b05c3dc79d85d7d4d2"
+    },
+    {
+      "path": "codex-rs/hepta-inferd",
+      "object": "803e2f4c6efc0dafbea8ea0beff338270b0d1b1b"
+    },
+    {
+      "path": "docs/modules/inference.control/SLO_ALERTS.json",
+      "object": "a66ab9e86700851005b91d5ccd0530d6461fa7de"
+    },
+    {
+      "path": "docs/modules/inference.control/TECHNICAL.md",
+      "object": "dc551107a335eb1b594465b75dcf5e2a10aadc5e"
+    },
+    {
+      "path": "scripts/test_hepta_inference_current_state.py",
+      "object": "66e6925347f49d81fa37baa6d1e6e5c981010c6b"
+    }
+  ]
+}
