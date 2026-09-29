@@ -3,6 +3,7 @@
 import copy
 import json
 import tempfile
+import tomllib
 import unittest
 from pathlib import Path
 from scripts.hepta_repository_surface import (
@@ -31,7 +32,9 @@ class RepositorySurfaceTests(unittest.TestCase):
         self.addCleanup(temp.cleanup)
         self.root = Path(temp.name)
         self.policy_text = (ROOT / POLICY_PATH).read_text()
-        self.write(POLICY_PATH, self.policy_text)
+        policy = tomllib.loads(self.policy_text)
+        for relative in policy["repositorySurface"]["canonicalRootMachineFiles"]:
+            self.write(relative, (ROOT / relative).read_text())
 
     def write(self, path, text):
         target = self.root / path
@@ -49,11 +52,20 @@ class RepositorySurfaceTests(unittest.TestCase):
         text = text.replace(
             "ordinaryWorkflowTimeoutMinutes = 15", "ordinaryWorkflowTimeoutMinutes = 18"
         )
+        text = text.replace(
+            "maximumActiveConvergencePrsPerCapability = 1",
+            "maximumActiveConvergencePrsPerCapability = 2",
+        )
+        text = text.replace(
+            'allowedDispositions = ["absorb", "supersede", "reference", "reject"]',
+            'allowedDispositions = ["absorb", "supersede", "reference", "reject", "archive"]',
+        )
         self.write(POLICY_PATH, text)
         policy = load_policy(self.root)
         self.assertEqual(policy["ordinaryFeedbackTargetMinutes"], 8)
         self.assertEqual(policy["ordinaryWorkflowTimeoutMinutes"], 18)
-        self.assertEqual(policy["maximumActiveConvergencePrsPerCapability"], 1)
+        self.assertEqual(policy["maximumActiveConvergencePrsPerCapability"], 2)
+        self.assertIn("archive", policy["allowedDispositions"])
 
     def test_budget_values_reject_aliases_unbounded_or_inverted_tiers(self):
         for value in ("true", "0", "361", "1.5", '"15"', "50"):
@@ -68,7 +80,7 @@ class RepositorySurfaceTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     load_policy(self.root)
 
-    def test_authority_and_duplicate_registry_policy_cannot_be_widened(self):
+    def test_authority_and_policy_shape_cannot_be_widened(self):
         for original, replacement in [
             (
                 "selfIterationReleaseAllowed = false",
@@ -80,12 +92,47 @@ class RepositorySurfaceTests(unittest.TestCase):
             ),
             (
                 '  "docs/modules/registry.toml",',
-                '  "docs/modules/registry.toml",\n  "docs/modules/SECOND.json",',
+                '  "docs/modules/registry.toml",\n  "docs/modules/registry.toml",',
+            ),
+            (
+                'allowedDispositions = ["absorb", "supersede", "reference", "reject"]',
+                'allowedDispositions = ["absorb", "bad value"]',
             ),
         ]:
             self.write(POLICY_PATH, self.policy_text.replace(original, replacement))
             with self.subTest(replacement=replacement), self.assertRaises(ValueError):
                 load_policy(self.root)
+
+    def test_reviewed_canonical_views_do_not_require_python_allowlist_edits(self):
+        relative = "docs/modules/ADDITIONAL_VIEW.json"
+        self.write(
+            relative, json.dumps({"schema": "hepta.additional-view.v1", "items": []})
+        )
+        policy_text = self.policy_text.replace(
+            '  "docs/modules/registry.toml",',
+            '  "docs/modules/registry.toml",\n  "docs/modules/ADDITIONAL_VIEW.json",',
+        )
+        self.write(POLICY_PATH, policy_text)
+        policy = load_policy(self.root)
+        self.assertIn(relative, policy["canonicalRootMachineFiles"])
+        self.assertEqual(self.forbidden([relative]), [])
+
+        matrix = json.loads((self.root / "docs/modules/CI_MATRIX.json").read_text())
+        self.write(relative, json.dumps({"schema": matrix["schema"], "items": []}))
+        with self.assertRaisesRegex(ValueError, "duplicate canonical machine schema"):
+            load_policy(self.root)
+
+    def test_reviewed_module_local_machine_name_uses_policy_not_source_constant(self):
+        policy_text = self.policy_text.replace(
+            'canonicalModuleLocalMachineFiles = ["module.toml"]',
+            'canonicalModuleLocalMachineFiles = ["module.toml", "owner.toml"]',
+        )
+        self.write(POLICY_PATH, policy_text)
+        relative = "docs/modules/example.readonly/owner.toml"
+        self.write(relative, 'schema = "hepta.example-owner.v1"\n')
+        policy = load_policy(self.root)
+        self.assertIn("owner.toml", policy["canonicalModuleLocalMachineFiles"])
+        self.assertEqual(self.forbidden([relative]), [])
 
     def test_explanation_and_single_module_manifest_are_allowed(self):
         self.assertEqual(

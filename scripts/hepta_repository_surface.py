@@ -15,13 +15,98 @@ from typing import Iterable
 
 ROOT = Path(__file__).resolve().parents[1]
 POLICY_PATH = "docs/modules/registry.toml"
-_REQUIRED_DISPOSITIONS = {"absorb", "supersede", "reference", "reject"}
-_REQUIRED_ROOT_MODULE_FILES = {
-    "docs/modules/CI_MATRIX.json",
-    "docs/modules/COMPILE_GRAPH.json",
-    "docs/modules/registry.toml",
-}
-_REQUIRED_LOCAL_MACHINE_FILES = {"module.toml"}
+
+
+def _unique_strings(value: object, label: str, *, maximum: int = 128) -> list[str]:
+    if (
+        not isinstance(value, list)
+        or not 1 <= len(value) <= maximum
+        or any(
+            not isinstance(item, str) or not item or item.strip() != item
+            for item in value
+        )
+        or len(value) != len(set(value))
+    ):
+        raise ValueError(f"{label} must be a bounded unique string list")
+    return value
+
+
+def _repository_path(value: str, label: str) -> PurePosixPath:
+    path = PurePosixPath(value)
+    if (
+        path.is_absolute()
+        or str(path) != value
+        or ".." in path.parts
+        or "\\" in value
+        or "\x00" in value
+    ):
+        raise ValueError(f"invalid {label}: {value!r}")
+    return path
+
+
+def _document_schema(path: Path) -> str:
+    try:
+        if path.suffix == ".json":
+
+            def pairs(items):
+                result = {}
+                for key, value in items:
+                    if key in result:
+                        raise ValueError("duplicate machine document key")
+                    result[key] = value
+                return result
+
+            document = json.loads(
+                path.read_text(encoding="utf-8"), object_pairs_hook=pairs
+            )
+        elif path.suffix == ".toml":
+            document = tomllib.loads(path.read_text(encoding="utf-8"))
+        else:
+            raise ValueError("canonical machine documents must be JSON or TOML")
+    except (OSError, ValueError, tomllib.TOMLDecodeError) as error:
+        raise ValueError(
+            f"invalid canonical machine document {path}: {error}"
+        ) from error
+    schema = document.get("schema") if isinstance(document, dict) else None
+    if not isinstance(schema, str) or not schema or len(schema) > 256:
+        raise ValueError(f"canonical machine document lacks a bounded schema: {path}")
+    return schema
+
+
+def _canonical_root_files(value: object, root: Path) -> set[str]:
+    values = _unique_strings(value, "canonicalRootMachineFiles", maximum=64)
+    if POLICY_PATH not in values:
+        raise ValueError("canonicalRootMachineFiles must retain its policy owner")
+    schemas = set()
+    for item in values:
+        relative = _repository_path(item, "canonical root machine path")
+        if relative.parent != PurePosixPath("docs/modules"):
+            raise ValueError("canonical root machine files must stay in docs/modules")
+        target = root / relative
+        if (
+            target.is_symlink()
+            or not target.is_file()
+            or not target.resolve().is_relative_to(root.resolve())
+        ):
+            raise ValueError(
+                f"canonical root machine file is missing or unsafe: {item}"
+            )
+        schema = _document_schema(target)
+        if schema in schemas:
+            raise ValueError(f"duplicate canonical machine schema: {schema}")
+        schemas.add(schema)
+    return set(values)
+
+
+def _canonical_local_files(value: object) -> set[str]:
+    values = _unique_strings(value, "canonicalModuleLocalMachineFiles", maximum=32)
+    if "module.toml" not in values:
+        raise ValueError("canonicalModuleLocalMachineFiles must retain module.toml")
+    for item in values:
+        path = _repository_path(item, "module-local machine filename")
+        if len(path.parts) != 1 or path.suffix not in {".json", ".toml"}:
+            raise ValueError("module-local machine entries must be JSON/TOML filenames")
+    return set(values)
 
 
 def load_policy(root: Path = ROOT) -> dict[str, Any]:
@@ -30,6 +115,8 @@ def load_policy(root: Path = ROOT) -> dict[str, Any]:
         document = tomllib.loads(path.read_text(encoding="utf-8"))
     except (OSError, tomllib.TOMLDecodeError) as error:
         raise ValueError(f"invalid convergence policy {path}: {error}") from error
+    if document.get("schema") != "hepta.module-manifest-registry.v1":
+        raise ValueError("unsupported module manifest registry policy")
 
     convergence = document.get("convergence")
     surface = document.get("repositorySurface")
@@ -37,18 +124,20 @@ def load_policy(root: Path = ROOT) -> dict[str, Any]:
         raise ValueError(
             "registry.toml must define [convergence] and [repositorySurface]"
         )
-    if convergence.get("maximumActiveConvergencePrsPerCapability") != 1:
-        raise ValueError("exactly one active convergence PR per capability is required")
+    maximum_prs = convergence.get("maximumActiveConvergencePrsPerCapability")
+    if type(maximum_prs) is not int or not 1 <= maximum_prs <= 16:
+        raise ValueError(
+            "active convergence PR budget must be a bounded positive integer"
+        )
     if convergence.get("supersededDispositionRequired") is not True:
         raise ValueError("superseded PR disposition must remain mandatory")
-    dispositions = convergence.get("allowedDispositions")
-    if (
-        not isinstance(dispositions, list)
-        or set(dispositions) != _REQUIRED_DISPOSITIONS
+    dispositions = _unique_strings(
+        convergence.get("allowedDispositions"), "allowedDispositions", maximum=16
+    )
+    if any(
+        re.fullmatch(r"[a-z][a-z0-9_-]{0,63}", value) is None for value in dispositions
     ):
-        raise ValueError(
-            "convergence dispositions must be absorb/supersede/reference/reject"
-        )
+        raise ValueError("convergence dispositions must be bounded identifiers")
     required_false = (
         "ordinaryExactSourceMapRequired",
         "ordinaryProseMetricsRequired",
@@ -68,8 +157,8 @@ def load_policy(root: Path = ROOT) -> dict[str, Any]:
         "statefulWorkflowTimeoutMinutes",
         "architectureDeepTimeoutMinutes",
     )
-    expected_minutes = {key: convergence.get(key) for key in minute_keys}
-    values = list(expected_minutes.values())
+    budgets = {key: convergence.get(key) for key in minute_keys}
+    values = list(budgets.values())
     if any(type(value) is not int or not 1 <= value <= 360 for value in values):
         raise ValueError(
             "CI cost budgets must be positive whole minutes within hosted job bounds"
@@ -83,31 +172,17 @@ def load_policy(root: Path = ROOT) -> dict[str, Any]:
             "new automatic or privileged workflow files must require integration review"
         )
 
-    allowed_root = surface.get("canonicalRootMachineFiles")
-    allowed_local = surface.get("canonicalModuleLocalMachineFiles")
-    if (
-        not isinstance(allowed_root, list)
-        or any(not isinstance(value, str) or not value for value in allowed_root)
-        or set(allowed_root) != _REQUIRED_ROOT_MODULE_FILES
-        or len(allowed_root) != len(_REQUIRED_ROOT_MODULE_FILES)
-    ):
-        raise ValueError("canonicalRootMachineFiles widened or drifted")
-    if (
-        not isinstance(allowed_local, list)
-        or set(allowed_local) != _REQUIRED_LOCAL_MACHINE_FILES
-        or len(allowed_local) != len(_REQUIRED_LOCAL_MACHINE_FILES)
-    ):
-        raise ValueError(
-            "module.toml must remain the only module-local machine manifest"
-        )
-
+    allowed_root = _canonical_root_files(surface.get("canonicalRootMachineFiles"), root)
+    allowed_local = _canonical_local_files(
+        surface.get("canonicalModuleLocalMachineFiles")
+    )
     return {
-        "maximumActiveConvergencePrsPerCapability": 1,
-        "allowedDispositions": sorted(_REQUIRED_DISPOSITIONS),
-        **expected_minutes,
+        "maximumActiveConvergencePrsPerCapability": maximum_prs,
+        "allowedDispositions": dispositions,
+        **budgets,
         "newAutomaticOrPrivilegedWorkflowFilesAllowed": False,
-        "canonicalRootMachineFiles": set(allowed_root),
-        "canonicalModuleLocalMachineFiles": set(allowed_local),
+        "canonicalRootMachineFiles": allowed_root,
+        "canonicalModuleLocalMachineFiles": allowed_local,
     }
 
 
@@ -254,7 +329,10 @@ def forbidden_additions(
         elif value.startswith("docs/modules/"):
             if value in policy["canonicalRootMachineFiles"] or path.suffix == ".md":
                 continue
-            if len(path.parts) == 4 and path.name == "module.toml":
+            if (
+                len(path.parts) == 4
+                and path.name in policy["canonicalModuleLocalMachineFiles"]
+            ):
                 continue
             try:
                 schema = path.suffix == ".json" and is_contract_schema(
