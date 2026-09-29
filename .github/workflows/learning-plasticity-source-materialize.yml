@@ -7,6 +7,11 @@ on:
       - feat/learning-plasticity-product-closure-20260928
     paths:
       - ".github/workflows/learning-plasticity-source-materialize.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/learning-plasticity-source-materialize.yml"
   workflow_dispatch:
 
 permissions:
@@ -18,6 +23,8 @@ concurrency:
 
 env:
   RUST_BACKTRACE: "1"
+  MATERIALIZE_BRANCH: ${{ github.head_ref || github.ref_name }}
+  MATERIALIZE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
 jobs:
   materialize:
@@ -27,7 +34,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.ref_name }}
+          ref: ${{ env.MATERIALIZE_SHA }}
           fetch-depth: 0
           persist-credentials: true
 
@@ -35,7 +42,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD)" = "$MATERIALIZE_SHA"
           test "$(git hash-object scripts/.learning_plasticity_runtime_materializer.part00)" = "0a3e77db906b659595d28bfaf3d61764365df928"
           test "$(git hash-object scripts/.learning_plasticity_runtime_materializer.part01)" = "a36d920b0e85769b92ff275d9fe01477d2459ede"
           test "$(git hash-object scripts/.learning_plasticity_runtime_materializer.part02)" = "2c86ef886003b445b7662fcb6ed38cf2bb52be24"
@@ -107,4 +114,4 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "feat(plasticity): bound runtime resources and lifecycle"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+          git push origin "HEAD:${MATERIALIZE_BRANCH}"
