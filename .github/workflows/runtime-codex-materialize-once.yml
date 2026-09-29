@@ -15,6 +15,7 @@ on:
       - scripts/runtime-codex-cleanup-migration.py
       - scripts/runtime-codex-storage-fixup.py
       - scripts/runtime-codex-terminal-outbox-migration.py
+      - scripts/runtime-codex-product-executor-migration.py
       - scripts/runtime-codex-process-crash-migration.py
       - scripts/runtime-codex-qualification-fixup.py
       - scripts/runtime-codex-final-closure.py
@@ -30,8 +31,8 @@ concurrency:
 
 jobs:
   materialize:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -57,6 +58,7 @@ jobs:
             scripts/runtime-codex-cleanup-migration.py
             scripts/runtime-codex-storage-fixup.py
             scripts/runtime-codex-terminal-outbox-migration.py
+            scripts/runtime-codex-product-executor-migration.py
             scripts/runtime-codex-process-crash-migration.py
             scripts/runtime-codex-qualification-fixup.py
             scripts/runtime-codex-final-closure.py
@@ -71,13 +73,17 @@ jobs:
           (
             cd codex-rs
             cargo fmt --all
+            cargo test -p codex-hepta-infer-worker-host --lib --no-run
+            cargo test -p codex-hepta-agentd --test runtime_codex_product_e2e --no-run
           )
           git diff --check
           git status --short
       - name: Commit immutable source and map-only projection
         shell: bash
         env:
-          BRANCH: codex/runtime-codex-final-convergence-20260929-r3
+          WORK_BRANCH: codex/runtime-codex-final-convergence-20260929-r3
+          TARGET_BRANCH: codex/runtime-codex-full-convergence-20260929
+          TARGET_EXPECTED_SHA: fa2dc24bcfddb4658890675b951a9702c629f542
         run: |
           set -euo pipefail
           git config user.name 'runtime.codex exact-head materializer'
@@ -104,5 +110,8 @@ jobs:
           fi
 
           git push \
-            --force-with-lease="refs/heads/${BRANCH}:${GITHUB_SHA}" \
-            origin "HEAD:refs/heads/${BRANCH}"
+            --force-with-lease="refs/heads/${WORK_BRANCH}:${GITHUB_SHA}" \
+            --force-with-lease="refs/heads/${TARGET_BRANCH}:${TARGET_EXPECTED_SHA}" \
+            origin \
+            "HEAD:refs/heads/${WORK_BRANCH}" \
+            "HEAD:refs/heads/${TARGET_BRANCH}"
