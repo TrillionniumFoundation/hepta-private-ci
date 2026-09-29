@@ -15,7 +15,7 @@ use crate::wire::CANONICAL_PROJECTION_COMPARISON_V1;
 use crate::wire::CognitiveContractV1;
 use crate::wire::ContractDigestProfileV1;
 use crate::wire::canonical_contract_digest_bound_v1;
-use crate::wire::canonical_contract_digest_v1;
+use crate::wire::canonical_contract_digests_v1;
 use crate::wire::decode_validated_wire_v1;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -55,8 +55,11 @@ impl CanonicalConsumerBindingV1 {
         }
         let payload =
             decode_validated_wire_v1::<T>(canonical_wire).map_err(|error| error.violation())?;
-        let frozen_digest = canonical_contract_digest_v1(payload.as_inner())
-            .map_err(|error| error.violation())?;
+        // Reuse only the checked canonical encoding of this received payload.
+        // Its historical and schema-bound digests remain different profiles;
+        // neither is evidence of current owner authorization.
+        let (frozen_digest, observed_semantic_digest) =
+            canonical_contract_digests_v1(payload.as_inner()).map_err(|error| error.violation())?;
         if frozen_digest != self.canonical_payload_sha256.digest() {
             return Err(violation(
                 ContractErrorCodeV1::DigestMismatch,
@@ -65,8 +68,6 @@ impl CanonicalConsumerBindingV1 {
             ));
         }
         let expected_semantic_digest = canonical_contract_digest_bound_v1(expected.as_inner())
-            .map_err(|error| error.violation())?;
-        let observed_semantic_digest = canonical_contract_digest_bound_v1(payload.as_inner())
             .map_err(|error| error.violation())?;
         let parity = if expected.as_inner() == payload.as_inner() {
             CanonicalParityV1::Matched
