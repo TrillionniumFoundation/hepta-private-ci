@@ -479,14 +479,18 @@ model in Agentd, migrate live V1 state, or grant calibration or activation trust
 
 `decision_cell_calibration.py` fits the existing scalar support predicate to the
 complete typed decision: action, applicable target, disposition and postcondition.
-An accepted OOD row is an error even when the remaining labels match. The OOD
-threshold is frozen first; confidence selection evaluates the exact intersection
-of confidence and OOD acceptance, so rejected rows cannot dilute supported error.
-Only the separate calibration partition is used, never test/native outcomes.
+An accepted OOD row is an error even when the remaining labels match. The joint
+threshold frontier evaluates complete supported decisions while preserving both
+the marginal OOD false-accept cap and supported-error cap. Rejected rows cannot
+dilute supported error. Only the separate calibration partition is used, never
+test/native outcomes. See the current [support calibration contract](../../../docs/modules/neuron.runtime/SUPPORT_CALIBRATION.md)
+for the bounded search, deterministic tie breaks and frozen evaluation design.
 
 The package-local profile is
-`hepta.decision-cell-joint-support-calibration.v1`. It keeps the empirical 5% pilot
-error cap and records supported count, coverage, joint error and feasibility.
+`hepta.decision-cell-joint-support-calibration.v2`. It keeps both empirical 5%
+pilot error caps and records supported count, coverage, joint error and feasibility.
+This supersedes the v1 sequential fit only for new artifacts; retained v1 receipts
+and thresholds are not reinterpreted as executions of the new policy.
 Those empirical observations neither establish independence nor issue calibrated
 trust. Marginal confidence/action and OOD diagnostics retain their old meanings;
 they must not be substituted for supported complete-decision risk.
@@ -509,3 +513,10 @@ old receipts remain old evidence. No wire registration or durable owner is added
 wrong non-action heads, missing populations, accepted OOD errors, threshold ties
 and saved-artifact consumption by the actual shared tensor graph. Synthetic test
 fixtures establish regression behavior, not model quality or prospective efficacy.
+
+The frontier regressions include an independent exhaustive oracle over 512 seeded
+fixture panels and saved-safetensors consumption tests. They verify the fitting
+algorithm and runtime predicate, not independent calibration trust. The current
+[teacher qualification contract](../../../docs/modules/neuron.runtime/TEACHER_QUALIFICATION.md)
+defines typed Gateway diagnostics, native-transport identity, execution isolation
+and separate account-specific training-data admission.
