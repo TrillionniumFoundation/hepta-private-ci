@@ -139,10 +139,15 @@ impl FileBackedFreshnessOracleV1 {
         Self { path, verifier }
     }
 
-    fn read(
+    /// Read one authenticated file image for a composition snapshot, without
+    /// retaining it across calls. Stage/final-use freshness still reopens it.
+    pub(crate) fn current_owners(
         &self,
-        requested: &StableId,
-    ) -> Result<CurrentOwnerStateV1, CanonicalIntelligenceError> {
+        requested_owners: &[StableId],
+    ) -> Result<Vec<CurrentOwnerStateV1>, CanonicalIntelligenceError> {
+        let Some(requested) = requested_owners.first() else {
+            return Ok(Vec::new());
+        };
         validate_authority_file_path(&self.path, requested)?;
         let metadata = std::fs::metadata(&self.path)
             .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
@@ -151,8 +156,21 @@ impl FileBackedFreshnessOracleV1 {
                 requested.clone(),
             ));
         }
-        let bytes = std::fs::read(&self.path)
+        // Bound the actual read as well as the metadata observation: an atomic
+        // replacement or concurrent writer must not turn this into an unbounded read.
+        use std::io::Read;
+        let mut bytes = Vec::new();
+        std::fs::File::open(&self.path)
+            .and_then(|file| {
+                file.take(MAX_INTELLIGENCE_AUTHORITY_FILE_BYTES + 1)
+                    .read_to_end(&mut bytes)
+            })
             .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
+        if bytes.len() as u64 > MAX_INTELLIGENCE_AUTHORITY_FILE_BYTES {
+            return Err(CanonicalIntelligenceError::FreshnessUnavailable(
+                requested.clone(),
+            ));
+        }
         let file: IntelligenceAuthorityFileV1 = serde_json::from_slice(&bytes)
             .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
         verify_authority_file(&file, &self.verifier, requested)?;
@@ -178,29 +196,42 @@ impl FileBackedFreshnessOracleV1 {
                 ));
             }
         }
-        let owner = seen
-            .remove(requested)
-            .ok_or_else(|| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
-        let generation = Generation::new(owner.generation)
-            .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
-        let implementation_digest = Digest32::from_str(&owner.implementation_digest)
-            .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
-        let key_digest = Digest32::from_str(&owner.key_digest)
-            .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
-        if implementation_digest.is_zero() || key_digest.is_zero() || owner.key_epoch == 0 {
-            return Err(CanonicalIntelligenceError::FreshnessUnavailable(
-                requested.clone(),
-            ));
+        let mut states = Vec::with_capacity(requested_owners.len().min(seen.len()));
+        for requested in requested_owners {
+            let owner = seen.remove(requested).ok_or_else(|| {
+                CanonicalIntelligenceError::FreshnessUnavailable(requested.clone())
+            })?;
+            let generation = Generation::new(owner.generation)
+                .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
+            let implementation_digest = Digest32::from_str(&owner.implementation_digest)
+                .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
+            let key_digest = Digest32::from_str(&owner.key_digest)
+                .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
+            if implementation_digest.is_zero() || key_digest.is_zero() || owner.key_epoch == 0 {
+                return Err(CanonicalIntelligenceError::FreshnessUnavailable(
+                    requested.clone(),
+                ));
+            }
+            states.push(CurrentOwnerStateV1 {
+                owner_id: requested.clone(),
+                generation,
+                implementation_digest,
+                key_digest,
+                key_epoch: owner.key_epoch,
+                authority_epoch: file.authority_epoch,
+                revocation_frontier_digest: frontier,
+            });
         }
-        Ok(CurrentOwnerStateV1 {
-            owner_id: requested.clone(),
-            generation,
-            implementation_digest,
-            key_digest,
-            key_epoch: owner.key_epoch,
-            authority_epoch: file.authority_epoch,
-            revocation_frontier_digest: frontier,
-        })
+        Ok(states)
+    }
+
+    fn read(
+        &self,
+        requested: &StableId,
+    ) -> Result<CurrentOwnerStateV1, CanonicalIntelligenceError> {
+        self.current_owners(std::slice::from_ref(requested))?
+            .pop()
+            .ok_or_else(|| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))
     }
 }
 
@@ -762,3 +793,7 @@ pub(crate) mod tests;
 #[cfg(test)]
 #[path = "intelligence_evaluation_tests.rs"]
 mod evaluation_tests;
+
+#[cfg(test)]
+#[path = "intelligence_owner_snapshot_tests.rs"]
+mod owner_snapshot_tests;

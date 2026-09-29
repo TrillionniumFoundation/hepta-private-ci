@@ -14,7 +14,6 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_agent_components::intelligence::CanonicalBudgetV1;
-use codex_hepta_agent_components::intelligence::CanonicalFreshnessOracleV1;
 use codex_hepta_agent_components::intelligence::CanonicalIntelligenceRunRequestV1;
 use codex_hepta_agent_components::intelligence::CanonicalIntelligenceSnapshotV1;
 use codex_hepta_agent_components::intelligence::CanonicalSnapshotRequestV1;
@@ -218,17 +217,19 @@ fn current_owner_bindings(
     authority_verifier: IntelligenceAuthorityVerifierV1,
     expected_epoch: u64,
 ) -> Result<(Vec<OwnerBindingV1>, Digest32), AgentdError> {
-    let mut oracle = FileBackedFreshnessOracleV1::new(authority_file, authority_verifier);
-    let mut states = Vec::with_capacity(REQUIRED_OWNERS.len());
-    for owner in REQUIRED_OWNERS {
-        let owner_id = id(owner)?;
-        let current = oracle
-            .current(&owner_id)
-            .map_err(|error| invalid(&format!("current {owner}: {error}")))?;
-        if current.authority_epoch != expected_epoch {
-            return Err(invalid("authority epoch differs from durable RunStart"));
-        }
-        states.push(current);
+    let oracle = FileBackedFreshnessOracleV1::new(authority_file, authority_verifier);
+    let owner_ids = REQUIRED_OWNERS
+        .into_iter()
+        .map(id)
+        .collect::<Result<Vec<_>, _>>()?;
+    let states = oracle
+        .current_owners(&owner_ids)
+        .map_err(|error| invalid(&format!("current owner snapshot: {error}")))?;
+    if states
+        .iter()
+        .any(|current| current.authority_epoch != expected_epoch)
+    {
+        return Err(invalid("authority epoch differs from durable RunStart"));
     }
     let frontier = states
         .first()
