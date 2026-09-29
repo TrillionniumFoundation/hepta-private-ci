@@ -8,6 +8,8 @@ The [2026-09-29 rejection and evidence hardening supplement](REJECTION_EVIDENCE_
 
 The [2026-09-29 fixed-candidate depth-evidence supplement](DEPTH_EVIDENCE_20260929.md) documents independent exact-head/merge execution for each of the five existing consumer packages, existing owner final-use paths, and actual bounded plus scheduled decoder fuzz campaigns. Its workflow artifacts remain execution evidence for named candidates, not compatibility retirement, product acceptance, activation or release.
 
+The [2026-09-29 five-consumer entrypoint and diagnostic hardening supplement](ENTRYPOINT_AND_DIAGNOSTIC_HARDENING_20260929.md) records payload-free textual propagation for existing binding errors and an exact ten-artifact pull-request matrix that rejects zero-test success for each reviewed normal-entrypoint module. It preserves the existing owners and does not promote consumer convergence or acceptance.
+
 The existing [IMPLEMENTATION_MAP.json](IMPLEMENTATION_MAP.json) is the status authority. [INVARIANTS.json](INVARIANTS.json) maps reviewed obligations to source, tests and required checks, and [INVARIANTS.md](INVARIANTS.md) is its generated human-readable projection. The invariant table is not a second completion ledger or a claim of exhaustive API inventory.
 
 `CanonicalShadowComparisonV1` is a raw digest-equality diagnostic only, even when its inputs match. Typed migration parity and compatibility-cutover evidence must use `CanonicalHandoffV1` over one explicit common semantic projection, followed by current owner revalidation at the physical-use boundary.
