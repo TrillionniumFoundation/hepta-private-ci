@@ -16,7 +16,7 @@ import re
 import stat
 
 MAX_RECEIPT_BYTES = 32768
-PROFILE = "hepta.model-native-evidence-evaluation.v2"
+PROFILE = "hepta.model-native-evidence-evaluation.v3"
 SHA = re.compile(r"(?!0{64}$)[0-9a-f]{64}\Z")
 GIT_SHA = re.compile(r"[0-9a-f]{40}\Z")
 SIZES = {"action": 6, "target": 4, "disposition": 6, "postcondition": 6, "ood": 2}
@@ -73,6 +73,9 @@ def _number(value) -> bool:
 
 def _choice(packet: dict) -> dict:
     """Independent reduction of the fixed diagnostic head profile, never policy selection."""
+    _require(type(packet) is dict and packet.get("schema") == "hepta.model-native-probe-input.v2",
+             "packet_schema_mismatch")
+    _require(type(packet.get("modelSupported")) is bool, "packet_support_shape")
     probabilities = packet["probabilities"]
     _require(type(probabilities) is dict and set(probabilities) == set(SIZES), "packet_head_shape")
     predicted = {}
@@ -85,7 +88,7 @@ def _choice(packet: dict) -> dict:
     confidence = min(probabilities[key][predicted[key]] for key in
                      ("action", "target", "disposition", "postcondition"))
     ood = probabilities["ood"][1]
-    abstained = (predicted["action"] != 2 or predicted["disposition"] != 0 or
+    abstained = (not packet["modelSupported"] or predicted["action"] != 2 or predicted["disposition"] != 0 or
                  predicted["postcondition"] != 2 or confidence < 0.95 or ood > 0.05)
     return {"predicted": predicted, "confidence": confidence, "ood": ood, "abstained": abstained}
 
@@ -120,6 +123,8 @@ def evaluate_native_receipt(path: Path, *, exit_code: int, timed_out: bool,
             _require(type(packet.get(key)) is str and choice.get(key) == packet[key], "native_request_mismatch")
         _require(SHA.fullmatch(packet["replySha256"]) is not None, "native_request_mismatch")
         reduced = _choice(packet)
+        _require(type(choice.get("modelSupported")) is bool and
+                 choice["modelSupported"] is packet["modelSupported"], "native_support_mismatch")
         for key in ("confidence", "ood"):
             _require(_number(choice.get(key)) and abs(choice[key] - reduced[key]) <= 1e-12,
                      "native_choice_mismatch")
@@ -135,7 +140,7 @@ def evaluate_native_receipt(path: Path, *, exit_code: int, timed_out: bool,
         else:
             _require(native.get("schema") == "hepta.native-x11-clipboard-qualification.v1",
                      "native_schema_mismatch")
-            _require(not reduced["abstained"] and choice.get("status") == "selected", "native_choice_mismatch")
+            _require(choice.get("status") == "selected", "native_choice_mismatch")
             selected = choice.get("targetIndex")
             _require(type(selected) is int and 0 <= selected < 4 and
                      selected == reduced["predicted"]["target"], "native_target_mismatch")
@@ -158,17 +163,20 @@ def evaluate_native_receipt(path: Path, *, exit_code: int, timed_out: bool,
             # Preserve the actual observation even when later cleanup or validation fails.
             result.update(status="observed", selected_target_index=selected, external_effect=True,
                           readback_matches_selected=True, model_receipt_bound=True,
+                          model_policy_respected=not reduced["abstained"],
                           frame_sha256=native["frameSha256"], outcome_digest=native["outcomeDigest"])
             checks = ("exactRetryReused", "changedIntentRejected", "observationAfterClose",
                       "writerCleanupObserved", "observerCleanupObserved", "changedPrincipalRejected")
             lifecycle_ok = (all(native.get(key) is True for key in checks) and
                             type(native.get("finalUseCalls")) is int and native["finalUseCalls"] == 1 and
                             _number(native.get("elapsedMicros")) and native["elapsedMicros"] >= 0)
-            result["task_passed"] = (exit_code == 0 and not timed_out and lifecycle_ok and
+            result["task_passed"] = (not reduced["abstained"] and exit_code == 0 and not timed_out and lifecycle_ok and
                                      not expected_ood and selected == expected_target)
-            if not lifecycle_ok:
+            if not reduced["abstained"] and not lifecycle_ok:
                 result["evidence_error"] = "native_lifecycle_incomplete"
-        expected_exit = 3 if reduced["abstained"] else 0
+            elif reduced["abstained"]:
+                result["evidence_error"] = "native_policy_violation"
+        expected_exit = 3 if choice["status"] == "abstained" else 0
         if timed_out or exit_code != expected_exit:
             result["evidence_error"] = "native_process_incomplete"
     except FileNotFoundError:

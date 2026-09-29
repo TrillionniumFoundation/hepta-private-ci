@@ -16,9 +16,9 @@ SOURCE = {"commit": "1" * 40, "tree": "2" * 40, "repository_root": "/not-product
 
 def packet_fixture():
     one = lambda size, index: [int(i == index) for i in range(size)]
-    return {"schema": "hepta.model-native-probe-input.v1", "requestId": "probe.one",
+    return {"schema": "hepta.model-native-probe-input.v2", "requestId": "probe.one",
             "replySha256": "a" * 64, "projectionSha256": "b" * 64,
-            "headManifestSha256": "c" * 64, "baseSnapshotDigest": "d" * 64,
+            "headManifestSha256": "c" * 64, "baseSnapshotDigest": "d" * 64, "modelSupported": True,
             "probabilities": {"action": one(6, 2), "target": one(4, 3),
                 "disposition": one(6, 0), "postcondition": one(6, 2), "ood": one(2, 0)},
             "targets": [{"referenceId": f"reference.{i}", "generation": 1, "text": f"nonsecret-{i}"} for i in range(4)]}
@@ -29,7 +29,7 @@ def receipt_fixture(packet):
     choice = {"status": "selected", "requestId": packet["requestId"],
         "replySha256": packet["replySha256"], "referenceId": packet["targets"][selected]["referenceId"],
         "text": packet["targets"][selected]["text"], "targetIndex": selected,
-        "confidence": 1, "ood": 0, "authorityGranted": False}
+        "confidence": 1, "ood": 0, "modelSupported": packet["modelSupported"], "authorityGranted": False}
     return {"schema": "hepta.native-x11-clipboard-qualification.v1",
         "source": {"commit": SOURCE["commit"], "tree": SOURCE["tree"], "dirty": False},
         **{key: "e" * 64 for key in ("frameSha256", "sourceActionDigest", "outcomeDigest", "executableSha256", "xvfbSha256")},
@@ -63,7 +63,7 @@ class NativeProbeEvidenceTests(unittest.TestCase):
         self.receipt = {"schema": "hepta.native-model-abstention.v1",
             "source": self.receipt["source"], "productionActivation": False, "externalEffect": False,
             "modelChoice": {"status": "abstained", "requestId": self.packet["requestId"],
-                "replySha256": self.packet["replySha256"], "authorityGranted": False,
+                "replySha256": self.packet["replySha256"], "modelSupported": self.packet["modelSupported"], "authorityGranted": False,
                 "predicted": {"action": 2, "target": 3, "disposition": 0, "postcondition": 2, "ood": 1},
                 "confidence": 1, "ood": 1}}
 
@@ -202,6 +202,71 @@ class NativeProbeEvidenceTests(unittest.TestCase):
                     self.receipt = receipt_fixture(self.packet); self.receipt["modelChoice"] = choice
                     code, ood = 0, False
                 self.write(); self.assertTrue(self.evaluate(code=code, ood=ood)["task_passed"])
+
+    def test_upstream_abstention_is_not_replaced_by_fixed_thresholds(self):
+        self.abstain()
+        self.packet["probabilities"]["ood"] = [1, 0]
+        self.packet["modelSupported"] = False
+        self.receipt["modelChoice"].update(modelSupported=False, ood=0)
+        self.receipt["modelChoice"]["predicted"]["ood"] = 0
+        self.write()
+        result = self.evaluate(code=3, ood=True)
+        self.assertTrue(result["task_passed"])
+        self.assertIs(result["external_effect"], False)
+
+    def test_observed_copy_after_support_denial_remains_an_effect_not_a_pass(self):
+        self.packet["modelSupported"] = False
+        self.receipt["modelChoice"]["modelSupported"] = False
+        self.write()
+        result = self.evaluate()
+        self.assertIs(result["external_effect"], True)
+        self.assertFalse(result["task_passed"])
+        self.assertFalse(result["model_policy_respected"])
+        self.assertEqual(result["evidence_error"], "native_policy_violation")
+
+    def test_support_substitution_and_truthy_flags_cannot_pass_evidence(self):
+        self.packet["modelSupported"] = False
+        self.write()
+        result = self.evaluate()
+        self.assertIsNone(result["external_effect"])
+        self.assertEqual(result["evidence_error"], "native_support_mismatch")
+        for support in [0, 1, None, "true", [], {}]:
+            with self.subTest(support=support):
+                self.packet["modelSupported"] = support
+                self.receipt["modelChoice"]["modelSupported"] = support
+                self.write()
+                self.assertFalse(self.evaluate()["task_passed"])
+        self.packet.pop("modelSupported")
+        self.write()
+        self.assertFalse(self.evaluate()["task_passed"])
+
+    def test_old_packet_schema_cannot_acquire_new_evaluation_semantics(self):
+        self.packet["schema"] = "hepta.model-native-probe-input.v1"
+        self.write()
+        result = self.evaluate()
+        self.assertFalse(result["task_passed"])
+        self.assertEqual(result["evidence_error"], "packet_schema_mismatch")
+
+    def test_model_support_veto_matches_real_javascript_consumer(self):
+        module = Path(__file__).resolve().parents[3] / "apps/hepta-native/qualification/model-decision.mjs"
+        command = ["node", "--input-type=module", "-e",
+            'import fs from "node:fs";const m=await import(process.argv[1]);console.log(JSON.stringify(m.clipboardChoiceFromModel(JSON.parse(fs.readFileSync(0,"utf8")),1)))', module.as_uri()]
+        for support in [False, True]:
+            self.packet = packet_fixture()
+            self.packet["modelSupported"] = support
+            reply = subprocess.run(command, input=json.dumps(self.packet), capture_output=True,
+                                   text=True, check=True, timeout=5)
+            choice = json.loads(reply.stdout)
+            self.assertEqual(choice["status"], "selected" if support else "abstained")
+            self.assertIs(choice["modelSupported"], support)
+            if support:
+                self.receipt = receipt_fixture(self.packet)
+            else:
+                self.receipt = {"schema": "hepta.native-model-abstention.v1", "modelChoice": choice,
+                    "source": {"commit": SOURCE["commit"], "tree": SOURCE["tree"], "dirty": False},
+                    "productionActivation": False, "externalEffect": False}
+            self.write()
+            self.assertTrue(self.evaluate(code=0 if support else 3, ood=not support)["task_passed"])
 
 
 if __name__ == "__main__":

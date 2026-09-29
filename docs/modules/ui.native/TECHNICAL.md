@@ -347,3 +347,17 @@ requires an explicitly authorized disposable X display and uses test-only
 backend/authorization ports. Its presence does not imply successful execution.
 The [native operating notes](../../../apps/hepta-native/README.md) retain clipboard
 lifetime, external-host assumptions and unresolved-stop handling.
+
+
+### Diagnostic model-support veto
+
+The optional model-to-X11 qualification path consumes
+`hepta.model-native-probe-input.v2`, including the bound worker's explicit boolean
+`modelSupported`. A denied model decision must abstain before Xvfb or the native
+binary actuator starts, even when the diagnostic probability thresholds would
+otherwise select a clipboard target. A true flag grants no final-use authority.
+Old local probe packets are not silently upgraded; ComputerActionIR bytes and the
+production native owner are unchanged. The independent native evidence evaluator
+retains a bound actual readback even after policy failure, while refusing a task
+pass or replay authority. The [qualification contract](../../../codex-rs/hepta-neuron/qualification/README.md#model-support-is-preserved-across-the-diagnostic-boundary)
+defines versions, negative cases and the distinction from calibrated OOD trust.

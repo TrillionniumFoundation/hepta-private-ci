@@ -59,8 +59,8 @@ function distribution(values) {
 
 export function clipboardChoiceFromModel(value, currentGeneration) {
   value = exact(value, ["schema", "requestId", "replySha256", "projectionSha256", "headManifestSha256",
-    "baseSnapshotDigest", "probabilities", "targets"]);
-  if (value.schema !== "hepta.model-native-probe-input.v1" || typeof value.requestId !== "string" ||
+    "baseSnapshotDigest", "modelSupported", "probabilities", "targets"]);
+  if (value.schema !== "hepta.model-native-probe-input.v2" || typeof value.requestId !== "string" ||
       value.requestId.length > 120 || !ID.test(value.requestId) ||
       !Number.isSafeInteger(currentGeneration) || currentGeneration < 1) {
     throw new TypeError("invalid probe identity");
@@ -68,6 +68,7 @@ export function clipboardChoiceFromModel(value, currentGeneration) {
   for (const key of ["replySha256", "projectionSha256", "headManifestSha256", "baseSnapshotDigest"]) {
     if (typeof value[key] !== "string" || !SHA.test(value[key])) throw new TypeError("invalid model binding digest");
   }
+  if (typeof value.modelSupported !== "boolean") throw new TypeError("invalid model support decision");
   const raw = exact(value.probabilities, Object.keys(SIZES));
   const probabilities = {}, predicted = {};
   for (const [key, size] of Object.entries(SIZES)) {
@@ -85,16 +86,17 @@ export function clipboardChoiceFromModel(value, currentGeneration) {
     }
     ids.add(target.referenceId);
   }
-  // Predeclared diagnostic policy, not production calibration or a learned veto.
+  // Model abstention is a mandatory veto. The diagnostic thresholds can only
+  // narrow its support; neither a true flag nor these thresholds grant authority.
   const confidence = Math.min(...["action", "target", "disposition", "postcondition"]
     .map((key) => probabilities[key][predicted[key]]));
   const ood = probabilities.ood[1];
-  if (predicted.action !== 2 || predicted.disposition !== 0 || predicted.postcondition !== 2 ||
+  if (!value.modelSupported || predicted.action !== 2 || predicted.disposition !== 0 || predicted.postcondition !== 2 ||
       confidence < 0.95 || ood > 0.05) {
-    return Object.freeze({ status: "abstained", requestId: value.requestId, replySha256: value.replySha256, predicted: Object.freeze(predicted), confidence, ood, authorityGranted: false });
+    return Object.freeze({ status: "abstained", requestId: value.requestId, replySha256: value.replySha256, predicted: Object.freeze(predicted), confidence, ood, modelSupported: value.modelSupported, authorityGranted: false });
   }
   const target = targets[predicted.target];
   return Object.freeze({ status: "selected", requestId: value.requestId,
     referenceId: target.referenceId, text: target.text, targetIndex: predicted.target,
-    confidence, ood, replySha256: value.replySha256, authorityGranted: false });
+    confidence, ood, replySha256: value.replySha256, modelSupported: value.modelSupported, authorityGranted: false });
 }

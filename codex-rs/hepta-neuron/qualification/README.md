@@ -294,8 +294,11 @@ select the action, target and postcondition; expected labels are used only by th
 subsequent evaluator. The effect is not preselected from the expected answer.
 
 `apps/hepta-native/qualification/model-decision.mjs` checks the closed probability
-shape, finite normalized values, current target generation and a predeclared
-confidence/OOD rule. Unsupported decisions abstain before starting Xvfb. An accepted
+shape, finite normalized values, current target generation, the model's explicit
+support decision, and a predeclared confidence/OOD rule. The model support flag is
+a mandatory veto: the fixed probe thresholds can only narrow support, never undo
+the calibrated tensor consumer's abstention. Unsupported decisions abstain before
+starting Xvfb. An accepted
 choice is encoded with the existing ComputerActionIR codec, executes through
 NativeShellRuntime/X11ClipboardPlatform and is independently read back by xclip.
 The source/model/reply/frame/outcome chain is retained. The probe cannot issue a
@@ -317,6 +320,34 @@ or replaced with an easier case. Real clipboard execution does not establish gen
 GUI perception, independent calibration, a signed product caller, durable native
 cross-process recovery, future-window efficacy or production activation. A missing
 Python environment/model snapshot is an execution blocker, not a passed probe.
+
+## Model support is preserved across the diagnostic boundary
+
+`hepta.model-native-probe-input.v2` carries a required boolean `modelSupported`,
+copied from the single-row `probabilities.supported` returned by the bound worker.
+The producer rejects missing, numeric, null, empty or multi-row support before
+native dispatch. The JavaScript consumer snapshots this own data property and
+requires it to be true **in addition to** its existing action, target, disposition,
+postcondition, confidence and OOD conditions. A true flag is not capability,
+calibration trust, backend-selection authority or permission for an OS effect.
+
+`hepta.model-native-evidence-evaluation.v3` independently recomputes the combined
+rule and binds the receipt's echoed support decision. Old v1 packets and receipts
+without explicit support remain historical; they cannot be relabelled as current
+support-preserving evidence. The underlying ComputerActionIR wire format and its
+registered codec are unchanged. These versions belong to the local experiment,
+not to a new public wire contract or durable owner.
+
+Task validity and physical observations stay separate. A bound clipboard readback
+observed despite a denied model decision remains `external_effect=true`, but has
+`model_policy_respected=false`, `task_passed=false` and `native_policy_violation`.
+It must not become an invented `NotApplied` outcome or a retry permission. Missing
+or substituted source/request/support/readback evidence remains indeterminate.
+Rejecting an in-domain positive task is safe abstention, not successful efficacy.
+
+Regressions use certain heads with explicit support denial, false-like/nonboolean
+values, old packets, substituted support, actual JS/Python policy agreement and
+post-effect policy failure. The fake-port tests do not establish real-model quality.
 
 ## Interrupted native panels retain negative evidence
 
@@ -387,3 +418,28 @@ output-training use and derived-weight distribution are distinct checks. The
 actual governing contract and any written permission must be retained by the
 appropriate owner. Public API model availability and repository-owner permission
 do not by themselves establish rights for a particular subscription/auth route.
+
+
+## Native Codex transport diagnostics
+
+The OpenClaw Gateway and the native Codex CLI are different transports. An
+`Unknown model` result from one is not a completed request on the other. A native
+probe uses the already authorized local Codex login, an isolated empty directory,
+a unique nonsecret nonce, read-only execution and no requested tools. Do not copy
+credentials, edit the user's configuration, silently switch models or retry an
+uncertain remote invocation. Capture the exact CLI version, requested model,
+command, exit code, JSONL events, final response digest and nonce match.
+
+When stdin is not interactive, explicitly close it (`</dev/null`) or supply the
+prompt through a closed pipe. A process still waiting for prompt input has not
+established a provider result. Record that local launch failure separately rather
+than labelling it a model rejection or silently replacing its evidence.
+
+A completed native nonce roundtrip is connectivity evidence for that invocation.
+When JSONL events omit a transport-owned observed model/provider identity, the
+`-m` argument remains **requested identity**, not proof of no fallback or provider
+qualification. No tool event observed is not an independently enforced tool-sandbox
+qualification. Retain the run/thread reference for diagnosis; do not ask the model
+to certify its own identity. Connectivity outputs stay outside the training corpus.
+The actual account agreement, permitted output use and distribution scope remain
+separate from successful login, CLI completion and repository administrator rights.

@@ -63,7 +63,10 @@ class NativeProbeIntegrationTests(unittest.TestCase):
                 return {"status": "observed", "projection_sha256": "b" * 64,
                     "observation": {"head_manifest_sha256": "c" * 64, "base_snapshot_digest": "d" * 64,
                         "base_forward_passes": 1, "latency_ns": 1,
-                        "probabilities": {k: [v] for k, v in probabilities.items()}}}
+                        "probabilities": {**{k: [v] for k, v in probabilities.items()},
+                            "supported": {"invalid_support_numeric": [1], "invalid_support_null": None,
+                                "invalid_support_empty": [], "invalid_support_batch": [True, True]}.get(
+                                mode, [False if mode == "model_abstention" else True])}}}
 
         transport.FrozenEncoderProcess = FakeChild
         module_path = Path(__file__).with_name("native_cell_probe.py")
@@ -81,14 +84,14 @@ class NativeProbeIntegrationTests(unittest.TestCase):
             self.assertEqual(hashlib.sha256(packet_path.read_bytes()).hexdigest(), command[4])
             receipt = receipt_fixture(packet)
             code = 0
-            if packet["probabilities"]["ood"][1] == 1:
+            if not packet["modelSupported"] or packet["probabilities"]["ood"][1] == 1:
                 code = 3
                 receipt = {"schema": "hepta.native-model-abstention.v1", "source": receipt["source"],
                     "productionActivation": False, "externalEffect": False,
                     "modelChoice": {"status": "abstained", "requestId": packet["requestId"],
-                        "replySha256": packet["replySha256"], "authorityGranted": False,
-                        "predicted": {"action": 2, "target": 3, "disposition": 0, "postcondition": 2, "ood": 1},
-                        "confidence": 1, "ood": 1}}
+                        "replySha256": packet["replySha256"], "modelSupported": packet["modelSupported"], "authorityGranted": False,
+                        "predicted": {"action": 2, "target": 3, "disposition": 0, "postcondition": 2, "ood": int(packet["probabilities"]["ood"][1])},
+                        "confidence": 1, "ood": packet["probabilities"]["ood"][1]}}
             if mode == "wrong_source":
                 receipt["source"]["commit"] = "f" * 40
             elif mode == "fake_abstention" and code == 3:
@@ -233,6 +236,28 @@ class NativeProbeIntegrationTests(unittest.TestCase):
                 if child.poll() is None:
                     os.killpg(child.pid, signal.SIGKILL)
                     child.wait()
+    def test_probe_preserves_model_abstention_instead_of_selecting_certain_heads(self):
+        result = self.run_probe("model_abstention")
+        self.assertFalse(result["passed"])
+        self.assertIsNone(result["execution_failure"])
+        self.assertEqual(result["actual_native_effects"], 0)
+        self.assertEqual(result["indeterminate_native_effects"], 0)
+        self.assertTrue(all(row["status"] == "abstained" for row in result["records"]))
+        self.assertFalse(result["records"][0]["task_passed"])
+        self.assertTrue(all(row["task_passed"] for row in result["records"][1:]))
+
+    def test_malformed_model_support_stops_before_native_dispatch(self):
+        for mode in ["invalid_support_numeric", "invalid_support_null",
+                     "invalid_support_empty", "invalid_support_batch"]:
+            with self.subTest(mode=mode):
+                result = self.run_probe(mode)
+                self.assertFalse(result["passed"])
+                self.assertEqual(result["execution_failure"]["phase"], "model_reply_validation")
+                self.assertEqual(result["actual_native_effects"], 0)
+                self.assertEqual(result["indeterminate_native_effects"], 0)
+                self.assertEqual([row["status"] for row in result["records"]],
+                                 ["execution_failed", "not_started", "not_started"])
+
 
 if __name__ == "__main__":
     unittest.main()

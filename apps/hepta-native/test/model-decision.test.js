@@ -2,9 +2,9 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { clipboardChoiceFromModel } from "../qualification/model-decision.mjs";
 const one = (n, i) => Array.from({ length: n }, (_, j) => j === i ? 1 : 0);
-const input = () => ({ schema: "hepta.model-native-probe-input.v1", requestId: "test.one",
+const input = () => ({ schema: "hepta.model-native-probe-input.v2", requestId: "test.one",
   replySha256: "a".repeat(64), projectionSha256: "b".repeat(64), headManifestSha256: "c".repeat(64),
-  baseSnapshotDigest: "d".repeat(64), probabilities: { action: one(6, 2), target: one(4, 3),
+  baseSnapshotDigest: "d".repeat(64), modelSupported: true, probabilities: { action: one(6, 2), target: one(4, 3),
     disposition: one(6, 0), postcondition: one(6, 2), ood: one(2, 0) },
   targets: Array.from({ length: 4 }, (_, i) => ({ referenceId: `reference.${i}`, generation: 1, text: `nonsecret-${i}` })) });
 
@@ -107,4 +107,39 @@ test("proxies are rejected before any reflective trap can run", () => {
     assert.throws(() => clipboardChoiceFromModel(value, 1), /data|array/);
     assert.equal(traps, 0);
   }
+});
+
+
+test("upstream model abstention vetoes otherwise certain clipboard decisions", () => {
+  const value = input(); value.modelSupported = false;
+  const choice = clipboardChoiceFromModel(value, 1);
+  assert.equal(choice.status, "abstained");
+  assert.equal(choice.modelSupported, false);
+  assert.equal(choice.confidence, 1);
+  assert.equal(choice.ood, 0);
+  assert.equal(choice.authorityGranted, false);
+});
+test("support is an explicit boolean, never a truthy value or an inferred default", () => {
+  for (const support of [0, 1, null, "true", [], {}, undefined]) {
+    const value = input(); value.modelSupported = support;
+    assert.throws(() => clipboardChoiceFromModel(value, 1), /support/);
+  }
+  const missing = input(); delete missing.modelSupported;
+  assert.throws(() => clipboardChoiceFromModel(missing, 1), /field/);
+});
+test("v1 packets cannot be silently reinterpreted with the new support contract", () => {
+  const value = input(); value.schema = "hepta.model-native-probe-input.v1";
+  assert.throws(() => clipboardChoiceFromModel(value, 1), /identity/);
+});
+test("support accessors are rejected without executing caller code", () => {
+  const value = input(); let calls = 0;
+  Object.defineProperty(value, "modelSupported", {get() {calls++; return true;}, enumerable: true});
+  assert.throws(() => clipboardChoiceFromModel(value, 1), /own data/);
+  assert.equal(calls, 0);
+});
+test("support true cannot bypass diagnostic thresholds or supply effect authority", () => {
+  const value = input(); value.probabilities.target = [.25, .25, .25, .25];
+  const choice = clipboardChoiceFromModel(value, 1);
+  assert.equal(choice.status, "abstained"); assert.equal(choice.modelSupported, true);
+  assert.equal(choice.authorityGranted, false);
 });

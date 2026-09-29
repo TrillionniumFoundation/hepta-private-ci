@@ -141,10 +141,14 @@ def probe(receipt_path: Path, model_path: Path, output: Path, count: int) -> dic
                         if not isinstance(values, list) or len(values) != 1 or not isinstance(values[0], list):
                             raise ValueError("expected one typed probability row")
                         probabilities[key] = values[0]
-                    packet = {"schema": "hepta.model-native-probe-input.v1", "requestId": request["request_id"],
+                    support = observed["probabilities"].get("supported")
+                    if type(support) is not list or len(support) != 1 or type(support[0]) is not bool:
+                        raise ValueError("expected one explicit model support decision")
+                    packet = {"schema": "hepta.model-native-probe-input.v2", "requestId": request["request_id"],
                         "replySha256": reply_digest, "projectionSha256": reply["projection_sha256"],
                         "headManifestSha256": expected["head_manifest_sha256"],
-                        "baseSnapshotDigest": expected["base_snapshot_digest"], "probabilities": probabilities,
+                        "baseSnapshotDigest": expected["base_snapshot_digest"], "modelSupported": support[0],
+                        "probabilities": probabilities,
                         "targets": [{"referenceId": f"clipboard.reference.{target}", "generation": 1,
                             "text": f"Hepta nonsecret selected target {target}: {text}"}
                             for target, text in enumerate(example.candidates)]}
