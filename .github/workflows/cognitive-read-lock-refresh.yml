@@ -61,10 +61,55 @@ jobs:
             --all-features \
             --filter-platform aarch64-unknown-linux-gnu >/dev/null
           cargo fmt --manifest-path codex-rs/Cargo.toml --all
-          git diff --check
+          git add -- codex-rs scripts/cognitive_read_evidence.py
+          python3 - <<'PY'
+          from __future__ import annotations
+
+          import json
+          from pathlib import Path
+          import subprocess
+
+          path = Path("docs/modules/cognitive.read/IMPLEMENTATION_MAP.json")
+          mapping = json.loads(path.read_text(encoding="utf-8"))
+
+          def git(*args: str) -> str:
+              return subprocess.check_output(["git", *args], text=True).strip()
+
+          staged_tree = git("write-tree")
+
+          def object_at(candidate_path: str) -> str:
+              return git("rev-parse", f"{staged_tree}:{candidate_path}")
+
+          for entry in mapping.get("sourceObjects", []):
+              entry["object"] = object_at(entry["path"])
+
+          exact = mapping.get("exactSourceEvidence")
+          if isinstance(exact, dict):
+              for entry in exact.get("entries", []):
+                  entry["blobSha"] = object_at(entry["path"])
+
+          for operation in mapping.get("operations", []):
+              source_path = operation.get("sourcePath")
+              if isinstance(source_path, str) and "sourceBlob" in operation:
+                  operation["sourceBlob"] = object_at(source_path)
+
+          for caller in mapping.get("productCallers", []):
+              source_path = caller.get("sourcePath")
+              if isinstance(source_path, str) and "blobSha" in caller:
+                  caller["blobSha"] = object_at(source_path)
+
+          head = git("rev-parse", "HEAD")
+          mapping["observedAtHead"] = {
+              "commit": head,
+              "tree": git("rev-parse", "HEAD^{tree}"),
+          }
+          path.write_text(json.dumps(mapping, indent=2) + "\n", encoding="utf-8")
+          PY
+          git add -- docs/modules/cognitive.read/IMPLEMENTATION_MAP.json
+          git diff --cached --check
           mkdir -p "$RUNNER_TEMP/cognitive-read-refresh"
-          git diff --binary > "$RUNNER_TEMP/cognitive-read-refresh/refresh.patch"
-          git diff --name-only > "$RUNNER_TEMP/cognitive-read-refresh/changed-files.txt"
+          git diff --cached --binary > "$RUNNER_TEMP/cognitive-read-refresh/refresh.patch"
+          git diff --cached --name-only > "$RUNNER_TEMP/cognitive-read-refresh/changed-files.txt"
           while IFS= read -r path; do
             test -n "$path" || continue
             mkdir -p "$RUNNER_TEMP/cognitive-read-refresh/$(dirname "$path")"
