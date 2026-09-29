@@ -140,8 +140,22 @@ jobs:
       - name: Refresh generated document projection
         run: python3 scripts/hepta-module-docs.py refresh-derived
 
+      - name: Prepare native build prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+
       - name: Install DotSlash
         uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+
+      - name: Expose DotSlash for integration tests
+        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
 
       - name: Resolve verified V8 artifacts
         env:
@@ -160,6 +174,14 @@ jobs:
       - name: Test experimental local profile
         working-directory: codex-rs
         run: cargo test --locked -p codex-hepta-infer-worker-host --features experimental-local-model
+
+      - name: Exercise real Agentd App Server event sequence
+        working-directory: codex-rs
+        run: |
+          cargo test --locked -p codex-hepta-infer-worker-host \
+            --features experimental-local-model \
+            real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone \
+            -- --nocapture --test-threads=1
 
       - name: Check and lint exact targets
         working-directory: codex-rs
