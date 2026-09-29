@@ -2,7 +2,7 @@ Request the branch-owned ui.native WAL and retirement-index source applicator.
 
 The write-capable lane checks out the exact target-branch base SHA, verifies the
 immutable capsule blob, applies only reviewed ui.native source/document paths,
-and publishes only after the pinned Rust and Python gates pass. A separate
-read-only ubuntu-slim lane exports the exact decoded patch and materialized source
-for independent inspection. This trigger branch is not implementation or
-qualification source. Refresh: 2026-09-29T12:34Z.
+and publishes only after the pinned Rust and Python gates pass. The read-only
+ubuntu-slim export uses a shallow exact-SHA checkout and emits the decoded patch,
+changed-path ledger, and materialized source for independent inspection. This
+trigger branch is not implementation or qualification source. Refresh: 2026-09-29T12:40Z.
