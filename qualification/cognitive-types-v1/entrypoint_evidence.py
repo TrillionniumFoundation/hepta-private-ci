@@ -60,10 +60,10 @@ def unique_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
 
 
 def load_json(path: Path) -> dict[str, Any]:
-    require(not path.is_symlink() and path.is_file(), f"missing or unsafe JSON: {path}")
     try:
+        raw = read_regular(path).decode("utf-8")
         value = json.loads(
-            path.read_text(encoding="utf-8"),
+            raw,
             object_pairs_hook=unique_object,
             parse_constant=reject_constant,
         )
@@ -71,14 +71,6 @@ def load_json(path: Path) -> dict[str, Any]:
         raise EvidenceError(f"invalid JSON in {path.name}: {error}") from error
     require(isinstance(value, dict), f"JSON root must be an object: {path.name}")
     return value
-
-
-def file_sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as stream:
-        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
 
 
 def read_regular(path: Path, maximum: int = MAX_LOG_BYTES) -> bytes:
@@ -443,11 +435,14 @@ def expected_artifacts(source: str, attempt: str, event: str) -> dict[str, tuple
 
 def load_receipt(directory: Path) -> dict[str, Any]:
     checksum = directory / "receipt.sha256"
-    require(not checksum.is_symlink() and checksum.is_file(), "missing receipt checksum")
-    expected = checksum.read_text(encoding="ascii").strip()
+    try:
+        expected = read_regular(checksum, 1024).decode("ascii").strip()
+    except UnicodeError as error:
+        raise EvidenceError("receipt checksum is not ASCII") from error
     require(SHA64.fullmatch(expected) is not None, "invalid receipt checksum")
     receipt_path = directory / "receipt.json"
-    require(file_sha256(receipt_path) == expected, "receipt checksum mismatch")
+    receipt_bytes = read_regular(receipt_path)
+    require(hashlib.sha256(receipt_bytes).hexdigest() == expected, "receipt checksum mismatch")
     return load_json(receipt_path)
 
 
