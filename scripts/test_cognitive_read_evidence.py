@@ -52,13 +52,39 @@ class EvidenceGateTests(unittest.TestCase):
     def test_complete_evidence_is_accepted(self):
         self.assertEqual(validate_evidence(self.evidence, self.required), [])
 
-    def test_pinned_nextest_multiline_version_is_accepted(self):
+    def test_pinned_nextest_structured_multiline_version_is_accepted(self):
+        commit = "d2e7b879fb79975e8b47a8e3ce569b651e6381c0"
         (self.evidence / "test-runner.log").write_text(
-            f"cargo-nextest {NEXTEST_VERSION} (revision)\n"
+            f"cargo-nextest {NEXTEST_VERSION} ({commit[:9]} 2025-08-25)\n"
             f"release: {NEXTEST_VERSION}\n"
+            f"commit-hash: {commit}\n"
+            "commit-date: 2025-08-25\n"
             "host: x86_64-unknown-linux-gnu\n"
         )
         self.assertEqual(validate_evidence(self.evidence, self.required), [])
+
+    def test_pinned_nextest_unstructured_multiline_version_is_rejected(self):
+        commit = "d2e7b879fb79975e8b47a8e3ce569b651e6381c0"
+        (self.evidence / "test-runner.log").write_text(
+            f"cargo-nextest {NEXTEST_VERSION} ({commit[:9]} 2025-08-25)\n"
+            f"release: {NEXTEST_VERSION}\n"
+            f"commit-hash: {commit}\n"
+            "commit-date: 2025-08-25\n"
+            "host: x86_64-unknown-linux-gnu\n"
+            "unexpected: injected evidence\n"
+        )
+        self.assertTrue(validate_evidence(self.evidence, self.required))
+
+    def test_pinned_nextest_mismatched_metadata_is_rejected(self):
+        commit = "d2e7b879fb79975e8b47a8e3ce569b651e6381c0"
+        (self.evidence / "test-runner.log").write_text(
+            f"cargo-nextest {NEXTEST_VERSION} ({commit[:9]} 2025-08-25)\n"
+            f"release: {NEXTEST_VERSION}\n"
+            f"commit-hash: {commit}\n"
+            "commit-date: 2025-08-26\n"
+            "host: x86_64-unknown-linux-gnu\n"
+        )
+        self.assertTrue(validate_evidence(self.evidence, self.required))
 
     def test_every_required_gate_must_have_a_command_log_and_exit(self):
         for label in self.required:
