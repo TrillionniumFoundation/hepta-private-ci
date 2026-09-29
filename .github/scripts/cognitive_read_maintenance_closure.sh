@@ -8,6 +8,7 @@ set -euo pipefail
 test "$GITHUB_HEAD_REF" = "$TARGET_BRANCH"
 test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
 test "$(git diff --name-only "$EXPECTED_PARENT" HEAD)" = ".github/workflows/cognitive-read-qualification.yml"
+input_head="$(git rev-parse HEAD)"
 
 python3 - <<'PY'
 from pathlib import Path
@@ -49,7 +50,6 @@ PY
 cargo fmt --manifest-path codex-rs/Cargo.toml \
   -p codex-hepta-cognitive-read \
   -p codex-hepta-agentd
-
 cargo check --manifest-path codex-rs/Cargo.toml \
   -p codex-hepta-cognitive-read \
   -p codex-hepta-agentd \
@@ -118,23 +118,61 @@ git config user.email 'cognitive-read-maintenance@users.noreply.github.com'
 git add -A
 git diff --cached --check
 git commit -m 'fix(cognitive.read): close exact qualification blockers'
+source_commit="$(git rev-parse HEAD)"
+source_tree="$(git rev-parse HEAD^{tree})"
 
 python3 scripts/hepta-implementation-maps.py migrate --module cognitive.read
 git add docs/modules/cognitive.read/IMPLEMENTATION_MAP.json
 git diff --cached --quiet || \
   git commit -m 'docs(cognitive.read): rebind repaired source evidence'
+final_commit="$(git rev-parse HEAD)"
+final_tree="$(git rev-parse HEAD^{tree})"
 
-candidate="$(git rev-parse HEAD)"
-tree="$(git rev-parse HEAD^{tree})"
 python3 scripts/verify-cognitive-read-map.py \
-  --expected-sha "$candidate" \
-  --expected-tree "$tree"
+  --expected-sha "$final_commit" \
+  --expected-tree "$final_tree"
 python3 scripts/cognitive_read_consumers.py \
-  --expected-sha "$candidate" \
+  --expected-sha "$final_commit" \
   --output "$RUNNER_TEMP/cognitive-read-consumers.json"
 python3 scripts/hepta-implementation-maps.py verify \
-  --expected-sha "$candidate" \
-  --expected-tree "$tree"
+  --expected-sha "$final_commit" \
+  --expected-tree "$final_tree"
 test -z "$(git status --porcelain --untracked-files=no)"
 
-git push origin "HEAD:$TARGET_BRANCH"
+out="$RUNNER_TEMP/cognitive-read-maintenance-artifact"
+rm -rf "$out"
+mkdir -p "$out/files"
+git diff --name-only --diff-filter=ACMRT "$input_head" "$final_commit" > "$out/files.txt"
+git diff --name-only --diff-filter=D "$input_head" "$final_commit" > "$out/deletions.txt"
+while IFS= read -r path; do
+  test -n "$path" || continue
+  mkdir -p "$out/files/$(dirname "$path")"
+  cp "$path" "$out/files/$path"
+done < "$out/files.txt"
+git diff --binary "$input_head" "$final_commit" > "$out/candidate.patch"
+INPUT_HEAD="$input_head" SOURCE_COMMIT="$source_commit" SOURCE_TREE="$source_tree" \
+FINAL_COMMIT="$final_commit" FINAL_TREE="$final_tree" python3 - <<'PY'
+import json
+import os
+from pathlib import Path
+
+out = Path(os.environ["RUNNER_TEMP"]) / "cognitive-read-maintenance-artifact"
+metadata = {
+    "schema": "hepta.cognitive.read.maintenance-artifact.v1",
+    "inputHead": os.environ["INPUT_HEAD"],
+    "sourceCommit": os.environ["SOURCE_COMMIT"],
+    "sourceTree": os.environ["SOURCE_TREE"],
+    "finalCommit": os.environ["FINAL_COMMIT"],
+    "finalTree": os.environ["FINAL_TREE"],
+    "activation": False,
+    "release": False,
+}
+(out / "metadata.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
+PY
+cp "$RUNNER_TEMP/cognitive-read-consumers.json" "$out/consumers.json"
+(
+  cd "$out"
+  find . -type f ! -name SHA256SUMS -print0 \
+    | sort -z \
+    | xargs -0 sha256sum > SHA256SUMS
+)
