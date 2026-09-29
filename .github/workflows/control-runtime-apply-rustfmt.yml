@@ -1,4 +1,4 @@
-name: control.runtime verified source publication
+name: control.runtime one-shot convergence finalizer
 
 on:
   pull_request:
@@ -6,21 +6,17 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/control-runtime-apply-rustfmt.yml'
+  workflow_dispatch:
 
 permissions:
-  actions: read
   contents: write
   pull-requests: read
 
 concurrency:
-  group: control-runtime-publish-${{ github.event.pull_request.number }}
+  group: control-runtime-finalizer-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 env:
-  EXPECTED_BOOTSTRAP_PARENT: c27675f7efbdde0f6b29ca5fcbf84196260f29ff
-  EXPECTED_ARTIFACT_SOURCE: 23474f7cf1103b92e1a978106081c5bd71c85c81
-  EXPECTED_ARTIFACT_ID: '11010773885'
-  EXPECTED_ARCHIVE_SHA256: b18843cb9d9aa519bf0d27518b2ee7eec05fecde89e86289e94ba895e34eeff6
   EXPECTED_BRANCH: codex/control-runtime-convergence-v1
   CARGO_INCREMENTAL: '0'
   CARGO_BUILD_JOBS: '2'
@@ -28,84 +24,39 @@ env:
   CARGO_PROFILE_DEV_DEBUG: '0'
 
 jobs:
-  verify-and-publish:
+  finalize:
     if: >-
       github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
-      github.event.pull_request.head.ref == 'codex/control-runtime-convergence-v1'
-    runs-on: macos-14
+      (github.event_name == 'workflow_dispatch' ||
+       github.event.pull_request.head.ref == 'codex/control-runtime-convergence-v1')
+    runs-on: ubuntu-24.04
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Verify exact bootstrap lineage and scope
+      - name: Acquire exact target-branch lease
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = "$EXPECTED_BOOTSTRAP_PARENT"
-          git merge-base --is-ancestor "$EXPECTED_ARTIFACT_SOURCE" HEAD
-          test "$(git ls-remote origin "refs/heads/$EXPECTED_BRANCH" | awk '{print $1}')" = "$(git rev-parse HEAD)"
-          cat > "$RUNNER_TEMP/expected-bootstrap-paths.txt" <<'EOF'
-          .github/workflows/control-runtime-apply-rustfmt.yml
-          codex-rs/hepta-control-plane/src/planner_journal_core.rs
-          codex-rs/hepta-control-plane/src/planner_journal_tests.rs
-          codex-rs/hepta-control-plane/src/planner_store_tests.rs
-          EOF
-          LC_ALL=C sort -o "$RUNNER_TEMP/expected-bootstrap-paths.txt" "$RUNNER_TEMP/expected-bootstrap-paths.txt"
-          git diff --name-only "$EXPECTED_ARTIFACT_SOURCE"..HEAD | LC_ALL=C sort > "$RUNNER_TEMP/actual-bootstrap-paths.txt"
-          diff -u "$RUNNER_TEMP/expected-bootstrap-paths.txt" "$RUNNER_TEMP/actual-bootstrap-paths.txt"
+          if [[ "$GITHUB_EVENT_NAME" == workflow_dispatch ]]; then
+            test "$GITHUB_REF_NAME" = "$EXPECTED_BRANCH"
+          fi
+          checked_head="$(git rev-parse HEAD)"
+          remote_head="$(git ls-remote origin "refs/heads/$EXPECTED_BRANCH" | awk '{print $1}')"
+          test -n "$remote_head"
+          test "$checked_head" = "$remote_head"
+          echo "CHECKED_HEAD=$checked_head" >> "$GITHUB_ENV"
 
-      - name: Download and verify exact rustfmt artifact
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Install native prerequisites
         run: |
-          set -euo pipefail
-          archive="$RUNNER_TEMP/control-runtime-rustfmt.zip"
-          bundle="$RUNNER_TEMP/control-runtime-rustfmt"
-          curl --fail --location --retry 3 \
-            --header "Authorization: Bearer $GH_TOKEN" \
-            --header "Accept: application/vnd.github+json" \
-            --header "X-GitHub-Api-Version: 2022-11-28" \
-            "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/$EXPECTED_ARTIFACT_ID/zip" \
-            --output "$archive"
-          echo "$EXPECTED_ARCHIVE_SHA256  $archive" | shasum -a 256 -c -
-          mkdir -p "$bundle"
-          unzip -q "$archive" -d "$bundle"
-          test "$(tr -d '\r\n' < "$bundle/source-head.txt")" = "$EXPECTED_ARTIFACT_SOURCE"
-          test -s "$bundle/rustfmt.patch"
-          test -d "$bundle/files"
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libcap-dev
 
-          cat > "$RUNNER_TEMP/expected-rustfmt-paths.txt" <<'EOF'
-          codex-rs/hepta-control-plane/src/bin/planner_store_process_fixture.rs
-          codex-rs/hepta-control-plane/src/lib.rs
-          codex-rs/hepta-control-plane/src/organ_fanout_recovery.rs
-          codex-rs/hepta-control-plane/src/organ_runtime.rs
-          codex-rs/hepta-control-plane/src/planner_execution.rs
-          codex-rs/hepta-control-plane/src/planner_execution_codec.rs
-          codex-rs/hepta-control-plane/src/planner_execution_core.rs
-          codex-rs/hepta-control-plane/src/planner_execution_durable.rs
-          codex-rs/hepta-control-plane/src/planner_execution_pending.rs
-          codex-rs/hepta-control-plane/src/planner_execution_recovery_tests.rs
-          codex-rs/hepta-control-plane/src/planner_execution_tests.rs
-          codex-rs/hepta-control-plane/src/planner_hardening_tests.rs
-          codex-rs/hepta-control-plane/src/planner_store.rs
-          codex-rs/hepta-control-plane/src/planner_store_core.rs
-          codex-rs/hepta-control-plane/tests/organ_fanout_receipts.rs
-          codex-rs/hepta-control-plane/tests/planner_durable_hardening.rs
-          codex-rs/hepta-control-plane/tests/planner_store_process_recovery.rs
-          EOF
-          LC_ALL=C sort -o "$RUNNER_TEMP/expected-rustfmt-paths.txt" "$RUNNER_TEMP/expected-rustfmt-paths.txt"
-          LC_ALL=C sort "$bundle/paths.txt" > "$RUNNER_TEMP/actual-rustfmt-paths.txt"
-          diff -u "$RUNNER_TEMP/expected-rustfmt-paths.txt" "$RUNNER_TEMP/actual-rustfmt-paths.txt"
-          rsync -a "$bundle/files/" "$GITHUB_WORKSPACE/"
-          git diff --name-only | LC_ALL=C sort > "$RUNNER_TEMP/applied-rustfmt-paths.txt"
-          diff -u "$RUNNER_TEMP/expected-rustfmt-paths.txt" "$RUNNER_TEMP/applied-rustfmt-paths.txt"
-
-      - name: Synchronize canonical state mapping
+      - name: Close the canonical mapping and recovery-workflow gap
         shell: bash
         run: |
           set -euo pipefail
@@ -118,6 +69,10 @@ jobs:
 
           map_path = Path("docs/modules/control.runtime/IMPLEMENTATION_MAP.json")
           implementation = json.loads(map_path.read_text(encoding="utf-8"))
+          operations = implementation.get("operations")
+          if not isinstance(operations, list):
+              raise SystemExit("implementation map operations must be a list")
+
           pending_operation = {
               "operation": "PlannerStoreV1::pending_dispatches_page",
               "nativeSymbol": "codex_hepta_control_plane::PlannerStoreV1::pending_dispatches_page",
@@ -158,15 +113,46 @@ jobs:
               ],
               "sourcePathExists": True,
           }
-          operations = implementation.get("operations")
-          if not isinstance(operations, list):
-              raise SystemExit("implementation map operations must be a list")
+          fanout_recovery_operation = {
+              "operation": "OrganFanoutReceiptV1::continuation",
+              "nativeSymbol": "codex_hepta_control_plane::OrganFanoutReceiptV1::continuation",
+              "sourcePath": "codex-rs/hepta-control-plane/src/organ_fanout_recovery.rs",
+              "inputs": [
+                  "complete per-target fanout receipt",
+                  "independently retained canonical evidence digest",
+              ],
+              "outputs": [
+                  "DENY_ALL cursor for only the first incomplete route",
+                  "fail-closed rejection for drift, contradictory boundaries or incomplete delivered evidence",
+              ],
+              "state": "source_candidate_boundary_uncomposed",
+              "authority": "deny_all",
+              "nonClaim": "the cursor is not retry authority and does not provide downstream idempotency, scheduling or backpressure",
+              "tests": [
+                  {
+                      "path": "codex-rs/hepta-control-plane/tests/organ_fanout_receipts.rs",
+                      "symbol": "failed_fanout_preserves_the_exact_successful_prefix_digest",
+                  },
+              ],
+              "designOperation": "organ_fanout_fail_closed_continuation",
+              "mappingClass": "owner_boundary",
+              "delegatedCallees": [
+                  "OrganFanoutReceiptV1::evidence_digest",
+                  "canonical per-delivery and delivered-prefix identity digests",
+              ],
+              "sourcePathExists": True,
+          }
+
+          replacement_names = {
+              pending_operation["operation"],
+              fanout_recovery_operation["operation"],
+          }
           operations[:] = [
               operation
               for operation in operations
-              if operation.get("operation") != pending_operation["operation"]
+              if operation.get("operation") not in replacement_names
           ]
-          insert_at = next(
+          organ_index = next(
               (
                   index
                   for index, operation in enumerate(operations)
@@ -174,12 +160,22 @@ jobs:
               ),
               len(operations),
           )
-          operations.insert(insert_at, pending_operation)
+          operations.insert(organ_index, pending_operation)
+          organ_index = next(
+              index
+              for index, operation in enumerate(operations)
+              if operation.get("operation") == "OrganHostV1::dispatch_once_with_receipt"
+          )
+          operations.insert(organ_index + 1, fanout_recovery_operation)
 
           owner_types = implementation.get("ownerLocalTypes")
           if not isinstance(owner_types, list):
               raise SystemExit("implementation map ownerLocalTypes must be a list")
-          for name in ("PlannerPendingDispatchV1", "PlannerPendingDispatchPageV1"):
+          for name in (
+              "PlannerPendingDispatchV1",
+              "PlannerPendingDispatchPageV1",
+              "OrganFanoutContinuationV1",
+          ):
               if name not in owner_types:
                   owner_types.append(name)
 
@@ -187,6 +183,18 @@ jobs:
           if not isinstance(completion, dict):
               raise SystemExit("implementation map completion must be an object")
           completion["pendingDispatchInventory"] = "source_candidate_boundary_uncomposed"
+          completion["organFanoutRecoveryCursor"] = "source_candidate_boundary_uncomposed"
+
+          gaps = implementation.get("repositoryControlledGaps")
+          if not isinstance(gaps, list):
+              raise SystemExit("repositoryControlledGaps must be a list")
+          fanout_gap = (
+              "Compose the DENY_ALL fanout continuation through a bounded product retry owner "
+              "with downstream idempotency and backpressure; never reinterpret the cursor as replay authority."
+          )
+          if fanout_gap not in gaps:
+              gaps.append(fanout_gap)
+
           map_path.write_text(
               json.dumps(implementation, indent=2, ensure_ascii=False) + "\n",
               encoding="utf-8",
@@ -194,12 +202,21 @@ jobs:
 
           validator_path = Path("scripts/control_runtime_validate_state.py")
           validator = validator_path.read_text(encoding="utf-8")
-          operation_line = '    "PlannerStoreV1::pending_dispatches_page",\n'
-          if operation_line not in validator:
-              anchor = '    "reconcile_planner_request_v1",\n'
-              if anchor not in validator:
-                  raise SystemExit("validator operation insertion anchor is missing")
-              validator = validator.replace(anchor, anchor + operation_line, 1)
+          insertions = (
+              (
+                  '    "reconcile_planner_request_v1",\n',
+                  '    "PlannerStoreV1::pending_dispatches_page",\n',
+              ),
+              (
+                  '    "OrganHostV1::dispatch_once_with_receipt",\n',
+                  '    "OrganFanoutReceiptV1::continuation",\n',
+              ),
+          )
+          for anchor, addition in insertions:
+              if addition not in validator:
+                  if anchor not in validator:
+                      raise SystemExit(f"validator insertion anchor is missing: {anchor!r}")
+                  validator = validator.replace(anchor, anchor + addition, 1)
           validator_path.write_text(validator, encoding="utf-8")
 
           workflow = textwrap.dedent(
@@ -237,11 +254,26 @@ jobs:
                     matrix:
                       os: [ubuntu-24.04, macos-14]
                   runs-on: __MATRIX_OS_EXPRESSION__
-                  timeout-minutes: 60
+                  timeout-minutes: 75
                   steps:
                     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
                       with:
+                        ref: __CHECKOUT_REF_EXPRESSION__
+                        fetch-depth: 1
                         persist-credentials: false
+
+                    - name: Record immutable candidate identity
+                      shell: bash
+                      run: |
+                        set -euo pipefail
+                        evidence="$RUNNER_TEMP/control-runtime-recovery-evidence"
+                        mkdir -p "$evidence"
+                        git rev-parse HEAD > "$evidence/commit.txt"
+                        git rev-parse HEAD^{tree} > "$evidence/tree.txt"
+                        rustc --version > "$evidence/rustc.txt"
+                        cargo --version > "$evidence/cargo.txt"
+                        printf '%s\n' "$RUNNER_OS" > "$evidence/runner-os.txt"
+                        printf '%s\n' "$RUNNER_ARCH" > "$evidence/runner-arch.txt"
 
                     - name: Install Linux native prerequisites
                       if: runner.os == 'Linux'
@@ -250,7 +282,7 @@ jobs:
                         sudo apt-get install -y build-essential pkg-config libcap-dev
 
                     - name: Canonical state validation
-                      run: python3 scripts/control_runtime_validate_state.py --output "$RUNNER_TEMP/control-runtime-state.json"
+                      run: python3 scripts/control_runtime_validate_state.py --output "$RUNNER_TEMP/control-runtime-recovery-evidence/state.json"
 
                     - name: Formatting
                       working-directory: codex-rs
@@ -264,6 +296,14 @@ jobs:
                       working-directory: codex-rs
                       run: cargo test --locked -p codex-hepta-control-plane --test planner_store_process_recovery -- --nocapture
 
+                    - name: Durable execution hardening regressions
+                      working-directory: codex-rs
+                      run: cargo test --locked -p codex-hepta-control-plane --test planner_durable_hardening -- --nocapture
+
+                    - name: Fanout evidence and continuation regressions
+                      working-directory: codex-rs
+                      run: cargo test --locked -p codex-hepta-control-plane --test organ_fanout_receipts -- --nocapture
+
                     - name: All-target compilation
                       working-directory: codex-rs
                       run: cargo check --locked --all-targets -p codex-hepta-control-plane
@@ -271,15 +311,43 @@ jobs:
                     - name: Strict lint
                       working-directory: codex-rs
                       run: cargo clippy --locked --all-targets -p codex-hepta-control-plane -- -D warnings
+
+                    - name: Preserve exact recovery evidence
+                      if: always()
+                      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+                      with:
+                        name: control-runtime-recovery-__ARTIFACT_SHA_EXPRESSION__-__MATRIX_NAME_EXPRESSION__
+                        path: __ARTIFACT_PATH_EXPRESSION__
+                        if-no-files-found: error
+                        retention-days: 30
               """
           )
           expression_open = "$" + "{{"
-          workflow = workflow.replace(
-              "__GROUP_EXPRESSION__",
-              expression_open + " github.event.pull_request.number || github.ref }}",
-          ).replace(
-              "__MATRIX_OS_EXPRESSION__",
-              expression_open + " matrix.os }}",
+          workflow = (
+              workflow.replace(
+                  "__GROUP_EXPRESSION__",
+                  expression_open + " github.event.pull_request.number || github.ref }}",
+              )
+              .replace(
+                  "__MATRIX_OS_EXPRESSION__",
+                  expression_open + " matrix.os }}",
+              )
+              .replace(
+                  "__CHECKOUT_REF_EXPRESSION__",
+                  expression_open + " github.event.pull_request.head.sha || github.sha }}",
+              )
+              .replace(
+                  "__ARTIFACT_SHA_EXPRESSION__",
+                  expression_open + " github.event.pull_request.head.sha || github.sha }}",
+              )
+              .replace(
+                  "__MATRIX_NAME_EXPRESSION__",
+                  expression_open + " matrix.os }}",
+              )
+              .replace(
+                  "__ARTIFACT_PATH_EXPRESSION__",
+                  expression_open + " runner.temp }}/control-runtime-recovery-evidence",
+              )
           )
           Path(".github/workflows/control-runtime-crash-recovery.yml").write_text(
               workflow,
@@ -288,29 +356,67 @@ jobs:
           Path(".github/workflows/control-runtime-apply-rustfmt.yml").unlink()
           PY
 
+      - name: Canonical formatting
+        working-directory: codex-rs
+        run: |
+          cargo fmt -p codex-hepta-control-plane
+          cargo fmt -p codex-hepta-control-plane -- --check
+
+      - name: Refresh mapped Git object identities
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A
+          export INDEX_TREE="$(git write-tree)"
+          python3 - <<'PY'
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+
+          path = Path("docs/modules/control.runtime/IMPLEMENTATION_MAP.json")
+          implementation = json.loads(path.read_text(encoding="utf-8"))
+          source_objects = implementation.get("sourceObjects")
+          if not isinstance(source_objects, list):
+              raise SystemExit("sourceObjects must be a list")
+          tree = os.environ["INDEX_TREE"]
+          for source_object in source_objects:
+              source_path = source_object.get("path")
+              if not isinstance(source_path, str) or not source_path:
+                  raise SystemExit("source object path must be non-empty")
+              source_object["object"] = subprocess.check_output(
+                  ["git", "rev-parse", f"{tree}:{source_path}"],
+                  text=True,
+              ).strip()
+          path.write_text(
+              json.dumps(implementation, indent=2, ensure_ascii=False) + "\n",
+              encoding="utf-8",
+          )
+          PY
+          git add docs/modules/control.runtime/IMPLEMENTATION_MAP.json
+          git diff --cached --check
+
       - name: Validate exact source candidate
         shell: bash
         run: |
           set -euo pipefail
           python3 scripts/control_runtime_validate_state.py --output "$RUNNER_TEMP/control-runtime-state.json"
           cd codex-rs
-          cargo fmt -p codex-hepta-control-plane
           cargo fmt -p codex-hepta-control-plane -- --check
           cargo test --locked -p codex-hepta-control-plane
           cargo check --locked --all-targets -p codex-hepta-control-plane
           cargo clippy --locked --all-targets -p codex-hepta-control-plane -- -D warnings
 
-      - name: Commit and push only fully verified source
+      - name: Commit and push only the verified fast-forward
         shell: bash
         run: |
           set -euo pipefail
-          cd "$GITHUB_WORKSPACE"
           test ! -e .github/workflows/control-runtime-apply-rustfmt.yml
-          git diff --check
-          test "$(git ls-remote origin "refs/heads/$EXPECTED_BRANCH" | awk '{print $1}')" = "$(git rev-parse HEAD)"
+          git diff --exit-code
+          git diff --cached --check
+          remote_head="$(git ls-remote origin "refs/heads/$EXPECTED_BRANCH" | awk '{print $1}')"
+          test "$remote_head" = "$CHECKED_HEAD"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git diff --cached --check
-          git commit -s -m "feat(control.runtime): finalize bounded recovery qualification"
+          git commit -s -m "feat(control.runtime): close recovery evidence mapping"
           git push origin "HEAD:refs/heads/$EXPECTED_BRANCH"
