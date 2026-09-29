@@ -51,7 +51,7 @@ fn lost_typed_reply_blocks_startup_until_query_only_recovery_commits_it() {
     drop(controller);
     drop(handle);
     let handle = h.owner();
-    let controller = checked(AgentdNeuronGenerationControllerV2::new(handle.clone()));
+    let controller = checked(AgentdNeuronGenerationControllerV2::new(handle));
     assert!(matches!(
         controller.start(),
         Err(AgentdNeuronControlErrorV2::PendingRecovery)

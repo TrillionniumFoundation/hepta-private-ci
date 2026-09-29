@@ -99,7 +99,7 @@ impl AgentdNeuronHandleV2 {
         self.recover_operation_with_policy(input, AgentdNeuronRecoveryPolicyV2::PreserveUnexecuted)
     }
 
-    pub(crate) fn recover_operation_with_policy(
+    fn recover_operation_with_policy(
         &self,
         input: &NeuronTickInputV1,
         policy: AgentdNeuronRecoveryPolicyV2,
