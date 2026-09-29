@@ -1,0 +1,86 @@
+name: Prompt registry runtime closeout
+on:
+  push:
+    branches:
+      - codex/prompt-registry-runtime-closeout-20260929
+permissions:
+  contents: write
+concurrency:
+  group: prompt-registry-runtime-closeout
+  cancel-in-progress: true
+jobs:
+  qualify-and-publish:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/prompt-registry-runtime-closeout-20260929
+          fetch-depth: 0
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+      - name: Prepare native dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+      - name: Format exact changed crates
+        working-directory: codex-rs
+        run: >-
+          cargo fmt
+          -p codex-extension-api
+          -p codex-core
+          -p codex-hepta-prompt-extension
+          -p codex-hepta-codex-adapter
+          -p codex-hepta-agentd
+      - name: Check cross-crate output-fence composition
+        working-directory: codex-rs
+        run: >-
+          cargo check --locked --all-targets
+          -p codex-extension-api
+          -p codex-core
+          -p codex-hepta-prompt-extension
+          -p codex-hepta-codex-adapter
+          -p codex-hepta-agentd
+      - name: Run prompt runtime and provider-policy tests
+        working-directory: codex-rs
+        run: |
+          cargo test --locked -p codex-hepta-prompt-extension
+          cargo test --locked -p codex-hepta-agentd prompt_runtime
+          cargo test --locked -p codex-core model_provider_policy
+      - name: Enforce strict lint on changed crates
+        working-directory: codex-rs
+        run: >-
+          cargo clippy --locked --all-targets --no-deps
+          -p codex-extension-api
+          -p codex-core
+          -p codex-hepta-prompt-extension
+          -p codex-hepta-codex-adapter
+          -p codex-hepta-agentd
+          -- -D warnings
+      - name: Commit formatter-only source normalization
+        run: |
+          set -euo pipefail
+          git config user.name 'Prompt registry runtime closeout'
+          git config user.email 'prompt-registry-runtime@users.noreply.github.com'
+          if ! git diff --quiet; then
+            git add codex-rs
+            git commit -m 'style(prompt.registry): format runtime-output closeout'
+          fi
+      - name: Generate source-bound implementation map
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-prompt-registry-map.py --write
+          python3 scripts/hepta-prompt-registry-doc-truth.py --write
+          python3 scripts/hepta-prompt-registry-doc-truth.py --check
+          git diff --check
+          if ! git diff --quiet; then
+            git add docs/modules/prompt.registry/IMPLEMENTATION_MAP.json \
+                    docs/modules/prompt.registry/QUALIFICATION_FACTS.json \
+                    docs/modules/prompt.registry/QUALIFICATION_STATUS.md
+            git commit -m 'docs(prompt.registry): bind runtime closeout source map'
+          fi
+      - name: Publish validated commits
+        run: git push origin HEAD:codex/prompt-registry-runtime-closeout-20260929
