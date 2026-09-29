@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import importlib.util
 import json
 from pathlib import Path
 import subprocess
@@ -13,7 +14,13 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts/hepta-objective-evidence-project.py"
 SOURCE = "1" * 40
 TREE = "2" * 40
-LOG = "3" * 64
+LOG_BYTES = b"observed fixture output\n"
+LOG = hashlib.sha256(LOG_BYTES).hexdigest()
+BASE = "5" * 40
+SPEC = importlib.util.spec_from_file_location("projector", SCRIPT)
+assert SPEC is not None and SPEC.loader is not None
+MODULE = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(MODULE)
 
 
 def current_state() -> dict:
@@ -52,15 +59,12 @@ def current_state() -> dict:
 
 def candidate(kind: str, exit_code: int = 0) -> dict:
     return {
-        "kind": kind,
-        "clean": True,
+        "kind": kind, "clean": True, "tree": TREE,
+        "commit": SOURCE if kind == "source-head" else MODULE.synthetic_commit_identity(TREE, BASE, SOURCE),
         "checks": [
-            {
-                "name": "test",
-                "status": "completed",
-                "exitCode": exit_code,
-                "logSha256": LOG,
-            }
+            {"name": name, "argv": argv, "status": "completed", "exitCode": exit_code,
+             "log": f"{name}.log", "logSha256": LOG}
+            for name, argv in MODULE.qualification_commands().items()
         ],
     }
 
@@ -151,6 +155,11 @@ class EvidenceProjectionTest(unittest.TestCase):
                 str(root / "projection.json"),
             ]
             if exact is not None:
+                for kind in ("source-head", "synthetic-merge"):
+                    directory = root / kind
+                    directory.mkdir()
+                    for name in MODULE.qualification_commands():
+                        (directory / f"{name}.log").write_bytes(LOG_BYTES)
                 (root / "exact.json").write_text(json.dumps(exact), encoding="utf-8")
                 argv += ["--exact-execution", str(root / "exact.json")]
             if target is not None:
@@ -167,6 +176,9 @@ class EvidenceProjectionTest(unittest.TestCase):
     def test_projects_receipts_without_promoting_acceptance(self) -> None:
         exact = {
             "schema": "hepta.objective.exact-execution.v1",
+            "sourceClean": True, "mergeBase": BASE,
+            "selectedTargetHostAccepted": False, "independentAcceptance": False,
+            "activated": False, "released": False,
             "sourceCommit": SOURCE,
             "sourceTree": TREE,
             "runId": "17",
@@ -203,6 +215,9 @@ class EvidenceProjectionTest(unittest.TestCase):
     def test_incomplete_candidate_is_failed_not_passed(self) -> None:
         exact = {
             "schema": "hepta.objective.exact-execution.v1",
+            "sourceClean": True, "mergeBase": BASE,
+            "selectedTargetHostAccepted": False, "independentAcceptance": False,
+            "activated": False, "released": False,
             "sourceCommit": SOURCE,
             "sourceTree": TREE,
             "candidates": [candidate("source-head", 1)],
@@ -221,6 +236,9 @@ class EvidenceProjectionTest(unittest.TestCase):
     def test_checks_passed_cannot_disagree_with_observed_checks(self) -> None:
         exact = {
             "schema": "hepta.objective.exact-execution.v1",
+            "sourceClean": True, "mergeBase": BASE,
+            "selectedTargetHostAccepted": False, "independentAcceptance": False,
+            "activated": False, "released": False,
             "sourceCommit": SOURCE,
             "sourceTree": TREE,
             "candidates": [candidate("source-head"), candidate("synthetic-merge")],
@@ -234,6 +252,9 @@ class EvidenceProjectionTest(unittest.TestCase):
     def test_source_identity_mismatch_refuses_projection(self) -> None:
         exact = {
             "schema": "hepta.objective.exact-execution.v1",
+            "sourceClean": True, "mergeBase": BASE,
+            "selectedTargetHostAccepted": False, "independentAcceptance": False,
+            "activated": False, "released": False,
             "sourceCommit": "9" * 40,
             "sourceTree": TREE,
             "candidates": [],
@@ -243,6 +264,58 @@ class EvidenceProjectionTest(unittest.TestCase):
         completed, value, _ = self.run_projection(exact, None)
         self.assertNotEqual(completed.returncode, 0)
         self.assertIsNone(value)
+
+    def test_exact_projection_rejects_mixed_source_and_incomplete_command_evidence(self) -> None:
+        baseline = {
+            "schema": "hepta.objective.exact-execution.v1", "sourceCommit": SOURCE,
+            "sourceTree": TREE, "sourceClean": True, "mergeBase": BASE,
+            "selectedTargetHostAccepted": False, "independentAcceptance": False,
+            "activated": False, "released": False, "checksPassed": True,
+            "errors": [], "candidates": [candidate("source-head"), candidate("synthetic-merge")],
+        }
+        mutations = [
+            lambda r: r["candidates"][0].update(commit="9" * 40),
+            lambda r: r["candidates"][0].update(tree="9" * 40),
+            lambda r: r["candidates"][1].update(commit="9" * 40),
+            lambda r: r.update(mergeBase="9" * 40),
+            lambda r: r.update(sourceClean=False),
+            lambda r: r.update(checksPassed=1),
+            lambda r: r.update(errors=None),
+            lambda r: r.update(activated=True),
+            lambda r: r["candidates"][0]["checks"].pop(),
+            lambda r: r["candidates"][0]["checks"].append(r["candidates"][0]["checks"][0]),
+            lambda r: r["candidates"][0]["checks"][0].update(argv=["true"]),
+            lambda r: r["candidates"][0]["checks"][0].update(exitCode=False),
+            lambda r: r["candidates"][0]["checks"][0].update(logSha256="f" * 64),
+            lambda r: r["candidates"][0]["checks"][0].update(log="../arbitrary.log"),
+        ]
+        for index, mutation in enumerate(mutations):
+            exact = copy.deepcopy(baseline)
+            mutation(exact)
+            completed, value, _ = self.run_projection(exact, None)
+            with self.subTest(index=index):
+                self.assertNotEqual(completed.returncode, 0)
+                self.assertIsNone(value)
+
+    def test_exact_candidate_requires_actual_unchanged_log_files(self) -> None:
+        receipt = {"sourceCommit": SOURCE, "sourceTree": TREE, "sourceClean": True,
+                   "mergeBase": BASE, "candidates": [candidate("source-head")]}
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            phase = root / "source-head"
+            phase.mkdir()
+            for name in MODULE.qualification_commands():
+                (phase / f"{name}.log").write_bytes(LOG_BYTES)
+            self.assertEqual(MODULE.candidate_state(receipt, "source-head", root), "passed")
+            log = phase / "format.log"
+            log.write_bytes(b"changed")
+            self.assertEqual(MODULE.candidate_state(receipt, "source-head", root), "failed")
+            log.unlink()
+            self.assertEqual(MODULE.candidate_state(receipt, "source-head", root), "failed")
+            target = root / "elsewhere.log"
+            target.write_bytes(LOG_BYTES)
+            log.symlink_to(target)
+            self.assertEqual(MODULE.candidate_state(receipt, "source-head", root), "failed")
 
     def test_static_manifest_cannot_embed_dynamic_pass_fields(self) -> None:
         state = current_state()

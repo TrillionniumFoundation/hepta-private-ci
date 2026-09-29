@@ -26,6 +26,13 @@ exact commit/tree, workflow/run identity when available, the operator-supplied
 host profile identifier, platform/machine, Rust/Cargo versions and release build
 profile.
 
+V2 evidence additionally binds the exact Cargo-produced test executable, other
+emitted package executables, their SHA-256 digests and sizes, the Cargo artifact
+messages, exact selected test and its listing, and the execution transcript.
+Artifact identities are checked both before and after execution. A missing,
+ambiguous, symlinked or changed executable is an error, not a zero-cost sample.
+This is native Rust fixture identity, not independent FFI qualification.
+
 ## 2. Separately measured paths
 
 ### Static profile validation and request-local compilation
@@ -101,34 +108,38 @@ incomplete worst-case conflict work.
 
 ## 3. Resource observation semantics
 
-Each Rust workload is launched below a fresh Python helper process. The helper
-reports one `hepta.objective-command-resource-observation.v1` record containing:
+Each workload is built first with `cargo test --locked --release --no-run` and
+Cargo JSON artifact output. The selected prebuilt native test is then launched
+below a fresh Python resource helper, with its exact fully qualified test name,
+`--ignored --exact --nocapture --test-threads=1`. Cargo compilation is outside
+the resource sample. The helper reports one
+`hepta.objective-command-resource-observation.v1` record containing:
 
-- isolated command-process-tree peak resident set size;
+- the OS-reported waited-child peak resident set size;
 - user and system CPU nanoseconds;
 - wall nanoseconds;
 - minor and major page faults;
 - voluntary and involuntary context switches.
 
-This fixes the previous ambiguity in which `RUSAGE_CHILDREN.ru_maxrss` accumulated
-across all earlier Cargo fixtures in the recorder process. Each workload now has
-its own process-tree resource observation.
+A fresh helper prevents `RUSAGE_CHILDREN` from accumulating earlier fixtures in
+the recorder process. However, its `ru_maxrss` value is not a sampled sum of all
+simultaneously live descendants and must not be described as aggregate
+process-tree peak memory. It is also not an allocation profile for an internal
+Rust phase. These distinctions apply separately to each supported host OS.
 
-The process-tree peak still includes the Cargo/test executable and descendants.
-It is **not** an allocation profile for an individual internal Rust phase. Phase
-latencies are measured inside the fixture; resource values are isolated per
-ordinary, maximum-conflict and product fixture. In particular, the product
+Phase latencies are measured inside the fixture; resource values are isolated
+per ordinary, maximum-conflict and product fixture. In particular, the product
 resource observation covers the combined append/checkpoint/handoff boundary
 rather than pretending to assign memory to non-separable owner substeps.
-Detailed allocator, I/O and per-internal-phase profiling may be attached by the
-selected host profile as additional evidence, but may not replace these bounded
-workload identities.
+Detailed allocator, I/O and simultaneous-process-tree profiling may be attached
+by the selected host profile as additional evidence, but may not replace the
+bounded workload and prebuilt artifact identities.
 
 The compiler fixtures are normal Rust tests marked `#[ignore]`. Repository CI
 compiles, formats and lints them but does not treat source presence as target-host
-evidence. The recorder runs them in `--release` and parses their structured
-measurement rows. Its parser and negative tests run in both objective admission
-qualification and the dedicated target-measurement workflow.
+evidence. The recorder explicitly executes them in release mode and parses
+structured measurement rows. Parser and negative tests run in both objective
+admission qualification and the dedicated target-measurement workflow.
 
 ## 4. Filesystem and evidence boundary
 
@@ -139,11 +150,15 @@ filesystem mount/type; memory-backed and disk-backed runs must not be pooled
 into one storage qualification result. Filesystem identification and successful
 timing do not grant storage qualification.
 
-The measurement output is consumed by
+The V2 measurement output is consumed by
 `scripts/hepta-objective-evidence-project.py` together with the static
 `CURRENT_STATE.json`. The resulting projection binds source commit/tree,
-workflow/run identity when available, and the measurement artifact digest.
-Checked-in source does not hand-edit a target-host pass field.
+workflow/run identity when available, native fixture identities and the
+measurement artifact digest. Checked-in source does not hand-edit a target-host
+pass field. Exact-execution projection additionally checks the complete command
+inventory from the existing runner, candidate commit/tree, deterministic merge
+identity and the actual retained log bytes; digest-shaped labels alone do not
+constitute successful execution evidence.
 
 A GitHub-hosted runner remains qualification/development evidence, not selected
 deployment-host acceptance. Closing `LANE-D-EXT-HOST-MEASUREMENT` requires the

@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib.util
 import json
 import re
 from pathlib import Path
@@ -129,34 +130,78 @@ def current_state_projection(path: Path) -> dict[str, Any]:
     }
 
 
-def candidate_state(receipt: dict[str, Any], kind: str) -> str:
+def qualification_commands() -> dict[str, list[str]]:
+    # The existing read-only runner owns the check inventory. Do not maintain a
+    # second, weaker list of commands in the receipt consumer.
+    spec = importlib.util.spec_from_file_location(
+        "objective_exact_contract", Path(__file__).with_name("hepta-objective-qualify-exact.py")
+    )
+    if spec is None or spec.loader is None:
+        raise ValueError("exact execution contract is unavailable")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return dict(module.commands())
+
+
+def synthetic_commit_identity(tree: str, base: str, source: str) -> str:
+    # Frozen author/date/message and parent order from deterministic_merge().
+    # This checks the recorded merge identity, not independent merge correctness.
+    actor = "Hepta immutable qualification <qualification@localhost> 946684800 +0000"
+    text = (f"tree {tree}\nparent {base}\nparent {source}\n"
+            f"author {actor}\ncommitter {actor}\n\n"
+            f"objective qualification merge\nbase {base}\nsource {source}\n").encode()
+    return hashlib.sha1(f"commit {len(text)}\0".encode() + text).hexdigest()
+
+
+def candidate_state(receipt: dict[str, Any], kind: str, root: Path) -> str:
     candidates = receipt.get("candidates")
-    if not isinstance(candidates, list):
+    if not isinstance(candidates, list) or receipt.get("sourceClean") is not True:
         return "failed"
-    matching = [
-        item
-        for item in candidates
-        if isinstance(item, dict) and item.get("kind") == kind
-    ]
+    if any(not isinstance(item, dict) or item.get("kind") not in
+           {"source-head", "synthetic-merge"} for item in candidates):
+        return "failed"
+    matching = [item for item in candidates if item.get("kind") == kind]
     if len(matching) != 1:
         return "failed"
     candidate = matching[0]
+    commit, tree = candidate.get("commit"), candidate.get("tree")
+    if any(not isinstance(value, str) or not SHA.fullmatch(value)
+           for value in (commit, tree)):
+        return "failed"
+    if kind == "source-head":
+        if (commit, tree) != (receipt["sourceCommit"], receipt["sourceTree"]):
+            return "failed"
+    else:
+        base = receipt.get("mergeBase")
+        if not isinstance(base, str) or not SHA.fullmatch(base):
+            return "failed"
+        if commit != synthetic_commit_identity(tree, base, receipt["sourceCommit"]):
+            return "failed"
+    expected = qualification_commands()
     checks = candidate.get("checks")
-    if (
-        candidate.get("clean") is True
-        and isinstance(checks, list)
-        and checks
-        and all(
-            isinstance(check, dict)
-            and check.get("status") == "completed"
-            and check.get("exitCode") == 0
-            and isinstance(check.get("logSha256"), str)
-            and LOG_SHA.fullmatch(check["logSha256"])
-            for check in checks
-        )
-    ):
-        return "passed"
-    return "failed"
+    if candidate.get("clean") is not True or not isinstance(checks, list):
+        return "failed"
+    if len(checks) != len(expected) or any(not isinstance(c, dict) for c in checks):
+        return "failed"
+    names = [c.get("name") for c in checks]
+    if any(not isinstance(name, str) for name in names) or set(names) != set(expected):
+        return "failed"
+    root = root.resolve()
+    directory = root / kind
+    if directory.is_symlink() or not directory.is_dir():
+        return "failed"
+    for check in checks:
+        name = check["name"]
+        if (check.get("argv") != expected[name] or check.get("status") != "completed"
+            or type(check.get("exitCode")) is not int or check["exitCode"] != 0
+            or check.get("log") != f"{name}.log"
+            or not isinstance(check.get("logSha256"), str)
+            or not LOG_SHA.fullmatch(check["logSha256"])):
+            return "failed"
+        log = directory / f"{name}.log"
+        if log.is_symlink() or not log.is_file() or sha256(log) != check["logSha256"]:
+            return "failed"
+    return "passed"
 
 
 def exact_projection(
@@ -165,16 +210,21 @@ def exact_projection(
     receipt = load(path)
     if receipt.get("schema") != "hepta.objective.exact-execution.v1":
         raise ValueError("unexpected exact-execution schema")
-    if (
-        receipt.get("sourceCommit") != source_commit
-        or receipt.get("sourceTree") != source_tree
-    ):
+    if (receipt.get("sourceCommit") != source_commit
+        or receipt.get("sourceTree") != source_tree):
         raise ValueError("exact-execution source identity mismatch")
-    source_state = candidate_state(receipt, "source-head")
-    merge_state = candidate_state(receipt, "synthetic-merge")
-    errors = receipt.get("errors") if isinstance(receipt.get("errors"), list) else []
+    if type(receipt.get("checksPassed")) is not bool:
+        raise ValueError("exact-execution checksPassed must be a Boolean")
+    errors = receipt.get("errors")
+    if not isinstance(errors, list) or any(not isinstance(error, str) for error in errors):
+        raise ValueError("exact-execution errors must be an explicit string list")
+    for field in ("selectedTargetHostAccepted", "independentAcceptance", "activated", "released"):
+        if receipt.get(field) is not False:
+            raise ValueError("exact execution cannot grant external acceptance or release")
+    source_state = candidate_state(receipt, "source-head", path.parent)
+    merge_state = candidate_state(receipt, "synthetic-merge", path.parent)
     derived_pass = source_state == merge_state == "passed" and not errors
-    if (receipt.get("checksPassed") is True) != derived_pass:
+    if receipt["checksPassed"] != derived_pass:
         raise ValueError("exact-execution checksPassed disagrees with observed checks")
     return {
         "artifactSha256": sha256(path),
@@ -374,7 +424,7 @@ def main() -> int:
         "status": status,
         "truth": source["truth"],
         "claimBoundary": (
-            "static source facts plus authenticated artifact observations only; no "
+            "static source facts plus identity-bound artifact observations only; no "
             "independent acceptance, selected deployment-host approval, activation, "
             "promotion or release authority"
         ),
