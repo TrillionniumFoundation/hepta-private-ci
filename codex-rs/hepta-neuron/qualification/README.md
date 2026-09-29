@@ -318,6 +318,37 @@ GUI perception, independent calibration, a signed product caller, durable native
 cross-process recovery, future-window efficacy or production activation. A missing
 Python environment/model snapshot is an execution blocker, not a passed probe.
 
+## Interrupted native panels retain negative evidence
+
+The `hepta.model-native-execution-probe.v3` report separates experiment completion
+from model truth and observed native effects. Before model startup, the probe
+writes an exclusive `plan.json` containing every selected case. Its append-only
+`progress.jsonl` flushes and syncs each model/native dispatch attempt and retained
+case outcome. The final report binds both files by SHA-256. These are local
+qualification records, not a second durable operation owner or a product receipt.
+
+A model startup/transport failure, malformed model reply, native launch failure,
+interruption or cleanup exception stops subsequent case dispatch. Unstarted cases
+remain visible and cannot be replaced with easier inputs. There is no model restart
+or automatic retry. A native process-control exception is not evidence of
+`NotApplied`: the existing native validator first checks any retained observation,
+preserves a verified copy, and leaves missing/invalid evidence indeterminate. A
+nonzero evaluator sentinel is not reported as an actual child exit status.
+
+The native runner terminates and reaps only its own private process group on
+interruption. Source identity is checked before each model case, again immediately
+before native dispatch, and at completion. A cleanup error, source drift or unknown
+child cleanup prevents a panel pass even when earlier case effects were observed.
+Reports retain exception classes and phases rather than raw exception messages.
+
+This handling covers exceptions while the parent can still write evidence. It does
+not claim recovery after parent `SIGKILL`, host power loss, exhausted/unwritable
+storage or an adversarial filesystem. The synced plan/progress preserve available
+breadcrumbs; they cannot authorize replay. Tests in
+`test_native_cell_probe_evidence.py` use explicit fake model/native ports for fault
+schedules and a real private child for interruption/reaping. Model quality still
+requires a separately executed artifact-bound probe.
+
 ## Finite-sample support before calibration trust
 
 `binomial_support.py` adds a separate count diagnostic, without changing historical
