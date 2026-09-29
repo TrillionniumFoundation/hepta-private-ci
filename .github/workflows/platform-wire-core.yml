@@ -143,6 +143,11 @@ jobs:
           record managed-fleet-profile-run 0 bash -c '"$CARGO_TARGET_DIR/release/examples/managed_fleet_profile" 8 > "$RUNNER_TEMP/wire-core-evidence/managed-fleet-profile.measurements.json"'
           record managed-fleet-profile-validation 0 python3 scripts/platform_wire_managed_fleet_profile.py --input "$records/managed-fleet-profile.measurements.json" --rounds 8
           record managed-fleet-emitter-contract 7 python3 scripts/platform_wire_fleet_contract.py --input "$records/managed-fleet-profile.measurements.json" --rounds 8
+          record retention-selftest 10 python3 scripts/platform_wire_retention_profile.py --self-test
+          record retention-build 0 cargo build --release --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-wire --example managed_retention_profile
+          record retention-run 0 bash -c '"$CARGO_TARGET_DIR/release/examples/managed_retention_profile" 32 > "$RUNNER_TEMP/wire-core-evidence/retention.measurements.json"'
+          record retention-validation 0 python3 scripts/platform_wire_retention_profile.py --input "$records/retention.measurements.json" --iterations 32
+          record retention-emitter-contract 10 python3 scripts/platform_wire_retention_profile.py --input "$records/retention.measurements.json" --iterations 32 --contract
           record http-parser-build 0 rustc --edition 2024 --test codex-rs/hepta-native-gateway/src/http_accept.rs -o "$RUNNER_TEMP/http-accept-tests"
           record http-parser-tests 8 "$RUNNER_TEMP/http-accept-tests"
           record clean-tree 0 bash -c 'git diff --exit-code && git diff --cached --exit-code && test -z "$(git status --porcelain --untracked-files=all)"'
@@ -165,7 +170,7 @@ jobs:
           source, base = os.environ['SOURCE_SHA'], os.environ['BASE_SHA']
           receipt = {
               'schema':'hepta.platform-wire.core-execution.v1',
-              'scope':'wire all-targets + public managed consumer contracts + strict clippy + single-session and multi-peer release measurements + real fleet emitter contract + isolated HTTP parser; not integrated gateway/provider/target-host acceptance',
+              'scope':'wire all-targets + public managed consumer contracts + strict clippy + single-session and multi-peer release measurements + real fleet emitter contract + eighteen retention-policy scenarios + isolated HTTP parser; not integrated gateway/provider/target-host acceptance',
               'source_sha':source,'source_tree':git('rev-parse',source+'^{tree}'),
               'base_sha':base,'tested_sha':git('rev-parse','HEAD'),'tested_tree':git('rev-parse','HEAD^{tree}'),
               'parents':git('show','-s','--format=%P','HEAD').split(),'lane':os.environ['HEPTA_CI_LANE'],
