@@ -1,0 +1,43 @@
+name: intuition.policy Export Immutable Carrier
+
+on:
+  push:
+    branches: [codex/intuition-policy-final-use-recovery-20260929]
+    paths:
+      - ".github/workflows/intuition-carrier-export.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact carrier
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Stage immutable carrier blobs
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/intuition-carrier"
+          mkdir -p "$out"
+          cp .github/intuition-authoring-patch/READY "$out/"
+          cp .github/intuition-authoring-patch/part-000.b64 "$out/"
+          cp .github/intuition-authoring-patch/part-001.b64 "$out/"
+          cp .github/intuition-authoring-patch/part-002.b64 "$out/"
+          git rev-parse HEAD > "$out/carrier-head.txt"
+          sha256sum "$out"/* > "$out/files.sha256"
+
+      - name: Upload immutable carrier
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intuition-immutable-carrier-${{ github.sha }}
+          path: ${{ runner.temp }}/intuition-carrier/
+          if-no-files-found: error
+          retention-days: 3
