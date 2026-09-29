@@ -296,3 +296,37 @@ fn reclamation_is_per_peer_and_cannot_reopen_a_retired_owner() -> TestResult {
     b.finish()?;
     Ok(())
 }
+
+#[test]
+fn following_short_prefix_cannot_pin_a_completed_large_record() -> TestResult {
+    for split in [1, PREFIX_BYTES - 1, PREFIX_BYTES, PREFIX_BYTES + 1] {
+        let mut sender = owner(1, SessionEndpoint::Initiator)?;
+        let first = envelope(1, 128 * 1024)?;
+        let second = envelope(2, 128)?;
+        let first_record = sender.seal_envelope(&first)?;
+        let second_record = sender.seal_envelope(&second)?;
+        let mut receiver = stream(1)?;
+        let cut = first_record.len() - 1;
+        assert!(deliver_fragmented(&mut receiver, &first_record[..cut]).is_empty());
+        assert!(receiver.buffer_capacity_bytes() > receiver.idle_buffer_limit_bytes());
+        let mut coalesced = first_record[cut..].to_vec();
+        coalesced.extend_from_slice(&second_record[..split]);
+        let feed = receiver.feed(&coalesced);
+        assert_eq!(feed.bytes_consumed(), coalesced.len());
+        assert_eq!(feed.batch().frames(), &[first]);
+        assert!(feed.batch().terminal_error().is_none());
+        assert_eq!(receiver.buffered_bytes(), split);
+        assert!(receiver.buffer_capacity_bytes() <= receiver.idle_buffer_limit_bytes());
+        assert_eq!(receiver.release_idle_buffer(), 0);
+        let tail = receiver.feed(&second_record[split..]);
+        assert_eq!(tail.bytes_consumed(), second_record.len() - split);
+        assert_eq!(tail.batch().frames(), &[second]);
+        assert!(tail.batch().terminal_error().is_none());
+        // Record-boundary reclamation must not rewind the authenticated sequence.
+        let replay = receiver.feed(&second_record);
+        assert!(replay.batch().frames().is_empty());
+        assert!(replay.batch().terminal_error().is_some());
+        assert!(receiver.is_terminal());
+    }
+    Ok(())
+}

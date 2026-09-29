@@ -431,6 +431,9 @@ impl ManagedRecordStream {
             }
             self.pending.clear();
             self.expected = None;
+            // Reclaim before a following short prefix can pin the old allocation.
+            // No incomplete record exists at this authenticated record boundary.
+            self.trim_idle_buffer_to_limit();
         }
         allowance.remaining_bytes -= consumed;
         allowance.remaining_records -= attempted;
