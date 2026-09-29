@@ -1,0 +1,133 @@
+name: Cognitive store reviewed evidence hardening trusted runner
+
+on:
+  push:
+    branches:
+      - codex/cognitive-store-full-closure-20260927
+    paths:
+      - .github/workflows/cognitive-store-reviewed-evidence-self-hosted.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cognitive-store-reviewed-evidence-hardening-trusted
+  cancel-in-progress: false
+
+jobs:
+  apply-and-verify:
+    runs-on: [self-hosted, linux, x64, rog]
+    timeout-minutes: 60
+    env:
+      BASE_COMMIT: f5f30176a0ca879bdac0f7c383d6104f525c4d0c
+      PATCH_GZIP_SHA256: 7f4ca7e08734cbf7cc1ac7b88367d91c36efd0e3855126c5a56af11038fd56c4
+      PATCH_BASE64_BYTES: "22788"
+      WORKFLOW_PATH: .github/workflows/cognitive-store-reviewed-evidence-self-hosted.yml
+      ARM_WORKFLOW_PATH: .github/workflows/cognitive-store-reviewed-evidence-arm.yml
+      X64_WORKFLOW_PATH: .github/workflows/cognitive-store-reviewed-evidence.yml
+      TARGET_BRANCH: codex/cognitive-store-full-closure-20260927
+      PATCH_BLOBS: >-
+        51531a22ff67b70cde01b8ec1665d1c5238e9832
+        32d392e29191a91f2bdbafd36de3cf6c7f79d579
+        97e777d4da8cd77417dd77951f3c0fffee6e0197
+        acbb8acee6017395ee5e8bdb09dd6671c17beac9
+        3794bc961a487b7dbf34c6ae61a7a810d5955ef2
+        a2e88685da8a89e4a822125b7aa3e0ea2b021e70
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Authenticate staging commits and reviewed patch
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor "$BASE_COMMIT" HEAD
+          mapfile -t staged_paths < <(git diff --name-only "$BASE_COMMIT"..HEAD | sort)
+          test "${#staged_paths[@]}" -eq 3
+          test "${staged_paths[0]}" = "$ARM_WORKFLOW_PATH"
+          test "${staged_paths[1]}" = "$WORKFLOW_PATH"
+          test "${staged_paths[2]}" = "$X64_WORKFLOW_PATH"
+          : > "$RUNNER_TEMP/cognitive-evidence.patch.b64"
+          for blob in $PATCH_BLOBS; do
+            curl --fail --silent --show-error --location \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/blobs/${blob}" \
+              | python3 -c 'import base64,json,sys; sys.stdout.buffer.write(base64.b64decode(json.load(sys.stdin)["content"]))' \
+              >> "$RUNNER_TEMP/cognitive-evidence.patch.b64"
+          done
+          test "$(wc -c < "$RUNNER_TEMP/cognitive-evidence.patch.b64")" -eq "$PATCH_BASE64_BYTES"
+          base64 --decode "$RUNNER_TEMP/cognitive-evidence.patch.b64" \
+            > "$RUNNER_TEMP/cognitive-evidence.patch.gz"
+          printf '%s  %s\n' "$PATCH_GZIP_SHA256" "$RUNNER_TEMP/cognitive-evidence.patch.gz" \
+            | sha256sum --check --strict -
+          gzip --decompress --stdout "$RUNNER_TEMP/cognitive-evidence.patch.gz" \
+            > "$RUNNER_TEMP/cognitive-evidence.patch"
+          git apply --check "$RUNNER_TEMP/cognitive-evidence.patch"
+          git apply "$RUNNER_TEMP/cognitive-evidence.patch"
+          git rm "$WORKFLOW_PATH" "$ARM_WORKFLOW_PATH" "$X64_WORKFLOW_PATH"
+
+      - name: Execute focused fail-closed regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONDONTWRITEBYTECODE=1
+          python3 tools/cognitive-store-host-bootstrap/prepare_archive_env.py
+          PY="$RUNNER_TEMP/cognitive-archive-venv/bin/python"
+          "$PY" -m py_compile \
+            tools/cognitive-store-host-bootstrap/acceptance_governance.py \
+            tools/cognitive-store-host-bootstrap/host_qualification.py \
+            tools/cognitive-store-host-bootstrap/lifecycle.py \
+            tools/cognitive-store-host-bootstrap/retention_readiness.py
+          "$PY" tools/cognitive-store-host-bootstrap/test_acceptance_governance.py -v
+          "$PY" tools/cognitive-store-host-bootstrap/test_host_qualification.py -v
+          "$PY" tools/cognitive-store-host-bootstrap/test_retention_readiness.py -v
+          "$PY" tools/cognitive-store-host-bootstrap/test_lifecycle.py -v
+          "$PY" tools/cognitive-store-host-bootstrap/test_lifecycle_final_use.py -v
+          "$PY" scripts/cognitive_store_status.py --check
+          "$PY" scripts/test_cognitive_plan_binding.py -v
+          "$PY" scripts/test_cognitive_qualification_manifest.py -v
+          "$PY" scripts/test_cognitive_store_map.py -v
+          find . -type d -name __pycache__ -prune -exec rm -rf '{}' +
+          git diff --check
+          test ! -e "$WORKFLOW_PATH"
+          test ! -e "$ARM_WORKFLOW_PATH"
+          test ! -e "$X64_WORKFLOW_PATH"
+
+      - name: Commit reviewed source and exact object map
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Tomasrgbsf"
+          git config user.email "tomasbraynt@gmail.com"
+          git add -A
+          git commit \
+            -m "cognitive.store: require complete independent evidence identities" \
+            -m "Bind acceptance to the exact committed qualification command and artifact inventory. Require globally distinct host-step, retention-owner, lifecycle-owner, and independent-review evidence identities so one observation cannot be replayed across obligations." \
+            -m "Preserve the single SQLite owner, atomic semantic provenance, reconcile-first ambiguity handling, and false target-host, pruning, erasure, activation, and release claims." \
+            -m "Signed-off-by: OpenAI <noreply@openai.com>"
+          SOURCE_COMMIT="$(git rev-parse HEAD)"
+          SOURCE_TREE="$(git rev-parse HEAD^{tree})"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          python3 scripts/cognitive_store_map_generate.py \
+            --source-commit "$SOURCE_COMMIT" \
+            > "$RUNNER_TEMP/IMPLEMENTATION_MAP.generated.json"
+          mv "$RUNNER_TEMP/IMPLEMENTATION_MAP.generated.json" \
+            docs/modules/cognitive.store/IMPLEMENTATION_MAP.json
+          git add docs/modules/cognitive.store/IMPLEMENTATION_MAP.json
+          git commit \
+            -m "docs(cognitive-store): refresh independent evidence bindings" \
+            -m "Bind the reviewed source snapshot and exact Git objects. This map-only commit does not advance execution, target-host, erasure, acceptance, activation, or release claims." \
+            -m "Signed-off-by: OpenAI <noreply@openai.com>"
+          mapfile -t map_paths < <(git diff-tree --no-commit-id --name-only -r HEAD)
+          test "${#map_paths[@]}" -eq 1
+          test "${map_paths[0]}" = "docs/modules/cognitive.store/IMPLEMENTATION_MAP.json"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          git push origin "HEAD:${TARGET_BRANCH}"
+          printf 'source_commit=%s\nsource_tree=%s\nmap_commit=%s\n' \
+            "$SOURCE_COMMIT" "$SOURCE_TREE" "$(git rev-parse HEAD)"
