@@ -176,7 +176,7 @@ jobs:
     if: ${{ github.event_name == 'pull_request' && github.event.pull_request.number == 1183 && github.event.pull_request.head.ref == 'codex/inference-worker-authoritative-20260929' }}
     permissions:
       contents: write
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
       MATERIALIZATION_BASE: c3b3aaa9887e15bf18b1572f259b6893ddbe2b68
@@ -277,3 +277,4 @@ jobs:
           git add -A
           git commit -m 'inference.worker: bind peak resources and durable usage'
           git push origin "HEAD:$MATERIALIZATION_BRANCH"
+
