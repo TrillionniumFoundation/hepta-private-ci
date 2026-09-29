@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "ae64788d1a68e7ba76da59627e3974774e48bc1e",
-    "tree": "ef16e1f3ace50981d1591fb39add7f93ac9a6bed"
+    "commit": "a737ae6b522f3b1a3442432f310be2861cac9229",
+    "tree": "2dc2eb786af453d07077e1accd486a31dbb29c68"
   },
   "laneId": "LANE-F-ADAPTIVE-POLICY",
   "module": "neuron.runtime",
@@ -238,6 +238,11 @@
           "role": "interrupted_handoff_restart_resolution_and_fail_closed_gate_ownership"
         },
         {
+          "path": "codex-rs/hepta-agentd/src/lib.rs",
+          "symbol": "AgentdNeuronGenerationStateV2 / read_agentd_neuron_generation_state_v2 / write_agentd_neuron_generation_state_v2",
+          "role": "stable_crate_root_product_api"
+        },
+        {
           "path": "docs/modules/neuron.runtime/V2_DURABLE_CONTROL_STATE.md",
           "symbol": "restart resolution matrix",
           "role": "operator_and_developer_contract"
@@ -299,6 +304,11 @@
       "nativeSymbol": "AgentdNeuronGenerationStateV2"
     },
     {
+      "state": "crate_root_durable_control_state_api_exported_not_product_activated",
+      "sourcePath": "codex-rs/hepta-agentd/src/lib.rs",
+      "nativeSymbol": "AgentdNeuronGenerationStateV2"
+    },
+    {
       "state": "typed_intelligence_caller_source_implemented",
       "sourcePath": "codex-rs/hepta-intelligence/src/neuron_runtime.rs",
       "nativeSymbol": "run_neuron_tick_v1"
@@ -308,6 +318,10 @@
     {
       "path": ".github/workflows/neuron-runtime-closure.yml",
       "object": "10271285ac3dc18bc5d31128cf315bafe290bfe2"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "object": "b2c5e25724b6c93e72dd666f6b2ee18ddbd5e84d"
     },
     {
       "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2.rs",
