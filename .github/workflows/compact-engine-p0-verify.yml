@@ -1,0 +1,89 @@
+name: compact.engine P0 exact-source verification
+
+on:
+  push:
+    branches: [automation/compact-engine-p0-20260930]
+    paths:
+      - ".github/workflows/compact-engine-p0-verify.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: compact-engine-p0-exact-source-verification
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      TARGET_SHA: 668372aa409710e17ebc7c2b6668d6552059dd35
+      PATCH_SHA256: 293cc2ab4a03b596629c92a2bc5e15dda83ecd44454777526087386c7cc19156
+    steps:
+      - name: Checkout immutable executor inputs
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: automation/compact-engine-p0-20260930
+          path: executor
+          persist-credentials: false
+      - name: Checkout exact PR candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          path: source
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Apply exact bounded remediation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C source rev-parse HEAD)" = "$TARGET_SHA"
+          echo "$PATCH_SHA256  executor/.github/compact-engine-p0.patch" | sha256sum --check
+          git -C source apply --check ../executor/.github/compact-engine-p0.patch
+          git -C source apply ../executor/.github/compact-engine-p0.patch
+          rm source/.github/workflows/compact-engine-remediation-apply.yml
+          git -C source diff --check
+          actual="$(git -C source diff --name-only | sort)"
+          expected="$(printf '%s\n' \
+            .github/workflows/compact-engine-remediation-apply.yml \
+            codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs \
+            codex-rs/hepta-compact-engine/src/durable.rs \
+            codex-rs/hepta-compact-engine/src/product_e2e_tests.rs \
+            codex-rs/hepta-memory/src/cognitive_store_recovery.rs | sort)"
+          test "$actual" = "$expected"
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: rustfmt,clippy
+      - name: Format
+        working-directory: source/codex-rs
+        run: cargo fmt --all -- --check
+      - name: Check locked source
+        working-directory: source/codex-rs
+        run: cargo check --locked -p codex-hepta-compact-engine -p codex-hepta-agentd --all-targets
+      - name: Test locked source
+        working-directory: source/codex-rs
+        run: cargo test --locked -p codex-hepta-compact-engine -p codex-hepta-agentd
+      - name: Strict Clippy
+        working-directory: source/codex-rs
+        run: cargo clippy --locked -p codex-hepta-compact-engine -p codex-hepta-agentd --all-targets -- -D warnings
+      - name: Retain exact verified patch evidence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/compact-p0-evidence"
+          git -C source diff --binary > "$RUNNER_TEMP/compact-p0-evidence/verified.patch"
+          git -C source diff --stat > "$RUNNER_TEMP/compact-p0-evidence/diff.stat"
+          printf 'target=%s\npatch_sha256=%s\nchecked_tree=%s\n' \
+            "$TARGET_SHA" "$PATCH_SHA256" "$(git -C source rev-parse HEAD^{tree})" \
+            > "$RUNNER_TEMP/compact-p0-evidence/identity.txt"
+          (cd "$RUNNER_TEMP/compact-p0-evidence" && sha256sum verified.patch diff.stat identity.txt > SHA256SUMS)
+      - name: Upload exact verification evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: compact-engine-p0-${{ env.TARGET_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/compact-p0-evidence/
+          retention-days: 7
+          if-no-files-found: error
