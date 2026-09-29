@@ -3,7 +3,7 @@ name: Kernel evidence canonical status sync
 on:
   push:
     branches:
-      - fix/kernel-evidence-production-closure
+      - work/kernel-evidence-ad-integration-20260928
 
 permissions:
   contents: write
@@ -14,43 +14,110 @@ concurrency:
 
 jobs:
   synchronize:
-    if: ${{ !contains(github.event.head_commit.message, '[kernel-evidence-status-sync]') }}
+    if: ${{ !contains(github.event.head_commit.message, '[kernel-evidence-truth-sync]') }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 60
     steps:
       - name: Check out exact branch head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          ref: fix/kernel-evidence-production-closure
+          ref: work/kernel-evidence-ad-integration-20260928
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Regenerate and verify canonical projections
+      - uses: ./.github/actions/setup-ci
+
+      - name: Synchronize Lane A kernel.evidence truth
         shell: bash
         run: |
           set -euo pipefail
-          python3 scripts/kernel_evidence_status.py sync
-          python3 scripts/kernel_evidence_status.py verify
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          core_path = Path('scripts/lane_a_foundation_core.py')
+          core = core_path.read_text(encoding='utf-8')
+          old_migrations = '''    "0011_qualification_evidence.sql",\n    "0012_authbus_recovery.sql",\n]'''
+          new_migrations = '''    "0011_qualification_evidence.sql",\n    "0012_authbus_recovery.sql",\n    "0013_recovery_frontier_acceptance.sql",\n    "0014_evidence_publication.sql",\n    "0015_evidence_trust_acceptance.sql",\n    "0016_qualification_auth_provenance.sql",\n]'''
+          if old_migrations not in core and new_migrations not in core:
+              raise SystemExit('unexpected Lane A migration inventory')
+          core_path.write_text(core.replace(old_migrations, new_migrations, 1), encoding='utf-8')
+
+          lib_path = Path('scripts/lane_a_foundation_lib.py')
+          lib = lib_path.read_text(encoding='utf-8')
+          old_durability = '("kernel.evidence", "durability"): "sqlite_migrations_0001_0012",'
+          new_durability = '("kernel.evidence", "durability"): "sqlite_migrations_0001_0016",'
+          if old_durability not in lib and new_durability not in lib:
+              raise SystemExit('unexpected Lane A kernel.evidence durability oracle')
+          lib_path.write_text(lib.replace(old_durability, new_durability, 1), encoding='utf-8')
+
+          matrix_path = Path('docs/lane-a-foundation/MODULE_TRUTH_MATRIX.json')
+          matrix = json.loads(matrix_path.read_text(encoding='utf-8'))
+          expected = [
+              'platform.types',
+              'platform.wire',
+              'kernel.authority',
+              'kernel.operations',
+              'kernel.evidence',
+              'auth.authbus',
+              'secrets.heptabao',
+          ]
+          by_module = {row['module']: row for row in matrix['modules']}
+          if set(by_module) != set(expected):
+              raise SystemExit('Lane A module inventory changed unexpectedly')
+          matrix['modules'] = [by_module[module] for module in expected]
+          evidence = by_module['kernel.evidence']
+          evidence['states'].update({
+              'implementation': 'authenticated_evidence_and_fenced_publication_store',
+              'durability': 'sqlite_migrations_0001_0016',
+              'qualification': 'source_and_product_tests_present_exact_candidate_pending',
+              'activation': 'agentd_development_and_fail_closed_production_composed_not_activated',
+          })
+          evidence['currentCapabilities'] = [
+              'authenticated exact-candidate append, bounded paging and owner-profile verification',
+              'sealed monotonic trust snapshots enforced in the evidence transaction',
+              'single-transaction authenticated recovery snapshot and full admission commitment',
+              'durable publication ownership, dispatch fencing, indeterminate outcome and CAS reconciliation',
+              'external monotonic frontier adapter with segmented history, atomic latest index and capacity telemetry',
+              'Agentd development and fail-closed production composition with real backup object, build provenance and restore-witness checks',
+          ]
+          evidence['targetOnlyCapabilities'] = [
+              'deployment of the external rollback-domain backend on independently governed storage',
+              'target-host power-loss, capacity, RPO and RTO qualification',
+              'independent exact-candidate acceptance, canary, promotion and release authority',
+          ]
+          matrix_path.write_text(json.dumps(matrix, indent=2) + '\n', encoding='utf-8')
+          PY
+
+      - name: Regenerate source maps and document indexes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py migrate
+          python3 scripts/hepta-implementation-maps.py sync-plasticity-status
           python3 scripts/hepta-module-docs.py sync
+
+      - name: Verify synchronized truth before publication
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/verify_lane_a_foundation.py verify
+          python3 scripts/hepta-implementation-maps.py verify
           python3 scripts/hepta-module-docs.py verify
+          python3 scripts/hepta-docs.py verify
+          python3 scripts/kernel_evidence_status.py verify
           git diff --check
 
-      - name: Commit deterministic projections and index
+      - name: Commit deterministic truth and source observations
         shell: bash
         run: |
           set -euo pipefail
-          git add \
-            docs/modules/MODULE_DOCS.json \
-            docs/modules/kernel.evidence/TECHNICAL.md \
-            docs/lane-a-foundation/kernel.evidence/CURRENT_IMPLEMENTATION.md \
-            qualification/kernel-evidence/TRACEABILITY.md \
-            qualification/module-execution-dossiers/detail/kernel.evidence.md \
-            qualification/kernel-evidence/RELEASE_DASHBOARD.md
+          git add docs qualification scripts
           if git diff --cached --quiet; then
-            echo "Canonical projections and module document index already synchronized"
+            echo 'Final truth and maps already synchronized.'
             exit 0
           fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "docs(kernel.evidence): regenerate canonical status [kernel-evidence-status-sync]"
-          git push origin HEAD:fix/kernel-evidence-production-closure
+          git config user.name 'kernel-evidence-truth-sync'
+          git config user.email 'kernel-evidence-truth-sync@users.noreply.github.com'
+          git commit -m 'docs(kernel.evidence): synchronize final Lane A truth and maps [kernel-evidence-truth-sync]'
+          git push origin HEAD:work/kernel-evidence-ad-integration-20260928
