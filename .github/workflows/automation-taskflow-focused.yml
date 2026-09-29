@@ -69,6 +69,50 @@ env:
   PYTHONDONTWRITEBYTECODE: "1"
 
 jobs:
+  source_export:
+    name: Export exact TaskFlow source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Package reviewed source inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          export_dir="$RUNNER_TEMP/automation-taskflow-source"
+          mkdir -p "$export_dir"
+          git archive --format=tar.gz \
+            --output="$export_dir/exact-taskflow-source.tar.gz" \
+            "$SOURCE_SHA" -- \
+            codex-rs/hepta-automation/src/durable_neural_circuit.rs \
+            codex-rs/hepta-automation/src/durable_neural_circuit_recovery.rs \
+            codex-rs/hepta-automation/src/taskflow.rs \
+            codex-rs/hepta-automation/tests/durable_neural_circuit.rs \
+            codex-rs/hepta-automation/tests/durable_neural_circuit_recovery.rs \
+            codex-rs/hepta-automation/tests/taskflow.rs \
+            codex-rs/hepta-automation/migrations/0022_durable_neural_circuit.sql \
+            docs/modules/automation.taskflow \
+            scripts/automation_taskflow_contract.py \
+            scripts/automation_taskflow_truthful_finalize_20260929.py \
+            scripts/automation_taskflow_layered_contract_20260929.py \
+            scripts/automation_taskflow_source_last_mile_20260929.py.gz.b64 \
+            .github/workflows/automation-taskflow-focused.yml \
+            .github/workflows/automation-taskflow-selected-host.yml
+          sha256sum "$export_dir/exact-taskflow-source.tar.gz" > "$export_dir/SHA256SUMS"
+          printf '%s\n' "$SOURCE_SHA" > "$export_dir/COMMIT"
+      - name: Retain exact source bundle
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: automation-taskflow-source-${{ env.SOURCE_SHA }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/automation-taskflow-source/
+          if-no-files-found: error
+          retention-days: 1
+
   focused:
     name: TaskFlow exact-source qualification
     runs-on: ubuntu-24.04
