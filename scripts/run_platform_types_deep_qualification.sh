@@ -84,6 +84,7 @@ truth_check() {
   python3 -m unittest \
     scripts/test_platform_types_rama_lock_guard.py \
     scripts/test_platform_types_rustdoc_api.py
+  python3 -m unittest discover -s scripts -p test_platform_types_nonempty_tests.py -v
   python3 scripts/platform_types_public_api.py
   python3 scripts/platform_types_implementation_map.py \
     --output "$OUT/generated-implementation-map.json"
@@ -95,7 +96,8 @@ truth_check() {
     --markdown "$OUT/protocol-catalog.md"
   python3 codex-rs/hepta-types/conformance/verify_platform_wire_vectors.py
   node codex-rs/hepta-types/conformance/verify_platform_wire_vectors.mjs
-  bash scripts/run_platform_types_consumer_qualification.sh
+  HEPTA_TYPES_EVIDENCE_DIR="$OUT/consumers" \
+    bash scripts/run_platform_types_consumer_qualification.sh
   cargo run --release --locked --manifest-path "$MANIFEST" \
     --package "$PACKAGE" --bin platform-types-registry-bench -- \
     100000 "$OUT/registry-benchmark.json"
@@ -123,6 +125,10 @@ for row in value["cases"]:
     ):
         assert isinstance(row[field], int) and row[field] >= 0
 PY
+  bash scripts/run_platform_types_resource_qualification.sh "$OUT/resources"
+  # Bind the retained raw samples and resource report through truth-log, which
+  # already has a mandatory digest in the exact-candidate qualification receipt.
+  sha256sum "$OUT/resources/raw.json" "$OUT/resources/report.json"
   git diff --check
   test -z "$(git status --porcelain --untracked-files=no)"
 }

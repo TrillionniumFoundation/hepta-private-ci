@@ -18,6 +18,12 @@ fn prompt_wire_boundaries_preserve_hashability_and_roundtrip() {
         if count <= 4_096 {
             let value = decoded.expect("accepted boundary");
             let digest = value.semantic_digest().expect("admitted values must hash");
+            if count == 4_096 {
+                assert_eq!(
+                    digest.to_string(),
+                    "c499a4a2479291376878d2f3a506d342c7f96b3eaa0fea3d206aafcbaf5a4e36"
+                );
+            }
             let encoded = encode_prompt_delivery_v2_json(&value).expect("encode");
             let roundtrip = decode_prompt_delivery_v2_json(&encoded).expect("roundtrip");
             assert_eq!(value, roundtrip);

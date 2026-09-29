@@ -31,6 +31,15 @@ python3 "$ROOT/scripts/verify_platform_types_schema_catalog.py" \
   --report "$OUT/schema-catalog-report.json" \
   2>&1 | tee "$OUT/schema-catalog.log"
 
+python3 "$ROOT/scripts/verify_platform_types_semantic_bounds.py" \
+  --catalog "$OUT/protocol-catalog.json" \
+  --report "$OUT/semantic-bounds-report.json" \
+  2>&1 | tee "$OUT/semantic-bounds.log"
+
+(cd "$ROOT" && python3 -m unittest discover -s scripts \
+  -p test_platform_types_semantic_bounds.py -v) \
+  2>&1 | tee "$OUT/semantic-bounds-tests.log"
+
 FINAL_SHA="$(git -C "$ROOT" rev-parse HEAD)"
 FINAL_TREE="$(git -C "$ROOT" rev-parse HEAD^{tree})"
 FINAL_STATUS="$(git -C "$ROOT" status --porcelain --untracked-files=no)"
@@ -52,6 +61,9 @@ for name in (
     "schema-catalog-report.json",
     "codegen.log",
     "schema-catalog.log",
+    "semantic-bounds-report.json",
+    "semantic-bounds.log",
+    "semantic-bounds-tests.log",
 ):
     path = out / name
     raw = path.read_bytes()
@@ -67,7 +79,7 @@ receipt = {
     "artifacts": artifacts,
     "status": "passed",
     "claimBoundary": (
-        "same-candidate Rust catalog and executable-schema structural parity; "
+        "same-candidate Rust catalog/schema structural and Prompt capacity parity; "
         "not activation, external acceptance, promotion, or release"
     ),
 }

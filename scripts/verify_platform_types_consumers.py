@@ -62,15 +62,16 @@ def main() -> int:
         "python3 codex-rs/hepta-types/conformance/verify_platform_wire_vectors.py",
         "node codex-rs/hepta-types/conformance/verify_platform_wire_vectors.mjs",
         'cargo test --locked --manifest-path "$MANIFEST" \\\n  -p codex-hepta-types --test manifest_protocol_consumer',
-        "just test --locked -p codex-hepta-types --all-targets",
-        "just test --locked -p codex-hepta-wire --lib",
-        "just test --locked -p codex-hepta-ndu --lib",
-        "just test --locked -p codex-hepta-codex-adapter --lib -E 'test(prompt_delivery)'",
-        "just test --locked -p codex-hepta-learning-ledger --lib -E 'test(runtime_delivery)'",
-        "just test --locked -p codex-hepta-supervisor --lib -E 'test(topology_candidate)'",
-        "just test --locked -p codex-hepta-supervisor --lib -E 'test(platform_manifest_admission)'",
+        'cargo test --locked --manifest-path "$MANIFEST" \\\n  -p codex-hepta-types --all-targets',
+        'cargo test --locked --manifest-path "$MANIFEST" \\\n  -p codex-hepta-wire --lib',
+        'cargo test --locked --manifest-path "$MANIFEST" \\\n  -p codex-hepta-ndu --lib',
+        'cargo test --locked --manifest-path "$MANIFEST" \\\n  -p codex-hepta-codex-adapter --lib prompt_delivery',
+        'cargo test --locked --manifest-path "$MANIFEST" \\\n  -p codex-hepta-learning-ledger --lib runtime_delivery',
+        'cargo test --locked --manifest-path "$MANIFEST" \\\n  -p codex-hepta-supervisor --lib topology_candidate',
+        'cargo test --locked --manifest-path "$MANIFEST" \\\n  -p codex-hepta-supervisor --lib platform_manifest_admission',
         'cargo clippy --locked --manifest-path "$MANIFEST" -p codex-hepta-wire --lib',
         'cargo clippy --locked --manifest-path "$MANIFEST" -p codex-hepta-ndu --lib',
+        'python3 scripts/platform_types_nonempty_tests.py "$EVIDENCE/$name.log"',
     ):
         if command not in qualification:
             raise SystemExit(f"platform.types qualification command drift: {command}")

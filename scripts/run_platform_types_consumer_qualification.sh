@@ -9,6 +9,7 @@ INITIAL_TREE="$(git rev-parse HEAD^{tree})" || exit 1
 INITIAL_STATUS="$(git status --porcelain --untracked-files=normal)" || exit 1
 EVIDENCE="${HEPTA_TYPES_EVIDENCE_DIR:-$ROOT/.hepta-evidence/platform-types-consumers}"
 mkdir -p "$EVIDENCE" || exit 1
+rm -f "$EVIDENCE/execution.json" || exit 1
 RESULTS="$EVIDENCE/results.tsv"
 : > "$RESULTS"
 failed=0
@@ -18,6 +19,14 @@ run_step() {
   printf '\n=== %s ===\n' "$name"
   "$@" > "$EVIDENCE/$name.log" 2>&1 || rc=$?
   cat "$EVIDENCE/$name.log"
+  case "$name" in
+    manifest-rust|types-tests|wire-tests|ndu-tests|prompt-producer|prompt-ledger|topology-consumer|manifest-owners)
+      if (( rc == 0 )); then
+        python3 scripts/platform_types_nonempty_tests.py "$EVIDENCE/$name.log" \
+          > "$EVIDENCE/$name-count.json" || rc=$?
+      fi
+      ;;
+  esac
   printf '%s\t%s\t%s\n' "$name" "$rc" "$((SECONDS-start))" >> "$RESULTS"
   if (( rc != 0 )); then failed=1; fi
 }
@@ -82,8 +91,8 @@ record = {"schema": "hepta.platform-types.consumer-execution.v2", "sourceHead": 
           "productActivation": False, "independentAcceptance": False}
 (evidence / "execution.json").write_text(json.dumps(record, indent=2) + "\n")
 print(json.dumps({key: record[key] for key in ("sourceHead", "checksPassed", "qualified")}))
-if not unchanged or not clean:
-    raise SystemExit("consumer qualification requires a clean, unchanged source candidate")
+if not unchanged or not clean or not passed:
+    raise SystemExit("consumer qualification requires all 24 checks and a clean unchanged candidate")
 RECEIPT
 receipt_rc=$?
 if (( receipt_rc != 0 )); then failed=1; fi

@@ -48,11 +48,12 @@ const PROMPT_V2_FIELDS: &[ProtocolFieldDescriptorV2] = &[
         true,
         Some(64),
     ),
+    // This is decoded u32 payload size, not JSON text or HPTC framing size.
     field(
         "observed_token_positions",
         "required_nullable_u32_array",
         true,
-        Some(32_768),
+        Some(crate::prompt_delivery_v2::MAX_PROMPT_V2_TOKEN_POSITIONS * 4),
     ),
     field("truncation_observed", "bool", true, None),
     field(
