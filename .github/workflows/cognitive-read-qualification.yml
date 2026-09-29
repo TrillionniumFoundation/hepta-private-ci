@@ -19,11 +19,11 @@ jobs:
   maintenance-artifact:
     name: Build exact maintenance artifact
     if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'work/cognitive-read-production-convergence-20260927'
-    runs-on: ubuntu-24.04
+    runs-on: windows-2025
     timeout-minutes: 180
     env:
       RUST_MIN_STACK: "8388608"
-      EXPECTED_PARENT: 42a7a0daca57aa373b559705ad64e48a32e966c8
+      EXPECTED_PARENT: d4bd1a1f90882b889efccbf10509c58bf5e25c71
       RESTORE_COMMIT: c20035266afa1cd08570b021632ba71dcb7766b7
       TARGET_BRANCH: work/cognitive-read-production-convergence-20260927
     steps:
@@ -37,7 +37,9 @@ jobs:
         uses: ./.github/actions/setup-ci
       - name: Build and verify bounded maintenance candidate
         shell: bash
-        run: bash .github/scripts/cognitive_read_maintenance_closure.sh
+        run: |
+          export RUNNER_TEMP="$(cygpath -u "$RUNNER_TEMP")"
+          bash .github/scripts/cognitive_read_maintenance_closure.sh
       - name: Retain exact maintenance artifact
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
