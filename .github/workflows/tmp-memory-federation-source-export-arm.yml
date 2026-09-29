@@ -1,0 +1,33 @@
+name: temporary memory federation source export arm
+
+on:
+  push:
+    branches:
+      - tmp/memory-federation-source-export-arm-20260929
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Archive tracked source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git archive --format=tar.gz --output="$RUNNER_TEMP/hepta-private-ci-${GITHUB_SHA}.tar.gz" HEAD
+      - name: Upload exact source
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-federation-source-export-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-private-ci-${{ github.sha }}.tar.gz
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
