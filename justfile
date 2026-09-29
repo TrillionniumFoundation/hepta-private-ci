@@ -46,13 +46,13 @@ app-server-test-client *args:
     cargo build -p codex-cli
     cargo run -p codex-app-server-test-client -- --codex-bin ./target/debug/codex {args}
 
-# Format the justfile, Rust, Bazel/Starlark, Python SDK code, and Python scripts.
-fmt:
-    @{{ python }} ../scripts/format.py
+# Format changed files with their owning language tools. Use `just fmt --all` for the full tree.
+fmt *args:
+    @{{ python }} ../scripts/format.py {args}
 
-# Check formatting without modifying files.
+# Check the entire repository without modifying files; never silently check an empty diff.
 fmt-check:
-    @{{ python }} ../scripts/format.py --check
+    @{{ python }} ../scripts/format.py --all --check
 
 fix *args:
     cargo clippy --fix --tests --allow-dirty {args}

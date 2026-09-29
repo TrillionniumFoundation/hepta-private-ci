@@ -6,6 +6,12 @@ import os
 import shlex
 import subprocess
 import sys
+import json
+
+try:
+    import tomllib
+except ModuleNotFoundError:  # Python 3.10 uses Cargo for Rust edition metadata.
+    tomllib = None
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
@@ -48,11 +54,17 @@ def rust_formatter_group(*, check: bool) -> FormatterGroup:
     return FormatterGroup("Rust", (command,))
 
 
-def buildifier_formatter_group(*, check: bool) -> FormatterGroup:
-    repository_files = subprocess.check_output(
-        ["git", "ls-files", "-z", "--cached", "--others", "--exclude-standard"],
-        cwd=REPO_ROOT,
-    ).split(b"\0")
+def buildifier_formatter_group(
+    *, check: bool, paths: list[str] | None = None
+) -> FormatterGroup:
+    repository_files = (
+        [os.fsencode(path) for path in paths]
+        if paths is not None
+        else subprocess.check_output(
+            ["git", "ls-files", "-z", "--cached", "--others", "--exclude-standard"],
+            cwd=REPO_ROOT,
+        ).split(b"\0")
+    )
     buildifier_files: list[str] = []
     for encoded_path in repository_files:
         if not encoded_path:
@@ -80,7 +92,9 @@ def buildifier_formatter_group(*, check: bool) -> FormatterGroup:
     return FormatterGroup("Bazel/Starlark", (Command(tuple(buildifier_args)),))
 
 
-def python_sdk_formatter_group(*, check: bool) -> FormatterGroup:
+def python_sdk_formatter_group(
+    *, check: bool, paths: list[str] | None = None
+) -> FormatterGroup:
     # Each `--project` retains its local dependency and Ruff configuration context.
     uv_run_args = [
         "uv",
@@ -109,13 +123,21 @@ def python_sdk_formatter_group(*, check: bool) -> FormatterGroup:
     return FormatterGroup(
         "Python SDK",
         (
-            Command((*uv_run_args, *lint_args, "sdk/python")),
-            Command((*format_args, "sdk/python")),
+            Command(
+                (
+                    *uv_run_args,
+                    *lint_args,
+                    *(paths if paths is not None else ["sdk/python"]),
+                )
+            ),
+            Command((*format_args, *(paths if paths is not None else ["sdk/python"]))),
         ),
     )
 
 
-def python_scripts_formatter_group(*, check: bool) -> FormatterGroup:
+def python_scripts_formatter_group(
+    *, check: bool, paths: list[str] | None = None
+) -> FormatterGroup:
     # The SDK and internal scripts intentionally use separate project roots so
     # uv and Ruff retain each project's configuration context.
     args = [
@@ -129,7 +151,7 @@ def python_scripts_formatter_group(*, check: bool) -> FormatterGroup:
     ]
     if check:
         args.append("--check")
-    args.append("scripts")
+    args.extend(paths if paths is not None else ["scripts"])
     return FormatterGroup("Python scripts", (Command(tuple(args)),))
 
 
@@ -168,6 +190,171 @@ def run_formatter_group(group: FormatterGroup) -> FormatterResult:
     return FormatterResult(group.name, "", 0)
 
 
+def changed_paths(base: str | None = None) -> list[str]:
+    """Include staged, unstaged and untracked inputs; preserve literal filenames."""
+    revision = "HEAD"
+    if base is not None:
+        revision = subprocess.check_output(
+            ["git", "rev-parse", "--verify", "--end-of-options", f"{base}^{{commit}}"],
+            cwd=REPO_ROOT,
+            text=True,
+        ).strip()
+    commands = [
+        [
+            "git",
+            "diff",
+            "--name-only",
+            "--diff-filter=ACMRT",
+            "--no-renames",
+            "-z",
+            revision,
+            "--",
+        ],
+        ["git", "ls-files", "--others", "--exclude-standard", "-z"],
+    ]
+    values = set()
+    for command in commands:
+        for raw in subprocess.check_output(command, cwd=REPO_ROOT).split(b"\0"):
+            if not raw:
+                continue
+            value = os.fsdecode(raw)
+            path = REPO_ROOT / value
+            if not path.resolve().is_relative_to(REPO_ROOT.resolve()):
+                raise ValueError(f"format input escapes repository: {value!r}")
+            if path.is_file():
+                values.add(value)
+    return sorted(values)
+
+
+def rust_file_command(path: str, *, check: bool) -> Command:
+    manifest = next(
+        (
+            parent / "Cargo.toml"
+            for parent in (REPO_ROOT / path).parents
+            if (parent / "Cargo.toml").is_file() and parent.is_relative_to(REPO_ROOT)
+        ),
+        None,
+    )
+    edition = "2021"
+    if manifest is not None and tomllib is None:
+        metadata = json.loads(
+            subprocess.check_output(
+                [
+                    "cargo",
+                    "metadata",
+                    "--no-deps",
+                    "--format-version=1",
+                    "--manifest-path",
+                    str(manifest),
+                ],
+                cwd=REPO_ROOT,
+                text=True,
+            )
+        )
+        package = next(
+            row
+            for row in metadata["packages"]
+            if Path(row["manifest_path"]) == manifest
+        )
+        edition = package["edition"]
+    elif manifest is not None:
+        package = tomllib.loads(manifest.read_text())["package"]
+        edition = package.get("edition", "2015")
+        if isinstance(edition, dict):
+            workspace = tomllib.loads((REPO_ROOT / "codex-rs/Cargo.toml").read_text())
+            edition = workspace["workspace"]["package"]["edition"]
+    args = [
+        "rustfmt",
+        "--edition",
+        str(edition),
+        "--config",
+        "imports_granularity=Item,skip_children=true",
+    ]
+    if check:
+        args.append("--check")
+    return Command((*args, "--", "./" + path), REPO_ROOT)
+
+
+def formatting_configuration_changed(path: str, base: str | None = None) -> bool:
+    """Dependency metadata alone does not change Ruff rules or their scope."""
+    if Path(path).name != "pyproject.toml" or tomllib is None:
+        return True
+    before = subprocess.run(
+        ["git", "show", f"{base or 'HEAD'}:{path}"],
+        cwd=REPO_ROOT,
+        text=True,
+        capture_output=True,
+    )
+    if before.returncode:
+        return True
+    try:
+        previous = tomllib.loads(before.stdout).get("tool", {}).get("ruff", {})
+        current = (
+            tomllib.loads((REPO_ROOT / path).read_text())
+            .get("tool", {})
+            .get("ruff", {})
+        )
+    except (ValueError, OSError):
+        return True
+    return previous != current
+
+
+def scoped_formatter_groups(
+    paths: list[str], *, check: bool, base: str | None = None
+) -> tuple[FormatterGroup, ...]:
+    groups = []
+    if "justfile" in paths:
+        groups.append(just_formatter_group(check=check))
+    rust = [
+        path for path in paths if path.startswith("codex-rs/") and path.endswith(".rs")
+    ]
+    if any(Path(path).name in {"rustfmt.toml", ".rustfmt.toml"} for path in paths):
+        groups.append(rust_formatter_group(check=check))
+    elif rust:
+        groups.append(
+            FormatterGroup(
+                "Rust", tuple(rust_file_command(path, check=check) for path in rust)
+            )
+        )
+    build = [
+        path
+        for path in paths
+        if Path(path).name in {"BUILD", "WORKSPACE", "MODULE.bazel"}
+        or Path(path).name.startswith(("BUILD.", "WORKSPACE."))
+        or path.endswith((".BUILD.bazel", ".MODULE.bazel", ".bzl", ".sky"))
+        or ".bzl." in Path(path).name
+        or ".sky." in Path(path).name
+    ]
+    if build:
+        groups.append(buildifier_formatter_group(check=check, paths=build))
+    for directory, factory in (
+        ("sdk/python", python_sdk_formatter_group),
+        ("scripts", python_scripts_formatter_group),
+    ):
+        selected = [
+            "./" + path
+            for path in paths
+            if path.startswith(directory + "/") and path.endswith((".py", ".pyi"))
+        ]
+        config_changed = any(
+            path
+            in {
+                f"{directory}/pyproject.toml",
+                f"{directory}/ruff.toml",
+                f"{directory}/.ruff.toml",
+                "ruff.toml",
+                ".ruff.toml",
+            }
+            and formatting_configuration_changed(path, base)
+            for path in paths
+        )
+        if config_changed:
+            groups.append(factory(check=check))
+        elif selected:
+            groups.append(factory(check=check, paths=selected))
+    return tuple(groups)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -175,8 +362,30 @@ def main() -> int:
         action="store_true",
         help="check formatting without modifying files",
     )
+    scope = parser.add_mutually_exclusive_group()
+    scope.add_argument(
+        "--all", action="store_true", help="format/check the full repository"
+    )
+    scope.add_argument(
+        "--base",
+        help="include committed changes since this exact base, plus local edits",
+    )
     args = parser.parse_args()
-    groups = formatter_groups(check=args.check)
+    try:
+        groups = (
+            formatter_groups(check=args.check)
+            if args.all
+            else scoped_formatter_groups(
+                changed_paths(args.base), check=args.check, base=args.base
+            )
+        )
+    except (ValueError, subprocess.CalledProcessError) as error:
+        parser.exit(2, f"Cannot determine formatting scope: {error}\n")
+    if not groups:
+        print(
+            "No changed files need formatting. Use --all for a full repository check."
+        )
+        return 0
 
     failures: list[str] = []
     with ThreadPoolExecutor(max_workers=len(groups)) as executor:
