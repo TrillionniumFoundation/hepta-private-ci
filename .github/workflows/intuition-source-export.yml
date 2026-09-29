@@ -1,57 +1,206 @@
-name: intuition.policy Exact Source Export
+name: intuition.policy One-shot Source Authoring
 
 on:
   push:
     branches: [codex/intuition-policy-production-closure-20260927]
     paths:
-      - ".github/workflows/intuition-source-export.yml"
-  workflow_dispatch:
+      - ".github/intuition-authoring-patch/READY"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
-  group: intuition-source-export-${{ github.ref }}
+  group: intuition-one-shot-authoring-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  export:
-    name: Export immutable intuition sources
+  apply-verify-push:
+    name: Apply, format, verify, and publish source patch
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    timeout-minutes: 90
     steps:
-      - name: Check out exact source
+      - name: Check out exact authoring head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
-          persist-credentials: false
           fetch-depth: 0
-      - name: Capture exact source subset
+          persist-credentials: true
+
+      - name: Recover the exact reviewed patch and apply it
+        shell: bash
+        run: |
+          exec > >(tee "$RUNNER_TEMP/intuition-authoring-validate.log") 2>&1
+          set -euxo pipefail
+          ready=.github/intuition-authoring-patch/READY
+          base="$(sed -n 's/^base=//p' "$ready" | tr -d '\r')"
+          part_000="$(sed -n 's/^part-000=//p' "$ready" | tr -d '\r')"
+          part_001="$(sed -n 's/^part-001=//p' "$ready" | tr -d '\r')"
+          part_002="$(sed -n 's/^part-002=//p' "$ready" | tr -d '\r')"
+          test "$base" = "696447e733e22e425cd05691d98f4fe0ef63f759"
+          test "$part_000" = "ff90ec4b0bb594c6659c0805f7683e625f423d46"
+          test "$part_001" = "8ef03a50ccef25591918ed67fb42506bcfdd21f1"
+          test "$part_002" = "627e323cc4086e712a04ffa58b02e7723415e64c"
+          test "$(git cat-file -t "$base")" = commit
+          for blob in "$part_000" "$part_001" "$part_002"; do
+            test "$(git cat-file -t "$blob")" = blob
+          done
+          PART_000="$part_000" PART_001="$part_001" PART_002="$part_002" python3 - <<'PY'
+          import base64
+          import hashlib
+          import os
+          import pathlib
+          import subprocess
+
+          expected = "d9988033416a6bf64588b593c34496abba4d3f66a20df57d749a6308500ca3dc"
+          parts = [
+              b"".join(subprocess.check_output(["git", "cat-file", "blob", os.environ[name]]).split())
+              for name in ("PART_000", "PART_001", "PART_002")
+          ]
+          print("compact lengths:", [len(part) for part in parts])
+          matches = []
+          direct = b"".join(parts)
+          candidates = [("direct", None, direct)]
+          if len(direct) % 4 == 1 and len(parts[1]) == 12001:
+              candidates.extend(
+                  (
+                      "part-001-single-byte-removal",
+                      index,
+                      parts[0] + parts[1][:index] + parts[1][index + 1:] + parts[2],
+                  )
+                  for index in range(len(parts[1]))
+              )
+          for method, index, encoded in candidates:
+              try:
+                  patch = base64.b64decode(encoded, validate=True)
+              except ValueError:
+                  continue
+              digest = hashlib.sha256(patch).hexdigest()
+              if digest == expected:
+                  matches.append((method, index, patch))
+          if len(matches) != 1:
+              raise SystemExit(f"expected one exact reviewed reconstruction, found {len(matches)}")
+          method, index, patch = matches[0]
+          if not patch.startswith(b"diff --git a/") or not patch.endswith(b"\n"):
+              raise SystemExit("reviewed digest did not decode to a unified patch")
+          target = pathlib.Path(".git/intuition-source.patch")
+          target.write_bytes(patch)
+          pathlib.Path(".git/intuition-source.patch.sha256").write_text(
+              f"{expected}  {target.name}\n", encoding="utf-8"
+          )
+          pathlib.Path(".git/intuition-source.patch.recovery").write_text(
+              f"method={method}\nindex={index}\nsha256={expected}\n", encoding="utf-8"
+          )
+          print(f"selected method={method} index={index} sha256={expected}")
+          PY
+          git diff --quiet
+          git apply --check .git/intuition-source.patch
+          git apply --index .git/intuition-source.patch
+          rm -rf .github/intuition-authoring-patch
+          rm -f .github/workflows/intuition-source-export.yml
+
+      - name: Preserve exact patch evidence
         shell: bash
         run: |
           set -euo pipefail
-          output="$RUNNER_TEMP/intuition-source"
+          output="$RUNNER_TEMP/intuition-patched-source"
           mkdir -p "$output"
-          tar -czf "$output/source.tgz" \
-            codex-rs/hepta-agentd/src \
-            codex-rs/hepta-agentd/tests \
-            codex-rs/hepta-agentd/Cargo.toml \
-            codex-rs/hepta-agent-protocol/src \
-            codex-rs/hepta-agent-protocol/Cargo.toml \
-            codex-rs/hepta-intelligence/src/intuition_qualification_v3.rs \
-            codex-rs/hepta-intuition/src \
-            codex-rs/hepta-learning-ledger/src \
-            docs/modules/intuition.policy \
-            qualification/module-execution-dossiers/detail/intuition.policy.md \
-            scripts/intuition_ledger_exact.py
-          git rev-parse HEAD > "$output/source-sha.txt"
-          git rev-parse 'HEAD^{tree}' > "$output/source-tree.txt"
-          git status --porcelain --untracked-files=all > "$output/worktree-status.txt"
-          test ! -s "$output/worktree-status.txt"
-      - name: Retain immutable source subset
+          cp .git/intuition-source.patch "$output/source.patch"
+          cp .git/intuition-source.patch.sha256 "$output/source.patch.sha256"
+          cp .git/intuition-source.patch.recovery "$output/source.patch.recovery"
+          cp "$RUNNER_TEMP/intuition-authoring-validate.log" "$output/validate.log"
+          git diff --cached --binary > "$output/applied.patch"
+
+      - name: Upload exact patch evidence
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: intuition-source-export-${{ github.sha }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/intuition-source/
+          name: intuition-final-use-patch-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/intuition-patched-source/
           if-no-files-found: error
-          retention-days: 1
+          retention-days: 7
+
+      - name: Set up repository CI dependencies
+        uses: ./.github/actions/setup-ci
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt,clippy
+
+      - name: Format exact Rust source
+        working-directory: codex-rs
+        run: cargo fmt --all
+
+      - name: Verify Python boundaries and source inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/intuition_legacy_consumers.py
+          python -m unittest discover -s scripts/tests -p 'test_intuition*.py' -v
+
+      - name: Run final-use and existing boundary regressions
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-intuition
+          cargo test --locked -p codex-hepta-intelligence intuition
+          cargo test --locked -p codex-hepta-agentd --test intuition_policy_final_use_v4
+          cargo test --locked -p codex-hepta-agentd --test intuition_policy_commit_boundary
+          cargo test --locked -p codex-hepta-agentd --lib intuition_policy
+
+      - name: Run strict lint on affected product package
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-agentd --lib --tests -- -D warnings
+
+      - name: Verify formatting and source cleanliness
+        shell: bash
+        run: |
+          set -euo pipefail
+          (cd codex-rs && cargo fmt --all -- --check)
+          git diff --check
+          test -z "$(find . -type d -name __pycache__ -print -quit)"
+
+      - name: Publish one clean source commit on the reviewed base
+        shell: bash
+        env:
+          TARGET_BRANCH: codex/intuition-policy-production-closure-20260927
+          CLEAN_PARENT: 696447e733e22e425cd05691d98f4fe0ef63f759
+        run: |
+          set -euo pipefail
+          git config user.name "OpenAI source authoring"
+          git config user.email "assistant@openai.invalid"
+          git add -A
+          test -z "$(git diff --cached --name-only | grep -E '^\.github/(intuition-authoring-patch|workflows/intuition-source-export\.yml)' || true)"
+          tree="$(git write-tree)"
+          commit="$(printf '%s\n\n%s\n' \
+            'fix(intuition): revalidate authority at final use' \
+            'Preserve the sole ledger owner while moving fresh time, generation, and three-party qualification checks under its serialization boundary. Add typed boundary domains, stage telemetry, legacy-consumer drift checks, and separate safety/effectiveness/operator acceptance states.' \
+            | git commit-tree "$tree" -p "$CLEAN_PARENT")"
+          git push --force-with-lease="refs/heads/$TARGET_BRANCH:$GITHUB_SHA" \
+            origin "$commit:refs/heads/$TARGET_BRANCH"
+          printf '%s\n' "$commit"
+
+      - name: Retain diagnostics on failure
+        if: failure()
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/intuition-authoring-failure"
+          mkdir -p "$output"
+          git status --short > "$output/status.txt"
+          git diff --binary > "$output/worktree.patch"
+          git diff --cached --binary > "$output/index.patch"
+          cp "$RUNNER_TEMP/intuition-authoring-validate.log" "$output/validate.log" 2>/dev/null || true
+          cp .git/intuition-source.patch "$output/source.patch" 2>/dev/null || true
+          cp .git/intuition-source.patch.sha256 "$output/source.patch.sha256" 2>/dev/null || true
+          cp .git/intuition-source.patch.recovery "$output/source.patch.recovery" 2>/dev/null || true
+
+      - name: Upload failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intuition-authoring-failure-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/intuition-authoring-failure/
+          if-no-files-found: warn
+          retention-days: 7
