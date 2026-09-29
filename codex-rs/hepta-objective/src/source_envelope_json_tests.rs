@@ -312,11 +312,28 @@ fn numeric_and_digest_grammar_remains_exact() {
 }
 
 #[test]
+fn accepts_empty_caller_actions_for_intrinsic_abstain_after_decoding() {
+    let mut source: Value = serde_json::from_str(SOURCE).unwrap();
+    source["structuredIntent"]["legalActionClasses"] = json!([]);
+    source["structuredIntent"]["confirmationActionClasses"] = json!([]);
+
+    let decoded =
+        decode_source_envelope_json_v1(&serde_json::to_vec(&source).unwrap()).unwrap();
+    assert!(decoded.structured_intent.legal_action_classes.is_empty());
+    assert!(
+        decoded
+            .structured_intent
+            .confirmation_action_classes
+            .is_empty()
+    );
+    assert_eq!(decoded.validate_structure(), Ok(()));
+}
+
+#[test]
 fn retains_structural_count_text_and_semantic_key_checks_after_decoding() {
     let original: Value = serde_json::from_str(SOURCE).unwrap();
     for (pointer, invalid) in [
         ("/locale", json!("é".repeat(17))),
-        ("/structuredIntent/legalActionClasses", json!([])),
         (
             "/structuredIntent/legalActionClasses",
             json!(vec!["read"; 129]),
