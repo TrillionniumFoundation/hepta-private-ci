@@ -62,6 +62,39 @@ def _object(evidence: dict[str, Any], name: str) -> tuple[dict[str, Any], dict[s
     return record, read_object(resolve_record_path(record))
 
 
+def _nonnegative_integer(value: Any) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool) and value >= 0
+
+
+def _validate_registry_benchmark(value: dict[str, Any]) -> None:
+    if (
+        value.get("schema") != "hepta.platform-types.registry-lookup-benchmark.v1"
+        or value.get("schemaVersion") != 1
+        or not _nonnegative_integer(value.get("iterationsPerLookup"))
+        or value.get("iterationsPerLookup") == 0
+        or value.get("acceptanceThreshold") is not None
+    ):
+        raise CandidateBundleError("registry workload evidence header is invalid")
+    cases = value.get("cases")
+    if not isinstance(cases, list) or [case.get("entryCount") for case in cases if isinstance(case, dict)] != [8, 256]:
+        raise CandidateBundleError("registry workload matrix must contain exact 8 and 256 entry cases")
+    fields = (
+        "constructionElapsedNs",
+        "constructionNsPerEntry",
+        "identityElapsedNs",
+        "identityNsPerLookup",
+        "digestElapsedNs",
+        "digestNsPerLookup",
+        "registryIdentityElapsedNs",
+        "registryIdentityNsPerLookup",
+    )
+    for case in cases:
+        if not isinstance(case, dict) or any(
+            not _nonnegative_integer(case.get(field)) for field in fields
+        ):
+            raise CandidateBundleError("registry workload case is incomplete or non-numeric")
+
+
 def write_receipt(args: Any) -> None:
     identity = exact_identity(args)
     outcomes = _outcomes(args)
@@ -71,6 +104,7 @@ def write_receipt(args: Any) -> None:
     evidence = evidence_records(args.evidence, require_existing=True)
     bundle_record, bundle = _object(evidence, "bundle-manifest")
     property_record, properties = _object(evidence, "property-report")
+    benchmark_record, registry_benchmark = _object(evidence, "registry-benchmark")
     map_record, generated_map = _object(evidence, "generated-map")
     provenance_record, provenance = _object(evidence, "provenance")
     api_record, api_diff = _object(evidence, "rustdoc-diff")
@@ -83,6 +117,7 @@ def write_receipt(args: Any) -> None:
         raise CandidateBundleError("document bundle overclaims qualification")
     if properties.get("status") != "passed":
         raise CandidateBundleError("property report did not pass")
+    _validate_registry_benchmark(registry_benchmark)
     if provenance.get("status") != "passed" or provenance.get("candidateIdentity") != identity:
         raise CandidateBundleError("Git provenance did not pass for this candidate")
     if api_diff.get("status") != "passed" or api_diff.get("breaking") is not False:
@@ -127,13 +162,15 @@ def write_receipt(args: Any) -> None:
         "evidence": evidence,
         "documentBundleSha256": bundle_record["sha256"],
         "propertyReportSha256": property_record["sha256"],
+        "registryBenchmarkSha256": benchmark_record["sha256"],
         "generatedImplementationMapSha256": map_record["sha256"],
         "gitProvenanceSha256": provenance_record["sha256"],
         "rustdocSemverDiffSha256": api_record["sha256"],
         "coverageFuzzSha256": fuzz_record["sha256"],
         "protocolCatalogSha256": catalog_record["sha256"],
+        "performanceAcceptance": "same_candidate_measurement_only_no_target_threshold",
         "status": "passed_in_current_job",
-        "scope": "exact Git identity, Rust-generated protocol catalog, rustdoc API compatibility, generated map, deterministic properties, coverage-guided fuzz, MSRV, native tests, Miri, consumers, and bound docs",
+        "scope": "exact Git identity, Rust-generated protocol catalog, rustdoc API compatibility, generated map, deterministic properties, bounded registry workload measurement, coverage-guided fuzz, MSRV, native tests, Miri, consumers, and bound docs",
         **_nonclaims(),
         "github": _github(),
     })
