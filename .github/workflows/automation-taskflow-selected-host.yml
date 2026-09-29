@@ -167,7 +167,8 @@ jobs:
           cargo test -p codex-hepta-automation --test multi_scheduler_race -- --nocapture
           cargo test -p codex-hepta-automation --test runtime_crash_points -- --nocapture
           cargo test -p codex-hepta-automation --test runtime_property_sweep -- --nocapture
-          cargo test -p codex-hepta-automation durable_neural_circuit -- --nocapture
+          cargo test -p codex-hepta-automation --test durable_neural_circuit -- --nocapture
+          cargo test -p codex-hepta-automation --test durable_neural_circuit_recovery -- --nocapture
           cargo test -p codex-hepta-automation external_host_fence -- --nocapture
           cargo test -p codex-hepta-automation cross_host_recovery -- --nocapture
           cargo test -p codex-hepta-agentd --lib automation_effect_host -- --nocapture
