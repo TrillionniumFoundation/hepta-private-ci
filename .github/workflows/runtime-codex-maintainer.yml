@@ -10,6 +10,7 @@ on:
       - scripts/runtime-codex-maintainer-followup.py
       - scripts/runtime-codex-durability-migration.py
       - scripts/runtime-codex-durability-fixup.py
+      - scripts/runtime-codex-finalize-map.py
   workflow_dispatch:
 
 permissions:
@@ -53,7 +54,8 @@ jobs:
             scripts/runtime-codex-maintainer.py \
             scripts/runtime-codex-maintainer-followup.py \
             scripts/runtime-codex-durability-migration.py \
-            scripts/runtime-codex-durability-fixup.py
+            scripts/runtime-codex-durability-fixup.py \
+            scripts/runtime-codex-finalize-map.py
           python3 scripts/runtime-codex-maintainer.py
           python3 scripts/runtime-codex-maintainer-followup.py
           python3 scripts/runtime-codex-durability-migration.py
@@ -68,7 +70,7 @@ jobs:
           mkdir -p "$LOG_DIR"
           cd codex-rs
 
-          cargo check \
+          cargo check --locked \
             -p codex-hepta-agent-protocol \
             -p codex-hepta-infer-core \
             -p codex-hepta-codex-adapter \
@@ -77,16 +79,19 @@ jobs:
             --all-targets 2>&1 | tee "../$LOG_DIR/check.log"
           check_status=${PIPESTATUS[0]}
 
-          cargo test -p codex-hepta-agent-protocol 2>&1 | tee "../$LOG_DIR/agent-protocol.log"
+          cargo test --locked -p codex-hepta-agent-protocol 2>&1 | tee "../$LOG_DIR/agent-protocol.log"
           protocol_status=${PIPESTATUS[0]}
-          cargo test -p codex-hepta-infer-core 2>&1 | tee "../$LOG_DIR/infer-core.log"
+          cargo test --locked -p codex-hepta-infer-core 2>&1 | tee "../$LOG_DIR/infer-core.log"
           core_status=${PIPESTATUS[0]}
-          cargo test -p codex-hepta-agentd --lib lane_b_runtime 2>&1 | tee "../$LOG_DIR/agentd-owner.log"
+          cargo test --locked -p codex-hepta-agentd --lib lane_b_runtime 2>&1 | tee "../$LOG_DIR/agentd-owner.log"
           agentd_status=${PIPESTATUS[0]}
-          cargo test -p codex-hepta-infer-worker-host 2>&1 | tee "../$LOG_DIR/worker-host.log"
+          cargo test --locked -p codex-hepta-infer-worker-host 2>&1 | tee "../$LOG_DIR/worker-host.log"
           worker_status=${PIPESTATUS[0]}
+          cargo test --locked -p codex-hepta-infer-worker-host \
+            --test runtime_codex_crash_matrix 2>&1 | tee "../$LOG_DIR/crash-matrix.log"
+          crash_status=${PIPESTATUS[0]}
 
-          cargo clippy \
+          cargo clippy --locked \
             -p codex-hepta-agent-protocol \
             -p codex-hepta-infer-core \
             -p codex-hepta-codex-adapter \
@@ -96,11 +101,11 @@ jobs:
           clippy_status=${PIPESTATUS[0]}
 
           cd ..
-          printf 'check=%s\nprotocol=%s\ncore=%s\nagentd=%s\nworker=%s\nclippy=%s\n' \
+          printf 'check=%s\nprotocol=%s\ncore=%s\nagentd=%s\nworker=%s\ncrash=%s\nclippy=%s\n' \
             "$check_status" "$protocol_status" "$core_status" "$agentd_status" \
-            "$worker_status" "$clippy_status" | tee "$LOG_DIR/status.txt"
+            "$worker_status" "$crash_status" "$clippy_status" | tee "$LOG_DIR/status.txt"
           exit 0
-      - name: Commit convergence
+      - name: Commit source convergence
         if: always()
         shell: bash
         run: |
@@ -109,6 +114,8 @@ jobs:
           git config user.email 'runtime-codex-maintainer@invalid'
           git add \
             .github/workflows/runtime-codex-qualification.yml \
+            scripts/runtime-codex-qualification.py \
+            codex-rs/Cargo.lock \
             codex-rs/hepta-infer-core \
             codex-rs/hepta-infer-worker-host \
             codex-rs/hepta-agentd
@@ -116,7 +123,34 @@ jobs:
             git commit -m 'fix(runtime.codex): converge and durably fence bound execution'
             git push origin HEAD:codex/runtime-codex-full-convergence-20260929
           fi
-          git archive --format=zip --output=runtime-codex-source-after.zip HEAD
+          source_commit="$(git rev-parse HEAD)"
+          source_tree="$(git rev-parse 'HEAD^{tree}')"
+          echo "RUNTIME_CODEX_SOURCE_COMMIT=$source_commit" >> "$GITHUB_ENV"
+          echo "RUNTIME_CODEX_SOURCE_TREE=$source_tree" >> "$GITHUB_ENV"
+          printf 'source_commit=%s\nsource_tree=%s\n' "$source_commit" "$source_tree"
+          git archive --format=zip --output=runtime-codex-source-after.zip "$source_commit"
+      - name: Finalize canonical maps from verified source
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f "$LOG_DIR/status.txt"
+          if grep -Eq '=[1-9][0-9]*$' "$LOG_DIR/status.txt"; then
+            echo 'source verification failed; canonical maps remain unchanged'
+            git archive --format=zip --output=runtime-codex-final-head.zip HEAD
+            exit 0
+          fi
+          python3 scripts/runtime-codex-finalize-map.py
+          git config user.name 'runtime.codex maintainer'
+          git config user.email 'runtime-codex-maintainer@invalid'
+          git add \
+            docs/modules/runtime.codex \
+            docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'docs(runtime.codex): bind converged source candidate'
+            git push origin HEAD:codex/runtime-codex-full-convergence-20260929
+          fi
+          git archive --format=zip --output=runtime-codex-final-head.zip HEAD
       - name: Upload maintainer evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -126,8 +160,9 @@ jobs:
             qualification/runtime-codex-maintainer/
             runtime-codex-source-before.zip
             runtime-codex-source-after.zip
+            runtime-codex-final-head.zip
           if-no-files-found: warn
-          retention-days: 3
+          retention-days: 30
       - name: Enforce verification
         if: always()
         shell: bash
