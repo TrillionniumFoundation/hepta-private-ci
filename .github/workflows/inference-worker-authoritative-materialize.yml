@@ -3,13 +3,17 @@ name: Inference worker authoritative materializer
 on:
   push:
     branches:
-      - codex/inference-worker-authoritative-20260929
+      - ops/inference-worker-materializer-run-20260929
     paths:
       - .github/materialization/inference-worker-stage1/**
       - .github/workflows/inference-worker-authoritative-materialize.yml
 
 permissions:
   contents: write
+
+concurrency:
+  group: inference-worker-authoritative-materializer
+  cancel-in-progress: true
 
 env:
   BASE_SHA: c3b3aaa9887e15bf18b1572f259b6893ddbe2b68
@@ -23,7 +27,7 @@ env:
 jobs:
   materialize:
     name: Verify and materialize stage 1
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
       - name: Check out exact transfer head
