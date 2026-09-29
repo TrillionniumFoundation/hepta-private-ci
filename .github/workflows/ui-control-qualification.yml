@@ -200,6 +200,7 @@ jobs:
           name: ui-control-exact-head-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
             ui-control-evidence/
+            apps/hepta-control-ui/dist/
             apps/hepta-control-ui/playwright-report/
             apps/hepta-control-ui/test-results/
           if-no-files-found: warn

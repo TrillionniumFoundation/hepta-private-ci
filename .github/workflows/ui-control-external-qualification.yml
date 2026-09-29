@@ -221,59 +221,46 @@ jobs:
           retention-days: 90
 
   candidate-build:
-    name: secretless exact-candidate browser build artifact
+    name: secretless accepted exact-head browser build relay
     needs: repository-preflight
     if: ${{ needs.repository-preflight.result == 'success' }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 10
     steps:
-      - name: Check out only the exact candidate on a secretless runner
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - name: Download accepted repository-preflight evidence without executing candidate code
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          ref: ${{ inputs.candidate_sha }}
-          path: .ui-control-candidate
-          persist-credentials: false
-          fetch-depth: 1
+          name: ui-control-repository-preflight-${{ inputs.candidate_sha }}
+          path: ui-control-preflight-evidence
 
-      - name: Require the exact candidate identity before build
-        env:
-          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
-        working-directory: .ui-control-candidate
+      - name: Require one bounded regular exact-head browser build
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
-          printf 'sha=%s\ntree=%s\n' "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})" > ../candidate-build-source.txt
+          build_root=ui-control-preflight-evidence/source-head/apps/hepta-control-ui/dist
+          test -d "$build_root"
+          test ! -L "$build_root"
+          test -f "$build_root/build-manifest.json"
+          test ! -L "$build_root/build-manifest.json"
+          if find "$build_root" -type l -print -quit | grep -q .; then
+            echo 'symbolic links are forbidden in the accepted browser build' >&2
+            exit 1
+          fi
+          file_count="$(find "$build_root" -type f -printf '.' | wc -c)"
+          total_bytes="$(find "$build_root" -type f -printf '%s\n' | awk '{ total += $1 } END { print total + 0 }')"
+          test "$file_count" -ge 2
+          test "$file_count" -le 512
+          test "$total_bytes" -gt 0
+          test "$total_bytes" -le 67108864
+          printf 'source_artifact=ui-control-exact-head-%s\nfile_count=%s\ntotal_bytes=%s\n' \
+            "${{ inputs.candidate_sha }}" "$file_count" "$total_bytes" \
+            > ui-control-preflight-evidence/candidate-build-relay.txt
 
-      - name: Setup Node.js 22 for the isolated candidate build
-        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
-        with:
-          node-version: 22
-
-      - name: Build the exact locked candidate without protected values
-        working-directory: .ui-control-candidate/apps/hepta-control-ui
-        shell: bash
-        run: |
-          set -euo pipefail
-          npm ci --ignore-scripts --no-audit --no-fund
-          npm run build
-
-      - name: Require candidate identity and tracked tree to remain unchanged
-        env:
-          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
-        working-directory: .ui-control-candidate
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
-          git diff --exit-code
-          git diff --cached --exit-code
-
-      - name: Upload the untrusted candidate build as data only
+      - name: Upload accepted exact-head build as data only
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: ui-control-candidate-build-${{ inputs.candidate_sha }}
-          path: .ui-control-candidate/apps/hepta-control-ui/dist/
+          path: ui-control-preflight-evidence/source-head/apps/hepta-control-ui/dist/
           if-no-files-found: error
           retention-days: 14
 

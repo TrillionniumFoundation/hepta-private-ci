@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("../../../", import.meta.url));
 const external = readFileSync(`${root}.github/workflows/ui-control-external-qualification.yml`, "utf8");
+const qualification = readFileSync(`${root}.github/workflows/ui-control-qualification.yml`, "utf8");
 
 function section(text, start, end) {
   const from = text.indexOf(start);
@@ -51,7 +52,7 @@ test("external qualification performs a secretless main-bound repository preflig
   assert.ok(metadata >= 0 && sourceDownload > metadata && canonical > sourceDownload && semantic > canonical);
 });
 
-test("candidate-controlled build execution is isolated in a separate secretless job", () => {
+test("accepted exact-head build relay is secretless and never executes candidate code", () => {
   const build = section(
     external,
     "  candidate-build:\n",
@@ -61,12 +62,30 @@ test("candidate-controlled build execution is isolated in a separate secretless 
   assert.match(build, /needs\.repository-preflight\.result == 'success'/u);
   assert.doesNotMatch(build, /environment:/u);
   assert.doesNotMatch(build, /\$\{\{\s*secrets\./u);
-  assert.doesNotMatch(build, /\.ui-control-trusted/u);
-  assert.match(build, /npm ci --ignore-scripts --no-audit --no-fund/u);
-  assert.match(build, /npm run build/u);
-  assert.match(build, /git diff --exit-code/u);
-  assert.match(build, /git diff --cached --exit-code/u);
+  assert.doesNotMatch(build, /actions\/checkout/u);
+  assert.doesNotMatch(build, /actions\/setup-node/u);
+  assert.doesNotMatch(build, /\.ui-control-candidate/u);
+  assert.doesNotMatch(build, /\bnpm\s/u);
+  assert.doesNotMatch(build, /\bnode\s/u);
+  assert.match(build, /Download accepted repository-preflight evidence without executing candidate code/u);
+  assert.match(build, /source-head\/apps\/hepta-control-ui\/dist/u);
+  assert.match(build, /find "\$build_root" -type l -print -quit/u);
+  assert.match(build, /file_count="\$\(find "\$build_root" -type f -printf '\.'/u);
+  assert.match(build, /total_bytes="\$\(find "\$build_root" -type f -printf '%s\\n'/u);
   assert.match(build, /name: ui-control-candidate-build-\$\{\{ inputs\.candidate_sha \}\}/u);
+});
+
+test("the exact-head receipt artifact retains the browser bytes used by protected qualification", () => {
+  const exact = section(
+    qualification,
+    "  exact-head:\n",
+    "  synthetic-merge:\n",
+  );
+  const upload = section(exact, "      - name: Upload immutable qualification evidence\n");
+  assert.match(upload, /ui-control-exact-head-\$\{\{ github\.event\.pull_request\.head\.sha \|\| github\.sha \}\}/u);
+  assert.match(upload, /apps\/hepta-control-ui\/dist\//u);
+  assert.match(upload, /apps\/hepta-control-ui\/playwright-report\//u);
+  assert.match(upload, /apps\/hepta-control-ui\/test-results\//u);
 });
 
 test("the protected job uses a fresh runner and executes only immutable trusted verifiers", () => {
