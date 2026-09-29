@@ -1,16 +1,16 @@
 name: Learning operator remaining convergence
 
-# Single authoritative writer for the frozen learning.operator qualification head.
-# It applies the deterministic source convergence, qualifies exact source and
-# current-main synthetic merge, binds immutable evidence, and removes all
-# temporary writer/dispatch surfaces before pushing the final branch head.
+# One-shot authoritative writer. This workflow may run only on the trigger
+# commit whose sole change is this file and whose parent is the reviewed head.
+# It materializes the frozen transformation, qualifies that checked-in source,
+# binds immutable evidence, removes itself and the materializer, then pushes a
+# normal fast-forward. It never issues independent acceptance or activation.
 
 on:
   push:
     branches: [codex/learning-operator-full-convergence-20260926]
     paths:
       - '.github/workflows/learning-operator-remaining-convergence.yml'
-  workflow_dispatch:
 
 permissions:
   contents: write
@@ -26,6 +26,7 @@ jobs:
     timeout-minutes: 180
     env:
       TARGET_BRANCH: codex/learning-operator-full-convergence-20260926
+      EXPECTED_PARENT: 336c6cc0ac5def21554e10da16afae5947d4c924
       CARGO_BUILD_JOBS: 2
       CARGO_PROFILE_DEV_DEBUG: 0
       CARGO_PROFILE_TEST_DEBUG: 0
@@ -35,36 +36,50 @@ jobs:
           ref: codex/learning-operator-full-convergence-20260926
           fetch-depth: 0
           persist-credentials: true
+
+      - name: Prove single-writer trigger
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
+          test "$(git branch --show-current)" = "$TARGET_BRANCH"
+          mapfile -t changed < <(git diff-tree --no-commit-id --name-only -r HEAD)
+          test "${#changed[@]}" -eq 1
+          test "${changed[0]}" = ".github/workflows/learning-operator-remaining-convergence.yml"
+          test -z "$(git status --porcelain)"
+
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
           toolchain: 1.95.0
           components: rustfmt,clippy
 
-      - name: Apply V4 type-state, bounded algorithms, RCU, and operations convergence
+      - name: Materialize V4 type-state, bounded algorithms, RCU, and operations
         shell: bash
         run: |
           set -euo pipefail
           python3 scripts/learning_operator_remaining_convergence.py
 
-          # Idempotent fallback for the exact-module implementation-map verifier.
+          # Keep the implementation-map verifier module-scoped and make the
+          # legacy V2 constructors qualification-only when an older frozen
+          # materializer is replayed.
           python3 - <<'PY'
           from pathlib import Path
 
-          def replace_if_present(path: str, old: str, new: str) -> None:
+          def replace_once(path: str, old: str, new: str) -> None:
               target = Path(path)
               text = target.read_text()
               if new in text:
                   return
               if old not in text:
-                  raise SystemExit(f"{path}: missing map verifier marker")
+                  raise SystemExit(f"{path}: missing expected marker")
               target.write_text(text.replace(old, new, 1))
 
           dataset = Path("codex-rs/hepta-bellman-operator/src/dataset_bound.rs")
           text = dataset.read_text()
-          for marker in [
+          for marker in (
               "impl VerifiedTabularOperatorPlanV2 {\n",
               "impl VerifiedWorldModelDatasetV2 {\n",
-          ]:
+          ):
               gated = '#[cfg(feature = "qualification-unverified-input")]\n' + marker
               if gated not in text:
                   if marker not in text:
@@ -75,35 +90,146 @@ jobs:
           maps = "scripts/hepta-implementation-maps.py"
           text = Path(maps).read_text()
           if "selected_modules: list[str] | None = None" not in text:
-              replace_if_present(
+              replace_once(
                   maps,
                   "def verify(\n    *,\n    require_current_source: bool = True,\n    expected_sha: str | None = None,\n    expected_tree: str | None = None,\n):",
                   "def verify(\n    *,\n    require_current_source: bool = True,\n    expected_sha: str | None = None,\n    expected_tree: str | None = None,\n    selected_modules: list[str] | None = None,\n):",
               )
-              replace_if_present(
+              replace_once(
                   maps,
                   "        ids = [module[\"id\"] for module in modules]\n        if len(set(ids)) != len(ids):\n            raise ValueError(\"duplicate module identity\")\n        lanes = lane_by_module()",
                   "        ids = [module[\"id\"] for module in modules]\n        if len(set(ids)) != len(ids):\n            raise ValueError(\"duplicate module identity\")\n        if selected_modules is not None:\n            requested = set(selected_modules)\n            unknown = sorted(requested.difference(ids))\n            if unknown:\n                raise ValueError(\"unknown selected modules: \" + \", \".join(unknown))\n            modules = [module for module in modules if module[\"id\"] in requested]\n            if not modules:\n                raise ValueError(\"selected module set must be nonempty\")\n        lanes = lane_by_module()",
               )
-              replace_if_present(
+              replace_once(
                   maps,
                   "        help=\"rebind only this module (repeatable; migrate only)\",",
                   "        help=\"select this module (repeatable; migrate or verify)\",",
               )
-              replace_if_present(
+              replace_once(
                   maps,
                   "    if args.modules is not None and args.command != \"migrate\":\n        parser.error(\"--module applies only to migrate\")",
                   "    if args.modules is not None and args.command not in {\"migrate\", \"verify\"}:\n        parser.error(\"--module applies only to migrate or verify\")",
               )
-              replace_if_present(
+              replace_once(
                   maps,
                   "                expected_sha=args.expected_sha,\n                expected_tree=args.expected_tree,\n            ),",
                   "                expected_sha=args.expected_sha,\n                expected_tree=args.expected_tree,\n                selected_modules=args.modules,\n            ),",
               )
           PY
 
+          # Replace transformed-worktree diagnostics with an exact-source-only
+          # workflow. The final branch no longer contains a source mutator.
+          cat > .github/workflows/learning-operator-diagnostics.yml <<'YAML'
+          name: Learning operator exact-source diagnostics
+
+          on:
+            pull_request:
+              paths:
+                - 'codex-rs/hepta-bellman-operator/**'
+                - 'codex-rs/hepta-learning-ledger/**'
+                - 'codex-rs/hepta-learning-artifacts/**'
+                - 'codex-rs/hepta-agentd/**'
+                - 'codex-rs/hepta-shadow-qualification/**'
+                - 'docs/modules/learning.operator/**'
+                - 'qualification/lane-e/**'
+                - 'qualification/module-execution-dossiers/detail/learning.operator.md'
+                - 'scripts/hepta-learning-operator-contract.py'
+                - 'scripts/hepta-learning-operator-receipt.py'
+                - '.github/workflows/learning-operator-diagnostics.yml'
+            push:
+              branches: [main, codex/learning-operator-full-convergence-20260926]
+              paths:
+                - 'codex-rs/hepta-bellman-operator/**'
+                - 'codex-rs/hepta-learning-ledger/**'
+                - 'codex-rs/hepta-learning-artifacts/**'
+                - 'codex-rs/hepta-agentd/**'
+                - 'codex-rs/hepta-shadow-qualification/**'
+                - 'docs/modules/learning.operator/**'
+                - 'qualification/lane-e/**'
+                - 'qualification/module-execution-dossiers/detail/learning.operator.md'
+                - 'scripts/hepta-learning-operator-contract.py'
+                - 'scripts/hepta-learning-operator-receipt.py'
+                - '.github/workflows/learning-operator-diagnostics.yml'
+
+          permissions:
+            contents: read
+
+          concurrency:
+            group: learning-operator-exact-source-${{ github.event.pull_request.number || github.ref }}-${{ matrix.os }}
+            cancel-in-progress: true
+
+          jobs:
+            exact-source:
+              strategy:
+                fail-fast: false
+                matrix:
+                  os: [ubuntu-24.04, windows-2025]
+              runs-on: ${{ matrix.os }}
+              timeout-minutes: 90
+              env:
+                CARGO_BUILD_JOBS: 2
+                CARGO_PROFILE_DEV_DEBUG: 0
+                CARGO_PROFILE_TEST_DEBUG: 0
+              steps:
+                - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+                  with:
+                    fetch-depth: 0
+                - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+                  with:
+                    toolchain: 1.95.0
+                    components: rustfmt,clippy
+                - name: Prove exact checked-in source
+                  shell: bash
+                  run: |
+                    set -euo pipefail
+                    test ! -e scripts/learning_operator_remaining_convergence.py
+                    test ! -e .github/workflows/learning-operator-remaining-convergence.yml
+                    test -z "$(git status --porcelain)"
+                    python3 scripts/hepta-learning-operator-contract.py verify --require-receipt
+                    python3 scripts/hepta-implementation-dossiers.py verify
+                    python3 scripts/hepta-lane-e-closure.py verify
+                    cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
+                    git diff --check
+                - name: Compile and test checked-in source
+                  shell: bash
+                  run: |
+                    set -euo pipefail
+                    cargo check --manifest-path codex-rs/Cargo.toml --locked \
+                      -p codex-hepta-learning-ledger \
+                      -p codex-hepta-bellman-operator \
+                      -p codex-hepta-learning-artifacts \
+                      -p codex-hepta-agentd
+                    cargo test --manifest-path codex-rs/Cargo.toml --locked \
+                      -p codex-hepta-learning-ledger dataset_receipt_v4 -- --nocapture
+                    cargo test --manifest-path codex-rs/Cargo.toml --locked \
+                      -p codex-hepta-bellman-operator sensor_core_v2::tests -- --nocapture
+                    cargo test --manifest-path codex-rs/Cargo.toml --locked \
+                      -p codex-hepta-bellman-operator tabular_v2::tests -- --nocapture
+                    cargo test --manifest-path codex-rs/Cargo.toml --locked \
+                      -p codex-hepta-bellman-operator world_model_v2::tests -- --nocapture
+                    cargo test --manifest-path codex-rs/Cargo.toml --locked \
+                      -p codex-hepta-agentd --lib \
+                      immutable_candidate_supports_concurrent_current_reads_and_metrics -- --nocapture
+                    cargo test --manifest-path codex-rs/Cargo.toml --locked \
+                      -p codex-hepta-bellman-operator loaded_tests -- --nocapture
+                - name: Strict lint on Linux
+                  if: runner.os == 'Linux'
+                  shell: bash
+                  run: |
+                    set -euo pipefail
+                    cargo clippy --manifest-path codex-rs/Cargo.toml --locked --no-deps \
+                      -p codex-hepta-learning-ledger \
+                      -p codex-hepta-bellman-operator \
+                      -p codex-hepta-learning-artifacts \
+                      --all-targets -- -D warnings
+                    cargo clippy --manifest-path codex-rs/Cargo.toml --locked --no-deps \
+                      -p codex-hepta-agentd --lib -- \
+                      -D warnings \
+                      -A clippy::too-many-arguments \
+                      -A clippy::large-enum-variant
+          YAML
+
           python3 -m py_compile \
-            scripts/learning_operator_remaining_convergence.py \
             scripts/hepta-learning-operator-contract.py \
             scripts/hepta-learning-operator-receipt.py \
             scripts/hepta-implementation-maps.py
@@ -111,7 +237,7 @@ jobs:
           python3 scripts/hepta-learning-operator-contract.py verify
           git diff --check
 
-      - name: Exact-source compilation, lint, tests, docs, and reload qualification
+      - name: Qualify materialized source
         shell: bash
         run: |
           set -euo pipefail
@@ -130,7 +256,6 @@ jobs:
             -D warnings \
             -A clippy::too-many-arguments \
             -A clippy::large-enum-variant
-
           cargo test --manifest-path codex-rs/Cargo.toml --locked \
             -p codex-hepta-learning-ledger dataset_receipt_v4 -- --nocapture
           cargo test --manifest-path codex-rs/Cargo.toml --locked \
@@ -150,7 +275,6 @@ jobs:
             -p codex-hepta-bellman-operator loaded_tests -- --nocapture
           cargo test --manifest-path codex-rs/Cargo.toml --locked \
             -p codex-hepta-shadow-qualification tabular_reload -- --nocapture
-
           python3 scripts/hepta-implementation-dossiers.py verify
           python3 scripts/hepta-lane-e-closure.py self-test
           python3 scripts/hepta-lane-e-closure.py verify
@@ -170,14 +294,14 @@ jobs:
             .github/workflows/learning-operator-authoritative-dispatch.yml
           git add -A
           git commit \
-            -m "feat(learning.operator): close V4 production qualification path" \
-            -m "Add the V4 row-committed receipt and opaque type-state ingress, budgeted sensor/tabular/world-model V2 implementations, complete V2 host loading, concurrent final-use revalidation, ArcSwap reload, telemetry, migration policy, and operations evidence without granting activation or release." \
+            -m "feat(learning.operator): materialize V4 exact-source qualification" \
+            -m "Materialize the V4 row-committed type-state path, bounded sensor/tabular/world-model implementations, complete V2 host loading, concurrent ArcSwap reads, telemetry, migration policy and operations documentation without granting activation or release." \
             -m "Signed-off-by: OpenAI <openai@users.noreply.github.com>"
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           echo "tree=$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
           echo "workflow_blob=$(git rev-parse HEAD:.github/workflows/learning-operator-remaining-convergence.yml)" >> "$GITHUB_OUTPUT"
 
-      - name: Deterministic current-main synthetic merge qualification
+      - name: Qualify deterministic current-main synthetic merge
         id: synthetic
         shell: bash
         run: |
@@ -193,7 +317,6 @@ jobs:
           export GIT_COMMITTER_DATE="$GIT_AUTHOR_DATE"
           SYNTHETIC_SHA="$(printf '%s\n' 'learning.operator deterministic synthetic merge v1' | git commit-tree "$MERGE_TREE" -p "$MAIN_SHA" -p "$SOURCE_SHA")"
           test "$(git rev-parse "$SYNTHETIC_SHA^{tree}")" = "$MERGE_TREE"
-
           rm -rf /tmp/learning-operator-synthetic
           git worktree add --detach /tmp/learning-operator-synthetic "$SYNTHETIC_SHA"
           (
@@ -205,8 +328,7 @@ jobs:
               -p codex-hepta-learning-artifacts \
               -p codex-hepta-agentd
             cargo test --manifest-path codex-rs/Cargo.toml --locked \
-              -p codex-hepta-bellman-operator \
-              sensor_core_v2::tests -- --nocapture
+              -p codex-hepta-bellman-operator sensor_core_v2::tests -- --nocapture
             cargo test --manifest-path codex-rs/Cargo.toml --locked \
               -p codex-hepta-agentd --lib \
               immutable_candidate_supports_concurrent_current_reads_and_metrics -- --nocapture
@@ -216,7 +338,7 @@ jobs:
           echo "sha=$SYNTHETIC_SHA" >> "$GITHUB_OUTPUT"
           echo "tree=$MERGE_TREE" >> "$GITHUB_OUTPUT"
 
-      - name: Bind implementation maps and immutable qualification evidence
+      - name: Bind immutable evidence and remove temporary writers
         shell: bash
         run: |
           set -euo pipefail
@@ -241,16 +363,15 @@ jobs:
                   "concurrentRanker": "pass",
                   "separateProcessReloadRollback": "pass",
                   "laneEClosure": "pass",
-                  "currentMainSyntheticMerge": "pass",
+                  "currentMainSyntheticMerge": "pass"
               },
               "crossPlatformAndSecurity": "resolved only by exact-head PR workflow checks; never inferred here",
-              "externalAcceptance": "unissued",
+              "externalAcceptance": "unissued"
           }
           Path("qualification/lane-e/learning-operator-test-artifact.json").write_text(
               json.dumps(payload, indent=2, sort_keys=True) + "\n"
           )
           PY
-
           python3 scripts/hepta-implementation-maps.py migrate \
             --module learning.operator \
             --module learning.eval
@@ -264,16 +385,14 @@ jobs:
             --target "$(rustc -vV | sed -n 's/^host: //p')" \
             --rustc-file qualification/lane-e/learning-operator-rustc.txt \
             --test-artifact qualification/lane-e/learning-operator-test-artifact.json
-
           git rm -f --ignore-unmatch \
             .github/workflows/learning-operator-remaining-convergence.yml \
             scripts/learning_operator_remaining_convergence.py
           git add -A
           git commit \
             -m "docs(learning.operator): bind frozen qualification evidence" \
-            -m "Bind implementation maps and immutable source/workflow/lock/compiler/synthetic-merge/test evidence while leaving independent acceptance, target-host efficacy, canary, promotion, activation, and release explicitly unissued." \
+            -m "Bind source/workflow/lock/compiler/synthetic-merge/test evidence while leaving independent acceptance, target-host efficacy, canary, promotion, activation and release explicitly unissued." \
             -m "Signed-off-by: OpenAI <openai@users.noreply.github.com>"
-
           python3 scripts/hepta-learning-operator-contract.py verify --require-receipt
           python3 scripts/hepta-implementation-maps.py verify \
             --module learning.operator \
