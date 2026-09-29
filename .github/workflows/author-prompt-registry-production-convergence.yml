@@ -13,14 +13,14 @@ permissions:
 
 concurrency:
   group: author-prompt-registry-production-convergence
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   TARGET_BRANCH: codex/prompt-registry-production-convergence-20260929
 
 jobs:
   author-output-gate:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     steps:
       - name: Checkout authoring source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
