@@ -60,7 +60,9 @@ fn read_limit(maximum: u64) -> Result<u64, ShellError> {
     maximum
         .checked_add(1)
         .filter(|limit| usize::try_from(*limit).is_ok())
-        .ok_or_else(|| ShellError::InvalidInput("local input byte limit is not representable".into()))
+        .ok_or_else(|| {
+            ShellError::InvalidInput("local input byte limit is not representable".into())
+        })
 }
 
 /// Read at most the requested limit plus one overflow sentinel byte. A stat is

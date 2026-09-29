@@ -45,13 +45,10 @@ impl HeptaNativeApp {
     pub(super) fn request_shutdown(&mut self, ctx: &egui::Context) {
         let first_request = !self.shutdown.requested();
         self.shutdown.request(Instant::now());
-        self.activate_update_on_exit
-            .store(false, Ordering::Release);
+        self.activate_update_on_exit.store(false, Ordering::Release);
         self.view_revision = None;
         self.operation_binding = None;
-        if first_request
-            && let Some(task) = &self.pending_task
-        {
+        if first_request && let Some(task) = &self.pending_task {
             task.worker.cancel_before_admission();
         }
         ctx.request_repaint();
