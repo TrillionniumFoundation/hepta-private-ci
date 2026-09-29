@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   materialize:
-    runs-on: [self-hosted, linux, x64, rog]
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -47,6 +47,10 @@ jobs:
           python3 scripts/runtime-codex-finalize-map-followup.py
           (
             cd codex-rs
+            # Resolve only manifest deltas against the existing lock. This is the
+            # same resolver path used by Cargo, but without the qualification
+            # lane's fail-closed --locked flag.
+            cargo metadata --format-version 1 >/dev/null
             cargo fmt --all
           )
           git diff --check
