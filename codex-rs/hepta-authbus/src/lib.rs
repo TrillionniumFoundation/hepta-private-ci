@@ -1,7 +1,7 @@
 //! Signed admission, replay fencing and durable authorization policy state.
 //!
 //! The signed admission API verifies issuer-bound Ed25519 messages. The durable
-//! authority store evaluates revision-bound policy against a persisted trusted-
+//! authority owner evaluates revision-bound policy against a persisted trusted-
 //! time floor. Policy decisions and replay receipts do not reserve quota,
 //! dispatch an effect or mint final-use authority. Successful receipts retain
 //! `AuthorityPosture::DENY_ALL`.
@@ -11,23 +11,36 @@
 mod authority;
 mod authority_schema;
 mod authority_store;
+mod checkpoint_file;
 mod host;
+mod ports;
 mod quota;
 mod quota_store;
 mod recovery;
 mod settlement;
 mod settlement_store;
 mod signed;
+#[cfg(feature = "test-support")]
+mod test_support;
 mod trust;
 mod trust_store;
+
 pub use authority::AuthBusAuthorityError;
 pub use authority::AuthPolicy;
 pub use authority::PolicyDecision;
 pub use authority::PolicyEffect;
 pub use authority::PolicySpec;
 pub use authority::TrustedTimeSample;
+#[cfg(feature = "test-support")]
 pub use authority_store::AuthBusAuthorityStore;
+#[cfg(not(feature = "test-support"))]
+pub(crate) use authority_store::AuthBusAuthorityStore;
+pub use host::AuthBusAuthorityBootstrap;
 pub use host::AuthBusAuthorityHost;
+pub use ports::AsAuthBusEffectPort;
+pub use ports::AuthBusAdminPort;
+pub use ports::AuthBusEffectPort;
+pub use ports::AuthBusReadPort;
 pub use quota::QuotaReservation;
 pub use quota::QuotaSnapshot;
 pub use quota::QuotaSpec;
@@ -36,7 +49,7 @@ pub use quota::ReservationState;
 pub use recovery::AuthorityCheckpoint;
 pub use settlement::Settlement;
 pub use settlement::SettlementEvidenceClaims;
-pub use settlement::SettlementIssuerRegistration;
+pub(crate) use settlement::SettlementIssuerRegistration;
 pub use settlement::SettlementStatus;
 pub use settlement::SignedSettlementEvidence;
 pub use signed::AuthenticatedMessage;
