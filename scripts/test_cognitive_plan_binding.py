@@ -266,6 +266,16 @@ class RunnerManifestTests(unittest.TestCase):
         self.assertEqual(receipt["commands"][0]["observedPassedTests"], 2)
         self.assertIs(receipt["targetHostQualified"], False)
 
+    def test_manifest_binds_raw_committed_plan_and_each_entry(self):
+        self.assertEqual(self.execute().returncode, 0)
+        result = self.collect()
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        receipt = json.loads(self.output.read_text())
+        self.assertEqual(receipt["schema"], "hepta.cognitive-store-qualification-manifest.v3")
+        self.assertEqual(receipt["qualificationPlanSha256"], spec_sha256(self.plan))
+        self.assertEqual(receipt["commands"][0]["planEntrySha256"],
+                         spec_sha256(self.plan["commands"][0]))
+
     def test_actual_weaker_command_fails_collection(self):
         specs, _ = load_plan(self.plan_path, self.repo, self.env)
         self.env[SPEC_ENV] = spec_sha256(specs[0])

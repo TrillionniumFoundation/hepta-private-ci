@@ -101,3 +101,6 @@ reconciliation, filesystem faults, restart, rollback and SLO acceptance remain
 separate. Destructive ancestry-safe hot pruning and actual per-owner physical
 erasure/unlearning are not implemented by this change. Cold archives and signed
 owner assertions cannot substitute for those operations or their acceptance.
+## Committed-plan identity in terminal manifests
+
+Qualification manifest v3 binds two stable layers in addition to the resolved command-spec digest. `qualificationPlanSha256` is the canonical digest of the complete committed plan object, and each command row carries `planEntrySha256`, the canonical digest of its unexpanded plan entry. The source-head and deterministic base-merge lanes may resolve different candidate and scratch paths, but neither can substitute a command, workload, limit, working directory, native-preparation disposition or evidence inventory without changing one of these committed identities. Independent acceptance recomputes both layers from the bundled canonical plan.

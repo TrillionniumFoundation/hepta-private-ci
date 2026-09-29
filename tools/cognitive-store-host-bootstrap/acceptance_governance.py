@@ -19,20 +19,22 @@ import uuid
 from lifecycle import CLASSES, digest, exact, identifier, integer, load_bounded, require
 from lifecycle import sha256, validate_trust, verify_signature
 
-PLAN_SCHEMA = "hepta.cognitive.acceptance-plan.v5"
-RECEIPT_SCHEMA = "hepta.cognitive.acceptance-receipt.v5"
-REPORT_SCHEMA = "hepta.cognitive.acceptance-report.v5"
+PLAN_SCHEMA = "hepta.cognitive.acceptance-plan.v6"
+RECEIPT_SCHEMA = "hepta.cognitive.acceptance-receipt.v6"
+REPORT_SCHEMA = "hepta.cognitive.acceptance-report.v6"
 QUALIFICATION_PLAN_SCHEMA = "hepta.cognitive-store-qualification-plan.v1"
-QUALIFICATION_SCHEMA = "hepta.cognitive-store-qualification-manifest.v2"
+QUALIFICATION_SCHEMA = "hepta.cognitive-store-qualification-manifest.v3"
 HOST_PLAN_SCHEMA = "hepta.cognitive.host-qualification-plan.v2"
-HOST_REPORT_SCHEMA = "hepta.cognitive.host-qualification-report.v2"
+HOST_REPORT_SCHEMA = "hepta.cognitive.host-qualification-report.v3"
 RETENTION_PLAN_SCHEMA = "hepta.cognitive.retention-checkpoint-plan.v3"
-RETENTION_REPORT_SCHEMA = "hepta.cognitive.retention-readiness-report.v3"
+RETENTION_REPORT_SCHEMA = "hepta.cognitive.retention-readiness-report.v4"
 LIFECYCLE_PLAN_SCHEMA = "hepta.cognitive.lifecycle-plan.v1"
 LIFECYCLE_REPORT_SCHEMA = "hepta.cognitive.lifecycle-reconciliation.v1"
 GIT_OID = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})\Z")
 QUALIFICATION_RECORD = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]*\.json\Z")
 SAFE_BASENAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,255}\Z")
+WORKLOAD_ENV = re.compile(r"HEPTA_COGNITIVE_[A-Z0-9_]+\Z")
+SPEC_ENV = "HEPTA_COGNITIVE_COMMAND_SPEC_SHA256"
 HOST_STEPS = (
     "bootstrap",
     "publication_fsync_fault",
@@ -109,6 +111,7 @@ def validate_qualification_plan(plan: object) -> dict:
         "qualification plan has missing or excessive commands",
     )
     records = {}
+    record_digests = {}
     for item in commands:
         required = {
             "record",
@@ -126,6 +129,7 @@ def validate_qualification_plan(plan: object) -> dict:
         record = item["record"]
         require(
             isinstance(record, str)
+            and len(record) <= 160
             and QUALIFICATION_RECORD.fullmatch(record) is not None
             and record not in records,
             "qualification plan has a duplicate or unsafe record",
@@ -134,7 +138,13 @@ def validate_qualification_plan(plan: object) -> dict:
         require(
             isinstance(argv, list)
             and 1 <= len(argv) <= 128
-            and all(isinstance(value, str) and value and "\0" not in value for value in argv),
+            and all(
+                isinstance(value, str)
+                and 0 < len(value) <= 16_384
+                and "\0" not in value
+                for value in argv
+            )
+            and sum(len(value) for value in argv) <= 65_536,
             "qualification plan command is empty or malformed",
         )
         cwd = item["cwd"]
@@ -143,7 +153,8 @@ def validate_qualification_plan(plan: object) -> dict:
             and cwd
             and not Path(cwd).is_absolute()
             and ".." not in Path(cwd).parts
-            and "\\" not in cwd,
+            and "\\" not in cwd
+            and Path(cwd).as_posix() == cwd,
             "qualification plan working directory is unsafe",
         )
         minimum = item["minimumTests"]
@@ -163,15 +174,17 @@ def validate_qualification_plan(plan: object) -> dict:
             and len(environment) <= 32
             and all(
                 isinstance(key, str)
+                and WORKLOAD_ENV.fullmatch(key) is not None
+                and key != SPEC_ENV
                 and isinstance(value, str)
-                and key
-                and value
-                and "\0" not in key + value
+                and 0 < len(value) <= 16_384
+                and "\0" not in value
                 for key, value in environment.items()
             ),
             "qualification plan workload environment is invalid",
         )
         records[record] = item
+        record_digests[record] = sha256(item)
 
     evidence = plan["evidence"]
     require(
@@ -193,10 +206,11 @@ def validate_qualification_plan(plan: object) -> dict:
         evidence_names.append(name)
     return {
         "plan": plan,
+        "plan_sha256": sha256(plan),
         "records": records,
+        "record_digests": record_digests,
         "evidence_names": frozenset(evidence_names),
     }
-
 
 def validate_qualification_manifest(
     report: object,
@@ -208,6 +222,7 @@ def validate_qualification_manifest(
         report,
         {
             "schema",
+            "qualificationPlanSha256",
             "sourceSha",
             "sourceTree",
             "baseSha",
@@ -239,6 +254,10 @@ def validate_qualification_manifest(
     require(
         report.get("schema") == QUALIFICATION_SCHEMA,
         "unsupported qualification manifest evidence",
+    )
+    require(
+        report.get("qualificationPlanSha256") == qualification["plan_sha256"],
+        "qualification manifest binds another committed plan",
     )
     require(report.get("lane") == lane, "qualification evidence belongs to another lane")
     require(
@@ -342,12 +361,17 @@ def validate_qualification_manifest(
                 "outputLimitExceeded",
                 "diagnostic",
                 "commandSpecSha256",
+                "planEntrySha256",
                 "logName",
                 "logBytes",
                 "logSha256",
             },
         )
         expected = expected_records[row["name"]]
+        require(
+            row["planEntrySha256"] == qualification["record_digests"][row["name"]],
+            "qualification command is not bound to its committed plan entry",
+        )
         require(
             row["status"] == "passed"
             and row["recordedStatus"] == "passed"
@@ -372,7 +396,7 @@ def validate_qualification_manifest(
             and row["observedPassedTests"] >= minimum,
             "qualification command test threshold differs from the committed plan",
         )
-        for field in ("recordSha256", "commandSpecSha256", "logSha256"):
+        for field in ("recordSha256", "commandSpecSha256", "planEntrySha256", "logSha256"):
             digest(row[field])
         require(
             isinstance(row["logName"], str)
@@ -446,8 +470,9 @@ def validate_host_plan(host_plan: object, acceptance_plan: dict) -> dict:
         },
     )
     require(host_plan["schema"] == HOST_PLAN_SCHEMA, "unsupported selected-host plan evidence")
+    identifier(host_plan["request_id"])
     require(
-        host_plan["owner_agent_id"] == acceptance_plan["owner_agent_id"],
+        canonical_agent(host_plan["owner_agent_id"]) == acceptance_plan["owner_agent_id"],
         "selected-host plan belongs to another Agent",
     )
     require(
@@ -457,6 +482,10 @@ def validate_host_plan(host_plan: object, acceptance_plan: dict) -> dict:
     )
     git_oid(host_plan["source_commit"], "selected-host source commit")
     git_oid(host_plan["source_tree"], "selected-host source tree")
+    require(
+        len(host_plan["source_commit"]) == len(host_plan["source_tree"]),
+        "selected-host source commit and tree use different object formats",
+    )
     for field in ("writer_generation", "rollback_generation_floor", "rollback_writer_generation"):
         integer(host_plan[field])
     require(
@@ -487,16 +516,29 @@ def validate_host_plan(host_plan: object, acceptance_plan: dict) -> dict:
     )
     digest(anchor["schema_digest"])
     digest(anchor["state_digest"])
+    integer(host_plan["created_at"])
+    integer(host_plan["expires_at"])
+    require(
+        host_plan["created_at"] < host_plan["expires_at"],
+        "selected-host plan has an invalid validity interval",
+    )
     steps = host_plan["steps"]
     require(
         isinstance(steps, list)
-        and len(steps) == len(HOST_STEPS)
-        and all(isinstance(row, dict) for row in steps)
-        and {row.get("step") for row in steps} == set(HOST_STEPS),
-        "selected-host plan contains incomplete or duplicate steps",
+        and tuple(row.get("step") for row in steps if isinstance(row, dict)) == HOST_STEPS,
+        "selected-host plan contains incomplete, duplicate or reordered steps",
     )
+    profiles = set()
+    for row in steps:
+        exact(row, {"step", "executor", "evidence_profile_sha256"})
+        identifier(row["executor"])
+        digest(row["evidence_profile_sha256"])
+        require(
+            row["evidence_profile_sha256"] not in profiles,
+            "selected-host steps reuse one evidence profile identity",
+        )
+        profiles.add(row["evidence_profile_sha256"])
     return host_plan
-
 
 def validate_host_report(report: object, host_plan: dict) -> dict:
     exact(
@@ -538,10 +580,36 @@ def validate_host_report(report: object, host_plan: dict) -> dict:
         and all(row.get("status") == "completed" for row in steps),
         "selected-host qualification evidence contains incomplete or reordered steps",
     )
+    planned = {row["step"]: row for row in host_plan["steps"]}
+    identities = set()
     for row in steps:
-        exact(row, {"step", "executor", "status", "verified_receipt_sha256"})
+        exact(
+            row,
+            {
+                "step",
+                "executor",
+                "status",
+                "verified_receipt_sha256",
+                "verified_evidence_sha256",
+                "verified_metrics_sha256",
+            },
+        )
+        require(
+            row["executor"] == planned[row["step"]]["executor"],
+            "selected-host report executor differs from the signed plan",
+        )
         identifier(row["executor"])
-        digest(row["verified_receipt_sha256"])
+        for field in (
+            "verified_receipt_sha256",
+            "verified_evidence_sha256",
+            "verified_metrics_sha256",
+        ):
+            digest(row[field])
+            require(
+                row[field] not in identities,
+                "selected-host report reuses an evidence, metrics or receipt identity",
+            )
+            identities.add(row[field])
     for field in (
         "initial_cut_sha256",
         "qualified_cut_sha256",
@@ -559,6 +627,10 @@ def validate_host_report(report: object, host_plan: dict) -> dict:
         "observed_at",
     ):
         integer(report[field])
+    require(
+        host_plan["created_at"] <= report["observed_at"] <= host_plan["expires_at"],
+        "selected-host report falls outside the signed plan interval",
+    )
     require(
         report["initial_cut_sha256"] == host_plan["recovery_anchor"]["state_digest"]
         and report["initial_writer_generation"] == host_plan["writer_generation"]
@@ -578,7 +650,6 @@ def validate_host_report(report: object, host_plan: dict) -> dict:
         "selected-host qualification evidence",
     )
     return report
-
 
 def validate_retention_plan(retention_plan: object, acceptance_plan: dict) -> dict:
     exact(
@@ -615,8 +686,9 @@ def validate_retention_plan(retention_plan: object, acceptance_plan: dict) -> di
         },
     )
     require(retention_plan["schema"] == RETENTION_PLAN_SCHEMA, "unsupported retention plan evidence")
+    identifier(retention_plan["request_id"])
     require(
-        retention_plan["owner_agent_id"] == acceptance_plan["owner_agent_id"],
+        canonical_agent(retention_plan["owner_agent_id"]) == acceptance_plan["owner_agent_id"],
         "retention plan belongs to another Agent",
     )
     require(
@@ -626,6 +698,10 @@ def validate_retention_plan(retention_plan: object, acceptance_plan: dict) -> di
     )
     git_oid(retention_plan["source_commit"], "retention source commit")
     git_oid(retention_plan["source_tree"], "retention source tree")
+    require(
+        len(retention_plan["source_commit"]) == len(retention_plan["source_tree"]),
+        "retention source commit and tree use different object formats",
+    )
     integer(retention_plan["writer_generation"])
     for field in (
         "schema_sha256",
@@ -641,6 +717,11 @@ def validate_retention_plan(retention_plan: object, acceptance_plan: dict) -> di
         "last_segment_manifest_sha256",
     ):
         digest(retention_plan[field])
+    require(
+        retention_plan["predecessor_image_sha256"]
+        != retention_plan["successor_image_sha256"],
+        "retention plan did not name a distinct successor image",
+    )
     for field in (
         "tombstone_frontier",
         "source_frontier",
@@ -648,20 +729,97 @@ def validate_retention_plan(retention_plan: object, acceptance_plan: dict) -> di
         "kg_frontier",
     ):
         integer(retention_plan[field], 0)
-    for field in ("successor_image_bytes", "segment_count", "segment_row_count"):
+    integer(retention_plan["successor_image_bytes"])
+    require(
+        retention_plan["successor_image_bytes"] <= 128 * 1024 * 1024,
+        "retention successor exceeds the owner profile",
+    )
+    for field in ("segment_count", "segment_row_count", "created_at", "expires_at"):
         integer(retention_plan[field])
+    require(
+        retention_plan["created_at"] < retention_plan["expires_at"],
+        "retention plan has an invalid validity interval",
+    )
+    identifier(retention_plan["rebuild_owner"])
     segments = retention_plan["segments"]
     require(
-        isinstance(segments, list)
-        and segments
-        and retention_plan["segment_count"] == len(segments)
-        and retention_plan["segment_set_sha256"] == sha256(segments)
-        and retention_plan["segment_row_count"]
-        == sum(row.get("row_count", 0) for row in segments if isinstance(row, dict)),
+        isinstance(segments, list) and 1 <= len(segments) <= 128,
+        "retention plan has missing or excessive segments",
+    )
+    segment_ids = set()
+    content_ids = set()
+    storage_owners = set()
+    previous_manifest = None
+    previous_last_key = None
+    total_rows = 0
+    for ordinal, row in enumerate(segments):
+        exact(
+            row,
+            {
+                "segment_id",
+                "storage_owner",
+                "ordinal",
+                "first_key_sha256",
+                "last_key_sha256",
+                "row_count",
+                "plaintext_sha256",
+                "ciphertext_sha256",
+                "manifest_sha256",
+                "predecessor_manifest_sha256",
+            },
+        )
+        identifier(row["segment_id"])
+        identifier(row["storage_owner"])
+        require(row["segment_id"] not in segment_ids, "duplicate retention segment identity")
+        require(type(row["ordinal"]) is int and row["ordinal"] == ordinal,
+                "retention segment ordinal is missing or reordered")
+        integer(row["row_count"])
+        for field in (
+            "first_key_sha256",
+            "last_key_sha256",
+            "plaintext_sha256",
+            "ciphertext_sha256",
+            "manifest_sha256",
+        ):
+            digest(row[field])
+        local = {row["plaintext_sha256"], row["ciphertext_sha256"], row["manifest_sha256"]}
+        require(len(local) == 3, "retention segment content identities overlap")
+        require(not (local & content_ids), "duplicate retention segment content identity")
+        if row["row_count"] == 1:
+            require(row["first_key_sha256"] == row["last_key_sha256"],
+                    "single-row retention segment does not bind one key")
+        else:
+            require(row["first_key_sha256"] < row["last_key_sha256"],
+                    "retention segment has an invalid key range")
+        if previous_last_key is not None:
+            require(previous_last_key < row["first_key_sha256"],
+                    "retention segment key ranges overlap or regress")
+        require(
+            row["predecessor_manifest_sha256"] == previous_manifest,
+            "retention segment manifest chain is broken",
+        )
+        segment_ids.add(row["segment_id"])
+        content_ids.update(local)
+        storage_owners.add(row["storage_owner"])
+        previous_manifest = row["manifest_sha256"]
+        previous_last_key = row["last_key_sha256"]
+        total_rows += row["row_count"]
+    require(
+        retention_plan["rebuild_owner"] not in storage_owners,
+        "retention rebuild owner is not independent of segment owners",
+    )
+    require(
+        retention_plan["segment_count"] == len(segments)
+        and retention_plan["segment_row_count"] == total_rows
+        and retention_plan["segment_set_sha256"] == sha256(segments),
         "retention plan has an inconsistent segment aggregate",
     )
+    require(
+        retention_plan["first_segment_manifest_sha256"] == segments[0]["manifest_sha256"]
+        and retention_plan["last_segment_manifest_sha256"] == segments[-1]["manifest_sha256"],
+        "retention plan has inconsistent segment chain endpoints",
+    )
     return retention_plan
-
 
 def validate_retention_report(report: object, retention_plan: dict) -> dict:
     exact(
@@ -677,6 +835,7 @@ def validate_retention_report(report: object, retention_plan: dict) -> dict:
             "segments",
             "rebuild_status",
             "verified_rebuild_receipt_sha256",
+            "verified_rebuild_evidence_sha256",
             "all_required_owner_receipts_verified",
             "result",
             "successor_published",
@@ -694,22 +853,54 @@ def validate_retention_report(report: object, retention_plan: dict) -> dict:
         "retention readiness evidence is incomplete",
     )
     segments = report["segments"]
+    planned = retention_plan["segments"]
     require(
         isinstance(segments, list)
-        and segments
+        and len(segments) == len(planned)
         and all(isinstance(row, dict) and row.get("status") == "completed" for row in segments)
         and report["rebuild_status"] == "completed",
         "retention readiness evidence contains incomplete segment or rebuild receipts",
     )
-    for row in segments:
-        exact(row, {"segment_id", "storage_owner", "status", "verified_receipt_sha256"})
+    identities = set()
+    for row, expected in zip(segments, planned, strict=True):
+        exact(
+            row,
+            {
+                "segment_id",
+                "storage_owner",
+                "status",
+                "verified_receipt_sha256",
+                "verified_evidence_sha256",
+            },
+        )
+        require(
+            row["segment_id"] == expected["segment_id"]
+            and row["storage_owner"] == expected["storage_owner"],
+            "retention report segment identity differs from the signed plan",
+        )
         identifier(row["segment_id"])
         identifier(row["storage_owner"])
-        digest(row["verified_receipt_sha256"])
+        for field in ("verified_receipt_sha256", "verified_evidence_sha256"):
+            digest(row[field])
+            require(row[field] not in identities,
+                    "retention report reuses an evidence or receipt identity")
+            identities.add(row[field])
     for field in ("segment_count", "segment_row_count", "observed_at"):
         integer(report[field])
-    for field in ("segment_set_sha256", "verified_rebuild_receipt_sha256", "trust_sha256"):
+    for field in (
+        "segment_set_sha256",
+        "verified_rebuild_receipt_sha256",
+        "verified_rebuild_evidence_sha256",
+        "trust_sha256",
+    ):
         digest(report[field])
+        require(report[field] not in identities,
+                "retention report reuses a segment, rebuild or trust identity")
+        identities.add(report[field])
+    require(
+        retention_plan["created_at"] <= report["observed_at"] <= retention_plan["expires_at"],
+        "retention report falls outside the signed plan interval",
+    )
     require(
         report["segment_count"] == len(segments)
         and report["segment_count"] == retention_plan["segment_count"]
@@ -730,7 +921,6 @@ def validate_retention_report(report: object, retention_plan: dict) -> dict:
     )
     return report
 
-
 def validate_lifecycle_plan(lifecycle_plan: object, acceptance_plan: dict) -> dict:
     exact(
         lifecycle_plan,
@@ -747,22 +937,42 @@ def validate_lifecycle_plan(lifecycle_plan: object, acceptance_plan: dict) -> di
         },
     )
     require(lifecycle_plan["schema"] == LIFECYCLE_PLAN_SCHEMA, "unsupported lifecycle plan evidence")
+    identifier(lifecycle_plan["request_id"])
     require(
-        lifecycle_plan["owner_agent_id"] == acceptance_plan["owner_agent_id"],
+        canonical_agent(lifecycle_plan["owner_agent_id"]) == acceptance_plan["owner_agent_id"],
         "lifecycle plan belongs to another Agent",
     )
     integer(lifecycle_plan["writer_generation"])
+    integer(lifecycle_plan["created_at"])
     for field in ("cut_sha256", "policy_sha256", "inventory_sha256"):
         digest(lifecycle_plan[field])
     obligations = lifecycle_plan["obligations"]
     require(
-        isinstance(obligations, list)
-        and obligations
-        and {row.get("storage_class") for row in obligations if isinstance(row, dict)} == CLASSES,
+        isinstance(obligations, list) and len(CLASSES) <= len(obligations) <= 128,
+        "lifecycle plan has missing or excessive obligations",
+    )
+    observed = set()
+    for row in obligations:
+        exact(row, {"storage_class", "storage_owner", "requirement", "inventory_sha256"})
+        require(row["storage_class"] in CLASSES, "lifecycle plan has an unknown storage class")
+        identifier(row["storage_owner"])
+        require(
+            row["requirement"] in {"erase", "unlearn", "not_applicable"},
+            "lifecycle plan has an unknown requirement",
+        )
+        require(
+            row["requirement"] != "unlearn" or row["storage_class"] == "trained_parameters",
+            "lifecycle plan uses unlearning outside trained parameters",
+        )
+        digest(row["inventory_sha256"])
+        identity = (row["storage_class"], row["storage_owner"])
+        require(identity not in observed, "lifecycle plan has a duplicate owner obligation")
+        observed.add(identity)
+    require(
+        {identity[0] for identity in observed} == CLASSES,
         "lifecycle plan omits or invents a storage class",
     )
     return lifecycle_plan
-
 
 def validate_lifecycle_report(report: object, lifecycle_plan: dict) -> dict:
     exact(
@@ -788,17 +998,18 @@ def validate_lifecycle_report(report: object, lifecycle_plan: dict) -> dict:
         "lifecycle reconciliation evidence is incomplete",
     )
     obligations = report["obligations"]
+    expected = {
+        (row["storage_class"], row["storage_owner"]): row
+        for row in lifecycle_plan["obligations"]
+    }
     require(
         isinstance(obligations, list)
-        and obligations
+        and len(obligations) == len(expected)
         and all(isinstance(row, dict) and row.get("status") == "completed" for row in obligations),
         "lifecycle reconciliation evidence contains incomplete obligations",
     )
-    require(
-        {row.get("storage_class") for row in obligations} == CLASSES,
-        "lifecycle reconciliation evidence omits or invents a storage class",
-    )
     evidence_identities = set()
+    observed = set()
     for row in obligations:
         exact(
             row,
@@ -812,31 +1023,42 @@ def validate_lifecycle_report(report: object, lifecycle_plan: dict) -> dict:
                 "verified_evidence_sha256",
             },
         )
-        identifier(row["storage_owner"])
+        identity = (row["storage_class"], row["storage_owner"])
+        require(identity in expected and identity not in observed,
+                "lifecycle report omits, invents or duplicates an owner obligation")
         require(
-            row["requirement"] in {"erase", "unlearn", "not_applicable"},
-            "lifecycle reconciliation evidence has an unknown requirement",
+            row["requirement"] == expected[identity]["requirement"]
+            and row["inventory_sha256"] == expected[identity]["inventory_sha256"],
+            "lifecycle report obligation differs from the signed plan",
         )
+        observed.add(identity)
+        identifier(row["storage_owner"])
         for field in (
             "inventory_sha256",
             "verified_receipt_sha256",
             "verified_evidence_sha256",
         ):
             digest(row[field])
-        require(
-            row["verified_evidence_sha256"] not in evidence_identities,
-            "lifecycle reconciliation evidence reuses one owner evidence identity",
-        )
-        evidence_identities.add(row["verified_evidence_sha256"])
+        for field in ("verified_receipt_sha256", "verified_evidence_sha256"):
+            require(
+                row[field] not in evidence_identities,
+                "lifecycle reconciliation evidence reuses one owner evidence or receipt identity",
+            )
+            evidence_identities.add(row[field])
+    require({identity[0] for identity in observed} == CLASSES,
+            "lifecycle reconciliation evidence omits or invents a storage class")
     digest(report["trust_sha256"])
     integer(report["observed_at"])
+    require(
+        report["observed_at"] >= lifecycle_plan["created_at"],
+        "lifecycle report predates the signed lifecycle plan",
+    )
     require_false(
         report,
         ("authorized_effects", "physical_erasure_independently_proved", "target_host_qualified"),
         "lifecycle reconciliation evidence",
     )
     return report
-
 
 def validate_evidence_bundle(bundle: object, plan: dict) -> dict:
     exact(bundle, set(EVIDENCE_FIELDS))
@@ -888,6 +1110,42 @@ def validate_evidence_bundle(bundle: object, plan: dict) -> dict:
         and retention_plan["writer_generation"] == lifecycle_plan["writer_generation"],
         "retention and lifecycle evidence describe different owner contexts",
     )
+
+    operational = []
+    for row in host_report["steps"]:
+        operational.extend(
+            row[field]
+            for field in (
+                "verified_receipt_sha256",
+                "verified_evidence_sha256",
+                "verified_metrics_sha256",
+            )
+        )
+    for row in retention_report["segments"]:
+        operational.extend(
+            row[field]
+            for field in ("verified_receipt_sha256", "verified_evidence_sha256")
+        )
+    operational.extend(
+        [
+            retention_report["verified_rebuild_receipt_sha256"],
+            retention_report["verified_rebuild_evidence_sha256"],
+        ]
+    )
+    for row in lifecycle_report["obligations"]:
+        operational.extend(
+            row[field]
+            for field in ("verified_receipt_sha256", "verified_evidence_sha256")
+        )
+    require(
+        len(operational) == len(set(operational)),
+        "host, retention and lifecycle evidence identities overlap across domains",
+    )
+    bound = {plan[field] for field in EVIDENCE_FIELDS}
+    require(
+        not (set(operational) & bound),
+        "operational evidence reuses a bound plan or report identity",
+    )
     return {
         "qualified_cut_sha256": qualified_cut,
         "qualified_writer_generation": qualified_generation,
@@ -895,13 +1153,13 @@ def validate_evidence_bundle(bundle: object, plan: dict) -> dict:
         "host_plan_sha256": sha256(host_plan),
         "retention_plan_sha256": sha256(retention_plan),
         "lifecycle_plan_sha256": sha256(lifecycle_plan),
+        "operational_evidence_identities": frozenset(operational),
         "reports": {
             "host": host_report,
             "retention": retention_report,
             "lifecycle": lifecycle_report,
         },
     }
-
 
 def validate_plan(plan: object, trust: dict, now: int) -> dict:
     exact(
@@ -1044,6 +1302,7 @@ def reconcile(
     observed = {}
     review_evidence = set()
     bound_evidence = {plan[field] for field in EVIDENCE_FIELDS}
+    operational_evidence = context["operational_evidence_identities"]
     for envelope in receipt_envelopes:
         require(isinstance(envelope, dict), "invalid acceptance receipt envelope")
         signer = trusted.get(envelope.get("signer_id"))
@@ -1069,6 +1328,10 @@ def reconcile(
         require(
             receipt["review_sha256"] not in bound_evidence,
             "acceptance review evidence reuses a bound plan or report identity",
+        )
+        require(
+            receipt["review_sha256"] not in operational_evidence,
+            "acceptance review evidence reuses host, retention or lifecycle evidence",
         )
         review_evidence.add(receipt["review_sha256"])
         observed[role_name] = receipt
@@ -1118,6 +1381,7 @@ def reconcile(
         "qualified_writer_generation": context["qualified_writer_generation"],
         "all_bound_evidence_reports_validated": True,
         "all_bound_evidence_context_coherent": True,
+        "all_operational_evidence_identities_unique": True,
         "roles": rows,
         "all_required_independent_approvals_verified": complete,
         "result": "external_approval_set_verified" if complete else "incomplete",

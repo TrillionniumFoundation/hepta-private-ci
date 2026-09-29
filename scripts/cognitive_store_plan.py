@@ -113,11 +113,21 @@ def resolve_plan(plan: dict, root: Path, environment: dict[str, str]) -> tuple[l
     return result, paths
 
 
-def load_plan(path: Path, root: Path, environment: dict[str, str]) -> tuple[list[dict], list[str]]:
+def load_plan_document(path: Path) -> dict:
+    """Read the exact bounded committed plan before runtime expansion.
+
+    The raw object is the stable cross-lane identity. Resolved specifications
+    additionally bind runner paths and candidate-specific substitutions.
+    """
     require(path.is_file() and not path.is_symlink() and path.stat().st_size <= MAX_PLAN_BYTES,
             "missing, redirected or oversized qualification plan")
     with path.open("rb") as stream:
         data = stream.read(MAX_PLAN_BYTES + 1)
     require(len(data) <= MAX_PLAN_BYTES, "qualification plan exceeds byte budget")
     plan = json.loads(data, object_pairs_hook=no_duplicates)
-    return resolve_plan(plan, root, environment)
+    require(isinstance(plan, dict), "qualification plan must be one JSON object")
+    return plan
+
+
+def load_plan(path: Path, root: Path, environment: dict[str, str]) -> tuple[list[dict], list[str]]:
+    return resolve_plan(load_plan_document(path), root, environment)

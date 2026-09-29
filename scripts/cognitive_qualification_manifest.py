@@ -16,7 +16,7 @@ import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 
-from cognitive_store_plan import NAME, load_plan, no_duplicates, spec_sha256
+from cognitive_store_plan import NAME, load_plan_document, no_duplicates, resolve_plan, spec_sha256
 from hepta_ci_exec import observed_test_counts
 
 HEX40 = re.compile(r"^[0-9a-f]{40}$")
@@ -192,6 +192,8 @@ def main() -> int:
     required = list(args.required)
     evidence_paths = list(args.evidence)
     expectations = {}
+    plan_entry_sha256 = {}
+    qualification_plan_sha256 = None
     if args.plan is None:
         identity_errors.append("a committed qualification plan is required for terminal success")
     else:
@@ -203,8 +205,13 @@ def main() -> int:
             if git("hash-object", str(canonical_plan)) != git(
                     "rev-parse", "HEAD:docs/modules/cognitive.store/QUALIFICATION_PLAN.json"):
                 raise ValueError("qualification plan differs from the tested Git object")
-            specs, planned_evidence = load_plan(canonical_plan, root, dict(os.environ))
+            raw_plan = load_plan_document(canonical_plan)
+            specs, planned_evidence = resolve_plan(raw_plan, root, dict(os.environ))
             expectations = {item["record"]: item for item in specs}
+            qualification_plan_sha256 = spec_sha256(raw_plan)
+            plan_entry_sha256 = {
+                item["record"]: spec_sha256(item) for item in raw_plan["commands"]
+            }
             if any(name not in expectations for name in required):
                 raise ValueError("requested record is not in the committed plan")
             required.extend(expectations)
@@ -215,7 +222,12 @@ def main() -> int:
     if not required or any(NAME.fullmatch(name) is None for name in required):
         identity_errors.append("required command names must be nonempty safe JSON basenames")
         required = [name for name in required if NAME.fullmatch(name) is not None]
-    commands = [load_record(args.records / name, context, expectations.get(name)) for name in required]
+    commands = []
+    for name in required:
+        row = load_record(args.records / name, context, expectations.get(name))
+        if name in plan_entry_sha256:
+            row["planEntrySha256"] = plan_entry_sha256[name]
+        commands.append(row)
     evidence = []
     for value in sorted(set(evidence_paths)):
         path = Path(value)
@@ -236,7 +248,8 @@ def main() -> int:
               and all(row["status"] == "passed" for row in commands)
               and all(row["status"] == "retained" for row in evidence))
     receipt = {
-        "schema": "hepta.cognitive-store-qualification-manifest.v2", **identity,
+        "schema": "hepta.cognitive-store-qualification-manifest.v3", **identity,
+        "qualificationPlanSha256": qualification_plan_sha256,
         "requestedIdentity": context, "identityErrors": identity_errors,
         "lane": context["lane"], "runId": context["run_id"], "runAttempt": context["run_attempt"],
         "job": os.environ.get("GITHUB_JOB"), "workflowSha": os.environ.get("GITHUB_WORKFLOW_SHA"),

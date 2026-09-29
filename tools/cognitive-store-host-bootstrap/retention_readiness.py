@@ -22,7 +22,7 @@ from lifecycle import sha256, validate_trust, verify_signature
 PLAN_SCHEMA = "hepta.cognitive.retention-checkpoint-plan.v3"
 SEGMENT_RECEIPT_SCHEMA = "hepta.cognitive.retention-segment-receipt.v3"
 REBUILD_RECEIPT_SCHEMA = "hepta.cognitive.retention-rebuild-receipt.v3"
-REPORT_SCHEMA = "hepta.cognitive.retention-readiness-report.v3"
+REPORT_SCHEMA = "hepta.cognitive.retention-readiness-report.v4"
 MAX_SEGMENTS = 128
 MAX_IMAGE_BYTES = 128 * 1024 * 1024
 GIT_OID = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})\Z")
@@ -572,6 +572,9 @@ def reconcile(
                 "storage_owner": segment["storage_owner"],
                 "status": receipt["status"] if receipt else "missing",
                 "verified_receipt_sha256": sha256(receipt) if receipt else None,
+                "verified_evidence_sha256": (
+                    receipt["evidence_sha256"] if receipt else None
+                ),
             }
         )
     complete = (
@@ -589,6 +592,7 @@ def reconcile(
         "segments": rows,
         "rebuild_status": rebuild["status"],
         "verified_rebuild_receipt_sha256": sha256(rebuild),
+        "verified_rebuild_evidence_sha256": rebuild["evidence_sha256"],
         "all_required_owner_receipts_verified": complete,
         "result": "retention_ready" if complete else "incomplete",
         "successor_published": False,

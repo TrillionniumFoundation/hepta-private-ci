@@ -295,7 +295,7 @@
     },
     {
       "id": "CS-PLAN-001",
-      "invariant": "Only the committed command, workload and test threshold can satisfy qualification",
+      "invariant": "Only the committed plan, per-command template identity, resolved workload and test threshold can satisfy qualification",
       "sources": [
         "scripts/cognitive_store_plan.py",
         "scripts/cognitive_store_qualify.py",
@@ -316,7 +316,7 @@
         "shared-exec-deadline-regressions.json",
         "shared-exec-output-regressions.json"
       ],
-      "scope": "Real command runner in disposable Git repositories; exact production candidate and native matrix remain separately required"
+      "scope": "Canonical whole-plan and raw-entry digests plus real command runner in disposable Git repositories; exact production candidate and native matrix remain separately required"
     },
     {
       "id": "CS-OBS-002",
@@ -337,7 +337,7 @@
     },
     {
       "id": "CS-HOST-001",
-      "invariant": "Selected-host receipts bind one coherent cut, fresh grant-bound writer generation and distinct per-step evidence",
+      "invariant": "Selected-host receipts bind one coherent cut, fresh grant-bound writer generation and distinct receipt/evidence/metrics identities",
       "sources": [
         "tools/cognitive-store-host-bootstrap/host_qualification.py"
       ],
@@ -347,11 +347,11 @@
       "records": [
         "host-qualification-tests.json"
       ],
-      "scope": "Real Ed25519 fixture receipts, cut/generation/grant chains, globally unique evidence/metrics and final-use trust checks; actual selected-host execution and acceptance remain external"
+      "scope": "Real Ed25519 fixture receipts, cut/generation/grant chains and downstream-visible unique receipt/evidence/metrics identities; actual selected-host execution and acceptance remain external"
     },
     {
       "id": "CS-RET-001",
-      "invariant": "Retention readiness binds owner-attested disjoint key ranges, globally distinct content/evidence identities, the complete aggregate and an unpublished same-cut rebuild",
+      "invariant": "Retention readiness binds owner-attested disjoint ranges, complete aggregates, an unpublished same-cut rebuild and distinct receipt/evidence identities",
       "sources": [
         "tools/cognitive-store-host-bootstrap/retention_readiness.py"
       ],
@@ -361,11 +361,11 @@
       "records": [
         "retention-readiness-tests.json"
       ],
-      "scope": "Signed range/data/manifest/evidence identities with owner separation and final-use ordering only; publication, pruning and erasure remain unclaimed"
+      "scope": "Signed range/data/manifest/receipt/evidence identities with owner separation and final-use ordering only; publication, pruning and erasure remain unclaimed"
     },
     {
       "id": "CS-ACC-001",
-      "invariant": "Independent acceptance validates the exact qualification inventory, coherent bound evidence, distinct reviews and ordered approval dependencies without effects",
+      "invariant": "Independent acceptance validates exact plan-entry identities, coherent evidence contents, globally unique operational/review evidence and ordered approvals without effects",
       "sources": [
         "tools/cognitive-store-host-bootstrap/acceptance_governance.py"
       ],
@@ -375,7 +375,7 @@
       "records": [
         "acceptance-governance-tests.json"
       ],
-      "scope": "Real Ed25519 fixture approvals plus exact qualification-plan inventory, source-head/merge/host/retention/lifecycle validation, unique review evidence and final-use trust checks; actual reviewers and release execution remain external"
+      "scope": "Real Ed25519 fixture approvals plus manifest-v3 whole-plan/entry bindings, source-head/merge/host/retention/lifecycle validation, cross-domain evidence uniqueness and final-use trust checks; actual reviewers and release execution remain external"
     }
   ],
   "externalEvidence": [

@@ -12,7 +12,7 @@ and recomputes the merge tree. Every command has an exclusive record and bounded
 | `implementation-map.json` | `.` | `python3 scripts/cognitive_store_map_verify.py --expected-sha $TESTED_SHA --expected-tree $TESTED_TREE` | 0 |
 | `map-regressions.json` | `.` | `python3 scripts/test_cognitive_store_map.py -v` | 12 |
 | `manifest-regressions.json` | `.` | `python3 scripts/test_cognitive_qualification_manifest.py -v` | 11 |
-| `plan-binding-regressions.json` | `.` | `python3 scripts/test_cognitive_plan_binding.py -v` | 39 |
+| `plan-binding-regressions.json` | `.` | `python3 scripts/test_cognitive_plan_binding.py -v` | 40 |
 | `shared-exec-regressions.json` | `.` | `python3 scripts/test_hepta_ci_exec.py -v` | 15 |
 | `shared-exec-deadline-regressions.json` | `.` | `python3 scripts/test_hepta_ci_exec_deadline.py -v` | 9 |
 | `shared-exec-output-regressions.json` | `.` | `python3 scripts/test_hepta_ci_exec_output.py -v` | 21 |
@@ -54,7 +54,7 @@ and recomputes the merge tree. Every command has an exclusive record and bounded
 | `recovery-release-16384-report.json` | `.` | `python3 scripts/cognitive_store_recovery_report.py --report $RUNNER_TEMP/cognitive-recovery-perf-16384.json --source-commit $SOURCE_SHA --tested-commit $TESTED_SHA --tested-tree $TESTED_TREE --records 16384 --minimum-repetitions 3 --require-rss` | 0 |
 | `host-qualification-tests.json` | `.` | `python3 tools/cognitive-store-host-bootstrap/test_host_qualification.py -v` | 38 |
 | `retention-readiness-tests.json` | `.` | `python3 tools/cognitive-store-host-bootstrap/test_retention_readiness.py -v` | 43 |
-| `acceptance-governance-tests.json` | `.` | `python3 tools/cognitive-store-host-bootstrap/test_acceptance_governance.py -v` | 43 |
+| `acceptance-governance-tests.json` | `.` | `python3 tools/cognitive-store-host-bootstrap/test_acceptance_governance.py -v` | 49 |
 | `clippy.json` | `codex-rs` | `cargo clippy --locked -p codex-hepta-cognitive-store -p codex-hepta-memory -p codex-hepta-agentd --all-targets --all-features --no-deps -- -D warnings` | 0 |
 | `clean-source.json` | `.` | `git diff --exit-code HEAD --` | 0 |
 

@@ -20,7 +20,7 @@ from lifecycle import sha256, validate_trust, verify_signature
 
 PLAN_SCHEMA = "hepta.cognitive.host-qualification-plan.v2"
 RECEIPT_SCHEMA = "hepta.cognitive.host-qualification-receipt.v2"
-REPORT_SCHEMA = "hepta.cognitive.host-qualification-report.v2"
+REPORT_SCHEMA = "hepta.cognitive.host-qualification-report.v3"
 MAX_STEPS = 32
 GIT_OID = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})\Z")
 
@@ -282,6 +282,8 @@ def reconcile(plan_envelope: object, receipt_envelopes: object, trust: dict,
             "executor": expected[name]["executor"],
             "status": receipt["status"] if receipt else "missing",
             "verified_receipt_sha256": sha256(receipt) if receipt else None,
+            "verified_evidence_sha256": receipt["evidence_sha256"] if receipt else None,
+            "verified_metrics_sha256": receipt["metrics_sha256"] if receipt else None,
         })
     complete = all(row["status"] == "completed" for row in rows)
     return {

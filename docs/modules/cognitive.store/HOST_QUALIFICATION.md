@@ -62,3 +62,6 @@ python3 tools/cognitive-store-host-bootstrap/host_qualification.py \
 ```
 
 All files use the bounded, no-follow signed-file reader shared with lifecycle reconciliation. Exit code 0 means all required owner receipts were authenticated. Exit code 2 means the evidence set is incomplete. Neither code is an activation or release decision.
+## Report identity exposure
+
+The current report schema is `hepta.cognitive.host-qualification-report.v3`. Each completed step exposes three separately authenticated identities: the signed receipt digest, the underlying step evidence digest, and the metrics artifact digest. All three are unique across the ceremony. They are included so downstream independent acceptance can detect cross-domain replay against retention, lifecycle or review evidence without receiving a writable host capability. This exposure authenticates identities only; it does not make repository fixtures target-host qualification.

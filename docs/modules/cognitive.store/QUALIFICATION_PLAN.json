@@ -4,89 +4,772 @@
   "commands": [
     {
       "record": "workspace.json",
-      "command": ["cargo", "metadata", "--locked", "--format-version", "1", "--no-deps"],
-      "cwd": "codex-rs", "minimumTests": 0, "native": true, "timeoutSeconds": 1800
+      "command": [
+        "cargo",
+        "metadata",
+        "--locked",
+        "--format-version",
+        "1",
+        "--no-deps"
+      ],
+      "cwd": "codex-rs",
+      "minimumTests": 0,
+      "native": true,
+      "timeoutSeconds": 1800
     },
     {
       "record": "boundary.json",
-      "command": ["python3", "scripts/verify_cognitive_store_boundary.py", "--output", "$RUNNER_TEMP/cognitive-boundary-receipt.json"],
-      "cwd": ".", "minimumTests": 0, "native": false, "timeoutSeconds": 1800
+      "command": [
+        "python3",
+        "scripts/verify_cognitive_store_boundary.py",
+        "--output",
+        "$RUNNER_TEMP/cognitive-boundary-receipt.json"
+      ],
+      "cwd": ".",
+      "minimumTests": 0,
+      "native": false,
+      "timeoutSeconds": 1800
     },
     {
       "record": "implementation-map.json",
-      "command": ["python3", "scripts/cognitive_store_map_verify.py", "--expected-sha", "$TESTED_SHA", "--expected-tree", "$TESTED_TREE"],
-      "cwd": ".", "minimumTests": 0, "native": false, "timeoutSeconds": 1800
-    },
-    {"record":"map-regressions.json","command":["python3","scripts/test_cognitive_store_map.py","-v"],"cwd":".","minimumTests":12,"native":false,"timeoutSeconds":1800},
-    {"record":"manifest-regressions.json","command":["python3","scripts/test_cognitive_qualification_manifest.py","-v"],"cwd":".","minimumTests":11,"native":false,"timeoutSeconds":1800},
-    {"record":"plan-binding-regressions.json","command":["python3","scripts/test_cognitive_plan_binding.py","-v"],"cwd":".","minimumTests":39,"native":false,"timeoutSeconds":1800},
-    {"record":"shared-exec-regressions.json","command":["python3","scripts/test_hepta_ci_exec.py","-v"],"cwd":".","minimumTests":15,"native":false,"timeoutSeconds":1800},
-    {"record":"shared-exec-deadline-regressions.json","command":["python3","scripts/test_hepta_ci_exec_deadline.py","-v"],"cwd":".","minimumTests":9,"native":false,"timeoutSeconds":1800},
-    {"record":"shared-exec-output-regressions.json","command":["python3","scripts/test_hepta_ci_exec_output.py","-v"],"cwd":".","minimumTests":21,"native":false,"timeoutSeconds":1800},
-    {"record":"api-probe-regressions.json","command":["python3","scripts/test_cognitive_store_api_probe.py","-v"],"cwd":".","minimumTests":12,"native":false,"timeoutSeconds":1800},
-    {"record":"status-drift.json","command":["python3","scripts/cognitive_store_status.py","--check"],"cwd":".","minimumTests":0,"native":false,"timeoutSeconds":1800},
-    {"record":"module-inventory.json","command":["python3","scripts/check-rust-module-inventory.py","codex-rs/hepta-cognitive-store/src"],"cwd":".","minimumTests":0,"native":false,"timeoutSeconds":1800},
-    {"record":"host-bootstrap.json","command":["python3","tools/cognitive-store-host-bootstrap/test_bootstrap.py"],"cwd":".","minimumTests":1,"native":false,"timeoutSeconds":1800},
-    {"record":"expired-bootstrap-cli.json","command":["python3","tools/cognitive-store-host-bootstrap/test_expired_cli.py"],"cwd":".","minimumTests":1,"native":false,"timeoutSeconds":1800},
-    {"record":"lifecycle-owner-receipts.json","command":["python3","tools/cognitive-store-host-bootstrap/test_lifecycle.py","-v"],"cwd":".","minimumTests":37,"native":false,"timeoutSeconds":1800},
-    {"record":"archive-dependencies.json","command":["python3","tools/cognitive-store-host-bootstrap/prepare_archive_env.py"],"cwd":".","minimumTests":0,"native":false,"timeoutSeconds":600},
-    {"record":"archive-publication-boundary-tests.json","command":["$RUNNER_TEMP/cognitive-archive-venv/bin/python","tools/cognitive-store-host-bootstrap/test_archive_publication.py","-v"],"cwd":".","minimumTests":21,"native":false,"timeoutSeconds":1800},
-    {"record":"lifecycle-final-use-tests.json","command":["$RUNNER_TEMP/cognitive-archive-venv/bin/python","tools/cognitive-store-host-bootstrap/test_lifecycle_final_use.py","-v"],"cwd":".","minimumTests":12,"native":false,"timeoutSeconds":1800},
-    {"record":"recovery-report-regressions.json","command":["python3","scripts/test_cognitive_store_recovery_report.py","-v"],"cwd":".","minimumTests":21,"native":false,"timeoutSeconds":1800},
-    {"record":"archive-protocol-tests.json","command":["$RUNNER_TEMP/cognitive-archive-venv/bin/python","tools/cognitive-store-host-bootstrap/test_archive.py","-v"],"cwd":".","minimumTests":45,"native":false,"timeoutSeconds":1800},
-    {"record":"publication-observation-tests.json","command":["$RUNNER_TEMP/cognitive-archive-venv/bin/python","tools/cognitive-store-host-bootstrap/test_publication_observation.py","-v"],"cwd":".","minimumTests":35,"native":false,"timeoutSeconds":1800},
-    {"record":"observation-boundary-tests.json","command":["$RUNNER_TEMP/cognitive-archive-venv/bin/python","tools/cognitive-store-host-bootstrap/test_observation_boundary.py","-v"],"cwd":".","minimumTests":17,"native":false,"timeoutSeconds":1800},
-    {
-      "record":"archive-owner-tests.json",
-      "command":["cargo","test","--locked","-p","codex-hepta-memory","--test","cognitive_archive_owner","signed_archive_restores_real_correction_and_tombstone_history","--","--ignored","--exact"],
-      "cwd":"codex-rs","minimumTests":1,"native":true,"timeoutSeconds":1800,
-      "env":{"HEPTA_COGNITIVE_ARCHIVE_PYTHON":"$RUNNER_TEMP/cognitive-archive-venv/bin/python"}
-    },
-    {"record":"format.json","command":["cargo","fmt","--package","codex-hepta-cognitive-store","--package","codex-hepta-memory","--package","codex-hepta-agentd","--","--check"],"cwd":"codex-rs","minimumTests":0,"native":true,"timeoutSeconds":1800},
-    {"record":"default-feature-check.json","command":["cargo","check","--locked","-p","codex-hepta-cognitive-store","--no-default-features","--lib"],"cwd":"codex-rs","minimumTests":0,"native":true,"timeoutSeconds":1800},
-    {"record":"agentd-normal-profile-check.json","command":["cargo","check","--locked","-p","codex-hepta-agentd","--lib"],"cwd":"codex-rs","minimumTests":0,"native":true,"timeoutSeconds":1800},
-    {"record":"api-probes.json","command":["python3","scripts/cognitive_store_api_probe.py","--output","$RUNNER_TEMP/cognitive-api-probes.json"],"cwd":".","minimumTests":0,"native":true,"timeoutSeconds":7200},
-    {"record":"cognitive-store-tests.json","command":["cargo","test","--locked","-p","codex-hepta-cognitive-store","--all-features"],"cwd":"codex-rs","minimumTests":1,"native":true,"timeoutSeconds":1800},
-    {"record":"memory-tests.json","command":["cargo","test","--locked","-p","codex-hepta-memory"],"cwd":"codex-rs","minimumTests":1,"native":true,"timeoutSeconds":1800},
-    {"record":"publication-fault-tests.json","command":["cargo","test","--locked","-p","codex-hepta-memory","--test","cognitive_recovery_publication_fault"],"cwd":"codex-rs","minimumTests":1,"native":true,"timeoutSeconds":1800},
-    {"record":"recovery-final-use-tests.json","command":["cargo","test","--locked","-p","codex-hepta-memory","final_use_tests"],"cwd":"codex-rs","minimumTests":2,"native":true,"timeoutSeconds":1800},
-    {"record":"agentd-product-tests.json","command":["cargo","test","--locked","-p","codex-hepta-agentd","--test","cognitive_store_product_writer","--features","qualification-cognitive-write"],"cwd":"codex-rs","minimumTests":1,"native":true,"timeoutSeconds":1800},
-    {"record":"bootstrap-tests.json","command":["cargo","test","--locked","-p","codex-hepta-agentd","--test","cognitive_bootstrap","--features","qualification-cognitive-write"],"cwd":"codex-rs","minimumTests":1,"native":true,"timeoutSeconds":1800},
-    {"record":"recovery-boundary-tests.json","command":["cargo","test","--locked","-p","codex-hepta-agentd","--test","cognitive_recovery_boundary","--features","qualification-cognitive-write"],"cwd":"codex-rs","minimumTests":8,"native":true,"timeoutSeconds":1800},
-    {"record":"normal-read-page-tests.json","command":["cargo","test","--locked","-p","codex-hepta-agentd","--test","cognitive_store_read_pages"],"cwd":"codex-rs","minimumTests":3,"native":true,"timeoutSeconds":1800},
-    {"record":"normal-host-read-page-tests.json","command":["cargo","test","--locked","-p","codex-hepta-agentd","--test","cognitive_store_host_read_pages"],"cwd":"codex-rs","minimumTests":1,"native":true,"timeoutSeconds":1800},
-    {"record":"crash-reopen.json","command":["cargo","test","--locked","-p","codex-hepta-memory","local_lease_outbox_tests::qualification_durable_writer_crash_reopen_probe","--","--ignored","--exact"],"cwd":"codex-rs","minimumTests":1,"native":true,"timeoutSeconds":1800},
-    {
-      "record":"perf-256.json","command":["cargo","run","--locked","--release","-p","codex-hepta-memory","--example","cognitive_store_perf"],"cwd":"codex-rs","minimumTests":0,"native":true,"timeoutSeconds":3600,
-      "env":{"HEPTA_COGNITIVE_PERF_RECORDS":"256","HEPTA_COGNITIVE_PERF_OUTPUT":"$RUNNER_TEMP/cognitive-perf-256.json"}
+      "command": [
+        "python3",
+        "scripts/cognitive_store_map_verify.py",
+        "--expected-sha",
+        "$TESTED_SHA",
+        "--expected-tree",
+        "$TESTED_TREE"
+      ],
+      "cwd": ".",
+      "minimumTests": 0,
+      "native": false,
+      "timeoutSeconds": 1800
     },
     {
-      "record":"perf-16384.json","command":["cargo","run","--locked","--release","-p","codex-hepta-memory","--example","cognitive_store_perf"],"cwd":"codex-rs","minimumTests":0,"native":true,"timeoutSeconds":7200,
-      "env":{"HEPTA_COGNITIVE_PERF_RECORDS":"16384","HEPTA_COGNITIVE_PERF_OUTPUT":"$RUNNER_TEMP/cognitive-perf-16384.json"}
+      "record": "map-regressions.json",
+      "command": [
+        "python3",
+        "scripts/test_cognitive_store_map.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "minimumTests": 12,
+      "native": false,
+      "timeoutSeconds": 1800
     },
     {
-      "record":"history-64-16.json","command":["cargo","run","--locked","-p","codex-hepta-memory","--example","cognitive_store_history_perf"],"cwd":"codex-rs","minimumTests":0,"native":true,"timeoutSeconds":3600,
-      "env":{"HEPTA_COGNITIVE_HISTORY_HEADS":"64","HEPTA_COGNITIVE_HISTORY_REVISIONS":"16","HEPTA_COGNITIVE_HISTORY_OUTPUT":"$RUNNER_TEMP/cognitive-history-64-16.json"}
+      "record": "manifest-regressions.json",
+      "command": [
+        "python3",
+        "scripts/test_cognitive_qualification_manifest.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "minimumTests": 11,
+      "native": false,
+      "timeoutSeconds": 1800
     },
     {
-      "record":"history-128-64.json","command":["cargo","run","--locked","-p","codex-hepta-memory","--example","cognitive_store_history_perf"],"cwd":"codex-rs","minimumTests":0,"native":true,"timeoutSeconds":3600,
-      "env":{"HEPTA_COGNITIVE_HISTORY_HEADS":"128","HEPTA_COGNITIVE_HISTORY_REVISIONS":"64","HEPTA_COGNITIVE_HISTORY_OUTPUT":"$RUNNER_TEMP/cognitive-history-128-64.json"}
+      "record": "plan-binding-regressions.json",
+      "command": [
+        "python3",
+        "scripts/test_cognitive_plan_binding.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "minimumTests": 40,
+      "native": false,
+      "timeoutSeconds": 1800
     },
     {
-      "record":"recovery-release-256.json","command":["cargo","run","--locked","--release","-p","codex-hepta-memory","--example","cognitive_store_recovery_perf"],"cwd":"codex-rs","minimumTests":0,"native":true,"timeoutSeconds":3600,
-      "env":{"HEPTA_COGNITIVE_RECOVERY_RECORDS":"256","HEPTA_COGNITIVE_RECOVERY_REPETITIONS":"3","HEPTA_COGNITIVE_RECOVERY_OUTPUT":"$RUNNER_TEMP/cognitive-recovery-perf-256.json"}
+      "record": "shared-exec-regressions.json",
+      "command": [
+        "python3",
+        "scripts/test_hepta_ci_exec.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "minimumTests": 15,
+      "native": false,
+      "timeoutSeconds": 1800
     },
-    {"record":"recovery-release-256-report.json","command":["python3","scripts/cognitive_store_recovery_report.py","--report","$RUNNER_TEMP/cognitive-recovery-perf-256.json","--source-commit","$SOURCE_SHA","--tested-commit","$TESTED_SHA","--tested-tree","$TESTED_TREE","--records","256","--minimum-repetitions","3","--require-rss"],"cwd":".","minimumTests":0,"native":false,"timeoutSeconds":1800},
     {
-      "record":"recovery-release-16384.json","command":["cargo","run","--locked","--release","-p","codex-hepta-memory","--example","cognitive_store_recovery_perf"],"cwd":"codex-rs","minimumTests":0,"native":true,"timeoutSeconds":7200,
-      "env":{"HEPTA_COGNITIVE_RECOVERY_RECORDS":"16384","HEPTA_COGNITIVE_RECOVERY_REPETITIONS":"3","HEPTA_COGNITIVE_RECOVERY_OUTPUT":"$RUNNER_TEMP/cognitive-recovery-perf-16384.json"}
+      "record": "shared-exec-deadline-regressions.json",
+      "command": [
+        "python3",
+        "scripts/test_hepta_ci_exec_deadline.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "minimumTests": 9,
+      "native": false,
+      "timeoutSeconds": 1800
     },
-    {"record":"recovery-release-16384-report.json","command":["python3","scripts/cognitive_store_recovery_report.py","--report","$RUNNER_TEMP/cognitive-recovery-perf-16384.json","--source-commit","$SOURCE_SHA","--tested-commit","$TESTED_SHA","--tested-tree","$TESTED_TREE","--records","16384","--minimum-repetitions","3","--require-rss"],"cwd":".","minimumTests":0,"native":false,"timeoutSeconds":1800},
-    {"record":"host-qualification-tests.json","command":["python3","tools/cognitive-store-host-bootstrap/test_host_qualification.py","-v"],"cwd":".","minimumTests":38,"native":false,"timeoutSeconds":1800},
-    {"record":"retention-readiness-tests.json","command":["python3","tools/cognitive-store-host-bootstrap/test_retention_readiness.py","-v"],"cwd":".","minimumTests":43,"native":false,"timeoutSeconds":1800},
-    {"record":"acceptance-governance-tests.json","command":["python3","tools/cognitive-store-host-bootstrap/test_acceptance_governance.py","-v"],"cwd":".","minimumTests":43,"native":false,"timeoutSeconds":1800},
-    {"record":"clippy.json","command":["cargo","clippy","--locked","-p","codex-hepta-cognitive-store","-p","codex-hepta-memory","-p","codex-hepta-agentd","--all-targets","--all-features","--no-deps","--","-D","warnings"],"cwd":"codex-rs","minimumTests":0,"native":true,"timeoutSeconds":1800},
-    {"record":"clean-source.json","command":["git","diff","--exit-code","HEAD","--"],"cwd":".","minimumTests":0,"native":false,"timeoutSeconds":1800}
+    {
+      "record": "shared-exec-output-regressions.json",
+      "command": [
+        "python3",
+        "scripts/test_hepta_ci_exec_output.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "minimumTests": 21,
+      "native": false,
+      "timeoutSeconds": 1800
+    },
+    {
+      "record": "api-probe-regressions.json",
+      "command": [
+        "python3",
+        "scripts/test_cognitive_store_api_probe.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "minimumTests": 12,
+      "native": false,
+      "timeoutSeconds": 1800
+    },
+    {
+      "record": "status-drift.json",
+      "command": [
+        "python3",
+        "scripts/cognitive_store_status.py",
+        "--check"
+      ],
+      "cwd": ".",
+      "minimumTests": 0,
+      "native": false,
+      "timeoutSeconds": 1800
+    },
+    {
+      "record": "module-inventory.json",
+      "command": [
+        "python3",
+        "scripts/check-rust-module-inventory.py",
+        "codex-rs/hepta-cognitive-store/src"
+      ],
+      "cwd": ".",
+      "minimumTests": 0,
+      "native": false,
+      "timeoutSeconds": 1800
+    },
+    {
+      "record": "host-bootstrap.json",
+      "command": [
+        "python3",
+        "tools/cognitive-store-host-bootstrap/test_bootstrap.py"
+      ],
+      "cwd": ".",
+      "minimumTests": 1,
+      "native": false,
+      "timeoutSeconds": 1800
+    },
+    {
+      "record": "expired-bootstrap-cli.json",
+      "command": [
+        "python3",
+        "tools/cognitive-store-host-bootstrap/test_expired_cli.py"
+      ],
+      "cwd": ".",
+      "minimumTests": 1,
+      "native": false,
+      "timeoutSeconds": 1800
+    },
+    {
+      "record": "lifecycle-owner-receipts.json",
+      "command": [
+        "python3",
+        "tools/cognitive-store-host-bootstrap/test_lifecycle.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "minimumTests": 37,
+      "native": false,
+      "timeoutSeconds": 1800
+    },
+    {
+      "record": "archive-dependencies.json",
+      "command": [
+        "python3",
+        "tools/cognitive-store-host-bootstrap/prepare_archive_env.py"
+      ],
+      "cwd": ".",
+      "minimumTests": 0,
+      "native": false,
+      "timeoutSeconds": 600
+    },
+    {
+      "record": "archive-publication-boundary-tests.json",
+      "command": [
+        "$RUNNER_TEMP/cognitive-archive-venv/bin/python",
+        "tools/cognitive-store-host-bootstrap/test_archive_publication.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "minimumTests": 21,
+      "native": false,
+      "timeoutSeconds": 1800
+    },
+    {
+      "record": "lifecycle-final-use-tests.json",
+      "command": [
+        "$RUNNER_TEMP/cognitive-archive-venv/bin/python",
+        "tools/cognitive-store-host-bootstrap/test_lifecycle_final_use.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "minimumTests": 12,
+      "native": false,
+      "timeoutSeconds": 1800
+    },
+    {
+      "record": "recovery-report-regressions.json",
+      "command": [
+        "python3",
+        "scripts/test_cognitive_store_recovery_report.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "minimumTests": 21,
+      "native": false,
+      "timeoutSeconds": 1800
+    },
+    {
+      "record": "archive-protocol-tests.json",
+      "command": [
+        "$RUNNER_TEMP/cognitive-archive-venv/bin/python",
+        "tools/cognitive-store-host-bootstrap/test_archive.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "minimumTests": 45,
+      "native": false,
+      "timeoutSeconds": 1800
+    },
+    {
+      "record": "publication-observation-tests.json",
+      "command": [
+        "$RUNNER_TEMP/cognitive-archive-venv/bin/python",
+        "tools/cognitive-store-host-bootstrap/test_publication_observation.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "minimumTests": 35,
+      "native": false,
+      "timeoutSeconds": 1800
+    },
+    {
+      "record": "observation-boundary-tests.json",
+      "command": [
+        "$RUNNER_TEMP/cognitive-archive-venv/bin/python",
+        "tools/cognitive-store-host-bootstrap/test_observation_boundary.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "minimumTests": 17,
+      "native": false,
+      "timeoutSeconds": 1800
+    },
+    {
+      "record": "archive-owner-tests.json",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-memory",
+        "--test",
+        "cognitive_archive_owner",
+        "signed_archive_restores_real_correction_and_tombstone_history",
+        "--",
+        "--ignored",
+        "--exact"
+      ],
+      "cwd": "codex-rs",
+      "minimumTests": 1,
+      "native": true,
+      "timeoutSeconds": 1800,
+      "env": {
+        "HEPTA_COGNITIVE_ARCHIVE_PYTHON": "$RUNNER_TEMP/cognitive-archive-venv/bin/python"
+      }
+    },
+    {
+      "record": "format.json",
+      "command": [
+        "cargo",
+        "fmt",
+        "--package",
+        "codex-hepta-cognitive-store",
+        "--package",
+        "codex-hepta-memory",
+        "--package",
+        "codex-hepta-agentd",
+        "--",
+        "--check"
+      ],
+      "cwd": "codex-rs",
+      "minimumTests": 0,
+      "native": true,
+      "timeoutSeconds": 1800
+    },
+    {
+      "record": "default-feature-check.json",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "-p",
+        "codex-hepta-cognitive-store",
+        "--no-default-features",
+        "--lib"
+      ],
+      "cwd": "codex-rs",
+      "minimumTests": 0,
+      "native": true,
+      "timeoutSeconds": 1800
+    },
+    {
+      "record": "agentd-normal-profile-check.json",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib"
+      ],
+      "cwd": "codex-rs",
+      "minimumTests": 0,
+      "native": true,
+      "timeoutSeconds": 1800
+    },
+    {
+      "record": "api-probes.json",
+      "command": [
+        "python3",
+        "scripts/cognitive_store_api_probe.py",
+        "--output",
+        "$RUNNER_TEMP/cognitive-api-probes.json"
+      ],
+      "cwd": ".",
+      "minimumTests": 0,
+      "native": true,
+      "timeoutSeconds": 7200
+    },
+    {
+      "record": "cognitive-store-tests.json",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-cognitive-store",
+        "--all-features"
+      ],
+      "cwd": "codex-rs",
+      "minimumTests": 1,
+      "native": true,
+      "timeoutSeconds": 1800
+    },
+    {
+      "record": "memory-tests.json",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-memory"
+      ],
+      "cwd": "codex-rs",
+      "minimumTests": 1,
+      "native": true,
+      "timeoutSeconds": 1800
+    },
+    {
+      "record": "publication-fault-tests.json",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-memory",
+        "--test",
+        "cognitive_recovery_publication_fault"
+      ],
+      "cwd": "codex-rs",
+      "minimumTests": 1,
+      "native": true,
+      "timeoutSeconds": 1800
+    },
+    {
+      "record": "recovery-final-use-tests.json",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-memory",
+        "final_use_tests"
+      ],
+      "cwd": "codex-rs",
+      "minimumTests": 2,
+      "native": true,
+      "timeoutSeconds": 1800
+    },
+    {
+      "record": "agentd-product-tests.json",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--test",
+        "cognitive_store_product_writer",
+        "--features",
+        "qualification-cognitive-write"
+      ],
+      "cwd": "codex-rs",
+      "minimumTests": 1,
+      "native": true,
+      "timeoutSeconds": 1800
+    },
+    {
+      "record": "bootstrap-tests.json",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--test",
+        "cognitive_bootstrap",
+        "--features",
+        "qualification-cognitive-write"
+      ],
+      "cwd": "codex-rs",
+      "minimumTests": 1,
+      "native": true,
+      "timeoutSeconds": 1800
+    },
+    {
+      "record": "recovery-boundary-tests.json",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--test",
+        "cognitive_recovery_boundary",
+        "--features",
+        "qualification-cognitive-write"
+      ],
+      "cwd": "codex-rs",
+      "minimumTests": 8,
+      "native": true,
+      "timeoutSeconds": 1800
+    },
+    {
+      "record": "normal-read-page-tests.json",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--test",
+        "cognitive_store_read_pages"
+      ],
+      "cwd": "codex-rs",
+      "minimumTests": 3,
+      "native": true,
+      "timeoutSeconds": 1800
+    },
+    {
+      "record": "normal-host-read-page-tests.json",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--test",
+        "cognitive_store_host_read_pages"
+      ],
+      "cwd": "codex-rs",
+      "minimumTests": 1,
+      "native": true,
+      "timeoutSeconds": 1800
+    },
+    {
+      "record": "crash-reopen.json",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-memory",
+        "local_lease_outbox_tests::qualification_durable_writer_crash_reopen_probe",
+        "--",
+        "--ignored",
+        "--exact"
+      ],
+      "cwd": "codex-rs",
+      "minimumTests": 1,
+      "native": true,
+      "timeoutSeconds": 1800
+    },
+    {
+      "record": "perf-256.json",
+      "command": [
+        "cargo",
+        "run",
+        "--locked",
+        "--release",
+        "-p",
+        "codex-hepta-memory",
+        "--example",
+        "cognitive_store_perf"
+      ],
+      "cwd": "codex-rs",
+      "minimumTests": 0,
+      "native": true,
+      "timeoutSeconds": 3600,
+      "env": {
+        "HEPTA_COGNITIVE_PERF_RECORDS": "256",
+        "HEPTA_COGNITIVE_PERF_OUTPUT": "$RUNNER_TEMP/cognitive-perf-256.json"
+      }
+    },
+    {
+      "record": "perf-16384.json",
+      "command": [
+        "cargo",
+        "run",
+        "--locked",
+        "--release",
+        "-p",
+        "codex-hepta-memory",
+        "--example",
+        "cognitive_store_perf"
+      ],
+      "cwd": "codex-rs",
+      "minimumTests": 0,
+      "native": true,
+      "timeoutSeconds": 7200,
+      "env": {
+        "HEPTA_COGNITIVE_PERF_RECORDS": "16384",
+        "HEPTA_COGNITIVE_PERF_OUTPUT": "$RUNNER_TEMP/cognitive-perf-16384.json"
+      }
+    },
+    {
+      "record": "history-64-16.json",
+      "command": [
+        "cargo",
+        "run",
+        "--locked",
+        "-p",
+        "codex-hepta-memory",
+        "--example",
+        "cognitive_store_history_perf"
+      ],
+      "cwd": "codex-rs",
+      "minimumTests": 0,
+      "native": true,
+      "timeoutSeconds": 3600,
+      "env": {
+        "HEPTA_COGNITIVE_HISTORY_HEADS": "64",
+        "HEPTA_COGNITIVE_HISTORY_REVISIONS": "16",
+        "HEPTA_COGNITIVE_HISTORY_OUTPUT": "$RUNNER_TEMP/cognitive-history-64-16.json"
+      }
+    },
+    {
+      "record": "history-128-64.json",
+      "command": [
+        "cargo",
+        "run",
+        "--locked",
+        "-p",
+        "codex-hepta-memory",
+        "--example",
+        "cognitive_store_history_perf"
+      ],
+      "cwd": "codex-rs",
+      "minimumTests": 0,
+      "native": true,
+      "timeoutSeconds": 3600,
+      "env": {
+        "HEPTA_COGNITIVE_HISTORY_HEADS": "128",
+        "HEPTA_COGNITIVE_HISTORY_REVISIONS": "64",
+        "HEPTA_COGNITIVE_HISTORY_OUTPUT": "$RUNNER_TEMP/cognitive-history-128-64.json"
+      }
+    },
+    {
+      "record": "recovery-release-256.json",
+      "command": [
+        "cargo",
+        "run",
+        "--locked",
+        "--release",
+        "-p",
+        "codex-hepta-memory",
+        "--example",
+        "cognitive_store_recovery_perf"
+      ],
+      "cwd": "codex-rs",
+      "minimumTests": 0,
+      "native": true,
+      "timeoutSeconds": 3600,
+      "env": {
+        "HEPTA_COGNITIVE_RECOVERY_RECORDS": "256",
+        "HEPTA_COGNITIVE_RECOVERY_REPETITIONS": "3",
+        "HEPTA_COGNITIVE_RECOVERY_OUTPUT": "$RUNNER_TEMP/cognitive-recovery-perf-256.json"
+      }
+    },
+    {
+      "record": "recovery-release-256-report.json",
+      "command": [
+        "python3",
+        "scripts/cognitive_store_recovery_report.py",
+        "--report",
+        "$RUNNER_TEMP/cognitive-recovery-perf-256.json",
+        "--source-commit",
+        "$SOURCE_SHA",
+        "--tested-commit",
+        "$TESTED_SHA",
+        "--tested-tree",
+        "$TESTED_TREE",
+        "--records",
+        "256",
+        "--minimum-repetitions",
+        "3",
+        "--require-rss"
+      ],
+      "cwd": ".",
+      "minimumTests": 0,
+      "native": false,
+      "timeoutSeconds": 1800
+    },
+    {
+      "record": "recovery-release-16384.json",
+      "command": [
+        "cargo",
+        "run",
+        "--locked",
+        "--release",
+        "-p",
+        "codex-hepta-memory",
+        "--example",
+        "cognitive_store_recovery_perf"
+      ],
+      "cwd": "codex-rs",
+      "minimumTests": 0,
+      "native": true,
+      "timeoutSeconds": 7200,
+      "env": {
+        "HEPTA_COGNITIVE_RECOVERY_RECORDS": "16384",
+        "HEPTA_COGNITIVE_RECOVERY_REPETITIONS": "3",
+        "HEPTA_COGNITIVE_RECOVERY_OUTPUT": "$RUNNER_TEMP/cognitive-recovery-perf-16384.json"
+      }
+    },
+    {
+      "record": "recovery-release-16384-report.json",
+      "command": [
+        "python3",
+        "scripts/cognitive_store_recovery_report.py",
+        "--report",
+        "$RUNNER_TEMP/cognitive-recovery-perf-16384.json",
+        "--source-commit",
+        "$SOURCE_SHA",
+        "--tested-commit",
+        "$TESTED_SHA",
+        "--tested-tree",
+        "$TESTED_TREE",
+        "--records",
+        "16384",
+        "--minimum-repetitions",
+        "3",
+        "--require-rss"
+      ],
+      "cwd": ".",
+      "minimumTests": 0,
+      "native": false,
+      "timeoutSeconds": 1800
+    },
+    {
+      "record": "host-qualification-tests.json",
+      "command": [
+        "python3",
+        "tools/cognitive-store-host-bootstrap/test_host_qualification.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "minimumTests": 38,
+      "native": false,
+      "timeoutSeconds": 1800
+    },
+    {
+      "record": "retention-readiness-tests.json",
+      "command": [
+        "python3",
+        "tools/cognitive-store-host-bootstrap/test_retention_readiness.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "minimumTests": 43,
+      "native": false,
+      "timeoutSeconds": 1800
+    },
+    {
+      "record": "acceptance-governance-tests.json",
+      "command": [
+        "python3",
+        "tools/cognitive-store-host-bootstrap/test_acceptance_governance.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "minimumTests": 49,
+      "native": false,
+      "timeoutSeconds": 1800
+    },
+    {
+      "record": "clippy.json",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-hepta-cognitive-store",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-hepta-agentd",
+        "--all-targets",
+        "--all-features",
+        "--no-deps",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "codex-rs",
+      "minimumTests": 0,
+      "native": true,
+      "timeoutSeconds": 1800
+    },
+    {
+      "record": "clean-source.json",
+      "command": [
+        "git",
+        "diff",
+        "--exit-code",
+        "HEAD",
+        "--"
+      ],
+      "cwd": ".",
+      "minimumTests": 0,
+      "native": false,
+      "timeoutSeconds": 1800
+    }
   ],
   "evidence": [
     "$RUNNER_TEMP/cognitive-boundary-receipt.json",

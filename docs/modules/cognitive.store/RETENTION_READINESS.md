@@ -44,7 +44,7 @@ The last condition prevents a readiness verifier from laundering an unapproved p
 
 ## Report semantics
 
-A complete report is named `retention_ready`, not `pruned`. It always returns:
+A complete v4 report is named `retention_ready`, not `pruned`. It repeats the signed receipt digest and underlying evidence digest for every segment, plus separate rebuild receipt and rebuild evidence identities. These identities remain globally distinct and are available to independent acceptance for cross-domain replay detection. It always returns:
 
 ```text
 successor_published = false

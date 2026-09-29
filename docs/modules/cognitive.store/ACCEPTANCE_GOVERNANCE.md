@@ -8,7 +8,7 @@ The contract preserves the existing owner and product path. Reviewers evaluate e
 
 ## Signed acceptance plan
 
-The coordinator signs `hepta.cognitive.acceptance-plan.v5`. The plan binds:
+The coordinator signs `hepta.cognitive.acceptance-plan.v6`. The plan binds:
 
 - canonical Agent identity;
 - exact source commit and tree;
@@ -27,7 +27,7 @@ The required roles are semantic review, durability review, security review, oper
 
 Digest strings alone are not accepted. The verifier also consumes a bounded descriptor-pinned JSON evidence bundle containing exactly nine objects: the canonical qualification plan, two qualification manifests, the selected-host plan/report pair, the retention plan/report pair and the lifecycle plan/report pair. For every object it recomputes the canonical digest and compares it to the signed acceptance plan before validating its schema and outcome.
 
-The source-head and base-merge manifests must be v2 terminal-success manifests with no identity errors, complete passing command records, retained evidence and no escalated host, acceptance or release claims. Their command records and retained artifacts must match the exact committed qualification-plan inventory: a one-command or one-artifact success-shaped manifest cannot stand in for the full plan. Exit codes, timeout/output-limit state, test thresholds, command identities and log identities are revalidated. The source-head must test the exact acceptance source commit/tree. The base-merge must bind the frozen base/source parent pair and the same source commit.
+The source-head and base-merge manifests must be v3 terminal-success manifests with no identity errors, complete passing command records, retained evidence and no escalated host, acceptance or release claims. Each manifest repeats the canonical digest of the complete committed qualification plan, and every command row repeats the canonical digest of its unexpanded plan entry. The acceptance verifier recomputes both identities from the bundled plan before considering any command result. A one-command, substituted-command, weakened-limit or one-artifact success-shaped manifest cannot stand in for the full plan. Exit codes, timeout/output-limit state, test thresholds, resolved-command identities and log identities are revalidated. The source-head must test the exact acceptance source commit/tree. The base-merge must bind the frozen base/source parent pair and the same source commit.
 
 The selected-host report must bind the supplied selected-host plan, contain the complete ordered ceremony, use a strictly newer rollback generation and fresh rollback authority grant, and keep target-host qualification, SLO acceptance, activation and release authorization false. The selected-host plan must name the same Agent and source as the acceptance plan.
 
@@ -41,13 +41,14 @@ The complete bundle is reread after signature and review verification. A same-pa
 
 ## Review receipts
 
-Each reviewer signs `hepta.cognitive.acceptance-receipt.v5`. The receipt repeats the exact source and all nine evidence digests, binds the role-specific criteria and records one of `approved`, `rejected`, `pending` or `indeterminate`. Missing or non-approved decisions keep the report incomplete. An approval cannot follow a supplied earlier review that is pending, rejected or indeterminate; in particular, release approval cannot sit on top of non-approved operator acceptance. Missing earlier receipts keep the set incomplete rather than manufacturing a prerequisite. Changed source, evidence, reviewer, criteria, trust or validity fails closed. Each approved role must also bind a distinct review artifact digest; one review document cannot be replayed as several independent reviews or collide with a plan/report identity. V1–V4 artifacts are not silently reinterpreted under this coherent-context contract.
+Each reviewer signs `hepta.cognitive.acceptance-receipt.v6`. The receipt repeats the exact source and all nine evidence digests, binds the role-specific criteria and records one of `approved`, `rejected`, `pending` or `indeterminate`. Missing or non-approved decisions keep the report incomplete. An approval cannot follow a supplied earlier review that is pending, rejected or indeterminate; in particular, release approval cannot sit on top of non-approved operator acceptance. Missing earlier receipts keep the set incomplete rather than manufacturing a prerequisite. Changed source, evidence, reviewer, criteria, trust or validity fails closed. Selected-host reports expose the exact receipt, evidence and metrics identities for every ceremony step; retention reports expose every segment and rebuild receipt/evidence identity; lifecycle reports expose every owner receipt/evidence identity. The verifier requires this entire operational identity set to be globally unique and disjoint from every bound plan/report digest. Each approved role must also bind a distinct review artifact digest that is disjoint from both sets, so one document or measurement cannot be replayed as a host step, retention publication, lifecycle operation and independent review. V1–V5 artifacts are not silently reinterpreted under this coherent-context contract.
 
-A complete v5 report is named `external_approval_set_verified` and sets both:
+A complete v6 report is named `external_approval_set_verified` and sets both:
 
 ```text
 all_bound_evidence_reports_validated = true
 all_bound_evidence_context_coherent = true
+all_operational_evidence_identities_unique = true
 ```
 
 It also repeats the selected-host `qualified_cut_sha256` and `qualified_writer_generation`. These are evidence identities, not write authority. The report always keeps:
