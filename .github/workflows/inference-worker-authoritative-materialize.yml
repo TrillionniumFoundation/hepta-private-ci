@@ -18,7 +18,6 @@ concurrency:
 
 env:
   BASE_SHA: c3b3aaa9887e15bf18b1572f259b6893ddbe2b68
-  PATCH_SHA256: a4be02dea1d771a4467f0bb05cb4be7122ab71b4d54c79506c778785e55a85a3
   BRANCH_NAME: codex/inference-worker-authoritative-20260929
   CARGO_INCREMENTAL: 0
   CARGO_BUILD_JOBS: 2
@@ -29,7 +28,7 @@ jobs:
   converge:
     name: Materialize resource and deadline closure
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 60
+    timeout-minutes: 90
     steps:
       - name: Check out exact transfer head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -42,18 +41,47 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           test "$(git merge-base "$BASE_SHA" HEAD)" = "$BASE_SHA"
-          LC_ALL=C cat .github/materialization/inference-worker-stage1/part* \
+
+          verify_blob() {
+            local expected="$1"
+            local path="$2"
+            local actual
+            actual="$(git hash-object "$path")"
+            test "$actual" = "$expected" || {
+              printf 'staged blob mismatch: %s expected=%s actual=%s\n' \
+                "$path" "$expected" "$actual" >&2
+              exit 1
+            }
+          }
+
+          verify_blob 61f5e74ef904016978740b7cb5905bb395522fe4 .github/materialization/inference-worker-stage1/part00
+          verify_blob 47cae9999ae5fefecf25a2c4c811a9556fce33a8 .github/materialization/inference-worker-stage1/part01
+          verify_blob b2ec3f29753afac2e7bb2204af42d7efb650edfd .github/materialization/inference-worker-stage1/part02
+          verify_blob 23c5c0082a42a3f1dc3d5efbd38c5ec5d82a4d8a .github/materialization/inference-worker-stage1/part03
+          verify_blob 9db3cb414b089b697cad7cde23a0d6a06c90fd11 .github/materialization/inference-worker-stage1/part0405
+          verify_blob 56df0a88a2030a690040146a2850e43cbe1577f4 .github/materialization/inference-worker-stage1/part0607
+          verify_blob 362990c01fd8019874f697c4e5bc8a8cb81a4a7e .github/materialization/inference-worker-stage1/part0809
+
+          LC_ALL=C cat \
+            .github/materialization/inference-worker-stage1/part00 \
+            .github/materialization/inference-worker-stage1/part01 \
+            .github/materialization/inference-worker-stage1/part02 \
+            .github/materialization/inference-worker-stage1/part03 \
+            .github/materialization/inference-worker-stage1/part0405 \
+            .github/materialization/inference-worker-stage1/part0607 \
+            .github/materialization/inference-worker-stage1/part0809 \
             | base64 --decode > "$RUNNER_TEMP/inference-worker-stage1.patch"
-          printf '%s  %s\n' "$PATCH_SHA256" "$RUNNER_TEMP/inference-worker-stage1.patch" \
-            | sha256sum --check --strict
-          git apply --check "$RUNNER_TEMP/inference-worker-stage1.patch"
+          sha256sum "$RUNNER_TEMP/inference-worker-stage1.patch"
+          git apply --check --verbose "$RUNNER_TEMP/inference-worker-stage1.patch"
           git apply "$RUNNER_TEMP/inference-worker-stage1.patch"
 
       - name: Apply worker-owned deadline and kill boundary
         shell: bash
         run: |
           set -euo pipefail
+          test "$(git hash-object .github/materialization/inference-worker-stage2/apply.py.gz.b64)" = ec08a862c786e9474f326b11b1bcf68420724599
           base64 --decode .github/materialization/inference-worker-stage2/apply.py.gz.b64 \
             | gzip --decompress > "$RUNNER_TEMP/inference-worker-stage2.py"
           python3 "$RUNNER_TEMP/inference-worker-stage2.py"
@@ -116,6 +144,7 @@ jobs:
           rm -f .github/workflows/inference-worker-authoritative-materialize.yml
           python3 - <<'PY'
           import subprocess
+
           expected = sorted([
               'codex-rs/hepta-infer-core/src/native_control.rs',
               'codex-rs/hepta-infer-core/src/native_control_tests.rs',
