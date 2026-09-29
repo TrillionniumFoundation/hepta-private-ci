@@ -29,7 +29,7 @@ env:
 jobs:
   apply-validate-commit:
     if: github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     timeout-minutes: 150
     steps:
       - name: Check out exact unchanged target
