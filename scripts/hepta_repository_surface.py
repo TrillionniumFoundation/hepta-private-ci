@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Freeze workflow, registry and convergence-policy proliferation."""
+"""Validate repository extensions without duplicating authority or CI cost."""
 
 from __future__ import annotations
 
@@ -109,15 +109,22 @@ def load_policy(root: Path = ROOT) -> dict[str, Any]:
     }
 
 
-def added_paths(base: str, head: str, root: Path = ROOT) -> list[str]:
-    return subprocess.check_output(
+def extension_paths(base: str, head: str, root: Path = ROOT) -> list[str]:
+    """Inspect new extensions and continued use of the same narrow admission path.
+
+    Existing integration-owned workflows/registries keep their normal review
+    path. Previously admitted manual diagnostics and schemas cannot gain new
+    privileges merely by changing an existing file on a subsequent commit.
+    """
+    raw = subprocess.check_output(
         [
             "git",
             "--no-replace-objects",
             "diff",
-            "--diff-filter=A",
-            "--name-only",
+            "--diff-filter=ACMT",
+            "--name-status",
             "--no-renames",
+            "-z",
             base,
             head,
             "--",
@@ -125,8 +132,37 @@ def added_paths(base: str, head: str, root: Path = ROOT) -> list[str]:
             "docs/modules",
         ],
         cwd=root,
-        text=True,
-    ).splitlines()
+    ).split(b"\0")
+    if raw[-1:] == [b""]:
+        raw.pop()
+    if len(raw) % 2:
+        raise ValueError("invalid changed surface inventory")
+    selected = []
+    for status, path_bytes in zip(raw[::2], raw[1::2]):
+        path = path_bytes.decode("utf-8")
+        if status in {b"A", b"T"}:
+            selected.append(path)
+            continue
+        previous = subprocess.check_output(
+            ["git", "--no-replace-objects", "show", f"{base}:{path}"],
+            cwd=root,
+        ).decode("utf-8")
+        if path.startswith(".github/workflows/"):
+            try:
+                from scripts.hepta_workflow_commands import validate_manual_workflow
+            except ModuleNotFoundError as error:
+                if error.name != "scripts":
+                    raise
+                from hepta_workflow_commands import validate_manual_workflow
+            try:
+                # Historical recognition must not depend on a newly lowered tier budget.
+                validate_manual_workflow(previous, 360)
+            except ValueError:
+                continue
+            selected.append(path)
+        elif path.endswith(".json") and is_contract_schema(previous):
+            selected.append(path)
+    return sorted(selected)
 
 
 def is_contract_schema(text: str) -> bool:
@@ -235,7 +271,7 @@ def main() -> None:
     parser.add_argument("--head", required=True)
     args = parser.parse_args()
     policy = load_policy()
-    added = added_paths(args.base, args.head)
+    added = extension_paths(args.base, args.head)
     forbidden = forbidden_additions(added, policy)
     if forbidden:
         raise SystemExit(
@@ -251,7 +287,7 @@ def main() -> None:
                     "maximumActiveConvergencePrsPerCapability"
                 ],
                 "allowedDispositions": policy["allowedDispositions"],
-                "added": len(added),
+                "checkedExtensions": len(added),
                 "forbidden": 0,
             },
             sort_keys=True,

@@ -241,9 +241,59 @@ def validate_manual_workflow(text: str, maximum_minutes: int) -> None:
                     raise ValueError("manual diagnostic cannot reference secrets")
 
     credentials(document)
+
+    def job_bound(job):
+        strategy = job.get("strategy", {})
+        if not isinstance(strategy, dict):
+            raise ValueError("manual diagnostic requires a static strategy")
+        if "matrix" not in strategy:
+            return 1
+        matrix = strategy["matrix"]
+        if not isinstance(matrix, dict) or not matrix:
+            raise ValueError("manual diagnostic requires a finite static matrix")
+
+        def literal(value):
+            if isinstance(value, dict):
+                return all(literal(item) for item in value.values())
+            if isinstance(value, list):
+                return all(literal(item) for item in value)
+            return isinstance(value, str) and "${{" not in value
+
+        if not literal(matrix):
+            raise ValueError("dynamic matrix requires integration review")
+        axes = {
+            key: value
+            for key, value in matrix.items()
+            if key not in {"include", "exclude"}
+        }
+        combinations = 1 if axes else 0
+        for values in axes.values():
+            if not isinstance(values, list) or not values:
+                raise ValueError("matrix dimensions require nonempty static lists")
+            combinations *= len(values)
+            if combinations > 16:
+                raise ValueError("manual diagnostic exceeds expanded job budget")
+        includes = matrix.get("include", [])
+        excludes = matrix.get("exclude", [])
+        for entries in (includes, excludes):
+            if not isinstance(entries, list) or not all(
+                isinstance(item, dict) for item in entries
+            ):
+                raise ValueError("matrix include/exclude must be static objects")
+        # Upper bound: exclusions do not buy extra budget. Include-only rows may
+        # add jobs; metadata-only includes on existing axes cannot add a new job.
+        combinations += sum(not axes or bool(set(row) & set(axes)) for row in includes)
+        if not 1 <= combinations <= 16:
+            raise ValueError("manual diagnostic exceeds expanded job budget")
+        return combinations
+
+    expanded_jobs = 0
     for job in jobs.values():
         if not isinstance(job, dict) or "uses" in job:
             raise ValueError("opaque reusable job requires integration review")
+        expanded_jobs += job_bound(job)
+        if expanded_jobs > 16:
+            raise ValueError("manual diagnostic exceeds expanded job budget")
         permissions(job.get("permissions", document["permissions"]))
         runner = job.get("runs-on")
         if not isinstance(runner, str) or not re.fullmatch(

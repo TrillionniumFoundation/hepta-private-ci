@@ -213,6 +213,95 @@ class RepositorySurfaceTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.forbidden(["docs/modules/../outside.md"])
 
+    def test_existing_manual_diagnostic_cannot_escape_its_admission_on_edit(self):
+        import subprocess
+        from scripts.hepta_repository_surface import extension_paths
+
+        def git(*args):
+            return subprocess.check_output(
+                ["git", *args], cwd=self.root, text=True
+            ).strip()
+
+        git("init", "-q")
+        git("config", "user.name", "Policy Test")
+        git("config", "user.email", "policy@localhost")
+        path = ".github/workflows/manual diagnostic.yml"
+        self.write(path, MANUAL)
+        legacy = ".github/workflows/existing-integration.yml"
+        self.write(legacy, MANUAL.replace("workflow_dispatch", "push"))
+        git("add", ".")
+        git("commit", "-qm", "admitted baseline")
+        base = git("rev-parse", "HEAD")
+        self.write(path, MANUAL.replace("workflow_dispatch", "pull_request"))
+        self.write(
+            legacy,
+            MANUAL.replace("workflow_dispatch", "push").replace(
+                "diagnostic output", "different output"
+            ),
+        )
+        git("add", ".")
+        git("commit", "-qm", "workflow edits")
+        selected = extension_paths(base, git("rev-parse", "HEAD"), self.root)
+        self.assertEqual(selected, [path])
+        self.assertEqual(self.forbidden(selected), [path])
+        self.write(path, MANUAL.replace("diagnostic output", "renamed diagnostic"))
+        git("add", ".")
+        git("commit", "-qm", "equivalent diagnostic")
+        selected = extension_paths(base, git("rev-parse", "HEAD"), self.root)
+        self.assertEqual(self.forbidden(selected), [])
+
+    def test_manual_matrix_budget_counts_expanded_jobs_not_yaml_job_entries(self):
+        document = load_workflow(MANUAL)
+        job = document["jobs"]["inspect"]
+        job["strategy"] = {"matrix": {"version": ["a", "b"], "mode": ["x", "y"]}}
+        validate_manual_workflow(json.dumps(document), 60)
+        job["strategy"]["matrix"]["include"] = [{"note": "metadata only"}]
+        validate_manual_workflow(json.dumps(document), 60)
+        for matrix in (
+            "${{ fromJSON(inputs.matrix) }}",
+            {"version": [str(i) for i in range(17)]},
+            {"include": [{"item": str(i)} for i in range(17)]},
+            {"version": ["${{ inputs.version }}"]},
+            {"version": []},
+        ):
+            job["strategy"] = {"matrix": matrix}
+            with self.subTest(matrix=matrix), self.assertRaises(ValueError):
+                validate_manual_workflow(json.dumps(document), 60)
+        job["strategy"] = {"matrix": {"version": [str(i) for i in range(9)]}}
+        document["jobs"]["second"] = copy.deepcopy(job)
+        with self.assertRaisesRegex(ValueError, "expanded job budget"):
+            validate_manual_workflow(json.dumps(document), 60)
+
+    def test_changed_schema_cannot_become_a_parallel_registry(self):
+        import subprocess
+        from scripts.hepta_repository_surface import extension_paths
+
+        def git(*args):
+            return subprocess.check_output(
+                ["git", *args], cwd=self.root, text=True
+            ).strip()
+
+        git("init", "-q")
+        git("config", "user.name", "Schema Test")
+        git("config", "user.email", "schema@localhost")
+        path = "docs/modules/example.readonly/schema.json"
+        schema = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+        }
+        self.write(path, json.dumps(schema))
+        git("add", ".")
+        git("commit", "-qm", "schema baseline")
+        base = git("rev-parse", "HEAD")
+        self.write(path, json.dumps({**schema, "modules": []}))
+        unusual = "docs/modules/说明\nsecond line.md"
+        self.write(unusual, "# explanation")
+        git("add", ".")
+        git("commit", "-qm", "changed schema and literal path")
+        selected = extension_paths(base, git("rev-parse", "HEAD"), self.root)
+        self.assertEqual(selected, sorted([path, unusual]))
+        self.assertEqual(self.forbidden(selected), [path])
+
 
 if __name__ == "__main__":
     unittest.main()
