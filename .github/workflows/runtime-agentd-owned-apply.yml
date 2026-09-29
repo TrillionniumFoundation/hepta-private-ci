@@ -1,0 +1,242 @@
+name: Runtime Agentd verified owned optimization apply
+
+on:
+  push:
+    branches:
+      - work/runtime-agentd-owned-qualification-and-maintenance-20260929
+    paths:
+      - '.github/runtime-agentd-owned-apply/**'
+      - '.github/workflows/runtime-agentd-owned-apply.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-agentd-owned-optimization-apply
+  cancel-in-progress: false
+
+env:
+  TARGET_BRANCH: work/runtime-agentd-production-closure-20260928
+  EXPECTED_TARGET_HEAD: 2f1705384e1ea5d1dbf1e76e1dcf4bf0e2882515
+  MAIN_PATCH_SHA256: ca3d6b6550ec64fcfb9e1b376952edd6eae275cd11126a27ab5e5aa6c6011785
+  AMENDMENT_SHA256: 06acddfa8baf2df088c789484c9dc9537095061d5062d3d0a1ad82df2043e938
+  CARGO_INCREMENTAL: '0'
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    name: verify and publish / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-14]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - name: Verify carrier and reconstruct exact patches
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = work/runtime-agentd-owned-qualification-and-maintenance-20260929
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          remote_head="$(git ls-remote --heads origin "refs/heads/$TARGET_BRANCH" | cut -f1)"
+          test "$remote_head" = "$EXPECTED_TARGET_HEAD"
+          python3 - <<'PY'
+          from hashlib import sha256
+          from pathlib import Path
+          import os
+
+          expected = {
+              'part-000.patch': 'b73eb90040a37b19a48d90c558b696da2ff9dc8e0835e7687bccf1880b3c0e9c',
+              'part-001.patch': '19fc5a0e25b0b2110bd19e7b7c5a80508a61416514855642e1108cde1aa092d2',
+              'part-002.patch': 'f2c95a4669cca4a0144e0b859fe08c50656a6518fe0448d0652fd7d1f09de965',
+              'part-003.patch': '880dfa3f9b4b948198079d6a01f6eead334b099f41e9f14d2da1d5c25dfbf21a',
+              'part-004.patch': '7bac3d5a1a2c248ba57b4d6c15c7b147ac1a3117e9dd3ffd3e341cc09101e135',
+              'part-005.patch': 'b72bdb21ac539304f292273d368f150a021760e4acaa49f448922b4ec04e7a9c',
+              'part-006.patch': '692876fcb5897cb2e41694775847729925b527437b9ffd8b82f80069003a3483',
+              'part-007.patch': '22f830634a649b4a325bdbe5c1bf0c9ff45fde2ac6919204659738b58f7b7b3f',
+              'part-008.patch': 'c8c3bae749e9b43ae8752235555343dc5d5c11308eb3220b03d5f02b9266ab33',
+              'part-009.patch': 'f110b0ebbcd02261fcc66018d11f8008bb97ffe294725e9d43278ec399f7d634',
+              'part-010.patch': '8389b76fac25e1b1064b20d038ebb2c6730dc02f28b4a277e52f59f246f3b909',
+              'part-011.patch': '9c1d2606979893f221395b9f9e21d6511382b6a0013bedee72a608117955b146',
+              'part-012.patch': '18e813b8755372474cebdc5cf89c0f0fc00030bbc69d9c726d2c2949cb4c4dce',
+              'part-013.patch': '1927192c15d18f18219314241e300e0a7611c70dc708e3f2b09455166675f29c',
+              'part-014.patch': '91402f2b9455c92f9f448b13137f8eee43fa7021ab5fed7e4907c4890e51a9b0',
+              'part-015.patch': '5e5b15fa143d1dfffff42b05e027438f2cae93a8db210a46f14f407497b6e612',
+              'part-016.patch': 'b256fab2a9eaba5aa4a32d4156a3dece27a506868a3642bc3745be4c04bef193',
+              'part-017.patch': 'cdb61c6a7ef6eb98ef11ef997e49e19fc0185bcc55565072e478466209d66c37',
+              'part-018.patch': '612a17174c21cdf23826293f9e608ec63957482ce892e168e9d90ba0f4794dc8',
+              'part-019.patch': '5ba9279a45fe61118b2b3ac0dfb9405178c4396e2a7768732709b9cfb8d56318',
+              'amend-000.patch': os.environ['AMENDMENT_SHA256'],
+          }
+          root = Path('.github/runtime-agentd-owned-apply')
+          observed = {path.name for path in root.glob('*.patch')}
+          if observed != set(expected):
+              raise SystemExit(f'carrier patch set mismatch: missing={sorted(set(expected)-observed)} extra={sorted(observed-set(expected))}')
+          for name, digest in expected.items():
+              observed_digest = sha256((root / name).read_bytes()).hexdigest()
+              if observed_digest != digest:
+                  raise SystemExit(f'carrier digest mismatch for {name}: {observed_digest}')
+          main = b''.join((root / f'part-{index:03d}.patch').read_bytes() for index in range(20))
+          if sha256(main).hexdigest() != os.environ['MAIN_PATCH_SHA256']:
+              raise SystemExit('combined main patch digest mismatch')
+          temp = Path(os.environ['RUNNER_TEMP'])
+          (temp / 'runtime-agentd-main.patch').write_bytes(main)
+          (temp / 'runtime-agentd-amendment.patch').write_bytes((root / 'amend-000.patch').read_bytes())
+          PY
+      - name: Apply exact source delta to current PR head
+        shell: bash
+        run: |
+          set -euo pipefail
+          git reset --hard "$EXPECTED_TARGET_HEAD"
+          git clean -ffd
+          git apply --check --whitespace=error "$RUNNER_TEMP/runtime-agentd-main.patch"
+          git apply --whitespace=error "$RUNNER_TEMP/runtime-agentd-main.patch"
+          git apply --check --whitespace=error "$RUNNER_TEMP/runtime-agentd-amendment.patch"
+          git apply --whitespace=error "$RUNNER_TEMP/runtime-agentd-amendment.patch"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_TARGET_HEAD"
+          git diff --check
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+          expected = {
+              '.github/workflows/hepta-agentd-exact-head.yml',
+              '.github/workflows/hepta-agentd-prospective-merge.yml',
+              '.github/workflows/runtime-agentd-format-repair.yml',
+              '.github/workflows/runtime-agentd-source-capsule.yml',
+              '.github/workflows/runtime-agentd-trust-boundary.yml',
+              'codex-rs/hepta-agentd/DEPENDENCY_BOUNDARY.json',
+              'codex-rs/hepta-agentd/src/error.rs',
+              'codex-rs/hepta-agentd/src/lib.rs',
+              'codex-rs/hepta-agentd/src/runtime_codex_executor_persistence.rs',
+              'codex-rs/hepta-agentd/src/runtime_codex_executor_process.rs',
+              'codex-rs/hepta-agentd/src/runtime_codex_executor_process_base.rs',
+              'codex-rs/hepta-agentd/src/runtime_codex_executor_tests.rs',
+              'codex-rs/hepta-agentd/src/runtime_codex_policy.rs',
+              'codex-rs/hepta-agentd/src/runtime_codex_policy_tests.rs',
+              'codex-rs/hepta-agentd/src/runtime_codex_supervisor.rs',
+              'codex-rs/hepta-agentd/src/runtime_codex_supervisor_maintenance.rs',
+              'codex-rs/hepta-agentd/src/state.rs',
+              'codex-rs/hepta-agentd/src/state_isolation_tests.rs',
+              'codex-rs/hepta-infer-worker-host/tests/native_host_process_e2e.rs',
+              'docs/modules/runtime.agentd/REMEDIATION_EXECUTION_20260927.md',
+              'docs/modules/runtime.agentd/TECHNICAL.md',
+              'qualification/module-execution-dossiers/detail/runtime.agentd.md',
+              'qualification/runtime-agentd-core/Cargo.lock',
+              'qualification/runtime-agentd-core/Cargo.toml',
+              'qualification/runtime-agentd-core/src/lib.rs',
+              'scripts/qualification/agentd_exact_head.py',
+              'scripts/qualification/runtime_agentd_dependency_boundary.py',
+              'scripts/qualification/runtime_agentd_scope.py',
+              'scripts/qualification/test_agentd_exact_head.py',
+              'scripts/qualification/test_runtime_agentd_dependency_boundary.py',
+              'scripts/qualification/test_runtime_agentd_scope.py',
+          }
+          observed = set(subprocess.check_output(['git', 'diff', '--name-only'], text=True).splitlines())
+          if observed != expected:
+              raise SystemExit(f'unexpected source delta: missing={sorted(expected-observed)} extra={sorted(observed-expected)}')
+          for path in expected:
+              if not Path(path).exists():
+                  raise SystemExit(f'expected path missing after apply: {path}')
+          PY
+      - name: Run qualification and boundary contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B -m unittest discover -s scripts/qualification -p 'test_agentd_exact_head.py' -v
+          python3 -B -m unittest scripts.qualification.test_runtime_agentd_scope -v
+          python3 -B -m unittest scripts.qualification.test_runtime_agentd_current_status -v
+          python3 -B -m unittest scripts.qualification.test_runtime_agentd_dependency_boundary -v
+          python3 -B -m unittest scripts.test_hepta_agentd_trust_boundary -v
+          python3 scripts/hepta-module-docs.py refresh-derived --check
+          python3 scripts/hepta_module_registry.py --strict
+          python3 scripts/hepta_agentd_trust_boundary.py
+          python3 scripts/qualification/runtime_agentd_dependency_boundary.py --repository .
+          python3 -m py_compile \
+            scripts/qualification/agentd_exact_head.py \
+            scripts/qualification/runtime_agentd_current_status.py \
+            scripts/qualification/runtime_agentd_dependency_boundary.py \
+            scripts/qualification/runtime_agentd_scope.py \
+            scripts/qualification/test_agentd_exact_head.py \
+            scripts/qualification/test_runtime_agentd_current_status.py \
+            scripts/qualification/test_runtime_agentd_dependency_boundary.py \
+            scripts/qualification/test_runtime_agentd_scope.py
+          git diff --check
+      - name: Install exact Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          toolchain=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
+          rustup toolchain install "$toolchain" --profile minimal --component rustfmt --component clippy
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6
+        with:
+          workspaces: codex-rs
+          shared-key: runtime-agentd-owned-apply-v1-${{ matrix.os }}
+      - name: Verify Rust formatting, core-policy compilation, tests and strict module lint
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-agentd --package codex-hepta-infer-worker-host -- --check
+          cargo test --locked --manifest-path qualification/runtime-agentd-core/Cargo.toml
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib
+          cargo test --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-infer-worker-host --test native_host_process_e2e --no-run
+          cargo clippy --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-agentd -p codex-hepta-supervisor \
+            -p codex-hepta-infer-worker-host --all-targets --no-deps -- -D warnings
+      - name: Commit clean candidate and publish with lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          test -z "$(git status --porcelain --untracked-files=all | grep '^?? .github/runtime-agentd-owned-apply' || true)"
+          git commit -m 'runtime.agentd: isolate qualification and bound maintenance'
+          local_tree="$(git rev-parse HEAD^{tree})"
+          remote_head="$(git ls-remote --heads origin "refs/heads/$TARGET_BRANCH" | cut -f1)"
+          if [ "$remote_head" = "$EXPECTED_TARGET_HEAD" ]; then
+            git push origin "HEAD:refs/heads/$TARGET_BRANCH" \
+              --force-with-lease="refs/heads/$TARGET_BRANCH:$EXPECTED_TARGET_HEAD"
+            published="$(git rev-parse HEAD)"
+          else
+            git fetch --no-tags origin "refs/heads/$TARGET_BRANCH"
+            remote_tree="$(git rev-parse FETCH_HEAD^{tree})"
+            test "$remote_tree" = "$local_tree"
+            published="$(git rev-parse FETCH_HEAD)"
+          fi
+          printf '%s\n' "$published" > "$RUNNER_TEMP/PUBLISHED_SHA"
+          printf '%s\n' "$local_tree" > "$RUNNER_TEMP/PUBLISHED_TREE"
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          temp = Path(os.environ['RUNNER_TEMP'])
+          payload = {
+              'schema': 'hepta.runtime-agentd-owned-apply.v1',
+              'source_parent': os.environ['EXPECTED_TARGET_HEAD'],
+              'published_sha': (temp / 'PUBLISHED_SHA').read_text().strip(),
+              'published_tree': (temp / 'PUBLISHED_TREE').read_text().strip(),
+              'runner_os': os.environ['RUNNER_OS'],
+              'main_patch_sha256': os.environ['MAIN_PATCH_SHA256'],
+              'amendment_sha256': os.environ['AMENDMENT_SHA256'],
+              'production_activation': False,
+          }
+          (temp / 'runtime-agentd-owned-apply-result.json').write_text(
+              json.dumps(payload, indent=2, sort_keys=True) + '\n')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ always() }}
+        with:
+          name: runtime-agentd-owned-apply-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.os }}
+          path: ${{ runner.temp }}/runtime-agentd-owned-apply-result.json
+          if-no-files-found: warn
+          retention-days: 14
