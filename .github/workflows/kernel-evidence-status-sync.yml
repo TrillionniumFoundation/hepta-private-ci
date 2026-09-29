@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - fix/kernel-evidence-production-closure
+      - codex/kernel-evidence-full-convergence-20260929
 
 permissions:
   contents: write
@@ -18,12 +19,25 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      - name: Check out exact branch head
+      - name: Check out exact triggering branch head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          ref: fix/kernel-evidence-production-closure
+          ref: ${{ github.ref_name }}
           fetch-depth: 0
           persist-credentials: true
+
+      - name: Bind writable synchronization target
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_TYPE" = branch
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git branch --show-current)" = "$GITHUB_REF_NAME"
+          case "$GITHUB_REF_NAME" in
+            fix/kernel-evidence-production-closure|codex/kernel-evidence-full-convergence-20260929) ;;
+            *) echo "refusing unexpected status-sync branch: $GITHUB_REF_NAME" >&2; exit 2 ;;
+          esac
+          test -z "$(git status --porcelain)"
 
       - name: Regenerate and verify canonical projections
         shell: bash
@@ -53,4 +67,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "docs(kernel.evidence): regenerate canonical status [kernel-evidence-status-sync]"
-          git push origin HEAD:fix/kernel-evidence-production-closure
+          git fetch origin "refs/heads/$GITHUB_REF_NAME"
+          test "$(git rev-parse "$GITHUB_SHA")" = "$(git rev-parse FETCH_HEAD)"
+          git push origin "HEAD:refs/heads/$GITHUB_REF_NAME"
