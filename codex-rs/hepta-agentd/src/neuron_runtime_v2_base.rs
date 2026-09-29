@@ -311,13 +311,14 @@ impl NeuronAdmissionGuard for CombinedAdmission<'_> {
 fn compatibility_error(error: AgentdNeuronControlErrorV2) -> NeuronRuntimeV2Error {
     match error {
         AgentdNeuronControlErrorV2::Runtime(error) => error,
+        AgentdNeuronControlErrorV2::ControlState(_)
+        | AgentdNeuronControlErrorV2::OwnerPoisoned
+        | AgentdNeuronControlErrorV2::ControllerPoisoned => {
+            NeuronRuntimeV2Error::Index(NeuronRuntimeIndexError::Poisoned)
+        }
         AgentdNeuronControlErrorV2::OwnerBusy
         | AgentdNeuronControlErrorV2::ControllerBusy => {
             NeuronRuntimeV2Error::Admission(NeuronAdmissionError::Unavailable)
-        }
-        AgentdNeuronControlErrorV2::OwnerPoisoned
-        | AgentdNeuronControlErrorV2::ControllerPoisoned => {
-            NeuronRuntimeV2Error::Index(NeuronRuntimeIndexError::Poisoned)
         }
         AgentdNeuronControlErrorV2::PendingRecovery => NeuronRuntimeV2Error::PendingOperation,
         AgentdNeuronControlErrorV2::NotServing

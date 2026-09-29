@@ -56,6 +56,28 @@ impl NeuronOperationStatusV2 {
         }
     }
 
+    /// Stable operator action for the exact status. This is advisory only:
+    /// execution still requires the new-work admission boundary, recovery may
+    /// only reconcile the same key, and result release still requires the
+    /// current-use guard.
+    #[must_use]
+    pub fn action_code(&self) -> &'static str {
+        match self {
+            Self::NotRecorded => "admit_original_request",
+            Self::NotExecuted => "resume_or_close_unexecuted",
+            Self::OutcomeUnknown => "reconcile_provider",
+            Self::Failed(_) => "return_terminal_failure",
+            Self::Committed {
+                witness_acknowledged: false,
+                ..
+            } => "reconcile_witness",
+            Self::Committed {
+                witness_acknowledged: true,
+                ..
+            } => "check_current_use",
+        }
+    }
+
     #[must_use]
     pub fn is_terminal(&self) -> bool {
         matches!(self, Self::Failed(_) | Self::Committed { .. })
@@ -120,5 +142,31 @@ impl NeuronRuntimeV2Error {
             Self::Arithmetic => "arithmetic",
             Self::TerminalFailure(_) => "terminal_failure",
         }
+    }
+}
+
+#[cfg(test)]
+mod status_action_tests {
+    use super::*;
+
+    #[test]
+    fn operation_status_actions_do_not_collapse_recovery_boundaries() {
+        assert_eq!(
+            NeuronOperationStatusV2::NotRecorded.action_code(),
+            "admit_original_request"
+        );
+        assert_eq!(
+            NeuronOperationStatusV2::NotExecuted.action_code(),
+            "resume_or_close_unexecuted"
+        );
+        assert_eq!(
+            NeuronOperationStatusV2::OutcomeUnknown.action_code(),
+            "reconcile_provider"
+        );
+        assert_eq!(
+            NeuronOperationStatusV2::Failed(NeuronOperationFailureV2::AdmissionDenied)
+                .action_code(),
+            "return_terminal_failure"
+        );
     }
 }

@@ -66,11 +66,19 @@ Supporting inspection interfaces are:
 - `AgentdNeuronControlStateErrorV2::stable_code()` —
   `control_state_invalid`, `control_state_corrupt` or `control_state_io`.
 
-Controller construction maps an unreadable, malformed or digest-invalid state to
-`controller_poisoned` and leaves the generation gates closed. The direct file
-APIs retain the more specific state error for diagnostics.
+Controller construction preserves those three control-state codes through
+`AgentdNeuronControlErrorV2::ControlState`. `controller_poisoned` is reserved for
+an in-process poisoned controller lock or execution fence. This distinction tells
+the host whether to repair a path/permission problem, retain corrupt bytes for
+forensics, retry an I/O dependency, or reconstruct poisoned process ownership.
+All cases still fail closed and grant no operation or result-use authority.
 
 ## 3. Publication and filesystem contract
+
+Before taking ownership of caller handles, construction validates that the
+control-state parent already exists, is a directory and is not a symlink. A
+missing or invalid namespace therefore fails without silently advancing the
+caller's execution epoch.
 
 Every publication:
 
@@ -80,11 +88,15 @@ Every publication:
 4. writes and syncs the complete bytes;
 5. replaces the final path in the same directory;
 6. syncs the parent directory on platforms that expose directory sync;
-7. revalidates that the final path is a regular, non-symlink file.
+7. opens the published file, validates its metadata and reads back the exact
+   bytes before reporting success.
 
-The parent directory must already exist and must not be a symlink. The final file
-must be regular, bounded and non-empty. A state digest mismatch is corruption,
-not an absent state. Do not delete the file and silently start a new topology.
+The final file must be regular, bounded and non-empty. On Unix it must have link
+count one and no group/other permission bits. Reads compare the pre-open path
+metadata, opened file metadata and post-read path metadata; device/inode changes
+fail closed. Symlinks and hard links are rejected. A state digest mismatch is
+corruption, not an absent state. Do not delete the file and silently start a new
+topology.
 
 The state path belongs in a host-owned namespace distinct from untrusted model or
 request content. It may share a protected runtime directory, but it must never be
@@ -146,17 +158,24 @@ versioned manifest, migration, crash-cut tests and retained historical queries.
 
 ## 7. Incident procedure
 
-When startup reports `controller_poisoned`, `generation_conflict` or a direct
-control-state error:
+When startup reports `control_state_invalid`, `control_state_corrupt`,
+`control_state_io`, `controller_poisoned` or `generation_conflict`:
 
 1. keep all generation execution gates closed;
 2. retain the state file and runtime paths as incident evidence;
-3. validate the state digest and file identity;
-4. enumerate the actual active and retained generation directories and provider
+3. for `control_state_invalid`, verify the parent/file type, Unix link count and
+   private permissions before replacing anything;
+4. for `control_state_corrupt`, retain the exact bytes and verify the canonical
+   digest; do not rewrite the topology by hand;
+5. for `control_state_io`, restore the required host-owned namespace or storage
+   dependency and retry construction without inventing a new state;
+6. for `controller_poisoned`, reconstruct process ownership from durable files
+   rather than treating it as an operation retry;
+7. enumerate the actual active and retained generation directories and provider
    ledgers;
-5. reconstruct only a topology accepted by the restart matrix;
-6. reconcile every retained generation, then the active generation;
-7. reopen service only through `start()`.
+8. reconstruct only a topology accepted by the restart matrix;
+9. reconcile every retained generation, then the active generation;
+10. reopen service only through `start()`.
 
 Never edit `activeGeneration`, remove a retained generation or clear a reload
 target manually to make startup succeed.
@@ -165,8 +184,11 @@ target manually to make startup succeed.
 
 Repository regression tests cover state round-trip, digest tampering, every
 published lifecycle transition, both accepted interrupted-reload topologies,
-ambiguous-topology rejection and corrupt-state fail-closed behavior. These tests
-are source evidence only until the exact-head qualification workflow completes.
+ambiguous-topology rejection, specific corrupt/I/O error propagation, parent
+preflight before handle fencing, and Unix symlink/hard-link/private-mode
+rejection. These tests are source evidence only until the exact-head
+qualification workflow completes.
+
 Target-host qualification must still terminate the process at each publication
-cut and exercise real filesystem sync failure, owner panic and concurrent
-in-flight invocation drain.
+cut and exercise real filesystem sync failure, owner panic, namespace replacement
+and concurrent in-flight invocation drain.

@@ -12,6 +12,7 @@ pub enum AgentdNeuronLifecycleStateV2 {
 #[derive(Debug)]
 pub enum AgentdNeuronControlErrorV2 {
     Runtime(NeuronRuntimeV2Error),
+    ControlState(AgentdNeuronControlStateErrorV2),
     OwnerBusy,
     OwnerPoisoned,
     ControllerBusy,
@@ -28,6 +29,7 @@ impl AgentdNeuronControlErrorV2 {
     pub fn stable_code(&self) -> &'static str {
         match self {
             Self::Runtime(error) => error.stable_code(),
+            Self::ControlState(error) => error.stable_code(),
             Self::OwnerBusy => "owner_busy",
             Self::OwnerPoisoned => "owner_poisoned",
             Self::ControllerBusy => "controller_busy",

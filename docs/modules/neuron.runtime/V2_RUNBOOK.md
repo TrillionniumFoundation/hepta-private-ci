@@ -32,6 +32,13 @@ canonical input digest is already retained.
 | `committed_witness_pending` | The local result is durable but external witness acknowledgement is incomplete. | Reconcile witness CAS and the local acknowledgement before handoff. |
 | `committed_witnessed` | The exact local result and witness acknowledgement are durable. | Apply the current authorization policy before exposing the result. |
 
+`NeuronOperationStatusV2::action_code()` and
+`AgentdNeuronRecoveryReportV2::action_code` expose the same low-cardinality
+operator actions: `admit_original_request`, `resume_or_close_unexecuted`,
+`reconcile_provider`, `return_terminal_failure`, `reconcile_witness` and
+`check_current_use`. These are advice, not capabilities; hosts must still use the
+separate new-work, exact-recovery, truth-query and current-use boundaries.
+
 `NeuronRuntimeV2Error::stable_code()` is a low-cardinality diagnostic family.
 `store_outcome_unknown`, `index_outcome_unknown`, `witness_outcome_unknown` and
 `model_outcome_unknown` require operation-key reconciliation. They are not
@@ -74,8 +81,8 @@ headroom instead of only the aggregate action code.
    must be resolved; they cannot be force-closed.
 7. Query the operation again. A read, corruption or poisoning error remains an
    error; never convert it to `not_recorded`.
-8. Retain the resulting status, source identity, file identities, capacity,
-   execution epoch and provider evidence with the incident record.
+8. Retain the resulting status, action code, source identity, file identities,
+   capacity, execution epoch and provider evidence with the incident record.
 
 A process restart is not a retry policy. Reopen the exact generation-store,
 index, witness and provider histories, reconstruct the active and retained handle
@@ -121,13 +128,24 @@ the successor has reserved, dispatched, failed or committed an operation,
 returning to the predecessor is a new migration requiring explicit evidence; it
 must not be represented as a transparent rollback.
 
-## Filesystem incidents
+## Control-state and filesystem incidents
+
+Controller construction now preserves the direct control-state code instead of
+collapsing every state-file problem into `controller_poisoned`:
+
+| Stable code | Required response |
+| --- | --- |
+| `control_state_invalid` | Verify parent/file type, Unix private permissions, link count and opened-file identity. Do not replace the state from an untrusted path. |
+| `control_state_corrupt` | Retain the exact bytes, verify the canonical digest and reconstruct only from matching durable generation histories. |
+| `control_state_io` | Restore the host-owned namespace or storage dependency; do not fabricate an empty topology. |
+| `controller_poisoned` | Reconstruct the in-process controller and execution fence from durable state. Do not interpret this as an operation retry. |
 
 | Observation | Required response |
 | --- | --- |
 | Symlink, reparse point, FIFO or non-regular path | Fail closed; restore from an authenticated retained copy. |
-| Inode/device identity changed after open | Stop writes and investigate host ownership; do not reopen a replacement as the same history. |
+| Inode/device identity changed before open or after read | Stop writes and investigate host ownership; do not reopen a replacement as the same history. |
 | Link count is not one | Fail closed because another writable name can mutate the owned file. |
+| Unix group/other permission bits are present | Fail closed and restore the file under the private owner-only contract. |
 | Partial final frame | Reopen through the qualified recovery path; only a verified incomplete tail may be truncated. |
 | Complete checksum/frontier mismatch | Treat as corruption, retain evidence and do not truncate through it. |
 | Sync result indeterminate or store poisoned | Query after reopening; never write a negative tombstone from absence that is not proven. |
@@ -148,8 +166,11 @@ quality evidence or a production SLA.
 
 Operational snapshots additionally expose the oldest current `OutcomeUnknown`
 lower-bound age, witness backlog age, capacity trends, stale invocation counts,
-owner busy/poisoned counts and preserving-versus-closing recovery counts. Age
-values reset on owner reconstruction; durable records remain authoritative.
+owner busy/poisoned counts and preserving-versus-closing recovery counts.
+`pending_operation_action_code()`, `capacity_action_code()` and controller
+`lifecycle_action_code()` project those facts into low-cardinality operator
+advice. Age values reset on owner reconstruction; durable records remain
+authoritative.
 
 The only acceptable candidate evidence comes from the committed-source workflow
 for the exact source commit and fixed main integration base. Required commands

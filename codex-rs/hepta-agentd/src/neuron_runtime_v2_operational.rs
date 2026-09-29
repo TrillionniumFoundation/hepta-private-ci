@@ -105,6 +105,24 @@ pub struct AgentdNeuronOperationalSnapshotV2 {
     pub last_measurement: Option<NeuronRuntimeMeasurementV2>,
 }
 
+impl AgentdNeuronOperationalSnapshotV2 {
+    /// Advisory host action derived from the durable operation status. This
+    /// never creates execution or result-use authority.
+    #[must_use]
+    pub fn pending_operation_action_code(&self) -> Option<&'static str> {
+        self.pending_operation_code
+            .as_deref()
+            .map(operation_status_action_code)
+    }
+
+    /// Advisory capacity action. Payload-specific store/index/witness
+    /// admission remains authoritative.
+    #[must_use]
+    pub fn capacity_action_code(&self) -> &'static str {
+        self.capacity.action_code()
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct AgentdNeuronGenerationControllerSnapshotV2 {
     pub lifecycle: AgentdNeuronLifecycleStateV2,
@@ -115,9 +133,28 @@ pub struct AgentdNeuronGenerationControllerSnapshotV2 {
     pub active: AgentdNeuronOperationalSnapshotV2,
 }
 
+impl AgentdNeuronGenerationControllerSnapshotV2 {
+    /// Advisory lifecycle action for operators. Actual transitions still go
+    /// through the controller methods and their durable/fencing checks.
+    #[must_use]
+    pub fn lifecycle_action_code(&self) -> &'static str {
+        match self.lifecycle {
+            AgentdNeuronLifecycleStateV2::Starting => "reconcile_and_start",
+            AgentdNeuronLifecycleStateV2::Serving if self.accepting_new_work => "serve",
+            AgentdNeuronLifecycleStateV2::Serving => "inspect_closed_serving_gate",
+            AgentdNeuronLifecycleStateV2::Quiescing => "recover_and_seal",
+            AgentdNeuronLifecycleStateV2::Sealed => "reload_or_stop",
+            AgentdNeuronLifecycleStateV2::Reloading => "complete_or_recover_handoff",
+            AgentdNeuronLifecycleStateV2::Stopped => "stopped",
+            AgentdNeuronLifecycleStateV2::Failed => "reconstruct_controller",
+        }
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct AgentdNeuronRecoveryReportV2 {
     pub status_code: String,
+    pub action_code: String,
     pub terminal: bool,
     pub requires_reconciliation: bool,
     pub failure_code: Option<String>,
@@ -145,11 +182,53 @@ impl AgentdNeuronRecoveryReportV2 {
         };
         Self {
             status_code: status.stable_code().to_owned(),
+            action_code: status.action_code().to_owned(),
             terminal: status.is_terminal(),
             requires_reconciliation: status.requires_reconciliation(),
             failure_code,
             operation_digest,
             witness_acknowledged,
         }
+    }
+}
+
+fn operation_status_action_code(status_code: &str) -> &'static str {
+    match status_code {
+        "not_recorded" => "admit_original_request",
+        "reserved_not_executed" => "resume_or_close_unexecuted",
+        "outcome_unknown" => "reconcile_provider",
+        "failed" => "return_terminal_failure",
+        "committed_witness_pending" => "reconcile_witness",
+        "committed_witnessed" => "check_current_use",
+        _ => "inspect_operation",
+    }
+}
+
+#[cfg(test)]
+mod operational_action_tests {
+    use super::*;
+
+    #[test]
+    fn operation_action_codes_are_explicit_and_low_cardinality() {
+        assert_eq!(
+            operation_status_action_code("reserved_not_executed"),
+            "resume_or_close_unexecuted"
+        );
+        assert_eq!(
+            operation_status_action_code("outcome_unknown"),
+            "reconcile_provider"
+        );
+        assert_eq!(
+            operation_status_action_code("committed_witness_pending"),
+            "reconcile_witness"
+        );
+        assert_eq!(
+            operation_status_action_code("committed_witnessed"),
+            "check_current_use"
+        );
+        assert_eq!(
+            operation_status_action_code("unexpected_future_status"),
+            "inspect_operation"
+        );
     }
 }
