@@ -33,6 +33,11 @@ base.QUALIFIED_PATHS = (
     "scripts/run_memory_federation_qualification.sh",
 )
 
+# Strict Clippy applies to the selected memory.federation product crates.
+# `--no-deps` prevents unrelated workspace-owner lint debt from deciding this
+# module qualification while the same locked source graph is still compiled by
+# the preceding check and test commands. No warning is allowed in a selected
+# package, and the standalone wire crate remains a separate strict target.
 base.COMMANDS = (
     "python3 -m py_compile scripts/memory_federation_attestation.py "
     "scripts/memory_federation_full_attestation.py "
@@ -58,10 +63,10 @@ base.COMMANDS = (
     "cargo test --locked -p codex-hepta-memory --lib cognitive_federation_tests",
     "cargo test --locked -p codex-hepta-memory-extension --lib cognitive::federation",
     "cargo check --locked -p codex-hepta-agentd -p codex-app-server",
-    "cargo clippy --locked -p codex-hepta-memory-federation -p codex-hepta-memory "
+    "cargo clippy --locked --no-deps -p codex-hepta-memory-federation -p codex-hepta-memory "
     "-p codex-hepta-memory-extension -p codex-app-server --all-targets -- -D warnings",
-    "cargo clippy --locked -p codex-hepta-memory-federation --all-targets --features legacy-v1 -- -D warnings",
-    "cargo clippy --locked -p codex-hepta-agentd --lib -- -D warnings",
+    "cargo clippy --locked --no-deps -p codex-hepta-memory-federation --all-targets --features legacy-v1 -- -D warnings",
+    "cargo clippy --locked --no-deps -p codex-hepta-agentd --lib -- -D warnings",
     "cargo fmt --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml -- --check",
     "cargo metadata --locked --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml "
     "--format-version 1 --no-deps",
@@ -69,7 +74,7 @@ base.COMMANDS = (
     "cargo test --locked --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml --doc",
     "cargo run --locked --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml "
     "--bin memory_federation_capacity_probe -- <capacity-metrics.json>",
-    "cargo clippy --locked --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml "
+    "cargo clippy --locked --no-deps --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml "
     "--all-targets -- -D warnings",
     "git diff --check",
     "test -z \"$(git status --porcelain --untracked-files=no)\"",
@@ -369,6 +374,29 @@ def _self_test_metrics():
 
 
 def self_test(args):
+    clippy_commands = [command for command in base.COMMANDS if command.startswith("cargo clippy ")]
+    if not clippy_commands or any(
+        "--no-deps" not in command or "-- -D warnings" not in command
+        for command in clippy_commands
+    ):
+        raise base.AttestationError(
+            "strict module-scoped Clippy commands must reject selected-package warnings "
+            "without linting transitive workspace owners"
+        )
+    required_clippy_targets = (
+        "-p codex-hepta-memory-federation",
+        "-p codex-hepta-memory",
+        "-p codex-hepta-memory-extension",
+        "-p codex-hepta-agentd",
+        "-p codex-app-server",
+        "--manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml",
+    )
+    if any(
+        not any(target in command for command in clippy_commands)
+        for target in required_clippy_targets
+    ):
+        raise base.AttestationError("module-scoped Clippy contract lost a product target")
+
     metrics = _self_test_metrics()
     require_metrics(metrics)
     tampered = dict(metrics)
