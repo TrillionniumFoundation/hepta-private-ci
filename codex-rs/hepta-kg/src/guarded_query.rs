@@ -2,9 +2,8 @@
 //!
 //! Structural validation, immutable indexes and generation byte measurement are
 //! performed once when the view is sealed. Every external query checks its
-//! operation guard before execution and before returning, and validates the
-//! physical output byte bound. The support-work ceiling remains the bounded
-//! execution segment between checkpoints.
+//! operation guard inside index/support traversal and before returning, and
+//! validates the physical output byte bound.
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -79,11 +78,10 @@ impl KnowledgePhysicalQueryViewV2 {
         ),
         KnowledgePhysicalQueryErrorV2,
     > {
-        guard.checkpoint()?;
         let (result, work) = self
             .verified
-            .query_relations_external(query, maximum_support_work)?;
-        guard.checkpoint()?;
+            .query_relations_external_guarded(query, maximum_support_work, guard)
+            .map_err(KnowledgePhysicalQueryErrorV2::from)?;
         let output_bytes = validate_query_output_physical_limits_v2(&result, self.limits)?;
         guard.checkpoint()?;
         Ok((
@@ -112,7 +110,10 @@ impl From<KnowledgeGenerationErrorV2> for KnowledgePhysicalQueryErrorV2 {
 
 impl From<KnowledgeQueryAdmissionErrorV2> for KnowledgePhysicalQueryErrorV2 {
     fn from(error: KnowledgeQueryAdmissionErrorV2) -> Self {
-        Self::Admission(error)
+        match error {
+            KnowledgeQueryAdmissionErrorV2::Resource(error) => Self::Resource(error),
+            other => Self::Admission(other),
+        }
     }
 }
 

@@ -109,9 +109,10 @@ pub const MAX_QUERY_SUPPORT_WORK_V2: u64 = 1_000_000;
 
 /// Admission/result classification for the bounded external query entry.
 ///
-/// Successful empty results remain `Ok`; budget exhaustion is a distinct error
-/// and never returns a partial result or an inexact omitted count. Semantic or
-/// source-cut failures retain their original generation error.
+/// Successful empty results remain `Ok`; budget exhaustion, invalid admission,
+/// deadline/cancellation and semantic/source-cut failures remain distinct. No
+/// exhausted or cancelled request returns a partial success or an inexact
+/// omitted count.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum KnowledgeQueryAdmissionErrorV2 {
     InvalidBudget {
@@ -122,12 +123,19 @@ pub enum KnowledgeQueryAdmissionErrorV2 {
         maximum_support_work: u64,
         attempted_support_work: u64,
     },
+    Resource(KnowledgeResourceErrorV2),
     Query(KnowledgeGenerationErrorV2),
 }
 
 impl From<KnowledgeGenerationErrorV2> for KnowledgeQueryAdmissionErrorV2 {
     fn from(error: KnowledgeGenerationErrorV2) -> Self {
         Self::Query(error)
+    }
+}
+
+impl From<KnowledgeResourceErrorV2> for KnowledgeQueryAdmissionErrorV2 {
+    fn from(error: KnowledgeResourceErrorV2) -> Self {
+        Self::Resource(error)
     }
 }
 
@@ -148,6 +156,7 @@ impl fmt::Display for KnowledgeQueryAdmissionErrorV2 {
                 formatter,
                 "query support-work budget {maximum_support_work} exhausted at {attempted_support_work}"
             ),
+            Self::Resource(error) => write!(formatter, "{error}"),
             Self::Query(error) => write!(formatter, "{error}"),
         }
     }
@@ -156,6 +165,7 @@ impl fmt::Display for KnowledgeQueryAdmissionErrorV2 {
 impl StdError for KnowledgeQueryAdmissionErrorV2 {
     fn source(&self) -> Option<&(dyn StdError + 'static)> {
         match self {
+            Self::Resource(error) => Some(error),
             Self::Query(error) => Some(error),
             Self::InvalidBudget { .. } | Self::BudgetExceeded { .. } => None,
         }
@@ -164,11 +174,10 @@ impl StdError for KnowledgeQueryAdmissionErrorV2 {
 
 /// Explicit unbounded reference/oracle query.
 ///
-/// Product-facing callers should use
-/// [`VerifiedKnowledgeGenerationV2::query_relations_external`] instead. This
-/// function validates and scans the complete generation and exists for oracle,
-/// migration and trusted-owner comparison work; it is not the external resource
-/// contract.
+/// Product-facing callers should use [`KnowledgePhysicalQueryViewV2`] or an
+/// owner adapter that embeds it. This function validates and scans the complete
+/// generation and exists for oracle, migration and trusted-owner comparison
+/// work; it is not the external resource contract.
 pub fn query_relations_reference_unbounded(
     generation: &KnowledgeGenerationV2,
     query: KnowledgeRelationQueryV2,

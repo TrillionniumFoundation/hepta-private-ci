@@ -5,8 +5,12 @@
 
 use super::*;
 use crate::DEFAULT_QUERY_SUPPORT_WORK_V2;
+use crate::KnowledgeCancellationV2;
+use crate::KnowledgeOperationGuardV2;
 use crate::KnowledgeQueryAdmissionErrorV2;
 use crate::MAX_QUERY_SUPPORT_WORK_V2;
+
+const SUPPORT_CHECKPOINT_INTERVAL: u64 = 64;
 
 /// Charge before inspecting or copying. Exhaustion never yields a partial result
 /// with a misleading exact omitted_count. Generation validation/index
@@ -25,6 +29,18 @@ fn charge_support_work(
         });
     }
     *used = attempted;
+    Ok(())
+}
+
+fn checkpoint_support_work(
+    guard: &KnowledgeOperationGuardV2,
+    used: u64,
+    next_checkpoint: &mut u64,
+) -> Result<(), KnowledgeQueryAdmissionErrorV2> {
+    if used >= *next_checkpoint {
+        guard.checkpoint()?;
+        *next_checkpoint = used.saturating_add(SUPPORT_CHECKPOINT_INTERVAL);
+    }
     Ok(())
 }
 
@@ -102,10 +118,9 @@ impl VerifiedKnowledgeGenerationV2 {
 
     /// Backward-compatible budgeted query surface.
     ///
-    /// Invalid budgets and runtime exhaustion retain the historical
-    /// `InvalidQueryLimit` error. New external callers should use
-    /// [`Self::query_relations_external`] for distinct admission and exhaustion
-    /// classification.
+    /// Invalid budgets, runtime exhaustion and operation-guard failures retain
+    /// the historical `InvalidQueryLimit` error. New external callers should use
+    /// [`Self::query_relations_external_guarded`] for exact classification.
     pub fn query_relations_with_work_budget(
         &self,
         query: KnowledgeRelationQueryV2,
@@ -116,18 +131,17 @@ impl VerifiedKnowledgeGenerationV2 {
             Ok(result) => Ok(result),
             Err(KnowledgeQueryAdmissionErrorV2::Query(error)) => Err(error),
             Err(KnowledgeQueryAdmissionErrorV2::InvalidBudget { .. })
-            | Err(KnowledgeQueryAdmissionErrorV2::BudgetExceeded { .. }) => {
+            | Err(KnowledgeQueryAdmissionErrorV2::BudgetExceeded { .. })
+            | Err(KnowledgeQueryAdmissionErrorV2::Resource(_)) => {
                 Err(KnowledgeGenerationErrorV2::InvalidQueryLimit)
             }
         }
     }
 
-    /// The bounded external query contract.
+    /// The bounded external query contract without a caller-owned guard.
     ///
-    /// `None` selects [`DEFAULT_QUERY_SUPPORT_WORK_V2`]. A caller may lower the
-    /// budget but cannot raise [`MAX_QUERY_SUPPORT_WORK_V2`]. A successful empty
-    /// result is `Ok` with no edges; exhausted work is `BudgetExceeded`; invalid
-    /// admission is `InvalidBudget`. No branch returns a partial success.
+    /// This retains the existing API while using an unbounded, uncancelled guard.
+    /// Product owners should call [`Self::query_relations_external_guarded`].
     pub fn query_relations_external(
         &self,
         query: KnowledgeRelationQueryV2,
@@ -136,6 +150,29 @@ impl VerifiedKnowledgeGenerationV2 {
         (KnowledgeRelationResultV2, KnowledgeRelationQueryWorkV2),
         KnowledgeQueryAdmissionErrorV2,
     > {
+        let guard = KnowledgeOperationGuardV2::unbounded(KnowledgeCancellationV2::default());
+        self.query_relations_external_guarded(query, maximum_support_work, &guard)
+    }
+
+    /// The bounded external query contract with a real operation boundary.
+    ///
+    /// `None` selects [`DEFAULT_QUERY_SUPPORT_WORK_V2`]. A caller may lower the
+    /// budget but cannot raise [`MAX_QUERY_SUPPORT_WORK_V2`]. A successful empty
+    /// result is `Ok`; exhausted work is `BudgetExceeded`; invalid admission is
+    /// `InvalidBudget`; deadline/cancellation failures are `Resource`. No branch
+    /// returns a partial success. The guard is checked before admission, while
+    /// collecting incident indexes, per edge, periodically during support scans,
+    /// before bulk support copies and before returning the terminal result.
+    pub fn query_relations_external_guarded(
+        &self,
+        query: KnowledgeRelationQueryV2,
+        maximum_support_work: Option<u64>,
+        guard: &KnowledgeOperationGuardV2,
+    ) -> Result<
+        (KnowledgeRelationResultV2, KnowledgeRelationQueryWorkV2),
+        KnowledgeQueryAdmissionErrorV2,
+    > {
+        guard.checkpoint()?;
         let maximum_support_work = maximum_support_work.unwrap_or(DEFAULT_QUERY_SUPPORT_WORK_V2);
         if maximum_support_work == 0 || maximum_support_work > MAX_QUERY_SUPPORT_WORK_V2 {
             return Err(KnowledgeQueryAdmissionErrorV2::InvalidBudget {
@@ -143,17 +180,19 @@ impl VerifiedKnowledgeGenerationV2 {
                 maximum_support_work: MAX_QUERY_SUPPORT_WORK_V2,
             });
         }
-        self.query_relations_with_admitted_budget(query, maximum_support_work)
+        self.query_relations_with_admitted_budget(query, maximum_support_work, guard)
     }
 
     fn query_relations_with_admitted_budget(
         &self,
         query: KnowledgeRelationQueryV2,
         maximum_support_work: u64,
+        guard: &KnowledgeOperationGuardV2,
     ) -> Result<
         (KnowledgeRelationResultV2, KnowledgeRelationQueryWorkV2),
         KnowledgeQueryAdmissionErrorV2,
     > {
+        guard.checkpoint()?;
         if query.generation_digest != self.generation.generation_digest {
             return Err(KnowledgeGenerationErrorV2::DigestMismatch("query_generation").into());
         }
@@ -179,17 +218,21 @@ impl VerifiedKnowledgeGenerationV2 {
         // undirected adjacency visits each edge at most twice. Sorted original
         // positions preserve reference ordering and deduplicate self-loops and
         // edges reached from multiple seeds.
-        let incident = seeds
-            .iter()
-            .filter_map(|seed| self.adjacency.get(seed))
-            .flat_map(|indices| indices.iter().copied())
-            .collect::<BTreeSet<_>>();
+        let mut incident = BTreeSet::new();
+        for seed in &seeds {
+            guard.checkpoint()?;
+            if let Some(indices) = self.adjacency.get(seed) {
+                incident.extend(indices.iter().copied());
+            }
+        }
         let mut work = KnowledgeRelationQueryWorkV2::default();
         let mut support_work = 0_u64;
+        let mut next_support_checkpoint = SUPPORT_CHECKPOINT_INTERVAL;
         let mut visible_nodes = BTreeMap::<&StableId, bool>::new();
         let mut edges = Vec::new();
         let mut omitted_count = 0_u32;
         for index in incident {
+            guard.checkpoint()?;
             let edge = &self.generation.edges[index];
             work.relation_edges_scanned += 1;
             if !kinds.is_empty() && !kinds.contains(&edge.identity.relation) {
@@ -205,6 +248,11 @@ impl VerifiedKnowledgeGenerationV2 {
                             let mut visible = false;
                             for support in &self.generation.nodes[self.nodes[node_id]].supports {
                                 charge_support_work(&mut support_work, maximum_support_work, 1)?;
+                                checkpoint_support_work(
+                                    guard,
+                                    support_work,
+                                    &mut next_support_checkpoint,
+                                )?;
                                 work.visibility_supports_inspected += 1;
                                 if support.visible_at(at) {
                                     visible = true;
@@ -230,6 +278,11 @@ impl VerifiedKnowledgeGenerationV2 {
                 if let Some(at) = query.valid_at_unix_seconds {
                     for support in &edge.supports {
                         charge_support_work(&mut support_work, maximum_support_work, 1)?;
+                        checkpoint_support_work(
+                            guard,
+                            support_work,
+                            &mut next_support_checkpoint,
+                        )?;
                         work.relation_supports_inspected += 1;
                         if support.visible_at(at) {
                             visible = true;
@@ -249,9 +302,19 @@ impl VerifiedKnowledgeGenerationV2 {
                     let mut selected = Vec::new();
                     for support in &edge.supports {
                         charge_support_work(&mut support_work, maximum_support_work, 1)?;
+                        checkpoint_support_work(
+                            guard,
+                            support_work,
+                            &mut next_support_checkpoint,
+                        )?;
                         work.relation_supports_inspected += 1;
                         if support.visible_at(at) {
                             charge_support_work(&mut support_work, maximum_support_work, 1)?;
+                            checkpoint_support_work(
+                                guard,
+                                support_work,
+                                &mut next_support_checkpoint,
+                            )?;
                             selected.push(support.clone());
                         }
                     }
@@ -263,6 +326,12 @@ impl VerifiedKnowledgeGenerationV2 {
                         maximum_support_work,
                         edge.supports.len(),
                     )?;
+                    checkpoint_support_work(
+                        guard,
+                        support_work,
+                        &mut next_support_checkpoint,
+                    )?;
+                    guard.checkpoint()?;
                     edge.supports.clone()
                 }
             };
@@ -279,6 +348,7 @@ impl VerifiedKnowledgeGenerationV2 {
                 supports,
             });
         }
+        guard.checkpoint()?;
         let mut result = KnowledgeRelationResultV2 {
             query_id: query.query_id,
             generation_digest: self.generation.generation_digest,
@@ -290,6 +360,7 @@ impl VerifiedKnowledgeGenerationV2 {
             authority: AuthorityPosture::DENY_ALL,
         };
         result.result_digest = compute_query_result_digest(&result);
+        guard.checkpoint()?;
         Ok((result, work))
     }
 }
