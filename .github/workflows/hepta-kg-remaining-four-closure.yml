@@ -1,16 +1,16 @@
-name: knowledge.graph remaining-four closure
+name: knowledge.graph remaining-five executor
 
 on:
   push:
     branches:
-      - work/kg-abc-evidence-hardening-20260928
+      - ops/kg-remaining-five-executor-20260929
 
 permissions:
   contents: write
 
 concurrency:
-  group: kg-remaining-four-${{ github.sha }}
-  cancel-in-progress: false
+  group: kg-remaining-five-executor
+  cancel-in-progress: true
 
 jobs:
   close-labelled:
