@@ -12,12 +12,12 @@ permissions:
 
 concurrency:
   group: authbus-target-host-authoring-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   materialize-format:
     name: Materialize AuthBus canonical format
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
