@@ -14,6 +14,7 @@ export class TerminalCleanupQueue {
   #deadlineMs;
   #cursor = 0;
   #pending = new Map();
+  #outstanding = new Map();
   #done = new Set();
   #visible = new Set();
   #tail = Promise.resolve();
@@ -35,14 +36,20 @@ export class TerminalCleanupQueue {
     if (!Array.isArray(operations) || operations.length > this.#limit) {
       throw new RangeError("terminal cleanup inventory exceeds its bound");
     }
-    const selected = new Map();
+    const visible = new Map();
     for (const operation of operations) {
       if (operation.state !== "terminal") continue;
       const snapshot = Object.freeze({ ...operation });
       const key = JSON.stringify(fields.map(field => snapshot[field]));
-      selected.set(key, snapshot);
+      visible.set(key, snapshot);
     }
-    this.#visible = new Set(selected.keys());
+    // A terminal that leaves presentation history must not lose its failed
+    // local cleanup. Retain its exact snapshot until verified removal succeeds.
+    const selected = new Map([...this.#outstanding, ...visible]);
+    if (selected.size > this.#limit) {
+      throw new RangeError("outstanding terminal cleanup exceeds its bound");
+    }
+    this.#visible = new Set(visible.keys());
     for (const key of this.#done) {
       if (!this.#visible.has(key)) this.#done.delete(key);
     }
@@ -68,8 +75,10 @@ export class TerminalCleanupQueue {
           await this.#complete(operation, { signal: deadline.signal });
           // false means the exact record was already absent. This local memo
           // never participates in admission or runtime-success decisions.
+          this.#outstanding.delete(key);
           if (this.#visible.has(key)) this.#done.add(key);
         });
+        this.#outstanding.set(key, operation);
         this.#pending.set(key, task);
         this.#tail = task.then(
           () => { this.#pending.delete(key); },
@@ -83,7 +92,8 @@ export class TerminalCleanupQueue {
         throw new AggregateError(failures.map(result => result.reason),
           "Terminal cleanup failed; failed records require recovery.");
       }
-      return [...selected.keys()].every(key => this.#done.has(key));
+      return [...selected.keys()].every(key => this.#done.has(key) ||
+        (!this.#visible.has(key) && !this.#outstanding.has(key)));
     } finally {
       clearTimeout(timer);
       signal?.removeEventListener("abort", abort);

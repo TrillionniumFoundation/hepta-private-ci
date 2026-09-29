@@ -4,7 +4,7 @@ import { TerminalCleanupQueue } from "../src/terminal-cleanup.js";
 import { ScopedRecoveryStore } from "../src/recovery-store.js";
 import { deferred, operation, terminal, storageOptions } from "./browser-fixture.js";
 
- test("cleanup coalesces concurrent callers and unchanged terminal history", async () => {
+test("cleanup coalesces concurrent callers and unchanged terminal history", async () => {
   const gate = deferred(); let calls = 0;
   const queue = new TerminalCleanupQueue(async () => { calls += 1; await gate.promise; });
   const one = queue.sync([terminal()]); const two = queue.sync([terminal()]);
@@ -101,4 +101,29 @@ test("batch deadline bounds lock waiting and rotation reaches later records", as
   await assert.rejects(queue.sync([terminal("slow"), terminal("fast")]));
   assert.equal(await queue.sync([terminal("slow"), terminal("fast")]), false);
   assert.deepEqual(seen, ["slow", "fast"]);
+});
+
+
+test("failed cleanup survives terminal display-history eviction", async () => {
+  const options = storageOptions(); const store = await ScopedRecoveryStore.create(options);
+  await store.prepare(operation());
+  const original = options.storage.removeItem;
+  options.storage.removeItem = () => {};
+  const queue = new TerminalCleanupQueue((op, opts) => store.complete(op, opts));
+  await assert.rejects(queue.sync([terminal()]));
+  await assert.rejects(queue.sync([]));
+  assert.equal(options.storage.length, 1);
+  options.storage.removeItem = original;
+  assert.equal(await queue.sync([]), true);
+  assert.equal(options.storage.length, 0);
+});
+
+test("in-flight cleanup remains joined after its display record is removed", async () => {
+  const gate = deferred(); let calls = 0;
+  const queue = new TerminalCleanupQueue(async () => { calls += 1; await gate.promise; });
+  const first = queue.sync([terminal()]);
+  const second = queue.sync([]);
+  await Promise.resolve(); assert.equal(calls, 1);
+  gate.resolve();
+  assert.deepEqual(await Promise.all([first, second]), [true, true]);
 });
