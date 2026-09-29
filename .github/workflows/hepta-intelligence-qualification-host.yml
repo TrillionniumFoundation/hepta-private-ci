@@ -132,11 +132,54 @@ jobs:
           destination.write_text(candidates[0] + "\n")
           PY
           }
+          compile_integration_probe() {
+            local package="$1"
+            local target_name="$2"
+            local label="$3"
+            local json="$root/${label}-build.jsonl"
+            local log="$root/${label}-build.log"
+            cargo test --release --locked -p "$package" --test "$target_name" --no-run \
+              --message-format=json-render-diagnostics > "$json" 2> "$log"
+            python3 - "$json" "$root/${label}-test-binary" "$target_name" <<'PY'
+          import json, pathlib, sys
+          source = pathlib.Path(sys.argv[1])
+          destination = pathlib.Path(sys.argv[2])
+          target_name = sys.argv[3]
+          candidates = []
+          for line in source.read_text().splitlines():
+              try:
+                  value = json.loads(line)
+              except json.JSONDecodeError:
+                  continue
+              if value.get("reason") != "compiler-artifact":
+                  continue
+              target = value.get("target", {})
+              profile = value.get("profile", {})
+              executable = value.get("executable")
+              if (
+                  executable
+                  and profile.get("test") is True
+                  and target.get("name") == target_name
+                  and "test" in target.get("kind", [])
+              ):
+                  candidates.append(executable)
+          candidates = sorted(set(candidates))
+          if len(candidates) != 1:
+              raise SystemExit(
+                  f"expected one {target_name} integration test binary, observed {candidates}"
+              )
+          destination.write_text(candidates[0] + "\n")
+          PY
+          }
           compile_probe codex-hepta-agentd codex_hepta_agentd agentd
+          compile_probe codex-hepta-intelligence codex_hepta_intelligence intelligence
+          compile_integration_probe codex-hepta-intelligence canonical_candidate_closure intelligence-candidate
           compile_probe codex-hepta-operations codex_hepta_operations operations
           compile_probe codex-hepta-infer-worker-host codex_hepta_infer_worker_host infer-worker
           compile_probe codex-hepta-supervisor codex_hepta_supervisor supervisor
           printf 'AGENTD_TEST_BINARY=%s\n' "$(cat "$root/agentd-test-binary")" >> "$GITHUB_ENV"
+          printf 'INTELLIGENCE_TEST_BINARY=%s\n' "$(cat "$root/intelligence-test-binary")" >> "$GITHUB_ENV"
+          printf 'INTELLIGENCE_CANDIDATE_TEST_BINARY=%s\n' "$(cat "$root/intelligence-candidate-test-binary")" >> "$GITHUB_ENV"
           printf 'OPERATIONS_TEST_BINARY=%s\n' "$(cat "$root/operations-test-binary")" >> "$GITHUB_ENV"
           printf 'INFER_WORKER_TEST_BINARY=%s\n' "$(cat "$root/infer-worker-test-binary")" >> "$GITHUB_ENV"
           printf 'SUPERVISOR_TEST_BINARY=%s\n' "$(cat "$root/supervisor-test-binary")" >> "$GITHUB_ENV"
@@ -181,18 +224,19 @@ jobs:
           set -euo pipefail
           root="$RUNNER_TEMP/intelligence-qualification-host"
           : > "$root/semantic-quality.jsonl"
-          for filter in \
-            actual_stage_outputs_fill_templates_but_reject_substitution \
-            utility_universe_rejects_foreign_and_missing_candidates \
-            signed_input_cannot_install_host_trust_or_change_actual_context \
-            final_gate_rehashes_every_envelope_dependency \
-            membership_gate_rejects_mutated_legal_support
-          do
-            output="$root/quality-${filter}.log"
-            timeout 180 "$AGENTD_TEST_BINARY" "$filter" --nocapture --test-threads=1 > "$output" 2>&1
+          run_quality_probe() {
+            local executable="$1"
+            local filter="$2"
+            local output="$root/quality-${filter}.log"
+            timeout 180 "$executable" "$filter" --nocapture --test-threads=1 > "$output" 2>&1
             grep -Eq 'test result: ok\. [1-9][0-9]* passed' "$output"
             printf '{"test":"%s","status":"passed"}\n' "$filter" >> "$root/semantic-quality.jsonl"
-          done
+          }
+          run_quality_probe "$AGENTD_TEST_BINARY" actual_stage_outputs_fill_templates_but_reject_substitution
+          run_quality_probe "$AGENTD_TEST_BINARY" utility_universe_rejects_foreign_and_missing_candidates
+          run_quality_probe "$AGENTD_TEST_BINARY" signed_input_cannot_install_host_trust_or_change_actual_context
+          run_quality_probe "$INTELLIGENCE_CANDIDATE_TEST_BINARY" final_gate_rehashes_every_envelope_dependency
+          run_quality_probe "$INTELLIGENCE_TEST_BINARY" membership_gate_rejects_mutated_legal_support
 
       - name: Measure canonical real-owner preparation latency and RSS
         working-directory: codex-rs

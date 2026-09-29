@@ -16,8 +16,11 @@
 
 This is the effective implementation guide. Canonical JSON registries retain
 ownership of module, contract, data-authority and delivery facts. This guide,
-[product composition](PRODUCT_CLOSURE.md) and
-[restart semantics](RESTART_RECONCILIATION.md) describe the same current source,
+[product composition](PRODUCT_CLOSURE.md),
+[restart semantics](RESTART_RECONCILIATION.md), the
+[durable-operation ADR](ADR-001-DURABLE-OPERATION-RECOVERY.md),
+[operations runbook](OPERATIONS_RUNBOOK.md) and
+[compatibility contract](COMPATIBILITY.md) describe the same current source,
 not competing historical amendments. Git history preserves earlier designs.
 Source presence, native execution, complete product composition, independent
 acceptance and activation are separate claims.
@@ -195,6 +198,19 @@ arbitrary synchronous instruction. Do not advertise complete hard isolation.
 remain mandatory at every owner boundary.
 
 ## 8. Failure semantics, recovery and rollback
+
+`kernel.operations` owns durable identity, operation/outbox state and recovery.
+`DurableFailureClass` preserves identity, capacity, lease, authority, clock,
+corruption and unknown-outcome distinctions. `RecoveryDisposition` restricts
+callers to reject, same-identity retry, capacity backoff, reconcile-only,
+successor-owner replacement or clock/store repair. `Prepared` and a proven
+`NotDispatched` effect are the only generic same-identity retry cases.
+
+Durable Unix timestamps are obtained from an injected `DurableOperationClock`
+after SQLite grants the immediate writer transaction. Monotonic elapsed budgets
+remain owner-local and absolute. See the
+[decision record](ADR-001-DURABLE-OPERATION-RECOVERY.md) and
+[runbook](OPERATIONS_RUNBOOK.md).
 
 See [the effective restart contract](RESTART_RECONCILIATION.md). Event time is
 historical Unix milliseconds; current evidence validation reads the host clock

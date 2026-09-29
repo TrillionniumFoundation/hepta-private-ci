@@ -92,9 +92,11 @@
         "unused_claim_deferral_preserves_identity_and_fences_old_claim",
         "post_dispatch_claim_cannot_be_deferred_for_reexecution",
         "exact_claim_freezes_the_adopted_intent_generation",
-        "exact_claim_recovers_only_an_unused_expired_lease"
+        "exact_claim_recovers_only_an_unused_expired_lease",
+        "recovery_disposition_is_effect_boundary_aware",
+        "writer_samples_clock_after_immediate_transaction_admission"
       ],
-      "supportScope": "scheduler arithmetic plus real SQLite cursor/claim invariants; not end-to-end daemon fault scheduling"
+      "supportScope": "scheduler arithmetic, typed retry/reconcile projection, serialized injected-clock sampling and real SQLite cursor/claim invariants; not end-to-end daemon fault scheduling"
     },
     {
       "id": "independent_worker_supervision",
@@ -438,6 +440,18 @@
       "name": "rollback_lock_and_parent_links_fail_without_mutating_target",
       "sourcePath": "codex-rs/hepta-agentd/src/intelligence_authority_rollback.rs",
       "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "recovery_disposition_is_effect_boundary_aware",
+      "sourcePath": "codex-rs/hepta-operations/src/durable_store_tests.rs",
+      "package": "codex-hepta-operations",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "writer_samples_clock_after_immediate_transaction_admission",
+      "sourcePath": "codex-rs/hepta-operations/src/durable_store_tests.rs",
+      "package": "codex-hepta-operations",
       "executionStatus": "pending"
     }
   ],

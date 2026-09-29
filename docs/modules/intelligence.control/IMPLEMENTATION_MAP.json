@@ -24,7 +24,7 @@
     "codex-rs/hepta-infer-worker-host"
   ],
   "statusMatrix": {
-    "documentationDepthClosed": false,
+    "documentationDepthClosed": true,
     "sourceImplementation": true,
     "routeCallsitePresent": true,
     "providerImplementationPresent": true,
@@ -296,6 +296,22 @@
         "pub fn validate(&self)",
         "admitted_exercise"
       ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-operations/src/durable_store.rs",
+      "symbols": [
+        "pub trait DurableOperationClock",
+        "pub async fn open_with_clock",
+        "let now = self.now_millis()?"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-operations/src/durable_model.rs",
+      "symbols": [
+        "pub enum DurableFailureClass",
+        "pub enum RecoveryDisposition",
+        "pub const fn recovery_disposition"
+      ]
     }
   ],
   "canonicalOperations": [
@@ -412,5 +428,10 @@
     "Qualify forced containment of hung learning I/O, Supervisor replacement and separately retained host-root backup/write-side replacement.",
     "Execute all current source-head and synthetic-merge native/mapping/Bazel gates; no historical local result is a final SHA pass.",
     "Measure target-host latency/RSS/saturation/recovery and independent task quality, then obtain independent acceptance."
-  ]
+  ],
+  "architectureDecisions": [
+    "docs/modules/intelligence.control/ADR-001-DURABLE-OPERATION-RECOVERY.md"
+  ],
+  "operationsRunbook": "docs/modules/intelligence.control/OPERATIONS_RUNBOOK.md",
+  "compatibilityGuide": "docs/modules/intelligence.control/COMPATIBILITY.md"
 }

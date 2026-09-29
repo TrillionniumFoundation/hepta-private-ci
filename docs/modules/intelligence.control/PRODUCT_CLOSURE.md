@@ -132,6 +132,11 @@ future cannot cancel supervision. Explicit cognition hard-timeout policy exits
 code 70 only after its configured grace.
 
 Cognition and final currentness reads share the remaining monotonic budget.
+Durable operation Unix timestamps come from the injected
+`DurableOperationClock` only after SQLite grants `BEGIN IMMEDIATE`; this keeps
+writer ordering deterministic without clamping a real clock rollback. Typed
+`RecoveryDisposition` prevents unavailable commits and provider-entered states
+from being reinterpreted as immediate retry.
 Input factory work is inside the same supervised bounded-worker lifetime and
 uses the earlier of its host budget and durable deadline. Learning grant,
 payload and `LedgerWriter` work runs outside Tokio control threads with four
