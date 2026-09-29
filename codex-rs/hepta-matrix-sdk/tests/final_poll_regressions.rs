@@ -20,6 +20,11 @@ use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_matrix_protocol::MatrixEventId;
 use codex_hepta_matrix_protocol::MatrixRoomId;
+use codex_hepta_matrix_protocol::MatrixSyncBatchV2;
+use codex_hepta_matrix_protocol::MatrixSyncDecisionV2;
+use codex_hepta_matrix_protocol::MatrixSyncMutationBodyV2;
+use codex_hepta_matrix_protocol::MatrixSyncMutationV2;
+use codex_hepta_matrix_protocol::MatrixSyncResultV2;
 use codex_hepta_matrix_protocol::MatrixTransactionId;
 use codex_hepta_matrix_protocol::MatrixUserId;
 use codex_hepta_matrix_protocol::outbox_id;
@@ -42,6 +47,7 @@ use codex_hepta_matrix_store::MatrixDurableStore;
 use codex_hepta_matrix_store::OutboxDraft;
 use codex_hepta_matrix_store::OutboxKind;
 use codex_hepta_matrix_store::OutboxRecord;
+use codex_hepta_matrix_store::OutboxState;
 use codex_hepta_matrix_store::RoomBindingDraft;
 use codex_hepta_paths::HeptaFleetRoot;
 use ed25519_dalek::Signer;
@@ -51,6 +57,11 @@ use tempfile::TempDir;
 use tokio_util::sync::CancellationToken;
 
 type TestResult<T = ()> = Result<T, Box<dyn Error>>;
+
+const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
+const ROOM_ID: &str = "!allowed:example.test";
+const AGENT_USER_ID: &str = "@agent:example.test";
+const ACCEPTED_EVENT_ID: &str = "$transport-accepted";
 
 fn now_ms() -> TestResult<u64> {
     Ok(u64::try_from(
@@ -64,22 +75,30 @@ fn test_material() -> TestResult<[u8; 32]> {
     Ok(material)
 }
 
+fn layout(temp: &TempDir) -> TestResult<codex_hepta_paths::HeptaAgentLayout> {
+    let root = temp.path().join("fleet");
+    let agent = AgentId::parse(AGENT_ID)?;
+    Ok(HeptaFleetRoot::parse(root.canonicalize()?)?
+        .layout()
+        .agent(&agent))
+}
+
 async fn fixture(
     count: usize,
 ) -> TestResult<(TempDir, MatrixDurableStore, Vec<MatrixTransactionId>)> {
     let temp = TempDir::new()?;
     let root = temp.path().join("fleet");
     fs::create_dir_all(&root)?;
-    let agent = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
+    let agent = AgentId::parse(AGENT_ID)?;
     let layout = HeptaFleetRoot::parse(root.canonicalize()?)?
         .layout()
         .agent(&agent);
     let store = MatrixDurableStore::open(&layout, MatrixDurableConfig::default()).await?;
-    let room = MatrixRoomId::parse("!allowed:example.test")?;
+    let room = MatrixRoomId::parse(ROOM_ID)?;
     store
         .bind_room(&RoomBindingDraft {
             room_id: room.clone(),
-            agent_user_id: MatrixUserId::parse("@agent:example.test")?,
+            agent_user_id: MatrixUserId::parse(AGENT_USER_ID)?,
             expected_revision: None,
             generation: 1,
             changed_at_ms: 1,
@@ -112,6 +131,44 @@ async fn fixture(
         ids.push(txn);
     }
     Ok((temp, store, ids))
+}
+
+async fn observe_outbound(
+    store: &MatrixDurableStore,
+    txn_id: MatrixTransactionId,
+    event_id: MatrixEventId,
+    observed_at_ms: u64,
+) -> TestResult {
+    let decision = MatrixSyncDecisionV2::Commit {
+        batch: MatrixSyncBatchV2 {
+            schema_version: 2,
+            operation_id: format!("normal-send-observation-{observed_at_ms}"),
+            checkpoint_revision: 1,
+            checkpoint_generation: 1,
+            expected_next_batch: None,
+            next_batch: format!("normal-send-sync-{observed_at_ms}"),
+            observed_at_ms,
+            mutations: vec![MatrixSyncMutationV2 {
+                source_event_id: event_id,
+                room_id: MatrixRoomId::parse(ROOM_ID)?,
+                sender: MatrixUserId::parse(AGENT_USER_ID)?,
+                transaction_id: Some(txn_id),
+                binding_revision: 1,
+                generation: 1,
+                origin_server_ts_ms: observed_at_ms,
+                received_at_ms: observed_at_ms,
+                body: MatrixSyncMutationBodyV2::Timeline {
+                    event_type: "m.room.message".to_string(),
+                    payload: br#"{"msgtype":"m.text","body":"observed outbound"}"#.to_vec(),
+                },
+            }],
+        },
+    };
+    assert!(matches!(
+        store.apply_sync_decision_v2(&decision).await?,
+        MatrixSyncResultV2::Committed { .. }
+    ));
+    Ok(())
 }
 
 struct Authorizer {
@@ -226,7 +283,7 @@ impl MatrixOutboundTransport for Transport {
         let second = self.identity_reads.fetch_add(1, Ordering::SeqCst) > 0;
         Ok(MatrixOutboundIdentity {
             homeserver_id: "https://example.test".to_string(),
-            matrix_user_id: "@agent:example.test".to_string(),
+            matrix_user_id: AGENT_USER_ID.to_string(),
             device_id: if second && self.rotate_identity {
                 "ROTATED"
             } else {
@@ -252,7 +309,7 @@ impl MatrixOutboundTransport for Transport {
             }
             match self.error {
                 Some(error) => Err(error),
-                None => MatrixEventId::parse("$transport-accepted")
+                None => MatrixEventId::parse(ACCEPTED_EVENT_ID)
                     .map_err(|_| MatrixTransportError::ResponseLost),
             }
         })
@@ -430,6 +487,79 @@ async fn transport_acceptance_alone_never_counts_as_confirmed_delivery() -> Test
         MatrixDispatchState::Accepted
     );
     store.close().await;
+    Ok(())
+}
+
+#[tokio::test]
+async fn normal_send_confirms_only_after_sync_and_survives_reopen() -> TestResult {
+    let (temp, store, ids) = fixture(/*count*/ 1).await?;
+    let authority = Authorizer::new()?;
+    let transport = Transport::new();
+    let accepted_at_ms = now_ms()?;
+    let stats = dispatch_outbox_once(
+        &store,
+        &transport,
+        &authority,
+        &config(),
+        &CancellationToken::new(),
+        accepted_at_ms,
+    )
+    .await?;
+    assert_eq!(stats.transport_accepted, 1);
+    assert_eq!(stats.sent, 0);
+    assert_eq!(
+        store
+            .dispatch_for_txn(&ids[0])
+            .await?
+            .ok_or("missing accepted dispatch")?
+            .state,
+        MatrixDispatchState::Accepted
+    );
+
+    let accepted = store
+        .outbox_for_txn(&ids[0])
+        .await?
+        .ok_or("missing accepted outbox")?;
+    let event_id = MatrixEventId::parse(ACCEPTED_EVENT_ID)?;
+    observe_outbound(
+        &store,
+        ids[0].clone(),
+        event_id.clone(),
+        accepted.updated_at_ms.saturating_add(1),
+    )
+    .await?;
+    assert_eq!(
+        store
+            .dispatch_for_txn(&ids[0])
+            .await?
+            .ok_or("missing confirmed dispatch")?
+            .state,
+        MatrixDispatchState::Succeeded
+    );
+    let settled = store
+        .outbox_for_txn(&ids[0])
+        .await?
+        .ok_or("missing settled outbox")?;
+    assert_eq!(settled.state, OutboxState::Sent);
+    assert_eq!(settled.sent_event_id, Some(event_id.clone()));
+    store.close().await;
+
+    let reopened = MatrixDurableStore::open(&layout(&temp)?, MatrixDurableConfig::default()).await?;
+    assert_eq!(
+        reopened
+            .dispatch_for_txn(&ids[0])
+            .await?
+            .ok_or("confirmed dispatch did not survive reopen")?
+            .state,
+        MatrixDispatchState::Succeeded
+    );
+    let reopened_outbox = reopened
+        .outbox_for_txn(&ids[0])
+        .await?
+        .ok_or("settled outbox did not survive reopen")?;
+    assert_eq!(reopened_outbox.state, OutboxState::Sent);
+    assert_eq!(reopened_outbox.sent_event_id, Some(event_id));
+    reopened.close().await;
     Ok(())
 }
 
