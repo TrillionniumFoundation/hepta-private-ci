@@ -204,7 +204,7 @@ def changed_paths(base: str | None = None) -> list[str]:
             "git",
             "diff",
             "--name-only",
-            "--diff-filter=ACMRT",
+            "--diff-filter=ACDMRT",
             "--no-renames",
             "-z",
             revision,
@@ -221,7 +221,14 @@ def changed_paths(base: str | None = None) -> list[str]:
             path = REPO_ROOT / value
             if not path.resolve().is_relative_to(REPO_ROOT.resolve()):
                 raise ValueError(f"format input escapes repository: {value!r}")
-            if path.is_file():
+            config_removed = not path.exists() and path.name in {
+                "pyproject.toml",
+                "ruff.toml",
+                ".ruff.toml",
+                "rustfmt.toml",
+                ".rustfmt.toml",
+            }
+            if path.is_file() or config_removed:
                 values.add(value)
     return sorted(values)
 
@@ -261,8 +268,31 @@ def rust_file_command(path: str, *, check: bool) -> Command:
         package = tomllib.loads(manifest.read_text())["package"]
         edition = package.get("edition", "2015")
         if isinstance(edition, dict):
-            workspace = tomllib.loads((REPO_ROOT / "codex-rs/Cargo.toml").read_text())
-            edition = workspace["workspace"]["package"]["edition"]
+            if edition.get("workspace") is not True:
+                raise ValueError(f"invalid inherited Rust edition in {manifest}")
+            explicit = package.get("workspace")
+            candidates = (
+                [manifest.parent / explicit / "Cargo.toml"]
+                if explicit is not None
+                else [
+                    parent / "Cargo.toml"
+                    for parent in manifest.parents
+                    if parent.is_relative_to(REPO_ROOT)
+                ]
+            )
+            for candidate in candidates:
+                if not candidate.resolve().is_relative_to(REPO_ROOT.resolve()):
+                    raise ValueError("Rust workspace escapes repository")
+                if not candidate.is_file():
+                    continue
+                document = tomllib.loads(candidate.read_text())
+                if "workspace" in document:
+                    edition = document["workspace"].get("package", {}).get("edition")
+                    if not isinstance(edition, str):
+                        raise ValueError(f"workspace edition missing in {candidate}")
+                    break
+            else:
+                raise ValueError(f"owning Rust workspace missing for {manifest}")
     args = [
         "rustfmt",
         "--edition",
@@ -288,11 +318,15 @@ def formatting_configuration_changed(path: str, base: str | None = None) -> bool
     if before.returncode:
         return True
     try:
-        previous = tomllib.loads(before.stdout).get("tool", {}).get("ruff", {})
+        previous_document = tomllib.loads(before.stdout)
+        current_document = tomllib.loads((REPO_ROOT / path).read_text())
+        previous = (
+            previous_document.get("tool", {}).get("ruff", {}),
+            previous_document.get("project", {}).get("requires-python"),
+        )
         current = (
-            tomllib.loads((REPO_ROOT / path).read_text())
-            .get("tool", {})
-            .get("ruff", {})
+            current_document.get("tool", {}).get("ruff", {}),
+            current_document.get("project", {}).get("requires-python"),
         )
     except (ValueError, OSError):
         return True
@@ -336,22 +370,35 @@ def scoped_formatter_groups(
             for path in paths
             if path.startswith(directory + "/") and path.endswith((".py", ".pyi"))
         ]
-        config_changed = any(
-            path
-            in {
-                f"{directory}/pyproject.toml",
-                f"{directory}/ruff.toml",
-                f"{directory}/.ruff.toml",
-                "ruff.toml",
-                ".ruff.toml",
-            }
-            and formatting_configuration_changed(path, base)
-            for path in paths
+        directories = set()
+        for path in paths:
+            config = Path(path)
+            if config.name not in {"pyproject.toml", "ruff.toml", ".ruff.toml"}:
+                continue
+            if config.parent == Path("."):
+                owner = directory
+            elif path.startswith(directory + "/"):
+                owner = config.parent.as_posix()
+            else:
+                continue
+            if formatting_configuration_changed(path, base):
+                directories.add(owner)
+        # A nested configuration affects its subtree, not unrelated toolchains.
+        scopes = sorted(
+            value
+            for value in directories
+            if not any(
+                value != other and value.startswith(other + "/")
+                for other in directories
+            )
         )
-        if config_changed:
-            groups.append(factory(check=check))
-        elif selected:
-            groups.append(factory(check=check, paths=selected))
+        selected = [
+            path
+            for path in selected
+            if not any(path[2:].startswith(scope + "/") for scope in scopes)
+        ]
+        if scopes or selected:
+            groups.append(factory(check=check, paths=[*scopes, *selected]))
     return tuple(groups)
 
 

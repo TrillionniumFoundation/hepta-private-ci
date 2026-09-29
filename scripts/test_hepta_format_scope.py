@@ -166,6 +166,64 @@ class FormatterScopeTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "escapes"):
                 FMT.changed_paths()
 
+    def test_deleted_configuration_rechecks_owner_without_deleted_source(self):
+        self.write("scripts/ruff.toml", "line-length = 99\n")
+        self.git("add", ".")
+        self.git("commit", "-qm", "format rules")
+        (self.root / "scripts/ruff.toml").unlink()
+        (self.root / "scripts/delete.py").unlink()
+        paths = FMT.changed_paths()
+        self.assertEqual(paths, ["scripts/ruff.toml"])
+        groups = FMT.scoped_formatter_groups(paths, check=True)
+        self.assertEqual([group.name for group in groups], ["Python scripts"])
+        self.assertEqual(groups[0].commands[0].args[-1], "scripts")
+
+    def test_nested_configuration_selects_subtree_and_other_actual_edits(self):
+        self.write("scripts/nested/ruff.toml", "line-length = 99\n")
+        self.write("scripts/nested/deeper/ruff.toml", "line-length = 88\n")
+        self.write("scripts/first.py", "x=2\n")
+        self.write("scripts/nested/child.py", "x=2\n")
+        groups = FMT.scoped_formatter_groups(FMT.changed_paths(), check=False)
+        self.assertEqual([group.name for group in groups], ["Python scripts"])
+        self.assertEqual(
+            groups[0].commands[0].args[-2:], ("scripts/nested", "./scripts/first.py")
+        )
+
+    def test_python_version_changes_affect_inferred_ruff_target(self):
+        self.write("scripts/pyproject.toml", '[project]\nrequires-python=">=3.10"\n')
+        self.git("add", ".")
+        self.git("commit", "-qm", "Python version")
+        self.write("scripts/pyproject.toml", '[project]\nrequires-python=">=3.12"\n')
+        groups = FMT.scoped_formatter_groups(FMT.changed_paths(), check=True)
+        self.assertEqual(groups[0].commands[0].args[-1], "scripts")
+
+    def test_rust_edition_comes_from_nearest_or_explicit_workspace(self):
+        self.write("codex-rs/Cargo.toml", '[workspace.package]\nedition="2024"\n')
+        self.write(
+            "codex-rs/nested/Cargo.toml", '[workspace.package]\nedition="2021"\n'
+        )
+        self.write(
+            "codex-rs/nested/member/Cargo.toml",
+            '[package]\nname="member"\nedition.workspace=true\n',
+        )
+        command = FMT.rust_file_command("codex-rs/nested/member/src/lib.rs", check=True)
+        self.assertEqual(command.args[command.args.index("--edition") + 1], "2021")
+        self.write(
+            "codex-rs/explicit/Cargo.toml",
+            '[package]\nname="explicit"\nworkspace="../nested"\nedition.workspace=true\n',
+        )
+        command = FMT.rust_file_command("codex-rs/explicit/src/lib.rs", check=False)
+        self.assertEqual(command.args[command.args.index("--edition") + 1], "2021")
+
+    def test_rust_does_not_guess_an_inherited_edition_without_its_owner(self):
+        self.write("codex-rs/Cargo.toml", "[workspace]\nmembers=[]\n")
+        self.write(
+            "codex-rs/member/Cargo.toml",
+            '[package]\nname="member"\nedition.workspace=true\n',
+        )
+        with self.assertRaisesRegex(ValueError, "workspace edition missing"):
+            FMT.rust_file_command("codex-rs/member/src/lib.rs", check=True)
+
 
 if __name__ == "__main__":
     unittest.main()
