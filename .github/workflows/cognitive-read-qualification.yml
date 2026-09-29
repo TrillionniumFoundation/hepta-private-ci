@@ -1,49 +1,195 @@
 name: Cognitive read qualification
 
 on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-cognitive-read/**"
+      - "codex-rs/hepta-cognitive-types/**"
+      - "codex-rs/hepta-cognitive-store/**"
+      - "codex-rs/hepta-types/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-agent-protocol/**"
+      - "codex-rs/hepta-memory/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "docs/modules/cognitive.read/**"
+      - "docs/contracts/**"
+      - "qualification/cognitive-read/**"
+      - "scripts/*cognitive*read*"
+      - "scripts/hepta-implementation-maps.py"
+      - ".github/scripts/verify_cargo_workspace_manifests.py"
+      - ".github/workflows/cognitive-read-qualification.yml"
+      - ".github/actions/setup-ci/**"
+      - ".github/actions/hepta-synthetic-merge/**"
   push:
     branches:
+      - main
       - work/cognitive-read-production-convergence-20260927
     paths:
-      - .github/workflows/cognitive-read-qualification.yml
+      - "codex-rs/hepta-cognitive-read/**"
+      - "codex-rs/hepta-cognitive-types/**"
+      - "codex-rs/hepta-cognitive-store/**"
+      - "codex-rs/hepta-types/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-agent-protocol/**"
+      - "codex-rs/hepta-memory/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "docs/modules/cognitive.read/**"
+      - "docs/contracts/**"
+      - "qualification/cognitive-read/**"
+      - "scripts/*cognitive*read*"
+      - "scripts/hepta-implementation-maps.py"
+      - ".github/scripts/verify_cargo_workspace_manifests.py"
+      - ".github/workflows/cognitive-read-qualification.yml"
+      - ".github/actions/setup-ci/**"
+      - ".github/actions/hepta-synthetic-merge/**"
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: cognitive-read-maintenance-artifact-push
+  group: cognitive-read-qualification-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+env:
+  RUST_MIN_STACK: "8388608"
+
 jobs:
-  maintenance-artifact:
-    name: Build exact maintenance artifact
-    runs-on: windows-2025
+  exact-head:
+    name: Exact-head cognitive.read qualification
+    runs-on: ubuntu-24.04
     timeout-minutes: 180
-    env:
-      RUST_MIN_STACK: "8388608"
-      EXPECTED_PARENT: dc6420ff87b039b1d2928ec77fbb65edd4729090
-      RESTORE_COMMIT: c20035266afa1cd08570b021632ba71dcb7766b7
-      TARGET_BRANCH: work/cognitive-read-production-convergence-20260927
     steps:
-      - name: Check out exact branch head
+      - name: Check out exact source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
-          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
-      - name: Prepare repository CI tools
+          fetch-depth: 0
+      - name: Prepare CI tools
         uses: ./.github/actions/setup-ci
-      - name: Build and verify bounded maintenance candidate
+      - name: Install pinned repository test runner
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-nextest@0.9.103
+      - name: Verify repository test entry points
         shell: bash
         run: |
-          export GITHUB_HEAD_REF="$GITHUB_REF_NAME"
-          export RUNNER_TEMP="$(cygpath -u "$RUNNER_TEMP")"
-          bash .github/scripts/cognitive_read_maintenance_closure.sh
-      - name: Retain exact maintenance artifact
+          set -euo pipefail
+          just --version
+          cargo nextest --version
+      - name: Run exact-head suite and seal evidence
+        id: qualification
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          bash scripts/run-cognitive-read-qualification.sh \
+            source-head "$EXPECTED_SHA" \
+            .hepta-evidence/cognitive-read-source exact-head
+      - name: Retain immutable exact-head evidence
+        id: upload
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: cognitive-read-maintenance-${{ github.sha }}-${{ github.run_id }}
-          path: ${{ runner.temp }}/cognitive-read-maintenance-artifact
+          name: cognitive-read-source-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}
+          path: |
+            ${{ steps.qualification.outputs.bundle }}
+            ${{ steps.qualification.outputs.bundle_sha }}
           if-no-files-found: error
           retention-days: 30
+      - name: Publish exact-head artifact identity
+        if: always()
+        env:
+          ARTIFACT_DIGEST: ${{ steps.upload.outputs['artifact-digest'] }}
+          BUNDLE_SHA: ${{ steps.qualification.outputs.bundle_sha }}
+        shell: bash
+        run: |
+          {
+            echo '## cognitive.read source-head evidence'
+            echo "Artifact digest: $ARTIFACT_DIGEST"
+            test -n "$BUNDLE_SHA" && cat "$BUNDLE_SHA"
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Enforce exact-head qualification result
+        if: always()
+        env:
+          FAILED: ${{ steps.qualification.outputs.failed }}
+        run: test "$FAILED" = '0'
+
+  merge-candidate:
+    name: Synthetic-merge cognitive.read qualification
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Check out source head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Construct deterministic synthetic merge
+        id: synthetic
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ github.event.pull_request.base.sha }}
+          source-sha: ${{ github.event.pull_request.head.sha }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Cognitive Read CI
+          author-email: cognitive-read-ci@users.noreply.github.com
+          message: Cognitive read synthetic merge
+      - name: Prepare CI tools
+        uses: ./.github/actions/setup-ci
+      - name: Install pinned repository test runner
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-nextest@0.9.103
+      - name: Verify repository test entry points
+        shell: bash
+        run: |
+          set -euo pipefail
+          just --version
+          cargo nextest --version
+      - name: Run merge-candidate suite and seal evidence
+        id: qualification
+        env:
+          EXPECTED_SHA: ${{ steps.synthetic.outputs.sha }}
+        shell: bash
+        run: |
+          bash scripts/run-cognitive-read-qualification.sh \
+            merge-candidate "$EXPECTED_SHA" \
+            .hepta-evidence/cognitive-read-merge merge-candidate
+      - name: Retain immutable merge-candidate evidence
+        id: upload
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cognitive-read-merge-${{ steps.synthetic.outputs.sha }}-${{ github.run_id }}
+          path: |
+            ${{ steps.qualification.outputs.bundle }}
+            ${{ steps.qualification.outputs.bundle_sha }}
+          if-no-files-found: error
+          retention-days: 30
+      - name: Publish merge-candidate artifact identity
+        if: always()
+        env:
+          ARTIFACT_DIGEST: ${{ steps.upload.outputs['artifact-digest'] }}
+          BUNDLE_SHA: ${{ steps.qualification.outputs.bundle_sha }}
+        shell: bash
+        run: |
+          {
+            echo '## cognitive.read synthetic-merge evidence'
+            echo "Artifact digest: $ARTIFACT_DIGEST"
+            test -n "$BUNDLE_SHA" && cat "$BUNDLE_SHA"
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Enforce merge-candidate qualification result
+        if: always()
+        env:
+          FAILED: ${{ steps.qualification.outputs.failed }}
+        run: test "$FAILED" = '0'
