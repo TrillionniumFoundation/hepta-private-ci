@@ -1,0 +1,353 @@
+name: control.runtime one-shot exact fixes
+
+on:
+  push:
+    branches:
+      - codex/control-runtime-convergence-v1
+    paths:
+      - .github/workflows/control-runtime-apply-fixes.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: control-runtime-one-shot-fixes
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+      - name: Apply exact fail-closed fixes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              file = Path(path)
+              text = file.read_text()
+              if text.count(old) != 1:
+                  raise SystemExit(f"expected exactly one source block in {path}, found {text.count(old)}")
+              file.write_text(text.replace(old, new, 1))
+
+          core = "codex-rs/hepta-control-plane/src/planner_journal_core.rs"
+          replace_once(
+              core,
+              """        if self.entries.len() >= MAX_RECORDS {
+                      return Err(PlannerJournalError::RecordLimitExceeded);
+                  }
+          """,
+              """        validate_transition(&self.entries, kind, payload_digest)?;
+                  if self.entries.len() >= MAX_RECORDS {
+                      return Err(PlannerJournalError::RecordLimitExceeded);
+                  }
+          """,
+          )
+          replace_once(
+              core,
+              """            if journal.identities.contains_key(&identity_digest) {
+                          return Err(PlannerJournalError::DuplicateSerializedIdentity);
+                      }
+                      journal
+                          .identities
+                          .insert(identity_digest, (kind, payload_digest));
+          """,
+              """            if journal.identities.contains_key(&identity_digest) {
+                          return Err(PlannerJournalError::DuplicateSerializedIdentity);
+                      }
+                      validate_transition(&journal.entries, kind, payload_digest)?;
+                      journal
+                          .identities
+                          .insert(identity_digest, (kind, payload_digest));
+          """,
+          )
+          replace_once(
+              core,
+              """fn digest_entry(
+          """,
+              """fn validate_transition(
+              entries: &[PlannerJournalEntryV1],
+              kind: PlannerJournalKindV1,
+              payload_digest: Digest32,
+          ) -> Result<(), PlannerJournalError> {
+              if kind != PlannerJournalKindV1::SelectedPlan {
+                  return Ok(());
+              }
+              let decision_exists = entries.iter().any(|entry| {
+                  entry.kind == PlannerJournalKindV1::Decision && entry.payload_digest == payload_digest
+              });
+              if !decision_exists {
+                  return Err(PlannerJournalError::DecisionNotRecorded);
+              }
+              let revoked = entries.iter().any(|entry| {
+                  entry.kind == PlannerJournalKindV1::Revocation && entry.payload_digest == payload_digest
+              });
+              if revoked {
+                  return Err(PlannerJournalError::RevokedPlan);
+              }
+              Ok(())
+          }
+
+          fn digest_entry(
+          """,
+          )
+
+          wrapper = "codex-rs/hepta-control-plane/src/planner_journal.rs"
+          replace_once(
+              wrapper,
+              """    pub fn append(
+                  &mut self,
+                  kind: PlannerJournalKindV1,
+                  identity_digest: Digest32,
+                  payload_digest: Digest32,
+              ) -> Result<PlannerJournalEntryV1, PlannerJournalError> {
+                  if let Some(existing) = self
+                      .entries()
+                      .iter()
+                      .find(|entry| entry.identity_digest == identity_digest)
+                  {
+                      // Preserve the core's exact-idempotency and conflict behavior. A
+                      // retry of an already committed transition remains safe even when
+                      // a later revocation changed the current projection.
+                      if existing.kind == kind && existing.payload_digest == payload_digest {
+                          return self.inner.append(kind, identity_digest, payload_digest);
+                      }
+                      return Err(PlannerJournalError::IdentityConflict);
+                  }
+                  validate_transition(self.entries(), kind, payload_digest)?;
+                  self.inner.append(kind, identity_digest, payload_digest)
+              }
+          """,
+              """    pub fn append(
+                  &mut self,
+                  kind: PlannerJournalKindV1,
+                  identity_digest: Digest32,
+                  payload_digest: Digest32,
+              ) -> Result<PlannerJournalEntryV1, PlannerJournalError> {
+                  self.inner.append(kind, identity_digest, payload_digest)
+              }
+          """,
+          )
+          replace_once(
+              wrapper,
+              """    pub fn reopen(bytes: &[u8]) -> Result<Self, PlannerJournalError> {
+                  let decoded = core::PlannerJournalV1::reopen(bytes)?;
+                  let mut validated = Self::new();
+                  for entry in decoded.entries() {
+                      let replayed =
+                          validated.append(entry.kind, entry.identity_digest, entry.payload_digest)?;
+                      if replayed != *entry {
+                          return Err(PlannerJournalError::CorruptEntryDigest);
+                      }
+                  }
+                  Ok(validated)
+              }
+          }
+
+          fn validate_transition(
+              entries: &[PlannerJournalEntryV1],
+              kind: PlannerJournalKindV1,
+              payload_digest: Digest32,
+          ) -> Result<(), PlannerJournalError> {
+              if kind != PlannerJournalKindV1::SelectedPlan {
+                  return Ok(());
+              }
+              let decision_exists = entries.iter().any(|entry| {
+                  entry.kind == PlannerJournalKindV1::Decision && entry.payload_digest == payload_digest
+              });
+              if !decision_exists {
+                  return Err(PlannerJournalError::DecisionNotRecorded);
+              }
+              let revoked = entries.iter().any(|entry| {
+                  entry.kind == PlannerJournalKindV1::Revocation && entry.payload_digest == payload_digest
+              });
+              if revoked {
+                  return Err(PlannerJournalError::RevokedPlan);
+              }
+              Ok(())
+          }
+          """,
+              """    pub fn reopen(bytes: &[u8]) -> Result<Self, PlannerJournalError> {
+                  Ok(Self {
+                      inner: core::PlannerJournalV1::reopen(bytes)?,
+                  })
+              }
+          }
+          """,
+          )
+          replace_once(
+              wrapper,
+              """    #[test]
+              fn reopen_rejects_a_structurally_valid_illegal_transition() {
+                  let mut unchecked = core::PlannerJournalV1::new();
+                  unchecked
+                      .append(
+                          PlannerJournalKindV1::SelectedPlan,
+                          digest("operation"),
+                          digest("missing-decision"),
+                      )
+                      .unwrap();
+                  assert_eq!(
+                      PlannerJournalV1::reopen(&unchecked.export_bytes()),
+                      Err(PlannerJournalError::DecisionNotRecorded)
+                  );
+              }
+
+          """,
+              """""",
+          )
+
+          tests = "codex-rs/hepta-control-plane/src/planner_journal_tests.rs"
+          replace_once(
+              tests,
+              """#[test]
+          fn truncation_and_tampering_fail_closed() {
+          """,
+              """#[test]
+          fn reopen_rejects_a_structurally_valid_illegal_transition() {
+              let sequence = 1;
+              let kind = PlannerJournalKindV1::SelectedPlan;
+              let identity_digest = digest("operation");
+              let payload_digest = digest("missing-decision");
+              let predecessor_entry_digest = Digest32::ZERO;
+              let entry_digest = digest_entry(
+                  sequence,
+                  kind,
+                  identity_digest,
+                  payload_digest,
+                  predecessor_entry_digest,
+              );
+              let mut bytes = Vec::new();
+              bytes.extend_from_slice(MAGIC);
+              bytes.extend_from_slice(&1_u32.to_be_bytes());
+              bytes.extend_from_slice(&sequence.to_be_bytes());
+              bytes.push(kind.tag());
+              bytes.extend_from_slice(identity_digest.as_array());
+              bytes.extend_from_slice(payload_digest.as_array());
+              bytes.extend_from_slice(predecessor_entry_digest.as_array());
+              bytes.extend_from_slice(entry_digest.as_array());
+
+              assert_eq!(
+                  PlannerJournalV1::reopen(&bytes),
+                  Err(PlannerJournalError::DecisionNotRecorded)
+              );
+          }
+
+          #[test]
+          fn truncation_and_tampering_fail_closed() {
+          """,
+          )
+
+          replace_once(
+              "codex-rs/hepta-control-plane/src/planner_store_core.rs",
+              """        let mut log = OpenOptions::new()
+                  .create(true)
+                  .read(true)
+                  .write(true)
+                  .open(log_path)?;
+          """,
+              """        let mut log = OpenOptions::new()
+                  .create(true)
+                  .read(true)
+                  .write(true)
+                  .truncate(false)
+                  .open(log_path)?;
+          """,
+          )
+
+          store = "codex-rs/hepta-control-plane/src/planner_store.rs"
+          replace_once(
+              store,
+              """        if let Err(error) = &result {
+                  if mutation_may_be_uncertain(error, boundary) {
+                      self.recovery_required = true;
+                  }
+              }
+          """,
+              """        if result
+                  .as_ref()
+                  .is_err_and(|error| mutation_may_be_uncertain(error, boundary))
+              {
+                  self.recovery_required = true;
+              }
+          """,
+          )
+          replace_once(
+              store,
+              """        PlannerStoreError::Failpoint(point) => match (boundary, point) {
+                  (
+                      MutationBoundary::Append,
+                      PlannerStoreFailpointV1::AfterFrameWriteBeforeSync
+                      | PlannerStoreFailpointV1::AfterLogSyncBeforePublish,
+                  )
+                  | (
+                      MutationBoundary::Checkpoint,
+                      PlannerStoreFailpointV1::AfterCheckpointRenameBeforeDirectorySync,
+                  )
+                  | (
+                      MutationBoundary::Compaction,
+                      PlannerStoreFailpointV1::AfterCompactionRenameBeforeDirectorySync,
+                  ) => true,
+                  _ => false,
+              },
+          """,
+              """        PlannerStoreError::Failpoint(point) => matches!(
+                  (boundary, point),
+                  (
+                      MutationBoundary::Append,
+                      PlannerStoreFailpointV1::AfterFrameWriteBeforeSync
+                          | PlannerStoreFailpointV1::AfterLogSyncBeforePublish,
+                  ) | (
+                      MutationBoundary::Checkpoint,
+                      PlannerStoreFailpointV1::AfterCheckpointRenameBeforeDirectorySync,
+                  ) | (
+                      MutationBoundary::Compaction,
+                      PlannerStoreFailpointV1::AfterCompactionRenameBeforeDirectorySync,
+                  )
+              ),
+          """,
+          )
+
+          replace_once(
+              "codex-rs/hepta-control-plane/src/organ_fanout_recovery.rs",
+              """fn push_usize(bytes: &mut Vec<u8>, value: usize) {
+              let value = u64::try_from(value).expect("bounded organ values fit into u64");
+              bytes.extend_from_slice(&value.to_be_bytes());
+          }
+          """,
+              """fn push_usize(bytes: &mut Vec<u8>, value: usize) {
+              // V1's wire identity is explicitly 64-bit. Supported product
+              // targets use at most 64-bit `usize`, and evidence construction
+              // must not add a panic-only conversion path.
+              let value = u64::try_from(value).unwrap_or(u64::MAX);
+              bytes.extend_from_slice(&value.to_be_bytes());
+          }
+          """,
+          )
+          PY
+      - name: Canonical formatting
+        working-directory: codex-rs
+        run: cargo fmt -p codex-hepta-control-plane
+      - name: Commit exact source fixes and remove one-shot workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/control-runtime-apply-fixes.yml
+          git diff --check
+          git config user.name "control-runtime-fix-bot"
+          git config user.email "control-runtime-fix-bot@users.noreply.github.com"
+          git add codex-rs/hepta-control-plane/src/planner_journal_core.rs \
+                  codex-rs/hepta-control-plane/src/planner_journal.rs \
+                  codex-rs/hepta-control-plane/src/planner_journal_tests.rs \
+                  codex-rs/hepta-control-plane/src/planner_store_core.rs \
+                  codex-rs/hepta-control-plane/src/planner_store.rs \
+                  codex-rs/hepta-control-plane/src/organ_fanout_recovery.rs \
+                  .github/workflows/control-runtime-apply-fixes.yml
+          git commit -m "fix(control-runtime): close journal and strict lint gaps"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
