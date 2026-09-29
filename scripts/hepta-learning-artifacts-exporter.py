@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Fail-closed Prometheus sidecar for learning.artifacts owner metrics.
 
-The owner writes authenticated JSON snapshots through its normal operations
-surface. This sidecar only projects those snapshots; it grants no owner,
-selection, activation, promotion or release authority.
+The owner writes its real operational JSON projection through the authenticated
+product surface. This sidecar only projects that snapshot and an optional
+owning-system quarantine observation; it grants no writer, selection,
+activation, promotion or release authority.
 """
 
 from __future__ import annotations
@@ -12,13 +13,16 @@ import argparse
 import json
 import pathlib
 import time
+from dataclasses import dataclass
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
 
 COMMAND_SCHEMA = "hepta.learning-artifactd.metrics.v1"
 OPERATIONAL_SCHEMA = "hepta.learning-artifactd.operational-metrics.v1"
+QUARANTINE_SCHEMA = "hepta.learning-artifactd.quarantine-observation.v1"
 CONTENT_TYPE = "text/plain; version=0.0.4; charset=utf-8"
+MAX_SNAPSHOT_BYTES = 1_048_576
 
 COMMAND_COUNTERS = {
     "requestsReceived": "hepta_learning_artifact_owner_requests_received_total",
@@ -36,27 +40,18 @@ COMMAND_COUNTERS = {
 }
 
 OPERATIONAL_COUNTERS = {
-    "recoveryFailures": "hepta_learning_artifact_owner_recovery_failures_total",
+    "recoveryReconciliationFailures": "hepta_learning_artifact_owner_recovery_failures_total",
     "withdrawalBlocks": "hepta_learning_artifact_owner_withdrawal_blocks_total",
-    "withdrawalBlockSeconds": "hepta_learning_artifact_owner_withdrawal_block_seconds_total",
     "identityConflicts": "hepta_learning_artifact_owner_identity_conflicts_total",
-    "staleOwnerFailures": "hepta_learning_artifact_owner_stale_owner_failures_total",
-    "persistenceUnknownFailures": "hepta_learning_artifact_owner_persistence_unknown_failures_total",
-    "capacityFailures": "hepta_learning_artifact_owner_capacity_failures_total",
+    "staleOwnerRejections": "hepta_learning_artifact_owner_stale_owner_failures_total",
+    "persistenceUnknown": "hepta_learning_artifact_owner_persistence_unknown_failures_total",
+    "capacityRejections": "hepta_learning_artifact_owner_capacity_failures_total",
     "observabilityFailures": "hepta_learning_artifact_owner_observability_failures_total",
-}
-
-OPERATIONAL_GAUGES = {
-    "startedAt": "hepta_learning_artifact_owner_started_at_seconds",
-    "observedAt": "hepta_learning_artifact_owner_observed_at_seconds",
-    "pendingAttempts": "hepta_learning_artifact_owner_pending_attempts",
 }
 
 OPTIONAL_GAUGES = {
     "oldestPendingAttemptAgeSeconds": "hepta_learning_artifact_owner_oldest_pending_attempt_age_seconds",
     "drainAgeSeconds": "hepta_learning_artifact_owner_drain_age_seconds",
-    "pinnedBytes": "hepta_learning_artifact_owner_pinned_bytes",
-    "pendingPhysicalErasureBytes": "hepta_learning_artifact_owner_pending_physical_erasure_bytes",
 }
 
 
@@ -64,12 +59,26 @@ class SnapshotError(RuntimeError):
     pass
 
 
-def _load(path: pathlib.Path, expected_schema: str) -> dict[str, Any]:
+@dataclass(frozen=True)
+class LoadedSnapshot:
+    value: dict[str, Any]
+    modified_at: int
+
+
+@dataclass(frozen=True)
+class QuarantineObservation:
+    observed_at: int
+    items: int
+    source_digest: str
+
+
+def _load(path: pathlib.Path, expected_schema: str) -> LoadedSnapshot:
     try:
         raw = path.read_bytes()
+        modified_at = int(path.stat().st_mtime)
     except OSError as exc:
         raise SnapshotError(f"cannot read {path}: {exc}") from exc
-    if not raw or len(raw) > 1_048_576:
+    if not raw or len(raw) > MAX_SNAPSHOT_BYTES:
         raise SnapshotError(f"invalid snapshot size for {path}")
     try:
         value = json.loads(raw)
@@ -77,12 +86,24 @@ def _load(path: pathlib.Path, expected_schema: str) -> dict[str, Any]:
         raise SnapshotError(f"invalid JSON in {path}: {exc}") from exc
     if not isinstance(value, dict) or value.get("schema") != expected_schema:
         raise SnapshotError(f"wrong schema in {path}")
-    return value
+    return LoadedSnapshot(value=value, modified_at=modified_at)
 
 
 def _nonnegative_int(value: Any, field: str) -> int:
     if isinstance(value, bool) or not isinstance(value, int) or value < 0:
         raise SnapshotError(f"{field} must be a non-negative integer")
+    return value
+
+
+def _digest(value: Any, field: str) -> str:
+    if not isinstance(value, str) or len(value) != 64:
+        raise SnapshotError(f"{field} must be a 64-character digest")
+    try:
+        int(value, 16)
+    except ValueError as exc:
+        raise SnapshotError(f"{field} must be lowercase hexadecimal") from exc
+    if value != value.lower():
+        raise SnapshotError(f"{field} must be lowercase hexadecimal")
     return value
 
 
@@ -97,27 +118,100 @@ def _emit_optional(lines: list[str], name: str, value: Any, field: str) -> None:
         _emit(lines, "gauge", name, _nonnegative_int(value, field))
 
 
-def render(command: dict[str, Any], operational: dict[str, Any], now: int, maximum_age: int) -> bytes:
-    observed = _nonnegative_int(operational.get("observedAt"), "observedAt")
-    if now < observed or now - observed > maximum_age:
-        raise SnapshotError("operational snapshot is stale or from the future")
+def _validate_base(value: Any) -> dict[str, Any]:
+    if not isinstance(value, dict) or value.get("schema") != COMMAND_SCHEMA:
+        raise SnapshotError("operational base metrics have the wrong schema")
+    for field in COMMAND_COUNTERS:
+        _nonnegative_int(value.get(field), f"base.{field}")
+    return value
+
+
+def _validate_retention(value: Any) -> dict[str, Any] | None:
+    if value is None:
+        return None
+    if not isinstance(value, dict):
+        raise SnapshotError("retention must be null or an object")
+    _nonnegative_int(value.get("pinnedBytes"), "retention.pinnedBytes")
+    _nonnegative_int(
+        value.get("pendingPhysicalEraseBytes"),
+        "retention.pendingPhysicalEraseBytes",
+    )
+    _nonnegative_int(value.get("observedAt"), "retention.observedAt")
+    _digest(value.get("sourceDigest"), "retention.sourceDigest")
+    return value
+
+
+def _validate_operational(value: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any] | None]:
+    base = _validate_base(value.get("base"))
+    for field in OPERATIONAL_COUNTERS:
+        _nonnegative_int(value.get(field), field)
+    for field in OPTIONAL_GAUGES:
+        if value.get(field) is not None:
+            _nonnegative_int(value.get(field), field)
+    stages = value.get("stageSummaries")
+    if not isinstance(stages, dict):
+        raise SnapshotError("stageSummaries must be an object")
+    return base, _validate_retention(value.get("retention"))
+
+
+def _load_quarantine(path: pathlib.Path | None, now: int, maximum_age: int) -> QuarantineObservation | None:
+    if path is None:
+        return None
+    loaded = _load(path, QUARANTINE_SCHEMA)
+    value = loaded.value
+    observed_at = _nonnegative_int(value.get("observedAt"), "quarantine.observedAt")
+    items = _nonnegative_int(value.get("items"), "quarantine.items")
+    source_digest = _digest(value.get("sourceDigest"), "quarantine.sourceDigest")
+    _require_fresh(observed_at, now, maximum_age, "quarantine observation")
+    return QuarantineObservation(observed_at, items, source_digest)
+
+
+def _require_fresh(observed_at: int, now: int, maximum_age: int, label: str) -> None:
+    if now < observed_at or now - observed_at > maximum_age:
+        raise SnapshotError(f"{label} is stale or from the future")
+
+
+def render(
+    operational: dict[str, Any],
+    observed_at: int,
+    quarantine: QuarantineObservation | None,
+) -> bytes:
+    base, retention = _validate_operational(operational)
     lines: list[str] = []
     for field, metric in COMMAND_COUNTERS.items():
-        _emit(lines, "counter", metric, _nonnegative_int(command.get(field), field))
+        _emit(lines, "counter", metric, _nonnegative_int(base.get(field), f"base.{field}"))
     for field, metric in OPERATIONAL_COUNTERS.items():
         _emit(lines, "counter", metric, _nonnegative_int(operational.get(field), field))
-    for field, metric in OPERATIONAL_GAUGES.items():
-        _emit(lines, "gauge", metric, _nonnegative_int(operational.get(field), field))
+    _emit(
+        lines,
+        "gauge",
+        "hepta_learning_artifact_owner_observed_at_seconds",
+        observed_at,
+    )
     for field, metric in OPTIONAL_GAUGES.items():
         _emit_optional(lines, metric, operational.get(field), field)
-    retention = operational.get("retentionObservationDigest")
-    if retention is not None and (not isinstance(retention, str) or len(retention) != 64):
-        raise SnapshotError("retentionObservationDigest must be null or a 64-character digest")
+
+    pinned = None if retention is None else retention["pinnedBytes"]
+    pending_erase = None if retention is None else retention["pendingPhysicalEraseBytes"]
+    _emit_optional(lines, "hepta_learning_artifact_owner_pinned_bytes", pinned, "retention.pinnedBytes")
+    _emit_optional(
+        lines,
+        "hepta_learning_artifact_owner_pending_physical_erasure_bytes",
+        pending_erase,
+        "retention.pendingPhysicalEraseBytes",
+    )
     _emit(
         lines,
         "gauge",
         "hepta_learning_artifact_owner_retention_observation_known",
         int(retention is not None),
+    )
+    quarantine_items = None if quarantine is None else quarantine.items
+    _emit_optional(
+        lines,
+        "hepta_learning_artifact_owner_quarantine_items",
+        quarantine_items,
+        "quarantine.items",
     )
     return ("\n".join(lines) + "\n").encode("utf-8")
 
@@ -125,18 +219,25 @@ def render(command: dict[str, Any], operational: dict[str, Any], now: int, maxim
 class Exporter:
     def __init__(
         self,
-        command_path: pathlib.Path,
         operational_path: pathlib.Path,
+        quarantine_path: pathlib.Path | None,
         maximum_age: int,
     ) -> None:
-        self.command_path = command_path
         self.operational_path = operational_path
+        self.quarantine_path = quarantine_path
         self.maximum_age = maximum_age
 
     def snapshot(self) -> bytes:
-        command = _load(self.command_path, COMMAND_SCHEMA)
+        now = int(time.time())
         operational = _load(self.operational_path, OPERATIONAL_SCHEMA)
-        return render(command, operational, int(time.time()), self.maximum_age)
+        _require_fresh(
+            operational.modified_at,
+            now,
+            self.maximum_age,
+            "operational metrics snapshot",
+        )
+        quarantine = _load_quarantine(self.quarantine_path, now, self.maximum_age)
+        return render(operational.value, operational.modified_at, quarantine)
 
 
 def handler_for(exporter: Exporter) -> type[BaseHTTPRequestHandler]:
@@ -186,8 +287,8 @@ def parse_listen(value: str) -> tuple[str, int]:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--command-metrics", required=True, type=pathlib.Path)
     parser.add_argument("--operational-metrics", required=True, type=pathlib.Path)
+    parser.add_argument("--quarantine-observation", type=pathlib.Path)
     parser.add_argument("--listen", default="127.0.0.1:9469", type=parse_listen)
     parser.add_argument("--maximum-age-seconds", default=120, type=int)
     parser.add_argument("--check", action="store_true")
@@ -195,8 +296,8 @@ def main() -> int:
     if args.maximum_age_seconds <= 0:
         parser.error("--maximum-age-seconds must be positive")
     exporter = Exporter(
-        args.command_metrics,
         args.operational_metrics,
+        args.quarantine_observation,
         args.maximum_age_seconds,
     )
     if args.check:
