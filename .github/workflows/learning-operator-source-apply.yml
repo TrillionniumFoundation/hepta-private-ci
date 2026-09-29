@@ -15,7 +15,7 @@ permissions:
   actions: read
 
 concurrency:
-  group: learning-operator-source-apply-windows-v2
+  group: learning-operator-source-apply-windows-v3
   cancel-in-progress: false
 
 jobs:
@@ -41,18 +41,35 @@ jobs:
           toolchain: 1.95.0
           components: rustfmt,clippy
       - name: Apply the idempotent V4/type-state/budget/RCU convergence
+        id: converge
+        continue-on-error: true
         shell: bash
         run: |
-          set -euo pipefail
-          python scripts/learning_operator_remaining_convergence.py
-          python -m py_compile \
-            scripts/learning_operator_remaining_convergence.py \
-            scripts/hepta-learning-operator-contract.py \
-            scripts/hepta-learning-operator-receipt.py \
-            scripts/hepta-implementation-maps.py
-          cargo fmt --manifest-path codex-rs/Cargo.toml --all
-          python scripts/hepta-learning-operator-contract.py verify
-          git diff --check
+          set -o pipefail
+          (
+            set -euxo pipefail
+            python scripts/learning_operator_remaining_convergence.py
+            python -m py_compile \
+              scripts/learning_operator_remaining_convergence.py \
+              scripts/hepta-learning-operator-contract.py \
+              scripts/hepta-learning-operator-receipt.py \
+              scripts/hepta-implementation-maps.py
+            cargo fmt --manifest-path codex-rs/Cargo.toml --all
+            python scripts/hepta-learning-operator-contract.py verify
+            git diff --check
+          ) 2>&1 | tee "$RUNNER_TEMP/learning-operator-convergence.log"
+      - name: Retain convergence diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-operator-convergence-${{ github.sha }}
+          path: ${{ runner.temp }}/learning-operator-convergence.log
+          if-no-files-found: error
+          retention-days: 7
+      - name: Stop after convergence failure
+        if: steps.converge.outcome == 'failure'
+        shell: bash
+        run: exit 1
       - name: Compile and test the exact source candidate
         shell: bash
         run: |
