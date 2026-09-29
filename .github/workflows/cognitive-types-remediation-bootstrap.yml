@@ -6,6 +6,9 @@ on:
       - codex/cognitive-types-full-closure-20260927
     paths:
       - '.github/workflows/cognitive-types-remediation-bootstrap.yml'
+      - 'scripts/remediate_cognitive_types_final_use.py'
+      - 'scripts/hepta-hnmf.py'
+      - 'codex-rs/hepta-cognitive-types/fuzz/fuzz_targets/decode_contracts.rs'
   workflow_dispatch:
 
 permissions:
@@ -33,6 +36,7 @@ jobs:
           python3 scripts/remediate_cognitive_types_final_use.py
           python3 -m unittest discover -s qualification/cognitive-types-v1 -p 'test_*.py'
           python3 qualification/cognitive-types-v1/render_traceability.py --check
+          python3 scripts/hepta-hnmf.py self-test
           python3 scripts/hepta-hnmf.py verify
 
       - name: Format and qualify the core plus normal product consumers

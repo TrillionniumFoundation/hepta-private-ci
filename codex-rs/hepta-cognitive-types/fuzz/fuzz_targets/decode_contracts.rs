@@ -14,7 +14,7 @@ use codex_hepta_cognitive_types::shared_experience::{
 };
 use codex_hepta_cognitive_types::wire::{
     CognitiveContractV1, canonical_contract_digest_bound_v1, canonical_contract_digest_v1,
-    decode_validated_wire_v1, encode_wire_v1,
+    decode_validated_wire_v1, decode_wire_v1, encode_wire_v1,
 };
 use libfuzzer_sys::fuzz_target;
 
@@ -36,6 +36,21 @@ fn check<T: CognitiveContractV1>(data: &[u8]) {
 }
 
 fuzz_target!(|data: &[u8]| {
+    // Exercise every raw decoder independently. The validated path below then
+    // checks that accepted bytes are canonical and semantically stable.
+    let _ = decode_wire_v1::<ModalitySpanRefV1>(data);
+    let _ = decode_wire_v1::<MemoryEventV1>(data);
+    let _ = decode_wire_v1::<CrossModalBindingV1>(data);
+    let _ = decode_wire_v1::<EngramNodeV1>(data);
+    let _ = decode_wire_v1::<SynapseV1>(data);
+    let _ = decode_wire_v1::<MemoryCueV1>(data);
+    let _ = decode_wire_v1::<RecallPacketV1>(data);
+    let _ = decode_wire_v1::<OutcomeSignalV1>(data);
+    let _ = decode_wire_v1::<ReplaySelectionReceiptV1>(data);
+    let _ = decode_wire_v1::<PlasticityBatchV1>(data);
+    let _ = decode_wire_v1::<TopologyProposalV1>(data);
+    let _ = decode_wire_v1::<ForgetPropagationReceiptV1>(data);
+
     check::<ModalitySpanRefV1>(data);
     check::<MemoryEventV1>(data);
     check::<CrossModalBindingV1>(data);
