@@ -238,7 +238,28 @@ jobs:
           run_quality_probe "$INTELLIGENCE_CANDIDATE_TEST_BINARY" final_gate_rehashes_every_envelope_dependency
           run_quality_probe "$INTELLIGENCE_TEST_BINARY" membership_gate_rejects_mutated_legal_support
 
-      - name: Measure canonical real-owner preparation latency and RSS
+      - name: Measure strict signature verification and real hard-timeout exit
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-qualification-target
+          HEPTA_INTELLIGENCE_SIGNATURE_PROFILE_ITERATIONS: "2000"
+          HEPTA_INTELLIGENCE_SIGNATURE_PROFILE_OUTPUT: ${{ runner.temp }}/intelligence-qualification-host/signature-profile.json
+          HEPTA_INTELLIGENCE_HARD_KILL_SAMPLES: "9"
+          HEPTA_INTELLIGENCE_HARD_KILL_OUTPUT: ${{ runner.temp }}/intelligence-qualification-host/hard-kill-profile.json
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/intelligence-qualification-host"
+          timeout 180 "$AGENTD_TEST_BINARY" qualification_authority_signature_verification_profile \
+            --ignored --nocapture --test-threads=1 > "$root/signature-profile.log" 2>&1
+          grep -Eq 'test result: ok\. [1-9][0-9]* passed' "$root/signature-profile.log"
+          timeout 180 "$AGENTD_TEST_BINARY" explicit_hard_timeout_terminates_a_real_child_process \
+            --nocapture --test-threads=1 > "$root/hard-kill-profile.log" 2>&1
+          grep -Eq 'test result: ok\. [1-9][0-9]* passed' "$root/hard-kill-profile.log"
+          test -s "$HEPTA_INTELLIGENCE_SIGNATURE_PROFILE_OUTPUT"
+          test -s "$HEPTA_INTELLIGENCE_HARD_KILL_OUTPUT"
+
+      - name: Measure canonical real-owner latency CPU and RSS
         working-directory: codex-rs
         env:
           CARGO_TARGET_DIR: ${{ runner.temp }}/intelligence-qualification-target
@@ -249,11 +270,11 @@ jobs:
           filter=signed_evaluation_completes_existing_owner_preparation_and_run_admission
           timeout 180 "$AGENTD_TEST_BINARY" "$filter" --nocapture --test-threads=1 > "$root/warmup.log" 2>&1
           grep -Eq 'test result: ok\. [1-9][0-9]* passed' "$root/warmup.log"
-          printf 'sample,elapsed_seconds,max_rss_kib\n' > "$root/samples.csv"
+          printf 'sample,elapsed_seconds,user_cpu_seconds,system_cpu_seconds,max_rss_kib\n' > "$root/samples.csv"
           for sample in $(seq 1 9); do
             output="$root/sample-${sample}.log"
             timing="$root/sample-${sample}.time"
-            timeout 180 /usr/bin/time -f "${sample},%e,%M" -o "$timing" \
+            timeout 180 /usr/bin/time -f "${sample},%e,%U,%S,%M" -o "$timing" \
               "$AGENTD_TEST_BINARY" "$filter" --nocapture --test-threads=1 \
               > "$output" 2>&1
             grep -Eq 'test result: ok\. [1-9][0-9]* passed' "$output"
@@ -263,26 +284,57 @@ jobs:
           import csv, json, math, pathlib, statistics, sys
           root = pathlib.Path(sys.argv[1])
           rows = list(csv.DictReader((root / "samples.csv").open()))
-          elapsed = sorted(float(row["elapsed_seconds"]) for row in rows)
+          signature = json.loads((root / "signature-profile.json").read_text())
+          hard_kill = json.loads((root / "hard-kill-profile.json").read_text())
+          if signature.get("schema") != "hepta.intelligence-control.signature-profile.v1":
+              raise SystemExit("unexpected signature profile schema")
+          if hard_kill.get("schema") != "hepta.intelligence-control.hard-kill-profile.v1":
+              raise SystemExit("unexpected hard-kill profile schema")
+          def distribution(values):
+              values = sorted(values)
+              if not values:
+                  raise SystemExit("qualification distribution is empty")
+              def percentile(value):
+                  return values[max(0, math.ceil(value * len(values)) - 1)]
+              return {
+                  "p50": percentile(0.50),
+                  "p95": percentile(0.95),
+                  "p99": percentile(0.99),
+                  "mean": statistics.fmean(values),
+                  "maximum": max(values),
+              }
+          elapsed = [float(row["elapsed_seconds"]) for row in rows]
+          user_cpu = [float(row["user_cpu_seconds"]) for row in rows]
+          system_cpu = [float(row["system_cpu_seconds"]) for row in rows]
           rss = [int(row["max_rss_kib"]) for row in rows]
-          def percentile(values, value):
-              return values[max(0, math.ceil(value * len(values)) - 1)]
+          cpu_percent = [
+              100.0 * (user + system) / max(wall, 1e-9)
+              for wall, user, system in zip(elapsed, user_cpu, system_cpu)
+          ]
+          signature_micros = [value / 1_000.0 for value in signature["samplesNanos"]]
+          hard_kill_millis = [value / 1_000_000.0 for value in hard_kill["samplesNanos"]]
           result = {
-              "schema": "hepta.intelligence-control.qualification-host.v1",
+              "schema": "hepta.intelligence-control.qualification-host.v2",
               "sourceCommit": sys.argv[2],
               "sampleCount": len(rows),
-              "elapsedSeconds": {
-                  "p50": percentile(elapsed, 0.50),
-                  "p95": percentile(elapsed, 0.95),
-                  "p99": percentile(elapsed, 0.99),
-                  "mean": statistics.fmean(elapsed),
-                  "maximum": max(elapsed),
+              "elapsedSeconds": distribution(elapsed),
+              "userCpuSeconds": distribution(user_cpu),
+              "systemCpuSeconds": distribution(system_cpu),
+              "processCpuPercent": distribution(cpu_percent),
+              "maximumResidentSetKiB": distribution(rss),
+              "strictSignatureVerificationMicros": distribution(signature_micros),
+              "hardKillSpawnToExit70Millis": distribution(hard_kill_millis),
+              "rawEvidence": {
+                  "samplesCsv": "samples.csv",
+                  "signatureProfile": "signature-profile.json",
+                  "hardKillProfile": "hard-kill-profile.json",
               },
-              "maximumResidentSetKiB": max(rss),
               "claimBoundary": {
                   "githubHostedQualificationHost": True,
                   "productionTargetHostAcceptance": False,
                   "modelQualityOrLongitudinalEfficacy": False,
+                  "independentSemanticSecurityAcceptance": False,
+                  "activationPromotionOrRelease": False,
               },
           }
           (root / "metrics.json").write_text(json.dumps(result, indent=2) + "\n")
