@@ -1,7 +1,6 @@
 //! Explicitly enrolled HTTPS consumer. It cannot issue its own grant, follow
 //! redirects, use an ambient proxy, or return secret bytes in its receipt.
 
-use std::collections::BTreeMap;
 use std::fmt;
 use std::future::Future;
 use std::time::Duration;
@@ -31,6 +30,10 @@ use serde::Serialize;
 use url::Url;
 use zeroize::Zeroizing;
 
+#[path = "https_response.rs"]
+mod response;
+use response::KvResponse;
+
 const MAX_RESPONSE_BYTES: usize = 1024 * 1024;
 
 /// Provider credential injected by the enrolled host. Debug never reveals it.
@@ -39,7 +42,14 @@ pub struct BaoToken(Zeroizing<String>);
 impl BaoToken {
     pub fn new(value: String) -> Result<Self, BaoClientError> {
         let value = Zeroizing::new(value);
-        if value.is_empty() || value.len() > 8192 || HeaderValue::from_str(&value).is_err() {
+        // Validate borrowed bytes: constructing a temporary HeaderValue would
+        // allocate an unnecessary token copy which is not zeroized on drop.
+        if value.is_empty()
+            || value.len() > 8192
+            || value
+                .bytes()
+                .any(|byte| byte != b'\t' && (byte < 32 || byte == 127))
+        {
             return Err(BaoClientError::InvalidConfiguration);
         }
         Ok(Self(value))
@@ -375,9 +385,15 @@ impl BaoClient {
                 ))
             }
             Err(error) if ambiguous_after_dispatch(error) => {
-                let time = authbus
-                    .observe_trusted_time_attestation(&evidence.trusted_time()?)
-                    .await;
+                let time = match evidence.trusted_time() {
+                    Ok(attestation) => authbus.observe_trusted_time_attestation(&attestation).await,
+                    Err(_) => {
+                        return Err(BaoAuthBusError::Indeterminate {
+                            reservation_id: dispatched.reservation_id,
+                            provider_error: error,
+                        });
+                    }
+                };
                 match time {
                     Ok(time) => {
                         let _ = authbus
@@ -544,7 +560,10 @@ impl BaoClient {
         {
             return Err(BaoClientError::ResponseTooLarge);
         }
-        let mut body = Zeroizing::new(Vec::new());
+        // Allocate the bounded buffer before plaintext arrives. Growing a Vec
+        // can leave earlier secret-bearing allocations unzeroized even when
+        // the final allocation is wrapped in Zeroizing.
+        let mut body = Zeroizing::new(Vec::with_capacity(MAX_RESPONSE_BYTES));
         while let Some(chunk) = response.chunk().await.map_err(transport_error)? {
             if chunk.len() > MAX_RESPONSE_BYTES - body.len() {
                 return Err(BaoClientError::ResponseTooLarge);
@@ -598,20 +617,6 @@ impl BaoClient {
     }
 }
 
-#[derive(Deserialize)]
-struct KvResponse {
-    data: KvPayload,
-}
-#[derive(Deserialize)]
-struct KvPayload {
-    data: BTreeMap<String, Zeroizing<String>>,
-    metadata: KvMetadata,
-}
-#[derive(Deserialize)]
-struct KvMetadata {
-    version: u64,
-}
-
 fn component(value: &str) -> bool {
     !value.is_empty()
         && value.len() <= 128
@@ -633,10 +638,13 @@ pub(crate) async fn settle_observed<E: BaoAuthBusEvidenceProvider>(
     terminal_evidence_digest: Digest32,
     receipt: Option<BaoSecretReceipt>,
 ) -> Result<Option<BaoSecretReceipt>, BaoAuthBusError> {
-    let time = match authbus
-        .observe_trusted_time_attestation(&evidence.trusted_time()?)
-        .await
-    {
+    let pending = |error: BaoAuthBusError| BaoAuthBusError::SettlementPending {
+        reservation_id: reservation.reservation_id.clone(),
+        receipt: receipt.clone(),
+        control_error: error.to_string(),
+    };
+    let attestation = evidence.trusted_time().map_err(pending)?;
+    let time = match authbus.observe_trusted_time_attestation(&attestation).await {
         Ok(time) => time,
         Err(error) => {
             return Err(BaoAuthBusError::SettlementPending {
@@ -646,13 +654,15 @@ pub(crate) async fn settle_observed<E: BaoAuthBusEvidenceProvider>(
             });
         }
     };
-    let signed = evidence.settlement_evidence(
-        reservation,
-        status,
-        observed_cost,
-        terminal_evidence_digest,
-        time.wall_time_ms(),
-    )?;
+    let signed = evidence
+        .settlement_evidence(
+            reservation,
+            status,
+            observed_cost,
+            terminal_evidence_digest,
+            time.wall_time_ms(),
+        )
+        .map_err(pending)?;
     let issuer = match authbus
         .settlement_issuer(&signed.claims.issuer_id, signed.claims.key_epoch)
         .await
