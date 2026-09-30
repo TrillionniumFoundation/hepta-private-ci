@@ -1,0 +1,54 @@
+name: knowledge.graph read-only source snapshot
+
+on:
+  push:
+    branches:
+      - work/kg-abc-evidence-hardening-20260928
+    paths:
+      - ".github/workflows/hepta-kg-source-snapshot-readonly.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kg-readonly-source-snapshot-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Pack exact tracked source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+          archive="$RUNNER_TEMP/hepta-private-ci-$GITHUB_SHA.tar.gz"
+          git archive --format=tar HEAD | gzip -n > "$archive"
+          sha256sum "$archive" > "$archive.sha256"
+          printf 'source_sha=%s\nsource_tree=%s\n' \
+            "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})" \
+            > "$RUNNER_TEMP/source-identity.txt"
+
+      - name: Upload immutable source snapshot
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: kg-source-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/hepta-private-ci-${{ github.sha }}.tar.gz
+            ${{ runner.temp }}/hepta-private-ci-${{ github.sha }}.tar.gz.sha256
+            ${{ runner.temp }}/source-identity.txt
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
