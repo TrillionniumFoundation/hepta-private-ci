@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-"""Read-only exact-candidate qualification with durable per-check diagnostics.
+"""Read-only exact-candidate qualification with retry-audited dependency priming.
 
-Never patches source, updates Cargo.lock, regenerates a map, formats in place,
-self-accepts, or treats an empty test filter as a pass. Outputs must be outside
-the checkout. A core-only pass is explicitly not a product qualification.
+Network access is allowed only for a bounded dependency-prime check. A retry is
+allowed only after a recognized transport failure, and every attempt is retained.
+All compiler, test, lint, profile and map checks then run with Cargo offline.
+Outputs are outside the checkout and every receipt remains fail-closed: a lane
+cannot self-accept, activate, merge, release, or claim external infrastructure.
 """
 from __future__ import annotations
 
@@ -17,17 +19,40 @@ import re
 import signal
 import subprocess
 import time
+from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 CARGO = ROOT / "codex-rs"
+DOC_ROOT = ROOT / "docs/modules/prompt.registry"
+MAP = DOC_ROOT / "IMPLEMENTATION_MAP.json"
+WORKFLOW = ROOT / ".github/workflows/hepta-prompt-registry-qualification.yml"
+NETWORK_MARKERS = (
+    "spurious network error", "failed to download", "failed to get `",
+    "timeout was reached", "timed out", "connection reset", "connection refused",
+    "could not resolve host", "temporary failure in name resolution",
+    "failed to get successful http response", "operation too slow", "http2 framing layer",
+)
 
 
 def git(*args: str) -> str:
     return subprocess.check_output(["git", *args], cwd=ROOT, text=True).strip()
 
 
+def sha256_bytes(value: bytes) -> str:
+    return hashlib.sha256(value).hexdigest()
+
+
 def file_sha256(value: Path) -> str:
-    return hashlib.sha256(value.read_bytes()).hexdigest()
+    return sha256_bytes(value.read_bytes())
+
+
+def canonical_sha(value: object) -> str:
+    return sha256_bytes(json.dumps(value, sort_keys=True, separators=(",", ":")).encode())
+
+
+def tracked_manifest(*pathspecs: str) -> dict[str, str]:
+    paths = git("ls-files", "--", *pathspecs).splitlines()
+    return {path: sha256_bytes((ROOT / path).read_bytes()) for path in sorted(path for path in paths if path)}
 
 
 def rust_target_triple() -> str:
@@ -93,11 +118,44 @@ def check_measurements(name: str, rows: list[dict]) -> list[str]:
 
 def input_snapshot() -> dict[str, str]:
     """Detect tracked byte drift, not just a clean index or unchanged HEAD."""
-    paths = git("ls-files", "--", "codex-rs/hepta-prompt-registry", "codex-rs/hepta-prompt-optimizer",
-                "codex-rs/hepta-agentd/src/prompt*", "codex-rs/ext/hepta-prompt",
-                "codex-rs/Cargo.toml", "codex-rs/Cargo.lock", "codex-rs/rust-toolchain.toml",
-                "docs/modules/prompt.registry", "scripts/hepta-prompt-registry-*").splitlines()
-    return {path: hashlib.sha256((ROOT / path).read_bytes()).hexdigest() for path in paths}
+    return tracked_manifest(
+        "codex-rs/hepta-prompt-registry", "codex-rs/hepta-prompt-optimizer",
+        "codex-rs/hepta-agentd/src/prompt*", "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
+        "codex-rs/ext/hepta-prompt", "codex-rs/Cargo.toml", "codex-rs/Cargo.lock",
+        "codex-rs/rust-toolchain.toml", "docs/modules/prompt.registry",
+        "scripts/hepta-prompt-registry-*", ".github/workflows/hepta-prompt-registry-qualification.yml",
+    )
+
+
+def transient_network_failure(text: str) -> bool:
+    lowered = text.lower()
+    return any(marker in lowered for marker in NETWORK_MARKERS)
+
+
+def runner_identity(target: str) -> dict[str, str]:
+    return {
+        "system": platform.platform(),
+        "machine": platform.machine(),
+        "name": os.environ.get("RUNNER_NAME", "local"),
+        "os": os.environ.get("RUNNER_OS", platform.system()),
+        "arch": os.environ.get("RUNNER_ARCH", platform.machine()),
+        "environment": os.environ.get("RUNNER_ENVIRONMENT", "local"),
+        "imageOs": os.environ.get("ImageOS", os.environ.get("RUNNER_OS", platform.system())),
+        "imageVersion": os.environ.get("ImageVersion", "unavailable"),
+        "targetTriple": target,
+    }
+
+
+def artifact_hashes(out: Path) -> dict[str, str]:
+    values: dict[str, str] = {}
+    for path in sorted(entry for entry in out.rglob("*") if entry.is_file()):
+        relative = path.relative_to(out).as_posix()
+        if relative in {"receipt.json", "receipt.next"}:
+            continue
+        if path.is_symlink():
+            raise ValueError("qualification artifact contains a symlink")
+        values[relative] = file_sha256(path)
+    return values
 
 
 def main() -> None:
@@ -125,42 +183,64 @@ def main() -> None:
     if not re.fullmatch(r"[a-f0-9]{40}", workflow_sha):
         raise SystemExit("invalid qualification workflow SHA")
     target_triple = rust_target_triple()
-    receipt = {
-        "schema": "hepta.prompt-registry.qualification-receipt.v2",
-        "profile": args.profile, "lane": args.lane,
-        "sourceSha": source, "baseSha": base, "testedSha": tested,
-        "testedTree": git("rev-parse", "HEAD^{tree}"),
-        "runId": os.environ.get("GITHUB_RUN_ID"), "runAttempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
-        "workflowSha": workflow_sha,
-        "workflowRef": workflow_ref,
-        "dependencyLockSha256": file_sha256(CARGO / "Cargo.lock"),
-        "targetTriple": target_triple,
-        "runner": {
-            "system": platform.platform(),
-            "machine": platform.machine(),
-            "name": os.environ.get("RUNNER_NAME", "local"),
-            "os": os.environ.get("RUNNER_OS", platform.system()),
-            "arch": os.environ.get("RUNNER_ARCH", platform.machine()),
-            "environment": os.environ.get("RUNNER_ENVIRONMENT", "local"),
-            "targetTriple": target_triple,
-        },
-        "checks": [], "allRequiredChecksPassed": False, "qualified": False,
-        "productionReady": False, "productActivated": False, "accepted": False, "released": False,
-        "sourceFiles": {},
+    runner = runner_identity(target_triple)
+    source_files = input_snapshot()
+    docs_manifest = tracked_manifest("docs/modules/prompt.registry")
+    feature_profile = {
+        "profile": args.profile, "lane": args.lane, "workspaceDefaultFeatures": True,
+        "cargoOfflineAfterDependencyPrime": True,
+        "packages": (["codex-hepta-prompt-registry"] if args.profile == "core" else [
+            "codex-hepta-prompt-optimizer", "codex-hepta-agentd",
+            "codex-hepta-intelligence", "codex-hepta-prompt-extension",
+        ]),
     }
-    receipt["sourceFiles"] = input_snapshot()
+    receipt: dict[str, Any] = {
+        "schema": "hepta.prompt-registry.qualification-receipt.v3",
+        "profile": args.profile, "lane": args.lane,
+        "candidateSha": source, "sourceSha": source, "baseSha": base,
+        "testedSha": tested, "deterministicMergeSha": tested if args.lane == "base-merge" else None,
+        "testedTree": git("rev-parse", "HEAD^{tree}"), "sourceTreeHash": git("rev-parse", "HEAD^{tree}"),
+        "runId": os.environ.get("GITHUB_RUN_ID", "local"),
+        "runAttempt": os.environ.get("GITHUB_RUN_ATTEMPT", "1"),
+        "workflowRunId": os.environ.get("GITHUB_RUN_ID", "local"),
+        "workflowRunAttempt": os.environ.get("GITHUB_RUN_ATTEMPT", "1"),
+        "workflowSha": workflow_sha, "workflowRef": workflow_ref,
+        "workflowFileSha256": file_sha256(WORKFLOW),
+        "dependencyLockSha256": file_sha256(CARGO / "Cargo.lock"),
+        "cargoLockSha256": file_sha256(CARGO / "Cargo.lock"),
+        "implementationMapSha256": file_sha256(MAP),
+        "documentationManifest": docs_manifest,
+        "documentationHash": canonical_sha(docs_manifest),
+        "sourceFiles": source_files,
+        "sourceManifestSha256": canonical_sha(source_files),
+        "featureProfile": feature_profile,
+        "featureProfileSha256": canonical_sha(feature_profile),
+        "targetTriple": target_triple,
+        "runner": runner,
+        "runnerImageIdentitySha256": canonical_sha(runner),
+        "runnerImageDigest": None,
+        "runnerImageDigestKind": "github-hosted-vm-identity-not-oci-content-digest",
+        "checks": [], "artifactHashes": {}, "testSetSha256": None,
+        "retryOccurred": False, "firstFailure": None,
+        "allRequiredChecksPassed": False, "qualified": False,
+        "mergeReady": False, "productionReady": False, "productActivated": False,
+        "accepted": False, "released": False,
+        "kmsHsmQualified": False, "wormRetentionQualified": False, "multiNodeQualified": False,
+    }
+
+    active_child: subprocess.Popen | None = None
 
     def save() -> None:
+        receipt["artifactHashes"] = artifact_hashes(out)
         temporary = out / "receipt.next"
-        with temporary.open("w") as stream:
+        with temporary.open("w", encoding="utf-8") as stream:
             stream.write(json.dumps(receipt, sort_keys=True, indent=2) + "\n")
             stream.flush()
             os.fsync(stream.fileno())
         temporary.replace(out / "receipt.json")
 
-    active_child: subprocess.Popen | None = None
-
     def interrupt(signum: int, _frame: object) -> None:
+        nonlocal active_child
         if active_child is not None and active_child.poll() is None:
             try:
                 os.killpg(active_child.pid, signal.SIGKILL)
@@ -178,73 +258,127 @@ def main() -> None:
     signal.signal(signal.SIGTERM, interrupt)
     signal.signal(signal.SIGINT, interrupt)
 
-    commands: list[tuple[str, list[str], Path, int, list[str], int]] = [
-        ("clean-before", ["git", "diff", "--exit-code", "HEAD"], ROOT, 30, [], 0),
-        ("harness-tests", ["python3", "scripts/hepta-prompt-registry-harness-tests.py"], ROOT, 60, [], 0),
-        ("map", ["python3", "scripts/hepta-prompt-registry-map.py", "--check"], ROOT, 60, [], 0),
-        ("toolchain", ["rustc", "--version", "--verbose"], ROOT, 30, [], 0),
-        ("source-graph", ["cargo", "metadata", "--locked", "--no-deps", "--format-version", "1"], CARGO, 90, [], 0),
-    ]
+    commands: list[dict[str, Any]] = []
+
+    def add(name: str, command: list[str], cwd: Path, limit: int, required: list[str] | None = None,
+            minimum_passed: int = 0, network_prime: bool = False) -> None:
+        commands.append({"name": name, "command": command, "cwd": cwd, "limit": limit,
+                         "required": required or [], "minimumPassed": minimum_passed,
+                         "networkPrime": network_prime})
+
+    add("clean-before", ["git", "diff", "--exit-code", "HEAD"], ROOT, 30)
+    add("harness-tests", ["python3", "scripts/hepta-prompt-registry-harness-tests.py"], ROOT, 120)
+    add("public-api-map", ["python3", "scripts/hepta-prompt-registry-live-map.py", "--output", str(out / "live-public-api-map.json")], ROOT, 120)
+    add("toolchain", ["rustc", "--version", "--verbose"], ROOT, 30)
     if args.profile == "core":
-        commands.extend([
-            ("format", ["cargo", "fmt", "--package", "codex-hepta-prompt-registry", "--", "--check"], CARGO, 120, [], 0),
-            ("registry-inventory", ["cargo", "test", "--locked", "-p", "codex-hepta-prompt-registry", "--", "--list"], CARGO, 1200,
-             ["gc_reclaims_inactive_raw_bytes_but_preserves_audit_and_revocation_after_restart", "gc_indeterminate_publication_poison_preserves_both_slots_until_reopen", "operational_restore_does_not_create_missing_paths_or_accept_unpinned_identity", "operational_compaction_retry_is_idempotent_and_conflicting_destination_is_untouched", "operational_poisoned_owner_exposes_diagnostics_but_not_authority"], 0),
-            ("registry", ["cargo", "test", "--locked", "-p", "codex-hepta-prompt-registry", "--", "--test-threads=1"], CARGO, 180, [], 1),
-            ("all-targets", ["cargo", "check", "--locked", "-p", "codex-hepta-prompt-registry", "--all-targets"], CARGO, 180, [], 0),
-            ("lint", ["cargo", "clippy", "--locked", "-p", "codex-hepta-prompt-registry", "--all-targets", "--no-deps", "--", "-D", "warnings"], CARGO, 180, [], 0),
-            ("operational-profiles", ["cargo", "test", "--locked", "-p", "codex-hepta-prompt-registry", "operational_", "--", "--ignored", "--nocapture", "--test-threads=1"], CARGO, 600, [], 3),
-        ])
+        add("format", ["cargo", "fmt", "--package", "codex-hepta-prompt-registry", "--", "--check"], CARGO, 120)
+        add("dependency-prime", ["cargo", "test", "--locked", "-p", "codex-hepta-prompt-registry", "--no-run"], CARGO, 1200, network_prime=True)
     else:
         packages = ["codex-hepta-prompt-optimizer", "codex-hepta-agentd", "codex-hepta-intelligence", "codex-hepta-prompt-extension"]
         flags = [part for package in packages for part in ["-p", package]]
-        commands.extend([
-            ("format", ["cargo", "fmt", *flags, "--", "--check"], CARGO, 120, [], 0),
-            ("agentd-inventory", ["cargo", "test", "--locked", "-p", "codex-hepta-agentd", "prompt_", "--", "--list"], CARGO, 1200,
-             ["final_use_revocation_precedes_snapshot_error_and_survives_restart", "named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host"], 0),
-            ("extension-inventory", ["cargo", "test", "--locked", "-p", "codex-hepta-prompt-extension", "--", "--list"], CARGO, 600,
-             ["cached_prompt_revalidates_owner_withdrawal_before_provider_begin", "cached_prompt_never_silently_switches_injected_payload"], 0),
-            ("optimizer", ["cargo", "test", "--locked", "-p", "codex-hepta-prompt-optimizer", "--", "--test-threads=1"], CARGO, 300, [], 1),
-            ("extension", ["cargo", "test", "--locked", "-p", "codex-hepta-prompt-extension", "--", "--test-threads=1"], CARGO, 300, [], 1),
-            ("agentd", ["cargo", "test", "--locked", "-p", "codex-hepta-agentd", "prompt_", "--", "--nocapture", "--test-threads=1"], CARGO, 300, [], 1),
-            ("all-targets", ["cargo", "check", "--locked", *flags, "--all-targets"], CARGO, 900, [], 0),
-            ("lint", ["cargo", "clippy", "--locked", *flags, "--all-targets", "--no-deps", "--", "-D", "warnings"], CARGO, 900, [], 0),
-            ("pipeline-profile", ["cargo", "test", "--locked", "-p", "codex-hepta-agentd", "operational_pipeline_compile_stage_final_use_profile", "--", "--ignored", "--nocapture", "--test-threads=1"], CARGO, 300, [], 1),
-        ])
-    commands.append(("clean-after", ["git", "diff", "--exit-code", "HEAD"], ROOT, 30, [], 0))
-    receipt["checks"] = [{"name": name, "command": command, "state": "not_run", "exitCode": None} for name, command, *_ in commands]
+        add("format", ["cargo", "fmt", *flags, "--", "--check"], CARGO, 120)
+        add("dependency-prime", ["cargo", "test", "--locked", *flags, "--no-run"], CARGO, 1800, network_prime=True)
+    add("source-graph", ["cargo", "metadata", "--locked", "--offline", "--no-deps", "--format-version", "1"], CARGO, 90)
+    if args.profile == "core":
+        add("registry-inventory", ["cargo", "test", "--locked", "--offline", "-p", "codex-hepta-prompt-registry", "--", "--list"], CARGO, 1200,
+            ["gc_reclaims_inactive_raw_bytes_but_preserves_audit_and_revocation_after_restart", "gc_indeterminate_publication_poison_preserves_both_slots_until_reopen", "operational_restore_does_not_create_missing_paths_or_accept_unpinned_identity", "operational_compaction_retry_is_idempotent_and_conflicting_destination_is_untouched", "operational_poisoned_owner_exposes_diagnostics_but_not_authority"])
+        add("registry", ["cargo", "test", "--locked", "--offline", "-p", "codex-hepta-prompt-registry", "--", "--test-threads=1"], CARGO, 300, minimum_passed=1)
+        add("all-targets", ["cargo", "check", "--locked", "--offline", "-p", "codex-hepta-prompt-registry", "--all-targets"], CARGO, 300)
+        add("lint", ["cargo", "clippy", "--locked", "--offline", "-p", "codex-hepta-prompt-registry", "--all-targets", "--no-deps", "--", "-D", "warnings"], CARGO, 300)
+        add("operational-profiles", ["cargo", "test", "--locked", "--offline", "-p", "codex-hepta-prompt-registry", "operational_", "--", "--ignored", "--nocapture", "--test-threads=1"], CARGO, 900, minimum_passed=3)
+    else:
+        packages = ["codex-hepta-prompt-optimizer", "codex-hepta-agentd", "codex-hepta-intelligence", "codex-hepta-prompt-extension"]
+        flags = [part for package in packages for part in ["-p", package]]
+        add("agentd-inventory", ["cargo", "test", "--locked", "--offline", "-p", "codex-hepta-agentd", "prompt_", "--", "--list"], CARGO, 1200,
+            ["final_use_revocation_precedes_snapshot_error_and_survives_restart", "named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host"])
+        add("extension-inventory", ["cargo", "test", "--locked", "--offline", "-p", "codex-hepta-prompt-extension", "--", "--list"], CARGO, 600,
+            ["cached_prompt_revalidates_owner_withdrawal_before_provider_begin", "cached_prompt_never_silently_switches_injected_payload"])
+        add("optimizer", ["cargo", "test", "--locked", "--offline", "-p", "codex-hepta-prompt-optimizer", "--", "--test-threads=1"], CARGO, 600, minimum_passed=1)
+        add("extension", ["cargo", "test", "--locked", "--offline", "-p", "codex-hepta-prompt-extension", "--", "--test-threads=1"], CARGO, 600, minimum_passed=1)
+        add("agentd", ["cargo", "test", "--locked", "--offline", "-p", "codex-hepta-agentd", "prompt_", "--", "--nocapture", "--test-threads=1"], CARGO, 600, minimum_passed=1)
+        add("all-targets", ["cargo", "check", "--locked", "--offline", *flags, "--all-targets"], CARGO, 1200)
+        add("lint", ["cargo", "clippy", "--locked", "--offline", *flags, "--all-targets", "--no-deps", "--", "-D", "warnings"], CARGO, 1200)
+        add("pipeline-profile", ["cargo", "test", "--locked", "--offline", "-p", "codex-hepta-agentd", "operational_pipeline_compile_stage_final_use_profile", "--", "--ignored", "--nocapture", "--test-threads=1"], CARGO, 600, minimum_passed=1)
+    add("clean-after", ["git", "diff", "--exit-code", "HEAD"], ROOT, 30)
+
+    receipt["testSetSha256"] = canonical_sha([
+        {"name": row["name"], "command": row["command"], "required": row["required"],
+         "minimumPassed": row["minimumPassed"], "networkPrime": row["networkPrime"]}
+        for row in commands
+    ])
+    receipt["checks"] = [{
+        "name": row["name"], "command": row["command"],
+        "required": row["required"], "minimumPassed": row["minimumPassed"],
+        "networkPrime": row["networkPrime"], "state": "not_run",
+        "exitCode": None, "attempts": [], "postconditionFailures": [],
+    } for row in commands]
     save()
-    for index, (name, command, cwd, limit, required, minimum_passed) in enumerate(commands):
+
+    for index, spec in enumerate(commands):
+        name = spec["name"]
         entry = receipt["checks"][index]
         entry["state"] = "running"
         save()
-        log = out / (name + ".log")
-        start = time.monotonic()
-        with log.open("w") as stream:
-            try:
-                child = subprocess.Popen(command, cwd=cwd, stdout=stream, stderr=subprocess.STDOUT, start_new_session=True)
-                active_child = child
+        max_attempts = 3 if spec["networkPrime"] else 1
+        combined: list[str] = []
+        code = 127
+        started = time.monotonic()
+        for attempt in range(1, max_attempts + 1):
+            attempt_log = out / f"{name}.attempt-{attempt}.log"
+            attempt_started = time.monotonic()
+            environment = os.environ.copy()
+            if spec["networkPrime"]:
+                environment.pop("CARGO_NET_OFFLINE", None)
+                environment.setdefault("CARGO_NET_RETRY", "10")
+                environment.setdefault("CARGO_HTTP_TIMEOUT", "600")
+                environment.setdefault("CARGO_HTTP_LOW_SPEED_LIMIT", "1")
+                environment.setdefault("CARGO_REGISTRIES_CRATES_IO_PROTOCOL", "sparse")
+            elif spec["command"] and spec["command"][0] == "cargo":
+                environment["CARGO_NET_OFFLINE"] = "true"
+            with attempt_log.open("w", encoding="utf-8") as stream:
                 try:
-                    code = child.wait(timeout=limit)
-                except subprocess.TimeoutExpired:
-                    os.killpg(child.pid, signal.SIGKILL)
-                    child.wait()
-                    code = 124
-            except OSError as error:
-                stream.write(f"{type(error).__name__}: command unavailable\n")
-                code = 127
-        active_child = None
-        text = log.read_text(errors="replace")
-        checks = []
-        if code == 0 and any(token not in text for token in required):
-            checks.append("required compiled test is missing")
+                    child = subprocess.Popen(spec["command"], cwd=spec["cwd"], env=environment,
+                                             stdout=stream, stderr=subprocess.STDOUT, start_new_session=True)
+                    active_child = child
+                    try:
+                        code = child.wait(timeout=spec["limit"])
+                    except subprocess.TimeoutExpired:
+                        os.killpg(child.pid, signal.SIGKILL)
+                        child.wait()
+                        code = 124
+                except OSError as error:
+                    stream.write(f"{type(error).__name__}: command unavailable\n")
+                    code = 127
+            active_child = None
+            text = attempt_log.read_text(encoding="utf-8", errors="replace")
+            transient = code != 0 and transient_network_failure(text)
+            attempt_row = {
+                "attempt": attempt, "exitCode": code,
+                "durationSeconds": time.monotonic() - attempt_started,
+                "log": attempt_log.name, "logSha256": file_sha256(attempt_log),
+                "transientNetworkFailure": transient,
+            }
+            entry["attempts"].append(attempt_row)
+            combined.append(f"===== attempt {attempt} exit={code} transientNetworkFailure={str(transient).lower()} =====\n{text}")
+            if code == 0:
+                break
+            if not spec["networkPrime"] or not transient or attempt == max_attempts:
+                break
+            receipt["retryOccurred"] = True
+            time.sleep(min(5 * (3 ** (attempt - 1)), 45))
+        log = out / (name + ".log")
+        log.write_text("\n".join(combined), encoding="utf-8")
+        text = "\n".join(combined)
+        failures: list[str] = []
+        if code == 0 and any(token not in text for token in spec["required"]):
+            failures.append("required compiled test is missing")
         counts = re.findall(r"test result: ok\. (\d+) passed", text)
         passed = sum(map(int, counts))
-        if code == 0 and minimum_passed and passed < minimum_passed:
-            checks.append("test filter did not execute the required nonzero tests")
+        if code == 0 and spec["minimumPassed"] and passed < spec["minimumPassed"]:
+            failures.append("test filter did not execute the required nonzero tests")
         rows = profile_rows(text)
         if code == 0:
-            checks.extend(check_measurements(name, rows))
+            failures.extend(check_measurements(name, rows))
             required_execution = {
                 "registry": ["gc_reclaims_inactive_raw_bytes_but_preserves_audit_and_revocation_after_restart", "gc_indeterminate_publication_poison_preserves_both_slots_until_reopen", "gc_process_exit_after_unknown_commit_reconciles", "read_integrity_failures_never_become_recompile_or_availability_retries"],
                 "agentd": ["final_use_integrity_error_is_not_a_recompilation_hint", "final_use_revocation_precedes_snapshot_error_and_survives_restart"],
@@ -252,31 +386,66 @@ def main() -> None:
             }.get(name, [])
             executed = {test.rsplit("::", 1)[-1] for test in completed_tests(text)}
             if any(test not in executed for test in required_execution):
-                checks.append("required regression did not actually pass")
+                failures.append("required regression did not actually pass")
         if name == "source-graph" and code == 0:
             try:
-                graph = json.loads(text[text.index("{"):])
+                opening = text.find("{")
+                graph = json.loads(text[opening:])
                 names = {package["name"] for package in graph["packages"]}
             except (ValueError, KeyError, TypeError):
-                checks.append("invalid Cargo source graph output")
+                failures.append("invalid Cargo source graph output")
                 names = set()
             if not {"codex-hepta-prompt-registry", "codex-hepta-prompt-extension", "codex-hepta-agentd"}.issubset(names):
-                checks.append("missing required workspace package")
+                failures.append("missing required workspace package")
+        if name == "public-api-map" and code == 0:
+            try:
+                live_map = json.loads((out / "live-public-api-map.json").read_text(encoding="utf-8"))
+                if live_map.get("candidateSha") != tested or live_map.get("sourceTreeHash") != receipt["testedTree"]:
+                    failures.append("live public API map identity mismatch")
+                if live_map.get("closedWorldPublicFunctions") is not True or live_map.get("dangerousLegacyPurgeSymbols") != []:
+                    failures.append("public API inventory or legacy purge guard failed")
+                receipt["livePublicApiMapSha256"] = file_sha256(out / "live-public-api-map.json")
+                receipt["closedWorldPublicFunctions"] = live_map.get("closedWorldPublicFunctions") is True
+                receipt["productExecutionProved"] = live_map.get("productExecutionProved") is True
+            except (OSError, ValueError, TypeError):
+                failures.append("invalid live public API map")
         if name == "clean-after":
             if git("status", "--porcelain", "--untracked-files=no") or git("rev-parse", "HEAD") != tested or input_snapshot() != receipt["sourceFiles"]:
-                checks.append("tested source changed during qualification")
+                failures.append("tested source changed during qualification")
             untracked = git("ls-files", "--others", "--exclude-standard", "--", "codex-rs/hepta-prompt-registry", "codex-rs/hepta-agentd/src", "codex-rs/hepta-prompt-optimizer", "codex-rs/ext/hepta-prompt")
             if untracked:
-                checks.append("untracked owned source appeared during qualification")
-        entry.update({"exitCode": code, "state": "passed" if code == 0 and not checks else "failed",
-            "postconditionFailures": checks, "durationSeconds": time.monotonic() - start,
-            "logSha256": hashlib.sha256(log.read_bytes()).hexdigest(), "passedTests": passed})
+                failures.append("untracked owned source appeared during qualification")
+        entry.update({
+            "exitCode": code, "state": "passed" if code == 0 and not failures else "failed",
+            "postconditionFailures": failures, "durationSeconds": time.monotonic() - started,
+            "logSha256": file_sha256(log), "passedTests": passed,
+            "retried": len(entry["attempts"]) > 1,
+            "firstAttemptExitCode": entry["attempts"][0]["exitCode"],
+            "finalAttemptExitCode": entry["attempts"][-1]["exitCode"],
+        })
         if rows:
-            (out / (name + ".json")).write_text(json.dumps(rows, sort_keys=True, indent=2) + "\n")
+            (out / (name + ".json")).write_text(json.dumps(rows, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+        if entry["state"] != "passed" and receipt["firstFailure"] is None:
+            receipt["firstFailure"] = {
+                "check": name, "command": spec["command"], "exitCode": code,
+                "postconditionFailures": failures,
+                "firstAttemptExitCode": entry["firstAttemptExitCode"],
+                "finalAttemptExitCode": entry["finalAttemptExitCode"],
+                "retried": entry["retried"],
+            }
         save()
         print(name, entry["state"], code, text[-3000:], flush=True)
+        if name == "dependency-prime" and entry["state"] != "passed":
+            for blocked in receipt["checks"][index + 1:]:
+                if blocked["state"] == "not_run":
+                    blocked["state"] = "blocked_by_dependency_prime"
+            save()
+            break
+
     receipt["allRequiredChecksPassed"] = all(row["state"] == "passed" for row in receipt["checks"])
-    # A single job cannot accept another lane, claim a deployed caller, or release.
+    receipt["qualified"] = False
+    receipt["mergeReady"] = False
+    receipt["productionReady"] = False
     save()
     raise SystemExit(0 if receipt["allRequiredChecksPassed"] else 1)
 
