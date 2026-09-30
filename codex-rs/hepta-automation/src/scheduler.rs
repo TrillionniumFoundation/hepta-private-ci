@@ -8,8 +8,10 @@ use tokio::time::timeout;
 use crate::AutomationAdmission;
 use crate::AutomationError;
 use crate::AutomationQueueReceipt;
+use crate::AutomationRuntimePolicyV1;
 use crate::AutomationStore;
 use crate::AutomationTick;
+use crate::TaskFlowError;
 use crate::admission_receipt_digest;
 
 pub type AutomationFuture<'a, T> =
@@ -28,6 +30,26 @@ pub trait AutomationTurnQueue: Send + Sync {
         &self,
         admission: AutomationAdmission,
     ) -> AutomationFuture<'_, AutomationQueueReceipt>;
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum AutomationBatchStopReason {
+    Idle,
+    AdmissionBudgetExhausted,
+    DispatchUncertain,
+    RetryBudgetExhausted,
+    RetryDeferred,
+    Cancelled,
+}
+
+/// Results from one bounded Agentd admission cycle. The individual V1 ticks are
+/// retained so existing retry accounting and observability stay compatible.
+/// An idle stop retains the final `AutomationTick::Idle` sentinel so callers
+/// reset any cross-cycle pre-admission retry budget exactly as the V1 loop did.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct AutomationBatchReport {
+    pub ticks: Vec<AutomationTick>,
+    pub stop_reason: AutomationBatchStopReason,
 }
 
 pub struct AutomationScheduler<Q> {
@@ -71,6 +93,64 @@ where
         &self.store
     }
 
+    /// Compatibility entrypoint for hosts without a cancellation signal.
+    pub async fn tick_batch<C>(
+        &self,
+        policy: &AutomationRuntimePolicyV1,
+        now_ms: C,
+    ) -> Result<AutomationBatchReport, AutomationError>
+    where
+        C: FnMut() -> Result<u64, AutomationError>,
+    {
+        self.tick_batch_cancellable(policy, now_ms, || false).await
+    }
+
+    /// Stop before admitting the next occurrence, never by dropping an already
+    /// admitted tick's acknowledgement future. The first proven pre-admission
+    /// failure returns to the host for cross-cycle backoff and retry accounting.
+    /// Cancellation is sampled before each claim; a racing already-started tick
+    /// finishes its durable acknowledgement or preserves exact uncertainty.
+    pub async fn tick_batch_cancellable<C, S>(
+        &self,
+        policy: &AutomationRuntimePolicyV1,
+        mut now_ms: C,
+        mut should_stop: S,
+    ) -> Result<AutomationBatchReport, AutomationError>
+    where
+        C: FnMut() -> Result<u64, AutomationError>,
+        S: FnMut() -> bool,
+    {
+        policy.validate()?;
+        let mut ticks = Vec::with_capacity(usize::from(policy.admission_budget_per_cycle));
+        for _ in 0..policy.admission_budget_per_cycle {
+            if should_stop() {
+                return Ok(AutomationBatchReport {
+                    ticks,
+                    stop_reason: AutomationBatchStopReason::Cancelled,
+                });
+            }
+            let tick = self.tick(now_ms()?).await?;
+            let stop_reason = match &tick {
+                AutomationTick::Idle => Some(AutomationBatchStopReason::Idle),
+                AutomationTick::Submitted { .. } => None,
+                AutomationTick::RetryScheduled { .. } => {
+                    Some(AutomationBatchStopReason::RetryDeferred)
+                }
+                AutomationTick::DispatchUncertain { .. } => {
+                    Some(AutomationBatchStopReason::DispatchUncertain)
+                }
+            };
+            ticks.push(tick);
+            if let Some(stop_reason) = stop_reason {
+                return Ok(AutomationBatchReport { ticks, stop_reason });
+            }
+        }
+        Ok(AutomationBatchReport {
+            ticks,
+            stop_reason: AutomationBatchStopReason::AdmissionBudgetExhausted,
+        })
+    }
+
     /// Claims and admits at most one occurrence. Queue admission is deliberately
     /// non-terminal: the owning runtime must later bind the persisted turn and
     /// terminal observation through the durable occurrence lifecycle.
@@ -92,7 +172,7 @@ where
             .store
             .prepare_occurrence_taskflow(&occurrence, &lease, now_ms, self.lease_duration_ms)
             .await
-            .map_err(|_| AutomationError::Unavailable)?;
+            .map_err(taskflow_admission_error)?;
 
         // Persist the dispatch intent before crossing the App Server seam. If
         // this process dies after possible admission, recovery retains the same
@@ -102,12 +182,6 @@ where
         let result = timeout(self.dispatch_timeout, self.queue.enqueue(admission)).await;
         let receipt = match result {
             Ok(Ok(receipt)) => receipt,
-            Ok(Err(AutomationError::AccessDenied)) => {
-                self.store
-                    .abort_dispatch_before_admission(&lease, now_ms)
-                    .await?;
-                return Err(AutomationError::AccessDenied);
-            }
             Ok(Err(AutomationError::DispatchUnknown)) | Err(_) => {
                 self.store.record_dispatch_uncertain(&lease, now_ms).await?;
                 return Ok(AutomationTick::DispatchUncertain {
@@ -115,7 +189,7 @@ where
                     occurrence: lease.occurrence,
                 });
             }
-            Ok(Err(_)) => {
+            Ok(Err(AutomationError::Dispatch | AutomationError::Unavailable)) => {
                 self.store
                     .abort_dispatch_before_admission(&lease, now_ms)
                     .await?;
@@ -123,6 +197,18 @@ where
                     task_id: lease.task.task_id,
                     occurrence: lease.occurrence,
                 });
+            }
+            Ok(Err(
+                error @ (AutomationError::AccessDenied
+                | AutomationError::TimerFenced
+                | AutomationError::Corrupt
+                | AutomationError::Invalid
+                | AutomationError::Conflict),
+            )) => {
+                // Never mutate through a rejected owner or erase uncertainty
+                // while corruption/fencing is unresolved. Preserve the exact
+                // failure class for Agentd instead of relabeling it as retry.
+                return Err(error);
             }
         };
         if receipt.client_user_message_id != lease.client_user_message_id
@@ -135,9 +221,7 @@ where
             });
         }
 
-        // Critical semantic boundary: durable Core admission is not automation
-        // completion. The lifecycle row remains admitted/running until a trusted
-        // terminal observation (or reconciliation) settles it.
+        // Durable Core admission is not automation completion.
         let admitted = self
             .store
             .record_occurrence_admitted(&lease, &receipt, now_ms)
@@ -146,15 +230,24 @@ where
         self.store
             .mark_occurrence_taskflow_admitted(&admitted, &taskflow, &admission_digest, now_ms)
             .await
-            .map_err(|_| AutomationError::Unavailable)?;
+            .map_err(taskflow_admission_error)?;
 
-        // Preserve the public v1 tick variant for compatibility. `Submitted`
-        // now means only durable Core queue admission; it is explicitly not an
-        // automation-occurrence terminal state.
         Ok(AutomationTick::Submitted {
             task_id: lease.task.task_id,
             occurrence: lease.occurrence,
             queued_submission_id: receipt.queued_submission_id,
         })
+    }
+}
+
+fn taskflow_admission_error(error: TaskFlowError) -> AutomationError {
+    match error {
+        TaskFlowError::StaleFence => AutomationError::AccessDenied,
+        TaskFlowError::Corrupt(_) => AutomationError::Corrupt,
+        TaskFlowError::Invalid(_) => AutomationError::Invalid,
+        TaskFlowError::Conflict(_) | TaskFlowError::InvalidTransition(_) => {
+            AutomationError::Conflict
+        }
+        TaskFlowError::Unavailable => AutomationError::Unavailable,
     }
 }

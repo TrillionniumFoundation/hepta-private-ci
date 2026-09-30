@@ -1,0 +1,160 @@
+name: automation-taskflow-independent-acceptance
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_sha:
+        description: Exact candidate commit accepted by both qualification runs
+        required: true
+        type: string
+      focused_run_id:
+        description: Successful automation-taskflow-focused run ID
+        required: true
+        type: string
+      selected_host_run_id:
+        description: Successful selected-host qualification run ID
+        required: true
+        type: string
+      acceptance_ref:
+        description: Immutable commit containing the independently signed envelope
+        required: true
+        type: string
+      acceptance_path:
+        description: Repository-relative path to the signed acceptance envelope
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: automation-taskflow-independent-acceptance-${{ inputs.candidate_sha }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: verify independent signed acceptance
+    runs-on: ubuntu-24.04
+    environment: automation-taskflow-independent-acceptance
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+      CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+      FOCUSED_RUN_ID: ${{ inputs.focused_run_id }}
+      SELECTED_HOST_RUN_ID: ${{ inputs.selected_host_run_id }}
+      ACCEPTANCE_REF: ${{ inputs.acceptance_ref }}
+      ACCEPTANCE_PATH: ${{ inputs.acceptance_path }}
+      IMPLEMENTATION_PRINCIPAL: ${{ vars.AUTOMATION_IMPLEMENTATION_PRINCIPAL }}
+      ACCEPTANCE_PRINCIPAL: ${{ vars.AUTOMATION_ACCEPTANCE_PRINCIPAL }}
+      ACCEPTANCE_PUBLIC_KEY_PEM: ${{ secrets.AUTOMATION_ACCEPTANCE_PUBLIC_KEY_PEM }}
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ inputs.candidate_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Validate immutable inputs and protected principals
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$CANDIDATE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$ACCEPTANCE_REF" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$FOCUSED_RUN_ID" =~ ^[0-9]+$ ]]
+          [[ "$SELECTED_HOST_RUN_ID" =~ ^[0-9]+$ ]]
+          [[ "$ACCEPTANCE_PATH" =~ ^[A-Za-z0-9._/-]+$ ]]
+          [[ "$ACCEPTANCE_PATH" != /* ]]
+          [[ "$ACCEPTANCE_PATH" != *".."* ]]
+          test -n "$IMPLEMENTATION_PRINCIPAL"
+          test -n "$ACCEPTANCE_PRINCIPAL"
+          test "$IMPLEMENTATION_PRINCIPAL" != "$ACCEPTANCE_PRINCIPAL"
+          test -n "$ACCEPTANCE_PUBLIC_KEY_PEM"
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          test -z "$(git status --porcelain --untracked-files=no)"
+          git rev-parse HEAD^{tree} > "$RUNNER_TEMP/candidate-tree.txt"
+          printf '%s\n' "$ACCEPTANCE_PUBLIC_KEY_PEM" > "$RUNNER_TEMP/acceptance-public-key.pem"
+          chmod 600 "$RUNNER_TEMP/acceptance-public-key.pem"
+
+      - name: Require successful focused and selected-host runs
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh run view "$FOCUSED_RUN_ID" --repo "$GITHUB_REPOSITORY" \
+            --json conclusion,headSha,event > "$RUNNER_TEMP/focused-run.json"
+          gh run view "$SELECTED_HOST_RUN_ID" --repo "$GITHUB_REPOSITORY" \
+            --json conclusion,headSha,event > "$RUNNER_TEMP/selected-host-run.json"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          focused = json.loads((Path(os.environ["RUNNER_TEMP"]) / "focused-run.json").read_text())
+          selected = json.loads((Path(os.environ["RUNNER_TEMP"]) / "selected-host-run.json").read_text())
+          if focused.get("conclusion") != "success":
+              raise SystemExit("focused run is not successful")
+          if focused.get("headSha") != os.environ["CANDIDATE_SHA"]:
+              raise SystemExit("focused run does not bind the candidate SHA")
+          if selected.get("conclusion") != "success":
+              raise SystemExit("selected-host run is not successful")
+          if selected.get("event") != "workflow_dispatch":
+              raise SystemExit("selected-host evidence must come from workflow_dispatch")
+          PY
+
+      - name: Download exact qualification artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/focused" "$RUNNER_TEMP/selected-host"
+          gh run download "$FOCUSED_RUN_ID" --repo "$GITHUB_REPOSITORY" \
+            --dir "$RUNNER_TEMP/focused"
+          gh run download "$SELECTED_HOST_RUN_ID" --repo "$GITHUB_REPOSITORY" \
+            --dir "$RUNNER_TEMP/selected-host"
+          mapfile -t focused_receipts < <(
+            find "$RUNNER_TEMP/focused" -type f \
+              -name automation-taskflow-command-receipt.json -print
+          )
+          mapfile -t selected_receipts < <(
+            find "$RUNNER_TEMP/selected-host" -type f \
+              -name automation-taskflow-selected-host-receipt.json -print
+          )
+          test "${#focused_receipts[@]}" -eq 1
+          test "${#selected_receipts[@]}" -eq 1
+          printf 'FOCUSED_RECEIPT=%s\n' "${focused_receipts[0]}" >> "$GITHUB_ENV"
+          printf 'SELECTED_HOST_RECEIPT=%s\n' "${selected_receipts[0]}" >> "$GITHUB_ENV"
+
+      - name: Materialize immutable independent envelope
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "$ACCEPTANCE_REF"
+          git cat-file -e "$ACCEPTANCE_REF^{commit}"
+          git show "${ACCEPTANCE_REF}:${ACCEPTANCE_PATH}" \
+            > "$RUNNER_TEMP/automation-taskflow-independent-acceptance.json"
+          test -s "$RUNNER_TEMP/automation-taskflow-independent-acceptance.json"
+
+      - name: Verify independent signature and exact evidence chain
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/verify_automation_taskflow_acceptance.py \
+            --envelope "$RUNNER_TEMP/automation-taskflow-independent-acceptance.json" \
+            --focused-receipt "$FOCUSED_RECEIPT" \
+            --selected-host-receipt "$SELECTED_HOST_RECEIPT" \
+            --public-key-pem "$RUNNER_TEMP/acceptance-public-key.pem" \
+            --candidate-commit "$CANDIDATE_SHA" \
+            --candidate-tree "$(cat "$RUNNER_TEMP/candidate-tree.txt")" \
+            --focused-run-id "$FOCUSED_RUN_ID" \
+            --selected-host-run-id "$SELECTED_HOST_RUN_ID" \
+            --implementation-principal "$IMPLEMENTATION_PRINCIPAL" \
+            --acceptance-principal "$ACCEPTANCE_PRINCIPAL" \
+            --output "$RUNNER_TEMP/automation-taskflow-independent-acceptance-verification.json"
+
+      - name: Retain verified independent acceptance receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: automation-taskflow-independent-acceptance-${{ inputs.candidate_sha }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/automation-taskflow-independent-acceptance-verification.json
+          if-no-files-found: error
+          retention-days: 365

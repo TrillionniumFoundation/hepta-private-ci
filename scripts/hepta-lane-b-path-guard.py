@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import tempfile
 import tomllib
 from pathlib import Path
@@ -12,6 +13,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 TRUTH = ROOT / "qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json"
+MODULE_ID = re.compile(r"^[a-z0-9]+(?:\.[a-z0-9]+)+$")
 
 
 class Invalid(ValueError):
@@ -79,6 +81,32 @@ def canonical_path(
 
 def inside(path: str, roots: list[str]) -> bool:
     return any(path == root or path.startswith(root + "/") for root in roots)
+
+
+def load_owner_roots(
+    root: Path, module: str, *, map_path: str | None = None
+) -> tuple[dict[str, Any], list[str]]:
+    """Load one owner map without expanding the Lane B operation inventory.
+
+    Lane B operations may delegate to registered owners in another lane.  The
+    delegated source must still be checked against that owner's canonical map;
+    absence from the Lane B module index is not permission to omit ownerModule.
+    """
+    need(MODULE_ID.fullmatch(module) is not None, f"{module}: invalid module identity")
+    relative = map_path or f"docs/modules/{module}/IMPLEMENTATION_MAP.json"
+    path = canonical_path(root, relative, f"{module}: map", require_file=True)
+    row = load(path)
+    need(row.get("module") == module, f"{module}: map identity")
+    resolved_roots = row.get("resolvedRoots")
+    need(
+        isinstance(resolved_roots, list)
+        and resolved_roots
+        and all(isinstance(item, str) and item for item in resolved_roots),
+        f"{module}: resolved roots",
+    )
+    for owner_root in resolved_roots:
+        canonical_path(root, owner_root, f"{module}: owner root", require_file=None)
+    return row, resolved_roots
 
 
 def delegated_dependency_matches(
@@ -159,11 +187,12 @@ def verify_anchor(
 
 
 def verify(root: Path = ROOT) -> int:
-    truth = load(
+    truth_path = (
         TRUTH
         if root == ROOT
         else root / "qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json"
     )
+    truth = load(truth_path)
     entries = truth.get("modules")
     need(isinstance(entries, list) and entries, "module index")
 
@@ -174,20 +203,26 @@ def verify(root: Path = ROOT) -> int:
         module = entry.get("module")
         map_path = entry.get("mapPath")
         need(isinstance(module, str) and bool(module), "module identity")
-        path = canonical_path(root, map_path, f"{module}: map", require_file=True)
-        row = load(path)
-        need(row.get("module") == module, f"{module}: map identity")
-        resolved_roots = row.get("resolvedRoots")
-        need(
-            isinstance(resolved_roots, list)
-            and resolved_roots
-            and all(isinstance(item, str) and item for item in resolved_roots),
-            f"{module}: resolved roots",
-        )
-        for owner_root in resolved_roots:
-            canonical_path(root, owner_root, f"{module}: owner root", require_file=None)
+        row, resolved_roots = load_owner_roots(root, module, map_path=map_path)
         maps[module] = row
         roots[module] = resolved_roots
+
+    # Resolve every explicitly named delegated owner from its canonical module
+    # map.  This closes the old false failure where runtime.agentd legitimately
+    # delegated to learning.ledger/neuron.runtime, which are registered outside
+    # the closed Lane B operation inventory.
+    for module, row in maps.items():
+        items = row.get("operations")
+        need(isinstance(items, list) and items, f"{module}: operations")
+        for item in items:
+            need(isinstance(item, dict), f"{module}: operation")
+            for delegate in item.get("delegatedCallees", []):
+                need(isinstance(delegate, dict), f"{module}: delegated callee")
+                delegated_owner = delegate.get("ownerModule")
+                need(isinstance(delegated_owner, str), f"{module}: delegated owner")
+                if delegated_owner not in roots:
+                    _, delegated_roots = load_owner_roots(root, delegated_owner)
+                    roots[delegated_owner] = delegated_roots
 
     operations = tests = delegates = 0
     for module, row in maps.items():
@@ -225,6 +260,7 @@ def verify(root: Path = ROOT) -> int:
             {
                 "status": "PASS_HEPTA_LANE_B_CANONICAL_PATH_GUARD",
                 "modules": len(maps),
+                "ownerMaps": len(roots),
                 "operations": operations,
                 "delegates": delegates,
                 "testBindings": tests,
@@ -288,6 +324,21 @@ def self_test() -> int:
                 pass
             else:
                 raise Invalid("accepted symlink binding")
+
+        module_root = root / "docs/modules/learning.ledger"
+        module_root.mkdir(parents=True)
+        (module_root / "IMPLEMENTATION_MAP.json").write_text(
+            json.dumps(
+                {
+                    "module": "learning.ledger",
+                    "resolvedRoots": ["foreign"],
+                }
+            ),
+            encoding="utf-8",
+        )
+        _, external_roots = load_owner_roots(root, "learning.ledger")
+        need(external_roots == ["foreign"], "external delegated owner fixture")
+
     print(
         json.dumps(
             {"status": "PASS_HEPTA_LANE_B_CANONICAL_PATH_GUARD_SELF_TEST"},

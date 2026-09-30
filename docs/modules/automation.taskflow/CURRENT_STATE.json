@@ -1,0 +1,42 @@
+{
+  "claimBoundary": {
+    "activation": false,
+    "boundedAdmissionBatchComplete": true,
+    "crossHostRecoveryContractComplete": true,
+    "crossHostRecoveryProductComplete": true,
+    "deploymentQualificationComplete": false,
+    "durableNeuralCircuitProductComplete": true,
+    "externalEffectProductCompositionComplete": true,
+    "independentAcceptance": false,
+    "independentAcceptanceVerificationPathComplete": false,
+    "neuralCircuitRuntimeVerticalSliceComplete": true,
+    "productExecutionProved": false,
+    "promotion": false,
+    "release": false,
+    "repositoryControlledDocumentationGapsClosed": false,
+    "repositoryControlledProductCompositionGapsClosed": false,
+    "repositoryControlledSourceBoundaryGapsClosed": false,
+    "selectedHostQualificationPathComplete": false,
+    "separateRecoveryBudgetComplete": true
+  },
+  "derivedFrom": [
+    "docs/modules/automation.taskflow/SCHEMA_CONTRACT.json",
+    "docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json"
+  ],
+  "evidenceBoundary": "Source declarations only. Native source-head, deterministic-merge, selected-runtime execution and independent acceptance require separate immutable receipts.",
+  "module": "automation.taskflow",
+  "remainingModuleGaps": [
+    "Linux exact-head, macOS exact-head and deterministic-merge formatting, locked compile, strict Clippy, native tests, Agentd product tests and Bazel qualification must all reach terminal success on the final immutable candidate; queued, skipped and not_run receipts do not count.",
+    "Selected-host evidence must bind the native binary and SQLite identity, the timezone profile actually consumed, provider endpoint/contract, final-use trust root, current revocation frontier and terminal observer to one execution receipt.",
+    "The repository now contains a signed-fence copied-store handoff controller and two-store fault tests, but physical source-host fencing, checkpoint transport and a real two-host network-partition exercise remain selected-runtime evidence.",
+    "Long-retention startup is paged and bounded in source; retained-history growth, restore latency, compaction and saturation still require native selected-runtime measurements.",
+    "Independent acceptance, activation, promotion and release remain false and cannot be issued by repository source declarations."
+  ],
+  "repositoryControlledProductCompositionGaps": [
+    "Selected-host actual-use binding and physical two-host fencing/transport evidence are not repository source declarations.",
+    "Long-retention growth, restore, compaction and saturation require selected-runtime qualification."
+  ],
+  "schema": "hepta.automation-taskflow.current-state.v1",
+  "storeSchemaVersion": 22,
+  "taskflowSchemaVersion": 1
+}

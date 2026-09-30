@@ -12,6 +12,7 @@ use codex_hepta_automation::AutomationAdmission;
 use codex_hepta_automation::AutomationError;
 use codex_hepta_automation::AutomationFuture;
 use codex_hepta_automation::AutomationQueueReceipt;
+use codex_hepta_automation::AutomationRuntimePolicyV1;
 use codex_hepta_automation::AutomationSchedule;
 use codex_hepta_automation::AutomationScheduler;
 use codex_hepta_automation::AutomationStore;
@@ -333,6 +334,7 @@ async fn cancellation_preserves_in_flight_queue_ack_before_scheduler_exit() {
         Arc::clone(&fixture.state),
         stop.clone(),
         Duration::from_millis(1),
+        AutomationRuntimePolicyV1::default(),
     ));
     timeout(Duration::from_secs(2), queue.entered.notified())
         .await

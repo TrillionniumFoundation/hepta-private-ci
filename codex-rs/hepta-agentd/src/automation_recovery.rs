@@ -5,6 +5,10 @@
 //! terminal occurrence is published only after a persisted turn reports a
 //! terminal status and the durable TaskFlow step/run have been reconciled.
 
+use std::collections::BTreeSet;
+use std::time::Duration;
+use std::time::Instant;
+
 use codex_app_server_client::RemoteAppServerClient;
 use codex_app_server_client::RemoteAppServerConnectArgs;
 use codex_app_server_client::RemoteAppServerEndpoint;
@@ -21,6 +25,9 @@ use codex_app_server_protocol::Turn;
 use codex_app_server_protocol::TurnItemsView;
 use codex_app_server_protocol::TurnStatus;
 use codex_app_server_protocol::UserInput;
+use codex_hepta_automation::AutomationDispatchUncertainty;
+use codex_hepta_automation::AutomationError;
+use codex_hepta_automation::AutomationFailureDisposition;
 use codex_hepta_automation::AutomationOccurrenceTerminalState;
 use codex_hepta_automation::AutomationOccurrenceWork;
 use codex_hepta_automation::AutomationQueueReceipt;
@@ -36,6 +43,7 @@ use crate::AgentdState;
 const TURN_PAGE_SIZE: u32 = 100;
 const MAX_TURN_PAGES: usize = 16;
 const RECOVERY_RUN_LEASE_MS: u64 = 30_000;
+const RECOVERY_READ_TIMEOUT: Duration = Duration::from_secs(5);
 
 enum TurnLookup {
     Found(Turn),
@@ -43,31 +51,93 @@ enum TurnLookup {
     Exhausted,
 }
 
-pub(crate) async fn reconcile_one(
+/// Reconcile persistent, independently rotating recovery frontiers. A transient
+/// unknown-lane failure does not suppress the reserved terminal lane, but the
+/// batch still returns that failure so Agentd cannot admit new work this cycle.
+/// Fencing, identity and corruption failures stop immediately.
+pub(crate) async fn reconcile_batch(
     store: &AutomationStore,
     state: &AgentdState,
     identity: &AgentdIdentity,
     now_ms: u64,
-) -> Result<bool, AgentdError> {
-    if reconcile_one_unknown_dispatch(store, state, identity, now_ms).await? {
-        return Ok(true);
+    limit: usize,
+) -> Result<usize, AgentdError> {
+    if limit == 0 {
+        return Ok(0);
     }
-    let Some(work) = store.pending_occurrence_work(1).await?.into_iter().next() else {
-        return Ok(false);
-    };
-    reconcile_work(store, state, identity, work, now_ms).await?;
-    Ok(true)
+    let started = Instant::now();
+    let selection = store.reserve_recovery_selection(limit).await?;
+    let mut processed = 0;
+    let mut first_error = None;
+    let mut observed = BTreeSet::new();
+    for key in selection.uncertain {
+        observed.insert(key);
+        let Some(dispatch) = store.uncertain_dispatch_exact(key.0, key.1).await? else {
+            continue;
+        };
+        let current_ms = recovery_time(now_ms, started)?;
+        retain_recovery_result(
+            reconcile_unknown_dispatch(store, state, identity, dispatch, current_ms).await,
+            &mut first_error,
+        )?;
+        processed += 1;
+    }
+    for key in selection.pending {
+        if !observed.insert(key) {
+            continue;
+        }
+        let Some(work) = store.pending_occurrence_work_exact(key.0, key.1).await? else {
+            continue;
+        };
+        let current_ms = recovery_time(now_ms, started)?;
+        retain_recovery_result(
+            reconcile_work(store, state, identity, work, current_ms).await,
+            &mut first_error,
+        )?;
+        processed += 1;
+    }
+    match first_error {
+        Some(error) => Err(error),
+        None => Ok(processed),
+    }
 }
 
-async fn reconcile_one_unknown_dispatch(
+fn recovery_time(now_ms: u64, started: Instant) -> Result<u64, AgentdError> {
+    let elapsed =
+        u64::try_from(started.elapsed().as_millis()).map_err(|_| AutomationError::Invalid)?;
+    now_ms
+        .checked_add(elapsed)
+        .ok_or_else(|| AutomationError::Invalid.into())
+}
+
+fn retain_recovery_result(
+    result: Result<(), AgentdError>,
+    first_error: &mut Option<AgentdError>,
+) -> Result<(), AgentdError> {
+    if let Err(error) = result {
+        match crate::automation::classify_recovery_error(&error) {
+            AutomationFailureDisposition::Fence | AutomationFailureDisposition::FailStop => {
+                return Err(error);
+            }
+            AutomationFailureDisposition::Retry
+            | AutomationFailureDisposition::Reconcile
+            | AutomationFailureDisposition::Isolate => {
+                if first_error.is_none() {
+                    *first_error = Some(error);
+                }
+            }
+        }
+    }
+    Ok(())
+}
+
+async fn reconcile_unknown_dispatch(
     store: &AutomationStore,
     state: &AgentdState,
     identity: &AgentdIdentity,
+    uncertain: AutomationDispatchUncertainty,
     now_ms: u64,
-) -> Result<bool, AgentdError> {
-    let Some(uncertain) = store.uncertain_dispatches(1).await?.into_iter().next() else {
-        return Ok(false);
-    };
+) -> Result<(), AgentdError> {
     let task = store
         .task(uncertain.task_id)
         .await?
@@ -176,7 +246,7 @@ async fn reconcile_one_unknown_dispatch(
             ));
         }
     }
-    Ok(true)
+    Ok(())
 }
 
 async fn reconcile_work(
@@ -392,10 +462,8 @@ async fn pending_exact(
     occurrence: u64,
 ) -> Result<AutomationOccurrenceWork, AgentdError> {
     store
-        .pending_occurrence_work(1024)
+        .pending_occurrence_work_exact(task_id, occurrence)
         .await?
-        .into_iter()
-        .find(|work| work.occurrence.task_id == task_id && work.occurrence.occurrence == occurrence)
         .ok_or_else(|| {
             AgentdError::Protocol(
                 "automation occurrence is not in the recovery frontier".to_string(),
@@ -449,9 +517,10 @@ async fn reconcile_queue(
     client_user_message_id: &str,
     expected_payload_sha256: &str,
 ) -> Result<ThreadQueueReconcileResponse, AgentdError> {
-    client
-        .request_handle()
-        .request_typed(ClientRequest::ThreadQueueReconcile {
+    let handle = client.request_handle();
+    tokio::time::timeout(
+        RECOVERY_READ_TIMEOUT,
+        handle.request_typed(ClientRequest::ThreadQueueReconcile {
             request_id: RequestId::Integer(1),
             params: ThreadQueueReconcileParams {
                 thread_id: thread_id.to_string(),
@@ -460,11 +529,15 @@ async fn reconcile_queue(
                 expected_payload_sha256: expected_payload_sha256.to_string(),
                 mode: ThreadQueueReconcileMode::ReconcileOnly,
             },
-        })
-        .await
-        .map_err(|error| {
-            AgentdError::Protocol(format!("automation queue reconcile failed: {error}"))
-        })
+        }),
+    )
+    .await
+    .map_err(|_| {
+        AgentdError::Protocol(
+            "automation queue reconcile failed: read deadline exceeded".to_string(),
+        )
+    })?
+    .map_err(|error| AgentdError::Protocol(format!("automation queue reconcile failed: {error}")))
 }
 
 async fn find_turn(
@@ -474,10 +547,11 @@ async fn find_turn(
     start_cursor: Option<&str>,
 ) -> Result<TurnLookup, AgentdError> {
     let mut cursor = start_cursor.map(str::to_owned);
+    let handle = client.request_handle();
     for page_index in 0..MAX_TURN_PAGES {
-        let response: ThreadTurnsListResponse = client
-            .request_handle()
-            .request_typed(ClientRequest::ThreadTurnsList {
+        let response: ThreadTurnsListResponse = tokio::time::timeout(
+            RECOVERY_READ_TIMEOUT,
+            handle.request_typed(ClientRequest::ThreadTurnsList {
                 request_id: RequestId::Integer(i64::try_from(page_index + 2).unwrap_or(i64::MAX)),
                 params: ThreadTurnsListParams {
                     thread_id: thread_id.to_string(),
@@ -486,11 +560,17 @@ async fn find_turn(
                     sort_direction: Some(SortDirection::Desc),
                     items_view: Some(TurnItemsView::NotLoaded),
                 },
-            })
-            .await
-            .map_err(|error| {
-                AgentdError::Protocol(format!("automation turn observation failed: {error}"))
-            })?;
+            }),
+        )
+        .await
+        .map_err(|_| {
+            AgentdError::Protocol(
+                "automation turn observation failed: read deadline exceeded".to_string(),
+            )
+        })?
+        .map_err(|error| {
+            AgentdError::Protocol(format!("automation turn observation failed: {error}"))
+        })?;
         if let Some(turn) = response.data.into_iter().find(|turn| turn.id == turn_id) {
             return Ok(TurnLookup::Found(turn));
         }
@@ -549,5 +629,18 @@ fn observation_digest(value: &impl serde::Serialize) -> Result<Sha256Digest, Age
 }
 
 fn taskflow_error(error: codex_hepta_automation::TaskFlowError) -> AgentdError {
-    AgentdError::Protocol(format!("automation TaskFlow recovery failed: {error}"))
+    use codex_hepta_automation::TaskFlowError;
+    AgentdError::Automation(match error {
+        TaskFlowError::StaleFence => AutomationError::AccessDenied,
+        TaskFlowError::Corrupt(_) => AutomationError::Corrupt,
+        TaskFlowError::Invalid(_) => AutomationError::Invalid,
+        TaskFlowError::Conflict(_) | TaskFlowError::InvalidTransition(_) => {
+            AutomationError::Conflict
+        }
+        TaskFlowError::Unavailable => AutomationError::Unavailable,
+    })
 }
+
+#[cfg(test)]
+#[path = "automation_recovery_review_tests.rs"]
+mod review_tests;

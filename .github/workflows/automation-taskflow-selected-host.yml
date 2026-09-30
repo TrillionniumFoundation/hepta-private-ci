@@ -1,0 +1,209 @@
+name: automation-taskflow-selected-host-qualification
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_sha:
+        description: Exact immutable candidate commit to qualify
+        required: true
+        type: string
+      target_profile:
+        description: Selected-host deployment profile identifier
+        required: true
+        type: string
+      tzdb_root:
+        description: Absolute canonical IANA tzdb root on the selected host
+        required: true
+        default: /usr/share/zoneinfo
+        type: string
+      expected_tzdb_sha256:
+        description: Expected hepta.automation.tzdb-tree.v1 digest
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: automation-taskflow-selected-host-${{ inputs.target_profile }}
+  cancel-in-progress: false
+
+jobs:
+  qualify:
+    name: selected-host exact-input, runtime, recovery and provider qualification
+    runs-on: [self-hosted, hepta-automation-selected-host]
+    environment: automation-taskflow-selected-host
+    timeout-minutes: 150
+    env:
+      AUTOMATION_TIMEZONE_PROFILE_FILE: ${{ vars.AUTOMATION_TIMEZONE_PROFILE_FILE }}
+      AUTOMATION_EFFECT_HOST_FILE: ${{ vars.AUTOMATION_EFFECT_HOST_FILE }}
+      AUTOMATION_TERMINAL_OBSERVER_FILE: ${{ vars.AUTOMATION_TERMINAL_OBSERVER_FILE }}
+    steps:
+      - name: Check out exact immutable candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ inputs.candidate_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify exact source and protected evidence paths
+        env:
+          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$CANDIDATE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          test -n "$AUTOMATION_TIMEZONE_PROFILE_FILE"
+          test -n "$AUTOMATION_EFFECT_HOST_FILE"
+          test -n "$AUTOMATION_TERMINAL_OBSERVER_FILE"
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Prepare CI environment
+        uses: ./.github/actions/setup-ci
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+
+      - name: Derive exact selected-host input facts
+        env:
+          TZDB_ROOT: ${{ inputs.tzdb_root }}
+          EXPECTED_TZDB_SHA256: ${{ inputs.expected_tzdb_sha256 }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/automation_taskflow_selected_host.py facts \
+            --tzdb-root "$TZDB_ROOT" \
+            --expected-tzdb-sha256 "$EXPECTED_TZDB_SHA256" \
+            --timezone-profile "$AUTOMATION_TIMEZONE_PROFILE_FILE" \
+            --effect-host "$AUTOMATION_EFFECT_HOST_FILE" \
+            --terminal-observer "$AUTOMATION_TERMINAL_OBSERVER_FILE" \
+            > "$RUNNER_TEMP/automation-taskflow-selected-host-facts.json"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          facts = json.loads(
+              (Path(os.environ["RUNNER_TEMP"]) / "automation-taskflow-selected-host-facts.json")
+              .read_text(encoding="utf-8")
+          )
+          names = {
+              "AUTOMATION_EXPECTED_TZDB_SHA256": facts["tzdbSha256"],
+              "AUTOMATION_EXPECTED_TIMEZONE_PROFILE_SHA256": facts["timezoneProfileSha256"],
+              "AUTOMATION_EXPECTED_TIMEZONE_ID": facts["timezoneId"],
+              "AUTOMATION_EXPECTED_EFFECT_HOST_SHA256": facts["effectHostSha256"],
+              "AUTOMATION_EXPECTED_TERMINAL_OBSERVER_SHA256": facts["terminalObserverSha256"],
+              "AUTOMATION_EXPECTED_REVOCATIONS_SHA256": facts["revocationsSha256"],
+              "AUTOMATION_TIMEZONE_RUST_RECEIPT": str(
+                  Path(os.environ["RUNNER_TEMP"]) / "automation-timezone-rust-receipt.json"
+              ),
+              "AUTOMATION_EFFECT_HOST_RUST_RECEIPT": str(
+                  Path(os.environ["RUNNER_TEMP"]) / "automation-effect-rust-receipt.json"
+              ),
+          }
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as output:
+              for name, value in names.items():
+                  if value is None or "\n" in str(value):
+                      raise SystemExit(f"invalid selected-host fact {name}")
+                  output.write(f"{name}={value}\n")
+          PY
+
+      - name: Verify schema, source truth and evidence tooling
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/automation_taskflow_contract.py self-test
+          python3 -m unittest -v \
+            scripts/test_automation_taskflow_contract.py \
+            scripts/test_verify_automation_taskflow_acceptance.py \
+            scripts/test_automation_taskflow_selected_host.py
+          python3 scripts/hepta-implementation-maps.py verify \
+            --expected-sha "$(git rev-parse HEAD)" \
+            --expected-tree "$(git rev-parse HEAD^{tree})"
+          git diff --check
+
+      - name: Verify format, compile and strict Clippy
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd -- --check
+          cargo check -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd --all-targets
+          cargo clippy -p codex-hepta-automation -p codex-hepta-agentd --all-targets --all-features -- -D warnings
+
+      - name: Consume exact timezone profile through Rust and native SQLite
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test -p codex-hepta-automation \
+            --test selected_host_profile \
+            selected_host_timezone_profile_is_consumed_by_rust_runtime \
+            -- --ignored --exact --nocapture
+          test -s "$AUTOMATION_TIMEZONE_RUST_RECEIPT"
+
+      - name: Load exact provider, final-use, revocation and observer inputs through Agentd
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test -p codex-hepta-agentd \
+            --test automation_selected_host \
+            selected_host_effect_host_uses_exact_protected_inputs \
+            -- --ignored --exact --nocapture
+          test -s "$AUTOMATION_EFFECT_HOST_RUST_RECEIPT"
+
+      - name: Qualify scheduler, crash, recovery, durable circuit and signed fence contracts
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test -p codex-hepta-automation schedule_v2 -- --nocapture
+          cargo test -p codex-hepta-automation --test scheduler_review_regressions -- --nocapture
+          cargo test -p codex-hepta-automation --test multi_scheduler_race -- --nocapture
+          cargo test -p codex-hepta-automation --test runtime_crash_points -- --nocapture
+          cargo test -p codex-hepta-automation --test runtime_property_sweep -- --nocapture
+          cargo test -p codex-hepta-automation --test durable_neural_circuit -- --nocapture
+          cargo test -p codex-hepta-automation --test durable_neural_circuit_recovery -- --nocapture
+          cargo test -p codex-hepta-automation external_host_fence -- --nocapture
+          cargo test -p codex-hepta-automation cross_host_recovery -- --nocapture
+          cargo test -p codex-hepta-agentd --lib automation_effect_host -- --nocapture
+
+      - name: Create selected-host qualification receipt from consumed bytes
+        env:
+          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+          TARGET_PROFILE: ${{ inputs.target_profile }}
+          TZDB_ROOT: ${{ inputs.tzdb_root }}
+          EXPECTED_TZDB_SHA256: ${{ inputs.expected_tzdb_sha256 }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/automation_taskflow_selected_host.py receipt \
+            --candidate-sha "$CANDIDATE_SHA" \
+            --target-profile "$TARGET_PROFILE" \
+            --tzdb-root "$TZDB_ROOT" \
+            --expected-tzdb-sha256 "$EXPECTED_TZDB_SHA256" \
+            --timezone-profile "$AUTOMATION_TIMEZONE_PROFILE_FILE" \
+            --effect-host "$AUTOMATION_EFFECT_HOST_FILE" \
+            --terminal-observer "$AUTOMATION_TERMINAL_OBSERVER_FILE" \
+            --timezone-rust-receipt "$AUTOMATION_TIMEZONE_RUST_RECEIPT" \
+            --effect-rust-receipt "$AUTOMATION_EFFECT_HOST_RUST_RECEIPT" \
+            --output "$RUNNER_TEMP/automation-taskflow-selected-host-receipt.json"
+          test -s "$RUNNER_TEMP/automation-taskflow-selected-host-receipt.json"
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Retain selected-host qualification receipts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: automation-taskflow-selected-host-${{ inputs.target_profile }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/automation-taskflow-selected-host-facts.json
+            ${{ runner.temp }}/automation-timezone-rust-receipt.json
+            ${{ runner.temp }}/automation-effect-rust-receipt.json
+            ${{ runner.temp }}/automation-taskflow-selected-host-receipt.json
+          if-no-files-found: error
+          retention-days: 90
