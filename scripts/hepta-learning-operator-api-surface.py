@@ -75,7 +75,6 @@ def check(source: str, *, compatibility: bool) -> subprocess.CompletedProcess[st
             [
                 "cargo",
                 "check",
-                "--offline",
                 "--quiet",
                 "--manifest-path",
                 str(root / "Cargo.toml"),
@@ -148,7 +147,9 @@ def main() -> None:
     if args.output:
         output = ROOT / args.output
         output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        output.write_text(
+            json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
     print(json.dumps(payload, sort_keys=True))
 
 
