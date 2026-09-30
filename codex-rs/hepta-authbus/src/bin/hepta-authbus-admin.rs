@@ -23,6 +23,7 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_authbus::AuthBusAuthorityHost;
+use codex_hepta_authbus::bootstrap_retryable;
 use serde::Deserialize;
 use serde::Serialize;
 use sha2::Digest as ShaDigest;
@@ -250,7 +251,7 @@ fn reject_present(name: &str, value: Option<&PathBuf>) -> Result<()> {
 
 async fn bootstrap(options: &Options) -> Result<BootstrapReceipt> {
     validate_distinct_private_paths(&options.database, &options.checkpoint, true)?;
-    let host = AuthBusAuthorityHost::bootstrap(
+    let host = bootstrap_retryable(
         &options.database,
         options.checkpoint.clone(),
         &options.owner_id,
