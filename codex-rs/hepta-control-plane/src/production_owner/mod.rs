@@ -1,4 +1,4 @@
-#[path = "../production_owner_v2/fence.rs"]
+#[path = "../production_owner_v2/fence_v2.rs"]
 mod fence;
 #[path = "../production_owner_v2/owner.rs"]
 mod owner;
