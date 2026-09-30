@@ -1,0 +1,20 @@
+# Reviewed deployment example, not an installed service. Run under the actual
+# Agentd UID; update generation from the supervised deployment, never guess it.
+[Unit]
+Description=Read-only NDU metrics textfile observation
+After=network.target
+
+[Service]
+Type=oneshot
+User=hepta
+EnvironmentFile=/etc/hepta/ndu-observer.env
+ExecStart=/usr/bin/python3 /opt/hepta/scripts/hepta_ndu_observer.py --socket ${NDU_SOCKET} --agent-id ${NDU_AGENT_ID} --generation ${NDU_GENERATION} --output /var/lib/node_exporter/textfile/ndu.prom
+TimeoutStartSec=10
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=read-only
+PrivateDevices=yes
+RestrictAddressFamilies=AF_UNIX
+RestrictNamespaces=yes
+ReadWritePaths=/var/lib/node_exporter/textfile
+UMask=0077

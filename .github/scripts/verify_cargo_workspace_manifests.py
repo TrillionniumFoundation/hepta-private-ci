@@ -33,7 +33,11 @@ MANIFEST_FEATURE_EXCEPTIONS = {
     # acceptance. Remove each entry with its reviewed extraction; defaults stay off.
     "codex-rs/hepta-agentd/Cargo.toml": {
         "default": (),
-        "qualification-cognitive-write": (),
+        "production-cognitive-write": (),
+        "qualification-cognitive-write": ("production-cognitive-write",),
+        "qualification-legacy-learning-write": (
+            "codex-hepta-learning-ledger/qualification-legacy-write",
+        ),
     },
     "codex-rs/hepta-automation/Cargo.toml": {
         "default": (),
@@ -57,7 +61,13 @@ MANIFEST_FEATURE_EXCEPTIONS = {
     },
 }
 OPTIONAL_DEPENDENCY_EXCEPTIONS = set()
-INTERNAL_DEPENDENCY_FEATURE_EXCEPTIONS = {}
+INTERNAL_DEPENDENCY_FEATURE_EXCEPTIONS = {
+    (
+        "codex-rs/hepta-agentd/Cargo.toml",
+        "dev-dependencies",
+        "codex-hepta-learning-ledger",
+    ): ("qualification-legacy-write",),
+}
 
 
 def main() -> int:

@@ -5,6 +5,7 @@
 mod authbus;
 mod capabilities;
 mod evidence;
+mod ndu;
 pub use authbus::AuthBusObjectiveBody;
 pub use authbus::AuthBusObjectiveIngress;
 pub use authbus::AuthBusTextBody;
@@ -28,6 +29,11 @@ pub use evidence::KernelEvidenceResult;
 pub use evidence::KernelEvidenceVerifyV1;
 pub use evidence::MAX_KERNEL_EVIDENCE_ENVELOPE_BYTES;
 pub use evidence::MAX_KERNEL_EVIDENCE_REQUIRED_ROLES;
+pub use ndu::NduCommittedEntryV1;
+pub use ndu::NduControlRequestV1;
+pub use ndu::NduControlResultV1;
+pub use ndu::NduMutationOperationV1;
+pub use ndu::NduMutationV1;
 
 use std::path::PathBuf;
 
@@ -338,7 +344,7 @@ impl AgentdRequest {
             method: AgentdMethod::AutomationExecuteEffect {
                 intent,
                 wire_payload_hex,
-                signed_grant,
+                signed_grant: Box::new(signed_grant),
                 command_id,
             },
         }
@@ -571,6 +577,9 @@ impl AgentdRequest {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum AgentdMethod {
+    NduControl {
+        request: NduControlRequestV1,
+    },
     Capabilities,
     Health,
     Lifecycle,
@@ -651,7 +660,7 @@ pub enum AgentdMethod {
     AutomationExecuteEffect {
         intent: AuthorizedEffectIntent,
         wire_payload_hex: String,
-        signed_grant: SignedFinalUseGrant,
+        signed_grant: Box<SignedFinalUseGrant>,
         command_id: String,
     },
     AutomationReconcileEffect {
@@ -734,6 +743,7 @@ pub struct AgentdResponse {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum AgentdPayload {
+    NduControl(NduControlResultV1),
     Capabilities(AgentdCapabilitySet),
     Health(HealthSnapshot),
     Lifecycle(LifecycleSnapshot),
@@ -1072,7 +1082,7 @@ mod tests {
                 read_digest: snapshot.read_digest.clone(),
                 omitted_records: snapshot.omitted_records,
                 items: snapshot.items.clone(),
-                plan: snapshot.plan.clone(),
+                plan: snapshot.plan,
             },
         };
         let bytes = serde_json::to_vec(&request).expect("serialize revalidation request");
@@ -1318,13 +1328,8 @@ mod tests {
             attach
         );
 
-        let cancel = AgentdRequest::run_cancel(
-            14,
-            3,
-            snapshot.run_id.clone(),
-            2,
-            "operator_request".to_string(),
-        );
+        let cancel =
+            AgentdRequest::run_cancel(14, 3, snapshot.run_id, 2, "operator_request".to_string());
         let cancel_bytes = serde_json::to_vec(&cancel).expect("serialize cancellation");
         assert!(cancel_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
         assert_eq!(

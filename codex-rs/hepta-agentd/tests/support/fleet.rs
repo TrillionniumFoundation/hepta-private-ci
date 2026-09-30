@@ -203,6 +203,28 @@ impl FleetHarness {
     }
 
     #[allow(dead_code)]
+    pub(crate) fn start_with_ndu_bootstrap_descriptor(
+        &mut self,
+        agent: &AgentFixture,
+        descriptor: &Path,
+        descriptor_digest: &str,
+    ) -> Result<()> {
+        let command = AgentCommand::new(
+            agentd_binary()?,
+            vec![
+                "--ndu-bootstrap-descriptor".into(),
+                descriptor.as_os_str().to_owned(),
+                "--ndu-bootstrap-descriptor-digest".into(),
+                descriptor_digest.into(),
+            ],
+        )?;
+        self.supervisor
+            .start(&agent.agent_id, command, Instant::now())?;
+        self.started = true;
+        Ok(())
+    }
+
+    #[allow(dead_code)]
     pub(crate) fn start_with_plasticity_bootstrap_descriptor(
         &mut self,
         agent: &AgentFixture,

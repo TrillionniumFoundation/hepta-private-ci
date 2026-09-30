@@ -1,61 +1,78 @@
-# utility.ndu status and claim boundary
+# utility.ndu current status and claim boundary
 
-This page is the short interpretation guide for the status fields used by the `utility.ndu` documentation set. It does not grant activation, effect authority, production acceptance, promotion, signing, or release authority.
+Status date: 2026-09-30
 
-## Status axes are intentionally independent
+`utility.ndu` is a unified source candidate. Production activation, release, promotion and external acceptance remain false.
 
-`docs/modules/utility.ndu/TECHNICAL.md` contains canonical work-package execution envelopes such as `NDU-0`, `NDU-1`, and `NDU-2`. Their `State: planned` values describe the lifecycle of those canonical packages and their predecessor/evidence envelopes. They are not a statement that no source has been implemented.
+## Canonical candidate line
 
-`docs/modules/utility.ndu/IMPLEMENTATION_MAP.json` records native source bindings and source-candidate maturity. A value such as `candidate_implemented` means that the bounded source candidate exists and is mapped to tests; it does not establish a product caller, production writer, independent acceptance, activation, or release.
+The current integration branch is `work/utility-ndu-unified-production-closure-20260930`.
+It is based on the FBSDE closure head, which already contains the A-D engineering/recovery line, and it integrates the production-hardening contracts that were developed separately. The historical branch documents are retained for audit, but their qualification results do not qualify this changed candidate.
 
-`docs/readiness/LANE_D_MATURITY.json` is the cross-module maturity view. Its dimensions are independent. In particular, source materialization and deterministic-kernel maturity must not be read as production composition or release readiness.
+The exact source commit, source tree, base commit, deterministic synthetic-merge commit, ordered parents, target triple, runner identity, `Cargo.lock`, test-set and documentation-map digests are authoritative only when emitted by the read-only qualification workflow for one immutable candidate. A new source or documentation commit invalidates an earlier exact-head result.
 
-When these files are read together, use the following interpretation:
+## Bounded capability
 
-1. work-package lifecycle answers which canonical delivery envelope is planned/active/completed;
-2. implementation-map state answers which bounded source operations exist in the candidate;
-3. Lane-D maturity answers which qualification, composition, activation, and release gates are established.
+The candidate contains:
 
-## Current bounded capability
+- deterministic preference, utility, covariance, regression and recursive-value kernels;
+- bounded preference solving and complete residual receipts;
+- crash-bounded projection journal/store and additive epoch/archive contracts;
+- bounded discrete FBSDE training, immutable dataset/filtration binding and Q24 coefficient publication contracts;
+- authenticated Ed25519 hierarchy claims bound to key identity, epoch, validity window, trust-root revision and revocation frontier;
+- immutable artifact locators restricted to admitted schemes and bound to content digest plus immutable object version;
+- source-compatible V1 protocol and Z-conversion surfaces, sealed V2 receipts and explicit migration entry points;
+- distinct historical replay and current-use validation types;
+- a production composition receipt naming the persistent store, owner/writer, fence, trusted time, revocation frontier, artifact registry, encrypted remote backup, restore executor, metrics exporter and product caller, together with implementation/configuration digests and policy revisions;
+- independent FBSDE acceptance evidence for dataset registration, filtration/leakage audit, numerical oracle, convergence, calibration, utility improvement, regressions, rollback trigger and staged runtime receipts.
 
-The accurate capability description is:
+All learning and acceptance receipts remain `DENY_ALL`. They cannot register, select, promote, release or activate an artifact.
 
-> deterministic NDU / preference-utility source candidate with stochastic numerical building blocks.
+## Compatibility
 
-The repository contains a deterministic policy-bound evaluator, bounded preference solver, recursive utility support, owner-local protocol binding, conditional covariance/backward-regression numerical support, semantic projection journal, crash-bounded `NduProjectionStoreV1` durable-writer source candidate, and explicit original/whitened Z-coordinate to signed-Q24 conversion evidence. A real request-local read-only call chain is established through Agentd and Control. The stochastic/FBSDE material remains a separately qualified candidate design and numerical substrate; this page does not claim a production learned-FBSDE policy.
+V1 public types and entry points remain available. New consumers should use the sealed V2 receipts and explicit migration functions. The dedicated public-API workflow compiles a V1 external-consumer fixture and runs a pinned semantic-version compatibility check against the immutable PR baseline.
 
-Preference fixed-point exhaustion is unavailable after the registered 64-iteration bound. A bounded solver may publish a successful local termination receipt only when it converges within that bound.
+Historical operation replay answers what a completed operation returned. It is not fresh authorization. Current use separately binds the currently selected projection, immutable artifact, final-use grant, revocation frontier, trusted-time receipt, owner fence, production policy and adapter manifest.
 
-Staged hierarchy validation is identity-based: parent/child conflicts are determined from explicit subject and parent identities, while unrelated hierarchies may update in the same generation. Reusing one subject/generation for a different artifact is a conflict.
+## Qualification gate
 
-The owner-local projection journal is a durability reference. Reopen must replay the journal state machine, not only verify the hash chain; a correctly rehashed but semantically invalid selection or revocation is rejected. Revocation is scoped by objective and subject.
+The candidate is not qualified until all required exact-source and deterministic synthetic-merge suites pass on the same source head, including:
 
-The source truth is intentionally two-level: `sourceBase` remains the canonical repository baseline used by the closed-world implementation-map set, while `currentSourceEvidence` records the post-base current-main implementation commit and scope. These must not be conflated, and neither field substitutes for an exact-head passing qualification receipt.
+- NDU recursion/core and independent numerical checks;
+- development-document and closed-world implementation-map checks;
+- semantic conformance;
+- V1 public API/semver compatibility;
+- strict formatting and Clippy;
+- Control/Agentd product callers;
+- named-host and persistence fault qualification;
+- clean-tree and immutable evidence aggregation.
 
-## Production closure is not established
+An older run from the A-D line, FBSDE line or production-hardening line is historical evidence only.
 
-The following remain separate gates and must stay false/not-established until evidence exists:
+## External production gates
 
-- authenticated production NDU owner/caller beyond the established request-local read-only caller;
-- governed selection and activation of the `NduProjectionStoreV1` writer candidate on the target host;
-- target-host filesystem/fsync/directory-durability and recovery qualification;
-- explicit future-schema migration policy (V1 is the initial on-disk schema and rejects unknown/corrupt images rather than silently migrating them);
-- production retention/deletion, encrypted off-host backup transport, restore drills, monitoring and independent anti-rollback/non-resurrection evidence;
-- independent semantic/convergence acceptance;
-- named-host capacity and recovery measurements;
-- activation/canary/promotion/release authority;
-- production stochastic coefficient/profile admission and independent FBSDE/convergence qualification.
+Source completion cannot manufacture the following evidence. They remain explicit blockers:
 
-`NduProjectionJournalV1` is the semantic journal and `NduProjectionStoreV1` is now a durable-writer **source candidate**. Neither may be relabeled as the selected/activated production writer merely because the source implements deterministic reopen, locking, sync/rename, indeterminate fencing and monotonic restore.
+- the selected target host/filesystem and shared-volume profile;
+- real process/cross-host fencing and protected trusted-time/revocation providers;
+- approved artifact registry and encrypted versioned off-host backup destination;
+- executed backup acknowledgement, restore, retention and deletion drills;
+- deployed metrics export, alert routes and operator acceptance;
+- immutable registered production dataset and independent filtration/leakage audit;
+- independent numerical, convergence, calibration and utility-improvement acceptance;
+- sufficient real shadow/advisory/restricted-write volume and rollback exercise;
+- canary, promotion, activation and release authority.
 
-## Qualification interpretation
+Hosted CI and mounted fault fixtures do not prove physical power-loss durability on a production filesystem.
 
-The dedicated NDU workflow qualifies both source-head and synthetic-merge candidates for pull requests, runs on relevant pushes to `main` and manual dispatch, and includes focused Control `planner_context` / `planner_ndu` caller regressions. This closes the previous trigger and caller-drift gaps, but a workflow definition is not itself a qualification receipt.
+## Documentation index
 
-`exactHeadSourceQualification` remains pending until the exact candidate/head named by the maturity claim has a passing workflow result. Do not promote that field merely because an older source base passed scoped tests or because the NDU source files were unchanged between two commits.
+- `TECHNICAL.md`: stable module architecture and completion definitions.
+- `PRODUCTION_HARDENING.md`: production contracts and external evidence boundary.
+- `UNIFIED_CANDIDATE_2026-09-30.md`: integration order and candidate-specific acceptance plan.
+- `OPERATOR_RUNBOOK.md`: operator procedures.
+- `RECOVERY_OBSERVABILITY_2026-09-28.md`: recovery and observability detail.
+- `STATUS_HISTORY_2026-09-29.md`: preserved predecessor status narrative.
+- `IMPLEMENTATION_MAP.json` and `IMPLEMENTATION_MAP_EXTENSIONS.json`: closed-world source/test bindings.
 
-## Safe claim language
-
-Use `source candidate`, `deterministic kernel candidate`, `durable-writer source candidate`, or `deterministic NDU + stochastic numerical building blocks` while authenticated production composition, writer selection/activation and independent stochastic gates above remain open.
-
-Do not use `production complete`, `fully activated NDU`, `production writer established`, or `learned FBSDE NDU complete` without the corresponding repository and external evidence.
+Safe descriptions are `unified source candidate`, `durable-writer source candidate`, and `deterministic NDU with bounded FBSDE candidate and production contracts`. Do not use `production complete`, `production activated`, `fully qualified`, or `learned FBSDE production policy` without the named current receipts and external authority.

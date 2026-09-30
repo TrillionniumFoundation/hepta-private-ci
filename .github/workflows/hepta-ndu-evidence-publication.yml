@@ -1,0 +1,110 @@
+name: NDU encrypted evidence publication
+# Explicit operator action only, and only the trusted default branch can obtain
+# an OIDC token. No workflow_run or pull_request_target privilege escalation.
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: Completed trusted NDU run containing the aggregate artifact
+        required: true
+        type: string
+      source_sha:
+        description: Exact qualified source commit (40 hex)
+        required: true
+        type: string
+permissions:
+  contents: read
+  actions: read
+jobs:
+  evidence-publication:
+    if: github.ref == 'refs/heads/main'
+    environment: ndu-evidence
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    env:
+      NDU_EVIDENCE_ACCOUNT: ${{ vars.NDU_EVIDENCE_ACCOUNT }}
+      NDU_EVIDENCE_BUCKET: ${{ vars.NDU_EVIDENCE_BUCKET }}
+      NDU_EVIDENCE_KMS_ARN: ${{ vars.NDU_EVIDENCE_KMS_ARN }}
+      SOURCE_SHA: ${{ inputs.source_sha }}
+      EVIDENCE_RUN: ${{ inputs.run_id }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.workflow_sha }}
+          persist-credentials: false
+      - name: Require approved external configuration before credentials
+        env:
+          ROLE: ${{ vars.NDU_EVIDENCE_ROLE_ARN }}
+          REGION: ${{ vars.NDU_EVIDENCE_REGION }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$EVIDENCE_RUN" =~ ^[0-9]+$ ]]
+          [[ "$NDU_EVIDENCE_ACCOUNT" =~ ^[0-9]{12}$ ]]
+          test -n "$ROLE" && test -n "$REGION"
+          test -n "$NDU_EVIDENCE_BUCKET" && test -n "$NDU_EVIDENCE_KMS_ARN"
+      - name: Verify trusted run provenance before credentials
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$EVIDENCE_RUN" > "$RUNNER_TEMP/ndu-run.json"
+          python3 - <<'PYRUN'
+          import json, os
+          from pathlib import Path
+          run = json.loads((Path(os.environ['RUNNER_TEMP']) / 'ndu-run.json').read_text())
+          assert run['repository']['full_name'] == os.environ['GITHUB_REPOSITORY']
+          assert run['head_repository']['full_name'] == os.environ['GITHUB_REPOSITORY']
+          assert run['status'] == 'completed' and run['conclusion'] == 'success'
+          assert run['path'] == '.github/workflows/hepta-ndu-recursion.yml'
+          PYRUN
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: ndu-qualified-evidence-${{ inputs.source_sha }}
+          path: ${{ runner.temp }}/ndu-evidence
+          run-id: ${{ inputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Verify sealed aggregate without executing candidate code
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ndu_evidence.py verify --root "$RUNNER_TEMP/ndu-evidence"
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          report = json.loads((Path(os.environ['RUNNER_TEMP']) / 'ndu-evidence' / 'aggregate.json').read_text())
+          assert report['schema'] == 'hepta.ndu.aggregate-evidence.v1'
+          assert report['sourceSha'] == os.environ['SOURCE_SHA'] and report['passed'] is True
+          assert report['productionActivation'] is False and len(report['suites']) == 12
+          import sys
+          sys.path.insert(0, 'scripts')
+          from hepta_ndu_evidence import aggregate
+          assert aggregate(Path(os.environ['RUNNER_TEMP']) / 'ndu-evidence', report['sourceSha'], report['baseSha'], report['mergeSha']) == report
+          PY
+          python3 scripts/hepta_ndu_evidence.py pack --root "$RUNNER_TEMP/ndu-evidence" --output "$RUNNER_TEMP/ndu-evidence.tar.gz"
+      - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
+        with:
+          role-to-assume: ${{ vars.NDU_EVIDENCE_ROLE_ARN }}
+          aws-region: ${{ vars.NDU_EVIDENCE_REGION }}
+          allowed-account-ids: ${{ vars.NDU_EVIDENCE_ACCOUNT }}
+          role-session-name: ndu-evidence-${{ github.run_id }}
+          unset-current-credentials: true
+      - name: Publish identified KMS-encrypted version and verify readback
+        shell: bash
+        run: |
+          set -euo pipefail
+          DIGEST=$(sha256sum "$RUNNER_TEMP/ndu-evidence.tar.gz" | cut -d' ' -f1)
+          export NDU_EVIDENCE_KEY="ndu-evidence/$SOURCE_SHA/$DIGEST.tar.gz"
+          python3 scripts/hepta_ndu_evidence.py publish --root "$RUNNER_TEMP/ndu-evidence.tar.gz" --output "$RUNNER_TEMP/evidence-publication.json"
+      - name: Retain successful publication receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ndu-evidence-publication-${{ inputs.source_sha }}
+          path: ${{ runner.temp }}/evidence-publication.json
+          if-no-files-found: error
