@@ -1,11 +1,13 @@
-name: channel.matrix documentation consistency
+name: channel.matrix documentation contract
 
 on:
   pull_request:
     paths:
       - 'docs/modules/channel.matrix/**'
       - 'codex-rs/hepta-matrix-store/migrations/**'
-      - 'scripts/tests/test_channel_matrix_documentation.py'
+      - 'scripts/channel_matrix_docs.py'
+      - 'scripts/channel_matrix_migrations.py'
+      - 'scripts/tests/test_channel_matrix_doc*.py'
       - '.github/workflows/channel-matrix-materialize.yml'
   workflow_dispatch: {}
 
@@ -18,14 +20,18 @@ concurrency:
 
 jobs:
   validate:
-    name: Matrix documentation consistency
+    name: Matrix documentation contract
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
-      - name: Verify migration floor, rollback contract, and read-only publication policy
+      - name: Verify generated status, migration inventory and documentation policy
         env:
           PYTHONDONTWRITEBYTECODE: '1'
-        run: python3 -m unittest discover -s scripts/tests -p 'test_channel_matrix_documentation.py' -v
+        run: |
+          set -euo pipefail
+          python3 scripts/channel_matrix_docs.py --check
+          python3 scripts/channel_matrix_migrations.py --check
+          python3 -m unittest discover -s scripts/tests -p 'test_channel_matrix_doc*.py' -v
