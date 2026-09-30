@@ -304,20 +304,29 @@ class ProcessTests(unittest.TestCase):
                                        stdout=log, stderr=subprocess.STDOUT)
             try:
                 deadline = time.monotonic() + 5
-                while not marker.exists() and time.monotonic() < deadline:
+                child_pid = None
+                while time.monotonic() < deadline:
                     if process.poll() is not None:
                         self.fail((self.root / "runner.log").read_text())
+                    if marker.exists():
+                        raw_pid = marker.read_text().strip()
+                        if raw_pid.isdecimal():
+                            child_pid = int(raw_pid)
+                            break
                     time.sleep(0.01)
-                self.assertTrue(marker.exists(), "child never reached ready boundary")
+                self.assertIsNotNone(
+                    child_pid,
+                    "child never published a complete ready-boundary PID",
+                )
                 process.send_signal(signum)
                 self.assertEqual(process.wait(timeout=8), 1)
             finally:
                 if process.poll() is None:
                     process.kill()
                     process.wait()
-                if marker.exists():
+                if child_pid is not None:
                     try:
-                        os.kill(int(marker.read_text()), signal.SIGKILL)
+                        os.kill(child_pid, signal.SIGKILL)
                     except ProcessLookupError:
                         pass
         path = self.root / execution.DIRECTORY / "execution.json"
