@@ -1,8 +1,8 @@
-name: intuition.policy One-shot Source Authoring
+name: intuition.policy One-shot Source Authoring (macOS hosted)
 
 on:
   push:
-    branches: [codex/intuition-policy-production-closure-20260927]
+    branches: [codex/intuition-policy-authoring-macos-20260930]
     paths:
       - ".github/intuition-authoring-patch/READY"
       - ".github/workflows/intuition-source-export.yml"
@@ -11,13 +11,13 @@ permissions:
   contents: write
 
 concurrency:
-  group: intuition-one-shot-authoring-${{ github.ref }}
+  group: intuition-one-shot-authoring-macos-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   apply-verify-push:
-    name: Apply, format, verify, and publish source patch
-    runs-on: ubuntu-24.04
+    name: Apply, format, verify, and publish source patch on macOS
+    runs-on: macos-15
     timeout-minutes: 90
     steps:
       - name: Check out exact authoring head
@@ -118,7 +118,7 @@ jobs:
       - name: Upload exact patch evidence
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: intuition-final-use-patch-${{ env.AUTHORING_HEAD }}-${{ github.run_attempt }}
+          name: intuition-final-use-patch-macos-${{ env.AUTHORING_HEAD }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/intuition-patched-source/
           if-no-files-found: error
           retention-days: 7
@@ -187,11 +187,12 @@ jobs:
         shell: bash
         env:
           TARGET_BRANCH: codex/intuition-policy-production-closure-20260927
+          TARGET_EXPECTED_HEAD: 879fde35544c5d91923d8fc4253a22e452728872
           CLEAN_PARENT: 696447e733e22e425cd05691d98f4fe0ef63f759
         run: |
           set -euo pipefail
           git diff --check
-          test -z "$(find . -type d -name __pycache__ -print -quit)"
+          test -z "$(find . -type d -name __pycache__ -print | head -n 1)"
           git config user.name "OpenAI source authoring"
           git config user.email "assistant@openai.invalid"
           git add -A
@@ -201,7 +202,7 @@ jobs:
             'fix(intuition): revalidate authority at final use' \
             'Preserve the sole ledger owner while moving fresh time, generation, and three-party qualification checks under its serialization boundary. Add typed boundary domains, stage telemetry, legacy-consumer drift checks, and separate safety/effectiveness/operator acceptance states.' \
             | git commit-tree "$tree" -p "$CLEAN_PARENT")"
-          git push --force-with-lease="refs/heads/$TARGET_BRANCH:$AUTHORING_HEAD" \
+          git push --force-with-lease="refs/heads/$TARGET_BRANCH:$TARGET_EXPECTED_HEAD" \
             origin "$commit:refs/heads/$TARGET_BRANCH"
           printf 'published_tree=%s\npublished_commit=%s\n' "$tree" "$commit"
 
@@ -227,7 +228,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: intuition-authoring-failure-${{ env.AUTHORING_HEAD }}-${{ github.run_attempt }}
+          name: intuition-authoring-failure-macos-${{ env.AUTHORING_HEAD }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/intuition-authoring-failure/
           if-no-files-found: warn
           retention-days: 7
