@@ -11,6 +11,7 @@
 mod authority;
 mod authority_schema;
 mod authority_store;
+mod bootstrap;
 mod host;
 mod issuer_registry;
 #[cfg(feature = "legacy-preverified-replay")]
@@ -35,6 +36,7 @@ pub use authority::PolicyEffect;
 pub use authority::PolicySpec;
 pub use authority::TrustedTimeSample;
 pub(crate) use authority_store::AuthBusAuthorityStore;
+pub use bootstrap::bootstrap_retryable;
 pub use host::AuthBusAuthorityHost;
 pub use issuer_registry::IssuerRegistryError;
 pub use issuer_registry::PrivateIssuerRegistryDocument;
