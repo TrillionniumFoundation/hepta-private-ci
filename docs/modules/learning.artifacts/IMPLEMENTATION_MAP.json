@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "b876bf1612393aee9732ed539942a758dc0b7778",
-    "tree": "de8ba53ba1160b71abcf2e27a02d90cc248878b6"
+    "commit": "39facdecf49bacae57820cc09843b96820bb2732",
+    "tree": "cdb76a38d9581560ee3a363b1b7ef2936cb7beda"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.artifacts",
@@ -523,11 +523,23 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
-      "object": "28e565a3569f9148e3d371b0150a02e14bf2fde4"
+      "object": "9568862f6e49e3993716b6d3de26ccf3b98cbfd5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_ranker_owner_tests.rs",
+      "object": "6572d46b8fdc4f7640fe35ed521e8f5096238b77"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts",
-      "object": "334ab1e3c50d5dfada22eae8c0d1b5afe291ad4d"
+      "object": "7404ce972e41f9d71d2e076ef18cefc7b3046f0f"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/admission_storage.rs",
+      "object": "69ab1954b820da922b385179b8fc875fad0e4b65"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/admission_storage_tests.rs",
+      "object": "75e17ba04e2589d98f2712814b7052403f0e3858"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/admission_v3.rs",
@@ -543,7 +555,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/iteration_ledger.rs",
-      "object": "eacbe57a25d6b66c5c571d819b4b4981b3c4ef3c"
+      "object": "ac10fb3b628c1c6227b2767ca61897e733f5b0e2"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs",
@@ -551,15 +563,19 @@
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
-      "object": "efc5bcf6168b72cae9a1ecfd7451ad65c37ad810"
+      "object": "f7f88665a21a8600f3d490927e2ab4faec507ff1"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
-      "object": "f04b6946ea1f06b2cf18ae472ba798ca39e3996f"
+      "object": "ab92efd80c159042ac8fe4c82ec8765e9bbf156e"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/pinned.rs",
-      "object": "3a5118ecda2c48d3f613c76b50060589cba3026c"
+      "object": "c2486be0a5c47ffa302cf043e3fdb3687cc28189"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/pinned_tests.rs",
+      "object": "7d33aaf6099caba3aa084a296a30e2dcb67ccb4b"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/publication.rs",
@@ -571,7 +587,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/selection.rs",
-      "object": "722f0e63cae22db7b6317dbf9f481478dfe101ed"
+      "object": "5fa45d7b9fdff57750b7f49c936734b560493407"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/sensor_core_registry.rs",
@@ -579,7 +595,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/storage.rs",
-      "object": "77d4bd2238341a204b56f31d62ca2cc36289a29e"
+      "object": "0700e12545a9b98778f4c25df712a13788972ec8"
     },
     {
       "path": "codex-rs/hepta-shadow-qualification/tests/support/tabular_reload.rs",
@@ -587,7 +603,7 @@
     },
     {
       "path": "docs/modules/learning.artifacts/TECHNICAL.md",
-      "object": "1c8e628bdd3f1125657c4de510ec95ebe1a4a768"
+      "object": "a52677c60c5465ccf6459e9612922399067e4545"
     }
   ]
 }
