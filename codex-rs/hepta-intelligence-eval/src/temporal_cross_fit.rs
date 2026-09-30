@@ -20,6 +20,12 @@ use crate::freeze_cross_fold_plan_v2;
 const MAX_CROSS_FIT_ROWS: usize = 1_000_000;
 const MAX_CROSS_FIT_ACTION_CELLS: usize = 4_000_000;
 
+#[derive(Clone, Copy)]
+struct TemporalCrossFitBudget {
+    rows: usize,
+    action_cells: usize,
+}
+
 /// Execute every preregistered fold and reject any lineage or digest substitution.
 ///
 /// Each tuple is `(fold_id, fold_plan, training_rows, held_out_targets)`. Inputs
@@ -29,16 +35,54 @@ impl CrossFoldPlanV1 {
     pub fn execute_temporal_cross_fit_v1(
         self,
         metric_roles: Vec<MetricRoleContractV2>,
-        mut inputs: Vec<(
+        inputs: Vec<(
             StableId,
             TemporalFoldPlan,
             Vec<OutcomeTrainingSample>,
             Vec<HeldOutTarget>,
         )>,
     ) -> Result<CrossFoldPlanReceiptV1, ProductEvaluationError> {
+        self.execute_temporal_cross_fit_with_budget(
+            metric_roles,
+            inputs,
+            TemporalCrossFitBudget {
+                rows: MAX_CROSS_FIT_ROWS,
+                action_cells: MAX_CROSS_FIT_ACTION_CELLS,
+            },
+        )
+    }
+
+    fn execute_temporal_cross_fit_with_budget(
+        self,
+        metric_roles: Vec<MetricRoleContractV2>,
+        mut inputs: Vec<(
+            StableId,
+            TemporalFoldPlan,
+            Vec<OutcomeTrainingSample>,
+            Vec<HeldOutTarget>,
+        )>,
+        budget: TemporalCrossFitBudget,
+    ) -> Result<CrossFoldPlanReceiptV1, ProductEvaluationError> {
         let frozen = freeze_cross_fold_plan_v2(self.clone(), metric_roles)?;
         if inputs.len() != self.folds.len() {
             return Err(ProductEvaluationError::Binding("cross-fit fold coverage"));
+        }
+        // Admit the entire input before allocating global identity sets or
+        // fitting any fold. A late oversized fold must not follow earlier work.
+        let mut total_rows = 0_usize;
+        let mut total_action_cells = 0_usize;
+        for (_, _, training, targets) in &inputs {
+            total_rows = total_rows
+                .checked_add(training.len())
+                .and_then(|value| value.checked_add(targets.len()))
+                .filter(|value| *value <= budget.rows)
+                .ok_or(ProductEvaluationError::Binding("cross-fit row budget"))?;
+            for target in targets {
+                total_action_cells = total_action_cells
+                    .checked_add(target.actions.len())
+                    .filter(|value| *value <= budget.action_cells)
+                    .ok_or(ProductEvaluationError::Binding("cross-fit action budget"))?;
+            }
         }
         inputs.sort_by_key(|input| input.0.clone());
         if inputs.windows(2).any(|rows| rows[0].0 == rows[1].0) {
@@ -51,6 +95,7 @@ impl CrossFoldPlanV1 {
         // before fitting any fold so a duplicate cannot be masked by the first
         // affected fold's changed prediction digest.
         let mut held_out_decisions = BTreeSet::new();
+        let mut final_holdout_decisions = BTreeSet::new();
         for (_, _, _, targets) in &inputs {
             for target in targets {
                 if !held_out_decisions.insert(target.decision_id.clone()) {
@@ -58,28 +103,27 @@ impl CrossFoldPlanV1 {
                         "cross-fit held-out decision reuse",
                     ));
                 }
+                if target.window_id == self.final_holdout_window_id {
+                    final_holdout_decisions.insert(&target.decision_id);
+                }
             }
         }
-
-        let mut total_rows = 0_usize;
-        let mut total_action_cells = 0_usize;
+        for (_, _, training, _) in &inputs {
+            if training
+                .iter()
+                .any(|sample| final_holdout_decisions.contains(&sample.decision_id))
+            {
+                return Err(ProductEvaluationError::Binding(
+                    "cross-fit final-holdout decision in training",
+                ));
+            }
+        }
 
         for (partition, (fold_id, fold_plan, training, targets)) in
             declared.iter().zip(inputs.iter())
         {
             if partition.fold_id != *fold_id || fold_plan.fold_id != *fold_id {
                 return Err(ProductEvaluationError::Binding("cross-fit fold identity"));
-            }
-            total_rows = total_rows
-                .checked_add(training.len())
-                .and_then(|value| value.checked_add(targets.len()))
-                .filter(|value| *value <= MAX_CROSS_FIT_ROWS)
-                .ok_or(ProductEvaluationError::Binding("cross-fit row budget"))?;
-            for target in targets {
-                total_action_cells = total_action_cells
-                    .checked_add(target.actions.len())
-                    .filter(|value| *value <= MAX_CROSS_FIT_ACTION_CELLS)
-                    .ok_or(ProductEvaluationError::Binding("cross-fit action budget"))?;
             }
             validate_lineage(partition, training, targets)?;
             let receipt = fit_temporal_fold(fold_plan, training, targets).map_err(|error| {
@@ -146,6 +190,14 @@ mod tests {
     use crate::MetricRoleV2;
     use codex_hepta_types::FixedQ32;
 
+    type FoldInput = (
+        StableId,
+        TemporalFoldPlan,
+        Vec<OutcomeTrainingSample>,
+        Vec<HeldOutTarget>,
+    );
+    type CrossFitFixture = (CrossFoldPlanV1, Vec<MetricRoleContractV2>, Vec<FoldInput>);
+
     fn id(value: &str) -> StableId {
         StableId::new(value).expect("id")
     }
@@ -154,18 +206,7 @@ mod tests {
         Digest32::of_bytes(value.as_bytes())
     }
 
-    fn fold_fixture(
-        name: &str,
-        final_window: bool,
-    ) -> (
-        CrossFoldPartitionV1,
-        (
-            StableId,
-            TemporalFoldPlan,
-            Vec<OutcomeTrainingSample>,
-            Vec<HeldOutTarget>,
-        ),
-    ) {
+    fn fold_fixture(name: &str, final_window: bool) -> (CrossFoldPartitionV1, FoldInput) {
         let fold_id = id(name);
         let plan = TemporalFoldPlan {
             plan_digest: digest(&format!("plan:{name}")),
@@ -221,16 +262,7 @@ mod tests {
         (partition, (fold_id, plan, training, targets))
     }
 
-    fn fixture() -> (
-        CrossFoldPlanV1,
-        Vec<MetricRoleContractV2>,
-        Vec<(
-            StableId,
-            TemporalFoldPlan,
-            Vec<OutcomeTrainingSample>,
-            Vec<HeldOutTarget>,
-        )>,
-    ) {
+    fn fixture() -> CrossFitFixture {
         let (first_partition, first_input) = fold_fixture("fold-a", true);
         let (second_partition, second_input) = fold_fixture("fold-b", false);
         let metric = id("success");
@@ -285,8 +317,7 @@ mod tests {
         let (plan, roles, mut inputs) = fixture();
         inputs[0].2[0].principal_lineage = id("substituted-principal");
         assert!(matches!(
-            plan.clone()
-                .execute_temporal_cross_fit_v1(roles.clone(), inputs),
+            plan.execute_temporal_cross_fit_v1(roles, inputs),
             Err(ProductEvaluationError::Binding("cross-fit lineage"))
         ));
         let (mut plan, roles, inputs) = fixture();
@@ -310,5 +341,100 @@ mod tests {
                 "cross-fit held-out decision reuse"
             ))
         ));
+    }
+
+    #[test]
+    fn final_holdout_decisions_cannot_supply_another_folds_training_labels() {
+        let (mut plan, roles, mut inputs) = fixture();
+        let final_decision = inputs[1].3[0].decision_id.clone();
+        inputs[0].2[0].decision_id = final_decision;
+        // Recompute both declared output digests: this is actual training-label
+        // leakage with otherwise matching lineage/digests, not stale evidence.
+        let input = &inputs[0];
+        let receipt = fit_temporal_fold(&input.1, &input.2, &input.3)
+            .expect("each individual fold would fit");
+        let partition = plan
+            .folds
+            .iter_mut()
+            .find(|partition| partition.fold_id == input.0)
+            .expect("training partition");
+        partition.model_digest = receipt.model_digest;
+        partition.predictions_digest = receipt.predictions_digest;
+        assert!(matches!(
+            plan.execute_temporal_cross_fit_v1(roles, inputs),
+            Err(ProductEvaluationError::Binding(
+                "cross-fit final-holdout decision in training"
+            ))
+        ));
+    }
+
+    #[test]
+    fn ordinary_holdout_training_and_shared_training_decisions_remain_allowed() {
+        let (mut plan, roles, mut inputs) = fixture();
+        let ordinary_target = inputs[0].3[0].clone();
+        let shared_training = inputs[0].2[0].clone();
+        let input = &mut inputs[1];
+        input.1.training_watermark = 30;
+        input.1.evaluation_start = 40;
+        input.3[0].decision_at = 40;
+        input.2[0] = shared_training;
+        input.2.push(OutcomeTrainingSample {
+            decision_id: ordinary_target.decision_id,
+            principal_lineage: ordinary_target.principal_lineage,
+            episode_lineage: ordinary_target.episode_lineage,
+            window_id: ordinary_target.window_id,
+            action_id: id("action"),
+            outcome: FixedQ32::ONE,
+            observed_at: 30,
+            evidence_digest: digest("ordinary-holdout-training-outcome"),
+        });
+        let receipt = fit_temporal_fold(&input.1, &input.2, &input.3)
+            .expect("later independent temporal fold");
+        let partition = plan
+            .folds
+            .iter_mut()
+            .find(|partition| partition.fold_id == input.0)
+            .expect("later partition");
+        partition.training_principals = unique(input.2.iter().map(|row| &row.principal_lineage));
+        partition.training_episodes = unique(input.2.iter().map(|row| &row.episode_lineage));
+        partition.training_windows = unique(input.2.iter().map(|row| &row.window_id));
+        partition.model_digest = receipt.model_digest;
+        partition.predictions_digest = receipt.predictions_digest;
+        plan.execute_temporal_cross_fit_v1(roles, inputs)
+            .expect("ordinary cross-fit and consistent shared training");
+    }
+
+    #[test]
+    fn complete_input_budgets_reject_before_any_fold_fitting() {
+        let (mut plan, roles, inputs) = fixture();
+        plan.folds
+            .iter_mut()
+            .find(|partition| partition.fold_id == id("fold-a"))
+            .expect("first canonical fold")
+            .model_digest = digest("would-fail-after-first-fit");
+        let cases = [
+            (
+                TemporalCrossFitBudget {
+                    rows: 5,
+                    action_cells: MAX_CROSS_FIT_ACTION_CELLS,
+                },
+                "cross-fit row budget",
+            ),
+            (
+                TemporalCrossFitBudget {
+                    rows: MAX_CROSS_FIT_ROWS,
+                    action_cells: 1,
+                },
+                "cross-fit action budget",
+            ),
+        ];
+        for (budget, expected) in cases {
+            assert!(matches!(
+                plan.clone().execute_temporal_cross_fit_with_budget(
+                    roles.clone(), inputs.clone(), budget,
+                ),
+                Err(ProductEvaluationError::Binding(actual)) if actual == expected
+            ));
+        }
     }
 }
