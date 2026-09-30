@@ -222,7 +222,7 @@ fn validate_record(record: &AgentdSelfIterationRecordV1) -> Result<(), AgentdErr
         ]
         .into_iter()
         .flatten()
-        .any(|digest| digest.is_zero())
+        .any(codex_hepta_agent_components::types::Digest32::is_zero)
     {
         return Err(invalid(
             "iteration record identity or phase evidence incomplete",

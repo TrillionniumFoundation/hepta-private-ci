@@ -86,8 +86,11 @@ fn canary_and_forward_rollback_keep_real_durable_receipts_and_revoke_old_epochs(
         NeuronOperationStatusV2::Committed { .. }
     ));
     checked(host.quarantine_iteration());
-    checked(host.install_iteration_generation(rollback_handle.clone(), 2));
+    checked(host.install_iteration_generation(rollback_handle, 2));
     checked(host.release_iteration_quarantine());
     assert_eq!(checked(host.generation_snapshot()).active_generation, 3);
     assert_eq!(second.calls.load(Ordering::SeqCst), 1);
 }
+
+#[path = "neuron_runtime_v2_archive_tests.rs"]
+mod archive_tests;
