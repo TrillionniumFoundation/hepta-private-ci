@@ -1,10 +1,10 @@
 {
   "schema": "hepta.ui-native-qualification-run-request.v1",
-  "requestedAt": "2026-09-30T03:40:00Z",
+  "requestedAt": "2026-09-30T07:20:00Z",
   "canonicalBaseInfrastructureSha": "6f145464d9d58233c59aafe262a1250a5ea873a8",
-  "candidateReviewHeadBeforeRequest": "f5ae50d02c19db6dd6b22ac47e064605f06cf432",
-  "implementationSourceSha": "a417e5756d4dba18737b9d3e6aa8b13016c23662",
-  "implementationSourceTree": "76c085b09b249be772deae1ce8fdbab0acfb0908",
+  "candidateReviewHeadBeforeRequest": "9be52d267d02a76f73e8a94fd086191c351d1c70",
+  "implementationSourceSha": "bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52",
+  "implementationSourceTree": "136c62bfe0cc0ca6c7455169162c3f5a1b951f8a",
   "subjects": [
     "linux-exact-head",
     "linux-fixed-ordered-parent-merge",
@@ -22,5 +22,5 @@
     "deploymentQualified": false,
     "releaseAuthorized": false
   },
-  "purpose": "Trigger the sole read-only qualification workflow after installing it on the canonical pull-request base. This request is evidence routing only and does not modify product implementation paths or promote any release flag."
+  "purpose": "Trigger the sole read-only qualification workflow against the post-convergence canonical exact head. This request is evidence routing only, changes no product implementation path, and does not promote any production, deployment, or release flag."
 }
