@@ -1,0 +1,61 @@
+{
+  "schema": "hepta.authbus.product-caller-contract.v2",
+  "module": "auth.authbus",
+  "activation": false,
+  "callers": [
+    {
+      "name": "agentd_signed_text",
+      "sourcePath": "codex-rs/hepta-agentd/src/authbus_ingress.rs",
+      "testPaths": [
+        "codex-rs/hepta-agentd/tests/authbus_text_product.rs",
+        "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs"
+      ],
+      "requiredTokens": [
+        "enqueue_authbus_message",
+        "sync_replay_checkpoint",
+        "message.authenticate(",
+        "require_ready(state)?"
+      ],
+      "forbiddenTokens": [
+        "AuthBusAuthorityStore"
+      ],
+      "contracts": {
+        "noBypass": "Signed ingress commits replay advancement and outbox insertion through HeptaEvidenceStore before reporting readiness.",
+        "canonicalDigest": "authbus_text_claims derives subject, scope and payload digest from canonical request fields.",
+        "authorityIdentity": "The agent identity supplies subject and domain-separated scope.",
+        "ambiguousOutcome": "A committed message is preserved when authority changes; readiness is rechecked before success.",
+        "terminalCleanup": "Outbox delivery owner performs claim, retry, acknowledgement and quarantine lifecycle.",
+        "recoveryOwner": "Evidence store plus ReplayCheckpointFile own restart rollback detection.",
+        "unavailableBehavior": "No explicit trust configuration or non-ready generation fails closed.",
+        "correlation": "Delivery ID and queue receipt digest cross the component boundary."
+      }
+    },
+    {
+      "name": "bao_kv_v2_read",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "testPaths": [
+        "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+      ],
+      "requiredTokens": [
+        "consume_kv_v2_with_authbus",
+        "authbus_effect_digest",
+        "mark_dispatch_attempted",
+        "mark_indeterminate",
+        "settle_observed"
+      ],
+      "forbiddenTokens": [
+        "AuthBusAuthorityStore"
+      ],
+      "contracts": {
+        "noBypass": "The quota-controlled public product path receives only AuthBusExecutionPort and final-use authority.",
+        "canonicalDigest": "The effect digest binds durable operation identity to the exact final-use tuple.",
+        "authorityIdentity": "Principal, action, scope, policy revision, quota and operation ID are checked before dispatch.",
+        "ambiguousOutcome": "Transport ambiguity after dispatch preserves an indeterminate reservation and forbids blind refund.",
+        "terminalCleanup": "Authenticated settlement evidence is required for terminal quota accounting.",
+        "recoveryOwner": "AuthBus restart reconciliation promotes unresolved DispatchAttempted rows conservatively.",
+        "unavailableBehavior": "AuthBus or evidence-provider failure returns an error before provider use unless dispatch is already durable.",
+        "correlation": "Reservation ID, operation ID, request digest and terminal evidence digest connect control and provider observations."
+      }
+    }
+  ]
+}
