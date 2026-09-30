@@ -318,7 +318,11 @@ impl<D: ModelDriver> InferenceWorker<D> {
             self.active_requests.remove(&request.request_id);
             loaded.active_requests = loaded.active_requests.saturating_sub(1);
         }
-        self.observe_memory(model_id, observed.observed_memory_bytes, /*transient_bytes*/ 0)?;
+        self.observe_memory(
+            model_id,
+            observed.observed_memory_bytes,
+            /*transient_bytes*/ 0,
+        )?;
         if observed.consumed_tokens > request.maximum_tokens
             || observed.consumed_tokens > request.reservation_maximum_tokens
         {

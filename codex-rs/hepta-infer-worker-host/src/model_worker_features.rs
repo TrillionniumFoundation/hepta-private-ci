@@ -10,6 +10,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+use super::DriverModelHandle;
 use super::Error;
 use super::ExecutionStatus;
 use super::InferenceWorker;
@@ -19,7 +20,6 @@ use super::ModelDriver;
 use super::ModelManifest;
 use super::Q24_STATE_LIMIT;
 use super::WorkerRequest;
-use super::DriverModelHandle;
 use super::validate_digest;
 use super::validate_identity;
 use super::validate_request;

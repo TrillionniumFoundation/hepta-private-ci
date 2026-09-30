@@ -554,7 +554,9 @@ fn expiration_never_retries_unknown_unload_or_releases_unknown_execution() {
                 Err(Error::DriverFailure(_))
             ));
         } else {
-            worker.run(/*now_ms*/ 100, "model.1", request()).expect("unknown run");
+            worker
+                .run(/*now_ms*/ 100, "model.1", request())
+                .expect("unknown run");
         }
         let expected = if unknown_unload {
             Error::DriverUnavailable
@@ -588,15 +590,24 @@ fn runtime_growth_and_smaller_later_observations_preserve_aggregate_load_budget(
     )
     .expect("worker");
     worker.load_model(/*now_ms*/ 100, manifest()).expect("load");
-    worker.run(/*now_ms*/ 100, "model.1", request()).expect("growth");
+    worker
+        .run(/*now_ms*/ 100, "model.1", request())
+        .expect("growth");
     worker.driver.run_memory_bytes = Some(1_024);
-    worker.run(/*now_ms*/ 100, "model.1", request()).expect("smaller observation");
+    worker
+        .run(/*now_ms*/ 100, "model.1", request())
+        .expect("smaller observation");
     let mut second = manifest();
     second.model_id = "model.2".to_string();
-    worker.load_model(/*now_ms*/ 100, second).expect("exact aggregate limit");
+    worker
+        .load_model(/*now_ms*/ 100, second)
+        .expect("exact aggregate limit");
     let mut third = manifest();
     third.model_id = "model.3".to_string();
-    assert_eq!(worker.load_model(/*now_ms*/ 100, third), Err(Error::ModelCapacity));
+    assert_eq!(
+        worker.load_model(/*now_ms*/ 100, third),
+        Err(Error::ModelCapacity)
+    );
     assert_eq!(worker.driver.loaded, 2);
     assert_eq!(worker.driver.unload_calls, 1);
 }
@@ -615,16 +626,35 @@ fn runtime_aggregate_overflow_fences_admission_until_actual_idle_drain() {
         driver,
     )
     .expect("worker");
-    worker.load_model(/*now_ms*/ 100, manifest()).expect("first load");
+    worker
+        .load_model(/*now_ms*/ 100, manifest())
+        .expect("first load");
     let mut second = manifest();
     second.model_id = "model.2".to_string();
-    worker.load_model(/*now_ms*/ 100, second).expect("second load");
-    assert_eq!(worker.run(/*now_ms*/ 100, "model.1", request()), Err(Error::ModelCapacity));
-    assert_eq!(worker.run(/*now_ms*/ 100, "model.1", request()), Err(Error::ModelCapacity));
-    worker.unload_model(/*_now_ms*/ 100, "model.1").expect("known idle cleanup");
-    assert_eq!(worker.load_model(/*now_ms*/ 100, manifest()), Err(Error::ModelCapacity));
-    worker.unload_model(/*_now_ms*/ 100, "model.2").expect("complete drain");
-    worker.load_model(/*now_ms*/ 100, manifest()).expect("admission after actual drain");
+    worker
+        .load_model(/*now_ms*/ 100, second)
+        .expect("second load");
+    assert_eq!(
+        worker.run(/*now_ms*/ 100, "model.1", request()),
+        Err(Error::ModelCapacity)
+    );
+    assert_eq!(
+        worker.run(/*now_ms*/ 100, "model.1", request()),
+        Err(Error::ModelCapacity)
+    );
+    worker
+        .unload_model(/*_now_ms*/ 100, "model.1")
+        .expect("known idle cleanup");
+    assert_eq!(
+        worker.load_model(/*now_ms*/ 100, manifest()),
+        Err(Error::ModelCapacity)
+    );
+    worker
+        .unload_model(/*_now_ms*/ 100, "model.2")
+        .expect("complete drain");
+    worker
+        .load_model(/*now_ms*/ 100, manifest())
+        .expect("admission after actual drain");
     assert_eq!(worker.driver.unload_calls, 2);
 }
 
@@ -648,8 +678,13 @@ fn feature_transient_peak_and_arithmetic_overflow_are_bounded_with_idle_cleanup(
             worker.run_neuron_features(/*now_ms*/ 100, "model.1", neuron_feature_request()),
             Err(Error::ModelCapacity)
         );
-        assert_eq!(worker.run(/*now_ms*/ 100, "model.1", request()), Err(Error::ModelCapacity));
-        worker.unload_model(/*_now_ms*/ 100, "model.1").expect("cleanup");
+        assert_eq!(
+            worker.run(/*now_ms*/ 100, "model.1", request()),
+            Err(Error::ModelCapacity)
+        );
+        worker
+            .unload_model(/*_now_ms*/ 100, "model.1")
+            .expect("cleanup");
         assert_eq!(worker.driver.loaded, 0);
     }
 }
@@ -684,9 +719,14 @@ fn failed_and_partial_feature_values_are_discarded_before_typed_receipt() {
         assert!(receipt.drive_q24.is_empty());
         assert!(receipt.prediction_q24.is_empty());
         if indeterminate {
-            assert_eq!(worker.unload_model(/*_now_ms*/ 100, "model.1"), Err(Error::ActiveRequests));
+            assert_eq!(
+                worker.unload_model(/*_now_ms*/ 100, "model.1"),
+                Err(Error::ActiveRequests)
+            );
         } else {
-            worker.unload_model(/*_now_ms*/ 100, "model.1").expect("terminal cleanup");
+            worker
+                .unload_model(/*_now_ms*/ 100, "model.1")
+                .expect("terminal cleanup");
         }
     }
 }
@@ -711,5 +751,7 @@ fn failed_feature_observation_still_validates_identity_bounds() {
         worker.run_neuron_features(/*now_ms*/ 100, "model.1", neuron_feature_request()),
         Err(Error::InvalidDigest("encoder"))
     );
-    worker.unload_model(/*_now_ms*/ 100, "model.1").expect("known terminal cleanup");
+    worker
+        .unload_model(/*_now_ms*/ 100, "model.1")
+        .expect("known terminal cleanup");
 }
