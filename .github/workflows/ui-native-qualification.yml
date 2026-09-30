@@ -1,0 +1,505 @@
+name: ui.native exact-source qualification
+
+on:
+  pull_request:
+    branches: [work/ui-native-qualified-integration-20260928]
+    paths:
+      - apps/hepta-native/**
+      - codex-rs/hepta-native-gateway/**
+      - codex-rs/hepta-contracts/**
+      - codex-rs/hepta-private-state/**
+      - codex-rs/keyring-store/**
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - CALLERS.toml
+      - docs/modules/ui.native/**
+      - scripts/check_hepta_ui_native_convergence.py
+      - scripts/hepta_ui_native_*.py
+      - scripts/qualify_hepta_ui_native_storage.py
+      - scripts/test_hepta_ui_native_*.py
+      - .github/workflows/ui-native-qualification.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ui-native-exact-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
+  cancel-in-progress: false
+
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: "1"
+  HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha }}
+
+jobs:
+  subject:
+    name: ui.native / source identity
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    outputs:
+      candidate: ${{ steps.identity.outputs.candidate }}
+      base: ${{ steps.identity.outputs.base }}
+      implementation: ${{ steps.identity.outputs.implementation }}
+      matrix: ${{ steps.identity.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ env.HEAD_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - id: identity
+        name: Bind candidate, base, implementation and seven qualification subjects
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$HEAD_SHA"
+          test -n "$BASE_SHA"
+          git cat-file -e "$BASE_SHA^{commit}"
+          implementation="$(python3 - <<'PYTHON'
+          import json
+          from pathlib import Path
+          print(json.loads(Path('apps/hepta-native/CANDIDATE.json').read_text(encoding='utf-8'))['implementationSourceSha'])
+          PYTHON
+          )"
+          git cat-file -e "$implementation^{commit}"
+          echo "candidate=$HEAD_SHA" >> "$GITHUB_OUTPUT"
+          echo "base=$BASE_SHA" >> "$GITHUB_OUTPUT"
+          echo "implementation=$implementation" >> "$GITHUB_OUTPUT"
+          echo "matrix=$(python3 scripts/hepta_ui_native_qualification_evidence.py matrix)" >> "$GITHUB_OUTPUT"
+          python3 scripts/check_hepta_ui_native_convergence.py \
+            --emit "$RUNNER_TEMP/ui-native-source-evidence.json"
+          test -z "$(git status --porcelain)"
+      - name: Retain exact source and review-friendly ordinary diff
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p source-snapshot
+          git archive --format=tar "$HEAD_SHA" | gzip -n > source-snapshot/source.tar.gz
+          git rev-parse "$HEAD_SHA" "$HEAD_SHA^{tree}" "$BASE_SHA" "$BASE_SHA^{tree}" \
+            > source-snapshot/identity.txt
+          git diff --binary --full-index "$BASE_SHA" "$HEAD_SHA" \
+            > source-snapshot/review.diff
+          git diff --stat "$BASE_SHA" "$HEAD_SHA" \
+            > source-snapshot/review.stat
+          sha256sum source-snapshot/source.tar.gz source-snapshot/review.diff \
+            > source-snapshot/sha256.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ui-native-source-${{ steps.identity.outputs.candidate }}-attempt-${{ github.run_attempt }}
+          path: source-snapshot
+          if-no-files-found: error
+          retention-days: 30
+
+  qualify:
+    name: ui.native / ${{ matrix.os }} / ${{ matrix.kind }}
+    needs: subject
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.subject.outputs.matrix) }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 180
+    defaults:
+      run:
+        shell: bash
+    env:
+      CARGO_TARGET_DIR: ${{ github.workspace }}/apps/hepta-native/target
+      CANDIDATE: ${{ needs.subject.outputs.candidate }}
+      BASE: ${{ needs.subject.outputs.base }}
+      KIND: ${{ matrix.kind }}
+      WORKFLOW_SHA: ${{ github.workflow_sha }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Construct exact head or fixed ordered-parent merge
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$WORKFLOW_SHA"
+          git checkout --detach "$CANDIDATE"
+          test "$(git rev-parse HEAD)" = "$CANDIDATE"
+          if test "$KIND" = merge; then
+            tree="$(git merge-tree --write-tree "$BASE" "$CANDIDATE")"
+            merge="$(TREE="$tree" BASE="$BASE" CANDIDATE="$CANDIDATE" python3 - <<'PYTHON'
+          import os
+          import subprocess
+          commit = subprocess.check_output(
+              [
+                  'git', 'commit-tree', os.environ['TREE'],
+                  '-p', os.environ['BASE'], '-p', os.environ['CANDIDATE'],
+              ],
+              input='deterministic ui.native qualification merge\n',
+              text=True,
+              env={
+                  **os.environ,
+                  'GIT_AUTHOR_NAME': 'native-qualification',
+                  'GIT_AUTHOR_EMAIL': 'native-qualification@users.noreply.github.com',
+                  'GIT_COMMITTER_NAME': 'native-qualification',
+                  'GIT_COMMITTER_EMAIL': 'native-qualification@users.noreply.github.com',
+                  'GIT_AUTHOR_DATE': '2000-01-01T00:00:00Z',
+                  'GIT_COMMITTER_DATE': '2000-01-01T00:00:00Z',
+              },
+          ).strip()
+          print(commit)
+          PYTHON
+            )"
+            git checkout --detach "$merge"
+            test "$(git show -s --format=%P HEAD)" = "$BASE $CANDIDATE"
+          fi
+          echo "NATIVE_EXPECTED_HEAD=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          mkdir -p native-evidence/checks
+          git show --no-patch --format='parents=%P%ncommit=%H%ntree=%T%nsubject=%s' HEAD \
+            > native-evidence/source.txt
+          test -z "$(git status --porcelain)"
+      - name: Install Linux native prerequisites
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y \
+            libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev \
+            libxkbcommon-dev libxkbcommon-x11-dev libwayland-dev \
+            libgl1-mesa-dev libssl-dev desktop-file-utils \
+            xvfb xauth dbus-x11 gnome-keyring xdotool x11-utils \
+            python3-cryptography fonts-noto-cjk
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+      - name: Verify identities, registries and Python contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          check() { python3 scripts/hepta_ui_native_qualification_evidence.py run --out native-evidence/checks --label "$1" --timeout 3600 -- "${@:2}"; }
+          check identity python3 scripts/check_hepta_ui_native_convergence.py
+          check registry python3 scripts/test_hepta_module_registry.py
+          check python_tests python3 -m unittest discover -s scripts -p 'test_hepta_ui_native_*.py' -v
+          python3 scripts/hepta_ui_native_qualification_evidence.py inventory \
+            --out native-evidence/inventory.json
+      - name: Strict application and owner formatting and Clippy
+        shell: bash
+        run: |
+          set -euo pipefail
+          check() { python3 scripts/hepta_ui_native_qualification_evidence.py run --out native-evidence/checks --label "$1" --timeout 3600 -- "${@:2}"; }
+          check app_format cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml --check
+          check owner_format cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-native-gateway -p codex-hepta-contracts \
+            -p codex-hepta-private-state -- --check
+          check app_lint cargo +1.95.0 clippy --manifest-path apps/hepta-native/Cargo.toml \
+            --locked --all-targets --all-features -- -D warnings
+          check owner_lint cargo +1.95.0 clippy --manifest-path codex-rs/Cargo.toml \
+            --locked -p codex-hepta-native-gateway -p codex-hepta-contracts \
+            -p codex-hepta-private-state --all-targets --all-features --no-deps -- -D warnings
+      - name: Full tests, release binaries and compiler-negative API boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          check() { python3 scripts/hepta_ui_native_qualification_evidence.py run --out native-evidence/checks --label "$1" --timeout 3600 -- "${@:2}"; }
+          check app_tests cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml \
+            --locked --all-targets
+          check owner_tests cargo +1.95.0 test --manifest-path codex-rs/Cargo.toml \
+            --locked -p codex-hepta-native-gateway -p codex-hepta-contracts \
+            -p codex-hepta-private-state --all-targets --all-features
+          check release cargo +1.95.0 build --manifest-path apps/hepta-native/Cargo.toml \
+            --locked --release --bins
+          check compile_negative python3 scripts/hepta_ui_native_compile_negative.py
+      - name: Process-kill recovery and deterministic unsigned package
+        shell: bash
+        run: |
+          set -euo pipefail
+          check() { python3 scripts/hepta_ui_native_qualification_evidence.py run --out native-evidence/checks --label "$1" --timeout 3600 -- "${@:2}"; }
+          binary=apps/hepta-native/target/release/hepta-native
+          case "$RUNNER_OS" in
+            Linux) platform=linux ;;
+            macOS) platform=macos ;;
+            Windows) platform=windows; binary="${binary}.exe" ;;
+            *) exit 1 ;;
+          esac
+          case "$RUNNER_ARCH" in
+            X64) architecture=x86_64 ;;
+            ARM64) architecture=aarch64 ;;
+            *) exit 1 ;;
+          esac
+          check self_test "$binary" --self-test
+          check crash_test "$binary" --qualification-e2e
+          check package python3 apps/hepta-native/tools/package_unsigned.py \
+            --platform "$platform" --architecture "$architecture" \
+            --release-dir apps/hepta-native/target/release --out-dir native-package
+          case "$RUNNER_OS" in
+            Linux) packaged='native-package/extracted/HeptaNative.AppDir/usr/bin/hepta-native' ;;
+            macOS) packaged='native-package/extracted/Hepta Native.app/Contents/MacOS/hepta-native' ;;
+            Windows) packaged='native-package/extracted/HeptaNative/hepta-native.exe' ;;
+          esac
+          check packaged_self_test "$packaged" --self-test
+          check packaged_crash_test "$packaged" --qualification-e2e
+      - name: Installed Linux GUI, gateway, keyring and normal lifecycle
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -euo pipefail
+          check() { python3 scripts/hepta_ui_native_qualification_evidence.py run --out native-evidence/checks --label "$1" --timeout 3600 -- "${@:2}"; }
+          check gateway_release cargo +1.95.0 build --manifest-path codex-rs/Cargo.toml \
+            --locked -p codex-hepta-native-gateway --bin hepta-native-gateway --release
+          check linux_product xvfb-run -a -s '-screen 0 1280x900x24' \
+            dbus-run-session -- python3 apps/hepta-native/tools/linux_product_qualification.py \
+            --package-root native-package/extracted/HeptaNative.AppDir \
+            --gateway apps/hepta-native/target/release/hepta-native-gateway \
+            --out-dir native-evidence/ordinary-linux-product
+      - name: Seal exact-subject observations
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ui_native_qualification_evidence.py seal \
+            --candidate "$CANDIDATE" --base "$BASE" --kind "$KIND" \
+            --expected-head "$NATIVE_EXPECTED_HEAD" --workflow-sha "$WORKFLOW_SHA" \
+            --runner-os "$RUNNER_OS" --checks native-evidence/checks \
+            --packages native-package --out native-evidence/qualification.json
+      - name: Retain complete or partial platform evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ui-native-qualification-${{ matrix.runner }}-${{ matrix.kind }}-${{ needs.subject.outputs.candidate }}-attempt-${{ github.run_attempt }}
+          path: |
+            native-evidence
+            native-package/*.zip
+            native-package/package-receipt.json
+          if-no-files-found: warn
+          retention-days: 30
+
+  storage-scale:
+    name: ui.native / Linux / exact implementation storage scale
+    needs: subject
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    env:
+      CARGO_TARGET_DIR: ${{ runner.temp }}/ui-native-storage-target
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ needs.subject.outputs.candidate }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install Linux storage prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y \
+            libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev \
+            libxkbcommon-dev libxkbcommon-x11-dev libwayland-dev \
+            libgl1-mesa-dev libssl-dev desktop-file-utils strace
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          toolchain: 1.95.0
+      - name: Prepare exact implementation evidence paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ needs.subject.outputs.candidate }}"
+          test "${{ needs.subject.outputs.implementation }}" = "$(python3 - <<'PYTHON'
+          import json
+          from pathlib import Path
+          print(json.loads(Path('apps/hepta-native/CANDIDATE.json').read_text(encoding='utf-8'))['implementationSourceSha'])
+          PYTHON
+          )"
+          echo "IMPLEMENTATION_SHA=${{ needs.subject.outputs.implementation }}" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/ui-native-storage-evidence" "$RUNNER_TEMP/ui-native-storage-roots"
+      - id: compile
+        name: Compile full-scale storage qualification harness
+        run: cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml --locked --lib --no-run
+      - id: active
+        name: Measure 4096 active records and durability syscalls
+        shell: bash
+        env:
+          HEPTA_UI_NATIVE_REQUIRE_PINNED: "1"
+          HEPTA_UI_NATIVE_STORAGE_ROOT: ${{ runner.temp }}/ui-native-storage-roots
+          HEPTA_UI_NATIVE_STORAGE_EVIDENCE: ${{ runner.temp }}/ui-native-storage-evidence/active.json
+        run: |
+          set -euo pipefail
+          HEPTA_UI_NATIVE_SOURCE_SHA="$IMPLEMENTATION_SHA" \
+          strace -ff -yy \
+            -o "$RUNNER_TEMP/ui-native-storage-evidence/active.strace" \
+            -e trace=write,writev,pwrite64,pwritev,pwritev2,fsync,fdatasync \
+            cargo +1.95.0 test \
+              --manifest-path apps/hepta-native/Cargo.toml --locked --lib \
+              storage_qualification_tests::storage_active_scale_qualification -- \
+              --ignored --exact --nocapture --test-threads=1
+      - id: retired
+        name: Measure one million retired identities and deterministic rebuild
+        shell: bash
+        env:
+          HEPTA_UI_NATIVE_REQUIRE_PINNED: "1"
+          HEPTA_UI_NATIVE_STORAGE_ROOT: ${{ runner.temp }}/ui-native-storage-roots
+          HEPTA_UI_NATIVE_STORAGE_EVIDENCE: ${{ runner.temp }}/ui-native-storage-evidence/retired.json
+        run: |
+          set -euo pipefail
+          HEPTA_UI_NATIVE_SOURCE_SHA="$IMPLEMENTATION_SHA" \
+          cargo +1.95.0 test \
+            --manifest-path apps/hepta-native/Cargo.toml --locked --lib \
+            storage_qualification_tests::storage_retirement_scale_qualification -- \
+            --ignored --exact --nocapture --test-threads=1
+      - id: validate
+        name: Enforce every hard storage budget
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/qualify_hepta_ui_native_storage.py \
+            --budgets apps/hepta-native/STORAGE_BUDGETS.json \
+            --active "$RUNNER_TEMP/ui-native-storage-evidence/active.json" \
+            --retired "$RUNNER_TEMP/ui-native-storage-evidence/retired.json" \
+            --trace-prefix "$RUNNER_TEMP/ui-native-storage-evidence/active.strace" \
+            --source-sha "$IMPLEMENTATION_SHA" \
+            --emit "$RUNNER_TEMP/ui-native-storage-evidence/qualification.json"
+          test -z "$(git status --porcelain)"
+      - name: Record storage subject outcomes
+        if: always()
+        shell: bash
+        env:
+          COMPILE: ${{ steps.compile.outcome }}
+          ACTIVE: ${{ steps.active.outcome }}
+          RETIRED: ${{ steps.retired.outcome }}
+          VALIDATE: ${{ steps.validate.outcome }}
+        run: |
+          python3 - <<'PYTHON'
+          import json, os
+          from pathlib import Path
+          path = Path(os.environ['RUNNER_TEMP']) / 'ui-native-storage-evidence' / 'job-outcomes.json'
+          path.parent.mkdir(parents=True, exist_ok=True)
+          path.write_text(json.dumps({
+              'schema': 'hepta.ui-native-storage-job-outcomes.v1',
+              'sourceSha': os.environ.get('IMPLEMENTATION_SHA'),
+              'compile': os.environ['COMPILE'],
+              'active': os.environ['ACTIVE'],
+              'retired': os.environ['RETIRED'],
+              'validate': os.environ['VALIDATE'],
+              'runId': os.environ.get('GITHUB_RUN_ID'),
+              'runAttempt': os.environ.get('GITHUB_RUN_ATTEMPT'),
+          }, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+          PYTHON
+      - name: Retain complete or partial storage evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ui-native-storage-${{ needs.subject.outputs.candidate }}-attempt-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ui-native-storage-evidence
+          if-no-files-found: warn
+          retention-days: 30
+
+  qualification-result:
+    name: ui.native / qualification result
+    if: always()
+    needs: [subject, qualify, storage-scale]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Missing, cancelled and skipped subjects are failure
+        shell: bash
+        env:
+          SUBJECT: ${{ needs.subject.result }}
+          QUALIFY: ${{ needs.qualify.result }}
+          STORAGE: ${{ needs.storage-scale.result }}
+        run: |
+          set -euo pipefail
+          test "$SUBJECT" = success
+          test "$QUALIFY" = success
+          test "$STORAGE" = success
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v4.3.0
+        with:
+          pattern: ui-native-qualification-*-${{ needs.subject.outputs.candidate }}-attempt-${{ github.run_attempt }}
+          path: qualification-bundles
+          merge-multiple: false
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v4.3.0
+        with:
+          name: ui-native-storage-${{ needs.subject.outputs.candidate }}-attempt-${{ github.run_attempt }}
+          path: storage-bundle
+      - name: Revalidate six platform subjects
+        env:
+          CANDIDATE: ${{ needs.subject.outputs.candidate }}
+          BASE: ${{ needs.subject.outputs.base }}
+          WORKFLOW_SHA: ${{ github.workflow_sha }}
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ui_native_qualification_aggregate.py \
+            --bundles qualification-bundles --candidate "$CANDIDATE" --base "$BASE" \
+            --workflow-sha "$WORKFLOW_SHA" \
+            --out native-aggregate/platform-qualification.json
+      - name: Bind platform aggregate and storage artifact
+        env:
+          CANDIDATE: ${{ needs.subject.outputs.candidate }}
+          BASE: ${{ needs.subject.outputs.base }}
+          IMPLEMENTATION: ${{ needs.subject.outputs.implementation }}
+          WORKFLOW_SHA: ${{ github.workflow_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PYTHON'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          def load(path):
+              value = json.loads(path.read_text(encoding='utf-8'))
+              if not isinstance(value, dict):
+                  raise SystemExit(f'non-object evidence: {path}')
+              return value
+
+          def digest(path):
+              return hashlib.sha256(path.read_bytes()).hexdigest()
+
+          platform_path = Path('native-aggregate/platform-qualification.json')
+          platform = load(platform_path)
+          storage_paths = list(Path('storage-bundle').rglob('qualification.json'))
+          if len(storage_paths) != 1:
+              raise SystemExit(f'exactly one storage qualification required, got {storage_paths}')
+          storage_path = storage_paths[0]
+          storage = load(storage_path)
+          if platform.get('qualificationPassed') is not True:
+              raise SystemExit('platform aggregate did not pass')
+          if storage.get('schema') != 'hepta.ui-native-storage-qualification.v1':
+              raise SystemExit('storage schema mismatch')
+          if storage.get('status') != 'pass' or storage.get('storageQualified') is not True:
+              raise SystemExit('storage qualification did not pass')
+          if storage.get('sourceSha') != os.environ['IMPLEMENTATION']:
+              raise SystemExit('storage evidence is not bound to the implementation source')
+          for key in ('productionQualified', 'deploymentQualified', 'releaseAuthorized'):
+              if storage.get(key) is not False:
+                  raise SystemExit(f'storage evidence attempted unsupported promotion: {key}')
+          final = {
+              'schema': 'hepta.ui-native-repository-qualification.v1',
+              'candidateSha': os.environ['CANDIDATE'],
+              'baseSha': os.environ['BASE'],
+              'implementationSourceSha': os.environ['IMPLEMENTATION'],
+              'workflowSha': os.environ['WORKFLOW_SHA'],
+              'runId': os.environ['GITHUB_RUN_ID'],
+              'runAttempt': os.environ['GITHUB_RUN_ATTEMPT'],
+              'platformAggregateSha256': digest(platform_path),
+              'storageQualificationSha256': digest(storage_path),
+              'repositoryControlledQualificationPassed': True,
+              'physicalHostAcceptance': False,
+              'accessibilityAcceptance': False,
+              'productionSigningObserved': False,
+              'productionQualified': False,
+              'deploymentQualified': False,
+              'releaseAuthorized': False,
+          }
+          output = Path('native-aggregate/qualification-result.json')
+          output.write_text(json.dumps(final, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+          print(json.dumps(final, indent=2, sort_keys=True))
+          PYTHON
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ui-native-qualification-result-${{ needs.subject.outputs.candidate }}-attempt-${{ github.run_attempt }}
+          path: native-aggregate
+          if-no-files-found: error
+          retention-days: 30
