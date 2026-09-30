@@ -22,7 +22,6 @@ use super::KnowledgeResourceErrorCodeV2;
 use super::KnowledgeResourceErrorV2;
 use super::validate_generation_physical_limits_v2;
 
-
 impl KnowledgePhysicalUsageV2 {
     /// Returns the deterministic canonical cost used for admission receipts.
     /// This is not allocator RSS, SQLite page growth, or wire-encoding size.
@@ -205,10 +204,9 @@ impl KnowledgeGenerationCacheV2 {
             let build_started = Instant::now();
             let built = Arc::new(VerifiedKnowledgeGenerationV2::from_validated(validated));
             self.counters.builds.fetch_add(1, Ordering::Relaxed);
-            self.counters.index_build_nanos.fetch_add(
-                duration_nanos(build_started.elapsed()),
-                Ordering::Relaxed,
-            );
+            self.counters
+                .index_build_nanos
+                .fetch_add(duration_nanos(build_started.elapsed()), Ordering::Relaxed);
             let result = self.insert_built_view(&digest, usage.canonical_bytes, built);
             return self.finish_build_result(&digest, &slot, result);
         }
@@ -358,15 +356,12 @@ impl KnowledgeGenerationCacheV2 {
     }
 
     fn record_coordination_wait(&self, duration: Duration) {
-        self.counters.coordination_lock_wait_nanos.fetch_add(
-            duration_nanos(duration),
-            Ordering::Relaxed,
-        );
+        self.counters
+            .coordination_lock_wait_nanos
+            .fetch_add(duration_nanos(duration), Ordering::Relaxed);
     }
 
-    pub fn metrics(
-        &self,
-    ) -> Result<KnowledgeGenerationCacheMetricsV2, KnowledgeResourceErrorV2> {
+    pub fn metrics(&self) -> Result<KnowledgeGenerationCacheMetricsV2, KnowledgeResourceErrorV2> {
         let lock_started = Instant::now();
         let state = self.state.lock().map_err(|_| {
             KnowledgeResourceErrorV2::exceeded(
@@ -477,7 +472,11 @@ mod tests {
         }
         let views = workers
             .into_iter()
-            .map(|worker| worker.join().unwrap_or_else(|_| panic!("cache worker join")))
+            .map(|worker| {
+                worker
+                    .join()
+                    .unwrap_or_else(|_| panic!("cache worker join"))
+            })
             .collect::<Vec<_>>();
         for view in &views[1..] {
             assert!(Arc::ptr_eq(&views[0], view));
@@ -492,5 +491,4 @@ mod tests {
             measure_generation_v2(&generation(1)).canonical_cost_bytes()
         );
     }
-
 }
