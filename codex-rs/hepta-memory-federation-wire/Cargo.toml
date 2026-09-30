@@ -10,9 +10,11 @@ codex-hepta-types = { path = "../hepta-types" }
 codex-hepta-wire = { path = "../hepta-wire" }
 hmac = "0.12.1"
 rand = "0.9"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
 sha2 = "0.10"
 zeroize = "1.8.2"
 
-# Protocol-core delivery is intentionally independently buildable. It owns no
-# durable recovery backend, network transport, Agentd serving, or release gate.
+# Recovery/host delivery remains independently buildable and owns no product
+# packet adapter, selected network transport, Agentd activation, or release.
 [workspace]
