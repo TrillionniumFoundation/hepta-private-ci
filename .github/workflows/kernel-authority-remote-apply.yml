@@ -54,16 +54,22 @@ jobs:
         run: |
           set -euo pipefail
           cat > "$RUNNER_TEMP/allowed" <<'EOF'
+          codex-rs/hepta-agentd/src/authority_effect_tasks.rs
           codex-rs/hepta-agentd/src/authority_feed_clock.rs
           codex-rs/hepta-agentd/src/automation_authority_bootstrap.rs
           codex-rs/hepta-agentd/src/automation_effect_host.rs
+          codex-rs/hepta-agentd/src/automation_effect_host_tests.rs
           codex-rs/hepta-agentd/src/config.rs
           codex-rs/hepta-agentd/src/lib.rs
           codex-rs/hepta-agentd/src/runtime.rs
           codex-rs/hepta-agentd/tests/authority_effect_process_restart.rs
+          codex-rs/hepta-contracts/src/authority_lease_interval_tests.rs
+          codex-rs/hepta-contracts/src/authority_runtime_clock.rs
           codex-rs/hepta-contracts/src/authority_trust.rs
           codex-rs/hepta-contracts/src/authority_trust_tests.rs
           codex-rs/hepta-contracts/src/final_use.rs
+          codex-rs/hepta-contracts/src/final_use_store.rs
+          codex-rs/hepta-contracts/src/final_use_time_tests.rs
           codex-rs/hepta-contracts/src/lib.rs
           codex-rs/hepta-fleet/src/authority_port.rs
           EOF
