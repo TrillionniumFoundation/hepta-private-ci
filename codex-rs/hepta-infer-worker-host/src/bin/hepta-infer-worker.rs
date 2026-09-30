@@ -9,6 +9,7 @@ use codex_hepta_infer_worker_host::native_app_server::AppServerModelDriver;
 use codex_hepta_infer_worker_host::native_app_server::NativeAdmission;
 use codex_hepta_infer_worker_host::native_app_server::NativeIntelligenceRunBinding;
 use codex_hepta_infer_worker_host::native_app_server::NativeWorkerConfig;
+use codex_hepta_infer_worker_host::native_recovery::NativeRecoveryPolicy;
 use tokio::io::AsyncReadExt;
 use tokio_util::sync::CancellationToken;
 
@@ -29,11 +30,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let mut intelligence_envelope_digest = None;
     let mut native_profile_selected = false;
     let mut timeout_ms = 120_000_u64;
+    let mut turn_start_reconcile_grace_ms = 2_000_u64;
     let mut args = std::env::args().skip(1);
     while let Some(flag) = args.next() {
         if flag == "--help" {
             println!(
-                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N --final-use-authority-config ABSOLUTE_JSON [--intelligence-run-id ID --intelligence-revision N --intelligence-context-digest HEX --intelligence-envelope-digest HEX] [--context-query TEXT] [--timeout-ms N]\nReads one prompt from stdin; an independent final-use authority must sign the exact turn/start binding before model dispatch."
+                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N --final-use-authority-config ABSOLUTE_JSON [--intelligence-run-id ID --intelligence-revision N --intelligence-context-digest HEX --intelligence-envelope-digest HEX] [--context-query TEXT] [--timeout-ms N] [--turn-start-reconcile-grace-ms N]\nReads one prompt from stdin; an independent final-use authority must sign the exact turn/start binding before model dispatch."
             );
             return Ok(());
         }
@@ -57,6 +59,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             "--intelligence-context-digest" => intelligence_context_digest = Some(value),
             "--intelligence-envelope-digest" => intelligence_envelope_digest = Some(value),
             "--timeout-ms" => timeout_ms = value.parse()?,
+            "--turn-start-reconcile-grace-ms" => turn_start_reconcile_grace_ms = value.parse()?,
             _ => return Err(format!("unknown argument: {flag}").into()),
         }
     }
@@ -73,6 +76,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         model: model.ok_or("--model is required")?,
         timeout: Duration::from_millis(timeout_ms),
     })?
+    .with_recovery_policy(NativeRecoveryPolicy::new(Duration::from_millis(
+        turn_start_reconcile_grace_ms,
+    ))?)
     .with_turn_start_authorizer(Arc::new(final_use_authorizer));
     let journal = journal.ok_or("--journal is required")?;
     if !journal.is_absolute() {

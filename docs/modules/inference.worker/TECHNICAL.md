@@ -205,7 +205,10 @@ For `inference.worker`, this document grants no runtime, production, model, prov
 
 #### `INFER-V4-T4`
 
-- State: `planned`; priority: `2`; parallel class: `contract_coordinated`.
+- Source implementation state: `source_implemented`.
+- Product composition state: `product_composition_pending`.
+- External qualification state: `external_qualification_pending`.
+- Canonical package state remains `planned`; priority: `2`; parallel class: `contract_coordinated`.
 - Owner/deputy: `inference-platform` / `security-authority`.
 - Allowed write paths:
 - `codex-rs/hepta-infer-worker-host/**`
@@ -233,7 +236,10 @@ For `inference.worker`, this document grants no runtime, production, model, prov
 
 #### `INFER-V4-T5`
 
-- State: `planned`; priority: `2`; parallel class: `contract_coordinated`.
+- Source implementation state: `source_implemented`.
+- Product composition state: `product_composition_pending`.
+- External qualification state: `external_qualification_pending`.
+- Canonical package state remains `planned`; priority: `2`; parallel class: `contract_coordinated`.
 - Owner/deputy: `inference-platform` / `security-authority`.
 - Allowed write paths:
 - `codex-rs/hepta-infer-worker-host/**`

@@ -1,17 +1,40 @@
 //! Authority-checked inference worker boundary.
 //!
-//! The legacy boundary validates a pre-existing request, lease and reservation.
-//! The native App Server profile invokes the owning Agent's configured provider
-//! and observes its turn events. Neither profile issues grants, mutates fleet
-//! state, infers success from queue acceptance, promotes or releases artifacts.
+//! The public capability boundary is deliberately split into three profiles:
+//!
+//! - [`native_app_server`] is the hosted App Server worker and is a
+//!   repository-qualified production candidate. It still requires deployment,
+//!   real-provider and independent acceptance gates.
+//! - [`experimental_local`] and the compatibility [`model_worker`] state machine
+//!   are compiled only with `experimental-local-model`. They are non-production
+//!   until real weights, device isolation and target-host qualification exist.
+//! - [`execute`] is a validation-only legacy receipt boundary. It never proves
+//!   that a provider or local model physically executed.
+//!
+//! No profile issues grants, mutates fleet state, infers success from queue
+//! acceptance, promotes artifacts or authorizes release.
 
 #![forbid(unsafe_code)]
 
-/// Model-manifest/grant state machine for native driver implementations.
+/// Hardened experimental local-model boundary. The feature gate is an explicit
+/// non-production opt-in and is never enabled by the hosted worker binary.
+#[cfg(feature = "experimental-local-model")]
+pub mod experimental_local;
+
+/// Compatibility model state machine retained for fixtures and migration only.
+/// It must not be used as evidence of physical weights or device execution.
+#[cfg(feature = "experimental-local-model")]
+#[deprecated(
+    note = "use experimental_local; this compatibility state machine is not production evidence"
+)]
 pub mod model_worker;
 
+/// Independent final-use authority bridge for hosted App Server dispatch.
 pub mod final_use_authorizer;
+/// Hosted App Server worker profile.
 pub mod native_app_server;
+/// Explicit hosted recovery, terminal-receipt reconciliation and metrics.
+pub mod native_recovery;
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -22,6 +45,7 @@ use codex_hepta_types::StableId;
 
 const MAX_TOKENS: u32 = 1_000_000;
 
+/// Validation-only request identity for the legacy receipt boundary.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct InferenceRequest {
     pub request_id: StableId,
@@ -32,6 +56,8 @@ pub struct InferenceRequest {
     pub deadline_ms: u64,
 }
 
+/// Validation-only lease projection. This is not a signed or independently
+/// verified final-use grant.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AuthorityLease {
     pub lease_id: StableId,
@@ -42,6 +68,7 @@ pub struct AuthorityLease {
     pub revoked: bool,
 }
 
+/// Validation-only reservation projection.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Reservation {
     pub reservation_id: StableId,
@@ -52,6 +79,7 @@ pub struct Reservation {
     pub cancelled: bool,
 }
 
+/// Caller-supplied observation used only to normalize a legacy receipt.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ExecutionObservation {
     pub output_digest: Digest32,
@@ -65,6 +93,7 @@ pub enum TerminalStatus {
     Indeterminate,
 }
 
+/// Deny-all receipt produced by the validation-only legacy boundary.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct InferenceReceipt {
     pub request_id: StableId,
@@ -116,6 +145,8 @@ pub fn request_digest(request: &InferenceRequest) -> Digest32 {
     Digest32::of_bytes(&bytes)
 }
 
+/// Validate an already-existing request/lease/reservation tuple and normalize a
+/// deny-all receipt. This function performs no model or provider execution.
 pub fn execute(
     now_ms: u64,
     request: InferenceRequest,

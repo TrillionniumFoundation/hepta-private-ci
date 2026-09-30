@@ -2,42 +2,57 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
-    "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7"
+    "commit": "4761fbd2ce7b8d8f815d2ef8178b82c0a5ccc2e8",
+    "tree": "bb4695af711506442f673008e3df78f1af58d048"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "inference.worker",
-  "sourceMaturity": "durable_native_app_server_profile_and_local_driver_component",
+  "sourceMaturity": "hosted_app_server_production_candidate_and_feature_gated_experimental_local_framework",
   "declaredRoots": [
     "codex-rs/hepta-infer-worker-host"
   ],
   "resolvedRoots": [
     "codex-rs/hepta-infer-worker-host"
   ],
-  "stateOwnerDisposition": "Owns live provider client handles; persistent request/slot/observation facts remain in the inference.control journal. App Server owns ephemeral thread execution; artifact/cache owners retain model bytes.",
-  "terminalObserverDisposition": "The hosted native-app-server profile observes real matching turn events; the local manifest driver remains injected and does not prove physical weights/device behavior.",
+  "stateOwnerDisposition": "Hosted and experimental local execution reuse the inference.control durable journal for exact request, slot, dispatch and observation facts. The hosted profile owns live App Server client handles. The experimental local profile owns in-process aggregate resource accounting and attested handles; artifact/cache owners retain model bytes and a real device driver remains a separate product composition.",
+  "terminalObserverDisposition": "The hosted profile observes exact App Server history and supports a trusted provider-terminal receipt verification port without upgrading provider truth to owner authority. The experimental local profile requires an independent TrustedResourceObserver and inspect-only restart recovery. Neither profile claims real-provider, real-hardware or deployed-verifier qualification from repository source alone.",
   "operations": [
     {
       "designOperation": "load_model",
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
-        "symbol": "pub fn load_model(",
-        "buildTarget": "codex-hepta-infer-worker-host::model_worker"
+        "path": "codex-rs/hepta-infer-worker-host/src/experimental_local/durable.rs",
+        "symbol": "pub async fn load_model(",
+        "buildTarget": "codex-hepta-infer-worker-host::experimental_local[experimental-local-model]"
       },
-      "delegatedCallees": [],
-      "tests": [
+      "delegatedCallees": [
         {
-          "path": "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs",
-          "kind": "manifest_and_resource_binding",
-          "command": "just test -p codex-hepta-infer-worker-host --lib"
+          "role": "supporting_algorithm",
+          "path": "codex-rs/hepta-infer-worker-host/src/experimental_local/authority.rs",
+          "symbol": "pub fn verify(",
+          "buildTarget": "codex-hepta-infer-worker-host::experimental_local::authority",
+          "ownerModule": "inference.worker"
+        },
+        {
+          "role": "supporting_algorithm",
+          "path": "codex-rs/hepta-infer-worker-host/src/experimental_local/resources.rs",
+          "symbol": "pub(super) fn reserve_model(",
+          "buildTarget": "codex-hepta-infer-worker-host::experimental_local::resources",
+          "ownerModule": "inference.worker"
         }
       ],
-      "sourceSemantics": "Validates supplied manifest and resource-grant bindings before invoking the injected driver; physical artifact/device loading remains that driver owner's responsibility.",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/experimental_local_tests.rs",
+          "kind": "signed_grant_manifest_aggregate_resource_and_failed_unload",
+          "command": "cargo test -p codex-hepta-infer-worker-host --features experimental-local-model --lib"
+        }
+      ],
+      "sourceSemantics": "Experimental-only: verifies a signed resource grant and exact model tuple, reserves aggregate resources before physical load, requires independent resource observation and retains failed-unload handles as Zombie/RepairRequired. A product-local weights/device driver and target-hardware proof remain unimplemented gates.",
       "operation": "load_model",
-      "nativeSymbol": "pub fn load_model(",
-      "sourcePath": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
+      "nativeSymbol": "pub async fn load_model(",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/experimental_local/durable.rs",
       "sourcePathExists": true
     },
     {
@@ -59,6 +74,13 @@
         },
         {
           "role": "supporting_algorithm",
+          "path": "codex-rs/hepta-infer-worker-host/src/native_recovery.rs",
+          "symbol": "pub async fn reconcile_provider_terminal<",
+          "buildTarget": "codex-hepta-infer-worker-host::native_recovery",
+          "ownerModule": "inference.worker"
+        },
+        {
+          "role": "supporting_algorithm",
           "path": "codex-rs/hepta-infer-core/src/native_control.rs",
           "symbol": "pub fn settle_native(",
           "buildTarget": "codex-hepta-infer-core::durable_control::native",
@@ -69,15 +91,25 @@
         {
           "path": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
           "kind": "duplicate_reopen_and_predispatch_cancellation",
-          "command": "just test -p codex-hepta-infer-worker-host --lib"
+          "command": "cargo test -p codex-hepta-infer-worker-host --lib"
         },
         {
           "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
-          "kind": "matching_native_events_and_usage",
-          "command": "just test -p codex-hepta-infer-worker-host --lib"
+          "kind": "matching_native_events_authority_and_usage",
+          "command": "cargo test -p codex-hepta-infer-worker-host --lib"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_recovery_tests.rs",
+          "kind": "bounded_reconcile_quarantine_and_trusted_terminal_receipt",
+          "command": "cargo test -p codex-hepta-infer-worker-host --lib"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/experimental_local_tests.rs",
+          "kind": "durable_local_duplicate_and_inspect_only_restart_recovery",
+          "command": "cargo test -p codex-hepta-infer-worker-host --features experimental-local-model --lib"
         }
       ],
-      "sourceSemantics": "Reserves through durable inference.control, calls the actual private Agent/App Server once, and commits matching terminal/output/optional-token observations before returning. Reopen and duplicate paths consume the journal without invoking the provider again.",
+      "sourceSemantics": "Hosted production candidate: reserves through durable inference.control, calls the exact private Agent/App Server once, and commits matching terminal/output/optional-token observations. Exact duplicates and reopened runs consume the journal without provider replay. Missing history stays quarantined; a trusted provider receipt may establish terminal provider truth but cannot manufacture owner authority. Experimental local execution reuses the same durable owner and calls inspect, never run, after possible effect entry.",
       "operation": "run",
       "nativeSymbol": "pub async fn run(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
@@ -88,33 +120,45 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
-        "symbol": "pub fn unload_model(",
-        "buildTarget": "codex-hepta-infer-worker-host::model_worker"
+        "path": "codex-rs/hepta-infer-worker-host/src/experimental_local/durable.rs",
+        "symbol": "pub async fn unload_model(",
+        "buildTarget": "codex-hepta-infer-worker-host::experimental_local[experimental-local-model]"
       },
-      "delegatedCallees": [],
-      "tests": [
+      "delegatedCallees": [
         {
-          "path": "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs",
-          "kind": "drain_and_unload",
-          "command": "just test -p codex-hepta-infer-worker-host --lib"
+          "role": "supporting_algorithm",
+          "path": "codex-rs/hepta-infer-worker-host/src/experimental_local/resources.rs",
+          "symbol": "pub(super) fn begin_unload(",
+          "buildTarget": "codex-hepta-infer-worker-host::experimental_local::resources",
+          "ownerModule": "inference.worker"
         }
       ],
-      "sourceSemantics": "Drains and unloads only the exact admitted generation and releases acquired resources.",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/experimental_local_tests.rs",
+          "kind": "trusted_zero_residency_and_zombie_retention",
+          "command": "cargo test -p codex-hepta-infer-worker-host --features experimental-local-model --lib"
+        }
+      ],
+      "sourceSemantics": "Experimental-only: drains and unloads the exact admitted generation, requires a trusted zero-residency observation before deleting accounting, and preserves failed physical unloads as Zombie rather than forgetting the handle.",
       "operation": "unload",
-      "nativeSymbol": "pub fn unload_model(",
-      "sourcePath": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
+      "nativeSymbol": "pub async fn unload_model(",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/experimental_local/durable.rs",
       "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
-    "Implement a local model driver that acquires and proves actual weights, device and memory grants before claiming isolated local inference.",
-    "Implement trusted provider reconciliation for dispatch-unknown/reopened runs and later missing token usage; do not infer zero usage or safe replay from transport loss."
+    "Compose a real local model driver that acquires and proves exact weights, tokenizer, runtime, device lease and physical memory before any isolated-local-inference claim; synthetic drivers remain test-only.",
+    "Bind a deployed trusted provider terminal/usage verifier and a qualified App Server history-retention contract; repository source ports and quarantine policy do not establish real-provider truth by themselves.",
+    "Qualify the experimental local path under OOM, device reset, load kill, unload failure and process crash on named target hardware before removing its feature-gated non-production status."
   ],
   "externalEvidenceGates": [
-    "identified real weights/tokenizer/runtime/device",
+    "identified and attested real weights/tokenizer/runtime/device",
     "isolated deployed worker process and authenticated control channel",
-    "OOM/device-reset/load-kill target qualification"
+    "deployed final-use issuer, trusted time, revocation distribution and anti-rollback",
+    "real provider terminal and usage reconciliation",
+    "OOM/device-reset/load-kill target qualification",
+    "independent acceptance, activation, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,

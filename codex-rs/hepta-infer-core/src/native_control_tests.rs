@@ -422,6 +422,8 @@ fn journal_byte_budget_rejects_before_append_and_replay_checks_actual_bytes() {
     let event = Event::Observe {
         request_id: "r1".to_string(),
         output: observed,
+        observed_at_unix_ms: 0,
+        usage_units: None,
     };
     let json = serde_json::to_string(&event).unwrap();
     let mut file = std::fs::OpenOptions::new()
@@ -525,8 +527,18 @@ fn legacy_journal_completion_without_authority_cannot_be_replayed_as_success() {
     let event = Event::Observe {
         request_id: "r1".to_string(),
         output: old_output,
+        observed_at_unix_ms: 0,
+        usage_units: None,
     };
     let mut json = serde_json::to_value(event).unwrap();
+    json["Observe"]
+        .as_object_mut()
+        .unwrap()
+        .remove("observed_at_unix_ms");
+    json["Observe"]
+        .as_object_mut()
+        .unwrap()
+        .remove("usage_units");
     json["Observe"]["output"]
         .as_object_mut()
         .unwrap()
@@ -598,6 +610,63 @@ fn historical_codex_dispatch_without_frontier_reopens_but_cannot_upgrade_to_succ
             .is_some_and(|reason| reason.contains("lacks claim-time authority frontier"))
     );
 
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn generic_usage_and_indeterminate_age_are_durable_and_monotonic() {
+    let path = path("usage-age");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    start(&mut control, "r1");
+    let unknown = control
+        .settle_native_with_usage_at(
+            "r1",
+            output(NativeRunStatus::Indeterminate, Some(4)),
+            Some(11),
+            1_000,
+        )
+        .unwrap();
+    assert_eq!(unknown.observed_usage_units, Some(11));
+    assert_eq!(unknown.first_indeterminate_at_unix_ms, Some(1_000));
+    assert_eq!(unknown.last_observed_at_unix_ms, Some(1_000));
+    assert_eq!(
+        control.settle_native_with_usage_at(
+            "r1",
+            output(NativeRunStatus::Indeterminate, Some(4)),
+            Some(10),
+            1_001,
+        ),
+        Err(Error::Conflict)
+    );
+    assert_eq!(
+        control.settle_native_with_usage_at(
+            "r1",
+            output(NativeRunStatus::Indeterminate, Some(4)),
+            Some(11),
+            999,
+        ),
+        Err(Error::Conflict)
+    );
+    drop(control);
+
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    let terminal = control
+        .settle_native_with_usage_at(
+            "r1",
+            output(NativeRunStatus::Completed, Some(7)),
+            Some(13),
+            1_300,
+        )
+        .unwrap();
+    assert_eq!(terminal.state, NativeReservationState::Released);
+    assert_eq!(terminal.observed_usage_units, Some(13));
+    assert_eq!(terminal.first_indeterminate_at_unix_ms, Some(1_000));
+    assert_eq!(terminal.last_observed_at_unix_ms, Some(1_300));
+    drop(control);
+
+    let control = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(control.native_record("r1"), Some(&terminal));
     drop(control);
     std::fs::remove_file(path).unwrap();
 }

@@ -170,3 +170,111 @@ jobs:
           path: ${{ runner.temp }}/hepta-inference-records/*
           if-no-files-found: error
           retention-days: 14
+
+  materialize-authoritative:
+    name: Materialize authoritative inference.worker stage 1
+    if: ${{ github.event_name == 'pull_request' && github.event.pull_request.number == 1183 && github.event.pull_request.head.ref == 'codex/inference-worker-authoritative-20260929' }}
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      MATERIALIZATION_BASE: c3b3aaa9887e15bf18b1572f259b6893ddbe2b68
+      MATERIALIZATION_PATCH_SHA256: a4be02dea1d771a4467f0bb05cb4be7122ab71b4d54c79506c778785e55a85a3
+      MATERIALIZATION_BRANCH: codex/inference-worker-authoritative-20260929
+    steps:
+      - name: Check out exact authoritative transfer head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Decode and verify immutable reviewed patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git merge-base "$MATERIALIZATION_BASE" HEAD)" = "$MATERIALIZATION_BASE"
+          LC_ALL=C cat .github/materialization/inference-worker-stage1/part* \
+            | base64 --decode > "$RUNNER_TEMP/inference-worker-stage1.patch"
+          printf '%s  %s\n' "$MATERIALIZATION_PATCH_SHA256" "$RUNNER_TEMP/inference-worker-stage1.patch" \
+            | sha256sum --check --strict
+          git apply --check "$RUNNER_TEMP/inference-worker-stage1.patch"
+          git apply "$RUNNER_TEMP/inference-worker-stage1.patch"
+
+      - name: Format only the reviewed Rust surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustfmt --edition 2024 \
+            codex-rs/hepta-infer-core/src/native_control.rs \
+            codex-rs/hepta-infer-core/src/native_control_tests.rs \
+            codex-rs/hepta-infer-worker-host/src/experimental_local/driver.rs \
+            codex-rs/hepta-infer-worker-host/src/experimental_local/durable.rs \
+            codex-rs/hepta-infer-worker-host/src/experimental_local/resources.rs \
+            codex-rs/hepta-infer-worker-host/src/experimental_local/resources_tests.rs \
+            codex-rs/hepta-infer-worker-host/src/experimental_local_tests.rs \
+            codex-rs/hepta-infer-worker-host/src/native_app_server.rs \
+            codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs \
+            codex-rs/hepta-infer-worker-host/src/native_recovery.rs \
+            codex-rs/hepta-infer-worker-host/src/native_run_control.rs \
+            codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs
+          git diff --check
+
+      - name: Run durable inference core tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-infer-core
+
+      - name: Run authoritative local worker tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-infer-worker-host \
+            --features experimental-local-model
+
+      - name: Restore registered workflow and verify exact final tree surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          git checkout "$MATERIALIZATION_BASE" -- .github/workflows/hepta-inference-maintenance.yml
+          rm -rf .github/materialization/inference-worker-stage1
+          rm -f .github/workflows/inference-worker-authoritative-materialize.yml
+          python3 - <<'PYVERIFY'
+          import subprocess
+          expected = sorted([
+              'codex-rs/hepta-infer-core/src/native_control.rs',
+              'codex-rs/hepta-infer-core/src/native_control_tests.rs',
+              'codex-rs/hepta-infer-worker-host/src/experimental_local/driver.rs',
+              'codex-rs/hepta-infer-worker-host/src/experimental_local/durable.rs',
+              'codex-rs/hepta-infer-worker-host/src/experimental_local/resources.rs',
+              'codex-rs/hepta-infer-worker-host/src/experimental_local/resources_tests.rs',
+              'codex-rs/hepta-infer-worker-host/src/experimental_local_tests.rs',
+              'codex-rs/hepta-infer-worker-host/src/native_app_server.rs',
+              'codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs',
+              'codex-rs/hepta-infer-worker-host/src/native_recovery.rs',
+              'codex-rs/hepta-infer-worker-host/src/native_run_control.rs',
+              'codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs',
+          ])
+          actual = sorted(filter(None, subprocess.check_output(
+              ['git', 'diff', '--name-only', 'c3b3aaa9887e15bf18b1572f259b6893ddbe2b68', '--'],
+              text=True,
+          ).splitlines()))
+          if actual != expected:
+              raise SystemExit(f'unexpected final tree surface: {actual!r}')
+          PYVERIFY
+          git diff --check
+
+      - name: Commit and push verified implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name hepta-inference-materializer
+          git config user.email hepta-inference-materializer@users.noreply.github.com
+          git add -A
+          git commit -m 'inference.worker: bind peak resources and durable usage'
+          git push origin "HEAD:$MATERIALIZATION_BRANCH"
+

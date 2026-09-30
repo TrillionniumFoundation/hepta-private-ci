@@ -1,0 +1,55 @@
+{
+  "schema": "hepta.inference-worker-current-status.v1",
+  "schemaVersion": 1,
+  "generation": {
+    "mode": "exact-candidate-ci-artifact",
+    "generator": "scripts/inference_worker_current_status.py",
+    "workflow": ".github/workflows/inference-worker-qualification.yml",
+    "operating_runbook": "docs/modules/inference.worker/RECOVERY_AND_OPERATIONS.md",
+    "note": "This checked-in record is a claim boundary, not a pass receipt. Exact commit, tree, blob and result fields are populated only in the workflow artifact for the candidate that was actually executed."
+  },
+  "source_head": null,
+  "source_tree": null,
+  "source_blob_digests": {},
+  "last_exact_head_run": null,
+  "last_merge_candidate_run": null,
+  "linux_result": "not_run_for_this_record",
+  "macos_result": "not_run_for_this_record",
+  "derived_projections_result": "not_run_for_this_record",
+  "lib_test_result": "not_run_for_this_record",
+  "binary_test_result": "not_run_for_this_record",
+  "all_targets_result": "not_run_for_this_record",
+  "clippy_result": "not_run_for_this_record",
+  "clean_tree_result": "not_run_for_this_record",
+  "real_hardware_result": "not_run_external_gate",
+  "composition_result": "not_established",
+  "independent_acceptance_result": "not_established",
+  "profiles": {
+    "HostedAppServerWorker": "production-candidate",
+    "LocalModelWorker": "experimental-non-production",
+    "LegacyReceiptBoundary": "validation-only"
+  },
+  "local_model_source": {
+    "signed_resource_grant": "implemented",
+    "verified_manifest_input_deadline": "implemented",
+    "aggregate_resource_manager": "implemented",
+    "durable_no_replay_recovery": "implemented",
+    "real_weights_device_driver": "not_implemented_external_and_product_gate",
+    "target_hardware_fault_qualification": "not_established"
+  },
+  "provider_reconciliation": {
+    "exact_app_server_thread_history": "implemented",
+    "missing_history_resolution": "repository_quarantine_and_trusted_terminal_receipt_port_implemented; deployed_resolver_not_established",
+    "trusted_token_usage_reconciliation": "unknown_is_preserved_and_monotonic_receipt_refinement_is_supported; deployed_provider_verifier_not_established",
+    "real_provider_target_host_qualification": "not_established"
+  },
+  "claim_boundary": {
+    "repository_local_qualification_complete": false,
+    "production_implementation": false,
+    "product_execution_complete": false,
+    "deployment_qualification_complete": false,
+    "independent_acceptance_complete": false,
+    "activation": false,
+    "release": false
+  }
+}

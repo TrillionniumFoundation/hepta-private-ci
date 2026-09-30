@@ -397,26 +397,6 @@ async fn success_requires_both_matching_completion_and_final_ready_owner() {
     assert!(!output.succeeded());
 }
 
-#[test]
-fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start() {
-    let source = include_str!("native_app_server.rs");
-    let durable_dispatch = source
-        .find("control.dispatch_native_with_pre_effect_abort(")
-        .expect("durable native dispatch");
-    let revalidation = source
-        .find("owner.revalidate_cognitive_context(snapshot).await")
-        .expect("final-use cognitive revalidation");
-    let turn_start = source
-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
-        .expect("physical turn start");
-    let durable_stop = source
-        .find("control.abort_native_before_effect(")
-        .expect("durable pre-turn stop");
-    assert!(durable_dispatch < revalidation);
-    assert!(revalidation < turn_start);
-    assert!(durable_stop < turn_start);
-}
-
 #[cfg(unix)]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone() -> Result<()> {
@@ -473,18 +453,49 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let journal = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}.journal"));
     let mut durable = DurableInferenceControl::open(&journal, 8)?;
 
-    let accepted = driver
-        .run(
-            &mut durable,
-            NativeAdmission {
-                request_id: ACCEPT_REQUEST_ID.to_string(),
-                maximum_in_flight: 1,
-            },
-            "answer from the verified memory".to_string(),
-            Some("lemon".to_string()),
-            &CancellationToken::new(),
-        )
-        .await?;
+    let sequence_hook = Arc::new(FinalRevalidationTestHook {
+        reached: tokio::sync::Notify::new(),
+        release: tokio::sync::Notify::new(),
+    });
+    install_final_revalidation_test_hook(Arc::clone(&sequence_hook));
+    let accepted_cancellation = CancellationToken::new();
+    let accepted_run = driver.run(
+        &mut durable,
+        NativeAdmission {
+            request_id: ACCEPT_REQUEST_ID.to_string(),
+            maximum_in_flight: 1,
+        },
+        "answer from the verified memory".to_string(),
+        Some("lemon".to_string()),
+        &accepted_cancellation,
+    );
+    let persisted_before_effect = async {
+        sequence_hook.reached.notified().await;
+        let journal_text = std::fs::read_to_string(&journal)?;
+        assert!(journal_text.contains("\"Dispatch\""));
+        assert!(journal_text.contains(ACCEPT_REQUEST_ID));
+        assert!(journal_text.contains("\"codex_request_digest\""));
+        assert!(journal_text.contains("\"codex_authority_witness_sha256\""));
+        assert!(!journal_text.contains("\"Started\""));
+        assert_eq!(
+            response_mock.requests().len(),
+            0,
+            "physical provider request must not precede final-use revalidation"
+        );
+        sequence_hook.release.notify_one();
+        Ok::<_, Box<dyn std::error::Error + Send + Sync>>(())
+    };
+    let accepted = match tokio::time::timeout(Duration::from_secs(30), async {
+        let (worker_result, sequence_result) =
+            tokio::join!(accepted_run, persisted_before_effect);
+        sequence_result?;
+        worker_result
+    })
+    .await
+    {
+        Ok(result) => result?,
+        Err(_) => return Err("timed out proving durable-before-effect sequence".into()),
+    };
     assert!(
         accepted.succeeded(),
         "fresh context must reach a successful real TurnStart"

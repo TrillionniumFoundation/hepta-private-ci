@@ -27,12 +27,17 @@ on:
       - codex-rs/app-server-client/**
       - codex-rs/app-server-transport/**
       - codex-rs/uds/**
+      - docs/modules/inference.worker/**
+      - qualification/module-execution-dossiers/detail/inference.worker.md
       - .github/scripts/check_ci_results.py
       - scripts/test_hepta_agentd_ci.py
       - scripts/hepta_ci_candidate.py
       - scripts/hepta_workspace.py
       - scripts/test_hepta_workspace.py
+      - scripts/inference_worker_current_status.py
+      - scripts/tests/test_inference_worker_current_status.py
       - .github/workflows/hepta-gap-agentd-process.yml
+      - .github/workflows/inference-worker-qualification.yml
 
 permissions:
   contents: read
@@ -44,7 +49,7 @@ concurrency:
 jobs:
   derived-projections:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -59,6 +64,14 @@ jobs:
           python3 scripts/hepta-implementation-maps.py verify
           python3 -m unittest -v scripts.tests.test_hepta_ci_candidate
           python3 -m unittest discover -v -s scripts -p 'test_hepta_agentd_ci.py'
+          python3 -m unittest discover -v -s scripts/tests -p 'test_inference_worker_current_status.py'
+      - name: Check unchanged candidate
+        if: always()
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
 
   owner-formatting:
     runs-on: ubuntu-24.04
@@ -107,14 +120,13 @@ jobs:
         lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","merge-candidate"]' || '["source-head"]') }}
         os: ${{ fromJSON('["ubuntu-24.04","macos-15"]') }}
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 90
+    timeout-minutes: 120
     env:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
       EXPECTED_SHA: ${{ matrix.lane == 'merge-candidate' && github.sha || github.event.pull_request.head.sha || github.sha }}
       RUST_BACKTRACE: "1"
       CARGO_BUILD_JOBS: "2"
-      # Preserve the short private Unix-socket test root on Darwin.
       TMPDIR: /tmp
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -152,16 +164,84 @@ jobs:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
-      - name: Exercise owner and lifecycle libraries
+
+      - name: Exercise inference.control in isolation
+        id: infer_core
         if: steps.execution.outputs.run_native == 'true'
+        continue-on-error: true
         working-directory: codex-rs
         run: |
           set -euo pipefail
-          just test --locked --lib -p codex-hepta-agentd -p codex-hepta-cognitive-read \
-            -p codex-hepta-infer-core -p codex-hepta-infer-worker-host \
+          rm -f target/nextest/default/junit.xml
+          cargo nextest run --locked -p codex-hepta-infer-core --lib --test-threads=1
+          cargo test --locked -p codex-hepta-infer-core --bins
+          cargo check --locked -p codex-hepta-infer-core --all-targets
+          cargo clippy --locked -p codex-hepta-infer-core --all-targets --no-deps -- -D warnings
+      - name: Upload inference.control JUnit
+        if: always() && steps.execution.outputs.run_native == 'true'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: infer-core-${{ matrix.lane }}-${{ matrix.os }}-junit
+          path: codex-rs/target/nextest/default/junit.xml
+          if-no-files-found: warn
+
+      - name: Exercise inference.worker in isolation
+        id: infer_worker
+        if: steps.execution.outputs.run_native == 'true'
+        continue-on-error: true
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          rm -f target/nextest/default/junit.xml
+          cargo nextest run --locked -p codex-hepta-infer-worker-host \
+            --features experimental-local-model --lib --test-threads=1
+          cargo test --locked -p codex-hepta-infer-worker-host \
+            --features experimental-local-model --bins
+          cargo check --locked -p codex-hepta-infer-worker-host \
+            --features experimental-local-model --all-targets
+          cargo clippy --locked -p codex-hepta-infer-worker-host \
+            --features experimental-local-model --all-targets --no-deps -- -D warnings
+      - name: Upload inference.worker JUnit
+        if: always() && steps.execution.outputs.run_native == 'true'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: infer-worker-${{ matrix.lane }}-${{ matrix.os }}-junit
+          path: codex-rs/target/nextest/default/junit.xml
+          if-no-files-found: warn
+
+      - name: Exercise Agentd in isolation
+        id: agentd
+        if: steps.execution.outputs.run_native == 'true'
+        continue-on-error: true
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          rm -f target/nextest/default/junit.xml
+          cargo nextest run --locked -p codex-hepta-agentd --lib --test-threads=1
+          cargo test --locked -p codex-hepta-agentd --bins
+          cargo check --locked -p codex-hepta-agentd --all-targets
+          cargo clippy --locked -p codex-hepta-agentd --all-targets --no-deps -- -D warnings
+      - name: Upload Agentd JUnit
+        if: always() && steps.execution.outputs.run_native == 'true'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: agentd-${{ matrix.lane }}-${{ matrix.os }}-junit
+          path: codex-rs/target/nextest/default/junit.xml
+          if-no-files-found: warn
+
+      - name: Exercise cognitive-read and supervisor support libraries
+        id: support_libraries
+        if: steps.execution.outputs.run_native == 'true'
+        continue-on-error: true
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          just test --locked --lib -p codex-hepta-cognitive-read \
             -p codex-hepta-supervisor --test-threads=1
       - name: Exercise actual optional retirement and durable destination recovery
+        id: retirement_recovery
         if: steps.execution.outputs.run_native == 'true'
+        continue-on-error: true
         working-directory: codex-rs
         run: |
           set -euo pipefail
@@ -171,7 +251,9 @@ jobs:
             --test operation_timer_fence --test-threads=1
           just test --locked -p codex-hepta-memory --lib destination_recovery_binding --test-threads=1
       - name: Exercise named plasticity and live cutover paths
+        id: plasticity_cutover
         if: steps.execution.outputs.run_native == 'true'
+        continue-on-error: true
         working-directory: codex-rs
         run: |
           set -euo pipefail
@@ -180,7 +262,9 @@ jobs:
           just test --locked -p codex-hepta-runtime \
             authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_predecessor_semantics --test-threads=1
       - name: Exercise writer admission and real daemon process suites
+        id: daemon_process
         if: steps.execution.outputs.run_native == 'true'
+        continue-on-error: true
         working-directory: codex-rs
         run: |
           set -euo pipefail
@@ -190,10 +274,36 @@ jobs:
             --test cognitive_product_e2e --test plasticity_process_e2e \
             --test runtime_codex_product_e2e --test supervised_two_agents \
             --test supervisord_product_e2e --test queue_capacity_product --test-threads=1
-      - name: Strict owner lint
+      - name: Strict qualification-feature owner lint
+        id: qualification_lint
         if: steps.execution.outputs.run_native == 'true'
+        continue-on-error: true
         working-directory: codex-rs
         run: cargo clippy --locked -p codex-hepta-agentd --no-deps --all-targets --features qualification-cognitive-write -- -D warnings
+      - name: Require every applicable owner and process check
+        if: steps.execution.outputs.run_native == 'true'
+        env:
+          INFER_CORE: ${{ steps.infer_core.outcome }}
+          INFER_WORKER: ${{ steps.infer_worker.outcome }}
+          AGENTD: ${{ steps.agentd.outcome }}
+          SUPPORT_LIBRARIES: ${{ steps.support_libraries.outcome }}
+          RETIREMENT_RECOVERY: ${{ steps.retirement_recovery.outcome }}
+          PLASTICITY_CUTOVER: ${{ steps.plasticity_cutover.outcome }}
+          DAEMON_PROCESS: ${{ steps.daemon_process.outcome }}
+          QUALIFICATION_LINT: ${{ steps.qualification_lint.outcome }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          failed=0
+          for name in INFER_CORE INFER_WORKER AGENTD SUPPORT_LIBRARIES \
+            RETIREMENT_RECOVERY PLASTICITY_CUTOVER DAEMON_PROCESS QUALIFICATION_LINT; do
+            value="${!name}"
+            printf '%s=%s\n' "$name" "$value"
+            if [[ "$value" != success ]]; then
+              failed=1
+            fi
+          done
+          test "$failed" -eq 0
       - name: Check unchanged candidate after execution
         if: always()
         run: |

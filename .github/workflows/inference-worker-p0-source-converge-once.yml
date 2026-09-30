@@ -1,0 +1,234 @@
+name: Inference worker P0 ordinary-source convergence (one shot)
+
+on:
+  push:
+    branches:
+      - codex/inference-worker-authoritative-20260929
+    paths:
+      - .github/workflows/inference-worker-p0-source-converge-once.yml
+
+permissions:
+  contents: write
+  statuses: write
+
+concurrency:
+  group: inference-worker-p0-ordinary-source-convergence
+  cancel-in-progress: false
+
+env:
+  BRANCH_NAME: codex/inference-worker-authoritative-20260929
+  REVIEWED_TRANSFORM_COMMIT: 1c73f14c2bc0688b53eb3bb0c5fdaf29f491a20c
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  RUST_BACKTRACE: "1"
+
+jobs:
+  converge:
+    runs-on: [self-hosted, linux, x64, rog]
+    timeout-minutes: 240
+    steps:
+      - name: Check out exact trigger head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Bind immutable input head
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git branch --show-current)" = "$BRANCH_NAME"
+          test "$(git ls-remote origin "refs/heads/$BRANCH_NAME" | awk '{print $1}')" = "$GITHUB_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
+
+      - name: Execute reviewed source transform from immutable Git history
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+
+          commit = "1c73f14c2bc0688b53eb3bb0c5fdaf29f491a20c"
+          path = ".github/workflows/inference-worker-p0-source-converge-once.yml"
+          source = subprocess.check_output(
+              ["git", "show", f"{commit}:{path}"],
+              text=True,
+          )
+          step = "      - name: Materialize reviewed P0 fixes as ordinary source\n"
+          next_step = "\n      - name: Commit ordinary source fixes locally\n"
+          step_start = source.index(step)
+          run_start = source.index("        run: |\n", step_start) + len("        run: |\n")
+          run_end = source.index(next_step, run_start)
+          lines = source[run_start:run_end].splitlines()
+          decoded = []
+          for line in lines:
+              if line.startswith("          "):
+                  decoded.append(line[10:])
+              elif line:
+                  raise SystemExit(f"unexpected reviewed transform indentation: {line!r}")
+              else:
+                  decoded.append("")
+          target = Path("/tmp/inference-worker-reviewed-transform.sh")
+          target.write_text("\n".join(decoded) + "\n", encoding="utf-8")
+          PY
+          bash -euo pipefail /tmp/inference-worker-reviewed-transform.sh
+          git diff --check
+
+      - name: Commit ordinary source and documentation projections
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name hepta-inference-p0-convergence
+          git config user.email hepta-inference-p0-convergence@users.noreply.github.com
+          test -n "$(git status --porcelain --untracked-files=normal)"
+          git add \
+            codex-rs/hepta-infer-core \
+            codex-rs/hepta-infer-worker-host \
+            codex-rs/hepta-agentd \
+            scripts/hepta-implementation-maps.py \
+            scripts/run_inference_worker_qualification_lane.sh
+          git commit -m 'inference.worker: close P0 runtime and qualification regressions'
+          python3 scripts/hepta-implementation-maps.py migrate \
+            --module inference.control \
+            --module inference.worker
+          python3 scripts/hepta-module-docs.py refresh-derived
+          git diff --check
+          git add docs/modules/inference.control docs/modules/inference.worker
+          if ! git diff --cached --quiet; then
+            git commit -m 'docs(inference): bind implementation maps to ordinary source'
+          fi
+
+      - name: Retire every inference.worker source writer before qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/inference-worker-p0-source-converge-once.yml
+          rm -f .github/workflows/inference-worker-authoritative-materialize.yml
+          rm -f .github/workflows/inference-worker-runtime-closure-materialize.yml
+          rm -f .github/workflows/inference-worker-qualification.yml
+          rm -rf .github/materialization/inference-worker-runtime-closure
+          rm -rf .github/materialization/inference-worker-stage1
+          rm -rf .github/materialization/inference-worker-stage2
+          rm -f .github/materialization/inference-worker-p05.patch.gz.b64
+          python3 - <<'PY'
+          from pathlib import Path
+
+          workflow = Path('.github/workflows/inference-worker-authoritative-qualification.yml')
+          text = workflow.read_text(encoding='utf-8')
+          if 'contents: write' in text:
+              raise SystemExit('authoritative qualification still has write permission')
+          forbidden = ('git push', 'git commit', 'git apply', 'apply.py', '.github/materialization/')
+          found = [token for token in forbidden if token in text]
+          if found:
+              raise SystemExit(f'authoritative qualification mutates source: {found}')
+          PY
+          git add -A
+          git commit -m 'ci(inference.worker): make ordinary source the only qualification input'
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          printf 'FINAL_CANDIDATE_SHA=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Prepare native build prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+
+      - name: Install DotSlash
+        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+
+      - name: Resolve verified V8 artifacts
+        shell: bash
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: |
+          set -euo pipefail
+          sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+          python3 scripts/hepta_ci_v8.py
+
+      - name: Verify exact final ordinary-source candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$FINAL_CANDIDATE_SHA"
+          export CARGO_TARGET_DIR="$RUNNER_TEMP/inference-worker-p0"
+          pushd codex-rs >/dev/null
+          cargo test --locked -p codex-hepta-infer-core --lib
+          cargo clippy --locked -p codex-hepta-infer-core --all-targets --no-deps -- -D warnings
+          cargo test --locked -p codex-hepta-infer-worker-host --lib
+          cargo clippy --locked -p codex-hepta-infer-worker-host --all-targets --no-deps -- -D warnings
+          cargo test --locked -p codex-hepta-infer-worker-host --features experimental-local-model --lib
+          cargo check --locked -p codex-hepta-infer-worker-host --features experimental-local-model --all-targets
+          cargo clippy --locked -p codex-hepta-infer-worker-host --features experimental-local-model --all-targets --no-deps -- -D warnings
+          cargo test --locked -p codex-hepta-agentd --lib
+          cargo clippy --locked -p codex-hepta-agentd --all-targets --no-deps -- -D warnings
+          cargo build --locked -p codex-cli --bin codex
+          export HEPTA_TEST_CODEX_SELF_EXE="$CARGO_TARGET_DIR/debug/codex"
+          test -x "$HEPTA_TEST_CODEX_SELF_EXE"
+          cargo test --locked -p codex-hepta-infer-worker-host \
+            --features experimental-local-model \
+            real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone \
+            -- --ignored --nocapture --test-threads=1
+          popd >/dev/null
+          python3 scripts/hepta-module-docs.py refresh-derived --check
+          python3 scripts/hepta_module_registry.py --strict
+          python3 scripts/hepta-implementation-maps.py verify \
+            --module inference.control \
+            --module inference.worker
+          python3 -m unittest discover -v -s scripts/tests -p 'test_inference_worker_*.py'
+          python3 -m unittest -v scripts/test_inference_worker_command_receipt.py
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          test "$(git rev-parse HEAD)" = "$FINAL_CANDIDATE_SHA"
+
+      - name: Publish only the verified final candidate
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          remote_head="$(git ls-remote origin "refs/heads/$BRANCH_NAME" | awk '{print $1}')"
+          test "$remote_head" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD)" = "$FINAL_CANDIDATE_SHA"
+          git push origin "HEAD:$BRANCH_NAME"
+          python3 - <<'PY'
+          import json
+          import os
+          import urllib.request
+
+          sha = os.environ['FINAL_CANDIDATE_SHA']
+          token = os.environ['GH_TOKEN']
+          url = f"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/statuses/{sha}"
+          payload = json.dumps({
+              "state": "success",
+              "context": "inference.worker/p0-exact-head",
+              "description": "P0 ordinary-source exact-head verification passed",
+          }).encode()
+          request = urllib.request.Request(
+              url,
+              data=payload,
+              method="POST",
+              headers={
+                  "Accept": "application/vnd.github+json",
+                  "Authorization": f"Bearer {token}",
+                  "X-GitHub-Api-Version": "2022-11-28",
+                  "Content-Type": "application/json",
+              },
+          )
+          with urllib.request.urlopen(request) as response:
+              if response.status not in (200, 201):
+                  raise SystemExit(f"status publication failed: {response.status}")
+          PY
