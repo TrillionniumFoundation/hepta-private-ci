@@ -85,12 +85,42 @@ pub fn watch_helper_lifetime(
     std::thread::Builder::new()
         .name("native-update-startup-watch".into())
         .spawn(move || {
-            if receiver.recv_timeout(std::time::Duration::from_secs(35)) != Ok(true)
-                || manager.acknowledge_running_process(&handoff).is_err()
+            if observe_helper_lifetime(
+                &manager,
+                &handoff,
+                receiver,
+                std::time::Duration::from_secs(35),
+            )
+            .is_err()
             {
                 eprintln!("hepta-native: update helper disappeared before startup acknowledgement");
                 std::process::exit(1);
             }
         })?;
     Ok(())
+}
+
+pub(crate) fn observe_helper_lifetime(
+    manager: &crate::updater::UpdateManager,
+    handoff: &UpdateHandoff,
+    receiver: std::sync::mpsc::Receiver<bool>,
+    maximum: std::time::Duration,
+) -> Result<(), ShellError> {
+    let confirmation = if receiver.recv_timeout(maximum) == Ok(true) {
+        manager.acknowledge_running_process(handoff)
+    } else {
+        Err(ShellError::Update(
+            "helper acknowledgement was not observed".into(),
+        ))
+    };
+    if confirmation.is_ok() {
+        return confirmation;
+    }
+    // Every failure arbiter uses the same owner transaction. A delayed local
+    // notification cannot kill a candidate whose confirmation already won.
+    if manager.cancel_unconfirmed_restart(handoff)? {
+        confirmation
+    } else {
+        Ok(())
+    }
 }

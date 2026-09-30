@@ -58,6 +58,21 @@ fn helper_acknowledgement_is_durable_before_success() {
             manager.load_pending().unwrap().unwrap().status,
             PendingUpdateStatus::Confirmed
         );
+        // The durable commit is the scheduling barrier: no local notification
+        // has arrived at this observer when its deadline fires immediately.
+        // It must preserve the already confirmed process through the owner fence.
+        let (_delayed_notification, receiver) = std::sync::mpsc::sync_channel(1);
+        crate::update_handoff::observe_helper_lifetime(
+            &manager,
+            &handoff,
+            receiver,
+            Duration::ZERO,
+        )
+        .unwrap();
+        assert_eq!(
+            manager.load_pending().unwrap().unwrap().status,
+            PendingUpdateStatus::Confirmed
+        );
         return;
     }
 
@@ -174,14 +189,7 @@ fn helper_acknowledgement_is_durable_before_success() {
             assert_eq!(current.status, PendingUpdateStatus::Confirmed);
             assert!(!manager.cancel_unconfirmed_restart(&handoff).unwrap());
         } else {
-            assert_eq!(
-                current.status,
-                if cancelled {
-                    PendingUpdateStatus::RollbackStarted
-                } else {
-                    PendingUpdateStatus::ActivatedUnconfirmed
-                }
-            );
+            assert_eq!(current.status, PendingUpdateStatus::RollbackStarted);
             assert!(manager.recover_interrupted_activation().unwrap());
             assert_eq!(
                 manager.load_pending().unwrap().unwrap().status,
