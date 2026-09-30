@@ -29,20 +29,32 @@ impl LatencyHistogram {
         self.count = self.count.saturating_add(1);
         self.sum_ms = self.sum_ms.saturating_add(milliseconds);
         self.max_ms = self.max_ms.max(milliseconds);
-        for (boundary, bucket) in [
-            (1, &mut self.le_1_ms),
-            (5, &mut self.le_5_ms),
-            (10, &mut self.le_10_ms),
-            (25, &mut self.le_25_ms),
-            (50, &mut self.le_50_ms),
-            (100, &mut self.le_100_ms),
-            (250, &mut self.le_250_ms),
-            (500, &mut self.le_500_ms),
-            (1_000, &mut self.le_1000_ms),
-        ] {
-            if milliseconds <= boundary {
-                *bucket = bucket.saturating_add(1);
-            }
+        if milliseconds <= 1 {
+            self.le_1_ms = self.le_1_ms.saturating_add(1);
+        }
+        if milliseconds <= 5 {
+            self.le_5_ms = self.le_5_ms.saturating_add(1);
+        }
+        if milliseconds <= 10 {
+            self.le_10_ms = self.le_10_ms.saturating_add(1);
+        }
+        if milliseconds <= 25 {
+            self.le_25_ms = self.le_25_ms.saturating_add(1);
+        }
+        if milliseconds <= 50 {
+            self.le_50_ms = self.le_50_ms.saturating_add(1);
+        }
+        if milliseconds <= 100 {
+            self.le_100_ms = self.le_100_ms.saturating_add(1);
+        }
+        if milliseconds <= 250 {
+            self.le_250_ms = self.le_250_ms.saturating_add(1);
+        }
+        if milliseconds <= 500 {
+            self.le_500_ms = self.le_500_ms.saturating_add(1);
+        }
+        if milliseconds <= 1_000 {
+            self.le_1000_ms = self.le_1000_ms.saturating_add(1);
         }
     }
 
