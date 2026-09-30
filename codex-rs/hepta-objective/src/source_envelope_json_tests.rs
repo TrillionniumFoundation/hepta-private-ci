@@ -338,10 +338,8 @@ fn retains_structural_count_text_and_semantic_key_checks_after_decoding() {
     // contract rather than classifying an accepted source as malformed.
     let mut intrinsic_abstain = original.clone();
     intrinsic_abstain["structuredIntent"]["legalActionClasses"] = json!([]);
-    let decoded = decode_source_envelope_json_v1(
-        &serde_json::to_vec(&intrinsic_abstain).unwrap(),
-    )
-    .expect("empty legal action set remains structurally valid");
+    let decoded = decode_source_envelope_json_v1(&serde_json::to_vec(&intrinsic_abstain).unwrap())
+        .expect("empty legal action set remains structurally valid");
     assert!(decoded.structured_intent.legal_action_classes.is_empty());
 
     let mut source = original;
