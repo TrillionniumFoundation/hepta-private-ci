@@ -225,11 +225,15 @@
     "entries": [
       {
         "path": ".github/workflows/compact-engine-qualification.yml",
-        "blobSha": "bc4164cd0c22898785a49fa5c7a3bc63056c1b0b"
+        "blobSha": "9a74df38ebfdf0e3bce6fa9286e36ffa3744a562"
       },
       {
         "path": "codex-rs/hepta-agentd/src/compaction_checkpoint_host.rs",
         "blobSha": "bc107c43308bf4a5174b670e841c4dc0f1d89fb5"
+      },
+      {
+        "path": "codex-rs/hepta-cognitive-types/src/lib.rs",
+        "blobSha": "63853374ea98aeea5dc720e4871bce3723998452"
       },
       {
         "path": "codex-rs/hepta-compact-engine/src/coordinator.rs",
@@ -241,7 +245,7 @@
       },
       {
         "path": "codex-rs/hepta-compact-engine/src/durable_fence_tests.rs",
-        "blobSha": "61d5ef1089ba66fe00173315c1bb5d360a095de1"
+        "blobSha": "ce3d9c1058588992b68160eb6cbfccead61ec32e"
       },
       {
         "path": "codex-rs/hepta-compact-engine/src/durable_tests.rs",
@@ -320,6 +324,7 @@
   },
   "observedSourcePaths": [
     "codex-rs/hepta-compact-engine",
+    "codex-rs/hepta-cognitive-types/src/lib.rs",
     "codex-rs/hepta-agentd/src/compaction_checkpoint_host.rs",
     "codex-rs/Cargo.toml",
     "codex-rs/Cargo.lock",
@@ -333,21 +338,25 @@
     "qualification/module-execution-dossiers/detail/compact.engine.md"
   ],
   "observedAtHead": {
-    "commit": "81f4e8159bb0109aaabce9fe784c7ef046134b73",
-    "tree": "dd2b27d14a5b23ec9b07188a90ac6446957dd513"
+    "commit": "5e7ba097f34c0bc10646543836dc87b052af0fec",
+    "tree": "8c9dc1e883e01e41ee906fb4fb2de8e5dfec2dd6"
   },
   "sourceObjects": [
     {
       "path": ".github/workflows/compact-engine-qualification.yml",
-      "object": "bc4164cd0c22898785a49fa5c7a3bc63056c1b0b"
+      "object": "9a74df38ebfdf0e3bce6fa9286e36ffa3744a562"
     },
     {
       "path": "codex-rs/hepta-agentd/src/compaction_checkpoint_host.rs",
       "object": "bc107c43308bf4a5174b670e841c4dc0f1d89fb5"
     },
     {
+      "path": "codex-rs/hepta-cognitive-types/src/lib.rs",
+      "object": "63853374ea98aeea5dc720e4871bce3723998452"
+    },
+    {
       "path": "codex-rs/hepta-compact-engine",
-      "object": "28281b45613a8ca3c6144a6187524da76ee1a83b"
+      "object": "651c4d5cb92ba1c29a953863bac8dcbf758d6375"
     },
     {
       "path": "codex-rs/hepta-compact-engine/src/coordinator.rs",
@@ -359,7 +368,7 @@
     },
     {
       "path": "codex-rs/hepta-compact-engine/src/durable_fence_tests.rs",
-      "object": "61d5ef1089ba66fe00173315c1bb5d360a095de1"
+      "object": "ce3d9c1058588992b68160eb6cbfccead61ec32e"
     },
     {
       "path": "codex-rs/hepta-compact-engine/src/durable_tests.rs",
