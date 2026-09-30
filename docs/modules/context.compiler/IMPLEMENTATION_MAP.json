@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
-    "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7"
+    "commit": "cade4f451ce1c1f37cd5b5b48d726c242ab0bf95",
+    "tree": "ed426dec9e219dad5b4b4f26303a10c8bb693c34"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "context.compiler",
@@ -18,7 +18,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "legacy_v1_read_only_source_composed_verified_v2_not_composed",
+  "productCallerState": "legacy_v1_and_partial_verified_v2_source_adapters_composed_provider_chain_not_qualified",
   "productionWriterState": "not_established",
   "operations": [
     {
@@ -220,6 +220,30 @@
       "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product.rs",
       "nativeSymbol": "compile_context",
       "state": "compiled_legacy_owner_adapter_not_verified_v2_ingress"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-intelligence/src/prompt_pipeline.rs",
+      "nativeSymbol": "compile_exercised_prompt_context_v1",
+      "state": "source_v2_compile_serialize_attach_explicit_tokenizer_requires_host_qualification",
+      "tests": [
+        "codex-rs/hepta-intelligence/src/prompt_pipeline_tests.rs"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
+      "nativeSymbol": "compile_prompt_registry_v2",
+      "state": "source_registry_bridge_not_verified_v2_predispatch_or_delivery_observation",
+      "tests": [
+        "codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+      "nativeSymbol": "AgentdPromptPipelineOwner::compile_and_stage",
+      "state": "source_v2_staging_explicit_tokenizer_physical_provider_proof_not_closed",
+      "tests": [
+        "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs"
+      ]
     }
   ],
   "sourceObjects": [
@@ -228,8 +252,12 @@
       "object": "1781996175ec7f16f44b9f58ac3e2c2bd41358af"
     },
     {
+      "path": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+      "object": "e4dec6e9fc084c50221003506b8128d34b02f82f"
+    },
+    {
       "path": "codex-rs/hepta-context-compiler",
-      "object": "517aa2bbba2f31ab5d4bf2ce96f5f4d8ec4fa662"
+      "object": "455d1a0706d1b799e5dccd9e126acf8fc3c336d0"
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/candidate_bound.rs",
@@ -257,23 +285,31 @@
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/v2.rs",
-      "object": "d6be3d4b86ef261157af101c6629bcee8ecf1311"
+      "object": "d0d3045bbfb66350cb2c58121ae99c84924b8f70"
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/v2_tests.rs",
-      "object": "49232cf8eb81a64110a3ba23e6c0abaf54830438"
+      "object": "830419fb96b237de2aa0b7bb492571ec25a11560"
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/wire.rs",
-      "object": "6e0583a81b064eec7ceb0b785bc9a48bd801a2f1"
+      "object": "d31253432fd7f378d8015651d73a2d82c547291e"
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/wire_tests.rs",
-      "object": "4adcc64f926aec0e65ee1c05aebf2b67d07daadc"
+      "object": "9ec529e1a36971630e37ccce7e8ff1be7a48e0ae"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
+      "object": "1a19ce51253e5f3a7bdfe0b4573d6b1f7d4d54a8"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/prompt_pipeline.rs",
+      "object": "ce49605b80b33d3aaa8e8519f21224c8b8cb1210"
     },
     {
       "path": "docs/modules/context.compiler/TECHNICAL.md",
-      "object": "bba347eebcdf9a9e93afaf5ae26798dee368bd0e"
+      "object": "f1e690cda8b02f5797082406dc99ae6b7d108aa8"
     }
   ]
 }

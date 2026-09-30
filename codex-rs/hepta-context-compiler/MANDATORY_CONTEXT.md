@@ -66,11 +66,17 @@ receipt and must not be interpreted as the verified V2 proof chain:
   invokes the profile-bound serializer, hashes the actual final payload and then
   invokes the exact tokenizer over that final payload, including framing,
   template and tool-schema overhead;
-- `build_attachment` revalidates every selected admission against the current
-  verified admission/revocation snapshot; expiry is exclusive, so an admission
+- `build_attachment` binds request scope and authority domain even for an empty
+  selected set, then revalidates every selected admission against the current
+  verified admission/revocation snapshot, preserving every selected candidate’s
+  authenticated cumulative frontier even when only unrelated ids were revoked.
+  Same-epoch set changes and later removal of revoked ids fail closed. Immutable
+  revoked sets are shared across proof clones, and each distinct frontier is
+  checked once per revalidation. Expiry is exclusive, so an admission
   is already invalid when the snapshot time equals `expires_unix_ms`;
 - `prepare_delivery_v2` rejects revocation-epoch or snapshot-time rollback
-  from the attachment boundary, revalidates every selected admission again
+  from the attachment boundary, rejects same-epoch revoked-set changes and
+  cumulative revocation resurrection across epochs, revalidates every selected admission again
   immediately before dispatch, and emits a construction-closed
   `ContextDeliveryPreparationV2` safety witness binding the exact serialized
   payload, provider/model profile and current verified admission snapshot;
