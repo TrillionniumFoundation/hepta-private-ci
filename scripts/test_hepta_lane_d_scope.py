@@ -402,5 +402,49 @@ class LaneDOwnerMapTests(unittest.TestCase):
                     LANE_D.load(relative)
 
 
+class LaneDTruthBoundaryTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.row = {
+            "module": "utility.ndu",
+            "dimensions": {
+                "productCaller": {"authenticatedProductionEstablished": False},
+                "independentAcceptance": {"established": False},
+                "activation": {"established": False},
+                "release": {"established": False},
+            },
+        }
+        self.mapping = {
+            "claimBoundary": {
+                "productionImplementation": False,
+                "productExecutionProved": False,
+                "independentAcceptance": False,
+                "activation": False,
+                "release": False,
+            },
+        }
+
+    def test_descriptive_caller_wording_does_not_mint_execution_or_block_read_only_source(self) -> None:
+        self.row["dimensions"]["productCaller"]["state"] = "editorial wording may evolve"
+        LANE_D.verify_truth_boundary(self.row, self.mapping)
+        real_map = LANE_D.load(LANE_D.MAPS["utility.ndu"])
+        LANE_D.verify_truth_boundary(self.row, real_map)
+        real_map["productCallers"][0]["nativeSymbol"] = "missing_read_only_caller"
+        with self.assertRaisesRegex(SystemExit, "missing read-only caller symbol"):
+            LANE_D.verify_truth_boundary(self.row, real_map)
+
+    def test_execution_and_activation_claims_reject_without_rewriting_prose(self) -> None:
+        for key in self.mapping["claimBoundary"]:
+            with self.subTest(key=key):
+                self.mapping["claimBoundary"][key] = True
+                try:
+                    with self.assertRaisesRegex(SystemExit, "truth boundary"):
+                        LANE_D.verify_truth_boundary(self.row, self.mapping)
+                finally:
+                    self.mapping["claimBoundary"][key] = False
+        self.row["dimensions"]["productCaller"]["authenticatedProductionEstablished"] = "false"
+        with self.assertRaisesRegex(SystemExit, "authenticated production"):
+            LANE_D.verify_truth_boundary(self.row, self.mapping)
+
+
 if __name__ == "__main__":
     unittest.main()

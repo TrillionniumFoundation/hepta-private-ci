@@ -60,7 +60,8 @@
           "evidence": [
             "codex-rs/hepta-agentd/src/objective_runtime.rs::ObjectiveRuntimeHost::submit",
             "codex-rs/hepta-intelligence/src/objective_run.rs::compile_and_publish_objective_run_v1"
-          ]
+          ],
+          "authenticatedProductionEstablished": false
         },
         "productionWriter": {
           "state": "destination_owner_journal_source_composed_not_deployed",
@@ -70,15 +71,18 @@
         },
         "independentAcceptance": {
           "state": "not_established",
-          "evidence": []
+          "evidence": [],
+          "established": false
         },
         "activation": {
           "state": "not_established",
-          "evidence": []
+          "evidence": [],
+          "established": false
         },
         "release": {
           "state": "not_established",
-          "evidence": []
+          "evidence": [],
+          "established": false
         },
         "boundedAdmissionProfile": {
           "state": "candidate_implemented",
@@ -216,7 +220,8 @@
             "codex-rs/hepta-control-plane/src/planner_ndu.rs",
             "codex-rs/hepta-control-plane/src/planner_context_tests.rs",
             "codex-rs/hepta-control-plane/src/planner_ndu_tests.rs"
-          ]
+          ],
+          "authenticatedProductionEstablished": false
         },
         "productionWriter": {
           "state": "durable_writer_source_candidate_not_selected_or_activated",
@@ -229,15 +234,18 @@
         },
         "independentAcceptance": {
           "state": "not_established",
-          "evidence": []
+          "evidence": [],
+          "established": false
         },
         "activation": {
           "state": "not_established",
-          "evidence": []
+          "evidence": [],
+          "established": false
         },
         "release": {
           "state": "not_established",
-          "evidence": []
+          "evidence": [],
+          "established": false
         },
         "completeUncertaintyAndProvenance": {
           "state": "candidate_implemented",
@@ -307,7 +315,8 @@
         },
         "productCaller": {
           "state": "not_established",
-          "evidence": []
+          "evidence": [],
+          "authenticatedProductionEstablished": false
         },
         "productionWriter": {
           "state": "not_established",
@@ -315,15 +324,18 @@
         },
         "independentAcceptance": {
           "state": "not_established",
-          "evidence": []
+          "evidence": [],
+          "established": false
         },
         "activation": {
           "state": "not_established",
-          "evidence": []
+          "evidence": [],
+          "established": false
         },
         "release": {
           "state": "not_established",
-          "evidence": []
+          "evidence": [],
+          "established": false
         },
         "sealedPlanningIntegrity": {
           "state": "candidate_implemented",
