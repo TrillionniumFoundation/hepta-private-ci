@@ -100,7 +100,7 @@ async fn ready(
 ) -> Result<(AgentdClient, SupervisordAgentStatus)> {
     timeout(Duration::from_secs(30), async {
         loop {
-            let status = client.agent(agent.clone()).await?;
+            let status = client.snapshot(agent.clone()).await?;
             if let Some(generation) = status
                 .spawn_generation
                 .filter(|generation| *generation > after)
@@ -128,7 +128,7 @@ async fn exercise(
     agent: &AgentId,
     release: ReleaseId,
 ) -> Result<()> {
-    let before = client.agent(agent.clone()).await?;
+    let before = client.snapshot(agent.clone()).await?;
     client.start(before.control_fence, release).await?;
     let (product, first) = ready(client, registry, agent, 0).await?;
     let now = u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis())?;
@@ -144,7 +144,7 @@ async fn exercise(
     );
     let created = product.automation_create(draft).await?;
     ensure!(product.automation_list(10).await?.len() == 1);
-    let current = client.agent(agent.clone()).await?;
+    let current = client.snapshot(agent.clone()).await?;
     client.restart(current.control_fence).await?;
     let (reopened, second) = ready(
         client,
@@ -230,11 +230,11 @@ async fn normal_agentd_binary_consumes_selected_topology_and_recovers_one_durabl
     }
     .await;
     // Explicitly settle owned processes even after an assertion/operation error.
-    if let Ok(status) = client.agent(agent.clone()).await {
+    if let Ok(status) = client.snapshot(agent.clone()).await {
         let _ = client.kill(status.control_fence).await;
         let _ = timeout(Duration::from_secs(5), async {
             while client
-                .agent(agent.clone())
+                .snapshot(agent.clone())
                 .await
                 .is_ok_and(|status| status.active)
             {
