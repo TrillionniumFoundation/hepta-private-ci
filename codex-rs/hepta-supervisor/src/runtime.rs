@@ -17,6 +17,7 @@ use crate::SupervisorError;
 use crate::SupervisorEvent;
 use crate::SupervisorEventKind;
 use crate::release_transaction::DurableReleaseTransaction;
+use crate::restart_state::MatrixRestartRecovery;
 use crate::signed_intent::SignedSupervisorIntent;
 
 pub(crate) const MAX_FAULT_BYTES: usize = 512;
@@ -78,6 +79,8 @@ pub(crate) struct DeferredAgentAction {
 
 pub(crate) struct MatrixCompanionSlot<P> {
     pub runtime: Option<MatrixRuntime<P>>,
+    pub exit_lease_removal: Option<crate::matrix::MatrixProcessLeaseRemoval>,
+    pub observed_exit: Option<crate::ProcessExit>,
     pub configured: bool,
     pub degraded: bool,
     pub restart_attempt: u32,
@@ -87,12 +90,15 @@ pub(crate) struct MatrixCompanionSlot<P> {
     pub restart_after_exit: bool,
     pub restart_exhausted: bool,
     pub last_error: Option<String>,
+    pub recovery_budget: Option<MatrixRestartRecovery>,
 }
 
 impl<P> MatrixCompanionSlot<P> {
     fn new() -> Self {
         Self {
             runtime: None,
+            exit_lease_removal: None,
+            observed_exit: None,
             configured: false,
             degraded: false,
             restart_attempt: 0,
@@ -102,6 +108,7 @@ impl<P> MatrixCompanionSlot<P> {
             restart_after_exit: false,
             restart_exhausted: false,
             last_error: None,
+            recovery_budget: None,
         }
     }
 }
@@ -144,6 +151,12 @@ impl<T> BoundedQueue<T> {
 
 pub(crate) struct AgentSlot<P> {
     pub runtime: Option<AgentRuntime<P>>,
+    /// At most one unacknowledged signal, bound to the current spawn generation.
+    pub pending_control: Option<crate::control::pending::PendingControl>,
+    /// Identity-bound local retry after this owner unlinks an exited process lease.
+    pub exit_lease_removal: Option<crate::lease::ProcessLeaseRemoval>,
+    /// An exact observed exit is immutable while durable finalization is retried.
+    pub observed_exit: Option<crate::ProcessExit>,
     pub matrix: MatrixCompanionSlot<P>,
     pub deferred_agent_action: Option<DeferredAgentAction>,
     pub last_command: Option<AgentCommand>,
@@ -169,6 +182,9 @@ impl<P> AgentSlot<P> {
     pub fn new(config: &SupervisorConfig) -> Self {
         Self {
             runtime: None,
+            pending_control: None,
+            exit_lease_removal: None,
+            observed_exit: None,
             matrix: MatrixCompanionSlot::new(),
             deferred_agent_action: None,
             last_command: None,

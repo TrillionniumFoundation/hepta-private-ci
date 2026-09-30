@@ -12,11 +12,18 @@ doctest = false
 
 [features]
 default = []
-# Offline/shadow harness API; never enabled by a product dependency.
+# Offline/shadow harness API and deterministic durability fault points; never
+# enabled by a product dependency.
 qualification = []
-# Explicit build opt-in for externally authorized mutation; default daemons
-# remain lifecycle-only and keep signed mutation admission fail-closed.
+# Deprecated compatibility name for the daemon verifier gate. New product
+# manifests must request `production-verifier` explicitly.
 production-authority = []
+# Public-key verification and signed mutation admission for hepta-supervisord.
+# This feature never enables private-key loaders or signer binaries.
+production-verifier = ["production-authority"]
+# Offline key-custody and signer tools. This implies the verifier types because
+# requests and receipts are checked with the same canonical contracts.
+offline-authority-tools = ["production-verifier"]
 
 [[bin]]
 name = "hepta-supervisord"
@@ -29,28 +36,39 @@ path = "src/bin/hepta-supervisor-intent-recovery.rs"
 test = false
 
 [[bin]]
+name = "hepta-supervisor-recovery-diagnose"
+path = "src/bin/hepta-supervisor-recovery-diagnose.rs"
+test = false
+
+[[bin]]
+name = "hepta-supervisor-authority-bundle"
+path = "src/bin/hepta-supervisor-authority-bundle.rs"
+test = false
+required-features = ["offline-authority-tools"]
+
+[[bin]]
 name = "hepta-authority-signer"
 path = "src/bin/hepta-authority-signer.rs"
 test = false
-required-features = ["production-authority"]
+required-features = ["offline-authority-tools"]
 
 [[bin]]
 name = "hepta-final-use-signer"
 path = "src/bin/hepta-final-use-signer.rs"
 test = false
-required-features = ["production-authority"]
+required-features = ["offline-authority-tools"]
 
 [[bin]]
 name = "hepta-final-use-approver"
 path = "src/bin/hepta-final-use-approver.rs"
 test = false
-required-features = ["production-authority"]
+required-features = ["offline-authority-tools"]
 
 [[bin]]
 name = "hepta-final-use-revocation-signer"
 path = "src/bin/hepta-final-use-revocation-signer.rs"
 test = false
-required-features = ["production-authority"]
+required-features = ["offline-authority-tools"]
 
 [lints]
 workspace = true

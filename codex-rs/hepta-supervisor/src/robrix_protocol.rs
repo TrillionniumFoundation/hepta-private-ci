@@ -137,7 +137,8 @@ impl TryFrom<SupervisordResponse> for RobrixSupervisordResponse {
             SupervisordPayload::RuntimeModuleSelection { .. }
             | SupervisordPayload::MutationAccepted { .. }
             | SupervisordPayload::ReleaseSelection { .. }
-            | SupervisordPayload::ProductionMutationStatus { .. } => {
+            | SupervisordPayload::ProductionMutationStatus { .. }
+            | SupervisordPayload::OrdinaryMutationStatus { .. } => {
                 return Err(RobrixProtocolError::MutationPayloadForbidden);
             }
         };

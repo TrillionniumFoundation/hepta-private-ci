@@ -13,6 +13,7 @@ use tokio::io::AsyncWriteExt;
 use tokio::io::BufReader;
 use tokio::time::timeout;
 
+use crate::DurableMutationStatusV1;
 use crate::DurableReleaseTransaction;
 use crate::H7H89ProductionGrant;
 use crate::ProductionMutationState;
@@ -44,7 +45,7 @@ impl SupervisordClient {
         }
         Ok(Self {
             socket_path,
-            next_request_id: AtomicU64::new(1),
+            next_request_id: AtomicU64::new(random_request_seed()),
             timeout: Duration::from_secs(2),
         })
     }
@@ -71,6 +72,77 @@ impl SupervisordClient {
                 }
                 Ok(selection)
             }
+            payload => unexpected(payload),
+        }
+    }
+
+    pub fn reserve_request_id(&self) -> u64 {
+        loop {
+            let candidate = self.next_request_id.fetch_add(1, Ordering::Relaxed);
+            if candidate != 0 {
+                return candidate;
+            }
+        }
+    }
+
+    pub async fn execute_mutation_with_request_id(
+        &self,
+        request_id: u64,
+        method: SupervisordMethod,
+    ) -> Result<SupervisordMutationAccepted, SupervisorError> {
+        if request_id == 0 {
+            return Err(SupervisorError::Invalid(
+                "ordinary mutation request identity must be non-zero".to_string(),
+            ));
+        }
+        if !matches!(
+            &method,
+            SupervisordMethod::Start { .. }
+                | SupervisordMethod::Drain { .. }
+                | SupervisordMethod::Stop { .. }
+                | SupervisordMethod::Kill { .. }
+                | SupervisordMethod::Restart { .. }
+                | SupervisordMethod::Upgrade { .. }
+                | SupervisordMethod::Rollback { .. }
+        ) {
+            return Err(SupervisorError::Invalid(
+                "execute_mutation_with_request_id requires an ordinary lifecycle mutation"
+                    .to_string(),
+            ));
+        }
+        self.mutation_with_request_id(request_id, method).await
+    }
+
+    pub async fn ordinary_mutation_status(
+        &self,
+        agent_id: AgentId,
+        mutation_request_id: u64,
+    ) -> Result<Option<DurableMutationStatusV1>, SupervisorError> {
+        match self
+            .send(SupervisordMethod::OrdinaryMutationStatus {
+                agent_id,
+                mutation_request_id,
+            })
+            .await?
+        {
+            SupervisordPayload::OrdinaryMutationStatus { status } => Ok(status),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn reconcile_ordinary_mutation(
+        &self,
+        fence: SupervisordControlFence,
+        mutation_request_id: u64,
+    ) -> Result<Option<DurableMutationStatusV1>, SupervisorError> {
+        match self
+            .send(SupervisordMethod::ReconcileOrdinaryMutation {
+                fence,
+                mutation_request_id,
+            })
+            .await?
+        {
+            SupervisordPayload::OrdinaryMutationStatus { status } => Ok(status),
             payload => unexpected(payload),
         }
     }
@@ -231,7 +303,16 @@ impl SupervisordClient {
         &self,
         method: SupervisordMethod,
     ) -> Result<SupervisordMutationAccepted, SupervisorError> {
-        match self.send(method).await? {
+        let request_id = self.reserve_request_id();
+        self.mutation_with_request_id(request_id, method).await
+    }
+
+    async fn mutation_with_request_id(
+        &self,
+        request_id: u64,
+        method: SupervisordMethod,
+    ) -> Result<SupervisordMutationAccepted, SupervisorError> {
+        match self.send_with_request_id(request_id, method).await? {
             SupervisordPayload::MutationAccepted {
                 operation,
                 accepted_state_digest,
@@ -248,7 +329,15 @@ impl SupervisordClient {
     }
 
     async fn send(&self, method: SupervisordMethod) -> Result<SupervisordPayload, SupervisorError> {
-        let request_id = self.next_request_id.fetch_add(1, Ordering::Relaxed);
+        let request_id = self.reserve_request_id();
+        self.send_with_request_id(request_id, method).await
+    }
+
+    async fn send_with_request_id(
+        &self,
+        request_id: u64,
+        method: SupervisordMethod,
+    ) -> Result<SupervisordPayload, SupervisorError> {
         let request = SupervisordRequest::new(request_id, method);
         request
             .validate()
@@ -302,6 +391,16 @@ impl SupervisordClient {
             payload => Ok(payload),
         }
     }
+}
+
+fn random_request_seed() -> u64 {
+    let bytes = *uuid::Uuid::new_v4().as_bytes();
+    let seed = u64::from_be_bytes(
+        bytes[..8]
+            .try_into()
+            .expect("UUID prefix is exactly eight bytes"),
+    );
+    seed.max(1)
 }
 
 fn unexpected<T>(payload: SupervisordPayload) -> Result<T, SupervisorError> {

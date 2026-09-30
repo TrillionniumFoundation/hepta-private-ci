@@ -1,16 +1,6 @@
 #[cfg(unix)]
-use std::fs::File;
-#[cfg(unix)]
-use std::fs::OpenOptions;
+use std::collections::BTreeSet;
 use std::io::ErrorKind;
-#[cfg(unix)]
-use std::io::Seek;
-#[cfg(unix)]
-use std::io::SeekFrom;
-#[cfg(unix)]
-use std::io::Write;
-#[cfg(unix)]
-use std::os::fd::AsRawFd;
 #[cfg(unix)]
 use std::path::Path;
 #[cfg(unix)]
@@ -58,9 +48,9 @@ use tokio::io::AsyncWriteExt;
 #[cfg(unix)]
 use tokio::io::BufReader;
 #[cfg(unix)]
-use tokio::sync::Mutex;
-#[cfg(unix)]
 use tokio::sync::Semaphore;
+#[cfg(unix)]
+use tokio::task::JoinSet;
 #[cfg(unix)]
 use tokio::time::MissedTickBehavior;
 #[cfg(unix)]
@@ -123,6 +113,33 @@ use crate::daemon_protocol::SupervisordResponse;
 use crate::signed_authority::authority_epoch_for_supervisor_epoch;
 
 #[cfg(unix)]
+#[path = "daemon_execution.rs"]
+mod execution;
+
+#[cfg(unix)]
+#[path = "daemon_mutation.rs"]
+mod mutation;
+#[cfg(unix)]
+use mutation::handle_mutation;
+#[cfg(unix)]
+use mutation::ordinary_mutation_status;
+#[cfg(unix)]
+use mutation::reconcile_ordinary_mutation;
+#[cfg(unix)]
+#[path = "daemon_mutex.rs"]
+mod mutex;
+#[cfg(unix)]
+#[path = "daemon_owner.rs"]
+mod owner;
+#[cfg(unix)]
+#[path = "daemon_read_view.rs"]
+mod read_view;
+#[cfg(unix)]
+use mutex::MeasuredMutex as Mutex;
+#[cfg(unix)]
+use owner::SingleInstanceLock;
+
+#[cfg(unix)]
 const CONNECTION_CAPACITY: usize = 64;
 #[cfg(unix)]
 const IO_TIMEOUT: Duration = Duration::from_secs(2);
@@ -147,8 +164,40 @@ struct DaemonState<D: ProcessDriver> {
     supervisor_epoch: SupervisorEpoch,
     production_grant_verifier: Option<H7H89ProductionGrantVerifier>,
     observed_faults: AtomicU64,
+    recovery_observation_blocked: std::sync::RwLock<BTreeSet<AgentId>>,
     // Opened before readiness; restores active generations and fences.
     runtime_modules: Mutex<DurableRuntimeModuleSupervisorV1>,
+    execution: execution::Execution,
+    // Drop after the writer. Detached or cancelling tasks retain the same guard
+    // through their Arc<DaemonState>; returning from run_supervisord is not a fence.
+    _instance: SingleInstanceLock,
+}
+
+#[cfg(unix)]
+impl<D: ProcessDriver> DaemonState<D> {
+    fn any_recovery_observation_blocked(&self) -> bool {
+        self.recovery_observation_blocked
+            .read()
+            .map_or(true, |blocked| !blocked.is_empty())
+    }
+
+    fn recovery_observation_blocked_for(&self, agent_id: &AgentId) -> bool {
+        self.recovery_observation_blocked
+            .read()
+            .map_or(true, |blocked| blocked.contains(agent_id))
+    }
+
+    fn block_recovery_observation(&self, agent_id: AgentId) -> Result<(), SupervisorError> {
+        self.recovery_observation_blocked
+            .write()
+            .map_err(|_| {
+                SupervisorError::Invalid(
+                    "recovery observation block set is unavailable".to_string(),
+                )
+            })?
+            .insert(agent_id);
+        Ok(())
+    }
 }
 
 /// Runs the one lifecycle-only supervisor daemon for a fleet.
@@ -188,6 +237,8 @@ async fn run_supervisord_inner(
     cancellation: CancellationToken,
     production_grant_verifier: Option<H7H89ProductionGrantVerifier>,
 ) -> Result<(), SupervisorError> {
+    // Cancelling/dropping the outer future must also stop the ticker and server.
+    let _shutdown = cancellation.clone().drop_guard();
     let registry = FleetRegistry::open_existing(fleet_root)?;
     let snapshot = registry.load()?;
     if snapshot.agents.len() > usize::from(MAX_SUPERVISORD_ROSTER) {
@@ -197,7 +248,7 @@ async fn run_supervisord_inner(
         )));
     }
     let layout = registry.layout().clone();
-    let _instance = SingleInstanceLock::acquire(layout.supervisor_lock())?;
+    let instance = SingleInstanceLock::acquire(layout.supervisor_lock())?;
     let runtime_modules = DurableRuntimeModuleSupervisorV1::open(
         layout.runtime_module_supervisor_state(),
     )
@@ -218,8 +269,16 @@ async fn run_supervisord_inner(
         supervisor_epoch: SupervisorEpoch::new(),
         production_grant_verifier,
         observed_faults: AtomicU64::new(recovery.faults.len() as u64),
+        recovery_observation_blocked: std::sync::RwLock::new(BTreeSet::new()),
         runtime_modules: Mutex::new(runtime_modules),
+        execution: execution::Execution::new(cancellation.clone()),
+        _instance: instance,
     });
+    {
+        let supervisor = state.supervisor.lock().await;
+        publish_recovery_observations(&state, &supervisor)?;
+        execution::refresh(&state, &supervisor);
+    }
     let server = SupervisordServer::bind(
         layout.supervisor_socket().to_path_buf(),
         Arc::clone(&state),
@@ -234,16 +293,20 @@ async fn run_supervisord_inner(
         loop {
             tokio::select! {
                 _ = tick_cancellation.cancelled() => return,
-                _ = interval.tick() => {
-                    let faults = tick_state.supervisor.lock().await.tick(Instant::now()).faults;
-                    tick_state.observed_faults.fetch_add(faults.len() as u64, Ordering::Relaxed);
+                scheduled = interval.tick() => {
+                    execution::tick(Arc::clone(&tick_state), scheduled.into_std()).await;
                 }
             }
         }
     });
     let result = server.run().await;
     cancellation.cancel();
-    let _ = ticker.await;
+    let ticker_result = ticker.await;
+    if ticker_result.is_err() || state.execution.failed() {
+        return Err(SupervisorError::Invalid(
+            "supervisord lifecycle worker failed; durable recovery is required".to_string(),
+        ));
+    }
     result
 }
 
@@ -289,21 +352,50 @@ impl SupervisordServer {
     }
 
     async fn run(mut self) -> Result<(), SupervisorError> {
-        loop {
+        let mut tasks = JoinSet::new();
+        let mut result = loop {
             let stream = tokio::select! {
-                _ = self.cancellation.cancelled() => return Ok(()),
-                accepted = self.listener.accept() => accepted?,
+                _ = self.cancellation.cancelled() => break Ok(()),
+                joined = tasks.join_next(), if !tasks.is_empty() => {
+                    if matches!(joined, Some(Err(_))) {
+                        break Err(SupervisorError::Invalid(
+                            "supervisord connection task failed".to_string(),
+                        ));
+                    }
+                    continue;
+                }
+                accepted = self.listener.accept() => match accepted {
+                    Ok(stream) => stream,
+                    Err(error) => break Err(error.into()),
+                },
             };
             let Ok(permit) = Arc::clone(&self.connections).try_acquire_owned() else {
                 drop(stream);
                 continue;
             };
             let state = Arc::clone(&self.state);
-            tokio::spawn(async move {
+            tasks.spawn(async move {
                 let _permit = permit;
                 let _ = timeout(IO_TIMEOUT, serve_connection(stream, state)).await;
             });
+        };
+        self.cancellation.cancel();
+        if result.is_err() {
+            tasks.abort_all();
         }
+        // Drain already accepted requests before normal shutdown. On future drop,
+        // JoinSet aborts them; a still-running synchronous task retains state/lock.
+        while let Some(joined) = tasks.join_next().await {
+            if let Err(error) = joined
+                && error.is_panic()
+            {
+                self.state.observed_faults.fetch_add(1, Ordering::Relaxed);
+                result = Err(SupervisorError::Invalid(
+                    "supervisord connection task failed during shutdown".to_string(),
+                ));
+            }
+        }
+        result
     }
 }
 
@@ -366,7 +458,13 @@ async fn serve_connection(
         Ok(()) => SupervisordResponse {
             schema_version: SUPERVISORD_CONTROL_SCHEMA_VERSION,
             request_id: request.request_id,
-            payload: handle_request(Arc::clone(&state), request.method).await,
+
+            payload: execution::handle_with_request_id(
+                Arc::clone(&state),
+                request.request_id,
+                request.method,
+            )
+            .await,
         },
     };
     write_response(&mut writer, response).await
@@ -393,6 +491,7 @@ async fn write_response(
 #[cfg(unix)]
 async fn handle_request<D: ProcessDriver>(
     state: Arc<DaemonState<D>>,
+    request_id: u64,
     method: SupervisordMethod,
 ) -> SupervisordPayload {
     match method {
@@ -437,7 +536,7 @@ async fn handle_request<D: ProcessDriver>(
                 .await
                 .any_production_recovery_required();
             SupervisordPayload::Health(SupervisordHealth {
-                ready: !recovery_required,
+                ready: !recovery_required && !state.any_recovery_observation_blocked(),
                 supervisor_epoch: state.supervisor_epoch.clone(),
                 process_id: std::process::id(),
                 registered_agents,
@@ -508,6 +607,14 @@ async fn handle_request<D: ProcessDriver>(
                 }
             }
         }
+        SupervisordMethod::OrdinaryMutationStatus {
+            agent_id,
+            mutation_request_id,
+        } => ordinary_mutation_status(&state, &agent_id, mutation_request_id),
+        SupervisordMethod::ReconcileOrdinaryMutation {
+            fence,
+            mutation_request_id,
+        } => reconcile_ordinary_mutation(state, fence, mutation_request_id).await,
         SupervisordMethod::Start { fence, release_id } => {
             let target = match resolve_release_outside_lock(
                 Arc::clone(&state),
@@ -522,11 +629,19 @@ async fn handle_request<D: ProcessDriver>(
                     return safe_rejection(error, actual, /*mutation_started*/ false);
                 }
             };
-            handle_mutation(state, SupervisordMutation::Start, fence, Some(target)).await
+            handle_mutation(
+                state,
+                request_id,
+                SupervisordMutation::Start,
+                fence,
+                Some(target),
+            )
+            .await
         }
         SupervisordMethod::Drain { fence } => {
             handle_mutation(
                 state,
+                request_id,
                 SupervisordMutation::Drain,
                 fence,
                 /*target*/ None,
@@ -536,6 +651,7 @@ async fn handle_request<D: ProcessDriver>(
         SupervisordMethod::Stop { fence } => {
             handle_mutation(
                 state,
+                request_id,
                 SupervisordMutation::Stop,
                 fence,
                 /*target*/ None,
@@ -545,6 +661,7 @@ async fn handle_request<D: ProcessDriver>(
         SupervisordMethod::Kill { fence } => {
             handle_mutation(
                 state,
+                request_id,
                 SupervisordMutation::Kill,
                 fence,
                 /*target*/ None,
@@ -554,6 +671,7 @@ async fn handle_request<D: ProcessDriver>(
         SupervisordMethod::Restart { fence } => {
             handle_mutation(
                 state,
+                request_id,
                 SupervisordMutation::Restart,
                 fence,
                 /*target*/ None,
@@ -574,11 +692,19 @@ async fn handle_request<D: ProcessDriver>(
                     return safe_rejection(error, actual, /*mutation_started*/ false);
                 }
             };
-            handle_mutation(state, SupervisordMutation::Upgrade, fence, Some(target)).await
+            handle_mutation(
+                state,
+                request_id,
+                SupervisordMutation::Upgrade,
+                fence,
+                Some(target),
+            )
+            .await
         }
         SupervisordMethod::Rollback { fence } => {
             handle_mutation(
                 state,
+                request_id,
                 SupervisordMutation::Rollback,
                 fence,
                 /*target*/ None,
@@ -781,155 +907,47 @@ fn unix_seconds_now() -> u64 {
 }
 
 #[cfg(unix)]
-async fn handle_mutation<D: ProcessDriver>(
-    state: Arc<DaemonState<D>>,
-    operation: SupervisordMutation,
-    fence: SupervisordControlFence,
-    target: Option<AgentRelease>,
-) -> SupervisordPayload {
-    let agent_id = fence.agent_id.clone();
-    let accepted_state_digest = fence.state_digest.clone();
-    let mut supervisor = state.supervisor.lock().await;
-    let actual = match agent_status_locked(&state, &supervisor, &agent_id) {
-        Ok(actual) => actual,
-        Err(error) => {
-            return safe_rejection(error, /*actual*/ None, /*mutation_started*/ false);
-        }
-    };
-    if !control_fence_matches(&fence, &actual.control_fence) {
-        return error_payload(
-            "stale_control_fence",
-            "selected Agent changed; refresh before retry",
-            Some(actual),
-        );
-    }
-    match supervisor.production_recovery_required(&agent_id) {
-        Ok(true) if operation != SupervisordMutation::Kill => {
-            return error_payload(
-                "signed_intent_recovery_required",
-                "this Agent has a quarantined production mutation; only status, recovery, or emergency kill is allowed",
-                Some(actual),
-            );
-        }
-        Ok(_) => {}
-        Err(error) => {
-            return safe_rejection(error, Some(actual), /*mutation_started*/ false);
-        }
-    }
-    if state.production_grant_verifier.is_some()
-        && matches!(
-            operation,
-            SupervisordMutation::Upgrade | SupervisordMutation::Rollback
+fn publish_recovery_observations<D: ProcessDriver>(
+    state: &DaemonState<D>,
+    supervisor: &Supervisor<D>,
+) -> Result<(), SupervisorError> {
+    let authority_epoch = state
+        .production_grant_verifier
+        .as_ref()
+        .map(|_| authority_epoch_for_supervisor_epoch(state.supervisor_epoch.as_str()));
+    for (agent_id, record) in state.registry.load()?.agents {
+        let snapshot = supervisor
+            .snapshot(&agent_id)
+            .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
+        let observation = crate::publish_production_recovery_observation(
+            record.layout.run_root(),
+            &agent_id,
+            state.supervisor_epoch.as_str(),
+            record.lifecycle.lifecycle,
+            record.lifecycle.generation,
+            &snapshot,
+            authority_epoch,
+            None,
         )
-    {
-        return error_payload(
-            "signed_release_authority_required",
-            "production mode requires SignedUpgrade or SignedRollback for release transitions",
-            Some(actual),
-        );
-    }
-
-    let prepared = match (operation, target) {
-        (SupervisordMutation::Start, Some(target)) => PreparedMutation::Start(target),
-        (SupervisordMutation::Drain, None) => PreparedMutation::Drain,
-        (SupervisordMutation::Stop, None) => PreparedMutation::Stop,
-        (SupervisordMutation::Kill, None) => PreparedMutation::Kill,
-        (SupervisordMutation::Restart, None) => PreparedMutation::Restart,
-        (SupervisordMutation::Upgrade, Some(target)) => PreparedMutation::Upgrade(target),
-        (SupervisordMutation::Rollback, None) => PreparedMutation::Rollback,
-        (SupervisordMutation::Start | SupervisordMutation::Upgrade, None) => {
-            return error_payload(
-                "invalid_frame",
-                "request is not valid supervisord control JSON",
-                Some(actual),
-            );
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        match crate::replay_production_recovery_observation(&observation)
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+        {
+            crate::RecoveryReplayDecisionV1::Clean
+            | crate::RecoveryReplayDecisionV1::ContinueOwnedProcess => {}
+            crate::RecoveryReplayDecisionV1::FinalizeObservedExit => {
+                return Err(SupervisorError::Invalid(format!(
+                    "agent {agent_id} retained an observed exit after recovery finalization"
+                )));
+            }
+            crate::RecoveryReplayDecisionV1::RejectStaleGeneration
+            | crate::RecoveryReplayDecisionV1::RequiresOperator => {
+                state.block_recovery_observation(agent_id.clone())?;
+                state.observed_faults.fetch_add(1, Ordering::Relaxed);
+            }
         }
-        (
-            SupervisordMutation::Drain
-            | SupervisordMutation::Stop
-            | SupervisordMutation::Kill
-            | SupervisordMutation::Restart
-            | SupervisordMutation::Rollback,
-            Some(_),
-        ) => {
-            return error_payload(
-                "invalid_frame",
-                "request is not valid supervisord control JSON",
-                Some(actual),
-            );
-        }
-    };
-
-    let preflight = match &prepared {
-        PreparedMutation::Start(_) => supervisor.preflight_start(&agent_id),
-        PreparedMutation::Drain => supervisor.preflight_drain(&agent_id),
-        PreparedMutation::Stop | PreparedMutation::Kill => {
-            supervisor.preflight_stop_or_kill(&agent_id)
-        }
-        PreparedMutation::Restart => supervisor.preflight_restart(&agent_id),
-        PreparedMutation::Upgrade(target) => supervisor.preflight_upgrade(&agent_id, target),
-        PreparedMutation::Rollback => supervisor.preflight_rollback(&agent_id),
-    };
-    if let Err(error) = preflight {
-        let refreshed = agent_status_locked(&state, &supervisor, &agent_id).ok();
-        return safe_rejection(
-            error,
-            refreshed.or(Some(actual)),
-            /*mutation_started*/ false,
-        );
     }
-
-    let next_revision = match supervisor.next_control_revision(&agent_id) {
-        Ok(revision) => revision,
-        Err(error) => return safe_rejection(error, Some(actual), /*mutation_started*/ false),
-    };
-    if let Err(error) = supervisor.set_control_revision(&agent_id, next_revision) {
-        return safe_rejection(error, Some(actual), /*mutation_started*/ false);
-    }
-
-    let mutation = match prepared {
-        PreparedMutation::Start(target) => {
-            supervisor.start_release(&agent_id, target, Instant::now())
-        }
-        PreparedMutation::Drain => supervisor.drain(&agent_id, Instant::now()),
-        PreparedMutation::Stop => supervisor.stop(&agent_id, Instant::now()),
-        PreparedMutation::Kill => supervisor.kill(&agent_id),
-        PreparedMutation::Restart => supervisor.restart(&agent_id, Instant::now()),
-        PreparedMutation::Upgrade(target) => supervisor.upgrade(&agent_id, target, Instant::now()),
-        PreparedMutation::Rollback => supervisor.rollback(&agent_id, Instant::now()),
-    };
-    let post = agent_status_locked(&state, &supervisor, &agent_id).ok();
-    if let Err(_error) = mutation {
-        return error_payload(
-            "operation_indeterminate",
-            "operation outcome is indeterminate; refresh before retry",
-            post,
-        );
-    }
-    let Some(agent) = post else {
-        return error_payload(
-            "operation_indeterminate",
-            "operation outcome is indeterminate; refresh before retry",
-            /*actual*/ None,
-        );
-    };
-    SupervisordPayload::MutationAccepted {
-        operation,
-        accepted_state_digest,
-        agent,
-        production_receipt: None,
-    }
-}
-
-#[cfg(unix)]
-enum PreparedMutation {
-    Start(AgentRelease),
-    Drain,
-    Stop,
-    Kill,
-    Restart,
-    Upgrade(AgentRelease),
-    Rollback,
+    Ok(())
 }
 
 #[cfg(unix)]
@@ -1346,52 +1364,6 @@ async fn set_owner_only(path: &Path) -> Result<(), SupervisorError> {
     Ok(())
 }
 
-#[cfg(unix)]
-struct SingleInstanceLock {
-    file: File,
-}
-
-#[cfg(unix)]
-impl SingleInstanceLock {
-    fn acquire(path: &Path) -> Result<Self, SupervisorError> {
-        let mut file = OpenOptions::new()
-            .create(true)
-            .read(true)
-            .write(true)
-            .truncate(false)
-            .open(path)?;
-        set_lock_owner_only(path)?;
-        // SAFETY: flock only operates on this live File descriptor with fixed flags.
-        if unsafe { libc::flock(file.as_raw_fd(), libc::LOCK_EX | libc::LOCK_NB) } == -1 {
-            let error = std::io::Error::last_os_error();
-            return Err(SupervisorError::Io(std::io::Error::new(
-                ErrorKind::AddrInUse,
-                format!("another supervisord owns {}: {error}", path.display()),
-            )));
-        }
-        file.set_len(0)?;
-        file.seek(SeekFrom::Start(0))?;
-        writeln!(file, "{}", std::process::id())?;
-        file.sync_all()?;
-        Ok(Self { file })
-    }
-}
-
-#[cfg(unix)]
-impl Drop for SingleInstanceLock {
-    fn drop(&mut self) {
-        // SAFETY: unlocks the same live File descriptor acquired above.
-        let _ = unsafe { libc::flock(self.file.as_raw_fd(), libc::LOCK_UN) };
-    }
-}
-
-#[cfg(unix)]
-fn set_lock_owner_only(path: &Path) -> Result<(), SupervisorError> {
-    use std::os::unix::fs::PermissionsExt;
-    std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))?;
-    Ok(())
-}
-
 #[cfg(test)]
 mod tests {
     use codex_hepta_contracts::AgentId;
@@ -1780,3 +1752,7 @@ mod tests {
 #[cfg(all(test, not(unix)))]
 #[path = "daemon_platform_tests.rs"]
 mod platform_tests;
+
+#[cfg(all(test, unix))]
+#[path = "daemon_shutdown_tests.rs"]
+mod shutdown_tests;

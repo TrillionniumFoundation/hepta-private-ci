@@ -10,6 +10,7 @@ use serde::Serialize;
 use serde::Serializer;
 use serde::de::Error as _;
 
+use crate::DurableMutationStatusV1;
 use crate::DurableReleaseTransaction;
 use crate::H7H89ProductionGrant;
 use crate::ProductionMutationReceipt;
@@ -49,6 +50,16 @@ impl SupervisordRequest {
             | SupervisordMethod::Snapshot { .. }
             | SupervisordMethod::ReleaseSelection { .. }
             | SupervisordMethod::ProductionMutationStatus { .. } => Ok(()),
+            SupervisordMethod::OrdinaryMutationStatus {
+                mutation_request_id,
+                ..
+            } => {
+                if *mutation_request_id == 0 {
+                    Err(SupervisordRequestValidationError::InvalidRequest)
+                } else {
+                    Ok(())
+                }
+            }
             SupervisordMethod::RuntimeModuleSelection { module_id } => {
                 codex_hepta_agent_protocol::validate_runtime_module_id(module_id)
                     .map_err(|_| SupervisordRequestValidationError::InvalidRequest)
@@ -70,6 +81,16 @@ impl SupervisordRequest {
             | SupervisordMethod::SignedUpgrade { fence, .. }
             | SupervisordMethod::SignedRollback { fence, .. }
             | SupervisordMethod::ResolveProductionRecovery { fence, .. } => fence.validate(),
+            SupervisordMethod::ReconcileOrdinaryMutation {
+                fence,
+                mutation_request_id,
+            } => {
+                if *mutation_request_id == 0 {
+                    Err(SupervisordRequestValidationError::InvalidRequest)
+                } else {
+                    fence.validate()
+                }
+            }
         }
     }
 }
@@ -105,6 +126,16 @@ pub enum SupervisordMethod {
     /// Query the last signed production mutation and its durable witness digests.
     ProductionMutationStatus {
         agent_id: AgentId,
+    },
+    /// Inspect an ordinary mutation without replaying its process effect.
+    OrdinaryMutationStatus {
+        agent_id: AgentId,
+        mutation_request_id: u64,
+    },
+    /// Resolve the durable outcome under the current lifecycle fence.
+    ReconcileOrdinaryMutation {
+        fence: SupervisordControlFence,
+        mutation_request_id: u64,
     },
     Start {
         fence: SupervisordControlFence,
@@ -351,6 +382,9 @@ pub enum SupervisordPayload {
     },
     ProductionMutationStatus {
         state: Option<ProductionMutationState>,
+    },
+    OrdinaryMutationStatus {
+        status: Option<DurableMutationStatusV1>,
     },
     MutationAccepted {
         operation: SupervisordMutation,
@@ -675,6 +709,38 @@ mod tests {
         .expect("serialize upgrade");
         bad_release["method"]["release_id"] = json!("../../release");
         assert!(serde_json::from_value::<SupervisordRequest>(bad_release).is_err());
+    }
+
+    #[test]
+    fn ordinary_mutation_status_and_reconcile_requests_are_validated() {
+        let agent_id = AgentId::parse(AGENT_ID).expect("agent");
+        let status = SupervisordRequest::new(
+            51,
+            SupervisordMethod::OrdinaryMutationStatus {
+                agent_id: agent_id.clone(),
+                mutation_request_id: 41,
+            },
+        );
+        assert_eq!(status.validate(), Ok(()));
+        let reconcile = SupervisordRequest::new(
+            52,
+            SupervisordMethod::ReconcileOrdinaryMutation {
+                fence: fence(),
+                mutation_request_id: 41,
+            },
+        );
+        assert_eq!(reconcile.validate(), Ok(()));
+        let invalid = SupervisordRequest::new(
+            53,
+            SupervisordMethod::OrdinaryMutationStatus {
+                agent_id,
+                mutation_request_id: 0,
+            },
+        );
+        assert_eq!(
+            invalid.validate(),
+            Err(SupervisordRequestValidationError::InvalidRequest)
+        );
     }
 
     fn status() -> SupervisordAgentStatus {

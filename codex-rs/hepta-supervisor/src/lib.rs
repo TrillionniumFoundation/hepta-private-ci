@@ -2,12 +2,18 @@
 //!
 //! The supervisor does not execute turns or forward messages, models, or tokens.
 
+mod authority_bundle;
+#[cfg(any(test, feature = "offline-authority-tools"))]
 mod authority_signer;
 mod control;
+mod control_intent;
 mod daemon;
 mod daemon_client;
 mod daemon_protocol;
 mod driver;
+mod durability;
+#[cfg(all(test, feature = "qualification"))]
+mod durability_qualification_tests;
 mod durable_publish;
 mod error;
 mod lease;
@@ -15,12 +21,19 @@ mod matrix;
 mod model;
 mod module_runtime;
 mod module_runtime_store;
+mod mutation_journal;
 mod process_deadline;
+mod process_exit_witness;
+#[cfg(feature = "qualification")]
+mod qualification_faults;
 mod recovery;
+mod recovery_diagnostics;
+mod recovery_observation;
 mod release;
 mod release_transaction;
 mod restart_budget;
 mod restart_journal;
+mod restart_lineage;
 mod restart_policy;
 mod restart_state;
 mod result_fence;
@@ -34,17 +47,34 @@ mod supervisor_qualification;
 mod tick;
 mod writer_handoff;
 
+#[cfg(feature = "qualification")]
+#[path = "daemon_mutex.rs"]
+pub mod qualification_mutex;
+
 #[cfg(unix)]
 mod unix;
 
+pub use authority_bundle::PRODUCTION_AUTHORITY_BUNDLE_NAMESPACE;
+pub use authority_bundle::PRODUCTION_AUTHORITY_BUNDLE_SCHEMA_VERSION;
+pub use authority_bundle::ProductionAuthorityBundle;
+pub use authority_bundle::ProductionAuthorityBundleError;
+#[cfg(any(test, feature = "offline-authority-tools"))]
 pub use authority_signer::ExternalSignerError;
+#[cfg(any(test, feature = "offline-authority-tools"))]
 pub use authority_signer::MAX_SIGNING_KEY_INPUT_BYTES;
+#[cfg(any(test, feature = "offline-authority-tools"))]
 pub use authority_signer::MAX_SIGNING_REQUEST_BYTES;
+#[cfg(any(test, feature = "offline-authority-tools"))]
 pub use authority_signer::SignRequest;
+#[cfg(any(test, feature = "offline-authority-tools"))]
 pub use authority_signer::SignResponse;
+#[cfg(any(test, feature = "offline-authority-tools"))]
 pub use authority_signer::load_signing_key_from_fd;
+#[cfg(any(test, feature = "offline-authority-tools"))]
 pub use authority_signer::load_signing_key_from_path;
+#[cfg(any(test, feature = "offline-authority-tools"))]
 pub use authority_signer::read_request;
+#[cfg(any(test, feature = "offline-authority-tools"))]
 pub use authority_signer::sign_request;
 pub use daemon::PRODUCTION_AUTHORITY_FEATURE_ENABLED;
 pub use daemon::run_supervisord;
@@ -93,6 +123,7 @@ pub use model::SupervisorConfig;
 pub use model::SupervisorEvent;
 pub use model::SupervisorEventKind;
 pub use model::TickReport;
+
 pub use module_runtime::RuntimeModuleInitializationWitnessV1;
 pub use module_runtime::RuntimeModulePendingPromotionCheckpointV1;
 pub use module_runtime::RuntimeModuleRetirementCheckpointV1;
@@ -103,12 +134,53 @@ pub use module_runtime::RuntimeModuleSupervisorErrorV1;
 pub use module_runtime::RuntimeModuleSupervisorV1;
 pub use module_runtime_store::DurableRuntimeModuleSupervisorErrorV1;
 pub use module_runtime_store::DurableRuntimeModuleSupervisorV1;
+pub use mutation_journal::DurableMutationPhaseV1;
+pub use mutation_journal::DurableMutationStatusV1;
+pub use mutation_journal::MUTATION_JOURNAL_FILE;
+pub use mutation_journal::MUTATION_JOURNAL_SCHEMA_VERSION;
+pub use mutation_journal::MutationJournalError;
+pub use mutation_journal::commit_mutation;
+pub use mutation_journal::mark_mutation_ambiguous;
+pub use mutation_journal::mark_mutation_effect_started;
+pub use mutation_journal::prepare_mutation;
+pub use mutation_journal::read_mutation_status;
+pub use mutation_journal::require_mutation_operator;
 pub use process_deadline::ProcessDeadlineOutcomeV1;
 pub use process_deadline::ProcessDeadlinePolicyErrorV1;
 pub use process_deadline::ProcessDeadlinePolicyV1;
 pub use process_deadline::ProcessTerminationOutcomeV1;
 pub use process_deadline::enforce_process_deadline_v1;
 pub use process_deadline::enforce_process_termination_deadline_v1;
+pub use process_exit_witness::PROCESS_EXIT_WITNESS_FILE;
+pub use process_exit_witness::PROCESS_EXIT_WITNESS_SCHEMA_VERSION;
+pub use process_exit_witness::ProcessExitWitnessError;
+pub use process_exit_witness::ProcessExitWitnessPhaseV1;
+pub use process_exit_witness::ProcessExitWitnessV1;
+pub use process_exit_witness::consume_process_exit_witness;
+pub use process_exit_witness::read_process_exit_witness;
+pub use process_exit_witness::record_process_exit;
+#[cfg(feature = "qualification")]
+pub use qualification_faults::QualificationCrashProbeError;
+#[cfg(feature = "qualification")]
+pub use qualification_faults::QualificationCrashProbeReceipt;
+#[cfg(feature = "qualification")]
+pub use qualification_faults::inspect_qualification_crash_probe;
+#[cfg(feature = "qualification")]
+pub use qualification_faults::publish_qualification_crash_probe;
+pub use recovery_diagnostics::RecoveryBlockerDiagnostic;
+pub use recovery_diagnostics::RecoveryBlockerKind;
+pub use recovery_diagnostics::RecoveryDiagnostic;
+pub use recovery_diagnostics::RecoveryDiagnosticContext;
+pub use recovery_diagnostics::RecoveryOperatorAction;
+pub use recovery_diagnostics::diagnose_recovery;
+pub use recovery_observation::PRODUCTION_RECOVERY_OBSERVATION_FILE;
+pub use recovery_observation::PRODUCTION_RECOVERY_OBSERVATION_SCHEMA_VERSION;
+pub use recovery_observation::ProductionRecoveryObservationV1;
+pub use recovery_observation::RecoveryObservationError;
+pub use recovery_observation::RecoveryReplayDecisionV1;
+pub use recovery_observation::publish_production_recovery_observation;
+pub use recovery_observation::read_production_recovery_observation;
+pub use recovery_observation::replay_production_recovery_observation;
 pub use release_transaction::DurableReleaseTransaction;
 pub use release_transaction::ReleaseTransactionKind;
 pub use release_transaction::ReleaseTransactionPhase;
@@ -130,11 +202,13 @@ pub use robrix_protocol::RobrixSupervisordPayload;
 pub use robrix_protocol::RobrixSupervisordRequest;
 pub use robrix_protocol::RobrixSupervisordResponse;
 pub use signed_authority::H7H89ProductionGrant;
+#[cfg(any(test, feature = "offline-authority-tools"))]
 pub use signed_authority::H7H89ProductionGrantSigner;
 pub use signed_authority::H7H89ProductionGrantVerifier;
 pub use signed_authority::H7H89ProductionTransition;
 pub use signed_authority::PRODUCTION_RECOVERY_NAMESPACE;
 pub use signed_authority::PRODUCTION_RECOVERY_SCHEMA_VERSION;
+pub use signed_authority::ProductionAuthorityError;
 pub use signed_authority::ProductionMutationReceipt;
 pub use signed_authority::ProductionMutationState;
 pub use signed_authority::ProductionMutationStatus;
