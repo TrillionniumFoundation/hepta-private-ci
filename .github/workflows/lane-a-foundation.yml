@@ -199,13 +199,13 @@ jobs:
         run: |
           python3 codex-rs/hepta-bao-adapter/qa/qualify.py \
             --expected-sha "$EXPECTED_SHA" --candidate-role source-head \
-            --output .hepta-evidence/secrets-native-head
+            --output "$RUNNER_TEMP/secrets-native-head"
       - name: Retain actual native results including failures
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: secrets-native-head-${{ github.event.pull_request.head.sha || github.sha }}
-          path: .hepta-evidence/secrets-native-head
+          path: ${{ runner.temp }}/secrets-native-head
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 90
@@ -239,13 +239,13 @@ jobs:
         run: |
           python3 codex-rs/hepta-bao-adapter/qa/qualify.py \
             --expected-sha "$EXPECTED_SHA" --candidate-role synthetic-merge \
-            --output .hepta-evidence/secrets-native-merge
+            --output "$RUNNER_TEMP/secrets-native-merge"
       - name: Retain actual native results including failures
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: secrets-native-merge-${{ github.event.pull_request.head.sha || github.sha }}
-          path: .hepta-evidence/secrets-native-merge
+          path: ${{ runner.temp }}/secrets-native-merge
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 90
