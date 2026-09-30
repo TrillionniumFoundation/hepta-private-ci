@@ -1,5 +1,7 @@
 use codex_api::RequestDispatchMetadata;
 use codex_extension_api::ModelProviderAttemptLease;
+use codex_extension_api::ModelProviderOutputBatch;
+use codex_extension_api::ModelProviderOutputDecision;
 use codex_extension_api::ModelProviderPolicyError;
 use codex_extension_api::ModelProviderTerminal;
 use tokio::sync::mpsc;
@@ -38,6 +40,18 @@ impl ProviderAttemptOwner {
         Self { commands }
     }
 
+    pub(crate) async fn authorize_output(
+        &self,
+        batch: ModelProviderOutputBatch,
+    ) -> Result<ModelProviderOutputDecision, ModelProviderPolicyError> {
+        batch.validate()?;
+        let (acknowledge, acknowledged) = oneshot::channel();
+        self.commands
+            .send(OwnerCommand::AuthorizeOutput { batch, acknowledge })
+            .map_err(|_| owner_stopped_error())?;
+        acknowledged.await.map_err(|_| owner_stopped_error())?
+    }
+
     pub(crate) async fn finish(
         self,
         terminal: ModelProviderTerminal,
@@ -54,6 +68,10 @@ impl ProviderAttemptOwner {
 }
 
 enum OwnerCommand {
+    AuthorizeOutput {
+        batch: ModelProviderOutputBatch,
+        acknowledge: oneshot::Sender<Result<ModelProviderOutputDecision, ModelProviderPolicyError>>,
+    },
     Finish {
         terminal: ModelProviderTerminal,
         acknowledge: oneshot::Sender<Result<(), ModelProviderPolicyError>>,
@@ -61,36 +79,41 @@ enum OwnerCommand {
 }
 
 async fn run_owner(
-    lease: Box<dyn ModelProviderAttemptLease>,
+    mut lease: Box<dyn ModelProviderAttemptLease>,
     dispatch_probe: Box<dyn Fn() -> bool + Send + 'static>,
     mut commands: mpsc::UnboundedReceiver<OwnerCommand>,
 ) {
-    match commands.recv().await {
-        Some(OwnerCommand::Finish {
-            terminal,
-            acknowledge,
-        }) => {
-            let _ = acknowledge.send(lease.finish(terminal).await);
-        }
-        None => {
-            let terminal = if dispatch_probe() {
-                ModelProviderTerminal::Indeterminate {
-                    reason_code: OWNER_DROPPED_AFTER_DISPATCH.to_string(),
-                    partial_response_sha256: None,
-                }
-            } else {
-                ModelProviderTerminal::NotDispatched {
-                    reason_code: OWNER_DROPPED_BEFORE_DISPATCH.to_string(),
-                }
-            };
-            if let Err(error) = lease.finish(terminal).await {
-                tracing::warn!(
-                    reason_code = error.reason_code(),
-                    detail = error.detail(),
-                    "failed to persist provider terminal after owner cancellation"
-                );
+    while let Some(command) = commands.recv().await {
+        match command {
+            OwnerCommand::AuthorizeOutput { batch, acknowledge } => {
+                let _ = acknowledge.send(lease.authorize_output(batch).await);
+            }
+            OwnerCommand::Finish {
+                terminal,
+                acknowledge,
+            } => {
+                let _ = acknowledge.send(lease.finish(terminal).await);
+                return;
             }
         }
+    }
+
+    let terminal = if dispatch_probe() {
+        ModelProviderTerminal::Indeterminate {
+            reason_code: OWNER_DROPPED_AFTER_DISPATCH.to_string(),
+            partial_response_sha256: None,
+        }
+    } else {
+        ModelProviderTerminal::NotDispatched {
+            reason_code: OWNER_DROPPED_BEFORE_DISPATCH.to_string(),
+        }
+    };
+    if let Err(error) = lease.finish(terminal).await {
+        tracing::warn!(
+            reason_code = error.reason_code(),
+            detail = error.detail(),
+            "failed to persist provider terminal after owner cancellation"
+        );
     }
 }
 

@@ -78,6 +78,7 @@ use codex_otel::SessionTelemetry;
 use codex_otel::current_span_w3c_trace_context;
 use codex_protocol::auth::AuthMode;
 
+use codex_extension_api::ModelProviderOutputDecision;
 use codex_extension_api::ModelProviderPolicyError;
 use codex_extension_api::ModelProviderRequestKind;
 use codex_extension_api::ModelProviderTerminal;
@@ -137,6 +138,7 @@ use crate::model_provider_policy::ProviderWireSemantic;
 use crate::model_provider_policy::active_model_provider_policies;
 use crate::model_provider_policy::begin_active_model_provider_policy;
 use crate::model_provider_policy::begin_model_provider_policy;
+use crate::model_provider_policy::canonical_sha256;
 use crate::model_provider_policy::has_active_model_provider_policy;
 use crate::model_provider_policy::logical_compaction_request;
 use crate::model_provider_policy::logical_responses_request;
@@ -3151,13 +3153,85 @@ where
             let Some(event) = event else {
                 break;
             };
+            let output_decision = match &event {
+                Ok(provider_event) => {
+                    let encoded_bytes = match serde_json::to_vec(provider_event) {
+                        Ok(value) => u64::try_from(value.len()).unwrap_or(u64::MAX),
+                        Err(error) => {
+                            let error = model_provider_policy_error(ModelProviderPolicyError::new(
+                                "model_provider_output_encoding_failed",
+                                format!("failed to encode provider output event: {error}"),
+                            ));
+                            inference_trace_attempt.record_failed(
+                                &error,
+                                upstream_request_id,
+                                &items_added,
+                            );
+                            session_telemetry.see_event_completed_failed(&error);
+                            let _ = tx_event.send(Err(error)).await;
+                            return;
+                        }
+                    };
+                    let event_sha256 = match canonical_sha256(provider_event) {
+                        Ok(value) => value,
+                        Err(error) => {
+                            let error = model_provider_policy_error(error);
+                            inference_trace_attempt.record_failed(
+                                &error,
+                                upstream_request_id,
+                                &items_added,
+                            );
+                            session_telemetry.see_event_completed_failed(&error);
+                            let _ = tx_event.send(Err(error)).await;
+                            return;
+                        }
+                    };
+                    match provider_terminal
+                        .authorize_output(event_sha256, encoded_bytes)
+                        .await
+                    {
+                        Ok(decision) => decision,
+                        Err(error) => {
+                            let _ = provider_terminal
+                                .finish_indeterminate(
+                                    "provider_output_authorization_failed",
+                                    &items_added,
+                                )
+                                .await;
+                            let error = model_provider_policy_error(error);
+                            inference_trace_attempt.record_failed(
+                                &error,
+                                upstream_request_id,
+                                &items_added,
+                            );
+                            session_telemetry.see_event_completed_failed(&error);
+                            let _ = tx_event.send(Err(error)).await;
+                            return;
+                        }
+                    }
+                }
+                Err(_) => ModelProviderOutputDecision::Allow,
+            };
+            let output_allowed = matches!(output_decision, ModelProviderOutputDecision::Allow);
+            if let ModelProviderOutputDecision::Drop {
+                reason_code,
+                message,
+            } = &output_decision
+            {
+                tracing::warn!(
+                    reason_code,
+                    message,
+                    "provider output event dropped by current-use fence"
+                );
+            }
             match event {
                 Ok(ResponseEvent::OutputItemDone(item)) => {
                     items_added.push(item.clone());
-                    if tx_event
-                        .send(Ok(ResponseEvent::OutputItemDone(item)))
-                        .await
-                        .is_err()
+                    if output_allowed
+                        && tx_event
+                            .send(Ok(ResponseEvent::OutputItemDone(item)))
+                            .await
+                            .is_err()
                     {
                         finish_abandoned_provider_response(
                             &mut provider_terminal,
@@ -3223,20 +3297,36 @@ where
                         &token_usage,
                         &items_added,
                     );
-                    if let Some(sender) = tx_last_response.take() {
+                    if provider_terminal.output_fence().is_none()
+                        && let Some(sender) = tx_last_response.take()
+                    {
                         let _ = sender.send(LastResponse {
                             response_id: response_id.clone(),
                             items_added: std::mem::take(&mut items_added),
                         });
                     }
-                    if tx_event
-                        .send(Ok(ResponseEvent::Completed {
-                            response_id,
-                            token_usage,
-                            end_turn,
-                        }))
-                        .await
-                        .is_err()
+                    if let Some((reason_code, message)) = provider_terminal.output_fence() {
+                        let error = CodexErr::Fatal(format!(
+                            "model provider output fenced [{reason_code}]: {message}"
+                        ));
+                        inference_trace_attempt.record_failed(
+                            &error,
+                            upstream_request_id,
+                            &items_added,
+                        );
+                        session_telemetry.see_event_completed_failed(&error);
+                        let _ = tx_event.send(Err(error)).await;
+                        return;
+                    }
+                    if output_allowed
+                        && tx_event
+                            .send(Ok(ResponseEvent::Completed {
+                                response_id,
+                                token_usage,
+                                end_turn,
+                            }))
+                            .await
+                            .is_err()
                     {
                         return;
                     }
@@ -3245,12 +3335,15 @@ where
                     }
                 }
                 Ok(event) => {
-                    if matches!(&event, ResponseEvent::OutputItemAdded(_)) && ttft_ms.is_none() {
+                    if output_allowed
+                        && matches!(&event, ResponseEvent::OutputItemAdded(_))
+                        && ttft_ms.is_none()
+                    {
                         ttft_ms = Some(
                             i64::try_from(request_start.elapsed().as_millis()).unwrap_or(i64::MAX),
                         );
                     }
-                    if tx_event.send(Ok(event)).await.is_err() {
+                    if output_allowed && tx_event.send(Ok(event)).await.is_err() {
                         finish_abandoned_provider_response(
                             &mut provider_terminal,
                             "provider_response_consumer_dropped",

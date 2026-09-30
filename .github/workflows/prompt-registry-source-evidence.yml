@@ -1,0 +1,51 @@
+name: Prompt registry immutable source evidence
+
+on:
+  push:
+    branches: [codex/prompt-registry-verified-closeout-20260928]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-evidence:
+    runs-on: ubuntu-slim
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Export committed source and identity (not qualification)
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          set -eu
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --exit-code HEAD
+          mkdir -p "$RUNNER_TEMP/prompt-registry-source"
+          git archive --format=tar HEAD | gzip -n > "$RUNNER_TEMP/prompt-registry-source/source.tar.gz"
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, subprocess
+          out = pathlib.Path(os.environ['RUNNER_TEMP']) / 'prompt-registry-source'
+          archive = out / 'source.tar.gz'
+          manifest = {
+              'schema': 'hepta.prompt-registry.source-export.v1',
+              'sourceSha': os.environ['SOURCE_SHA'],
+              'sourceTree': subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip(),
+              'archiveSha256': hashlib.sha256(archive.read_bytes()).hexdigest(),
+              'runId': os.environ['GITHUB_RUN_ID'],
+              'runAttempt': os.environ['GITHUB_RUN_ATTEMPT'],
+              'qualification': False, 'accepted': False, 'released': False,
+          }
+          (out / 'source-manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
+          print(json.dumps(manifest))
+          PY
+          git diff --exit-code HEAD
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-registry-source-${{ github.sha }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/prompt-registry-source
+          if-no-files-found: error
+          retention-days: 7

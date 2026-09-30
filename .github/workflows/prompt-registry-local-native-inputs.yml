@@ -1,0 +1,52 @@
+name: Prompt registry local native inputs
+on:
+  push:
+    branches: [codex/prompt-registry-remediation-20260927]
+    paths: [.github/workflows/prompt-registry-local-native-inputs.yml]
+permissions:
+  contents: read
+jobs:
+  inputs:
+    runs-on: ubuntu-slim
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,cargo-nextest,cargo-shear@1.11.2
+          checksum: true
+      - name: Resolve checksum-verified V8 pair
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Package only public build prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/native-inputs/bin" "$RUNNER_TEMP/native-inputs/v8"
+          cp "$(command -v just)" "$(command -v cargo-nextest)" "$(command -v cargo-shear)" "$RUNNER_TEMP/native-inputs/bin/"
+          test -f "$RUSTY_V8_ARCHIVE"
+          test -f "$RUSTY_V8_SRC_BINDING_PATH"
+          cp "$RUSTY_V8_ARCHIVE" "$RUSTY_V8_SRC_BINDING_PATH" "$RUNNER_TEMP/native-inputs/v8/"
+          printf '%s\n' "${RUSTY_V8_ARCHIVE##*/}" > "$RUNNER_TEMP/native-inputs/v8/archive.name"
+          printf '%s\n' "${RUSTY_V8_SRC_BINDING_PATH##*/}" > "$RUNNER_TEMP/native-inputs/v8/binding.name"
+          cd "$RUNNER_TEMP/native-inputs"
+          just --version > versions.txt
+          cargo nextest --version >> versions.txt
+          cargo shear --version >> versions.txt
+          find bin v8 -type f -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS
+          tar -czf "$RUNNER_TEMP/prompt-native-inputs.tar.gz" bin v8 versions.txt SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-registry-local-native-inputs-${{ github.sha }}
+          path: ${{ runner.temp }}/prompt-native-inputs.tar.gz
+          compression-level: 0
+          retention-days: 3
+          if-no-files-found: error

@@ -80,7 +80,9 @@ def git(*args: str, input_text: str | None = None) -> str:
     return p.stdout.strip()
 
 
-def checked_identity(value, candidate: dict[str, str]) -> dict[str, str]:
+def checked_identity(
+    value, candidate: dict[str, str], *, require_ancestor: bool = True
+) -> dict[str, str]:
     if not isinstance(value, dict) or any(
         not isinstance(value.get(key), str)
         or not re.fullmatch(r"[0-9a-f]{40}", value[key])
@@ -92,7 +94,8 @@ def checked_identity(value, candidate: dict[str, str]) -> dict[str, str]:
         raise ValueError("source identity does not identify a commit")
     if git("rev-parse", f"{commit}^{{tree}}") != tree:
         raise ValueError("source tree mismatch")
-    git("merge-base", "--is-ancestor", commit, candidate["commit"])
+    if require_ancestor:
+        git("merge-base", "--is-ancestor", commit, candidate["commit"])
     return {"commit": commit, "tree": tree}
 
 
@@ -224,10 +227,14 @@ def verify_source_identity(
     policy = row.get("sourceIdentityPolicy", "legacy_shared_batch")
     if policy not in {"legacy_shared_batch", "candidate_or_exact_observation_v1"}:
         raise ValueError(f"unknown source identity policy: {policy}")
-    source = checked_identity(row.get("sourceBase"), candidate)
     mapping_mode = row.get("mappingSourceIdentityMode", "path_only")
     if mapping_mode not in {"path_only", "exact_blob"}:
         raise ValueError(f"unknown mapping source identity mode: {mapping_mode}")
+    source = checked_identity(
+        row.get("sourceBase"),
+        candidate,
+        require_ancestor=mapping_mode != "exact_blob",
+    )
     paths = evidence_paths(row, roots)
     # In exact-blob mode ``sourceBase`` is immutable integration provenance,
     # not the current-source observation. Currentness is proved independently
@@ -790,8 +797,12 @@ def migrate(selected_modules: list[str] | None = None):
         row = load(str(path.relative_to(ROOT)))
         if row.get("module", mid) != mid:
             raise SystemExit(f"{mid}: identity")
-        anchor = checked_identity(row.get("sourceBase"), source_base)
         mapping_mode = row.get("mappingSourceIdentityMode", "path_only")
+        anchor = checked_identity(
+            row.get("sourceBase"),
+            source_base,
+            require_ancestor=mapping_mode != "exact_blob",
+        )
         migrated = migrate_map(row, by_id[mid], lanes, anchor)
         if "observedAtHead" in row:
             migrated["observedAtHead"] = row["observedAtHead"]

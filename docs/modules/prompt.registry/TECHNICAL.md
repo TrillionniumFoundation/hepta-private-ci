@@ -1,6 +1,8 @@
 # prompt.registry technical development guide
 
-**Plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0
+**Plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0 ([canonical plan](../../DEVELOPMENT.md), selected by `docs/CURRENT.json`).
+
+**Current implementation contracts:** [API and failure policy](API_CONTRACT.md), [operations and retention](OPERATIONS.md), [performance measurement](PERFORMANCE.md), [architecture and traceability](ARCHITECTURE.md), and [independent acceptance](ACCEPTANCE.md).
 
 **Module:** `prompt.registry`
 
@@ -128,18 +130,20 @@ Migrations are deterministic and checksum-bound. Store open verifies required sc
 
 Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
 
-### Native storage V3: immutable payload extents
+### V4 semantic core with V4/V5 payload envelope
 
-`DurablePromptRegistry` publishes storage V3 through the existing single writer.
-`registry.json` contains the V2 semantic metadata image plus bounded payload
+`DurablePromptRegistry` publishes strict storage V4 through the existing single writer.
+`registry.json` contains the V4 semantic metadata image, including relations, plus bounded payload
 references; `registry.payloads` holds immutable, digest-checked byte extents.
 New extents and their directory entry are synchronized before atomic metadata
 publication. A failed publication leaves the predecessor selected; an uncertain
 post-rename outcome poisons the writer until reopen and reconciliation. Recovery
 validates the complete semantic image before trimming only an unselected trailing
 write. Missing, shortened or modified committed extents are rejected, not healed.
-V1/V2 storage migrates on open without changing domain digests, lifecycle or grants.
-A validated V3 reopen does not rewrite its metadata snapshot. Backup/restore must
+V1/V2/V3 and transitional outer-V4/inner-V2 storage migrate on normal owner open
+while preserving their validated semantic facts. A validated strict-V4 reopen
+does not rewrite its metadata snapshot. Strict checkpoint verification is a
+separate non-mutating path: it rejects legacy inputs instead of migrating them. Backup/restore must
 capture both files from a quiesced owner; copying metadata alone is not a backup.
 Old binaries reject the new storage version; downgrade requires an explicitly
 reviewed owner migration, not restoring revoked state. Metadata and raw extents
@@ -226,7 +230,7 @@ For `prompt.registry`, this document grants no runtime, production, model, provi
 
 #### `PIM-0-PROMPT-INTERVENTION-CONTRACTS`
 
-- State: `planned`; priority: `1`; parallel class: `contract_first_parallel`.
+- State: `source_implemented_qualification_pending`; priority: `1`; parallel class: `contract_first_parallel`.
 - Owner/deputy: `intelligence-platform` / `cognitive-platform`.
 - Allowed write paths:
 - `codex-rs/hepta-prompt-registry/**`
@@ -258,7 +262,7 @@ For `prompt.registry`, this document grants no runtime, production, model, provi
 
 #### `PIM-1-PROMPT-FACTOR-REGISTRY`
 
-- State: `planned`; priority: `1`; parallel class: `contract_coordinated`.
+- State: `source_implemented_qualification_pending`; priority: `1`; parallel class: `contract_coordinated`.
 - Owner/deputy: `intelligence-platform` / `cognitive-platform`.
 - Allowed write paths:
 - `codex-rs/hepta-prompt-registry/**`
@@ -288,7 +292,7 @@ For `prompt.registry`, this document grants no runtime, production, model, provi
 
 #### `PIM-3-FACTOR-EVOLUTION`
 
-- State: `planned`; priority: `3`; parallel class: `contract_coordinated`.
+- State: `source_implemented_qualification_pending`; priority: `3`; parallel class: `contract_coordinated`.
 - Owner/deputy: `intelligence-platform` / `cognitive-platform`.
 - Allowed write paths:
 - `codex-rs/hepta-prompt-registry/**`
@@ -349,3 +353,73 @@ The bootstrap source-location obligation for `prompt.registry` is implemented by
 - `codex-rs/hepta-prompt-registry`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+
+## Operational checkpoints, quotas and measurement
+
+`DurablePromptRegistry` exposes a read-only operational metrics snapshot that
+unifies logical-record, payload-record, selected/physical payload-byte,
+single-payload and metadata ceilings. The metrics distinguish selected active
+payload bytes from reclaimable inactive payload bytes and report a bounded
+high-water value. These are owner-local facts, not acceptance or deployment
+authority.
+
+`export_consistent_checkpoint` writes the current committed V4 image to a fresh
+private directory and reopens it before issuing a receipt.
+`checkpoint_compacted` copy-compacts into another fresh directory, retaining
+factor, realization, binding, relation, supersession and lifecycle history while
+omitting payload bytes for inactive realizations. Neither operation rewrites or
+switches the live owner. Activation of a verified checkpoint requires an
+external quiescent owner protocol.
+
+`verify_restore_checkpoint` performs a non-mutating strict-V4 read against a
+required trusted exact revision and registry digest. It never initializes,
+migrates, republishes metadata or trims an unselected tail. Checkpoint receipts
+include equal source/checkpoint retained-history digests and explicitly report
+`source_erased=false`; omitted destination bytes are not original-store erasure. `probe_fsync` measures a bounded
+private temporary-file write, file synchronization and directory
+synchronization, then removes the probe. The module qualification workflow runs
+the named 1k/8k/16k logical-scale and bounded fsync profiles and binds their log
+digest into the exact qualification receipt. A WAL, Merkle tree or incremental
+digest remains unjustified until those measurements show a material bottleneck.
+
+## Current-use and delivery-consistency update — 2026-09-28
+
+The real factor lifecycle is Draft, Admitted, Retired and Revoked. Agentd
+preparation and durable dispatch recording use the same typed current-use
+contract. Cached ready contexts reconsult that owner and reject changed
+attachments rather than silently replacing an injected payload. The dispatch
+claim retains the registry lock through durable recording and uses the trusted
+host clock, not a caller-provided past timestamp. Terminal provider facts remain
+truthful; this does not claim cancellation of already admitted network I/O or
+retraction of streamed output. See API_CONTRACT.md for the linearization boundary.
+
+Metrics remain available diagnostically after poisoning with
+`authoritative=false`; raw payloads and compiler diagnostics are not emitted in
+final-use Display messages. Checkpoint retry is idempotent only for the exact
+completed image. Partial/conflicting/symlink destinations are never overwritten.
+
+The candidate builds checked-in Rust directly. Historical apply-prompt scripts
+and source-mutating qualification workflows were retired. The implementation
+map is explicitly authored using --write after a source commit; CI uses --check
+only and records each check result, including missing tests and timeouts.
+
+
+## Owner-local GC and failure contract update (2026-09-28)
+
+The checked-in owner now supports a V5 outer payload-generation manifest while
+retaining the strict V4 semantic schema and legacy migration paths. Existing
+V4 stores remain V4 until the first nonempty owner-local garbage collection.
+`durable_gc.rs` implements bounded two-slot publication/cleanup;
+`durable_io.rs` records actual owner I/O observations; `failure.rs` centralizes
+redacted errors and non-blind retry guidance. `durable_gc_tests.rs` exercises
+revocation/audit preservation, idempotence, alternating generations, pre-rename
+failure, unknown post-rename durability, corrupt selected extents, strict V5
+restore and unsafe unselected-slot refusal. This is namespace reclamation of
+inactive raw payload files, not secure erasure of devices or backups.
+
+The API contract, operational runbook and performance guide define these new
+interfaces. Qualification never applies source patches or writes a generated
+map. Source authoring and formatting precede a separate map-only commit; both
+exact-head and bound-base synthetic merge compile the committed source.
+Native execution results live in exact-run artifacts, not this narrative.

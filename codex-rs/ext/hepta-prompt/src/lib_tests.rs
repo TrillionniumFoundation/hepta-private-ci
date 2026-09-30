@@ -49,10 +49,11 @@ fn host(
     dispatch_records: Arc<StdMutex<Vec<PromptRuntimeDispatchRecordV1>>>,
     terminal_records: Arc<StdMutex<Vec<PromptRuntimeTerminalRecordV1>>>,
 ) -> PromptRuntimeHost {
+    let prepared_attachment = attachment();
     PromptRuntimeHost::new(
         "prompt-runtime-test",
-        |_request| {
-            let attachment = attachment();
+        move |_request| {
+            let attachment = prepared_attachment.clone();
             Box::pin(async move { Ok(Some(attachment)) })
         },
         move |record| {
@@ -263,4 +264,180 @@ async fn not_dispatched_never_fabricates_delivery_credit() {
     records[0]
         .validate()
         .unwrap_or_else(|error| panic!("record: {error}"));
+}
+
+#[tokio::test]
+async fn cached_prompt_revalidates_owner_withdrawal_before_provider_begin() {
+    let withdrawn = Arc::new(AtomicBool::new(false));
+    let dispatch_count = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let prepared = attachment();
+    let flag = Arc::clone(&withdrawn);
+    let counter = Arc::clone(&dispatch_count);
+    let host = PromptRuntimeHost::new(
+        "prompt-runtime-cache-withdrawal",
+        move |_| {
+            let result = if flag.load(Ordering::Acquire) {
+                Err(PromptRuntimeHostError::new(
+                    "prompt_final_use_revoked",
+                    "selection revoked",
+                ))
+            } else {
+                Ok(Some(prepared.clone()))
+            };
+            Box::pin(std::future::ready(result))
+        },
+        move |_| {
+            counter.fetch_add(1, Ordering::Relaxed);
+            Box::pin(std::future::ready(Ok(())))
+        },
+        |_| Box::pin(std::future::ready(Ok(()))),
+    )
+    .unwrap_or_else(|error| panic!("host: {error}"));
+    let extension = PromptRuntimeExtension { host };
+    let (session_store, thread_store, turn_store) = stores();
+    let thread_id = ThreadId::from_string(thread_store.level_id())
+        .unwrap_or_else(|error| panic!("thread: {error}"));
+    assert_eq!(
+        extension
+            .contribute_turn_context(TurnContextContributionInput {
+                thread_id,
+                turn_id: turn_store.level_id(),
+                session_store: &session_store,
+                thread_store: &thread_store,
+                turn_store: &turn_store,
+                model_context_window: Some(128_000),
+            })
+            .await
+            .len(),
+        1
+    );
+    withdrawn.store(true, Ordering::Release);
+    let provider_config = provider_digest("config");
+    let endpoint = provider_digest("endpoint");
+    let logical = provider_digest("logical");
+    let wire = provider_digest("wire");
+    let result = extension
+        .begin(ModelProviderInvocationInput {
+            schema_version: codex_extension_api::MODEL_PROVIDER_POLICY_INPUT_SCHEMA_VERSION,
+            session_store: &session_store,
+            thread_store: &thread_store,
+            turn_store: &turn_store,
+            attempt_id: "provider-attempt:cache",
+            request_binding_id: "provider-request:cache",
+            thread_id: thread_store.level_id(),
+            turn_id: turn_store.level_id(),
+            request_kind: ModelProviderRequestKind::Turn,
+            provider_id: "test-provider",
+            provider_config_sha256: &provider_config,
+            model: "gpt-test",
+            transport: ModelProviderTransport::Http,
+            endpoint_sha256: &endpoint,
+            logical_request_sha256: &logical,
+            wire_semantic_sha256: &wire,
+            ephemeral_input_sha256: None,
+            ephemeral_input_witness_sha256: None,
+            previous_response_id_sha256: None,
+            generate: true,
+        })
+        .await;
+    let error = match result {
+        Err(error) => error,
+        Ok(_) => panic!("withdrawn cached context must block provider begin"),
+    };
+    assert_eq!(error.reason_code(), "prompt_final_use_revoked");
+    assert_eq!(dispatch_count.load(Ordering::Relaxed), 0);
+}
+
+#[tokio::test]
+async fn cached_prompt_never_silently_switches_injected_payload() {
+    let changed = Arc::new(AtomicBool::new(false));
+    let initial = attachment();
+    let mut replacement = initial.clone();
+    replacement.developer_fragments = vec![
+        PromptRuntimeDeveloperFragmentV1::new("different reviewed material")
+            .unwrap_or_else(|error| panic!("fragment: {error}")),
+    ];
+    replacement.source_binding_digest = replacement.compute_binding_digest();
+    let flag = Arc::clone(&changed);
+    let host = PromptRuntimeHost::new(
+        "prompt-runtime-cache-drift",
+        move |_| {
+            let value = if flag.load(Ordering::Acquire) {
+                replacement.clone()
+            } else {
+                initial.clone()
+            };
+            Box::pin(std::future::ready(Ok(Some(value))))
+        },
+        |_| Box::pin(std::future::ready(Ok(()))),
+        |_| Box::pin(std::future::ready(Ok(()))),
+    )
+    .unwrap_or_else(|error| panic!("host: {error}"));
+    let extension = PromptRuntimeExtension { host };
+    let (_, thread_store, turn_store) = stores();
+    assert!(matches!(
+        extension
+            .resolve(
+                thread_store.level_id().to_owned(),
+                turn_store.level_id().to_owned(),
+                None,
+                &turn_store
+            )
+            .await,
+        ResolvedAttachment::Ready(_)
+    ));
+    changed.store(true, Ordering::Release);
+    let result = extension
+        .resolve(
+            thread_store.level_id().to_owned(),
+            turn_store.level_id().to_owned(),
+            None,
+            &turn_store,
+        )
+        .await;
+    match result {
+        ResolvedAttachment::Failed(error) => {
+            assert_eq!(error.reason_code(), "prompt_runtime_cached_binding_changed")
+        }
+        _ => panic!("cached identity drift must fail closed"),
+    }
+}
+
+#[tokio::test]
+async fn concurrent_initial_resolution_is_single_flight() {
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let counter = Arc::clone(&calls);
+    let prepared = attachment();
+    let host = PromptRuntimeHost::new(
+        "prompt-runtime-single-flight",
+        move |_| {
+            counter.fetch_add(1, Ordering::AcqRel);
+            let prepared = prepared.clone();
+            Box::pin(async move {
+                tokio::task::yield_now().await;
+                Ok(Some(prepared))
+            })
+        },
+        |_| Box::pin(std::future::ready(Ok(()))),
+        |_| Box::pin(std::future::ready(Ok(()))),
+    )
+    .unwrap_or_else(|error| panic!("host: {error}"));
+    let extension = PromptRuntimeExtension { host };
+    let (_, thread_store, turn_store) = stores();
+    let first = extension.resolve(
+        thread_store.level_id().to_owned(),
+        turn_store.level_id().to_owned(),
+        None,
+        &turn_store,
+    );
+    let second = extension.resolve(
+        thread_store.level_id().to_owned(),
+        turn_store.level_id().to_owned(),
+        None,
+        &turn_store,
+    );
+    let (first, second) = tokio::join!(first, second);
+    assert!(matches!(first, ResolvedAttachment::Ready(_)));
+    assert!(matches!(second, ResolvedAttachment::Ready(_)));
+    assert_eq!(calls.load(Ordering::Acquire), 1);
 }
