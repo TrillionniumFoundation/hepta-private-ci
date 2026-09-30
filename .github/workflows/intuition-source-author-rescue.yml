@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: intuition-reviewed-source-rescue-${{ github.ref }}-${{ matrix.runner }}
+  group: intuition-reviewed-source-rescue-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
