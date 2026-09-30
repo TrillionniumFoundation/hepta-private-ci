@@ -1,0 +1,232 @@
+name: Runtime supervisor source bootstrap (macOS)
+
+on:
+  push:
+    branches:
+      - codex/runtime-supervisor-six-phase-closure-20260930-r4
+    paths:
+      - .github/workflows/runtime-supervisor-bootstrap-macos.yml
+  workflow_dispatch:
+
+# One-shot authoring lane. A successful run commits ordinary source and removes
+# this workflow, the legacy materializers, and their scripts in the same commit.
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-supervisor-source-bootstrap-macos-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  RUST_BACKTRACE: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  materialize:
+    runs-on: macos-15
+    timeout-minutes: 180
+    steps:
+      - name: Check out immutable input
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+          persist-credentials: true
+          clean: true
+
+      - name: Bind input identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain --untracked-files=no)"
+          mkdir -p "$RUNNER_TEMP/runtime-supervisor-bootstrap"
+          {
+            printf 'input_sha=%s\n' "$GITHUB_SHA"
+            printf 'input_tree=%s\n' "$(git rev-parse HEAD^{tree})"
+            printf 'workflow_sha=%s\n' "$GITHUB_WORKFLOW_SHA"
+            printf 'run_id=%s\n' "$GITHUB_RUN_ID"
+            printf 'run_attempt=%s\n' "$GITHUB_RUN_ATTEMPT"
+            printf 'runner_os=%s\n' "$RUNNER_OS"
+            printf 'runner_arch=%s\n' "$RUNNER_ARCH"
+          } > "$RUNNER_TEMP/runtime-supervisor-bootstrap/input-identity.txt"
+
+      - name: Install exact Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          channel="$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')"
+          rustup toolchain install "$channel" --profile minimal --component clippy,rustfmt
+          printf 'RUSTUP_TOOLCHAIN=%s\n' "$channel" >> "$GITHUB_ENV"
+          printf 'CARGO_TARGET_DIR=%s/hepta-supervisor-bootstrap-target\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+
+      - name: Materialize reviewed source closure
+        id: materialize
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            scripts/runtime_supervisor_six_phase_materialize.py \
+            scripts/runtime_supervisor_six_phase_followup.py
+          python3 scripts/runtime_supervisor_six_phase_materialize.py
+          python3 scripts/runtime_supervisor_six_phase_followup.py
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-supervisor
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-supervisor -- --check
+          git diff --check
+          lib=codex-rs/hepta-supervisor/src/lib.rs
+          grep -Fxq 'mod mutation_journal;' "$lib"
+          grep -Fxq 'mod process_exit_witness;' "$lib"
+          grep -Fxq 'mod recovery_observation;' "$lib"
+          grep -Fq 'pub use mutation_journal::DurableMutationStatusV1;' "$lib"
+          grep -Fq 'pub use process_exit_witness::ProcessExitWitnessV1;' "$lib"
+          grep -Fq 'pub use recovery_observation::ProductionRecoveryObservationV1;' "$lib"
+          grep -Fq 'process_exit_witness::record_process_exit' codex-rs/hepta-supervisor/src/tick.rs
+          grep -Fq 'process_exit_witness::read_process_exit_witness' codex-rs/hepta-supervisor/src/recovery.rs
+          grep -Fq 'publish_production_recovery_observation' codex-rs/hepta-supervisor/src/daemon_execution.rs
+          grep -Fq 'prepare_mutation' codex-rs/hepta-supervisor/src/daemon_execution.rs
+          git status --short | tee "$RUNNER_TEMP/runtime-supervisor-bootstrap/materialized-status.txt"
+
+      - name: Package exact materialized tree
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/runtime-supervisor-bootstrap"
+          git diff --binary > "$out/materialized.patch"
+          python3 - <<'PY'
+          import hashlib
+          import pathlib
+          import subprocess
+          import tarfile
+
+          root = pathlib.Path.cwd()
+          out = pathlib.Path(__import__('os').environ['RUNNER_TEMP']) / 'runtime-supervisor-bootstrap'
+          tracked = subprocess.check_output(['git', 'diff', '--name-only', '-z']).split(b'\0')
+          untracked = subprocess.check_output(['git', 'ls-files', '--others', '--exclude-standard', '-z']).split(b'\0')
+          paths = sorted({p.decode() for p in tracked + untracked if p})
+          with tarfile.open(out / 'materialized-files.tar.gz', 'w:gz') as archive:
+              for rel in paths:
+                  path = root / rel
+                  if path.is_file():
+                      archive.add(path, arcname=rel, recursive=False)
+          (out / 'materialized-files.txt').write_text('\n'.join(paths) + '\n', encoding='utf-8')
+          for name in ('materialized.patch', 'materialized-files.tar.gz', 'materialized-files.txt'):
+              path = out / name
+              digest = hashlib.sha256(path.read_bytes()).hexdigest()
+              with (out / 'SHA256SUMS').open('a', encoding='utf-8') as sums:
+                  sums.write(f'{digest}  {name}\n')
+          PY
+
+      - name: Default library regression
+        id: default_tests
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          cargo test \
+            --manifest-path codex-rs/Cargo.toml \
+            --locked \
+            -p codex-hepta-supervisor \
+            --lib \
+            2>&1 | tee "$RUNNER_TEMP/runtime-supervisor-bootstrap/cargo-test-default.log"
+
+      - name: All qualification targets
+        id: qualification_tests
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          cargo test \
+            --manifest-path codex-rs/Cargo.toml \
+            --locked \
+            -p codex-hepta-supervisor \
+            --all-targets \
+            --features qualification,offline-authority-tools \
+            2>&1 | tee "$RUNNER_TEMP/runtime-supervisor-bootstrap/cargo-test-all-targets.log"
+
+      - name: Strict Clippy
+        id: clippy
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          cargo clippy \
+            --manifest-path codex-rs/Cargo.toml \
+            --locked \
+            -p codex-hepta-supervisor \
+            --all-targets \
+            --features qualification,offline-authority-tools \
+            -- -D warnings \
+            2>&1 | tee "$RUNNER_TEMP/runtime-supervisor-bootstrap/cargo-clippy.log"
+
+      - name: Repository qualification policy
+        id: policy
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          python3 -m unittest -v \
+            scripts.test_hepta_supervisor_ci \
+            scripts.test_hepta_supervisor_ci_v3 \
+            scripts.test_hepta_supervisor_evidence \
+            scripts.test_hepta_supervisor_workflow \
+            scripts.test_hepta_supervisor_status \
+            scripts.test_hepta_supervisor_external_receipt \
+            2>&1 | tee "$RUNNER_TEMP/runtime-supervisor-bootstrap/policy-tests.log"
+
+      - name: Upload exact materialization diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-supervisor-bootstrap-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/runtime-supervisor-bootstrap/*
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Gate source-bearing commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          test '${{ steps.materialize.outcome }}' = success
+          test '${{ steps.default_tests.outcome }}' = success
+          test '${{ steps.qualification_tests.outcome }}' = success
+          test '${{ steps.clippy.outcome }}' = success
+          test '${{ steps.policy.outcome }}' = success
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          remote_sha="$(git ls-remote origin "refs/heads/$GITHUB_REF_NAME" | awk '{print $1}')"
+          test "$remote_sha" = "$GITHUB_SHA"
+
+      - name: Remove all source-writing bootstrap machinery
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/runtime-supervisor-bootstrap-macos.yml
+          rm -f .github/workflows/runtime-supervisor-evidence-integration-materializer.yml
+          rm -f .github/workflows/runtime-supervisor-six-phase-materializer.yml
+          rm -f .github/workflows/runtime-supervisor-six-phase-self-hosted-materializer.yml
+          rm -f .github/workflows/runtime-supervisor-six-phase-macos-materializer.yml
+          rm -f .github/workflows/runtime-supervisor-six-phase-fleet-materializer.yml
+          rm -f .github/workflows/runtime-supervisor-source-rebind-materializer.yml
+          rm -f scripts/runtime_supervisor_six_phase_materialize.py
+          rm -f scripts/runtime_supervisor_six_phase_followup.py
+          git diff --check
+          if grep -R -n -E '^  contents: write$' .github/workflows/runtime-supervisor-*.yml; then
+            echo 'runtime.supervisor qualification must be read-only after bootstrap' >&2
+            exit 1
+          fi
+
+      - name: Commit and push ordinary source candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "OpenAI"
+          git config user.email "openai@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          test -n "$(git diff --cached --name-only)"
+          git commit -m "feat(supervisor): close lifecycle and mutation evidence"
+          git push origin "HEAD:$GITHUB_REF_NAME"
