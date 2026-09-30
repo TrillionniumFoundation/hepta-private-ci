@@ -885,6 +885,23 @@ impl RuntimeModuleSupervisorV1 {
             .ok_or(RuntimeModuleSupervisorErrorV1::MissingVerifiedSelection)
     }
 
+    /// A selected reservation can remain after its serving route is removed.
+    /// Read adapters must not relabel quiescing/quarantined owners as absent.
+    pub(crate) fn selected_module_phase(
+        &self,
+        module_id: &StableId,
+    ) -> Result<Option<RuntimeModuleLifecycleV1>, RuntimeModuleSupervisorErrorV1> {
+        self.registry
+            .active_generation(module_id)
+            .map(|generation| {
+                self.registry
+                    .record(module_id, generation)
+                    .map(|record| record.lifecycle)
+                    .ok_or(RuntimeModuleRegistryError::UnknownCandidate.into())
+            })
+            .transpose()
+    }
+
     pub fn topology(&self) -> RuntimeTopologySnapshotV1 {
         self.registry.snapshot()
     }
@@ -1089,3 +1106,7 @@ mod tests {
 #[cfg(test)]
 #[path = "module_runtime_safety_tests.rs"]
 mod safety_tests;
+
+#[cfg(test)]
+#[path = "module_runtime_observation_safety_tests.rs"]
+mod observation_safety_tests;

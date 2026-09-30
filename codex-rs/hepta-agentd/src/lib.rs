@@ -55,6 +55,8 @@ mod intuition_policy;
 #[cfg(feature = "server")]
 mod lane_b_runtime;
 #[cfg(feature = "server")]
+mod module_selection;
+#[cfg(feature = "server")]
 mod neuron_runtime;
 #[cfg(feature = "server")]
 mod objective_runtime;
@@ -80,6 +82,8 @@ mod qualification_writer;
 mod runtime;
 #[cfg(feature = "server")]
 mod runtime_executable;
+#[cfg(feature = "server")]
+pub use module_selection::RuntimeModuleProfileV1;
 #[cfg(feature = "server")]
 mod runtime_module_state;
 #[cfg(feature = "server")]

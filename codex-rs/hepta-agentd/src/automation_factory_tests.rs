@@ -47,9 +47,10 @@ async fn factory_routes_substituted_queue_and_drains_before_handoff() {
         )
         .expect("host"),
     );
-    let service = AutomationService::open(Arc::clone(&state))
-        .await
-        .expect("production owner factory");
+    let service =
+        AutomationService::open(Arc::clone(&state), crate::RuntimeModuleProfileV1::Compiled)
+            .await
+            .expect("production owner factory");
     let cognitive = codex_hepta_agent_components::cognitive_store::DurableCognitiveStore::open(
         &fixture.identity.layout,
     )

@@ -148,7 +148,7 @@ struct DaemonState<D: ProcessDriver> {
     production_grant_verifier: Option<H7H89ProductionGrantVerifier>,
     observed_faults: AtomicU64,
     // Opened before readiness; restores active generations and fences.
-    _runtime_modules: Mutex<DurableRuntimeModuleSupervisorV1>,
+    runtime_modules: Mutex<DurableRuntimeModuleSupervisorV1>,
 }
 
 /// Runs the one lifecycle-only supervisor daemon for a fleet.
@@ -218,7 +218,7 @@ async fn run_supervisord_inner(
         supervisor_epoch: SupervisorEpoch::new(),
         production_grant_verifier,
         observed_faults: AtomicU64::new(recovery.faults.len() as u64),
-        _runtime_modules: Mutex::new(runtime_modules),
+        runtime_modules: Mutex::new(runtime_modules),
     });
     let server = SupervisordServer::bind(
         layout.supervisor_socket().to_path_buf(),
@@ -396,6 +396,20 @@ async fn handle_request<D: ProcessDriver>(
     method: SupervisordMethod,
 ) -> SupervisordPayload {
     match method {
+        SupervisordMethod::RuntimeModuleSelection { module_id } => {
+            match state
+                .runtime_modules
+                .lock()
+                .await
+                .module_selection(&module_id)
+            {
+                Ok(selection) => SupervisordPayload::RuntimeModuleSelection { selection },
+                Err(error) => {
+                    error_response(0, "module_selection_unavailable", &error.to_string(), None)
+                        .payload
+                }
+            }
+        }
         SupervisordMethod::Health => {
             let registered_agents = match state.registry.load() {
                 Ok(snapshot) => snapshot.agents.len(),

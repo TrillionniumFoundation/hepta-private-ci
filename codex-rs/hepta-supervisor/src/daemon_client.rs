@@ -49,6 +49,32 @@ impl SupervisordClient {
         })
     }
 
+    /// Read one selected module from the existing durable Supervisor owner.
+    pub async fn runtime_module_selection(
+        &self,
+        module_id: String,
+    ) -> Result<codex_hepta_agent_protocol::RuntimeModuleSelectionV1, SupervisorError> {
+        codex_hepta_agent_protocol::validate_runtime_module_id(&module_id)
+            .map_err(SupervisorError::Invalid)?;
+        match self
+            .send(SupervisordMethod::RuntimeModuleSelection {
+                module_id: module_id.clone(),
+            })
+            .await?
+        {
+            SupervisordPayload::RuntimeModuleSelection { selection } => {
+                selection.validate().map_err(SupervisorError::Invalid)?;
+                if selection.module_id != module_id {
+                    return Err(SupervisorError::Invalid(
+                        "runtime module response identity mismatch".to_string(),
+                    ));
+                }
+                Ok(selection)
+            }
+            payload => unexpected(payload),
+        }
+    }
+
     pub async fn health(&self) -> Result<SupervisordHealth, SupervisorError> {
         match self.send(SupervisordMethod::Health).await? {
             SupervisordPayload::Health(health) => Ok(health),

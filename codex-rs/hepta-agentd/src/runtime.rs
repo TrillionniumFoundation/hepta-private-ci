@@ -39,6 +39,7 @@ pub async fn run(
 ) -> Result<(), AgentdError> {
     // Reject partial product composition before opening owners or publishing sockets.
     config.require_intelligence_composition()?;
+    let module_profile = config.runtime_module_profile();
     let production_operations = config.take_production_operations();
     let plasticity_bootstrap = config.take_plasticity_runtime_bootstrap();
     let trust_file = config
@@ -222,7 +223,7 @@ pub async fn run(
         federation_owner_layouts,
     )
     .await?;
-    let automation_service = AutomationService::open(Arc::clone(&state)).await?;
+    let automation_service = AutomationService::open(Arc::clone(&state), module_profile).await?;
     if let Some(path) = automation_effect_host_file {
         state.refresh_generation()?;
         let host =

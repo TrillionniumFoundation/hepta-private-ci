@@ -457,3 +457,34 @@ This is a Cargo client boundary, not general optional learning/automation profil
 or a minimal inference runtime: App Server adapter dependencies remain. Default
 Bazel product targets keep the full server feature explicitly. Separate client-only
 Bazel deployment is not established by the Cargo dependency reduction.
+
+### Supervisor-selected compiled module startup
+
+The ordinary `codex-hepta-agentd` binary accepts `--runtime-module-profile
+supervisor-selected`. The default `compiled` profile preserves existing startup.
+The selected profile reads `runtime_module_selection` through the owner-local
+Supervisor socket, from the already-open durable runtime-module owner. It never
+opens a second topology store, writes a selection file, or issues activation.
+
+The initial supported consumer is the existing Automation factory. Before opening
+its store, it binds the selected owner, generation, state class, dependencies and
+domains to the canonical module definition and the actual loaded executable.
+Unknown ports/effect scopes are unsupported, not silently admitted. An absent
+selection leaves a new Automation module unopened and no idle scheduler is
+advertised. Existing files are not evidence of retirement: an absent selection
+with retained Automation state is rejected for explicit owner recovery/retirement.
+This bounded profile does not silently convert an existing compiled owner into
+a removed module. A non-serving selected writer reservation also rejects, rather
+than being flattened into absence.
+The factory reobserves the same selection after bounded owner startup and before
+publishing its attachment or scheduling work. Failed publication leaves no live
+attachment. The local task generation is the selected module generation, not the
+Agent process generation; existing owner epochs remain separate writer fences.
+
+This is startup composition under the existing host trust boundary, not a hot-path
+permission cache or a live topology watcher. Active processes retain their frozen
+configuration. A replacement still requires the existing independently admitted
+selection, explicit drain, owner handoff and supervised process-generation path.
+The query cannot grant effects, reset an owner, reactivate retired timers, or
+replace state schemas. General module routing and live multi-owner replacement
+are not implied by this bounded profile.

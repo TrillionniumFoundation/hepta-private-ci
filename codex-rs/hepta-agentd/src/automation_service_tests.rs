@@ -111,6 +111,7 @@ async fn install(fixture: &Fixture, tasks: &mut RuntimeTasks, stop: &Cancellatio
             fixture.identity.clone(),
         )),
         stop.clone(),
+        Generation::new(fixture.identity.spawn_generation).expect("generation"),
     )
     .await
     .expect("production constructor");
@@ -143,6 +144,7 @@ async fn production_constructor_rejects_mismatched_identity_before_spawn() {
                 fixture.identity.clone(),
             )),
             stop.clone(),
+            Generation::new(fixture.identity.spawn_generation).expect("generation"),
         )
         .await
         .is_err()
@@ -381,9 +383,10 @@ async fn production_constructor_keeps_retired_timer_absent_after_reopen() {
         AgentdState::new(fixture.identity.clone(), fixture.registry.clone(), 128)
             .expect("restarted host"),
     );
-    let service = AutomationService::open(Arc::clone(&state))
-        .await
-        .expect("readable owner factory");
+    let service =
+        AutomationService::open(Arc::clone(&state), crate::RuntimeModuleProfileV1::Compiled)
+            .await
+            .expect("readable owner factory");
     let (mut tasks, stop) = host();
     tasks.spawn_required("core", pending()).expect("sibling");
     service

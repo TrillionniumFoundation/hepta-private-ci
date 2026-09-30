@@ -275,6 +275,14 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/writer-handoff-generations.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor writer_handoff
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/topology-contract.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-types topology
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/topology-proposal.json" --minimum-tests 1 -- just test --locked -p codex-hepta-plasticity --lib
+      - name: Supervisor-selected module startup and durable observation
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.lifecycle == 'true'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/module-selection.json" --minimum-tests 4 -- just test --locked -p codex-hepta-agentd --lib -E 'test(module_selection::tests)' --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/module-selection-wire.json" --minimum-tests 2 -- just test --locked -p codex-hepta-agent-protocol --lib -E 'test(module_selection::tests)'
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/supervisor-selection-product.json" --minimum-tests 1 -- just test --locked -p codex-hepta-supervisor --test daemon_product --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/agentd-selection-product.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --test module_selection_product --test-threads=1
       - name: Objective and prompt policy convergence
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.objective == 'true'
         run: |

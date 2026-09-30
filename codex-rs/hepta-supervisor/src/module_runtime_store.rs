@@ -1427,3 +1427,6 @@ mod tests {
         );
     }
 }
+
+#[path = "module_runtime_observation.rs"]
+mod module_runtime_observation;

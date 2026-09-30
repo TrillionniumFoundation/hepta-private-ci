@@ -5,6 +5,7 @@
 mod authbus;
 mod capabilities;
 mod evidence;
+mod module_selection;
 pub use authbus::AuthBusObjectiveBody;
 pub use authbus::AuthBusObjectiveIngress;
 pub use authbus::AuthBusTextBody;
@@ -29,6 +30,11 @@ pub use evidence::KernelEvidenceResult;
 pub use evidence::KernelEvidenceVerifyV1;
 pub use evidence::MAX_KERNEL_EVIDENCE_ENVELOPE_BYTES;
 pub use evidence::MAX_KERNEL_EVIDENCE_REQUIRED_ROLES;
+pub use module_selection::MAX_SUPERVISORD_CONTROL_FRAME_BYTES;
+pub use module_selection::RuntimeModuleBindingV1;
+pub use module_selection::RuntimeModuleSelectionV1;
+pub use module_selection::SUPERVISORD_CONTROL_SCHEMA_VERSION;
+pub use module_selection::validate_runtime_module_id;
 
 use std::path::PathBuf;
 

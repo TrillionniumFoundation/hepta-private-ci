@@ -17,6 +17,7 @@ fn main() -> anyhow::Result<()> {
         // Helper re-execs must reach arg0 dispatch before daemon-only flags.
         let mut args = std::env::args_os().skip(1);
         let mut authbus_trust = None;
+        let mut runtime_module_profile = None;
         let mut intelligence_authority_file = None;
         let mut intelligence_authority_signer = None;
         let mut intelligence_authority_verifying_key = None;
@@ -33,7 +34,17 @@ fn main() -> anyhow::Result<()> {
             let path = args
                 .next()
                 .ok_or_else(|| anyhow::anyhow!("{flag:?} requires a path"))?;
-            if flag == "--authbus-trust-file" {
+            if flag == "--runtime-module-profile" {
+                anyhow::ensure!(
+                    runtime_module_profile.is_none(),
+                    "duplicate --runtime-module-profile"
+                );
+                let value = path
+                    .into_string()
+                    .map_err(|_| anyhow::anyhow!("runtime module profile must be UTF-8"))?;
+                runtime_module_profile =
+                    Some(value.parse::<codex_hepta_agentd::RuntimeModuleProfileV1>()?);
+            } else if flag == "--authbus-trust-file" {
                 anyhow::ensure!(authbus_trust.is_none(), "duplicate --authbus-trust-file");
                 authbus_trust = Some(path);
             } else if flag == "--plasticity-bootstrap-descriptor" {
@@ -124,6 +135,9 @@ fn main() -> anyhow::Result<()> {
             } else {
                 anyhow::bail!("unknown Agentd argument {flag:?}");
             }
+        }
+        if let Some(profile) = runtime_module_profile {
+            config = config.with_runtime_module_profile(profile);
         }
         match (
             intelligence_authority_file,

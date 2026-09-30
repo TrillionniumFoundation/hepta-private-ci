@@ -30,6 +30,7 @@ pub(crate) async fn spawn_automation_service<Q: AutomationTurnQueue + 'static>(
     identity: AgentdIdentity,
     queue: Arc<Q>,
     host_cancellation: CancellationToken,
+    generation: Generation,
 ) -> Result<(), AgentdError> {
     if state.identity() != &identity
         || store
@@ -71,8 +72,8 @@ pub(crate) async fn spawn_automation_service<Q: AutomationTurnQueue + 'static>(
             return Ok(());
         }
     }
-    let generation = Generation::new(identity.spawn_generation)
-        .map_err(|error| AgentdError::Invalid(error.to_string()))?;
+    // Startup has bound either the host generation or a Supervisor-selected
+    // generation to this compiled image. No dynamic plugin is loaded.
     // This is the trusted compiled-in owner, not independently selected plugin
     // code. Bind its host generation without manufacturing a runtime-module
     // selection from manifest values. Dynamic replacement still requires the

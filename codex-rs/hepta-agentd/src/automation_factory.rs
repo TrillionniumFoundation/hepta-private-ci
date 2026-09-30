@@ -16,19 +16,63 @@ use crate::RuntimeTasks;
 pub(crate) struct AutomationService {
     store: Option<AutomationStore>,
     state: Arc<AgentdState>,
+    selection: Option<codex_hepta_agent_protocol::RuntimeModuleSelectionV1>,
 }
 
 impl AutomationService {
-    pub(crate) async fn open(state: Arc<AgentdState>) -> Result<Self, AgentdError> {
+    pub(crate) async fn open(
+        state: Arc<AgentdState>,
+        profile: crate::RuntimeModuleProfileV1,
+    ) -> Result<Self, AgentdError> {
+        state.refresh_generation()?;
+        let selection = match profile {
+            crate::RuntimeModuleProfileV1::Compiled => None,
+            crate::RuntimeModuleProfileV1::SupervisorSelected => Some(
+                crate::module_selection::observe_compiled_selection(
+                    state.identity(),
+                    "automation.taskflow",
+                )
+                .await?,
+            ),
+        };
+        state.refresh_generation()?;
+        // An explicitly unselected optional module does not even open/migrate
+        // its store. This does not delete its history or mint a retirement receipt.
+        if selection
+            .as_ref()
+            .is_some_and(|value| value.selected.is_none())
+        {
+            // Switching profiles is not a stateful-retirement operation. The
+            // existing Agent writer lock excludes another admitted host while
+            // this bounded directory check distinguishes a new optional module
+            // from retained state that still needs its own recovery/retirement.
+            let mut entries = std::fs::read_dir(state.identity().layout.automation_root())?;
+            if entries.next().transpose()?.is_some() {
+                return Err(AgentdError::GenerationFenced(
+                    "unselected Automation retains owner state; explicit owner recovery or retirement is required".to_string(),
+                ));
+            }
+            return Ok(Self {
+                store: None,
+                state,
+                selection,
+            });
+        }
         let layout = state.identity().layout.clone();
         let store = open_automation_store_after_generation_fence(&state, || async move {
             AutomationStore::open(&layout).await
         })
         .await?;
-        if let Some(store) = store.as_ref() {
+        if selection.is_none()
+            && let Some(store) = store.as_ref()
+        {
             state.attach_automation_store(store.clone())?;
         }
-        Ok(Self { store, state })
+        Ok(Self {
+            store,
+            state,
+            selection,
+        })
     }
 
     /// Default product composition chooses its adapter here, not in Agentd's
@@ -53,15 +97,50 @@ impl AutomationService {
         host_cancellation: CancellationToken,
     ) -> Result<(), AgentdError> {
         let identity = self.state.identity().clone();
-        super::spawn_automation_service(
+        self.state.refresh_generation()?;
+        if let Some(expected) = &self.selection {
+            let current = crate::module_selection::observe_compiled_selection(
+                &identity,
+                "automation.taskflow",
+            )
+            .await?;
+            if &current != expected {
+                return Err(AgentdError::GenerationFenced(
+                    "module selection changed during owner startup".to_string(),
+                ));
+            }
+        }
+        self.state.refresh_generation()?;
+        let generation = self
+            .selection
+            .as_ref()
+            .and_then(|selection| selection.selected.as_ref())
+            .map_or(identity.spawn_generation, |binding| binding.generation);
+        let generation = codex_hepta_agent_components::types::Generation::new(generation)
+            .map_err(|error| AgentdError::Invalid(error.to_string()))?;
+        // Selected owners remain unpublished until both sides of bounded
+        // startup I/O have observed the same selection and process generation.
+        if self.selection.is_some()
+            && let Some(store) = self.store.as_ref()
+        {
+            self.state.attach_automation_store(store.clone())?;
+        }
+        let state = Arc::clone(&self.state);
+        let selected_profile = self.selection.is_some();
+        let result = super::spawn_automation_service(
             tasks,
             self.store,
             self.state,
             identity,
             queue,
             host_cancellation,
+            generation,
         )
-        .await
+        .await;
+        if result.is_err() && selected_profile {
+            state.mark_automation_unavailable()?;
+        }
+        result
     }
 }
 

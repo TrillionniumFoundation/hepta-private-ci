@@ -86,6 +86,7 @@ pub struct AgentdConfig {
     production_operations: Option<crate::AgentdProductionOperationRuntimeConfig>,
     production_writer_host: Option<std::sync::Arc<crate::AgentdProductionWriterHost>>,
     cognitive_retrieval_mode: CognitiveRetrievalMode,
+    runtime_module_profile: crate::RuntimeModuleProfileV1,
     cognitive_retrieval_context: Option<std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
     cognitive_retrieval_learning: Option<std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
     plasticity_bootstrap: Option<crate::PlasticityRuntimeBootstrapV1>,
@@ -96,6 +97,16 @@ pub struct AgentdConfig {
 }
 
 impl AgentdConfig {
+    /// Bind optional startup modules to the existing Supervisor serving selection.
+    pub fn with_runtime_module_profile(mut self, profile: crate::RuntimeModuleProfileV1) -> Self {
+        self.runtime_module_profile = profile;
+        self
+    }
+
+    pub(crate) fn runtime_module_profile(&self) -> crate::RuntimeModuleProfileV1 {
+        self.runtime_module_profile
+    }
+
     pub fn from_process_environment() -> Result<Self, AgentdError> {
         let cognitive_retrieval_mode = cognitive_retrieval_mode_from_process_environment()?;
         let fleet_root = required_path(codex_hepta_agent_components::paths::HEPTA_FLEET_ROOT_ENV)?;
@@ -209,6 +220,7 @@ impl AgentdConfig {
             production_operations: None,
             production_writer_host: None,
             cognitive_retrieval_mode: CognitiveRetrievalMode::Compatibility,
+            runtime_module_profile: crate::RuntimeModuleProfileV1::Compiled,
             cognitive_retrieval_context: None,
             cognitive_retrieval_learning: None,
             plasticity_bootstrap: None,
