@@ -234,6 +234,144 @@ pub struct ArtifactOwnerOperationalMetricsV1 {
 }
 
 impl ArtifactOwnerOperationalMetricsV1 {
+    /// Prometheus textfile projection for node_exporter or another local
+    /// collector. Observability is never accepted as authority or qualification.
+    #[must_use]
+    pub fn prometheus_text(&self) -> String {
+        let mut output = String::new();
+        macro_rules! counter {
+            ($name:literal, $value:expr) => {
+                output.push_str(concat!("# TYPE ", $name, " counter\n", $name, " "));
+                output.push_str(&$value.to_string());
+                output.push('\n');
+            };
+        }
+        macro_rules! gauge {
+            ($name:literal, $value:expr) => {
+                output.push_str(concat!("# TYPE ", $name, " gauge\n", $name, " "));
+                output.push_str(&$value.to_string());
+                output.push('\n');
+            };
+        }
+
+        counter!(
+            "hepta_learning_artifact_requests_received_total",
+            self.base.requests_received
+        );
+        counter!(
+            "hepta_learning_artifact_requests_authenticated_total",
+            self.base.requests_authenticated
+        );
+        counter!(
+            "hepta_learning_artifact_authentication_failures_total",
+            self.base.authentication_failures
+        );
+        counter!(
+            "hepta_learning_artifact_exact_replays_total",
+            self.base.exact_replays
+        );
+        counter!(
+            "hepta_learning_artifact_replay_conflicts_total",
+            self.base.replay_conflicts
+        );
+        counter!(
+            "hepta_learning_artifact_publications_succeeded_total",
+            self.base.publications_succeeded
+        );
+        counter!(
+            "hepta_learning_artifact_publications_failed_total",
+            self.base.publications_failed
+        );
+        counter!(
+            "hepta_learning_artifact_recovery_publications_succeeded_total",
+            self.base.recovery_publications_succeeded
+        );
+        counter!(
+            "hepta_learning_artifact_withdrawal_frontiers_installed_total",
+            self.base.withdrawal_frontiers_installed
+        );
+        counter!(
+            "hepta_learning_artifact_authz_reloads_total",
+            self.base.authz_reloads
+        );
+        counter!(
+            "hepta_learning_artifact_backups_succeeded_total",
+            self.base.backups_succeeded
+        );
+        counter!(
+            "hepta_learning_artifact_command_failures_total",
+            self.base.command_failures
+        );
+        counter!(
+            "hepta_learning_artifact_recovery_reconciliation_failures_total",
+            self.recovery_reconciliation_failures
+        );
+        counter!(
+            "hepta_learning_artifact_withdrawal_blocks_total",
+            self.withdrawal_blocks
+        );
+        counter!(
+            "hepta_learning_artifact_identity_conflicts_total",
+            self.identity_conflicts
+        );
+        counter!(
+            "hepta_learning_artifact_stale_owner_rejections_total",
+            self.stale_owner_rejections
+        );
+        counter!(
+            "hepta_learning_artifact_persistence_unknown_total",
+            self.persistence_unknown
+        );
+        counter!(
+            "hepta_learning_artifact_capacity_rejections_total",
+            self.capacity_rejections
+        );
+        counter!(
+            "hepta_learning_artifact_observability_failures_total",
+            self.observability_failures
+        );
+        if let Some(value) = self.oldest_pending_attempt_age_seconds {
+            gauge!("hepta_learning_artifact_oldest_pending_attempt_age_seconds", value);
+        }
+        if let Some(value) = self.drain_age_seconds {
+            gauge!("hepta_learning_artifact_drain_age_seconds", value);
+        }
+        if let Some(retention) = self.retention {
+            gauge!("hepta_learning_artifact_pinned_bytes", retention.pinned_bytes);
+            gauge!(
+                "hepta_learning_artifact_pending_physical_erase_bytes",
+                retention.pending_physical_erase_bytes
+            );
+            gauge!(
+                "hepta_learning_artifact_retention_observed_at_seconds",
+                retention.observed_at
+            );
+        }
+        for (stage, summary) in &self.stage_summaries {
+            output.push_str(&format!(
+                "hepta_learning_artifact_stage_samples_total{{stage=\"{}\"}} {}\n",
+                stage.as_str(),
+                summary.samples
+            ));
+            output.push_str(&format!(
+                "hepta_learning_artifact_stage_failures_total{{stage=\"{}\"}} {}\n",
+                stage.as_str(),
+                summary.failures
+            ));
+            output.push_str(&format!(
+                "hepta_learning_artifact_stage_elapsed_micros_total{{stage=\"{}\"}} {}\n",
+                stage.as_str(),
+                summary.total_micros
+            ));
+            output.push_str(&format!(
+                "hepta_learning_artifact_stage_maximum_micros{{stage=\"{}\"}} {}\n",
+                stage.as_str(),
+                summary.maximum_micros
+            ));
+        }
+        output
+    }
+
     #[must_use]
     pub fn response_json(&self) -> String {
         let base = self.base.response_json();
