@@ -8,12 +8,17 @@ use codex_hepta_intelligence_eval::ProductEvaluationAttemptAnchorV1;
 use codex_hepta_intelligence_eval::ProductEvaluationAttemptJournalErrorV1;
 use codex_hepta_intelligence_eval::SignedEvaluationEvidenceV1;
 use codex_hepta_intelligence_eval::evaluation_signing_payload_v2;
+use codex_hepta_learning_ledger::ActivatedLearningTrustV1;
 use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
+use codex_hepta_learning_ledger::LearningTrustDistributionV1;
+use codex_hepta_learning_ledger::LearningTrustRootV1;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+use codex_hepta_learning_ledger::SignedLearningTrustDistributionV1;
 use codex_hepta_learning_ledger::TrustedLearningSignerV1;
+use codex_hepta_learning_ledger::activate_learning_trust;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
@@ -75,8 +80,8 @@ pub fn verifier_and_evidence(
     roles: &[MetricRoleContractV2],
     generator_key: &SigningKey,
     evaluator_key: &SigningKey,
-) -> (LearningEvidenceVerifierV1, SignedEvaluationEvidenceV1) {
-    let verifier = LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
+) -> (ActivatedLearningTrustV1, SignedEvaluationEvidenceV1) {
+    let trust = LearningEvidenceTrustV1 {
         scope_digest: bundle.generator.scope_digest,
         objective_digest: bundle.objective_digest,
         authority_epoch: 9,
@@ -96,12 +101,37 @@ pub fn verifier_and_evidence(
                 revoked_at: None,
             },
         ],
-    })
-    .expect("verifier");
+    };
+    let root_key = SigningKey::from_bytes(&[89; 32]);
+    let root = LearningTrustRootV1 {
+        root_id: id("selected-host-test-root"),
+        scope_digest: bundle.generator.scope_digest,
+        verifying_key: root_key.verifying_key().to_bytes(),
+        valid_from: 1,
+        expires_at: 100,
+        revoked_at: None,
+    };
+    let mut signed = SignedLearningTrustDistributionV1 {
+        distribution: LearningTrustDistributionV1 {
+            distribution_id: id("selected-host-test-distribution"),
+            generation: 1,
+            effective_at: 10,
+            trust,
+        },
+        root_id: root.root_id.clone(),
+        issued_at: 5,
+        expires_at: 90,
+        signature: [0; 64],
+    };
+    signed.signature = root_key
+        .sign(&signed.signing_bytes().expect("distribution payload"))
+        .to_bytes();
+    let activated = activate_learning_trust(&root, signed, None, 50).expect("activated trust");
+    let verifier = activated.verifier();
     let payload = evaluation_signing_payload_v2(bundle, roles).expect("evaluation payload");
     let evidence = SignedEvaluationEvidenceV1 {
         generator_plan: sign(
-            &verifier,
+            verifier,
             &bundle.generator,
             generator_key,
             LearningEvidenceRoleV1::Generator,
@@ -109,7 +139,7 @@ pub fn verifier_and_evidence(
             bundle.frozen_plan.plan_digest.as_array(),
         ),
         evaluator_bundle: sign(
-            &verifier,
+            verifier,
             &bundle.evaluator,
             evaluator_key,
             LearningEvidenceRoleV1::Evaluator,
@@ -117,7 +147,7 @@ pub fn verifier_and_evidence(
             &payload,
         ),
     };
-    (verifier, evidence)
+    (activated, evidence)
 }
 
 #[derive(Clone)]

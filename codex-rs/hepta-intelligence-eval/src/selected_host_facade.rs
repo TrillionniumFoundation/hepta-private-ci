@@ -3,6 +3,7 @@
 //! qualification archive encoding and signature verification are internal.
 use std::path::Path;
 
+use codex_hepta_learning_ledger::ActivatedLearningTrustV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -25,6 +26,18 @@ use crate::RecordedProductEvaluationRunnerV1;
 use crate::SignedEvaluationEvidenceV1;
 use crate::reconcile_product_attempt_publication_v1;
 
+fn current_verifier(
+    trust: &ActivatedLearningTrustV1,
+    now: u64,
+) -> Result<&LearningEvidenceVerifierV1, RecordedProductEvaluationErrorV1> {
+    if !trust.is_current_at(now) {
+        return Err(RecordedProductEvaluationErrorV1::Invariant(
+            "selected-host root-activated learning trust is not current",
+        ));
+    }
+    Ok(trust.verifier())
+}
+
 impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
     #[allow(clippy::too_many_arguments)]
     pub fn qualify_and_persist_on_selected_host<J: DurableProductEvaluationAttemptJournalV1>(
@@ -34,20 +47,31 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
         context: &ProductQualificationContextV1,
         evidence: &SignedEvaluationEvidenceV1,
         timing: ProductTimingEvidenceV1<'_>,
-        verifier: &LearningEvidenceVerifierV1,
+        trust: &ActivatedLearningTrustV1,
         now: u64,
         journal: &mut J,
         artifact_root: impl AsRef<Path>,
         publication_root: impl AsRef<Path>,
         selected_host_binding: Digest32,
     ) -> Result<ProductQualificationReceiptV1, RecordedProductEvaluationErrorV1> {
+        let verifier = current_verifier(trust, now)?;
         let store = LockedQualificationPublicationStoreV1::new(
             publication_root.as_ref(), selected_host_binding,
-        ).map_err(map_store_to_recorded)?;
+        )
+        .map_err(map_store_to_recorded)?;
         let mut sink = ReconciledProductQualificationSinkV1::new(store);
         self.qualify_and_persist_with_artifacts(
-            attempt_id, temporal, context, evidence, timing, verifier, now,
-            journal, artifact_root, selected_host_binding, &mut sink,
+            attempt_id,
+            temporal,
+            context,
+            evidence,
+            timing,
+            verifier,
+            now,
+            journal,
+            artifact_root,
+            selected_host_binding,
+            &mut sink,
         )
     }
 
@@ -60,16 +84,23 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
         artifact_root: impl AsRef<Path>,
         publication_root: impl AsRef<Path>,
         selected_host_binding: Digest32,
-        verifier: &LearningEvidenceVerifierV1,
+        trust: &ActivatedLearningTrustV1,
         now: u64,
     ) -> Result<ProductEvaluationAttemptReceiptV1, RecordedProductEvaluationErrorV1> {
+        let verifier = current_verifier(trust, now)?;
         let store = LockedQualificationPublicationStoreV1::open_existing(
             publication_root.as_ref(), selected_host_binding,
-        ).map_err(map_store_to_recorded)?;
+        )
+        .map_err(map_store_to_recorded)?;
         let mut sink = ReconciledProductQualificationSinkV1::new(store);
         self.recover_persisted_qualification(
-            journal, attempt_id, artifact_root, selected_host_binding,
-            verifier, now, &mut sink,
+            journal,
+            attempt_id,
+            artifact_root,
+            selected_host_binding,
+            verifier,
+            now,
+            &mut sink,
         )
     }
 
@@ -82,64 +113,92 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
     ) -> Result<ProductEvaluationAttemptReceiptV1, ProductAttemptRecoveryErrorV1> {
         let mut store = LockedQualificationPublicationStoreV1::open_existing(
             publication_root.as_ref(), selected_host_binding,
-        ).map_err(|_| ProductAttemptRecoveryErrorV1::Unresolved)?;
+        )
+        .map_err(|_| ProductAttemptRecoveryErrorV1::Unresolved)?;
         reconcile_product_attempt_publication_v1(journal, &mut store, attempt_id)
     }
 
     #[allow(clippy::too_many_arguments)]
-    pub fn qualify_outcomes_and_persist_on_selected_host<J: DurableProductEvaluationAttemptJournalV1>(
+    pub fn qualify_outcomes_and_persist_on_selected_host<
+        J: DurableProductEvaluationAttemptJournalV1,
+    >(
         &self,
         attempt_id: &StableId,
         temporal: &ProductOutcomeEvaluationReceiptV1,
         context: &ProductQualificationContextV1,
         evidence: &SignedEvaluationEvidenceV1,
         timing: ProductTimingEvidenceV1<'_>,
-        verifier: &LearningEvidenceVerifierV1,
+        trust: &ActivatedLearningTrustV1,
         now: u64,
         journal: &mut J,
         artifact_root: impl AsRef<Path>,
         publication_root: impl AsRef<Path>,
         selected_host_binding: Digest32,
     ) -> Result<ProductOutcomeQualificationReceiptV1, RecordedProductEvaluationErrorV1> {
+        let verifier = current_verifier(trust, now)?;
         let store = LockedQualificationPublicationStoreV1::new(
             publication_root.as_ref(), selected_host_binding,
-        ).map_err(map_store_to_recorded)?;
+        )
+        .map_err(map_store_to_recorded)?;
         let mut sink = ReconciledProductQualificationSinkV1::new(store);
         self.qualify_outcomes_and_persist_with_artifacts(
-            attempt_id, temporal, context, evidence, timing, verifier, now,
-            journal, artifact_root, selected_host_binding, &mut sink,
+            attempt_id,
+            temporal,
+            context,
+            evidence,
+            timing,
+            verifier,
+            now,
+            journal,
+            artifact_root,
+            selected_host_binding,
+            &mut sink,
         )
     }
 
     #[allow(clippy::too_many_arguments)]
-    pub fn recover_selected_host_outcome_qualification<J: DurableProductEvaluationAttemptJournalV1>(
+    pub fn recover_selected_host_outcome_qualification<
+        J: DurableProductEvaluationAttemptJournalV1,
+    >(
         &self,
         journal: &mut J,
         attempt_id: &StableId,
         artifact_root: impl AsRef<Path>,
         publication_root: impl AsRef<Path>,
         selected_host_binding: Digest32,
-        verifier: &LearningEvidenceVerifierV1,
+        trust: &ActivatedLearningTrustV1,
         now: u64,
     ) -> Result<ProductEvaluationAttemptReceiptV1, RecordedProductEvaluationErrorV1> {
+        let verifier = current_verifier(trust, now)?;
         let store = LockedQualificationPublicationStoreV1::open_existing(
             publication_root.as_ref(), selected_host_binding,
-        ).map_err(map_store_to_recorded)?;
+        )
+        .map_err(map_store_to_recorded)?;
         let mut sink = ReconciledProductQualificationSinkV1::new(store);
         self.recover_persisted_outcome_qualification(
-            journal, attempt_id, artifact_root, selected_host_binding,
-            verifier, now, &mut sink,
+            journal,
+            attempt_id,
+            artifact_root,
+            selected_host_binding,
+            verifier,
+            now,
+            &mut sink,
         )
     }
 
-    pub fn reconcile_selected_host_outcome_publication<J: DurableProductEvaluationAttemptJournalV1>(
+    pub fn reconcile_selected_host_outcome_publication<
+        J: DurableProductEvaluationAttemptJournalV1,
+    >(
         journal: &mut J,
         attempt_id: &StableId,
         publication_root: impl AsRef<Path>,
         selected_host_binding: Digest32,
     ) -> Result<ProductEvaluationAttemptReceiptV1, ProductAttemptRecoveryErrorV1> {
         Self::reconcile_selected_host_publication(
-            journal, attempt_id, publication_root, selected_host_binding,
+            journal,
+            attempt_id,
+            publication_root,
+            selected_host_binding,
         )
     }
 }

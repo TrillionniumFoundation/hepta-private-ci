@@ -63,6 +63,7 @@ pub struct ActivatedLearningTrustV1 {
     distribution_id: StableId,
     generation: u64,
     effective_at: u64,
+    expires_at: u64,
     distribution_digest: Digest32,
     verifier: LearningEvidenceVerifierV1,
 }
@@ -94,6 +95,11 @@ impl ActivatedLearningTrustV1 {
     }
 
     #[must_use]
+    pub const fn expires_at(&self) -> u64 {
+        self.expires_at
+    }
+
+    #[must_use]
     pub const fn distribution_digest(&self) -> Digest32 {
         self.distribution_digest
     }
@@ -101,6 +107,22 @@ impl ActivatedLearningTrustV1 {
     #[must_use]
     pub fn verifier(&self) -> &LearningEvidenceVerifierV1 {
         &self.verifier
+    }
+
+    /// True only while the root-signed distribution is usable at this exact
+    /// host-sampled time. Callers must still refresh owner state to observe a
+    /// later revocation or root-rotation ceremony.
+    #[must_use]
+    pub fn is_current_at(&self, now: u64) -> bool {
+        self.generation != 0
+            && self.effective_at <= now
+            && now <= self.expires_at
+            && !self.root_digest.is_zero()
+            && !self.distribution_digest.is_zero()
+            && !self.verifier.trust_digest().is_zero()
+            && !self.verifier.scope_digest().is_zero()
+            && !self.verifier.objective_digest().is_zero()
+            && self.verifier.authority_epoch() != 0
     }
 }
 
@@ -175,6 +197,7 @@ pub fn activate_learning_trust(
         distribution_id: distribution.distribution_id.clone(),
         generation: distribution.generation,
         effective_at: distribution.effective_at,
+        expires_at: signed.expires_at,
         distribution_digest,
         verifier,
     })

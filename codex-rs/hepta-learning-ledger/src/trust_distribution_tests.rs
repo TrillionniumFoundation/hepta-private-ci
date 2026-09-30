@@ -103,6 +103,9 @@ fn trust_distribution_rotation_is_monotonic_and_content_addressed() {
     assert_eq!(first.generation(), 1);
     assert_eq!(second.generation(), 2);
     assert_eq!(first.root_id(), &id("root"));
+    assert_eq!(first.expires_at(), 90);
+    assert!(first.is_current_at(90));
+    assert!(!first.is_current_at(91));
     assert_ne!(first.root_digest(), Digest32::ZERO);
     assert_ne!(first.distribution_digest(), second.distribution_digest());
     assert_eq!(second.verifier().authority_epoch(), 8);

@@ -33,6 +33,7 @@ struct RecoveryTrustFrontierV1 {
     distribution_digest: Digest32,
     generation: u64,
     effective_at: u64,
+    expires_at: u64,
     authority_epoch: u64,
 }
 
@@ -42,11 +43,17 @@ impl RecoveryTrustFrontierV1 {
         now: u64,
         previous: Option<Self>,
     ) -> Result<Self, RecordedError> {
+        if !trust.is_current_at(now) {
+            return Err(RecordedError::Invariant(
+                "selected-host recovery trust is not current",
+            ));
+        }
         Self {
             root_digest: trust.root_digest(),
             distribution_digest: trust.distribution_digest(),
             generation: trust.generation(),
             effective_at: trust.effective_at(),
+            expires_at: trust.expires_at(),
             authority_epoch: trust.verifier().authority_epoch(),
         }
         .validate(now, previous)
@@ -58,6 +65,7 @@ impl RecoveryTrustFrontierV1 {
             || self.generation == 0
             || self.authority_epoch == 0
             || self.effective_at > now
+            || now > self.expires_at
         {
             return Err(RecordedError::Invariant(
                 "selected-host recovery trust is not current",
@@ -91,6 +99,7 @@ mod trust_frontier_tests {
             ),
             generation: 7,
             effective_at: 70,
+            expires_at: 130,
             authority_epoch: 11,
         }
     }
@@ -114,7 +123,7 @@ mod trust_frontier_tests {
     }
 
     #[test]
-    fn recovery_trust_rejects_zero_and_future_frontiers() {
+    fn recovery_trust_rejects_zero_future_and_expired_frontiers() {
         let valid = frontier("valid");
         assert_not_current(
             RecoveryTrustFrontierV1 {
@@ -147,6 +156,13 @@ mod trust_frontier_tests {
         assert_not_current(
             RecoveryTrustFrontierV1 {
                 effective_at: 101,
+                ..valid
+            },
+            100,
+        );
+        assert_not_current(
+            RecoveryTrustFrontierV1 {
+                expires_at: 99,
                 ..valid
             },
             100,
@@ -345,7 +361,7 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
                             artifact_root,
                             publication_root,
                             selected_host_binding,
-                            trust.verifier(),
+                            &trust,
                             now,
                         ) {
                             Err(RecordedError::AttemptRequiresRecovery { .. }) => self
@@ -355,7 +371,7 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
                                     artifact_root,
                                     publication_root,
                                     selected_host_binding,
-                                    trust.verifier(),
+                                    &trust,
                                     now,
                                 ),
                             result => result,
