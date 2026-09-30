@@ -1,0 +1,20 @@
+{
+  "schema": "hepta.secrets-heptabao-product-caller.v1",
+  "callerId": "hepta-secrets-runtime",
+  "ownerModule": "secrets.heptabao",
+  "binaryPackage": "codex-hepta-bao-adapter",
+  "binaryTarget": "hepta-secrets-runtime",
+  "sourcePath": "codex-rs/hepta-bao-adapter/src/bin/hepta-secrets-runtime.rs",
+  "constructorSymbol": "compose_hepta_secrets_runtime",
+  "databasePathSource": "HEPTA_SECRETS_DB_PATH",
+  "providerConfigurationSource": "HEPTA_SECRETS_PROVIDER_ENDPOINT and HEPTA_SECRETS_PROVIDER_TOKEN_FILE",
+  "consumerRegistrySource": "compiled RegisteredBaoConsumer registry supplied by product host",
+  "trustedTimeSource": "kernel-governed AuthorityClock",
+  "settlementEvidenceSource": "AuthBus evidence provider and durable consumer observation",
+  "checkpointService": "external checkpoint path from HEPTA_SECRETS_CHECKPOINT_PATH",
+  "metricsSink": "SqliteBaoProductRuntimeV1 metrics exported through HEPTA_SECRETS_METRICS_ENDPOINT",
+  "recoveryWorker": "HeptaSecretsProductRuntimeV1::reconcile_due_just_in_time",
+  "shutdownDrainDeadlineMs": 30000,
+  "deploymentTopology": "single_process_local_filesystem",
+  "configurationDigest": "6f93406e3edd6f3785c36485e4efc51c3ab9ee0e6dac63fae796c5b52618ee0c"
+}
