@@ -1,8 +1,9 @@
 //! Governed prompt-factor and realization registry.
 //!
-//! The registry stores bounded identities and content digests, never executable
-//! instructions or ambient authority. External untrusted material cannot admit
-//! itself, and revocation is terminal and cascades to realizations.
+//! The registry stores bounded identities, content digests and realization bytes
+//! as data. Storage and delivery grant no selection or effect authority. External
+//! untrusted material cannot admit itself, and revocation is terminal and
+//! cascades to realizations.
 
 #![forbid(unsafe_code)]
 
@@ -482,14 +483,19 @@ impl PromptRegistry {
         if factor.content_digest != admission.factor_content_digest() {
             return Err(Error::FactorConflict(admission.factor_id().to_string()));
         }
-        if factor.lifecycle == Lifecycle::Admitted
-            && self.lifecycle_events.iter().any(|event| {
-                event.kind == LifecycleEventKind::Admitted
-                    && event.factor_id == *admission.factor_id()
-                    && event.admission_grant_id.as_ref() == Some(admission.grant_id())
-            })
-        {
-            return Ok(self.receipt(MutationDisposition::Unchanged));
+        if let Some(event) = self.lifecycle_events.iter().find(|event| {
+            event.admission_grant_id.as_ref() == Some(admission.grant_id())
+        }) {
+            if factor.lifecycle == Lifecycle::Admitted
+                && event.kind == LifecycleEventKind::Admitted
+                && event.factor_id == *admission.factor_id()
+                && event.actor_id == *admission.reviewer_id()
+                && event.evidence_digest == admission.evidence_digest()
+                && event.scope_digest == Some(admission.reviewed_scope_digest())
+            {
+                return Ok(self.receipt(MutationDisposition::Unchanged));
+            }
+            return Err(Error::InvalidTransition);
         }
         if factor.source != FactorSource::GovernedInternal
             || factor.lifecycle != Lifecycle::Draft

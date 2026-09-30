@@ -35,6 +35,47 @@ fn registry() -> PromptRegistry {
     registry
 }
 
+fn verified_admission_for(
+    factor: &PromptFactor,
+    grant_id: &str,
+    reviewer_id: &str,
+    scope_digest: Digest32,
+    evidence_digest: Digest32,
+) -> VerifiedAdmission {
+    let signing_key = SigningKey::from_bytes(&[10; 32]);
+    let authority = AdmissionAuthority::new(
+        id("review-authority:replay-test"),
+        signing_key.verifying_key().to_bytes(),
+    )
+    .must("review authority");
+    let grant = AdmissionGrantV1 {
+        schema_version: 1,
+        signer_id: "review-authority:replay-test".to_owned(),
+        grant_id: grant_id.to_owned(),
+        binding: AdmissionBindingV1 {
+            factor_id: factor.factor_id.to_string(),
+            factor_content_sha256: factor.content_digest.into_array(),
+            reviewer_id: reviewer_id.to_owned(),
+            reviewed_scope_sha256: scope_digest.into_array(),
+            evidence_sha256: evidence_digest.into_array(),
+        },
+        not_before_unix_ms: 10,
+        expires_at_unix_ms: 30,
+    };
+    let signature = signing_key
+        .sign(&grant.signing_bytes().must("signing bytes"))
+        .to_bytes()
+        .to_vec();
+    authority
+        .verify(
+            &SignedAdmissionGrantV1 { grant, signature },
+            factor,
+            scope_digest,
+            /*now_unix_ms*/ 20,
+        )
+        .must("verified admission")
+}
+
 #[test]
 fn external_material_cannot_admit_itself() {
     let mut registry = registry();
@@ -509,6 +550,69 @@ fn record_capacity_rejects_atomically() {
     assert_eq!(
         registry.register_factor(second),
         Err(Error::CapacityExceeded)
+    );
+    assert_eq!(registry, before);
+}
+
+#[test]
+fn admission_grant_retry_requires_identical_recorded_semantics() {
+    let mut registry = registry();
+    let factor = factor(FactorSource::GovernedInternal);
+    registry.register_factor(factor.clone()).must("factor");
+    let scope = digest(b"scope");
+    let evidence = digest(b"evidence");
+    let original = verified_admission_for(&factor, "admission:retry", "reviewer:1", scope, evidence);
+    registry
+        .admit_factor_verified(original, /*now_unix_ms*/ 20)
+        .must("admit");
+    let before = registry.clone();
+    let retry = verified_admission_for(&factor, "admission:retry", "reviewer:1", scope, evidence);
+    assert_eq!(
+        registry.admit_factor_verified(retry, /*now_unix_ms*/ 20),
+        Ok(before.receipt(MutationDisposition::Unchanged))
+    );
+    assert_eq!(registry, before);
+
+    for (reviewer, changed_scope, changed_evidence) in [
+        ("reviewer:2", scope, evidence),
+        ("reviewer:1", digest(b"other-scope"), evidence),
+        ("reviewer:1", scope, digest(b"other-evidence")),
+    ] {
+        let drifted = verified_admission_for(
+            &factor,
+            "admission:retry",
+            reviewer,
+            changed_scope,
+            changed_evidence,
+        );
+        assert_eq!(
+            registry.admit_factor_verified(drifted, /*now_unix_ms*/ 20),
+            Err(Error::InvalidTransition)
+        );
+        assert_eq!(registry, before);
+    }
+}
+
+#[test]
+fn admission_grant_identity_cannot_be_reused_for_another_factor() {
+    let mut registry = registry();
+    let first = factor(FactorSource::GovernedInternal);
+    let mut second = first.clone();
+    second.factor_id = id("factor:2");
+    second.content_digest = digest(b"factor:2");
+    registry.register_factor(first.clone()).must("first factor");
+    registry.register_factor(second.clone()).must("second factor");
+    let scope = digest(b"scope");
+    let evidence = digest(b"evidence");
+    let admission = verified_admission_for(&first, "admission:shared", "reviewer:1", scope, evidence);
+    registry
+        .admit_factor_verified(admission, /*now_unix_ms*/ 20)
+        .must("first admission");
+    let before = registry.clone();
+    let reused = verified_admission_for(&second, "admission:shared", "reviewer:1", scope, evidence);
+    assert_eq!(
+        registry.admit_factor_verified(reused, /*now_unix_ms*/ 20),
+        Err(Error::InvalidTransition)
     );
     assert_eq!(registry, before);
 }
