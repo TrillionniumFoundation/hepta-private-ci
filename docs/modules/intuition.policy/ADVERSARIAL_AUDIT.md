@@ -1,6 +1,6 @@
 # intuition.policy 本轮对抗审计
 
-审计日期：2026-10-01。候选入口：[PR #1036](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1036)。本报告记录本轮源码审查、修正与有限本地验证，不签发生产完成、独立接受、部署或发布证明。当前源码事实以 [CURRENT_STATE.json](CURRENT_STATE.json) 为准；精确执行证明须来自绑定候选提交、树、命令、日志和运行身份的不可变工件。
+审计日期：2026-09-30。候选入口：[PR #1036](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1036)。本报告记录本轮源码审查、修正与有限本地验证，不签发生产完成、独立接受、部署或发布证明。当前源码事实以 [CURRENT_STATE.json](CURRENT_STATE.json) 为准；精确执行证明须来自绑定候选提交、树、命令、日志和运行身份的不可变工件。
 
 ## 文档与项目位置
 
@@ -38,7 +38,7 @@
 | --- | --- |
 | kernel 37/37；intelligence／ledger 201/201，另有 1 个 ignored | 已执行的对应包测试；ignored 不计为通过，不能替代完整 Agentd 产品执行。 |
 | 67 个 Python 回归通过；规范状态与只读源码 inventory 检查通过 | 证据脚本、拒绝规则、投影一致性及源码标记；部分测试使用明确标注的合成工件。 |
-| 最终本地性能 gates 通过；曾发生并发执行失败并保留失败记录 | 对应环境下的内核和认证 gate 观测；不代表组合请求、writer／witness、目标机容量或稳定 SLO。 |
+| 最终本地性能 gates 通过；曾发生并发执行失败并保留失败记录 | 对应环境下的 V4 内核 gate 观测；不代表组合请求、writer／witness、目标机容量或稳定 SLO。 |
 | 256 次普通 fuzz smoke 与 1024 个 seeded cases | 有限输入烟测；不是 sanitizer 检测、长时间 fuzz 或完整覆盖证明。 |
 | 完整 Agentd 本地执行遭 SIGKILL；磁盘 ENOSPC 后已释放空间 | 这些运行不能计为通过；清理空间不产生执行成功证据。 |
 | 当前严格 CI 与 source／synthetic-merge／independent 工件协议 | 仍待完整精确候选结果；旧提交结果、本地测试和工作流定义不能替代新候选资格。 |
