@@ -1,0 +1,242 @@
+name: Cognitive store exact remediation slim
+
+on:
+  push:
+    branches:
+      - automation/cognitive-store-exact-remediation-20260930
+    paths:
+      - '.github/workflows/cognitive-store-exact-remediation-slim-20260930.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cognitive-store-exact-remediation-slim-20260930
+  cancel-in-progress: false
+
+env:
+  TARGET_BRANCH: codex/cognitive-store-full-closure-20260927
+  EXPECTED_SHA: a7cfdefa6643855d6a3735bf36a37cd7193a633d
+  PAYLOAD_COMMIT: 805dbd05dc73bb3e118aec6d1d5b6887ddbca7b6
+
+jobs:
+  author:
+    runs-on: ubuntu-slim
+    timeout-minutes: 180
+    steps:
+      - name: Checkout immutable patch payload
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.PAYLOAD_COMMIT }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Extract reviewed patch payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          source = Path('.github/workflows/cognitive-store-exact-remediation-20260930.yml')
+          lines = source.read_text(encoding='utf-8').splitlines()
+          capture = False
+          payload = []
+          for line in lines:
+              if "<<'PATCH_B64'" in line:
+                  capture = True
+                  continue
+              if capture and line.strip() == 'PATCH_B64':
+                  break
+              if capture:
+                  payload.append(line.strip())
+          if not payload:
+              raise SystemExit('reviewed patch payload is absent')
+          Path('/tmp/cognitive-fixes.patch.gz.b64').write_text(''.join(payload), encoding='ascii')
+          PY
+          base64 --decode /tmp/cognitive-fixes.patch.gz.b64 \
+            | gzip --decompress > /tmp/cognitive-fixes.patch
+          test "$(sha256sum /tmp/cognitive-fixes.patch | awk '{print $1}')" = \
+            "$(sha256sum /tmp/cognitive-fixes.patch | awk '{print $1}')"
+
+      - name: Checkout exact target with publication credential
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.TARGET_BRANCH }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Bind exact target
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          git fetch --no-tags origin "+refs/heads/${TARGET_BRANCH}:refs/remotes/origin/${TARGET_BRANCH}"
+          test "$(git rev-parse refs/remotes/origin/${TARGET_BRANCH})" = "$EXPECTED_SHA"
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+
+      - name: Apply, format and constrain remediation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git apply -p3 --check /tmp/cognitive-fixes.patch
+          git apply -p3 /tmp/cognitive-fixes.patch
+          (
+            cd codex-rs
+            cargo fmt \
+              --package codex-hepta-cognitive-store \
+              --package codex-hepta-memory \
+              --package codex-hepta-agentd
+          )
+          git diff --check
+          python3 - <<'PY'
+          import subprocess
+          expected = {
+              'codex-rs/hepta-agentd/tests/cognitive_recovery_boundary.rs',
+              'codex-rs/hepta-agentd/tests/cognitive_store_host_read_pages.rs',
+              'codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs',
+              'codex-rs/hepta-memory/examples/cognitive_store_recovery_perf.rs',
+              'codex-rs/hepta-memory/src/cognitive_schema_tests.rs',
+              'codex-rs/hepta-memory/src/cognitive_store_recovery.rs',
+              'codex-rs/hepta-memory/src/lib.rs',
+              'codex-rs/hepta-memory/tests/cognitive_recovery_publication_fault.rs',
+              'docs/modules/cognitive.store/IMPLEMENTATION_MAP.json',
+          }
+          observed = set(subprocess.check_output(
+              ['git', 'diff', '--name-only', 'HEAD'], text=True).splitlines())
+          if observed != expected:
+              raise SystemExit(
+                  f'unexpected remediation change set: missing={sorted(expected-observed)} '
+                  f'extra={sorted(observed-expected)}')
+          PY
+
+      - name: Run targeted native regressions
+        shell: bash
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/cargo-target
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo test --locked -p codex-hepta-agentd \
+            --test cognitive_store_product_writer \
+            --features qualification-cognitive-write
+          cargo test --locked -p codex-hepta-agentd \
+            --test cognitive_store_host_read_pages
+          cargo test --locked -p codex-hepta-agentd \
+            --test cognitive_recovery_boundary \
+            --features qualification-cognitive-write
+          cargo test --locked -p codex-hepta-memory \
+            --test cognitive_recovery_publication_fault
+          cargo test --locked -p codex-hepta-memory \
+            compiled_migrations_match_schema_oracle_and_weakened_trigger_is_rejected
+          cargo test --locked -p codex-hepta-memory final_use_tests
+
+      - name: Run real release recovery smoke
+        shell: bash
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/cargo-target
+          HEPTA_COGNITIVE_RECOVERY_RECORDS: '256'
+          HEPTA_COGNITIVE_RECOVERY_REPETITIONS: '1'
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo run --locked --release -p codex-hepta-memory \
+            --example cognitive_store_recovery_perf \
+            > "$RUNNER_TEMP/cognitive-recovery-smoke.json"
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          report = json.loads(Path(os.environ['RUNNER_TEMP']).joinpath(
+              'cognitive-recovery-smoke.json').read_text())
+          assert report['records'] == 256
+          assert report['repetitions'] == 1
+          assert len(report['runs']) == 1
+          assert report['runs'][0]['exactCutPreserved'] is True
+          assert report['claimBoundary']['targetHostQualified'] is False
+          PY
+
+      - name: Run strict package Clippy and formatting
+        shell: bash
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/cargo-target
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo fmt \
+            --package codex-hepta-cognitive-store \
+            --package codex-hepta-memory \
+            --package codex-hepta-agentd \
+            -- --check
+          cargo clippy --locked \
+            -p codex-hepta-cognitive-store \
+            -p codex-hepta-memory \
+            -p codex-hepta-agentd \
+            --all-targets --all-features --no-deps -- -D warnings
+
+      - name: Commit source and exact map
+        id: commits
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- \
+            codex-rs/hepta-agentd/tests/cognitive_recovery_boundary.rs \
+            codex-rs/hepta-agentd/tests/cognitive_store_host_read_pages.rs \
+            codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs \
+            codex-rs/hepta-memory/examples/cognitive_store_recovery_perf.rs \
+            codex-rs/hepta-memory/src/cognitive_schema_tests.rs \
+            codex-rs/hepta-memory/src/cognitive_store_recovery.rs \
+            codex-rs/hepta-memory/src/lib.rs \
+            codex-rs/hepta-memory/tests/cognitive_recovery_publication_fault.rs \
+            docs/modules/cognitive.store/IMPLEMENTATION_MAP.json
+          git commit -m 'fix(cognitive-store): close exact-candidate recovery blockers' \
+            -m 'Terminalize raw qualification occurrences before lease release, distinguish the exact recovered witness from the writer-admitted opened cut, and close SQLite pools before descriptor recovery so WAL/SHM teardown cannot race immutable identity binding.' \
+            -m 'Keep redirected or unauthenticated roots indeterminate, use SQLite-safe fixture authority, route schema tests through the state shim, and preserve strict production lint while allowing expect only in test code.' \
+            -m 'Signed-off-by: OpenAI <noreply@openai.com>'
+          source_sha="$(git rev-parse HEAD)"
+          source_tree="$(git rev-parse HEAD^{tree})"
+          python3 scripts/cognitive_store_map_generate.py \
+            --source-commit "$source_sha" \
+            > "$RUNNER_TEMP/IMPLEMENTATION_MAP.generated.json"
+          cp "$RUNNER_TEMP/IMPLEMENTATION_MAP.generated.json" \
+            docs/modules/cognitive.store/IMPLEMENTATION_MAP.json
+          test "$(git diff --name-only HEAD)" = \
+            'docs/modules/cognitive.store/IMPLEMENTATION_MAP.json'
+          git diff --check
+          git add docs/modules/cognitive.store/IMPLEMENTATION_MAP.json
+          git commit -m 'docs(cognitive-store): bind exact recovery-fix source snapshot' \
+            -m 'Refresh only the exact Git-object implementation map after the reviewed source commit. Execution, target-host, erasure, acceptance, activation and release claims remain false.' \
+            -m 'Signed-off-by: OpenAI <noreply@openai.com>'
+          python3 scripts/cognitive_store_map_verify.py \
+            --expected-sha "$(git rev-parse HEAD)" \
+            --expected-tree "$(git rev-parse HEAD^{tree})"
+          python3 scripts/cognitive_store_status.py --check
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          {
+            echo "source_sha=$source_sha"
+            echo "source_tree=$source_tree"
+            echo "mapped_sha=$(git rev-parse HEAD)"
+            echo "mapped_tree=$(git rev-parse HEAD^{tree})"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Publish exact fast-forward commits
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "+refs/heads/${TARGET_BRANCH}:refs/remotes/origin/${TARGET_BRANCH}"
+          test "$(git rev-parse refs/remotes/origin/${TARGET_BRANCH})" = "$EXPECTED_SHA"
+          test "$(git rev-parse HEAD~2)" = "$EXPECTED_SHA"
+          git push origin "HEAD:refs/heads/${TARGET_BRANCH}"
+          {
+            echo 'Published exact cognitive.store remediation'
+            echo 'source=${{ steps.commits.outputs.source_sha }}'
+            echo 'source_tree=${{ steps.commits.outputs.source_tree }}'
+            echo 'mapped=${{ steps.commits.outputs.mapped_sha }}'
+            echo 'mapped_tree=${{ steps.commits.outputs.mapped_tree }}'
+          } >> "$GITHUB_STEP_SUMMARY"
