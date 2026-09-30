@@ -1,6 +1,5 @@
 use std::io::Read;
 
-
 use super::*;
 
 fn fixture() -> (tempfile::TempDir, PathBuf) {

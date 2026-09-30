@@ -2,6 +2,8 @@
 //!
 //! Native owner recovery still validates its supplied receipt, anchor and trust.
 //! These checks protect file identity and the trusted operator namespace only.
+//! Unix mutable files must have one link and exclude group/world writes;
+//! read-only owner inputs retain their existing permissions/link contract.
 
 use std::fs::File;
 use std::fs::Metadata;
@@ -14,6 +16,7 @@ use crate::AgentdError;
 #[cfg(unix)]
 use crate::operator_namespace::OperatorNamespace;
 
+#[derive(Clone, Copy)]
 enum ExistingAccess {
     ReadOnly,
     ReadWrite,
@@ -25,6 +28,8 @@ struct ExistingBootstrapFile {
     metadata: Metadata,
     #[cfg(unix)]
     namespace: OperatorNamespace,
+    #[cfg(unix)]
+    access: ExistingAccess,
     file: File,
 }
 
@@ -37,6 +42,8 @@ impl ExistingBootstrapFile {
             return Err(invalid(label, "must be a regular non-symlink file"));
         }
         #[cfg(unix)]
+        validate_access(&metadata, access, label)?;
+        #[cfg(unix)]
         let namespace = OperatorNamespace::capture(&canonical, &metadata)?;
         let mut options = OpenOptions::new();
         options.read(true);
@@ -48,6 +55,8 @@ impl ExistingBootstrapFile {
         }
         let file = options.open(&canonical)?;
         let opened = file.metadata()?;
+        #[cfg(unix)]
+        validate_access(&opened, access, label)?;
         if !opened.is_file() || !same_file_version(&metadata, &opened) {
             return Err(invalid(label, "changed while opening"));
         }
@@ -57,6 +66,8 @@ impl ExistingBootstrapFile {
             metadata,
             #[cfg(unix)]
             namespace,
+            #[cfg(unix)]
+            access,
             file,
         })
     }
@@ -65,7 +76,11 @@ impl ExistingBootstrapFile {
         let after = std::fs::symlink_metadata(&self.path)?;
         let opened_after = self.file.metadata()?;
         #[cfg(unix)]
-        self.namespace.verify(&self.canonical, &after)?;
+        {
+            validate_access(&after, self.access, label)?;
+            validate_access(&opened_after, self.access, label)?;
+            self.namespace.verify(&self.canonical, &after)?;
+        }
         if self.path.canonicalize()? != self.canonical
             || after.file_type().is_symlink()
             || !after.is_file()
@@ -151,8 +166,29 @@ pub(super) fn create_new_rw(path: &Path, label: &str) -> Result<File, AgentdErro
     }
     let file = options.open(path)?;
     #[cfg(unix)]
-    namespace.verify(path, &parent_metadata)?;
+    {
+        validate_access(&file.metadata()?, ExistingAccess::ReadWrite, label)?;
+        namespace.verify(path, &parent_metadata)?;
+    }
     Ok(file)
+}
+
+#[cfg(unix)]
+fn validate_access(
+    metadata: &Metadata,
+    access: ExistingAccess,
+    label: &str,
+) -> Result<(), AgentdError> {
+    use std::os::unix::fs::MetadataExt;
+    if matches!(access, ExistingAccess::ReadWrite)
+        && (metadata.mode() & 0o022 != 0 || metadata.nlink() != 1)
+    {
+        return Err(invalid(
+            label,
+            "mutable file must have one link and prohibit group/world writes",
+        ));
+    }
+    Ok(())
 }
 
 #[cfg(unix)]

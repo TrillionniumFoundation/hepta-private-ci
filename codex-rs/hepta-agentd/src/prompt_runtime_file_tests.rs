@@ -1,4 +1,3 @@
-
 use super::super::AgentdPromptRuntimeOwner;
 use super::super::LOCK_FILE;
 use super::super::NEXT_FILE;
