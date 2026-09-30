@@ -654,11 +654,6 @@ fn final_use_binding(
     })
 }
 
-#[cfg(test)]
-fn observation_budget_from(now_ms: u64, deadline_ms: u64) -> Duration {
-    Duration::from_millis(deadline_ms.saturating_sub(now_ms))
-}
-
 fn classify_observation_failure(reason: &str) -> NativeBoundaryStatus {
     match reason {
         LOCAL_CANCELLED => NativeBoundaryStatus::Cancelled,

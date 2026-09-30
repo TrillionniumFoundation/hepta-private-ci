@@ -671,24 +671,20 @@ mod durable_store_tests {
     }
 
     #[tokio::test]
-    async fn durable_record_and_resolution_survive_reopen() {
-        let directory = tempfile::tempdir().expect("tempdir");
+    async fn durable_record_and_resolution_survive_reopen() -> anyhow::Result<()> {
+        let directory = tempfile::tempdir()?;
         let path = directory.path().join("quarantine.sqlite3");
-        let store = DurableQuarantineStore::open(&path, "agent:test".to_string(), 3)
-            .await
-            .expect("open store");
+        let store = DurableQuarantineStore::open(&path, "agent:test".to_string(), 3).await?;
         let quarantine = record();
         assert_eq!(
-            store.record_unknown(&quarantine).await.expect("record"),
+            store.record_unknown(&quarantine).await?,
             QuarantineRecordDisposition::Inserted
         );
         store.close().await;
 
-        let store = DurableQuarantineStore::open(&path, "agent:test".to_string(), 3)
-            .await
-            .expect("reopen store");
+        let store = DurableQuarantineStore::open(&path, "agent:test".to_string(), 3).await?;
         assert_eq!(
-            store.active(&quarantine.operation_id).await.expect("load"),
+            store.active(&quarantine.operation_id).await?,
             Some(quarantine.clone())
         );
         let key = SigningKey::from_bytes(&rand::random());
@@ -698,10 +694,10 @@ mod durable_store_tests {
             resolution_id: "resolution:durable".to_string(),
             operation_id: quarantine.operation_id.clone(),
             quarantine_revision: quarantine.quarantine_revision,
-            quarantine_record_sha256: quarantine.record_sha256().expect("record digest"),
+            quarantine_record_sha256: quarantine.record_sha256()?,
             request_sha256: quarantine.request_sha256,
             dispatch_sha256: quarantine.local_dispatch_sha256,
-            evidence_set_sha256: quarantine.evidence_set_sha256().expect("evidence digest"),
+            evidence_set_sha256: quarantine.evidence_set_sha256()?,
             authority_epoch: quarantine.authority_epoch,
             resolution_authority_epoch: 1,
             resolution_key_epoch: 1,
@@ -714,10 +710,7 @@ mod durable_store_tests {
             new_operation_constraints: None,
             reason_code: "DUAL_OPERATOR_REVIEW".to_string(),
         };
-        let signature = key
-            .sign(&resolution.signing_bytes().expect("signing bytes"))
-            .to_bytes()
-            .to_vec();
+        let signature = key.sign(&resolution.signing_bytes()?).to_bytes().to_vec();
         let signed = SignedQuarantineResolutionV1 {
             resolution: resolution.clone(),
             signature,
@@ -729,15 +722,8 @@ mod durable_store_tests {
                 &signed,
                 2_000,
             )
-            .await
-            .expect("resolve");
-        assert!(
-            store
-                .active(&quarantine.operation_id)
-                .await
-                .expect("load resolved")
-                .is_none()
-        );
+            .await?;
+        assert!(store.active(&quarantine.operation_id).await?.is_none());
         assert!(
             store
                 .verify_and_commit_resolution(
@@ -749,5 +735,6 @@ mod durable_store_tests {
                 .await
                 .is_err()
         );
+        Ok(())
     }
 }
