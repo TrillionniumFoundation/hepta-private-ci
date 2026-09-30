@@ -2,12 +2,12 @@
   "schema": "hepta.ui.native.delivery.v2",
   "canonicalBranch": "work/ui-native-qualified-integration-20260928",
   "convergenceBranch": "work/ui-native-exact-convergence-20260930",
-  "implementationSourceSha": "392c11672192d94afe8f878c2c94199e5be41ac4",
-  "implementationSourceTree": "e8a85378abc43bc24b87891c2c9b7cf28edf13ec",
+  "implementationSourceSha": "a417e5756d4dba18737b9d3e6aa8b13016c23662",
+  "implementationSourceTree": "76c085b09b249be772deae1ce8fdbab0acfb0908",
   "ordinarySourceHistory": {
     "baseline": "9213ff850d3dd91f8734ec954e1e5981db3480fa",
     "walIndex": "4bc29cf124dc5532d04349e478bc82f5d4959fd9",
-    "convergence": "392c11672192d94afe8f878c2c94199e5be41ac4"
+    "convergence": "a417e5756d4dba18737b9d3e6aa8b13016c23662"
   },
   "implemented": {
     "exactActiveOperationIndex": true,
@@ -24,12 +24,15 @@
     "clearedLauncherEnvironment": true,
     "readOnlyQualificationWorkflow": true,
     "selfMutatingUiNativeWorkflowsRemoved": 16,
-    "storageBudgetsDeclared": true
+    "storageBudgetsDeclared": true,
+    "fullScaleStorageQualificationHarness": true,
+    "straceDurabilityAccounting": true,
+    "deterministicLegacyIndexRebuildSubject": true
   },
   "repositoryBlocking": [
     "executed exact-head and ordered-parent-merge qualification has not yet completed for the immutable candidate",
-    "4096-active and 1000000-retired measured performance artifacts are absent",
-    "process-kill, cold-restart, corruption and updater-rollback qualification bundles are absent",
+    "4096-active and 1000000-retired storage evidence has not yet passed the hard budgets on the immutable source",
+    "process-kill, cold-restart, corruption and updater-rollback qualification bundles remain incomplete",
     "persistent history paging and split picker/read/mutation lanes remain unimplemented",
     "verified OS resource capability handoff for OpenPath and RevealPath remains unavailable",
     "xdg-desktop-portal primary picker integration remains unavailable",
@@ -54,6 +57,8 @@
     "strictClippyPassed": false,
     "nativeTestsPassed": false,
     "pythonContractTestsPassed": false,
+    "storageScalePassed": false,
+    "durabilitySyscallEvidencePassed": false,
     "millionRecordMeasurementsComplete": false,
     "physicalPlatformAcceptanceComplete": false
   },

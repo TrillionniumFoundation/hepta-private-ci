@@ -4,8 +4,8 @@
   "module": "ui.native",
   "owner": "ui-platform",
   "deputy": "accessibility",
-  "implementationSourceSha": "392c11672192d94afe8f878c2c94199e5be41ac4",
-  "implementationSourceTree": "e8a85378abc43bc24b87891c2c9b7cf28edf13ec",
+  "implementationSourceSha": "a417e5756d4dba18737b9d3e6aa8b13016c23662",
+  "implementationSourceTree": "76c085b09b249be772deae1ce8fdbab0acfb0908",
   "sourceMaturity": "implementation-candidate-qualification-blocked",
   "declaredRoots": ["apps/hepta-native", "codex-rs/hepta-native-gateway", "codex-rs/hepta-private-state"],
   "technicalGuide": "docs/modules/ui.native/TECHNICAL.md",
@@ -36,13 +36,16 @@
   },
   "testSurfaces": [
     "apps/hepta-native/src/*_tests.rs",
+    "apps/hepta-native/src/storage_qualification_tests.rs",
     "apps/hepta-native/tests/*.rs",
     "apps/hepta-native/tools/tests/test_package_security.py",
+    "scripts/check_hepta_ui_native_convergence.py",
+    "scripts/qualify_hepta_ui_native_storage.py",
     "scripts/test_hepta_ui_native_convergence.py",
     "scripts/test_hepta_ui_native_package_security.py"
   ],
   "repositoryControlledGaps": [
-    "measured storage-scale and crash-point qualification",
+    "executed storage-scale and crash-point qualification",
     "persistent history paging",
     "split picker/read/mutation lanes without a second state owner",
     "verified resource capability handoff for OpenPath and RevealPath",
@@ -58,6 +61,7 @@
   "claimBoundary": {
     "ordinarySourceCommitEstablished": true,
     "selfMutatingQualificationRemoved": true,
+    "storageQualificationHarnessImplemented": true,
     "repositoryControlledSourceBoundaryGapsClosed": false,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,

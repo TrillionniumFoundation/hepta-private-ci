@@ -4,16 +4,19 @@
 **Owner / deputy:** `ui-platform` / `accessibility`  
 **Canonical branch:** `work/ui-native-qualified-integration-20260928`  
 **Convergence branch:** `work/ui-native-exact-convergence-20260930`  
-**Immutable implementation source:** `0ef8638eaf7c4ae733ac2d10eba67d9308ef7e17`  
-**Implementation tree:** `7f52a91a42a612dfd7472fa5514ab81626dc13f9`
+**Immutable implementation source:** `a417e5756d4dba18737b9d3e6aa8b13016c23662`  
+**Implementation tree:** `76c085b09b249be772deae1ce8fdbab0acfb0908`
 
 This is an implementation candidate, not a production-qualified or
 release-authorized product. The ordinary source history is
 `9213ff850d3dd91f8734ec954e1e5981db3480fa` →
 `4bc29cf124dc5532d04349e478bc82f5d4959fd9` →
-`0ef8638eaf7c4ae733ac2d10eba67d9308ef7e17`. The middle commit contains the
-WAL/index implementation. The final implementation commit removes the
-self-mutating qualification graph and hardens platform launcher identity.
+`0ef8638eaf7c4ae733ac2d10eba67d9308ef7e17` →
+`392c11672192d94afe8f878c2c94199e5be41ac4` →
+`a417e5756d4dba18737b9d3e6aa8b13016c23662`. The WAL/index implementation is
+ordinary Rust source. The later source commits remove the self-mutating
+qualification graph, harden platform launcher identity, normalize with the
+pinned formatter and add exact-source scale/durability qualification subjects.
 
 Read `CURRENT_SOURCE.json`, `CURRENT_DELIVERY.json`,
 `IMPLEMENTATION_MAP.json`, `QUALIFICATION_MANIFEST.json` and
@@ -51,9 +54,10 @@ source-export and derived qualification workflows were removed. Patch capsules
 are not source delivery.
 
 Current state is `implementation-candidate / qualification-blocked /
-release-not-authorized`. Journal v7, WAL v1, exact active lookup and retirement
-indexing are implemented. Complete crash, scale, physical-platform and signed
-release evidence is not established.
+release-not-authorized`. Journal v7, WAL v1, exact active lookup, retirement
+indexing and full-scale storage qualification code are implemented. Executed
+crash, scale, physical-platform and signed-release evidence is not yet
+established.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -86,6 +90,13 @@ redirects and permissions.
 `ui/native_picker.rs` owns a platform dialog process and exact single-use ticket.
 The current UI still copies active history into presentation state; persistent
 history paging and a formal immutable read-snapshot lane remain open work.
+
+`storage_qualification_tests.rs` is test-only and cannot authorize product work.
+It drives 4096 active identities through the real journal and one million
+retired identities through the real retirement store, emits exact-source JSON,
+and exercises deterministic legacy-index rebuild. The workflow separately
+measures Linux write and sync syscalls so final file size is never substituted
+for write amplification.
 
 ## 5. Contracts, ports and compatibility
 
@@ -216,9 +227,18 @@ index bounds ordinary exact lookup without becoming authority. UI pagination
 bounds drawing only; runtime-to-UI history copying remains proportional to
 active history and requires a generation-bound persistent page API.
 
-Qualification records raw samples, fsync count, WAL and snapshot growth, host,
-filesystem, source, parents, command and artifact digest. Merely constructing a
-large fixture is not a performance pass.
+The exact-source storage job runs both ignored qualification subjects on Linux.
+The active subject measures all 12,288 state transitions, cold reopen, snapshot,
+WAL and peak RSS. `strace -ff -yy` records successful write/pwrite and
+fsync/fdatasync calls whose descriptors resolve inside the qualification root.
+The retirement subject builds one million exact identities, verifies indexed
+cold open, projects the same authoritative checkpoint through the legacy-v2
+migration path and requires the rebuilt v3 head to be byte-identical.
+
+`scripts/qualify_hepta_ui_native_storage.py` rejects wrong source identity,
+missing traces, missing sync calls, count mismatch, nondeterministic rebuild and
+any hard-budget breach. It produces an immutable combined artifact but does not
+set production, deployment or release flags.
 
 ## 13. Observability and operations
 
@@ -238,13 +258,16 @@ Use Rust 1.95.0 and locked dependencies. The read-only workflow runs source
 identity, rustfmt, all-target/all-feature check, strict Clippy, all native Rust
 targets, Python convergence/package-security contracts and Linux/macOS/Windows
 exact-head subjects. Pull requests also run fixed ordered-parent merge subjects
-on all three platforms.
+on all three platforms. Linux additionally runs the exact-source 4096-active and
+one-million-retired storage qualification and retains raw syscall/JSON evidence.
+The aggregate fails when any applicable primary subject fails, skips or is
+cancelled.
 
 Repository qualification additionally needs compiler-negative API tests,
 process-kill, cold restart, corruption, updater rollback, installed-package E2E,
-measured coverage and sustained scale. Physical acceptance covers Windows,
-macOS, X11, Wayland, multiple displays, high DPI, Chinese IME, screen readers,
-keyboard navigation, shutdown, update and crash recovery.
+measured coverage and sustained physical-host profiles. Physical acceptance
+covers Windows, macOS, X11, Wayland, multiple displays, high DPI, Chinese IME,
+screen readers, keyboard navigation, shutdown, update and crash recovery.
 
 `QUALIFICATION_MANIFEST.json` remains pending until every required subject is
 bound to the same immutable implementation source and accepted independently.
@@ -272,6 +295,7 @@ requalified. Required GitHub administration is recorded in
 
 Remaining work is explicit: persistent history paging, split picker/read/mutation
 lanes without another state owner, verified resource handoff, portal-first Linux
-picker, packaged Windows notification, crash/scale harnesses, physical
-accessibility acceptance and signed release evidence. Until those gates close,
-`productionQualified`, `deploymentQualified` and `releaseAuthorized` stay false.
+picker, packaged Windows notification, executed crash and installed-package
+qualification, physical accessibility acceptance and signed release evidence.
+Until those gates close, `productionQualified`, `deploymentQualified` and
+`releaseAuthorized` stay false.

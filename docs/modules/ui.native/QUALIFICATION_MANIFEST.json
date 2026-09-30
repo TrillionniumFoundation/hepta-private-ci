@@ -1,8 +1,8 @@
 {
   "schema": "hepta.ui.native.qualification-manifest.v1",
   "manifestStatus": "pending-executed-evidence",
-  "implementationSourceSha": "392c11672192d94afe8f878c2c94199e5be41ac4",
-  "implementationSourceTree": "e8a85378abc43bc24b87891c2c9b7cf28edf13ec",
+  "implementationSourceSha": "a417e5756d4dba18737b9d3e6aa8b13016c23662",
+  "implementationSourceTree": "76c085b09b249be772deae1ce8fdbab0acfb0908",
   "orderedParents": {
     "base": "9213ff850d3dd91f8734ec954e1e5981db3480fa",
     "head": "pending-review-head"
@@ -15,9 +15,10 @@
   "requiredSubjects": [
     "linux-exact-head", "macos-exact-head", "windows-exact-head",
     "linux-ordered-parent-merge", "macos-ordered-parent-merge", "windows-ordered-parent-merge",
-    "process-kill-and-cold-restart", "journal-wal-corruption", "updater-rollback",
-    "installed-package-e2e", "measured-coverage", "sustained-performance",
-    "physical-accessibility", "signed-release-provenance"
+    "linux-storage-scale-exact-source", "process-kill-and-cold-restart",
+    "journal-wal-corruption", "updater-rollback", "installed-package-e2e",
+    "measured-coverage", "sustained-performance", "physical-accessibility",
+    "signed-release-provenance"
   ],
   "runIds": [],
   "artifactDigests": {},

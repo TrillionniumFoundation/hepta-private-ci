@@ -1,8 +1,8 @@
 # hepta-native developer guide
 
 This guide applies to immutable implementation source
-`0ef8638eaf7c4ae733ac2d10eba67d9308ef7e17`, tree
-`7f52a91a42a612dfd7472fa5514ab81626dc13f9`. The module is an implementation
+`a417e5756d4dba18737b9d3e6aa8b13016c23662`, tree
+`76c085b09b249be772deae1ce8fdbab0acfb0908`. The module is an implementation
 candidate; production, deployment and release flags remain false.
 
 ## Toolchain and identity
@@ -22,10 +22,11 @@ python3 -m unittest \
 ```
 
 The checker rejects retired writer/materializer workflows, patch capsules,
-write permissions, mutation commands, stale state anchors, product-source drift
-after the frozen commit and promoted release flags. It also checks journal/WAL,
-retirement-index, storage-budget and fixed-launcher contracts. It does not
-replace compilation, crash tests, physical acceptance or release review.
+write permissions, mutation commands, stale state or budget anchors,
+product-source drift after the frozen commit and promoted release flags. It also
+checks journal/WAL, retirement-index, storage-budget and fixed-launcher
+contracts. It does not replace compilation, crash tests, physical acceptance or
+release review.
 
 ## Build, formatting and lint
 
@@ -56,6 +57,27 @@ legality, WAL framing/checksum/sequence/partial tail, checkpoint recovery,
 retirement chain/index integrity, legacy migration, private-root rejection,
 update handoff/rollback, task admission, stale picker tickets and shutdown.
 Targeted tests are useful while developing but are not a qualification pass.
+
+The full-scale storage subjects are intentionally ignored during ordinary test
+runs. The read-only workflow executes them against the frozen implementation
+source and supplies exact source identity and evidence paths:
+
+```bash
+cargo +1.95.0 test \
+  --manifest-path apps/hepta-native/Cargo.toml --locked --lib \
+  storage_qualification_tests::storage_active_scale_qualification -- \
+  --ignored --exact --nocapture --test-threads=1
+
+cargo +1.95.0 test \
+  --manifest-path apps/hepta-native/Cargo.toml --locked --lib \
+  storage_qualification_tests::storage_retirement_scale_qualification -- \
+  --ignored --exact --nocapture --test-threads=1
+```
+
+Do not treat a manual invocation as qualification. The workflow additionally
+records Linux `strace -yy` write and sync syscalls, validates every hard ceiling
+with `scripts/qualify_hepta_ui_native_storage.py`, and retains the raw trace and
+JSON artifacts.
 
 Process-kill qualification must terminate a real process at each durable cut
 point. In-process injected errors do not establish crash recovery.
@@ -121,19 +143,21 @@ never makes a retired identity executable.
 
 ## Storage budgets and profiles
 
-`STORAGE_BUDGETS.json` contains blocking provisional ceilings. Required measured
-subjects use the same immutable source and record:
+`STORAGE_BUDGETS.json` contains blocking provisional ceilings. The implemented
+qualification harness exercises the same immutable source and records:
 
-- 4096 active records;
+- 4096 active records through Prepared, Invoking and Terminal transitions;
 - 1,000,000 retired identities;
 - cold-start and mutation p50/p95/p99;
-- fsync count per transition;
+- real write bytes and fsync/fdatasync counts from Linux syscall traces;
 - WAL/snapshot growth and write amplification;
 - peak RSS;
-- deterministic index rebuild time.
+- indexed cold open and deterministic legacy-index rebuild time.
 
-Retain raw samples, host/filesystem, runner image, source, ordered parents,
-command and artifact digest. Missing or cancelled data fails the budget.
+Retain raw samples, runner image, source, ordered parents, command and artifact
+digest. Missing, cancelled or over-budget data fails qualification. The declared
+budgets remain `provisional-unqualified` until the immutable workflow artifact
+passes and is independently reviewed.
 
 ## Picker and platform helpers
 
@@ -159,8 +183,9 @@ add a detached task or second journal writer.
 
 Pushes check exact head on Linux, macOS and Windows. Pull requests also check a
 fixed merge with exact target base as parent 1 and candidate head as parent 2.
-The aggregate `ui.native / qualification result` succeeds only when every
-applicable subject succeeds.
+The Linux exact-source storage subject enforces every provisional storage budget
+and uploads raw evidence. The aggregate `ui.native / qualification result`
+succeeds only when every applicable subject succeeds.
 
 The final manifest additionally binds compiler-negative API tests, process kill,
 cold restart, corruption, updater rollback, installed-package E2E, measured
