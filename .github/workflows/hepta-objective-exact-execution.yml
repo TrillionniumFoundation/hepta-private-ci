@@ -12,10 +12,15 @@ on:
       - codex-rs/Cargo.lock
       - codex-rs/rust-toolchain.toml
       - docs/modules/objective.compiler/**
+      - docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md
+      - docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md
       - qualification/module-execution-dossiers/detail/objective.compiler.md
+      - scripts/hepta-implementation-maps.py
       - scripts/hepta-objective-current-state.py
       - scripts/hepta-objective-qualify-exact.py
       - scripts/test_hepta_objective_qualify_exact.py
+      - scripts/hepta-objective-spec-consistency.py
+      - scripts/test_hepta_objective_spec_consistency.py
       - scripts/hepta-objective-target-measure.py
       - scripts/test_hepta_objective_target_measure.py
       - scripts/hepta-objective-evidence-project.py
@@ -23,6 +28,7 @@ on:
       - scripts/test_hepta_objective_release_gate.py
       - scripts/test_hepta_objective_evidence_project.py
       - .github/workflows/hepta-objective-exact-execution.yml
+      - .github/workflows/hepta-objective-target-host.yml
       - .github/workflows/hepta-objective-target-measurement.yml
   workflow_dispatch:
     inputs:
@@ -41,14 +47,8 @@ permissions:
 env:
   SOURCE_SHA: ${{ inputs.source_commit || github.sha }}
   QUALIFICATION_WORKFLOW_SHA: ${{ github.workflow_sha }}
-  # macOS exposes /tmp through a symlinked /var path. The product fixtures
-  # require a canonical, short owner path so Unix sockets and private checkpoint
-  # parent validation exercise the intended boundary rather than host aliases.
   TMPDIR: /private/tmp
 
-# Branch pushes are a moving development signal: only the newest branch head is
-# useful. Manual dispatches bind immutable source/base identities and are never
-# cancelled by a later development push or a different manual candidate.
 concurrency:
   group: ${{ github.event_name == 'workflow_dispatch' && format('objective-exact-manual-{0}-{1}', inputs.source_commit, inputs.merge_base) || format('objective-exact-push-{0}', github.ref) }}
   cancel-in-progress: ${{ github.event_name == 'push' }}
@@ -56,13 +56,14 @@ concurrency:
 jobs:
   qualify:
     runs-on: macos-15
-    timeout-minutes: 90
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: false
+
       - name: Bind immutable source and merge base
         env:
           REQUESTED_MERGE_BASE: ${{ inputs.merge_base }}
@@ -78,18 +79,29 @@ jobs:
           [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
           [[ "$BASE" =~ ^[0-9a-f]{40}$ ]]
           test "$(git rev-parse "$BASE^{commit}")" = "$BASE"
-          printf 'MERGE_BASE_SHA=%s\n' "$BASE" >> "$GITHUB_ENV"
-          printf 'Source: %s\nMerge base: %s\n' "$SOURCE_SHA" "$BASE" >> "$GITHUB_STEP_SUMMARY"
-      - name: Verify static state and recorder failure semantics
+          SOURCE_TREE="$(git rev-parse HEAD^{tree})"
+          printf 'SOURCE_TREE=%s\nMERGE_BASE_SHA=%s\n' "$SOURCE_TREE" "$BASE" >> "$GITHUB_ENV"
+          printf 'Source: %s\nTree: %s\nMerge base: %s\n' \
+            "$SOURCE_SHA" "$SOURCE_TREE" "$BASE" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Verify exact static state and recorder failure semantics
         shell: bash
         run: |
           set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py verify \
+            --module objective.compiler \
+            --expected-sha "$SOURCE_SHA" \
+            --expected-tree "$SOURCE_TREE"
           python3 scripts/hepta-objective-current-state.py verify
+          python3 scripts/hepta-objective-spec-consistency.py verify
           python3 scripts/hepta-objective-release-gate.py verify-source
-          python3 -m unittest -v scripts.test_hepta_objective_qualify_exact
-          python3 -m unittest -v scripts.test_hepta_objective_target_measure
-          python3 -m unittest -v scripts.test_hepta_objective_evidence_project
-          python3 -m unittest -v scripts.test_hepta_objective_release_gate
+          python3 -m unittest -v \
+            scripts.test_hepta_objective_qualify_exact \
+            scripts.test_hepta_objective_spec_consistency \
+            scripts.test_hepta_objective_target_measure \
+            scripts.test_hepta_objective_evidence_project \
+            scripts.test_hepta_objective_release_gate
+
       - name: Qualify source and deterministic merge without source writes
         shell: bash
         run: |
@@ -99,6 +111,7 @@ jobs:
             --merge-base "$MERGE_BASE_SHA" \
             --out "$RUNNER_TEMP/objective-exact-evidence" \
             --command-timeout 1800
+
       - name: Project the observed execution receipt
         if: always()
         shell: bash
@@ -108,11 +121,12 @@ jobs:
           if [[ -f "$receipt" ]]; then
             python3 scripts/hepta-objective-evidence-project.py \
               --source-commit "$SOURCE_SHA" \
-              --source-tree "$(git rev-parse HEAD^{tree})" \
+              --source-tree "$SOURCE_TREE" \
               --current-state docs/modules/objective.compiler/CURRENT_STATE.json \
               --exact-execution "$receipt" \
               --output "$RUNNER_TEMP/objective-exact-evidence/evidence-projection.json"
           fi
+
       - name: Preserve observed failures and partial execution as evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -121,12 +135,14 @@ jobs:
           path: ${{ runner.temp }}/objective-exact-evidence
           if-no-files-found: warn
           retention-days: 14
+
       - name: Verify the source checkout was not mutated
         if: always()
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$SOURCE_TREE"
           git diff --check
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"
