@@ -6,6 +6,10 @@ on:
       - codex/runtime-codex-p0-ordinary-convergence-20260930
     paths:
       - .github/workflows/runtime-codex-source-export.yml
+      - scripts/runtime-codex-process-crash-expansion-source.py
+      - scripts/runtime-codex-process-crash-expansion-v2.py
+      - scripts/runtime-codex-quarantine-authority-source.py
+      - scripts/runtime-codex-quarantine-authority-v2.py
   workflow_dispatch:
 
 permissions:
