@@ -15,7 +15,12 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 RUST_ROOT = REPO_ROOT / "codex-rs"
 REMOVED_DIGEST_BYTES = re.compile(
-    r"Digest32::(?:of_bytes|new|from_array)\s*\([^;]{0,2048}?\)\s*\.as_bytes\s*\(\s*\)",
+    # Direct receiver chain only. Constructor-argument calls such as
+    # Digest32::of_bytes(material.as_bytes()) are valid and must not be
+    # mistaken for Digest32::as_bytes().
+    r"Digest32::(?:of_bytes|new|from_array)\\s*"
+    r"\\((?:[^()]|\\([^()]*\\))*\\)\\s*"
+    r"\\.as_bytes\\s*\\(\\s*\\)",
     flags=re.DOTALL,
 )
 
