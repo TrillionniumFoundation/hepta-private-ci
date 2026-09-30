@@ -20,6 +20,7 @@ mod lifecycle;
 mod model;
 mod neural_circuit;
 mod neural_circuit_runtime;
+mod neural_circuit_runtime_verify;
 mod operation_destination;
 mod schedule_v2;
 mod scheduler;

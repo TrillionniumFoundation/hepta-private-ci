@@ -239,6 +239,15 @@ impl AutomationCalendarScheduleV2 {
         if !forward && reference_utc_ms < self.start_at_utc_ms {
             return Ok(None);
         }
+        // Completed schedules have no candidates after their inclusive end.
+        // Search from that bound so a late restart does not exhaust the scan
+        // budget or require timezone evidence for time outside the schedule.
+        let reference_utc_ms = if forward {
+            reference_utc_ms
+        } else {
+            self.end_at_utc_ms
+                .map_or(reference_utc_ms, |end| reference_utc_ms.min(end))
+        };
         if reference_utc_ms < self.clock_profile.valid_from_utc_ms
             || reference_utc_ms >= self.clock_profile.valid_until_utc_ms
         {
@@ -995,6 +1004,38 @@ mod tests {
             .await
             .expect("read task")
             .expect("task exists")
+    }
+
+    #[test]
+    fn ended_calendar_lookup_uses_the_schedule_end_after_a_long_outage() {
+        let schedule = utc_daily_schedule();
+        let expected = Some(29 * DAY + 2 * HOUR);
+        for observed in [1_400 * DAY, 40 * DAY, 30 * DAY] {
+            assert_eq!(
+                schedule.latest_at_or_before(observed),
+                Ok(expected),
+                "lookup at {observed}"
+            );
+        }
+    }
+
+    #[tokio::test]
+    async fn ended_calendar_coalesce_recovers_and_completes_after_a_long_outage() {
+        let (_temp, store) = open_calendar_test_store().await;
+        let schedule = utc_daily_schedule();
+        let policy = AutomationMissedRunPolicy::Coalesce;
+        let task = create_backlog_task(&store, &schedule, policy).await;
+        let first = task.next_run_at_ms.expect("first occurrence");
+        let observed = 1_400 * DAY;
+        let coalesced = advance_backlog(&store, task.task_id, first, observed, policy).await;
+        let final_occurrence = 29 * DAY + 2 * HOUR;
+        assert_eq!(coalesced.next_run_at_ms, Some(final_occurrence));
+
+        let completed =
+            advance_backlog(&store, task.task_id, final_occurrence, observed, policy).await;
+        assert_eq!(completed.next_run_at_ms, None);
+        assert_eq!(completed.state, crate::AutomationTaskState::Completed);
+        store.close().await;
     }
 
     #[tokio::test]

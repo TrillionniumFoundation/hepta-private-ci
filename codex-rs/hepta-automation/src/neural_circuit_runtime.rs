@@ -5,18 +5,24 @@
 //! Fleet-owned resource lease. It does not schedule work, mint resource
 //! authority, mutate Fleet state, or reinterpret a committed TaskFlow history.
 
-use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use serde::Deserialize;
 use serde::Serialize;
 use sqlx::Row;
-use sqlx::SqlitePool;
+use sqlx::Sqlite;
+use sqlx::Transaction;
 
 use crate::AutomationStore;
+use crate::TaskFlowDefinition;
 use crate::TaskFlowError;
 use crate::TaskFlowFence;
+use crate::TaskFlowNodeKind;
 use crate::TaskFlowRun;
 use crate::TaskFlowRunState;
+use crate::neural_circuit_runtime_verify::activation_from_row;
+use crate::neural_circuit_runtime_verify::choice_from_row;
+use crate::taskflow::load_taskflow_definition_tx;
+use crate::taskflow::load_taskflow_run_tx;
 
 pub const CIRCUIT_RUNTIME_SCHEMA_VERSION: u32 = 1;
 const MAX_ID_BYTES: usize = 256;
@@ -180,13 +186,23 @@ impl AutomationStore {
     ) -> Result<CircuitActivationReceiptV1, TaskFlowError> {
         activation.validate()?;
         validate_id(command_id, "command_id")?;
-        let run = self.require_current_circuit_run(&activation.run_id, fence, now_ms).await?;
+        // Acquire the writer before reading ownership. A separate pool read
+        // allows takeover/termination to commit before the metadata insert.
+        let mut tx = self
+            .taskflow_pool()
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(|_| TaskFlowError::Unavailable)?;
+        let (run, definition) = self
+            .require_current_circuit_run(&mut tx, &activation.run_id, fence, now_ms)
+            .await?;
         if run.definition_digest != activation.taskflow_definition_digest {
             return Err(TaskFlowError::Conflict(
                 "circuit activation compiled definition differs from the admitted TaskFlow run"
                     .to_string(),
             ));
         }
+        validate_activation_definition(activation, &definition)?;
         let activation_digest = activation.digest()?;
         let command_digest = command_digest(
             b"hepta.circuit-activation-command.v1\0",
@@ -229,20 +245,19 @@ impl AutomationStore {
         .bind(command_digest.as_str())
         .bind(activation_digest.as_str())
         .bind(to_i64(now_ms)?)
-        .execute(self.taskflow_pool())
+        .execute(&mut *tx)
         .await
         .map_err(|_| TaskFlowError::Unavailable)?;
 
         let inserted = result.rows_affected() == 1;
         if !inserted {
             let row = sqlx::query(
-                "SELECT command_digest, activation_digest
-                 FROM taskflow_circuit_activations
+                "SELECT * FROM taskflow_circuit_activations
                  WHERE owner_agent_id = ? AND command_id = ?",
             )
             .bind(fence.owner_agent_id.as_str())
             .bind(command_id)
-            .fetch_optional(self.taskflow_pool())
+            .fetch_optional(&mut *tx)
             .await
             .map_err(|_| TaskFlowError::Unavailable)?
             .ok_or_else(|| {
@@ -250,12 +265,24 @@ impl AutomationStore {
                     "circuit activation identity already exists under another command".to_string(),
                 )
             })?;
-            let stored_command: String = row
-                .try_get("command_digest")
-                .map_err(|_| TaskFlowError::Corrupt("invalid activation command digest".to_string()))?;
+            let stored_command: String = row.try_get("command_digest").map_err(|_| {
+                TaskFlowError::Corrupt("invalid activation command digest".to_string())
+            })?;
             let stored_activation: String = row
                 .try_get("activation_digest")
                 .map_err(|_| TaskFlowError::Corrupt("invalid activation digest".to_string()))?;
+            if activation_from_row(&row)?
+                .digest()
+                .map_err(|_| {
+                    TaskFlowError::Corrupt("invalid durable circuit activation payload".to_string())
+                })?
+                .as_str()
+                != stored_activation
+            {
+                return Err(TaskFlowError::Corrupt(
+                    "durable circuit activation digest mismatch".to_string(),
+                ));
+            }
             if stored_command != command_digest.as_str()
                 || stored_activation != activation_digest.as_str()
             {
@@ -264,6 +291,7 @@ impl AutomationStore {
                 ));
             }
         }
+        tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
         Ok(CircuitActivationReceiptV1 {
             activation_digest,
             command_digest,
@@ -282,20 +310,58 @@ impl AutomationStore {
     ) -> Result<CircuitChoiceReceiptV1, TaskFlowError> {
         choice.validate()?;
         validate_id(command_id, "command_id")?;
-        let _ = self.require_current_circuit_run(&choice.run_id, fence, now_ms).await?;
-        let activation_exists: i64 = sqlx::query_scalar(
-            "SELECT COUNT(*) FROM taskflow_circuit_activations
+        let mut tx = self
+            .taskflow_pool()
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(|_| TaskFlowError::Unavailable)?;
+        let (_, definition) = self
+            .require_current_circuit_run(&mut tx, &choice.run_id, fence, now_ms)
+            .await?;
+        let activation_row = sqlx::query(
+            "SELECT * FROM taskflow_circuit_activations
              WHERE owner_agent_id = ? AND run_id = ? AND activation_id = ?",
         )
         .bind(fence.owner_agent_id.as_str())
         .bind(&choice.run_id)
         .bind(&choice.activation_id)
-        .fetch_one(self.taskflow_pool())
+        .fetch_optional(&mut *tx)
         .await
         .map_err(|_| TaskFlowError::Unavailable)?;
-        if activation_exists != 1 {
-            return Err(TaskFlowError::Conflict(
+        let activation_row = activation_row.ok_or_else(|| {
+            TaskFlowError::Conflict(
                 "circuit choice requires an existing durable activation".to_string(),
+            )
+        })?;
+        let activation = activation_from_row(&activation_row)?;
+        let stored_activation_digest: String = activation_row
+            .try_get("activation_digest")
+            .map_err(|_| TaskFlowError::Corrupt("invalid activation digest column".to_string()))?;
+        if activation
+            .digest()
+            .map_err(|_| {
+                TaskFlowError::Corrupt("invalid durable circuit activation payload".to_string())
+            })?
+            .as_str()
+            != stored_activation_digest
+        {
+            return Err(TaskFlowError::Corrupt(
+                "durable circuit activation digest mismatch".to_string(),
+            ));
+        }
+        validate_activation_definition(&activation, &definition).map_err(|_| {
+            TaskFlowError::Corrupt(
+                "durable circuit activation definition binding is invalid".to_string(),
+            )
+        })?;
+        let activation_node = activation.node_id;
+        if !definition
+            .edges
+            .iter()
+            .any(|edge| edge.from == activation_node && edge.to == choice.selected_port)
+        {
+            return Err(TaskFlowError::Conflict(
+                "circuit choice is not an outgoing edge of the durable activation".to_string(),
             ));
         }
         let choice_digest = choice.digest()?;
@@ -324,19 +390,18 @@ impl AutomationStore {
         .bind(command_digest.as_str())
         .bind(choice_digest.as_str())
         .bind(to_i64(now_ms)?)
-        .execute(self.taskflow_pool())
+        .execute(&mut *tx)
         .await
         .map_err(|_| TaskFlowError::Unavailable)?;
         let inserted = result.rows_affected() == 1;
         if !inserted {
             let row = sqlx::query(
-                "SELECT command_digest, choice_digest
-                 FROM taskflow_circuit_choices
+                "SELECT * FROM taskflow_circuit_choices
                  WHERE owner_agent_id = ? AND command_id = ?",
             )
             .bind(fence.owner_agent_id.as_str())
             .bind(command_id)
-            .fetch_optional(self.taskflow_pool())
+            .fetch_optional(&mut *tx)
             .await
             .map_err(|_| TaskFlowError::Unavailable)?
             .ok_or_else(|| {
@@ -350,12 +415,26 @@ impl AutomationStore {
             let stored_choice: String = row
                 .try_get("choice_digest")
                 .map_err(|_| TaskFlowError::Corrupt("invalid choice digest".to_string()))?;
-            if stored_command != command_digest.as_str() || stored_choice != choice_digest.as_str() {
+            if choice_from_row(&row)?
+                .digest()
+                .map_err(|_| {
+                    TaskFlowError::Corrupt("invalid durable circuit choice payload".to_string())
+                })?
+                .as_str()
+                != stored_choice
+            {
+                return Err(TaskFlowError::Corrupt(
+                    "durable circuit choice digest mismatch".to_string(),
+                ));
+            }
+            if stored_command != command_digest.as_str() || stored_choice != choice_digest.as_str()
+            {
                 return Err(TaskFlowError::Conflict(
                     "circuit choice command was reused with changed semantics".to_string(),
                 ));
             }
         }
+        tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
         Ok(CircuitChoiceReceiptV1 {
             choice_digest,
             command_digest,
@@ -365,15 +444,15 @@ impl AutomationStore {
 
     async fn require_current_circuit_run(
         &self,
+        tx: &mut Transaction<'_, Sqlite>,
         run_id: &str,
         fence: &TaskFlowFence,
         now_ms: u64,
-    ) -> Result<TaskFlowRun, TaskFlowError> {
+    ) -> Result<(TaskFlowRun, TaskFlowDefinition), TaskFlowError> {
         if &fence.owner_agent_id != self.taskflow_owner_agent_id() {
             return Err(TaskFlowError::StaleFence);
         }
-        let run = self
-            .taskflow_run(run_id)
+        let run = load_taskflow_run_tx(tx, self.taskflow_owner_agent_id(), run_id)
             .await?
             .ok_or_else(|| TaskFlowError::Conflict("TaskFlow run does not exist".to_string()))?;
         if run.owner_agent_id != fence.owner_agent_id
@@ -381,7 +460,9 @@ impl AutomationStore {
             || run.owner_epoch != Some(fence.owner_epoch)
             || run.generation != Some(fence.generation)
             || run.fencing_token.as_deref() != Some(fence.fencing_token.as_str())
-            || run.lease_expires_at_ms.is_none_or(|expiry| expiry <= now_ms)
+            || run
+                .lease_expires_at_ms
+                .is_none_or(|expiry| expiry <= now_ms)
         {
             return Err(TaskFlowError::StaleFence);
         }
@@ -394,32 +475,57 @@ impl AutomationStore {
                     .to_string(),
             ));
         }
-        Ok(run)
+        let definition = load_taskflow_definition_tx(
+            tx,
+            self.taskflow_owner_agent_id(),
+            &run.workflow_id,
+            run.workflow_version,
+        )
+        .await?
+        .ok_or_else(|| {
+            TaskFlowError::Corrupt("circuit TaskFlow definition is missing".to_string())
+        })?;
+        if &run.definition_digest != definition.definition_digest() {
+            return Err(TaskFlowError::Corrupt(
+                "circuit run definition binding is corrupt".to_string(),
+            ));
+        }
+        Ok((run, definition))
     }
 }
 
-pub(crate) async fn verify_circuit_runtime_store(
-    pool: &SqlitePool,
-    owner_agent_id: &AgentId,
+pub(crate) use crate::neural_circuit_runtime_verify::verify_circuit_runtime_store;
+
+pub(crate) fn validate_activation_definition(
+    activation: &CircuitActivationV1,
+    definition: &TaskFlowDefinition,
 ) -> Result<(), TaskFlowError> {
-    let foreign_activations: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM taskflow_circuit_activations WHERE owner_agent_id != ?",
-    )
-    .bind(owner_agent_id.as_str())
-    .fetch_one(pool)
-    .await
-    .map_err(|_| TaskFlowError::Unavailable)?;
-    let foreign_choices: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM taskflow_circuit_choices WHERE owner_agent_id != ?",
-    )
-    .bind(owner_agent_id.as_str())
-    .fetch_one(pool)
-    .await
-    .map_err(|_| TaskFlowError::Unavailable)?;
-    if foreign_activations != 0 || foreign_choices != 0 {
-        return Err(TaskFlowError::Corrupt(
-            "circuit runtime contains foreign-owner rows".to_string(),
+    if &activation.taskflow_definition_digest != definition.definition_digest()
+        || crate::neural_circuit::circuit_policy_digest(
+            &activation.route_policy_digest,
+            &activation.parameter_bundle_digest,
+            &activation.budget.resource_profile_digest,
+            &activation.circuit_digest,
+        )? != definition.policy_digest
+    {
+        return Err(TaskFlowError::Conflict(
+            "circuit activation policy differs from the compiled TaskFlow definition".to_string(),
         ));
+    }
+    let node = definition
+        .nodes
+        .iter()
+        .find(|node| node.node_id == activation.node_id)
+        .ok_or_else(|| {
+            TaskFlowError::Conflict(
+                "circuit activation node is not in the admitted TaskFlow definition".to_string(),
+            )
+        })?;
+    if matches!(
+        node.kind,
+        TaskFlowNodeKind::TerminalSuccess | TaskFlowNodeKind::TerminalFailure
+    ) {
+        return Err(invalid("terminal node cannot own a circuit activation"));
     }
     Ok(())
 }
@@ -454,10 +560,7 @@ fn canonical_digest(domain: &[u8], value: &impl Serialize) -> Result<Sha256Diges
 }
 
 fn validate_id(value: &str, field: &str) -> Result<(), TaskFlowError> {
-    if value.is_empty()
-        || value.len() > MAX_ID_BYTES
-        || value.chars().any(char::is_control)
-    {
+    if value.is_empty() || value.len() > MAX_ID_BYTES || value.chars().any(char::is_control) {
         return Err(invalid(format!("{field} is invalid")));
     }
     Ok(())
@@ -471,7 +574,9 @@ fn validate_digest(digest: &Sha256Digest, field: &str) -> Result<(), TaskFlowErr
             .bytes()
             .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
     {
-        return Err(invalid(format!("{field} must be a non-zero lowercase sha256")));
+        return Err(invalid(format!(
+            "{field} must be a non-zero lowercase sha256"
+        )));
     }
     Ok(())
 }
@@ -487,6 +592,7 @@ fn invalid(message: impl Into<String>) -> TaskFlowError {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use pretty_assertions::assert_eq;
 
     fn digest(label: &str) -> Sha256Digest {
         Sha256Digest::for_bytes(label.as_bytes())
@@ -546,8 +652,12 @@ mod tests {
         );
     }
 
-    #[tokio::test]
-    async fn durable_activation_and_choice_replay_without_redeciding() {
+    async fn fixture() -> (
+        tempfile::TempDir,
+        AutomationStore,
+        TaskFlowFence,
+        CircuitActivationV1,
+    ) {
         use std::fs;
 
         use codex_hepta_fleet::AgentManifest;
@@ -582,7 +692,9 @@ mod tests {
         )
         .expect("manifest");
         let layout = registry.register(manifest).expect("register agent").layout;
-        let store = AutomationStore::open(&layout).await.expect("automation store");
+        let store = AutomationStore::open(&layout)
+            .await
+            .expect("automation store");
 
         let circuit = NeuralCircuitCandidateV1::new(
             "runtime-test",
@@ -607,14 +719,8 @@ mod tests {
         )
         .expect("circuit");
         let (definition, compilation) = circuit.compile_taskflow().expect("compile");
-        let fence = TaskFlowFence::new(
-            agent_id,
-            "circuit-owner",
-            1,
-            1,
-            "circuit-fence",
-        )
-        .expect("fence");
+        let fence =
+            TaskFlowFence::new(agent_id, "circuit-owner", 1, 1, "circuit-fence").expect("fence");
         store
             .register_taskflow_definition(&definition, &fence, 10)
             .await
@@ -664,6 +770,12 @@ mod tests {
                 ..budget()
             },
         };
+        (temp, store, fence, activation)
+    }
+
+    #[tokio::test]
+    async fn durable_activation_and_choice_replay_without_redeciding() {
+        let (_temp, store, fence, activation) = fixture().await;
         let first = store
             .record_circuit_activation_v1(&activation, &fence, "activation-command", 14)
             .await
@@ -705,5 +817,201 @@ mod tests {
                 .is_err()
         );
     }
-}
 
+    #[tokio::test]
+    async fn circuit_activation_and_choice_reject_unadmitted_graph_and_policy() {
+        let (_temp, store, fence, activation) = fixture().await;
+        for field in [
+            "node",
+            "terminal",
+            "circuit",
+            "route",
+            "parameters",
+            "resources",
+        ] {
+            let mut changed = activation.clone();
+            match field {
+                "node" => changed.node_id = "absent".to_string(),
+                "terminal" => changed.node_id = "success".to_string(),
+                "circuit" => changed.circuit_digest = digest("other-circuit"),
+                "route" => changed.route_policy_digest = digest("other-route"),
+                "parameters" => changed.parameter_bundle_digest = digest("other-parameters"),
+                "resources" => changed.budget.resource_profile_digest = digest("other-resources"),
+                _ => unreachable!(),
+            }
+            assert!(matches!(
+                store
+                    .record_circuit_activation_v1(&changed, &fence, field, 14)
+                    .await,
+                Err(TaskFlowError::Conflict(_) | TaskFlowError::Invalid(_))
+            ));
+        }
+        store
+            .record_circuit_activation_v1(&activation, &fence, "activation", 14)
+            .await
+            .expect("activation");
+        let choice = CircuitChoiceV1 {
+            run_id: activation.run_id,
+            activation_id: activation.activation_id,
+            selected_port: "observe".to_string(),
+            candidate_set_digest: digest("candidate-set"),
+            behavior_policy_digest: digest("behavior"),
+            decision_receipt_digest: digest("decision"),
+        };
+        assert!(matches!(
+            store
+                .record_circuit_choice_v1(&choice, &fence, "wrong-edge", 15)
+                .await,
+            Err(TaskFlowError::Conflict(_))
+        ));
+        let count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM taskflow_circuit_choices")
+            .fetch_one(store.taskflow_pool())
+            .await
+            .expect("choice count");
+        assert_eq!(count, 0);
+    }
+
+    #[tokio::test]
+    async fn circuit_write_revalidates_run_after_a_competing_writer_commits() {
+        use std::time::Duration;
+
+        for kind in ["activation", "choice"] {
+            let (_temp, store, fence, activation) = fixture().await;
+            if kind == "choice" {
+                store
+                    .record_circuit_activation_v1(&activation, &fence, "activation", 14)
+                    .await
+                    .expect("activation");
+            }
+            let mut writer = store
+                .taskflow_pool()
+                .begin_with("BEGIN IMMEDIATE")
+                .await
+                .expect("competing writer");
+            // A concurrent writer changes the projection while the metadata
+            // call is blocked. Its previously readable run snapshot must not
+            // authorize a later INSERT after this transaction commits.
+            sqlx::query("UPDATE taskflow_runs SET lease_expires_at_ms = 0 WHERE run_id = ?")
+                .bind(&activation.run_id)
+                .execute(&mut *writer)
+                .await
+                .expect("projection edit");
+            let runtime = store.clone();
+            let mut pending = tokio::spawn(async move {
+                if kind == "activation" {
+                    runtime
+                        .record_circuit_activation_v1(&activation, &fence, "pending", 15)
+                        .await
+                        .map(|_| ())
+                } else {
+                    let choice = CircuitChoiceV1 {
+                        run_id: activation.run_id,
+                        activation_id: activation.activation_id,
+                        selected_port: "success".to_string(),
+                        candidate_set_digest: digest("candidates"),
+                        behavior_policy_digest: digest("behavior"),
+                        decision_receipt_digest: digest("decision"),
+                    };
+                    runtime
+                        .record_circuit_choice_v1(&choice, &fence, "pending", 15)
+                        .await
+                        .map(|_| ())
+                }
+            });
+            assert!(
+                tokio::time::timeout(Duration::from_millis(100), &mut pending)
+                    .await
+                    .is_err()
+            );
+            writer.commit().await.expect("competing commit");
+            assert!(matches!(
+                pending.await.expect("metadata writer"),
+                Err(TaskFlowError::Corrupt(_))
+            ));
+        }
+    }
+
+    #[tokio::test]
+    async fn circuit_store_reopen_rejects_payload_corruption_beyond_first_page() {
+        use crate::AutomationError;
+
+        let (_temp, store, fence, activation) = fixture().await;
+        for index in 0..129 {
+            let mut next = activation.clone();
+            next.activation_id = format!("activation-{index}");
+            store
+                .record_circuit_activation_v1(&next, &fence, &format!("activation-{index}"), 14)
+                .await
+                .expect("activation");
+        }
+        verify_circuit_runtime_store(store.taskflow_pool(), store.taskflow_owner_agent_id())
+            .await
+            .expect("all valid rows");
+        sqlx::query("DROP TRIGGER taskflow_circuit_activations_no_update")
+            .execute(store.taskflow_pool())
+            .await
+            .expect("simulate damaged file");
+        sqlx::query("UPDATE taskflow_circuit_activations SET causal_event_digest = ? WHERE activation_id = 'activation-128'")
+            .bind(digest("corrupt-event").as_str()).execute(store.taskflow_pool()).await.expect("corrupt last row");
+        let mut replay = activation;
+        replay.activation_id = "activation-128".to_string();
+        assert!(matches!(
+            store
+                .record_circuit_activation_v1(&replay, &fence, "activation-128", 15)
+                .await,
+            Err(TaskFlowError::Corrupt(_))
+        ));
+        let root = store.path().parent().expect("store root").to_path_buf();
+        let owner = store.taskflow_owner_agent_id().clone();
+        store.close().await;
+        assert!(matches!(
+            AutomationStore::open_root(root, owner).await,
+            Err(AutomationError::Corrupt)
+        ));
+    }
+
+    #[tokio::test]
+    async fn circuit_store_reopen_rejects_choice_digest_corruption() {
+        use crate::AutomationError;
+
+        let (_temp, store, fence, activation) = fixture().await;
+        store
+            .record_circuit_activation_v1(&activation, &fence, "activation", 14)
+            .await
+            .expect("activation");
+        let choice = CircuitChoiceV1 {
+            run_id: activation.run_id,
+            activation_id: activation.activation_id,
+            selected_port: "success".to_string(),
+            candidate_set_digest: digest("candidate-set"),
+            behavior_policy_digest: digest("behavior"),
+            decision_receipt_digest: digest("decision"),
+        };
+        store
+            .record_circuit_choice_v1(&choice, &fence, "choice", 15)
+            .await
+            .expect("choice");
+        sqlx::query("DROP TRIGGER taskflow_circuit_choices_no_update")
+            .execute(store.taskflow_pool())
+            .await
+            .expect("simulate damaged file");
+        sqlx::query("UPDATE taskflow_circuit_choices SET decision_receipt_digest = ?")
+            .bind(digest("corrupt-decision").as_str())
+            .execute(store.taskflow_pool())
+            .await
+            .expect("corrupt choice");
+        assert!(matches!(
+            store
+                .record_circuit_choice_v1(&choice, &fence, "choice", 16)
+                .await,
+            Err(TaskFlowError::Corrupt(_))
+        ));
+        let root = store.path().parent().expect("store root").to_path_buf();
+        let owner = store.taskflow_owner_agent_id().clone();
+        store.close().await;
+        assert!(matches!(
+            AutomationStore::open_root(root, owner).await,
+            Err(AutomationError::Corrupt)
+        ));
+    }
+}
