@@ -76,6 +76,13 @@ pub struct ArtifactPublicationReceiptV1 {
     pub authority: AuthorityPosture,
 }
 
+/// Unified durable commit receipt.
+///
+/// This is intentionally the same wire-neutral value as the historical
+/// ArtifactPublicationReceiptV1. It can only be produced after payload,
+/// registry and CURRENT witness durability plus final withdrawal revalidation.
+pub type DurableCommitReceiptV1 = ArtifactPublicationReceiptV1;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ArtifactPublicationStatusV1 {
     pub operation_id: StableId,
