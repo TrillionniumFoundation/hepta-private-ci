@@ -10,8 +10,10 @@ not available from that feature surface.
 from __future__ import annotations
 
 import argparse
+import json
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import tempfile
@@ -27,6 +29,52 @@ NEGATIVE = (
     "unbound_codec.rs",
     "clone_key.rs",
 )
+
+# A build or dependency failure is not proof that a forbidden API is absent.
+# Require diagnostics from the consumer itself for each intended restriction.
+DIAGNOSTICS = {
+    "raw_owners.rs": (
+        ("E0432", "E0603"),
+        (
+            "AuthenticatedWireSession",
+            "ManagedAuthenticatedWireSession",
+            "ManagedRecordStream",
+            "WireSession",
+        ),
+    ),
+    "session_escape.rs": (("E0599",), ("session",)),
+    "raw_envelope.rs": (("E0599",), ("seal_envelope",)),
+    "unbound_codec.rs": (("E0277",), ("BoundPayloadCodec",)),
+    "clone_key.rs": (("E0308",), ("mismatched types",)),
+}
+
+
+def expected_rejection(source: Path, output: str) -> bool:
+    codes, fragments = DIAGNOSTICS[source.name]
+    messages = []
+    for line in output.splitlines():
+        try:
+            item = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(item, dict) or item.get("reason") != "compiler-message":
+            continue
+        if item.get("target", {}).get("name") != "platform-wire-production-surface":
+            continue
+        message = item.get("message", {})
+        if (
+            message.get("level") == "error"
+            and isinstance(message.get("code"), dict)
+            and message["code"].get("code") in codes
+        ):
+            messages.append(message.get("message", ""))
+    return all(
+        any(
+            re.search(r"\b" + re.escape(fragment) + r"\b", message)
+            for message in messages
+        )
+        for fragment in fragments
+    )
 
 
 def manifest() -> str:
@@ -58,6 +106,7 @@ def check(source: Path, *, expect_success: bool, target: Path) -> None:
                 "cargo",
                 "check",
                 "--quiet",
+                "--message-format=json",
                 "--manifest-path",
                 str(root / "Cargo.toml"),
             ],
@@ -75,6 +124,15 @@ def check(source: Path, *, expect_success: bool, target: Path) -> None:
         if result.returncode != 0 and expect_success:
             raise SystemExit(
                 f"production surface fixture failed: {source.name}\n{result.stderr}"
+            )
+        if (
+            result.returncode != 0
+            and not expect_success
+            and not expected_rejection(source, result.stdout)
+        ):
+            raise SystemExit(
+                f"negative production fixture did not prove its API restriction: {source.name}\n"
+                f"{result.stdout}\n{result.stderr}"
             )
 
 
