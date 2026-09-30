@@ -1,7 +1,7 @@
 # context.compiler execution dossier
 <!-- GENERATED CURRENT STATE: edit CURRENT_STATE.json; detailed design is retained separately. -->
 
-State SHA-256: `e44ec8dfcc2e8a9102ae3fee0b5b428f8885044018be59f0810ee488c836a0d2`. Source anchor: `cd07ed1ca09bef0538955ce44b9a60d8bac2dba9`.
+State SHA-256: `fb4e39d5cfc419bb9d197b7636866b679ec88fd91c8a806d035c6ba76f8fe044`. Source anchor: `db57c5c3f446dfc6442caf5964b216392dce3932`.
 The source anchor is provenance, not the final tested head. Only external execution receipts bind a final source/merge object.
 
 ## 1. Current implementation and evidence state
@@ -49,6 +49,10 @@ The source anchor is provenance, not the final tested head. Only external execut
 - Consumer execution rows distinguish actual source callsites from absent authenticated ingress and absent external-security consumption. Receipt projection records native results separately from unverified authenticated product E2E, independent acceptance, activation and release.
 - Exact-attempt observer terminal binding was already implemented in ext/hepta-prompt/src/exact_body.rs before this follow-up; it is retained rather than repeatedly listed as missing source.
 - Live attempt completion measures final-request observation through durable final persistence, including the intervening transport interval. Recovered reconciliation is a separate attempted phase and does not invent pre-crash elapsed time. Neither is a full authenticated user-turn SLO.
+- Admission and attachment retain a shared immutable revocation frontier; every selected admission baseline and the attachment baseline must advance monotonically even when a replacement snapshot was independently root-verified.
+- Empty selections validate compilation scope and revocation domain before attachment or delivery preparation.
+- Unix exact-delivery storage pins a private directory descriptor, rejects symbolic/hard links and non-private files before truncation, and permanently fences an owner whose directory or lock identity changes. Six previously dormant/new storage regressions are registered in the owner module and qualification command.
+- Strict compiler all-targets Clippy findings are resolved without changing the published V2 evidence-owner call shape.
 
 ## 3. Current product call path
 
@@ -77,6 +81,7 @@ Stage publication uses exact-state -> runtime-state lock order, with no await or
 ## 4. Dormant integration inputs
 
 - `codex-rs/hepta-agentd/src/prompt_product_v3.rs`: Historical alternate owner remains unregistered and is not part of the product call graph; the canonical path is prompt_runtime plus exact_context_delivery.
+- `codex-rs/hepta-agentd/src/exact_context_delivery/settled_history_tests.rs`: Unregistered future settlement tests reference an absent settled_history implementation; they are not executable coverage or evidence that bounded history rollover is complete.
 
 ## 5. Remaining implementation and qualification gates
 
@@ -93,12 +98,13 @@ Stage publication uses exact-state -> runtime-state lock order, with no await or
 - Run immutable source-head and deterministic synthetic-merge qualification over the final direct-source commit; pre-commit materialization tests do not transfer qualification to the generated successor commit.
 - Compose ContextSecurityCapabilitiesV3 into the existing actual exact-delivery owner: external lease/journal/generation, immutable tokenizer custody and independent terminal attestation remain defined interfaces rather than consumed runtime capabilities. The current local verifier binds intent and bytes but is not independent provider truth.
 - Long-lived history rollover is not implemented by raw-payload retirement. The 1024 runtime dispatch and 4096 exact pre-send limits, bounded whole-JSON persistence and replay cost remain. A versioned append-only journal/checkpoint/archive migration must retain every attempt tombstone, unresolved binding and independently anchored frontier; do not delete history or increase limits as a substitute.
-- Execute all seventeen lifecycle/capacity/metrics Rust regressions on the final source and merge candidates, including their named-output and bounded-profile validation. No local Rust toolchain was available for this follow-up.
+- Execute all seventeen lifecycle/capacity/metrics Rust regressions on the final source and merge candidates, including their named-output and bounded-profile validation. Local toolchain availability and local passing tests do not replace immutable CI lane receipts.
 - Connect public cleanup and raw-free diagnostics to authenticated turn lifecycle/operations consumers; a method definition or a direct owner fixture is not proof of ordinary App Server ingress, cross-host safety or production operations.
+- Unix descriptor-relative storage defenses do not establish Windows parity, target-host power-loss durability or resistance to a privileged same-user replace-and-restore adversary.
 
 ## 6. Verification
 
-The final ordinary-source candidate must pass deterministic generated-truth checks, default V3 and explicit legacy profiles, V3 product regressions, typed-slot and attempt-bound terminal tests, tokenizer revocation/expiry races, process-reopen recovery, strict all-feature Clippy, dependency policy, exact source-head and deterministic synthetic-merge qualification. Read-only CI and source generation cannot self-certify independent acceptance, activation or release. The lifecycle, capacity and metrics command groups additionally require 17 exact native names; the lifecycle group retains a 257-turn owner protocol-fixture measurement. Neither source navigation nor native fixture evidence grants authenticated product E2E or target-host acceptance.
+The final ordinary-source candidate must pass deterministic generated-truth checks, default V3 and explicit legacy profiles, V3 product regressions, typed-slot and attempt-bound terminal tests, tokenizer revocation/expiry races, process-reopen recovery, strict all-feature Clippy, dependency policy, exact source-head and deterministic synthetic-merge qualification. Read-only CI and source generation cannot self-certify independent acceptance, activation or release. The lifecycle, capacity and metrics command groups additionally require 23 exact native names (17 lifecycle/capacity/metrics plus 6 Unix storage); the lifecycle group retains a 257-turn owner protocol-fixture measurement. Neither source navigation nor native fixture evidence grants authenticated product E2E or target-host acceptance.
 
 The canonical workflow uses separate source-head and deterministic synthetic-merge lanes. Both must retain passing receipts with source/base/tested commit/tree, run/attempt, command exit codes, nonempty native test counts and log digests. Candidate identity is revalidated before and after each command. Pending, skipped, cancelled and missing artifacts are not passes.
 
@@ -124,6 +130,7 @@ The complete previous technical guide, implementation map, dossier and product-p
 | `phase-observation` | `codex-rs/hepta-agentd/src/exact_context_delivery/metrics.rs::Metrics` | `codex-rs/hepta-agentd/src/exact_context_delivery.rs::observe_final_request` | `owner-metrics-regressions` | unverified |
 | `authenticated-app-server-ingress` | `codex-rs/hepta-agentd/src/prompt_runtime.rs::compile_and_stage_v3` | Not composed | `none` | unverified |
 | `external-security-consumption` | `codex-rs/hepta-agentd/src/context_security_runtime.rs::ContextSecurityCapabilitiesV3` | Not composed | `none` | unverified |
+| `private-storage` | `codex-rs/hepta-agentd/src/exact_context_delivery/storage.rs::verify_identity` | `codex-rs/hepta-agentd/src/exact_context_delivery.rs::ensure_available` | `owner-storage-regressions` | unverified |
 
 These are reviewed source anchors, not compiler reachability or execution evidence. The exact-candidate receipt records each required native name and command/log identity; native fixture passes never qualify authenticated ingress, independent provider truth or a target host.
 

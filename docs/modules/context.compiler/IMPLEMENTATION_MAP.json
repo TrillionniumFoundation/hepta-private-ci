@@ -3,7 +3,7 @@
   "module": "context.compiler",
   "generated": {
     "state": "docs/modules/context.compiler/CURRENT_STATE.json",
-    "stateSha256": "e44ec8dfcc2e8a9102ae3fee0b5b428f8885044018be59f0810ee488c836a0d2",
+    "stateSha256": "fb4e39d5cfc419bb9d197b7636866b679ec88fd91c8a806d035c6ba76f8fe044",
     "generator": "scripts/generate_context_compiler_module_docs.py",
     "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
     "integrationBranch": "codex/context-compiler-v3-closure-20260928"
@@ -67,7 +67,10 @@
     "scripts/generate_context_compiler_module_docs.py",
     "scripts/test_context_compiler_named_evidence.py",
     "scripts/test_context_compiler_single_owner.py",
-    "scripts/test_context_compiler_state.py"
+    "scripts/test_context_compiler_state.py",
+    "codex-rs/hepta-context-compiler/src/v2_tests.rs",
+    "codex-rs/hepta-agentd/src/exact_context_delivery/storage.rs",
+    "codex-rs/hepta-agentd/src/exact_context_delivery/storage_hardening_tests.rs"
   ],
   "publicSurface": [
     "compile_prompt_registry_v2",
@@ -222,10 +225,28 @@
         "exact_context_delivery::capacity_tests::unknown_observations_cannot_release_the_final_reservation",
         "exact_context_delivery::capacity_tests::reserve_exhaustion_rejects_before_writing_and_does_not_poison",
         "exact_context_delivery::capacity_tests::oversized_terminal_cannot_exceed_its_reserved_record_bound"
+      ],
+      "owner-storage-regressions": [
+        "exact_context_delivery::storage_hardening_tests::second_writer_is_rejected_by_the_existing_owner_lock",
+        "exact_context_delivery::storage_hardening_tests::state_and_next_symlinks_fail_closed_without_poisoning_unrelated_capacity",
+        "exact_context_delivery::storage_hardening_tests::permissive_or_hard_linked_state_files_are_rejected",
+        "exact_context_delivery::storage_hardening_tests::root_replacement_fences_the_owner_even_after_path_restoration",
+        "exact_context_delivery::storage_hardening_tests::lock_links_and_symlink_ancestors_cannot_redirect_the_owner",
+        "exact_context_delivery::storage_hardening_tests::replacing_the_lock_fences_the_pinned_owner"
       ]
     },
     "lifecycleFollowupPythonTestsPassed": 61,
     "lifecycleFollowupPythonScope": "Local editing-source identity, state generation, source-navigation, named-log/profile parsing and consumer projection only; not Rust, authenticated E2E or target-host acceptance.",
+    "adversarialAuditLocalChecks": {
+      "compilerTestsPassed": 55,
+      "pythonTestsPassed": 61,
+      "isolatedStorageHarnessTestsPassed": 6,
+      "storageHarnessScope": "Production store methods and module; substituted schema migration/validation and metrics. Not a full agentd crate pass.",
+      "consumerNativeExecution": "blocked_by_shared_disk_exhaustion",
+      "bazelLockUpdate": "blocked_by_dependency_TLS_certificate_validation",
+      "immutableDualLaneExecution": "unverified",
+      "compilerStrictAllTargetsClippy": "passed with -D warnings"
+    },
     "runner": "scripts/context_compiler_execution.py"
   },
   "knownOpenItems": [
@@ -242,13 +263,14 @@
     "Run immutable source-head and deterministic synthetic-merge qualification over the final direct-source commit; pre-commit materialization tests do not transfer qualification to the generated successor commit.",
     "Compose ContextSecurityCapabilitiesV3 into the existing actual exact-delivery owner: external lease/journal/generation, immutable tokenizer custody and independent terminal attestation remain defined interfaces rather than consumed runtime capabilities. The current local verifier binds intent and bytes but is not independent provider truth.",
     "Long-lived history rollover is not implemented by raw-payload retirement. The 1024 runtime dispatch and 4096 exact pre-send limits, bounded whole-JSON persistence and replay cost remain. A versioned append-only journal/checkpoint/archive migration must retain every attempt tombstone, unresolved binding and independently anchored frontier; do not delete history or increase limits as a substitute.",
-    "Execute all seventeen lifecycle/capacity/metrics Rust regressions on the final source and merge candidates, including their named-output and bounded-profile validation. No local Rust toolchain was available for this follow-up.",
-    "Connect public cleanup and raw-free diagnostics to authenticated turn lifecycle/operations consumers; a method definition or a direct owner fixture is not proof of ordinary App Server ingress, cross-host safety or production operations."
+    "Execute all seventeen lifecycle/capacity/metrics Rust regressions on the final source and merge candidates, including their named-output and bounded-profile validation. Local toolchain availability and local passing tests do not replace immutable CI lane receipts.",
+    "Connect public cleanup and raw-free diagnostics to authenticated turn lifecycle/operations consumers; a method definition or a direct owner fixture is not proof of ordinary App Server ingress, cross-host safety or production operations.",
+    "Unix descriptor-relative storage defenses do not establish Windows parity, target-host power-loss durability or resistance to a privileged same-user replace-and-restore adversary."
   ],
   "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
   "integrationBranch": "codex/context-compiler-v3-closure-20260928",
-  "runtimeSourceAnchor": "cd07ed1ca09bef0538955ce44b9a60d8bac2dba9",
-  "runtimeSourceTree": "94040868000198d9d18cd589cc31e3c967e03f18",
+  "runtimeSourceAnchor": "db57c5c3f446dfc6442caf5964b216392dce3932",
+  "runtimeSourceTree": "6aca7a8d4845da8943786a3827ee9330dc08eda0",
   "maturity": {
     "sourceExists": true,
     "compiledModuleReachability": "source_composed_pending_exact_head_execution",
@@ -313,6 +335,10 @@
     {
       "path": "codex-rs/hepta-agentd/src/prompt_product_v3.rs",
       "reason": "Historical alternate owner remains unregistered and is not part of the product call graph; the canonical path is prompt_runtime plus exact_context_delivery."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/exact_context_delivery/settled_history_tests.rs",
+      "reason": "Unregistered future settlement tests reference an absent settled_history implementation; they are not executable coverage or evidence that bounded history rollover is complete."
     }
   ],
   "runtimeSourceFiles": [
@@ -330,11 +356,11 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/exact_context_delivery.rs",
-      "blobSha": "2ec389b6d738a735ef18f5f378d88f10a13b248b"
+      "blobSha": "3dd172e68933f3ab97a96dead2fb6ea8c23eba59"
     },
     {
       "path": "codex-rs/hepta-agentd/src/exact_context_delivery/capacity_tests.rs",
-      "blobSha": "07678a90f653bd6b1594d941a5c70548367f9abd"
+      "blobSha": "34bf7f75272a362580475c11a3123c9522b64f3f"
     },
     {
       "path": "codex-rs/hepta-agentd/src/exact_context_delivery/framing_json.rs",
@@ -342,19 +368,19 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/exact_context_delivery/lifecycle.rs",
-      "blobSha": "a2a7fe61922b339ea5e9e8ae5f6628530bb6d94a"
+      "blobSha": "fe84ef93abbc1125f60e2ecc24ee90769130bf72"
     },
     {
       "path": "codex-rs/hepta-agentd/src/exact_context_delivery/lifecycle_tests.rs",
-      "blobSha": "c496d7f52044831f3ecedbeb4785c7baa60006f1"
+      "blobSha": "73af3271eacac1105ad1506ab19ee79d3cdcea22"
     },
     {
       "path": "codex-rs/hepta-agentd/src/exact_context_delivery/metrics.rs",
-      "blobSha": "b7d50c671bf790e525f6a3a025206a974562b6e8"
+      "blobSha": "d13972a5632006a255124b41489ca1d97170247e"
     },
     {
       "path": "codex-rs/hepta-agentd/src/exact_context_delivery/metrics_tests.rs",
-      "blobSha": "ba9cf70200cf081606e91218535b63ab8c590106"
+      "blobSha": "56d9255bde74bace59d6b68d181faff2694bfe8d"
     },
     {
       "path": "codex-rs/hepta-agentd/src/exact_context_delivery/registry_race_tests.rs",
@@ -378,7 +404,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/prompt_runtime_lifecycle_tests.rs",
-      "blobSha": "fcf9de3f80b7b63feed13a7a92383653e137acb1"
+      "blobSha": "e4a5890b3e86bdcc406e3ac2b227cfa766e283a8"
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/v2/delivery_evidence.rs",
@@ -390,7 +416,7 @@
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/v2/recovery.rs",
-      "blobSha": "a36ff1cadfa01bd995992162417bed9d8d153613"
+      "blobSha": "fed0853640ff083382704f3e1a17a437b22d7cb7"
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/v2/redaction.rs",
@@ -414,7 +440,7 @@
     },
     {
       "path": "scripts/context_compiler_execution.py",
-      "blobSha": "d7686aed3a85031c215cf6e41fa0d9b9dac0157f"
+      "blobSha": "94cd9588ea43c0087ed22d53bd50448c99c8e2cb"
     },
     {
       "path": "scripts/context_compiler_named_evidence.py",
@@ -439,6 +465,26 @@
     {
       "path": "scripts/test_context_compiler_state.py",
       "blobSha": "5bd3331e2c1d54edb5cc7e0847da9d269aa5cf35"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/v2.rs",
+      "blobSha": "816f4c5f86541dcd965de779a12e380e8998b4f8"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/v2_tests.rs",
+      "blobSha": "0951d2135243924762b72ad07e33a4db9d905eac"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/exact_context_delivery/storage.rs",
+      "blobSha": "93d048bd107232ee6a7bc59bc14086c20b3cd43f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/exact_context_delivery/storage_hardening_tests.rs",
+      "blobSha": "b5cb28d04fab74acf28584b590df62a1bfb23469"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/provider_closure.rs",
+      "blobSha": "5d4224d1860a1734f9628e9503ca38baf0be4d7d"
     }
   ],
   "consumerExecution": [
@@ -672,6 +718,56 @@
       "nativeTests": [],
       "testSources": [],
       "command": null,
+      "authenticatedProductE2E": "unverified",
+      "exactExecution": "CI_EXACT_HEAD"
+    },
+    {
+      "id": "private-storage",
+      "definition": {
+        "path": "codex-rs/hepta-agentd/src/exact_context_delivery/storage.rs",
+        "symbol": "verify_identity"
+      },
+      "consumer": {
+        "path": "codex-rs/hepta-agentd/src/exact_context_delivery.rs",
+        "symbol": "ensure_available",
+        "call": "verify_identity"
+      },
+      "sourceState": "source_composed",
+      "nativeTests": [
+        "exact_context_delivery::storage_hardening_tests::second_writer_is_rejected_by_the_existing_owner_lock",
+        "exact_context_delivery::storage_hardening_tests::state_and_next_symlinks_fail_closed_without_poisoning_unrelated_capacity",
+        "exact_context_delivery::storage_hardening_tests::permissive_or_hard_linked_state_files_are_rejected",
+        "exact_context_delivery::storage_hardening_tests::root_replacement_fences_the_owner_even_after_path_restoration",
+        "exact_context_delivery::storage_hardening_tests::lock_links_and_symlink_ancestors_cannot_redirect_the_owner",
+        "exact_context_delivery::storage_hardening_tests::replacing_the_lock_fences_the_pinned_owner"
+      ],
+      "testSources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/exact_context_delivery/storage_hardening_tests.rs",
+          "name": "exact_context_delivery::storage_hardening_tests::second_writer_is_rejected_by_the_existing_owner_lock"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/exact_context_delivery/storage_hardening_tests.rs",
+          "name": "exact_context_delivery::storage_hardening_tests::state_and_next_symlinks_fail_closed_without_poisoning_unrelated_capacity"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/exact_context_delivery/storage_hardening_tests.rs",
+          "name": "exact_context_delivery::storage_hardening_tests::permissive_or_hard_linked_state_files_are_rejected"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/exact_context_delivery/storage_hardening_tests.rs",
+          "name": "exact_context_delivery::storage_hardening_tests::root_replacement_fences_the_owner_even_after_path_restoration"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/exact_context_delivery/storage_hardening_tests.rs",
+          "name": "exact_context_delivery::storage_hardening_tests::lock_links_and_symlink_ancestors_cannot_redirect_the_owner"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/exact_context_delivery/storage_hardening_tests.rs",
+          "name": "exact_context_delivery::storage_hardening_tests::replacing_the_lock_fences_the_pinned_owner"
+        }
+      ],
+      "command": "owner-storage-regressions",
       "authenticatedProductE2E": "unverified",
       "exactExecution": "CI_EXACT_HEAD"
     }
