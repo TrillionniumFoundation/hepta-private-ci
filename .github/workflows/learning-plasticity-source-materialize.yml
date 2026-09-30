@@ -6,6 +6,11 @@ on:
       - feat/learning-plasticity-product-closure-20260928
     paths:
       - ".github/workflows/learning-plasticity-source-materialize.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/learning-plasticity-source-materialize.yml"
 
 permissions:
   contents: write
@@ -15,12 +20,13 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  SOURCE_SHA: ${{ github.sha }}
-  TARGET_BRANCH: ${{ github.ref_name }}
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  TARGET_BRANCH: feat/learning-plasticity-product-closure-20260928
 
 jobs:
   materialize:
     name: Materialize and qualify P0 closure
+    if: github.event_name == 'push' || github.event.pull_request.head.ref == 'feat/learning-plasticity-product-closure-20260928'
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     steps:
