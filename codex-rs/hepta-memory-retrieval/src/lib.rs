@@ -1,4 +1,8 @@
 //! Explainable, snapshot-revalidated local memory retrieval.
+//!
+//! Historical recall helpers that synthesize unlimited work control are hidden
+//! unless the migration-only `legacy-uncontrolled-retrieval` feature is enabled.
+//! Product callers use the controlled APIs or [`product`] facade.
 
 #![forbid(unsafe_code)]
 
@@ -52,8 +56,10 @@ pub use engram::MAX_ENGRAM_SETTLING_STEPS;
 pub use engram::MAX_ENGRAM_SYNAPSES;
 pub use engram::SynapseRelationV1;
 pub use engram::SynapseV1;
+#[cfg(any(test, feature = "legacy-uncontrolled-retrieval"))]
 pub use engram::recall_with_engram;
 pub use engram::recall_with_engram_controlled;
+#[cfg(any(test, feature = "legacy-uncontrolled-retrieval"))]
 pub use engram::settle_engram;
 pub use engram::settle_engram_controlled;
 pub use generation_bound::CandidateUnionEntryV1;
@@ -74,6 +80,7 @@ pub use generation_bound::RetrievalChannelWeightV1;
 pub use generation_bound::RetrievalPolicyV1;
 pub use generation_bound::adapt_generation_bound_recall_to_canonical_shadow_v1;
 pub use generation_bound::build_candidate_union;
+#[cfg(any(test, feature = "legacy-uncontrolled-retrieval"))]
 pub use generation_bound::recall;
 pub use generator::GeneratedCandidateInputV1;
 pub use generator::GeneratedCandidateUnionV1;
@@ -86,7 +93,9 @@ pub use generator::RetrievalGeneratorReceiptV1;
 pub use generator::RetrievalSourceCompletenessV1;
 pub use generator::build_candidate_union_from_generated;
 pub use generator::compile_cue;
+#[cfg(any(test, feature = "legacy-uncontrolled-retrieval"))]
 pub use generator::recall_generated;
+#[cfg(any(test, feature = "legacy-uncontrolled-retrieval"))]
 pub use generator::recall_generated_with_engram;
 pub use generator::recall_generated_with_engram_controlled;
 pub use lifecycle::AcknowledgedRetrievalV1;
@@ -178,6 +187,7 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
+#[cfg(any(test, feature = "legacy-uncontrolled-retrieval"))]
 pub fn retrieve(request: RetrievalRequest) -> Result<RetrievalReceipt, Error> {
     retrieve_request(&request)
 }
