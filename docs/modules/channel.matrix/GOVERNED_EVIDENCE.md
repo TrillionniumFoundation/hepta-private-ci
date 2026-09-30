@@ -70,8 +70,8 @@ Each JSON receipt has schema
     "sha256": "64-lowercase-hex"
   },
   "checks": [
-    "hermetic_homeserver_ack_loss",
-    "target_process_restart"
+    "encrypted_room_rotation",
+    "protected_backup_restore"
   ],
   "authorityGranted": false,
   "activation": false,
@@ -85,7 +85,38 @@ are closed-format identifiers, not free-form logs or secrets. Policy, keys,
 receipts, signatures and manifests are read into bounded byte snapshots and
 rejected if their file identity changes during the read.
 
-## 3. Signature contract
+## 3. Complete production-evidence profile
+
+Before a target or independent principal signs an attestation, validate its
+external evidence manifest against the closed profile in
+`PRODUCTION_QUALIFICATION_PROFILE.json`:
+
+```sh
+python3 scripts/channel_matrix_production_qualification.py \
+  --manifest /protected/evidence/target.manifest.json \
+  --expected-commit "$CANDIDATE_SHA" \
+  --expected-tree "$CANDIDATE_TREE" \
+  --output /protected/evidence/target.validation.json
+```
+
+The target inventory includes exact source-head and deterministic-merge results,
+a real enrolled homeserver, encrypted-room and multi-device/session rotation,
+protected backup restore, ENOSPC, permission loss, WAL/SHM corruption, stale
+snapshot recovery, sustained capacity, 429, disconnect/reconnect, slow server,
+long unknown effects, ACK/response loss, delayed echo, redaction, concurrent
+retry, sync rollback, final-use broker rotation and all owner/claim/session/
+authority/supervisor fencing cases. The independent inventory separately
+requires evidence reproduction, operator runbook review, security threat review,
+restore/rollback drill review and release-boundary review.
+
+Every required check must appear exactly once with `result: pass` and a distinct,
+canonical sibling artifact whose size and SHA-256 match. Missing, duplicate,
+failed, tampered, wrong-candidate, checkout-local or authority-granting evidence
+fails closed. The generated validation JSON is the manifest that should be bound
+by the scope-specific governed attestation. It still grants no activation or
+release authority.
+
+## 4. Signature contract
 
 The detached signature is a raw, exactly 64-byte Ed25519 signature over:
 
@@ -104,7 +135,7 @@ Private signing keys and signing operations belong to separately protected
 target/operator workflows. They must never be stored in the repository, emitted
 to artifacts or made available to a candidate-authored workflow.
 
-## 4. Status semantics
+## 5. Status semantics
 
 A valid receipt changes only the matching evidence state to `passed`.
 `activation`, `release` and `authority_granted` remain `false`. Missing receipts

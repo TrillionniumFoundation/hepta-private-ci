@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import re
 import unittest
 from pathlib import Path
@@ -79,6 +80,25 @@ class ChannelMatrixDocumentationTests(unittest.TestCase):
             self.assertNotIn("git push", source, workflow.name)
         self.assertFalse((ROOT / ".github/channel-matrix-repair.py").exists())
         self.assertFalse((ROOT / ".matrix-staging").exists())
+
+    def test_production_profile_names_every_external_gate(self) -> None:
+        profile = json.loads(
+            (DOCS / "PRODUCTION_QUALIFICATION_PROFILE.json").read_text()
+        )
+        target = set(profile["targetQualification"])
+        acceptance = set(profile["independentAcceptance"])
+        self.assertIn("encrypted_room_rotation", target)
+        self.assertIn("multi_device_session_rotation", target)
+        self.assertIn("protected_backup_restore", target)
+        self.assertIn("enospc_recovery", target)
+        self.assertIn("wal_shm_corruption_recovery", target)
+        self.assertIn("sustained_capacity", target)
+        self.assertIn("long_unknown_effect", target)
+        self.assertIn("stale_supervisor_generation_fencing", target)
+        self.assertIn("operator_runbook_review", acceptance)
+        self.assertIn("security_threat_review", acceptance)
+        governed = self.read_doc("GOVERNED_EVIDENCE.md")
+        self.assertIn("channel_matrix_production_qualification.py", governed)
 
 
 if __name__ == "__main__":
