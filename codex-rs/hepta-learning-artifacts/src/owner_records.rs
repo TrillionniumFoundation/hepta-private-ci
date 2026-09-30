@@ -218,9 +218,9 @@ impl LearningArtifactOwnerHost {
             .ok_or(ArtifactOwnerHostError::CheckpointMismatch)?;
         let requirement = RegistryHeadRequirementV1 {
             registry_id: self.verifier.trust.registry_id.clone(),
-            minimum_generation: self.verifier.trust.minimum_registry_generation,
+            minimum_generation: signed.witness.generation,
             expected_predecessor_head_digest: checkpoint.expected_registry_predecessor_head,
-            minimum_authority_epoch: self.verifier.trust.minimum_authority_epoch,
+            minimum_authority_epoch: signed.witness.authority_epoch,
             now: signed.witness.issued_at,
         };
         let verified = self
