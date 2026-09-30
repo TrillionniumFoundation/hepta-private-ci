@@ -134,7 +134,6 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
     }
     let mut pending_assignment = None;
 
-    let cut = store.lane_c_snapshot(&access, &scope, now).await?;
     let observation = store
         .observe_memory_retrieval(&access, &RetrievalRequest::new(query, now))
         .await?;
@@ -148,6 +147,9 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         .collect::<Result<Vec<_>, _>>()?;
     record_ids.sort();
     record_ids.dedup();
+    let cut = store
+        .lane_c_snapshot_ids(&access, &scope, now, record_ids.clone())
+        .await?;
     let admission_read = cut
         .read_ids(ReadIdsRequestV1 {
             snapshot_digest: cut.snapshot().snapshot_digest,
@@ -351,9 +353,32 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         }
     }
 
-    let selected_read = read_selected_items(&cut, &response.items)?;
-    let selected_read_binding =
-        bind_selected_read(&cut, &selected_read, expected_retrieval_context_digest);
+    // Publish a snapshot over exactly the delivered IDs. Its global owner
+    // witness must still equal the admitted candidate cut, so narrowing cannot
+    // hide an unrelated correction, deletion, source append or validity change.
+    let output_ids = response
+        .items
+        .iter()
+        .map(|item| {
+            StableId::new(item.memory_id.as_str())
+                .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    let output_cut = store
+        .lane_c_snapshot_ids(&access, &scope, now_seconds()?, output_ids)
+        .await?;
+    if output_cut.cut_digest() != cut.cut_digest() {
+        return Err(CognitiveStoreError::Conflict(
+            "cognitive owner changed before context publication".to_string(),
+        )
+        .into());
+    }
+    let selected_read = read_selected_items(&output_cut, &response.items)?;
+    let selected_read_binding = bind_selected_read(
+        &output_cut,
+        &selected_read,
+        expected_retrieval_context_digest,
+    );
     response.snapshot_digest = selected_read.snapshot_digest().to_string();
     response.read_digest = selected_read_binding.to_string();
     let encoded_context = serde_json::to_vec(&response)
@@ -383,6 +408,20 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
     .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?;
     if !plan.read_allowed {
         response.items.clear();
+        let empty_cut = store
+            .lane_c_snapshot_ids(&access, &scope, now_seconds()?, Vec::new())
+            .await?;
+        if empty_cut.cut_digest() != cut.cut_digest() {
+            return Err(CognitiveStoreError::Conflict(
+                "cognitive owner changed before context abstention".to_string(),
+            )
+            .into());
+        }
+        let empty_read = read_selected_items(&empty_cut, &response.items)?;
+        response.snapshot_digest = empty_read.snapshot_digest().to_string();
+        response.read_digest =
+            bind_selected_read(&empty_cut, &empty_read, expected_retrieval_context_digest)
+                .to_string();
     }
     response.plan = Some(CognitiveContextPlan {
         evaluated_context_digest: plan.context_digest.to_string(),
@@ -556,8 +595,15 @@ pub(crate) async fn revalidate_with_retrieval_context(
     }
     let access = CognitiveAccess::agent_private(owner.clone());
     let scope = CognitiveScope::AgentPrivate;
+    let selected_ids = items
+        .iter()
+        .map(|item| {
+            StableId::new(item.memory_id.as_str())
+                .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))
+        })
+        .collect::<Result<Vec<_>, _>>()?;
     let cut = store
-        .lane_c_snapshot(&access, &scope, now_seconds()?)
+        .lane_c_snapshot_ids(&access, &scope, now_seconds()?, selected_ids)
         .await?;
     if cut.snapshot().snapshot_digest != expected_snapshot {
         return Err(CognitiveStoreError::Conflict(

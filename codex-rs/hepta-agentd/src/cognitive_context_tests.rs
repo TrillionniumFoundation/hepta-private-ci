@@ -34,6 +34,89 @@ fn encoded_read_budget_unavailability_is_local_not_store_failure() {
 mod hnmf;
 
 #[tokio::test]
+async fn final_use_reacquires_only_delivered_ids_with_the_global_owner_witness() {
+    let temp = tempfile::tempdir().unwrap();
+    let fleet = temp.path().join("fleet");
+    std::fs::create_dir_all(&fleet).unwrap();
+    let owner = AgentId::parse("00000000-0000-4000-8000-000000000122").unwrap();
+    let layout = HeptaFleetRoot::parse(fleet).unwrap().layout().agent(&owner);
+    let store = CognitiveStore::open(&layout).await.unwrap();
+    let access = CognitiveAccess::agent_private(owner.clone());
+    let scope = CognitiveScope::AgentPrivate;
+    let citation = store
+        .append_source(
+            &access,
+            &SourceDraft {
+                scope: scope.clone(),
+                kind: LedgerSourceKind::ExplicitMemoryDirective,
+                event_key: "selected-context-source".to_string(),
+                content: b"orchard evidence".to_vec(),
+                observed_at_unix_seconds: 100,
+            },
+        )
+        .await
+        .unwrap();
+    for key in ["first", "second"] {
+        store
+            .remember_memory(
+                &access,
+                &MemoryDraft {
+                    stable_key: key.to_string(),
+                    revision: MemoryRevisionDraft {
+                        scope: scope.clone(),
+                        content: format!("verified orchard {key}"),
+                        verification: MemoryVerification::Verified,
+                        lifecycle: MemoryLifecycleState::Active,
+                        valid_from_unix_seconds: 100,
+                        valid_to_unix_seconds: None,
+                        citations: vec![citation.clone()],
+                    },
+                },
+            )
+            .await
+            .unwrap();
+    }
+    let context = read(&store, &owner, 1, "orchard", 1, None).await.unwrap();
+    assert_eq!(context.items.len(), 1);
+    let ids = context
+        .items
+        .iter()
+        .map(|item| codex_hepta_types::StableId::new(item.memory_id.as_str()).unwrap())
+        .collect();
+    let cut = store
+        .lane_c_snapshot_ids(&access, &scope, 200, ids)
+        .await
+        .unwrap();
+    assert_eq!(
+        context.snapshot_digest,
+        cut.snapshot().snapshot_digest.to_string()
+    );
+    assert_ne!(
+        context.snapshot_digest,
+        store
+            .lane_c_snapshot(&access, &scope, 200)
+            .await
+            .unwrap()
+            .snapshot()
+            .snapshot_digest
+            .to_string()
+    );
+    let current = revalidate(
+        &store,
+        &owner,
+        &context.snapshot_digest,
+        &context.read_digest,
+        context.omitted_records,
+        &context.items,
+        context.plan.as_ref(),
+        None,
+    )
+    .await
+    .unwrap();
+    assert_eq!(current.verified_item_count, 1);
+}
+
+#[tokio::test]
 async fn context_reads_real_owner_content_and_removes_committed_tombstones() {
     let temp = tempfile::tempdir().unwrap();
     let fleet = temp.path().join("fleet");
