@@ -262,6 +262,14 @@ impl IterationLedgerV1 {
         snapshot: IterationLedgerSnapshotV1,
     ) -> Result<Self, IterationLedgerError> {
         let mut ledger = Self::new(snapshot.envelope)?;
+        // Reject oversized public snapshots before duplicating their candidate
+        // identities or replaying attacker-supplied event collections.
+        if snapshot.candidates.len() > ledger.envelope.maximum_candidates as usize {
+            return Err(IterationLedgerError::CandidateLimitExceeded);
+        }
+        if snapshot.events.len() > MAX_ITERATION_EVENTS {
+            return Err(IterationLedgerError::EventLimitExceeded);
+        }
         let expected_states: BTreeMap<StableId, IterationCandidateStateV1> = snapshot
             .candidates
             .iter()
@@ -294,6 +302,10 @@ impl IterationLedgerV1 {
         Ok(ledger)
     }
 }
+
+#[cfg(test)]
+#[path = "iteration_ledger_capacity_tests.rs"]
+mod capacity_tests;
 
 const fn expected_kind(next: IterationCandidateStateV1) -> IterationEvidenceKindV1 {
     match next {
