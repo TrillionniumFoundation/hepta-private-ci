@@ -41,7 +41,9 @@ pub fn fixture(
         plan.ope.maximum_weight = FixedQ32::from_raw(2_i64 << 32);
         plan.confidence.minimum_clusters = 4096;
         plan.confidence.simultaneous_comparisons = 4;
-        plan.plan_digest = plan.canonical_digest().expect("rebind temporal plan");
+        plan.plan_digest = plan
+            .canonical_digest()
+            .unwrap_or_else(|error| panic!("rebind temporal plan: {error:?}"));
     }
     let roles = vec![MetricRoleContractV2 {
         metric_id: id("utility"),
@@ -99,7 +101,7 @@ pub fn fixture(
         &candidate,
         &baseline,
     )
-    .expect("freeze typed temporal plan");
+    .unwrap_or_else(|error| panic!("freeze typed temporal plan: {error:?}"));
     let template = existing::inputs();
     let mut inputs = TemporalComparisonInputsV1 {
         training: template.training.clone(),
@@ -145,7 +147,7 @@ pub fn fixture(
                         0
                     },
                 )
-                .expect("evaluation probability");
+                .unwrap_or_else(|error| panic!("evaluation probability: {error:?}"));
             }
             row
         };

@@ -7,7 +7,7 @@ use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
 pub fn id(value: &str) -> StableId {
-    StableId::new(value).expect("fixture id")
+    StableId::new(value).unwrap_or_else(|error| panic!("fixture id: {error:?}"))
 }
 pub fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
@@ -42,7 +42,9 @@ fn temporal(name: &str) -> TemporalEvaluationPlan {
             minimum_clusters: ROWS,
         },
     };
-    value.plan_digest = value.canonical_digest().expect("temporal digest");
+    value.plan_digest = value
+        .canonical_digest()
+        .unwrap_or_else(|error| panic!("temporal digest: {error:?}"));
     value
 }
 
@@ -85,7 +87,7 @@ fn inputs(channel: &str, good: FixedQ32, bad: FixedQ32) -> TemporalComparisonInp
                         .map(|action| OpeAction {
                             action_id: id(action),
                             behavior_probability: ProbabilityQ32::from_raw(1 << 31)
-                                .expect("behavior"),
+                                .unwrap_or_else(|error| panic!("behavior: {error:?}")),
                             evaluation_probability: ProbabilityQ32::from_raw(
                                 if (action == "good") == candidate {
                                     1 << 32
@@ -93,7 +95,7 @@ fn inputs(channel: &str, good: FixedQ32, bad: FixedQ32) -> TemporalComparisonInp
                                     0
                                 },
                             )
-                            .expect("evaluation"),
+                            .unwrap_or_else(|error| panic!("evaluation: {error:?}")),
                             predicted_outcome: FixedQ32::ZERO,
                         })
                         .collect(),
@@ -164,7 +166,8 @@ pub fn fixture() -> (
             measurement_start_micros: 20,
             measurement_end_micros: 100,
             provenance_digest: digest(&format!("synthetic-custodian-{name}")),
-            inputs_digest: product_outcome_inputs_digest_v1(inputs).expect("input digest"),
+            inputs_digest: product_outcome_inputs_digest_v1(inputs)
+                .unwrap_or_else(|error| panic!("input digest: {error:?}")),
             candidate_plan: temporal(&format!("{name}-candidate")),
             baseline_plan: temporal(&format!("{name}-baseline")),
         })
@@ -231,14 +234,16 @@ pub fn fixture() -> (
         sources,
         channels,
     )
-    .expect("freeze native measured plan");
+    .unwrap_or_else(|error| panic!("freeze native measured plan: {error:?}"));
     let batch = plan
         .channels()
         .iter()
         .zip(data)
         .map(|(contract, inputs)| ProductOutcomeInputV1 {
             channel_id: contract.channel_id.clone(),
-            contract_digest: contract.canonical_digest().expect("channel digest"),
+            contract_digest: contract
+                .canonical_digest()
+                .unwrap_or_else(|error| panic!("channel digest: {error:?}")),
             inputs,
         })
         .collect();

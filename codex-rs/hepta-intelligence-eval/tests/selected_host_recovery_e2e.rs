@@ -41,7 +41,7 @@ fn create(path: &Path) -> File {
         .write(true)
         .create_new(true)
         .open(path)
-        .expect("create test file")
+        .unwrap_or_else(|error| panic!("create test file: {error:?}"))
 }
 
 fn reopen(path: &Path) -> File {
@@ -49,7 +49,7 @@ fn reopen(path: &Path) -> File {
         .read(true)
         .write(true)
         .open(path)
-        .expect("reopen test file")
+        .unwrap_or_else(|error| panic!("reopen test file: {error:?}"))
 }
 
 #[test]

@@ -22,15 +22,17 @@ pub struct DiskAnchor {
 
 impl DiskAnchor {
     pub fn new(root: &Path, crash_at: Option<u64>) -> Self {
-        fs::create_dir_all(root).expect("fixture anchor directory");
+        fs::create_dir_all(root)
+            .unwrap_or_else(|error| panic!("fixture anchor directory: {error:?}"));
         let lock = OpenOptions::new()
             .read(true)
             .write(true)
             .create(true)
             .truncate(false)
             .open(root.join("anchor.lock"))
-            .expect("fixture anchor lock");
-        lock.try_lock().expect("exclusive fixture anchor");
+            .unwrap_or_else(|error| panic!("fixture anchor lock: {error:?}"));
+        lock.try_lock()
+            .unwrap_or_else(|error| panic!("exclusive fixture anchor: {error:?}"));
         Self {
             root: root.to_owned(),
             _lock: lock,
@@ -59,9 +61,21 @@ impl ProductEvaluationAttemptAnchorStoreV1 for DiskAnchor {
             return Err(ProductEvaluationAttemptJournalErrorV1::Corrupt);
         }
         let anchor = ProductEvaluationAttemptAnchorV1 {
-            binding: Digest32::from_array(bytes[..32].try_into().expect("binding width")),
-            event_count: u64::from_be_bytes(bytes[32..40].try_into().expect("count width")),
-            state_digest: Digest32::from_array(bytes[40..72].try_into().expect("digest width")),
+            binding: Digest32::from_array(
+                bytes[..32]
+                    .try_into()
+                    .unwrap_or_else(|error| panic!("binding width: {error:?}")),
+            ),
+            event_count: u64::from_be_bytes(
+                bytes[32..40]
+                    .try_into()
+                    .unwrap_or_else(|error| panic!("count width: {error:?}")),
+            ),
+            state_digest: Digest32::from_array(
+                bytes[40..72]
+                    .try_into()
+                    .unwrap_or_else(|error| panic!("digest width: {error:?}")),
+            ),
         };
         if anchor.binding != binding {
             return Err(ProductEvaluationAttemptJournalErrorV1::Binding);
@@ -120,7 +134,7 @@ pub fn create(path: &Path) -> File {
         .write(true)
         .create_new(true)
         .open(path)
-        .expect("create fixture file")
+        .unwrap_or_else(|error| panic!("create fixture file: {error:?}"))
 }
 
 pub fn reopen(path: &Path) -> File {
@@ -128,7 +142,7 @@ pub fn reopen(path: &Path) -> File {
         .read(true)
         .write(true)
         .open(path)
-        .expect("open fixture file")
+        .unwrap_or_else(|error| panic!("open fixture file: {error:?}"))
 }
 
 pub fn retain_holdout_anchor(path: &Path, anchor: FinalHoldoutCasAnchorV1) {
@@ -137,20 +151,34 @@ pub fn retain_holdout_anchor(path: &Path, anchor: FinalHoldoutCasAnchorV1) {
     bytes.extend_from_slice(&anchor.record_count.to_be_bytes());
     bytes.extend_from_slice(anchor.state_digest.as_array());
     let mut file = create(path);
-    file.write_all(&bytes).expect("write holdout anchor");
-    file.sync_all().expect("sync holdout anchor");
-    File::open(path.parent().expect("anchor parent"))
-        .expect("parent")
+    file.write_all(&bytes)
+        .unwrap_or_else(|error| panic!("write holdout anchor: {error:?}"));
+    file.sync_all()
+        .unwrap_or_else(|error| panic!("sync holdout anchor: {error:?}"));
+    File::open(path.parent().unwrap_or_else(|| panic!("anchor parent")))
+        .unwrap_or_else(|error| panic!("parent: {error:?}"))
         .sync_all()
-        .expect("sync parent");
+        .unwrap_or_else(|error| panic!("sync parent: {error:?}"));
 }
 
 pub fn load_holdout_anchor(path: &Path) -> FinalHoldoutCasAnchorV1 {
-    let bytes = fs::read(path).expect("holdout anchor");
+    let bytes = fs::read(path).unwrap_or_else(|error| panic!("holdout anchor: {error:?}"));
     assert_eq!(bytes.len(), 48);
     FinalHoldoutCasAnchorV1 {
-        fence_generation: u64::from_be_bytes(bytes[..8].try_into().expect("generation")),
-        record_count: u64::from_be_bytes(bytes[8..16].try_into().expect("count")),
-        state_digest: Digest32::from_array(bytes[16..].try_into().expect("digest")),
+        fence_generation: u64::from_be_bytes(
+            bytes[..8]
+                .try_into()
+                .unwrap_or_else(|error| panic!("generation: {error:?}")),
+        ),
+        record_count: u64::from_be_bytes(
+            bytes[8..16]
+                .try_into()
+                .unwrap_or_else(|error| panic!("count: {error:?}")),
+        ),
+        state_digest: Digest32::from_array(
+            bytes[16..]
+                .try_into()
+                .unwrap_or_else(|error| panic!("digest: {error:?}")),
+        ),
     }
 }

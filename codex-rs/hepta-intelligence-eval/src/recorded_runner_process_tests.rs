@@ -346,7 +346,7 @@ fn product_process_worker() {
     // signature verification has its separate signed-product E2E qualification.
     let decision = publication_decision();
     let mut sink = ReconciledProductQualificationSinkV1::new(FilePublicationFixture {
-        root: root.clone(),
+        root,
         kill_after_commit: stage == "publication_ack_lost",
     });
     let mut recorded = RecordedPublicationSinkV1 {

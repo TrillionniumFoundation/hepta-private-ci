@@ -39,7 +39,7 @@ fn create(path: &Path) -> File {
         .write(true)
         .create_new(true)
         .open(path)
-        .expect("create test file")
+        .unwrap_or_else(|error| panic!("create test file: {error:?}"))
 }
 
 fn reopen(path: &Path) -> File {
@@ -47,7 +47,7 @@ fn reopen(path: &Path) -> File {
         .read(true)
         .write(true)
         .open(path)
-        .expect("reopen test file")
+        .unwrap_or_else(|error| panic!("reopen test file: {error:?}"))
 }
 
 #[test]
@@ -64,14 +64,14 @@ fn exercise_recovery(cut: u64) {
         "hepta-selected-host-outcome-recovery-{}-{ordinal}",
         std::process::id()
     ));
-    fs::create_dir(&root).expect("test root");
+    fs::create_dir(&root).unwrap_or_else(|error| panic!("test root: {error:?}"));
     let holdout_path = root.join("holdout.cas");
     let attempt_path = root.join("attempt.journal");
     let artifact_root = root.join("outcome-artifacts");
     let publication_root = root.join("publications");
     let namespace = digest("selected-host-outcome-holdout-namespace");
     let store = LockedFileFinalHoldoutCasStoreV1::create(create(&holdout_path), namespace)
-        .expect("holdout store");
+        .unwrap_or_else(|error| panic!("holdout store: {error:?}"));
     let owner = FencedFinalHoldoutOwnerV1::initialize(
         store,
         namespace,
@@ -81,7 +81,7 @@ fn exercise_recovery(cut: u64) {
             lease_digest: digest("selected-host-outcome-lease"),
         },
     )
-    .expect("holdout owner");
+    .unwrap_or_else(|error| panic!("holdout owner: {error:?}"));
     let mut runner = RecordedProductEvaluationRunnerV1::new(owner);
     let attempt_binding = digest("selected-host-outcome-attempt-binding");
     let anchor_store = FaultingAnchorStore::new(cut);
@@ -90,12 +90,12 @@ fn exercise_recovery(cut: u64) {
         attempt_binding,
         anchor_store.clone(),
     )
-    .expect("anchored journal");
+    .unwrap_or_else(|error| panic!("anchored journal: {error:?}"));
     let attempt_id = id("attempt:selected-host-outcome-recovery");
     let (plan, mut provider, roles) = fixture();
     let outcome = runner
         .evaluate_outcome_comparison(attempt_id.clone(), &plan, &mut provider, &mut journal)
-        .expect("multi-outcome comparison");
+        .unwrap_or_else(|error| panic!("multi-outcome comparison: {error:?}"));
     let scope = digest("selected-host-outcome-learning-scope");
     let generator_key = SigningKey::from_bytes(&[61; 32]);
     let evaluator_key = SigningKey::from_bytes(&[73; 32]);
@@ -107,7 +107,7 @@ fn exercise_recovery(cut: u64) {
     };
     let bundle = runner
         .outcome_qualification_bundle(&outcome, &context)
-        .expect("outcome bundle");
+        .unwrap_or_else(|error| panic!("outcome bundle: {error:?}"));
     let (trust, evidence) = verifier_and_evidence(&bundle, &roles, &generator_key, &evaluator_key);
     let selected_host_binding = digest("selected-host-outcome-binding");
     let mut current_clock = clock(50);
@@ -131,12 +131,14 @@ fn exercise_recovery(cut: u64) {
         ))
     ));
     assert_eq!(
-        fs::read_dir(&artifact_root).expect("artifact root").count(),
+        fs::read_dir(&artifact_root)
+            .unwrap_or_else(|error| panic!("artifact root: {error:?}"))
+            .count(),
         1
     );
     assert_eq!(
         fs::read_dir(&publication_root)
-            .expect("publication root")
+            .unwrap_or_else(|error| panic!("publication root: {error:?}"))
             .count(),
         0
     );
@@ -147,11 +149,11 @@ fn exercise_recovery(cut: u64) {
         attempt_binding,
         anchor_store.clone(),
     )
-    .expect("recover journal and anchor complete tail");
+    .unwrap_or_else(|error| panic!("recover journal and anchor complete tail: {error:?}"));
     let before = recovered
         .latest(&attempt_id)
-        .expect("latest")
-        .expect("attempt");
+        .unwrap_or_else(|error| panic!("latest: {error:?}"))
+        .unwrap_or_else(|| panic!("attempt"));
     assert_eq!(
         before.transition.phase,
         if cut == 4 {
@@ -202,12 +204,14 @@ fn exercise_recovery(cut: u64) {
         "a multi-outcome archive is not a single-outcome archive"
     );
     assert_eq!(
-        recovered.latest(&attempt_id).expect("unchanged"),
+        recovered
+            .latest(&attempt_id)
+            .unwrap_or_else(|error| panic!("unchanged: {error:?}")),
         Some(before)
     );
     assert_eq!(
         fs::read_dir(&publication_root)
-            .expect("no publication")
+            .unwrap_or_else(|error| panic!("no publication: {error:?}"))
             .count(),
         0
     );
@@ -221,11 +225,13 @@ fn exercise_recovery(cut: u64) {
             &trust,
             &mut current_clock,
         )
-        .expect("decode and re-verify actual persisted outcome bundle");
+        .unwrap_or_else(|error| {
+            panic!("decode and re-verify actual persisted outcome bundle: {error:?}")
+        });
     assert_eq!(published.transition.phase, Phase::Published);
     assert_eq!(
         fs::read_dir(&publication_root)
-            .expect("publication root")
+            .unwrap_or_else(|error| panic!("publication root: {error:?}"))
             .count(),
         1
     );
@@ -237,11 +243,11 @@ fn exercise_recovery(cut: u64) {
         &publication_root,
         selected_host_binding,
     )
-    .expect("existing outcome publication reconciliation");
+    .unwrap_or_else(|error| panic!("existing outcome publication reconciliation: {error:?}"));
     assert_eq!(reconciled, published);
     assert_eq!(
         fs::read_dir(&publication_root)
-            .expect("one publication")
+            .unwrap_or_else(|error| panic!("one publication: {error:?}"))
             .count(),
         1
     );
@@ -264,11 +270,11 @@ fn exercise_recovery(cut: u64) {
         attempt_binding,
         anchor_store,
     )
-    .expect("second restart");
+    .unwrap_or_else(|error| panic!("second restart: {error:?}"));
     assert_eq!(
         reopened
             .history(&attempt_id)
-            .expect("history")
+            .unwrap_or_else(|error| panic!("history: {error:?}"))
             .iter()
             .map(|receipt| receipt.transition.phase)
             .collect::<Vec<_>>(),
@@ -283,5 +289,5 @@ fn exercise_recovery(cut: u64) {
         ]
     );
     drop((reopened, runner));
-    fs::remove_dir_all(root).expect("remove test root");
+    fs::remove_dir_all(root).unwrap_or_else(|error| panic!("remove test root: {error:?}"));
 }

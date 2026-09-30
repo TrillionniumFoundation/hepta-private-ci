@@ -23,7 +23,7 @@ fn digest(value: &str) -> Digest32 {
 }
 
 fn id(value: &str) -> StableId {
-    StableId::new(value).expect("stable id")
+    StableId::new(value).unwrap_or_else(|error| panic!("stable id: {error:?}"))
 }
 
 fn open(path: &std::path::Path, create: bool) -> std::fs::File {
@@ -32,7 +32,7 @@ fn open(path: &std::path::Path, create: bool) -> std::fs::File {
         .write(true)
         .create_new(create)
         .open(path)
-        .expect("journal file")
+        .unwrap_or_else(|error| panic!("journal file: {error:?}"))
 }
 
 #[test]
