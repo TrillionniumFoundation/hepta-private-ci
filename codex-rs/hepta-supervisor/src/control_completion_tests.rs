@@ -362,7 +362,7 @@ impl Fixture {
                 release_id: ReleaseId::parse("unversioned")?,
                 identity: identity(),
             };
-            write_lease(record.layout.run_root(), &lease)?;
+            write_lease(record.layout.owner_run_root(), &lease)?;
             slot.runtime = Some(AgentRuntime {
                 process: Process {
                     label: "main.kill",
@@ -406,7 +406,7 @@ impl Fixture {
             requested,
             Some(requested + 5_000),
         )?;
-        write_control_intent(record.layout.run_root(), &intent)?;
+        write_control_intent(record.layout.owner_run_root(), &intent)?;
         Ok(())
     }
 }
@@ -416,7 +416,7 @@ fn idle_stop_and_kill_cancel_the_persisted_restart_without_a_fake_process() -> R
     for kill in [false, true] {
         let mut fixture = Fixture::new(false)?;
         let record = fixture.record()?;
-        pending(record.layout.run_root())?;
+        pending(record.layout.owner_run_root())?;
         fixture.slot.restart_pending = true;
         if kill {
             fixture.supervisor.kill_slot(&agent(), &mut fixture.slot)?;
@@ -426,9 +426,9 @@ fn idle_stop_and_kill_cancel_the_persisted_restart_without_a_fake_process() -> R
                 .stop_slot(&agent(), &mut fixture.slot, fixture.now)?;
         }
         assert!(!fixture.slot.restart_pending);
-        assert!(pending_restart(record.layout.run_root(), 3)?.is_none());
+        assert!(pending_restart(record.layout.owner_run_root(), 3)?.is_none());
         assert_eq!(
-            read_main_restart_budget(record.layout.run_root())?
+            read_main_restart_budget(record.layout.owner_run_root())?
                 .expect("history")
                 .attempts,
             1
@@ -511,7 +511,7 @@ fn pending_termination_blocks_a_new_restart_claim() -> Result<()> {
             .restart_slot(&agent(), &mut fixture.slot, fixture.now)
             .is_err()
     );
-    assert!(read_main_restart_budget(record.layout.run_root())?.is_none());
+    assert!(read_main_restart_budget(record.layout.owner_run_root())?.is_none());
     assert!(fixture.calls.lock().expect("calls").is_empty());
     Ok(())
 }
@@ -520,7 +520,7 @@ fn pending_termination_blocks_a_new_restart_claim() -> Result<()> {
 fn live_recovery_cancels_restart_before_restoring_the_pending_claim() -> Result<()> {
     let mut fixture = Fixture::new(true)?;
     let record = fixture.record()?;
-    pending(record.layout.run_root())?;
+    pending(record.layout.owner_run_root())?;
     fixture.stop_intent(false)?;
     fixture.slot.restart_pending = true;
     fixture
@@ -528,8 +528,8 @@ fn live_recovery_cancels_restart_before_restoring_the_pending_claim() -> Result<
         .recover_restart_budget(&agent(), &mut fixture.slot, fixture.now)?;
     assert!(!fixture.slot.restart_pending);
     assert!(fixture.slot.restart_not_before.is_none());
-    assert!(pending_restart(record.layout.run_root(), 3)?.is_none());
-    assert!(has_unresolved(record.layout.run_root())?);
+    assert!(pending_restart(record.layout.owner_run_root(), 3)?.is_none());
+    assert!(has_unresolved(record.layout.owner_run_root())?);
     assert!(fixture.slot.runtime.is_some());
     Ok(())
 }

@@ -94,7 +94,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             .as_ref()
             .ok_or_else(|| SupervisorError::Invalid(format!("agent {agent_id} is not active")))?;
         control_intent::prepare_stop(
-            record.layout.run_root(),
+            record.layout.owner_run_root(),
             agent_id,
             runtime.spawn_generation,
             &runtime.identity,
@@ -114,7 +114,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 )
             })
         {
-            control_intent::mark_stop_requested(record.layout.run_root())
+            control_intent::mark_stop_requested(record.layout.owner_run_root())
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         }
         result
@@ -133,7 +133,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         let runtime = active_runtime(agent_id, slot)?;
         let spawn_generation = runtime.spawn_generation;
         let durable = control_intent::recover_pending(
-            record.layout.run_root(),
+            record.layout.owner_run_root(),
             agent_id,
             spawn_generation,
             &runtime.identity,
@@ -203,13 +203,13 @@ impl<D: ProcessDriver> Supervisor<D> {
                 record.lifecycle.lifecycle,
                 AgentLifecycle::Stopped | AgentLifecycle::Failed
             )
-            || crate::lease::read_lease(record.layout.run_root())?.is_some()
+            || crate::lease::read_lease(record.layout.owner_run_root())?.is_some()
             || crate::lease::read_matrix_lease(record.layout.matrixd_process_lease())?.is_some()
         {
             return Ok(false);
         }
         control_intent::reconcile_absent(
-            record.layout.run_root(),
+            record.layout.owner_run_root(),
             agent_id,
             record.lifecycle.lifecycle,
         )
@@ -228,9 +228,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         let record = self.record(agent_id)?;
         // Attempt both durable cancellations. A sidecar failure must not hide
         // the budget cancellation, and vice versa.
-        let lineage = restart_lineage::cancel(record.layout.run_root(), agent_id)
+        let lineage = restart_lineage::cancel(record.layout.owner_run_root(), agent_id)
             .map_err(|error| SupervisorError::Invalid(error.to_string()));
-        let budget = crate::restart_budget::cancel_restart(record.layout.run_root())
+        let budget = crate::restart_budget::cancel_restart(record.layout.owner_run_root())
             .map_err(|error| SupervisorError::Invalid(error.to_string()));
         lineage.and(budget)
     }
@@ -255,7 +255,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 SupervisorError::Invalid(format!("agent {agent_id} is not active"))
             })?;
             control_intent::prepare_kill(
-                record.layout.run_root(),
+                record.layout.owner_run_root(),
                 agent_id,
                 runtime.spawn_generation,
                 &runtime.identity,
@@ -321,7 +321,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         };
         let acknowledgement = if intent.is_ok() && main.is_ok() {
             self.record(agent_id).and_then(|record| {
-                control_intent::mark_kill_requested(record.layout.run_root())
+                control_intent::mark_kill_requested(record.layout.owner_run_root())
                     .map_err(|error| SupervisorError::Invalid(error.to_string()))
             })
         } else {
@@ -369,7 +369,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             return Err(SupervisorError::ReleaseChangePending(agent_id.clone()));
         }
         let record = self.record(agent_id)?;
-        if control_intent::has_unresolved(record.layout.run_root())
+        if control_intent::has_unresolved(record.layout.owner_run_root())
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?
         {
             return Err(SupervisorError::Invalid(format!(
@@ -380,7 +380,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             return Err(SupervisorError::NoPreviousCommand(agent_id.clone()));
         }
         let claim = claim_restart(
-            record.layout.run_root(),
+            record.layout.owner_run_root(),
             self.config.restart_max_attempts,
             self.config.restart_window,
             self.config.restart_backoff_base,
@@ -404,7 +404,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             .transpose()
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         restart_lineage::begin(
-            record.layout.run_root(),
+            record.layout.owner_run_root(),
             agent_id,
             claim.window_started_unix_ms,
             claim.attempt,

@@ -181,7 +181,7 @@ impl Fixture {
             }
         }
         write_lease(
-            registry.load()?.agents[&agent].layout.run_root(),
+            registry.load()?.agents[&agent].layout.owner_run_root(),
             &ProcessLease {
                 schema_version: PROCESS_LEASE_SCHEMA_VERSION,
                 agent_id: agent.clone(),
@@ -375,7 +375,7 @@ fn exact_fenced_exit_is_reconciled_even_when_kill_returns_an_error() -> Result<(
     });
     assert!(supervisor.tick(f.now).faults.is_empty());
     assert!(!supervisor.snapshot(&f.agent).expect("snapshot").active);
-    assert!(read_lease(f.registry.load()?.agents[&f.agent].layout.run_root())?.is_none());
+    assert!(read_lease(f.registry.load()?.agents[&f.agent].layout.owner_run_root())?.is_none());
     let state = f.process.lock().expect("process state");
     assert_eq!((state.spawns, state.drops), (0, 1));
     Ok(())

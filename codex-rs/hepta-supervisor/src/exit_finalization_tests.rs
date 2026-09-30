@@ -143,7 +143,7 @@ fn exact_exit_survives_cleanup_failure_without_repolling_or_resignalling() -> Re
             identity: ProcessIdentity::new(/*system_id*/ 42, "exit-finalization-test")?,
         };
         let records = registry.load()?;
-        let run_root = records.agents[&agent].layout.run_root();
+        let run_root = records.agents[&agent].layout.owner_run_root();
         write_lease(run_root, &lease)?;
         let calls = Arc::new(Mutex::new(Calls::default()));
         let mut slot = AgentSlot::new(&config);

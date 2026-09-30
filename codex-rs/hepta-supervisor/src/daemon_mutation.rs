@@ -306,7 +306,7 @@ fn agent_run_root<D: ProcessDriver>(
         .registry
         .load()?
         .agent(agent_id)
-        .map(|record| record.layout.run_root().to_path_buf())
+        .map(|record| record.layout.owner_run_root().to_path_buf())
         .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))
 }
 

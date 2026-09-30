@@ -35,7 +35,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         record: &AgentRecord,
     ) -> Result<(), SupervisorError> {
-        let Some(journal) = read_restart_journal(record.layout.run_root())? else {
+        let Some(journal) = read_restart_journal(record.layout.owner_run_root())? else {
             return Ok(());
         };
         if journal.agent_id != *agent_id {
@@ -60,7 +60,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 DurableRestartWindow::empty(),
                 window.clone(),
             )?;
-            write_restart_journal(record.layout.run_root(), &normalized)?;
+            write_restart_journal(record.layout.owner_run_root(), &normalized)?;
         }
         // Do not clear charges solely because the committed release differs.
         // Exact lease adoption may still recover an in-flight target release.
@@ -96,7 +96,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 window_started_unix_millis: slot.matrix.restart_window_started_unix_millis,
             },
         )?;
-        write_restart_journal(record.layout.run_root(), &journal)
+        write_restart_journal(record.layout.owner_run_root(), &journal)
     }
 }
 

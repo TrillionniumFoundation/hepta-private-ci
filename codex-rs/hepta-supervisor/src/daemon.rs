@@ -138,6 +138,9 @@ pub(crate) mod owner;
 #[path = "daemon_read_view.rs"]
 mod read_view;
 #[cfg(unix)]
+#[path = "daemon_selection.rs"]
+mod selection;
+#[cfg(unix)]
 use mutex::MeasuredMutex as Mutex;
 #[cfg(unix)]
 use owner::SingleInstanceLock;
@@ -242,6 +245,10 @@ async fn run_supervisord_inner(
 ) -> Result<(), SupervisorError> {
     // Cancelling/dropping the outer future must also stop the ticker and server.
     let _shutdown = cancellation.clone().drop_guard();
+    let layout = fleet_root.layout();
+    let instance = SingleInstanceLock::acquire(layout.supervisor_lock())?;
+    let registry = FleetRegistry::initialize(fleet_root.clone())?;
+    registry.migrate_owner_journals()?;
     let registry = FleetRegistry::open_existing(fleet_root)?;
     let snapshot = registry.load()?;
     if snapshot.agents.len() > usize::from(MAX_SUPERVISORD_ROSTER) {
@@ -251,7 +258,6 @@ async fn run_supervisord_inner(
         )));
     }
     let layout = registry.layout().clone();
-    let instance = SingleInstanceLock::acquire(layout.supervisor_lock())?;
     let runtime_modules = DurableRuntimeModuleSupervisorV1::open(
         layout.runtime_module_supervisor_state(),
     )
@@ -288,6 +294,15 @@ async fn run_supervisord_inner(
         cancellation.clone(),
     )
     .await?;
+    let selection_server = selection::SelectionServer::bind(
+        layout.runtime_selection_socket(),
+        Arc::clone(&state),
+        cancellation.clone(),
+        unsafe { libc::geteuid() },
+        unsafe { libc::getegid() },
+    )
+    .await?;
+    let mut selection_task = tokio::spawn(selection_server.run());
     let tick_state = Arc::clone(&state);
     let tick_cancellation = cancellation.clone();
     let ticker = tokio::spawn(async move {
@@ -302,8 +317,20 @@ async fn run_supervisord_inner(
             }
         }
     });
-    let result = server.run().await;
+    let mut selection_finished = false;
+    let result = tokio::select! {
+        result = server.run() => result,
+        result = &mut selection_task => {
+            selection_finished = true;
+            result.map_err(|error| SupervisorError::Invalid(format!("selection server failed: {error}")))?
+        },
+    };
     cancellation.cancel();
+    if !selection_finished {
+        selection_task.await.map_err(|error| {
+            SupervisorError::Invalid(format!("selection server failed: {error}"))
+        })??;
+    }
     let ticker_result = ticker.await;
     if ticker_result.is_err() || state.execution.failed() {
         return Err(SupervisorError::Invalid(
@@ -974,7 +1001,7 @@ fn publish_recovery_observations<D: ProcessDriver>(
             .snapshot(&agent_id)
             .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
         let observation = crate::publish_production_recovery_observation(
-            record.layout.run_root(),
+            record.layout.owner_run_root(),
             &agent_id,
             state.supervisor_epoch.as_str(),
             record.lifecycle.lifecycle,
@@ -1748,7 +1775,7 @@ mod tests {
             crate::signed_intent::SignedIntentStatus::Queued,
         )
         .expect("signed intent");
-        crate::signed_intent::write_intent(record.layout.run_root(), &intent)
+        crate::signed_intent::write_intent(record.layout.owner_run_root(), &intent)
             .expect("persist signed intent");
 
         let cancellation = CancellationToken::new();

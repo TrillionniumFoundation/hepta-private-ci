@@ -299,7 +299,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         if slot.runtime.is_some() {
             return Err(SupervisorError::AlreadyActive(agent_id.clone()));
         }
-        if crate::lease::read_lease(record.layout.run_root())?.is_some() {
+        if crate::lease::read_lease(record.layout.owner_run_root())?.is_some() {
             return Err(SupervisorError::UnresolvedLease(agent_id.clone()));
         }
         if !matches!(
@@ -339,7 +339,7 @@ impl<D: ProcessDriver> Supervisor<D> {
     pub(crate) fn preflight_restart(&self, agent_id: &AgentId) -> Result<(), SupervisorError> {
         let record = self.record(agent_id)?;
         let available = crate::restart_budget::restart_available(
-            record.layout.run_root(),
+            record.layout.owner_run_root(),
             self.config.restart_max_attempts,
             self.config.restart_window,
         )
@@ -367,7 +367,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             }
             Some(_) => Ok(()),
             None => {
-                if crate::lease::read_lease(record.layout.run_root())?.is_some() {
+                if crate::lease::read_lease(record.layout.owner_run_root())?.is_some() {
                     return Err(SupervisorError::UnresolvedLease(agent_id.clone()));
                 }
                 if !matches!(
@@ -602,7 +602,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 SignedIntentStatus::Prepared,
             )
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-            write_intent(record.layout.run_root(), &intent)
+            write_intent(record.layout.owner_run_root(), &intent)
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
             Self::set_control_revision_for_slot(slot, next_control_revision)?;
             slot.signed_intent = Some(intent.clone());
@@ -618,14 +618,14 @@ impl<D: ProcessDriver> Supervisor<D> {
                 let recovery = intent
                     .with_status(SignedIntentStatus::RecoveryRequired)
                     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-                let _ = write_intent(record.layout.run_root(), &recovery);
+                let _ = write_intent(record.layout.owner_run_root(), &recovery);
                 slot.signed_intent = Some(recovery);
                 return Err(error);
             }
             let queued = intent
                 .with_status(SignedIntentStatus::Queued)
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-            write_intent(record.layout.run_root(), &queued)
+            write_intent(record.layout.owner_run_root(), &queued)
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
             slot.signed_intent = Some(queued);
             Ok(ProductionMutationReceipt::queued(
@@ -677,7 +677,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             .with_status(terminal_status)
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         let record = self.record(agent_id)?;
-        write_intent(record.layout.run_root(), &terminal)
+        write_intent(record.layout.owner_run_root(), &terminal)
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         slot.signed_intent = Some(terminal);
         Ok(())
@@ -689,7 +689,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         record: &AgentRecord,
     ) -> Result<(), SupervisorError> {
-        let intent = read_intent(record.layout.run_root())
+        let intent = read_intent(record.layout.owner_run_root())
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         let Some(intent) = intent else {
             return Ok(());
@@ -709,7 +709,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         // the crash cut between terminal transaction publication and the
         // matching signed-intent update. Matching release state is required so
         // a detached or unrelated terminal journal cannot close the intent.
-        if let Some(transaction) = read_release_transaction(record.layout.run_root())
+        if let Some(transaction) = read_release_transaction(record.layout.owner_run_root())
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?
         {
             let kind_matches = matches!(
@@ -764,7 +764,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 let terminal = intent
                     .with_status(status)
                     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-                write_intent(record.layout.run_root(), &terminal)
+                write_intent(record.layout.owner_run_root(), &terminal)
                     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
                 slot.signed_intent = Some(terminal);
                 return Ok(());
@@ -781,7 +781,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 .with_status(SignedIntentStatus::RecoveryRequired)
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?
         };
-        write_intent(record.layout.run_root(), &recovery)
+        write_intent(record.layout.owner_run_root(), &recovery)
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         slot.signed_intent = Some(recovery);
 
@@ -834,7 +834,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         agent_id: &AgentId,
     ) -> Result<Option<DurableReleaseTransaction>, SupervisorError> {
         let record = self.record(agent_id)?;
-        read_release_transaction(record.layout.run_root())
+        read_release_transaction(record.layout.owner_run_root())
             .map_err(|error| SupervisorError::Invalid(error.to_string()))
     }
 
@@ -843,7 +843,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         agent_id: &AgentId,
     ) -> Result<Option<ProductionMutationState>, SupervisorError> {
         let record = self.record(agent_id)?;
-        let Some(intent) = read_intent(record.layout.run_root())
+        let Some(intent) = read_intent(record.layout.owner_run_root())
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?
         else {
             return Ok(None);
@@ -863,7 +863,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             .expected_control_revision
             .checked_add(1)
             .ok_or_else(|| SupervisorError::Invalid("control revision overflow".to_string()))?;
-        let transaction = read_release_transaction(record.layout.run_root())
+        let transaction = read_release_transaction(record.layout.owner_run_root())
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         Ok(Some(ProductionMutationState {
             receipt: ProductionMutationReceipt {
@@ -896,7 +896,7 @@ impl<D: ProcessDriver> Supervisor<D> {
     ) -> Result<ProductionMutationReceipt, SupervisorError> {
         self.with_slot(agent_id, |supervisor, slot| {
             let record = supervisor.record(agent_id)?;
-            let intent = read_intent(record.layout.run_root())
+            let intent = read_intent(record.layout.owner_run_root())
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?
                 .ok_or_else(|| SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))?;
             if intent.status != SignedIntentStatus::RecoveryRequired {
@@ -904,7 +904,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     "production recovery requires a recovery_required signed intent".to_string(),
                 ));
             }
-            let transaction = read_release_transaction(record.layout.run_root())
+            let transaction = read_release_transaction(record.layout.owner_run_root())
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?
                 .ok_or_else(|| SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))?;
             if transaction.phase != ReleaseTransactionPhase::RecoveryRequired
@@ -1060,13 +1060,13 @@ impl<D: ProcessDriver> Supervisor<D> {
             let terminal_transaction = transaction
                 .with_recovery_resolution(terminal_phase, decision.digest().clone())
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-            write_release_transaction(record.layout.run_root(), &terminal_transaction)
+            write_release_transaction(record.layout.owner_run_root(), &terminal_transaction)
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
             slot.release_transaction = Some(terminal_transaction);
             let terminal_intent = intent
                 .with_status(terminal_intent_status)
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-            write_intent(record.layout.run_root(), &terminal_intent)
+            write_intent(record.layout.owner_run_root(), &terminal_intent)
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
             slot.signed_intent = Some(terminal_intent.clone());
 

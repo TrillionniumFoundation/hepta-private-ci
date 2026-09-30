@@ -74,7 +74,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         // contained even when catalog, restart-journal, or release-state reads
         // fail. Defer all fallible release/companion hydration until recover_slot
         // has attempted independent owner acquisition.
-        if read_lease(record.layout.run_root())?.is_some()
+        if read_lease(record.layout.owner_run_root())?.is_some()
             || read_matrix_lease(record.layout.matrixd_process_lease())?.is_some()
         {
             return Ok(());
@@ -126,22 +126,22 @@ impl<D: ProcessDriver> Supervisor<D> {
         now: Instant,
     ) -> Result<(), SupervisorError> {
         let record = self.record(agent_id)?;
-        if control_intent::cancel_restart_if_unresolved(record.layout.run_root(), agent_id)
+        if control_intent::cancel_restart_if_unresolved(record.layout.owner_run_root(), agent_id)
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?
         {
-            let lineage = restart_lineage::cancel(record.layout.run_root(), agent_id)
+            let lineage = restart_lineage::cancel(record.layout.owner_run_root(), agent_id)
                 .map_err(|error| SupervisorError::Invalid(error.to_string()));
             slot.restart_pending = false;
             slot.restart_not_before = None;
             return lineage;
         }
         let pending = crate::restart_budget::pending_restart(
-            record.layout.run_root(),
+            record.layout.owner_run_root(),
             self.config.restart_max_attempts,
         )
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         let Some(claim) = pending else {
-            restart_lineage::cancel_if_budget_absent(record.layout.run_root(), agent_id)
+            restart_lineage::cancel_if_budget_absent(record.layout.owner_run_root(), agent_id)
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
             slot.restart_pending = false;
             slot.restart_not_before = None;
@@ -161,9 +161,9 @@ impl<D: ProcessDriver> Supervisor<D> {
             })
             .transpose()
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-        let lease_present = read_lease(record.layout.run_root())?.is_some();
+        let lease_present = read_lease(record.layout.owner_run_root())?.is_some();
         let role = restart_lineage::reconcile_pending(
-            record.layout.run_root(),
+            record.layout.owner_run_root(),
             agent_id,
             claim.window_started_unix_ms,
             claim.attempt,
@@ -203,13 +203,13 @@ impl<D: ProcessDriver> Supervisor<D> {
                 slot.restart_not_before = None;
             }
             RestartRecoveryRole::Completed => {
-                crate::restart_budget::complete_restart(record.layout.run_root())
+                crate::restart_budget::complete_restart(record.layout.owner_run_root())
                     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
                 slot.restart_pending = false;
                 slot.restart_not_before = None;
             }
             RestartRecoveryRole::Cancelled => {
-                crate::restart_budget::cancel_restart(record.layout.run_root())
+                crate::restart_budget::cancel_restart(record.layout.owner_run_root())
                     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
                 slot.restart_pending = false;
                 slot.restart_not_before = None;
@@ -255,19 +255,19 @@ impl<D: ProcessDriver> Supervisor<D> {
             return Err(SupervisorError::UnresolvedLease(agent_id.clone()));
         }
         control_intent::reconcile_absent(
-            record.layout.run_root(),
+            record.layout.owner_run_root(),
             agent_id,
             record.lifecycle.lifecycle,
         )
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-        if control_intent::has_unresolved(record.layout.run_root())
+        if control_intent::has_unresolved(record.layout.owner_run_root())
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?
         {
             return Err(SupervisorError::Invalid(format!(
                 "agent {agent_id} has an unresolved durable termination intent"
             )));
         }
-        if read_lease(record.layout.run_root())?.is_some() {
+        if read_lease(record.layout.owner_run_root())?.is_some() {
             return Err(SupervisorError::UnresolvedLease(agent_id.clone()));
         }
         if !matches!(
@@ -317,10 +317,11 @@ impl<D: ProcessDriver> Supervisor<D> {
                     // separate quarantine path below instead.
                     slot.restart_pending = false;
                     slot.restart_not_before = None;
-                    let lineage = restart_lineage::cancel(record.layout.run_root(), agent_id)
+                    let lineage = restart_lineage::cancel(record.layout.owner_run_root(), agent_id)
                         .map_err(|error| SupervisorError::Invalid(error.to_string()));
-                    let budget = crate::restart_budget::cancel_restart(record.layout.run_root())
-                        .map_err(|error| SupervisorError::Invalid(error.to_string()));
+                    let budget =
+                        crate::restart_budget::cancel_restart(record.layout.owner_run_root())
+                            .map_err(|error| SupervisorError::Invalid(error.to_string()));
                     transition?;
                     lineage?;
                     budget?;
@@ -352,7 +353,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             fenced: false,
         });
         slot.event(starting.generation, SupervisorEventKind::Spawned);
-        let publication = write_lease(record.layout.run_root(), &lease);
+        let publication = write_lease(record.layout.owner_run_root(), &lease);
         let publication_failed = publication.is_err();
         let initialized = slot
             .runtime
@@ -368,7 +369,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             })
             .and_then(|()| {
                 let Some(claim) = crate::restart_budget::pending_restart(
-                    record.layout.run_root(),
+                    record.layout.owner_run_root(),
                     self.config.restart_max_attempts,
                 )
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?
@@ -385,7 +386,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 )
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
                 restart_lineage::bind_replacement(
-                    record.layout.run_root(),
+                    record.layout.owner_run_root(),
                     agent_id,
                     claim.window_started_unix_ms,
                     claim.attempt,
@@ -395,15 +396,15 @@ impl<D: ProcessDriver> Supervisor<D> {
             });
         if let Err(error) = launch {
             slot.exit_lease_removal = Some(if publication_failed {
-                ProcessLeaseRemoval::for_failed_publication(record.layout.run_root(), &lease)
+                ProcessLeaseRemoval::for_failed_publication(record.layout.owner_run_root(), &lease)
             } else {
-                ProcessLeaseRemoval::new(record.layout.run_root(), &lease)
+                ProcessLeaseRemoval::new(record.layout.owner_run_root(), &lease)
             });
             slot.pending_control = None;
             slot.restart_pending = false;
             slot.restart_not_before = None;
-            let _ = restart_lineage::cancel(record.layout.run_root(), agent_id);
-            let _ = crate::restart_budget::cancel_restart(record.layout.run_root());
+            let _ = restart_lineage::cancel(record.layout.owner_run_root(), agent_id);
+            let _ = crate::restart_budget::cancel_restart(record.layout.owner_run_root());
             let termination = if let Some(runtime) = slot.runtime.as_mut() {
                 runtime.healthy = false;
                 runtime.fenced = true;
@@ -514,9 +515,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         now: Instant,
     ) -> Result<(), SupervisorError> {
         let pending_exit =
-            process_exit_witness::read_process_exit_witness(record.layout.run_root())
+            process_exit_witness::read_process_exit_witness(record.layout.owner_run_root())
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-        let Some(lease) = read_lease(record.layout.run_root())? else {
+        let Some(lease) = read_lease(record.layout.owner_run_root())? else {
             let terminal_lifecycle = if is_live_lifecycle(record.lifecycle.lifecycle) {
                 let generation = self.transition_without_runtime(
                     agent_id,
@@ -530,7 +531,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 record.lifecycle.lifecycle
             };
             control_intent::reconcile_absent(
-                record.layout.run_root(),
+                record.layout.owner_run_root(),
                 agent_id,
                 terminal_lifecycle,
             )
@@ -541,7 +542,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     && witness.lifecycle_generation <= record.lifecycle.generation
             }) {
                 process_exit_witness::consume_process_exit_witness(
-                    record.layout.run_root(),
+                    record.layout.owner_run_root(),
                     &witness.witness_id,
                 )
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
@@ -648,7 +649,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 // An absent process does not make malformed control evidence
                 // valid. Retain rejected evidence for explicit reconciliation.
                 admission?;
-                remove_lease(record.layout.run_root(), &lease)?;
+                remove_lease(record.layout.owner_run_root(), &lease)?;
                 let terminal_lifecycle = if is_live_lifecycle(record.lifecycle.lifecycle) {
                     self.transition_without_runtime(
                         agent_id,
@@ -661,14 +662,14 @@ impl<D: ProcessDriver> Supervisor<D> {
                     record.lifecycle.lifecycle
                 };
                 control_intent::reconcile_absent(
-                    record.layout.run_root(),
+                    record.layout.owner_run_root(),
                     agent_id,
                     terminal_lifecycle,
                 )
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
                 if let Some(witness) = witnessed_exit {
                     process_exit_witness::consume_process_exit_witness(
-                        record.layout.run_root(),
+                        record.layout.owner_run_root(),
                         &witness.witness_id,
                     )
                     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
@@ -715,7 +716,7 @@ pub(crate) fn process_ownership_ready(
         return Ok(false);
     };
     Ok(!snapshot.runtime_fenced
-        && (snapshot.active || read_lease(record.layout.run_root())?.is_none())
+        && (snapshot.active || read_lease(record.layout.owner_run_root())?.is_none())
         && (snapshot.matrix.active
             || read_matrix_lease(record.layout.matrixd_process_lease())?.is_none()))
 }

@@ -154,7 +154,10 @@ impl Fixture {
             release_id: ReleaseId::parse("replacement")?,
             identity: ProcessIdentity::new(/*system_id*/ 42, "adopted-release-test")?,
         };
-        write_lease(registry.load()?.agents[&agent].layout.run_root(), &lease)?;
+        write_lease(
+            registry.load()?.agents[&agent].layout.owner_run_root(),
+            &lease,
+        )?;
         let calls = Arc::new(Mutex::new(Calls::default()));
         let mut slot = AgentSlot::new(&config);
         slot.active_release = Some(predecessor.clone());
@@ -218,7 +221,11 @@ impl Fixture {
         assert!(self.slot.previous_release.is_none());
         assert_eq!(self.calls.lock().expect("calls").drops, 0);
         assert_eq!(
-            read_lease(self.registry.load()?.agents[&self.agent].layout.run_root())?,
+            read_lease(
+                self.registry.load()?.agents[&self.agent]
+                    .layout
+                    .owner_run_root()
+            )?,
             Some(self.lease.clone())
         );
         Ok(())

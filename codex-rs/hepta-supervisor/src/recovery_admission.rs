@@ -42,7 +42,7 @@ pub(super) fn assess(
         record.lifecycle.lifecycle,
     )?;
     let durable_control = control_intent::recover_pending(
-        record.layout.run_root(),
+        record.layout.owner_run_root(),
         agent_id,
         lease.spawn_generation,
         &lease.identity,

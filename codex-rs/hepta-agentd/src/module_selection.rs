@@ -64,7 +64,7 @@ pub(crate) async fn observe_compiled_selection(
 ) -> Result<RuntimeModuleSelectionV1, AgentdError> {
     let root = HeptaFleetRoot::parse(identity.fleet_root.clone())
         .map_err(|error| AgentdError::Invalid(error.to_string()))?;
-    let path = root.layout().supervisor_socket().to_path_buf();
+    let path = root.layout().runtime_selection_socket();
     let request = serde_json::to_vec(&serde_json::json!({
         "schema_version": SUPERVISORD_CONTROL_SCHEMA_VERSION,
         "request_id": 1,
@@ -72,6 +72,16 @@ pub(crate) async fn observe_compiled_selection(
     }))?;
     let observation = timeout(Duration::from_secs(2), async {
         let mut stream = UnixStream::connect(&path).await?;
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::MetadataExt;
+            if std::fs::metadata(root.layout().supervisor_lock())?.uid() == 0 {
+                stream.ensure_peer_user(0)?;
+            } else {
+                codex_uds::ensure_current_user_peer(&stream)?;
+            }
+        }
+        #[cfg(not(unix))]
         codex_uds::ensure_current_user_peer(&stream)?;
         stream.write_all(&request).await?;
         stream.write_all(b"\n").await?;

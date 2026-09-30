@@ -188,7 +188,7 @@ impl Fixture {
         });
         let runtime = slot.runtime.as_ref().expect("runtime");
         write_lease(
-            registry.load()?.agents[&agent].layout.run_root(),
+            registry.load()?.agents[&agent].layout.owner_run_root(),
             &ProcessLease {
                 schema_version: PROCESS_LEASE_SCHEMA_VERSION,
                 agent_id: agent.clone(),

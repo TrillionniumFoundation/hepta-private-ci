@@ -23,9 +23,10 @@ fn unresolved_signed_recovery_blocks_pending_and_direct_process_start()
         crate::SignedIntentStatus::RecoveryRequired,
     )
     .expect("signed intent");
-    crate::signed_intent::write_intent(record.layout.run_root(), &intent).expect("persist intent");
+    crate::signed_intent::write_intent(record.layout.owner_run_root(), &intent)
+        .expect("persist intent");
     crate::restart_budget::claim_restart(
-        record.layout.run_root(),
+        record.layout.owner_run_root(),
         3,
         Duration::from_secs(300),
         Duration::from_millis(250),
@@ -37,7 +38,7 @@ fn unresolved_signed_recovery_blocks_pending_and_direct_process_start()
         Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
     assert_eq!(report, TickReport::default());
     assert!(recovered.production_recovery_required(&fleet.first)?);
-    let before = crate::restart_journal::read_main_restart_budget(record.layout.run_root())?;
+    let before = crate::restart_journal::read_main_restart_budget(record.layout.owner_run_root())?;
     assert_eq!(
         recovered.tick(now + Duration::from_secs(1)),
         TickReport::default()
@@ -48,7 +49,7 @@ fn unresolved_signed_recovery_blocks_pending_and_direct_process_start()
         "a durable restart is not permission to bypass signed quarantine"
     );
     assert_eq!(
-        crate::restart_journal::read_main_restart_budget(record.layout.run_root())?,
+        crate::restart_journal::read_main_restart_budget(record.layout.owner_run_root())?,
         before
     );
     let release = AgentRelease::try_from(fleet.registry.resolve_release(
@@ -92,7 +93,7 @@ fn unresolved_signed_recovery_blocks_pending_and_direct_process_start()
         before_lifecycle
     );
     assert_eq!(
-        crate::restart_journal::read_main_restart_budget(record.layout.run_root())?,
+        crate::restart_journal::read_main_restart_budget(record.layout.owner_run_root())?,
         before
     );
     drop(recovered);
@@ -116,7 +117,7 @@ fn unresolved_signed_recovery_blocks_pending_and_direct_process_start()
     );
     assert_eq!(control.spawn_count(&fleet.first), 1);
     assert_eq!(
-        crate::restart_journal::read_main_restart_budget(record.layout.run_root())?,
+        crate::restart_journal::read_main_restart_budget(record.layout.owner_run_root())?,
         before
     );
     Ok(())

@@ -168,7 +168,7 @@ impl Fixture {
                 RuntimePhase::AwaitingHealth { deadline: now },
             )
         };
-        let root = record.layout.run_root().to_path_buf();
+        let root = record.layout.owner_run_root().to_path_buf();
         let process = Arc::new(Mutex::new(State {
             root: root.clone(),
             signals: Vec::new(),

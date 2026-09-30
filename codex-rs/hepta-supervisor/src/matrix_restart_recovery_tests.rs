@@ -109,13 +109,13 @@ fn matrix_budget_restore_preserves_main_pending_claim() -> Result<(), Supervisor
         .cloned()
         .expect("agent");
     crate::restart_budget::claim_restart(
-        record.layout.run_root(),
+        record.layout.owner_run_root(),
         3,
         Duration::from_secs(300),
         Duration::from_millis(250),
     )
     .expect("independent main claim");
-    let before = crate::restart_journal::read_main_restart_budget(record.layout.run_root())?;
+    let before = crate::restart_journal::read_main_restart_budget(record.layout.owner_run_root())?;
     drop(supervisor);
     let (recovered, report) = Supervisor::recover(fleet.registry, control.driver(), config(), now)?;
     assert_eq!(report, TickReport::default());
@@ -127,7 +127,7 @@ fn matrix_budget_restore_preserves_main_pending_claim() -> Result<(), Supervisor
     );
     assert_eq!(state.matrix.restart_attempt, 1);
     assert_eq!(
-        crate::restart_journal::read_main_restart_budget(record.layout.run_root())?,
+        crate::restart_journal::read_main_restart_budget(record.layout.owner_run_root())?,
         before
     );
     Ok(())

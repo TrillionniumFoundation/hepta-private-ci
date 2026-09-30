@@ -15,6 +15,8 @@ pub fn with_offline_fleet_registry<T>(
     configure: impl FnOnce(&FleetRegistry) -> Result<T, FleetRegistryError>,
 ) -> Result<T, SupervisorError> {
     let _ownership = SingleInstanceLock::acquire(fleet_root.layout().supervisor_lock())?;
+    let registry = FleetRegistry::initialize(fleet_root.clone())?;
+    registry.migrate_owner_journals()?;
     let registry = FleetRegistry::open_existing(fleet_root)?;
     Ok(configure(&registry)?)
 }

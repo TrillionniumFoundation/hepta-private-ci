@@ -613,7 +613,7 @@ fn recovery_reuses_restart_claim_persisted_before_exit_finalize() -> Result<(), 
         .cloned()
         .expect("registered agent");
     let claim = crate::restart_budget::claim_restart(
-        record.layout.run_root(),
+        record.layout.owner_run_root(),
         config().restart_max_attempts,
         config().restart_window,
         config().restart_backoff_base,
@@ -1074,7 +1074,7 @@ fn process_recovery_fault_does_not_hide_signed_recovery_required() -> Result<(),
         crate::signed_intent::SignedIntentStatus::Queued,
     )
     .expect("queued signed intent");
-    crate::signed_intent::write_intent(record.layout.run_root(), &intent)
+    crate::signed_intent::write_intent(record.layout.owner_run_root(), &intent)
         .expect("write queued intent");
     fleet.registry.revoke_release(&fleet.first, &release_id)?;
 
@@ -1231,8 +1231,11 @@ fn recovery_terminalizes_unsigned_target_from_exact_release_state_cas()
     .expect("prepared transaction")
     .with_phase(crate::release_transaction::ReleaseTransactionPhase::TargetStarting)
     .expect("target starting");
-    crate::release_transaction::write_release_transaction(record.layout.run_root(), &transaction)
-        .expect("write transaction");
+    crate::release_transaction::write_release_transaction(
+        record.layout.owner_run_root(),
+        &transaction,
+    )
+    .expect("write transaction");
 
     fleet.registry.compare_and_set_release_state(
         &fleet.first,
@@ -1249,7 +1252,7 @@ fn recovery_terminalizes_unsigned_target_from_exact_release_state_cas()
     )?;
     assert_eq!(report, TickReport::default());
     let transaction =
-        crate::release_transaction::read_release_transaction(record.layout.run_root())
+        crate::release_transaction::read_release_transaction(record.layout.owner_run_root())
             .expect("read release transaction")
             .expect("release transaction");
     assert_eq!(
@@ -1327,8 +1330,11 @@ fn recovery_required_unsigned_source_is_terminalized_as_aborted() -> Result<(), 
     .expect("prepared transaction")
     .with_phase(crate::release_transaction::ReleaseTransactionPhase::RecoveryRequired)
     .expect("recovery required");
-    crate::release_transaction::write_release_transaction(record.layout.run_root(), &transaction)
-        .expect("write recovery transaction");
+    crate::release_transaction::write_release_transaction(
+        record.layout.owner_run_root(),
+        &transaction,
+    )
+    .expect("write recovery transaction");
 
     let (_recovered, report) = Supervisor::recover(
         fleet.registry,
@@ -1338,7 +1344,7 @@ fn recovery_required_unsigned_source_is_terminalized_as_aborted() -> Result<(), 
     )?;
     assert_eq!(report, TickReport::default());
     let transaction =
-        crate::release_transaction::read_release_transaction(record.layout.run_root())
+        crate::release_transaction::read_release_transaction(record.layout.owner_run_root())
             .expect("read release transaction")
             .expect("release transaction");
     assert_eq!(
@@ -1959,7 +1965,7 @@ fn recovery_does_not_infer_signed_commit_from_matching_target_only() -> Result<(
         crate::signed_intent::SignedIntentStatus::Queued,
     )
     .expect("synthetic unresolved intent");
-    crate::signed_intent::write_intent(record.layout.run_root(), &intent)
+    crate::signed_intent::write_intent(record.layout.owner_run_root(), &intent)
         .expect("persist unresolved intent");
 
     let (recovered, report) = Supervisor::recover(
@@ -1971,7 +1977,7 @@ fn recovery_does_not_infer_signed_commit_from_matching_target_only() -> Result<(
     assert_eq!(report, TickReport::default());
     assert!(recovered.production_recovery_required(&fleet.first)?);
     assert_eq!(
-        crate::signed_intent::read_intent(record.layout.run_root())
+        crate::signed_intent::read_intent(record.layout.owner_run_root())
             .expect("read unresolved intent")
             .expect("intent remains durable")
             .status,
@@ -2027,7 +2033,7 @@ fn recovery_reconciles_terminal_release_transaction_into_signed_intent()
         crate::signed_intent::SignedIntentStatus::Queued,
     )
     .expect("queued signed intent");
-    crate::signed_intent::write_intent(record.layout.run_root(), &intent)
+    crate::signed_intent::write_intent(record.layout.owner_run_root(), &intent)
         .expect("write queued intent");
 
     let transaction = crate::release_transaction::DurableReleaseTransaction::new(
@@ -2054,8 +2060,11 @@ fn recovery_reconciles_terminal_release_transaction_into_signed_intent()
     .expect("bind grant")
     .with_phase(crate::release_transaction::ReleaseTransactionPhase::Committed)
     .expect("terminal release transaction");
-    crate::release_transaction::write_release_transaction(record.layout.run_root(), &transaction)
-        .expect("write terminal transaction");
+    crate::release_transaction::write_release_transaction(
+        record.layout.owner_run_root(),
+        &transaction,
+    )
+    .expect("write terminal transaction");
 
     let (recovered, report) = Supervisor::recover(
         fleet.registry.clone(),
@@ -2073,7 +2082,7 @@ fn recovery_reconciles_terminal_release_transaction_into_signed_intent()
         crate::ProductionMutationStatus::Committed
     );
     assert_eq!(
-        crate::signed_intent::read_intent(record.layout.run_root())
+        crate::signed_intent::read_intent(record.layout.owner_run_root())
             .expect("read reconciled intent")
             .expect("intent")
             .status,
@@ -2128,7 +2137,7 @@ fn recovery_reconciles_terminal_signed_rollback_to_target() -> Result<(), Superv
         crate::signed_intent::SignedIntentStatus::Queued,
     )
     .expect("queued signed rollback");
-    crate::signed_intent::write_intent(record.layout.run_root(), &intent)
+    crate::signed_intent::write_intent(record.layout.owner_run_root(), &intent)
         .expect("write queued rollback intent");
 
     let transaction = crate::release_transaction::DurableReleaseTransaction::new(
@@ -2155,8 +2164,11 @@ fn recovery_reconciles_terminal_signed_rollback_to_target() -> Result<(), Superv
     .expect("bind rollback grant")
     .with_phase(crate::release_transaction::ReleaseTransactionPhase::RolledBack)
     .expect("terminal rollback transaction");
-    crate::release_transaction::write_release_transaction(record.layout.run_root(), &transaction)
-        .expect("write terminal rollback transaction");
+    crate::release_transaction::write_release_transaction(
+        record.layout.owner_run_root(),
+        &transaction,
+    )
+    .expect("write terminal rollback transaction");
 
     let (recovered, report) = Supervisor::recover(
         fleet.registry.clone(),
@@ -2174,7 +2186,7 @@ fn recovery_reconciles_terminal_signed_rollback_to_target() -> Result<(), Superv
         crate::ProductionMutationStatus::RolledBack
     );
     assert_eq!(
-        crate::signed_intent::read_intent(record.layout.run_root())
+        crate::signed_intent::read_intent(record.layout.owner_run_root())
             .expect("read reconciled rollback intent")
             .expect("rollback intent")
             .status,
@@ -2227,7 +2239,7 @@ fn recovery_reconciles_signed_upgrade_automatic_rollback_to_source() -> Result<(
         crate::signed_intent::SignedIntentStatus::Queued,
     )
     .expect("queued signed upgrade");
-    crate::signed_intent::write_intent(record.layout.run_root(), &intent)
+    crate::signed_intent::write_intent(record.layout.owner_run_root(), &intent)
         .expect("write queued upgrade intent");
 
     let transaction = crate::release_transaction::DurableReleaseTransaction::new(
@@ -2254,8 +2266,11 @@ fn recovery_reconciles_signed_upgrade_automatic_rollback_to_source() -> Result<(
     .expect("bind upgrade grant")
     .with_phase(crate::release_transaction::ReleaseTransactionPhase::RolledBack)
     .expect("automatic rollback transaction");
-    crate::release_transaction::write_release_transaction(record.layout.run_root(), &transaction)
-        .expect("write automatic rollback transaction");
+    crate::release_transaction::write_release_transaction(
+        record.layout.owner_run_root(),
+        &transaction,
+    )
+    .expect("write automatic rollback transaction");
 
     let (recovered, report) = Supervisor::recover(
         fleet.registry.clone(),
@@ -2273,7 +2288,7 @@ fn recovery_reconciles_signed_upgrade_automatic_rollback_to_source() -> Result<(
         crate::ProductionMutationStatus::RolledBack
     );
     assert_eq!(
-        crate::signed_intent::read_intent(record.layout.run_root())
+        crate::signed_intent::read_intent(record.layout.owner_run_root())
             .expect("read reconciled upgrade intent")
             .expect("upgrade intent")
             .status,

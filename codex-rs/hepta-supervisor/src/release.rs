@@ -121,7 +121,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             lifecycle_generation,
         )
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-        write_release_transaction(record.layout.run_root(), &transaction)
+        write_release_transaction(record.layout.owner_run_root(), &transaction)
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         slot.release_transaction = Some(transaction);
         Ok(())
@@ -141,7 +141,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             .with_authority(grant_sha256, authority_epoch)
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         let record = self.record(agent_id)?;
-        write_release_transaction(record.layout.run_root(), &transaction)
+        write_release_transaction(record.layout.owner_run_root(), &transaction)
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         slot.release_transaction = Some(transaction);
         Ok(())
@@ -160,7 +160,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             .with_phase(phase)
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         let record = self.record(agent_id)?;
-        write_release_transaction(record.layout.run_root(), &transaction)
+        write_release_transaction(record.layout.owner_run_root(), &transaction)
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         slot.release_transaction = Some(transaction);
         Ok(())
@@ -222,7 +222,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         let terminal_transaction = transaction
             .with_phase(terminal)
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-        write_release_transaction(record.layout.run_root(), &terminal_transaction)
+        write_release_transaction(record.layout.owner_run_root(), &terminal_transaction)
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         slot.release_transaction = Some(terminal_transaction);
         slot.release_change = None;
@@ -477,7 +477,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         now: Instant,
     ) -> Result<(), SupervisorError> {
         let record = self.record(agent_id)?;
-        let Some(mut transaction) = read_release_transaction(record.layout.run_root())
+        let Some(mut transaction) = read_release_transaction(record.layout.owner_run_root())
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?
         else {
             return Ok(());
@@ -500,7 +500,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 transaction = transaction
                     .with_phase(ReleaseTransactionPhase::RecoveryRequired)
                     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-                write_release_transaction(record.layout.run_root(), &transaction)
+                write_release_transaction(record.layout.owner_run_root(), &transaction)
                     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
                 slot.release_transaction = Some(transaction);
             }

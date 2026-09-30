@@ -228,7 +228,7 @@ impl Fixture {
             release_id: ReleaseId::parse(release)?,
             identity: ProcessIdentity::new(42, "owned-main-test")?,
         };
-        write_lease(self.record()?.layout.run_root(), &lease)?;
+        write_lease(self.record()?.layout.owner_run_root(), &lease)?;
         Ok(lease)
     }
 
@@ -283,7 +283,7 @@ fn rejected_main_identity_preserves_lease_and_unresolved_control() -> Result<()>
     let lease = f.publish_main("unversioned")?;
     let record = f.record()?;
     control_intent::prepare_kill(
-        record.layout.run_root(),
+        record.layout.owner_run_root(),
         &f.agent,
         lease.spawn_generation,
         &lease.identity,
@@ -292,8 +292,10 @@ fn rejected_main_identity_preserves_lease_and_unresolved_control() -> Result<()>
     f.driver.main.lock().expect("main state").adoption = AdoptionResult::Rejected;
     f.recover()?;
     assert!(f.slot.runtime.is_none());
-    assert_eq!(read_lease(record.layout.run_root())?, Some(lease));
-    assert!(control_intent::has_unresolved(record.layout.run_root())?);
+    assert_eq!(read_lease(record.layout.owner_run_root())?, Some(lease));
+    assert!(control_intent::has_unresolved(
+        record.layout.owner_run_root()
+    )?);
     assert_eq!(f.driver.main.lock().expect("main state").signals, 0);
     let command = AgentCommand::new(f._temp.path().join("unused-agentd"), Vec::new())?;
     assert!(
@@ -375,7 +377,7 @@ fn main_control_parse_fault_cannot_skip_matrix_ownership() -> Result<()> {
         f.driver.matrix.lock().expect("matrix state").adoption_count,
         1
     );
-    assert_eq!(read_lease(f.record()?.layout.run_root())?, Some(main));
+    assert_eq!(read_lease(f.record()?.layout.owner_run_root())?, Some(main));
     f.assert_matrix_retained(&matrix)?;
     Ok(())
 }
@@ -478,7 +480,7 @@ fn rejected_process_ownership_is_not_reported_ready() -> Result<()> {
         &record,
         supervisor.snapshot(&f.agent).as_ref()
     )?);
-    assert_eq!(read_lease(record.layout.run_root())?, Some(main));
+    assert_eq!(read_lease(record.layout.owner_run_root())?, Some(main));
     assert!(
         supervisor
             .snapshot(&f.agent)

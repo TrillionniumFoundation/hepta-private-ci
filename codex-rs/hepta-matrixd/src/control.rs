@@ -392,7 +392,10 @@ async fn serve_connection(
     stream: UnixStream,
     state: Arc<MatrixdControlState>,
 ) -> Result<(), MatrixdControlError> {
-    stream.ensure_current_user_peer()?;
+    let owner_peer = stream.ensure_current_user_peer().is_ok();
+    if !owner_peer {
+        stream.ensure_peer_user(0)?;
+    }
     let (reader, mut writer) = tokio::io::split(stream);
     let mut reader = BufReader::new(reader).take(MAX_MATRIXD_CONTROL_FRAME_BYTES + 1);
     let mut frame = Vec::new();
@@ -403,6 +406,13 @@ async fn serve_connection(
         ));
     }
     let request: MatrixdRequest = serde_json::from_slice(&frame)?;
+    if !owner_peer && !matches!(request.method, MatrixdMethod::Health) {
+        return Err(std::io::Error::new(
+            ErrorKind::PermissionDenied,
+            "root Supervisor may only query Matrix health",
+        )
+        .into());
+    }
     let response = state.response(request).await;
     let mut bytes = serde_json::to_vec(&response)?;
     bytes.push(b'\n');

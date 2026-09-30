@@ -122,7 +122,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             Err(error) => return Some(error),
         };
         match crate::restart_budget::claim_restart(
-            record.layout.run_root(),
+            record.layout.owner_run_root(),
             self.config.restart_max_attempts,
             self.config.restart_window,
             self.config.restart_backoff_base,
@@ -137,7 +137,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     Err(error) => return Some(SupervisorError::Invalid(error.to_string())),
                 };
                 if let Err(error) = restart_lineage::begin(
-                    record.layout.run_root(),
+                    record.layout.owner_run_root(),
                     agent_id,
                     claim.window_started_unix_ms,
                     claim.attempt,
@@ -345,7 +345,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 self.release_became_healthy(agent_id, slot, next.generation)?;
                 let record = self.record(agent_id)?;
                 if crate::restart_budget::pending_restart(
-                    record.layout.run_root(),
+                    record.layout.owner_run_root(),
                     self.config.restart_max_attempts,
                 )
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?
@@ -359,9 +359,13 @@ impl<D: ProcessDriver> Supervisor<D> {
                     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
                     // Commit the identity proof first. If the budget write is
                     // lost, recovery sees Completed and idempotently clears it.
-                    restart_lineage::complete(record.layout.run_root(), agent_id, &replacement)
-                        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-                    crate::restart_budget::complete_restart(record.layout.run_root())
+                    restart_lineage::complete(
+                        record.layout.owner_run_root(),
+                        agent_id,
+                        &replacement,
+                    )
+                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                    crate::restart_budget::complete_restart(record.layout.owner_run_root())
                         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
                     slot.restart_pending = false;
                 }
@@ -463,7 +467,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         };
 
         let exit_witness = process_exit_witness::record_process_exit(
-            record.layout.run_root(),
+            record.layout.owner_run_root(),
             agent_id,
             runtime.generation,
             runtime.spawn_generation,
@@ -477,17 +481,17 @@ impl<D: ProcessDriver> Supervisor<D> {
             .exit_lease_removal
             .as_ref()
             .is_some_and(ProcessLeaseRemoval::is_unpublished_launch);
-        let removal = slot
-            .exit_lease_removal
-            .get_or_insert_with(|| ProcessLeaseRemoval::new(record.layout.run_root(), &lease));
-        removal.finish(record.layout.run_root(), &lease)?;
+        let removal = slot.exit_lease_removal.get_or_insert_with(|| {
+            ProcessLeaseRemoval::new(record.layout.owner_run_root(), &lease)
+        });
+        removal.finish(record.layout.owner_run_root(), &lease)?;
 
         // Only an exact observed exit plus same-owner lease cleanup advances
         // predecessor -> replacement-pending. A signal acknowledgement alone
         // can never cross this boundary.
         if slot.restart_pending
             && crate::restart_budget::pending_restart(
-                record.layout.run_root(),
+                record.layout.owner_run_root(),
                 self.config.restart_max_attempts,
             )
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?
@@ -500,7 +504,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             )
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
             restart_lineage::mark_predecessor_exited(
-                record.layout.run_root(),
+                record.layout.owner_run_root(),
                 agent_id,
                 &predecessor,
             )
@@ -564,7 +568,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         }
 
         process_exit_witness::consume_process_exit_witness(
-            record.layout.run_root(),
+            record.layout.owner_run_root(),
             &exit_witness.witness_id,
         )
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;

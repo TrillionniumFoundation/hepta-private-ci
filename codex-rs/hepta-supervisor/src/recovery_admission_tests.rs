@@ -160,7 +160,7 @@ impl Fixture {
             release_id: ReleaseId::parse("unversioned")?,
             identity: ProcessIdentity::new(42, "lifetime-proven-fixture")?,
         };
-        write_lease(registry.load_agent(&agent)?.layout.run_root(), &lease)?;
+        write_lease(registry.load_agent(&agent)?.layout.owner_run_root(), &lease)?;
         Ok(Self {
             _temp: temp,
             registry,
@@ -194,7 +194,7 @@ impl Fixture {
         assert_eq!(runtime.identity, self.lease.identity);
         assert_eq!(runtime.spawn_generation, self.lease.spawn_generation);
         assert_eq!(
-            read_lease(self.record()?.layout.run_root())?,
+            read_lease(self.record()?.layout.owner_run_root())?,
             Some(self.lease.clone())
         );
         let state = self.state.lock().expect("process state");
@@ -238,7 +238,7 @@ fn valid_control_for_another_process_does_not_discard_the_owned_main() -> Result
     let mut fixture = Fixture::new()?;
     let record = fixture.record()?;
     control_intent::prepare_kill(
-        record.layout.run_root(),
+        record.layout.owner_run_root(),
         &fixture.agent,
         fixture.lease.spawn_generation,
         &ProcessIdentity::new(43, "different-lifetime")?,
@@ -280,7 +280,10 @@ fn missing_identity_never_erases_a_rejected_control_journal_or_lease() -> Result
             .is_err()
     );
     assert!(fixture.slot.runtime.is_none());
-    assert_eq!(read_lease(record.layout.run_root())?, Some(fixture.lease));
+    assert_eq!(
+        read_lease(record.layout.owner_run_root())?,
+        Some(fixture.lease)
+    );
     assert_eq!(
         std::fs::read(
             record
@@ -307,7 +310,10 @@ fn rejected_identity_cannot_gain_signal_authority_from_corrupt_control() -> Resu
             .is_err()
     );
     assert!(fixture.slot.runtime.is_none());
-    assert_eq!(read_lease(record.layout.run_root())?, Some(fixture.lease));
+    assert_eq!(
+        read_lease(record.layout.owner_run_root())?,
+        Some(fixture.lease)
+    );
     assert_eq!(fixture.state.lock().expect("state").signals, 0);
     Ok(())
 }
@@ -319,7 +325,7 @@ fn durable_stop_does_not_evaluate_an_overflowing_fallback_deadline() -> Result<(
     record.lifecycle.lifecycle = AgentLifecycle::Starting;
     record.lifecycle.generation = fixture.lease.spawn_generation;
     control_intent::prepare_stop(
-        record.layout.run_root(),
+        record.layout.owner_run_root(),
         &fixture.agent,
         fixture.lease.spawn_generation,
         &fixture.lease.identity,
