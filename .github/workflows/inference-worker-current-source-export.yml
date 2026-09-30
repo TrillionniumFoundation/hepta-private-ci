@@ -1,0 +1,147 @@
+name: Inference worker current-source export
+
+on:
+  push:
+    branches:
+      - automation/inference-worker-materialize-final-20260930
+    paths:
+      - .github/workflows/inference-worker-current-source-export.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: inference-worker-current-source-export
+  cancel-in-progress: true
+
+env:
+  TARGET_SHA: c85e991687c32608e4f3b3c54345ff19e1616d3f
+  REVIEWED_TRANSFORM_COMMIT: 1c73f14c2bc0688b53eb3bb0c5fdaf29f491a20c
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  export:
+    name: Export reviewed ordinary-source files
+    runs-on: ubuntu-slim
+    timeout-minutes: 30
+    steps:
+      - name: Check out frozen authoritative source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+          clean: true
+
+      - name: Bind immutable source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
+
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt
+
+      - name: Execute the reviewed transform without writing Git history
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import os
+          import subprocess
+
+          commit = os.environ["REVIEWED_TRANSFORM_COMMIT"]
+          path = ".github/workflows/inference-worker-p0-source-converge-once.yml"
+          source = subprocess.check_output(
+              ["git", "show", f"{commit}:{path}"],
+              text=True,
+          )
+          step = "      - name: Materialize reviewed P0 fixes as ordinary source\n"
+          next_step = "\n      - name: Commit ordinary source fixes locally\n"
+          step_start = source.index(step)
+          run_start = source.index("        run: |\n", step_start) + len("        run: |\n")
+          run_end = source.index(next_step, run_start)
+          lines = source[run_start:run_end].splitlines()
+          decoded = []
+          for line in lines:
+              if line.startswith("          "):
+                  decoded.append(line[10:])
+              elif line:
+                  raise SystemExit(f"unexpected reviewed transform indentation: {line!r}")
+              else:
+                  decoded.append("")
+          target = Path("/tmp/inference-worker-reviewed-transform.sh")
+          target.write_text("\n".join(decoded) + "\n", encoding="utf-8")
+          PY
+          bash -euo pipefail /tmp/inference-worker-reviewed-transform.sh
+          git diff --check
+
+      - name: Export complete transformed and qualification inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/inference-worker-current-source"
+          mkdir -p "$out"
+          git diff --binary --full-index > "$out/reviewed-transform.patch"
+          git diff --name-status > "$out/reviewed-transform-name-status.tsv"
+          printf '%s\n' "$TARGET_SHA" > "$out/source-head.txt"
+          git rev-parse "$TARGET_SHA^{tree}" > "$out/source-tree.txt"
+
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+
+          fixed = {
+              ".github/workflows/inference-worker-authoritative-qualification.yml",
+              ".github/workflows/hepta-inference-maintenance.yml",
+              ".github/workflows/inference-worker-p0-source-converge-once.yml",
+              "scripts/inference_worker_command_receipt.py",
+              "scripts/inference_worker_current_status.py",
+              "scripts/run_inference_worker_qualification_lane.sh",
+              "scripts/test_inference_worker_command_receipt.py",
+              "scripts/tests/test_inference_worker_current_status.py",
+              "docs/modules/inference.worker/CURRENT_STATUS.json",
+              "docs/modules/inference.worker/IMPLEMENTATION_MAP.json",
+              "docs/modules/inference.worker/TECHNICAL.md",
+              "docs/modules/inference.worker/RECOVERY_AND_OPERATIONS.md",
+              "docs/modules/inference.worker/LOCAL_MODEL_RECOVERY.md",
+              "codex-rs/hepta-infer-worker-host/src/experimental_local/resources.rs",
+              "codex-rs/hepta-infer-worker-host/src/experimental_local/live_authority.rs",
+              "codex-rs/hepta-infer-worker-host/src/experimental_local/hardened.rs",
+          }
+          changed = set(filter(None, subprocess.check_output(
+              ["git", "diff", "--name-only"], text=True
+          ).splitlines()))
+          paths = sorted(path for path in fixed | changed if Path(path).is_file())
+          Path("/tmp/inference-worker-export-paths.txt").write_text(
+              "\n".join(paths) + "\n", encoding="utf-8"
+          )
+          PY
+          tar -czf "$out/source-files.tar.gz" -T /tmp/inference-worker-export-paths.txt
+          cp /tmp/inference-worker-export-paths.txt "$out/export-paths.txt"
+          sha256sum "$out"/* > "$out/SHA256SUMS"
+
+      - name: Prove checkout identity was not rewritten
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          test "$(git rev-parse "$TARGET_SHA^{tree}")" = "$(cat "$RUNNER_TEMP/inference-worker-current-source/source-tree.txt")"
+          git diff --check
+
+      - name: Upload source export
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: inference-worker-current-source-${{ github.sha }}
+          path: ${{ runner.temp }}/inference-worker-current-source
+          if-no-files-found: error
+          retention-days: 3
