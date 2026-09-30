@@ -30,13 +30,24 @@ impl VerifiedKnowledgeGenerationV2 {
         let mut adjacency = BTreeMap::<StableId, Vec<usize>>::new();
         let mut relation_kinds = BTreeSet::new();
         for (index, edge) in generation.edges.iter().enumerate() {
-            adjacency.entry(edge.identity.source_node_id.clone()).or_default().push(index);
+            adjacency
+                .entry(edge.identity.source_node_id.clone())
+                .or_default()
+                .push(index);
             if edge.identity.target_node_id != edge.identity.source_node_id {
-                adjacency.entry(edge.identity.target_node_id.clone()).or_default().push(index);
+                adjacency
+                    .entry(edge.identity.target_node_id.clone())
+                    .or_default()
+                    .push(index);
             }
             relation_kinds.insert(edge.identity.relation.clone());
         }
-        Ok(Self { generation, nodes, adjacency, relation_kinds })
+        Ok(Self {
+            generation,
+            nodes,
+            adjacency,
+            relation_kinds,
+        })
     }
 
     pub fn generation(&self) -> &KnowledgeGenerationV2 {
@@ -51,7 +62,8 @@ impl VerifiedKnowledgeGenerationV2 {
         &self,
         query: KnowledgeRelationQueryV2,
     ) -> Result<KnowledgeRelationResultV2, KnowledgeGenerationErrorV2> {
-        self.query_relations_with_work(query).map(|(result, _work)| result)
+        self.query_relations_with_work(query)
+            .map(|(result, _work)| result)
     }
 
     /// Reports selection work only: validation counters are zero because the
@@ -60,14 +72,17 @@ impl VerifiedKnowledgeGenerationV2 {
     pub fn query_relations_with_work(
         &self,
         query: KnowledgeRelationQueryV2,
-    ) -> Result<(KnowledgeRelationResultV2, KnowledgeRelationQueryWorkV2), KnowledgeGenerationErrorV2> {
-        if query.generation_digest != self.generation.generation_digest {
-            return Err(KnowledgeGenerationErrorV2::DigestMismatch("query_generation"));
-        }
+    ) -> Result<(KnowledgeRelationResultV2, KnowledgeRelationQueryWorkV2), KnowledgeGenerationErrorV2>
+    {
         if query.seed_node_ids.len() > MAX_KNOWLEDGE_NODES_V2
             || query.relation_kinds.len() > MAX_KNOWLEDGE_EDGES_V2
         {
             return Err(KnowledgeGenerationErrorV2::InvalidQueryLimit);
+        }
+        if query.generation_digest != self.generation.generation_digest {
+            return Err(KnowledgeGenerationErrorV2::DigestMismatch(
+                "query_generation",
+            ));
         }
         ensure_unique_ids("query_seed", &query.seed_node_ids)?;
         let seeds = query.seed_node_ids.iter().cloned().collect::<BTreeSet<_>>();
@@ -84,7 +99,8 @@ impl VerifiedKnowledgeGenerationV2 {
         let request_digest = compute_query_request_digest(&query, &seeds, &kinds);
         // Sorted original positions preserve the reference full-scan ordering,
         // including self-loops and edges reached from multiple seeds.
-        let incident = seeds.iter()
+        let incident = seeds
+            .iter()
             .filter_map(|seed| self.adjacency.get(seed))
             .flat_map(|indices| indices.iter().copied())
             .collect::<BTreeSet<_>>();
@@ -103,10 +119,13 @@ impl VerifiedKnowledgeGenerationV2 {
                 for node_id in [&edge.identity.source_node_id, &edge.identity.target_node_id] {
                     let visible = *visible_nodes.entry(node_id).or_insert_with(|| {
                         work.visibility_nodes_scanned += 1;
-                        self.generation.nodes[self.nodes[node_id]].supports.iter().any(|support| {
-                            work.visibility_supports_inspected += 1;
-                            support.visible_at(at)
-                        })
+                        self.generation.nodes[self.nodes[node_id]]
+                            .supports
+                            .iter()
+                            .any(|support| {
+                                work.visibility_supports_inspected += 1;
+                                support.visible_at(at)
+                            })
                     });
                     if !visible {
                         endpoints_visible = false;
@@ -133,10 +152,15 @@ impl VerifiedKnowledgeGenerationV2 {
                 continue;
             }
             let supports = match query.valid_at_unix_seconds {
-                Some(at) => edge.supports.iter().filter(|support| {
-                    work.relation_supports_inspected += 1;
-                    support.visible_at(at)
-                }).cloned().collect::<Vec<_>>(),
+                Some(at) => edge
+                    .supports
+                    .iter()
+                    .filter(|support| {
+                        work.relation_supports_inspected += 1;
+                        support.visible_at(at)
+                    })
+                    .cloned()
+                    .collect::<Vec<_>>(),
                 None => edge.supports.clone(),
             };
             if supports.is_empty() {

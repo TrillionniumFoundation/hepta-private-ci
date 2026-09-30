@@ -1,26 +1,26 @@
 use super::*;
 
-fn id(value: &str) -> StableId {
+pub(super) fn id(value: &str) -> StableId {
     StableId::new(value).unwrap_or_else(|error| panic!("valid id: {error}"))
 }
 
-fn digest(value: &str) -> Digest32 {
+pub(super) fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
-fn generation(value: u64) -> Generation {
+pub(super) fn generation(value: u64) -> Generation {
     Generation::new(value).unwrap_or_else(|error| panic!("valid generation: {error}"))
 }
 
-fn revision(value: u64) -> Revision {
+pub(super) fn revision(value: u64) -> Revision {
     Revision::new(value).unwrap_or_else(|error| panic!("valid revision: {error}"))
 }
 
-fn probability(raw: u64) -> ProbabilityQ32 {
+pub(super) fn probability(raw: u64) -> ProbabilityQ32 {
     ProbabilityQ32::from_raw(raw).unwrap_or_else(|error| panic!("valid probability: {error}"))
 }
 
-fn support(label: &str, tombstoned: bool) -> KnowledgeSupportV2 {
+pub(super) fn support(label: &str, tombstoned: bool) -> KnowledgeSupportV2 {
     KnowledgeSupportV2 {
         source_id: id(&format!("source:{label}")),
         source_revision: revision(1),
@@ -32,7 +32,7 @@ fn support(label: &str, tombstoned: bool) -> KnowledgeSupportV2 {
     }
 }
 
-fn node(label: &str, payload: &str) -> KnowledgeNodeV2 {
+pub(super) fn node(label: &str, payload: &str) -> KnowledgeNodeV2 {
     KnowledgeNodeV2 {
         node_id: id(&format!("node:{label}")),
         node_kind_id: id("kind:entity"),
@@ -41,7 +41,7 @@ fn node(label: &str, payload: &str) -> KnowledgeNodeV2 {
     }
 }
 
-fn edge(
+pub(super) fn edge(
     source: &str,
     target: &str,
     relation: KnowledgeRelationKindV2,
@@ -59,7 +59,10 @@ fn edge(
     }
 }
 
-fn input(nodes: Vec<KnowledgeNodeV2>, edges: Vec<KnowledgeEdgeV2>) -> KnowledgeProjectionInputV2 {
+pub(super) fn input(
+    nodes: Vec<KnowledgeNodeV2>,
+    edges: Vec<KnowledgeEdgeV2>,
+) -> KnowledgeProjectionInputV2 {
     KnowledgeProjectionInputV2 {
         source_snapshot_digest: digest("snapshot:1"),
         generation_vector_digest: digest("vector:1"),
@@ -531,3 +534,6 @@ fn query_result_digest_binds_complete_request_even_when_edges_match() {
         assert_ne!(baseline.result_digest, changed.result_digest);
     }
 }
+
+#[path = "query_closure_tests.rs"]
+mod query_closure;
