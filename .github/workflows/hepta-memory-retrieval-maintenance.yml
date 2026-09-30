@@ -44,7 +44,7 @@ jobs:
         run: python3 scripts/hepta_memory_retrieval_workflow_policy.py
       - name: Enforce default-controlled feature policy
         run: python3 scripts/hepta_memory_retrieval_feature_policy.py
-      - name: Compile default controlled API and explicit migration feature
+      - name: Compile controlled API, lifecycle contracts and explicit migration feature
         shell: bash
         run: |
           set -euo pipefail
@@ -52,6 +52,11 @@ jobs:
           cargo check --locked -p codex-hepta-memory-retrieval --no-default-features
           cargo test --locked -p codex-hepta-memory-retrieval \
             --no-default-features --test controlled_api
+          cargo test --locked -p codex-hepta-memory-retrieval \
+            --no-default-features \
+            --test lifecycle_api \
+            --test lifecycle_append_api \
+            --test lifecycle_append_reconciliation_api
           cargo check --locked -p codex-hepta-memory-retrieval \
             --no-default-features --features legacy-uncontrolled-retrieval
           cargo test --locked -p codex-hepta-memory-retrieval \
