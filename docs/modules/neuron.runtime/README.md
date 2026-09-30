@@ -14,22 +14,26 @@ from being mistaken for the current implementation contract.
 3. [`V2_DURABLE_CONTROL_STATE.md`](V2_DURABLE_CONTROL_STATE.md) — checksummed
    Agentd lifecycle/topology state, atomic publication ordering and interrupted
    generation-handoff restart resolution.
-4. [`V2_DEVELOPMENT.md`](V2_DEVELOPMENT.md) — durable operation lifecycle,
+4. [`V2_SECURITY_BOUNDARY.md`](V2_SECURITY_BOUNDARY.md) — formal threat boundary,
+   joint admission/provider rollback gap and acceptable closure evidence.
+5. [`V2_DEVELOPMENT.md`](V2_DEVELOPMENT.md) — durable operation lifecycle,
    filesystem boundary, measurement model and backend qualification details.
-5. [`V2_RUNBOOK.md`](V2_RUNBOOK.md) — operation-state handling, capacity actions,
+6. [`V2_RUNBOOK.md`](V2_RUNBOOK.md) — operation-state handling, capacity actions,
    incident recovery and safe generation handoff without history deletion.
-6. [`TECHNICAL.md`](TECHNICAL.md) — Sparse Q24 mechanism, core data structures,
+7. [`TECHNICAL.md`](TECHNICAL.md) — Sparse Q24 mechanism, core data structures,
    model/body binding and the broader technical reference.
-7. [`../../../qualification/module-execution-dossiers/detail/neuron.runtime.md`](../../../qualification/module-execution-dossiers/detail/neuron.runtime.md)
+8. [`../../../qualification/module-execution-dossiers/detail/neuron.runtime.md`](../../../qualification/module-execution-dossiers/detail/neuron.runtime.md)
    — qualification scope and claim boundary.
 
 `V2_CONTROL_PLANE.md` is authoritative where an older lifecycle paragraph in a
 broader development note is less specific. `V2_STARTUP_RECOVERY.md` is
 authoritative for startup readiness and recovery while the execution gate is
 closed. `V2_DURABLE_CONTROL_STATE.md` is authoritative for Agentd state-file
-publication and restart resolution. `GAP_ANALYSIS.md` was a historical working
-ledger and is not present on the current convergence head. Do not treat links or
-checkboxes from an earlier head as current implementation or execution evidence.
+publication and restart resolution. `V2_SECURITY_BOUNDARY.md` is authoritative
+for `NR-SEC-ROLLBACK-001` and its blocked claims. `GAP_ANALYSIS.md` was a
+historical working ledger and is not present on the current convergence head. Do
+not treat links or checkboxes from an earlier head as current implementation or
+execution evidence.
 
 ## Current authority boundary
 
@@ -70,6 +74,10 @@ remain separate evidence and decision gates.
   result without provider work;
 - `NeuronOperationStatusV2::stable_code`: low-cardinality state for logs/metrics;
 - `NeuronRuntimeV2Error::stable_code`: diagnostic error family, never operation truth;
+- `AgentdNeuronControlErrorV2::retry_class` and `operator_action`: stable machine
+  and operator advice without changing the error's authority;
+- `AgentdNeuronControlFailureV2`: optional exact operation identity at the
+  logging/CLI boundary while preserving the nested error source chain;
 - `capacity_snapshot`: retained-record, byte-reservation and witness headroom;
 - `NeuronRuntimeCapacityV2::action_code`: `serve`,
   `schedule_generation_handoff` or `backpressure`;
@@ -129,14 +137,17 @@ diagnostics from native Codex transport identity, isolation and account-specific
 teacher-data rights. Neither guide adds a runtime owner or grants selection,
 training admission, product qualification or activation.
 
-
 ## Readiness evidence is not experiment acceptance
 
-`MODULE_SPEC.json` configures the existing readiness workflow and its generated
-navigation. `IMPLEMENTATION_MAP.json` remains the existing module source map;
-`IMPLEMENTATION_MAP.generated.json` is a projection of the readiness specification,
-not a second runtime owner or replacement for empirical evidence. The minimum
-receipts for all eleven DecisionCell/provider/motor/training boundaries are in
+`MODULE_SPEC.json` is the sole handwritten module-status specification. It
+configures the readiness workflow and generates
+`IMPLEMENTATION_MAP.generated.json`, `REQUIREMENT_TEST_MATRIX.json`,
+`READINESS_DASHBOARD.md`, `PRODUCTION_ACTIVATION.json` and `DOCS_INDEX.md`.
+No compatibility or historical file carries independent current implementation,
+readiness or activation facts.
+
+The minimum receipts for all eleven DecisionCell/provider/motor/training
+boundaries are in
 [the existing experiment contract](SUPPORT_CALIBRATION.md#minimum-acceptance-receipts-for-the-remaining-boundaries).
 
 Provenance v2 binds exact source/base commits and the deterministic tested lane,
@@ -155,6 +166,7 @@ outcomes too; even complete successful per-gate records cannot make the manifest
 ready after a matrix failure. The workflow's final result additionally requires
 all matrix jobs, artifact download and aggregation to succeed, including
 post-capture cleanup.
+
 A metadata fingerprint is not remote attestation: local fixture records do not
 prove a hosted run. The manifest explicitly leaves hosted execution independently
 unverified; trusted workflow/job records and retained command logs are required.
