@@ -15,12 +15,12 @@ permissions:
 
 concurrency:
   group: hepta-kg-stage1-materialize-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   materialize:
     name: Materialize reviewed stage-one patch as ordinary source
-    runs-on: macos-15
+    runs-on: ubuntu-24.04
     timeout-minutes: 180
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -69,7 +69,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          command -v protoc >/dev/null || brew install protobuf
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config protobuf-compiler
+          command -v protoc
+          protoc --version
 
       - name: Format and verify materialized source
         shell: bash
