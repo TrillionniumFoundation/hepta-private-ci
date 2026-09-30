@@ -1,0 +1,112 @@
+{
+  "schema": "hepta.platform-types.documentation-archive.v1",
+  "schemaVersion": 1,
+  "module": "platform.types",
+  "claimBoundary": "historical provenance and path-retention metadata only; this manifest does not qualify, approve, merge, activate, promote, or release any candidate",
+  "authoritativeEntries": [
+    "docs/modules/platform.types/SPEC_V2.md",
+    "docs/modules/platform.types/IMPLEMENTATION_STATUS.md",
+    "docs/modules/platform.types/MIGRATION_V1_TO_V2.md"
+  ],
+  "relocationPolicy": {
+    "status": "retained_in_place",
+    "reason": "existing exact-source evidence and qualification tooling still address the historical files at their committed paths",
+    "moveCondition": "all path-bound evidence consumers must resolve historical records through this manifest before a mechanical archive move"
+  },
+  "records": [
+    {
+      "path": "docs/modules/platform.types/CURRENT_IMPLEMENTATION.md",
+      "status": "superseded",
+      "supersededBy": [
+        "docs/modules/platform.types/SPEC_V2.md",
+        "docs/modules/platform.types/IMPLEMENTATION_STATUS.md",
+        "docs/modules/platform.types/MIGRATION_V1_TO_V2.md"
+      ],
+      "sourceSha": "a4333a92e10f1105273d4865b29f401ee8326faf",
+      "sourceGitBlob": "b1904f46d8f7f905ca13627e2d17bd0036236c05",
+      "validUntil": "path-bound-evidence-retirement",
+      "claimBoundary": "historical provenance only; not a current specification or status authority"
+    },
+    {
+      "path": "docs/modules/platform.types/TECHNICAL_CURRENT_AMENDMENT_V2.md",
+      "status": "superseded",
+      "supersededBy": [
+        "docs/modules/platform.types/SPEC_V2.md",
+        "docs/modules/platform.types/IMPLEMENTATION_STATUS.md"
+      ],
+      "sourceSha": "a4333a92e10f1105273d4865b29f401ee8326faf",
+      "sourceGitBlob": "cec3d46e54144320073e4e016ee54eab27a36044",
+      "validUntil": "path-bound-evidence-retirement",
+      "claimBoundary": "historical provenance only; not a current specification or status authority"
+    },
+    {
+      "path": "docs/modules/platform.types/DEEP_QUALIFICATION_V1.md",
+      "status": "superseded",
+      "supersededBy": [
+        "docs/modules/platform.types/IMPLEMENTATION_STATUS.md"
+      ],
+      "sourceSha": "a4333a92e10f1105273d4865b29f401ee8326faf",
+      "sourceGitBlob": "1695b5e6ea606eb1e45923a11507d9f770b69012",
+      "validUntil": "path-bound-evidence-retirement",
+      "claimBoundary": "historical provenance only; not a current specification or status authority"
+    },
+    {
+      "path": "docs/modules/platform.types/QUALIFICATION_HARDENING_20260928.md",
+      "status": "superseded",
+      "supersededBy": [
+        "docs/modules/platform.types/IMPLEMENTATION_STATUS.md"
+      ],
+      "sourceSha": "a4333a92e10f1105273d4865b29f401ee8326faf",
+      "sourceGitBlob": "b721505bb1965e746bb1afcab6400c9f93a91073",
+      "validUntil": "path-bound-evidence-retirement",
+      "claimBoundary": "historical provenance only; not a current specification or status authority"
+    },
+    {
+      "path": "docs/modules/platform.types/QUALIFICATION_INTEGRITY_20260929.md",
+      "status": "superseded",
+      "supersededBy": [
+        "docs/modules/platform.types/IMPLEMENTATION_STATUS.md"
+      ],
+      "sourceSha": "a4333a92e10f1105273d4865b29f401ee8326faf",
+      "sourceGitBlob": "8a14848c0106c5c2604167b3aeb3b37ceabb0db9",
+      "validUntil": "path-bound-evidence-retirement",
+      "claimBoundary": "historical provenance only; not a current specification or status authority"
+    },
+    {
+      "path": "docs/modules/platform.types/NDU_SNAPSHOT_INTEGRATION_20260929.md",
+      "status": "superseded",
+      "supersededBy": [
+        "docs/modules/platform.types/MIGRATION_V1_TO_V2.md",
+        "docs/modules/platform.types/IMPLEMENTATION_STATUS.md"
+      ],
+      "sourceSha": "a4333a92e10f1105273d4865b29f401ee8326faf",
+      "sourceGitBlob": "9360e2754fdfdd865b84c8aa22e197b011d3ec55",
+      "validUntil": "path-bound-evidence-retirement",
+      "claimBoundary": "historical provenance only; not a current specification or status authority"
+    },
+    {
+      "path": "docs/modules/platform.types/REMAINING_GAPS_CLOSURE_20260929.md",
+      "status": "superseded",
+      "supersededBy": [
+        "docs/modules/platform.types/IMPLEMENTATION_STATUS.md",
+        "docs/modules/platform.types/MIGRATION_V1_TO_V2.md"
+      ],
+      "sourceSha": "a4333a92e10f1105273d4865b29f401ee8326faf",
+      "sourceGitBlob": "1e9f0b3ba3ac5d0cf89f37166474d1b2f77b18cc",
+      "validUntil": "path-bound-evidence-retirement",
+      "claimBoundary": "historical provenance only; not a current specification or status authority"
+    },
+    {
+      "path": "docs/modules/platform.types/OPTIMIZATION_CLOSURE_20260929.md",
+      "status": "superseded",
+      "supersededBy": [
+        "docs/modules/platform.types/SPEC_V2.md",
+        "docs/modules/platform.types/IMPLEMENTATION_STATUS.md"
+      ],
+      "sourceSha": "a4333a92e10f1105273d4865b29f401ee8326faf",
+      "sourceGitBlob": "562c5f0b5ca0151284fba74ffbe7664b8856b4f9",
+      "validUntil": "path-bound-evidence-retirement",
+      "claimBoundary": "historical provenance only; not a current specification or status authority"
+    }
+  ]
+}

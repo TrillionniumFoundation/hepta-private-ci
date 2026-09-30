@@ -1,0 +1,52 @@
+{
+  "schema": "hepta.platform-types.truth-matrix.v2",
+  "schemaVersion": 2,
+  "module": "platform.types",
+  "generationCommand": "python3 scripts/platform_types_truth_matrix.py --write",
+  "generatedFrom": [
+    "docs/modules/platform.types/PUBLIC_API_INVENTORY_V1.json",
+    "docs/modules/platform.types/COMPATIBILITY_MATRIX_V1.json",
+    "docs/modules/platform.types/IMPLEMENTATION_MAP.json",
+    "docs/modules/platform.types/implementation_status_source.json",
+    "docs/modules/platform.types/archive/MANIFEST.json"
+  ],
+  "authorityModel": {
+    "humanReadableEntries": {
+      "specification": "docs/modules/platform.types/SPEC_V2.md",
+      "implementationStatus": "docs/modules/platform.types/IMPLEMENTATION_STATUS.md",
+      "migration": "docs/modules/platform.types/MIGRATION_V1_TO_V2.md"
+    },
+    "machineReadableDerivatives": {
+      "publicApiInventory": "docs/modules/platform.types/PUBLIC_API_INVENTORY_V1.json",
+      "compatibilityMatrix": "docs/modules/platform.types/COMPATIBILITY_MATRIX_V1.json",
+      "implementationMap": "docs/modules/platform.types/IMPLEMENTATION_MAP.json",
+      "archiveManifest": "docs/modules/platform.types/archive/MANIFEST.json"
+    },
+    "legacyTruthMatrix": "docs/lane-a-foundation/platform.types/TRUTH_MATRIX_V1.json"
+  },
+  "sourceFacts": {
+    "specVersion": "platform.types/v2",
+    "ownerMigration": "in_progress",
+    "publicApiExportCount": 81,
+    "publicApiOperationCount": 20,
+    "publicApiSourceModuleCount": 14,
+    "protocolCount": 7,
+    "mandatoryConsumerCount": 17,
+    "archivedRecordCount": 8
+  },
+  "qualificationState": {
+    "qualification": "unqualified",
+    "approvalSha": null,
+    "activation": false,
+    "sourceIdentity": "injected-only-into-exact-head-runtime-evidence",
+    "requiredOrdering": [
+      "exact-source qualification",
+      "fixed synthetic-merge qualification",
+      "independent same-head approval",
+      "merge to main",
+      "post-merge qualification",
+      "explicit activation"
+    ]
+  },
+  "claimBoundary": "source-derived implementation and migration facts only; qualification, approval, merge, activation, promotion, and release require external exact-SHA evidence and are never inferred from this committed projection"
+}
