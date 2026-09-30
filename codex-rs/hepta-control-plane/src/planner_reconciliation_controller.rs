@@ -44,16 +44,26 @@ pub trait PlannerPendingRequestResolverV1 {
 /// Per-claim outcome from one bounded reconciliation pass.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum PlannerPendingReconciliationDispositionV1 {
-    Reconciled { receipt: PlannerTerminalReceiptV1 },
-    RequestUnavailable { reason_digest: Digest32 },
-    RequestIndeterminate { reason_digest: Digest32 },
-    ResolverFailed { error: PlannerExecutionError },
+    Reconciled {
+        receipt: PlannerTerminalReceiptV1,
+    },
+    RequestUnavailable {
+        reason_digest: Digest32,
+    },
+    RequestIndeterminate {
+        reason_digest: Digest32,
+    },
+    ResolverFailed {
+        error: PlannerExecutionError,
+    },
     RequestBindingMismatch {
         observed_operation_identity_digest: Digest32,
         observed_request_digest: Digest32,
         observed_final_payload_digest: Digest32,
     },
-    ReconciliationFailed { error: PlannerExecutionError },
+    ReconciliationFailed {
+        error: PlannerExecutionError,
+    },
 }
 
 /// Auditable result for one pending claim. This evidence remains `DENY_ALL`.
@@ -146,14 +156,12 @@ where
         PlannerPendingRequestResolutionV1::Unavailable { reason_digest } => {
             if reason_digest.is_zero() {
                 return Ok(PlannerPendingReconciliationDispositionV1::ResolverFailed {
-                    error: PlannerExecutionError::EmptyDigest(
-                        "pending request unavailable reason",
-                    ),
+                    error: PlannerExecutionError::EmptyDigest("pending request unavailable reason"),
                 });
             }
-            return Ok(PlannerPendingReconciliationDispositionV1::RequestUnavailable {
-                reason_digest,
-            });
+            return Ok(
+                PlannerPendingReconciliationDispositionV1::RequestUnavailable { reason_digest },
+            );
         }
         PlannerPendingRequestResolutionV1::Indeterminate { reason_digest } => {
             if reason_digest.is_zero() {
@@ -163,9 +171,9 @@ where
                     ),
                 });
             }
-            return Ok(PlannerPendingReconciliationDispositionV1::RequestIndeterminate {
-                reason_digest,
-            });
+            return Ok(
+                PlannerPendingReconciliationDispositionV1::RequestIndeterminate { reason_digest },
+            );
         }
     };
 
@@ -184,17 +192,10 @@ where
         );
     }
 
-    match reconcile_planner_request_v1(
-        &request,
-        pending.original_grant_digest,
-        executor,
-        store,
-    ) {
+    match reconcile_planner_request_v1(&request, pending.original_grant_digest, executor, store) {
         Ok(receipt) => Ok(PlannerPendingReconciliationDispositionV1::Reconciled { receipt }),
         Err(error @ PlannerExecutionError::Store(_)) => Err(error),
-        Err(error) => Ok(
-            PlannerPendingReconciliationDispositionV1::ReconciliationFailed { error },
-        ),
+        Err(error) => Ok(PlannerPendingReconciliationDispositionV1::ReconciliationFailed { error }),
     }
 }
 
