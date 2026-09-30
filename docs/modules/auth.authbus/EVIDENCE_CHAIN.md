@@ -72,3 +72,11 @@ WAL corruption, backup race, trust-generation mismatch and filesystem
 publication failures run only on the protected target-host environment.
 Independent security acceptance, KMS/HSM composition, activation, canary and
 release remain separately governed artifacts.
+
+## Performance evidence
+
+The target-host evidence bundle also contains a performance receipt and bound
+performance manifest. The required matrix covers concurrency 1, 8, 32 and 128,
+multiple durable-state sizes, slow storage, checkpoint publication failure and
+recovery/backup overlap. A report that omits any stage between product entry and
+caller acknowledgement is rejected.
