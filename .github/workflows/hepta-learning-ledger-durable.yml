@@ -5,7 +5,15 @@ on:
     paths:
       - "codex-rs/hepta-learning-ledger/**"
       - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-bellman-operator/**"
+      - "codex-rs/hepta-agentd/src/learning_operator_coordinator.rs"
+      - "codex-rs/hepta-agentd/src/lib.rs"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "docs/modules/learning.operator/**"
+      - "scripts/hepta-learning-operator-*"
       - ".github/workflows/hepta-learning-ledger-durable.yml"
+      - ".github/workflows/learning-operator-authoritative.yml"
 
 permissions:
   contents: read
@@ -89,3 +97,55 @@ jobs:
           git diff --check
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"
+
+  operator-qualification-result:
+    name: learning-operator-authoritative / qualification-result
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      QUALIFICATION_WORKFLOW_PATH: .github/workflows/hepta-learning-ledger-durable.yml
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+    steps:
+      - name: Check out exact operator candidate without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Bind exact operator source candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git rev-parse "$BASE_SHA^{commit}")" = "$BASE_SHA"
+          git rev-parse HEAD HEAD^{tree}
+
+      - name: Install pinned operator qualification tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-llvm-cov@0.9.1
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt,llvm-tools-preview
+
+      - name: Run authoritative source and deterministic merge qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          export CARGO_TARGET_DIR="${RUNNER_TEMP}/learning-operator-target"
+          bash scripts/hepta-learning-operator-authoritative.sh
+
+      - name: Retain immutable operator qualification evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-operator-authoritative-${{ env.SOURCE_SHA }}
+          path: .hepta-evidence/learning-operator/
+          if-no-files-found: error
+          retention-days: 90
