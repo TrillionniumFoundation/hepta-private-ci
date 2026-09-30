@@ -1,0 +1,88 @@
+name: Cognitive store one-shot v7 source apply
+
+on:
+  push:
+    branches:
+      - codex/cognitive-store-full-closure-20260927
+    paths:
+      - scripts/cognitive_store_v7.patch.b64.*
+      - .github/workflows/cognitive-store-one-shot-v7.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cognitive-store-one-shot-v7
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Apply reviewed exact-source patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          shopt -s nullglob
+          parts=(scripts/cognitive_store_v7.patch.b64.*)
+          if (( ${#parts[@]} == 0 )); then
+            echo "one-shot patch parts are absent; nothing to apply"
+            exit 0
+          fi
+          test "${#parts[@]}" -eq 8
+          cat "${parts[@]}" | base64 --decode > "$RUNNER_TEMP/cognitive_store_v7.patch"
+          echo "5618518765605bacd5bf4262bb19eb153eb327bb1e51c5cbed0925ffc73eec73  $RUNNER_TEMP/cognitive_store_v7.patch" | sha256sum -c -
+          git apply --check "$RUNNER_TEMP/cognitive_store_v7.patch"
+          git apply "$RUNNER_TEMP/cognitive_store_v7.patch"
+          rm -- "${parts[@]}"
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-cognitive-store \
+            --package codex-hepta-memory \
+            --package codex-hepta-agentd
+          python3 scripts/cognitive_store_status.py --write
+          git diff --check
+
+      - name: Run focused native regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          if compgen -G 'scripts/cognitive_store_v7.patch.b64.*' > /dev/null; then
+            echo "patch parts were not consumed"
+            exit 1
+          fi
+          cd codex-rs
+          cargo test --locked -p codex-hepta-agentd --test cognitive_store_product_writer --features qualification-cognitive-write
+          cargo test --locked -p codex-hepta-agentd --test cognitive_store_host_read_pages
+          cargo test --locked -p codex-hepta-agentd --test cognitive_recovery_boundary --features qualification-cognitive-write
+          cargo test --locked -p codex-hepta-memory --test cognitive_recovery_publication_fault
+          cargo test --locked -p codex-hepta-memory final_use_tests
+          cargo clippy --locked \
+            -p codex-hepta-cognitive-store \
+            -p codex-hepta-memory \
+            -p codex-hepta-agentd \
+            --all-targets --all-features --no-deps -- -D warnings
+
+      - name: Commit exact source repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          if compgen -G 'scripts/cognitive_store_v7.patch.b64.*' > /dev/null; then
+            echo "patch parts were not consumed"
+            exit 1
+          fi
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          test -n "$(git status --porcelain --untracked-files=normal)"
+          git commit -m "cognitive.store: close exact execution blockers" \
+            -m "Add a quiescent SQLite recovery handoff, preserve redirected-root indeterminacy, repair product and crash/restart regressions, and close strict-Clippy helper leaks without weakening qualification. The one-shot transport payload is removed by this commit; target-host, erasure, acceptance, activation, promotion, and release claims remain false.\n\nSigned-off-by: OpenAI <noreply@openai.com>"
+          git push origin HEAD:codex/cognitive-store-full-closure-20260927
