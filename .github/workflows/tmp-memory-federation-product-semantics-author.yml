@@ -1,0 +1,94 @@
+name: temporary memory federation product semantics author
+
+on:
+  push:
+    branches:
+      - tmp/memory-federation-product-semantics-author-20260930
+
+permissions:
+  contents: write
+
+concurrency:
+  group: temporary-memory-federation-product-semantics-author
+  cancel-in-progress: true
+
+jobs:
+  apply-test-push:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Check out author material
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Reconstruct and verify semantic patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .authoring/memory-federation-semantics.patch.b64.* > "$RUNNER_TEMP/semantics.patch.b64"
+          echo "e0534075927b688deb7260c15af0d96bfb9e7315cd66dd29015c224846f6e711  $RUNNER_TEMP/semantics.patch.b64" | sha256sum -c -
+          base64 --decode "$RUNNER_TEMP/semantics.patch.b64" > "$RUNNER_TEMP/semantics.patch"
+          echo "045ad1e3b12149d73176bfd372bf6c5a10f04bb5a112be20792fe627767032b9  $RUNNER_TEMP/semantics.patch" | sha256sum -c -
+
+      - name: Apply to frozen product head
+        shell: bash
+        env:
+          SOURCE_SHA: ecb502a7a1435d84441a74cb8c3159e76f9b8a69
+          TARGET_BRANCH: fix/memory-federation-product-semantics-20260930
+        run: |
+          set -euo pipefail
+          git checkout --detach "$SOURCE_SHA"
+          git apply --check "$RUNNER_TEMP/semantics.patch"
+          git apply "$RUNNER_TEMP/semantics.patch"
+          git diff --check
+
+          cd codex-rs
+          cargo fmt --package codex-hepta-memory --package codex-hepta-memory-extension
+          cd ..
+
+          allowed='^(codex-rs/hepta-memory/Cargo.toml|codex-rs/hepta-memory/src/lib.rs|codex-rs/hepta-memory/src/cognitive_retrieval.rs|codex-rs/hepta-memory/src/cognitive_retrieval_observation.rs|codex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs|codex-rs/hepta-memory/src/cognitive_federation.rs|codex-rs/hepta-memory/src/cognitive_federation_tests.rs|codex-rs/hepta-memory/src/cognitive_runtime.rs|codex-rs/ext/hepta-memory/src/cognitive/federation.rs)$'
+          unexpected="$(git diff --name-only | grep -Ev "$allowed" || true)"
+          test -z "$unexpected" || { printf 'unexpected formatted paths:\n%s\n' "$unexpected"; exit 1; }
+          git diff --check
+
+      - name: Test product semantics
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo test -p codex-hepta-memory --lib
+          cargo test -p codex-hepta-memory-extension --lib
+          cargo test -p codex-hepta-memory-federation --lib --features legacy-v1
+
+      - name: Commit and push semantic source
+        shell: bash
+        env:
+          SOURCE_SHA: ecb502a7a1435d84441a74cb8c3159e76f9b8a69
+          TARGET_BRANCH: fix/memory-federation-product-semantics-20260930
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git config user.name "Hepta Memory Federation Author"
+          git config user.email "hepta-memory-federation-author@users.noreply.github.com"
+          git add \
+            codex-rs/hepta-memory/Cargo.toml \
+            codex-rs/hepta-memory/src/lib.rs \
+            codex-rs/hepta-memory/src/cognitive_retrieval.rs \
+            codex-rs/hepta-memory/src/cognitive_retrieval_observation.rs \
+            codex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs \
+            codex-rs/hepta-memory/src/cognitive_federation.rs \
+            codex-rs/hepta-memory/src/cognitive_federation_tests.rs \
+            codex-rs/hepta-memory/src/cognitive_runtime.rs \
+            codex-rs/ext/hepta-memory/src/cognitive/federation.rs
+          git commit -m "fix(memory.federation): close product retrieval semantics" -m "Apply exact scope before ranking and top-K, derive owner completion from the same SQLite snapshot, degrade peer-local setup failures without aborting healthy peers, use post-I/O authority observation time, and recheck both capability and memory validity at physical send. Restore workspace lint inheritance so any remaining exceptions can be narrowed to reviewed items."
+          test "$(git rev-parse HEAD^)" = "$SOURCE_SHA"
+          git push --force-with-lease="refs/heads/$TARGET_BRANCH:$SOURCE_SHA" origin "HEAD:refs/heads/$TARGET_BRANCH"
+
+      - name: Probe strict Clippy after push
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo clippy -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-hepta-memory-federation --all-targets --all-features -- -D warnings
