@@ -155,6 +155,72 @@ fn terminal_output_from_another_connection_cannot_replace_valid_text() {
 }
 
 #[test]
+fn nonterminal_observations_require_exact_connection_version_and_home() {
+    use codex_app_server_protocol::ThreadTokenUsage;
+    use codex_app_server_protocol::ThreadTokenUsageUpdatedNotification;
+    use codex_app_server_protocol::TokenUsageBreakdown;
+
+    let counts = TokenUsageBreakdown {
+        total_tokens: 999,
+        input_tokens: 0,
+        cached_input_tokens: 0,
+        cache_write_input_tokens: 0,
+        output_tokens: 999,
+        reasoning_output_tokens: 0,
+    };
+    let notifications = [
+        ServerNotification::AgentMessageDelta(AgentMessageDeltaNotification {
+            thread_id: "thread-a".to_string(),
+            turn_id: "turn-a".to_string(),
+            item_id: "unbound".to_string(),
+            delta: "unbound delta".to_string(),
+        }),
+        completed_message("thread-a", "turn-a", "unbound", "unbound completed text"),
+        ServerNotification::ThreadTokenUsageUpdated(ThreadTokenUsageUpdatedNotification {
+            thread_id: "thread-a".to_string(),
+            turn_id: "turn-a".to_string(),
+            token_usage: ThreadTokenUsage {
+                total: counts.clone(),
+                last: counts,
+                model_context_window: None,
+            },
+        }),
+    ];
+    for (connection_id, server_version, codex_home) in [
+        (8, "test-app-server", "/home/agent"),
+        (7, "another-app-server", "/home/agent"),
+        (7, "test-app-server", "/home/another-agent"),
+    ] {
+        for notification in &notifications {
+            let mut output = output();
+            observe_for_test(
+                &mut output,
+                completed_message("thread-a", "turn-a", "first", "valid output"),
+            )
+            .unwrap();
+            let expected = output.run.clone();
+            let foreign = RemoteAppServerObservedEvent::from_test_event(
+                AppServerEvent::ServerNotification(Box::new(notification.clone())),
+                connection_id,
+                Some(server_version.to_string()),
+                Some(codex_home.to_string()),
+            );
+            assert!(
+                observe_event(
+                    &mut output.run,
+                    &mut output.projection,
+                    &foreign,
+                    &binding(),
+                )
+                .is_err()
+            );
+            output.run.output = output.projection.text();
+            assert_eq!(output.run, expected);
+        }
+    }
+}
+
+#[test]
 fn interleaved_small_deltas_materialize_only_at_the_consumer_boundary() {
     let mut output = output();
     let binding = binding();

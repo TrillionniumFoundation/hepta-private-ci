@@ -204,7 +204,7 @@ fn read_private_config(path: &Path) -> Result<Vec<u8>> {
     }
     let mut file = std::fs::OpenOptions::new()
         .read(true)
-        .custom_flags(libc::O_NOFOLLOW)
+        .custom_flags(libc::O_NOFOLLOW | libc::O_NONBLOCK)
         .open(path)?;
     let metadata = file.metadata()?;
     let effective_uid = rustix::process::geteuid().as_raw();

@@ -1,5 +1,6 @@
 use super::*;
 
+use std::os::unix::fs::OpenOptionsExt;
 use std::os::unix::fs::PermissionsExt;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
@@ -211,6 +212,61 @@ fn connected_issuer_peer_uid_must_match_configured_owner() {
         .checked_add(1)
         .unwrap_or_else(|| owner.saturating_sub(1));
     assert!(validate_issuer_peer_uid(other, owner).is_err());
+}
+
+#[test]
+fn private_config_read_accepts_a_protected_regular_file() -> Result<()> {
+    let directory = tempfile::tempdir()?;
+    let path = directory.path().join("authority.json");
+    let expected = b"protected configuration";
+    std::fs::write(&path, expected)?;
+    std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600))?;
+    assert_eq!(read_private_config(&path)?, expected);
+    Ok(())
+}
+
+#[test]
+fn private_config_read_rejects_a_fifo_without_waiting_for_a_writer() -> Result<()> {
+    let directory = tempfile::tempdir()?;
+    let path = directory.path().join("authority.json");
+    let status = std::process::Command::new("mkfifo")
+        .args(["-m", "600"])
+        .arg(&path)
+        .status()?;
+    if !status.success() {
+        return Err("failed to create test configuration FIFO".into());
+    }
+    let (result_tx, result_rx) = std::sync::mpsc::sync_channel(1);
+    let reader_path = path.clone();
+    let reader = std::thread::spawn(move || {
+        let _ = result_tx.send(read_private_config(&reader_path));
+    });
+    let result = result_rx.recv_timeout(Duration::from_secs(2));
+    // If blocking open regresses, release the reader before failing so the
+    // negative fixture itself never leaves a blocked test thread behind.
+    let unblock = if matches!(result, Err(std::sync::mpsc::RecvTimeoutError::Timeout)) {
+        let read_end = std::fs::OpenOptions::new()
+            .read(true)
+            .custom_flags(libc::O_NONBLOCK)
+            .open(&path)?;
+        let write_end = std::fs::OpenOptions::new()
+            .write(true)
+            .custom_flags(libc::O_NONBLOCK)
+            .open(&path)?;
+        Some((read_end, write_end))
+    } else {
+        None
+    };
+    reader
+        .join()
+        .map_err(|_| "configuration reader thread panicked")?;
+    drop(unblock);
+    assert!(
+        result
+            .map_err(|_| "configuration FIFO open waited for a writer")?
+            .is_err()
+    );
+    Ok(())
 }
 
 /// Bounded test issuer over the production Unix protocol. Only this separate
