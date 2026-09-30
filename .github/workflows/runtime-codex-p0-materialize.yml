@@ -17,7 +17,7 @@ concurrency:
 
 env:
   CARGO_INCREMENTAL: "0"
-  DIAGNOSTIC_DIR: qualification/runtime-codex-materialize-debug
+  LOG_DIR: qualification/runtime-codex-materialize-debug
 
 jobs:
   materialize:
@@ -37,34 +37,56 @@ jobs:
         with:
           target: x86_64-unknown-linux-gnu
 
-      - name: Materialize pending source migrations
+      - name: Materialize, verify and publish immutable source
         shell: bash
         run: |
-          set -uo pipefail
-          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          set -Eeuo pipefail
+          input_sha="${GITHUB_SHA}"
+          test "$(git rev-parse HEAD)" = "$input_sha"
           test -z "$(git status --porcelain=v1)"
-          rm -rf "$DIAGNOSTIC_DIR"
-          mkdir -p "$DIAGNOSTIC_DIR"
-          status="$DIAGNOSTIC_DIR/status.txt"
-          : > "$status"
+          rm -rf "$LOG_DIR"
+          mkdir -p "$LOG_DIR"
+          : > "$LOG_DIR/status.txt"
 
           run_logged() {
             local name="$1"
             shift
-            printf 'START %s\n' "$name" | tee -a "$status"
+            printf 'START %s\n' "$name" | tee -a "$LOG_DIR/status.txt"
             set +e
-            "$@" >"$DIAGNOSTIC_DIR/$name.log" 2>&1
+            "$@" >"$LOG_DIR/$name.log" 2>&1
             local rc=$?
             set -e
-            printf '%s=%s\n' "$name" "$rc" | tee -a "$status"
+            printf '%s=%s\n' "$name" "$rc" | tee -a "$LOG_DIR/status.txt"
             if test "$rc" -ne 0; then
-              tail -n 400 "$DIAGNOSTIC_DIR/$name.log" > "$DIAGNOSTIC_DIR/$name.tail.log"
-              printf 'MATERIALIZE_RESULT=failure\n' >> "$GITHUB_ENV"
+              tail -n 400 "$LOG_DIR/$name.log" \
+                | tee "$LOG_DIR/$name.tail.log"
               return "$rc"
             fi
           }
 
-          scripts=(
+          retain_failure() {
+            local rc=$?
+            trap - EXIT
+            if test "$rc" -eq 0; then
+              return 0
+            fi
+            cp -a "$LOG_DIR" /tmp/runtime-codex-materialize-debug
+            git reset --hard "$input_sha"
+            git clean -fdx
+            mkdir -p "$(dirname "$LOG_DIR")"
+            cp -a /tmp/runtime-codex-materialize-debug "$LOG_DIR"
+            git config user.name 'runtime.codex P0 diagnostics'
+            git config user.email 'runtime-codex-p0@invalid'
+            git add "$LOG_DIR"
+            git commit -m 'test(runtime.codex): retain first P0 materialization failure'
+            git push \
+              --force-with-lease="refs/heads/codex/runtime-codex-p0-durable-convergence-20260930:${input_sha}" \
+              origin HEAD:refs/heads/codex/runtime-codex-p0-durable-convergence-20260930
+            exit "$rc"
+          }
+          trap retain_failure EXIT
+
+          migrations=(
             scripts/runtime-codex-maintainer.py
             scripts/runtime-codex-maintainer-followup.py
             scripts/runtime-codex-durability-migration.py
@@ -86,64 +108,33 @@ jobs:
             scripts/runtime-codex-qualification-fixup.py
             scripts/runtime-codex-final-closure.py
           )
+          migration_support=(
+            scripts/runtime-codex-quarantine-authority-v2.py
+            scripts/runtime-codex-process-crash-expansion-v2.py
+            scripts/runtime-codex-finalize-map.py
+            scripts/runtime-codex-finalize-map-followup.py
+          )
 
-          if ! run_logged py_compile python3 -m py_compile "${scripts[@]}" \
-            scripts/runtime-codex-finalize-map.py \
-            scripts/runtime-codex-finalize-map-followup.py; then
-            exit 0
-          fi
-          for script in "${scripts[@]}"; do
-            name="$(basename "$script" .py)"
-            if ! run_logged "$name" python3 "$script"; then
-              exit 0
-            fi
+          run_logged py_compile \
+            python3 -m py_compile "${migrations[@]}" "${migration_support[@]}"
+          for script in "${migrations[@]}"; do
+            run_logged "$(basename "$script" .py)" python3 "$script"
           done
-          if ! run_logged rustfmt bash -lc 'cd codex-rs && cargo fmt --all'; then
-            exit 0
-          fi
-          if ! run_logged diff_check git diff --check; then
-            exit 0
-          fi
+          run_logged rustfmt_materialized bash -lc 'cd codex-rs && cargo fmt --all'
+          run_logged materialized_diff_check git diff --check
+
           source_commit="$(git rev-parse HEAD)"
           source_tree="$(git rev-parse 'HEAD^{tree}')"
-          if ! run_logged finalize_map env \
+          run_logged finalize_map env \
             RUNTIME_CODEX_SOURCE_COMMIT="$source_commit" \
             RUNTIME_CODEX_SOURCE_TREE="$source_tree" \
-            python3 scripts/runtime-codex-finalize-map.py; then
-            exit 0
-          fi
-          if ! run_logged finalize_map_followup env \
+            python3 scripts/runtime-codex-finalize-map.py
+          run_logged finalize_map_followup env \
             RUNTIME_CODEX_SOURCE_COMMIT="$source_commit" \
             RUNTIME_CODEX_SOURCE_TREE="$source_tree" \
-            python3 scripts/runtime-codex-finalize-map-followup.py; then
-            exit 0
-          fi
-          if ! run_logged fault_matrix python3 scripts/check-runtime-codex-fault-matrix.py; then
-            exit 0
-          fi
-          printf 'MATERIALIZE_RESULT=success\n' >> "$GITHUB_ENV"
-
-      - name: Remove source-writing machinery and verify ordinary source
-        if: env.MATERIALIZE_RESULT == 'success'
-        shell: bash
-        run: |
-          set -uo pipefail
-          status="$DIAGNOSTIC_DIR/status.txt"
-          run_logged() {
-            local name="$1"
-            shift
-            printf 'START %s\n' "$name" | tee -a "$status"
-            set +e
-            "$@" >"$DIAGNOSTIC_DIR/$name.log" 2>&1
-            local rc=$?
-            set -e
-            printf '%s=%s\n' "$name" "$rc" | tee -a "$status"
-            if test "$rc" -ne 0; then
-              tail -n 400 "$DIAGNOSTIC_DIR/$name.log" > "$DIAGNOSTIC_DIR/$name.tail.log"
-              printf 'VERIFY_RESULT=failure\n' >> "$GITHUB_ENV"
-              return "$rc"
-            fi
-          }
+            python3 scripts/runtime-codex-finalize-map-followup.py
+          run_logged fault_matrix \
+            python3 scripts/check-runtime-codex-fault-matrix.py
 
           rm -f \
             .github/workflows/runtime-codex-p0-materialize.yml \
@@ -151,28 +142,9 @@ jobs:
             .github/workflows/runtime-codex-maintainer.yml \
             .github/workflows/runtime-codex-fast-feedback.yml \
             .github/workflows/runtime-codex-candidate-qualification.yml \
-            scripts/runtime-codex-maintainer.py \
-            scripts/runtime-codex-maintainer-followup.py \
-            scripts/runtime-codex-durability-migration.py \
-            scripts/runtime-codex-durability-fixup.py \
-            scripts/runtime-codex-transactional-owner-fixup.py \
-            scripts/runtime-codex-quarantine-migration.py \
-            scripts/runtime-codex-quarantine-authority-fixup.py \
-            scripts/runtime-codex-deadline-migration.py \
-            scripts/runtime-codex-cleanup-migration.py \
-            scripts/runtime-codex-storage-fixup.py \
-            scripts/runtime-codex-terminal-outbox-migration.py \
-            scripts/runtime-codex-product-executor-migration.py \
-            scripts/runtime-codex-product-executor-hardening.py \
-            scripts/runtime-codex-effect-guard-fixup.py \
-            scripts/runtime-codex-deadline-ceiling-fixup.py \
-            scripts/runtime-codex-structured-sequence-migration.py \
-            scripts/runtime-codex-process-crash-migration.py \
-            scripts/runtime-codex-process-crash-expansion.py \
-            scripts/runtime-codex-qualification-fixup.py \
-            scripts/runtime-codex-final-closure.py \
-            scripts/runtime-codex-finalize-map.py \
-            scripts/runtime-codex-finalize-map-followup.py
+            "${migrations[@]}" \
+            "${migration_support[@]}"
+
           cat > docs/modules/runtime.codex/MIGRATION_HISTORY.md <<'EOF'
           # runtime.codex migration history
 
@@ -185,50 +157,38 @@ jobs:
           patches or regenerating production source.
           EOF
 
-          if ! run_logged post_cleanup_diff git diff --check; then exit 0; fi
-          if ! run_logged format_check bash -lc 'cd codex-rs && cargo fmt --all -- --check'; then exit 0; fi
-          if ! run_logged all_target_check bash -lc 'cd codex-rs && cargo check --locked -p codex-hepta-agent-protocol -p codex-hepta-infer-core -p codex-hepta-codex-adapter -p codex-hepta-agentd -p codex-hepta-infer-worker-host --all-targets'; then exit 0; fi
-          if ! run_logged agent_protocol bash -lc 'cd codex-rs && cargo test --locked -p codex-hepta-agent-protocol'; then exit 0; fi
-          if ! run_logged infer_core bash -lc 'cd codex-rs && cargo test --locked -p codex-hepta-infer-core'; then exit 0; fi
-          if ! run_logged codex_adapter bash -lc 'cd codex-rs && cargo test --locked -p codex-hepta-codex-adapter'; then exit 0; fi
-          if ! run_logged agentd_owner bash -lc 'cd codex-rs && cargo test --locked -p codex-hepta-agentd --lib lane_b_runtime'; then exit 0; fi
-          if ! run_logged worker_host bash -lc 'cd codex-rs && cargo test --locked -p codex-hepta-infer-worker-host'; then exit 0; fi
-          if ! run_logged crash_model bash -lc 'cd codex-rs && cargo test --locked -p codex-hepta-infer-worker-host --test runtime_codex_crash_matrix'; then exit 0; fi
-          if ! run_logged process_crash bash -lc 'cd codex-rs && cargo test --locked -p codex-hepta-agentd --test runtime_codex_process_crash'; then exit 0; fi
-          if ! run_logged product_e2e bash -lc 'cd codex-rs && cargo test --locked -p codex-hepta-agentd runtime_codex_product_caller_commits_one_authorized_terminal_turn'; then exit 0; fi
-          if ! run_logged strict_clippy bash -lc 'cd codex-rs && cargo clippy --locked -p codex-hepta-agent-protocol -p codex-hepta-infer-core -p codex-hepta-codex-adapter -p codex-hepta-agentd -p codex-hepta-infer-worker-host --all-targets --no-deps -- -D warnings'; then exit 0; fi
-          printf 'VERIFY_RESULT=success\n' >> "$GITHUB_ENV"
+          run_logged post_cleanup_diff git diff --check
+          run_logged format_check bash -lc \
+            'cd codex-rs && cargo fmt --all -- --check'
+          run_logged all_target_check bash -lc \
+            'cd codex-rs && cargo check --locked -p codex-hepta-agent-protocol -p codex-hepta-infer-core -p codex-hepta-codex-adapter -p codex-hepta-agentd -p codex-hepta-infer-worker-host --all-targets'
+          run_logged agent_protocol bash -lc \
+            'cd codex-rs && cargo test --locked -p codex-hepta-agent-protocol'
+          run_logged infer_core bash -lc \
+            'cd codex-rs && cargo test --locked -p codex-hepta-infer-core'
+          run_logged codex_adapter bash -lc \
+            'cd codex-rs && cargo test --locked -p codex-hepta-codex-adapter'
+          run_logged agentd_owner bash -lc \
+            'cd codex-rs && cargo test --locked -p codex-hepta-agentd --lib lane_b_runtime'
+          run_logged worker_host bash -lc \
+            'cd codex-rs && cargo test --locked -p codex-hepta-infer-worker-host'
+          run_logged crash_model bash -lc \
+            'cd codex-rs && cargo test --locked -p codex-hepta-infer-worker-host --test runtime_codex_crash_matrix'
+          run_logged process_crash bash -lc \
+            'cd codex-rs && cargo test --locked -p codex-hepta-agentd --test runtime_codex_process_crash'
+          run_logged product_e2e bash -lc \
+            'cd codex-rs && cargo test --locked -p codex-hepta-agentd runtime_codex_product_caller_commits_one_authorized_terminal_turn'
+          run_logged strict_clippy bash -lc \
+            'cd codex-rs && cargo clippy --locked -p codex-hepta-agent-protocol -p codex-hepta-infer-core -p codex-hepta-codex-adapter -p codex-hepta-agentd -p codex-hepta-infer-worker-host --all-targets --no-deps -- -D warnings'
 
-      - name: Commit diagnostic evidence
-        if: env.MATERIALIZE_RESULT != 'success' || env.VERIFY_RESULT != 'success'
-        shell: bash
-        run: |
-          set -euo pipefail
-          cp -a "$DIAGNOSTIC_DIR" /tmp/runtime-codex-materialize-debug
-          git reset --hard "$GITHUB_SHA"
-          rm -rf "$DIAGNOSTIC_DIR"
-          mkdir -p "$(dirname "$DIAGNOSTIC_DIR")"
-          cp -a /tmp/runtime-codex-materialize-debug "$DIAGNOSTIC_DIR"
-          git config user.name 'runtime.codex P0 diagnostics'
-          git config user.email 'runtime-codex-p0@invalid'
-          git add "$DIAGNOSTIC_DIR"
-          git commit -m 'test(runtime.codex): retain P0 materialization failure evidence'
-          git push --force-with-lease="refs/heads/codex/runtime-codex-p0-durable-convergence-20260930:${GITHUB_SHA}" \
-            origin HEAD:refs/heads/codex/runtime-codex-p0-durable-convergence-20260930
-          exit 1
-
-      - name: Commit immutable materialized source
-        if: env.MATERIALIZE_RESULT == 'success' && env.VERIFY_RESULT == 'success'
-        shell: bash
-        run: |
-          set -euo pipefail
-          rm -rf "$DIAGNOSTIC_DIR"
-          test -z "$(find . -path './.git' -prune -o -name 'runtime-codex-*-migration.py' -print)"
-          git diff --check
+          rm -rf "$LOG_DIR"
+          run_logged final_diff_check git diff --check
+          trap - EXIT
           git config user.name 'runtime.codex P0 materializer'
           git config user.email 'runtime-codex-p0@invalid'
           git add -A
           git diff --cached --check
           git commit -m 'fix(runtime.codex): materialize immutable P0 convergence source'
-          git push --force-with-lease="refs/heads/codex/runtime-codex-p0-durable-convergence-20260930:${GITHUB_SHA}" \
+          git push \
+            --force-with-lease="refs/heads/codex/runtime-codex-p0-durable-convergence-20260930:${input_sha}" \
             origin HEAD:refs/heads/codex/runtime-codex-p0-durable-convergence-20260930
