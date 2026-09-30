@@ -15,7 +15,7 @@ use ed25519_dalek::SigningKey;
 pub const MINIMUM_WINDOW_MICROS: u64 = 10;
 
 pub fn id(value: &str) -> StableId {
-    StableId::new(value).expect("id")
+    StableId::new(value).unwrap_or_else(|error| panic!("id: {error:?}"))
 }
 pub fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
@@ -112,10 +112,11 @@ pub fn definition(revoked: bool) -> LearningEvidenceTrustV1 {
 }
 
 pub fn verifier(revoked: bool) -> LearningEvidenceVerifierV1 {
-    LearningEvidenceVerifierV1::new(definition(revoked)).expect("host trust fixture")
+    LearningEvidenceVerifierV1::new(definition(revoked))
+        .unwrap_or_else(|error| panic!("host trust fixture: {error:?}"))
 }
 
-fn activate_definition(revoked: bool) -> ActivatedLearningTrustV1 {
+fn activate_definition(revoked: bool, expires_at: u64) -> ActivatedLearningTrustV1 {
     let root_key = SigningKey::from_bytes(&[99; 32]);
     let root = LearningTrustRootV1 {
         root_id: id("cold-root"),
@@ -134,21 +135,30 @@ fn activate_definition(revoked: bool) -> ActivatedLearningTrustV1 {
         },
         root_id: root.root_id.clone(),
         issued_at: 5,
-        expires_at: 90,
+        expires_at,
         signature: [0; 64],
     };
     distribution.signature = root_key
-        .sign(&distribution.signing_bytes().expect("distribution bytes"))
+        .sign(
+            &distribution
+                .signing_bytes()
+                .unwrap_or_else(|error| panic!("distribution bytes: {error:?}")),
+        )
         .to_bytes();
-    activate_learning_trust(&root, distribution, None, 85).expect("activate fixture trust")
+    activate_learning_trust(&root, distribution, None, 85)
+        .unwrap_or_else(|error| panic!("activate fixture trust: {error:?}"))
 }
 
 pub fn activate() -> ActivatedLearningTrustV1 {
-    activate_definition(false)
+    activate_definition(/*revoked*/ false, /*expires_at*/ 90)
 }
 
 pub fn activate_revoked() -> ActivatedLearningTrustV1 {
-    activate_definition(true)
+    activate_definition(/*revoked*/ true, /*expires_at*/ 90)
+}
+
+pub fn activate_until(expires_at: u64) -> ActivatedLearningTrustV1 {
+    activate_definition(/*revoked*/ false, expires_at)
 }
 
 pub fn context() -> ProductQualificationContextV1 {
@@ -204,7 +214,7 @@ pub fn timing(bundle: &IndependentEvaluationBundleV1) -> LongitudinalTimeEvidenc
         observer: sign(LearningEvidenceRoleV1::Observer, b"placeholder", 70),
     };
     let payload = future_window_signing_payload_v1(bundle, &timing, MINIMUM_WINDOW_MICROS)
-        .expect("observer payload");
+        .unwrap_or_else(|error| panic!("observer payload: {error:?}"));
     timing.observer = sign(LearningEvidenceRoleV1::Observer, &payload, 70);
     timing
 }
@@ -217,9 +227,10 @@ pub fn evidence(
     let payload = match timing {
         Some(timing) => {
             longitudinal_evaluation_signing_payload_v3(bundle, roles, timing, MINIMUM_WINDOW_MICROS)
-                .expect("V3 payload")
+                .unwrap_or_else(|error| panic!("V3 payload: {error:?}"))
         }
-        None => evaluation_signing_payload_v2(bundle, roles).expect("V2 payload"),
+        None => evaluation_signing_payload_v2(bundle, roles)
+            .unwrap_or_else(|error| panic!("V2 payload: {error:?}")),
     };
     SignedEvaluationEvidenceV1 {
         generator_plan: sign(

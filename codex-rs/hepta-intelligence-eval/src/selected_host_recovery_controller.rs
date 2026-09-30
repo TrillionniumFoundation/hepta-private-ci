@@ -105,6 +105,219 @@ fn map_clock(error: SelectedHostClockErrorV1) -> RecordedError {
     }
 }
 
+impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
+    /// Process one page using an exclusively locked, host-provisioned cursor.
+    ///
+    /// The host supplies a freshly resolved root-authenticated learning-trust
+    /// activation before every attempt. The runner samples the host-owned clock
+    /// immediately before verification/publication final use. Clock identity,
+    /// sampled time, root, generation and epoch may not regress within a page.
+    /// Restarting the page is the boundary for an independently authorized root
+    /// rotation ceremony.
+    ///
+    /// The host must provide bounded/interruptible storage I/O: the wall budget
+    /// is cooperative between owner calls, not a claim to preempt a blocked
+    /// filesystem. Cursor progress survives process exit and advances past a
+    /// handled unresolved identity. A journal, cursor, clock or trust-frontier
+    /// error aborts the page.
+    #[allow(clippy::too_many_arguments, clippy::type_complexity)]
+    pub fn recover_selected_host_pending_page<J: DurableProductEvaluationAttemptJournalV1>(
+        &self,
+        journal: &mut J,
+        cursor_file: File,
+        artifact_root: &Path,
+        publication_root: &Path,
+        selected_host_binding: Digest32,
+        clock: &mut dyn SelectedHostClockV1,
+        mut current_trust: impl FnMut() -> Result<ActivatedLearningTrustV1, RecordedError>,
+        budget: Duration,
+        limit: usize,
+    ) -> Result<
+        Vec<(
+            StableId,
+            Result<ProductEvaluationAttemptReceiptV1, RecordedError>,
+        )>,
+        RecordedError,
+    > {
+        let clock_binding = clock.binding();
+        if selected_host_binding.is_zero()
+            || clock_binding.is_zero()
+            || !(1..=32).contains(&limit)
+            || budget.is_zero()
+            || budget > Duration::from_secs(60)
+        {
+            return Err(RecordedError::Invariant(
+                "selected-host recovery page bounds",
+            ));
+        }
+        let started = Instant::now();
+        // Preserve the existing cursor binding/format. Clock identity is a
+        // selected-topology fact and is checked on every use within this page.
+        let binding = Digest32::of_parts(&[
+            b"hepta.learning-eval.recovery-cursor.v1",
+            selected_host_binding.as_array(),
+            self.namespace.as_array(),
+        ]);
+        let mut cursor = RecoveryCursor::open(cursor_file, binding)?;
+        let page = journal.pending(cursor.after(), limit)?;
+        if page.len() > limit {
+            return Err(RecordedError::Invariant("recovery inventory exceeds page"));
+        }
+        let mut previous = cursor.after().cloned();
+        for receipt in &page {
+            receipt.validate_integrity()?;
+            let id = &receipt.transition.attempt_id;
+            if receipt.transition.phase.is_terminal()
+                || previous.as_ref().is_some_and(|before| before >= id)
+            {
+                return Err(RecordedError::Invariant("invalid recovery inventory order"));
+            }
+            previous = Some(id.clone());
+        }
+        let page_len = page.len();
+        let mut results = Vec::with_capacity(page_len);
+        let mut previous_now = None;
+        let mut previous_trust = None;
+        for receipt in page {
+            if started.elapsed() >= budget {
+                break;
+            }
+            let trust = current_trust()?;
+            if clock.binding() != clock_binding {
+                return Err(RecordedError::Invariant(
+                    "selected-host recovery clock binding changed",
+                ));
+            }
+            let mut now = clock.sample_current_time().map_err(map_clock)?;
+            if clock.binding() != clock_binding {
+                return Err(RecordedError::Invariant(
+                    "selected-host recovery clock binding changed",
+                ));
+            }
+            if previous_now.is_some_and(|before| now < before) {
+                return Err(RecordedError::Invariant("recovery host clock regressed"));
+            }
+            previous_trust = Some(RecoveryTrustFrontierV1::admit(
+                &trust,
+                now,
+                clock_binding,
+                previous_trust,
+            )?);
+
+            let id = receipt.transition.attempt_id.clone();
+            let result = (|| {
+                let history =
+                    validated_history(journal, &id).map_err(|error| map_recovery(&id, error))?;
+                if history.last() != Some(&receipt)
+                    || !history.iter().any(|event| {
+                        event.transition.phase == ProductEvaluationAttemptPhaseV1::IntentPersisted
+                            && event.transition.holdout_record_digest == self.namespace
+                    })
+                {
+                    return Err(RecordedError::AttemptRequiresRecovery {
+                        attempt_id: id.clone(),
+                    });
+                }
+                use ProductEvaluationAttemptPhaseV1 as Phase;
+                match receipt.transition.phase {
+                    Phase::PublicationPending => Self::reconcile_selected_host_publication(
+                        journal,
+                        &id,
+                        publication_root,
+                        selected_host_binding,
+                    )
+                    .map_err(|error| map_recovery(&id, error)),
+                    Phase::QualificationArtifactsPersisted | Phase::QualificationDecided => {
+                        if receipt.transition.phase == Phase::QualificationDecided {
+                            match Self::reconcile_selected_host_publication(
+                                journal,
+                                &id,
+                                publication_root,
+                                selected_host_binding,
+                            ) {
+                                Ok(published) => return Ok(published),
+                                Err(ProductAttemptRecoveryErrorV1::Unresolved) => {}
+                                Err(error) => return Err(map_recovery(&id, error)),
+                            }
+                        }
+                        // A wrong-family archive is rejected before phase
+                        // mutation. Only that pre-admission refusal may try the
+                        // other registered family; signature errors never fall
+                        // back to a weaker path. Both paths resample time and
+                        // reverify after write-ahead I/O at first publication.
+                        match self.recover_selected_host_qualification_at_current_time(
+                            journal,
+                            &id,
+                            artifact_root,
+                            publication_root,
+                            selected_host_binding,
+                            &trust,
+                            clock,
+                            clock_binding,
+                            &mut now,
+                        ) {
+                            Err(RecordedError::AttemptRequiresRecovery { .. }) => self
+                                .recover_selected_host_outcome_qualification_at_current_time(
+                                    journal,
+                                    &id,
+                                    artifact_root,
+                                    publication_root,
+                                    selected_host_binding,
+                                    &trust,
+                                    clock,
+                                    clock_binding,
+                                    &mut now,
+                                ),
+                            result => result,
+                        }
+                    }
+                    Phase::IntentPersisted | Phase::HoldoutConsumed | Phase::ComparisonSealed => {
+                        // Consumption reconciliation and lost estimator objects
+                        // require their existing owner protocols, never reruns.
+                        Err(RecordedError::AttemptRequiresRecovery {
+                            attempt_id: id.clone(),
+                        })
+                    }
+                    Phase::Failed | Phase::RejectedBeforeHoldout | Phase::Published => Err(
+                        RecordedError::Invariant("terminal attempt in pending inventory"),
+                    ),
+                }
+            })();
+            // Preserve the final-use sample for the next identity's monotonic
+            // comparison, including a per-attempt signature rejection.
+            previous_now = Some(now);
+            match result {
+                Err(RecordedError::Journal(error)) => {
+                    return Err(RecordedError::Journal(error));
+                }
+                Err(error @ RecordedError::Invariant(_)) => return Err(error),
+                result => {
+                    cursor.save(Some(&id))?;
+                    results.push((id, result));
+                }
+            }
+        }
+        if results.len() == page_len && page_len < limit {
+            cursor.save(None)?;
+        }
+        Ok(results)
+    }
+}
+
+fn map_recovery(id: &StableId, error: ProductAttemptRecoveryErrorV1) -> RecordedError {
+    match error {
+        ProductAttemptRecoveryErrorV1::Journal(error) => RecordedError::Journal(error),
+        ProductAttemptRecoveryErrorV1::MissingIntent
+        | ProductAttemptRecoveryErrorV1::WrongPhase
+        | ProductAttemptRecoveryErrorV1::Unresolved
+        | ProductAttemptRecoveryErrorV1::EvidenceMismatch => {
+            RecordedError::AttemptRequiresRecovery {
+                attempt_id: id.clone(),
+            }
+        }
+    }
+}
+
 #[cfg(test)]
 mod trust_frontier_tests {
     use super::*;
@@ -249,211 +462,5 @@ mod trust_frontier_tests {
             rotated.validate(100, Some(previous)),
             Ok(value) if value.generation == rotated.generation
         ));
-    }
-}
-
-impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
-    /// Process one page using an exclusively locked, host-provisioned cursor.
-    ///
-    /// The host supplies a freshly resolved root-authenticated learning-trust
-    /// activation before every attempt. The runner samples the host-owned clock
-    /// immediately before verification/publication final use. Clock identity,
-    /// sampled time, root, generation and epoch may not regress within a page.
-    /// Restarting the page is the boundary for an independently authorized root
-    /// rotation ceremony.
-    ///
-    /// The host must provide bounded/interruptible storage I/O: the wall budget
-    /// is cooperative between owner calls, not a claim to preempt a blocked
-    /// filesystem. Cursor progress survives process exit and advances past a
-    /// handled unresolved identity. A journal, cursor, clock or trust-frontier
-    /// error aborts the page.
-    #[allow(clippy::too_many_arguments, clippy::type_complexity)]
-    pub fn recover_selected_host_pending_page<J: DurableProductEvaluationAttemptJournalV1>(
-        &self,
-        journal: &mut J,
-        cursor_file: File,
-        artifact_root: &Path,
-        publication_root: &Path,
-        selected_host_binding: Digest32,
-        clock: &mut dyn SelectedHostClockV1,
-        mut current_trust: impl FnMut() -> Result<ActivatedLearningTrustV1, RecordedError>,
-        budget: Duration,
-        limit: usize,
-    ) -> Result<
-        Vec<(
-            StableId,
-            Result<ProductEvaluationAttemptReceiptV1, RecordedError>,
-        )>,
-        RecordedError,
-    > {
-        let clock_binding = clock.binding();
-        if selected_host_binding.is_zero()
-            || clock_binding.is_zero()
-            || !(1..=32).contains(&limit)
-            || budget.is_zero()
-            || budget > Duration::from_secs(60)
-        {
-            return Err(RecordedError::Invariant(
-                "selected-host recovery page bounds",
-            ));
-        }
-        let started = Instant::now();
-        // Preserve the existing cursor binding/format. Clock identity is a
-        // selected-topology fact and is checked on every use within this page.
-        let binding = Digest32::of_parts(&[
-            b"hepta.learning-eval.recovery-cursor.v1",
-            selected_host_binding.as_array(),
-            self.namespace.as_array(),
-        ]);
-        let mut cursor = RecoveryCursor::open(cursor_file, binding)?;
-        let page = journal.pending(cursor.after(), limit)?;
-        if page.len() > limit {
-            return Err(RecordedError::Invariant("recovery inventory exceeds page"));
-        }
-        let mut previous = cursor.after().cloned();
-        for receipt in &page {
-            receipt.validate_integrity()?;
-            let id = &receipt.transition.attempt_id;
-            if receipt.transition.phase.is_terminal()
-                || previous.as_ref().is_some_and(|before| before >= id)
-            {
-                return Err(RecordedError::Invariant("invalid recovery inventory order"));
-            }
-            previous = Some(id.clone());
-        }
-        let page_len = page.len();
-        let mut results = Vec::with_capacity(page_len);
-        let mut previous_now = None;
-        let mut previous_trust = None;
-        for receipt in page {
-            if started.elapsed() >= budget {
-                break;
-            }
-            let trust = current_trust()?;
-            if clock.binding() != clock_binding {
-                return Err(RecordedError::Invariant(
-                    "selected-host recovery clock binding changed",
-                ));
-            }
-            let now = clock.sample_current_time().map_err(map_clock)?;
-            if clock.binding() != clock_binding {
-                return Err(RecordedError::Invariant(
-                    "selected-host recovery clock binding changed",
-                ));
-            }
-            if previous_now.is_some_and(|before| now < before) {
-                return Err(RecordedError::Invariant("recovery host clock regressed"));
-            }
-            previous_now = Some(now);
-            previous_trust = Some(RecoveryTrustFrontierV1::admit(
-                &trust,
-                now,
-                clock_binding,
-                previous_trust,
-            )?);
-
-            let id = receipt.transition.attempt_id.clone();
-            let result = (|| {
-                let history =
-                    validated_history(journal, &id).map_err(|error| map_recovery(&id, error))?;
-                if history.last() != Some(&receipt)
-                    || !history.iter().any(|event| {
-                        event.transition.phase == ProductEvaluationAttemptPhaseV1::IntentPersisted
-                            && event.transition.holdout_record_digest == self.namespace
-                    })
-                {
-                    return Err(RecordedError::AttemptRequiresRecovery {
-                        attempt_id: id.clone(),
-                    });
-                }
-                use ProductEvaluationAttemptPhaseV1 as Phase;
-                match receipt.transition.phase {
-                    Phase::PublicationPending => Self::reconcile_selected_host_publication(
-                        journal,
-                        &id,
-                        publication_root,
-                        selected_host_binding,
-                    )
-                    .map_err(|error| map_recovery(&id, error)),
-                    Phase::QualificationArtifactsPersisted | Phase::QualificationDecided => {
-                        if receipt.transition.phase == Phase::QualificationDecided {
-                            match Self::reconcile_selected_host_publication(
-                                journal,
-                                &id,
-                                publication_root,
-                                selected_host_binding,
-                            ) {
-                                Ok(published) => return Ok(published),
-                                Err(ProductAttemptRecoveryErrorV1::Unresolved) => {}
-                                Err(error) => return Err(map_recovery(&id, error)),
-                            }
-                        }
-                        // A wrong-family archive is rejected before phase
-                        // mutation. Only that pre-admission refusal may try the
-                        // other registered family; signature errors never fall
-                        // back to a weaker path. Both paths reuse the exact
-                        // owner-sampled time validated above.
-                        match self.recover_selected_host_qualification_at_current_time(
-                            journal,
-                            &id,
-                            artifact_root,
-                            publication_root,
-                            selected_host_binding,
-                            &trust,
-                            now,
-                        ) {
-                            Err(RecordedError::AttemptRequiresRecovery { .. }) => self
-                                .recover_selected_host_outcome_qualification_at_current_time(
-                                    journal,
-                                    &id,
-                                    artifact_root,
-                                    publication_root,
-                                    selected_host_binding,
-                                    &trust,
-                                    now,
-                                ),
-                            result => result,
-                        }
-                    }
-                    Phase::IntentPersisted | Phase::HoldoutConsumed | Phase::ComparisonSealed => {
-                        // Consumption reconciliation and lost estimator objects
-                        // require their existing owner protocols, never reruns.
-                        Err(RecordedError::AttemptRequiresRecovery {
-                            attempt_id: id.clone(),
-                        })
-                    }
-                    Phase::Failed | Phase::RejectedBeforeHoldout | Phase::Published => Err(
-                        RecordedError::Invariant("terminal attempt in pending inventory"),
-                    ),
-                }
-            })();
-            match result {
-                Err(RecordedError::Journal(error)) => {
-                    return Err(RecordedError::Journal(error));
-                }
-                result => {
-                    cursor.save(Some(&id))?;
-                    results.push((id, result));
-                }
-            }
-        }
-        if results.len() == page_len && page_len < limit {
-            cursor.save(None)?;
-        }
-        Ok(results)
-    }
-}
-
-fn map_recovery(id: &StableId, error: ProductAttemptRecoveryErrorV1) -> RecordedError {
-    match error {
-        ProductAttemptRecoveryErrorV1::Journal(error) => RecordedError::Journal(error),
-        ProductAttemptRecoveryErrorV1::MissingIntent
-        | ProductAttemptRecoveryErrorV1::WrongPhase
-        | ProductAttemptRecoveryErrorV1::Unresolved
-        | ProductAttemptRecoveryErrorV1::EvidenceMismatch => {
-            RecordedError::AttemptRequiresRecovery {
-                attempt_id: id.clone(),
-            }
-        }
     }
 }
