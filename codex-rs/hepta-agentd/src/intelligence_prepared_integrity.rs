@@ -38,11 +38,12 @@ impl PreparedAgentdIntelligenceRunV1 {
         else {
             return Err(CanonicalIntelligenceError::UnexpectedDecision);
         };
-        if propensity.raw() == 0 || !self.candidate_ids().contains(candidate_id) {
-            return Err(CanonicalIntelligenceError::InvalidCandidateSet(
-                "selected canonical decision",
-            ));
-        }
+        let _membership = crate::AgentdLegalCandidateMembershipProofV1::admit(
+            envelope.candidate_set_digest,
+            self.candidate_ids(),
+            candidate_id,
+            *propensity,
+        )?;
         let mut bytes = b"hepta.intelligence.advisory-decision.v1\0".to_vec();
         push_id(&mut bytes, envelope.run_id.as_str())?;
         bytes.extend_from_slice(envelope.candidate_set_digest.as_array());
