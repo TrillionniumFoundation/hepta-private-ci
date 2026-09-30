@@ -52,6 +52,56 @@ fn attachment() -> ContextAttachment {
     }
 }
 
+#[test]
+fn historical_attachment_identity_survives_terminal_reconciliation() {
+    let mut coordinator = AgentRunCoordinator::compose_runtime(composition()).unwrap();
+    let admitted = coordinator.start_run(100, snapshot()).unwrap();
+    let mut attached = coordinator
+        .attach_context(100, admitted.revision, attachment())
+        .unwrap();
+    let dispatched = coordinator
+        .mark_dispatched(100, "run.1", attached.revision)
+        .unwrap();
+    let terminal = coordinator
+        .observe_terminal(
+            "run.1",
+            dispatched.revision,
+            RunPhase::Succeeded,
+            /*terminal_observed*/ true,
+        )
+        .unwrap();
+    attached.idempotent = true;
+    assert_eq!(
+        coordinator.original_context_attachment(&attachment()),
+        Ok(attached)
+    );
+    assert_eq!(coordinator.run("run.1"), Some(terminal));
+    let mut mixed = attachment();
+    mixed.compilation_receipt_digest = digest('a');
+    assert_eq!(
+        coordinator.original_context_attachment(&mixed),
+        Err(AgentRunError::MixedSnapshot)
+    );
+}
+
+#[test]
+fn recovered_run_without_original_attachment_revision_cannot_mint_it() {
+    let mut coordinator = AgentRunCoordinator::compose_runtime(composition()).unwrap();
+    coordinator
+        .recover_indeterminate(RunRecovery {
+            snapshot: snapshot(),
+            revision: 9,
+            context_digest: attachment().context_digest,
+            compilation_receipt_digest: attachment().compilation_receipt_digest,
+            cancel_reason: None,
+        })
+        .unwrap();
+    assert_eq!(
+        coordinator.original_context_attachment(&attachment()),
+        Err(AgentRunError::ContextRequired)
+    );
+}
+
 fn assert_receipt(
     receipt: &RunReceipt,
     revision: u64,

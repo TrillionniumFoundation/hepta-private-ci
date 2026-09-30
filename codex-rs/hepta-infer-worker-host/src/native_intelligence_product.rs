@@ -43,6 +43,8 @@ pub struct NativeIntelligenceProductReceiptV1 {
     /// The physical observation remains durable and visible even if learning
     /// or the terminal-control RPC needs exact reconciliation.
     pub reconciliation_required: bool,
+    /// Fixed stage classification only; no evidence, provider or secret payload.
+    pub reconciliation_reason: Option<String>,
 }
 
 pub struct NativeIntelligenceProductHostV1 {
@@ -80,11 +82,15 @@ impl NativeIntelligenceProductHostV1 {
                 Output = NativeIntelligenceProductResult<AgentdIntelligenceOutcomeAppendV1>,
             >,
     {
-        let (prepared, attached) = match admitted {
+        let (prepared, attached, reconciliation_only) = match admitted {
             AgentdIntelligenceAdmittedOutcomeV1::Ready {
                 prepared,
                 run_receipt,
-            } => (prepared, run_receipt),
+            } => (prepared, run_receipt, false),
+            AgentdIntelligenceAdmittedOutcomeV1::ReconciliationRequired {
+                prepared,
+                run_receipt,
+            } => (prepared, run_receipt, true),
             AgentdIntelligenceAdmittedOutcomeV1::Abstained => {
                 return Err("abstained intelligence run has no physical execution".into());
             }
@@ -106,48 +112,72 @@ impl NativeIntelligenceProductHostV1 {
             .await?;
         require_acknowledged("Decision", &decision)?;
 
-        let execution = self
-            .driver
-            .run_intelligence(
-                control,
-                admission,
-                prompt,
+        let (execution, control_reconciliation_reason) = if reconciliation_only {
+            let reconciled = self
+                .driver
+                .reconcile_intelligence(control, admission, prompt, binding.clone(), cancellation)
+                .await?;
+            (reconciled.execution, reconciled.reconciliation_reason)
+        } else {
+            (
+                self.driver
+                    .run_intelligence(
+                        control,
+                        admission,
+                        prompt,
+                        None,
+                        binding.clone(),
+                        cancellation,
+                    )
+                    .await?,
                 None,
-                binding.clone(),
-                cancellation,
             )
-            .await?;
+        };
         if !execution.terminal_observed {
             return Ok(NativeIntelligenceProductReceiptV1 {
                 decision,
                 execution,
                 outcome: None,
                 reconciliation_required: true,
+                reconciliation_reason: Some(
+                    control_reconciliation_reason
+                        .unwrap_or("physical terminal observation unavailable")
+                        .to_string(),
+                ),
             });
         }
         // Never discard a terminal provider observation merely because its
         // acknowledgement/evidence producer or learning destination is absent.
-        let closure: NativeIntelligenceProductResult<AgentdIntelligenceLearningReceiptV1> = async {
-            let terminal = self
-                .agentd
-                .run_status(binding.run_id.clone())
-                .await?
-                .ok_or("Agentd terminal receipt unavailable")?;
-            let terminal = local_terminal_receipt_v1(terminal)?;
-            let request = build_outcome(&prepared, &terminal, &execution).await?;
-            if request.run_receipt != terminal
-                || request.provider_terminal_digest
-                    != native_provider_terminal_digest_v1(&execution)?
-            {
-                return Err("Outcome source substituted the observed physical terminal".into());
+        let closure: std::result::Result<AgentdIntelligenceLearningReceiptV1, &'static str> =
+            async {
+                let terminal = self
+                    .agentd
+                    .run_status(binding.run_id.clone())
+                    .await
+                    .map_err(|_| "terminal Agentd status unavailable")?
+                    .ok_or("Agentd terminal receipt unavailable")?;
+                let terminal = local_terminal_receipt_v1(terminal)
+                    .map_err(|_| "terminal Agentd receipt not verified")?;
+                let request = build_outcome(&prepared, &terminal, &execution)
+                    .await
+                    .map_err(|_| "terminal Outcome evidence unavailable")?;
+                if request.run_receipt != terminal
+                    || request.provider_terminal_digest
+                        != native_provider_terminal_digest_v1(&execution)
+                            .map_err(|_| "terminal provider observation invalid")?
+                {
+                    return Err("Outcome source substituted the observed physical terminal");
+                }
+                self.learning
+                    .record_outcome_after_terminal_v1(&prepared, request)
+                    .await
+                    .map_err(|_| "terminal Outcome append unavailable")
             }
-            self.learning
-                .record_outcome_after_terminal_v1(&prepared, request)
-                .await
-                .map_err(Into::into)
-        }
-        .await;
-        let outcome: Option<AgentdIntelligenceLearningReceiptV1> = closure.ok();
+            .await;
+        let (outcome, closure_reason) = match closure {
+            Ok(receipt) => (Some(receipt), None),
+            Err(reason) => (None, Some(reason.to_string())),
+        };
         let reconciliation_required = !outcome.as_ref().is_some_and(|receipt| {
             receipt.disposition == AgentdIntelligenceLearningDispositionV1::Acknowledged
                 && receipt.append.is_some()
@@ -157,6 +187,17 @@ impl NativeIntelligenceProductHostV1 {
             execution,
             outcome,
             reconciliation_required,
+            reconciliation_reason: if reconciliation_required {
+                closure_reason.or_else(|| {
+                    Some(
+                        control_reconciliation_reason
+                            .unwrap_or("terminal Outcome append not acknowledged")
+                            .to_string(),
+                    )
+                })
+            } else {
+                None
+            },
         })
     }
 }

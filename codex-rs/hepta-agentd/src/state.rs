@@ -575,9 +575,22 @@ impl AgentdState {
         admitted: crate::AgentdIntelligenceAdmittedOutcomeV1,
     ) -> Result<&'static str, AgentdError> {
         let Some(host) = self.intelligence_execution.get() else {
-            return Ok("canonical_ready");
+            return Ok(
+                if matches!(
+                    admitted,
+                    crate::AgentdIntelligenceAdmittedOutcomeV1::ReconciliationRequired { .. }
+                ) {
+                    "canonical_reconciliation_required"
+                } else {
+                    "canonical_ready"
+                },
+            );
         };
-        let crate::AgentdIntelligenceAdmittedOutcomeV1::Ready { prepared, .. } = &admitted else {
+        let (crate::AgentdIntelligenceAdmittedOutcomeV1::Ready { prepared, .. }
+        | crate::AgentdIntelligenceAdmittedOutcomeV1::ReconciliationRequired {
+            prepared, ..
+        }) = &admitted
+        else {
             return Err(AgentdError::Invalid("non-selected execution".to_string()));
         };
         let run_id = prepared.run_snapshot().run_id;
@@ -700,24 +713,35 @@ impl AgentdState {
                     )
                     .map_err(run_error)?;
                 runner.telemetry().observe_run_receipt(&admitted, now_ms);
-                let run_receipt = runs
-                    .attach_context(
-                        now_ms,
-                        admitted.revision,
-                        crate::ContextAttachment {
-                            run_id: attachment.run_id,
-                            request_digest: attachment.request_digest,
-                            objective_digest: attachment.objective_digest,
-                            body_digest: attachment.body_digest,
-                            artifact_set_digest: attachment.artifact_set_digest,
-                            authority_epoch: attachment.authority_epoch,
-                            generation: attachment.generation,
-                            fence_digest: attachment.fence_digest,
-                            deadline_ms: attachment.deadline_ms,
-                            context_digest: attachment.context_digest,
-                            compilation_receipt_digest: attachment.compilation_receipt_digest,
+                let attachment = crate::ContextAttachment {
+                    run_id: attachment.run_id,
+                    request_digest: attachment.request_digest,
+                    objective_digest: attachment.objective_digest,
+                    body_digest: attachment.body_digest,
+                    artifact_set_digest: attachment.artifact_set_digest,
+                    authority_epoch: attachment.authority_epoch,
+                    generation: attachment.generation,
+                    fence_digest: attachment.fence_digest,
+                    deadline_ms: attachment.deadline_ms,
+                    context_digest: attachment.context_digest,
+                    compilation_receipt_digest: attachment.compilation_receipt_digest,
+                };
+                if !matches!(
+                    admitted.phase,
+                    crate::RunPhase::Admitted | crate::RunPhase::ContextAttached
+                ) {
+                    let run_receipt = runs
+                        .original_context_attachment(&attachment)
+                        .map_err(run_error)?;
+                    return Ok(Some(
+                        crate::AgentdIntelligenceAdmittedOutcomeV1::ReconciliationRequired {
+                            prepared,
+                            run_receipt,
                         },
-                    )
+                    ));
+                }
+                let run_receipt = runs
+                    .attach_context(now_ms, admitted.revision, attachment)
                     .map_err(run_error)?;
                 runner.telemetry().observe_run_receipt(&run_receipt, now_ms);
                 Ok(Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Ready {

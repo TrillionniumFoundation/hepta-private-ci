@@ -235,8 +235,7 @@ impl FileBackedFreshnessOracleV1 {
             let generation = Generation::new(owner.generation).map_err(|_| unavailable())?;
             let implementation_digest =
                 Digest32::from_str(&owner.implementation_digest).map_err(|_| unavailable())?;
-            let key_digest =
-                Digest32::from_str(&owner.key_digest).map_err(|_| unavailable())?;
+            let key_digest = Digest32::from_str(&owner.key_digest).map_err(|_| unavailable())?;
             let state = CurrentOwnerStateV1 {
                 owner_id: owner_id.clone(),
                 generation,
@@ -265,10 +264,7 @@ impl FileBackedFreshnessOracleV1 {
 }
 
 impl CanonicalFreshnessOracleV1 for FileBackedFreshnessOracleV1 {
-    fn refresh_snapshot(
-        &mut self,
-        owner_id: &StableId,
-    ) -> Result<(), CanonicalIntelligenceError> {
+    fn refresh_snapshot(&mut self, owner_id: &StableId) -> Result<(), CanonicalIntelligenceError> {
         self.snapshot = Some(self.load_snapshot(owner_id)?);
         Ok(())
     }
@@ -404,6 +400,12 @@ pub enum AgentdIntelligenceProductOutcomeV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum AgentdIntelligenceAdmittedOutcomeV1 {
     Ready {
+        prepared: PreparedAgentdIntelligenceRunV1,
+        run_receipt: crate::RunReceipt,
+    },
+    /// A historical attachment identity; only an existing durable native
+    /// dispatch may be reconciled. No fresh physical execution is permitted.
+    ReconciliationRequired {
         prepared: PreparedAgentdIntelligenceRunV1,
         run_receipt: crate::RunReceipt,
     },

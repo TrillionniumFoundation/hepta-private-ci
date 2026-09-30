@@ -74,6 +74,7 @@ use codex_utils_absolute_path::AbsolutePathBuf;
 #[path = "native_run_control.rs"]
 mod control;
 pub use control::NativeAdmission;
+pub use control::NativeIntelligenceReconciliationReceiptV1;
 pub use control::NativeIntelligenceRunBinding;
 use tokio::time::Instant;
 use tokio::time::timeout;

@@ -153,7 +153,8 @@ impl ObjectiveRuntimeHost {
                         )
                     })?;
                 match admitted {
-                    ready @ crate::AgentdIntelligenceAdmittedOutcomeV1::Ready { .. } => {
+                    ready @ (crate::AgentdIntelligenceAdmittedOutcomeV1::Ready { .. }
+                    | crate::AgentdIntelligenceAdmittedOutcomeV1::ReconciliationRequired { .. }) => {
                         let _ = agentd.complete_canonical_intelligence(ready).await?;
                     }
                     crate::AgentdIntelligenceAdmittedOutcomeV1::Abstained
@@ -326,7 +327,8 @@ impl ObjectiveRuntimeHost {
         let disposition = match record.disposition {
             RunStartObjectiveDispositionV1::Compiled => {
                 match agentd.start_canonical_intelligence(&record).await? {
-                    Some(admitted @ crate::AgentdIntelligenceAdmittedOutcomeV1::Ready { .. }) => {
+                    Some(admitted @ (crate::AgentdIntelligenceAdmittedOutcomeV1::Ready { .. }
+                    | crate::AgentdIntelligenceAdmittedOutcomeV1::ReconciliationRequired { .. })) => {
                         agentd.complete_canonical_intelligence(admitted).await?
                     }
                     Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Abstained) => {

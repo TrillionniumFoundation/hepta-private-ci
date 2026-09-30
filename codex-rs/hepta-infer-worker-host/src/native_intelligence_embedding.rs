@@ -118,10 +118,14 @@ impl AgentdIntelligenceExecutionHostV1 for NativeIntelligenceProductEmbeddingV1 
                     "execution host is stopping".to_string(),
                 ));
             }
-            let AgentdIntelligenceAdmittedOutcomeV1::Ready {
+            let (AgentdIntelligenceAdmittedOutcomeV1::Ready {
                 prepared,
                 run_receipt,
-            } = &admitted
+            }
+            | AgentdIntelligenceAdmittedOutcomeV1::ReconciliationRequired {
+                prepared,
+                run_receipt,
+            }) = &admitted
             else {
                 return Err(AgentdError::Invalid("non-selected execution".to_string()));
             };
