@@ -18,6 +18,7 @@ mod callers_manifest_tests;
 mod canonical;
 mod final_use;
 mod final_use_control;
+mod final_use_port;
 mod identity;
 mod memory;
 mod provider;
@@ -313,3 +314,16 @@ pub use receipt::PolicyStamp;
 pub use receipt::Sha256Digest;
 pub use receipt::ToolAction;
 pub use receipt::ToolActionSource;
+
+pub use final_use_port::MODEL_ISSUER_MAX_REQUEST_BYTES;
+pub use final_use_port::MODEL_ISSUER_MAX_RESPONSE_BYTES;
+pub use final_use_port::MODEL_ISSUER_OPERATION;
+pub use final_use_port::MODEL_ISSUER_SCHEMA_VERSION;
+pub use final_use_port::ModelIssuerRequest;
+pub use final_use_port::ModelIssuerResponse;
+
+pub use final_use_port::MODEL_TRUST_CAS;
+pub use final_use_port::MODEL_TRUST_LOAD;
+pub use final_use_port::ModelIssuerProcessIdentity;
+pub use final_use_port::ModelTrustRequest;
+pub use final_use_port::ModelTrustResponse;
