@@ -26,6 +26,19 @@ METHODOLOGY_PATHS = (
 )
 SHA = re.compile(r"[0-9a-f]{40}\Z")
 
+# Same-run normalized complexity ceilings are intentionally architecture-neutral.
+# They catch accidental algorithmic regressions without pretending that a shared
+# runner is a target-host latency authority.
+COMPLEXITY_THRESHOLDS = {
+    "hash-buffered-per-byte": 4.0,
+    "hash-streaming-per-byte": 4.0,
+    "registry-construct-per-entry": 4.0,
+    "registry-identity": 4.0,
+    "registry-digest": 4.0,
+    "numeric-convert-per-element": 4.0,
+    "numeric-verify-per-element": 4.0,
+}
+
 
 def require(condition, message):
     if not condition:
@@ -85,12 +98,65 @@ def summarize(raw):
     return summaries
 
 
+def _normalized_ratio(summary, larger_case, larger_size, smaller_case, smaller_size, statistic):
+    larger = summary[larger_case][statistic] / larger_size
+    smaller = summary[smaller_case][statistic] / smaller_size
+    require(larger > 0 and smaller > 0, "non-positive complexity measurement")
+    return larger / smaller
+
+
+def evaluate_complexity(summary):
+    comparisons = {
+        "hash-buffered-per-byte": (
+            "hash-buffered-65536", 65536, "hash-buffered-4096", 4096
+        ),
+        "hash-streaming-per-byte": (
+            "hash-streaming-65536", 65536, "hash-streaming-4096", 4096
+        ),
+        "registry-construct-per-entry": (
+            "registry-construct-256", 256, "registry-construct-8", 8
+        ),
+        "registry-identity": (
+            "registry-identity-256", 1, "registry-identity-8", 1
+        ),
+        "registry-digest": (
+            "registry-digest-256", 1, "registry-digest-8", 1
+        ),
+        "numeric-convert-per-element": (
+            "numeric-convert-4096", 4096, "numeric-convert-8", 8
+        ),
+        "numeric-verify-per-element": (
+            "numeric-verify-4096", 4096, "numeric-verify-8", 8
+        ),
+    }
+    ratios = {}
+    for name, (larger_case, larger_size, smaller_case, smaller_size) in comparisons.items():
+        ratios[name] = {
+            statistic: _normalized_ratio(
+                summary,
+                larger_case,
+                larger_size,
+                smaller_case,
+                smaller_size,
+                statistic,
+            )
+            for statistic in ("medianNs", "p95Ns")
+        }
+        ceiling = COMPLEXITY_THRESHOLDS[name]
+        require(
+            all(value <= ceiling for value in ratios[name].values()),
+            f"complexity regression: {name}",
+        )
+    return ratios
+
+
 def evaluate(raw, source, tree, context, harness_digest, baseline=None, maximum_ratio=None):
     require(isinstance(source, str) and SHA.fullmatch(source), "source SHA")
     require(isinstance(tree, str) and SHA.fullmatch(tree), "tree SHA")
     require(isinstance(context, dict) and bool(context), "environment context")
     require(isinstance(harness_digest, str) and re.fullmatch(r"[0-9a-f]{64}", harness_digest), "harness digest")
     summary = summarize(raw)
+    complexity_ratios = evaluate_complexity(summary)
     report = {
         "schema": "hepta.platform-types.resource-gate.v1",
         "sourceHead": source, "sourceTree": tree,
@@ -98,7 +164,11 @@ def evaluate(raw, source, tree, context, harness_digest, baseline=None, maximum_
         "harnessDigest": harness_digest,
         "methodologyFiles": list(METHODOLOGY_PATHS),
         "raw": raw, "summary": summary,
-        "allocationGate": "passed", "latencyGate": "not_requested",
+        "allocationGate": "passed",
+        "complexityGate": "passed",
+        "complexityThresholds": COMPLEXITY_THRESHOLDS,
+        "complexityRatios": complexity_ratios,
+        "latencyGate": "not_requested",
         "targetHostQualified": False, "independentAcceptance": False,
         "productActivation": False,
     }
@@ -157,7 +227,16 @@ def main():
     report = evaluate(json.loads(args.raw.read_text()), args.source_sha, args.tree_sha,
                       context, harness_digest, baseline, args.maximum_latency_ratio)
     args.report.write_text(json.dumps(report, indent=2) + "\n")
-    print(json.dumps({key: report[key] for key in ("sourceHead", "allocationGate", "latencyGate", "targetHostQualified")}))
+    print(json.dumps({
+        key: report[key]
+        for key in (
+            "sourceHead",
+            "allocationGate",
+            "complexityGate",
+            "latencyGate",
+            "targetHostQualified",
+        )
+    }))
 
 
 if __name__ == "__main__":

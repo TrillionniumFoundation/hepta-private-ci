@@ -2,7 +2,12 @@
 import copy
 import unittest
 
-from platform_types_resource_gate import CASES, METHODOLOGY_PATHS, evaluate
+from platform_types_resource_gate import (
+    CASES,
+    COMPLEXITY_THRESHOLDS,
+    METHODOLOGY_PATHS,
+    evaluate,
+)
 
 
 def fixture():
@@ -40,6 +45,8 @@ class ResourceGateTests(unittest.TestCase):
     def test_valid_sample_shape_preserves_nonclaims(self):
         report = check(fixture())
         self.assertEqual(report["allocationGate"], "passed")
+        self.assertEqual(report["complexityGate"], "passed")
+        self.assertEqual(report["complexityThresholds"], COMPLEXITY_THRESHOLDS)
         self.assertEqual(report["latencyGate"], "not_requested")
         self.assertFalse(report["targetHostQualified"])
         self.assertFalse(report["productActivation"])
@@ -70,6 +77,14 @@ class ResourceGateTests(unittest.TestCase):
         row = next(row for row in raw["rows"] if row["case"] == "registry-digest-256")
         row.update(allocationCalls=1, requestedBytes=8)
         with self.assertRaisesRegex(ValueError, "lookup allocated"):
+            check(raw)
+
+    def test_same_run_complexity_regression_is_blocking(self):
+        raw = fixture()
+        for row in raw["rows"]:
+            if row["case"] == "registry-identity-256":
+                row["elapsedNs"] *= 8
+        with self.assertRaisesRegex(ValueError, "complexity regression: registry-identity"):
             check(raw)
 
     def test_latency_requires_context_methodology_and_explicit_threshold(self):
