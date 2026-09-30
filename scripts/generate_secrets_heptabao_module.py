@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Generate and verify secrets.heptabao documentation projections.
+'''Generate and verify secrets.heptabao documentation projections.
 
-The manifest is the semantic source of truth. Exact candidate identities remain
-external CI attestations so committed documentation never requires a hash of the
-commit that contains itself. `--write` explicitly rebinds the implementation map
-to the checked-out predecessor; ordinary verification preserves that anchor.
-"""
+The canonical manifest is the semantic source of truth. Exact candidate
+identities remain external CI attestations so committed documentation never
+requires a hash of the commit that contains itself. --write explicitly rebinds
+the implementation map to the checked-out predecessor; ordinary verification
+preserves that historical source anchor.
+'''
 from __future__ import annotations
 
 import argparse
@@ -22,6 +23,26 @@ CAPABILITIES = ROOT / "docs/modules/secrets.heptabao/CAPABILITY_MATRIX.json"
 NONCLAIMS = ROOT / "docs/modules/secrets.heptabao/NONCLAIMS.json"
 ANCHORS = ROOT / "docs/modules/secrets.heptabao/SOURCE_ANCHORS.json"
 
+REQUIRED_READINESS = {
+    "sourcePresent",
+    "sourceCompiled",
+    "sourceQualified",
+    "storageProfileQualified",
+    "productComposed",
+    "targetHostQualified",
+    "activated",
+    "operatorAccepted",
+    "released",
+}
+REQUIRED_SQLITE_OPERATIONS = {
+    "sqlite_owner_open_and_verify",
+    "sqlite_reference_import",
+    "sqlite_reconciliation_claims",
+    "sqlite_checkpoint_publication",
+    "sqlite_terminal_archive",
+    "sqlite_product_runtime",
+}
+
 
 def load(path: Path) -> object:
     return json.loads(path.read_text(encoding="utf-8"))
@@ -33,13 +54,20 @@ def dump(value: object) -> str:
 
 def git(*args: str) -> str:
     env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
-    env.update(GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_GLOBAL=os.devnull, GIT_NO_REPLACE_OBJECTS="1")
-    return subprocess.check_output(["git", *args], cwd=ROOT, env=env, text=True).strip()
+    env.update(
+        GIT_CONFIG_NOSYSTEM="1",
+        GIT_CONFIG_GLOBAL=os.devnull,
+        GIT_NO_REPLACE_OBJECTS="1",
+    )
+    return subprocess.check_output(
+        ["git", *args], cwd=ROOT, env=env, text=True
+    ).strip()
 
 
 def validate(manifest: dict) -> None:
     if manifest.get("schema") != "hepta.module-manifest.v1":
         raise ValueError("unexpected module manifest schema")
+
     states = manifest.get("recoveryStates")
     if not isinstance(states, list) or not states:
         raise ValueError("recoveryStates must be non-empty")
@@ -49,15 +77,45 @@ def validate(manifest: dict) -> None:
     for row in states:
         if not row.get("meaning") or not row.get("recovery"):
             raise ValueError(f"state {row.get('state')} lacks a recovery action")
+
+    readiness = manifest.get("readinessDimensions")
+    if not isinstance(readiness, dict) or set(readiness) != REQUIRED_READINESS:
+        raise ValueError("readinessDimensions is incomplete or contains unknown fields")
+    if readiness["productComposed"] or readiness["activated"] or readiness["released"]:
+        raise ValueError("uncomposed candidate cannot claim activation or release")
+
+    build = manifest.get("buildSurface")
+    if not isinstance(build, dict) or build.get("kind") != "single_complete":
+        raise ValueError("secrets.heptabao must declare one complete build surface")
+    if build.get("cargoFeatures") != []:
+        raise ValueError("single complete build surface must not declare synthetic features")
+
+    operations = {row.get("operation") for row in manifest.get("operations", [])}
+    missing = REQUIRED_SQLITE_OPERATIONS - operations
+    if missing:
+        raise ValueError(f"SQLite source operations missing from manifest: {sorted(missing)}")
+
     for anchor in manifest.get("sourceAnchors", []):
         path = ROOT / anchor["path"]
         text = path.read_text(encoding="utf-8")
         for needle in anchor.get("mustContain", []):
             if needle not in text:
                 raise ValueError(f"missing source anchor {needle!r} in {anchor['path']}")
+
     provider = manifest["provider"]
-    if provider["dynamicLeaseExecutionProved"] or provider["dynamicMutationGate"] != "fail_closed_blocked_provider_contract":
+    if (
+        provider["dynamicLeaseExecutionProved"]
+        or provider["dynamicMutationGate"] != "fail_closed_blocked_provider_contract"
+    ):
         raise ValueError("unqualified dynamic provider mutation must remain fail closed")
+
+
+def product_caller_state(m: dict) -> str:
+    return (
+        "named_product_caller_composed"
+        if m["readinessDimensions"]["productComposed"]
+        else "not_composed"
+    )
 
 
 def truth_entry(m: dict) -> dict:
@@ -71,19 +129,23 @@ def truth_entry(m: dict) -> dict:
         "currentSpecificationRole": "current_executable_contract",
         "implementationDetail": d["durableSaga"],
         "states": m["states"],
+        "readinessDimensions": m["readinessDimensions"],
+        "buildSurface": m["buildSurface"],
         "currentCapabilities": m["currentCapabilities"],
         "targetOnlyCapabilities": m["targetOnlyCapabilities"],
         "sourceAnchors": m["sourceAnchors"],
-        "productCallerState": "registered_host_source_composed_not_activated",
+        "productCallerState": product_caller_state(m),
     }
 
 
 def capability_projection(m: dict) -> dict:
     return {
-        "schema": "hepta.module-capability-matrix.v1",
+        "schema": "hepta.module-capability-matrix.v2",
         "module": m["module"],
         "generatedFrom": str(MANIFEST.relative_to(ROOT)),
         "states": m["states"],
+        "readinessDimensions": m["readinessDimensions"],
+        "buildSurface": m["buildSurface"],
         "currentCapabilities": m["currentCapabilities"],
         "targetOnlyCapabilities": m["targetOnlyCapabilities"],
         "provider": m["provider"],
@@ -93,10 +155,11 @@ def capability_projection(m: dict) -> dict:
 
 def nonclaim_projection(m: dict) -> dict:
     return {
-        "schema": "hepta.module-nonclaims.v1",
+        "schema": "hepta.module-nonclaims.v2",
         "module": m["module"],
         "generatedFrom": str(MANIFEST.relative_to(ROOT)),
         "nonclaims": m["nonclaims"],
+        "readinessDimensions": m["readinessDimensions"],
         "activation": False,
         "independentAcceptance": False,
         "releaseAuthority": False,
@@ -105,7 +168,7 @@ def nonclaim_projection(m: dict) -> dict:
 
 def anchor_projection(m: dict) -> dict:
     return {
-        "schema": "hepta.module-source-anchors.v1",
+        "schema": "hepta.module-source-anchors.v2",
         "module": m["module"],
         "generatedFrom": str(MANIFEST.relative_to(ROOT)),
         "operations": m["operations"],
@@ -116,7 +179,11 @@ def anchor_projection(m: dict) -> dict:
 def operation_tests(name: str) -> list[str]:
     if name == "reservation_by_operation":
         return ["codex-rs/hepta-authbus/src/operation_lookup_tests.rs"]
-    if name in {"durable_consumption_transitions", "consume_kv_v2_with_authbus", "reconcile_consumption"}:
+    if name in {
+        "durable_consumption_transitions",
+        "consume_kv_v2_with_authbus",
+        "reconcile_consumption",
+    }:
         return [
             "codex-rs/hepta-bao-adapter/src/consumption_lifecycle_saga_tests.rs",
             "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
@@ -125,46 +192,88 @@ def operation_tests(name: str) -> list[str]:
         return ["codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs"]
     if name == "registered_saga_sigkill_matrix":
         return ["codex-rs/hepta-bao-adapter/src/saga_crash_tests.rs"]
+    if name.startswith("sqlite_"):
+        tests = ["codex-rs/hepta-bao-adapter/src/sqlite_owner_tests.rs"]
+        if name == "sqlite_product_runtime":
+            tests.append("codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs")
+        return tests
     return ["codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"]
+
+
+def writer_state(m: dict) -> str:
+    readiness = m["readinessDimensions"]
+    if not readiness["sourcePresent"]:
+        return "sqlite_owner_source_absent"
+    if not readiness["sourceQualified"]:
+        return "sqlite_owner_source_present_unqualified"
+    if not readiness["storageProfileQualified"]:
+        return "sqlite_owner_source_qualified_storage_profile_unqualified"
+    if not readiness["productComposed"]:
+        return "sqlite_owner_storage_profile_qualified_not_product_composed"
+    return "sqlite_owner_product_composed"
 
 
 def implementation_projection(m: dict, existing: dict, *, rebind: bool) -> dict:
     result = dict(existing)
     if rebind:
-        identity = {"commit": git("rev-parse", "HEAD"), "tree": git("rev-parse", "HEAD^{tree}")}
+        identity = {
+            "commit": git("rev-parse", "HEAD"),
+            "tree": git("rev-parse", "HEAD^{tree}"),
+        }
         result["sourceBase"] = identity
         result["observedAtHead"] = identity
+
     observed = set(result.get("observedSourcePaths", []))
     observed.update(
         {
+            ".github/workflows/secrets-heptabao-candidate-attestation.yml",
+            ".github/workflows/secrets-heptabao-five-closure-qualified.yml",
             "codex-rs/Cargo.toml",
             "codex-rs/Cargo.lock",
             "codex-rs/hepta-authbus",
             "codex-rs/hepta-bao-adapter",
+            "codex-rs/hepta-bao-adapter/migrations/0001_bao_owner_v1.sql",
+            "codex-rs/hepta-bao-adapter/migrations/0002_reconciliation_claims.sql",
+            "codex-rs/hepta-bao-adapter/src/sqlite_owner.rs",
+            "codex-rs/hepta-bao-adapter/src/sqlite_owner_tests.rs",
+            "codex-rs/hepta-bao-adapter/src/sqlite_product_runtime.rs",
+            "codex-rs/hepta-bao-adapter/qa/validate_build_contract.py",
             "docs/modules/secrets.heptabao/MODULE_MANIFEST_V1.json",
             "docs/modules/secrets.heptabao/CONSUMPTION_SAGA_V4.md",
+            "docs/modules/secrets.heptabao/LEASE_OWNER_V3.md",
             "docs/modules/secrets.heptabao/OPERATIONS_AND_CAPACITY_V1.md",
+            "docs/modules/secrets.heptabao/PRODUCTION_READINESS.md",
+            "docs/modules/secrets.heptabao/READINESS_POLICY_V1.json",
             "docs/modules/secrets.heptabao/TECHNICAL.md",
             "docs/lane-a-foundation/secrets.heptabao/CURRENT_IMPLEMENTATION.md",
+            "scripts/close_secrets_heptabao_candidate.py",
             "scripts/generate_secrets_heptabao_module.py",
             "codex-rs/hepta-bao-adapter/qa/evidence/dynamic-contract-probe-20260925.json",
             "external/HeptaBao",
         }
     )
+
+    readiness = m["readinessDimensions"]
     result.update(
         {
-            "schema": "hepta.module-implementation-map.v3",
-            "schemaVersion": 3,
+            "schema": "hepta.module-implementation-map.v4",
+            "schemaVersion": 4,
             "module": m["module"],
             "owner": m["owner"],
             "deputy": m["deputy"],
             "technicalGuide": m["documents"]["technicalGuide"],
             "currentImplementationGuide": m["documents"]["durableSaga"],
-            "productionImplementation": False,
-            "productCallerState": "registered_host_source_composed_not_activated",
-            "productionWriterState": "sqlite_owner_pending_json_reference_only",
+            "buildSurface": m["buildSurface"],
+            "readinessDimensions": readiness,
+            "productionImplementation": bool(
+                readiness["sourceQualified"]
+                and readiness["storageProfileQualified"]
+                and readiness["productComposed"]
+            ),
+            "productCallerState": product_caller_state(m),
+            "productionWriterState": writer_state(m),
             "canonicalManifest": str(MANIFEST.relative_to(ROOT)),
-            "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+            "sourceIdentityPolicy": "candidate_or_exact_observation_v2",
             "observedSourcePaths": sorted(observed),
             "operations": [
                 {
@@ -172,7 +281,11 @@ def implementation_projection(m: dict, existing: dict, *, rebind: bool) -> dict:
                     "nativeSymbol": row["symbol"],
                     "sourcePath": row["path"],
                     "state": row["class"],
-                    "authority": "kernel.final_use" if "consume" in row["operation"] else "none",
+                    "authority": (
+                        "kernel.final_use"
+                        if "consume" in row["operation"]
+                        else "none"
+                    ),
                     "tests": operation_tests(row["operation"]),
                     "sourcePathExists": True,
                     "designOperation": row["operation"],
@@ -183,18 +296,28 @@ def implementation_projection(m: dict, existing: dict, *, rebind: bool) -> dict:
             ],
             "repositoryControlledGaps": m["targetOnlyCapabilities"],
             "externalEvidenceGates": [
-                "exact-candidate native qualification",
-                "target-host product execution",
+                "exact-candidate source and deterministic-merge qualification",
+                "storage-profile and target-host qualification",
+                "named product execution",
                 "independent operator acceptance promotion and release",
             ],
             "claimBoundary": {
                 "nativeSourceMappingComplete": True,
-                "sourceRootPresent": True,
-                "productionImplementation": False,
+                "sourceRootPresent": readiness["sourcePresent"],
+                "sourceCompiled": readiness["sourceCompiled"],
+                "sourceQualified": readiness["sourceQualified"],
+                "storageProfileQualified": readiness["storageProfileQualified"],
+                "productionImplementation": bool(
+                    readiness["sourceQualified"]
+                    and readiness["storageProfileQualified"]
+                    and readiness["productComposed"]
+                ),
                 "productExecutionProved": False,
-                "independentAcceptance": False,
-                "activation": False,
-                "release": False,
+                "productComposed": readiness["productComposed"],
+                "targetHostQualified": readiness["targetHostQualified"],
+                "independentAcceptance": readiness["operatorAccepted"],
+                "activation": readiness["activated"],
+                "release": readiness["released"],
                 "implementedOperationMappingComplete": True,
             },
         }
@@ -213,6 +336,7 @@ def projections(m: dict, *, rebind: bool) -> dict[Path, object]:
             break
     if not replaced:
         raise ValueError("secrets.heptabao truth-matrix entry is missing")
+
     existing_map = load(MAP)
     return {
         TRUTH: truth,
@@ -227,10 +351,11 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--write", action="store_true")
     args = parser.parse_args()
+
     manifest = load(MANIFEST)
     validate(manifest)
     outputs = projections(manifest, rebind=args.write)
-    failures = []
+    failures: list[str] = []
     for path, value in outputs.items():
         expected = dump(value)
         if args.write:
