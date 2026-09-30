@@ -46,6 +46,7 @@ pub struct JournalAnchor {
 enum RecoveryPolicy {
     Unanchored,
     Require(JournalAnchor),
+    RequireComplete,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -126,6 +127,22 @@ impl SparseJournal {
         )
     }
 
+    /// Read a full intermediate segment without initializing or repairing it.
+    pub(crate) fn open_complete(
+        file: File,
+        config: SparseConfig,
+        scope: JournalScope,
+        max_records: usize,
+    ) -> Result<Self, JournalError> {
+        Self::open_with_policy(
+            file,
+            config,
+            scope,
+            max_records,
+            RecoveryPolicy::RequireComplete,
+        )
+    }
+
     fn open_with_policy(
         file: File,
         config: SparseConfig,
@@ -148,7 +165,10 @@ impl SparseJournal {
         let length = file.metadata()?.len();
         file.seek(SeekFrom::Start(0))?;
         if length == 0 {
-            if let RecoveryPolicy::Require(_) = policy {
+            if matches!(
+                policy,
+                RecoveryPolicy::Require(_) | RecoveryPolicy::RequireComplete
+            ) {
                 return Err(JournalError::AcknowledgedHistoryMissing);
             }
             file.write_all(&header)
@@ -241,6 +261,9 @@ impl SparseJournal {
         let length = file.metadata()?.len();
         file.seek(SeekFrom::Start(0))?;
         if length == 0 {
+            if matches!(policy, RecoveryPolicy::RequireComplete) {
+                return Err(JournalError::AcknowledgedHistoryMissing);
+            }
             if let RecoveryPolicy::Require(anchor) = policy
                 && anchor.sequence > seed_anchor.sequence
             {
@@ -301,6 +324,14 @@ impl SparseJournal {
         let complete = available / frame_len;
         if complete > max_records {
             return Err(JournalError::Capacity);
+        }
+        if matches!(policy, RecoveryPolicy::RequireComplete) {
+            if complete < max_records {
+                return Err(JournalError::AcknowledgedHistoryMissing);
+            }
+            if !available.is_multiple_of(frame_len) {
+                return Err(JournalError::Corrupt);
+            }
         }
         journal.file.seek(SeekFrom::Start(data_offset as u64))?;
         let mut frame = vec![0; frame_len];
@@ -385,6 +416,28 @@ impl SparseJournal {
             max_records,
             seed,
             anchor,
+        )?;
+        successor.base_receipt = self.receipt_at(seed.sequence())?.cloned();
+        Ok(successor)
+    }
+
+    /// Recover a full intermediate successor without modifying its history.
+    pub(crate) fn recover_complete_successor(
+        &self,
+        file: File,
+        max_records: usize,
+    ) -> Result<Self, JournalError> {
+        if self.poisoned {
+            return Err(JournalError::Poisoned);
+        }
+        let seed = self.current.as_ref().ok_or(JournalError::InvalidAnchor)?;
+        let mut successor = Self::open_successor_with_policy(
+            file,
+            self.config.clone(),
+            self.scope,
+            max_records,
+            seed,
+            RecoveryPolicy::RequireComplete,
         )?;
         successor.base_receipt = self.receipt_at(seed.sequence())?.cloned();
         Ok(successor)

@@ -30,6 +30,7 @@ pub use admission::NeuronAdmissionGuard;
 pub struct NeuronRuntime<W: AnchorWitnessStore> {
     config: NeuronRuntimeConfigV1,
     native: SparseConfig,
+    scope: JournalScope,
     journal: SparseJournal,
     operations: FileNeuronOperationStore,
     witness: W,
@@ -70,6 +71,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         Ok(Self {
             config,
             native,
+            scope,
             journal,
             operations,
             witness,
@@ -165,6 +167,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         let mut runtime = Self {
             config,
             native,
+            scope,
             journal,
             operations,
             witness,
@@ -190,7 +193,10 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         input: &NeuronTickInputV1,
     ) -> Result<NeuronModelRequestV1, NeuronRuntimeError> {
         let input_digest = input.semantic_digest()?;
-        if input.feature_vector_q24.len() != self.config.input_feature_dimension {
+        if input.feature_vector_q24.len() != self.config.input_feature_dimension
+            || subject_scope_digest(&input.subject_id)? != self.scope.scope_digest
+            || input.objective_digest != self.scope.objective_digest
+        {
             return Err(NeuronRuntimeError::InvalidInput);
         }
         Ok(NeuronModelRequestV1 {
@@ -240,7 +246,9 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
                 max_records,
                 anchor,
             )?,
-            Some(_) => SparseJournal::open(journal_file, native.clone(), scope, max_records)?,
+            Some(_) => {
+                SparseJournal::open_complete(journal_file, native.clone(), scope, max_records)?
+            }
             None if pending.is_some() || operations.is_empty()? => {
                 if journal_file.metadata().map_err(JournalError::from)?.len() == 0 {
                     return Err(NeuronRuntimeError::Journal(
@@ -254,6 +262,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         let mut runtime = Self {
             config,
             native,
+            scope,
             journal,
             operations,
             witness,
@@ -279,6 +288,12 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         if self.operations.pending()?.is_some() {
             return Err(NeuronRuntimeError::PendingReconciliation);
         }
+        if self.journal.remaining_capacity()? != 0 {
+            return Err(NeuronRuntimeError::Journal(JournalError::Conflict));
+        }
+        if self.witness.current()? != self.journal.current_anchor()? {
+            return Err(NeuronRuntimeError::RecoveryWitnessMismatch);
+        }
         self.journal = self.journal.start_successor(file, max_records)?;
         Ok(())
     }
@@ -291,6 +306,9 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         file: File,
         max_records: usize,
     ) -> Result<(), NeuronRuntimeError> {
+        if self.journal.remaining_capacity()? != 0 {
+            return Err(NeuronRuntimeError::Journal(JournalError::Conflict));
+        }
         let latest = self
             .witness
             .current()?
@@ -309,7 +327,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
                     JournalError::AcknowledgedHistoryMissing,
                 ));
             }
-            let recovered = self.journal.start_successor(file, max_records)?;
+            let recovered = self.journal.recover_complete_successor(file, max_records)?;
             let current = recovered
                 .current()?
                 .ok_or(NeuronRuntimeError::RecoveryWitnessMismatch)?;
