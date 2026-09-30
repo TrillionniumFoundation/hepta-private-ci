@@ -61,6 +61,16 @@ def sha256_bytes(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
 
 
+def require_hex(value: object, length: int, label: str) -> str:
+    if not isinstance(value, str) or len(value) != length:
+        raise ValueError(f"invalid {label}")
+    try:
+        int(value, 16)
+    except ValueError as error:
+        raise ValueError(f"invalid {label}") from error
+    return value
+
+
 def index_bytes(path: str) -> bytes:
     return run("git", "show", f":{path}")
 
@@ -147,8 +157,8 @@ def environment_identity() -> dict[str, str]:
 
 
 def emit(args: argparse.Namespace) -> dict[str, Any]:
-    source_sha = args.source_sha
-    candidate_sha = args.candidate_sha
+    source_sha = require_hex(args.source_sha, 40, "source SHA")
+    candidate_sha = require_hex(args.candidate_sha, 40, "candidate SHA")
     source_tree = git_text("rev-parse", f"{source_sha}^{{tree}}")
     candidate_tree = git_text("rev-parse", f"{candidate_sha}^{{tree}}")
     index_tree = git_text("write-tree")
@@ -158,9 +168,8 @@ def emit(args: argparse.Namespace) -> dict[str, Any]:
         if source_sha != candidate_sha:
             raise ValueError("exact-source candidate must equal source")
     elif args.mode == "synthetic-merge":
-        if not args.base_sha:
-            raise ValueError("synthetic merge requires base SHA")
-        if git_text("rev-parse", f"{candidate_sha}^1") != args.base_sha:
+        base_sha = require_hex(args.base_sha, 40, "base SHA")
+        if git_text("rev-parse", f"{candidate_sha}^1") != base_sha:
             raise ValueError("synthetic merge first parent is not base")
         if git_text("rev-parse", f"{candidate_sha}^2") != source_sha:
             raise ValueError("synthetic merge second parent is not source")
@@ -237,7 +246,7 @@ def emit(args: argparse.Namespace) -> dict[str, Any]:
     return receipt
 
 
-def verify_receipt(path: Path, *, bind_index: bool = True) -> dict[str, Any]:
+def verify_receipt(path: Path, *, bind_git_objects: bool = True) -> dict[str, Any]:
     receipt = json.loads(path.read_text(encoding="utf-8"))
     if receipt.get("schema") != SCHEMA:
         raise ValueError("unexpected receipt schema")
@@ -247,36 +256,58 @@ def verify_receipt(path: Path, *, bind_index: bool = True) -> dict[str, Any]:
     source = receipt.get("source")
     if not isinstance(source, dict):
         raise ValueError("missing source identity")
-    source_sha = str(source.get("commit", ""))
-    candidate_sha = str(source.get("candidateCommit", ""))
-    candidate_tree = str(source.get("candidateTree", ""))
-    if source.get("tree") != git_text("rev-parse", f"{source_sha}^{{tree}}"):
-        raise ValueError("source commit/tree mismatch")
-    if candidate_tree != git_text("rev-parse", f"{candidate_sha}^{{tree}}"):
-        raise ValueError("candidate commit/tree mismatch")
-    if bind_index and candidate_tree != git_text("write-tree"):
-        raise ValueError("receipt does not bind checked-out candidate tree")
+    source_sha = require_hex(source.get("commit"), 40, "source SHA")
+    source_tree = require_hex(source.get("tree"), 40, "source tree")
+    candidate_sha = require_hex(source.get("candidateCommit"), 40, "candidate SHA")
+    candidate_tree = require_hex(source.get("candidateTree"), 40, "candidate tree")
+    base_value = source.get("baseCommit")
+    base_sha = None if base_value is None else require_hex(base_value, 40, "base SHA")
+
     if mode == "exact-source":
-        if candidate_sha != source_sha:
+        if candidate_sha != source_sha or base_sha is None:
             raise ValueError("exact-source identity mismatch")
         required_outputs = {"coverage", "mutation", "performance", "testLog"}
     else:
-        base = str(source.get("baseCommit", ""))
-        if git_text("rev-parse", f"{candidate_sha}^1") != base:
-            raise ValueError("synthetic merge first parent mismatch")
-        if git_text("rev-parse", f"{candidate_sha}^2") != source_sha:
-            raise ValueError("synthetic merge second parent mismatch")
+        if base_sha is None:
+            raise ValueError("synthetic merge is missing base SHA")
         required_outputs = {"testLog"}
+
+    if bind_git_objects:
+        if source_tree != git_text("rev-parse", f"{source_sha}^{{tree}}"):
+            raise ValueError("source commit/tree mismatch")
+        if candidate_tree != git_text("rev-parse", f"{candidate_sha}^{{tree}}"):
+            raise ValueError("candidate commit/tree mismatch")
+        if candidate_tree != git_text("write-tree"):
+            raise ValueError("receipt does not bind checked-out candidate tree")
+        if mode == "synthetic-merge":
+            if git_text("rev-parse", f"{candidate_sha}^1") != base_sha:
+                raise ValueError("synthetic merge first parent mismatch")
+            if git_text("rev-parse", f"{candidate_sha}^2") != source_sha:
+                raise ValueError("synthetic merge second parent mismatch")
 
     inputs = receipt.get("inputs")
     if not isinstance(inputs, dict):
         raise ValueError("missing input identity")
-    digest, count = input_digest()
-    if inputs.get("setSha256") != digest or inputs.get("trackedFileCount") != count:
-        raise ValueError("qualification input set drift")
-    for key, source_path in DIGEST_FILES.items():
-        if inputs.get(key) != file_digest(source_path):
-            raise ValueError(f"stale input digest: {key}")
+    require_hex(inputs.get("setSha256"), 64, "input-set digest")
+    if not isinstance(inputs.get("trackedFileCount"), int) or inputs["trackedFileCount"] <= 0:
+        raise ValueError("invalid tracked input count")
+    for key in DIGEST_FILES:
+        require_hex(inputs.get(key), 64, key)
+    if bind_git_objects:
+        digest, count = input_digest()
+        if inputs.get("setSha256") != digest or inputs.get("trackedFileCount") != count:
+            raise ValueError("qualification input set drift")
+        for key, source_path in DIGEST_FILES.items():
+            if inputs.get(key) != file_digest(source_path):
+                raise ValueError(f"stale input digest: {key}")
+
+    test_set = receipt.get("testSet")
+    if not isinstance(test_set, dict):
+        raise ValueError("missing test-set identity")
+    require_hex(test_set.get("sha256"), 64, "test-set digest")
+    if not isinstance(test_set.get("required"), list) or not test_set["required"]:
+        raise ValueError("empty required test set")
+
     outputs = receipt.get("outputs")
     if not isinstance(outputs, dict) or set(outputs) != required_outputs:
         raise ValueError("qualification outputs are incomplete")
@@ -296,8 +327,13 @@ def verify_receipt(path: Path, *, bind_index: bool = True) -> dict[str, Any]:
 
 
 def combine(args: argparse.Namespace) -> dict[str, Any]:
-    exact = verify_receipt(ROOT / args.exact, bind_index=False)
-    merge = verify_receipt(ROOT / args.synthetic, bind_index=False)
+    exact = verify_receipt(ROOT / args.exact, bind_git_objects=True)
+    # The synthetic commit is created in an isolated runner and is deliberately
+    # not pushed. Its producing job already verified the commit, parents, tree,
+    # index and input digests before uploading this receipt. The fan-in job
+    # verifies the immutable receipt bytes and output hashes without inventing a
+    # repository object that does not exist in this checkout.
+    merge = verify_receipt(ROOT / args.synthetic, bind_git_objects=False)
     if exact["mode"] != "exact-source" or merge["mode"] != "synthetic-merge":
         raise ValueError("combined set requires exact-source and synthetic-merge receipts")
     if exact["source"]["commit"] != merge["source"]["commit"]:
