@@ -18,8 +18,8 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "explicit_read_and_writer_service_composed",
-  "productionWriterState": "named_owner_service_composed_source_qualification_pending",
+  "productCallerState": "owner_service_and_optional_agentd_source_seams_no_executable_bootstrap",
+  "productionWriterState": "fenced_owner_service_library_seam_source_qualification_pending",
   "operations": [
     {
       "operation": "artifact_registry_append",
@@ -354,15 +354,18 @@
       "sourceBlob": "83bfc190f930409df01d099668370ad2d7578f7f"
     }
   ],
-  "currentNativeState": "immutable registry/storage, scoped withdrawal, V3 admission, durable lifecycle/withdrawal snapshots, ordered host-visible publication, one physical sensor-core writer, bounded iteration, explicit Agentd read consumption, and one CALLERS.toml-closed LearningArtifactOwnerService over the fenced Ed25519-authenticated owner host are source implemented; activation, target-host durability and independently governed selection/release remain separate",
+  "currentNativeState": "Immutable V1 compatibility registry; full canonical V2/V3 admission sidecars before Prepared; fenced serial owner publication with atomic checkpoints, current trust floors, independent restart anchors and lease-rotation recovery; exact projection and single-parent inherited dataset provenance; service current-view expiry/withdrawal exclusions honored by selectors and cached consumers; bounded lifecycle and iteration evidence. Raw owner/verifier views prove V1 current history only. Normal executable writer/current-provider/selected-ranker bootstrap, multi-parent final-use ancestry, independent acceptance and target-host execution remain incomplete.",
   "repositoryControlledGaps": [
-    "Execute exact unified-candidate source binding, build and owner recovery qualification after cross-family composition."
+    "Compose the owner service, authenticated current withdrawal frontier, independently governed selector and Agentd ranker in a named executable bootstrap with product integration tests.",
+    "Introduce a versioned registry/reader capable of full multi-parent final-use ancestry before enabling multi-parent publication.",
+    "Provide trusted legacy full-admission backfill and an authorized durable withdrawal-to-artifact revocation/retention integration; V1 projections cannot reconstruct missing V2 provenance."
   ],
   "hostIntegrationRequirements": [
-    "Persist ArtifactPublicationTransactionSnapshotV1 under the product writer fence before treating a phase as durable.",
-    "Authenticate withdrawal actors and registry-head signatures before constructing typed source evidence.",
-    "Operate newest-head discovery, parent-directory fsync, retention/orphan reconciliation and trusted root protection.",
-    "Compose independently selected product loading and routing without granting this crate selection or release authority."
+    "Provision independent owner/selector trust and authenticate withdrawal actors/frontiers before constructing typed source evidence.",
+    "Retain an independent signed newest-head anchor for every populated service restart; protect the trusted root against concurrent hostile replacement.",
+    "Use LearningArtifactOwnerService current views for V2 expiry/source-withdrawal guarantees; raw owner/verifier compatibility views do not provide that guarantee.",
+    "Qualify non-Unix directory synchronization, abrupt power loss, retention/orphan reconciliation and physical deletion on the selected host.",
+    "Operate signed CURRENT and writer lease validity/rotation/revocation policy; lease generation alone is not an independently retained revocation floor."
   ],
   "externalEvidenceGates": [
     "independent semantic review",

@@ -60,13 +60,15 @@ A scoped registry has a scope-specific genesis/head; V3 admission additionally
 binds that scope digest and withdrawal head. Unscoped registries cannot issue
 V3 admissions.
 
-The stable V1 registry is a compatibility index and cannot represent all V2
-lineage. The implementation therefore does not collapse multiple V2
-predecessors or datasets into one V1 field. `ArtifactPublicationTransactionV1`
-retains the complete V3 admission as the authoritative V2 sidecar and verifies
-that the final V1 registration agrees only on faithfully representable fields:
-identity, kind, generation, payload digest, producer, compatibility digest and
-exact byte length.
+The stable V1 registry cannot represent all V2 lineage. The complete V3
+admission has a canonical `HEPTAA03` sidecar, bounded at 128 KiB and persisted
+before Prepared. Recovery verifies its independent admission commitment and
+manifest index. Multiple-parent manifests remain representable in V2/V3
+admission/storage, but publication and transaction replay reject them until a
+versioned reader can enforce all ancestor relationships at final use. The V1
+projection binds identity, kind, generation, payload, producer, objective,
+complete manifest support digest, compatibility, byte length and the sole
+predecessor. Single-parent children must retain their parent's datasets.
 
 Publication is an ordered durability protocol:
 
@@ -228,9 +230,21 @@ instead of a caller-constructible file/receipt pair.
 - **Operating references:** `STORAGE.md`, `READ_BOUNDARY.md`,
   `PINNED_LOAD.md`, `DATASET_REVOCATION.md`, `NATIVE_MAPPING.md`.
 
-The repository-controlled source gap is now primarily exact-candidate
-qualification, not missing core data structures. Current CI must still prove the
-exact head and actual-base synthetic merge.
+Detailed owner configuration, trust, restart, upgrade and recovery contracts
+are in `../../../codex-rs/hepta-learning-artifacts/OWNER_SERVICE.md`.
+Complete admissions are implemented in `admission_storage.rs`; owner lineage
+and current per-artifact expiry/withdrawal exclusions are in
+`owner_admissions.rs`. The service returns the exclusions as a read-eligibility
+overlay; selectors and cached consumers honor `view.is_eligible`, preserving
+valid unrelated candidates. Raw owner/verifier CURRENT views prove V1 history
+only. Missing or corrupt full provenance closes service view acquisition.
+
+Normal executable bootstrap still does not compose the writer service,
+authenticated withdrawal/current provider and independently selected Agentd
+ranker. Multi-parent final-use ancestry and trusted legacy admission backfill
+also remain repository integration work. Old checkpoints lacking full
+admission sidecars cannot transparently reopen. Exact-candidate and actual-base
+synthetic-merge qualification remain separate from these source facts.
 
 ## 9. Native closure and remaining evidence
 

@@ -19,6 +19,15 @@ discovery/recovery. External head distribution, selector enrollment and private
 signing authorities remain outside the crate. Public receipts use `AuthorityPosture::DENY_ALL` where an authority
 posture is returned.
 
+The service-to-host caller set is closed by `CALLERS.toml`; it proves a source
+library seam, not executable startup. The normal Agentd entry point currently
+does not construct `LearningArtifactOwnerService`, install a
+`CurrentCognitiveRegistry` implementation or attach a selected
+`PinnedCognitiveRanker`. Read attachment and independent selected loading remain
+explicit embedding/qualification surfaces. See [`OWNER_SERVICE.md`](OWNER_SERVICE.md)
+for configuration, trust roles, anchored restart, checkpoint recovery and the
+remaining deployment evidence.
+
 The `operator_sensor_core_registry` has no second writer. Sensor cores are first-class `ArtifactKind::SensorCore` records in the same append-only `ArtifactRegistry`; `project_operator_sensor_core_registry_v1` is a deterministic typed read view bound to the source registry head. Revocation/quarantine is therefore inherited from the physical artifact history rather than copied into another journal.
 
 The V1 registry is a compatibility index. It cannot encode every V2 lineage
@@ -40,8 +49,8 @@ flattened into one V1 predecessor.
 | validate-before-create current-head witness | `write_registry_head_witness_beneath` | `src/storage.rs` | implemented |
 | read exact pinned candidate | `load_pinned_candidate` | `src/pinned.rs` | retained |
 | revalidate cached consumer at a newer head | `RevalidatingCandidate::with_current` | `src/pinned.rs` | retained |
-| issue opaque authenticated CURRENT registry view | `ArtifactOwnerVerifierV1::verify_current_registry_view` / `LearningArtifactOwnerHost::current_registry_view` | `src/owner_host.rs` | implemented |
-| named product CURRENT/publication service | `LearningArtifactOwnerService::current_registry_view` / `publish` | `src/owner_service.rs` | product-composed source |
+| issue opaque authenticated V1 CURRENT registry view | `ArtifactOwnerVerifierV1::verify_current_registry_view` / `LearningArtifactOwnerHost::current_registry_view` | `src/owner_host.rs` | implemented compatibility view; full V2 service guard is separate |
+| named CURRENT/publication library service | `LearningArtifactOwnerService::current_registry_view` / `publish` | `src/owner_service.rs` | source service seam; executable bootstrap absent |
 | verify selector trust independently of artifact-owner keys | `ArtifactSelectionVerifierV1::verify` | `src/selection.rs` | implemented |
 | bind verified selector evidence to selected lifecycle transition | `record_verified_selection` | `src/selection.rs` | implemented |
 | load exact independently selected immutable candidate | `load_selected_candidate` | `src/selection.rs` | qualification-composed source |
@@ -54,6 +63,8 @@ flattened into one V1 predecessor.
 | contained scoped withdrawal snapshot write | `write_dataset_withdrawal_snapshot_beneath` | `src/durable_snapshots.rs` | implemented |
 | validate latest-head/anti-rollback evidence | `validate_registry_head_witness` | `src/closure_v2.rs` | implemented |
 | create scoped V3 admission | `admit_manifest_at_withdrawal_head_v3` | `src/admission_v3.rs` | implemented |
+| persist/recover complete canonical V3 admission | `write_artifact_admission_beneath` / `read_artifact_admission` | `src/admission_storage.rs` | implemented; durable owner sidecar before Prepared |
+| recover checkpoint/parent-committed full admission | `read_artifact_admission_by_digest` / `read_artifact_admission_by_manifest_digest` | `src/admission_storage.rs` | implemented; independent semantic digest required |
 | revalidate V3 admission at publication | `validate_artifact_publication_v3` | `src/admission_v3.rs` | implemented |
 | enforce publication durability order | `ArtifactPublicationTransactionV1` | `src/publication.rs` | implemented |
 | validate lifecycle transition | `validate_artifact_lifecycle_transition` | `src/closure_v2.rs` | implemented |
@@ -92,11 +103,23 @@ not own private signing keys.
 
 `Prepared -> PayloadDurable -> RegistryDurable -> WitnessDurable -> Acknowledged`.
 
-It stores the complete V3 admission as the authoritative V2 sidecar. When the
+The owner atomically persists the complete canonical V3 admission as an
+authoritative V2 sidecar before Prepared durability, and retains an immutable
+manifest-digest index for inherited parent provenance. Recovery verifies the
+sidecar against its independently retained checkpoint commitment. When the
 V1 registry becomes durable, the transaction verifies only fields that V1 can
 faithfully represent: artifact identity, kind, generation, payload digest,
 producer, compatibility digest and exact byte count. Multiple V2 datasets,
 lineage digests and predecessor IDs are **not** collapsed into V1 fields.
+
+The owner publication's V1 projection binds objective digest to the V2
+objective-class digest and support digest to the complete validated V2 manifest
+digest. Its sole predecessor is projected when there is exactly one. The owner
+publication path rejects multiple predecessors before Prepared durability;
+V2/V3 validation/admission retains that expressive shape for a future
+multi-parent registry and final-use reader. Admission retention alone cannot
+provide V1 multi-parent revocation enforcement. That support
+commitment does not claim equality to any component source dataset digest.
 
 The exact V1 registry snapshot receipt and independently validated head-witness
 receipt are then bound into the transaction state digest. Registry durability,
@@ -105,6 +128,20 @@ frontier, so an intervening withdrawal blocks completion. Acknowledgement before
 witness durability fails. Snapshot replay rejects shape/digest drift and
 revalidates the embedded admission. `status()` exposes the current transaction
 state as a deny-all observation surface for service/admin tooling.
+
+The service current-view read guard checks all eligible full V2 admissions for
+expiry, current withdrawal and inherited parent provenance. An internal
+read-eligibility overlay excludes expired/withdrawn artifacts and single-parent
+descendants while retaining valid unrelated consumers and the original signed V1
+history. Missing/corrupt provenance closes acquisition. Selector verification and
+cached consumption honor the overlay; durable quarantine/revocation remains
+separately authorized. Low-level signed V1 current-view verification remains a
+compatibility surface and does not replace this full V2 final-use boundary.
+
+Pre-sidecar owner checkpoints do not transparently reopen under the new service.
+Upgrade needs an independently authenticated full original admission and trusted
+backfill/reprovisioning before restart; unavailable provenance fails closed.
+V1 fields must never be used to invent omitted V2 closure.
 
 The host must durably persist each transaction snapshot under its writer fence
 before treating that phase as durable. This is an ordered crash-recovery
@@ -151,11 +188,17 @@ and symlink ancestors below a canonical host-designated trusted root. They also
 perform semantic validation before final-path creation, preventing ordinary
 validation failures from leaving zero-length final-path orphans.
 
-The owner host now performs bounded signed CURRENT discovery and exclusive writer
-fencing. The deployment host still owns concurrent hostile ancestor protection,
-parent-directory sync, external newest-head distribution, retention, backup
+The owner host performs bounded signed CURRENT discovery, exclusive writer
+fencing and owner-publication directory synchronization on Unix. Lower-level storage
+callers retain their directory-sync obligation. The deployment host still owns
+concurrent hostile ancestor protection, external newest-head distribution, retention, backup
 restore policy, indeterminate-write reconciliation and actual process loading.
 Standard-library path checks are not an `openat2` directory capability.
+
+Read handles are independently opened and initially unlocked; Linux
+cloned/inherited descriptors may share open-description lock state. Hosts drop
+cached candidates on current-view acquisition errors and do not reuse an old
+opaque view. Failed candidate revalidation also requires explicit re-admission.
 
 ## Qualification mapping
 
