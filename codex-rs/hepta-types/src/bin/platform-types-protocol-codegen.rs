@@ -7,6 +7,8 @@ use std::path::PathBuf;
 
 use codex_hepta_types::protocol_catalog_v2::PLATFORM_TYPES_PROTOCOL_CATALOG_V2;
 use codex_hepta_types::protocol_catalog_v2::ProtocolDescriptorV2;
+use codex_hepta_types::protocol_catalog_v2::identity_fields_for_protocol_v2;
+use codex_hepta_types::protocol_catalog_v2::identity_profile_for_protocol_field_v2;
 
 fn main() {
     if let Err(error) = run() {
@@ -113,18 +115,45 @@ fn render_json() -> String {
             push_json_string(&mut output, "          ", "name", field.name, true);
             push_json_string(&mut output, "          ", "wireType", field.wire_type, true);
             output.push_str(&format!(
-                "          \"required\": {}",
+                "          \"required\": {},\n",
                 if field.required { "true" } else { "false" }
             ));
             if let Some(maximum) = field.maximum_encoded_bytes {
                 output.push_str(&format!(
-                    ",\n          \"maximumEncodedBytes\": {maximum}\n"
+                    "          \"maximumEncodedBytes\": {maximum},\n"
                 ));
-            } else {
-                output.push('\n');
+            }
+            match identity_profile_for_protocol_field_v2(protocol.id, field.name) {
+                Some(profile) => push_json_string(
+                    &mut output,
+                    "          ",
+                    "identityProfile",
+                    profile.id(),
+                    false,
+                ),
+                None => output.push_str("          \"identityProfile\": null\n"),
             }
             output.push_str("        }");
             if field_index + 1 != protocol.fields.len() {
+                output.push(',');
+            }
+            output.push('\n');
+        }
+        output.push_str("      ],\n");
+        output.push_str("      \"identityFields\": [\n");
+        let identity_fields = identity_fields_for_protocol_v2(protocol.id).unwrap_or(&[]);
+        for (identity_index, identity) in identity_fields.iter().enumerate() {
+            output.push_str("        {\n");
+            push_json_string(&mut output, "          ", "path", identity.path, true);
+            push_json_string(
+                &mut output,
+                "          ",
+                "profile",
+                identity.profile.id(),
+                false,
+            );
+            output.push_str("        }");
+            if identity_index + 1 != identity_fields.len() {
                 output.push(',');
             }
             output.push('\n');
@@ -182,19 +211,33 @@ fn render_protocol_markdown(output: &mut String, protocol: &ProtocolDescriptorV2
         protocol.compatibility,
     ));
     output.push_str(
-        "| Field | Wire type | Required | Maximum encoded bytes |\n|---|---|---:|---:|\n",
+        "| Field | Wire type | Required | Maximum encoded bytes | Identity profile |\n|---|---|---:|---:|---|\n",
     );
     for field in protocol.fields {
         let maximum = field
             .maximum_encoded_bytes
             .map_or_else(|| "—".to_owned(), |value| value.to_string());
+        let identity_profile = identity_profile_for_protocol_field_v2(protocol.id, field.name)
+            .map_or("—", |profile| profile.id());
         output.push_str(&format!(
-            "| `{}` | `{}` | {} | {} |\n",
+            "| `{}` | `{}` | {} | {} | `{}` |\n",
             field.name,
             field.wire_type,
             if field.required { "yes" } else { "no" },
             maximum,
+            identity_profile,
         ));
+    }
+    let identity_fields = identity_fields_for_protocol_v2(protocol.id).unwrap_or(&[]);
+    if !identity_fields.is_empty() {
+        output.push_str("\nIdentity-bearing paths:\n\n");
+        for identity in identity_fields {
+            output.push_str(&format!(
+                "- `{}` → `{}`\n",
+                identity.path,
+                identity.profile.id(),
+            ));
+        }
     }
     output.push('\n');
 }

@@ -4,12 +4,25 @@
 //! descriptors. A referenced executable schema must exist and contain every
 //! descriptor field before qualification can pass.
 
+use crate::IdProfileV1;
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct ProtocolFieldDescriptorV2 {
     pub name: &'static str,
     pub wire_type: &'static str,
     pub required: bool,
     pub maximum_encoded_bytes: Option<usize>,
+}
+
+/// Catalog-owned identity policy for a concrete protocol field path.
+///
+/// This is deliberately separate from `ProtocolFieldDescriptorV2` so the
+/// existing public descriptor shape remains source compatible. Paths use `[]`
+/// for array traversal, for example `deltas[].module_id`.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct ProtocolIdentityFieldDescriptorV2 {
+    pub path: &'static str,
+    pub profile: IdProfileV1,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -144,6 +157,37 @@ const REGISTERED_NUMERIC_V2_FIELDS: &[ProtocolFieldDescriptorV2] = &[
     field("admission_digest", "derived_digest32", true, Some(32)),
 ];
 
+const PROMPT_V1_IDENTITY_FIELDS: &[ProtocolIdentityFieldDescriptorV2] = &[
+    identity_field("compilation_id", IdProfileV1::Stable),
+    identity_field("rejected_reason", IdProfileV1::Stable),
+];
+
+const PROMPT_V2_IDENTITY_FIELDS: &[ProtocolIdentityFieldDescriptorV2] = &[
+    identity_field("compilation_id", IdProfileV1::Stable),
+    identity_field("rejected_reason", IdProfileV1::Stable),
+];
+
+const TOPOLOGY_V1_IDENTITY_FIELDS: &[ProtocolIdentityFieldDescriptorV2] = &[
+    identity_field("candidate_id", IdProfileV1::Stable),
+    identity_field("deltas[].module_id", IdProfileV1::Stable),
+    identity_field("deltas[].related_module_ids[]", IdProfileV1::Stable),
+];
+
+const RANDOM_STREAM_IDENTITY_FIELDS: &[ProtocolIdentityFieldDescriptorV2] = &[
+    identity_field("manifest_id", IdProfileV1::Stable),
+    identity_field("episode_id", IdProfileV1::Stable),
+    identity_field("decision_id", IdProfileV1::Stable),
+    identity_field("stream_id", IdProfileV1::Stable),
+];
+
+const EXTERNAL_SYSTEM_IDENTITY_FIELDS: &[ProtocolIdentityFieldDescriptorV2] =
+    &[identity_field("system_id", IdProfileV1::Stable)];
+
+const SENSOR_IDENTITY_FIELDS: &[ProtocolIdentityFieldDescriptorV2] =
+    &[identity_field("sensor_id", IdProfileV1::Stable)];
+
+const NO_IDENTITY_FIELDS: &[ProtocolIdentityFieldDescriptorV2] = &[];
+
 pub const PLATFORM_TYPES_PROTOCOL_CATALOG_V2: &[ProtocolDescriptorV2] = &[
     ProtocolDescriptorV2 {
         id: "PromptDeliveryObservationV1",
@@ -217,6 +261,40 @@ pub const PLATFORM_TYPES_PROTOCOL_CATALOG_V2: &[ProtocolDescriptorV2] = &[
     },
 ];
 
+/// Returns the complete identity-policy ledger for a known protocol.
+pub fn identity_fields_for_protocol_v2(
+    protocol_id: &str,
+) -> Option<&'static [ProtocolIdentityFieldDescriptorV2]> {
+    match protocol_id {
+        "PromptDeliveryObservationV1" => Some(PROMPT_V1_IDENTITY_FIELDS),
+        "PromptDeliveryObservationV2" => Some(PROMPT_V2_IDENTITY_FIELDS),
+        "RuntimeTopologyCandidateV1" => Some(TOPOLOGY_V1_IDENTITY_FIELDS),
+        "RandomStreamManifestV1" => Some(RANDOM_STREAM_IDENTITY_FIELDS),
+        "ExternalSystemManifestV1" => Some(EXTERNAL_SYSTEM_IDENTITY_FIELDS),
+        "SensorCalibrationManifestV1" => Some(SENSOR_IDENTITY_FIELDS),
+        "RegisteredNumericConversionReceiptV2" => Some(NO_IDENTITY_FIELDS),
+        _ => None,
+    }
+}
+
+/// Resolves the catalog-declared identity profile for one exact field path.
+pub fn identity_profile_for_protocol_field_v2(
+    protocol_id: &str,
+    field_path: &str,
+) -> Option<IdProfileV1> {
+    identity_fields_for_protocol_v2(protocol_id)?
+        .iter()
+        .find(|field| field.path == field_path)
+        .map(|field| field.profile)
+}
+
+const fn identity_field(
+    path: &'static str,
+    profile: IdProfileV1,
+) -> ProtocolIdentityFieldDescriptorV2 {
+    ProtocolIdentityFieldDescriptorV2 { path, profile }
+}
+
 const fn field(
     name: &'static str,
     wire_type: &'static str,
@@ -228,5 +306,75 @@ const fn field(
         wire_type,
         required,
         maximum_encoded_bytes,
+    }
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn is_top_level_identity_wire_type(wire_type: &str) -> bool {
+        matches!(
+            wire_type,
+            "stable_id" | "optional_stable_id" | "required_nullable_stable_id"
+        )
+    }
+
+    #[test]
+    fn every_top_level_identity_field_is_profiled_by_the_catalog() {
+        for protocol in PLATFORM_TYPES_PROTOCOL_CATALOG_V2 {
+            for field in protocol.fields {
+                let profile = identity_profile_for_protocol_field_v2(protocol.id, field.name);
+                if is_top_level_identity_wire_type(field.wire_type) {
+                    assert_eq!(
+                        profile,
+                        Some(IdProfileV1::Stable),
+                        "{}.{} must carry its compatibility-preserving stable-v1 profile",
+                        protocol.id,
+                        field.name,
+                    );
+                } else {
+                    assert_eq!(
+                        profile, None,
+                        "{}.{} unexpectedly carries a top-level identity profile",
+                        protocol.id, field.name,
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn topology_nested_identity_paths_are_explicit() {
+        assert_eq!(
+            identity_profile_for_protocol_field_v2(
+                "RuntimeTopologyCandidateV1",
+                "deltas[].module_id",
+            ),
+            Some(IdProfileV1::Stable),
+        );
+        assert_eq!(
+            identity_profile_for_protocol_field_v2(
+                "RuntimeTopologyCandidateV1",
+                "deltas[].related_module_ids[]",
+            ),
+            Some(IdProfileV1::Stable),
+        );
+    }
+
+    #[test]
+    fn unknown_protocol_or_path_fails_closed() {
+        assert_eq!(
+            identity_profile_for_protocol_field_v2("unknown", "candidate_id"),
+            None,
+        );
+        assert_eq!(
+            identity_profile_for_protocol_field_v2(
+                "RuntimeTopologyCandidateV1",
+                "deltas[].unknown",
+            ),
+            None,
+        );
     }
 }

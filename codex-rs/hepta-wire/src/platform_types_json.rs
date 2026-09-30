@@ -17,6 +17,7 @@ use codex_hepta_types::RuntimeTopologyDeltaV1;
 use codex_hepta_types::RuntimeTopologyOperationV1;
 use codex_hepta_types::StableId;
 use codex_hepta_types::prompt_delivery_v2::PromptDeliveryErrorV2;
+use codex_hepta_types::protocol_catalog_v2::identity_profile_for_protocol_field_v2;
 use codex_hepta_types::prompt_delivery_v2::PromptDeliveryObservationV2;
 use codex_hepta_types::prompt_delivery_v2::PromptDeliveryRejectReasonV2;
 use serde::Deserialize;
@@ -139,7 +140,12 @@ pub fn decode_prompt_delivery_v2_json(
     let rejected_reason = wire
         .rejected_reason
         .map(|value| {
-            PromptDeliveryRejectReasonV2::new(stable_id(&value, "rejected_reason")?)
+            PromptDeliveryRejectReasonV2::new(stable_id(
+                "PromptDeliveryObservationV2",
+                "rejected_reason",
+                &value,
+                "rejected_reason",
+            )?)
                 .map_err(PlatformTypesWireError::Prompt)
         })
         .transpose()?;
@@ -148,7 +154,12 @@ pub fn decode_prompt_delivery_v2_json(
         .map(|value| digest(&value, "legacy_v1_digest"))
         .transpose()?;
     PromptDeliveryObservationV2::new(
-        stable_id(&wire.compilation_id, "compilation_id")?,
+        stable_id(
+            "PromptDeliveryObservationV2",
+            "compilation_id",
+            &wire.compilation_id,
+            "compilation_id",
+        )?,
         nonzero_digest(&wire.provider_request_digest, "provider_request_digest")?,
         wire.delivered,
         rejected_reason,
@@ -186,7 +197,12 @@ pub fn decode_runtime_topology_candidate_v1_json(
     }
     let value = RuntimeTopologyCandidateV1 {
         proposal_digest: nonzero_digest(&wire.proposal_digest, "proposal_digest")?,
-        candidate_id: stable_id(&wire.candidate_id, "candidate_id")?,
+        candidate_id: stable_id(
+            "RuntimeTopologyCandidateV1",
+            "candidate_id",
+            &wire.candidate_id,
+            "candidate_id",
+        )?,
         candidate_digest: nonzero_digest(&wire.candidate_digest, "candidate_digest")?,
         baseline_generation: generation(wire.baseline_generation, "baseline_generation")?,
         candidate_generation: generation(wire.candidate_generation, "candidate_generation")?,
@@ -242,12 +258,24 @@ fn decode_delta(
         _ => return Err(PlatformTypesWireError::InvalidOperation),
     };
     Ok(RuntimeTopologyDeltaV1 {
-        module_id: stable_id(&wire.module_id, "module_id")?,
+        module_id: stable_id(
+            "RuntimeTopologyCandidateV1",
+            "deltas[].module_id",
+            &wire.module_id,
+            "module_id",
+        )?,
         operation,
         related_module_ids: wire
             .related_module_ids
             .iter()
-            .map(|value| stable_id(value, "related_module_ids"))
+            .map(|value| {
+                stable_id(
+                    "RuntimeTopologyCandidateV1",
+                    "deltas[].related_module_ids[]",
+                    value,
+                    "related_module_ids",
+                )
+            })
             .collect::<Result<Vec<_>, _>>()?,
         predecessor_digest: digest(&wire.predecessor_digest, "predecessor_digest")?,
         candidate_digest: digest(&wire.candidate_digest, "candidate_digest")?,
@@ -342,8 +370,15 @@ fn enforce_raw_limits(bytes: &[u8]) -> Result<(), PlatformTypesWireError> {
     Ok(())
 }
 
-fn stable_id(value: &str, field: &'static str) -> Result<StableId, PlatformTypesWireError> {
-    StableId::new(value.to_owned()).map_err(|_| PlatformTypesWireError::StableId(field))
+fn stable_id(
+    protocol_id: &'static str,
+    field_path: &'static str,
+    value: &str,
+    field: &'static str,
+) -> Result<StableId, PlatformTypesWireError> {
+    let profile = identity_profile_for_protocol_field_v2(protocol_id, field_path)
+        .ok_or(PlatformTypesWireError::StableId(field))?;
+    StableId::with_profile(value, profile).map_err(|_| PlatformTypesWireError::StableId(field))
 }
 
 fn digest(value: &str, field: &'static str) -> Result<Digest32, PlatformTypesWireError> {

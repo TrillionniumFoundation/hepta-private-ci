@@ -48,6 +48,10 @@ The exact list is generated from the workspace and implementation map. At minimu
 
 Candidate evidence is self-contained by construction. Qualification evidence paths must resolve to regular files inside the checked-out repository tree; absolute paths outside that tree, parent traversal, and symlink evidence are rejected before a receipt can be emitted. This prevents a runner-local path from becoming part of a supposedly portable positive fixture.
 
+## Identity-profile convergence
+
+The V2 protocol catalog is the field-level source of truth for identity-bearing wire paths. Existing identity fields retain the legacy `stable-v1` grammar in this migration so catalog ownership does not silently tighten or reinterpret accepted identifiers. Product decoders resolve the profile from the catalog before constructing `StableId`; a missing protocol/path mapping fails closed. Any future move to `module-v1`, `execution-id-v1`, or another stricter profile is a versioned compatibility change with its own schema and migration evidence.
+
 ## Consumer migration procedure
 
 For each public API or wire change:

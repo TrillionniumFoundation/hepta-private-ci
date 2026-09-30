@@ -16,6 +16,21 @@ ROOT = Path(__file__).resolve().parents[1]
 SCHEMA_ROOT = ROOT / "codex-rs/hepta-types"
 CATALOG_SCHEMA = "hepta.platform-types.protocol-catalog.v2"
 JSON_SCHEMA_DIALECT = "https://json-schema.org/draft/2020-12/schema"
+IDENTITY_WIRE_TYPES = {
+    "stable_id",
+    "optional_stable_id",
+    "required_nullable_stable_id",
+}
+IDENTITY_PROFILE_IDS = {
+    "stable-v1",
+    "module-v1",
+    "namespaced-v1",
+    "execution-id-v1",
+    "schema-id-v1",
+    "normalization-id-v1",
+    "receipt-id-v1",
+    "artifact-id-v1",
+}
 
 
 class SchemaCatalogError(RuntimeError):
@@ -78,18 +93,133 @@ def _schema_path(relative: str) -> Path:
     return candidate
 
 
+def _identity_metadata(
+    identifier: str,
+    fields: list[Any],
+    identity_fields: Any,
+) -> dict[str, str]:
+    if not isinstance(identity_fields, list):
+        raise SchemaCatalogError(f"{identifier}: identityFields must be a list")
+    declared: dict[str, str] = {}
+    for row in identity_fields:
+        if (
+            not isinstance(row, dict)
+            or set(row) != {"path", "profile"}
+            or not isinstance(row.get("path"), str)
+            or not row["path"]
+            or not isinstance(row.get("profile"), str)
+            or row["profile"] not in IDENTITY_PROFILE_IDS
+        ):
+            raise SchemaCatalogError(f"{identifier}: invalid identity field descriptor")
+        path = row["path"]
+        if path in declared:
+            raise SchemaCatalogError(f"{identifier}: duplicate identity path {path}")
+        declared[path] = row["profile"]
+
+    for field in fields:
+        if not isinstance(field, dict):
+            raise SchemaCatalogError(f"{identifier}: invalid field descriptor")
+        name = field.get("name")
+        wire_type = field.get("wireType")
+        profile = field.get("identityProfile")
+        if not isinstance(name, str) or not isinstance(wire_type, str):
+            raise SchemaCatalogError(f"{identifier}: field name/wireType required")
+        if wire_type in IDENTITY_WIRE_TYPES:
+            if not isinstance(profile, str) or profile not in IDENTITY_PROFILE_IDS:
+                raise SchemaCatalogError(
+                    f"{identifier}.{name}: identity wire field needs a known identityProfile"
+                )
+            if declared.get(name) != profile:
+                raise SchemaCatalogError(
+                    f"{identifier}.{name}: top-level identityFields/profile mismatch"
+                )
+        elif profile is not None:
+            raise SchemaCatalogError(
+                f"{identifier}.{name}: non-identity wire field cannot carry identityProfile"
+            )
+    return declared
+
+
+def _resolve_local_ref(schema: dict[str, Any], node: Any, location: str) -> dict[str, Any]:
+    if not isinstance(node, dict):
+        raise SchemaCatalogError(f"{location}: schema node must be an object")
+    seen: set[str] = set()
+    while isinstance(node.get("$ref"), str):
+        ref = node["$ref"]
+        prefix = "#/$defs/"
+        if not ref.startswith(prefix):
+            raise SchemaCatalogError(f"{location}: only local $defs references are supported")
+        name = ref[len(prefix):]
+        if name in seen:
+            raise SchemaCatalogError(f"{location}: recursive identity schema reference")
+        seen.add(name)
+        definitions = schema.get("$defs")
+        if not isinstance(definitions, dict) or not isinstance(definitions.get(name), dict):
+            raise SchemaCatalogError(f"{location}: unresolved schema reference {ref}")
+        node = definitions[name]
+    return node
+
+
+def _schema_node_for_identity_path(
+    schema: dict[str, Any],
+    identity_path: str,
+    identifier: str,
+) -> dict[str, Any]:
+    node: dict[str, Any] = schema
+    for raw_segment in identity_path.split("."):
+        is_array = raw_segment.endswith("[]")
+        segment = raw_segment[:-2] if is_array else raw_segment
+        if not segment:
+            raise SchemaCatalogError(f"{identifier}: invalid identity path {identity_path!r}")
+        node = _resolve_local_ref(schema, node, f"{identifier}.{identity_path}")
+        properties = node.get("properties")
+        if not isinstance(properties, dict) or not isinstance(properties.get(segment), dict):
+            raise SchemaCatalogError(
+                f"{identifier}: identity path does not resolve: {identity_path}"
+            )
+        node = _resolve_local_ref(
+            schema,
+            properties[segment],
+            f"{identifier}.{identity_path}",
+        )
+        if is_array:
+            if node.get("type") != "array" or not isinstance(node.get("items"), dict):
+                raise SchemaCatalogError(
+                    f"{identifier}: identity path array segment is not an array: {identity_path}"
+                )
+            node = _resolve_local_ref(
+                schema,
+                node["items"],
+                f"{identifier}.{identity_path}",
+            )
+    return _resolve_local_ref(schema, node, f"{identifier}.{identity_path}")
+
+
+def _schema_accepts_string(schema: dict[str, Any], node: dict[str, Any], location: str) -> bool:
+    node = _resolve_local_ref(schema, node, location)
+    if node.get("type") == "string":
+        return True
+    for keyword in ("oneOf", "anyOf"):
+        variants = node.get(keyword)
+        if isinstance(variants, list):
+            return any(
+                isinstance(variant, dict)
+                and _schema_accepts_string(schema, variant, location)
+                for variant in variants
+            )
+    return False
+
+
 def _validate_protocol(protocol: dict[str, Any]) -> dict[str, Any] | None:
     identifier = protocol.get("id")
     relative = protocol.get("transportSchema")
     fields = protocol.get("fields")
     if not isinstance(identifier, str) or not identifier:
         raise SchemaCatalogError("protocol id required")
-    if relative is None:
-        return None
-    if not isinstance(relative, str) or not relative:
-        raise SchemaCatalogError(f"{identifier}: invalid transport schema path")
     if not isinstance(fields, list) or not fields:
         raise SchemaCatalogError(f"{identifier}: descriptor fields required")
+
+    identity_paths = _identity_metadata(identifier, fields, protocol.get("identityFields"))
 
     field_names: list[str] = []
     required_fields: set[str] = set()
@@ -104,6 +234,11 @@ def _validate_protocol(protocol: dict[str, Any]) -> dict[str, Any] | None:
         field_names.append(name)
         if field["required"]:
             required_fields.add(name)
+
+    if relative is None:
+        return None
+    if not isinstance(relative, str) or not relative:
+        raise SchemaCatalogError(f"{identifier}: invalid transport schema path")
 
     path = _schema_path(relative)
     schema = _read_object(path)
@@ -138,6 +273,14 @@ def _validate_protocol(protocol: dict[str, Any]) -> dict[str, Any] | None:
         raise SchemaCatalogError(
             f"{identifier}: kind discriminator must be {expected_kind!r}"
         )
+
+    for identity_path, profile in identity_paths.items():
+        node = _schema_node_for_identity_path(schema, identity_path, identifier)
+        if not _schema_accepts_string(schema, node, f"{identifier}.{identity_path}"):
+            raise SchemaCatalogError(
+                f"{identifier}.{identity_path}: {profile} identity path is not string-valued"
+            )
+
     _validate_closed_objects(schema, identifier)
     raw = path.read_bytes()
     return {
@@ -147,9 +290,10 @@ def _validate_protocol(protocol: dict[str, Any]) -> dict[str, Any] | None:
         "schemaSha256": hashlib.sha256(raw).hexdigest(),
         "fieldCount": len(field_names),
         "requiredFieldCount": len(required_fields),
+        "identityFieldCount": len(identity_paths),
+        "identityProfiles": sorted(set(identity_paths.values())),
         "status": "passed",
     }
-
 
 def verify_catalog(catalog: dict[str, Any]) -> dict[str, Any]:
     protocols = catalog.get("protocols")

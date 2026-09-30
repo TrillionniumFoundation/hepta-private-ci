@@ -22,6 +22,7 @@ use codex_hepta_types::SensorOperatingRangeV1;
 use codex_hepta_types::SensorUncertaintyProfileV1;
 use codex_hepta_types::StableId;
 use codex_hepta_types::UncertaintyDistributionV1;
+use codex_hepta_types::protocol_catalog_v2::identity_profile_for_protocol_field_v2;
 use serde::Deserialize;
 use serde::Deserializer;
 use serde::Serialize;
@@ -173,12 +174,32 @@ pub fn decode_random_stream_manifest_v1_json(
         return Err(PlatformManifestWireError::InvalidKind);
     }
     RandomStreamManifestV1::new(
-        stable_id(&wire.manifest_id, "manifest_id")?,
+        stable_id(
+            "RandomStreamManifestV1",
+            "manifest_id",
+            &wire.manifest_id,
+            "manifest_id",
+        )?,
         nonzero_digest(&wire.root_seed_digest, "root_seed_digest")?,
         &wire.algorithm_namespace,
-        stable_id(&wire.episode_id, "episode_id")?,
-        stable_id(&wire.decision_id, "decision_id")?,
-        stable_id(&wire.stream_id, "stream_id")?,
+        stable_id(
+            "RandomStreamManifestV1",
+            "episode_id",
+            &wire.episode_id,
+            "episode_id",
+        )?,
+        stable_id(
+            "RandomStreamManifestV1",
+            "decision_id",
+            &wire.decision_id,
+            "decision_id",
+        )?,
+        stable_id(
+            "RandomStreamManifestV1",
+            "stream_id",
+            &wire.stream_id,
+            "stream_id",
+        )?,
         wire.counter_start.0,
         wire.counter_end_exclusive.0,
         &wire.generator_id,
@@ -218,7 +239,12 @@ pub fn decode_external_system_manifest_v1_json(
     let system_class = ExternalSystemClassV1::from_id(&wire.system_class)
         .map_err(PlatformManifestWireError::Manifest)?;
     ExternalSystemManifestV1::new(
-        stable_id(&wire.system_id, "system_id")?,
+        stable_id(
+            "ExternalSystemManifestV1",
+            "system_id",
+            &wire.system_id,
+            "system_id",
+        )?,
         system_class,
         nonzero_digest(&wire.host_identity_digest, "host_identity_digest")?,
         nonzero_digest(&wire.os_release_digest, "os_release_digest")?,
@@ -285,7 +311,12 @@ pub fn decode_sensor_calibration_manifest_v1_json(
     )
     .map_err(PlatformManifestWireError::Manifest)?;
     SensorCalibrationManifestV1::new(
-        stable_id(&wire.sensor_id, "sensor_id")?,
+        stable_id(
+            "SensorCalibrationManifestV1",
+            "sensor_id",
+            &wire.sensor_id,
+            "sensor_id",
+        )?,
         sensor_class,
         nonzero_digest(
             &wire.hardware_or_adapter_digest,
@@ -411,8 +442,15 @@ fn enforce_raw_limits(bytes: &[u8]) -> Result<(), PlatformManifestWireError> {
     Ok(())
 }
 
-fn stable_id(value: &str, field: &'static str) -> Result<StableId, PlatformManifestWireError> {
-    StableId::new(value.to_owned()).map_err(|_| PlatformManifestWireError::StableId(field))
+fn stable_id(
+    protocol_id: &'static str,
+    field_path: &'static str,
+    value: &str,
+    field: &'static str,
+) -> Result<StableId, PlatformManifestWireError> {
+    let profile = identity_profile_for_protocol_field_v2(protocol_id, field_path)
+        .ok_or(PlatformManifestWireError::StableId(field))?;
+    StableId::with_profile(value, profile).map_err(|_| PlatformManifestWireError::StableId(field))
 }
 
 fn digest(value: &str, field: &'static str) -> Result<Digest32, PlatformManifestWireError> {
