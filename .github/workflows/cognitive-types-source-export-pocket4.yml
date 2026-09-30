@@ -1,5 +1,5 @@
-name: cognitive-types-source-export-pocket4
-run-name: cognitive-types-source-export-pocket4 @ ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+name: cognitive-types-source-export-self-hosted
+run-name: cognitive-types-source-export-${{ matrix.runner }} @ ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
 
 on:
   pull_request:
@@ -24,7 +24,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: cognitive-types-source-export-pocket4-${{ github.event.pull_request.head.ref || github.ref }}
+  group: cognitive-types-source-export-self-hosted-${{ github.event.pull_request.head.ref || github.ref }}
   cancel-in-progress: true
 
 env:
@@ -32,7 +32,11 @@ env:
 
 jobs:
   export-exact-head:
-    runs-on: [self-hosted, linux, x64, pocket4]
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [pocket4, rog]
+    runs-on: [self-hosted, linux, x64, ${{ matrix.runner }}]
     timeout-minutes: 20
     steps:
       - name: Check out exact pull-request head
@@ -44,18 +48,22 @@ jobs:
 
       - name: Verify immutable clean source
         shell: bash
+        env:
+          EXPECTED_RUNNER: ${{ matrix.runner }}
         run: |
           set -euo pipefail
-          test "$RUNNER_NAME" = pocket4
+          test "$RUNNER_NAME" = "$EXPECTED_RUNNER"
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           git diff --exit-code
           git diff --cached --exit-code
 
       - name: Export exact source and Git objects
         shell: bash
+        env:
+          RUNNER_KEY: ${{ matrix.runner }}
         run: |
           set -euo pipefail
-          evidence="$RUNNER_TEMP/cognitive-types-source-pocket4"
+          evidence="$RUNNER_TEMP/cognitive-types-source-$RUNNER_KEY"
           mkdir -p "$evidence"
           git rev-parse HEAD > "$evidence/source-sha.txt"
           git rev-parse HEAD^{tree} > "$evidence/source-tree.txt"
@@ -71,7 +79,7 @@ jobs:
       - name: Upload immutable exact-source artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: cognitive-types-source-pocket4-${{ env.SOURCE_SHA }}
-          path: ${{ runner.temp }}/cognitive-types-source-pocket4
+          name: cognitive-types-source-${{ matrix.runner }}-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/cognitive-types-source-${{ matrix.runner }}
           if-no-files-found: error
           retention-days: 14
