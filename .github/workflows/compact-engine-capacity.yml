@@ -24,9 +24,9 @@ env:
 
 jobs:
   production-ceiling:
-    name: 65K / 64 MiB / 8M kernel profile
+    name: Kernel ceiling and full durable profile
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    timeout-minutes: 120
     env:
       CARGO_INCREMENTAL: "0"
       CARGO_PROFILE_TEST_DEBUG: "0"
@@ -55,8 +55,7 @@ jobs:
           git diff --exit-code
           git diff --cached --exit-code
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
-      - name: Run ignored production-ceiling profile
-        working-directory: codex-rs
+      - name: Record toolchain
         shell: bash
         run: |
           set -euo pipefail
@@ -64,15 +63,36 @@ jobs:
             rustc --version --verbose
             cargo --version --verbose
           } > "$RUNNER_TEMP/compact-capacity/toolchain.txt"
+      - name: Run ignored production-ceiling kernel profile
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
           /usr/bin/time -v \
             cargo test --locked -p codex-hepta-compact-engine \
               --test capacity_profile \
               production_ceiling_capacity_profile \
               -- --ignored --exact --nocapture \
-            2>&1 | tee "$RUNNER_TEMP/compact-capacity/profile.log"
+            2>&1 | tee "$RUNNER_TEMP/compact-capacity/kernel-profile.log"
           grep -F 'COMPACT_ENGINE_CAPACITY_PROFILE=' \
-            "$RUNNER_TEMP/compact-capacity/profile.log" \
-            > "$RUNNER_TEMP/compact-capacity/profile.jsonl"
+            "$RUNNER_TEMP/compact-capacity/kernel-profile.log" \
+            > "$RUNNER_TEMP/compact-capacity/kernel-profile.jsonl"
+          git diff --exit-code
+          git diff --cached --exit-code
+      - name: Run full signed publish and cryptographic reopen profile
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v \
+            cargo test --locked -p codex-hepta-compact-engine \
+              --test full_operation_profile \
+              profile::full_publication_reopen_profile \
+              -- --ignored --exact --nocapture \
+            2>&1 | tee "$RUNNER_TEMP/compact-capacity/full-operation-profile.log"
+          grep -F 'COMPACT_ENGINE_FULL_OPERATION_PROFILE=' \
+            "$RUNNER_TEMP/compact-capacity/full-operation-profile.log" \
+            > "$RUNNER_TEMP/compact-capacity/full-operation-profile.jsonl"
           git diff --exit-code
           git diff --cached --exit-code
       - name: Retain exact-source capacity evidence
