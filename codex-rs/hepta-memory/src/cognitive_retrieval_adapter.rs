@@ -8,6 +8,7 @@ mod core;
 
 pub use core::OwnerRetrievalExecutionV1;
 pub use core::RetrievalExecutionContextV1;
+pub use core::sqlite_owner_completeness_policy_v1;
 pub use core::sqlite_owner_cue_profile_digest;
 pub use core::sqlite_owner_retrieval_policy_v1;
 
