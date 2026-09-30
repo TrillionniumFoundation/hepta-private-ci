@@ -149,14 +149,8 @@ fn pending_reconciliation_controller_never_redispatches_and_closes_exact_claim()
         request: request.clone(),
         calls: 0,
     };
-    let batch = reconcile_pending_dispatches_v1(
-        &mut store,
-        None,
-        1,
-        &mut resolver,
-        &mut executor,
-    )
-    .expect("bounded reconciliation pass");
+    let batch = reconcile_pending_dispatches_v1(&mut store, None, 1, &mut resolver, &mut executor)
+        .expect("bounded reconciliation pass");
 
     assert_eq!(resolver.calls, 1);
     assert_eq!(executor.execute_calls, 1);
@@ -202,14 +196,8 @@ fn pending_reconciliation_controller_rejects_resolver_identity_drift_before_effe
         request: request("drifted"),
         calls: 0,
     };
-    let batch = reconcile_pending_dispatches_v1(
-        &mut store,
-        None,
-        1,
-        &mut resolver,
-        &mut executor,
-    )
-    .expect("binding mismatch is item evidence");
+    let batch = reconcile_pending_dispatches_v1(&mut store, None, 1, &mut resolver, &mut executor)
+        .expect("binding mismatch is item evidence");
 
     assert_eq!(executor.execute_calls, 1);
     assert_eq!(executor.reconcile_calls, 0);
