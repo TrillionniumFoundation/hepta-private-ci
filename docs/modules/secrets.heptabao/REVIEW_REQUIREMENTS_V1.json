@@ -1,0 +1,38 @@
+{
+  "schema": "hepta.secrets-independent-review.v1",
+  "candidateSha": null,
+  "roles": [
+    {
+      "role": "secrets-security-reviewer",
+      "required": true,
+      "reviewer": null,
+      "accepted": false,
+      "attestationSha256": null
+    },
+    {
+      "role": "sqlite-storage-reviewer",
+      "required": true,
+      "reviewer": null,
+      "accepted": false,
+      "attestationSha256": null
+    },
+    {
+      "role": "product-caller-owner",
+      "required": true,
+      "reviewer": null,
+      "accepted": false,
+      "attestationSha256": null
+    },
+    {
+      "role": "operations-sre-reviewer",
+      "required": true,
+      "reviewer": null,
+      "accepted": false,
+      "attestationSha256": null
+    }
+  ],
+  "independentReviewAccepted": false,
+  "operatorAccepted": false,
+  "productionQualified": false,
+  "rule": "Every attestation must bind the same frozen candidate SHA and must be authored by a distinct accountable principal."
+}
