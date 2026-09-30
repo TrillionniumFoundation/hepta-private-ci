@@ -1,12 +1,16 @@
 use super::*;
 
+use std::time::Duration;
+use std::time::Instant;
+
 use codex_hepta_cognitive_types::lane_c::CognitiveSnapshotKeyV1;
 use codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1;
 use codex_hepta_memory_retrieval::EngramDynamicsPolicyV1;
 use codex_hepta_memory_retrieval::EngramSnapshotV1;
+use codex_hepta_memory_retrieval::RecallWorkControlV1;
 use codex_hepta_memory_retrieval::RetrievalGeneratorOwnerV1;
 use codex_hepta_memory_retrieval::compile_cue;
-use codex_hepta_memory_retrieval::recall_generated;
+use codex_hepta_memory_retrieval::recall_generated_with_engram_controlled;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::Revision;
@@ -134,6 +138,7 @@ async fn owner_adapter_exposes_pre_top_four_bounded_candidates() {
         .await
         .expect("cut");
     let snapshot_key = CognitiveSnapshotKeyV1::new(vector(&cut)).expect("snapshot key");
+    let generation_vector_digest = snapshot_key.vector_digest;
     let observation = store
         .observe_memory_retrieval(&access, &RetrievalRequest::new("Beacon", 200))
         .await
@@ -169,7 +174,27 @@ async fn owner_adapter_exposes_pre_top_four_bounded_candidates() {
     )
     .expect("cue");
     let policy = sqlite_owner_retrieval_policy_v1().expect("policy");
-    let recalled = recall_generated(&cue, &policy, &generated).expect("recall");
+    let engram = EngramSnapshotV1::new(
+        generation_vector_digest,
+        Digest32::of_bytes(b"owner-adapter-controlled-engram"),
+        Vec::new(),
+        Vec::new(),
+    )
+    .expect("engram");
+    let dynamics = EngramDynamicsPolicyV1::product_default().expect("dynamics");
+    let work = RecallWorkControlV1::bounded(
+        Instant::now() + Duration::from_secs(30),
+        100_000,
+    );
+    let recalled = recall_generated_with_engram_controlled(
+        &cue,
+        &policy,
+        &generated,
+        &engram,
+        &dynamics,
+        &work,
+    )
+    .expect("recall");
     assert!(recalled.packet.selections.len() > 4);
     assert!(recalled.packet.selections.len() <= 16);
 }
