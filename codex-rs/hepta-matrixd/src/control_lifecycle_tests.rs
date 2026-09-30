@@ -118,6 +118,14 @@ impl Fixture {
 
 #[tokio::test]
 async fn lifecycle_fence_and_dependency_loss_block_exact_fence_mutations() -> anyhow::Result<()> {
+    // Startup states are not currently emitted by connection health. Keep
+    // their mutation denial explicit when that lifecycle projection expands.
+    for lifecycle in [MatrixdLifecycle::Starting, MatrixdLifecycle::Syncing] {
+        assert!(matches!(
+            MatrixdControlState::require_mutation_lifecycle(lifecycle),
+            Err(MatrixdControlRequestError::NotReady)
+        ));
+    }
     for lifecycle in [
         MatrixdLifecycle::Fenced,
         MatrixdLifecycle::Draining,
@@ -133,7 +141,9 @@ async fn lifecycle_fence_and_dependency_loss_block_exact_fence_mutations() -> an
                     .connections
                     .set_agentd_connected(/*connected*/ false);
             }
-            MatrixdLifecycle::Ready => unreachable!(),
+            MatrixdLifecycle::Starting | MatrixdLifecycle::Syncing | MatrixdLifecycle::Ready => {
+                unreachable!()
+            }
         }
         for method in [
             MatrixdMethod::CancelTurn {

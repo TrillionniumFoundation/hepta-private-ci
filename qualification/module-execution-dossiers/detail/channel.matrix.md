@@ -109,7 +109,10 @@ No separate observer daemon or shared multi-Agent writer is composed.
   cancellation fences SDK/ingress and returns `Cancelled` for reconstruction
   from the durable Hepta cursor.
   `hepta-matrix-sdk/tests/durable_transport.rs` and
-  `tests/support/outbound_boundaries.rs` cover these cases. Owner
+  `tests/support/outbound_boundaries.rs` cover the storage and sender boundaries.
+  ACK classification has native unit coverage in `hepta-matrix-sdk/src/sdk.rs`.
+  The sync cadence and mid-sync cancellation paths are source-inspected; no
+  executable regression or pass receipt for those two paths is asserted here. Owner
   `tests/outbox_unresolved.rs` proves parked uncertainty across reopen; the state
   stays `InFlight` and only the issued attempt/physical transaction can settle
   it; coalesced aliases cannot settle another identity. Later permanent errors

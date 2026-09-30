@@ -291,12 +291,20 @@ impl MatrixdControlState {
     }
 
     fn require_live_mutation(&self) -> Result<(), MatrixdControlRequestError> {
-        match self.connections.health().lifecycle {
+        Self::require_mutation_lifecycle(self.connections.health().lifecycle)
+    }
+
+    fn require_mutation_lifecycle(
+        lifecycle: MatrixdLifecycle,
+    ) -> Result<(), MatrixdControlRequestError> {
+        match lifecycle {
             MatrixdLifecycle::Ready => Ok(()),
             MatrixdLifecycle::Fenced | MatrixdLifecycle::Draining => {
                 Err(MatrixdControlRequestError::LifecycleFenced)
             }
-            MatrixdLifecycle::Degraded => Err(MatrixdControlRequestError::NotReady),
+            MatrixdLifecycle::Starting | MatrixdLifecycle::Syncing | MatrixdLifecycle::Degraded => {
+                Err(MatrixdControlRequestError::NotReady)
+            }
         }
     }
 
