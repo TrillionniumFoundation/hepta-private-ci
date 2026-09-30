@@ -17,9 +17,17 @@ class CandidateImmutabilityTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temp = tempfile.TemporaryDirectory()
         self.root = Path(self.temp.name)
-        workflow_dir = self.root / ".github" / "workflows"
-        workflow_dir.mkdir(parents=True)
-        canonical = "permissions:\n  contents: read\njobs:\n  check:\n    steps:\n      - run: true\n"
+        canonical = (
+            "permissions:\n"
+            "  contents: read\n"
+            "jobs:\n"
+            "  check:\n"
+            "    steps:\n"
+            "      - uses: actions/checkout@pinned\n"
+            "        with:\n"
+            "          ref: ${{ github.sha }}\n"
+            "          persist-credentials: false\n"
+        )
         for relative in MODULE.CANONICAL_WORKFLOWS:
             path = self.root / relative
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -56,12 +64,50 @@ class CandidateImmutabilityTests(unittest.TestCase):
         violations = MODULE.collect_violations(self.root)
         self.assertTrue(any("payload remains" in item for item in violations))
 
+    def test_bootstrap_fragment_is_rejected(self) -> None:
+        payload = self.root / ".hepta-bootstrap/secrets-phase12.part-00"
+        payload.parent.mkdir(parents=True)
+        payload.write_text("fragment", encoding="utf-8")
+        violations = MODULE.collect_violations(self.root)
+        self.assertTrue(any("payload remains" in item for item in violations))
+
+    def test_staging_trigger_is_rejected(self) -> None:
+        payload = self.root / ".hepta-staging/secrets-heptabao-materialize.trigger"
+        payload.parent.mkdir(parents=True)
+        payload.write_text("trigger", encoding="utf-8")
+        violations = MODULE.collect_violations(self.root)
+        self.assertTrue(any("payload remains" in item for item in violations))
+
     def test_materializer_script_is_rejected(self) -> None:
         script = self.root / "scripts/materialize_secrets_heptabao_development.py"
         script.parent.mkdir(parents=True)
         script.write_text("pass\n", encoding="utf-8")
         violations = MODULE.collect_violations(self.root)
         self.assertTrue(any("payload remains" in item for item in violations))
+
+    def test_superseded_mutable_branch_is_rejected(self) -> None:
+        relative = sorted(MODULE.CANONICAL_WORKFLOWS)[0]
+        path = self.root / relative
+        path.write_text(
+            path.read_text(encoding="utf-8")
+            + "\n# codex/secrets-heptabao-production-qualified-20260930\n",
+            encoding="utf-8",
+        )
+        violations = MODULE.collect_violations(self.root)
+        self.assertTrue(any("superseded mutable branch" in item for item in violations))
+
+    def test_missing_exact_sha_binding_is_rejected(self) -> None:
+        relative = sorted(MODULE.CANONICAL_WORKFLOWS)[0]
+        path = self.root / relative
+        path.write_text(
+            "permissions:\n  contents: read\n"
+            "jobs:\n  check:\n    steps:\n"
+            "      - uses: actions/checkout@pinned\n"
+            "        with:\n          persist-credentials: false\n",
+            encoding="utf-8",
+        )
+        violations = MODULE.collect_violations(self.root)
+        self.assertTrue(any("exact candidate SHA" in item for item in violations))
 
 
 if __name__ == "__main__":

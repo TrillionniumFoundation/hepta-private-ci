@@ -2,8 +2,8 @@
 """Fail closed when the secrets.heptabao review tree can rewrite itself.
 
 The final review candidate is ordinary source. Source materializers, source
-exporters, patch payloads, and workflow write credentials are development
-machinery and must not be reachable from the candidate tree.
+exporters, patch payloads, bootstrap fragments, and workflow write credentials
+are development machinery and must not be reachable from the candidate tree.
 """
 from __future__ import annotations
 
@@ -12,9 +12,15 @@ import json
 from pathlib import Path
 from typing import Iterable
 
+FROZEN_BRANCH = "codex/secrets-heptabao-frozen-closure-20260930"
+MUTABLE_BRANCHES = (
+    "codex/secrets-heptabao-production-qualified-20260930",
+)
+
 CANONICAL_WORKFLOWS = {
     Path(".github/workflows/secrets-heptabao-five-closure-qualified.yml"),
     Path(".github/workflows/secrets-heptabao-candidate-attestation.yml"),
+    Path(".github/workflows/secrets-heptabao-storage-and-supply-chain.yml"),
 }
 
 BANNED_WORKFLOW_TOKENS = (
@@ -33,9 +39,11 @@ BANNED_WORKFLOW_TOKENS = (
 
 BANNED_FILE_GLOBS = (
     ".ci/secrets-heptabao*",
-    ".hepta-staging/**/*secrets*",
+    ".hepta-bootstrap/**/*",
+    ".hepta-staging/**/*",
     "scripts/close_secrets_heptabao*.py",
     "scripts/materialize_secrets_heptabao*.py",
+    "scripts/export_secrets_heptabao*.py",
 )
 
 WRITE_MARKERS = (
@@ -43,8 +51,10 @@ WRITE_MARKERS = (
     "persist-credentials: true",
     "git push",
     "git commit",
+    "git apply",
     "materialize_secrets_heptabao",
     "close_secrets_heptabao",
+    "export_secrets_heptabao",
 )
 
 SECRETS_MARKERS = (
@@ -56,12 +66,27 @@ SECRETS_MARKERS = (
     "secrets-sqlite",
 )
 
+EXACT_SHA_MARKERS = (
+    "github.sha",
+    "github.event.pull_request.head.sha",
+)
+
 
 def _workflow_paths(root: Path) -> Iterable[Path]:
     workflow_dir = root / ".github" / "workflows"
     if not workflow_dir.is_dir():
         return ()
     return sorted((*workflow_dir.glob("*.yml"), *workflow_dir.glob("*.yaml")))
+
+
+def _is_banned_payload(relative: Path) -> bool:
+    lowered = relative.as_posix().lower()
+    if lowered.startswith((".hepta-bootstrap/", ".hepta-staging/")):
+        return any(
+            token in lowered
+            for token in ("secret", "material", "bootstrap", "patch", "part-", "trigger")
+        )
+    return False
 
 
 def collect_violations(root: Path) -> list[str]:
@@ -76,6 +101,15 @@ def collect_violations(root: Path) -> list[str]:
         text = path.read_text(encoding="utf-8").lower()
         if "permissions:" not in text or "contents: read" not in text:
             violations.append(f"canonical workflow is not explicitly read-only: {relative}")
+        if "persist-credentials: false" not in text:
+            violations.append(f"canonical workflow checkout is not credentialless: {relative}")
+        if not any(marker in text for marker in EXACT_SHA_MARKERS):
+            violations.append(f"canonical workflow is not bound to an exact candidate SHA: {relative}")
+        for mutable_branch in MUTABLE_BRANCHES:
+            if mutable_branch.lower() in text:
+                violations.append(
+                    f"canonical workflow references superseded mutable branch {mutable_branch!r}: {relative}"
+                )
         for marker in WRITE_MARKERS:
             if marker in text:
                 violations.append(
@@ -105,7 +139,17 @@ def collect_violations(root: Path) -> list[str]:
         for path in sorted(root.glob(pattern)):
             if path.is_file():
                 violations.append(
-                    f"development materialization/export payload remains in candidate: "
+                    "development materialization/export payload remains in candidate: "
+                    f"{path.relative_to(root)}"
+                )
+
+    for prefix in (root / ".hepta-bootstrap", root / ".hepta-staging"):
+        if not prefix.exists():
+            continue
+        for path in sorted(prefix.rglob("*")):
+            if path.is_file() and _is_banned_payload(path.relative_to(root)):
+                violations.append(
+                    "development materialization/export payload remains in candidate: "
                     f"{path.relative_to(root)}"
                 )
 
@@ -124,8 +168,9 @@ def main() -> int:
 
     violations = collect_violations(args.root)
     report = {
-        "schema": "hepta.secrets-candidate-immutability.v1",
+        "schema": "hepta.secrets-candidate-immutability.v2",
         "root": str(args.root.resolve()),
+        "frozenBranch": FROZEN_BRANCH,
         "canonicalWorkflows": sorted(str(path) for path in CANONICAL_WORKFLOWS),
         "immutable": not violations,
         "violations": violations,

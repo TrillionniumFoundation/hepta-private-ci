@@ -1,9 +1,0 @@
-phase: secrets-heptabao-sqlite-owner-v1
-base_commit: f55e053735b2a5f454e50fc3536976df370ce748
-requested_date: 2026-09-27
-purpose: materialize and qualify the already-reviewed phase-three patch; this marker carries no product authority
-retrigger_commit: 4103f2806c65be78410f6343cd88239c288eaa98
-retrigger_reason: route phase-three apply to the trusted desktop runner group after hosted and ROG queues remained unassigned
-assistant_retrigger: 2026-09-28T00:50:00+09:00
-assistant_retrigger_nonce: gpt56-secrets-phase3-desktop-20260928-005000-jst
-assistant_retrigger_reason: execute the existing guarded apply-and-qualify workflow on the current PR head
