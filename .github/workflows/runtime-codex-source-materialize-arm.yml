@@ -6,6 +6,7 @@ on:
       - codex/runtime-codex-production-convergence-20260930
     paths:
       - .github/workflows/runtime-codex-source-materialize-arm.yml
+      - .github/runtime-codex-source-materialize.trigger
   workflow_dispatch:
 
 permissions:
