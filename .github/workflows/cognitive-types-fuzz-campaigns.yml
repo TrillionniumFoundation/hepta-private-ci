@@ -1,5 +1,5 @@
 name: cognitive-types-fuzz-campaigns
-run-name: cognitive-types-fuzz-${{ github.event_name }} @ ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+run-name: cognitive-types-fuzz-${{ github.event_name }}-${{ github.sha }}
 
 on:
   push:
@@ -38,7 +38,6 @@ on:
 
 permissions:
   contents: read
-  actions: read
 
 concurrency:
   group: cognitive-types-fuzz-${{ github.event.pull_request.head.ref || github.ref }}
@@ -73,7 +72,7 @@ jobs:
 
   campaign:
     needs: verifier
-    name: ${{ matrix.target }} (${{ (github.event_name == 'pull_request' || github.event_name == 'push') && 'smoke' || 'sustained' }})
+    name: fuzz-${{ matrix.target }}
     strategy:
       fail-fast: false
       matrix:
@@ -164,7 +163,7 @@ jobs:
           retention-days: 30
 
   aggregate:
-    if: always()
+    if: ${{ always() }}
     needs: [verifier, campaign]
     name: verify complete five-target fuzz matrix
     runs-on: ubuntu-24.04
