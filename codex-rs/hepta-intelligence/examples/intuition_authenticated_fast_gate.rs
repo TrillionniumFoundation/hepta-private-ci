@@ -46,6 +46,10 @@ const WARMUP: usize = 16;
 const P99_BUDGET: Duration = Duration::from_millis(50);
 const MIN_THROUGHPUT_PER_SEC: f64 = 20.0;
 
+#[allow(
+    clippy::expect_used,
+    reason = "Identifiers come only from the fixed benchmark fixture."
+)]
 fn id(value: &str) -> StableId {
     StableId::new(value).expect("id")
 }
@@ -91,6 +95,10 @@ struct Fixture {
     runtime: SignedLearningEvidenceV1,
 }
 
+#[allow(
+    clippy::expect_used,
+    reason = "Fixture construction uses fixed valid data and the four bounded benchmark sizes."
+)]
 fn fixture(candidate_count: usize) -> Fixture {
     let policy_digest = digest("policy:intuition-fast-v1");
     let model_digest = digest("model:intuition-fast-v1");
@@ -315,7 +323,7 @@ fn percentile(sorted: &[Duration], numerator: usize) -> Duration {
     sorted[index]
 }
 
-fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("path,candidates,samples,warmup,p50_us,p95_us,p99_us,throughput_per_sec");
     for count in [1usize, 16, 64, 128] {
         let fixture = fixture(count);
@@ -332,8 +340,7 @@ fn main() {
                 },
                 &fixture.verifier,
                 150,
-            )
-            .expect("warmup");
+            )?;
         }
 
         let wall_start = Instant::now();
@@ -352,8 +359,7 @@ fn main() {
                 },
                 &fixture.verifier,
                 150,
-            )
-            .expect("authenticated decision");
+            )?;
             std::hint::black_box(receipt);
             samples.push(start.elapsed());
         }
@@ -378,4 +384,5 @@ fn main() {
             "candidate_count={count} authenticated throughput={throughput}"
         );
     }
+    Ok(())
 }
