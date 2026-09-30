@@ -9,12 +9,16 @@
   "module": "runtime.codex",
   "sourceMaturity": "native_execution_spine",
   "declaredRoots": [
-    "codex-rs/codex-app-server",
-    "codex-rs/hepta-codex-adapter"
+    "codex-rs/app-server",
+    "codex-rs/hepta-codex-adapter",
+    "codex-rs/hepta-app-bridge",
+    "codex-rs/hepta-app-host"
   ],
   "resolvedRoots": [
     "codex-rs/app-server",
-    "codex-rs/hepta-codex-adapter"
+    "codex-rs/hepta-codex-adapter",
+    "codex-rs/hepta-app-bridge",
+    "codex-rs/hepta-app-host"
   ],
   "stateOwnerDisposition": "The existing App Server and Codex core remain the sole thread, turn, model, and tool execution spine.",
   "terminalObserverDisposition": "The App Server/client path supplies typed process-local terminal and request-level observations; runtime.codex validates exact correlation. External tool/provider terminality remains with its effect owner and target-host trust is independently qualified.",
@@ -163,8 +167,10 @@
   "deputy": "agent-runtime",
   "technicalGuide": "docs/modules/runtime.codex/TECHNICAL.md",
   "sourceRoot": [
-    "codex-rs/codex-app-server",
-    "codex-rs/hepta-codex-adapter"
+    "codex-rs/app-server",
+    "codex-rs/hepta-codex-adapter",
+    "codex-rs/hepta-app-bridge",
+    "codex-rs/hepta-app-host"
   ],
   "productionCallerBindings": [
     {
@@ -354,6 +360,14 @@
     {
       "path": "docs/modules/runtime.codex/TECHNICAL.md",
       "object": "28590a009a9a3b47042547bb5c6fe23f60bdffad"
+    },
+    {
+      "path": "codex-rs/hepta-app-bridge",
+      "object": "d25fad8cda95cd56666876feda7e8c3f10f008f9"
+    },
+    {
+      "path": "codex-rs/hepta-app-host",
+      "object": "b931976b50e941adf7d7cf97b9834d4e0bea0f60"
     }
   ]
 }

@@ -274,6 +274,10 @@
     {
       "path": "scripts/hepta-implementation-maps.py",
       "object": "e8ae0fd675b7e3ca2911b80af92cc21021789fbe"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_execution.rs",
+      "object": "f4daa370aeb6d2a1f27b7b062fe4868407db6db5"
     }
   ],
   "productCallers": [
@@ -304,8 +308,8 @@
     {
       "role": "model_effect_consumer",
       "blobSha": "3f4c9682e4e899c86c7ad14503c3ae222ed80cb0",
-      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
-      "nativeSymbol": "owner.revalidate_cognitive_context(snapshot).await"
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_execution.rs",
+      "nativeSymbol": "owner.revalidate_cognitive_context(snapshot)"
     },
     {
       "role": "durable_pre_turn_stop",

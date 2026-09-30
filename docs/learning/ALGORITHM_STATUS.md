@@ -15,8 +15,8 @@
 - Canonical adaptive protocols: **20**
 - Paper source locks: **4/4 verified; every used claim is locator- and SHA-256-bound**
 - Global work package: **`DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD`**
-- Specification identity: **actual Git bytes; no hand-maintained prose blob cache**
-- Candidate validation: **one executing owner per check; source and merge identities retained**
+- Specification identity: **exact Git blob bound**
+- Exact source and synthetic merge validation: **required in dedicated and global workflows**
 
 ## Critical-module coverage
 

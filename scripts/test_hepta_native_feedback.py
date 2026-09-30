@@ -90,6 +90,7 @@ class NativeFeedbackPolicyTests(unittest.TestCase):
             "candidate",
             "workspace-structure",
             "workspace-metadata",
+            "impact",
             "formatting",
             "native-prerequisites",
         ]
@@ -113,7 +114,7 @@ class NativeFeedbackPolicyTests(unittest.TestCase):
             )
         )
         self.assertEqual(step(names[2]).get("working-directory"), "codex-rs")
-        self.assertEqual(step(names[3]).get("working-directory"), "codex-rs")
+        self.assertEqual(step(names[4]).get("working-directory"), "codex-rs")
 
     def test_failure_independence_is_dataflow_bound(self):
         for name in (
@@ -134,13 +135,13 @@ class NativeFeedbackPolicyTests(unittest.TestCase):
         )
         self.assertEqual(step("candidate").get("id"), "candidate")
         self.assertEqual(step("native_ready").get("id"), "native_ready")
-        for name in (
-            "candidate",
-            "native-prerequisites",
-            "native_ready",
-            "owner-tests",
-        ):
-            self.assertNotIn("if", step(name))
+        self.assertNotIn("if", step("candidate"))
+        for name in ("native-prerequisites", "native_ready", "owner-tests"):
+            with self.subTest(name=name):
+                self.assertEqual(
+                    workflow_expression_references(step(name).get("if"), implicit=True),
+                    {"steps.impact.outputs.has_packages"},
+                )
 
     def test_no_failure_suppression_or_privileged_event(self):
         self.assertFalse(workflow_contains_key(WORKFLOW_DOCUMENT, "continue-on-error"))
@@ -222,9 +223,22 @@ class NativeFeedbackExecutionTests(unittest.TestCase):
         self.repo.mkdir()
         (self.repo / "codex-rs").mkdir()
         (self.repo / "scripts").mkdir()
-        shutil.copyfile(
-            ROOT / "scripts/hepta_ci_exec.py", self.repo / "scripts/hepta_ci_exec.py"
+        for script in (
+            "hepta_ci_exec.py",
+            "hepta_ci_dependencies.py",
+            "hepta_ci_modules.py",
+        ):
+            shutil.copyfile(ROOT / "scripts" / script, self.repo / "scripts" / script)
+        (self.repo / "codex-rs/Cargo.toml").write_text(
+            '[workspace]\nmembers = ["owner-a", "owner-b"]\nresolver = "2"\n'
         )
+        for owner in ("owner-a", "owner-b"):
+            folder = self.repo / "codex-rs" / owner
+            (folder / "src").mkdir(parents=True)
+            (folder / "Cargo.toml").write_text(
+                f'[package]\nname = "{owner}"\nversion = "0.1.0"\nedition = "2021"\n'
+            )
+            (folder / "src/lib.rs").write_text("pub fn value() -> u8 { 0 }\n")
         (self.repo / "scripts/hepta-gap-closure.py").write_text(
             'import os\nprint("document diagnostic sentinel")\nraise SystemExit(int(os.environ.get("DOC_RC", "0")))\n'
         )
@@ -251,7 +265,7 @@ raise SystemExit(int(os.environ.get("FAIL_" + phase.upper(), "0")))
             "GIT_CONFIG_GLOBAL": os.devnull,
             "RUNNER_TEMP": str(self.root / "records"),
             "TOOL_CALLS": str(self.root / "calls.jsonl"),
-            "PACKAGES": "owner-a owner-b",
+            "FULL_QUALIFICATION": "false",
             "HEPTA_CI_LANE": "source-head",
             "MERGE_SHA": "",
         }
@@ -259,8 +273,13 @@ raise SystemExit(int(os.environ.get("FAIL_" + phase.upper(), "0")))
         self.git("config", "user.name", "Workflow Test")
         self.git("config", "user.email", "workflow-test@example.invalid")
         self.git("config", "commit.gpgsign", "false")
+        base = self.commit()
+        for owner in ("owner-a", "owner-b"):
+            (self.repo / "codex-rs" / owner / "src/lib.rs").write_text(
+                "pub fn value() -> u8 { 1 }\n"
+            )
         self.head = self.commit()
-        self.env.update(SOURCE_SHA=self.head, TESTED_SHA=self.head, BASE_SHA=self.head)
+        self.env.update(SOURCE_SHA=self.head, TESTED_SHA=self.head, BASE_SHA=base)
 
     def git(self, *args):
         return subprocess.check_output(
@@ -390,9 +409,9 @@ raise SystemExit(int(os.environ.get("FAIL_" + phase.upper(), "0")))
                 [
                     "cargo",
                     "fmt",
-                    "--package",
+                    "-p",
                     "owner-a",
-                    "--package",
+                    "-p",
                     "owner-b",
                     "--",
                     "--check",

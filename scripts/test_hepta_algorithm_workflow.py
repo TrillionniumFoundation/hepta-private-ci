@@ -82,7 +82,9 @@ class AlgorithmWorkflowOwnershipTests(unittest.TestCase):
                     if row[:2] == ["python3", "scripts/hepta_ci_exec.py"]
                     and "--" in row
                 ]
-                self.assertEqual(wrapped.count(["python3", verifier, "verify"]), 2)
+                self.assertEqual(
+                    sum(row[:3] == ["python3", verifier, "verify"] for row in wrapped), 2
+                )
                 self.assertFalse(
                     any(row[:3] == ["python3", verifier, "verify"] for row in commands)
                 )

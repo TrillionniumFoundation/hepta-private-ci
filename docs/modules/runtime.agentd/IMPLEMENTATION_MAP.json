@@ -181,37 +181,37 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-agentd/src/neuron_runtime.rs",
-        "symbol": "pub struct AgentdNeuronOwner",
+        "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2_base.rs",
+        "symbol": "pub struct AgentdNeuronOwnerV2",
         "buildTarget": "codex-hepta-agentd"
       },
       "delegatedCallees": [
         {
           "role": "delegated_callee",
-          "path": "codex-rs/hepta-neuron/src/runtime.rs",
-          "symbol": "pub struct NeuronRuntime",
+          "path": "codex-rs/hepta-neuron/src/runtime_v2.rs",
+          "symbol": "pub struct NeuronRuntimeV2",
           "buildTarget": "codex-hepta-neuron",
           "ownerModule": "neuron.runtime"
         },
         {
           "role": "delegated_callee",
-          "path": "codex-rs/hepta-neuron/src/inference_control.rs",
-          "symbol": "pub trait NeuronInferenceControlPort",
+          "path": "codex-rs/hepta-neuron/src/runtime_v2.rs",
+          "symbol": "pub trait DurableNeuronInferenceControlPort",
           "buildTarget": "codex-hepta-neuron",
           "ownerModule": "neuron.runtime"
         }
       ],
       "tests": [
         {
-          "path": "codex-rs/hepta-agentd/src/neuron_runtime_tests.rs",
+          "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2_lock_metrics_tests.rs",
           "kind": "compiled_owner_boundary",
-          "command": "just test -p codex-hepta-agentd --lib"
+          "command": "just test -p codex-hepta-agentd --lib -E test(owner_lock_metrics_observe_contention_and_hold_time)"
         }
       ],
-      "sourceSemantics": "Owns one long-lived NeuronRuntime plus its inference-control port; construction remains explicit and does not self-activate the daemon lifecycle.",
+      "sourceSemantics": "Owns one long-lived durable V2 Neuron runtime and inference-control port. The guarded shared handle provides reconciliation, bounded execution and generation lifecycle control; construction does not select or activate a model.",
       "operation": "agentd_neuron_owner",
-      "nativeSymbol": "pub struct AgentdNeuronOwner",
-      "sourcePath": "codex-rs/hepta-agentd/src/neuron_runtime.rs",
+      "nativeSymbol": "pub struct AgentdNeuronOwnerV2",
+      "sourcePath": "codex-rs/hepta-agentd/src/neuron_runtime_v2_base.rs",
       "sourcePathExists": true
     },
     {
@@ -405,6 +405,18 @@
     {
       "path": "docs/modules/runtime.agentd/TECHNICAL.md",
       "object": "cb5c75c1eb3abe1e402c26b011e51703f501ca67"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2_base.rs",
+      "object": "8aa66f1eb786f72af7b41300893f2464ac3463e7"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2_lock_metrics_tests.rs",
+      "object": "bf6b9ffeca4ae204f5711464f78c29d8b51688ef"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/runtime_v2.rs",
+      "object": "33a97957bceba875166381924bf7f700ee46f3c7"
     }
   ]
 }

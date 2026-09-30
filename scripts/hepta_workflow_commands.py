@@ -475,7 +475,7 @@ def verify_document_workflow(
             ):
                 command = command[command.index("--") + 1 :]
             targets.append(command)
-        if ["python3", validator, "verify"] not in targets:
+        if not any(command[:3] == ["python3", validator, "verify"] for command in targets):
             raise ValueError("document workflow must execute verifier in " + lane)
         if lane == "source-head" and ["python3", validator, "self-test"] not in targets:
             raise ValueError("document workflow must execute source self-test")
