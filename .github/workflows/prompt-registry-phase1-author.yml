@@ -9,9 +9,13 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: prompt-registry-phase1-author
+  cancel-in-progress: true
+
 jobs:
   author:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     timeout-minutes: 45
     env:
       TARGET_BRANCH: codex/prompt-registry-full-closeout-20260929
