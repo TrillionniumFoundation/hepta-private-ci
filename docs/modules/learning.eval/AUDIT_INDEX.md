@@ -1,19 +1,22 @@
 # learning.eval audit index
 
 This index separates the short human development path from generated and machine-audited
-material. No document, source workflow, or repository receipt in this directory grants
-runtime, acceptance, activation, promotion, or release authority.
+material. No document in this directory grants runtime, acceptance, activation, promotion,
+or release authority.
 
 ## Human development path
 
 1. [`DEVELOPER_GUIDE.md`](DEVELOPER_GUIDE.md) — mission, authority, product path,
-   state machine, recovery, statistical contract, failure taxonomy, deployment,
-   qualification trust boundaries, and known gaps.
-2. [`TECHNICAL.md`](TECHNICAL.md) — full technical development guide and detailed design
+   state machine, recovery, statistical contract, failure taxonomy, deployment and gaps.
+2. [`LOCAL_DETERMINISTIC_VERIFICATION.md`](LOCAL_DETERMINISTIC_VERIFICATION.md) —
+   canonical offline control-plane command, strict artifact/marker rules, the 60-case
+   trusted-reporter regression inventory, control-plane byte identity, and the
+   authority-free evidence schema.
+3. [`TECHNICAL.md`](TECHNICAL.md) — full technical development guide and detailed design
    lineage.
-3. [`TARGET_HOST_QUALIFICATION.md`](TARGET_HOST_QUALIFICATION.md) — external host and
+4. [`TARGET_HOST_QUALIFICATION.md`](TARGET_HOST_QUALIFICATION.md) — external host and
    topology evidence requirements.
-4. [`RECOVERY_EVIDENCE_ADDENDUM.md`](RECOVERY_EVIDENCE_ADDENDUM.md) — persistence and
+5. [`RECOVERY_EVIDENCE_ADDENDUM.md`](RECOVERY_EVIDENCE_ADDENDUM.md) — persistence and
    recovery evidence details.
 
 ## Machine-readable source and status projections
@@ -22,7 +25,7 @@ runtime, acceptance, activation, promotion, or release authority.
   gates. Runtime-generated `CURRENT_STATUS.run.json` is an artifact, not a committed
   replacement.
 - [`IMPLEMENTATION_MAP.json`](IMPLEMENTATION_MAP.json) — exact source observation,
-  operations, callers, and test mapping.
+  operations, callers and test mapping.
 - [`QUALIFICATION_MATRIX.json`](QUALIFICATION_MATRIX.json) — scoped source facts and
   unbound deployment capabilities; it contains no bare `verified` claim.
 
@@ -32,52 +35,23 @@ runtime, acceptance, activation, promotion, or release authority.
 - [`SOURCE_CLOSEOUT_CURRENT_AUDIT.md`](SOURCE_CLOSEOUT_CURRENT_AUDIT.md)
 - [`EXECUTION_CLOSEOUT.md`](EXECUTION_CLOSEOUT.md)
 
-These records explain prior observations. Current immutable workflow artifacts and the
-machine-owned PR markers identify whether a particular SHA actually ran; prose is not a
-substitute for the commit-addressed evidence.
+These records explain prior observations. The current immutable workflow artifacts and
+PR machine markers are the source of truth for whether a particular SHA actually ran.
 
 ## Generated execution evidence
 
-The read-only source workflow retains:
+The source workflow retains:
 
 - `qualification-summary.json`;
 - `CURRENT_STATUS.run.json`;
 - per-filter nextest discovery evidence;
 - compatibility-fixture evidence;
-- logs, coverage, and job conclusions.
+- logs, coverage and job conclusions.
 
-The read-only exact-tree workflow retains one `convergence.json` per head/merge row plus
-`exact-summary.json`. Every summary has a canonical SHA-256, `authority: DENY_ALL`, and
-`releasePosture: NO_GO`. Target-host, independent-acceptance, activation, and release facts
-must come from separately administered evidence and are never upgraded by repository CI.
-
-## Trusted reporting boundary
-
-Candidate workflows have only `contents: read`; they do not receive `pull-requests: write`,
-credential references, `id-token: write`, or attestation authority while executing
-candidate code. They upload summaries but do not mutate the PR.
-
-`.github/workflows/hepta-learning-eval-trusted-report.yml` is a default-branch
-`workflow_run` reporter. It checks out only the trusted default branch and downloads a
-producer artifact as **untrusted data**. Before a PR marker can be changed, the reporter
-requires the expected artifact/file name, a single bounded regular file, a valid schema and
-canonical evidence hash, matching repository/workflow path/event/run/attempt identity, a
-current same-repository PR, and exact current head-SHA, base-SHA, source-tree and synthetic
-merge-object bindings where applicable. It re-queries the latest-attempt job inventory from
-GitHub and compares every reported conclusion with the actual producer job.
-
-The candidate producer workflow must also be byte-for-byte identical to the trusted
-workflow checked out from the default branch. A PR that changes its own qualification
-workflow cannot use that modified workflow to update a trusted qualification marker; the
-workflow change must first pass the separate trusted review/merge boundary. Permission-text
-validation remains defense in depth and rejects credential surfaces, direct PR mutation,
-output-derived checkout refs, unapproved write permissions, or candidate execution in the
-main-only attestation job.
-
-Symlinks, stale runs, substituted source trees, stale base revisions, substituted merge
-objects, malformed claims, extra jobs, forged internally consistent green summaries, or
-externally self-issued authority all fail closed.
-
-Successful provenance attestation is isolated to `push` runs on `main`. The attestation job
-downloads the already-produced summary and does not execute the candidate checkout under
-OIDC authority.
+The exact-tree workflow retains one `convergence.json` per head/merge row plus
+`exact-summary.json`. The local deterministic entrypoint retains one
+`local-deterministic-summary.json` plus command logs and generated fixture evidence.
+Every summary has a canonical SHA-256, `authority: DENY_ALL`, and
+`releasePosture: NO_GO`. Target-host, independent-acceptance, activation and release facts
+must come from separately administered evidence and are never upgraded by repository CI
+or by a local deterministic run.

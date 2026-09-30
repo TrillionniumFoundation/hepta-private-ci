@@ -2,7 +2,9 @@ name: Hepta learning.eval trusted PR reporter
 
 # This workflow is evaluated from the default branch. It never checks out or
 # executes candidate source. Candidate artifacts are treated as untrusted data
-# and must pass schema, digest, run-identity and current-PR-head validation.
+# and must pass a strict allowlisted artifact inventory, duplicate-key, schema,
+# digest, complete producer-job, Git-object, producer-workflow and qualification-
+# control-plane byte-identity, and current-PR validation.
 on:
   workflow_run:
     workflows:
@@ -74,6 +76,9 @@ jobs:
           ref: ${{ github.event.repository.default_branch }}
           persist-credentials: false
 
+      - name: Self-test trusted reporting control plane
+        run: python3 scripts/test_hepta_learning_eval_trusted_report.py -v
+
       - name: Download untrusted evidence as data only
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
@@ -83,11 +88,11 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ github.token }}
 
-      - name: Validate evidence and update the current PR head only
+      - name: Strictly validate evidence and update the current Draft PR only
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
-          python3 scripts/hepta-learning-eval-trusted-report.py \
+          python3 scripts/hepta-learning-eval-trusted-entry.py \
             --artifact-root .hepta-trusted-report/artifact \
             --summary-name '${{ steps.context.outputs.summary }}' \
             --marker '${{ steps.context.outputs.marker }}' \
