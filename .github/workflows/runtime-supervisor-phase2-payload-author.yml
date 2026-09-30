@@ -50,7 +50,7 @@ jobs:
           encoded = ''.join(payload_path.read_text(encoding='utf-8').split())
           compressed = base64.b64decode(encoded, validate=True)
           source = gzip.decompress(compressed)
-          expected = 'f33caf52af6d8449abb4879c801724953792fc60a08422dafc7c852868b3a429'
+          expected = '7771d7c2742743d5e3f50ce453f1bfad7ef6ee78359248095a211276d81d08f5'
           actual = hashlib.sha256(source).hexdigest()
           if actual != expected:
               raise SystemExit(f'phase-2 payload digest mismatch: {actual}')
