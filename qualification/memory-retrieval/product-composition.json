@@ -69,6 +69,10 @@
     "version": 2,
     "writerFenceRequired": true,
     "staleWriterRejected": true,
+    "checkedPublish": "codex-hepta-memory-retrieval:append_vector_publication_checked_v1",
+    "uncertainCommitPolicy": "reload-exact-current-no-blind-republish",
+    "exactReplayIdempotent": true,
+    "postCommitReloadRequired": true,
     "publisher": null,
     "durableStore": null
   },
@@ -159,8 +163,7 @@
   ],
   "promotionBlockers": [
     "qualified text encoder identity is absent",
-    "durable vector-index publisher is absent",
-    "durable store identity is absent",
+    "selected durable vector-index port backend and deployed store are absent",
     "transport, endpoint, mTLS profile and scopes are absent",
     "native consumer exact binary receipt is absent",
     "durable lifecycle port backend and end-to-end lifecycle receipt are absent",
