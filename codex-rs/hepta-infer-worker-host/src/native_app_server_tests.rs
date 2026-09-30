@@ -6,7 +6,7 @@ use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnItemsView;
 use codex_app_server_protocol::TurnStartedNotification;
 
-fn binding() -> CodexTurnBinding {
+pub(super) fn binding() -> CodexTurnBinding {
     let payload_digest = Digest32::of_bytes(b"test-turn-payload");
     CodexTurnBinding {
         intent: CodexOperationIntent {
@@ -32,7 +32,7 @@ fn binding() -> CodexTurnBinding {
     }
 }
 
-fn observed(notification: ServerNotification) -> RemoteAppServerObservedEvent {
+pub(super) fn observed(notification: ServerNotification) -> RemoteAppServerObservedEvent {
     RemoteAppServerObservedEvent::from_test_event(
         AppServerEvent::ServerNotification(Box::new(notification)),
         7,
@@ -46,10 +46,15 @@ fn observe_for_test(
     notification: ServerNotification,
 ) -> std::result::Result<bool, String> {
     let binding = binding();
-    observe_event(output, &observed(notification), &binding)
+    observe_event(
+        output,
+        &mut ObservedAgentMessages::default(),
+        &observed(notification),
+        &binding,
+    )
 }
 
-fn output() -> NativeRunOutput {
+pub(super) fn output() -> NativeRunOutput {
     NativeRunOutput {
         thread_id: "thread-a".to_string(),
         turn_id: "turn-a".to_string(),
@@ -163,6 +168,7 @@ fn only_the_bound_turn_can_complete_the_native_request() {
 #[test]
 fn output_is_observed_bounded_and_never_predeclares_success() {
     let mut output = output();
+    let mut messages = ObservedAgentMessages::default();
     let delta = |thread: &str, text: String| {
         ServerNotification::AgentMessageDelta(AgentMessageDeltaNotification {
             thread_id: thread.to_string(),
@@ -171,12 +177,27 @@ fn output_is_observed_bounded_and_never_predeclares_success() {
             delta: text,
         })
     };
-    observe_for_test(&mut output, delta("unrelated", "discard".to_string())).unwrap();
-    observe_for_test(&mut output, delta("thread-a", "model output".to_string())).unwrap();
+    output_message_tests::observe_message(
+        &mut output,
+        &mut messages,
+        delta("unrelated", "discard".to_string()),
+    )
+    .unwrap();
+    output_message_tests::observe_message(
+        &mut output,
+        &mut messages,
+        delta("thread-a", "model output".to_string()),
+    )
+    .unwrap();
     assert_eq!(output.output, "model output");
     assert_eq!(output.status, NativeRunStatus::Indeterminate);
     assert!(
-        observe_for_test(&mut output, delta("thread-a", "x".repeat(MAX_OUTPUT_BYTES))).is_err()
+        output_message_tests::observe_message(
+            &mut output,
+            &mut messages,
+            delta("thread-a", "x".repeat(MAX_OUTPUT_BYTES))
+        )
+        .is_err()
     );
     assert_eq!(output.output, "model output");
     assert!(!output.terminal_observed);
@@ -502,7 +523,20 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
             Some("lemon".to_string()),
             &CancellationToken::new(),
         )
-        .await?;
+        .await;
+    if let Err(error) = &accepted {
+        let provider_requests = server
+            .received_requests()
+            .await
+            .unwrap_or_default()
+            .iter()
+            .map(|request| (request.method.to_string(), request.url.path().to_string()))
+            .collect::<Vec<_>>();
+        eprintln!(
+            "fresh-context worker failed: {error}; loopback provider requests: {provider_requests:?}"
+        );
+    }
+    let accepted = accepted?;
     assert!(
         accepted.succeeded(),
         "fresh context must reach a successful real TurnStart"

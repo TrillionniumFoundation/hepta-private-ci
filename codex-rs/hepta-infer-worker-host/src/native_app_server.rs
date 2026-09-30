@@ -13,6 +13,9 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use crate::control_port::NativeControlPort;
+
+#[path = "native_output_messages.rs"]
+mod output_messages;
 use codex_app_server_client::AppServerEvent;
 use codex_app_server_client::RemoteAppServerClient;
 use codex_app_server_client::RemoteAppServerConnectArgs;
@@ -70,6 +73,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use codex_utils_absolute_path::AbsolutePathBuf;
+use output_messages::ObservedAgentMessages;
 
 #[path = "native_run_control.rs"]
 mod control;
@@ -471,7 +475,8 @@ impl AppServerModelDriver {
                 /*event_channel_capacity*/ 256,
             ),
         )
-        .await??;
+        .await
+        .map_err(|_| "App Server initialize connection timed out before model dispatch")??;
         let codex_home = client
             .codex_home()
             .ok_or("App Server initialize response omitted codex home")?
@@ -501,7 +506,8 @@ impl AppServerModelDriver {
                 },
             }),
         )
-        .await??;
+        .await
+        .map_err(|_| "App Server thread/start timed out before model dispatch")??;
         if started.model != self.config.model {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("provider substituted the requested model".into());
@@ -930,10 +936,11 @@ impl AppServerModelDriver {
         }
         let deadline =
             Instant::now() + observation_budget_from(unix_time_ms()?, binding.intent.deadline_ms);
+        let mut messages = ObservedAgentMessages::default();
         let result = self
             .observe(
                 &mut client,
-                &mut output,
+                (&mut output, &mut messages),
                 deadline,
                 cancellation,
                 Some(&owner),
@@ -974,7 +981,7 @@ impl AppServerModelDriver {
             let _ = self
                 .observe(
                     &mut client,
-                    &mut output,
+                    (&mut output, &mut messages),
                     Instant::now() + INTERRUPT_GRACE,
                     &grace,
                     /*owner*/ None,
@@ -1038,7 +1045,7 @@ impl AppServerModelDriver {
     async fn observe(
         &self,
         client: &mut RemoteAppServerClient,
-        output: &mut NativeRunOutput,
+        (output, messages): (&mut NativeRunOutput, &mut ObservedAgentMessages),
         deadline: Instant,
         cancellation: &CancellationToken,
         owner: Option<&AgentdClient>,
@@ -1060,7 +1067,7 @@ impl AppServerModelDriver {
             };
             match event.event() {
                 AppServerEvent::ServerNotification(_) => {
-                    if observe_event(output, &event, binding)? {
+                    if observe_event(output, messages, &event, binding)? {
                         return Ok(());
                     }
                 }
@@ -1454,6 +1461,7 @@ async fn interrupt(client: &mut RemoteAppServerClient, output: &NativeRunOutput)
 
 fn observe_event(
     output: &mut NativeRunOutput,
+    messages: &mut ObservedAgentMessages,
     observed: &RemoteAppServerObservedEvent,
     binding: &CodexTurnBinding,
 ) -> std::result::Result<bool, String> {
@@ -1464,10 +1472,21 @@ fn observe_event(
         ServerNotification::AgentMessageDelta(delta)
             if delta.thread_id == output.thread_id && delta.turn_id == output.turn_id =>
         {
-            if delta.delta.len() > MAX_OUTPUT_BYTES.saturating_sub(output.output.len()) {
-                return Err("output byte limit exceeded".to_string());
+            messages.delta(&mut output.output, &delta.item_id, &delta.delta)?;
+        }
+        ServerNotification::ItemStarted(started)
+            if started.thread_id == output.thread_id && started.turn_id == output.turn_id =>
+        {
+            if let ThreadItem::AgentMessage { id, text, .. } = &started.item {
+                messages.start(&mut output.output, id, text)?;
             }
-            output.output.push_str(&delta.delta);
+        }
+        ServerNotification::ItemCompleted(completed)
+            if completed.thread_id == output.thread_id && completed.turn_id == output.turn_id =>
+        {
+            if let ThreadItem::AgentMessage { id, text, .. } = &completed.item {
+                messages.complete(&mut output.output, id, text)?;
+            }
         }
         ServerNotification::ThreadTokenUsageUpdated(usage)
             if usage.thread_id == output.thread_id && usage.turn_id == output.turn_id =>
@@ -1527,3 +1546,7 @@ fn observe_event(
 #[cfg(test)]
 #[path = "native_app_server_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "native_output_messages_tests.rs"]
+mod output_message_tests;
