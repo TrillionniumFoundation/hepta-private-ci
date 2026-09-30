@@ -153,6 +153,10 @@ impl CognitiveStore {
         Ok(receipt)
     }
 
+    #[allow(
+        clippy::too_many_arguments,
+        reason = "the caller-owned SQLite transaction and exact correction binding stay explicit at the atomic owner boundary"
+    )]
     pub(crate) async fn correct_with_kg_tx(
         &self,
         transaction: &mut Transaction<'_, Sqlite>,

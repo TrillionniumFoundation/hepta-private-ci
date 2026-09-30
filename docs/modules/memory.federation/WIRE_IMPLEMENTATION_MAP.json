@@ -1,0 +1,157 @@
+{
+  "schema": "hepta.memory-federation.wire-implementation-map.v1",
+  "module": "memory.federation",
+  "profile": "authenticated-cross-host-protocol-and-host-candidate",
+  "owner": "cognitive-platform",
+  "securityReviewer": "security-authority",
+  "statusSource": "docs/modules/memory.federation/CAPABILITY_STATE.json",
+  "sourceRoot": "codex-rs/hepta-memory-federation-wire",
+  "technicalGuide": "docs/modules/memory.federation/WIRE_V1.md",
+  "productBridgeGuide": "docs/modules/memory.federation/PRODUCT_BRIDGE_V1.md",
+  "deploymentProfile": "docs/modules/memory.federation/DEPLOYMENT_PROFILE.json",
+  "operations": [
+    {
+      "name": "encode_decode_registered_frame",
+      "source": "codex-rs/hepta-memory-federation-wire/src/codec.rs",
+      "state": "source_candidate"
+    },
+    {
+      "name": "enroll_rotate_revoke_directional_credential",
+      "source": "codex-rs/hepta-memory-federation-wire/src/credential.rs",
+      "state": "source_candidate"
+    },
+    {
+      "name": "seal_verify_authenticated_frame",
+      "source": "codex-rs/hepta-memory-federation-wire/src/protocol.rs",
+      "state": "source_candidate_private_verified_result"
+    },
+    {
+      "name": "admit_nonce_once_with_clock_and_credential_partition",
+      "source": "codex-rs/hepta-memory-federation-wire/src/replay.rs",
+      "state": "source_candidate"
+    },
+    {
+      "name": "observe_cancel_and_acknowledge",
+      "source": "codex-rs/hepta-memory-federation-wire/src/attempt.rs",
+      "state": "source_candidate"
+    },
+    {
+      "name": "persist_restart_surviving_replay_and_attempt_state",
+      "source": "codex-rs/hepta-memory-federation-wire/src/recovery.rs",
+      "state": "source_candidate_backend_not_selected"
+    },
+    {
+      "name": "persist_outbound_query_cancel_and_correlate_verified_response",
+      "source": "codex-rs/hepta-memory-federation-wire/src/client",
+      "state": "source_candidate_backend_not_selected"
+    },
+    {
+      "name": "commit_client_inbound_replay_with_recovery_atomically",
+      "source": "codex-rs/hepta-memory-federation-wire/src/client/admission.rs",
+      "state": "source_candidate_same_process_and_restart_retry_covered"
+    },
+    {
+      "name": "admit_transport_bound_query_and_cancel",
+      "source": "codex-rs/hepta-memory-federation-wire/src/host.rs",
+      "state": "source_candidate_not_agentd_composed"
+    },
+    {
+      "name": "complete_read_only_query_with_owner_cut",
+      "source": "codex-rs/hepta-memory-federation-wire/src/host.rs",
+      "state": "source_candidate_not_agentd_composed"
+    },
+    {
+      "name": "revalidate_directional_request_credential_and_issuing_host_at_completion",
+      "source": "codex-rs/hepta-memory-federation-wire/src/host.rs",
+      "tests": "codex-rs/hepta-memory-federation-wire/src/host_terminal_tests.rs",
+      "state": "source_candidate_pending_exact_head_product_qualification"
+    },
+    {
+      "name": "attest_local_owner_remote_peer_and_selected_transport_context_before_packet_or_replay_admission",
+      "source": "codex-rs/hepta-memory-federation-wire/src/product/context.rs",
+      "tests": "codex-rs/hepta-memory-federation-wire/src/product_tests/mod.rs",
+      "state": "source_candidate_pending_exact_head_product_qualification"
+    },
+    {
+      "name": "reject_untrusted_key_wrong_local_owner_and_wrong_profile_without_consuming_replay",
+      "source": "codex-rs/hepta-memory-federation-wire/src/product_tests/mod.rs",
+      "state": "source_candidate_pending_exact_head_product_qualification"
+    },
+    {
+      "name": "bind_canonical_v2_query_and_response_body_to_authenticated_frame",
+      "source": "codex-rs/hepta-memory-federation-wire/src/product/mod.rs",
+      "tests": "codex-rs/hepta-memory-federation-wire/src/product_tests/mod.rs",
+      "state": "source_candidate_pending_exact_head_product_qualification"
+    },
+    {
+      "name": "reject_product_body_tamper_before_durable_replay_or_terminal_commit",
+      "source": "codex-rs/hepta-memory-federation-wire/src/product/mod.rs",
+      "tests": "codex-rs/hepta-memory-federation-wire/src/product_tests/mod.rs",
+      "state": "source_candidate_pending_exact_head_product_qualification"
+    },
+    {
+      "name": "adapt_authenticated_product_exchange_to_canonical_v2_transport",
+      "source": "codex-rs/hepta-memory-federation-wire/src/product/mod.rs",
+      "tests": "codex-rs/hepta-memory-federation-wire/src/product_tests/mod.rs",
+      "state": "source_candidate_not_agentd_serving_composed"
+    },
+    {
+      "name": "atomic_single_writer_unix_file_recovery",
+      "source": "codex-rs/hepta-memory-federation-wire/src/file_store.rs",
+      "tests": "codex-rs/hepta-memory-federation-wire/src/file_store_tests.rs",
+      "state": "source_candidate_process_tests_not_selected_host_acceptance"
+    },
+    {
+      "name": "measure_logical_host_capacity_and_recovery",
+      "source": "codex-rs/hepta-memory-federation-wire/src/bin/memory_federation_capacity_probe.rs",
+      "state": "retained_diagnostics_candidate_not_slo"
+    }
+  ],
+  "qualification": {
+    "workflow": ".github/workflows/memory-federation-v2-final-verify.yml",
+    "script": "scripts/run_memory_federation_qualification.sh",
+    "attestation": "scripts/memory_federation_full_attestation.py",
+    "statusVerifier": "scripts/verify_memory_federation_status.py",
+    "executionGuard": "scripts/memory_federation_execution_guard.py",
+    "executionRecorder": "scripts/memory_federation_execution_receipt.py",
+    "executionRecorderTests": "scripts/test_memory_federation_execution_receipt.py",
+    "exactHeadRequired": true,
+    "deterministicCurrentBaseMergeRequired": true,
+    "wireLibraryTestsRequired": true,
+    "wireCompileFailDoctestsRequired": true,
+    "transportContextConstructionCompileFailRequired": true,
+    "wrongLocalHostTransportContextRegressionRequired": true,
+    "productBridgeTestsRequired": true,
+    "capacityMetricsRequiredForSuccess": true,
+    "actualCommandExecutionRequiredForSuccess": true,
+    "trackedLockedInputsRequired": true,
+    "strictClippyRequired": true
+  },
+  "claimBoundary": {
+    "sourceCandidate": true,
+    "productComposed": false,
+    "productExecutionProved": false,
+    "mutuallyAuthenticatedTransportSelected": false,
+    "transportContextKeySelected": false,
+    "twoRealHostQualification": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "promotion": false,
+    "release": false
+  },
+  "externalGates": [
+    "selected mutually authenticated transport and local/remote channel identity binding",
+    "secure frame and per-host transport-context credential enrollment, storage, rotation, revocation and recovery",
+    "deployment-specific durable attempt and replay recovery policy",
+    "two independently provisioned real-host fault qualification",
+    "target-host latency, capacity, backpressure and cancellation-tail evidence",
+    "independent semantic and security acceptance",
+    "operator acceptance, canary, promotion and release authority"
+  ],
+  "sourceObservation": {
+    "commit": "e9c8e186c09ccd23659df5484170e88b7a382589",
+    "tree": "0da42e3b29433c4aecf26dda5f8325b5c64c6eca",
+    "sourceRootObject": "e20793ff1c51e281e1a6046b7e50ad573b98ee7a",
+    "meaning": "authenticated_wire_protocol_source_candidate_before_wire_map_metadata_rebind"
+  }
+}

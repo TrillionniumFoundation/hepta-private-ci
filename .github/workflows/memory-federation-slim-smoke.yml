@@ -1,0 +1,124 @@
+name: memory federation isolated smoke
+
+on:
+  push:
+    branches:
+      - "feat/memory-federation-*"
+      - "fix/memory-federation-*"
+    paths:
+      - ".github/workflows/memory-federation-slim-smoke.yml"
+      - "codex-rs/hepta-memory-federation/**"
+      - "codex-rs/hepta-memory-federation-wire/**"
+      - "codex-rs/hepta-memory/**"
+      - "codex-rs/ext/hepta-memory/**"
+      - "scripts/memory_federation_full_attestation.py"
+      - "scripts/memory_federation_execution_receipt.py"
+      - "scripts/test_memory_federation_execution_receipt.py"
+      - "scripts/run_memory_federation_qualification.sh"
+      - "docs/modules/memory.federation/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: memory-federation-isolated-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    runs-on: ubuntu-slim
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Isolate native build outputs from source
+        shell: bash
+        run: echo "CARGO_TARGET_DIR=$RUNNER_TEMP/memory-federation-native-build" >> "$GITHUB_ENV"
+      - name: Retain exact source for read-only reproduction
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          mkdir -p "$RUNNER_TEMP/memory-federation-reproduction"
+          git archive --format=tar.gz --output="$RUNNER_TEMP/memory-federation-reproduction/source.tar.gz" HEAD
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/memory-federation-reproduction/identity.txt"
+          git ls-tree -r HEAD > "$RUNNER_TEMP/memory-federation-reproduction/source-objects.txt"
+          cd "$RUNNER_TEMP/memory-federation-reproduction"
+          sha256sum source.tar.gz identity.txt source-objects.txt > SHA256SUMS
+      - name: Upload exact source reproduction inputs
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-federation-reproduction-${{ github.sha }}
+          path: ${{ runner.temp }}/memory-federation-reproduction
+          if-no-files-found: error
+          retention-days: 7
+      - name: Install pinned Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ca-certificates curl build-essential pkg-config libssl-dev python3
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain 1.95.0 --component rustfmt,clippy
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+      - name: Retain offline native reproduction inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT="$RUNNER_TEMP/memory-federation-offline"
+          mkdir -p "$OUT"
+          rustc --version --verbose > "$OUT/toolchain.txt"
+          git rev-parse HEAD HEAD^{tree} > "$OUT/identity.txt"
+          # Only public toolchain and crate sources, never Cargo credentials,
+          # configuration, caches containing tokens, or runner environment.
+          cargo vendor --locked --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml "$OUT/vendor" > "$OUT/vendor-config.toml"
+          cp codex-rs/hepta-memory-federation-wire/Cargo.lock "$OUT/Cargo.lock"
+          SYSROOT="$(rustc --print sysroot)"
+          tar --exclude='lib/rustlib/src' -czf "$OUT/toolchain.tar.gz" -C "$SYSROOT" bin lib
+          tar -czf "$OUT/vendor.tar.gz" -C "$OUT" vendor
+          rm -rf "$OUT/vendor"
+          cd "$OUT"
+          sha256sum toolchain.tar.gz vendor.tar.gz Cargo.lock toolchain.txt identity.txt vendor-config.toml > SHA256SUMS
+      - name: Upload offline native reproduction inputs
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-federation-offline-${{ github.sha }}
+          path: ${{ runner.temp }}/memory-federation-offline
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 1
+      - name: Read-only native wire diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/memory-federation-native"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/memory-federation-native/identity.txt"
+          # Formatting suggestions are produced only in a disposable copy. They
+          # never repair the tested checkout or count as qualification passes.
+          COPY="$(mktemp -d "$RUNNER_TEMP/memory-federation-format.XXXXXX")"
+          git archive HEAD | tar -x -C "$COPY"
+          (cd "$COPY/codex-rs" && cargo fmt -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-hepta-agentd -p codex-app-server)
+          cargo fmt --manifest-path "$COPY/codex-rs/hepta-memory-federation-wire/Cargo.toml"
+          tar -czf "$RUNNER_TEMP/memory-federation-native/formatted-source.tar.gz" -C "$COPY" codex-rs/hepta-memory-federation codex-rs/hepta-memory-federation-wire codex-rs/hepta-memory codex-rs/ext/hepta-memory codex-rs/hepta-agentd codex-rs/app-server
+          rm -rf "$COPY"
+          cargo test --locked --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml --lib 2>&1 | tee "$RUNNER_TEMP/memory-federation-native/wire-tests.log"
+          cargo test --locked --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml --doc 2>&1 | tee "$RUNNER_TEMP/memory-federation-native/wire-doctests.log"
+          cargo clippy --locked --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml --all-targets -- -D warnings 2>&1 | tee "$RUNNER_TEMP/memory-federation-native/wire-clippy.log"
+      - name: Run exact qualification matrix
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: bash scripts/run_memory_federation_qualification.sh
+      - name: Upload native diagnostics
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-federation-native-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/memory-federation-native
+            ${{ runner.temp }}/memory-federation-execution
+            codex-rs/hepta-memory-federation-wire/Cargo.lock
+          if-no-files-found: warn
+          retention-days: 7

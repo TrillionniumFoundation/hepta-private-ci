@@ -1,0 +1,79 @@
+{
+  "schema": "hepta.memory-federation.capability-state.v1",
+  "schemaVersion": 1,
+  "module": "memory.federation",
+  "owner": "cognitive-platform",
+  "securityReviewer": "security-authority",
+  "generatedStatusDocuments": [
+    "docs/modules/memory.federation/TECHNICAL.md",
+    "docs/modules/memory.federation/V2_HARDENING.md",
+    "docs/modules/memory.federation/WIRE_V1.md",
+    "qualification/memory-federation/FULL_CLOSURE.md"
+  ],
+  "implementationMap": "docs/modules/memory.federation/IMPLEMENTATION_MAP.json",
+  "wireImplementationMap": "docs/modules/memory.federation/WIRE_IMPLEMENTATION_MAP.json",
+  "productBridgeGuide": "docs/modules/memory.federation/PRODUCT_BRIDGE_V1.md",
+  "deploymentProfile": "docs/modules/memory.federation/DEPLOYMENT_PROFILE.json",
+  "qualificationScript": "scripts/run_memory_federation_qualification.sh",
+  "attestationScript": "scripts/memory_federation_full_attestation.py",
+  "capabilities": {
+    "inProcessV2Engine": "source_hardened_candidate_pending_execution",
+    "agentdProductCaller": "composed_candidate_pending_execution",
+    "boundedDiscovery": "half_budget_reserved_for_admitted_reads",
+    "finalUseRevalidation": "source_hardened_candidate_pending_execution",
+    "legacyV1": "explicit_feature_gate_only",
+    "authenticatedWire": "source_hardened_protocol_candidate_pending_execution",
+    "verifiedFrameType": "private_fields_read_only_accessors",
+    "replayAdmission": "bounded_fail_closed_monotonic_clock_per_credential_partition",
+    "cancellationFence": "restart_surviving_cancel_fences_late_terminal",
+    "crossHostProductTransport": "transport_neutral_host_boundary_source_candidate_not_agentd_composed",
+    "crossHostProductBridge": "canonical_v2_transport_adapter_source_candidate_pending_execution",
+    "authenticatedTransportContext": "issuer_attested_local_owner_peer_profile_channel_lifetime_key_generation_source_candidate",
+    "productBodyAtomicity": "bounded_body_preflight_before_durable_replay_or_terminal_commit",
+    "durableAttemptReplayRecovery": "host_store_snapshot_source_candidate_pending_selected_backend",
+    "clientInboundAtomicity": "staged_replay_and_recovery_commit_retryable_without_restart",
+    "logicalCapacityProbe": "source_candidate_retained_metrics_pending_execution",
+    "realHostQualification": "not_executed",
+    "terminalRequestCredentialRevalidation": "source_candidate_directional_key_generation_and_issuing_host_bound",
+    "availableRecoveryBackends": [
+      "in_memory_test_double",
+      "unix_atomic_file_candidate_pending_selected_host"
+    ],
+    "admissionPreparation": "authenticated_before_staged_replay_and_recovery_source_candidate",
+    "expiryMaintenance": "derived_indexes_incremental_partition_counts_bounded_cleanup_source_candidate"
+  },
+  "execution": {
+    "exactHead": "pending_current_head_qualification",
+    "deterministicCurrentBaseMerge": "pending_current_base_merge_qualification",
+    "executionGuard": "source_candidate_pending_execution",
+    "receiptsBindCapabilityState": true,
+    "successfulReceiptsRequireCapacityMetrics": true,
+    "successfulReceiptsRequireCommandExecution": true,
+    "successfulReceiptsRequireTrackedLock": true,
+    "receiptsBindWorkflowAttempt": true,
+    "entrypointIdentity": "single_cli_and_import_module_instance_source_candidate"
+  },
+  "claims": {
+    "sourceRootPresent": true,
+    "nativeSourceMappingComplete": true,
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "promotion": false,
+    "release": false,
+    "wireSourceCandidate": true,
+    "wireProductComposed": false,
+    "mutuallyAuthenticatedTransportSelected": false,
+    "twoRealHostQualification": false
+  },
+  "externalGates": [
+    "selected mutually authenticated transport and local/remote channel identity binding",
+    "secure frame and per-host transport-context credential enrollment, storage, rotation, revocation and recovery",
+    "deployment-specific durable attempt and replay recovery policy",
+    "two independently provisioned real-host fault qualification",
+    "target-host latency, capacity, backpressure and cancellation-tail evidence",
+    "independent semantic and security acceptance",
+    "operator acceptance, canary, promotion and release authority"
+  ]
+}

@@ -1,188 +1,257 @@
-name: memory federation v2 final verify
+name: memory federation final verify
 
 on:
   push:
     branches:
-      - fix/memory-federation-v2-closure-20260920
-    paths:
-      - ".github/workflows/memory-federation-v2-final-verify.yml"
-      - ".github/actions/hepta-synthetic-merge/**"
-      - "codex-rs/hepta-memory-federation/**"
-      - "codex-rs/hepta-memory/**"
-      - "codex-rs/hepta-agentd/**"
-      - "codex-rs/ext/hepta-memory/**"
-      - "codex-rs/app-server/**"
-      - "docs/modules/memory.federation/**"
-      - "qualification/memory-federation/**"
-      - "qualification/module-execution-dossiers/detail/memory.federation.md"
-      - "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json"
-      - "scripts/hepta-implementation-maps.py"
-  pull_request:
-    branches:
       - main
+      - feat/memory-federation-*
+      - fix/memory-federation-*
+      - work/memory-federation-*
     paths:
-      - ".github/workflows/memory-federation-v2-final-verify.yml"
-      - ".github/actions/hepta-synthetic-merge/**"
-      - "codex-rs/hepta-memory-federation/**"
-      - "codex-rs/hepta-memory/**"
-      - "codex-rs/hepta-agentd/**"
-      - "codex-rs/ext/hepta-memory/**"
-      - "codex-rs/app-server/**"
-      - "docs/modules/memory.federation/**"
-      - "qualification/memory-federation/**"
-      - "qualification/module-execution-dossiers/detail/memory.federation.md"
-      - "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json"
-      - "scripts/hepta-implementation-maps.py"
+      - codex-rs/hepta-memory-federation/**
+      - codex-rs/hepta-memory-federation-wire/**
+      - codex-rs/hepta-memory/**
+      - codex-rs/hepta-agentd/**
+      - codex-rs/ext/hepta-memory/**
+      - codex-rs/app-server/**
+      - docs/modules/memory.federation/**
+      - qualification/memory-federation/**
+      - qualification/module-execution-dossiers/detail/memory.federation.md
+      - scripts/hepta-implementation-maps.py
+      - scripts/memory_federation_attestation.py
+      - scripts/memory_federation_execution_guard.py
+      - scripts/memory_federation_full_attestation.py
+      - scripts/memory_federation_execution_receipt.py
+      - scripts/test_memory_federation_execution_receipt.py
+      - scripts/test_memory_federation_entrypoints.py
+      - scripts/prepare_memory_federation_observation.py
+      - scripts/run_memory_federation_qualification.sh
+      - scripts/verify_memory_federation_implementation.py
+      - scripts/verify_memory_federation_status.py
+      - .github/actions/hepta-synthetic-merge/**
+      - .github/workflows/memory-federation-v2-final-verify.yml
+  workflow_call:
+    inputs:
+      expected_sha:
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      expected_sha:
+        description: Exact source commit to qualify
+        required: true
+        type: string
 
 permissions:
   contents: read
 
 concurrency:
-  group: memory-federation-v2-final-${{ github.event.pull_request.number || github.ref }}
+  group: memory-federation-v2-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  source-head:
+  exact-head:
     name: exact-head contract and product
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
-      - name: Check out exact source head
+      - name: Check out exact source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ inputs.expected_sha || github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
-
       - name: Verify exact source identity
+        id: source
         env:
-          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          EXPECTED_SHA: ${{ inputs.expected_sha || github.event.pull_request.head.sha || github.sha }}
         run: |
           set -euo pipefail
-          test -n "$EXPECTED_SHA"
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
-
-      - name: Verify implementation maps
-        run: python3 scripts/hepta-implementation-maps.py verify
-
-      - name: Check formatting
-        working-directory: codex-rs
-        run: cargo fmt -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-hepta-agentd -p codex-app-server -- --check
-
-      - name: Test canonical federation contract
-        working-directory: codex-rs
-        run: cargo test -p codex-hepta-memory-federation --lib
-
-      - name: Test memory product adapter
-        working-directory: codex-rs
-        run: cargo test -p codex-hepta-memory --lib cognitive_runtime_tests
-
-      - name: Test legacy federation regression suite
-        working-directory: codex-rs
-        run: cargo test -p codex-hepta-memory --lib cognitive_federation_tests
-
-      - name: Test model-input federation integration
-        working-directory: codex-rs
-        run: cargo test -p codex-hepta-memory-extension --lib cognitive::federation
-
-      - name: Check Agentd and App Server composition
-        working-directory: codex-rs
-        run: cargo check -p codex-hepta-agentd -p codex-app-server
-
-      - name: Strict lint canonical and product crates
-        working-directory: codex-rs
-        run: |
-          cargo clippy -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-app-server --all-targets -- -D warnings
-          cargo clippy -p codex-hepta-agentd --lib -- -D warnings
-
-      - name: Verify patch hygiene
+          echo "sha=$EXPECTED_SHA" >> "$GITHUB_OUTPUT"
+          echo "tree=$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
+      - name: Self-test qualification tooling
         run: |
           set -euo pipefail
-          git diff --check
-          test -z "$(git status --porcelain --untracked-files=no)"
+          python3 -m py_compile scripts/memory_federation_attestation.py scripts/memory_federation_full_attestation.py
+          python3 scripts/memory_federation_full_attestation.py self-test
+          bash -n scripts/run_memory_federation_qualification.sh
+      - name: Run exact-head qualification matrix
+        id: qualification
+        run: bash scripts/run_memory_federation_qualification.sh
+      - name: Emit exact-head qualification payload
+        if: ${{ always() }}
+        env:
+          JOB_CONCLUSION: ${{ steps.qualification.outcome }}
+          SOURCE_SHA: ${{ steps.source.outputs.sha }}
+          SOURCE_TREE: ${{ steps.source.outputs.tree }}
+        run: |
+          set -euo pipefail
+          rm -rf "$RUNNER_TEMP/memory-federation-source"
+          python3 scripts/memory_federation_full_attestation.py emit-payload \
+            --output "$RUNNER_TEMP/memory-federation-source" \
+            --lane source-head \
+            --conclusion "$JOB_CONCLUSION" \
+            --source-sha "$SOURCE_SHA" \
+            --tested-sha "$SOURCE_SHA" \
+            --tested-tree "$SOURCE_TREE"
+          python3 scripts/memory_federation_full_attestation.py verify \
+            "$RUNNER_TEMP/memory-federation-source/attestation.json"
+      - name: Upload exact-head qualification payload
+        if: ${{ always() }}
+        id: upload-payload
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-federation-source-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/memory-federation-source
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 90
+      - name: Bind exact-head artifact digest
+        if: ${{ always() && steps.upload-payload.outputs.artifact-id != '' }}
+        env:
+          JOB_CONCLUSION: ${{ steps.qualification.outcome }}
+          ARTIFACT_ID: ${{ steps.upload-payload.outputs.artifact-id }}
+          ARTIFACT_DIGEST: ${{ steps.upload-payload.outputs.artifact-digest }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/memory-federation-source-envelope"
+          python3 scripts/memory_federation_full_attestation.py emit-envelope \
+            --output "$RUNNER_TEMP/memory-federation-source-envelope/envelope.json" \
+            --payload "$RUNNER_TEMP/memory-federation-source/attestation.json" \
+            --lane source-head \
+            --conclusion "$JOB_CONCLUSION" \
+            --artifact-name "memory-federation-source-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
+            --artifact-id "$ARTIFACT_ID" \
+            --artifact-digest "$ARTIFACT_DIGEST"
+          python3 scripts/memory_federation_full_attestation.py verify \
+            "$RUNNER_TEMP/memory-federation-source-envelope/envelope.json" \
+            --payload "$RUNNER_TEMP/memory-federation-source/attestation.json"
+      - name: Upload exact-head qualification envelope
+        if: ${{ always() && steps.upload-payload.outputs.artifact-id != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-federation-source-envelope-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/memory-federation-source-envelope
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 90
 
-  merge-candidate:
+  deterministic-merge:
     name: deterministic merge contract and product
-    if: github.event_name == 'pull_request'
+    # Main has no distinct current-base merge. All source-candidate invocations
+    # (push, dispatch, and reusable PR calls) run the same two-lane matrix.
+    if: ${{ github.event_name == 'pull_request' || github.ref != 'refs/heads/main' || (inputs.expected_sha != '' && inputs.expected_sha != github.sha) }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - name: Check out exact source for merge construction
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ inputs.expected_sha || github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
-
-      - name: Resolve current main head for merge qualification
-        id: current-base
+      - name: Resolve current base head
+        id: base
         env:
-          BASE_REF: ${{ github.base_ref }}
+          BASE_REF: ${{ github.event.pull_request.base.ref || github.event.repository.default_branch || 'main' }}
         run: |
           set -euo pipefail
-          test -n "$BASE_REF"
-          BASE_SHA="$(git rev-parse "refs/remotes/origin/$BASE_REF")"
-          test -n "$BASE_SHA"
+          git check-ref-format "refs/heads/$BASE_REF"
+          git fetch --no-tags origin "refs/heads/$BASE_REF"
+          # FETCH_HEAD is the result of this fetch, not a possibly stale
+          # tracking ref left by the initial checkout.
+          BASE_SHA="$(git rev-parse --verify 'FETCH_HEAD^{commit}')"
+          [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]]
           echo "sha=$BASE_SHA" >> "$GITHUB_OUTPUT"
-          echo "qualifying against current $BASE_REF@$BASE_SHA"
-
       - name: Construct deterministic synthetic merge
-        id: synthetic
+        id: merge
         uses: ./.github/actions/hepta-synthetic-merge
         with:
-          base-sha: ${{ steps.current-base.outputs.sha }}
-          source-sha: ${{ github.event.pull_request.head.sha }}
-          pr-number: ${{ github.event.pull_request.number }}
+          base-sha: ${{ steps.base.outputs.sha }}
+          source-sha: ${{ inputs.expected_sha || github.event.pull_request.head.sha || github.sha }}
+          pr-number: ${{ github.event.pull_request.number || 'source-candidate' }}
           author-name: Hepta Memory Federation CI
           author-email: hepta-memory-federation-ci@users.noreply.github.com
           message: Memory federation synthetic merge
-
       - name: Verify deterministic merge identity
         env:
-          EXPECTED_SHA: ${{ steps.synthetic.outputs.sha }}
-          EXPECTED_TREE: ${{ steps.synthetic.outputs.tree }}
+          EXPECTED_SHA: ${{ steps.merge.outputs.sha }}
+          EXPECTED_TREE: ${{ steps.merge.outputs.tree }}
         run: |
           set -euo pipefail
           test -n "$EXPECTED_SHA"
           test -n "$EXPECTED_TREE"
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           test "$(git rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
-
-      - name: Verify implementation maps on merge candidate
-        run: python3 scripts/hepta-implementation-maps.py verify
-
-      - name: Check formatting on merge candidate
-        working-directory: codex-rs
-        run: cargo fmt -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-hepta-agentd -p codex-app-server -- --check
-
-      - name: Test canonical federation contract on merge candidate
-        working-directory: codex-rs
-        run: cargo test -p codex-hepta-memory-federation --lib
-
-      - name: Test memory product adapter on merge candidate
-        working-directory: codex-rs
-        run: cargo test -p codex-hepta-memory --lib cognitive_runtime_tests
-
-      - name: Test legacy federation regression suite on merge candidate
-        working-directory: codex-rs
-        run: cargo test -p codex-hepta-memory --lib cognitive_federation_tests
-
-      - name: Test model-input federation integration on merge candidate
-        working-directory: codex-rs
-        run: cargo test -p codex-hepta-memory-extension --lib cognitive::federation
-
-      - name: Check Agentd and App Server composition on merge candidate
-        working-directory: codex-rs
-        run: cargo check -p codex-hepta-agentd -p codex-app-server
-
-      - name: Strict lint canonical and product crates on merge candidate
-        working-directory: codex-rs
-        run: |
-          cargo clippy -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-app-server --all-targets -- -D warnings
-          cargo clippy -p codex-hepta-agentd --lib -- -D warnings
-
-      - name: Verify merge patch hygiene
+      - name: Self-test qualification tooling
         run: |
           set -euo pipefail
-          git diff --check
-          test -z "$(git status --porcelain --untracked-files=no)"
+          python3 -m py_compile scripts/memory_federation_attestation.py scripts/memory_federation_full_attestation.py
+          python3 scripts/memory_federation_full_attestation.py self-test
+          bash -n scripts/run_memory_federation_qualification.sh
+      - name: Run deterministic-merge qualification matrix
+        id: qualification
+        run: bash scripts/run_memory_federation_qualification.sh
+      - name: Emit deterministic-merge qualification payload
+        if: ${{ always() }}
+        env:
+          JOB_CONCLUSION: ${{ steps.qualification.outcome }}
+          SOURCE_SHA: ${{ inputs.expected_sha || github.event.pull_request.head.sha || github.sha }}
+          BASE_SHA: ${{ steps.base.outputs.sha }}
+          MERGE_SHA: ${{ steps.merge.outputs.sha }}
+          MERGE_TREE: ${{ steps.merge.outputs.tree }}
+        run: |
+          set -euo pipefail
+          rm -rf "$RUNNER_TEMP/memory-federation-merge"
+          python3 scripts/memory_federation_full_attestation.py emit-payload \
+            --output "$RUNNER_TEMP/memory-federation-merge" \
+            --lane deterministic-merge \
+            --conclusion "$JOB_CONCLUSION" \
+            --source-sha "$SOURCE_SHA" \
+            --tested-sha "$MERGE_SHA" \
+            --tested-tree "$MERGE_TREE" \
+            --base-sha "$BASE_SHA" \
+            --merge-sha "$MERGE_SHA" \
+            --merge-tree "$MERGE_TREE"
+          python3 scripts/memory_federation_full_attestation.py verify \
+            "$RUNNER_TEMP/memory-federation-merge/attestation.json"
+      - name: Upload deterministic-merge qualification payload
+        if: ${{ always() }}
+        id: upload-payload
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-federation-merge-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/memory-federation-merge
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 90
+      - name: Bind deterministic-merge artifact digest
+        if: ${{ always() && steps.upload-payload.outputs.artifact-id != '' }}
+        env:
+          JOB_CONCLUSION: ${{ steps.qualification.outcome }}
+          ARTIFACT_ID: ${{ steps.upload-payload.outputs.artifact-id }}
+          ARTIFACT_DIGEST: ${{ steps.upload-payload.outputs.artifact-digest }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/memory-federation-merge-envelope"
+          python3 scripts/memory_federation_full_attestation.py emit-envelope \
+            --output "$RUNNER_TEMP/memory-federation-merge-envelope/envelope.json" \
+            --payload "$RUNNER_TEMP/memory-federation-merge/attestation.json" \
+            --lane deterministic-merge \
+            --conclusion "$JOB_CONCLUSION" \
+            --artifact-name "memory-federation-merge-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
+            --artifact-id "$ARTIFACT_ID" \
+            --artifact-digest "$ARTIFACT_DIGEST"
+          python3 scripts/memory_federation_full_attestation.py verify \
+            "$RUNNER_TEMP/memory-federation-merge-envelope/envelope.json" \
+            --payload "$RUNNER_TEMP/memory-federation-merge/attestation.json"
+      - name: Upload deterministic-merge qualification envelope
+        if: ${{ always() && steps.upload-payload.outputs.artifact-id != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-federation-merge-envelope-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/memory-federation-merge-envelope
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 90

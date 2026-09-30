@@ -1,0 +1,87 @@
+{
+  "schema": "hepta.memory-federation.deployment-profile.v1",
+  "module": "memory.federation",
+  "profileId": "memory-federation-product-v1",
+  "statusSource": "docs/modules/memory.federation/CAPABILITY_STATE.json",
+  "productBridge": {
+    "source": "codex-rs/hepta-memory-federation-wire/src/product/mod.rs",
+    "canonicalEngine": "codex-rs/hepta-memory-federation/src/v2.rs",
+    "state": "source_candidate_pending_exact_head_qualification",
+    "schedulerOwnership": "existing_canonical_v2_execute_once",
+    "blindRetry": false
+  },
+  "transport": {
+    "requiredProfileId": "authenticated-channel-v1",
+    "implementation": null,
+    "selectionState": "not_selected",
+    "requirements": [
+      "local endpoint and remote peer identities are authenticated by the same channel that carries the packet",
+      "channel binding digest is nonzero and derived from the verified channel",
+      "transport lifetime covers query and response admission",
+      "dropping an attempt future stops subsequent network I/O"
+    ],
+    "contextAttestation": {
+      "algorithm": "HMAC-SHA-256",
+      "issuerOwner": "selected_authenticated_transport_endpoint",
+      "verifierOwner": "matching_memory_federation_product_bridge",
+      "binds": [
+        "local wire owner identity",
+        "remote peer identity",
+        "transport profile identity",
+        "channel binding digest",
+        "channel establishment and expiry",
+        "context key identity and generation"
+      ],
+      "secretMaterialInProfile": false,
+      "perHostKeyRequired": true,
+      "keySelection": null,
+      "generationSelection": null,
+      "rotationRevocationAndRecoveryRequired": true
+    }
+  },
+  "credentials": {
+    "owner": "external_secure_host_credential_owner",
+    "secretMaterialInProfile": false,
+    "enrollmentRotationRevocationRequired": true
+  },
+  "recovery": {
+    "qualificationCandidate": "unix_atomic_file_v1",
+    "productionSelection": null,
+    "singleWriterRequired": true,
+    "crashSafeAtomicReplacementRequired": true
+  },
+  "bounds": {
+    "maximumAuthenticatedFramePayloadBytes": 262144,
+    "maximumRegisteredFrameBytes": 266240,
+    "maximumCanonicalBodyBytes": 524288,
+    "maximumProductPacketBytes": 790560,
+    "maximumCanonicalEvidenceItems": 512
+  },
+  "atomicity": {
+    "transportContextVerifiedBeforePacketDecode": true,
+    "transportContextBindsLocalWireOwner": true,
+    "queryBodyPreflightBeforeReplayCommit": true,
+    "responseBodyDigestPreflightBeforeTerminalCommit": true,
+    "invalidTransportContextOrBodyMayNotConsumeReplayOrAttemptState": true
+  },
+  "qualification": {
+    "exactHeadAndDeterministicMergeRequired": true,
+    "tests": "codex-rs/hepta-memory-federation-wire/src/product_tests/mod.rs",
+    "transportContextCompileFailRequired": true,
+    "wrongLocalHostContextRegressionRequired": true,
+    "twoRealHostFaultQualification": "not_executed",
+    "targetHostSloQualification": "not_executed"
+  },
+  "claims": {
+    "sourceCandidate": true,
+    "agentdServingComposed": false,
+    "mutuallyAuthenticatedTransportSelected": false,
+    "transportContextKeySelected": false,
+    "productionRecoveryBackendSelected": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "promotion": false,
+    "release": false
+  }
+}

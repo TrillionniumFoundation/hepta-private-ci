@@ -2615,6 +2615,10 @@ impl LocalLeaseOutbox {
         .await
     }
 
+    #[allow(
+        clippy::too_many_arguments,
+        reason = "the terminal outbox write keeps transaction, transition set, payload, and replay policy explicit in one atomic owner call"
+    )]
     async fn append_outcome_in_transaction(
         &self,
         transaction: &mut Transaction<'_, Sqlite>,
