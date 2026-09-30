@@ -314,24 +314,41 @@ fn numeric_and_digest_grammar_remains_exact() {
 #[test]
 fn retains_structural_count_text_and_semantic_key_checks_after_decoding() {
     let original: Value = serde_json::from_str(SOURCE).unwrap();
-    for (pointer, invalid) in [
-        ("/locale", json!("é".repeat(17))),
-        ("/structuredIntent/legalActionClasses", json!([])),
+    for (pointer, invalid, expected) in [
+        (
+            "/locale",
+            json!("é".repeat(17)),
+            ObjectiveStructureError::TextBytes {
+                field: "locale",
+                actual: 34,
+                maximum: 32,
+            },
+        ),
         (
             "/structuredIntent/legalActionClasses",
             json!(vec!["read"; 129]),
+            ObjectiveStructureError::CollectionCount {
+                field: "legalActionClasses",
+                actual: 129,
+                minimum: 0,
+                maximum: 128,
+            },
         ),
         (
             "/structuredIntent/legalActionClasses",
             json!(["read", "read"]),
+            ObjectiveStructureError::DuplicateSemanticKey {
+                field: "legalActionClasses",
+                index: 1,
+            },
         ),
     ] {
         let mut source = original.clone();
         *source.pointer_mut(pointer).unwrap() = invalid;
-        assert!(matches!(
+        assert_eq!(
             decode_source_envelope_json_v1(&serde_json::to_vec(&source).unwrap()),
-            Err(ObjectiveSourceJsonError::Structure(_))
-        ));
+            Err(ObjectiveSourceJsonError::Structure(expected))
+        );
     }
     let mut source = original;
     let predicates = source["structuredIntent"]["successPredicates"]
@@ -346,6 +363,19 @@ fn retains_structural_count_text_and_semantic_key_checks_after_decoding() {
             ObjectiveStructureError::DuplicateSemanticKey { .. }
         ))
     ));
+}
+
+#[test]
+fn empty_caller_action_set_decodes_without_injecting_intrinsic_abstain() {
+    let mut source: Value = serde_json::from_str(SOURCE).unwrap();
+    source["structuredIntent"]["legalActionClasses"] = json!([]);
+    let mut expected = decode_source_envelope_json_v1(SOURCE.as_bytes()).unwrap();
+    expected.structured_intent.legal_action_classes.clear();
+
+    assert_eq!(
+        decode_source_envelope_json_v1(&serde_json::to_vec(&source).unwrap()),
+        Ok(expected)
+    );
 }
 
 #[test]
