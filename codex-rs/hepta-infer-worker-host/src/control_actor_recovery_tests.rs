@@ -152,17 +152,8 @@ async fn queued_authorized_commands_recheck_owner_clock_after_expiry() {
     use codex_hepta_infer_core::control_contracts::verify_execution_plan;
 
     let paths = tempfile::tempdir().unwrap();
-    let current_time = || {
-        u64::try_from(
-            std::time::SystemTime::now()
-                .duration_since(std::time::UNIX_EPOCH)
-                .unwrap()
-                .as_millis(),
-        )
-        .unwrap()
-    };
-    let now = current_time();
-    let valid_until = now + 5_000;
+    let now = 1_000_000_u64;
+    let valid_until = now + 1;
     let ids = ["queued-bind", "queued-dispatch", "queued-settle"];
     let plans: Vec<_> = ids
         .iter()
@@ -177,6 +168,7 @@ async fn queued_authorized_commands_recheck_owner_clock_after_expiry() {
     let actor =
         NativeJournalWriterActor::spawn(paths.path().join("control.journal"), /*capacity*/ 8)
             .unwrap();
+    let clock = TestWriterClock::for_actor(&actor, now);
     let writer = actor.handle();
     for id in ids {
         writer
@@ -250,12 +242,9 @@ async fn queued_authorized_commands_recheck_owner_clock_after_expiry() {
             reply: settle_reply,
         })
         .unwrap();
-    // All three were accepted with a live caller timestamp. Keep the unique
-    // owner paused across the signed lease/data-policy deadline.
-    tokio::time::sleep(Duration::from_millis(
-        valid_until.saturating_sub(current_time()) + 1,
-    ))
-    .await;
+    // Setup and admission used a stable live clock. Only after the real owner
+    // barrier and all three queue admissions, expire its clock before release.
+    clock.advance_to(valid_until);
     release.send(()).unwrap();
     assert_eq!(
         bind_response.await.unwrap(),
@@ -276,4 +265,59 @@ async fn queued_authorized_commands_recheck_owner_clock_after_expiry() {
         );
     }
     actor.shutdown().await.unwrap();
+    drop(clock);
+}
+
+// The override is keyed by the real owner thread, so other actors and parallel
+// tests retain SystemTime. The scoped registration is removed after shutdown
+// and during unwinding; it never changes the process clock.
+type WriterTestClocks =
+    std::collections::HashMap<std::thread::ThreadId, Arc<std::sync::atomic::AtomicU64>>;
+
+static WRITER_TEST_CLOCKS: std::sync::LazyLock<std::sync::Mutex<WriterTestClocks>> =
+    std::sync::LazyLock::new(|| std::sync::Mutex::new(WriterTestClocks::new()));
+
+pub(super) fn writer_application_time_override() -> Option<u64> {
+    WRITER_TEST_CLOCKS
+        .lock()
+        .unwrap()
+        .get(&std::thread::current().id())
+        .map(|clock| clock.load(std::sync::atomic::Ordering::SeqCst))
+}
+
+struct TestWriterClock {
+    owner_thread: std::thread::ThreadId,
+    now_unix_ms: Arc<std::sync::atomic::AtomicU64>,
+}
+
+impl TestWriterClock {
+    fn for_actor(actor: &NativeJournalWriterActor, now_unix_ms: u64) -> Self {
+        let owner_thread = actor.join.as_ref().unwrap().thread().id();
+        let now_unix_ms = Arc::new(std::sync::atomic::AtomicU64::new(now_unix_ms));
+        assert!(
+            WRITER_TEST_CLOCKS
+                .lock()
+                .unwrap()
+                .insert(owner_thread, Arc::clone(&now_unix_ms))
+                .is_none()
+        );
+        Self {
+            owner_thread,
+            now_unix_ms,
+        }
+    }
+
+    fn advance_to(&self, now_unix_ms: u64) {
+        self.now_unix_ms
+            .store(now_unix_ms, std::sync::atomic::Ordering::SeqCst);
+    }
+}
+
+impl Drop for TestWriterClock {
+    fn drop(&mut self) {
+        WRITER_TEST_CLOCKS
+            .lock()
+            .unwrap()
+            .remove(&self.owner_thread);
+    }
 }

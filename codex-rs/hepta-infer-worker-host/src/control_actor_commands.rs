@@ -304,6 +304,10 @@ impl Command {
 }
 
 fn writer_application_time() -> Result<u64, codex_hepta_infer_core::durable_control::Error> {
+    #[cfg(test)]
+    if let Some(now_unix_ms) = super::recovery_tests::writer_application_time_override() {
+        return Ok(now_unix_ms);
+    }
     let elapsed = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .map_err(|_| codex_hepta_infer_core::durable_control::Error::InvalidTime)?;
