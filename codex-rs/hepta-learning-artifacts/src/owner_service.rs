@@ -81,6 +81,7 @@ impl LearningArtifactOwnerService {
         {
             return Err(LearningArtifactOwnerServiceError::InvalidConfiguration);
         }
+        let independently_anchored = config.required_current_head.is_some();
         let host = match config.required_current_head {
             Some(current) => LearningArtifactOwnerHost::open_with_required_current_head(
                 &config.root,
@@ -96,6 +97,12 @@ impl LearningArtifactOwnerService {
                 config.now,
             )?,
         };
+        let current = host.discover_current_head(config.now)?;
+        if let Some(current) = current
+            && (!independently_anchored || current.signed.binding != config.storage_binding)
+        {
+            return Err(LearningArtifactOwnerServiceError::InvalidConfiguration);
+        }
         let registry = host.recover_current_registry(config.now)?;
         let recovery = host.recovery_required_operations()?;
         if recovery.len() > 1 {
@@ -182,10 +189,19 @@ impl LearningArtifactOwnerService {
                 Ok(receipt)
             }
             Err(error) => {
-                if let Some(recovery) = self.host.recover_publication(&operation_id)?
-                    && recovery.checkpoint.phase != ArtifactPublicationPhaseV1::Acknowledged
-                {
-                    self.recovery_required = Some(operation_id);
+                // Recovery itself can fail after a durable effect. Fence the
+                // operation before probing and clear only on proven absence
+                // or a fully recovered terminal checkpoint.
+                self.recovery_required = Some(operation_id.clone());
+                match self.host.recover_publication(&operation_id)? {
+                    None => self.recovery_required = None,
+                    Some(recovery)
+                        if recovery.checkpoint.phase
+                            == ArtifactPublicationPhaseV1::Acknowledged =>
+                    {
+                        self.recovery_required = None;
+                    }
+                    Some(_) => {}
                 }
                 Err(error)
             }
@@ -205,10 +221,28 @@ impl LearningArtifactOwnerService {
             return Err(LearningArtifactOwnerServiceError::RequestMismatch);
         }
 
+        // Terminal retries still require the exact immutable request, even
+        // after the original admission or head has expired.
+        crate::verify_artifact_admission_v3(
+            &request.admission,
+            request.admission.withdrawal_head_digest,
+            request.admission.admitted_at,
+        )
+        .map_err(ArtifactPublicationError::from)?;
+        let manifest = &request.admission.validated_manifest.manifest;
+        if Digest32::of_bytes(&request.payload) != manifest.bytes_digest
+            || request.payload.len() as u64 != manifest.encoded_size_bytes
+        {
+            return Err(LearningArtifactOwnerServiceError::RequestMismatch);
+        }
         let checkpoint = self.host.recover_publication(&request.operation_id)?;
         if let Some(recovery) = checkpoint.as_ref() {
             validate_request_against_checkpoint(request, &recovery.checkpoint)?;
             if recovery.checkpoint.phase == ArtifactPublicationPhaseV1::Acknowledged {
+                self.host.verify_terminal_publication_head(
+                    &request.signed_current_head,
+                    &recovery.checkpoint,
+                )?;
                 return receipt_from_checkpoint(&recovery.checkpoint);
             }
         }
@@ -446,10 +480,10 @@ mod tests {
 
     static NEXT_TEST_DIR: AtomicU64 = AtomicU64::new(1);
 
-    struct TestDir(PathBuf);
+    pub(super) struct TestDir(pub(super) PathBuf);
 
     impl TestDir {
-        fn new() -> Self {
+        pub(super) fn new() -> Self {
             let id = NEXT_TEST_DIR.fetch_add(1, Ordering::Relaxed);
             let path = std::env::temp_dir().join(format!(
                 "hepta-learning-artifact-service-{}-{id}",
@@ -467,19 +501,19 @@ mod tests {
         }
     }
 
-    fn id(value: &str) -> StableId {
+    pub(super) fn id(value: &str) -> StableId {
         StableId::new(value.to_owned()).fixture("stable id")
     }
 
-    fn digest(value: &str) -> Digest32 {
+    pub(super) fn digest(value: &str) -> Digest32 {
         Digest32::of_bytes(value.as_bytes())
     }
 
-    fn key() -> SigningKey {
+    pub(super) fn key() -> SigningKey {
         SigningKey::from_bytes(&[9u8; 32])
     }
 
-    fn scope() -> DatasetWithdrawalScopeV1 {
+    pub(super) fn scope() -> DatasetWithdrawalScopeV1 {
         DatasetWithdrawalScopeV1 {
             authority_domain_id: id("dataset-authority"),
             registry_id: id("withdrawals"),
@@ -499,7 +533,7 @@ mod tests {
         }
     }
 
-    fn trust(key: &SigningKey, scope_digest: Digest32) -> ArtifactOwnerTrustV1 {
+    pub(super) fn trust(key: &SigningKey, scope_digest: Digest32) -> ArtifactOwnerTrustV1 {
         ArtifactOwnerTrustV1 {
             registry_id: id("learning-artifacts"),
             withdrawal_scope_digest: scope_digest,
@@ -511,7 +545,7 @@ mod tests {
         }
     }
 
-    fn lease(key: &SigningKey, scope_digest: Digest32) -> SignedArtifactWriterLeaseV1 {
+    pub(super) fn lease(key: &SigningKey, scope_digest: Digest32) -> SignedArtifactWriterLeaseV1 {
         let mut lease = SignedArtifactWriterLeaseV1 {
             lease_id: id("writer-lease"),
             producer_id: id("trainer"),
@@ -529,7 +563,7 @@ mod tests {
         lease
     }
 
-    fn manifest() -> LearningArtifactManifestV2 {
+    pub(super) fn manifest() -> LearningArtifactManifestV2 {
         LearningArtifactManifestV2 {
             artifact_id: id("candidate"),
             kind: ArtifactKind::Model,
@@ -554,7 +588,7 @@ mod tests {
         }
     }
 
-    fn publish_request(
+    pub(super) fn publish_request(
         key: &SigningKey,
         withdrawals: &DatasetWithdrawalRegistry,
         predecessor: Digest32,
@@ -682,3 +716,7 @@ mod tests {
         );
     }
 }
+
+#[cfg(test)]
+#[path = "owner_service_adversarial_tests.rs"]
+mod adversarial_tests;

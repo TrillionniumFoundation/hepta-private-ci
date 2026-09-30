@@ -2304,3 +2304,8 @@ mod tests {
         ));
     }
 }
+
+
+#[cfg(test)]
+#[path = "owner_host_adversarial_tests.rs"]
+mod adversarial_tests;
