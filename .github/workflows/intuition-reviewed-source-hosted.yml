@@ -1,13 +1,13 @@
-name: intuition.policy hosted reviewed source authoring
+name: intuition.policy isolated reviewed source authoring
 
 on:
-  push:
+  pull_request:
     branches:
-      - codex/intuition-policy-production-closure-20260927
-    paths:
-      - .github/workflows/intuition-reviewed-source-hosted.yml
-      - scripts/intuition_source_author.py
-      - .github/intuition-authoring-patch/READY
+      - tmp/intuition-authoring-control-20260930
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 permissions:
   contents: write
@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: 3ed30ea0af7ef2f81942767a3a2ac3835defcea0
           fetch-depth: 0
           persist-credentials: true
 
@@ -55,6 +55,7 @@ jobs:
         shell: bash
         env:
           TARGET_BRANCH: codex/intuition-policy-production-closure-20260927
+          AUTHORING_HEAD: 3ed30ea0af7ef2f81942767a3a2ac3835defcea0
           CLEAN_PARENT: 696447e733e22e425cd05691d98f4fe0ef63f759
         run: |
           set -euo pipefail
@@ -68,6 +69,6 @@ jobs:
             'fix(intuition): revalidate authority at final use' \
             'Preserve the sole ledger owner while moving fresh time, generation, and three-party qualification checks under its serialization boundary. Add typed boundary domains, stage telemetry, legacy-consumer drift checks, and separate safety/effectiveness/operator acceptance states.' \
             | git commit-tree "$tree" -p "$CLEAN_PARENT")"
-          git push --force-with-lease="refs/heads/$TARGET_BRANCH:$GITHUB_SHA" \
+          git push --force-with-lease="refs/heads/$TARGET_BRANCH:$AUTHORING_HEAD" \
             origin "$commit:refs/heads/$TARGET_BRANCH"
           echo "published=$commit"
