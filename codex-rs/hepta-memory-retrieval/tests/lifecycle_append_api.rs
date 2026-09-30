@@ -102,7 +102,9 @@ impl DurableDecisionPortV1 for MemoryDecisionPort {
                 outcome.identity().clone(),
                 RetrievalLifecyclePhaseV1::QuarantinedUnknownOutcome,
                 writer_fence,
-                expected_frontier + 1,
+                expected_frontier
+                    .checked_add(1)
+                    .ok_or_else(|| io::Error::other("frontier exhausted"))?,
                 payload_digest,
             ),
         )
