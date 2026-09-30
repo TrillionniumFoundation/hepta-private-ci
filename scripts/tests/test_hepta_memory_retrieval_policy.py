@@ -19,14 +19,19 @@ CRITICAL_SOURCE_OBJECTS = {
     "codex-rs/hepta-memory-retrieval/src/lifecycle_append.rs",
     "codex-rs/hepta-memory-retrieval/src/semantics.rs",
     "codex-rs/hepta-memory-retrieval/src/vector_publication.rs",
+    "codex-rs/hepta-memory-retrieval/src/vector_publication_append.rs",
     "codex-rs/hepta-memory-retrieval/src/work.rs",
     "codex-rs/hepta-memory-retrieval/tests/lifecycle_append_api.rs",
+    "codex-rs/hepta-memory-retrieval/tests/vector_publication_append_api.rs",
+    "docs/modules/memory.retrieval/VECTOR_OWNER.md",
     "qualification/memory-retrieval/product-composition.json",
     "qualification/memory-retrieval/qualification-policy.json",
     "qualification/memory-retrieval/recovery-matrix.json",
     "scripts/hepta_memory_retrieval_policy.py",
     "scripts/hepta_memory_retrieval_qualification.py",
     "scripts/hepta_memory_retrieval_status.py",
+    "scripts/hepta_memory_retrieval_vector_contract.py",
+    "scripts/tests/test_hepta_memory_retrieval_vector_contract.py",
 }
 
 
@@ -150,7 +155,7 @@ class QualificationPolicyTests(unittest.TestCase):
 
     def test_critical_source_object_cannot_be_removed(self):
         self.policy["sourceObjectInputs"].remove(
-            "codex-rs/hepta-memory-retrieval/src/lifecycle_append.rs"
+            "codex-rs/hepta-memory-retrieval/src/vector_publication_append.rs"
         )
         self.write_policy()
         with self.assertRaisesRegex(
