@@ -110,10 +110,7 @@
       "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [
-    "After selecting the native framework and supported platform matrix, implement the packaged application entrypoint and concrete authenticated backend, OS-permission and updater adapters around the existing shell library.",
-    "Implement platform-specific code-signing/notarization/keychain and updater trust-root integration in source and packaging, with executable crash/restart/update-rollback/accessibility integration coverage; deployed trust enrollment and selected-host qualification remain external gates."
-  ],
+  "repositoryControlledGaps": [],
   "externalEvidenceGates": [
     "selected native framework and supported platform matrix",
     "real code signing/notarization/keychain and updater trust roots",
@@ -144,5 +141,9 @@
   "technicalGuide": "docs/modules/ui.native/TECHNICAL.md",
   "sourceRoot": [
     "apps/hepta-native"
+  ],
+  "futureTargetSourceObligations": [
+    "After selecting the native framework and supported platform matrix, implement the packaged application entrypoint and concrete authenticated backend, OS-permission and updater adapters around the existing shell library.",
+    "Implement platform-specific code-signing/notarization/keychain and updater trust-root integration in source and packaging, with executable crash/restart/update-rollback/accessibility integration coverage; deployed trust enrollment and selected-host qualification remain external gates."
   ]
 }

@@ -226,6 +226,13 @@ In `codex-rs`, run `just test -p codex-hepta-supervisor` and `just test -p codex
 
 ## 13. Implementation sequence and work packages
 
+### Future target source obligations outside current closure
+
+The existing `repositoryControlledSourceBoundaryGapsClosed=true` claim covers the current mapped source subset. The map's `futureTargetSourceObligations` records the wider target-design work below, which is outside that closed subset. These are repository source, caller, packaging and integration-test obligations; they are not reclassified as external-only evidence. Their completion would still require separate host qualification and independent acceptance. This planning description changes no canonical work-package state, source closure, production, execution, acceptance, activation or release claim.
+
+- Implement the documented Multiscale DecisionCell integration target by applying existing lifecycle and writer-handoff mechanisms to model/organ replacement: drain/migrate before coherent-bundle publication, preserve retired identity fences and recorded choices/operation identity, and add crash-at-handoff, old-writer, revoked-rollback and shared-base-retirement tests.
+- Make the named product-call composition and executable product-path tests explicit through registered runtime.agentd/runtime.fleet and authority/operations boundaries; the native Supervisor and hepta-supervisord CLI already exist while the map still records productCallerState=not_composed. Actual host lifecycle and independently signed recovery acceptance remain qualification gates.
+
 Applicable work packages:
 
 - `P0.7A-RUNTIME-BOOTSTRAP`

@@ -87,10 +87,7 @@
       "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [
-    "Compose the existing presentation/runtime-client library into the selected browser package and bind a real authenticated versioned runtime.agentd backend; product integration must preserve request identity over reconnect and expose stale/pending/indeterminate states.",
-    "Add executable selected-package/backend integration and accessibility coverage for that composed frontend; browser/platform qualification and independent accessibility acceptance remain separate from the library source tests."
-  ],
+  "repositoryControlledGaps": [],
   "externalEvidenceGates": [
     "selected Web framework/build artifact and browser support matrix",
     "deployed authentication/CSP/CSRF/WebSocket topology",
@@ -121,5 +118,9 @@
   "technicalGuide": "docs/modules/ui.control/TECHNICAL.md",
   "sourceRoot": [
     "apps/hepta-control-ui"
+  ],
+  "futureTargetSourceObligations": [
+    "Compose the existing presentation/runtime-client library into the selected browser package and bind a real authenticated versioned runtime.agentd backend; product integration must preserve request identity over reconnect and expose stale/pending/indeterminate states.",
+    "Add executable selected-package/backend integration and accessibility coverage for that composed frontend; browser/platform qualification and independent accessibility acceptance remain separate from the library source tests."
   ]
 }

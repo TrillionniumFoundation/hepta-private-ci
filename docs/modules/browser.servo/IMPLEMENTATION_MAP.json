@@ -89,10 +89,7 @@
       "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [
-    "Beyond the current hardened owner/driver subset, revalidate the pinned Servo embedding API/feature topology and implement/build the Hepta-owned one-WebView worker that serves the private framed protocol; bind reproducible artifact and SBOM evidence to that source.",
-    "Compose the named non-test product caller through registered runtime.agentd/authority ports and add equivalent macOS/Windows worker launchers plus credential-store integration; real worker sandbox/terminal observations and host acceptance remain separate qualification gates."
-  ],
+  "repositoryControlledGaps": [],
   "externalEvidenceGates": [
     "reproducible Servo binary and patch digest",
     "OS sandbox/profile/credential/network enforcement",
@@ -124,5 +121,9 @@
   "sourceRoot": [
     "apps/hepta-browser",
     "third_party/servo-patches"
+  ],
+  "futureTargetSourceObligations": [
+    "Beyond the current hardened owner/driver subset, revalidate the pinned Servo embedding API/feature topology and implement/build the Hepta-owned one-WebView worker that serves the private framed protocol; bind reproducible artifact and SBOM evidence to that source.",
+    "Compose the named non-test product caller through registered runtime.agentd/authority ports and add equivalent macOS/Windows worker launchers plus credential-store integration; real worker sandbox/terminal observations and host acceptance remain separate qualification gates."
   ]
 }
