@@ -14,9 +14,12 @@ use std::sync::Arc;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+use crate::ArtifactStorageError;
+use crate::CreateOnlyArtifactFile;
 use crate::HostDurabilityError;
-use crate::durable_write_new_v1;
 use crate::provision_private_root_v1;
+use crate::storage::open_existing_beneath_trusted_root;
+use crate::storage::write_new as write_artifact_file;
 use crate::sync_directory_v1;
 
 const MAX_REQUEST_RECORD_BYTES: usize = 64 * 1024;
@@ -106,8 +109,10 @@ impl OwnerDurableStoreV1 for FsOwnerDurableStoreV1 {
     }
 
     fn write_new(&self, relative: &Path, bytes: &[u8]) -> Result<(), OwnerJournalError> {
-        let path = self.resolve(relative)?;
-        durable_write_new_v1(path, bytes).map_err(OwnerJournalError::Durability)
+        validate_relative(relative)?;
+        let capability = CreateOnlyArtifactFile::create_beneath_trusted_root(&self.root, relative)
+            .map_err(OwnerJournalError::Storage)?;
+        write_artifact_file(capability, bytes).map_err(OwnerJournalError::Storage)
     }
 
     fn read_optional(
@@ -115,20 +120,18 @@ impl OwnerDurableStoreV1 for FsOwnerDurableStoreV1 {
         relative: &Path,
         maximum_bytes: usize,
     ) -> Result<Option<Vec<u8>>, OwnerJournalError> {
-        let path = self.resolve(relative)?;
-        let metadata = match fs::symlink_metadata(&path) {
-            Ok(metadata) => metadata,
-            Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
-            Err(error) => return Err(error.into()),
+        validate_relative(relative)?;
+        let mut file = match open_existing_beneath_trusted_root(&self.root, relative) {
+            Ok(file) => file,
+            Err(ArtifactStorageError::Io(std::io::ErrorKind::NotFound)) => return Ok(None),
+            Err(error) => return Err(OwnerJournalError::Storage(error)),
         };
-        if metadata.file_type().is_symlink()
-            || !metadata.is_file()
-            || metadata.len() > maximum_bytes as u64
-        {
+        let metadata = file.metadata()?;
+        if !metadata.is_file() || metadata.len() > maximum_bytes as u64 {
             return Err(OwnerJournalError::Corrupt);
         }
         let mut bytes = Vec::with_capacity(metadata.len() as usize);
-        File::open(path)?
+        (&mut file)
             .take(maximum_bytes as u64 + 1)
             .read_to_end(&mut bytes)?;
         if bytes.len() > maximum_bytes {
@@ -417,6 +420,7 @@ const fn decode_nibble(value: u8) -> Option<u8> {
 #[derive(Debug)]
 pub enum OwnerJournalError {
     Durability(HostDurabilityError),
+    Storage(ArtifactStorageError),
     Io(std::io::Error),
     InvalidPath,
     InvalidRecord,
@@ -435,6 +439,7 @@ impl StdError for OwnerJournalError {
     fn source(&self) -> Option<&(dyn StdError + 'static)> {
         match self {
             Self::Durability(error) => Some(error),
+            Self::Storage(error) => Some(error),
             Self::Io(error) => Some(error),
             Self::InvalidPath
             | Self::InvalidRecord
