@@ -8,7 +8,6 @@ use crate::AuthenticatedSessionError;
 use crate::AuthenticatedWireSession;
 use crate::BoundPayloadCodec;
 use crate::BoundWireSessionError;
-use crate::PayloadCodec;
 use crate::SchemaCodecError;
 use crate::SessionEndpoint;
 use crate::SessionMacKey;
@@ -185,6 +184,7 @@ mod tests {
     use crate::GenerationPolicy;
     use crate::NegotiationOffer;
     use crate::NegotiationTranscript;
+    use crate::PayloadCodec;
     use crate::PayloadCodecBinding;
     use crate::SchemaDescriptor;
     use crate::SchemaPolicy;
