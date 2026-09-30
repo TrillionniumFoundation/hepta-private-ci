@@ -7,7 +7,6 @@ use crate::HeptaEvidenceStore;
 use crate::authbus_outbox_record::AUTHBUS_OUTBOX_MAX_ATTEMPTS;
 use crate::authbus_outbox_record::AUTHBUS_OUTBOX_MAX_ROWS;
 use crate::schema_validation::classify_sqlx_error;
-use crate::store::now_millis;
 
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq, Serialize)]
 pub struct AuthBusOutboxLatencySummary {
@@ -45,7 +44,8 @@ impl HeptaEvidenceStore {
     pub async fn authbus_outbox_operational_snapshot(
         &self,
     ) -> Result<AuthBusOutboxOperationalSnapshot, AuthBusOutboxError> {
-        let observed_at_ms = now_millis()?;
+        let observed_at_ms = i64::try_from(self.authbus_monotonic_now_ms().await?)
+            .map_err(|_| EvidenceError::Unavailable("AuthBus time floor exceeds i64".into()))?;
         let rows = sqlx::query(
             "SELECT state, attempts, created_at_ms, terminal_at_ms
              FROM authbus_outbox ORDER BY delivery_id LIMIT ?",

@@ -1,0 +1,81 @@
+{
+  "schema": "hepta.authbus.archive-retention-contract.v1",
+  "module": "auth.authbus",
+  "activation": false,
+  "authoritativeArchive": "authbus_quota_reservation_archive",
+  "identityOwner": "kernel.operations DurableOperationStore",
+  "currentSourceSemantics": {
+    "terminalLiveRowsMoveToImmutableArchive": true,
+    "operationIdRemainsUnique": true,
+    "automaticArchiveDeletion": false,
+    "destructiveCompactionImplemented": false,
+    "capacityProjection": "AuthBusReadPort::archive_capacity_snapshot",
+    "admissionBlockDecision": "AuthBusArchiveCapacitySnapshot::admission_blocked"
+  },
+  "minimumAuditRetention": {
+    "formula": "max(operation_id_reuse_window_ms, backup_restore_window_ms, incident_investigation_window_ms, canary_rollback_window_ms)",
+    "hardCodedDurationAllowed": false,
+    "requiredConfiguredWindows": [
+      "operation_id_reuse_window_ms",
+      "backup_restore_window_ms",
+      "incident_investigation_window_ms",
+      "canary_rollback_window_ms"
+    ]
+  },
+  "capacityPolicy": {
+    "requiredThresholds": [
+      "warning_reservation_rows",
+      "critical_reservation_rows",
+      "warning_reservation_bytes",
+      "critical_reservation_bytes"
+    ],
+    "warningAction": "schedule independently reviewed compaction analysis and verify backup/migration budgets",
+    "criticalAction": "fail closed for new reservation admission until capacity is restored or an approved extension is provisioned",
+    "criticalDoesNotAuthorizeDeletion": true
+  },
+  "destructiveCompactionPrerequisites": [
+    "the exact operation scope ID, operation ID and semantic digest are named",
+    "AuthBus reservation state is terminal and its settlement or terminal-evidence digest is retained",
+    "kernel.operations has an independently observed terminal row for the same operation identity and owner generation",
+    "the operation identity reuse window has elapsed",
+    "all backup, restore, incident-investigation and canary-rollback windows have elapsed",
+    "an immutable audit-export receipt covers the canonical archive row or a collision-resistant tombstone",
+    "all retained backup generations that still reference the full row are catalogued",
+    "a distinct operator approves the compaction manifest",
+    "post-compaction exact-frontier and restore verification succeed"
+  ],
+  "canonicalTombstoneMinimum": [
+    "reservation_id",
+    "operation_id",
+    "effect_digest",
+    "policy_id",
+    "policy_revision",
+    "policy_decision_digest",
+    "terminal_state",
+    "terminal_evidence_digest",
+    "settlement_digest",
+    "operation_semantic_digest",
+    "owner_generation",
+    "archive_row_digest",
+    "audit_export_receipt_digest"
+  ],
+  "jointDeletionProtocol": {
+    "authbusMayDeleteAlone": false,
+    "kernelOperationsMayDeleteAlone": false,
+    "requiredDecision": "same signed compaction manifest and exact operation identity",
+    "uncertainDecision": "retain both rows"
+  },
+  "budgetEvidence": {
+    "requiredMeasurements": [
+      "archive rows and canonical bytes",
+      "oldest and newest archive age",
+      "backup duration and bytes",
+      "restore duration and invariant verification",
+      "migration duration, temporary bytes and rollback duration"
+    ],
+    "missingMeasurementDecision": {
+      "productionQualified": false,
+      "mergeReady": false
+    }
+  }
+}

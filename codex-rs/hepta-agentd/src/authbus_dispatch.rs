@@ -27,7 +27,6 @@ use crate::AgentdState;
 use crate::AuthBusTextBody;
 use crate::authbus_ingress::TextIngress;
 use crate::authbus_ingress::attached;
-use crate::authbus_ingress::now_ms;
 use crate::authbus_ingress::payload;
 use crate::authbus_ingress::require_ready;
 use crate::authbus_trust::invalid;
@@ -171,13 +170,18 @@ async fn deliver<Q: TextQueueTransport>(
             .map_err(|error| invalid(&error.to_string()));
     }
     require_ready(state)?;
+    let observed_at_ms = host
+        .evidence
+        .authbus_monotonic_now_ms()
+        .await
+        .map_err(|error| invalid(&error.to_string()))?;
     delivery
         .message
         .authenticate(
             &issuer,
             host.scope,
             Digest32::of_bytes(&delivery.payload),
-            now_ms()?,
+            observed_at_ms,
         )
         .map_err(|error| invalid(&error.to_string()))?;
     // Renew immediately before the transport boundary to reject a stolen/expired
@@ -197,13 +201,18 @@ async fn deliver<Q: TextQueueTransport>(
             .await
             .map_err(|error| invalid(&error.to_string()));
     }
+    let final_observed_at_ms = host
+        .evidence
+        .authbus_monotonic_now_ms()
+        .await
+        .map_err(|error| invalid(&error.to_string()))?;
     delivery
         .message
         .authenticate(
             &fresh_issuer,
             host.scope,
             Digest32::of_bytes(&delivery.payload),
-            now_ms()?,
+            final_observed_at_ms,
         )
         .map_err(|error| invalid(&error.to_string()))?;
     let mode = if delivery.attempts == 1 {

@@ -10,8 +10,8 @@ use crate::authbus_outbox::clock;
 use crate::authbus_outbox::load;
 use crate::authbus_outbox_record::*;
 use crate::authbus_recovery::replay_checkpoint_pending;
+use crate::authbus_time::authbus_now;
 use crate::schema_validation::classify_sqlx_error;
-use crate::store::now_millis;
 
 impl HeptaEvidenceStore {
     /// Claim a queued message or recover an expired lease. The supplied issuer
@@ -219,7 +219,8 @@ fn require_lease(
 }
 
 // Time and authentication are refreshed after the write lock for every worker
-// transition, including ack. Clock rollback fails closed until time catches up.
+// transition, including ack. The persistent time floor prevents wall-clock
+// rollback from extending a lease or message after restart.
 async fn current(
     store: &HeptaEvidenceStore,
     id: Digest32,
@@ -237,7 +238,7 @@ async fn current(
     let record = load(&mut tx, id)
         .await?
         .ok_or(AuthBusOutboxError::NotFound)?;
-    let now = now_millis()?;
+    let now = authbus_now(&mut tx).await?;
     if !matches!(
         record.status.state,
         AuthBusDeliveryState::Queued | AuthBusDeliveryState::Leased

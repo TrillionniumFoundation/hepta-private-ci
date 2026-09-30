@@ -6,13 +6,18 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import subprocess
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 INVENTORY = ROOT / "docs/modules/auth.authbus/PUBLIC_API_INVENTORY.json"
 AUTHBUS = ROOT / "codex-rs/hepta-authbus/src"
 
-HOST_OPERATIONS = {"open", "bootstrap"}
+# The long-lived product constructor remains public. First-installation state is
+# created only through the audited retry-safe facade exported from bootstrap.rs.
+HOST_OPERATIONS = {"open"}
+BOOTSTRAP_FACADE = "bootstrap_retryable"
 
 PORT_OPERATIONS = {
     "AuthBusAdminPort": {
@@ -26,14 +31,13 @@ PORT_OPERATIONS = {
     },
     "AuthBusReadPort": {
         "message_issuer", "settlement_issuer", "quota_snapshot", "reservation",
-        "operational_snapshot",
+        "operational_snapshot", "archive_capacity_snapshot",
     },
     "AuthBusMaintenancePort": {
         "sync_checkpoint", "reconcile_expired_reservation",
         "sweep_expired_reservations", "compact_terminal_reservations", "maintenance_tick",
     },
 }
-
 
 STORE_OPERATIONS = {
     "open",
@@ -72,6 +76,7 @@ STORE_OPERATIONS = {
     "settlement_issuer",
     "observe_trusted_time_attestation",
     "operational_snapshot",
+    "archive_capacity_snapshot",
 }
 
 STORE_FILES = [
@@ -80,6 +85,7 @@ STORE_FILES = [
     "recovery.rs",
     "settlement_store.rs",
     "trust_store.rs",
+    "archive_capacity.rs",
     "operations.rs",
 ]
 
@@ -131,6 +137,8 @@ def verify_boundaries() -> list[str]:
     lib = source(AUTHBUS / "lib.rs")
     if "pub(crate) use authority_store::AuthBusAuthorityStore;" not in lib:
         errors.append("raw authority writer is not crate-private")
+    if f"pub use bootstrap::{BOOTSTRAP_FACADE};" not in lib:
+        errors.append("retry-safe bootstrap facade is not publicly exported")
     store_root = source(AUTHBUS / "authority_store.rs")
     if not re.search(r"(?m)^pub\(crate\) struct AuthBusAuthorityStore\s*\{", store_root):
         errors.append("raw authority writer type is not crate-private")
@@ -152,6 +160,9 @@ def verify_boundaries() -> list[str]:
     operations_source = source(AUTHBUS / "operations.rs")
     if "impl AuthBusAuthorityStore {\n    pub(crate) async fn operational_snapshot" not in operations_source:
         errors.append("operational snapshot raw writer method is not crate-private")
+    archive_source = source(AUTHBUS / "archive_capacity.rs")
+    if "impl AuthBusAuthorityStore {\n    pub(crate) async fn archive_capacity_snapshot" not in archive_source:
+        errors.append("archive capacity raw writer method is not crate-private")
     if re.search(r"(?m)^pub use authority_store::AuthBusAuthorityStore;", lib):
         errors.append("raw authority writer is publicly re-exported")
 
@@ -169,10 +180,11 @@ def verify_boundaries() -> list[str]:
         elif re.search(r"(?m)^\s*pub(?:\([^)]*\))?\s+\w+\s*:", match.group("body")):
             errors.append(f"trusted fields are externally writable on {type_name}")
 
+    host_source = source(AUTHBUS / "host.rs")
     discovered_host = set(
         re.findall(
             r"(?m)^\s*pub async fn ([a-z][a-z0-9_]*)\s*\(",
-            source(AUTHBUS / "host.rs"),
+            host_source,
         )
     )
     missing = sorted(HOST_OPERATIONS - discovered_host)
@@ -181,6 +193,8 @@ def verify_boundaries() -> list[str]:
         errors.append("missing public host constructors: " + ", ".join(missing))
     if unexpected:
         errors.append("unexpected public host authority methods: " + ", ".join(unexpected))
+    if not re.search(r"(?m)^\s*pub\(crate\) async fn bootstrap\s*\(", host_source):
+        errors.append("raw bootstrap constructor is not crate-private")
 
     ports_source = source(AUTHBUS / "ports.rs")
     for port, expected in PORT_OPERATIONS.items():
@@ -213,7 +227,7 @@ def verify_boundaries() -> list[str]:
 
 def inventory() -> dict[str, object]:
     return {
-        "schema": "hepta.authbus.public-api-inventory.v1",
+        "schema": "hepta.authbus.public-api-inventory.v2",
         "module": "auth.authbus",
         "writer": {
             "type": "AuthBusAuthorityStore",
@@ -236,6 +250,11 @@ def inventory() -> dict[str, object]:
             },
         ],
         "hostOperations": sorted(HOST_OPERATIONS),
+        "bootstrapFacade": {
+            "symbol": BOOTSTRAP_FACADE,
+            "rawConstructorVisibility": "crate_private",
+            "retryRule": "only pristine post-migration database without authority rows may be discarded",
+        },
         "capabilityPorts": {
             port: sorted(operations) for port, operations in sorted(PORT_OPERATIONS.items())
         },
@@ -248,6 +267,14 @@ def encoded_inventory() -> str:
     return json.dumps(inventory(), indent=2, sort_keys=True) + "\n"
 
 
+def verify_composition_root() -> None:
+    subprocess.run(
+        [sys.executable, str(ROOT / "scripts/check-authbus-composition-root.py")],
+        cwd=ROOT,
+        check=True,
+    )
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     group = parser.add_mutually_exclusive_group(required=True)
@@ -258,6 +285,7 @@ def main() -> None:
     errors = verify_boundaries()
     if errors:
         raise SystemExit("closed-world inventory failed:\n" + "\n".join(errors))
+    verify_composition_root()
     expected = encoded_inventory()
     if args.write:
         INVENTORY.write_text(expected, encoding="utf-8")

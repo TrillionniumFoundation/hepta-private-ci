@@ -8,8 +8,8 @@ use sqlx::sqlite::SqliteRow;
 
 use crate::EvidenceError;
 use crate::HeptaEvidenceStore;
+use crate::authbus_time::authbus_now;
 use crate::schema_validation::classify_sqlx_error;
-use crate::store::now_millis;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct ReplayCheckpoint {
@@ -68,7 +68,7 @@ impl HeptaEvidenceStore {
             )
             .bind(checkpoint.generation.to_be_bytes().as_slice())
             .bind(checkpoint.digest.as_array().as_slice())
-            .bind(now_millis()?)
+            .bind(authbus_now(&mut tx).await?)
             .execute(&mut *tx)
             .await
             .map_err(classify_sqlx_error)?;
@@ -264,7 +264,7 @@ impl HeptaEvidenceStore {
         .bind(retirement.issuer_id().as_str())
         .bind(retirement.key_epoch().get().to_be_bytes().as_slice())
         .bind(retirement.retirement_digest().as_array().as_slice())
-        .bind(now_millis()?)
+        .bind(authbus_now(&mut tx).await?)
         .execute(&mut *tx)
         .await
         .map_err(classify_sqlx_error)?;
@@ -337,7 +337,7 @@ pub(crate) async fn stage_replay_checkpoint_after_mutation(
     )
     .bind(generation.to_be_bytes().as_slice())
     .bind(digest.as_array().as_slice())
-    .bind(now_millis()?)
+    .bind(authbus_now(tx).await?)
     .execute(&mut **tx)
     .await
     .map_err(classify_sqlx_error)?;
@@ -355,7 +355,7 @@ async fn promote_pending_checkpoint(
     )
     .bind(checkpoint.generation.to_be_bytes().as_slice())
     .bind(checkpoint.digest.as_array().as_slice())
-    .bind(now_millis()?)
+    .bind(authbus_now(tx).await?)
     .execute(&mut **tx)
     .await
     .map_err(classify_sqlx_error)?;

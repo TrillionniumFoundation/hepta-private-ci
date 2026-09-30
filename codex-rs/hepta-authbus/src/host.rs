@@ -96,8 +96,10 @@ impl AuthBusAuthorityHost {
     }
 
     /// Create the first independently retained checkpoint only when neither
-    /// state domain exists. Bootstrap is never a recovery operation.
-    pub async fn bootstrap(
+    /// state domain exists. Bootstrap is never a recovery operation. External
+    /// callers must use `bootstrap_retryable`, which proves any orphan database
+    /// is a pristine, never-authoritative bootstrap remnant before removing it.
+    pub(crate) async fn bootstrap(
         database_path: &Path,
         checkpoint_path: PathBuf,
         owner_id: &str,

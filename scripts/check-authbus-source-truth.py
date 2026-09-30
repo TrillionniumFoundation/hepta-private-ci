@@ -4,9 +4,9 @@
 Static repository files may describe contracts and source mappings. Candidate
 SHAs, workflow attempts, bound projections, evidence receipts, and release
 decisions are generated artifacts and must never be committed as an alternate
-status authority. AuthBus qualification and authoring workflows are read-only:
-a workflow may validate source, but it may not format, commit, push, or otherwise
-rewrite the candidate it is qualifying.
+status authority. AuthBus qualification and authoring checks are read-only: a
+workflow may validate source, but it may not commit, push, materialize, or
+otherwise publish rewritten source as the candidate it is qualifying.
 """
 
 from __future__ import annotations
@@ -35,15 +35,48 @@ SHA_FIELD = re.compile(
     r"(?:^|_)(?:commit|candidate|head|base|tree|merge|final_merge|workflow)_?sha$",
     re.IGNORECASE,
 )
+# Detached checkout/reset and read-only plumbing such as merge-tree/commit-tree
+# are allowed to materialize one exact immutable candidate. Publication and
+# source synthesis are not.
 SOURCE_MUTATION = re.compile(
     r"(?im)(?:^\s*contents:\s*write\s*(?:#.*)?$|"
-    r"\bgit\s+(?:commit|push)\b|"
-    r"^\s*persist-credentials:\s*true\s*(?:#.*)?$)"
+    r"\bgit\s+(?:add|commit|push|merge|rebase|cherry-pick|am)(?=\s|$)|"
+    r"^\s*persist-credentials:\s*true\s*(?:#.*)?$|"
+    r"\bauthbus-materialize[^\s]*\.py\b|"
+    r"\bauthority-convergence-once\b|"
+    r"check-authbus-closed-world\.py\s+--write\b)"
 )
 FORBIDDEN_AUTHORING_WORKFLOWS = {
     ".github/workflows/authbus-bootstrap-api-authoring.yml",
     ".github/workflows/authbus-lockfile-authoring.yml",
     ".github/workflows/authbus-time-floor-authoring.yml",
+    ".github/workflows/authority-convergence-once.yml",
+    ".github/workflows/authbus-finalize-staging.yml",
+}
+FORBIDDEN_AUTHORING_SCRIPTS = {
+    "scripts/authbus-materialize-boundaries-once.py",
+    "scripts/authbus-materialize-source-once.py",
+    "scripts/authbus-closeout-once.py",
+}
+REQUIRED_READINESS_FIELDS = {
+    "source_head_sha",
+    "base_sha",
+    "deterministic_merge_sha",
+    "github_merge_sha",
+    "final_merge_sha",
+    "workflow_run_id",
+    "attempt_id",
+    "runner_image",
+    "rust_toolchain",
+    "target_triple",
+    "Cargo.lock_hash",
+    "migration_hash",
+    "source_tree_hash",
+    "documentation_hash",
+    "test_set_hash",
+    "qualification_profile_hash",
+    "artifact_hashes",
+    "target_host_identity",
 }
 
 
@@ -92,15 +125,33 @@ def walk(value: Any, path: str = "$") -> list[str]:
     return errors
 
 
+def is_authbus_workflow(path: Path, text: str) -> bool:
+    lowered = path.name.lower()
+    return (
+        "authbus" in lowered
+        or "authority-convergence" in lowered
+        or "auth.authbus" in text
+        or "AuthBus" in text
+        or "scripts/check-authbus" in text
+        or "scripts/authbus-" in text
+        or "codex-hepta-authbus" in text
+    )
+
+
 def verify_workflow_immutability(tracked: set[str]) -> list[str]:
     errors: list[str] = []
     for path in sorted(FORBIDDEN_AUTHORING_WORKFLOWS & tracked):
         errors.append(f"one-shot source-mutating AuthBus workflow is forbidden: {path}")
+    for path in sorted(FORBIDDEN_AUTHORING_SCRIPTS & tracked):
+        errors.append(f"one-shot AuthBus source materializer is forbidden: {path}")
     if not WORKFLOW_ROOT.is_dir():
         return errors
-    for workflow in sorted(WORKFLOW_ROOT.glob("authbus-*.yml")):
+    workflows = sorted(WORKFLOW_ROOT.glob("*.yml")) + sorted(WORKFLOW_ROOT.glob("*.yaml"))
+    for workflow in workflows:
         relative = workflow.relative_to(ROOT).as_posix()
         text = workflow.read_text(encoding="utf-8")
+        if not is_authbus_workflow(workflow, text):
+            continue
         match = SOURCE_MUTATION.search(text)
         if match:
             token = " ".join(match.group(0).split())
@@ -146,6 +197,18 @@ def verify() -> list[str]:
             "release": False,
         }:
             errors.append("readiness contract static decision is not fail-closed")
+        fields = contract.get("requiredFields")
+        if not isinstance(fields, list) or set(fields) != REQUIRED_READINESS_FIELDS:
+            errors.append(
+                "readiness contract requiredFields must equal the canonical identity set"
+            )
+        policy = contract.get("decisionPolicy")
+        if not isinstance(policy, dict) or policy.get("nonSuccessDecision") != {
+            "productionQualified": False,
+            "mergeReady": False,
+            "approvedForCanary": False,
+        }:
+            errors.append("readiness non-success decision must remain fail-closed")
 
     tracked = set(tracked_files())
     errors.extend(verify_workflow_immutability(tracked))

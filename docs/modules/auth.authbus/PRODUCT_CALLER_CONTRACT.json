@@ -12,19 +12,21 @@
       ],
       "requiredTokens": [
         "enqueue_authbus_message",
+        "authbus_monotonic_now_ms",
         "sync_replay_checkpoint",
         ".authenticate(",
         "require_ready(state)?"
       ],
       "forbiddenTokens": [
-        "AuthBusAuthorityStore"
+        "AuthBusAuthorityStore",
+        "SystemTime::now"
       ],
       "contracts": {
         "noBypass": "Signed ingress commits replay advancement and outbox insertion through HeptaEvidenceStore before reporting readiness.",
         "canonicalDigest": "authbus_text_claims derives subject, scope and payload digest from canonical request fields.",
-        "authorityIdentity": "The agent identity supplies subject and domain-separated scope.",
+        "authorityIdentity": "The agent identity supplies subject and domain-separated scope; the Evidence-owned persistent time floor supplies lifecycle time.",
         "ambiguousOutcome": "A committed message is preserved when authority changes; readiness is rechecked before success.",
-        "terminalCleanup": "Outbox delivery owner performs claim, retry, acknowledgement and quarantine lifecycle.",
+        "terminalCleanup": "Outbox delivery owner performs claim, retry, acknowledgement and quarantine lifecycle under the persistent time floor.",
         "recoveryOwner": "Evidence store plus ReplayCheckpointFile own restart rollback detection.",
         "unavailableBehavior": "No explicit trust configuration or non-ready generation fails closed.",
         "correlation": "Delivery ID and queue receipt digest cross the component boundary."
@@ -32,29 +34,32 @@
     },
     {
       "name": "bao_kv_v2_read",
-      "sourcePath": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/durable_authbus.rs",
       "testPaths": [
-        "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+        "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+        "codex-rs/hepta-operations/src/authbus_handle_tests.rs"
       ],
       "requiredTokens": [
-        "consume_kv_v2_with_authbus",
-        "authbus_effect_digest",
-        "mark_dispatch_attempted",
-        "mark_indeterminate",
-        "settle_observed"
+        "EnteredAuthBusOperationHandle",
+        "validate_entered_authbus_operation",
+        "consume_kv_v2_with_durable_authbus_operation",
+        "durable_operation_payload_digest",
+        "operation.semantic_digest()",
+        "reconciliation_required: true"
       ],
       "forbiddenTokens": [
-        "AuthBusAuthorityStore"
+        "AuthBusAuthorityStore",
+        "pub operation_id: StableId"
       ],
       "contracts": {
-        "noBypass": "The quota-controlled public product path receives only AuthBusExecutionPort and final-use authority.",
-        "canonicalDigest": "The effect digest binds durable operation identity to the exact final-use tuple.",
-        "authorityIdentity": "Principal, action, scope, policy revision, quota and operation ID are checked before dispatch.",
-        "ambiguousOutcome": "Transport ambiguity after dispatch preserves an indeterminate reservation and forbids blind refund.",
-        "terminalCleanup": "Authenticated settlement evidence is required for terminal quota accounting.",
-        "recoveryOwner": "AuthBus restart reconciliation promotes unresolved DispatchAttempted rows conservatively.",
-        "unavailableBehavior": "AuthBus or evidence-provider failure returns an error before provider use unless dispatch is already durable.",
-        "correlation": "Reservation ID, operation ID, request digest and terminal evidence digest connect control and provider observations."
+        "noBypass": "The qualified product entry accepts an entered sealed kernel.operations handle and only AuthBusExecutionPort; it does not accept caller-minted operation metadata.",
+        "canonicalDigest": "The durable payload digest and AuthBus effect digest bind the exact Bao request, destination and durable operation identity.",
+        "authorityIdentity": "Current durable scope, operation ID, semantic digest, destination, payload, owner generation and writer fence are validated before AuthBus reservation or provider I/O.",
+        "ambiguousOutcome": "kernel.operations is already Indeterminate before provider I/O; transport ambiguity cannot be retried under a fresh operation ID and AuthBus preserves its reservation conservatively.",
+        "terminalCleanup": "Authenticated AuthBus settlement and a separate kernel.operations reconciliation receipt are both required; provider success cannot forge terminal operation state.",
+        "recoveryOwner": "DurableOperationStore recovers the exact operation identity with a new generation/fence and rejects the stale entered handle.",
+        "unavailableBehavior": "Missing, stale or drifted operation identity fails before trusted time, quota reservation or provider use.",
+        "correlation": "Operation scope/ID/generation/semantic digest, AuthBus effect/reservation and provider receipt are returned as one caller-visible correlation record."
       }
     }
   ]

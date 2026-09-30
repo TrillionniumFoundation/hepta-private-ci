@@ -8,6 +8,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+use crate::AuthBusArchiveCapacitySnapshot;
 use crate::AuthBusAuthorityError;
 use crate::AuthBusAuthorityHost;
 use crate::AuthBusMaintenanceReport;
@@ -289,6 +290,15 @@ impl AuthBusReadPort<'_> {
         time: &TrustedTimeSample,
     ) -> Result<AuthBusOperationalSnapshot, AuthBusAuthorityError> {
         self.host.operational_snapshot(time).await
+    }
+
+    /// Read-only capacity diagnostics. This projection is not effect authority
+    /// and never authorizes archive deletion.
+    pub async fn archive_capacity_snapshot(
+        &self,
+        time: &TrustedTimeSample,
+    ) -> Result<AuthBusArchiveCapacitySnapshot, AuthBusAuthorityError> {
+        self.host.store.archive_capacity_snapshot(time).await
     }
 }
 

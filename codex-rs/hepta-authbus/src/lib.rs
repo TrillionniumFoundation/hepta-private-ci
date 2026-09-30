@@ -8,6 +8,7 @@
 
 #![forbid(unsafe_code)]
 
+mod archive_capacity;
 mod authority;
 mod authority_schema;
 mod authority_store;
@@ -22,12 +23,18 @@ mod ports;
 mod quota;
 mod quota_store;
 mod recovery;
+mod runtime_ownership;
 mod settlement;
 mod settlement_store;
 mod signed;
 mod trust;
 mod trust_store;
 mod worker;
+pub use archive_capacity::AuthBusArchiveAlert;
+pub use archive_capacity::AuthBusArchiveAlertKind;
+pub use archive_capacity::AuthBusArchiveAlertSeverity;
+pub use archive_capacity::AuthBusArchiveCapacityPolicy;
+pub use archive_capacity::AuthBusArchiveCapacitySnapshot;
 pub use authority::AuthBusAuthorityError;
 pub use authority::AuthBusMutationDisposition;
 pub use authority::AuthPolicy;
@@ -69,6 +76,9 @@ pub use quota::QuotaSpec;
 pub use quota::ReservationRequest;
 pub use quota::ReservationState;
 pub use recovery::AuthorityCheckpoint;
+pub use runtime_ownership::AuthBusAuthorityInstanceRuntimeSnapshot;
+pub use runtime_ownership::AuthBusProcessRuntimeSnapshot;
+pub use runtime_ownership::AuthBusRuntimeOwnershipSnapshot;
 pub use settlement::Settlement;
 pub use settlement::SettlementEvidenceClaims;
 pub use settlement::SettlementIssuerRegistration;

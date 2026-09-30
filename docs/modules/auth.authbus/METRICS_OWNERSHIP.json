@@ -1,0 +1,91 @@
+{
+  "schema": "hepta.authbus.metrics-ownership.v1",
+  "module": "auth.authbus",
+  "activation": false,
+  "compatibility": {
+    "flatSnapshot": "AuthBusRuntimeSnapshot",
+    "labelingUseAllowed": false,
+    "requiredProjection": "AuthBusRuntimeSnapshot::split_by_owner"
+  },
+  "owners": {
+    "process_runtime": {
+      "lifetime": "process",
+      "labels": [],
+      "fields": [
+        "owner_already_active_failures",
+        "owner_unsafe_path_failures",
+        "owner_storage_failures",
+        "replay_rejections"
+      ]
+    },
+    "authority_instance": {
+      "lifetime": "host_instance",
+      "requiredIdentityLabels": [
+        "owner_id_digest",
+        "database_identity_digest",
+        "checkpoint_identity_digest"
+      ],
+      "fields": [
+        "checkpoint_sync_failures",
+        "checkpoint_rollback_conflicts",
+        "checkpoint_storage_failures",
+        "authority_use_blocks",
+        "mutation_attempts",
+        "mutation_rejections",
+        "mutation_outcome_unknown",
+        "mutation_committed_reconciliation_required",
+        "maintenance_ticks",
+        "maintenance_failures",
+        "recovery_incomplete_ticks",
+        "mutation_latency",
+        "maintenance_latency"
+      ]
+    },
+    "product_caller": {
+      "lifetime": "route",
+      "sourceOwners": [
+        "Agentd Evidence outbox",
+        "Bao adapter and HTTPS client",
+        "kernel.operations durable owner"
+      ],
+      "requiredIdentityLabels": [
+        "caller",
+        "route"
+      ],
+      "fields": [
+        "enqueue_to_ack_latency",
+        "claim_to_first_execution_latency",
+        "provider_request_latency",
+        "provider_acknowledgement_latency",
+        "operation_reconciliation_latency"
+      ]
+    }
+  },
+  "stageTiming": {
+    "requiredStages": [
+      "product_entry",
+      "mutation_gate_wait",
+      "checkpoint_preflight",
+      "sqlite_transaction",
+      "frontier_fold",
+      "checkpoint_publication",
+      "operation_owner_handoff",
+      "provider_boundary",
+      "settlement",
+      "caller_acknowledgement",
+      "reconciliation"
+    ],
+    "sourceRule": "AuthBus in-process mutation latency remains all-inclusive; stage timing belongs to the exact-candidate performance receipt so no component fabricates a stage it cannot observe.",
+    "omissionDecision": {
+      "performanceQualified": false,
+      "mergeReady": false
+    }
+  },
+  "exportRules": [
+    "process counters must not carry authority-instance labels",
+    "authority-instance counters must not aggregate different database or checkpoint identities",
+    "product caller metrics must not be emitted by AuthBus core",
+    "labels must be bounded and non-secret",
+    "cumulative counters require exporter-side rate and delta calculation"
+  ]
+}

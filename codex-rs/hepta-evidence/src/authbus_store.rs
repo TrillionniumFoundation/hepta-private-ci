@@ -10,8 +10,8 @@ use crate::HeptaEvidenceStore;
 use crate::authbus_recovery::replay_checkpoint_pending;
 use crate::authbus_recovery::replay_epoch_retired;
 use crate::authbus_recovery::stage_replay_checkpoint_after_mutation;
+use crate::authbus_time::authbus_now;
 use crate::schema_validation::classify_sqlx_error;
-use crate::store::now_millis;
 
 const MAX_AUTHBUS_REPLAY_KEYS: i64 = 16_384;
 
@@ -45,10 +45,10 @@ impl HeptaEvidenceStore {
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(classify_sqlx_error)?;
-        // Read time after the SQLite wait; a queued message cannot outlive its
-        // expiry merely because signature verification happened before a lock.
-        let now = u64::try_from(now_millis()?)
-            .map_err(|_| EvidenceError::Unavailable("clock predates Unix epoch".into()))?;
+        // Advance the persistent floor after the SQLite wait. A queued message
+        // cannot regain lifetime after a wall-clock rollback or process restart.
+        let now = u64::try_from(authbus_now(&mut transaction).await?)
+            .map_err(|_| EvidenceError::Unavailable("AuthBus time floor exceeds u64".into()))?;
         if &message.claims.subject_id != expected_subject {
             return Err(codex_hepta_authbus::Error::SubjectMismatch.into());
         }

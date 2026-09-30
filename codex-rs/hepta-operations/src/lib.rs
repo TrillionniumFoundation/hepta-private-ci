@@ -65,6 +65,8 @@ pub use outbox::OutboxIntent;
 pub use outbox::OutboxState;
 
 #[cfg(test)]
+mod authbus_handle_tests;
+#[cfg(test)]
 mod exact_claim_tests;
 #[cfg(test)]
 mod fault_tests;
