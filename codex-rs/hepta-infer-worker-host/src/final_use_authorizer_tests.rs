@@ -268,6 +268,9 @@ async fn linux_connected_peer_is_bound_before_and_after_grant_exchange() -> Resu
     let signer = random_signing_key();
     let mut authorizer_config = config(directory.path(), socket, signer.verifying_key().to_bytes());
     authorizer_config.issuer_process_identity = Some(current_process_identity()?);
+    // This compatibility fixture hashes the complete test executable before
+    // and after exchange. Production uses the small root PID attestation.
+    authorizer_config.issuer_timeout_ms = 10_000;
     let authorizer = UnixFinalUseAuthorizer::from_test_config(authorizer_config)?;
     let server_signer = signer.clone();
     let server = tokio::spawn(async move {

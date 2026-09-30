@@ -376,6 +376,40 @@ async fn mismatched_abort_receipts_never_release_or_fabricate_an_observation() {
 }
 
 #[tokio::test]
+async fn acknowledged_history_retires_while_corrupt_cleanup_remains_unavailable() {
+    let directory = tempfile::tempdir().unwrap();
+    let socket = directory.path().join("agentd.sock");
+    let listener = UnixListener::bind(&socket).unwrap();
+    std::fs::write(
+        directory.path().join("runtime-codex-cleanup-v1.sqlite3"),
+        b"corrupted independent cleanup store",
+    )
+    .unwrap();
+    let mut control =
+        DurableInferenceControl::open(directory.path().join("control.journal"), 8).unwrap();
+    let pending = prepare(&mut control, "original-ack");
+    let mut driver = driver(socket);
+    let (receipt, ()) = tokio::join!(
+        driver.maintain_native_control(&mut control, Duration::from_secs(5)),
+        serve_abort(&listener, &pending, Some(acknowledgement(&pending)))
+    );
+    let receipt = receipt.unwrap();
+    assert_eq!(receipt.aborts_confirmed, 1);
+    assert_eq!(receipt.history.unwrap().archived_records, 1);
+    assert!(receipt.cleanup.is_none());
+    assert!(receipt.cleanup_error.is_some());
+    assert!(driver.cleanup_owner.get().await.is_err());
+    assert_eq!(
+        control
+            .native_record_resolved("original-ack")
+            .unwrap()
+            .unwrap()
+            .state,
+        NativeReservationState::Released
+    );
+}
+
+#[tokio::test]
 async fn idle_owner_recovers_lost_terminal_publication_ack_then_archives_without_replaying_effect()
 {
     let directory = tempfile::tempdir().unwrap();

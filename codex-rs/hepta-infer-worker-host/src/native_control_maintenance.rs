@@ -23,6 +23,9 @@ pub struct NativeControlMaintenanceReceipt {
     pub terminal_publications_unresolved: usize,
     pub history: Option<NativeHistoryMaintenanceReceipt>,
     pub cleanup: Option<NativeCleanupBacklogMetrics>,
+    /// Cleanup remains quarantined on failure; acknowledged history can still
+    /// retire independently, and the serial host must report/retry this error.
+    pub cleanup_error: Option<String>,
 }
 
 impl AppServerModelDriver {
@@ -50,6 +53,7 @@ impl AppServerModelDriver {
             terminal_publications_unresolved: 0,
             history: None,
             cleanup: None,
+            cleanup_error: None,
         };
         let mut visited = Vec::new();
         while receipt.aborts_attempted + receipt.terminal_publications_attempted < 8
@@ -82,12 +86,18 @@ impl AppServerModelDriver {
         }
         let remaining = deadline.saturating_duration_since(Instant::now());
         if !remaining.is_zero() {
-            receipt.cleanup = Some(self.maintain_native_cleanup(remaining / 2).await?);
+            receipt.history =
+                Some(control.maintain_native_history(/*maximum_records*/ 32, remaining / 2)?);
         }
         let remaining = deadline.saturating_duration_since(Instant::now());
         if !remaining.is_zero() {
-            receipt.history =
-                Some(control.maintain_native_history(/*maximum_records*/ 32, remaining)?);
+            match self.maintain_native_cleanup(remaining).await {
+                Ok(metrics) => receipt.cleanup = Some(metrics),
+                Err(error) => receipt.cleanup_error = Some(error.to_string()),
+            }
+        } else {
+            receipt.cleanup_error =
+                Some("native cleanup deferred after maintenance budget elapsed".into());
         }
         Ok(receipt)
     }
