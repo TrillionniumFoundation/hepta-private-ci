@@ -271,15 +271,13 @@ async fn serve_abort(
 }
 
 fn driver(socket: std::path::PathBuf) -> Result<AppServerModelDriver> {
-    Ok(AppServerModelDriver::new(
-        super::super::NativeWorkerConfig {
-            agentd_socket: socket,
-            agent_id: AgentId::parse(AGENT)?,
-            generation: 1,
-            model: "test-model".to_string(),
-            timeout: Duration::from_secs(1),
-        },
-    )?)
+    AppServerModelDriver::new(super::super::NativeWorkerConfig {
+        agentd_socket: socket,
+        agent_id: AgentId::parse(AGENT)?,
+        generation: 1,
+        model: "test-model".to_string(),
+        timeout: Duration::from_secs(1),
+    })
 }
 
 #[tokio::test]
