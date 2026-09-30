@@ -164,6 +164,7 @@ Current operating and state-format references:
 
 - [codex-rs/hepta-compact-engine/src/lib.rs](../../../codex-rs/hepta-compact-engine/src/lib.rs).
 - [codex-rs/hepta-compact-engine/src/qualified.rs](../../../codex-rs/hepta-compact-engine/src/qualified.rs).
+- [codex-rs/hepta-compact-engine/src/candidate.rs](../../../codex-rs/hepta-compact-engine/src/candidate.rs).
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -255,3 +256,71 @@ The bootstrap source-location obligation for `compact.engine` is implemented by 
 - `codex-rs/hepta-compact-engine`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+## 18. Native API and adversarial audit scope
+
+Source review updated **2026-10-01 (Asia/Shanghai)**. This section records native behavior and composition gaps; it does not record a passed test run. Sections 1–17 and the dossier's target replay/skill designs remain applicable.
+
+### Callable surfaces and selection algorithm
+
+| Native surface | Inputs and result | Implemented behavior |
+| --- | --- | --- |
+| `compact(generation, source_snapshot_digest, records)` | Complete per-record revision chains → legacy `CompactCheckpoint` | Validate and sort by record ID/revision; require revision 1, consecutive revisions and exact predecessor digests; retain the latest head, including tombstones. Reject a live successor after a tombstone. |
+| `build_qualified_candidate(source_snapshot, generation, predecessor_checkpoint_digest, policy, inputs)` | `CognitiveSnapshotKeyV1`, `CompactionPolicyV2`, complete revision chains with retention metadata → `QualifiedCompactionCandidateV2` | Validate policy/lineage; reject absent protected IDs; separate tombstoned heads from selectable payload; retain every protected live head before optional heads; record live omissions, terminal tombstone digests and deletion counts. |
+| `QualifiedCompactionCandidateV2::validate()` | Caller-visible candidate → integrity result | Revalidate contracts, resource bounds, live/unique retained records, disjoint unique retained/omitted/deleted digest sets, counts, payload/omission/support digests, nonzero selection-input commitment, tombstone cutoff and candidate digest. This is essential after transport or mutation of public fields. |
+| `QualifiedCompactionCandidateV2::validate_against_inputs(policy, inputs)` | Structurally valid candidate plus frozen policy and complete input preimage → integrity result | Rebuild with the same source snapshot, checkpoint generation and predecessor, then compare the complete semantic candidate digest. Equivalent citation permutations remain valid. Reject a different protected set, retention decision, reason, priority or source head as `CandidateSourceMismatch`; this verifies the supplied preimage, not its external authenticity. |
+| `prove_compaction(candidate, qualification)` | Validated candidate and `CompactionQualificationV2` observation claims → Lane C `CompactionProofV1` | Require the exact `qualification.candidate_digest`, three nonzero obligation digests and four successful checks; bind the checkpoint, deletion cutoff and source/retained counts. It does not execute the checks or authenticate their producer. |
+
+The qualified selector ranks live current heads by protected membership first, then descending `retention_priority`, then ascending record ID/revision. Input arrival order has no effect. There is no model call, generated prose summary, semantic merger, replay scheduler or skill induction in this crate. `algorithm_digest`, `compatibility_digest` and `retention_reason_digest` are caller-supplied labels; validating them does not attest an algorithm implementation or independently verify its declared rationale.
+
+Both paths require the full supplied lineage from revision 1. A current-head-only reader cannot feed a revised record into these APIs without an explicit consumer-owned adapter or future authenticated predecessor contract. Do not silently relax lineage checks to make an incompatible reader work.
+
+### Integrity bindings and trust limits
+
+| Binding | Exact meaning |
+| --- | --- |
+| Legacy checkpoint digest | Domain `hepta.compact.checkpoint.v1`, generation, declared source snapshot digest and retained head digests; records are ordered by ID. |
+| Policy digest | Domain `hepta.compaction-policy.v2`, policy ID, algorithm/compatibility digests, retention ceiling and sorted protected IDs. |
+| Payload digest | Domain `hepta.compaction-payload.v2` and sorted retained live record digests. |
+| Omitted-information digest | Domain `hepta.compaction-omitted.v2` and sorted omitted live record digests; deleted heads are excluded. |
+| Support manifest digest | Domain `hepta.compaction-support-manifest.v3` and the sorted union of retained, omitted and terminal tombstone head digests. The live set is exactly the union of retained and omitted digests; the candidate's separate `deleted_record_digests` partition preserves deletion accounting. It is not an authenticated complete source ledger. |
+| Loss report digest | Domain `hepta.compaction-loss-report.v2` and all eight counts; validation uses checked arithmetic and enforces protected counts as subsets of their corresponding populations. |
+| Selection-input digest | Domain `hepta.compaction-selection-input.v1`, current-head count, then each head's record digest, priority as u64 and reason digest in ascending record-ID order, including tombstone heads. The owner must retain the exact input preimage to audit ranking; a nonzero commitment alone cannot reconstruct or verify the declared priority/reason. |
+| Candidate digest | Domain `hepta.compaction-candidate.v3`, source vector, policy, selection-input commitment, checkpoint, loss report and the supplied retained/omitted/deleted sequences. Builders canonicalize order; validation binds the order actually supplied. |
+| Lane C checkpoint/proof | The V1 types and digest encoders in [lane_c.rs](../../../codex-rs/hepta-cognitive-types/src/lane_c.rs) bind their declared fields and require `DENY_ALL`; they are separate from the legacy Rust checkpoint type. |
+
+Checkpoint IDs include the complete source-vector digest and checkpoint generation to prevent same-generation identity reuse across snapshot scopes. The audit changes the unpublished local candidate's support/candidate digest domains to V3 while retaining the Rust `V2` type names. This is not in-place wire compatibility: no serialized wire contract or migration is implemented here, and consumers of old local candidates must rebuild them from authenticated source inputs.
+
+Self-consistent digests do not establish source membership, complete input coverage, current deletion state, caller access or authentic ledger frontiers. `MemoryRecord` has no owner/fence/frontier field. The consumer must obtain the inputs and snapshot from one authenticated coherent read and revalidate current lineage/revocation before publication and every selection. Truncated input can otherwise describe an internally consistent but incomplete set.
+
+The candidate stores policy and selection-input digests rather than their full preimages. `validate()` checks structural consistency; `validate_against_inputs()` re-runs policy membership and retention ranking against the supplied preimage. The owner retains the frozen `CompactionPolicyV2` and exact authenticated inputs, calls both checks before independent evaluation/publication, and revalidates current source/deletion state before selection. Rebuilding from a caller's invented but internally consistent preimage still does not authenticate a source or establish external completeness.
+
+The qualification struct requires the exact candidate digest and carries a caller-supplied `evaluator_id`; the current proof assembler does not authenticate that evaluator or bind its identity into `CompactionProofV1`. The returned V1 proof preserves the checkpoint digest, not the complete candidate/policy/selection commitment; the independent receipt must retain those bindings alongside it. Three suite digests and four booleans are observation declarations. They must be backed by independently authenticated, candidate-specific execution receipts before a composed owner treats a checkpoint as qualified. This structural proof does not authenticate an execution observation or authorize source deletion, checkpoint publication, generation selection or promotion.
+
+### Limits, errors and cost model
+
+Native legacy and qualified input ceilings are 65,536 revision records; the qualified protected-ID ceiling is 4,096, and `maximum_retained_records` must be 1..=65,536. The input ceiling counts historical revisions, while the retention ceiling counts live current heads. Empty input is structurally representable when no protected reference is requested; it does not prove an external store empty. Each record independently inherits cognitive-types citation and identifier bounds. These are metadata limits, not a compressed-byte ratio or a measured host budget.
+
+| Rejection group | Consumer action |
+| --- | --- |
+| Invalid record/contract, zero required digest, broken or duplicate revision lineage, live resurrection | Reject the candidate; correct the source adapter rather than retrying the same semantics. |
+| Invalid retention ceiling, too many inputs/protected IDs, protected references missing or exceeding retained capacity | Reject or plan a new bounded policy; do not drop required support. |
+| Payload/support/omission/candidate digest drift, overlapping/duplicate live/deleted sets, accounting/cutoff/qualification-candidate mismatch, `CandidateSourceMismatch`, granted authority | Reject as an invalid candidate; never publish a partially validated object. |
+| Failed retained-query, reconstruction, contradiction or deletion obligation | Preserve the previous selected generation; obtain a different candidate or independent corrected observation. |
+| External reader/publication failure or uncertain durable outcome | No corresponding native durable operation exists; the composed owner must retain/reconcile its intent without inferring success from candidate construction. |
+
+For `n` revision records and `p` protected IDs, construction performs bounded sorting/map/set work of order `O(n log n + p log p)` and uses `O(n + p)` metadata storage, including lineage and digest buffers. Candidate validation rehashes retained records and omitted/deleted digests; `validate_against_inputs()` performs an additional complete bounded rebuild and comparison with the same asymptotic cost. Digests reference content; raw source bodies are not loaded by this library. CPU, RSS, foreground interference, retained-query loss and storage reduction still require measurements on the selected host. The HNMF replay ceilings in the dossier describe a separate future scheduler.
+
+### Actual project integration and remaining work
+
+| Surface inspected | Current relationship to `compact.engine` |
+| --- | --- |
+| [hepta-compact-engine/Cargo.toml](../../../codex-rs/hepta-compact-engine/Cargo.toml) | Dependencies are bounded cognitive/types values; there is no cognitive reader, operation-ledger client, SQL store or runtime adapter. |
+| [hepta-memory cognitive_compact.rs](../../../codex-rs/hepta-memory/src/cognitive_compact.rs) | Defines a distinct `local_development_only` checkpoint/lease/summary/loss handshake; it is not an adapter for this crate's legacy checkpoint or Lane C candidate/proof. |
+| [hepta-memory local_compact_executor.rs](../../../codex-rs/hepta-memory/src/local_compact_executor.rs) and [local_compact_hooks.rs](../../../codex-rs/hepta-memory/src/local_compact_hooks.rs) | Persist local lease-bound append-only intent/commit/rehydration witnesses. These qualification surfaces use hepta-memory's checkpoint and cannot be counted as native checkpoint publication/reload for this module. |
+| [hepta-agentd qualification_writer.rs](../../../codex-rs/hepta-agentd/src/qualification_writer.rs) | Composes the existing local executor for qualification turn lifecycle. It does not call this crate's candidate builder/proof assembler, and its payload explicitly records `production_caller=false`. |
+| [CALLERS.toml](../../../CALLERS.toml) and [IMPLEMENTATION_MAP.json](IMPLEMENTATION_MAP.json) | No named product callsite currently composes this module. The privileged caller registry is an authority inventory, not proof that a pure library is consumed. The implementation map retains `productionImplementation=false` and `productCallerState=not_composed`. |
+
+Complete integration in the existing execution spine: add an authenticated coherent-read adapter with full lineage and protected coverage; retain the frozen policy/input preimage and call `validate_against_inputs()`; bind independent observations to the exact candidate; publish/reload through the declared `compact_checkpoint` owner with fenced intent, idempotency and revocation-aware selection; then compose a named caller and execute COMPACT-01..04 against that path. Existing hepta-memory stores must remain under their own owner; introducing a bridge requires explicit contract/owner coordination, not direct cross-owner writes or a replacement memory store. Replay scheduling and skill induction remain separate declared capabilities. Target-host qualification, independent acceptance and activation remain separate gates.
+
+The 2026-10-01 adversarial regressions address legacy resurrection, missing protected input, forged payload/support/omission/deletion/accounting, arithmetic overflow, unbound qualification observations and checkpoint identity reuse across snapshots. Their source presence and this document are not execution receipts. Run the focused package checks and inspect their exact-candidate output before claiming source validation; product completion stays open until the integration above is executable and evidenced.

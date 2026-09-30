@@ -27,7 +27,9 @@
       "sourcePath": "codex-rs/hepta-compact-engine/src/lib.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/lib_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "compact",
       "mappingClass": "owner_native",
@@ -39,7 +41,9 @@
       "sourcePath": "codex-rs/hepta-compact-engine/src/qualified.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/qualified_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "build_qualified_candidate",
       "mappingClass": "owner_native",
@@ -51,7 +55,9 @@
       "sourcePath": "codex-rs/hepta-compact-engine/src/qualified.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/qualified_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "prove_compaction",
       "mappingClass": "owner_native",
@@ -59,7 +65,10 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
+    "Compose a named consumer with authenticated, complete and current cognitive.read inputs; revalidate the frozen policy/input using QualifiedCompactionCandidateV2::validate_against_inputs.",
+    "Establish compact_checkpoint owner publication, fenced generation selection, durable reload and non-resurrection recovery; hepta-memory local compact qualification types are not this engine.",
+    "Bind authenticated independent observations to the exact candidate and retain evaluator provenance beside the V1 structural proof.",
+    "Implement target replay planning and skill proposal separately; neither is implied by checkpoint construction.",
     "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
   ],
   "externalEvidenceGates": [
