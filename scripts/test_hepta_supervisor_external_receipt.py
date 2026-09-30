@@ -35,7 +35,9 @@ class ExternalReceiptTests(unittest.TestCase):
 
     def target(self, os_name: str = "linux") -> dict:
         profile = self.target_profile()
-        architecture, filesystem = ("x86_64", "ext4") if os_name == "linux" else ("arm64", "apfs")
+        architecture, filesystem = (
+            ("x86_64", "ext4") if os_name == "linux" else ("arm64", "apfs")
+        )
         return {
             "schema_version": 1,
             "kind": "runtime-supervisor-target-host",
@@ -53,16 +55,24 @@ class ExternalReceiptTests(unittest.TestCase):
             "feature_set": ["production-verifier"],
             "target_triple": f"{architecture}-target",
             "runner_image_or_host_fingerprint": "host-fingerprint",
-            "host": {"os": os_name, "architecture": architecture,
-                     "kernel": "kernel", "filesystem": filesystem},
+            "host": {
+                "os": os_name,
+                "architecture": architecture,
+                "kernel": "kernel",
+                "filesystem": filesystem,
+            },
             "profile_sha256": canonical_profile_digest(profile),
             "workload_sha256": "d" * 64,
             "real_processes": 256,
             "fault_results": [
-                {"scenario": scenario, "status": "passed", "fault_cut": scenario,
-                 "raw_log_sha256": "1" * 64,
-                 "durable_snapshot_before_sha256": "2" * 64,
-                 "durable_snapshot_after_sha256": "3" * 64}
+                {
+                    "scenario": scenario,
+                    "status": "passed",
+                    "fault_cut": scenario,
+                    "raw_log_sha256": "1" * 64,
+                    "durable_snapshot_before_sha256": "2" * 64,
+                    "durable_snapshot_after_sha256": "3" * 64,
+                }
                 for scenario in profile["fault_scenarios"]
             ],
             "metrics": {"tick_lateness_p99_ms": 99},
@@ -77,8 +87,17 @@ class ExternalReceiptTests(unittest.TestCase):
             "profile_id": "production-v1",
             "required_target_hosts": ["linux", "macos"],
             "artifact_boundary": {"daemon_feature_set": ["production-verifier"]},
-            "key_custody": {"required_receipts": ["custody", "rotation", "revocation", "emergency_restore"]},
-            "independent_acceptance": {"required_roles": ["code", "security", "operations"]},
+            "key_custody": {
+                "required_receipts": [
+                    "custody",
+                    "rotation",
+                    "revocation",
+                    "emergency_restore",
+                ]
+            },
+            "independent_acceptance": {
+                "required_roles": ["code", "security", "operations"]
+            },
         }
 
     def test_target_accepts_complete_exact_receipt(self):
@@ -115,22 +134,41 @@ class ExternalReceiptTests(unittest.TestCase):
                 receipt = self.target(os_name)
                 path.write_text(json.dumps(receipt, sort_keys=True))
                 targets.append((path, receipt))
-                refs.append({"os": os_name, "receipt_sha256": hashlib.sha256(path.read_bytes()).hexdigest()})
+                refs.append(
+                    {
+                        "os": os_name,
+                        "receipt_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                    }
+                )
             production = {
-                "schema_version": 1, "kind": "runtime-supervisor-production-acceptance",
-                "profile_id": "production-v1", "source_sha": SHA40,
-                "base_sha": "c" * 40, "merge_candidate_sha": "d" * 40,
-                "final_merge_sha": "e" * 40, "workflow_sha": "f" * 40,
-                "workflow_run_id": "18", "binary_sha256": SHA256,
+                "schema_version": 1,
+                "kind": "runtime-supervisor-production-acceptance",
+                "profile_id": "production-v1",
+                "source_sha": SHA40,
+                "base_sha": "c" * 40,
+                "merge_candidate_sha": "d" * 40,
+                "final_merge_sha": "e" * 40,
+                "workflow_sha": "f" * 40,
+                "workflow_run_id": "18",
+                "binary_sha256": SHA256,
                 "cargo_lock_sha256": "c" * 64,
-                "feature_set": ["production-verifier"], "target_receipts": refs,
-                "key_custody_receipts": {name: str(index + 4) * 64 for index, name in enumerate(
-                    ("custody", "rotation", "revocation", "emergency_restore"))},
+                "feature_set": ["production-verifier"],
+                "target_receipts": refs,
+                "key_custody_receipts": {
+                    name: str(index + 4) * 64
+                    for index, name in enumerate(
+                        ("custody", "rotation", "revocation", "emergency_restore")
+                    )
+                },
                 "atomic_recovery_observation_sha256": "8" * 64,
                 "operator_drill_receipt_sha256": "9" * 64,
                 "independent_reviews": [
-                    {"role": role, "reviewer": reviewer, "decision": "accepted",
-                     "receipt_sha256": digit * 64}
+                    {
+                        "role": role,
+                        "reviewer": reviewer,
+                        "decision": "accepted",
+                        "receipt_sha256": digit * 64,
+                    }
                     for role, reviewer, digit in (
                         ("code", "code-reviewer", "a"),
                         ("security", "security-reviewer", "b"),
@@ -149,13 +187,17 @@ class ExternalReceiptTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 validate_production(broken, self.production_profile(), targets)
             broken = copy.deepcopy(production)
-            broken["target_receipts"].append(copy.deepcopy(broken["target_receipts"][0]))
+            broken["target_receipts"].append(
+                copy.deepcopy(broken["target_receipts"][0])
+            )
             with self.assertRaises(ValueError):
                 validate_production(broken, self.production_profile(), targets)
             drifted_targets = copy.deepcopy(targets)
             drifted_targets[0][1]["cargo_lock_sha256"] = "d" * 64
             with self.assertRaises(ValueError):
-                validate_production(production, self.production_profile(), drifted_targets)
+                validate_production(
+                    production, self.production_profile(), drifted_targets
+                )
 
 
 if __name__ == "__main__":

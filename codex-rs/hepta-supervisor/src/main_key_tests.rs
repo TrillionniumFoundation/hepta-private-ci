@@ -26,8 +26,7 @@ fn authority_bundle(temp: &tempfile::TempDir) -> (OsString, OsString, Vec<u8>) {
     let bytes = bundle.to_json_bytes().expect("bundle JSON");
     let path = temp.path().join("authority-bundle.json");
     std::fs::write(&path, &bytes).expect("write bundle");
-    std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600))
-        .expect("bundle mode");
+    std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600)).expect("bundle mode");
     (
         path.into_os_string(),
         OsString::from(bundle.bundle_sha256.as_str()),
@@ -38,11 +37,8 @@ fn authority_bundle(temp: &tempfile::TempDir) -> (OsString, OsString, Vec<u8>) {
 #[test]
 fn lifecycle_only_options_require_exact_absolute_fleet_root() {
     let temp = tempfile::tempdir().expect("directory");
-    let options = parse_options_from([
-        OsString::from("--fleet-root"),
-        absolute_fleet(&temp),
-    ])
-    .expect("lifecycle-only options");
+    let options = parse_options_from([OsString::from("--fleet-root"), absolute_fleet(&temp)])
+        .expect("lifecycle-only options");
     assert_eq!(options.fleet_root.as_path(), temp.path().join("fleet"));
     assert!(options.grant_verifier.is_none());
 }

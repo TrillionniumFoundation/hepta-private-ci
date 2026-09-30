@@ -4,6 +4,7 @@ The pinned nextest reporter is a trusted runner input, not a security boundary
 against a malicious same-UID test/runner. Bind a test name to its binary ID; a
 summary, a same-named test in another binary, or a retry is not equivalent proof.
 """
+
 from __future__ import annotations
 
 import json
@@ -32,6 +33,7 @@ BAD_STATUS = re.compile(
 
 def strict_json(raw: str | bytes) -> Any:
     """Reject duplicate members and JavaScript non-finite extensions at all depths."""
+
     def object_pairs(pairs):
         result = {}
         for key, value in pairs:
@@ -49,8 +51,12 @@ def strict_json(raw: str | bytes) -> Any:
             raise ValueError("non-finite JSON number")
         return number
 
-    return json.loads(raw, object_pairs_hook=object_pairs,
-                      parse_constant=constant, parse_float=finite_float)
+    return json.loads(
+        raw,
+        object_pairs_hook=object_pairs,
+        parse_constant=constant,
+        parse_float=finite_float,
+    )
 
 
 def read_regular(path: Path, maximum: int) -> bytes:
@@ -70,10 +76,15 @@ def read_regular(path: Path, maximum: int) -> bytes:
     fd = os.open(path, flags)
     try:
         opened = os.fstat(fd)
-        if (not stat.S_ISREG(opened.st_mode)
-                or (before.st_dev, before.st_ino) != (opened.st_dev, opened.st_ino)
-                or opened.st_nlink != 1 or opened.st_size > maximum):
-            raise ValueError(f"invalid, linked, replaced or oversized file: {path.name}")
+        if (
+            not stat.S_ISREG(opened.st_mode)
+            or (before.st_dev, before.st_ino) != (opened.st_dev, opened.st_ino)
+            or opened.st_nlink != 1
+            or opened.st_size > maximum
+        ):
+            raise ValueError(
+                f"invalid, linked, replaced or oversized file: {path.name}"
+            )
         chunks = []
         remaining = maximum + 1
         while remaining:
@@ -83,8 +94,16 @@ def read_regular(path: Path, maximum: int) -> bytes:
             chunks.append(chunk)
             remaining -= len(chunk)
         after = os.fstat(fd)
-        stable = ("st_dev", "st_ino", "st_mode", "st_uid", "st_nlink",
-                  "st_size", "st_mtime_ns", "st_ctime_ns")
+        stable = (
+            "st_dev",
+            "st_ino",
+            "st_mode",
+            "st_uid",
+            "st_nlink",
+            "st_size",
+            "st_mtime_ns",
+            "st_ctime_ns",
+        )
         if any(getattr(opened, f) != getattr(after, f) for f in stable):
             raise ValueError(f"file changed while reading: {path.name}")
         data = b"".join(chunks)
@@ -96,7 +115,9 @@ def read_regular(path: Path, maximum: int) -> bytes:
 
 
 def validate_transcript(
-    log: bytes, expected: dict[str, tuple[str, ...]], passed: int,
+    log: bytes,
+    expected: dict[str, tuple[str, ...]],
+    passed: int,
 ) -> dict[str, Any]:
     """Validate one complete, non-retried pinned-nextest invocation.
 
@@ -109,8 +130,11 @@ def validate_transcript(
         raise ValueError("missing nonempty test expectation")
     lines = ANSI.sub("", log.decode("utf-8", errors="strict")).splitlines()
     starts = [i for i, line in enumerate(lines) if START.fullmatch(line)]
-    summaries = [(i, SUMMARY.fullmatch(line)) for i, line in enumerate(lines)
-                 if SUMMARY.fullmatch(line)]
+    summaries = [
+        (i, SUMMARY.fullmatch(line))
+        for i, line in enumerate(lines)
+        if SUMMARY.fullmatch(line)
+    ]
     if len(starts) != 1 or len(summaries) != 1:
         raise ValueError("expected one nextest run and one successful terminal summary")
     end, summary = summaries[0]
@@ -124,7 +148,9 @@ def validate_transcript(
     seen: set[tuple[str, str]] = set()
     for i, line in enumerate(lines):
         if BAD_STATUS.match(line):
-            raise ValueError("retry, failed, timed-out or leaky test is not a clean pass")
+            raise ValueError(
+                "retry, failed, timed-out or leaky test is not a clean pass"
+            )
         match = PASS.fullmatch(line)
         if match:
             binary, test = match.groups()

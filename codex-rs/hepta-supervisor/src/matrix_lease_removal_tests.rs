@@ -28,9 +28,14 @@ fn matrix_normal_absence_is_not_exit_cleanup_evidence() {
     let temp = tempfile::tempdir().expect("directory");
     let path = temp.path().join("matrix-lease.json");
     let lease = lease();
-    assert!(MatrixProcessLeaseRemoval::new(&path, &lease).finish(&path, &lease).is_err());
+    assert!(
+        MatrixProcessLeaseRemoval::new(&path, &lease)
+            .finish(&path, &lease)
+            .is_err()
+    );
     MatrixProcessLeaseRemoval::for_failed_publication(&path, &lease)
-        .finish(&path, &lease).expect("same-owner failed publication can be absent");
+        .finish(&path, &lease)
+        .expect("same-owner failed publication can be absent");
 }
 
 #[test]
@@ -40,11 +45,19 @@ fn matrix_unlink_sync_retry_requires_the_same_owner_witness() {
     let lease = lease();
     write_matrix_lease(&path, &lease).expect("lease");
     let mut owner = MatrixProcessLeaseRemoval::new(&path, &lease);
-    assert!(owner.finish_with(&path, &lease, |_| {
-        Err(std::io::Error::other("injected sync failure").into())
-    }).is_err());
+    assert!(
+        owner
+            .finish_with(&path, &lease, |_| {
+                Err(std::io::Error::other("injected sync failure").into())
+            })
+            .is_err()
+    );
     assert!(read_matrix_lease(&path).expect("read").is_none());
-    assert!(MatrixProcessLeaseRemoval::new(&path, &lease).finish(&path, &lease).is_err());
+    assert!(
+        MatrixProcessLeaseRemoval::new(&path, &lease)
+            .finish(&path, &lease)
+            .is_err()
+    );
     owner.finish(&path, &lease).expect("same owner sync retry");
 }
 
@@ -54,9 +67,13 @@ fn matrix_restored_or_substituted_lease_never_reuses_cleanup_permission() {
     let path = temp.path().join("matrix-lease.json");
     let expected = lease();
     let mut owner = MatrixProcessLeaseRemoval::for_failed_publication(&path, &expected);
-    assert!(owner.finish_with(&path, &expected, |_| {
-        Err(std::io::Error::other("injected absent-path sync failure").into())
-    }).is_err());
+    assert!(
+        owner
+            .finish_with(&path, &expected, |_| {
+                Err(std::io::Error::other("injected absent-path sync failure").into())
+            })
+            .is_err()
+    );
     write_matrix_lease(&path, &expected).expect("restored same-looking lease");
     assert!(owner.finish(&path, &expected).is_err());
     assert_eq!(read_matrix_lease(&path).expect("read"), Some(expected));
@@ -72,6 +89,10 @@ fn matrix_cleanup_rejects_changed_epoch_and_path() {
     write_matrix_lease(&path, &changed).expect("different lifetime");
     let mut owner = MatrixProcessLeaseRemoval::new(&path, &expected);
     assert!(owner.finish(&path, &expected).is_err());
-    assert!(owner.finish(&temp.path().join("other.json"), &expected).is_err());
+    assert!(
+        owner
+            .finish(&temp.path().join("other.json"), &expected)
+            .is_err()
+    );
     assert_eq!(read_matrix_lease(&path).expect("read"), Some(changed));
 }

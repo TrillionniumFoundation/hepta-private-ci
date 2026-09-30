@@ -86,11 +86,19 @@ fn disk_full_and_fsync_fail_before_signed_intent_publication() {
             write_intent(dir.path(), &intent(SignedIntentStatus::Prepared))
         });
         assert!(result.is_err(), "{point} must fail");
-        assert!(read_intent(dir.path()).expect("read after failure").is_none());
+        assert!(
+            read_intent(dir.path())
+                .expect("read after failure")
+                .is_none()
+        );
         assert!(
             std::fs::read_dir(dir.path())
                 .expect("list run root")
-                .all(|entry| !entry.expect("entry").file_name().to_string_lossy().ends_with(".tmp"))
+                .all(|entry| !entry
+                    .expect("entry")
+                    .file_name()
+                    .to_string_lossy()
+                    .ends_with(".tmp"))
         );
     }
 }
@@ -100,7 +108,9 @@ fn rename_failure_preserves_predecessor_and_directory_sync_is_ambiguous_but_vali
     let dir = tempfile::tempdir().expect("temporary directory");
     let prepared = intent(SignedIntentStatus::Prepared);
     write_intent(dir.path(), &prepared).expect("write predecessor");
-    let queued = prepared.with_status(SignedIntentStatus::Queued).expect("queued");
+    let queued = prepared
+        .with_status(SignedIntentStatus::Queued)
+        .expect("queued");
     let rename = with_qualification_fault("signed_intent.rename", ErrorKind::Other, || {
         write_intent(dir.path(), &queued)
     });
@@ -110,13 +120,15 @@ fn rename_failure_preserves_predecessor_and_directory_sync_is_ambiguous_but_vali
         Some(prepared)
     );
 
-    let directory_sync = with_qualification_fault(
-        "signed_intent.directory_sync",
-        ErrorKind::Other,
-        || write_intent(dir.path(), &queued),
-    );
+    let directory_sync =
+        with_qualification_fault("signed_intent.directory_sync", ErrorKind::Other, || {
+            write_intent(dir.path(), &queued)
+        });
     assert!(directory_sync.is_err());
-    assert_eq!(read_intent(dir.path()).expect("read valid head"), Some(queued));
+    assert_eq!(
+        read_intent(dir.path()).expect("read valid head"),
+        Some(queued)
+    );
 }
 
 #[test]
@@ -137,20 +149,21 @@ fn release_transaction_and_restart_record_never_report_success_without_durabilit
     );
 
     let restart_dir = tempfile::tempdir().expect("temporary restart directory");
-    let disk_full = with_qualification_fault(
-        "restart_journal.file_write",
-        ErrorKind::StorageFull,
-        || {
+    let disk_full =
+        with_qualification_fault("restart_journal.file_write", ErrorKind::StorageFull, || {
             claim_restart(
                 restart_dir.path(),
                 3,
                 Duration::from_secs(300),
                 Duration::from_millis(10),
             )
-        },
-    );
+        });
     assert!(disk_full.is_err());
-    assert!(pending_restart(restart_dir.path(), 3).expect("read restart").is_none());
+    assert!(
+        pending_restart(restart_dir.path(), 3)
+            .expect("read restart")
+            .is_none()
+    );
 
     claim_restart(
         restart_dir.path(),
@@ -169,7 +182,11 @@ fn release_transaction_and_restart_record_never_report_success_without_durabilit
         )
     });
     assert!(rename.is_err());
-    assert!(pending_restart(restart_dir.path(), 3).expect("read predecessor").is_none());
+    assert!(
+        pending_restart(restart_dir.path(), 3)
+            .expect("read predecessor")
+            .is_none()
+    );
 }
 
 #[test]
@@ -191,11 +208,9 @@ fn lease_write_hard_link_and_directory_sync_faults_are_fail_closed() {
     }
 
     let dir = tempfile::tempdir().expect("temporary directory");
-    let result = with_qualification_fault(
-        "process_lease.directory_sync",
-        ErrorKind::Other,
-        || write_lease(dir.path(), &lease()),
-    );
+    let result = with_qualification_fault("process_lease.directory_sync", ErrorKind::Other, || {
+        write_lease(dir.path(), &lease())
+    });
     assert!(result.is_err());
     assert!(read_lease(dir.path()).expect("read linked lease").is_some());
 }

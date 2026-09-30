@@ -36,11 +36,7 @@ pub(crate) fn publish(staging: &Path, destination: &Path) -> io::Result<()> {
     publish_at(staging, destination, "durable_publish")
 }
 
-pub(crate) fn publish_at(
-    staging: &Path,
-    destination: &Path,
-    component: &str,
-) -> io::Result<()> {
+pub(crate) fn publish_at(staging: &Path, destination: &Path, component: &str) -> io::Result<()> {
     let parent = staging.parent().ok_or_else(|| {
         io::Error::new(io::ErrorKind::InvalidInput, "durable staging has no parent")
     })?;
@@ -54,11 +50,7 @@ pub(crate) fn publish_at(
 }
 
 #[cfg(unix)]
-fn publish_same_directory(
-    staging: &Path,
-    destination: &Path,
-    component: &str,
-) -> io::Result<()> {
+fn publish_same_directory(staging: &Path, destination: &Path, component: &str) -> io::Result<()> {
     crate::durability::check(component, "rename")?;
     std::fs::rename(staging, destination)?;
     let parent = destination.parent().ok_or_else(|| {
@@ -72,11 +64,7 @@ fn publish_same_directory(
 }
 
 #[cfg(windows)]
-fn publish_same_directory(
-    staging: &Path,
-    destination: &Path,
-    component: &str,
-) -> io::Result<()> {
+fn publish_same_directory(staging: &Path, destination: &Path, component: &str) -> io::Result<()> {
     use windows_sys::Win32::Storage::FileSystem::MOVEFILE_REPLACE_EXISTING;
     use windows_sys::Win32::Storage::FileSystem::MOVEFILE_WRITE_THROUGH;
     use windows_sys::Win32::Storage::FileSystem::MoveFileExW;

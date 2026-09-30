@@ -210,11 +210,8 @@ impl DurableControlIntent {
     }
 
     fn compute_record_digest(&self) -> Result<Sha256Digest, DurableControlIntentError> {
-        let payload = serde_json::to_vec(&(
-            &self.operation_sha256,
-            self.phase,
-            self.completed_unix_ms,
-        ))?;
+        let payload =
+            serde_json::to_vec(&(&self.operation_sha256, self.phase, self.completed_unix_ms))?;
         Ok(Sha256Digest::from_sha256_output(Sha256::digest(
             [CONTROL_RECORD_DOMAIN, payload.as_slice()].concat(),
         )))
@@ -372,9 +369,7 @@ pub(crate) fn cancel_restart_if_unresolved(
     Ok(true)
 }
 
-pub(crate) fn has_unresolved(
-    run_root: &Path,
-) -> Result<bool, DurableControlIntentError> {
+pub(crate) fn has_unresolved(run_root: &Path) -> Result<bool, DurableControlIntentError> {
     Ok(read_control_intent(run_root)?.is_some_and(|intent| !intent.phase.terminal()))
 }
 
@@ -525,7 +520,10 @@ mod tests {
             .expect("read")
             .expect("intent");
         assert_eq!(replayed.operation_sha256, prepared.operation_sha256);
-        assert_eq!(replayed.stop_deadline_unix_ms, prepared.stop_deadline_unix_ms);
+        assert_eq!(
+            replayed.stop_deadline_unix_ms,
+            prepared.stop_deadline_unix_ms
+        );
         assert!(matches!(
             recover_pending(
                 dir.path(),
@@ -535,29 +533,27 @@ mod tests {
                 Instant::now(),
             )
             .expect("recover"),
-            Some(PendingControl::Stop { spawn_generation: 7, .. })
+            Some(PendingControl::Stop {
+                spawn_generation: 7,
+                ..
+            })
         ));
-        assert!(recover_pending(
-            dir.path(),
-            &agent(),
-            7,
-            &identity("incarnation-b"),
-            Instant::now(),
-        )
-        .is_err());
+        assert!(
+            recover_pending(
+                dir.path(),
+                &agent(),
+                7,
+                &identity("incarnation-b"),
+                Instant::now(),
+            )
+            .is_err()
+        );
     }
 
     #[test]
     fn tampering_is_rejected() {
         let dir = tempfile::tempdir().expect("temp");
-        prepare_kill(
-            dir.path(),
-            &agent(),
-            7,
-            &identity("incarnation-a"),
-            8,
-        )
-        .expect("prepare");
+        prepare_kill(dir.path(), &agent(), 7, &identity("incarnation-a"), 8).expect("prepare");
         let path = dir.path().join(CONTROL_INTENT_FILE);
         let mut value: serde_json::Value =
             serde_json::from_slice(&std::fs::read(&path).expect("read")).expect("json");
@@ -581,26 +577,13 @@ mod tests {
             Duration::from_secs(5),
         )
         .expect("stop");
-        prepare_kill(
-            dir.path(),
-            &agent(),
-            7,
-            &identity("incarnation-a"),
-            8,
-        )
-        .expect("dominant kill");
+        prepare_kill(dir.path(), &agent(), 7, &identity("incarnation-a"), 8)
+            .expect("dominant kill");
         assert!(matches!(
-            prepare_kill(
-                dir.path(),
-                &agent(),
-                7,
-                &identity("incarnation-b"),
-                8,
-            ),
+            prepare_kill(dir.path(), &agent(), 7, &identity("incarnation-b"), 8,),
             Err(DurableControlIntentError::Unresolved)
         ));
-        reconcile_absent(dir.path(), &agent(), AgentLifecycle::Stopped)
-            .expect("terminal absence");
+        reconcile_absent(dir.path(), &agent(), AgentLifecycle::Stopped).expect("terminal absence");
         assert!(!has_unresolved(dir.path()).expect("status"));
     }
 }

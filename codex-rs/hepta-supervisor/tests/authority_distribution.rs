@@ -1,15 +1,15 @@
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
-use codex_hepta_memory::H7ArtifactSigner;
-use codex_hepta_memory::H7QualificationRuntime;
-use codex_hepta_memory::H7SignedArtifactEnvelope;
-use codex_hepta_memory::H7SignedArtifactTransition;
 use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_fleet::FleetRegistryError;
 use codex_hepta_fleet::ReleaseId;
 use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
+use codex_hepta_memory::H7ArtifactSigner;
+use codex_hepta_memory::H7QualificationRuntime;
+use codex_hepta_memory::H7SignedArtifactEnvelope;
+use codex_hepta_memory::H7SignedArtifactTransition;
 use codex_hepta_paths::HeptaFleetRoot;
 use codex_hepta_supervisor::H7H89ProductionGrantSigner;
 use codex_hepta_supervisor::H7H89ProductionTransition;
@@ -22,8 +22,8 @@ const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 fn pinned_bundle_rotation_rejects_predecessor_and_accepts_current_signer() {
     let envelope = h7_envelope();
     let agent = AgentId::parse(AGENT_ID).expect("fixed AgentId");
-    let old_signer = H7H89ProductionGrantSigner::from_seed("release-policy", 3, [3; 32])
-        .expect("old signer");
+    let old_signer =
+        H7H89ProductionGrantSigner::from_seed("release-policy", 3, [3; 32]).expect("old signer");
     let current_signer = H7H89ProductionGrantSigner::from_seed("release-policy", 4, [4; 32])
         .expect("current signer");
     let h7_signer = H7ArtifactSigner::from_seed("h7-policy", 9, [7; 32]).expect("H7 signer");
@@ -86,8 +86,8 @@ fn wrong_signer_stale_grant_and_authority_epoch_rollover_fail_closed() {
     let agent = AgentId::parse(AGENT_ID).expect("fixed AgentId");
     let current_signer = H7H89ProductionGrantSigner::from_seed("release-policy", 4, [4; 32])
         .expect("current signer");
-    let wrong_signer = H7H89ProductionGrantSigner::from_seed("other-policy", 4, [8; 32])
-        .expect("wrong signer");
+    let wrong_signer =
+        H7H89ProductionGrantSigner::from_seed("other-policy", 4, [8; 32]).expect("wrong signer");
     let h7_signer = H7ArtifactSigner::from_seed("h7-policy", 9, [7; 32]).expect("H7 signer");
     let bundle = ProductionAuthorityBundle::new(
         current_signer.signer_id(),
@@ -177,8 +177,11 @@ fn fleet_revocation_is_observed_from_the_current_policy_owner() {
         .register(
             AgentManifest::new(
                 agent.clone(),
-                WorkspaceBinding::new(workspace.canonicalize().expect("canonical workspace"), &root)
-                    .expect("workspace binding"),
+                WorkspaceBinding::new(
+                    workspace.canonicalize().expect("canonical workspace"),
+                    &root,
+                )
+                .expect("workspace binding"),
                 ResourceBudget::local_default(),
             )
             .expect("manifest"),
@@ -247,7 +250,9 @@ fn h7_envelope() -> H7SignedArtifactEnvelope {
         Sha256Digest::for_bytes(b"authority-distribution-fence"),
     )
     .expect("trajectory event");
-    runtime.append_trajectory_event(event).expect("append event");
+    runtime
+        .append_trajectory_event(event)
+        .expect("append event");
     runtime
         .evaluate_trajectory("authority-distribution-trajectory")
         .expect("evaluate trajectory");
@@ -272,7 +277,6 @@ fn h7_envelope() -> H7SignedArtifactEnvelope {
         .expect("H7 envelope")
 }
 
-
 #[cfg(unix)]
 #[test]
 fn product_caller_rejects_wrong_authority_bundle_pin() {
@@ -295,11 +299,8 @@ fn product_caller_rejects_wrong_authority_bundle_pin() {
     let fleet = temp.path().join("fleet");
     std::fs::create_dir(&fleet).expect("fleet directory");
     let bundle_path = temp.path().join("authority-bundle.json");
-    std::fs::write(
-        &bundle_path,
-        bundle.to_json_bytes().expect("bundle JSON"),
-    )
-    .expect("write bundle");
+    std::fs::write(&bundle_path, bundle.to_json_bytes().expect("bundle JSON"))
+        .expect("write bundle");
     std::fs::set_permissions(&bundle_path, std::fs::Permissions::from_mode(0o600))
         .expect("owner-only bundle");
 

@@ -97,9 +97,7 @@ impl ProductionAuthorityBundle {
         Ok(())
     }
 
-    pub fn verifier(
-        &self,
-    ) -> Result<H7H89ProductionGrantVerifier, ProductionAuthorityBundleError> {
+    pub fn verifier(&self) -> Result<H7H89ProductionGrantVerifier, ProductionAuthorityBundleError> {
         self.validate()?;
         let h7_verifier = H7ArtifactVerifier::from_bytes(
             self.h7_signer_id.clone(),
@@ -218,10 +216,7 @@ fn validate_unix_metadata(
     Ok(())
 }
 
-fn validate_identifier(
-    value: &str,
-    label: &str,
-) -> Result<(), ProductionAuthorityBundleError> {
+fn validate_identifier(value: &str, label: &str) -> Result<(), ProductionAuthorityBundleError> {
     if value.trim().is_empty()
         || value.len() > 256
         || value.as_bytes().contains(&0)

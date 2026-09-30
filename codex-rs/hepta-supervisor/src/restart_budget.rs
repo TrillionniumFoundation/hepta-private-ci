@@ -60,8 +60,7 @@ fn validate_state(
         || state.window_started_unix_ms == 0
         || state.attempts > maximum_attempts
         || (state.pending
-            && (state.attempts == 0
-                || state.next_eligible_unix_ms < state.window_started_unix_ms))
+            && (state.attempts == 0 || state.next_eligible_unix_ms < state.window_started_unix_ms))
     {
         return Err(RestartBudgetError::Invalid(
             "restart budget state is outside configured bounds".to_string(),

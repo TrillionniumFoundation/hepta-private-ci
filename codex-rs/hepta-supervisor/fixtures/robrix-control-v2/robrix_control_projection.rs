@@ -12,6 +12,7 @@ pub(crate) const MAX_PENDING_APPROVAL_SUMMARY_BYTES: usize = 1024;
 pub(crate) const MAX_RUNTIME_IDENTIFIER_BYTES: usize = 512;
 pub(crate) const MAX_MATRIXD_ERROR_CODE_BYTES: usize = 64;
 pub(crate) const MAX_MATRIXD_ERROR_MESSAGE_BYTES: usize = 1024;
-pub(crate) const ROBRIX_REQUIRED_JSON_SCHEMA_KEYWORDS: [&str; 2] = ["x-hepta-max-utf8-bytes", "x-hepta-safe-text-profile"];
+pub(crate) const ROBRIX_REQUIRED_JSON_SCHEMA_KEYWORDS: [&str; 2] =
+    ["x-hepta-max-utf8-bytes", "x-hepta-safe-text-profile"];
 pub(crate) const MATRIXD_BOOTSTRAP_METHODS: [&str; 2] = ["health", "snapshot"];
 pub(crate) const MATRIXD_FENCED_METHODS: [&str; 3] = ["events", "cancel_turn", "resolve_approval"];

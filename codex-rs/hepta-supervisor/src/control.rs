@@ -108,7 +108,10 @@ impl<D: ProcessDriver> Supervisor<D> {
         let result = self.stop_runtime_slot(agent_id, slot, now);
         if result.is_ok()
             && slot.runtime.as_ref().is_some_and(|runtime| {
-                matches!(runtime.phase, RuntimePhase::Stopping { .. } | RuntimePhase::Killing)
+                matches!(
+                    runtime.phase,
+                    RuntimePhase::Stopping { .. } | RuntimePhase::Killing
+                )
             })
         {
             control_intent::mark_stop_requested(record.layout.run_root())
@@ -154,7 +157,10 @@ impl<D: ProcessDriver> Supervisor<D> {
         // independently pressure the companion, collecting both outcomes.
         if !urgent
             && self.defer_agent_action_for_matrix(
-                agent_id, slot, DeferredAgentActionKind::Stop, now,
+                agent_id,
+                slot,
+                DeferredAgentActionKind::Stop,
+                now,
             )?
         {
             return Ok(());
@@ -189,15 +195,23 @@ impl<D: ProcessDriver> Supervisor<D> {
         if slot.runtime.is_some()
             || slot.matrix.runtime.is_some()
             || slot.release_change.is_some()
-            || slot.release_transaction.as_ref().is_some_and(|transaction| !transaction.phase.terminal())
-            || !matches!(record.lifecycle.lifecycle, AgentLifecycle::Stopped | AgentLifecycle::Failed)
+            || slot
+                .release_transaction
+                .as_ref()
+                .is_some_and(|transaction| !transaction.phase.terminal())
+            || !matches!(
+                record.lifecycle.lifecycle,
+                AgentLifecycle::Stopped | AgentLifecycle::Failed
+            )
             || crate::lease::read_lease(record.layout.run_root())?.is_some()
             || crate::lease::read_matrix_lease(record.layout.matrixd_process_lease())?.is_some()
         {
             return Ok(false);
         }
         control_intent::reconcile_absent(
-            record.layout.run_root(), agent_id, record.lifecycle.lifecycle,
+            record.layout.run_root(),
+            agent_id,
+            record.lifecycle.lifecycle,
         )
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         self.cancel_pending_restart(agent_id, slot)?;
@@ -261,15 +275,22 @@ impl<D: ProcessDriver> Supervisor<D> {
             let generation = active_runtime(agent_id, slot)?.generation;
             if generation != lifecycle.generation {
                 return Err(SupervisorError::GenerationFence {
-                    agent_id: agent_id.clone(), runtime: generation, registry: lifecycle.generation,
+                    agent_id: agent_id.clone(),
+                    runtime: generation,
+                    registry: lifecycle.generation,
                 });
             }
             if lifecycle.lifecycle == AgentLifecycle::Running {
                 let next = self.registry.compare_and_transition(
-                    agent_id, generation, AgentLifecycle::Draining,
+                    agent_id,
+                    generation,
+                    AgentLifecycle::Draining,
                 )?;
                 active_runtime(agent_id, slot)?.generation = next.generation;
-                slot.event(next.generation, SupervisorEventKind::Lifecycle(AgentLifecycle::Draining));
+                slot.event(
+                    next.generation,
+                    SupervisorEventKind::Lifecycle(AgentLifecycle::Draining),
+                );
             }
             Ok(())
         })();
@@ -289,10 +310,14 @@ impl<D: ProcessDriver> Supervisor<D> {
             kill_retained_main(agent_id, slot)
         } else {
             let spawn_generation = active_runtime(agent_id, slot)?.spawn_generation;
-            pending::stage(agent_id, slot, pending::PendingControl::Kill { spawn_generation })
-                .and_then(|()| pending::apply_to_slot(
-                    agent_id, slot, Instant::now(), self.config.stop_grace,
-                ))
+            pending::stage(
+                agent_id,
+                slot,
+                pending::PendingControl::Kill { spawn_generation },
+            )
+            .and_then(|()| {
+                pending::apply_to_slot(agent_id, slot, Instant::now(), self.config.stop_grace)
+            })
         };
         let acknowledgement = if intent.is_ok() && main.is_ok() {
             self.record(agent_id).and_then(|record| {
@@ -312,8 +337,14 @@ impl<D: ProcessDriver> Supervisor<D> {
             main.as_ref().err(),
             acknowledgement.as_ref().err(),
             companion.as_ref().err(),
-        ].into_iter().flatten() {
-            slot.event(0, SupervisorEventKind::DriverFault(bounded_message(fault.to_string())));
+        ]
+        .into_iter()
+        .flatten()
+        {
+            slot.event(
+                0,
+                SupervisorEventKind::DriverFault(bounded_message(fault.to_string())),
+            );
         }
         intent
             .and(cancellation)
@@ -457,8 +488,10 @@ impl<D: ProcessDriver> Supervisor<D> {
         let main = kill_retained_main(agent_id, slot);
         let companion = self.kill_matrix_now(agent_id, slot);
         if let Err(fault) = &companion {
-            slot.event(runtime_generation,
-                SupervisorEventKind::DriverFault(bounded_message(fault.to_string())));
+            slot.event(
+                runtime_generation,
+                SupervisorEventKind::DriverFault(bounded_message(fault.to_string())),
+            );
         }
         main?;
         companion?;
@@ -486,7 +519,10 @@ fn kill_retained_main<P: ManagedProcess>(
     let runtime = active_runtime(agent_id, slot)?;
     runtime.healthy = false;
     if !matches!(runtime.phase, RuntimePhase::Killing) {
-        runtime.process.kill().map_err(|error| driver_error(agent_id, error))?;
+        runtime
+            .process
+            .kill()
+            .map_err(|error| driver_error(agent_id, error))?;
         runtime.phase = RuntimePhase::Killing;
         let generation = runtime.generation;
         slot.event(generation, SupervisorEventKind::KillRequested);

@@ -38,10 +38,10 @@ use crate::runtime::bounded_message;
 use crate::runtime::deadline;
 use crate::runtime::driver_error;
 
-#[path = "matrix_tick.rs"]
-mod tick;
 #[path = "matrix_lease_removal.rs"]
 mod lease_removal;
+#[path = "matrix_tick.rs"]
+mod tick;
 pub(crate) use lease_removal::MatrixProcessLeaseRemoval;
 
 const MAX_MATRIX_BINDING_BYTES: u64 = 65_536;
@@ -189,7 +189,13 @@ impl<D: ProcessDriver> Supervisor<D> {
         let health_deadline = match deadline(now, self.config.health_timeout) {
             Ok(value) => value,
             Err(error) => {
-                self.degrade_matrix(agent_id, slot, attached_agent_generation, error.to_string(), now);
+                self.degrade_matrix(
+                    agent_id,
+                    slot,
+                    attached_agent_generation,
+                    error.to_string(),
+                    now,
+                );
                 return;
             }
         };
@@ -233,9 +239,16 @@ impl<D: ProcessDriver> Supervisor<D> {
             healthy: false,
             fenced: false,
         });
-        slot.event(attached_agent_generation, SupervisorEventKind::MatrixSpawned);
+        slot.event(
+            attached_agent_generation,
+            SupervisorEventKind::MatrixSpawned,
+        );
         let _ = self.publish_owned_matrix_launch(
-            agent_id, slot, record.layout.matrixd_process_lease(), &lease, now,
+            agent_id,
+            slot,
+            record.layout.matrixd_process_lease(),
+            &lease,
+            now,
         );
     }
 
@@ -249,11 +262,16 @@ impl<D: ProcessDriver> Supervisor<D> {
     ) -> Result<(), SupervisorError> {
         let publication = write_matrix_lease(path, lease);
         let publication_failed = publication.is_err();
-        let initialized = slot.matrix.runtime.as_ref().and_then(|runtime| {
-            runtime.process.initialization_failure().map(str::to_owned)
-        });
+        let initialized = slot
+            .matrix
+            .runtime
+            .as_ref()
+            .and_then(|runtime| runtime.process.initialization_failure().map(str::to_owned));
         let launch = publication.and_then(|()| match initialized {
-            Some(error) => Err(driver_error(agent_id, crate::ProcessDriverError::new(error))),
+            Some(error) => Err(driver_error(
+                agent_id,
+                crate::ProcessDriverError::new(error),
+            )),
             None => Ok(()),
         });
         if let Err(error) = launch {
@@ -269,10 +287,18 @@ impl<D: ProcessDriver> Supervisor<D> {
             }
             // Attempt termination before any fallible restart-budget I/O.
             if let Err(signal) = self.kill_matrix_now(agent_id, slot) {
-                slot.event(lease.attached_agent_generation,
-                    SupervisorEventKind::DriverFault(bounded_message(signal.to_string())));
+                slot.event(
+                    lease.attached_agent_generation,
+                    SupervisorEventKind::DriverFault(bounded_message(signal.to_string())),
+                );
             }
-            self.degrade_matrix(agent_id, slot, lease.attached_agent_generation, error.to_string(), now);
+            self.degrade_matrix(
+                agent_id,
+                slot,
+                lease.attached_agent_generation,
+                error.to_string(),
+                now,
+            );
             return Err(error);
         }
         slot.matrix.retry_at = None;
@@ -332,12 +358,16 @@ impl<D: ProcessDriver> Supervisor<D> {
                     healthy: false,
                     fenced: false,
                 });
-                let admission = match slot.matrix.runtime.as_ref().and_then(|runtime| {
-                    runtime.process.initialization_failure().map(str::to_owned)
-                }) {
-                    Some(error) => Err(driver_error(agent_id, crate::ProcessDriverError::new(error))),
-                    None => self.validate_adopted_matrix(slot, record, agent_id, &lease, now),
-                };
+                let admission =
+                    match slot.matrix.runtime.as_ref().and_then(|runtime| {
+                        runtime.process.initialization_failure().map(str::to_owned)
+                    }) {
+                        Some(error) => Err(driver_error(
+                            agent_id,
+                            crate::ProcessDriverError::new(error),
+                        )),
+                        None => self.validate_adopted_matrix(slot, record, agent_id, &lease, now),
+                    };
                 match admission {
                     Ok(Some(health_deadline)) => {
                         let runtime = slot.matrix.runtime.as_mut().ok_or_else(|| {
@@ -356,7 +386,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                     outcome => {
                         let fault = outcome.err();
                         let message = fault.as_ref().map_or_else(
-                            || "Matrix orphan is attached to a non-running main generation".to_string(),
+                            || {
+                                "Matrix orphan is attached to a non-running main generation"
+                                    .to_string()
+                            },
                             ToString::to_string,
                         );
                         // Rejected serving eligibility never discards ownership.
@@ -380,7 +413,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                         if let Err(signal) = &termination {
                             slot.event(
                                 record.lifecycle.generation,
-                                SupervisorEventKind::DriverFault(bounded_message(signal.to_string())),
+                                SupervisorEventKind::DriverFault(bounded_message(
+                                    signal.to_string(),
+                                )),
                             );
                         }
                         return match fault {

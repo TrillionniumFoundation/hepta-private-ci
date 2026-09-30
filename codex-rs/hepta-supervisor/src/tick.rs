@@ -53,7 +53,12 @@ impl<D: ProcessDriver> Supervisor<D> {
                     // Main storage/probe failure does not abandon companion
                     // containment. Retain both faults without masking the first.
                     if let Err(companion) = self.tick_matrix_companion(agent_id, slot, now) {
-                        slot.event(0, SupervisorEventKind::DriverFault(bounded_message(companion.to_string())));
+                        slot.event(
+                            0,
+                            SupervisorEventKind::DriverFault(bounded_message(
+                                companion.to_string(),
+                            )),
+                        );
                     }
                     return Err(error);
                 }
@@ -180,19 +185,27 @@ impl<D: ProcessDriver> Supervisor<D> {
             let termination = if matches!(runtime.phase, RuntimePhase::Killing) {
                 Ok(())
             } else {
-                runtime.process.kill().map_err(|error| driver_error(agent_id, error)).map(|()| {
-                    runtime.phase = RuntimePhase::Killing;
-                    slot.event(runtime.generation, SupervisorEventKind::KillRequested);
-                })
+                runtime
+                    .process
+                    .kill()
+                    .map_err(|error| driver_error(agent_id, error))
+                    .map(|()| {
+                        runtime.phase = RuntimePhase::Killing;
+                        slot.event(runtime.generation, SupervisorEventKind::KillRequested);
+                    })
             };
-            let observation = runtime.process.poll(self.config.driver_poll_batch)
+            let observation = runtime
+                .process
+                .poll(self.config.driver_poll_batch)
                 .map_err(|error| driver_error(agent_id, error))?;
             self.push_logs(slot, observation.logs);
             if let ProcessState::Exited(exit) = observation.state {
                 slot.observed_exit = Some(exit);
                 self.finalize_exit(agent_id, slot, runtime, exit)?;
                 slot.pending_control = None;
-                return Ok(RuntimeTickOutcome::Exited { restart_fault: None });
+                return Ok(RuntimeTickOutcome::Exited {
+                    restart_fault: None,
+                });
             }
             termination?;
             return Ok(RuntimeTickOutcome::Keep);
@@ -323,12 +336,8 @@ impl<D: ProcessDriver> Supervisor<D> {
                     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
                     // Commit the identity proof first. If the budget write is
                     // lost, recovery sees Completed and idempotently clears it.
-                    restart_lineage::complete(
-                        record.layout.run_root(),
-                        agent_id,
-                        &replacement,
-                    )
-                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                    restart_lineage::complete(record.layout.run_root(), agent_id, &replacement)
+                        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
                     crate::restart_budget::complete_restart(record.layout.run_root())
                         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
                     slot.restart_pending = false;
@@ -429,11 +438,13 @@ impl<D: ProcessDriver> Supervisor<D> {
             release_id: runtime.release_id.clone(),
             identity: runtime.identity.clone(),
         };
-        let unpublished_launch = slot.exit_lease_removal.as_ref()
+        let unpublished_launch = slot
+            .exit_lease_removal
+            .as_ref()
             .is_some_and(ProcessLeaseRemoval::is_unpublished_launch);
-        let removal = slot.exit_lease_removal.get_or_insert_with(|| {
-            ProcessLeaseRemoval::new(record.layout.run_root(), &lease)
-        });
+        let removal = slot
+            .exit_lease_removal
+            .get_or_insert_with(|| ProcessLeaseRemoval::new(record.layout.run_root(), &lease));
         removal.finish(record.layout.run_root(), &lease)?;
 
         // Only an exact observed exit plus same-owner lease cleanup advances
@@ -469,10 +480,15 @@ impl<D: ProcessDriver> Supervisor<D> {
             // The initial failure CAS may have failed. Retrying this exact
             // generation after exit must not leave a false live Starting state.
             let failed = self.registry.compare_and_transition(
-                agent_id, runtime.generation, AgentLifecycle::Failed,
+                agent_id,
+                runtime.generation,
+                AgentLifecycle::Failed,
             )?;
             generation = failed.generation;
-            slot.event(generation, SupervisorEventKind::Lifecycle(AgentLifecycle::Failed));
+            slot.event(
+                generation,
+                SupervisorEventKind::Lifecycle(AgentLifecycle::Failed),
+            );
         } else if !fenced {
             let target = match record.lifecycle.lifecycle {
                 AgentLifecycle::Starting

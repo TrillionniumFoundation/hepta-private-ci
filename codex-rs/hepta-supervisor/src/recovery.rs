@@ -326,12 +326,16 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot.event(starting.generation, SupervisorEventKind::Spawned);
         let publication = write_lease(record.layout.run_root(), &lease);
         let publication_failed = publication.is_err();
-        let initialized = slot.runtime.as_ref().and_then(|runtime| {
-            runtime.process.initialization_failure().map(str::to_owned)
-        });
+        let initialized = slot
+            .runtime
+            .as_ref()
+            .and_then(|runtime| runtime.process.initialization_failure().map(str::to_owned));
         let launch = publication
             .and_then(|()| match initialized {
-                Some(error) => Err(driver_error(agent_id, crate::ProcessDriverError::new(error))),
+                Some(error) => Err(driver_error(
+                    agent_id,
+                    crate::ProcessDriverError::new(error),
+                )),
                 None => Ok(()),
             })
             .and_then(|()| {
@@ -539,7 +543,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                     match slot.runtime.as_ref().and_then(|runtime| {
                         runtime.process.initialization_failure().map(str::to_owned)
                     }) {
-                        Some(error) => Err(driver_error(agent_id, crate::ProcessDriverError::new(error))),
+                        Some(error) => Err(driver_error(
+                            agent_id,
+                            crate::ProcessDriverError::new(error),
+                        )),
                         None => Ok(admitted),
                     }
                 });
@@ -602,7 +609,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                     terminal_lifecycle,
                 )
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-                slot.event(record.lifecycle.generation, SupervisorEventKind::OrphanMissing);
+                slot.event(
+                    record.lifecycle.generation,
+                    SupervisorEventKind::OrphanMissing,
+                );
             }
             Adoption::Rejected => {
                 admission?;
@@ -617,7 +627,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                         AgentLifecycle::Failed,
                     )?;
                 }
-                slot.event(record.lifecycle.generation, SupervisorEventKind::OrphanRejected);
+                slot.event(
+                    record.lifecycle.generation,
+                    SupervisorEventKind::OrphanRejected,
+                );
             }
         }
         if let Some(error) = control_fault {

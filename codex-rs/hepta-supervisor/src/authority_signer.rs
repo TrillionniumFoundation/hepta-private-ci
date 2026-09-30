@@ -93,9 +93,15 @@ pub enum SignRequest {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(tag = "operation", rename_all = "snake_case", deny_unknown_fields)]
 pub enum SignResponse {
-    H7Envelope { envelope: H7SignedArtifactEnvelope },
-    ProductionGrant { grant: H7H89ProductionGrant },
-    ProductionRecovery { decision: ProductionRecoveryDecision },
+    H7Envelope {
+        envelope: H7SignedArtifactEnvelope,
+    },
+    ProductionGrant {
+        grant: H7H89ProductionGrant,
+    },
+    ProductionRecovery {
+        decision: ProductionRecoveryDecision,
+    },
 }
 
 #[derive(Debug, Error)]

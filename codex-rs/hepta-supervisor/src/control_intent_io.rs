@@ -64,7 +64,9 @@ fn validate(metadata: &Metadata, maximum: usize) -> Result<(), DurableControlInt
         // SAFETY: geteuid has no arguments and returns the current effective UID.
         let owner = unsafe { libc::geteuid() };
         if metadata.uid() != owner || metadata.nlink() != 1 || metadata.mode() & 0o022 != 0 {
-            return Err(invalid("control intent ownership, links or permissions are unsafe"));
+            return Err(invalid(
+                "control intent ownership, links or permissions are unsafe",
+            ));
         }
     }
     Ok(())

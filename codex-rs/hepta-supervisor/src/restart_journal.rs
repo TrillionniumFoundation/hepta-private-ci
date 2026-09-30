@@ -275,12 +275,7 @@ fn write_record(run_root: &Path, mut record: RestartRecord) -> Result<(), Superv
             "restart record exceeds bound".to_string(),
         ));
     }
-    crate::durable_publish::write_atomic(
-        &temp_path,
-        &final_path,
-        &bytes,
-        "restart_journal",
-    )?;
+    crate::durable_publish::write_atomic(&temp_path, &final_path, &bytes, "restart_journal")?;
     Ok(())
 }
 

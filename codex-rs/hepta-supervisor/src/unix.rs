@@ -247,7 +247,9 @@ impl ProcessDriver for UnixProcessDriver {
             }
             let probe = HealthProbe::spawn(health_identity);
             return Ok(Adoption::Adopted(initialization::finish_adoption(
-                reference, probe, Some(agent_control),
+                reference,
+                probe,
+                Some(agent_control),
             )));
         }
 

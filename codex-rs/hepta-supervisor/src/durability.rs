@@ -24,11 +24,7 @@ thread_local! {
     static QUALIFICATION_FAULT: RefCell<Option<QualificationFault>> = const { RefCell::new(None) };
 }
 
-pub(crate) fn write_all(
-    file: &mut File,
-    bytes: &[u8],
-    component: &str,
-) -> io::Result<()> {
+pub(crate) fn write_all(file: &mut File, bytes: &[u8], component: &str) -> io::Result<()> {
     check(component, "file_write")?;
     file.write_all(bytes)
 }

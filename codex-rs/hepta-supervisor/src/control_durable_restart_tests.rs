@@ -77,9 +77,15 @@ impl ManagedProcess for Process {
         let state = self.0.lock().expect("state");
         Ok(ProcessObservation {
             state: if state.exited {
-                ProcessState::Exited(ProcessExit { success: false, code: None })
+                ProcessState::Exited(ProcessExit {
+                    success: false,
+                    code: None,
+                })
             } else {
-                ProcessState::Running { healthy: true, drained: false }
+                ProcessState::Running {
+                    healthy: true,
+                    drained: false,
+                }
             },
             logs: Vec::new(),
         })
@@ -108,7 +114,9 @@ impl ProcessDriver for Driver {
     }
 
     fn adopt(&mut self, _spec: &AdoptSpec) -> Result<Adoption<Process>, ProcessDriverError> {
-        Err(ProcessDriverError::new("unexpected adoption before completed cleanup"))
+        Err(ProcessDriverError::new(
+            "unexpected adoption before completed cleanup",
+        ))
     }
 }
 
@@ -253,10 +261,12 @@ fn cancellation_survives_reopen(kill: bool) -> Result<()> {
     drop(f.supervisor);
     let (recovered, report) = Supervisor::recover(f.registry.clone(), Driver, config, f.now)?;
     assert!(report.faults.is_empty());
-    assert!(!recovered
-        .snapshot(&f.agent)
-        .expect("snapshot")
-        .restart_pending);
+    assert!(
+        !recovered
+            .snapshot(&f.agent)
+            .expect("snapshot")
+            .restart_pending
+    );
     assert!(crate::restart_budget::pending_restart(&f.root, 3)?.is_none());
     Ok(())
 }
@@ -360,12 +370,7 @@ fn deferred_companion_stop_continuation_does_not_cancel_the_restart_claim() -> R
     f.queue_restart()?;
     f.slot.deferred_agent_action = Some(DeferredAgentAction {
         kind: DeferredAgentActionKind::Stop,
-        spawn_generation: f
-            .slot
-            .runtime
-            .as_ref()
-            .expect("runtime")
-            .spawn_generation,
+        spawn_generation: f.slot.runtime.as_ref().expect("runtime").spawn_generation,
     });
     f.supervisor
         .tick_matrix_companion(&f.agent, &mut f.slot, f.now)?;

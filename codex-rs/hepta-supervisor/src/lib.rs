@@ -12,9 +12,9 @@ mod daemon_client;
 mod daemon_protocol;
 mod driver;
 mod durability;
-mod durable_publish;
 #[cfg(all(test, feature = "qualification"))]
 mod durability_qualification_tests;
+mod durable_publish;
 mod error;
 mod lease;
 mod matrix;

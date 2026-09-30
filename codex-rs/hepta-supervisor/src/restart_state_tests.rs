@@ -65,7 +65,10 @@ struct NoDriver;
 impl ProcessDriver for NoDriver {
     type Process = NoProcess;
 
-    fn spawn(&mut self, _spec: &SpawnSpec) -> Result<SpawnedProcess<NoProcess>, ProcessDriverError> {
+    fn spawn(
+        &mut self,
+        _spec: &SpawnSpec,
+    ) -> Result<SpawnedProcess<NoProcess>, ProcessDriverError> {
         Err(ProcessDriverError::new(
             "unexpected process spawn in recovery-only test",
         ))
@@ -143,7 +146,9 @@ fn public_recovery_preserves_matrix_attempts_without_overwriting_main_projection
     let fixture = Fixture::new()?;
     fixture.write_window(/*attempts*/ 2, unix_millis_now()?)?;
     let supervisor = fixture.recover()?;
-    let snapshot = supervisor.snapshot(&fixture.agent).expect("registered agent");
+    let snapshot = supervisor
+        .snapshot(&fixture.agent)
+        .expect("registered agent");
     assert_eq!(
         (snapshot.matrix.restart_attempt, snapshot.restart_attempt),
         (2, 0)
@@ -231,7 +236,9 @@ fn expired_matrix_window_is_cleared_durably() -> Result<()> {
     let snapshot = supervisor.snapshot(&fixture.agent).expect("agent");
     assert_eq!(snapshot.matrix.restart_attempt, 0);
     assert_eq!(
-        read_restart_journal(&fixture.run_root)?.expect("journal").matrix,
+        read_restart_journal(&fixture.run_root)?
+            .expect("journal")
+            .matrix,
         DurableRestartWindow::empty()
     );
     Ok(())
@@ -269,7 +276,8 @@ fn staged_matrix_recovery_reapplies_backoff_once_without_touching_main_state() {
         (2, Some(now + RESTART_BACKOFF_MIN * 2), false)
     );
     slot.matrix.restart_attempt = 3;
-    slot.matrix.apply_restart_recovery(now + RESTART_BACKOFF_MAX);
+    slot.matrix
+        .apply_restart_recovery(now + RESTART_BACKOFF_MAX);
     assert_eq!(
         (slot.matrix.restart_attempt, slot.matrix.retry_at),
         (3, Some(now + RESTART_BACKOFF_MIN * 2))

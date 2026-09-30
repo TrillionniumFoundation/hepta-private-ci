@@ -5,6 +5,7 @@ The tracked matrix records source claims only. Exact-head, merge, target-host,
 independent acceptance and activation remain separate evidence dimensions and
 may never be inferred from source presence or test-source presence.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -34,7 +35,9 @@ def reject_duplicates(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
 
 
 def load_json(path: Path) -> dict[str, Any]:
-    data = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=reject_duplicates)
+    data = json.loads(
+        path.read_text(encoding="utf-8"), object_pairs_hook=reject_duplicates
+    )
     require(isinstance(data, dict), f"{path}: root must be an object")
     return data
 
@@ -56,13 +59,19 @@ def validate_matrix(root: Path, matrix: dict[str, Any]) -> None:
         "merge_candidate": {"pending", "passed", "failed", "not_applicable"},
         "target_host": {"not_run", "pending", "passed", "failed", "not_applicable"},
         "independent_acceptance": {
-            "not_obtained", "pending", "accepted", "rejected", "not_applicable"
+            "not_obtained",
+            "pending",
+            "accepted",
+            "rejected",
+            "not_applicable",
         },
     }
     require(set(semantics) == set(expected_semantics), "status semantics fields")
     for field, expected in expected_semantics.items():
         values = semantics[field]
-        require(isinstance(values, list) and set(values) == expected, f"{field} semantics")
+        require(
+            isinstance(values, list) and set(values) == expected, f"{field} semantics"
+        )
 
     current = matrix.get("current")
     require(isinstance(current, dict), "current status")
@@ -70,9 +79,14 @@ def validate_matrix(root: Path, matrix: dict[str, Any]) -> None:
         require(current.get(field) in allowed, f"current {field}")
     for field in ("activated", "release"):
         require(type(current.get(field)) is bool, f"current {field} must be boolean")
-    require(current["activated"] is False, "source matrix cannot self-activate production")
+    require(
+        current["activated"] is False, "source matrix cannot self-activate production"
+    )
     require(current["release"] is False, "source matrix cannot self-release production")
-    require(current["target_host"] != "passed", "tracked source cannot assert target-host pass")
+    require(
+        current["target_host"] != "passed",
+        "tracked source cannot assert target-host pass",
+    )
     require(
         current["independent_acceptance"] != "accepted",
         "tracked source cannot assert independent acceptance",
@@ -91,21 +105,31 @@ def validate_matrix(root: Path, matrix: dict[str, Any]) -> None:
         for field, allowed in expected_semantics.items():
             require(capability.get(field) in allowed, f"{identifier}: {field}")
         require(type(capability.get("activated")) is bool, f"{identifier}: activated")
-        require(capability["activated"] is False, f"{identifier}: source cannot activate")
+        require(
+            capability["activated"] is False, f"{identifier}: source cannot activate"
+        )
         paths = capability.get("source_paths")
         require(isinstance(paths, list) and paths, f"{identifier}: source paths")
         for path in paths:
-            require(isinstance(path, str) and path and not path.startswith("/"),
-                    f"{identifier}: invalid source path")
+            require(
+                isinstance(path, str) and path and not path.startswith("/"),
+                f"{identifier}: invalid source path",
+            )
             require((root / path).exists(), f"{identifier}: missing source path {path}")
         if capability["source"] == "not_implemented":
-            require(capability["exact_head"] == "not_applicable",
-                    f"{identifier}: unimplemented exact head")
-            require(capability["merge_candidate"] == "not_applicable",
-                    f"{identifier}: unimplemented merge")
+            require(
+                capability["exact_head"] == "not_applicable",
+                f"{identifier}: unimplemented exact head",
+            )
+            require(
+                capability["merge_candidate"] == "not_applicable",
+                f"{identifier}: unimplemented merge",
+            )
         if capability["test_source"] == "absent":
-            require(capability["source"] != "implemented",
-                    f"{identifier}: implemented capability needs test source")
+            require(
+                capability["source"] != "implemented",
+                f"{identifier}: implemented capability needs test source",
+            )
 
 
 def validate_history(root: Path, history: dict[str, Any]) -> None:
@@ -123,25 +147,34 @@ def validate_history(root: Path, history: dict[str, Any]) -> None:
         require(entry.get("normative") is False, f"{path}: normative false")
         superseded = entry.get("superseded_by")
         require(isinstance(superseded, list) and superseded, f"{path}: superseded_by")
-        require((root / DOC_ROOT / path).is_file(), f"missing historical document {path}")
+        require(
+            (root / DOC_ROOT / path).is_file(), f"missing historical document {path}"
+        )
         for current in superseded:
-            require((root / DOC_ROOT / current).is_file(), f"{path}: missing successor {current}")
-    actual = {
-        path.name for path in (root / DOC_ROOT).glob("*REPAIR_*.md")
-    } | {
+            require(
+                (root / DOC_ROOT / current).is_file(),
+                f"{path}: missing successor {current}",
+            )
+    actual = {path.name for path in (root / DOC_ROOT).glob("*REPAIR_*.md")} | {
         path.name for path in (root / DOC_ROOT).glob("EXIT_FINALIZATION_RETRY_*.md")
     }
-    require(set(by_path) == actual,
-            f"historical metadata mismatch: missing={sorted(actual-set(by_path))} extra={sorted(set(by_path)-actual)}")
+    require(
+        set(by_path) == actual,
+        f"historical metadata mismatch: missing={sorted(actual - set(by_path))} extra={sorted(set(by_path) - actual)}",
+    )
 
 
 def validate_build_boundary(root: Path) -> None:
     cargo = tomllib.loads((root / CARGO_PATH).read_text(encoding="utf-8"))
     features = cargo.get("features", {})
-    require(features.get("production-verifier") == ["production-authority"],
-            "production-verifier feature graph")
-    require(features.get("offline-authority-tools") == ["production-verifier"],
-            "offline-authority-tools feature graph")
+    require(
+        features.get("production-verifier") == ["production-authority"],
+        "production-verifier feature graph",
+    )
+    require(
+        features.get("offline-authority-tools") == ["production-verifier"],
+        "offline-authority-tools feature graph",
+    )
     signer_bins = {
         "hepta-supervisor-authority-bundle",
         "hepta-authority-signer",
@@ -152,25 +185,41 @@ def validate_build_boundary(root: Path) -> None:
     bins = {entry["name"]: entry for entry in cargo.get("bin", [])}
     require(signer_bins <= set(bins), "offline tool binary inventory")
     for name in signer_bins:
-        require(bins[name].get("required-features") == ["offline-authority-tools"],
-                f"{name}: offline feature boundary")
-    require(bins.get("hepta-supervisord", {}).get("required-features") is None,
-            "daemon must retain lifecycle-only default build")
+        require(
+            bins[name].get("required-features") == ["offline-authority-tools"],
+            f"{name}: offline feature boundary",
+        )
+    require(
+        bins.get("hepta-supervisord", {}).get("required-features") is None,
+        "daemon must retain lifecycle-only default build",
+    )
 
     main = (root / MAIN_PATH).read_text(encoding="utf-8")
     for legacy in (
-        "--grant-verifier-key", "--grant-signer-id", "--grant-signer-epoch",
-        "--h7-verifier-key", "--h7-signer-id", "--h7-signer-epoch",
+        "--grant-verifier-key",
+        "--grant-signer-id",
+        "--grant-signer-epoch",
+        "--h7-verifier-key",
+        "--h7-signer-id",
+        "--h7-signer-epoch",
     ):
         require(legacy not in main, f"legacy daemon option remains: {legacy}")
-    require("--authority-bundle" in main and "--authority-bundle-sha256" in main,
-            "pinned authority bundle options")
+    require(
+        "--authority-bundle" in main and "--authority-bundle-sha256" in main,
+        "pinned authority bundle options",
+    )
 
     library = (root / LIB_PATH).read_text(encoding="utf-8")
-    require('#[cfg(any(test, feature = "offline-authority-tools"))]\nmod authority_signer;'
-            in library, "private-key module gate")
-    require('#[cfg(any(test, feature = "offline-authority-tools"))]\npub use signed_authority::H7H89ProductionGrantSigner;'
-            in library, "grant signer export gate")
+    require(
+        '#[cfg(any(test, feature = "offline-authority-tools"))]\nmod authority_signer;'
+        in library,
+        "private-key module gate",
+    )
+    require(
+        '#[cfg(any(test, feature = "offline-authority-tools"))]\npub use signed_authority::H7H89ProductionGrantSigner;'
+        in library,
+        "grant signer export gate",
+    )
 
 
 def validate_technical(root: Path) -> None:
@@ -221,9 +270,17 @@ def render(matrix: dict[str, Any]) -> str:
         if isinstance(value, bool):
             value = str(value).lower()
         lines.append(f"| {label} | `{value}` |")
-    lines.extend(["", f"Current claim: {current['claim']}", "", "## Capability matrix", "",
-                  "| Capability | Source | Test source | Exact head | Merge candidate | Target host | Independent acceptance | Activated |",
-                  "| --- | --- | --- | --- | --- | --- | --- | --- |"])
+    lines.extend(
+        [
+            "",
+            f"Current claim: {current['claim']}",
+            "",
+            "## Capability matrix",
+            "",
+            "| Capability | Source | Test source | Exact head | Merge candidate | Target host | Independent acceptance | Activated |",
+            "| --- | --- | --- | --- | --- | --- | --- | --- |",
+        ]
+    )
     for capability in matrix["capabilities"]:
         values = {**capability, "activated": str(capability["activated"]).lower()}
         lines.append(
@@ -232,13 +289,15 @@ def render(matrix: dict[str, Any]) -> str:
                 **values
             )
         )
-    lines.extend([
-        "",
-        "## Evidence rule",
-        "",
-        "Repository CI receipts must bind one exact Git identity. Target-host receipts, code/security/operations acceptance and activation remain external, independently validated gates. Missing, queued, skipped or stale evidence is never represented as passed.",
-        "",
-    ])
+    lines.extend(
+        [
+            "",
+            "## Evidence rule",
+            "",
+            "Repository CI receipts must bind one exact Git identity. Target-host receipts, code/security/operations acceptance and activation remain external, independently validated gates. Missing, queued, skipped or stale evidence is never represented as passed.",
+            "",
+        ]
+    )
     return "\n".join(lines)
 
 
@@ -265,10 +324,19 @@ def main() -> int:
             destination.write_text(rendered, encoding="utf-8")
         else:
             require(destination.is_file(), f"missing generated status: {destination}")
-            require(destination.read_text(encoding="utf-8") == rendered,
-                    "CURRENT_STATUS.md is stale; run generate")
+            require(
+                destination.read_text(encoding="utf-8") == rendered,
+                "CURRENT_STATUS.md is stale; run generate",
+            )
         return 0
-    except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError, tomllib.TOMLDecodeError) as error:
+    except (
+        OSError,
+        ValueError,
+        KeyError,
+        TypeError,
+        json.JSONDecodeError,
+        tomllib.TOMLDecodeError,
+    ) as error:
         print(f"runtime.supervisor status rejected: {error}", file=sys.stderr)
         return 2
 

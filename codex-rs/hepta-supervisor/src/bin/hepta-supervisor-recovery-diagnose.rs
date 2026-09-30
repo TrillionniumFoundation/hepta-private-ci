@@ -58,9 +58,7 @@ fn parse_options() -> anyhow::Result<Options> {
                         .map_err(|error| anyhow::anyhow!("invalid authority epoch: {error}"))?,
                 );
             }
-            Some("--admission-frontier-sha256")
-                if current_admission_frontier_sha256.is_none() =>
-            {
+            Some("--admission-frontier-sha256") if current_admission_frontier_sha256.is_none() => {
                 current_admission_frontier_sha256 = Some(
                     Sha256Digest::parse(next_utf8(&mut arguments, "admission frontier")?)
                         .map_err(|error| anyhow::anyhow!(error.to_string()))?,

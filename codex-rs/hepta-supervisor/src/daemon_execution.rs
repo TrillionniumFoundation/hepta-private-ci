@@ -77,9 +77,9 @@ impl Execution {
     }
 
     fn view_refresh_due(&self, now: Instant) -> bool {
-        self.elapsed_us(now).saturating_sub(
-            self.last_view_refresh_us.load(Ordering::Relaxed),
-        ) >= micros(READ_VIEW_REFRESH_INTERVAL)
+        self.elapsed_us(now)
+            .saturating_sub(self.last_view_refresh_us.load(Ordering::Relaxed))
+            >= micros(READ_VIEW_REFRESH_INTERVAL)
     }
 
     fn note_view_refresh(&self, now: Instant) {

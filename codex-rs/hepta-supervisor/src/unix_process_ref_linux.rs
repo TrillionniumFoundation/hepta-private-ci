@@ -25,7 +25,9 @@ impl ProcessRef {
         let fd = i32::try_from(fd)
             .map_err(|_| io::Error::other("pidfd_open returned an invalid descriptor"))?;
         // SAFETY: successful pidfd_open transfers one new CLOEXEC descriptor.
-        Ok(Some(Self { fd: unsafe { File::from_raw_fd(fd) } }))
+        Ok(Some(Self {
+            fd: unsafe { File::from_raw_fd(fd) },
+        }))
     }
 
     pub(in crate::unix) fn exited(&self) -> io::Result<bool> {
@@ -47,7 +49,10 @@ impl ProcessRef {
 
     pub(in crate::unix) fn signal(&self, signal: i32) -> io::Result<()> {
         if !matches!(signal, libc::SIGTERM | libc::SIGKILL) {
-            return Err(io::Error::new(io::ErrorKind::InvalidInput, "unsupported control signal"));
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "unsupported control signal",
+            ));
         }
         // SAFETY: live owned pidfd; null siginfo asks the kernel to construct it.
         // The kernel targets this task reference, not a subsequently reused PID.

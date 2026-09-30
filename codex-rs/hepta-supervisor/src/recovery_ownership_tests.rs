@@ -82,9 +82,15 @@ impl ManagedProcess for Process {
         let state = self.0.lock().expect("process state");
         Ok(ProcessObservation {
             state: if state.exited {
-                ProcessState::Exited(ProcessExit { success: false, code: None })
+                ProcessState::Exited(ProcessExit {
+                    success: false,
+                    code: None,
+                })
             } else {
-                ProcessState::Running { healthy: true, drained: false }
+                ProcessState::Running {
+                    healthy: true,
+                    drained: false,
+                }
             },
             logs: Vec::new(),
         })
@@ -146,7 +152,10 @@ impl ProcessDriver for Driver {
         adopt(&self.main)
     }
 
-    fn adopt_matrixd(&mut self, _spec: &MatrixAdoptSpec) -> Result<Adoption<Process>, ProcessDriverError> {
+    fn adopt_matrixd(
+        &mut self,
+        _spec: &MatrixAdoptSpec,
+    ) -> Result<Adoption<Process>, ProcessDriverError> {
         adopt(&self.matrix)
     }
 }
@@ -181,9 +190,18 @@ impl Fixture {
         };
         let now = Instant::now();
         let config = SupervisorConfig::local_default();
-        let (supervisor, report) = Supervisor::recover(registry.clone(), driver.clone(), config.clone(), now)?;
+        let (supervisor, report) =
+            Supervisor::recover(registry.clone(), driver.clone(), config.clone(), now)?;
         assert!(report.faults.is_empty());
-        Ok(Self { _temp: temp, registry, agent, driver, supervisor, slot: AgentSlot::new(&config), now })
+        Ok(Self {
+            _temp: temp,
+            registry,
+            agent,
+            driver,
+            supervisor,
+            slot: AgentSlot::new(&config),
+            now,
+        })
     }
 
     fn record(&self) -> Result<AgentRecord> {
@@ -192,8 +210,14 @@ impl Fixture {
 
     fn publish_main(&self, release: &str) -> Result<ProcessLease> {
         let stopped = self.record()?.lifecycle.generation;
-        let starting = self.registry.compare_and_transition(&self.agent, stopped, AgentLifecycle::Starting)?;
-        self.registry.compare_and_transition(&self.agent, starting.generation, AgentLifecycle::Running)?;
+        let starting =
+            self.registry
+                .compare_and_transition(&self.agent, stopped, AgentLifecycle::Starting)?;
+        self.registry.compare_and_transition(
+            &self.agent,
+            starting.generation,
+            AgentLifecycle::Running,
+        )?;
         let lease = ProcessLease {
             schema_version: PROCESS_LEASE_SCHEMA_VERSION,
             agent_id: self.agent.clone(),
@@ -223,7 +247,8 @@ impl Fixture {
 
     fn recover(&mut self) -> Result<(), crate::SupervisorError> {
         let record = self.registry.load_agent(&self.agent)?;
-        self.supervisor.recover_slot(&self.agent, &mut self.slot, &record, self.now)
+        self.supervisor
+            .recover_slot(&self.agent, &mut self.slot, &record, self.now)
     }
 
     fn assert_no_spawn(&self) {
@@ -231,10 +256,18 @@ impl Fixture {
     }
 
     fn assert_matrix_retained(&self, lease: &MatrixProcessLease) -> Result<()> {
-        let runtime = self.slot.matrix.runtime.as_ref().expect("retained Matrix owner");
+        let runtime = self
+            .slot
+            .matrix
+            .runtime
+            .as_ref()
+            .expect("retained Matrix owner");
         assert!(runtime.fenced && !runtime.healthy);
         assert_eq!(&runtime.identity, &lease.identity);
-        assert_eq!(read_matrix_lease(self.record()?.layout.matrixd_process_lease())?, Some(lease.clone()));
+        assert_eq!(
+            read_matrix_lease(self.record()?.layout.matrixd_process_lease())?,
+            Some(lease.clone())
+        );
         assert_eq!(self.driver.matrix.lock().expect("matrix state").drops, 0);
         self.assert_no_spawn();
         Ok(())
@@ -246,8 +279,13 @@ fn rejected_main_identity_preserves_lease_and_unresolved_control() -> Result<()>
     let mut f = Fixture::new()?;
     let lease = f.publish_main("unversioned")?;
     let record = f.record()?;
-    control_intent::prepare_kill(record.layout.run_root(), &f.agent, lease.spawn_generation,
-        &lease.identity, record.lifecycle.generation)?;
+    control_intent::prepare_kill(
+        record.layout.run_root(),
+        &f.agent,
+        lease.spawn_generation,
+        &lease.identity,
+        record.lifecycle.generation,
+    )?;
     f.driver.main.lock().expect("main state").adoption = AdoptionResult::Rejected;
     f.recover()?;
     assert!(f.slot.runtime.is_none());
@@ -255,7 +293,11 @@ fn rejected_main_identity_preserves_lease_and_unresolved_control() -> Result<()>
     assert!(control_intent::has_unresolved(record.layout.run_root())?);
     assert_eq!(f.driver.main.lock().expect("main state").signals, 0);
     let command = AgentCommand::new(f._temp.path().join("unused-agentd"), Vec::new())?;
-    assert!(f.supervisor.start_slot(&f.agent, &mut f.slot, command, f.now).is_err());
+    assert!(
+        f.supervisor
+            .start_slot(&f.agent, &mut f.slot, command, f.now)
+            .is_err()
+    );
     f.assert_no_spawn();
     Ok(())
 }
@@ -267,10 +309,17 @@ fn rejected_matrix_identity_preserves_lease_and_blocks_main_start() -> Result<()
     f.driver.matrix.lock().expect("matrix state").adoption = AdoptionResult::Rejected;
     f.recover()?;
     assert!(f.slot.matrix.runtime.is_none());
-    assert_eq!(read_matrix_lease(f.record()?.layout.matrixd_process_lease())?, Some(lease));
+    assert_eq!(
+        read_matrix_lease(f.record()?.layout.matrixd_process_lease())?,
+        Some(lease)
+    );
     assert_eq!(f.driver.matrix.lock().expect("matrix state").signals, 0);
     let command = AgentCommand::new(f._temp.path().join("unused-agentd"), Vec::new())?;
-    assert!(f.supervisor.start_slot(&f.agent, &mut f.slot, command, f.now).is_err());
+    assert!(
+        f.supervisor
+            .start_slot(&f.agent, &mut f.slot, command, f.now)
+            .is_err()
+    );
     f.assert_no_spawn();
     Ok(())
 }
@@ -287,7 +336,10 @@ fn main_release_rejection_still_acquires_and_contains_matrix() -> Result<()> {
     assert!(runtime.fenced && !runtime.healthy);
     assert_eq!(runtime.identity, main.identity);
     assert_eq!(f.driver.main.lock().expect("main state").drops, 0);
-    assert_eq!(f.driver.matrix.lock().expect("matrix state").adoption_count, 1);
+    assert_eq!(
+        f.driver.matrix.lock().expect("matrix state").adoption_count,
+        1
+    );
     assert_eq!(f.driver.matrix.lock().expect("matrix state").signals, 1);
     f.assert_matrix_retained(&matrix)?;
     Ok(())
@@ -298,11 +350,20 @@ fn main_control_parse_fault_cannot_skip_matrix_ownership() -> Result<()> {
     let mut f = Fixture::new()?;
     let main = f.publish_main("unversioned")?;
     let matrix = f.publish_matrix(main.spawn_generation)?;
-    std::fs::write(f.record()?.layout.run_root().join(control_intent::CONTROL_INTENT_FILE), b"{")?;
+    std::fs::write(
+        f.record()?
+            .layout
+            .run_root()
+            .join(control_intent::CONTROL_INTENT_FILE),
+        b"{",
+    )?;
     f.driver.matrix.lock().expect("matrix state").fail_kill = true;
     assert!(f.recover().is_err());
     assert_eq!(f.driver.main.lock().expect("main state").adoption_count, 0);
-    assert_eq!(f.driver.matrix.lock().expect("matrix state").adoption_count, 1);
+    assert_eq!(
+        f.driver.matrix.lock().expect("matrix state").adoption_count,
+        1
+    );
     assert_eq!(read_lease(f.record()?.layout.run_root())?, Some(main));
     f.assert_matrix_retained(&matrix)?;
     Ok(())
@@ -315,7 +376,10 @@ fn main_driver_error_cannot_skip_matrix_ownership() -> Result<()> {
     let matrix = f.publish_matrix(main.spawn_generation)?;
     f.driver.main.lock().expect("main state").adoption = AdoptionResult::Error;
     assert!(f.recover().is_err());
-    assert_eq!(f.driver.matrix.lock().expect("matrix state").adoption_count, 1);
+    assert_eq!(
+        f.driver.matrix.lock().expect("matrix state").adoption_count,
+        1
+    );
     f.assert_matrix_retained(&matrix)?;
     Ok(())
 }
@@ -327,10 +391,15 @@ fn invalid_matrix_binding_is_checked_after_acquiring_exact_owner() -> Result<()>
     std::fs::write(f.record()?.layout.matrix_public_binding(), b"not json")?;
     f.driver.matrix.lock().expect("matrix state").fail_kill = true;
     assert!(f.recover().is_err());
-    assert_eq!(f.driver.matrix.lock().expect("matrix state").adoption_count, 1);
+    assert_eq!(
+        f.driver.matrix.lock().expect("matrix state").adoption_count,
+        1
+    );
     f.assert_matrix_retained(&matrix)?;
-    assert!(!matches!(f.slot.matrix.runtime.as_ref().expect("matrix owner").phase,
-        MatrixRuntimePhase::Killing));
+    assert!(!matches!(
+        f.slot.matrix.runtime.as_ref().expect("matrix owner").phase,
+        MatrixRuntimePhase::Killing
+    ));
     Ok(())
 }
 
@@ -340,10 +409,13 @@ fn acknowledged_matrix_kill_preserves_owner_and_lease_until_exit() -> Result<()>
     let matrix = f.publish_matrix(1)?;
     assert!(f.recover().is_err());
     f.assert_matrix_retained(&matrix)?;
-    assert!(matches!(f.slot.matrix.runtime.as_ref().expect("matrix owner").phase,
-        MatrixRuntimePhase::Killing));
+    assert!(matches!(
+        f.slot.matrix.runtime.as_ref().expect("matrix owner").phase,
+        MatrixRuntimePhase::Killing
+    ));
     f.driver.matrix.lock().expect("matrix state").exited = true;
-    f.supervisor.tick_matrix_companion(&f.agent, &mut f.slot, f.now)?;
+    f.supervisor
+        .tick_matrix_companion(&f.agent, &mut f.slot, f.now)?;
     assert!(f.slot.matrix.runtime.is_none());
     assert!(read_matrix_lease(f.record()?.layout.matrixd_process_lease())?.is_none());
     assert_eq!(f.driver.matrix.lock().expect("matrix state").drops, 1);
@@ -371,7 +443,10 @@ fn repeated_matrix_recovery_cannot_replace_retained_owner() -> Result<()> {
     f.driver.matrix.lock().expect("matrix state").fail_kill = true;
     assert!(f.recover().is_err());
     assert!(f.recover().is_err());
-    assert_eq!(f.driver.matrix.lock().expect("matrix state").adoption_count, 1);
+    assert_eq!(
+        f.driver.matrix.lock().expect("matrix state").adoption_count,
+        1
+    );
     f.assert_matrix_retained(&matrix)?;
     Ok(())
 }
@@ -381,13 +456,26 @@ fn rejected_process_ownership_is_not_reported_ready() -> Result<()> {
     let f = Fixture::new()?;
     let main = f.publish_main("unversioned")?;
     f.driver.main.lock().expect("main state").adoption = AdoptionResult::Rejected;
-    let (supervisor, _) = Supervisor::recover(f.registry.clone(), f.driver.clone(),
-        SupervisorConfig::local_default(), f.now)?;
+    let (supervisor, _) = Supervisor::recover(
+        f.registry.clone(),
+        f.driver.clone(),
+        SupervisorConfig::local_default(),
+        f.now,
+    )?;
     let record = f.record()?;
-    assert!(!super::process_ownership_ready(&record, supervisor.snapshot(&f.agent).as_ref())?);
+    assert!(!super::process_ownership_ready(
+        &record,
+        supervisor.snapshot(&f.agent).as_ref()
+    )?);
     assert_eq!(read_lease(record.layout.run_root())?, Some(main));
-    assert!(supervisor.snapshot(&f.agent).expect("snapshot").events.iter()
-        .any(|event| event.kind == SupervisorEventKind::OrphanRejected));
+    assert!(
+        supervisor
+            .snapshot(&f.agent)
+            .expect("snapshot")
+            .events
+            .iter()
+            .any(|event| event.kind == SupervisorEventKind::OrphanRejected)
+    );
     assert_eq!(f.driver.main.lock().expect("main state").signals, 0);
     Ok(())
 }

@@ -37,7 +37,6 @@ def replace_once(path: Path, old: str, new: str, *, already: str | None = None) 
     write(path, text.replace(old, new, 1))
 
 
-
 def replace_block(
     path: Path,
     old: str,
@@ -65,10 +64,7 @@ def replace_block(
                 break
         if not matched:
             continue
-        replacement = [
-            (prefix + line if line else "") + "\n"
-            for line in new_lines
-        ]
+        replacement = [(prefix + line if line else "") + "\n" for line in new_lines]
         source_lines[start : start + len(old_lines)] = replacement
         write(path, "".join(source_lines))
         return
@@ -144,8 +140,14 @@ def patch_exit_witness() -> None:
     path = SRC / "process_exit_witness.rs"
     for old, new in [
         ("    fn same_target(\n", "    pub(crate) fn same_target(\n"),
-        ("    fn compute_witness_id(&self)", "    pub(crate) fn compute_witness_id(&self)"),
-        ("    fn compute_record_digest(&self)", "    pub(crate) fn compute_record_digest(&self)"),
+        (
+            "    fn compute_witness_id(&self)",
+            "    pub(crate) fn compute_witness_id(&self)",
+        ),
+        (
+            "    fn compute_record_digest(&self)",
+            "    pub(crate) fn compute_record_digest(&self)",
+        ),
     ]:
         text = read(path)
         if new in text:
@@ -619,7 +621,12 @@ def patch_protocol() -> None:
     )
     # Place before the status fixture helper near the end of the test module.
     marker = "    fn status() -> SupervisordAgentStatus {\n"
-    insert_before(path, marker, test, sentinel="ordinary_mutation_status_and_reconcile_requests_are_validated")
+    insert_before(
+        path,
+        marker,
+        test,
+        sentinel="ordinary_mutation_status_and_reconcile_requests_are_validated",
+    )
 
 
 def patch_read_view() -> None:
@@ -701,7 +708,9 @@ def patch_execution() -> None:
         ) -> SupervisordPayload {
         """
     )
-    replace_once(path, old_sig, new_sig, already="pub(super) async fn handle_with_request_id(")
+    replace_once(
+        path, old_sig, new_sig, already="pub(super) async fn handle_with_request_id("
+    )
     replace_once(
         path,
         "        let reply = runtime.block_on(super::handle_request(Arc::clone(state), method));\n",
@@ -930,9 +939,12 @@ def patch_daemon() -> None:
         "handle_mutation(\n                state,\n                request_id,\n                SupervisordMutation::",
     )
     if "handle_mutation(state, SupervisordMutation::" in text or (
-        "handle_mutation(\n                state,\n                SupervisordMutation::" in text
+        "handle_mutation(\n                state,\n                SupervisordMutation::"
+        in text
     ):
-        raise SystemExit("an ordinary mutation call did not receive the wire request identity")
+        raise SystemExit(
+            "an ordinary mutation call did not receive the wire request identity"
+        )
     write(path, text)
 
     replace_block(
@@ -1715,7 +1727,6 @@ def patch_workflows() -> None:
         write(path, text.replace(old, new, 1))
 
 
-
 def verify_materialized_source() -> None:
     required = {
         SRC / "lib.rs": [
@@ -1757,11 +1768,14 @@ def verify_materialized_source() -> None:
             raise SystemExit(f"materialized source is missing {missing!r} in {path}")
     daemon = read(SRC / "daemon.rs")
     if "handle_mutation(state, SupervisordMutation::" in daemon:
-        raise SystemExit("ordinary mutation call remains detached from request identity")
+        raise SystemExit(
+            "ordinary mutation call remains detached from request identity"
+        )
     status = json.loads(read(DOCS / "CAPABILITY_STATUS.json"))
     if status["current"]["release"] or status["current"]["activated"]:
-        raise SystemExit("repository source materialization cannot authorize release or activation")
-
+        raise SystemExit(
+            "repository source materialization cannot authorize release or activation"
+        )
 
 
 def main() -> None:

@@ -352,12 +352,7 @@ pub fn write_release_transaction(
     ));
     let final_path = run_root.join(RELEASE_TRANSACTION_FILE);
     let bytes = serde_json::to_vec(transaction)?;
-    crate::durable_publish::write_atomic(
-        &temp,
-        &final_path,
-        &bytes,
-        "release_transaction",
-    )?;
+    crate::durable_publish::write_atomic(&temp, &final_path, &bytes, "release_transaction")?;
     Ok(())
 }
 

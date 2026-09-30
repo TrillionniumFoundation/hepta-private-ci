@@ -38,8 +38,7 @@ async fn cancelled_waiter_retains_writer_and_capacity_until_blocking_work_finish
     )
     .await?;
     assert!(matches!(health, SupervisordPayload::Health(_)));
-    let agent_id =
-        codex_hepta_contracts::AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
+    let agent_id = codex_hepta_contracts::AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
     let busy = handle(
         Arc::clone(&state),
         SupervisordMethod::ProductionMutationStatus { agent_id },
@@ -112,8 +111,7 @@ async fn queued_request_gets_owner_capacity_before_a_later_tick() -> Result<()> 
     let fixture = Fixture::new()?;
     let state = &fixture.state;
     let busy = Arc::clone(&state.execution.slots).try_acquire_owned()?;
-    let agent_id =
-        codex_hepta_contracts::AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
+    let agent_id = codex_hepta_contracts::AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
     let mut request = Box::pin(handle(
         Arc::clone(state),
         SupervisordMethod::ProductionMutationStatus { agent_id },

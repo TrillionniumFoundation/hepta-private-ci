@@ -61,11 +61,15 @@ impl ManagedProcess for Process {
     }
 
     fn request_drain(&mut self) -> Result<(), ProcessDriverError> {
-        Err(ProcessDriverError::new("unexpected drain during rejected admission"))
+        Err(ProcessDriverError::new(
+            "unexpected drain during rejected admission",
+        ))
     }
 
     fn request_stop(&mut self) -> Result<(), ProcessDriverError> {
-        Err(ProcessDriverError::new("unexpected stop during rejected admission"))
+        Err(ProcessDriverError::new(
+            "unexpected stop during rejected admission",
+        ))
     }
 
     fn kill(&mut self) -> Result<(), ProcessDriverError> {
@@ -175,7 +179,10 @@ impl Fixture {
 
     fn corrupt_control(&self) -> Result<()> {
         std::fs::write(
-            self.record()?.layout.run_root().join(control_intent::CONTROL_INTENT_FILE),
+            self.record()?
+                .layout
+                .run_root()
+                .join(control_intent::CONTROL_INTENT_FILE),
             b"{truncated",
         )?;
         Ok(())
@@ -186,7 +193,10 @@ impl Fixture {
         assert!(runtime.fenced && !runtime.healthy);
         assert_eq!(runtime.identity, self.lease.identity);
         assert_eq!(runtime.spawn_generation, self.lease.spawn_generation);
-        assert_eq!(read_lease(self.record()?.layout.run_root())?, Some(self.lease.clone()));
+        assert_eq!(
+            read_lease(self.record()?.layout.run_root())?,
+            Some(self.lease.clone())
+        );
         let state = self.state.lock().expect("process state");
         assert_eq!(state.adopted, 1);
         assert_eq!(state.drops, 0);
@@ -201,13 +211,21 @@ fn corrupt_control_retains_and_fences_the_identity_proven_main() -> Result<()> {
     fixture.corrupt_control()?;
     fixture.state.lock().expect("state").fail_kill = true;
     let record = fixture.record()?;
-    assert!(fixture.supervisor.recover_slot(
-        &fixture.agent, &mut fixture.slot, &record, fixture.now,
-    ).is_err());
+    assert!(
+        fixture
+            .supervisor
+            .recover_slot(&fixture.agent, &mut fixture.slot, &record, fixture.now,)
+            .is_err()
+    );
     fixture.assert_owned_quarantine()?;
-    assert!(matches!(fixture.slot.runtime.as_ref().expect("owner").phase, RuntimePhase::Stopping { .. }));
+    assert!(matches!(
+        fixture.slot.runtime.as_ref().expect("owner").phase,
+        RuntimePhase::Stopping { .. }
+    ));
     fixture.state.lock().expect("state").fail_kill = false;
-    fixture.supervisor.tick_slot(&fixture.agent, &mut fixture.slot, fixture.now)?;
+    fixture
+        .supervisor
+        .tick_slot(&fixture.agent, &mut fixture.slot, fixture.now)?;
     let runtime = fixture.slot.runtime.as_ref().expect("owner after retry");
     assert!(runtime.fenced && !runtime.healthy);
     assert!(matches!(runtime.phase, RuntimePhase::Killing));
@@ -226,9 +244,12 @@ fn valid_control_for_another_process_does_not_discard_the_owned_main() -> Result
         &ProcessIdentity::new(43, "different-lifetime")?,
         record.lifecycle.generation,
     )?;
-    assert!(fixture.supervisor.recover_slot(
-        &fixture.agent, &mut fixture.slot, &record, fixture.now,
-    ).is_err());
+    assert!(
+        fixture
+            .supervisor
+            .recover_slot(&fixture.agent, &mut fixture.slot, &record, fixture.now,)
+            .is_err()
+    );
     fixture.assert_owned_quarantine()
 }
 
@@ -237,9 +258,12 @@ fn invalid_lifecycle_distance_is_rejected_after_retaining_exact_ownership() -> R
     let mut fixture = Fixture::new()?;
     let mut record = fixture.record()?;
     record.lifecycle.generation += 100;
-    assert!(fixture.supervisor.recover_slot(
-        &fixture.agent, &mut fixture.slot, &record, fixture.now,
-    ).is_err());
+    assert!(
+        fixture
+            .supervisor
+            .recover_slot(&fixture.agent, &mut fixture.slot, &record, fixture.now,)
+            .is_err()
+    );
     fixture.assert_owned_quarantine()
 }
 
@@ -249,12 +273,23 @@ fn missing_identity_never_erases_a_rejected_control_journal_or_lease() -> Result
     fixture.corrupt_control()?;
     fixture.state.lock().expect("state").missing = true;
     let record = fixture.record()?;
-    assert!(fixture.supervisor.recover_slot(
-        &fixture.agent, &mut fixture.slot, &record, fixture.now,
-    ).is_err());
+    assert!(
+        fixture
+            .supervisor
+            .recover_slot(&fixture.agent, &mut fixture.slot, &record, fixture.now,)
+            .is_err()
+    );
     assert!(fixture.slot.runtime.is_none());
     assert_eq!(read_lease(record.layout.run_root())?, Some(fixture.lease));
-    assert_eq!(std::fs::read(record.layout.run_root().join(control_intent::CONTROL_INTENT_FILE))?, b"{truncated");
+    assert_eq!(
+        std::fs::read(
+            record
+                .layout
+                .run_root()
+                .join(control_intent::CONTROL_INTENT_FILE)
+        )?,
+        b"{truncated"
+    );
     assert_eq!(fixture.state.lock().expect("state").signals, 0);
     Ok(())
 }
@@ -265,9 +300,12 @@ fn rejected_identity_cannot_gain_signal_authority_from_corrupt_control() -> Resu
     fixture.corrupt_control()?;
     fixture.state.lock().expect("state").rejected = true;
     let record = fixture.record()?;
-    assert!(fixture.supervisor.recover_slot(
-        &fixture.agent, &mut fixture.slot, &record, fixture.now,
-    ).is_err());
+    assert!(
+        fixture
+            .supervisor
+            .recover_slot(&fixture.agent, &mut fixture.slot, &record, fixture.now,)
+            .is_err()
+    );
     assert!(fixture.slot.runtime.is_none());
     assert_eq!(read_lease(record.layout.run_root())?, Some(fixture.lease));
     assert_eq!(fixture.state.lock().expect("state").signals, 0);
@@ -281,15 +319,26 @@ fn durable_stop_does_not_evaluate_an_overflowing_fallback_deadline() -> Result<(
     record.lifecycle.lifecycle = AgentLifecycle::Starting;
     record.lifecycle.generation = fixture.lease.spawn_generation;
     control_intent::prepare_stop(
-        record.layout.run_root(), &fixture.agent, fixture.lease.spawn_generation,
-        &fixture.lease.identity, record.lifecycle.generation, Duration::from_secs(5),
+        record.layout.run_root(),
+        &fixture.agent,
+        fixture.lease.spawn_generation,
+        &fixture.lease.identity,
+        record.lifecycle.generation,
+        Duration::from_secs(5),
     )?;
     let mut config = SupervisorConfig::local_default();
     config.health_timeout = Duration::MAX;
     let admitted = super::admission::assess(
-        &fixture.agent, &record, &fixture.lease, &config, fixture.now,
+        &fixture.agent,
+        &record,
+        &fixture.lease,
+        &config,
+        fixture.now,
     )?;
-    assert!(matches!(admitted.control, Some(crate::control::pending::PendingControl::Stop { .. })));
+    assert!(matches!(
+        admitted.control,
+        Some(crate::control::pending::PendingControl::Stop { .. })
+    ));
     Ok(())
 }
 
@@ -300,9 +349,12 @@ fn failed_fallback_deadline_still_retains_the_acquired_owner() -> Result<()> {
     record.lifecycle.lifecycle = AgentLifecycle::Starting;
     record.lifecycle.generation = fixture.lease.spawn_generation;
     fixture.supervisor.config.health_timeout = Duration::MAX;
-    assert!(fixture.supervisor.recover_slot(
-        &fixture.agent, &mut fixture.slot, &record, fixture.now,
-    ).is_err());
+    assert!(
+        fixture
+            .supervisor
+            .recover_slot(&fixture.agent, &mut fixture.slot, &record, fixture.now,)
+            .is_err()
+    );
     fixture.assert_owned_quarantine()
 }
 
@@ -311,11 +363,17 @@ fn repeated_containment_never_downgrades_an_acknowledged_kill() -> Result<()> {
     let mut fixture = Fixture::new()?;
     fixture.corrupt_control()?;
     let record = fixture.record()?;
-    assert!(fixture.supervisor.recover_slot(
-        &fixture.agent, &mut fixture.slot, &record, fixture.now,
-    ).is_err());
+    assert!(
+        fixture
+            .supervisor
+            .recover_slot(&fixture.agent, &mut fixture.slot, &record, fixture.now,)
+            .is_err()
+    );
     super::admission::reject_owned(&fixture.agent, &mut fixture.slot, fixture.now);
     fixture.assert_owned_quarantine()?;
-    assert!(matches!(fixture.slot.runtime.as_ref().expect("owner").phase, RuntimePhase::Killing));
+    assert!(matches!(
+        fixture.slot.runtime.as_ref().expect("owner").phase,
+        RuntimePhase::Killing
+    ));
     Ok(())
 }

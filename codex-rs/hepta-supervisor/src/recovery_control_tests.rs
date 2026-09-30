@@ -147,7 +147,8 @@ impl Fixture {
             ResourceBudget::local_default(),
         )?)?;
         let stopped = registry.load()?.agents[&agent].lifecycle.generation;
-        let starting = registry.compare_and_transition(&agent, stopped, AgentLifecycle::Starting)?;
+        let starting =
+            registry.compare_and_transition(&agent, stopped, AgentLifecycle::Starting)?;
         match lifecycle {
             AgentLifecycle::Starting => {}
             AgentLifecycle::Failed => {
@@ -262,9 +263,15 @@ fn failed_recovery_stop_retains_exact_handle_and_retries() -> Result<()> {
     f.process.lock().expect("process state").fail = None;
     assert!(supervisor.tick(f.now).faults.is_empty());
     assert_eq!(f.process.lock().expect("process state").signals, [0, 3, 0]);
-    assert_eq!(f.control_events(&supervisor), vec![SupervisorEventKind::StopRequested]);
     assert_eq!(
-        supervisor.snapshot(&f.agent).expect("snapshot").runtime_phase,
+        f.control_events(&supervisor),
+        vec![SupervisorEventKind::StopRequested]
+    );
+    assert_eq!(
+        supervisor
+            .snapshot(&f.agent)
+            .expect("snapshot")
+            .runtime_phase,
         Some(ControlRuntimePhase::Stopping)
     );
     Ok(())
@@ -280,7 +287,10 @@ fn failed_recovery_kill_retains_exact_handle_and_retries() -> Result<()> {
     f.process.lock().expect("process state").fail = None;
     assert!(supervisor.tick(f.now).faults.is_empty());
     assert_eq!(f.process.lock().expect("process state").signals, [0, 0, 2]);
-    assert_eq!(f.control_events(&supervisor), vec![SupervisorEventKind::KillRequested]);
+    assert_eq!(
+        f.control_events(&supervisor),
+        vec![SupervisorEventKind::KillRequested]
+    );
     Ok(())
 }
 
@@ -294,7 +304,10 @@ fn recovered_draining_state_does_not_fabricate_a_drain_acknowledgement() -> Resu
     f.process.lock().expect("process state").fail = None;
     assert!(supervisor.tick(f.now).faults.is_empty());
     assert_eq!(f.process.lock().expect("process state").signals, [2, 0, 0]);
-    assert_eq!(f.control_events(&supervisor), vec![SupervisorEventKind::DrainRequested]);
+    assert_eq!(
+        f.control_events(&supervisor),
+        vec![SupervisorEventKind::DrainRequested]
+    );
     Ok(())
 }
 
@@ -303,9 +316,17 @@ fn recovered_failed_stop_escalates_at_its_original_retry_deadline() -> Result<()
     let f = Fixture::new(AgentLifecycle::Failed, "unversioned", Some(Signal::Stop))?;
     let (mut supervisor, report) = f.recover()?;
     assert!(!report.faults.is_empty());
-    assert!(supervisor.tick(f.now + Duration::from_secs(1)).faults.is_empty());
+    assert!(
+        supervisor
+            .tick(f.now + Duration::from_secs(1))
+            .faults
+            .is_empty()
+    );
     assert_eq!(f.process.lock().expect("process state").signals, [0, 1, 1]);
-    assert_eq!(f.control_events(&supervisor), vec![SupervisorEventKind::KillRequested]);
+    assert_eq!(
+        f.control_events(&supervisor),
+        vec![SupervisorEventKind::KillRequested]
+    );
     Ok(())
 }
 
@@ -315,13 +336,21 @@ fn unadmitted_release_fence_does_not_disable_failed_kill_retry() -> Result<()> {
     let (mut supervisor, report) = f.recover()?;
     assert!(!report.faults.is_empty());
     f.assert_owned(&supervisor);
-    assert!(supervisor.snapshot(&f.agent).expect("snapshot").runtime_fenced);
+    assert!(
+        supervisor
+            .snapshot(&f.agent)
+            .expect("snapshot")
+            .runtime_fenced
+    );
     assert!(!supervisor.tick(f.now).faults.is_empty());
     f.process.lock().expect("process state").fail = None;
     assert!(supervisor.tick(f.now).faults.is_empty());
     f.assert_owned(&supervisor);
     assert_eq!(f.process.lock().expect("process state").signals, [0, 0, 3]);
-    assert_eq!(f.control_events(&supervisor), vec![SupervisorEventKind::KillRequested]);
+    assert_eq!(
+        f.control_events(&supervisor),
+        vec![SupervisorEventKind::KillRequested]
+    );
     Ok(())
 }
 
@@ -358,7 +387,9 @@ fn generation_fence_signal_error_does_not_hide_an_observed_exit() -> Result<()> 
     let (mut supervisor, report) = f.recover()?;
     assert!(report.faults.is_empty());
     let old = f.registry.load()?.agents[&f.agent].lifecycle.generation;
-    let newer = f.registry.compare_and_transition(&f.agent, old, AgentLifecycle::Draining)?;
+    let newer = f
+        .registry
+        .compare_and_transition(&f.agent, old, AgentLifecycle::Draining)?;
     f.process.lock().expect("process state").observation = ProcessState::Exited(ProcessExit {
         success: false,
         code: None,
@@ -375,7 +406,12 @@ fn acknowledged_fenced_kill_is_not_reissued_and_never_becomes_healthy() -> Resul
     let f = Fixture::new(AgentLifecycle::Running, "not-admitted", None)?;
     let (mut supervisor, _) = f.recover()?;
     assert!(supervisor.tick(f.now).faults.is_empty());
-    assert!(supervisor.tick(f.now + Duration::from_secs(5)).faults.is_empty());
+    assert!(
+        supervisor
+            .tick(f.now + Duration::from_secs(5))
+            .faults
+            .is_empty()
+    );
     f.assert_owned(&supervisor);
     assert_eq!(f.process.lock().expect("process state").signals, [0, 0, 1]);
     Ok(())

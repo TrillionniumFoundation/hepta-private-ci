@@ -122,9 +122,7 @@ impl<T> MeasuredMutex<T> {
         self.timings.wait_max_us.fetch_max(wait, Ordering::Relaxed);
         if wait >= SLOW_WAIT_US {
             self.timings.slow_waits.fetch_add(1, Ordering::Relaxed);
-            eprintln!(
-                "hepta_supervisord_mutex_slow_wait wait_us={wait} contended={contended}"
-            );
+            eprintln!("hepta_supervisord_mutex_slow_wait wait_us={wait} contended={contended}");
         }
         MeasuredGuard {
             inner,

@@ -7,6 +7,7 @@ use std::time::Instant;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
 
+use super::MatrixProcessLeaseRemoval;
 use crate::ManagedProcess;
 use crate::ProcessDriver;
 use crate::ProcessObservation;
@@ -17,7 +18,6 @@ use crate::SupervisorEvent;
 use crate::SupervisorEventKind;
 use crate::lease::MATRIX_PROCESS_LEASE_SCHEMA_VERSION;
 use crate::lease::MatrixProcessLease;
-use super::MatrixProcessLeaseRemoval;
 use crate::runtime::AgentSlot;
 use crate::runtime::DeferredAgentActionKind;
 use crate::runtime::MatrixRuntimePhase;
@@ -46,21 +46,30 @@ impl<D: ProcessDriver> Supervisor<D> {
                 && runtime.fenced
                 && !matches!(runtime.phase, MatrixRuntimePhase::Killing)
             {
-                runtime.process.kill().map_err(|error| driver_error(agent_id, error)).map(|()| {
-                    runtime.phase = MatrixRuntimePhase::Killing;
-                    slot.events.push(SupervisorEvent {
-                        generation: runtime.attached_agent_generation,
-                        kind: SupervisorEventKind::MatrixKillRequested,
-                    });
-                })
+                runtime
+                    .process
+                    .kill()
+                    .map_err(|error| driver_error(agent_id, error))
+                    .map(|()| {
+                        runtime.phase = MatrixRuntimePhase::Killing;
+                        slot.events.push(SupervisorEvent {
+                            generation: runtime.attached_agent_generation,
+                            kind: SupervisorEventKind::MatrixKillRequested,
+                        });
+                    })
             } else {
                 Ok(())
             };
             // A failed kill cannot hide an observed exit. After that exact
             // observation, neither signal nor probe is repeated during cleanup.
             let observation = match terminal {
-                Some(exit) => ProcessObservation { state: ProcessState::Exited(exit), logs: Vec::new() },
-                None => runtime.process.poll(self.config.driver_poll_batch)
+                Some(exit) => ProcessObservation {
+                    state: ProcessState::Exited(exit),
+                    logs: Vec::new(),
+                },
+                None => runtime
+                    .process
+                    .poll(self.config.driver_poll_batch)
                     .map_err(|error| driver_error(agent_id, error))?,
             };
             for mut log in observation
@@ -86,9 +95,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                     identity: runtime.identity.clone(),
                 };
                 let path = record.layout.matrixd_process_lease();
-                let removal = slot.matrix.exit_lease_removal.get_or_insert_with(|| {
-                    MatrixProcessLeaseRemoval::new(path, &lease)
-                });
+                let removal = slot
+                    .matrix
+                    .exit_lease_removal
+                    .get_or_insert_with(|| MatrixProcessLeaseRemoval::new(path, &lease));
                 removal.finish(path, &lease)?;
                 let was_fenced = runtime.fenced;
                 let generation = runtime.attached_agent_generation;
@@ -229,7 +239,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                         DeferredAgentActionKind::Drain => self.drain_slot(agent_id, slot, now),
                         // This resumes the already-admitted owner intent; it is
                         // not a new operator Stop that cancels a restart claim.
-                        DeferredAgentActionKind::Stop => self.stop_runtime_slot(agent_id, slot, now),
+                        DeferredAgentActionKind::Stop => {
+                            self.stop_runtime_slot(agent_id, slot, now)
+                        }
                     };
                     if let Err(error) = result {
                         // A callee may clear its transient action before its

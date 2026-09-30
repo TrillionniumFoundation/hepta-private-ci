@@ -102,11 +102,8 @@ impl ProcessDriver for QualificationDriver {
         let mut world = self.world.lock().expect("qualification world");
         world.next_id = world.next_id.saturating_add(1);
         let id = world.next_id;
-        let identity = ProcessIdentity::new(
-            id,
-            format!("qualification-{id}-{}", spec.generation),
-        )
-        .map_err(|error| ProcessDriverError::new(error.to_string()))?;
+        let identity = ProcessIdentity::new(id, format!("qualification-{id}-{}", spec.generation))
+            .map_err(|error| ProcessDriverError::new(error.to_string()))?;
         world.processes.insert(
             id,
             QualificationProcessState {
@@ -126,10 +123,7 @@ impl ProcessDriver for QualificationDriver {
         })
     }
 
-    fn adopt(
-        &mut self,
-        spec: &AdoptSpec,
-    ) -> Result<Adoption<Self::Process>, ProcessDriverError> {
+    fn adopt(&mut self, spec: &AdoptSpec) -> Result<Adoption<Self::Process>, ProcessDriverError> {
         let world = self.world.lock().expect("qualification world");
         let Some((&id, _)) = world.processes.iter().find(|(_, state)| {
             state.agent_id == spec.agent_id
@@ -209,8 +203,7 @@ impl ManagedProcess for QualificationProcess {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
-async fn qualifies_256_instances_fault_waves_and_owner_lock_hol(
-) -> Result<(), SupervisorError> {
+async fn qualifies_256_instances_fault_waves_and_owner_lock_hol() -> Result<(), SupervisorError> {
     let temp = tempfile::tempdir()?;
     let root = HeptaFleetRoot::parse(temp.path().join("fleet"))
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
@@ -245,20 +238,11 @@ async fn qualifies_256_instances_fault_waves_and_owner_lock_hol(
 
     let owner = Arc::new(MeasuredMutex::new(supervisor));
     let read_view = Arc::new(RwLock::new(agents.clone()));
-    let healthy = run_tick_with_status(
-        &owner,
-        &read_view,
-        started + Duration::from_secs(1),
-    )
-    .await;
+    let healthy = run_tick_with_status(&owner, &read_view, started + Duration::from_secs(1)).await;
 
     control.set_poll_delay(Duration::from_micros(100));
-    let slow_driver = run_tick_with_status(
-        &owner,
-        &read_view,
-        started + Duration::from_secs(2),
-    )
-    .await;
+    let slow_driver =
+        run_tick_with_status(&owner, &read_view, started + Duration::from_secs(2)).await;
     control.set_poll_delay(Duration::ZERO);
 
     let slow_fs_before = owner.snapshot();
@@ -336,10 +320,8 @@ fn register_agents(
 ) -> Result<Vec<AgentId>, SupervisorError> {
     let mut agents = Vec::with_capacity(INSTANCE_COUNT);
     for index in 0..INSTANCE_COUNT {
-        let agent_id = AgentId::parse(format!(
-            "018f4f72-{index:04x}-7cc1-8f55-{index:012x}"
-        ))
-        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        let agent_id = AgentId::parse(format!("018f4f72-{index:04x}-7cc1-8f55-{index:012x}"))
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         let workspace = temp.join(format!("workspace-{index:03}"));
         std::fs::create_dir(&workspace)?;
         registry.register(AgentManifest::new(
@@ -417,10 +399,7 @@ async fn run_concurrent_drain_status_mutation(
     })
 }
 
-async fn spawn_status_reads(
-    read_view: &Arc<RwLock<Vec<AgentId>>>,
-    count: usize,
-) -> Vec<Duration> {
+async fn spawn_status_reads(read_view: &Arc<RwLock<Vec<AgentId>>>, count: usize) -> Vec<Duration> {
     let mut tasks = Vec::with_capacity(count);
     for index in 0..count {
         let read_view = Arc::clone(read_view);

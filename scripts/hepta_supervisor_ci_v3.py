@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Current runtime.supervisor CI plan layered on the stable receipt engine."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -53,37 +54,92 @@ class CurrentPlan:
 def current_plan() -> CurrentPlan:
     serial = base.SERIAL
     test = base.TEST
-    plans = {name: (minimum, command.copy()) for name, (minimum, command) in base.PLANS.items()}
-    plans.update({
-        "status": (0, ["python3", "scripts/hepta_supervisor_status.py", "check"]),
-        "validator-tests": (0, [
-            "python3", "-m", "unittest", "-v",
-            "scripts.test_hepta_supervisor_status",
-            "scripts.test_hepta_supervisor_external_receipt",
-            "scripts.test_hepta_supervisor_ci_v3",
-            "scripts.test_hepta_supervisor_workflow",
-        ]),
-        "verifier-artifact": (0, ["python3", "scripts/hepta_supervisor_artifact_gate.py"]),
-        "default": (30, [*test, "--lib", *serial]),
-        "production": (30, [
-            *test, "--lib", "--features", "production-authority", *serial,
-        ]),
-        "authority-distribution": (4, [
-            *test, "--features", "offline-authority-tools",
-            "--test", "authority_distribution", *serial,
-        ]),
-        "products": (19, [
-            *test, "--features", "offline-authority-tools",
-            "--bin", "hepta-supervisord", "--test", "authority_recovery",
-            "--test", "daemon_product", "--test", "paired_process_product",
-            "--test", "writer_handoff_production", *serial,
-        ]),
-        "lint": (0, [
-            "cargo", "clippy", "--manifest-path", "codex-rs/Cargo.toml", "--locked",
-            "-p", base.PACKAGE, "--no-deps", "--all-targets",
-            "--features", "qualification,offline-authority-tools", "--", "-D", "warnings",
-        ]),
-    })
+    plans = {
+        name: (minimum, command.copy())
+        for name, (minimum, command) in base.PLANS.items()
+    }
+    plans.update(
+        {
+            "status": (0, ["python3", "scripts/hepta_supervisor_status.py", "check"]),
+            "validator-tests": (
+                0,
+                [
+                    "python3",
+                    "-m",
+                    "unittest",
+                    "-v",
+                    "scripts.test_hepta_supervisor_status",
+                    "scripts.test_hepta_supervisor_external_receipt",
+                    "scripts.test_hepta_supervisor_ci_v3",
+                    "scripts.test_hepta_supervisor_workflow",
+                ],
+            ),
+            "verifier-artifact": (
+                0,
+                ["python3", "scripts/hepta_supervisor_artifact_gate.py"],
+            ),
+            "default": (30, [*test, "--lib", *serial]),
+            "production": (
+                30,
+                [
+                    *test,
+                    "--lib",
+                    "--features",
+                    "production-authority",
+                    *serial,
+                ],
+            ),
+            "authority-distribution": (
+                4,
+                [
+                    *test,
+                    "--features",
+                    "offline-authority-tools",
+                    "--test",
+                    "authority_distribution",
+                    *serial,
+                ],
+            ),
+            "products": (
+                19,
+                [
+                    *test,
+                    "--features",
+                    "offline-authority-tools",
+                    "--bin",
+                    "hepta-supervisord",
+                    "--test",
+                    "authority_recovery",
+                    "--test",
+                    "daemon_product",
+                    "--test",
+                    "paired_process_product",
+                    "--test",
+                    "writer_handoff_production",
+                    *serial,
+                ],
+            ),
+            "lint": (
+                0,
+                [
+                    "cargo",
+                    "clippy",
+                    "--manifest-path",
+                    "codex-rs/Cargo.toml",
+                    "--locked",
+                    "-p",
+                    base.PACKAGE,
+                    "--no-deps",
+                    "--all-targets",
+                    "--features",
+                    "qualification,offline-authority-tools",
+                    "--",
+                    "-D",
+                    "warnings",
+                ],
+            ),
+        }
+    )
     required_binary_tests = {
         name: {binary: tuple(tests) for binary, tests in binaries.items()}
         for name, binaries in base.REQUIRED_BINARY_TESTS.items()
@@ -102,7 +158,9 @@ def current_plan() -> CurrentPlan:
         name: tuple(test_name for tests in binaries.values() for test_name in tests)
         for name, binaries in required_binary_tests.items()
     }
-    return CurrentPlan(plans, required_binary_tests, required_tests, CURRENT_BINDING_PATHS)
+    return CurrentPlan(
+        plans, required_binary_tests, required_tests, CURRENT_BINDING_PATHS
+    )
 
 
 def apply_current_plan() -> None:

@@ -22,28 +22,59 @@ class SupervisorStatusTests(unittest.TestCase):
                 "test_source": ["present", "partial", "absent"],
                 "exact_head": ["pending", "passed", "failed", "not_applicable"],
                 "merge_candidate": ["pending", "passed", "failed", "not_applicable"],
-                "target_host": ["not_run", "pending", "passed", "failed", "not_applicable"],
-                "independent_acceptance": ["not_obtained", "pending", "accepted", "rejected", "not_applicable"],
+                "target_host": [
+                    "not_run",
+                    "pending",
+                    "passed",
+                    "failed",
+                    "not_applicable",
+                ],
+                "independent_acceptance": [
+                    "not_obtained",
+                    "pending",
+                    "accepted",
+                    "rejected",
+                    "not_applicable",
+                ],
             },
             "current": {
-                "source": "partial", "test_source": "present", "exact_head": "pending",
-                "merge_candidate": "pending", "target_host": "not_run",
-                "independent_acceptance": "not_obtained", "activated": False,
-                "release": False, "claim": "candidate",
+                "source": "partial",
+                "test_source": "present",
+                "exact_head": "pending",
+                "merge_candidate": "pending",
+                "target_host": "not_run",
+                "independent_acceptance": "not_obtained",
+                "activated": False,
+                "release": False,
+                "claim": "candidate",
             },
-            "capabilities": [{
-                "id": "one", "summary": "one", "source": "implemented",
-                "test_source": "present", "exact_head": "pending",
-                "merge_candidate": "pending", "target_host": "not_run",
-                "independent_acceptance": "not_obtained", "activated": False,
-                "source_paths": ["source.txt"],
-            }],
+            "capabilities": [
+                {
+                    "id": "one",
+                    "summary": "one",
+                    "source": "implemented",
+                    "test_source": "present",
+                    "exact_head": "pending",
+                    "merge_candidate": "pending",
+                    "target_host": "not_run",
+                    "independent_acceptance": "not_obtained",
+                    "activated": False,
+                    "source_paths": ["source.txt"],
+                }
+            ],
         }
 
     def test_render_keeps_every_evidence_dimension_distinct(self):
         text = render(self.matrix())
-        for heading in ("Source", "Test source", "Exact head", "Merge candidate",
-                        "Target host", "Independent acceptance", "Activated"):
+        for heading in (
+            "Source",
+            "Test source",
+            "Exact head",
+            "Merge candidate",
+            "Target host",
+            "Independent acceptance",
+            "Activated",
+        ):
             self.assertIn(heading, text)
         self.assertNotIn("`passed`", text)
 
@@ -51,9 +82,12 @@ class SupervisorStatusTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "source.txt").write_text("source")
-            for field, value in (("target_host", "passed"),
-                                 ("independent_acceptance", "accepted"),
-                                 ("activated", True), ("release", True)):
+            for field, value in (
+                ("target_host", "passed"),
+                ("independent_acceptance", "accepted"),
+                ("activated", True),
+                ("release", True),
+            ):
                 data = copy.deepcopy(self.matrix())
                 data["current"][field] = value
                 with self.subTest(field=field), self.assertRaises(ValueError):
@@ -79,10 +113,14 @@ class SupervisorStatusTests(unittest.TestCase):
             history = {
                 "schema_version": 1,
                 "module": "runtime.supervisor",
-                "documents": [{
-                    "path": "ONE_REPAIR_20260930.md", "status": "historical",
-                    "normative": False, "superseded_by": ["TECHNICAL.md"],
-                }],
+                "documents": [
+                    {
+                        "path": "ONE_REPAIR_20260930.md",
+                        "status": "historical",
+                        "normative": False,
+                        "superseded_by": ["TECHNICAL.md"],
+                    }
+                ],
             }
             validate_history(root, history)
             (docs / "TWO_REPAIR_20260930.md").write_text("unclassified")

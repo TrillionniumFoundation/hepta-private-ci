@@ -32,8 +32,16 @@ fn child(stdout: bool, stderr: bool) -> Child {
     Command::new("/bin/sh")
         .args(["-c", "exec sleep 10"])
         .stdin(Stdio::null())
-        .stdout(if stdout { Stdio::piped() } else { Stdio::null() })
-        .stderr(if stderr { Stdio::piped() } else { Stdio::null() })
+        .stdout(if stdout {
+            Stdio::piped()
+        } else {
+            Stdio::null()
+        })
+        .stderr(if stderr {
+            Stdio::piped()
+        } else {
+            Stdio::null()
+        })
         .spawn()
         .expect("real test child")
 }
@@ -54,23 +62,35 @@ fn failed_probe_retains_both_main_and_companion_child_handles() {
             child,
             u64::MAX,
             companion,
-            Err(ProcessDriverError::new("injected probe thread creation failure")),
+            Err(ProcessDriverError::new(
+                "injected probe thread creation failure",
+            )),
             None,
             1,
         );
         let mut retained = Cleanup(acquired.process);
         assert_eq!(acquired.identity.system_id(), u64::from(pid));
-        assert_eq!(retained.0.initialization_failure(), Some("injected probe thread creation failure"));
-        assert!(matches!(retained.0.poll(0).expect("poll").state,
-            ProcessState::Running { healthy: false, drained: false }));
+        assert_eq!(
+            retained.0.initialization_failure(),
+            Some("injected probe thread creation failure")
+        );
+        assert!(matches!(
+            retained.0.poll(0).expect("poll").state,
+            ProcessState::Running {
+                healthy: false,
+                drained: false
+            }
+        ));
         assert!(retained.0.request_drain().is_err());
         retained.0.kill().expect("retained child can be terminated");
         let UnixProcessHandle::Child(child) = &mut retained.0.handle else {
             panic!("spawned child ownership was replaced");
         };
         child.wait().expect("observe actual exit");
-        assert!(matches!(retained.0.poll(0).expect("terminal observation").state,
-            ProcessState::Exited(_)));
+        assert!(matches!(
+            retained.0.poll(0).expect("terminal observation").state,
+            ProcessState::Exited(_)
+        ));
         assert!(retained.0.initialization_failure().is_some());
     }
 }
@@ -78,11 +98,23 @@ fn failed_probe_retains_both_main_and_companion_child_handles() {
 #[test]
 fn missing_log_pipe_is_a_retained_failure_not_a_dropped_child() {
     for (stdout, stderr) in [(false, true), (true, false), (false, false)] {
-        let acquired = finish_child(child(stdout, stderr), 7, false, Ok(inactive_probe()), None, 1);
+        let acquired = finish_child(
+            child(stdout, stderr),
+            7,
+            false,
+            Ok(inactive_probe()),
+            None,
+            1,
+        );
         let mut retained = Cleanup(acquired.process);
         assert!(retained.0.initialization_failure().is_some());
-        assert!(matches!(retained.0.poll(0).expect("poll").state,
-            ProcessState::Running { healthy: false, drained: false }));
+        assert!(matches!(
+            retained.0.poll(0).expect("poll").state,
+            ProcessState::Running {
+                healthy: false,
+                drained: false
+            }
+        ));
         retained.0.kill().expect("kill after pipe setup failure");
     }
 }
@@ -115,6 +147,8 @@ fn failed_probe_retains_an_adopted_lifetime_reference() {
     assert!(retained.0.initialization_failure().is_some());
     retained.0.kill().expect("signal exact adopted reference");
     original.0.wait().expect("observe actual child exit");
-    assert!(matches!(retained.0.poll(0).expect("reference observation").state,
-        ProcessState::Exited(_)));
+    assert!(matches!(
+        retained.0.poll(0).expect("reference observation").state,
+        ProcessState::Exited(_)
+    ));
 }

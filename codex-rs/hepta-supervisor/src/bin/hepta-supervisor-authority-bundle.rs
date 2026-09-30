@@ -57,9 +57,7 @@ fn parse_options() -> anyhow::Result<Options> {
             Some("--grant-signer-epoch") if grant_signer_epoch.is_none() => {
                 grant_signer_epoch = Some(parse_epoch(value, "grant signer epoch")?)
             }
-            Some("--h7-verifier-key") if h7_key.is_none() => {
-                h7_key = Some(PathBuf::from(value))
-            }
+            Some("--h7-verifier-key") if h7_key.is_none() => h7_key = Some(PathBuf::from(value)),
             Some("--h7-signer-id") if h7_signer_id.is_none() => {
                 h7_signer_id = Some(to_utf8(value, "H7 signer id")?)
             }

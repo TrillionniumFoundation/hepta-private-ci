@@ -70,7 +70,9 @@ impl ManagedProcess for Process {
     }
 
     fn request_drain(&mut self) -> Result<(), ProcessDriverError> {
-        Err(ProcessDriverError::new("unexpected drain in companion test"))
+        Err(ProcessDriverError::new(
+            "unexpected drain in companion test",
+        ))
     }
 
     fn request_stop(&mut self) -> Result<(), ProcessDriverError> {
@@ -136,15 +138,12 @@ impl Fixture {
             ResourceBudget::local_default(),
         )?)?;
         let config = SupervisorConfig::local_default();
-        let (supervisor, report) = Supervisor::recover(
-            registry.clone(),
-            Driver,
-            config.clone(),
-            Instant::now(),
-        )?;
+        let (supervisor, report) =
+            Supervisor::recover(registry.clone(), Driver, config.clone(), Instant::now())?;
         assert!(report.faults.is_empty());
         let stopped = registry.load()?.agents[&agent].lifecycle.generation;
-        let starting = registry.compare_and_transition(&agent, stopped, AgentLifecycle::Starting)?;
+        let starting =
+            registry.compare_and_transition(&agent, stopped, AgentLifecycle::Starting)?;
         let running = registry.compare_and_transition(
             &agent,
             starting.generation,
@@ -236,20 +235,37 @@ fn poll_error_retains_exact_companion_and_invalidates_stale_health() -> Result<(
 fn failed_stop_is_not_an_acknowledged_phase_and_is_retried() -> Result<()> {
     let mut fixture = Fixture::new()?;
     let now = Instant::now();
-    fixture.slot.matrix.runtime.as_mut().expect("companion").phase =
-        MatrixRuntimePhase::AwaitingHealth { deadline: now };
+    fixture
+        .slot
+        .matrix
+        .runtime
+        .as_mut()
+        .expect("companion")
+        .phase = MatrixRuntimePhase::AwaitingHealth { deadline: now };
     fixture.companion.lock().expect("state").failure = Failure::Stop;
     assert!(fixture.tick(now).is_err());
     fixture.assert_retained();
     assert!(matches!(
-        fixture.slot.matrix.runtime.as_ref().expect("companion").phase,
+        fixture
+            .slot
+            .matrix
+            .runtime
+            .as_ref()
+            .expect("companion")
+            .phase,
         MatrixRuntimePhase::AwaitingHealth { .. }
     ));
     fixture.companion.lock().expect("state").failure = Failure::None;
     fixture.tick(now)?;
     assert_eq!(fixture.companion.lock().expect("state").stops, 2);
     assert!(matches!(
-        fixture.slot.matrix.runtime.as_ref().expect("companion").phase,
+        fixture
+            .slot
+            .matrix
+            .runtime
+            .as_ref()
+            .expect("companion")
+            .phase,
         MatrixRuntimePhase::Stopping { .. }
     ));
     Ok(())
@@ -259,20 +275,37 @@ fn failed_stop_is_not_an_acknowledged_phase_and_is_retried() -> Result<()> {
 fn failed_kill_retains_stopping_phase_and_is_retried() -> Result<()> {
     let mut fixture = Fixture::new()?;
     let now = Instant::now();
-    fixture.slot.matrix.runtime.as_mut().expect("companion").phase =
-        MatrixRuntimePhase::Stopping { deadline: now };
+    fixture
+        .slot
+        .matrix
+        .runtime
+        .as_mut()
+        .expect("companion")
+        .phase = MatrixRuntimePhase::Stopping { deadline: now };
     fixture.companion.lock().expect("state").failure = Failure::Kill;
     assert!(fixture.tick(now).is_err());
     fixture.assert_retained();
     assert!(matches!(
-        fixture.slot.matrix.runtime.as_ref().expect("companion").phase,
+        fixture
+            .slot
+            .matrix
+            .runtime
+            .as_ref()
+            .expect("companion")
+            .phase,
         MatrixRuntimePhase::Stopping { .. }
     ));
     fixture.companion.lock().expect("state").failure = Failure::None;
     fixture.tick(now)?;
     assert_eq!(fixture.companion.lock().expect("state").kills, 2);
     assert!(matches!(
-        fixture.slot.matrix.runtime.as_ref().expect("companion").phase,
+        fixture
+            .slot
+            .matrix
+            .runtime
+            .as_ref()
+            .expect("companion")
+            .phase,
         MatrixRuntimePhase::Killing
     ));
     Ok(())
@@ -281,7 +314,12 @@ fn failed_kill_retains_stopping_phase_and_is_retried() -> Result<()> {
 #[test]
 fn generation_mismatch_kill_error_does_not_drop_unfenced_owner() -> Result<()> {
     let mut fixture = Fixture::new()?;
-    fixture.slot.runtime.as_mut().expect("main").spawn_generation = 7;
+    fixture
+        .slot
+        .runtime
+        .as_mut()
+        .expect("main")
+        .spawn_generation = 7;
     fixture.companion.lock().expect("state").failure = Failure::Kill;
     assert!(fixture.tick(Instant::now()).is_err());
     fixture.assert_retained();
@@ -334,7 +372,12 @@ fn deferred_stop_survives_driver_failure_until_retry_succeeds() -> Result<()> {
     fixture.slot.matrix.runtime = None;
     let action = DeferredAgentAction {
         kind: DeferredAgentActionKind::Stop,
-        spawn_generation: fixture.slot.runtime.as_ref().expect("main").spawn_generation,
+        spawn_generation: fixture
+            .slot
+            .runtime
+            .as_ref()
+            .expect("main")
+            .spawn_generation,
     };
     fixture.slot.deferred_agent_action = Some(action);
     fixture.main.lock().expect("state").failure = Failure::Stop;
@@ -364,7 +407,13 @@ fn deferred_companion_stop_retries_the_unacknowledged_signal() -> Result<()> {
             .is_err()
     );
     assert!(matches!(
-        fixture.slot.matrix.runtime.as_ref().expect("companion").phase,
+        fixture
+            .slot
+            .matrix
+            .runtime
+            .as_ref()
+            .expect("companion")
+            .phase,
         MatrixRuntimePhase::Running
     ));
     fixture.companion.lock().expect("state").failure = Failure::None;
