@@ -207,21 +207,36 @@ Read-only data dependencies:
 
 None.
 
-For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
-
-Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
-
-Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
+The compiler owns request-local memory and construction-closed Rust proof
+objects. It opens no store, writes no durable facts, and has no database
+migration or projection rebuild. Admission/revocation state remains with the
+authoritative admission owner; prompt payload persistence remains with the
+registry; provider intent, attempt and terminal persistence remain with the
+runtime/provider owner. Binary rollback must preserve the existing V1 wire
+meaning and requalify any changed V2 adapter/profile combination.
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/context.compiler.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/context.compiler.md).
+Compilation and serialization are synchronous operations over immutable
+request inputs; concurrent requests share no compiler-owned writable state.
+Attachment retains its authenticated snapshot so pre-dispatch can compare the
+complete cumulative revocation frontier. This in-memory check is not atomic
+with physical dispatch: the effect owner must consume current final-use
+authority at its own dispatch boundary. Persisting an attachment or preparation
+alone cannot establish that the model received the payload.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/context.compiler.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/context.compiler.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Admission, scope, profile, realization or budget errors return no successful
+proof for that operation and must prevent dispatch. A caller may retry packing
+with a newly admitted candidate set or a different explicit budget; it must not
+silently trim trusted/schema floors. Recompilation after expiry or revocation
+requires a current authenticated snapshot and revalidated admissions.
+`observe_delivery` preserves `Rejected`, `NotDispatched` and `Indeterminate`
+provider outcomes. Crash/retry reconciliation and external-effect deduplication
+belong to the runtime/provider owner, not a compiler receipt or a local retry.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
