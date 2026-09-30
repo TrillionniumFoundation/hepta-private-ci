@@ -63,6 +63,7 @@ fn produce(root: &Path, family: &str, cut: u64) {
     let attempt = host::id("cold-process-attempt");
     let context = host::context();
     let trust = host::activate();
+    let mut clock = host::clock(85);
     if family == "outcome" {
         let (plan, mut provider, roles) = outcome_model::fixture();
         let receipt = runner
@@ -83,7 +84,7 @@ fn produce(root: &Path, family: &str, cut: u64) {
             &evidence,
             ProductTimingEvidenceV1::Qualification,
             &trust,
-            85,
+            &mut clock,
             &mut journal,
             root.join("artifacts"),
             root.join("publications"),
@@ -126,7 +127,7 @@ fn produce(root: &Path, family: &str, cut: u64) {
             &evidence,
             timing,
             &trust,
-            85,
+            &mut clock,
             &mut journal,
             root.join("artifacts"),
             root.join("publications"),
@@ -181,6 +182,7 @@ fn recover(root: &Path, family: &str, mode: &str) {
             host_binding()
         };
         let now = if mode == "expired" { 91 } else { 85 };
+        let mut clock = host::clock(now);
         let result = if family == "outcome" {
             runner.recover_selected_host_outcome_qualification(
                 &mut journal,
@@ -189,7 +191,7 @@ fn recover(root: &Path, family: &str, mode: &str) {
                 root.join("publications"),
                 binding,
                 &trust,
-                now,
+                &mut clock,
             )
         } else {
             runner.recover_selected_host_qualification(
@@ -199,7 +201,7 @@ fn recover(root: &Path, family: &str, mode: &str) {
                 root.join("publications"),
                 binding,
                 &trust,
-                now,
+                &mut clock,
             )
         };
         if matches!(mode, "revoked" | "expired" | "wrong-host" | "corrupt") {

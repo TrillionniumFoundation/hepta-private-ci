@@ -6,6 +6,41 @@
 //! in-memory attempt journal. Receipts produced through this facade remain
 //! `DENY_ALL`; selection, activation, promotion, and release are external.
 
+use std::error::Error as StdError;
+use std::fmt;
+
+use codex_hepta_types::Digest32;
+
+/// Failure while the selected-host owner samples its trusted wall clock.
+/// Missing or uncertain time is never replaced by a caller-provided scalar.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum SelectedHostClockErrorV1 {
+    Unavailable,
+    Indeterminate,
+}
+
+impl fmt::Display for SelectedHostClockErrorV1 {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, "{self:?}")
+    }
+}
+
+impl StdError for SelectedHostClockErrorV1 {}
+
+/// Host-owned clock capability for selected-host qualification and recovery.
+///
+/// `binding` identifies the concrete clock authority/topology and must remain
+/// stable and nonzero for one selected-host operation. The repository does not
+/// self-qualify an implementation of this trait: target-host evidence must bind
+/// clock provenance, units, rollback resistance and failure domain. The
+/// evaluator samples this capability immediately before signed final use rather
+/// than accepting a scalar evidence time from its caller.
+pub trait SelectedHostClockV1 {
+    fn binding(&self) -> Digest32;
+
+    fn sample_current_time(&mut self) -> Result<u64, SelectedHostClockErrorV1>;
+}
+
 pub use crate::AnchoredProductEvaluationAttemptJournalV1;
 pub use crate::DurableProductEvaluationAttemptJournalV1;
 pub use crate::FencedFinalHoldoutOwnerV1;

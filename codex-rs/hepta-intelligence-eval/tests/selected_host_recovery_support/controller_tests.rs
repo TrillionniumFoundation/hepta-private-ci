@@ -35,21 +35,21 @@ pub(super) fn recover_page<S: FinalHoldoutCasStoreV1, J: DurableProductEvaluatio
 
     if mode == "page-first" {
         // The first identity is durably handled with one active trust snapshot.
-        // A regressed clock on the second identity aborts the page before that
-        // identity can be verified, but the first cursor advancement survives
-        // the process boundary. This proves trust and time are resolved for
-        // every attempt rather than cached once for the whole page.
+        // A regressed owner-clock sample on the second identity aborts the page
+        // before that identity can be verified, but the first cursor advancement
+        // survives the process boundary. Trust and time are resolved per attempt.
         let mut calls = 0_u8;
+        let mut clock = host::scripted_clock(&[85, 84]);
         let result = runner.recover_selected_host_pending_page(
             journal,
             cursor,
             &root.join("artifacts"),
             &root.join("publications"),
             host_binding(),
+            &mut clock,
             || {
                 calls += 1;
-                let now = if calls == 1 { 85 } else { 84 };
-                Ok::<_, RecordedProductEvaluationErrorV1>((host::activate(), now))
+                Ok::<_, RecordedProductEvaluationErrorV1>(host::activate())
             },
             Duration::from_secs(30),
             2,
@@ -80,6 +80,7 @@ pub(super) fn recover_page<S: FinalHoldoutCasStoreV1, J: DurableProductEvaluatio
         return None;
     }
 
+    let mut clock = host::clock(85);
     let mut result = runner
         .recover_selected_host_pending_page(
             journal,
@@ -87,7 +88,8 @@ pub(super) fn recover_page<S: FinalHoldoutCasStoreV1, J: DurableProductEvaluatio
             &root.join("artifacts"),
             &root.join("publications"),
             host_binding(),
-            || Ok((host::activate(), 85)),
+            &mut clock,
+            || Ok(host::activate()),
             Duration::from_secs(30),
             1,
         )

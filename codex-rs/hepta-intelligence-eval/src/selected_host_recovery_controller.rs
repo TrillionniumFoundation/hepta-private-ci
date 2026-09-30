@@ -20,6 +20,8 @@ use crate::ProductEvaluationAttemptReceiptV1;
 use crate::RecordedProductEvaluationErrorV1;
 use crate::RecordedProductEvaluationRunnerV1;
 use crate::attempt_recovery::validated_history;
+use crate::product::SelectedHostClockErrorV1;
+use crate::product::SelectedHostClockV1;
 
 #[path = "recovery_cursor.rs"]
 mod cursor;
@@ -29,6 +31,7 @@ type RecordedError = RecordedProductEvaluationErrorV1;
 
 #[derive(Clone, Copy)]
 struct RecoveryTrustFrontierV1 {
+    clock_binding: Digest32,
     root_digest: Digest32,
     distribution_digest: Digest32,
     generation: u64,
@@ -41,6 +44,7 @@ impl RecoveryTrustFrontierV1 {
     fn admit(
         trust: &ActivatedLearningTrustV1,
         now: u64,
+        clock_binding: Digest32,
         previous: Option<Self>,
     ) -> Result<Self, RecordedError> {
         if !trust.is_current_at(now) {
@@ -49,6 +53,7 @@ impl RecoveryTrustFrontierV1 {
             ));
         }
         Self {
+            clock_binding,
             root_digest: trust.root_digest(),
             distribution_digest: trust.distribution_digest(),
             generation: trust.generation(),
@@ -60,7 +65,8 @@ impl RecoveryTrustFrontierV1 {
     }
 
     fn validate(self, now: u64, previous: Option<Self>) -> Result<Self, RecordedError> {
-        if self.root_digest.is_zero()
+        if self.clock_binding.is_zero()
+            || self.root_digest.is_zero()
             || self.distribution_digest.is_zero()
             || self.generation == 0
             || self.authority_epoch == 0
@@ -72,7 +78,8 @@ impl RecoveryTrustFrontierV1 {
             ));
         }
         if let Some(previous) = previous
-            && (self.root_digest != previous.root_digest
+            && (self.clock_binding != previous.clock_binding
+                || self.root_digest != previous.root_digest
                 || self.generation < previous.generation
                 || self.effective_at < previous.effective_at
                 || self.authority_epoch < previous.authority_epoch
@@ -87,12 +94,24 @@ impl RecoveryTrustFrontierV1 {
     }
 }
 
+fn map_clock(error: SelectedHostClockErrorV1) -> RecordedError {
+    match error {
+        SelectedHostClockErrorV1::Unavailable => {
+            RecordedError::Invariant("selected-host recovery clock unavailable")
+        }
+        SelectedHostClockErrorV1::Indeterminate => {
+            RecordedError::Invariant("selected-host recovery clock indeterminate")
+        }
+    }
+}
+
 #[cfg(test)]
 mod trust_frontier_tests {
     use super::*;
 
     fn frontier(label: &str) -> RecoveryTrustFrontierV1 {
         RecoveryTrustFrontierV1 {
+            clock_binding: Digest32::of_bytes(b"clock"),
             root_digest: Digest32::of_bytes(format!("root:{label}").as_bytes()),
             distribution_digest: Digest32::of_bytes(
                 format!("distribution:{label}").as_bytes(),
@@ -125,6 +144,13 @@ mod trust_frontier_tests {
     #[test]
     fn recovery_trust_rejects_zero_future_and_expired_frontiers() {
         let valid = frontier("valid");
+        assert_not_current(
+            RecoveryTrustFrontierV1 {
+                clock_binding: Digest32::ZERO,
+                ..valid
+            },
+            100,
+        );
         assert_not_current(
             RecoveryTrustFrontierV1 {
                 root_digest: Digest32::ZERO,
@@ -172,6 +198,13 @@ mod trust_frontier_tests {
     #[test]
     fn recovery_trust_rejects_every_in_page_regression_class() {
         let previous = frontier("previous");
+        assert_regressed(
+            RecoveryTrustFrontierV1 {
+                clock_binding: Digest32::of_bytes(b"different-clock"),
+                ..previous
+            },
+            previous,
+        );
         assert_regressed(frontier("different-root"), previous);
         assert_regressed(
             RecoveryTrustFrontierV1 {
@@ -225,18 +258,16 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
     /// Process one page using an exclusively locked, host-provisioned cursor.
     ///
     /// The host supplies a freshly resolved root-authenticated learning-trust
-    /// activation and clock sample before every attempt. A page may observe a
-    /// monotonic distribution rotation, but it never keeps using a cached bare
-    /// verifier after the host has moved to another generation. Root changes,
-    /// generation/epoch regression, same-generation distribution substitution
-    /// and clock regression fail the page closed. Restarting the page is the
-    /// boundary for an independently authorized root-rotation ceremony.
+    /// activation before every attempt. The runner samples the host-owned clock
+    /// immediately before verification/publication final use. Clock identity,
+    /// sampled time, root, generation and epoch may not regress within a page.
+    /// Restarting the page is the boundary for an independently authorized root
+    /// rotation ceremony.
     ///
     /// The host must provide bounded/interruptible storage I/O: the wall budget
     /// is cooperative between owner calls, not a claim to preempt a blocked
-    /// filesystem. The returned per-attempt errors retain unresolved work.
-    /// Cursor progress survives process exit, advances past rejected evidence,
-    /// and wraps only after a complete pass. A journal, cursor or trust-frontier
+    /// filesystem. Cursor progress survives process exit and advances past a
+    /// handled unresolved identity. A journal, cursor, clock or trust-frontier
     /// error aborts the page.
     #[allow(clippy::too_many_arguments, clippy::type_complexity)]
     pub fn recover_selected_host_pending_page<J: DurableProductEvaluationAttemptJournalV1>(
@@ -246,8 +277,8 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
         artifact_root: &Path,
         publication_root: &Path,
         selected_host_binding: Digest32,
-        mut current_trust: impl FnMut()
-            -> Result<(ActivatedLearningTrustV1, u64), RecordedError>,
+        clock: &mut dyn SelectedHostClockV1,
+        mut current_trust: impl FnMut() -> Result<ActivatedLearningTrustV1, RecordedError>,
         budget: Duration,
         limit: usize,
     ) -> Result<
@@ -257,7 +288,9 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
         )>,
         RecordedError,
     > {
+        let clock_binding = clock.binding();
         if selected_host_binding.is_zero()
+            || clock_binding.is_zero()
             || !(1..=32).contains(&limit)
             || budget.is_zero()
             || budget > Duration::from_secs(60)
@@ -267,6 +300,8 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
             ));
         }
         let started = Instant::now();
+        // Preserve the existing cursor binding/format. Clock identity is a
+        // selected-topology fact and is checked on every use within this page.
         let binding = Digest32::of_parts(&[
             b"hepta.learning-eval.recovery-cursor.v1",
             selected_host_binding.as_array(),
@@ -300,7 +335,18 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
             if started.elapsed() >= budget {
                 break;
             }
-            let (trust, now) = current_trust()?;
+            let trust = current_trust()?;
+            if clock.binding() != clock_binding {
+                return Err(RecordedError::Invariant(
+                    "selected-host recovery clock binding changed",
+                ));
+            }
+            let now = clock.sample_current_time().map_err(map_clock)?;
+            if clock.binding() != clock_binding {
+                return Err(RecordedError::Invariant(
+                    "selected-host recovery clock binding changed",
+                ));
+            }
             if previous_now.is_some_and(|before| now < before) {
                 return Err(RecordedError::Invariant(
                     "recovery host clock regressed",
@@ -310,6 +356,7 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
             previous_trust = Some(RecoveryTrustFrontierV1::admit(
                 &trust,
                 now,
+                clock_binding,
                 previous_trust,
             )?);
 
@@ -350,12 +397,12 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
                                 Err(error) => return Err(map_recovery(&id, error)),
                             }
                         }
-                        // A wrong-family archive is rejected before any phase
+                        // A wrong-family archive is rejected before phase
                         // mutation. Only that pre-admission refusal may try the
                         // other registered family; signature errors never fall
-                        // back to a weaker path. Both APIs verify V2/V3 internally
-                        // against the freshly resolved active trust above.
-                        match self.recover_selected_host_qualification(
+                        // back to a weaker path. Both paths reuse the exact
+                        // owner-sampled time validated above.
+                        match self.recover_selected_host_qualification_at_current_time(
                             journal,
                             &id,
                             artifact_root,
@@ -365,7 +412,7 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
                             now,
                         ) {
                             Err(RecordedError::AttemptRequiresRecovery { .. }) => self
-                                .recover_selected_host_outcome_qualification(
+                                .recover_selected_host_outcome_qualification_at_current_time(
                                     journal,
                                     &id,
                                     artifact_root,
@@ -398,8 +445,6 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
                     return Err(RecordedError::Journal(error));
                 }
                 result => {
-                    // Persist after each handled identity, including an
-                    // unresolved one. Unknown cursor fsync aborts immediately.
                     cursor.save(Some(&id))?;
                     results.push((id, result));
                 }

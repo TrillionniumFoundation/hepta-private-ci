@@ -232,7 +232,7 @@ fn bypass<S: FinalHoldoutCasStoreV1, J: DurableProductEvaluationAttemptJournalV1
         todo!(),
         todo!(),
         verifier,
-        0,
+        todo!(),
         journal,
         std::path::Path::new(""),
         std::path::Path::new(""),
@@ -254,7 +254,8 @@ fi
 python3 - "${tmp}/bare-selected-host-trust.stderr" <<'PY'
 import json
 import pathlib
-rows = [json.loads(line) for line in pathlib.Path(__import__('sys').argv[1]).read_text().splitlines() if line.strip()]
+import sys
+rows = [json.loads(line) for line in pathlib.Path(sys.argv[1]).read_text().splitlines() if line.strip()]
 if not any(
     row.get('level') == 'error'
     and (row.get('code') or {}).get('code') == 'E0308'
@@ -263,6 +264,59 @@ if not any(
     for row in rows
 ):
     raise SystemExit('selected-host activated-trust fixture failed for an unrelated reason')
+PY
+
+cat >"${tmp}/scalar_selected_host_time.rs" <<'RS'
+use codex_hepta_intelligence_eval::DurableProductEvaluationAttemptJournalV1;
+use codex_hepta_intelligence_eval::FinalHoldoutCasStoreV1;
+use codex_hepta_intelligence_eval::RecordedProductEvaluationRunnerV1;
+use codex_hepta_learning_ledger::ActivatedLearningTrustV1;
+
+#[allow(dead_code)]
+fn bypass<S: FinalHoldoutCasStoreV1, J: DurableProductEvaluationAttemptJournalV1>(
+    runner: &RecordedProductEvaluationRunnerV1<S>,
+    trust: &ActivatedLearningTrustV1,
+    journal: &mut J,
+) {
+    let _ = runner.qualify_and_persist_on_selected_host(
+        todo!(),
+        todo!(),
+        todo!(),
+        todo!(),
+        todo!(),
+        trust,
+        0_u64,
+        journal,
+        std::path::Path::new(""),
+        std::path::Path::new(""),
+        todo!(),
+    );
+}
+fn main() {}
+RS
+if rustc --edition=2024 --crate-name learning_eval_scalar_selected_host_time --error-format=json \
+    "${tmp}/scalar_selected_host_time.rs" \
+    --extern "codex_hepta_intelligence_eval=${rlib}" \
+    --extern "codex_hepta_learning_ledger=${ledger_rlib}" \
+    -L "dependency=${deps}" -o "${tmp}/scalar-selected-host-time" \
+    >"${tmp}/scalar-selected-host-time.stdout" 2>"${tmp}/scalar-selected-host-time.stderr"
+then
+  echo "selected-host qualification accepts a caller-provided scalar time" >&2
+  exit 1
+fi
+python3 - "${tmp}/scalar-selected-host-time.stderr" <<'PY'
+import json
+import pathlib
+import sys
+rows = [json.loads(line) for line in pathlib.Path(sys.argv[1]).read_text().splitlines() if line.strip()]
+if not any(
+    row.get('level') == 'error'
+    and (row.get('code') or {}).get('code') == 'E0308'
+    and 'SelectedHostClockV1' in (row.get('rendered') or row.get('message', ''))
+    and 'u64' in (row.get('rendered') or row.get('message', ''))
+    for row in rows
+):
+    raise SystemExit('selected-host clock fixture failed for an unrelated reason')
 PY
 
 for symbol in recover_persisted_qualification recover_persisted_outcome_qualification \
@@ -304,4 +358,4 @@ printf 'use codex_hepta_intelligence_eval::ProductEvaluationRunnerV1;\nfn main()
 rustc --edition=2024 --crate-name learning_eval_compat_surface "${tmp}/compat.rs" \
   --extern "codex_hepta_intelligence_eval=${compat}" -L "dependency=${compat_deps}" \
   -o "${tmp}/compat"
-printf '%s\n' '{"schema":"hepta.learning-eval.api-surface.v1","publicAdmission":true,"publicRecordedRunner":true,"verifiedRecoveryPublic":true,"callerDecisionDecoderAccepted":false,"bareVerifierSelectedHostAccepted":false,"unarchivedRecordedQualificationPublic":false,"unarchivedOutcomeQualificationPublic":false,"unverifiedPublicationRecoveryPublic":false,"lowLevelV2Public":false,"lowLevelV3Public":false,"volatileJournalDefaultAccepted":false,"rawRunnerDefaultPublic":false,"rawRunnerExplicitCompatibilityPublic":true}'
+printf '%s\n' '{"schema":"hepta.learning-eval.api-surface.v1","publicAdmission":true,"publicRecordedRunner":true,"verifiedRecoveryPublic":true,"callerDecisionDecoderAccepted":false,"bareVerifierSelectedHostAccepted":false,"callerScalarSelectedHostTimeAccepted":false,"unarchivedRecordedQualificationPublic":false,"unarchivedOutcomeQualificationPublic":false,"unverifiedPublicationRecoveryPublic":false,"lowLevelV2Public":false,"lowLevelV3Public":false,"volatileJournalDefaultAccepted":false,"rawRunnerDefaultPublic":false,"rawRunnerExplicitCompatibilityPublic":true}'

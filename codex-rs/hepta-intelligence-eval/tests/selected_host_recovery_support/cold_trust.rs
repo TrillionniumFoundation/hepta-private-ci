@@ -1,7 +1,11 @@
 //! Fixed synthetic trust configuration for cold-recovery and consumer fixtures.
 //! A recovering child loads this host configuration without constructing a
 //! model, dataset, qualification bundle or cached decision.
+use std::collections::VecDeque;
+
 use codex_hepta_intelligence_eval::*;
+use codex_hepta_intelligence_eval::product::SelectedHostClockErrorV1;
+use codex_hepta_intelligence_eval::product::SelectedHostClockV1;
 use codex_hepta_learning_ledger::*;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -15,6 +19,38 @@ pub fn id(value: &str) -> StableId {
 }
 pub fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
+}
+
+pub struct FixtureClock {
+    binding: Digest32,
+    samples: VecDeque<u64>,
+    last: u64,
+}
+
+pub fn clock(now: u64) -> FixtureClock {
+    scripted_clock(&[now])
+}
+
+pub fn scripted_clock(samples: &[u64]) -> FixtureClock {
+    assert!(!samples.is_empty(), "clock fixture needs one sample");
+    FixtureClock {
+        binding: digest("cold-trusted-clock"),
+        samples: samples.iter().copied().collect(),
+        last: samples[0],
+    }
+}
+
+impl SelectedHostClockV1 for FixtureClock {
+    fn binding(&self) -> Digest32 {
+        self.binding
+    }
+
+    fn sample_current_time(&mut self) -> Result<u64, SelectedHostClockErrorV1> {
+        if let Some(next) = self.samples.pop_front() {
+            self.last = next;
+        }
+        Ok(self.last)
+    }
 }
 
 fn key(role: LearningEvidenceRoleV1) -> SigningKey {

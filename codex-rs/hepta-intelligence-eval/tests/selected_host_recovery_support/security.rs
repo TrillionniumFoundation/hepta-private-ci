@@ -8,6 +8,8 @@ use codex_hepta_intelligence_eval::ProductEvaluationAttemptAnchorV1;
 use codex_hepta_intelligence_eval::ProductEvaluationAttemptJournalErrorV1;
 use codex_hepta_intelligence_eval::SignedEvaluationEvidenceV1;
 use codex_hepta_intelligence_eval::evaluation_signing_payload_v2;
+use codex_hepta_intelligence_eval::product::SelectedHostClockErrorV1;
+use codex_hepta_intelligence_eval::product::SelectedHostClockV1;
 use codex_hepta_learning_ledger::ActivatedLearningTrustV1;
 use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
@@ -32,6 +34,28 @@ fn digest(value: &str) -> Digest32 {
 
 fn id(value: &str) -> StableId {
     StableId::new(value).expect("fixture identity")
+}
+
+pub struct FixtureClock {
+    binding: Digest32,
+    now: u64,
+}
+
+pub fn clock(now: u64) -> FixtureClock {
+    FixtureClock {
+        binding: digest("selected-host-test-clock"),
+        now,
+    }
+}
+
+impl SelectedHostClockV1 for FixtureClock {
+    fn binding(&self) -> Digest32 {
+        self.binding
+    }
+
+    fn sample_current_time(&mut self) -> Result<u64, SelectedHostClockErrorV1> {
+        Ok(self.now)
+    }
 }
 
 pub fn principal(
