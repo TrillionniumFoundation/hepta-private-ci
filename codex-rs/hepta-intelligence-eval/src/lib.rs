@@ -25,8 +25,6 @@ mod ndu_convergence;
 mod ndu_well_posedness;
 #[cfg(test)]
 mod test_tempfile;
-#[cfg(test)]
-pub(crate) use test_tempfile::NamedTempFile;
 pub use attempt_durability::DurableProductEvaluationAttemptJournalV1;
 pub use attempt_journal::AnchoredProductEvaluationAttemptJournalV1;
 pub use attempt_journal::InMemoryProductEvaluationAttemptJournalV1;
@@ -57,6 +55,8 @@ pub use fenced_holdout_file::LockedFileCasCapacityV1;
 pub use fenced_holdout_file::LockedFileCasCompactionReceiptV1;
 pub use fenced_holdout_file::LockedFileCasErrorV1;
 pub use fenced_holdout_file::LockedFileFinalHoldoutCasStoreV1;
+#[cfg(test)]
+pub(crate) use test_tempfile::NamedTempFile;
 mod ope;
 pub mod product;
 mod product_runner;

@@ -94,12 +94,7 @@ fn exercise_recovery(cut: u64) {
     let attempt_id = id("attempt:selected-host-outcome-recovery");
     let (plan, mut provider, roles) = fixture();
     let outcome = runner
-        .evaluate_outcome_comparison(
-            attempt_id.clone(),
-            &plan,
-            &mut provider,
-            &mut journal,
-        )
+        .evaluate_outcome_comparison(attempt_id.clone(), &plan, &mut provider, &mut journal)
         .expect("multi-outcome comparison");
     let scope = digest("selected-host-outcome-learning-scope");
     let generator_key = SigningKey::from_bytes(&[61; 32]);
@@ -113,8 +108,7 @@ fn exercise_recovery(cut: u64) {
     let bundle = runner
         .outcome_qualification_bundle(&outcome, &context)
         .expect("outcome bundle");
-    let (trust, evidence) =
-        verifier_and_evidence(&bundle, &roles, &generator_key, &evaluator_key);
+    let (trust, evidence) = verifier_and_evidence(&bundle, &roles, &generator_key, &evaluator_key);
     let selected_host_binding = digest("selected-host-outcome-binding");
     let mut current_clock = clock(50);
     let interrupted = runner.qualify_outcomes_and_persist_on_selected_host(
@@ -137,9 +131,7 @@ fn exercise_recovery(cut: u64) {
         ))
     ));
     assert_eq!(
-        fs::read_dir(&artifact_root)
-            .expect("artifact root")
-            .count(),
+        fs::read_dir(&artifact_root).expect("artifact root").count(),
         1
     );
     assert_eq!(

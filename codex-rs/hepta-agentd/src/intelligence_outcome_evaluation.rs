@@ -25,11 +25,19 @@ impl AgentdEvaluationBindingV1 {
     ) -> Result<Vec<u8>, AgentdIntelligenceEvaluationError> {
         let decision = receipt.decision();
         let digests = [
-            self.objective_digest, self.snapshot_digest, self.context_receipt_digest,
-            self.candidate_set_digest, receipt.dataset_digest(), receipt.execution_digest(),
-            receipt.publication_digest(), decision.decision.evidence_digest,
-            decision.trust_digest, decision.authentication_digest, trust.distribution_digest(),
-            current_owner.key_digest, current_owner.implementation_digest,
+            self.objective_digest,
+            self.snapshot_digest,
+            self.context_receipt_digest,
+            self.candidate_set_digest,
+            receipt.dataset_digest(),
+            receipt.execution_digest(),
+            receipt.publication_digest(),
+            decision.decision.evidence_digest,
+            decision.trust_digest,
+            decision.authentication_digest,
+            trust.distribution_digest(),
+            current_owner.key_digest,
+            current_owner.implementation_digest,
             current_owner.revocation_frontier_digest,
         ];
         if digests.iter().any(|value| value.is_zero())
@@ -39,22 +47,36 @@ impl AgentdEvaluationBindingV1 {
             || current_owner.key_digest != receipt.evaluator().signing_key_digest
             || current_owner.authority_epoch != receipt.evaluator().authority_epoch
             || decision.trust_digest != trust.verifier().trust_digest()
-            || receipt.snapshot_ids().is_empty() || receipt.snapshot_ids().len() > 16_384
+            || receipt.snapshot_ids().is_empty()
+            || receipt.snapshot_ids().len() > 16_384
         {
             return Err(AgentdIntelligenceEvaluationError::Binding);
         }
         let mut bytes = b"hepta.agentd.outcome-qualification-use.v1\0".to_vec();
-        for id in [&self.run_id, &self.selected_candidate_id, &decision.decision.evaluation_id,
-            &decision.decision.baseline_id, &current_owner.owner_id,
-            &receipt.evaluator().principal_id] {
+        for id in [
+            &self.run_id,
+            &self.selected_candidate_id,
+            &decision.decision.evaluation_id,
+            &decision.decision.baseline_id,
+            &current_owner.owner_id,
+            &receipt.evaluator().principal_id,
+        ] {
             append_id(&mut bytes, id)?;
         }
-        for digest in digests { bytes.extend_from_slice(digest.as_array()); }
-        for value in [current_owner.generation.get(), current_owner.key_epoch, current_owner.authority_epoch] {
+        for digest in digests {
+            bytes.extend_from_slice(digest.as_array());
+        }
+        for value in [
+            current_owner.generation.get(),
+            current_owner.key_epoch,
+            current_owner.authority_epoch,
+        ] {
             bytes.extend_from_slice(&value.to_be_bytes());
         }
         bytes.extend_from_slice(&(receipt.snapshot_ids().len() as u64).to_be_bytes());
-        for id in receipt.snapshot_ids() { append_id(&mut bytes, id)?; }
+        for id in receipt.snapshot_ids() {
+            append_id(&mut bytes, id)?;
+        }
         Ok(bytes)
     }
 
@@ -73,7 +95,8 @@ impl AgentdEvaluationBindingV1 {
         now: u64,
     ) -> Result<Digest32, AgentdIntelligenceEvaluationError> {
         let decision = receipt.decision();
-        if expected_execution_digest.is_zero() || expected_publication_digest.is_zero()
+        if expected_execution_digest.is_zero()
+            || expected_publication_digest.is_zero()
             || receipt.execution_digest() != expected_execution_digest
             || receipt.publication_digest() != expected_publication_digest
             || &decision.decision.evaluation_id != expected_evaluation_id
@@ -83,16 +106,24 @@ impl AgentdEvaluationBindingV1 {
             return Err(AgentdIntelligenceEvaluationError::Binding);
         }
         let payload = self.outcome_qualification_use_payload_v1(receipt, current_owner, trust)?;
-        let verified = trust.verifier().verify(
-            LearningEvidenceRoleV1::Evaluator, use_attestation, &payload, now,
-        ).map_err(AgentdIntelligenceEvaluationError::Evidence)?;
+        let verified = trust
+            .verifier()
+            .verify(
+                LearningEvidenceRoleV1::Evaluator,
+                use_attestation,
+                &payload,
+                now,
+            )
+            .map_err(AgentdIntelligenceEvaluationError::Evidence)?;
         if verified.principal() != receipt.evaluator()
             || verified.principal().signing_key_digest != current_owner.key_digest
         {
             return Err(AgentdIntelligenceEvaluationError::Binding);
         }
-        if receipt.authority().grants_any() || decision.decision.authority.grants_any()
-            || decision.decision.disposition != IndependentEvaluationDispositionV1::EligibleForIndependentSelection
+        if receipt.authority().grants_any()
+            || decision.decision.authority.grants_any()
+            || decision.decision.disposition
+                != IndependentEvaluationDispositionV1::EligibleForIndependentSelection
         {
             return Err(AgentdIntelligenceEvaluationError::Ineligible);
         }
@@ -105,7 +136,8 @@ impl AgentdEvaluationBindingV1 {
 }
 
 fn append_id(bytes: &mut Vec<u8>, id: &StableId) -> Result<(), AgentdIntelligenceEvaluationError> {
-    let length = u64::try_from(id.as_str().len()).map_err(|_| AgentdIntelligenceEvaluationError::Binding)?;
+    let length =
+        u64::try_from(id.as_str().len()).map_err(|_| AgentdIntelligenceEvaluationError::Binding)?;
     bytes.extend_from_slice(&length.to_be_bytes());
     bytes.extend_from_slice(id.as_str().as_bytes());
     Ok(())

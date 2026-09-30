@@ -100,10 +100,8 @@ fn inputs(channel: &str, outcome: FixedQ32) -> TemporalComparisonInputsV1 {
             complete_candidates: true,
             actions: vec![OpeAction {
                 action_id: id("action"),
-                behavior_probability: ProbabilityQ32::from_raw(1 << 32)
-                    .expect("probability"),
-                evaluation_probability: ProbabilityQ32::from_raw(1 << 32)
-                    .expect("probability"),
+                behavior_probability: ProbabilityQ32::from_raw(1 << 32).expect("probability"),
+                evaluation_probability: ProbabilityQ32::from_raw(1 << 32).expect("probability"),
                 predicted_outcome: FixedQ32::ZERO,
             }],
             finalized_outcome: Some(outcome),
@@ -129,10 +127,7 @@ fn inputs(channel: &str, outcome: FixedQ32) -> TemporalComparisonInputsV1 {
     }
 }
 
-fn channel(
-    name: &str,
-    data: &TemporalComparisonInputsV1,
-) -> ProductOutcomeChannelContractV1 {
+fn channel(name: &str, data: &TemporalComparisonInputsV1) -> ProductOutcomeChannelContractV1 {
     ProductOutcomeChannelContractV1 {
         metric_id: id(name),
         channel_id: id(name),

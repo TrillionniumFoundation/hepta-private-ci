@@ -18,7 +18,9 @@ fn ids(bytes: &mut Vec<u8>, values: &[StableId]) -> Result<(), ProductEvaluation
     let mut ordered: Vec<_> = values.iter().collect();
     ordered.sort();
     if ordered.windows(2).any(|pair| pair[0] == pair[1]) {
-        return Err(ProductEvaluationError::Binding("duplicate outcome identity"));
+        return Err(ProductEvaluationError::Binding(
+            "duplicate outcome identity",
+        ));
     }
     bytes.extend_from_slice(&(ordered.len() as u64).to_be_bytes());
     for value in ordered {
@@ -30,8 +32,13 @@ fn ids(bytes: &mut Vec<u8>, values: &[StableId]) -> Result<(), ProductEvaluation
 fn observations(bytes: &mut Vec<u8>, rows: &[OpeRow]) -> Result<(), ProductEvaluationError> {
     let mut ordered: Vec<_> = rows.iter().collect();
     ordered.sort_by(|left, right| left.decision_id.cmp(&right.decision_id));
-    if ordered.windows(2).any(|pair| pair[0].decision_id == pair[1].decision_id) {
-        return Err(ProductEvaluationError::Binding("duplicate outcome observation"));
+    if ordered
+        .windows(2)
+        .any(|pair| pair[0].decision_id == pair[1].decision_id)
+    {
+        return Err(ProductEvaluationError::Binding(
+            "duplicate outcome observation",
+        ));
     }
     bytes.extend_from_slice(&(ordered.len() as u64).to_be_bytes());
     for row in ordered {
@@ -44,7 +51,10 @@ fn observations(bytes: &mut Vec<u8>, rows: &[OpeRow]) -> Result<(), ProductEvalu
         value.push(u8::from(row.complete_candidates));
         let mut actions: Vec<_> = row.actions.iter().collect();
         actions.sort_by(|left, right| left.action_id.cmp(&right.action_id));
-        if actions.windows(2).any(|pair| pair[0].action_id == pair[1].action_id) {
+        if actions
+            .windows(2)
+            .any(|pair| pair[0].action_id == pair[1].action_id)
+        {
             return Err(ProductEvaluationError::Binding("duplicate outcome action"));
         }
         value.extend_from_slice(&(actions.len() as u64).to_be_bytes());
@@ -72,9 +82,13 @@ fn observations(bytes: &mut Vec<u8>, rows: &[OpeRow]) -> Result<(), ProductEvalu
 pub fn product_outcome_inputs_digest_v1(
     inputs: &TemporalComparisonInputsV1,
 ) -> Result<Digest32, ProductEvaluationError> {
-    for length in [inputs.training.len(), inputs.targets.len(),
-        inputs.candidate_observations.len(), inputs.baseline_observations.len(),
-        inputs.assignments.len()] {
+    for length in [
+        inputs.training.len(),
+        inputs.targets.len(),
+        inputs.candidate_observations.len(),
+        inputs.baseline_observations.len(),
+        inputs.assignments.len(),
+    ] {
         if length > MAX_BATCH_ROWS {
             return Err(ProductEvaluationError::Binding("outcome input capacity"));
         }
@@ -82,14 +96,24 @@ pub fn product_outcome_inputs_digest_v1(
     let mut bytes = b"hepta.learning-eval.outcome-inputs.v1".to_vec();
     let mut training: Vec<_> = inputs.training.iter().collect();
     training.sort_by(|left, right| left.decision_id.cmp(&right.decision_id));
-    if training.windows(2).any(|pair| pair[0].decision_id == pair[1].decision_id) {
-        return Err(ProductEvaluationError::Binding("duplicate outcome training row"));
+    if training
+        .windows(2)
+        .any(|pair| pair[0].decision_id == pair[1].decision_id)
+    {
+        return Err(ProductEvaluationError::Binding(
+            "duplicate outcome training row",
+        ));
     }
     bytes.extend_from_slice(&(training.len() as u64).to_be_bytes());
     for row in training {
         let mut value = Vec::new();
-        for id in [&row.decision_id, &row.principal_lineage, &row.episode_lineage,
-            &row.window_id, &row.action_id] {
+        for id in [
+            &row.decision_id,
+            &row.principal_lineage,
+            &row.episode_lineage,
+            &row.window_id,
+            &row.action_id,
+        ] {
             push_id(&mut value, id);
         }
         value.extend_from_slice(&row.outcome.raw().to_be_bytes());
@@ -99,16 +123,26 @@ pub fn product_outcome_inputs_digest_v1(
     }
     let mut targets: Vec<_> = inputs.targets.iter().collect();
     targets.sort_by(|left, right| left.decision_id.cmp(&right.decision_id));
-    if targets.windows(2).any(|pair| pair[0].decision_id == pair[1].decision_id) {
+    if targets
+        .windows(2)
+        .any(|pair| pair[0].decision_id == pair[1].decision_id)
+    {
         return Err(ProductEvaluationError::Binding("duplicate outcome target"));
     }
     bytes.extend_from_slice(&(targets.len() as u64).to_be_bytes());
     for row in targets {
         if row.actions.len() > 128 {
-            return Err(ProductEvaluationError::Binding("outcome target action capacity"));
+            return Err(ProductEvaluationError::Binding(
+                "outcome target action capacity",
+            ));
         }
         let mut value = Vec::new();
-        for id in [&row.decision_id, &row.principal_lineage, &row.episode_lineage, &row.window_id] {
+        for id in [
+            &row.decision_id,
+            &row.principal_lineage,
+            &row.episode_lineage,
+            &row.window_id,
+        ] {
             push_id(&mut value, id);
         }
         value.extend_from_slice(&row.decision_at.to_be_bytes());
@@ -119,8 +153,13 @@ pub fn product_outcome_inputs_digest_v1(
     observations(&mut bytes, &inputs.baseline_observations)?;
     let mut assignments: Vec<_> = inputs.assignments.iter().collect();
     assignments.sort_by(|left, right| left.decision_id.cmp(&right.decision_id));
-    if assignments.windows(2).any(|pair| pair[0].decision_id == pair[1].decision_id) {
-        return Err(ProductEvaluationError::Binding("duplicate outcome assignment"));
+    if assignments
+        .windows(2)
+        .any(|pair| pair[0].decision_id == pair[1].decision_id)
+    {
+        return Err(ProductEvaluationError::Binding(
+            "duplicate outcome assignment",
+        ));
     }
     bytes.extend_from_slice(&(assignments.len() as u64).to_be_bytes());
     for row in assignments {

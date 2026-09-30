@@ -39,9 +39,7 @@ fn assert_durable_journal<T: DurableProductEvaluationAttemptJournalV1>() {}
 #[test]
 fn recorded_production_surface_is_public_and_composable() {
     assert_durable_journal::<AnchoredProductEvaluationAttemptJournalV1<CompileAnchor>>();
-    let runner = type_name::<
-        RecordedProductEvaluationRunnerV1<LockedFileFinalHoldoutCasStoreV1>,
-    >();
+    let runner = type_name::<RecordedProductEvaluationRunnerV1<LockedFileFinalHoldoutCasStoreV1>>();
     assert!(runner.contains("RecordedProductEvaluationRunnerV1"));
 
     let provider = type_name::<dyn FinalHoldoutProviderV1>();
@@ -64,9 +62,7 @@ fn raw_decision_and_runner_are_private_in_default_builds() {
         "#[cfg(not(feature = \"trusted-inprocess-eval\"))]\n\
          pub(crate) use product_runner::ProductEvaluationRunnerV1;"
     ));
-    assert!(source.contains(
-        "pub(crate) use signed_evaluation::decide_with_signed_evidence_v2;"
-    ));
+    assert!(source.contains("pub(crate) use signed_evaluation::decide_with_signed_evidence_v2;"));
     assert!(!source.lines().any(|line| {
         line.trim() == "pub use signed_evaluation::decide_with_signed_evidence_v2;"
     }));

@@ -145,7 +145,9 @@ impl FinalHoldoutProviderV1 for Provider {
         &mut self,
         _receipt: &FinalHoldoutJournalReceiptV1,
     ) -> Result<TemporalComparisonInputsV1, ProductProviderErrorV1> {
-        self.inputs.take().ok_or(ProductProviderErrorV1::Unavailable)
+        self.inputs
+            .take()
+            .ok_or(ProductProviderErrorV1::Unavailable)
     }
 }
 

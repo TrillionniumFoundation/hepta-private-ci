@@ -58,11 +58,7 @@ impl SelectedHostClockV1 for FixtureClock {
     }
 }
 
-pub fn principal(
-    name: &str,
-    key: &SigningKey,
-    scope: Digest32,
-) -> AuthenticatedPrincipalV1 {
+pub fn principal(name: &str, key: &SigningKey, scope: Digest32) -> AuthenticatedPrincipalV1 {
     AuthenticatedPrincipalV1 {
         principal_id: id(name),
         credential_chain_digest: digest(&format!("{name}-credential")),

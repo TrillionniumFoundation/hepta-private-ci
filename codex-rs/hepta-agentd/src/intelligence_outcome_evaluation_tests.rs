@@ -20,11 +20,11 @@ mod model;
 // This shared fixture's cold-process helpers are exercised by the evaluator's
 // integration tests. This consumer test only needs its file-backed anchor.
 #[allow(dead_code)]
-#[path = "../../hepta-intelligence-eval/tests/selected_host_recovery_support/cold_storage.rs"]
-mod storage;
-#[allow(dead_code)]
 #[path = "../../hepta-intelligence-eval/tests/selected_host_recovery_support/cold_trust.rs"]
 mod host;
+#[allow(dead_code)]
+#[path = "../../hepta-intelligence-eval/tests/selected_host_recovery_support/cold_storage.rs"]
+mod storage;
 
 static NEXT_ROOT: AtomicU64 = AtomicU64::new(0);
 
@@ -71,12 +71,7 @@ impl Fixture {
         let attempt_id = host::id("agentd-test-attempt");
         let (plan, mut provider, roles) = model::fixture();
         let evaluated = runner
-            .evaluate_outcome_comparison(
-                attempt_id.clone(),
-                &plan,
-                &mut provider,
-                &mut journal,
-            )
+            .evaluate_outcome_comparison(attempt_id.clone(), &plan, &mut provider, &mut journal)
             .expect("actual native multi-outcome evaluation");
         let context = host::context();
         let bundle = runner
@@ -219,12 +214,7 @@ fn multi_outcome_consumer_rejects_context_owner_and_signature_substitution() {
         }
         assert!(
             fixture
-                .consume(
-                    &fixture.binding,
-                    &changed,
-                    &fixture.use_attestation,
-                    85,
-                )
+                .consume(&fixture.binding, &changed, &fixture.use_attestation, 85,)
                 .is_err(),
             "owner field {field} requires a freshly authenticated use"
         );
@@ -249,11 +239,7 @@ fn multi_outcome_consumer_rejects_context_owner_and_signature_substitution() {
     );
     let payload = fixture
         .binding
-        .outcome_qualification_use_payload_v1(
-            &fixture.receipt,
-            &fixture.owner,
-            &fixture.trust,
-        )
+        .outcome_qualification_use_payload_v1(&fixture.receipt, &fixture.owner, &fixture.trust)
         .expect("payload");
     let wrong_role = host::sign(LearningEvidenceRoleV1::Generator, &payload, 82);
     assert!(

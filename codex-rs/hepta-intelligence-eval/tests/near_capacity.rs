@@ -79,7 +79,11 @@ fn near_capacity_rejects_new_admission_but_reserved_attempt_reaches_terminal() {
         rejected,
         Err(ProductEvaluationAttemptJournalErrorV1::Capacity)
     ));
-    assert_eq!(journal.event_count(), 1, "rejected admission must not append");
+    assert_eq!(
+        journal.event_count(),
+        1,
+        "rejected admission must not append"
+    );
 
     journal
         .append(ProductEvaluationAttemptTransitionV1::holdout_consumed(
@@ -175,13 +179,12 @@ fn qualification_limits_can_only_tighten_hard_backend_bounds() {
         std::process::id()
     ));
     let binding = digest("invalid-capacity-binding");
-    let too_small =
-        LockedFileProductEvaluationAttemptJournalV1::create_with_qualification_limits(
-            open(&path, true),
-            binding,
-            COMPLETE_LIFECYCLE_BYTES - 1,
-            COMPLETE_LIFECYCLE_EVENTS,
-        );
+    let too_small = LockedFileProductEvaluationAttemptJournalV1::create_with_qualification_limits(
+        open(&path, true),
+        binding,
+        COMPLETE_LIFECYCLE_BYTES - 1,
+        COMPLETE_LIFECYCLE_EVENTS,
+    );
     assert!(matches!(
         too_small,
         Err(ProductEvaluationAttemptJournalErrorV1::Capacity)

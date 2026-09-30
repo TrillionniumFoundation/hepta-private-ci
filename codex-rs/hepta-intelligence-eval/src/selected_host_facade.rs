@@ -31,12 +31,12 @@ use crate::reconcile_product_attempt_publication_v1;
 
 fn map_clock(error: SelectedHostClockErrorV1) -> RecordedProductEvaluationErrorV1 {
     match error {
-        SelectedHostClockErrorV1::Unavailable => RecordedProductEvaluationErrorV1::Invariant(
-            "selected-host trusted clock unavailable",
-        ),
-        SelectedHostClockErrorV1::Indeterminate => RecordedProductEvaluationErrorV1::Invariant(
-            "selected-host trusted clock indeterminate",
-        ),
+        SelectedHostClockErrorV1::Unavailable => {
+            RecordedProductEvaluationErrorV1::Invariant("selected-host trusted clock unavailable")
+        }
+        SelectedHostClockErrorV1::Indeterminate => {
+            RecordedProductEvaluationErrorV1::Invariant("selected-host trusted clock indeterminate")
+        }
     }
 }
 

@@ -34,7 +34,10 @@ impl SequentialPlan {
         let mut sizes = BTreeMap::<StableId, usize>::new();
         for trajectory in trajectories {
             if cluster_by_trajectory
-                .insert(trajectory.trajectory_id.clone(), trajectory.cluster_id.clone())
+                .insert(
+                    trajectory.trajectory_id.clone(),
+                    trajectory.cluster_id.clone(),
+                )
                 .is_some()
             {
                 return Err(SequentialError::DuplicateIdentity);
@@ -55,8 +58,7 @@ impl SequentialPlan {
                 SequentialEvidenceGap::ConfidenceEnvelope,
             ));
         }
-        let count = u128::try_from(trajectories.len())
-            .map_err(|_| SequentialError::Arithmetic)?;
+        let count = u128::try_from(trajectories.len()).map_err(|_| SequentialError::Arithmetic)?;
         let mut sum_squares = 0_u128;
         for size in sizes.values().copied() {
             let size = u128::try_from(size).map_err(|_| SequentialError::Arithmetic)?;
@@ -64,9 +66,8 @@ impl SequentialPlan {
                 .checked_add(size * size)
                 .ok_or(SequentialError::Arithmetic)?;
         }
-        let probability_ratio =
-            (4_000_000_u128 * u128::from(confidence.simultaneous_comparisons))
-                .div_ceil(u128::from(confidence.family_alpha_ppm));
+        let probability_ratio = (4_000_000_u128 * u128::from(confidence.simultaneous_comparisons))
+            .div_ceil(u128::from(confidence.family_alpha_ppm));
         let log_upper = u128::from((probability_ratio - 1).ilog2() + 1);
         let range = u128::try_from(envelope)
             .map_err(|_| SequentialError::Arithmetic)?
@@ -246,11 +247,7 @@ mod tests {
         let mut same_cluster = rows();
         same_cluster[1].cluster_id = same_cluster[0].cluster_id.clone();
         assert_eq!(
-            plan().estimate_cluster_intervals_v1(
-                &confidence(),
-                FixedQ32::ONE,
-                &same_cluster,
-            ),
+            plan().estimate_cluster_intervals_v1(&confidence(), FixedQ32::ONE, &same_cluster,),
             Err(SequentialError::InsufficientEvidence(
                 SequentialEvidenceGap::InsufficientClusters,
             ))

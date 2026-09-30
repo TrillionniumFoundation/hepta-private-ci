@@ -65,9 +65,10 @@ fn classify(error: &ProductEvaluationError) -> (FailureClassV2, FailureDetailV2)
         ProductEvaluationError::Frozen(_) => {
             (FailureClassV2::FrozenPlan, FailureDetailV2::Unspecified)
         }
-        ProductEvaluationError::Temporal(_) => {
-            (FailureClassV2::TemporalEvaluation, FailureDetailV2::Unspecified)
-        }
+        ProductEvaluationError::Temporal(_) => (
+            FailureClassV2::TemporalEvaluation,
+            FailureDetailV2::Unspecified,
+        ),
         ProductEvaluationError::Holdout(_) => {
             (FailureClassV2::FinalHoldout, FailureDetailV2::Unspecified)
         }
@@ -115,15 +116,13 @@ mod tests {
 
     #[test]
     fn v2_golden_vector_is_independent_of_debug_rendering() {
-        let digest = product_evaluation_failure_digest_v2(&ProductEvaluationError::Binding(
-            "temporal plan",
-        ));
+        let digest =
+            product_evaluation_failure_digest_v2(&ProductEvaluationError::Binding("temporal plan"));
         assert_eq!(
             digest,
             Digest32::from_array([
-                201, 103, 50, 170, 200, 10, 209, 212, 194, 244, 139, 18, 190, 238, 247,
-                196, 101, 53, 178, 204, 99, 19, 157, 216, 49, 48, 122, 197, 161, 251,
-                81, 166,
+                201, 103, 50, 170, 200, 10, 209, 212, 194, 244, 139, 18, 190, 238, 247, 196, 101,
+                53, 178, 204, 99, 19, 157, 216, 49, 48, 122, 197, 161, 251, 81, 166,
             ])
         );
     }

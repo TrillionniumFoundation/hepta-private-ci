@@ -37,16 +37,24 @@ pub struct ProductOutcomeEvaluationReceiptV1 {
 
 impl ProductOutcomeEvaluationReceiptV1 {
     #[must_use]
-    pub fn execution_digest(&self) -> Digest32 { self.execution_digest }
+    pub fn execution_digest(&self) -> Digest32 {
+        self.execution_digest
+    }
 
     #[must_use]
-    pub fn metric_gates(&self) -> &[MetricGateV1] { &self.metrics }
+    pub fn metric_gates(&self) -> &[MetricGateV1] {
+        &self.metrics
+    }
 
     #[must_use]
-    pub fn channel_estimates(&self) -> &[ProductOutcomeEstimateV1] { &self.estimates }
+    pub fn channel_estimates(&self) -> &[ProductOutcomeEstimateV1] {
+        &self.estimates
+    }
 
     #[must_use]
-    pub fn authority(&self) -> AuthorityPosture { AuthorityPosture::DENY_ALL }
+    pub fn authority(&self) -> AuthorityPosture {
+        AuthorityPosture::DENY_ALL
+    }
 }
 
 /// A signed decision and durable publication identity, not a deployment grant.
@@ -66,28 +74,44 @@ pub struct ProductOutcomeQualificationReceiptV1 {
 
 impl ProductOutcomeQualificationReceiptV1 {
     #[must_use]
-    pub fn decision(&self) -> &SignedEvaluationDecisionV1 { &self.decision }
+    pub fn decision(&self) -> &SignedEvaluationDecisionV1 {
+        &self.decision
+    }
 
     #[must_use]
-    pub fn execution_digest(&self) -> Digest32 { self.execution_digest }
+    pub fn execution_digest(&self) -> Digest32 {
+        self.execution_digest
+    }
 
     #[must_use]
-    pub fn publication_digest(&self) -> Digest32 { self.publication_digest }
+    pub fn publication_digest(&self) -> Digest32 {
+        self.publication_digest
+    }
 
     #[must_use]
-    pub fn objective_digest(&self) -> Digest32 { self.objective_digest }
+    pub fn objective_digest(&self) -> Digest32 {
+        self.objective_digest
+    }
 
     #[must_use]
-    pub fn dataset_digest(&self) -> Digest32 { self.dataset_digest }
+    pub fn dataset_digest(&self) -> Digest32 {
+        self.dataset_digest
+    }
 
     #[must_use]
-    pub fn evaluator(&self) -> &AuthenticatedPrincipalV1 { &self.evaluator }
+    pub fn evaluator(&self) -> &AuthenticatedPrincipalV1 {
+        &self.evaluator
+    }
 
     #[must_use]
-    pub fn snapshot_ids(&self) -> &[StableId] { &self.snapshot_ids }
+    pub fn snapshot_ids(&self) -> &[StableId] {
+        &self.snapshot_ids
+    }
 
     #[must_use]
-    pub fn authority(&self) -> AuthorityPosture { AuthorityPosture::DENY_ALL }
+    pub fn authority(&self) -> AuthorityPosture {
+        AuthorityPosture::DENY_ALL
+    }
 }
 
 pub(crate) fn compose(
@@ -96,7 +120,9 @@ pub(crate) fn compose(
     additional: Vec<ProductOutcomeEstimateV1>,
 ) -> Result<ProductOutcomeEvaluationReceiptV1, ProductEvaluationError> {
     if carrier.product_plan != plan.carrier || additional.len() + 1 != plan.channels.len() {
-        return Err(ProductEvaluationError::Integrity("outcome composition coverage"));
+        return Err(ProductEvaluationError::Integrity(
+            "outcome composition coverage",
+        ));
     }
     let mut estimates = vec![ProductOutcomeEstimateV1 {
         channel_id: plan.channels[0].channel_id.clone(),
@@ -115,9 +141,12 @@ pub(crate) fn compose(
         let source = &plan.carrier.metric_sources[index];
         if estimate.channel_id != channel.channel_id
             || estimate.contract_digest != plan.channel_digests[index]
-            || contract.metric_id != channel.metric_id || source.metric_id != channel.metric_id
+            || contract.metric_id != channel.metric_id
+            || source.metric_id != channel.metric_id
         {
-            return Err(ProductEvaluationError::Integrity("outcome estimator identity"));
+            return Err(ProductEvaluationError::Integrity(
+                "outcome estimator identity",
+            ));
         }
         estimate.candidate.validate_integrity()?;
         estimate.baseline.validate_integrity()?;
@@ -137,16 +166,28 @@ pub(crate) fn compose(
             ProductMetricSourceV1::Snips => 1,
             ProductMetricSourceV1::DoublyRobust => 2,
         });
-        for digest in [estimate.contract_digest, channel.inputs_digest,
-            estimate.candidate.evidence_digest, estimate.baseline.evidence_digest] {
+        for digest in [
+            estimate.contract_digest,
+            channel.inputs_digest,
+            estimate.candidate.evidence_digest,
+            estimate.baseline.evidence_digest,
+        ] {
             support.extend_from_slice(digest.as_array());
         }
         let support_digest = Digest32::of_bytes(&support);
         metrics.push(MetricGateV1 {
-            metric_id: channel.metric_id.clone(), direction: contract.direction,
-            candidate: EvaluationIntervalV1 { lower: candidate.lower, upper: candidate.upper },
-            baseline: EvaluationIntervalV1 { lower: baseline.lower, upper: baseline.upper },
-            safety_floor: contract.safety_floor, support_digest,
+            metric_id: channel.metric_id.clone(),
+            direction: contract.direction,
+            candidate: EvaluationIntervalV1 {
+                lower: candidate.lower,
+                upper: candidate.upper,
+            },
+            baseline: EvaluationIntervalV1 {
+                lower: baseline.lower,
+                upper: baseline.upper,
+            },
+            safety_floor: contract.safety_floor,
+            support_digest,
         });
         estimate_bytes.extend_from_slice(estimate.contract_digest.as_array());
         estimate_bytes.extend_from_slice(estimate.candidate.evidence_digest.as_array());
@@ -160,12 +201,22 @@ pub(crate) fn compose(
     let support_digest = Digest32::of_bytes(&support_bytes);
     let confidence_digest = Digest32::of_bytes(&confidence_bytes);
     let mut execution = b"hepta.learning-eval.outcome-execution.v1".to_vec();
-    for digest in [carrier.execution_digest, plan.carrier.frozen_plan.plan_digest,
-        estimate_digest, support_digest, confidence_digest] {
+    for digest in [
+        carrier.execution_digest,
+        plan.carrier.frozen_plan.plan_digest,
+        estimate_digest,
+        support_digest,
+        confidence_digest,
+    ] {
         execution.extend_from_slice(digest.as_array());
     }
     Ok(ProductOutcomeEvaluationReceiptV1 {
-        carrier, estimates, metrics, estimate_digest, support_digest, confidence_digest,
+        carrier,
+        estimates,
+        metrics,
+        estimate_digest,
+        support_digest,
+        confidence_digest,
         execution_digest: Digest32::of_bytes(&execution),
     })
 }

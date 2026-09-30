@@ -30,8 +30,14 @@ fn path_for(root: &Path, attempt: &StableId) -> PathBuf {
 }
 
 fn check_root(root: &Path) -> Result<(), ProductEvaluationError> {
-    if !fs::symlink_metadata(root).map_err(read_error)?.file_type().is_dir() {
-        return Err(ProductEvaluationError::Binding("qualification archive directory"));
+    if !fs::symlink_metadata(root)
+        .map_err(read_error)?
+        .file_type()
+        .is_dir()
+    {
+        return Err(ProductEvaluationError::Binding(
+            "qualification archive directory",
+        ));
     }
     Ok(())
 }
@@ -39,19 +45,29 @@ fn check_root(root: &Path) -> Result<(), ProductEvaluationError> {
 fn read_path(path: &Path) -> Result<Option<Vec<u8>>, ProductEvaluationError> {
     match fs::symlink_metadata(path) {
         Ok(metadata) if metadata.file_type().is_file() => {}
-        Ok(_) => return Err(ProductEvaluationError::Integrity("qualification archive file type")),
+        Ok(_) => {
+            return Err(ProductEvaluationError::Integrity(
+                "qualification archive file type",
+            ));
+        }
         Err(error) if error.kind() == io::ErrorKind::NotFound => return Ok(None),
         Err(error) => return Err(read_error(error)),
     }
     let file = File::open(path).map_err(read_error)?;
     let metadata = file.metadata().map_err(read_error)?;
     if !metadata.file_type().is_file() || metadata.len() > MAX_BYTES as u64 {
-        return Err(ProductEvaluationError::Integrity("qualification archive size"));
+        return Err(ProductEvaluationError::Integrity(
+            "qualification archive size",
+        ));
     }
     let mut bytes = Vec::new();
-    file.take(MAX_BYTES as u64 + 1).read_to_end(&mut bytes).map_err(read_error)?;
+    file.take(MAX_BYTES as u64 + 1)
+        .read_to_end(&mut bytes)
+        .map_err(read_error)?;
     if bytes.is_empty() || bytes.len() > MAX_BYTES {
-        return Err(ProductEvaluationError::Integrity("qualification archive bounds"));
+        return Err(ProductEvaluationError::Integrity(
+            "qualification archive bounds",
+        ));
     }
     Ok(Some(bytes))
 }
@@ -59,25 +75,38 @@ fn read_path(path: &Path) -> Result<Option<Vec<u8>>, ProductEvaluationError> {
 pub(super) fn load(root: &Path, attempt: &StableId) -> Result<Vec<u8>, ProductEvaluationError> {
     // Recovery is a read: absence never creates a new root or rewrites an object.
     check_root(root)?;
-    read_path(&path_for(root, attempt))?
-        .ok_or(ProductEvaluationError::Binding("qualification archive missing"))
+    read_path(&path_for(root, attempt))?.ok_or(ProductEvaluationError::Binding(
+        "qualification archive missing",
+    ))
 }
 
-pub(super) fn persist(root: &Path, attempt: &StableId, bytes: &[u8]) -> Result<(), ProductEvaluationError> {
+pub(super) fn persist(
+    root: &Path,
+    attempt: &StableId,
+    bytes: &[u8],
+) -> Result<(), ProductEvaluationError> {
     if bytes.is_empty() || bytes.len() > MAX_BYTES {
-        return Err(ProductEvaluationError::Integrity("qualification archive bounds"));
+        return Err(ProductEvaluationError::Integrity(
+            "qualification archive bounds",
+        ));
     }
     match fs::create_dir(root) {
         Ok(()) => {
             #[cfg(unix)]
             {
                 use std::os::unix::fs::PermissionsExt;
-                fs::set_permissions(root, fs::Permissions::from_mode(0o700)).map_err(write_error)?;
+                fs::set_permissions(root, fs::Permissions::from_mode(0o700))
+                    .map_err(write_error)?;
             }
             // The parent is provisioned by the owner. Do not silently create
             // an unqualified chain of ancestor directories.
-            let parent = root.parent().filter(|path| !path.as_os_str().is_empty()).unwrap_or(Path::new("."));
-            File::open(parent).and_then(|file| file.sync_all()).map_err(write_error)?;
+            let parent = root
+                .parent()
+                .filter(|path| !path.as_os_str().is_empty())
+                .unwrap_or(Path::new("."));
+            File::open(parent)
+                .and_then(|file| file.sync_all())
+                .map_err(write_error)?;
         }
         Err(error) if error.kind() == io::ErrorKind::AlreadyExists => {}
         Err(error) => return Err(write_error(error)),
@@ -86,7 +115,9 @@ pub(super) fn persist(root: &Path, attempt: &StableId, bytes: &[u8]) -> Result<(
     let final_path = path_for(root, attempt);
     if let Some(existing) = read_path(&final_path)? {
         if existing != bytes {
-            return Err(ProductEvaluationError::Binding("qualification archive conflict"));
+            return Err(ProductEvaluationError::Binding(
+                "qualification archive conflict",
+            ));
         }
         return sync_object(root, &final_path);
     }
@@ -101,12 +132,16 @@ pub(super) fn persist(root: &Path, attempt: &StableId, bytes: &[u8]) -> Result<(
             options.mode(0o600);
         }
         let mut file = options.open(&temporary).map_err(write_error)?;
-        file.write_all(bytes).and_then(|()| file.sync_all()).map_err(write_error)?;
+        file.write_all(bytes)
+            .and_then(|()| file.sync_all())
+            .map_err(write_error)?;
         match fs::hard_link(&temporary, &final_path) {
             Ok(()) => {}
             Err(error) if error.kind() == io::ErrorKind::AlreadyExists => {
                 if read_path(&final_path)?.as_deref() != Some(bytes) {
-                    return Err(ProductEvaluationError::Binding("qualification archive conflict"));
+                    return Err(ProductEvaluationError::Binding(
+                        "qualification archive conflict",
+                    ));
                 }
             }
             Err(error) => return Err(write_error(error)),
@@ -120,8 +155,12 @@ pub(super) fn persist(root: &Path, attempt: &StableId, bytes: &[u8]) -> Result<(
 }
 
 fn sync_object(root: &Path, path: &Path) -> Result<(), ProductEvaluationError> {
-    File::open(path).and_then(|file| file.sync_all()).map_err(write_error)?;
-    File::open(root).and_then(|file| file.sync_all()).map_err(write_error)
+    File::open(path)
+        .and_then(|file| file.sync_all())
+        .map_err(write_error)?;
+    File::open(root)
+        .and_then(|file| file.sync_all())
+        .map_err(write_error)
 }
 
 fn read_error(_error: io::Error) -> ProductEvaluationError {

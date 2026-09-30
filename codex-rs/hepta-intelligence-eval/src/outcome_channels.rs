@@ -47,21 +47,36 @@ pub struct ProductOutcomeChannelContractV1 {
 impl ProductOutcomeChannelContractV1 {
     pub fn canonical_digest(&self) -> Result<Digest32, ProductEvaluationError> {
         let mut bytes = b"hepta.learning-eval.outcome-channel.v1".to_vec();
-        for value in [&self.metric_id, &self.channel_id, &self.unit_id, &self.window_id] {
+        for value in [
+            &self.metric_id,
+            &self.channel_id,
+            &self.unit_id,
+            &self.window_id,
+        ] {
             push_id(&mut bytes, value);
         }
-        for value in [self.schema_digest, self.normalization_digest, self.subgroup_digest,
-            self.provenance_digest, self.inputs_digest,
-            self.candidate_plan.canonical_digest()?, self.baseline_plan.canonical_digest()?] {
+        for value in [
+            self.schema_digest,
+            self.normalization_digest,
+            self.subgroup_digest,
+            self.provenance_digest,
+            self.inputs_digest,
+            self.candidate_plan.canonical_digest()?,
+            self.baseline_plan.canonical_digest()?,
+        ] {
             if value.is_zero() {
-                return Err(ProductEvaluationError::Binding("empty outcome channel commitment"));
+                return Err(ProductEvaluationError::Binding(
+                    "empty outcome channel commitment",
+                ));
             }
             bytes.extend_from_slice(value.as_array());
         }
         bytes.extend_from_slice(&self.measurement_start_micros.to_be_bytes());
         bytes.extend_from_slice(&self.measurement_end_micros.to_be_bytes());
         if self.measurement_start_micros >= self.measurement_end_micros {
-            return Err(ProductEvaluationError::Binding("outcome measurement window"));
+            return Err(ProductEvaluationError::Binding(
+                "outcome measurement window",
+            ));
         }
         Ok(Digest32::of_bytes(&bytes))
     }
@@ -94,15 +109,22 @@ pub fn freeze_product_outcome_plan_v1(
     metric_sources: Vec<ProductMetricSourceContractV1>,
     mut channels: Vec<ProductOutcomeChannelContractV1>,
 ) -> Result<ProductFrozenOutcomePlanV1, ProductEvaluationError> {
-    if channels.is_empty() || channels.len() > MAX_CHANNELS
+    if channels.is_empty()
+        || channels.len() > MAX_CHANNELS
         || channels.len() != plan.metric_contracts.len()
         || plan.simultaneous_comparisons < (channels.len() as u32) * 2
         || plan.estimand_digest.is_zero()
     {
-        return Err(ProductEvaluationError::Binding("outcome channel coverage or multiplicity"));
+        return Err(ProductEvaluationError::Binding(
+            "outcome channel coverage or multiplicity",
+        ));
     }
     channels.sort_by(|left, right| left.metric_id.cmp(&right.metric_id));
-    let mut metrics: Vec<_> = plan.metric_contracts.iter().map(|row| &row.metric_id).collect();
+    let mut metrics: Vec<_> = plan
+        .metric_contracts
+        .iter()
+        .map(|row| &row.metric_id)
+        .collect();
     metrics.sort();
     let mut identities = BTreeSet::new();
     let mut inputs = BTreeSet::new();
@@ -116,7 +138,9 @@ pub fn freeze_product_outcome_plan_v1(
             || !inputs.insert(*channel.inputs_digest.as_array())
             || channel.window_id != plan.final_holdout_window_id
         {
-            return Err(ProductEvaluationError::Binding("duplicate or mismatched outcome channel"));
+            return Err(ProductEvaluationError::Binding(
+                "duplicate or mismatched outcome channel",
+            ));
         }
         for temporal in [&channel.candidate_plan, &channel.baseline_plan] {
             if temporal.plan_digest != temporal.canonical_digest()?
@@ -135,9 +159,18 @@ pub fn freeze_product_outcome_plan_v1(
     }
     plan.estimand_digest = Digest32::of_bytes(&bytes);
     let primary = &channels[0];
-    let carrier = freeze_product_evaluation_plan_v1(plan, metric_roles, metric_sources,
-        &primary.candidate_plan, &primary.baseline_plan)?;
-    Ok(ProductFrozenOutcomePlanV1 { carrier, channels, channel_digests })
+    let carrier = freeze_product_evaluation_plan_v1(
+        plan,
+        metric_roles,
+        metric_sources,
+        &primary.candidate_plan,
+        &primary.baseline_plan,
+    )?;
+    Ok(ProductFrozenOutcomePlanV1 {
+        carrier,
+        channels,
+        channel_digests,
+    })
 }
 
 #[derive(Clone, Debug)]
@@ -167,9 +200,11 @@ pub(crate) fn validate_inputs(
         || inputs.targets.len() != inputs.candidate_observations.len()
         || inputs.targets.len() != inputs.baseline_observations.len()
         || inputs.targets.len() != inputs.assignments.len()
-        || inputs.targets.iter().any(|row| row.window_id != channel.window_id
-            || row.decision_at < channel.measurement_start_micros
-            || row.decision_at > channel.measurement_end_micros)
+        || inputs.targets.iter().any(|row| {
+            row.window_id != channel.window_id
+                || row.decision_at < channel.measurement_start_micros
+                || row.decision_at > channel.measurement_end_micros
+        })
         || inputs.future_window_ids != [channel.window_id.clone()]
     {
         return Err(ProductEvaluationError::Binding("measured outcome payload"));
@@ -179,7 +214,8 @@ pub(crate) fn validate_inputs(
     candidate.sort_by(|left, right| left.decision_id.cmp(&right.decision_id));
     baseline.sort_by(|left, right| left.decision_id.cmp(&right.decision_id));
     for (left, right) in candidate.into_iter().zip(baseline) {
-        if left.decision_id != right.decision_id || left.chosen_action != right.chosen_action
+        if left.decision_id != right.decision_id
+            || left.chosen_action != right.chosen_action
             || left.complete_candidates != right.complete_candidates
             || left.finalized_outcome != right.finalized_outcome
             || left.outcome_observed_at != right.outcome_observed_at
@@ -188,15 +224,20 @@ pub(crate) fn validate_inputs(
             || left.outcome_observed_at < channel.measurement_start_micros
             || left.outcome_observed_at > channel.measurement_end_micros
         {
-            return Err(ProductEvaluationError::Binding("paired outcome measurements"));
+            return Err(ProductEvaluationError::Binding(
+                "paired outcome measurements",
+            ));
         }
         let mut la: Vec<_> = left.actions.iter().collect();
         let mut ra: Vec<_> = right.actions.iter().collect();
         la.sort_by(|a, b| a.action_id.cmp(&b.action_id));
         ra.sort_by(|a, b| a.action_id.cmp(&b.action_id));
-        if la.into_iter().zip(ra).any(|(a, b)| a.action_id != b.action_id
-            || a.behavior_probability != b.behavior_probability) {
-            return Err(ProductEvaluationError::Binding("paired outcome logging policy"));
+        if la.into_iter().zip(ra).any(|(a, b)| {
+            a.action_id != b.action_id || a.behavior_probability != b.behavior_probability
+        }) {
+            return Err(ProductEvaluationError::Binding(
+                "paired outcome logging policy",
+            ));
         }
     }
     Ok(())

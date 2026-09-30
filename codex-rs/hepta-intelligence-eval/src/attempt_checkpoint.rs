@@ -98,14 +98,12 @@ impl LockedFileProductEvaluationAttemptJournalV1 {
                 return Ok(checkpoint_anchor);
             }
         }
-        match authority.compare_and_swap(
-            checkpoint_anchor.binding,
-            expected,
-            checkpoint_anchor,
-        ) {
+        match authority.compare_and_swap(checkpoint_anchor.binding, expected, checkpoint_anchor) {
             Ok(()) => Ok(checkpoint_anchor),
-            Err(error @ (ProductEvaluationAttemptJournalErrorV1::Conflict
-                | ProductEvaluationAttemptJournalErrorV1::Indeterminate)) => {
+            Err(
+                error @ (ProductEvaluationAttemptJournalErrorV1::Conflict
+                | ProductEvaluationAttemptJournalErrorV1::Indeterminate),
+            ) => {
                 if authority.load(checkpoint_anchor.binding)? == Some(checkpoint_anchor) {
                     Ok(checkpoint_anchor)
                 } else {
@@ -194,9 +192,7 @@ impl LockedFileProductEvaluationAttemptJournalV1 {
             let mut raw = [0_u8; 4];
             file.read_exact(&mut raw).map_err(io_error)?;
             let count = u32::from_be_bytes(raw) as usize;
-            if !(1..=MAX_FRAME).contains(&count)
-                || length - cursor - 4 < count as u64 + 32
-            {
+            if !(1..=MAX_FRAME).contains(&count) || length - cursor - 4 < count as u64 + 32 {
                 return Err(ProductEvaluationAttemptJournalErrorV1::Corrupt);
             }
             let mut payload = vec![0_u8; count];
@@ -269,7 +265,12 @@ fn encode_snapshot(
 fn decode_snapshot(
     bytes: &[u8],
 ) -> Result<
-    (AttemptEvents, BTreeMap<[u8; 32], StableId>, AttemptCapacity, u64),
+    (
+        AttemptEvents,
+        BTreeMap<[u8; 32], StableId>,
+        AttemptCapacity,
+        u64,
+    ),
     ProductEvaluationAttemptJournalErrorV1,
 > {
     let mut input = Input::new(bytes);
@@ -386,8 +387,8 @@ fn put_id(
     value: &StableId,
 ) -> Result<(), ProductEvaluationAttemptJournalErrorV1> {
     let bytes = value.as_str().as_bytes();
-    let length = u16::try_from(bytes.len())
-        .map_err(|_| ProductEvaluationAttemptJournalErrorV1::Capacity)?;
+    let length =
+        u16::try_from(bytes.len()).map_err(|_| ProductEvaluationAttemptJournalErrorV1::Capacity)?;
     output.extend_from_slice(&length.to_be_bytes());
     output.extend_from_slice(bytes);
     Ok(())
@@ -414,10 +415,7 @@ impl<'a> Input<'a> {
         Self { bytes, cursor: 0 }
     }
 
-    fn take(
-        &mut self,
-        count: usize,
-    ) -> Result<&'a [u8], ProductEvaluationAttemptJournalErrorV1> {
+    fn take(&mut self, count: usize) -> Result<&'a [u8], ProductEvaluationAttemptJournalErrorV1> {
         let end = self
             .cursor
             .checked_add(count)

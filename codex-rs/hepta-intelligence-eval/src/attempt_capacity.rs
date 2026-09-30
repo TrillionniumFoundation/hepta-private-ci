@@ -100,7 +100,8 @@ impl AttemptCapacity {
         attempts: &AttemptEvents,
         after: Option<&StableId>,
         limit: usize,
-    ) -> Result<Vec<ProductEvaluationAttemptReceiptV1>, ProductEvaluationAttemptJournalErrorV1> {
+    ) -> Result<Vec<ProductEvaluationAttemptReceiptV1>, ProductEvaluationAttemptJournalErrorV1>
+    {
         if !(1..=MAX_PAGE).contains(&limit) {
             return Err(ProductEvaluationAttemptJournalErrorV1::Capacity);
         }

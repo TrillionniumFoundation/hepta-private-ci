@@ -120,7 +120,10 @@ fn run_profile(root: &std::path::Path, args: &Args) -> Result<String, Box<dyn Er
     drop(attempt);
     let attempt_recovery_start = Instant::now();
     let mut recovered_attempt = LockedFileProductEvaluationAttemptJournalV1::recover(
-        OpenOptions::new().read(true).write(true).open(&attempt_path)?,
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(&attempt_path)?,
         attempt_binding,
     )?;
     let attempt_recovery_micros = attempt_recovery_start.elapsed().as_micros();
@@ -135,10 +138,8 @@ fn run_profile(root: &std::path::Path, args: &Args) -> Result<String, Box<dyn Er
     let holdout_path = root.join("holdout.cas");
     let compacted_path = root.join("holdout.compacted.cas");
     let holdout_binding = digest("profile-holdout-binding");
-    let store = LockedFileFinalHoldoutCasStoreV1::create(
-        create_empty(&holdout_path)?,
-        holdout_binding,
-    )?;
+    let store =
+        LockedFileFinalHoldoutCasStoreV1::create(create_empty(&holdout_path)?, holdout_binding)?;
     let first_fence = fence(1)?;
     let mut owner = FencedFinalHoldoutOwnerV1::initialize(store, holdout_binding, first_fence)?;
     let holdout_write_start = Instant::now();
@@ -234,10 +235,7 @@ fn parse_args() -> Result<Args, Box<dyn Error>> {
     while let Some(arg) = args.next() {
         match arg.as_str() {
             "--attempts" => {
-                attempts = args
-                    .next()
-                    .ok_or("--attempts requires a value")?
-                    .parse()?;
+                attempts = args.next().ok_or("--attempts requires a value")?.parse()?;
             }
             "--fences" => {
                 fences = args.next().ok_or("--fences requires a value")?.parse()?;

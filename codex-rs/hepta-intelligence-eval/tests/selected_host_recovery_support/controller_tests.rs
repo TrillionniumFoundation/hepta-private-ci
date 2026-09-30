@@ -3,7 +3,10 @@ use super::*;
 use std::fs::File;
 use std::fs::OpenOptions;
 
-pub(super) fn recover_page<S: FinalHoldoutCasStoreV1, J: DurableProductEvaluationAttemptJournalV1>(
+pub(super) fn recover_page<
+    S: FinalHoldoutCasStoreV1,
+    J: DurableProductEvaluationAttemptJournalV1,
+>(
     runner: &RecordedProductEvaluationRunnerV1<S>,
     journal: &mut J,
     root: &Path,

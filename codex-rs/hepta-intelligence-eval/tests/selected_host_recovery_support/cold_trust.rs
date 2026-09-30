@@ -3,9 +3,9 @@
 //! model, dataset, qualification bundle or cached decision.
 use std::collections::VecDeque;
 
-use codex_hepta_intelligence_eval::*;
 use codex_hepta_intelligence_eval::product::SelectedHostClockErrorV1;
 use codex_hepta_intelligence_eval::product::SelectedHostClockV1;
+use codex_hepta_intelligence_eval::*;
 use codex_hepta_learning_ledger::*;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -54,12 +54,14 @@ impl SelectedHostClockV1 for FixtureClock {
 }
 
 fn key(role: LearningEvidenceRoleV1) -> SigningKey {
-    SigningKey::from_bytes(&[match role {
-        LearningEvidenceRoleV1::Generator => 41,
-        LearningEvidenceRoleV1::Evaluator => 53,
-        LearningEvidenceRoleV1::Observer => 67,
-        _ => panic!("unexpected fixture role"),
-    }; 32])
+    SigningKey::from_bytes(
+        &[match role {
+            LearningEvidenceRoleV1::Generator => 41,
+            LearningEvidenceRoleV1::Evaluator => 53,
+            LearningEvidenceRoleV1::Observer => 67,
+            _ => panic!("unexpected fixture role"),
+        }; 32],
+    )
 }
 
 fn principal(role: LearningEvidenceRoleV1) -> AuthenticatedPrincipalV1 {
@@ -213,13 +215,10 @@ pub fn evidence(
     timing: Option<&LongitudinalTimeEvidenceV1>,
 ) -> SignedEvaluationEvidenceV1 {
     let payload = match timing {
-        Some(timing) => longitudinal_evaluation_signing_payload_v3(
-            bundle,
-            roles,
-            timing,
-            MINIMUM_WINDOW_MICROS,
-        )
-        .expect("V3 payload"),
+        Some(timing) => {
+            longitudinal_evaluation_signing_payload_v3(bundle, roles, timing, MINIMUM_WINDOW_MICROS)
+                .expect("V3 payload")
+        }
         None => evaluation_signing_payload_v2(bundle, roles).expect("V2 payload"),
     };
     SignedEvaluationEvidenceV1 {

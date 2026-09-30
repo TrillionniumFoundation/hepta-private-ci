@@ -132,10 +132,7 @@ pub trait ProductQualificationPublicationStoreV1 {
         &mut self,
         expected_record_digest: Option<Digest32>,
         request: &ProductQualificationPublicationRequestV1,
-    ) -> Result<
-        ProductQualificationPublicationRecordV1,
-        ProductQualificationPublicationStoreErrorV1,
-    >;
+    ) -> Result<ProductQualificationPublicationRecordV1, ProductQualificationPublicationStoreErrorV1>;
 }
 
 pub struct ReconciledProductQualificationSinkV1<S> {
@@ -157,9 +154,7 @@ impl<S: ProductQualificationPublicationStoreV1> ReconciledProductQualificationSi
         self.pending.is_some()
     }
 
-    pub fn reconcile_pending(
-        &mut self,
-    ) -> Result<Option<Digest32>, ProductEvidenceSinkErrorV1> {
+    pub fn reconcile_pending(&mut self) -> Result<Option<Digest32>, ProductEvidenceSinkErrorV1> {
         let Some(request) = self.pending.clone() else {
             return Ok(None);
         };
@@ -369,8 +364,7 @@ mod tests {
                 evaluation_id: id("evaluation:1"),
                 candidate_id: id("candidate:1"),
                 baseline_id: id("candidate:0"),
-                disposition:
-                    IndependentEvaluationDispositionV1::EligibleForIndependentSelection,
+                disposition: IndependentEvaluationDispositionV1::EligibleForIndependentSelection,
                 failed_metrics: Vec::new(),
                 evidence_digest: Digest32::of_bytes(b"decision"),
                 authority: AuthorityPosture::DENY_ALL,
@@ -388,11 +382,15 @@ mod tests {
         };
         let mut sink = ReconciledProductQualificationSinkV1::new(store);
         let execution = Digest32::of_bytes(b"execution");
-        let first = sink.persist(execution, &decision()).expect("reconciled publish");
+        let first = sink
+            .persist(execution, &decision())
+            .expect("reconciled publish");
         assert!(!first.is_zero());
         assert!(!sink.has_pending_reconciliation());
 
-        let second = sink.persist(execution, &decision()).expect("idempotent replay");
+        let second = sink
+            .persist(execution, &decision())
+            .expect("idempotent replay");
         assert_eq!(first, second);
         let store = sink.into_inner();
         assert!(store.record.is_some());

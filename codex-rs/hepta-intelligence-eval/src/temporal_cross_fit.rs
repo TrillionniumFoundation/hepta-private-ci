@@ -82,10 +82,9 @@ impl CrossFoldPlanV1 {
                     .ok_or(ProductEvaluationError::Binding("cross-fit action budget"))?;
             }
             validate_lineage(partition, training, targets)?;
-            let receipt = fit_temporal_fold(fold_plan, training, targets)
-                .map_err(|error| ProductEvaluationError::Temporal(
-                    TemporalEvaluationError::Fold(error),
-                ))?;
+            let receipt = fit_temporal_fold(fold_plan, training, targets).map_err(|error| {
+                ProductEvaluationError::Temporal(TemporalEvaluationError::Fold(error))
+            })?;
             if receipt.model_digest != partition.model_digest
                 || receipt.predictions_digest != partition.predictions_digest
             {
@@ -122,11 +121,20 @@ fn validate_lineage(
 }
 
 fn unique<'a>(values: impl Iterator<Item = &'a StableId>) -> Vec<StableId> {
-    values.cloned().collect::<BTreeSet<_>>().into_iter().collect()
+    values
+        .cloned()
+        .collect::<BTreeSet<_>>()
+        .into_iter()
+        .collect()
 }
 
 fn normalized(values: &[StableId]) -> Vec<StableId> {
-    values.iter().cloned().collect::<BTreeSet<_>>().into_iter().collect()
+    values
+        .iter()
+        .cloned()
+        .collect::<BTreeSet<_>>()
+        .into_iter()
+        .collect()
 }
 
 #[cfg(test)]
@@ -259,12 +267,15 @@ mod tests {
     #[test]
     fn executes_every_fold_and_canonicalizes_input_order() {
         let (plan, roles, inputs) = fixture();
-        let expected = plan.clone().execute_temporal_cross_fit_v1(roles.clone(), inputs.clone())
+        let expected = plan
+            .clone()
+            .execute_temporal_cross_fit_v1(roles.clone(), inputs.clone())
             .expect("cross fit");
         let mut reversed = inputs;
         reversed.reverse();
         assert_eq!(
-            plan.execute_temporal_cross_fit_v1(roles, reversed).expect("reordered"),
+            plan.execute_temporal_cross_fit_v1(roles, reversed)
+                .expect("reordered"),
             expected
         );
     }
@@ -274,7 +285,8 @@ mod tests {
         let (plan, roles, mut inputs) = fixture();
         inputs[0].2[0].principal_lineage = id("substituted-principal");
         assert!(matches!(
-            plan.clone().execute_temporal_cross_fit_v1(roles.clone(), inputs),
+            plan.clone()
+                .execute_temporal_cross_fit_v1(roles.clone(), inputs),
             Err(ProductEvaluationError::Binding("cross-fit lineage"))
         ));
         let (mut plan, roles, inputs) = fixture();

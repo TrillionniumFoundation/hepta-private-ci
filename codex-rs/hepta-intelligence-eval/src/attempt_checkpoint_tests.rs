@@ -39,10 +39,7 @@ fn intent(attempt: &str) -> ProductEvaluationAttemptTransitionV1 {
     )
 }
 
-fn advance_to_pending(
-    journal: &mut LockedFileProductEvaluationAttemptJournalV1,
-    attempt: &str,
-) {
+fn advance_to_pending(journal: &mut LockedFileProductEvaluationAttemptJournalV1, attempt: &str) {
     use ProductEvaluationAttemptPhaseV1 as Phase;
     journal.append(intent(attempt)).expect("intent");
     journal
@@ -83,10 +80,8 @@ impl ProductEvaluationAttemptAnchorStoreV1 for CheckpointAuthority {
     fn load(
         &mut self,
         _binding: Digest32,
-    ) -> Result<
-        Option<ProductEvaluationAttemptAnchorV1>,
-        ProductEvaluationAttemptJournalErrorV1,
-    > {
+    ) -> Result<Option<ProductEvaluationAttemptAnchorV1>, ProductEvaluationAttemptJournalErrorV1>
+    {
         Ok(*self.0.borrow())
     }
 
@@ -128,7 +123,9 @@ fn independently_retained_checkpoint_restores_state_and_replays_only_tail() {
         .expect("checkpoint");
     assert_eq!(checkpoint.event_count as usize, journal.event_count());
 
-    journal.append(intent("attempt:c")).expect("post-checkpoint tail");
+    journal
+        .append(intent("attempt:c"))
+        .expect("post-checkpoint tail");
     let retained = journal.anchor().expect("retained anchor");
     let expected_events = journal.event_count();
     drop(journal);

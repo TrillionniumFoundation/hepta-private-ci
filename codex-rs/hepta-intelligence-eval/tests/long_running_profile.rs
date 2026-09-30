@@ -28,8 +28,14 @@ impl ProductEvaluationAttemptAnchorStoreV1 for CheckpointAuthority {
     fn load(
         &mut self,
         binding: Digest32,
-    ) -> Result<Option<ProductEvaluationAttemptAnchorV1>, ProductEvaluationAttemptJournalErrorV1> {
-        Ok(self.0.borrow().as_ref().copied().filter(|value| value.binding == binding))
+    ) -> Result<Option<ProductEvaluationAttemptAnchorV1>, ProductEvaluationAttemptJournalErrorV1>
+    {
+        Ok(self
+            .0
+            .borrow()
+            .as_ref()
+            .copied()
+            .filter(|value| value.binding == binding))
     }
 
     fn compare_and_swap(
@@ -75,8 +81,7 @@ fn persistent_attempt_journal_sustains_checkpointed_restart_batches() {
     let mut checkpoint_path = None;
 
     for index in 0..attempts {
-        let attempt_id =
-            StableId::new(format!("attempt:soak-{index}")).expect("attempt id");
+        let attempt_id = StableId::new(format!("attempt:soak-{index}")).expect("attempt id");
         let plan = digest("plan", index);
         let holdout = digest("holdout", index);
         let execution = digest("execution", index);

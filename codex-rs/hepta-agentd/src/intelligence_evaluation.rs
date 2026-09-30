@@ -109,12 +109,16 @@ impl AgentdEvaluationSessionV1 {
             selected_candidate_id: candidate.clone(),
         };
         let payload = intelligence_evaluation_binding_payload_v1(&binding, &self.signed.evidence)?;
-        let verified = self.trust.verifier().verify(
-            LearningEvidenceRoleV1::Evaluator,
-            &self.signed.use_attestation,
-            &payload,
-            now,
-        ).map_err(AgentdIntelligenceEvaluationError::Evidence)?;
+        let verified = self
+            .trust
+            .verifier()
+            .verify(
+                LearningEvidenceRoleV1::Evaluator,
+                &self.signed.use_attestation,
+                &payload,
+                now,
+            )
+            .map_err(AgentdIntelligenceEvaluationError::Evidence)?;
         if verified.principal() != &self.signed.bundle.evaluator
             || verified.principal().signing_key_digest != self.current_owner.key_digest
         {
@@ -122,9 +126,14 @@ impl AgentdEvaluationSessionV1 {
         }
         let binding_digest = Digest32::of_bytes(&payload);
         let result = admit_signed_eligibility_v2(
-            self.signed.bundle, self.signed.roles, &self.signed.evidence,
-            self.trust.verifier(), binding_digest, now,
-        ).map_err(AgentdIntelligenceEvaluationError::Evaluation)?;
+            self.signed.bundle,
+            self.signed.roles,
+            &self.signed.evidence,
+            self.trust.verifier(),
+            binding_digest,
+            now,
+        )
+        .map_err(AgentdIntelligenceEvaluationError::Evaluation)?;
         if result.authority.grants_any()
             || result.decision.decision.authority.grants_any()
             || result.decision.decision.disposition

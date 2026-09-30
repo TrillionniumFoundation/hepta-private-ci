@@ -39,23 +39,38 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
         artifact_host_binding: Digest32,
         sink: &mut dyn ProductQualificationEvidenceSinkV1,
     ) -> Result<ProductQualificationReceiptV1, RecordedProductEvaluationErrorV1> {
-        let bundle = self.qualification_bundle(temporal, context)
+        let bundle = self
+            .qualification_bundle(temporal, context)
             .map_err(RecordedProductEvaluationErrorV1::Evaluation)?;
         let artifact = archive::Archive::new(
-            archive::TEMPORAL, attempt_id, artifact_host_binding, self.namespace,
-            temporal.execution_digest, temporal.holdout.record_digest, bundle,
-            temporal.product_plan.metric_roles.clone(), evidence, timing,
+            archive::TEMPORAL,
+            attempt_id,
+            artifact_host_binding,
+            self.namespace,
+            temporal.execution_digest,
+            temporal.holdout.record_digest,
+            bundle,
+            temporal.product_plan.metric_roles.clone(),
+            evidence,
+            timing,
         );
         artifact.persist(journal, artifact_root.as_ref(), verifier, now)?;
         let mut recorded = RecordedPublicationSinkV1 {
             attempt_id: attempt_id.clone(),
             plan_digest: temporal.product_plan.frozen_plan.plan_digest,
             holdout_record_digest: temporal.holdout.record_digest,
-            journal, inner: sink, journal_error: None,
+            journal,
+            inner: sink,
+            journal_error: None,
         };
         let result = self.inner.qualify_and_persist(
-            temporal, context, evidence, artifact.timing.as_evidence(), verifier,
-            now, &mut recorded,
+            temporal,
+            context,
+            evidence,
+            artifact.timing.as_evidence(),
+            verifier,
+            now,
+            &mut recorded,
         );
         if let Some(error) = recorded.journal_error {
             return Err(RecordedProductEvaluationErrorV1::Journal(error));
@@ -76,8 +91,16 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
         now: u64,
         sink: &mut dyn ProductQualificationEvidenceSinkV1,
     ) -> Result<ProductEvaluationAttemptReceiptV1, RecordedProductEvaluationErrorV1> {
-        let decision = archive::recover(journal, attempt_id, artifact_root.as_ref(),
-            artifact_host_binding, self.namespace, archive::TEMPORAL, verifier, now)?;
+        let decision = archive::recover(
+            journal,
+            attempt_id,
+            artifact_root.as_ref(),
+            artifact_host_binding,
+            self.namespace,
+            archive::TEMPORAL,
+            verifier,
+            now,
+        )?;
         Self::resume_decided_publication(journal, attempt_id, &decision, sink)
     }
 }

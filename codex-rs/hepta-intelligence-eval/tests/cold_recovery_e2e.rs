@@ -12,18 +12,18 @@ use std::time::Instant;
 use codex_hepta_intelligence_eval::*;
 use codex_hepta_types::Digest32;
 
-#[path = "selected_host_recovery_support/eligible_model.rs"]
-mod outcome_model;
-#[allow(dead_code)]
-#[path = "selected_host_recovery_support/cold_temporal_model.rs"]
-mod temporal_model;
-#[path = "selected_host_recovery_support/cold_storage.rs"]
-mod storage;
+#[path = "selected_host_recovery_support/controller_tests.rs"]
+mod controller_tests;
 #[allow(dead_code)]
 #[path = "selected_host_recovery_support/cold_trust.rs"]
 mod host;
-#[path = "selected_host_recovery_support/controller_tests.rs"]
-mod controller_tests;
+#[path = "selected_host_recovery_support/eligible_model.rs"]
+mod outcome_model;
+#[path = "selected_host_recovery_support/cold_storage.rs"]
+mod storage;
+#[allow(dead_code)]
+#[path = "selected_host_recovery_support/cold_temporal_model.rs"]
+mod temporal_model;
 
 static NEXT_ROOT: AtomicU64 = AtomicU64::new(0);
 
@@ -51,8 +51,8 @@ fn produce(root: &Path, family: &str, cut: u64) {
         namespace(),
     )
     .expect("create holdout store");
-    let owner = FencedFinalHoldoutOwnerV1::initialize(store, namespace(), fence())
-        .expect("create owner");
+    let owner =
+        FencedFinalHoldoutOwnerV1::initialize(store, namespace(), fence()).expect("create owner");
     let mut runner = RecordedProductEvaluationRunnerV1::new(owner);
     let mut journal = AnchoredProductEvaluationAttemptJournalV1::create(
         storage::create(&root.join("attempt.journal")),
@@ -69,10 +69,7 @@ fn produce(root: &Path, family: &str, cut: u64) {
         let receipt = runner
             .evaluate_outcome_comparison(attempt.clone(), &plan, &mut provider, &mut journal)
             .expect("native multi-outcome estimation");
-        storage::retain_holdout_anchor(
-            &root.join("holdout.anchor"),
-            runner.holdout_anchor(),
-        );
+        storage::retain_holdout_anchor(&root.join("holdout.anchor"), runner.holdout_anchor());
         let bundle = runner
             .outcome_qualification_bundle(&receipt, &context)
             .expect("outcome bundle");
@@ -104,10 +101,7 @@ fn produce(root: &Path, family: &str, cut: u64) {
                 &mut journal,
             )
             .expect("native temporal estimation");
-        storage::retain_holdout_anchor(
-            &root.join("holdout.anchor"),
-            runner.holdout_anchor(),
-        );
+        storage::retain_holdout_anchor(&root.join("holdout.anchor"), runner.holdout_anchor());
         let bundle = runner
             .qualification_bundle(&receipt, &context)
             .expect("temporal bundle");
@@ -146,8 +140,8 @@ fn recover(root: &Path, family: &str, mode: &str) {
         Some(storage::load_holdout_anchor(&root.join("holdout.anchor"))),
     )
     .expect("recover holdout bytes");
-    let owner = FencedFinalHoldoutOwnerV1::recover(store, namespace(), fence())
-        .expect("recover owner");
+    let owner =
+        FencedFinalHoldoutOwnerV1::recover(store, namespace(), fence()).expect("recover owner");
     let runner = RecordedProductEvaluationRunnerV1::new(owner);
     let mut journal = AnchoredProductEvaluationAttemptJournalV1::recover(
         storage::reopen(&root.join("attempt.journal")),
@@ -205,7 +199,10 @@ fn recover(root: &Path, family: &str, mode: &str) {
             )
         };
         if matches!(mode, "revoked" | "expired" | "wrong-host" | "corrupt") {
-            assert!(result.is_err(), "invalid recovery must not reach publication");
+            assert!(
+                result.is_err(),
+                "invalid recovery must not reach publication"
+            );
             assert_eq!(journal.latest(&attempt).expect("unchanged"), Some(before));
             assert_eq!(
                 fs::read_dir(root.join("publications"))

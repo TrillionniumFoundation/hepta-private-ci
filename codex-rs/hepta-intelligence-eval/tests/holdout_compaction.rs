@@ -122,8 +122,8 @@ fn compaction_replays_nonempty_holdout_journal_without_semantic_drift() {
         generation: 1,
         lease_digest: digest("lease"),
     };
-    let mut owner = FencedFinalHoldoutOwnerV1::initialize(store, binding, fence)
-        .expect("initialize owner");
+    let mut owner =
+        FencedFinalHoldoutOwnerV1::initialize(store, binding, fence).expect("initialize owner");
     let use_receipt = owner.consume(&frozen_plan()).expect("consume holdout plan");
     assert!(!use_receipt.record_digest.is_zero());
     let source_anchor = owner.anchor();

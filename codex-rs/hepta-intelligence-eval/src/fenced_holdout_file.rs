@@ -301,7 +301,9 @@ impl LockedFileFinalHoldoutCasStoreV1 {
         let record_count = source_state
             .as_ref()
             .map_or(0, |record| record.journal.records.len() as u64);
-        let fence_generation = source_state.as_ref().map_or(0, |record| record.fence.generation);
+        let fence_generation = source_state
+            .as_ref()
+            .map_or(0, |record| record.fence.generation);
         let state_digest = source_state
             .as_ref()
             .map_or(Digest32::ZERO, |record| record.state_digest);

@@ -33,7 +33,9 @@ pub(crate) fn encode(plan: &CrossFoldPlanReceiptV1) -> Result<Vec<u8>, Evaluatio
         bytes.extend_from_slice(&value.to_be_bytes());
     }
     if plan.authority.grants_any() {
-        return Err(EvaluationClosureError::FrozenPlanBindingMismatch("authority"));
+        return Err(EvaluationClosureError::FrozenPlanBindingMismatch(
+            "authority",
+        ));
     }
     Ok(bytes)
 }

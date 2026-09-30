@@ -51,7 +51,10 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
     #[must_use]
     pub fn new(holdout: FencedFinalHoldoutOwnerV1<S>) -> Self {
         let namespace = holdout.binding();
-        Self { inner: ProductEvaluationRunnerV1::new(holdout), namespace }
+        Self {
+            inner: ProductEvaluationRunnerV1::new(holdout),
+            namespace,
+        }
     }
 
     #[must_use]
@@ -77,11 +80,18 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
         P: FinalHoldoutProviderV1,
         J: DurableProductEvaluationAttemptJournalV1,
     {
-        self.evaluate_recorded(attempt_id, product_plan, candidate_plan, baseline_plan,
-            provider, journal, |receipt, _| {
+        self.evaluate_recorded(
+            attempt_id,
+            product_plan,
+            candidate_plan,
+            baseline_plan,
+            provider,
+            journal,
+            |receipt, _| {
                 let execution_digest = receipt.execution_digest;
                 Ok((receipt, execution_digest))
-            })
+            },
+        )
     }
 
     // The finish callback is private. Multi-outcome composition must finish
@@ -101,8 +111,10 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
     where
         P: FinalHoldoutProviderV1,
         J: DurableProductEvaluationAttemptJournalV1,
-        F: FnOnce(ProductTemporalEvaluationReceiptV1, &mut P)
-            -> Result<(T, Digest32), ProductEvaluationError>,
+        F: FnOnce(
+            ProductTemporalEvaluationReceiptV1,
+            &mut P,
+        ) -> Result<(T, Digest32), ProductEvaluationError>,
     {
         let plan_digest = product_plan.frozen_plan.plan_digest;
         if journal.latest(&attempt_id)?.is_some() {
@@ -110,26 +122,47 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
         }
         let before = self.inner.holdout_state_digest();
         journal.append(ProductEvaluationAttemptTransitionV1::intent(
-            attempt_id.clone(), plan_digest, self.namespace, before,
+            attempt_id.clone(),
+            plan_digest,
+            self.namespace,
+            before,
         ))?;
         let (result, consumed, journal_error) = {
             let mut recorded_provider = RecordedHoldoutProviderV1 {
-                attempt_id: attempt_id.clone(), plan_digest, inner: provider, journal,
-                consumed_record_digest: None, journal_error: None,
+                attempt_id: attempt_id.clone(),
+                plan_digest,
+                inner: provider,
+                journal,
+                consumed_record_digest: None,
+                journal_error: None,
             };
             let result = self.inner.evaluate_temporal_comparison(
-                product_plan, candidate_plan, baseline_plan, &mut recorded_provider,
+                product_plan,
+                candidate_plan,
+                baseline_plan,
+                &mut recorded_provider,
             );
-            (result, recorded_provider.consumed_record_digest, recorded_provider.journal_error)
+            (
+                result,
+                recorded_provider.consumed_record_digest,
+                recorded_provider.journal_error,
+            )
         };
         if let Some(journal_error) = journal_error {
-            let holdout_record_digest = consumed.ok_or(RecordedProductEvaluationErrorV1::Invariant(
-                "attempt journal failed without an observed holdout receipt",
-            ))?;
+            let holdout_record_digest =
+                consumed.ok_or(RecordedProductEvaluationErrorV1::Invariant(
+                    "attempt journal failed without an observed holdout receipt",
+                ))?;
             return match result {
-                Err(evaluation) => Err(RecordedProductEvaluationErrorV1::HoldoutConsumedButJournalFailed {
-                    attempt_id, plan_digest, holdout_record_digest, evaluation, journal: journal_error,
-                }),
+                Err(evaluation) => Err(
+                    RecordedProductEvaluationErrorV1::HoldoutConsumedButJournalFailed {
+                        attempt_id,
+                        plan_digest,
+                        holdout_record_digest,
+                        evaluation,
+                        journal: journal_error,
+                    },
+                ),
                 Ok(_) => Err(RecordedProductEvaluationErrorV1::Invariant(
                     "attempt journal failure did not abort holdout release",
                 )),
@@ -138,35 +171,64 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
         let result = result.and_then(|receipt| finish(receipt, provider));
         match result {
             Ok((receipt, execution_digest)) => {
-                let holdout_record_digest = consumed.ok_or(RecordedProductEvaluationErrorV1::Invariant(
-                    "successful evaluation without recorded holdout consumption",
-                ))?;
-                journal.append(ProductEvaluationAttemptTransitionV1::comparison_sealed(
-                    attempt_id.clone(), plan_digest, holdout_record_digest, execution_digest,
-                )).map_err(|journal| RecordedProductEvaluationErrorV1::ComparisonSealedButJournalFailed {
-                    attempt_id, plan_digest, holdout_record_digest, execution_digest, journal,
-                })?;
+                let holdout_record_digest =
+                    consumed.ok_or(RecordedProductEvaluationErrorV1::Invariant(
+                        "successful evaluation without recorded holdout consumption",
+                    ))?;
+                journal
+                    .append(ProductEvaluationAttemptTransitionV1::comparison_sealed(
+                        attempt_id.clone(),
+                        plan_digest,
+                        holdout_record_digest,
+                        execution_digest,
+                    ))
+                    .map_err(|journal| {
+                        RecordedProductEvaluationErrorV1::ComparisonSealedButJournalFailed {
+                            attempt_id,
+                            plan_digest,
+                            holdout_record_digest,
+                            execution_digest,
+                            journal,
+                        }
+                    })?;
                 Ok(receipt)
             }
             Err(error) => {
                 let failure_digest = evaluation_failure_digest(&error);
                 if let Some(holdout_record_digest) = consumed {
-                    if let Err(journal) = journal.append(ProductEvaluationAttemptTransitionV1::failed(
-                        attempt_id.clone(), plan_digest, holdout_record_digest, failure_digest,
-                    )) {
-                        return Err(RecordedProductEvaluationErrorV1::EvaluationFailedButJournalFailed {
-                            attempt_id, plan_digest, holdout_record_digest, failure_digest,
-                            evaluation: error, journal,
-                        });
+                    if let Err(journal) =
+                        journal.append(ProductEvaluationAttemptTransitionV1::failed(
+                            attempt_id.clone(),
+                            plan_digest,
+                            holdout_record_digest,
+                            failure_digest,
+                        ))
+                    {
+                        return Err(
+                            RecordedProductEvaluationErrorV1::EvaluationFailedButJournalFailed {
+                                attempt_id,
+                                plan_digest,
+                                holdout_record_digest,
+                                failure_digest,
+                                evaluation: error,
+                                journal,
+                            },
+                        );
                     }
                 } else if self.inner.holdout_state_digest() == before
-                    && !matches!(&error, ProductEvaluationError::Holdout(
-                        FencedHoldoutError::Indeterminate | FencedHoldoutError::Poisoned
-                        | FencedHoldoutError::Conflict | FencedHoldoutError::Store(_)
-                    ))
+                    && !matches!(
+                        &error,
+                        ProductEvaluationError::Holdout(
+                            FencedHoldoutError::Indeterminate
+                                | FencedHoldoutError::Poisoned
+                                | FencedHoldoutError::Conflict
+                                | FencedHoldoutError::Store(_)
+                        )
+                    )
                 {
                     journal.append(ProductEvaluationAttemptTransitionV1 {
-                        attempt_id, plan_digest,
+                        attempt_id,
+                        plan_digest,
                         phase: ProductEvaluationAttemptPhaseV1::RejectedBeforeHoldout,
                         holdout_record_digest: self.namespace,
                         terminal_digest: failure_digest,
@@ -203,7 +265,9 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
         sink: &mut dyn ProductQualificationEvidenceSinkV1,
     ) -> Result<ProductQualificationReceiptV1, RecordedProductEvaluationErrorV1> {
         let latest = journal.latest(attempt_id)?.ok_or(
-            RecordedProductEvaluationErrorV1::AttemptRequiresRecovery { attempt_id: attempt_id.clone() },
+            RecordedProductEvaluationErrorV1::AttemptRequiresRecovery {
+                attempt_id: attempt_id.clone(),
+            },
         )?;
         latest.validate_integrity()?;
         if latest.transition.phase != ProductEvaluationAttemptPhaseV1::ComparisonSealed
@@ -211,16 +275,26 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
             || latest.transition.holdout_record_digest != temporal.holdout.record_digest
             || latest.transition.terminal_digest != temporal.execution_digest
         {
-            return Err(RecordedProductEvaluationErrorV1::AttemptRequiresRecovery { attempt_id: attempt_id.clone() });
+            return Err(RecordedProductEvaluationErrorV1::AttemptRequiresRecovery {
+                attempt_id: attempt_id.clone(),
+            });
         }
         let mut recorded = RecordedPublicationSinkV1 {
             attempt_id: attempt_id.clone(),
             plan_digest: latest.transition.plan_digest,
             holdout_record_digest: latest.transition.holdout_record_digest,
-            journal, inner: sink, journal_error: None,
+            journal,
+            inner: sink,
+            journal_error: None,
         };
         let result = self.inner.qualify_and_persist(
-            temporal, context, evidence, timing, verifier, now, &mut recorded,
+            temporal,
+            context,
+            evidence,
+            timing,
+            verifier,
+            now,
+            &mut recorded,
         );
         if let Some(error) = recorded.journal_error {
             return Err(RecordedProductEvaluationErrorV1::Journal(error));
@@ -250,9 +324,14 @@ impl<P: FinalHoldoutProviderV1, J: ProductEvaluationAttemptJournalV1> FinalHoldo
         receipt: &FinalHoldoutJournalReceiptV1,
     ) -> Result<TemporalComparisonInputsV1, ProductProviderErrorV1> {
         self.consumed_record_digest = Some(receipt.record_digest);
-        if let Err(error) = self.journal.append(ProductEvaluationAttemptTransitionV1::holdout_consumed(
-            self.attempt_id.clone(), self.plan_digest, receipt.record_digest,
-        )) {
+        if let Err(error) =
+            self.journal
+                .append(ProductEvaluationAttemptTransitionV1::holdout_consumed(
+                    self.attempt_id.clone(),
+                    self.plan_digest,
+                    receipt.record_digest,
+                ))
+        {
             self.journal_error = Some(error);
             return Err(map_journal_to_provider(error));
         }
@@ -263,7 +342,9 @@ impl<P: FinalHoldoutProviderV1, J: ProductEvaluationAttemptJournalV1> FinalHoldo
     }
 }
 
-fn map_journal_to_provider(error: ProductEvaluationAttemptJournalErrorV1) -> ProductProviderErrorV1 {
+fn map_journal_to_provider(
+    error: ProductEvaluationAttemptJournalErrorV1,
+) -> ProductProviderErrorV1 {
     match error {
         ProductEvaluationAttemptJournalErrorV1::Binding
         | ProductEvaluationAttemptJournalErrorV1::NotRegular
@@ -274,7 +355,9 @@ fn map_journal_to_provider(error: ProductEvaluationAttemptJournalErrorV1) -> Pro
         | ProductEvaluationAttemptJournalErrorV1::Capacity => ProductProviderErrorV1::Rejected,
         ProductEvaluationAttemptJournalErrorV1::Busy
         | ProductEvaluationAttemptJournalErrorV1::Io(_) => ProductProviderErrorV1::Unavailable,
-        ProductEvaluationAttemptJournalErrorV1::Indeterminate => ProductProviderErrorV1::Indeterminate,
+        ProductEvaluationAttemptJournalErrorV1::Indeterminate => {
+            ProductProviderErrorV1::Indeterminate
+        }
     }
 }
 
@@ -286,7 +369,9 @@ fn evaluation_failure_digest(error: &ProductEvaluationError) -> Digest32 {
 pub enum RecordedProductEvaluationErrorV1 {
     Evaluation(ProductEvaluationError),
     Journal(ProductEvaluationAttemptJournalErrorV1),
-    AttemptRequiresRecovery { attempt_id: StableId },
+    AttemptRequiresRecovery {
+        attempt_id: StableId,
+    },
     HoldoutConsumedButJournalFailed {
         attempt_id: StableId,
         plan_digest: Digest32,

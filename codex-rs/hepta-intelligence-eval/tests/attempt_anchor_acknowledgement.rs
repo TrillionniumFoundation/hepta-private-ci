@@ -132,8 +132,14 @@ fn consumed() -> ProductEvaluationAttemptTransitionV1 {
 
 fn assert_poisoned(journal: &mut AnchoredProductEvaluationAttemptJournalV1<TestAuthority>) {
     assert_eq!(journal.anchor(), Err(JournalError::Indeterminate));
-    assert_eq!(journal.latest(&attempt_id()), Err(JournalError::Indeterminate));
-    assert_eq!(journal.history(&attempt_id()), Err(JournalError::Indeterminate));
+    assert_eq!(
+        journal.latest(&attempt_id()),
+        Err(JournalError::Indeterminate)
+    );
+    assert_eq!(
+        journal.history(&attempt_id()),
+        Err(JournalError::Indeterminate)
+    );
     assert_eq!(journal.pending(None, 1), Err(JournalError::Indeterminate));
     assert_eq!(journal.append(intent()), Err(JournalError::Indeterminate));
 }
@@ -143,28 +149,31 @@ fn accepted_anchor_with_lost_ack_blocks_every_operation_until_recovery() {
     let file = JournalFile::new();
     let authority = TestAuthority::default();
     let binding = digest("anchor-binding");
-    let mut journal = AnchoredProductEvaluationAttemptJournalV1::create(
-        file.open(),
-        binding,
-        authority.clone(),
-    )
-    .expect("create");
+    let mut journal =
+        AnchoredProductEvaluationAttemptJournalV1::create(file.open(), binding, authority.clone())
+            .expect("create");
     authority.0.borrow_mut().next = NextAck::CommitThenLoseAck;
     assert_eq!(journal.append(intent()), Err(JournalError::Indeterminate));
     assert_poisoned(&mut journal);
     drop(journal);
 
-    let mut recovered = AnchoredProductEvaluationAttemptJournalV1::recover(
-        file.open(),
-        binding,
-        authority,
-    )
-    .expect("recover acknowledged authority history");
-    let latest = recovered.latest(&attempt_id()).expect("latest").expect("intent");
+    let mut recovered =
+        AnchoredProductEvaluationAttemptJournalV1::recover(file.open(), binding, authority)
+            .expect("recover acknowledged authority history");
+    let latest = recovered
+        .latest(&attempt_id())
+        .expect("latest")
+        .expect("intent");
     assert_eq!(latest.transition, intent());
     assert_eq!(latest.sequence, 1);
-    assert_eq!(recovered.pending(None, 1).expect("pending"), vec![latest.clone()]);
-    assert_eq!(recovered.append(intent()).expect("idempotent retry"), latest);
+    assert_eq!(
+        recovered.pending(None, 1).expect("pending"),
+        vec![latest.clone()]
+    );
+    assert_eq!(
+        recovered.append(intent()).expect("idempotent retry"),
+        latest
+    );
     assert_eq!(recovered.append(consumed()).expect("consume").sequence, 2);
 }
 
@@ -173,12 +182,9 @@ fn durable_tail_before_anchor_commit_is_reconciled_without_reexecution() {
     let file = JournalFile::new();
     let authority = TestAuthority::default();
     let binding = digest("tail-binding");
-    let mut journal = AnchoredProductEvaluationAttemptJournalV1::create(
-        file.open(),
-        binding,
-        authority.clone(),
-    )
-    .expect("create");
+    let mut journal =
+        AnchoredProductEvaluationAttemptJournalV1::create(file.open(), binding, authority.clone())
+            .expect("create");
     let before = journal.anchor().expect("genesis anchor");
     authority.0.borrow_mut().next = NextAck::RejectBeforeCommit;
     assert_eq!(journal.append(intent()), Err(JournalError::Indeterminate));
@@ -186,12 +192,9 @@ fn durable_tail_before_anchor_commit_is_reconciled_without_reexecution() {
     assert_poisoned(&mut journal);
     drop(journal);
 
-    let mut recovered = AnchoredProductEvaluationAttemptJournalV1::recover(
-        file.open(),
-        binding,
-        authority.clone(),
-    )
-    .expect("prove prefix and retain committed tail");
+    let mut recovered =
+        AnchoredProductEvaluationAttemptJournalV1::recover(file.open(), binding, authority.clone())
+            .expect("prove prefix and retain committed tail");
     let after = recovered.anchor().expect("reconciled anchor");
     assert_eq!(authority.0.borrow().anchor, Some(after));
     assert_ne!(after, before);
@@ -224,23 +227,17 @@ fn complete_old_backup_is_rejected_without_lowering_the_independent_anchor() {
     let file = JournalFile::new();
     let authority = TestAuthority::default();
     let binding = digest("rollback-binding");
-    let mut journal = AnchoredProductEvaluationAttemptJournalV1::create(
-        file.open(),
-        binding,
-        authority.clone(),
-    )
-    .expect("create");
+    let mut journal =
+        AnchoredProductEvaluationAttemptJournalV1::create(file.open(), binding, authority.clone())
+            .expect("create");
     journal.append(intent()).expect("intent");
     let old = std::fs::read(&file.0).expect("complete backup");
     journal.append(consumed()).expect("consumed");
     let retained = authority.0.borrow().anchor;
     drop(journal);
     std::fs::write(&file.0, old).expect("restore old complete backup");
-    let recovered = AnchoredProductEvaluationAttemptJournalV1::recover(
-        file.open(),
-        binding,
-        authority.clone(),
-    );
+    let recovered =
+        AnchoredProductEvaluationAttemptJournalV1::recover(file.open(), binding, authority.clone());
     assert!(recovered.is_err());
     assert_eq!(authority.0.borrow().anchor, retained);
 }

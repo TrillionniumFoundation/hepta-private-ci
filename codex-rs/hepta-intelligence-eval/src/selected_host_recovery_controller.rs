@@ -113,9 +113,7 @@ mod trust_frontier_tests {
         RecoveryTrustFrontierV1 {
             clock_binding: Digest32::of_bytes(b"clock"),
             root_digest: Digest32::of_bytes(format!("root:{label}").as_bytes()),
-            distribution_digest: Digest32::of_bytes(
-                format!("distribution:{label}").as_bytes(),
-            ),
+            distribution_digest: Digest32::of_bytes(format!("distribution:{label}").as_bytes()),
             generation: 7,
             effective_at: 70,
             expires_at: 130,
@@ -310,9 +308,7 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
         let mut cursor = RecoveryCursor::open(cursor_file, binding)?;
         let page = journal.pending(cursor.after(), limit)?;
         if page.len() > limit {
-            return Err(RecordedError::Invariant(
-                "recovery inventory exceeds page",
-            ));
+            return Err(RecordedError::Invariant("recovery inventory exceeds page"));
         }
         let mut previous = cursor.after().cloned();
         for receipt in &page {
@@ -321,9 +317,7 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
             if receipt.transition.phase.is_terminal()
                 || previous.as_ref().is_some_and(|before| before >= id)
             {
-                return Err(RecordedError::Invariant(
-                    "invalid recovery inventory order",
-                ));
+                return Err(RecordedError::Invariant("invalid recovery inventory order"));
             }
             previous = Some(id.clone());
         }
@@ -348,9 +342,7 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
                 ));
             }
             if previous_now.is_some_and(|before| now < before) {
-                return Err(RecordedError::Invariant(
-                    "recovery host clock regressed",
-                ));
+                return Err(RecordedError::Invariant("recovery host clock regressed"));
             }
             previous_now = Some(now);
             previous_trust = Some(RecoveryTrustFrontierV1::admit(
@@ -362,12 +354,11 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
 
             let id = receipt.transition.attempt_id.clone();
             let result = (|| {
-                let history = validated_history(journal, &id)
-                    .map_err(|error| map_recovery(&id, error))?;
+                let history =
+                    validated_history(journal, &id).map_err(|error| map_recovery(&id, error))?;
                 if history.last() != Some(&receipt)
                     || !history.iter().any(|event| {
-                        event.transition.phase
-                            == ProductEvaluationAttemptPhaseV1::IntentPersisted
+                        event.transition.phase == ProductEvaluationAttemptPhaseV1::IntentPersisted
                             && event.transition.holdout_record_digest == self.namespace
                     })
                 {
@@ -424,20 +415,16 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
                             result => result,
                         }
                     }
-                    Phase::IntentPersisted
-                    | Phase::HoldoutConsumed
-                    | Phase::ComparisonSealed => {
+                    Phase::IntentPersisted | Phase::HoldoutConsumed | Phase::ComparisonSealed => {
                         // Consumption reconciliation and lost estimator objects
                         // require their existing owner protocols, never reruns.
                         Err(RecordedError::AttemptRequiresRecovery {
                             attempt_id: id.clone(),
                         })
                     }
-                    Phase::Failed | Phase::RejectedBeforeHoldout | Phase::Published => {
-                        Err(RecordedError::Invariant(
-                            "terminal attempt in pending inventory",
-                        ))
-                    }
+                    Phase::Failed | Phase::RejectedBeforeHoldout | Phase::Published => Err(
+                        RecordedError::Invariant("terminal attempt in pending inventory"),
+                    ),
                 }
             })();
             match result {
