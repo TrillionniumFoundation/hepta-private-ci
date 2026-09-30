@@ -1,4 +1,5 @@
 use std::collections::BTreeSet;
+use std::fmt::Debug;
 
 use codex_hepta_control_plane::DataflowTiming;
 use codex_hepta_control_plane::FailureDomainV1;
@@ -20,12 +21,19 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+fn must<T, E: Debug>(result: Result<T, E>) -> T {
+    match result {
+        Ok(value) => value,
+        Err(error) => panic!("unexpected fixture error: {error:?}"),
+    }
+}
+
 fn id(value: &str) -> StableId {
-    StableId::new(value).expect("fixture identifier")
+    must(StableId::new(value))
 }
 
 fn generation(value: u64) -> Generation {
-    Generation::new(value).expect("fixture generation")
+    must(Generation::new(value))
 }
 
 fn graph() -> OrganGraphsV1 {

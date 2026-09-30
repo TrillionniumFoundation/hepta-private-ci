@@ -66,26 +66,26 @@ jobs:
         run: >-
           python3 scripts/control_runtime_validate_state.py
           --output "$RUNNER_TEMP/control-runtime-recovery-evidence/state.json"
-      - name: Diagnose exact workspace lockfile
+      - name: Verify exact workspace lockfile
         id: lock
         continue-on-error: true
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          original="$RUNNER_TEMP/control-runtime-Cargo.lock.original"
           evidence="$RUNNER_TEMP/control-runtime-recovery-evidence"
-          cp Cargo.lock "$original"
-          cargo generate-lockfile
-          if cmp -s Cargo.lock "$original"; then
-            status=clean
+          # A committed Cargo.lock is a reproducibility input, not a request to
+          # upgrade every compatible transitive dependency. `--locked` proves
+          # the manifests and exact lock agree without rewriting reviewed pins.
+          cargo metadata --locked --format-version 1 --no-deps \
+            > "$evidence/cargo-metadata.json"
+          if command -v sha256sum >/dev/null 2>&1; then
+            sha256sum Cargo.lock > "$evidence/Cargo.lock.sha256"
           else
-            status=drift
-            cp Cargo.lock "$evidence/Cargo.lock.generated"
-            git diff -- Cargo.lock > "$evidence/Cargo.lock.diff"
+            shasum -a 256 Cargo.lock > "$evidence/Cargo.lock.sha256"
           fi
-          printf '%s\n' "$status" > "$evidence/lockfile-status.txt"
-          printf 'status=%s\n' "$status" >> "$GITHUB_OUTPUT"
+          printf '%s\n' clean > "$evidence/lockfile-status.txt"
+          printf 'status=clean\n' >> "$GITHUB_OUTPUT"
       - name: Formatting
         id: fmt
         continue-on-error: true
@@ -152,9 +152,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ -f "$RUNNER_TEMP/control-runtime-Cargo.lock.original" ]]; then
-            cp "$RUNNER_TEMP/control-runtime-Cargo.lock.original" codex-rs/Cargo.lock
-          fi
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           if ! git diff --exit-code || ! git diff --cached --exit-code; then
             git status --short

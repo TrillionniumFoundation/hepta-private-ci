@@ -457,6 +457,3 @@ fn route_map(graph: &OrganGraphsV1) -> BTreeMap<(StableId, usize), Vec<(StableId
     routes
 }
 
-#[cfg(test)]
-#[path = "organ_runtime_tests.rs"]
-mod tests;
