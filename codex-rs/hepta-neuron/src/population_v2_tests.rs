@@ -148,3 +148,44 @@ fn every_activation_requires_a_registered_temporal_projection() {
         Some(PopulationSparseError::InvalidConfig)
     );
 }
+
+#[test]
+fn config_digest_distinguishes_projection_edges_from_inhibition_edges() {
+    let mut projection_config = config();
+    projection_config.projection = (0..projection_config.activation_width)
+        .map(|target_activation| TemporalProjectionEdgeV2 {
+            source_temporal: 0,
+            target_activation,
+            weight_q24: Q,
+        })
+        .collect();
+    projection_config.projection.push(TemporalProjectionEdgeV2 {
+        source_temporal: 1,
+        target_activation: 5,
+        weight_q24: Q,
+    });
+    let mut inhibition_config = projection_config.clone();
+    inhibition_config.projection.pop();
+    inhibition_config.inhibition.push(InhibitoryEdge {
+        source: 1,
+        target: 5,
+        weight_q24: Q,
+    });
+    let projection_digest = checked(projection_config.digest());
+    let inhibition_digest = checked(inhibition_config.digest());
+    assert_ne!(projection_digest, inhibition_digest);
+
+    let first = checked(population_sparse_tick_v2(
+        &projection_config,
+        &tick(/*sequence*/ 1, /*micros*/ 10),
+        /*previous*/ None,
+    ));
+    assert_eq!(
+        population_sparse_tick_v2(
+            &inhibition_config,
+            &tick(/*sequence*/ 2, /*micros*/ 20),
+            Some(&first.0),
+        ),
+        Err(PopulationSparseError::ConfigDrift)
+    );
+}

@@ -837,11 +837,31 @@ where
         })?;
     validate_port_receipt(&input, owner, &receipt)?;
     match stage {
-        CanonicalStageV1::IntuitionDecided => {
-            if matches!(receipt.decision, CanonicalPortDecisionV1::Continue) {
+        CanonicalStageV1::IntuitionDecided => match &receipt.decision {
+            CanonicalPortDecisionV1::Continue => {
                 return Err(CanonicalIntelligenceError::UnexpectedDecision);
             }
-        }
+            CanonicalPortDecisionV1::Selected {
+                candidate_id,
+                propensity,
+            } => {
+                if !legal
+                    .candidates
+                    .iter()
+                    .any(|candidate| candidate.candidate_id == *candidate_id)
+                {
+                    return Err(CanonicalIntelligenceError::InvalidCandidateSet(
+                        "selected candidate",
+                    ));
+                }
+                if *propensity == ProbabilityQ32::ZERO {
+                    return Err(CanonicalIntelligenceError::InvalidCandidateSet(
+                        "selected propensity",
+                    ));
+                }
+            }
+            CanonicalPortDecisionV1::Abstained | CanonicalPortDecisionV1::SlowPath => {}
+        },
         _ => {
             if !matches!(receipt.decision, CanonicalPortDecisionV1::Continue) {
                 return Err(CanonicalIntelligenceError::UnexpectedDecision);

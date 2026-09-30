@@ -133,6 +133,7 @@ impl CanonicalFreshnessOracleV1 for Oracle {
 struct Ports {
     calls: Vec<CanonicalStageV1>,
     abstain: bool,
+    intuition_override: Option<CanonicalPortDecisionV1>,
     wrong_owner: Option<CanonicalStageV1>,
 }
 
@@ -141,6 +142,7 @@ impl Ports {
         Self {
             calls: Vec::new(),
             abstain: false,
+            intuition_override: None,
             wrong_owner: None,
         }
     }
@@ -206,7 +208,9 @@ impl CanonicalOwnerPortsV1 for Ports {
         &mut self,
         input: &CanonicalPortInputV1,
     ) -> Result<CanonicalPortReceiptV1, CanonicalPortFailureV1> {
-        let decision = if self.abstain {
+        let decision = if let Some(decision) = &self.intuition_override {
+            decision.clone()
+        } else if self.abstain {
             CanonicalPortDecisionV1::Abstained
         } else {
             CanonicalPortDecisionV1::Selected {
@@ -278,6 +282,45 @@ fn abstention_stops_before_context_and_evaluation() {
             CanonicalStageV1::IntuitionDecided,
         ]
     );
+}
+
+#[test]
+fn selected_action_must_be_legal_and_have_positive_propensity_before_context() {
+    for (decision, expected) in [
+        (
+            CanonicalPortDecisionV1::Selected {
+                candidate_id: id("action:outside-legal-set"),
+                propensity: ProbabilityQ32::ONE,
+            },
+            CanonicalIntelligenceError::InvalidCandidateSet("selected candidate"),
+        ),
+        (
+            CanonicalPortDecisionV1::Selected {
+                candidate_id: id("action:one"),
+                propensity: ProbabilityQ32::ZERO,
+            },
+            CanonicalIntelligenceError::InvalidCandidateSet("selected propensity"),
+        ),
+    ] {
+        let request = request();
+        let mut oracle = Oracle::new(&request.snapshot);
+        let mut ports = Ports::new();
+        ports.intuition_override = Some(decision);
+        assert_eq!(
+            prepare_intelligence_run(request, &mut ports, &mut oracle),
+            Err(expected)
+        );
+        assert_eq!(
+            ports.calls,
+            vec![
+                CanonicalStageV1::ObjectiveValidated,
+                CanonicalStageV1::UtilityEvaluated,
+                CanonicalStageV1::NeuralSignalCollected,
+                CanonicalStageV1::PromptPortfolioBuilt,
+                CanonicalStageV1::IntuitionDecided,
+            ]
+        );
+    }
 }
 
 #[test]

@@ -155,6 +155,7 @@ impl PopulationSparseConfigV2 {
         }
         let mut projections = self.projection.clone();
         projections.sort();
+        bytes.extend_from_slice(&(projections.len() as u64).to_be_bytes());
         for edge in projections {
             bytes.extend_from_slice(
                 &u64::try_from(edge.source_temporal)
@@ -170,6 +171,7 @@ impl PopulationSparseConfigV2 {
         }
         let mut inhibition = self.inhibition.clone();
         inhibition.sort();
+        bytes.extend_from_slice(&(inhibition.len() as u64).to_be_bytes());
         for edge in inhibition {
             bytes.extend_from_slice(
                 &u64::try_from(edge.source)
@@ -183,6 +185,7 @@ impl PopulationSparseConfigV2 {
             );
             bytes.extend_from_slice(&edge.weight_q24.to_be_bytes());
         }
+        bytes.extend_from_slice(&(self.populations.len() as u64).to_be_bytes());
         for population in &self.populations {
             for value in [population.start, population.len, population.top_k] {
                 bytes.extend_from_slice(
