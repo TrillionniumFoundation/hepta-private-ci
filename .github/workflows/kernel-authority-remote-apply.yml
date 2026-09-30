@@ -1,4 +1,4 @@
-name: Kernel authority exact-head format and validate
+name: Kernel authority target-capacity workflow lint
 
 on:
   push:
@@ -7,110 +7,30 @@ on:
       - '.github/workflows/kernel-authority-remote-apply.yml'
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: kernel-authority-exact-head-format-and-validate
-  cancel-in-progress: false
+  group: kernel-authority-target-capacity-actionlint
+  cancel-in-progress: true
 
 jobs:
-  converge:
+  lint:
     runs-on: ubuntu-slim
-    timeout-minutes: 180
-    env:
-      CARGO_BUILD_JOBS: 2
-      CARGO_PROFILE_DEV_DEBUG: 0
-      CARGO_PROFILE_TEST_DEBUG: 0
-      CARGO_INCREMENTAL: 0
-      RUST_BACKTRACE: 1
-      RUST_MIN_STACK: 8388608
-      PYTHONDONTWRITEBYTECODE: 1
-      EXPECTED_HEAD: d98cf4f4d98a9e6858b103ffc4668a86b304ee49
-      TARGET_BRANCH: work/kernel-authority-convergence-20260925
+    timeout-minutes: 20
     steps:
-      - name: Checkout exact target branch
+      - name: Checkout immutable target head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          ref: work/kernel-authority-convergence-20260925
+          ref: d98cf4f4d98a9e6858b103ffc4668a86b304ee49
           fetch-depth: 1
-          persist-credentials: true
-      - name: Verify immutable input
-        shell: bash
+          persist-credentials: false
+      - name: Verify exact source
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
-          git fetch --no-tags origin "refs/heads/$TARGET_BRANCH"
-          test "$(git rev-parse FETCH_HEAD)" = "$EXPECTED_HEAD"
+          test "$(git rev-parse HEAD)" = d98cf4f4d98a9e6858b103ffc4668a86b304ee49
           test -z "$(git status --porcelain)"
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
         with:
-          toolchain: 1.95.0
-          components: rustfmt, clippy
-      - name: Apply canonical Rust formatting
-        working-directory: codex-rs
-        run: cargo fmt -p codex-hepta-agentd -p codex-hepta-contracts -p codex-hepta-fleet
-      - name: Constrain formatting diff to kernel.authority sources
-        shell: bash
-        run: |
-          set -euo pipefail
-          cat > "$RUNNER_TEMP/allowed" <<'EOF'
-          codex-rs/hepta-agentd/src/authority_effect_tasks.rs
-          codex-rs/hepta-agentd/src/authority_feed_clock.rs
-          codex-rs/hepta-agentd/src/automation_authority_bootstrap.rs
-          codex-rs/hepta-agentd/src/automation_effect_host.rs
-          codex-rs/hepta-agentd/src/automation_effect_host_tests.rs
-          codex-rs/hepta-agentd/src/config.rs
-          codex-rs/hepta-agentd/src/lib.rs
-          codex-rs/hepta-agentd/src/runtime.rs
-          codex-rs/hepta-agentd/tests/authority_effect_process_restart.rs
-          codex-rs/hepta-contracts/src/authority_lease_interval_tests.rs
-          codex-rs/hepta-contracts/src/authority_runtime_clock.rs
-          codex-rs/hepta-contracts/src/authority_trust.rs
-          codex-rs/hepta-contracts/src/authority_trust_tests.rs
-          codex-rs/hepta-contracts/src/final_use.rs
-          codex-rs/hepta-contracts/src/final_use_store.rs
-          codex-rs/hepta-contracts/src/final_use_time_tests.rs
-          codex-rs/hepta-contracts/src/lib.rs
-          codex-rs/hepta-fleet/src/authority_port.rs
-          EOF
-          LC_ALL=C sort -o "$RUNNER_TEMP/allowed" "$RUNNER_TEMP/allowed"
-          git diff --name-only | LC_ALL=C sort > "$RUNNER_TEMP/actual"
-          test -s "$RUNNER_TEMP/actual"
-          printf '%s\n' 'rustfmt changed:'
-          cat "$RUNNER_TEMP/actual"
-          unexpected="$(comm -23 "$RUNNER_TEMP/actual" "$RUNNER_TEMP/allowed")"
-          test -z "$unexpected" || { printf 'unexpected rustfmt paths:\n%s\n' "$unexpected" >&2; exit 1; }
-          git diff --check
-      - name: Verify formatting and product-process parser
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 -B qualification/kernel-authority/test_product_process_recovery.py
-          cd codex-rs
-          cargo fmt --check -p codex-hepta-agentd -p codex-hepta-contracts -p codex-hepta-fleet
-      - name: Strict product-process Clippy
-        working-directory: codex-rs
-        run: cargo clippy --locked -p codex-hepta-agentd --test authority_effect_process_restart -- -D warnings
-      - name: Execute two-product-process recovery
-        working-directory: codex-rs
-        run: cargo test --locked -p codex-hepta-agentd --test authority_effect_process_restart -- --nocapture
-      - name: Re-run authority qualification and caller closure
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 -B -m unittest discover -s qualification/kernel-authority -p 'test_*.py' -v
-          python3 -B -m unittest discover -s qa/b4-no-bypass -p 'test_kernel_authority*.py' -v
-          python3 -B scripts/verify_hepta_callers.py
-          git diff --check
-      - name: Commit and fast-forward exact target
-        shell: bash
-        run: |
-          set -euo pipefail
-          git add -- $(cat "$RUNNER_TEMP/actual")
-          test "$(git diff --cached --name-only | LC_ALL=C sort | sha256sum | cut -d' ' -f1)" = "$(cat "$RUNNER_TEMP/actual" | LC_ALL=C sort | sha256sum | cut -d' ' -f1)"
-          git config user.name 'OpenAI Codex'
-          git config user.email 'codex@openai.com'
-          git commit -m 'style(kernel.authority): apply canonical Rust formatting'
-          git fetch --no-tags origin "refs/heads/$TARGET_BRANCH"
-          test "$(git rev-parse FETCH_HEAD)" = "$EXPECTED_HEAD"
-          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          tool: actionlint@1.7.7
+      - name: Lint target capacity workflow
+        run: actionlint -verbose .github/workflows/kernel-authority-target-capacity.yml
