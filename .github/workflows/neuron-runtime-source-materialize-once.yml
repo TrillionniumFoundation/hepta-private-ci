@@ -1,0 +1,270 @@
+name: Neuron runtime immutable source materializer
+
+on:
+  push:
+    branches:
+      - codex/neuron-runtime-five-phase-closure-v2
+    paths:
+      - .github/workflows/neuron-runtime-source-materialize-once.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: neuron-runtime-source-materializer-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 75
+    steps:
+      - name: Checkout exact triggering commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: "${{ github.sha }}"
+          fetch-depth: 0
+
+      - name: Materialize reviewed V2 product path
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          python3 - <<'PY'
+          from pathlib import Path
+
+          source = Path("scripts/neuron_runtime_apply_gate_repair.sh").read_text()
+          needle = "from pathlib import Path\n\n\ndef replace"
+          replacement = (
+              "from pathlib import Path\n\n"
+              "workflow = '.github/workflows/neuron-runtime-gate-fix-once.yml'\n"
+              "script = 'scripts/neuron_runtime_apply_gate_repair.sh'\n\n"
+              "def replace"
+          )
+          if source.count(needle) != 1:
+              raise SystemExit("migration script Python preamble changed")
+          Path("/tmp/neuron_runtime_apply_gate_repair.sh").write_text(
+              source.replace(needle, replacement, 1)
+          )
+          PY
+          chmod +x /tmp/neuron_runtime_apply_gate_repair.sh
+          bash /tmp/neuron_runtime_apply_gate_repair.sh
+
+      - name: Close graceful restart and canonical specification
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              target = Path(path)
+              value = target.read_text()
+              count = value.count(old)
+              if count != 1:
+                  raise SystemExit(f"{path}: expected one replacement, found {count}")
+              target.write_text(value.replace(old, new))
+
+          def append_once(path: str, marker: str, value: str) -> None:
+              target = Path(path)
+              current = target.read_text()
+              if marker not in current:
+                  target.write_text(current.rstrip() + "\n\n" + value.strip() + "\n")
+
+          replace_once(
+              "codex-rs/hepta-agentd/src/neuron_runtime_v2_controller.rs",
+              "    pub fn shutdown(&self) -> Result<(), AgentdNeuronControlErrorV2> {\n",
+              '''    /// Reopen a generation after a graceful daemon shutdown. The
+              /// transition is durably published as `Starting` before ordinary
+              /// reconciliation; execution remains closed until the full startup
+              /// postcondition succeeds.
+              pub fn restart_stopped(&self) -> Result<(), AgentdNeuronControlErrorV2> {
+                  {
+                      let mut state = self.lock_state()?;
+                      if state.lifecycle != AgentdNeuronLifecycleStateV2::Stopped {
+                          return Err(AgentdNeuronControlErrorV2::InvalidTransition);
+                      }
+                      state
+                          .persist_transition(AgentdNeuronLifecycleStateV2::Starting, None)
+                          .map_err(poison_control_state)?;
+                      state.lifecycle = AgentdNeuronLifecycleStateV2::Starting;
+                      state.reload_target_generation = None;
+                  }
+                  self.start()
+              }
+
+              pub fn shutdown(&self) -> Result<(), AgentdNeuronControlErrorV2> {
+          ''',
+          )
+
+          replace_once(
+              "codex-rs/hepta-agentd/src/neuron_runtime_v2_product.rs",
+              '''        controller
+                      .start()
+                      .map_err(|error| neuron_product_error("start controller", error))?;
+          ''',
+              '''        let lifecycle = controller
+                      .state()
+                      .map_err(|error| neuron_product_error("read recovered lifecycle", error))?;
+                  match lifecycle {
+                      AgentdNeuronLifecycleStateV2::Starting => controller.start(),
+                      AgentdNeuronLifecycleStateV2::Stopped => controller.restart_stopped(),
+                      state => {
+                          return Err(crate::AgentdError::Protocol(format!(
+                              "Neuron V2 recovered in {state:?}; explicit operator recovery is required"
+                          )));
+                      }
+                  }
+                  .map_err(|error| neuron_product_error("start controller", error))?;
+          ''',
+          )
+
+          append_once(
+              "codex-rs/hepta-agentd/src/neuron_runtime_v2_durable_state_tests.rs",
+              "fn product_config_restarts_gracefully_stopped_generation()",
+              r'''
+          struct UnusedProductTickProvider;
+
+          impl AgentdNeuronTickProviderV2 for UnusedProductTickProvider {
+              fn build_tick(
+                  &self,
+                  _identity: &crate::AgentdIdentity,
+                  _record: &codex_hepta_learning_ledger::RunStartRecordV1,
+                  _invocation: &crate::AgentdIntelligenceInvocationV1,
+              ) -> Result<NeuronTickInputV1, crate::AgentdError> {
+                  Err(crate::AgentdError::Invalid(
+                      "test tick provider must not be invoked".to_string(),
+                  ))
+              }
+          }
+
+          #[test]
+          fn product_config_restarts_gracefully_stopped_generation() {
+              let directory = private_state_directory();
+              let path = directory.path().join("neuron-generation-state.json");
+              let (active, first_owner) = handle(1);
+              let first = checked(AgentdNeuronRuntimeV2Config::new(
+                  active,
+                  path.clone(),
+                  Arc::new(UnusedProductTickProvider),
+              ));
+              let first_host = checked(first.start());
+              assert_eq!(
+                  checked(read_agentd_neuron_generation_state_v2(&path)).lifecycle,
+                  AgentdNeuronLifecycleStateV2::Serving
+              );
+              checked(first_host.shutdown());
+              assert!(first_owner.reconciles.load(Ordering::SeqCst) >= 2);
+              assert_eq!(
+                  checked(read_agentd_neuron_generation_state_v2(&path)).lifecycle,
+                  AgentdNeuronLifecycleStateV2::Stopped
+              );
+              drop(first_host);
+
+              let (recovered, recovered_owner) = handle(1);
+              let recovered_clone = recovered.clone();
+              let restarted = checked(AgentdNeuronRuntimeV2Config::new(
+                  recovered,
+                  path.clone(),
+                  Arc::new(UnusedProductTickProvider),
+              ));
+              let restarted_host = checked(restarted.start());
+              assert_eq!(recovered_owner.reconciles.load(Ordering::SeqCst), 1);
+              assert_eq!(
+                  checked(read_agentd_neuron_generation_state_v2(&path)).lifecycle,
+                  AgentdNeuronLifecycleStateV2::Serving
+              );
+
+              let input = test_input(1);
+              checked(recovered_clone.prepare(
+                  input.tick_id.clone(),
+                  recovered_clone.body_bundle_digest().expect("body digest"),
+                  input,
+              ));
+              checked(restarted_host.shutdown());
+              assert_eq!(
+                  checked(read_agentd_neuron_generation_state_v2(&path)).lifecycle,
+                  AgentdNeuronLifecycleStateV2::Stopped
+              );
+          }
+          ''',
+          )
+
+          append_once(
+              "docs/modules/neuron.runtime/V2_STARTUP_RECOVERY.md",
+              "## Graceful daemon restart from `Stopped`",
+              '''
+          ## Graceful daemon restart from `Stopped`
+
+          `Stopped` records completion of the owning Agentd process lifecycle; it is
+          not a generation-retirement grant. A trusted `AgentdNeuronRuntimeV2Config`
+          may invoke the explicit `restart_stopped` transition for the same proven
+          topology. The transition first persists `Starting`, then performs normal
+          retained-generation, active-generation, pending-operation and witness
+          reconciliation, opening execution only after the startup postcondition.
+
+          `Quiescing`, `Sealed`, `Reloading` and `Failed` are never silently resumed;
+          they retain interrupted drain, handoff or failure intent and require the
+          documented operator recovery action.
+          ''',
+          )
+
+          spec_path = Path("docs/modules/neuron.runtime/MODULE_SPEC.json")
+          spec = json.loads(spec_path.read_text())
+          for source in (
+              "codex-rs/hepta-agentd/src/config.rs",
+              "codex-rs/hepta-agentd/src/lib.rs",
+              "codex-rs/hepta-agentd/src/runtime.rs",
+              "codex-rs/hepta-agentd/src/state.rs",
+              "codex-rs/hepta-agentd/src/intelligence_durable_neuron.rs",
+              "codex-rs/hepta-agentd/src/neuron_runtime_v2_product.rs",
+          ):
+              if source not in spec["sourceRoots"]:
+                  spec["sourceRoots"].append(source)
+          if not any(item["id"] == "agentd_product_lifecycle" for item in spec["operations"]):
+              spec["operations"].append({
+                  "id": "agentd_product_lifecycle",
+                  "symbol": "AgentdNeuronRuntimeV2Config / AgentdNeuronRuntimeV2Host",
+                  "source": "codex-rs/hepta-agentd/src/neuron_runtime_v2_product.rs",
+                  "state": "source_implemented_daemon_owned_start_restart_quiesce_shutdown_not_product_activated",
+                  "authority": "none",
+                  "tests": [
+                      "codex-rs/hepta-agentd/src/neuron_runtime_v2_durable_state_tests.rs::product_config_restarts_gracefully_stopped_generation",
+                      "codex-rs/hepta-agentd/src/neuron_runtime_v2_control_tests.rs"
+                  ]
+              })
+          if not any(item["id"] == "NR-C-005" for item in spec["requirements"]):
+              spec["requirements"].append({
+                  "id": "NR-C-005",
+                  "statement": "The ordinary Agentd lifecycle owns V2 startup, explicit stopped restart, quiesce and shutdown without opening a gate before reconciliation.",
+                  "tests": ["neuron_runtime_v2_durable_state_tests::product_config_restarts_gracefully_stopped_generation"],
+                  "gates": ["all"]
+              })
+          spec["qualification"]["testSetVersion"] = "2026-09-30.4"
+          spec_path.write_text(json.dumps(spec, indent=2) + "\n")
+          PY
+
+          python3 scripts/neuron/readiness.py render
+          (
+            cd codex-rs
+            cargo +stable fmt --all
+            cargo +stable check -p codex-hepta-agentd -p codex-hepta-infer-core -p codex-hepta-infer-worker-host
+            cargo +1.88.0 check -p codex-hepta-agentd -p codex-hepta-infer-core -p codex-hepta-infer-worker-host
+            cargo +stable test -p codex-hepta-agentd neuron_runtime_v2 --lib -- --nocapture
+            cargo +stable test -p codex-hepta-infer-worker-host native_app_server -- --nocapture
+          )
+          python3 -m unittest discover -v -s scripts/neuron -p 'test_*.py'
+          git diff --check
+          if grep -R --line-number --fixed-strings 'contents: write' .github/workflows/*neuron*.yml | grep -v 'neuron-runtime-source-materialize-once.yml'; then
+            echo 'mutable neuron qualification workflow remains' >&2
+            exit 1
+          fi
+          rm -f .github/workflows/neuron-runtime-source-materialize-once.yml
+          git add -A
+          git config user.name hepta-qualification
+          git config user.email qualification@invalid
+          git commit -m "fix(neuron): close graceful restart and canonical source authority"
+          git push origin HEAD:codex/neuron-runtime-five-phase-closure-v2
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
