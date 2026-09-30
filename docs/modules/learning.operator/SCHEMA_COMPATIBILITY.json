@@ -1,62 +1,73 @@
 {
-  "schema": "hepta.learning-operator-schema-compatibility.v1",
-  "schemaVersion": 1,
+  "schema": "hepta.learning-operator-schema-compatibility.v2",
+  "schemaVersion": 2,
   "module": "learning.operator",
-  "productionPath": {
-    "datasetReceipt": "DatasetSnapshotReceiptV4",
-    "tabularPin": "TabularPayloadPinV2",
+  "defaultQualificationPath": {
+    "trainingProfile": "TrainingProfileV1",
+    "worldModelProfile": "WorldModelProfileV1",
+    "tabularCapability": "FinalUseTabularCapabilityV1",
+    "worldModelCapability": "FinalUseWorldModelCapabilityV1",
+    "tabularSelectedArtifact": "OpaquePinnedTabularArtifactV1",
+    "worldModelSelectedArtifact": "OpaquePinnedWorldModelV1",
     "tabularLoader": "LoadedTabularOperatorV2",
-    "worldModelArtifact": "WorldModelArtifactV2",
+    "hostLoop": "coordinate_learning_operator_shadow_v1",
+    "activationAllowed": false,
     "typeState": [
-      "RawRows",
-      "StructurallyValidated",
-      "SourceAuthenticated",
-      "CurrentAtUse",
-      "VerifiedTrainingInput",
+      "CanonicalProfile",
+      "OwnerAuthenticatedSource",
+      "CurrentAtCapabilityIssue",
+      "SingleUseFinalUseCapability",
+      "CurrentImmediatelyBeforeFit",
       "ImmutableCandidate",
+      "CurrentImmediatelyBeforePublish",
       "IndependentlyEvaluated",
-      "SelectedOrRollbackAuthorized",
-      "LoadedReadOnly"
+      "IndependentlySelected",
+      "FreshProcessLoaded",
+      "ShadowObserved",
+      "CurrentOrRevokedAtUse",
+      "ExactPredecessorRolledBack"
     ]
   },
   "versions": [
     {
       "version": "V1",
-      "status": "qualification_compatibility_only",
-      "datasetReceipt": "structural_or_legacy",
-      "payloadPin": "TabularPayloadPinV1",
-      "loader": "LoadedTabularOperatorV1",
-      "productionAllowed": false,
-      "migration": "Re-freeze under V4, independently evaluate, select, and load through V2."
+      "status": "structural_qualification_compatibility_only",
+      "defaultExport": false,
+      "qualificationAllowed": true,
+      "activationAllowed": false,
+      "migration": "Decode and validate, then re-freeze and independently evaluate through the final-use path."
     },
     {
       "version": "V2",
-      "status": "structural_compatibility_and_complete_payload_pin",
-      "datasetReceipt": "DatasetSnapshotV2 compatibility",
-      "payloadPin": "TabularPayloadPinV2",
-      "loader": "LoadedTabularOperatorV2",
-      "productionAllowed": false,
-      "migration": "Retain complete pin; replace structural rows with V4 owner-authenticated input."
+      "status": "bounded_internal_compatibility",
+      "defaultExport": false,
+      "qualificationAllowed": true,
+      "activationAllowed": false,
+      "migration": "Reconstruct the canonical profile internally and issue a single-use owner-bound capability."
     },
     {
       "version": "V3",
-      "status": "owner_authenticated_compatibility",
-      "datasetReceipt": "DatasetSnapshotReceiptV3",
-      "payloadPin": "TabularPayloadPinV2",
-      "loader": "LoadedTabularOperatorV2",
-      "productionAllowed": false,
-      "migration": "Issue additive V4 row commitment and validity envelope without rewriting V3."
+      "status": "owner_authenticated_source_compatibility",
+      "defaultExport": true,
+      "qualificationAllowed": true,
+      "activationAllowed": false,
+      "migration": "Use the V3 owner receipt as input to the final-use capability; do not persist the verified wrapper."
     },
     {
-      "version": "V4",
-      "status": "production_qualification_path",
-      "datasetReceipt": "DatasetSnapshotReceiptV4",
-      "payloadPin": "TabularPayloadPinV2",
-      "loader": "LoadedTabularOperatorV2",
-      "productionAllowed": true,
-      "migration": "No downgrade. Rollback requires independently authorized immutable predecessor bytes."
+      "version": "FinalUseV1",
+      "status": "authoritative_shadow_qualification_path",
+      "defaultExport": true,
+      "qualificationAllowed": true,
+      "activationAllowed": false,
+      "migration": "No implicit downgrade. Reopen the exact immutable predecessor and its original complete pin."
     }
   ],
+  "resourceQualification": {
+    "sensorCandidateCounts": [1000, 4000, 8000, 16000],
+    "tabularSampleCounts": [100000, 500000, 1000000],
+    "cooperativeCancellation": "WorkControlV1",
+    "absoluteDeadlineRequired": true
+  },
   "externalEvidence": {
     "independentAcceptanceRequired": true,
     "targetHostBenchmarkRequired": true,

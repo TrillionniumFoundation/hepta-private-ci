@@ -1,75 +1,71 @@
+# `learning.operator` authoritative admission contract
 
-# `learning.operator` admission contract
+This document defines the current default qualification path. It composes the
+existing ledger owner, evaluator, selector, artifact store and Agentd host; it
+does not create another authority. Repository qualification can establish
+source-bound engineering evidence, while independent scientific acceptance,
+promotion, activation and release remain external. **Production activation
+remains false.**
 
-This document is the canonical entrypoint for candidate state, failure
-scope, recovery action, and qualification evidence. It describes the
-existing owners; it does not introduce another runtime or authority.
+## Canonical identity
 
-## State progression
+Callers supply semantic values, not a value plus a caller-authored digest.
+`TrainingProfileV1` binds objective, sensor core, dataset generation, minimum
+samples per cell, maximum error and runtime limits. `WorldModelProfileV1` binds
+objective, dataset generation, minimum support, one-step and multistep
+calibration limits, OOD false-acceptance, drift and runtime limits. Both derive
+their profile and runtime digests internally.
 
-| State | Concrete representation | Meaning |
+Raw V1/V2 structural fitters remain available only through the non-default
+`qualification-unverified-input` feature. They are compatibility fixtures, not
+final-use authority.
+
+## Single-use final-use state progression
+
+| State | Concrete representation | Required property |
 |---|---|---|
-| Raw input | `TabularOperatorPlanV1`, `Vec<WorldModelSampleV1>` | Caller data only; no trust or currentness claim. |
-| Structurally validated | V2 compatibility wrappers or `ValidatedTabularOperatorV1` | Shape and digest consistency only. This is not production admission. |
-| Source authenticated | `VerifiedTabularOperatorPlanV3` / `VerifiedWorldModelDatasetV3` | Opaque, single-use owner borrow; exact frozen source set and signed row semantics verified. |
-| Current at use | `fit_*_verified_v3` revalidation | Ledger membership, correction/revocation cuts, trust epoch, expiry, and role separation are checked again immediately before fitting. |
-| Immutable candidate | `TabularPayloadPinV2` + `LoadedTabularOperatorV2` | Complete immutable identity, runtime profile, trust snapshot, epoch, and registry head are host-selected; this still does not prove evaluation or selection. |
-| Independently evaluated | sealed `learning.eval` receipt and verified selection evidence | Owned by the evaluator/selector; signatures authenticate evidence but do not prove scientific efficacy. |
-| Selected read-only | `PinnedCognitiveRanker::load_evaluated` | Agentd binds the independently selected artifact and revalidates registry, trust, revocation, runtime, and authorization on every read. |
+| Canonical profile | `TrainingProfileV1` / `WorldModelProfileV1` | Complete semantic field set and internally derived identity. |
+| Owner-authenticated source | `DatasetSnapshotReceiptV3` plus signed freeze/row evidence | Exact active source set, authority epoch, objective and row semantics. |
+| Current capability issue | `FinalUseFenceV1` + `FinalUseWitnessV1` | Ledger head, dataset frontier, generation, authority epoch, stop epoch and absolute deadline all match. |
+| Single-use capability | `FinalUseTabularCapabilityV1` / `FinalUseWorldModelCapabilityV1` | Opaque, non-`Clone`, owner-borrowed capability. |
+| Current immediately before fit | `fit_*_final_use_v1` | Owner snapshot and ledger membership revalidated; stop, deadline and cancellation checked. |
+| Immutable candidate | `FinalUse*CandidateV1` | Artifact/profile/generation identity remains canonical. |
+| Current immediately before selection | second owner/currentness verification | A fit cannot be published from a stale generation or revoked source. |
+| Independently selected read-only artifact | `OpaquePinnedTabularArtifactV1` / `OpaquePinnedWorldModelV1` | Selection, trust, registry, authority and stop epochs are exact. |
 
-`OperatorAdmissionStageV1` names these states. APIs return opaque types
-at the applicable boundaries; callers must not reconstruct state from
-booleans or caller-authored digests.
+`WorkControlV1` supplies cooperative cancellation to every resource-metered
+long loop. `OperatorResourceBudgetV1` supplies absolute operation, resident-byte
+and elapsed-time ceilings.
 
-## Failure scope and recovery
+## Default host loop
 
-`ClassifyOperatorAdmissionFailure` maps dataset-binding and payload
-failures to `OperatorFailureDispositionV1`.
-
-- Request-local shape, identity, evidence-set, or arithmetic failures:
-  correct the request; do not retry unchanged input.
-- Candidate-global model, decoder, grid, or persisted-payload failures:
-  reject that candidate.
-- Expired, revoked, or trust-context evidence:
-  obtain fresh owner evidence and repeat admission.
-- Payload-pin movement:
-  reload an independently selected immutable candidate.
-- Unsupported prediction cells:
-  abstain for the decision; do not invalidate the entire candidate.
-- Owner I/O, clock regression, or authority violation:
-  stop the consumer and preserve evidence.
-
-`OwnerDatasetFailureV1` retains the failed owner operation instead of
-flattening freeze, record-read, snapshot, and canonical-payload errors
-into one unstructured string.
-
-## Capacity
-
-The compatibility fitter can represent up to 1,000,000 rows and
-262,144 cells. The owner-authenticated V3 signing path is deliberately
-narrower: at most `MAX_SIGNED_OPERATOR_ROWS = 4096` rows and frozen
-source records.
-
-A signed tabular profile must satisfy, before allocation or sorting:
+Agentd exposes `coordinate_learning_operator_shadow_v1`. Its only legal
+sequence is:
 
 ```text
-sensor_count × action_count × minimum_samples_per_cell ≤ 4096
+freeze training → derive → final-use fit → freeze independent future window
+→ independent evaluation → independent selection → create-only persistence
+→ fresh-process load → shadow observation → currentness/revocation check
+→ exact predecessor rollback
 ```
 
-The other hard limits remain 4,096 sensors, 128 actions, and 64 MiB
-persisted payload bytes.
+The coordinator has no publish, canary or activate port. A healthy current
+candidate ends as `QualifiedAndRolledBack`; a revoked candidate ends as
+`RevokedAndRolledBack`; load, shadow or currentness failures end as
+`RejectedAndRolledBack`. Failure to reopen the exact predecessor is terminal.
 
-## Performance evidence
+## Compatibility and product use
 
-Run the explicit end-to-end qualification-core profile:
+`LoadedTabularOperatorV2` remains the validated read-only loader. Product code
+receives only an opaque selected artifact, never a raw fit plan, mutable proof
+structure or caller-authored digest bundle. Unsupported cells abstain. Registry,
+trust or revocation movement invalidates the loaded candidate and requires an
+explicit reload.
 
-```bash
-cargo test --locked -p codex-hepta-bellman-operator \
-  full_v3_qualification_path_profile -- --ignored --nocapture
-```
+## Claim boundary
 
-It records dataset freeze, row canonicalization/signing, owner
-admission, fit-time revalidation, encoding, create-only persistence,
-reload, first prediction, total wall time, payload bytes, and process
-peak RSS. These measurements are candidate/host observations, not
-acceptance or future-window efficacy evidence.
+Passing repository qualification means the exact source and deterministic
+synthetic merge compiled and passed the declared tests, mutation suite,
+coverage threshold and bounded performance matrix. It does not establish
+future-window efficacy, target-host acceptance, canary acceptance, promotion,
+activation or release; activation remains false.

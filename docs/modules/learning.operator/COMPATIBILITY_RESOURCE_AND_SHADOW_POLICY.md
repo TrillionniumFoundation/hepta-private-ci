@@ -1,62 +1,57 @@
+# `learning.operator` compatibility, resource and shadow policy
 
-# `learning.operator` compatibility, resource, and shadow policy
+The authoritative path is defined by `TrainingProfileV1`,
+`WorldModelProfileV1`, the single-use final-use capabilities and
+`coordinate_learning_operator_shadow_v1`. **Production activation remains
+false.**
 
-## Schema and backward compatibility
+## Compatibility
 
-- V1 payload bytes remain decodable only while their schema is pinned.
-- V1 pins and V2 dataset wrappers are structural compatibility inputs;
-  neither independently authorizes promotion.
-- V3 owner-bound inputs establish exact frozen-source and signed-row
-  admission and are revalidated immediately before fit.
-- V2 payload pins bind artifact and producer identity, artifact/payload
-  schemas, runtime profile, trust snapshot, authority epoch, and
-  registry head in addition to numerical digests.
-- Every schema version uses a new domain separator and explicit
-  decoder. Unknown versions fail closed.
-- Migration is decode old → validate old → encode new → compare full
-  semantics → persist create-only → independently re-evaluate.
-- Downgrade reopens the original immutable predecessor and original pin.
+V1 structural plans, V1 pins and V2 raw bounded fitters are qualification-only
+and hidden behind the non-default `qualification-unverified-input` feature.
+V3 owner receipts may enter the authoritative path, but a verified wrapper is
+never a durable bearer token: ledger membership, trust, stop state and deadline
+are rechecked at actual use. Unknown payload schemas fail closed.
 
-## Resource budgets
+Migration is decode old → validate old → construct a canonical profile →
+re-freeze under the current owner → issue a single-use capability → fit →
+independently evaluate and select → fresh-process load → shadow → rollback.
+There is no implicit downgrade or fallback.
 
-Compatibility/storage ceilings:
+## Resource boundaries
 
-- at most 1,000,000 represented training samples;
-- at most 262,144 tabular cells;
-- at most 4,096 sensors;
-- at most 128 actions;
-- at most 64 MiB persisted payload.
+The compatibility ceiling remains 1,000,000 samples, 262,144 tabular cells,
+4,096 sensors and 128 actions, but admission additionally enforces
+`OperatorResourceBudgetV1`. Before expensive allocation or sorting, the fitter
+accounts for operation count and estimated resident bytes. During long loops it
+checks an absolute elapsed deadline and `WorkControlV1` cancellation.
 
-Owner-authenticated V3 admission is narrower:
+The authoritative performance gate executes sensor-core candidate sets of
+1K/4K/8K/16K and tabular fits of 100K/500K/1M samples, three observations per
+size, and emits p50/p95/p99. Until those measurements pass on the exact
+candidate, a structural maximum is not a shipping capacity claim.
 
-- at most 4,096 signed rows and frozen source records;
-- `sensors × actions × minimum_samples_per_cell ≤ rows ≤ 4096`.
+Sensor-core selection uses an exact path only up to the configured exact limit;
+larger candidate sets use the bounded streaming working set. Duplicate
+coordinates are rejected by canonical keys rather than quadratic pairwise
+comparison.
 
-Impossible profiles fail during allocation-free preflight. The larger
-compatibility ceiling must never be presented as the V3 admission
-capacity.
+## Mutation, coverage and evidence
 
-Qualification publishes peak resident memory, total wall time, and
-stage timings for freeze, canonicalization, owner admission, fit-time
-revalidation, encoding, create-only persistence, reload, and first
-prediction. Structural ceilings alone are not acceptance evidence.
+The qualification job runs source mutations that remove error/runtime fields
+from canonical profile identity and disable cooperative cancellation; each
+mutant must be killed by a named test. It also enforces an operator-specific
+line-coverage threshold, strict Clippy, formatting, exact-head tests and a
+deterministic ordered-parent synthetic merge. A skipped job is not success.
 
-## Longitudinal shadow acceptance
+The immutable receipt binds commit, tree, workflow blob and run ID, synthetic
+merge commit/tree/parents, Cargo.lock, compiler target, runner fingerprint,
+test-set hash, implementation-map hash and every gate log.
 
-Thresholds are preregistered before final outcomes. Promotion requires
-zero identity/trust/authority violations, zero unauthorized writes,
-fresh-process load and immutable rollback, stable calibration and
-subgroup coverage, bounded abstention/OOD, no independently measured
-utility regression, no budget breach, and restart/permutation/read
-concurrency stability.
+## Shadow-only default
 
-A hard-bound violation rejects the candidate. Passing shadow
-acceptance authorizes only the separately declared next stage.
-
-## Required robustness suites
-
-The gate includes decoder fuzzing, determinism/order properties,
-semantic-row mutation, trust rotation/revocation races, registry
-movement, restart recovery, immutable rollback, maximum-profile
-measurements, and fail-closed mutation tests. Missing or skipped
-execution is reported as missing evidence, never success.
+The default Agentd loop performs independent future-window evaluation,
+selection, fresh-process load, shadow observation, currentness/revocation
+verification and exact rollback. It exposes no publish, canary or activate
+method. Canary promotion, drift-based rollout and model-family expansion remain
+post-qualification work; activation remains false.
