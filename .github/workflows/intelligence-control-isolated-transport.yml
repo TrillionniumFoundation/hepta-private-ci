@@ -1,0 +1,157 @@
+name: intelligence.control isolated transport
+
+on:
+  push:
+    branches:
+      - codex/intelligence-control-runtime-transport-20260930
+    paths:
+      - .github/workflows/intelligence-control-isolated-transport.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: intelligence-control-isolated-transport-20260930
+  cancel-in-progress: false
+
+env:
+  BASE_SHA: 11588c5b1fc7d9a6a93a457e59513f4a39c32384
+  TARGET_BRANCH: codex/intelligence-control-production-closure-20260929
+  PATCH_B64_SHA256: 574a28c573561f426b90835f37cab2663c8cbfbca527d8661b58a891f420cc8c
+  PATCH_GZIP_SHA256: fbf73034adf66f8b49f2efe7bbcc15381428dac098d98c262bd97f31a33041f1
+  PATCH_SHA256: c014b84151d9bc9adf45683217c32590732fb4c2eb0e0a65db20033aae4ed336
+  PYTHONDONTWRITEBYTECODE: "1"
+  CARGO_INCREMENTAL: "0"
+
+jobs:
+  apply-validate-push:
+    name: Apply validated intelligence.control closure
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    steps:
+      - name: Check out isolated transport payload
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Reconstruct and authenticate patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(find .transport/intelligence-control -maxdepth 1 -type f -name 'part-*' | wc -l)" -eq 8
+          cat .transport/intelligence-control/part-* > "$RUNNER_TEMP/intelligence.patch.gz.b64"
+          echo "$PATCH_B64_SHA256  $RUNNER_TEMP/intelligence.patch.gz.b64" | sha256sum --check --strict
+          base64 --decode "$RUNNER_TEMP/intelligence.patch.gz.b64" > "$RUNNER_TEMP/intelligence.patch.gz"
+          echo "$PATCH_GZIP_SHA256  $RUNNER_TEMP/intelligence.patch.gz" | sha256sum --check --strict
+          gzip --decompress --stdout "$RUNNER_TEMP/intelligence.patch.gz" > "$RUNNER_TEMP/intelligence.patch"
+          echo "$PATCH_SHA256  $RUNNER_TEMP/intelligence.patch" | sha256sum --check --strict
+
+      - name: Apply only to the frozen candidate parent
+        shell: bash
+        run: |
+          set -euo pipefail
+          git cat-file -e "$BASE_SHA^{commit}"
+          current_target="$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | cut -f1)"
+          test "$current_target" = "$BASE_SHA"
+          git reset --hard "$BASE_SHA"
+          git clean -fdx
+          test "$(git rev-parse HEAD)" = "$BASE_SHA"
+          git apply --index --whitespace=error-all "$RUNNER_TEMP/intelligence.patch"
+          git diff --cached --check
+          git diff --cached --name-only | LC_ALL=C sort > "$RUNNER_TEMP/actual-paths"
+          cat > "$RUNNER_TEMP/expected-paths" <<'EOF'
+          .github/workflows/hepta-intelligence-control.yml
+          .github/workflows/hepta-intelligence-qualification-host.yml
+          codex-rs/core/src/client.rs
+          codex-rs/core/src/mcp_tool_call.rs
+          codex-rs/core/src/session/turn_input.rs
+          codex-rs/core/src/tasks/mod.rs
+          codex-rs/core/src/tools/lifecycle.rs
+          codex-rs/hepta-agentd/src/intelligence_commit_state.rs
+          codex-rs/hepta-agentd/src/intelligence_files.rs
+          codex-rs/hepta-agentd/src/intelligence_membership.rs
+          codex-rs/hepta-agentd/src/intelligence_observability.rs
+          codex-rs/hepta-agentd/src/intelligence_product.rs
+          codex-rs/hepta-agentd/src/intelligence_product_runner.rs
+          codex-rs/hepta-agentd/src/intelligence_product_tests.rs
+          codex-rs/hepta-agentd/src/intelligence_profile.rs
+          codex-rs/hepta-agentd/src/intelligence_worker_watchdog.rs
+          codex-rs/hepta-intelligence/src/canonical.rs
+          codex-rs/hepta-intelligence/src/canonical_tests.rs
+          codex-rs/hepta-operations/src/fault_tests.rs
+          docs/modules/intelligence.control/COMPATIBILITY.md
+          docs/modules/intelligence.control/FAULT_MATRIX.json
+          docs/modules/intelligence.control/IMPLEMENTATION_MAP.json
+          docs/modules/intelligence.control/OPERATIONS_RUNBOOK.md
+          docs/modules/intelligence.control/PRODUCT_CLOSURE.md
+          docs/modules/intelligence.control/RESTART_RECONCILIATION.md
+          docs/modules/intelligence.control/REVIEW_PARTITIONS.json
+          docs/modules/intelligence.control/TECHNICAL.md
+          docs/modules/intelligence.control/TEST_TRACEABILITY.json
+          scripts/hepta-intelligence-acceptance.py
+          scripts/hepta-intelligence-control-status.py
+          scripts/hepta-intelligence-fault-matrix.py
+          scripts/hepta-intelligence-lane-evidence.py
+          scripts/hepta-intelligence-readiness-tests.py
+          scripts/hepta-intelligence-readiness.py
+          scripts/hepta-intelligence-review-partitions.py
+          EOF
+          sed -i 's/^          //' "$RUNNER_TEMP/expected-paths"
+          diff -u "$RUNNER_TEMP/expected-paths" "$RUNNER_TEMP/actual-paths"
+
+      - name: Validate reviewed mappings and qualification contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-intelligence-control-status.py --check-tracked
+          python3 scripts/hepta-intelligence-control-status-tests.py
+          python3 scripts/hepta-intelligence-acceptance.py --check
+          python3 scripts/hepta-intelligence-review-partitions.py --check-tracked
+          python3 scripts/hepta-intelligence-fault-matrix.py --check-tracked
+          python3 scripts/hepta-intelligence-readiness-tests.py
+          python3 -m py_compile scripts/hepta-intelligence-*.py
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          for path in Path('docs/modules/intelligence.control').glob('*.json'):
+              json.loads(path.read_text(encoding='utf-8'))
+          print('intelligence.control JSON declarations valid')
+          PY
+          git diff --cached --check
+          git diff --exit-code
+
+      - name: Verify Rust formatting on the exact candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+          cd codex-rs
+          cargo +1.95.0 fmt --all -- --check
+
+      - name: Create the single-parent candidate commit
+        id: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "OpenAI Codex"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "fix(intelligence.control): close runtime qualification gaps"
+          candidate_sha="$(git rev-parse HEAD)"
+          test "$(git rev-parse HEAD^)" = "$BASE_SHA"
+          if git ls-tree -r --name-only HEAD | grep -Eq '^(\.transport/|\.github/workflows/intelligence-control-isolated-transport\.yml$)'; then
+            echo "transport material leaked into candidate" >&2
+            exit 1
+          fi
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          printf 'sha=%s\n' "$candidate_sha" >> "$GITHUB_OUTPUT"
+          printf 'Candidate SHA: `%s`\n' "$candidate_sha" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Push only if the reviewed branch has not moved
+        shell: bash
+        run: |
+          set -euo pipefail
+          current_target="$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | cut -f1)"
+          test "$current_target" = "$BASE_SHA"
+          git push origin "${{ steps.candidate.outputs.sha }}:refs/heads/$TARGET_BRANCH"
