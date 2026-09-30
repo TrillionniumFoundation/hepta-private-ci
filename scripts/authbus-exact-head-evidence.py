@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 RELEVANT_ROOTS = [
     ".github/workflows/authbus-authority-qualification.yml",
     ".github/workflows/authbus-target-host-qualification.yml",
+    ".github/workflows/authbus-production-acceptance.yml",
     "codex-rs/hepta-authbus",
     "codex-rs/hepta-authbus-p1-3-qualification",
     "codex-rs/hepta-evidence",
@@ -28,6 +29,7 @@ RELEVANT_ROOTS = [
     "scripts/authbus-exact-head-evidence.py",
     "scripts/authbus-target-host-evidence.py",
     "scripts/authbus-performance-evidence.py",
+    "scripts/authbus-production-acceptance.py",
 ]
 ARTIFACT_TOKENS = ("authbus", "hepta_evidence", "hepta_agentd", "bao_adapter")
 REQUIRED_PROJECTIONS = (
