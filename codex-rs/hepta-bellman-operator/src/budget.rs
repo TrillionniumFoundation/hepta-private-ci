@@ -1,11 +1,16 @@
-//! Shared absolute resource budget for bounded operator construction.
+//! Shared absolute resource budget and cooperative cancellation for bounded
+//! operator construction.
 //!
-//! Production qualification paths must account for estimated resident bytes,
-//! operation work, and one absolute elapsed deadline before and during long
-//! loops. Compatibility V1 APIs retain their historical signatures.
+//! A work-control scope is thread-local and nest-safe. Existing synchronous
+//! fitters therefore inherit cancellation checks through the common work meter
+//! without accepting ambient global state or changing artifact identities.
 
+use std::cell::RefCell;
 use std::error::Error as StdError;
 use std::fmt;
+use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 use std::time::Instant;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -26,6 +31,55 @@ impl OperatorResourceBudgetV1 {
     }
 }
 
+#[derive(Clone, Debug, Default)]
+pub struct WorkControlV1 {
+    cancelled: Arc<AtomicBool>,
+}
+
+impl WorkControlV1 {
+    #[must_use]
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    pub fn cancel(&self) {
+        self.cancelled.store(true, Ordering::Release);
+    }
+
+    #[must_use]
+    pub fn is_cancelled(&self) -> bool {
+        self.cancelled.load(Ordering::Acquire)
+    }
+}
+
+thread_local! {
+    static ACTIVE_WORK_CONTROL: RefCell<Option<WorkControlV1>> = RefCell::new(None);
+}
+
+struct WorkControlScope {
+    previous: Option<WorkControlV1>,
+}
+
+impl Drop for WorkControlScope {
+    fn drop(&mut self) {
+        let previous = self.previous.take();
+        ACTIVE_WORK_CONTROL.with(|slot| {
+            let _ = slot.replace(previous);
+        });
+    }
+}
+
+/// Execute one synchronous bounded operation under a cooperative cancellation
+/// capability. Nested scopes restore the previous capability even on unwind.
+pub fn with_work_control_v1<T>(
+    control: &WorkControlV1,
+    operation: impl FnOnce() -> T,
+) -> T {
+    let previous = ACTIVE_WORK_CONTROL.with(|slot| slot.replace(Some(control.clone())));
+    let _scope = WorkControlScope { previous };
+    operation()
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum OperatorResourceKindV1 {
     Operations,
@@ -35,6 +89,7 @@ pub enum OperatorResourceKindV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum OperatorWorkErrorV1 {
     InvalidBudget,
+    Cancelled,
     ResourceExhausted {
         resource: OperatorResourceKindV1,
         required: u64,
@@ -64,6 +119,7 @@ pub struct OperatorWorkSnapshotV1 {
 
 pub(crate) struct OperatorWorkMeter {
     budget: OperatorResourceBudgetV1,
+    control: WorkControlV1,
     started: Instant,
     operations: u64,
     estimated_bytes: u64,
@@ -79,8 +135,15 @@ impl OperatorWorkMeter {
         {
             return Err(OperatorWorkErrorV1::InvalidBudget);
         }
+        let control = ACTIVE_WORK_CONTROL
+            .with(|slot| slot.borrow().clone())
+            .unwrap_or_default();
+        if control.is_cancelled() {
+            return Err(OperatorWorkErrorV1::Cancelled);
+        }
         Ok(Self {
             budget,
+            control,
             started: Instant::now(),
             operations: 0,
             estimated_bytes: 0,
@@ -91,6 +154,7 @@ impl OperatorWorkMeter {
         &self,
         required: u64,
     ) -> Result<(), OperatorWorkErrorV1> {
+        self.checkpoint()?;
         if required > self.budget.max_operations {
             return Err(OperatorWorkErrorV1::ResourceExhausted {
                 resource: OperatorResourceKindV1::Operations,
@@ -105,6 +169,7 @@ impl OperatorWorkMeter {
         &mut self,
         required: u64,
     ) -> Result<(), OperatorWorkErrorV1> {
+        self.checkpoint()?;
         if required > self.budget.max_estimated_bytes {
             return Err(OperatorWorkErrorV1::ResourceExhausted {
                 resource: OperatorResourceKindV1::EstimatedBytes,
@@ -132,6 +197,9 @@ impl OperatorWorkMeter {
     }
 
     pub(crate) fn checkpoint(&self) -> Result<(), OperatorWorkErrorV1> {
+        if self.control.is_cancelled() {
+            return Err(OperatorWorkErrorV1::Cancelled);
+        }
         let elapsed = u64::try_from(self.started.elapsed().as_micros()).unwrap_or(u64::MAX);
         if elapsed > self.budget.max_elapsed_micros {
             return Err(OperatorWorkErrorV1::DeadlineExceeded {
