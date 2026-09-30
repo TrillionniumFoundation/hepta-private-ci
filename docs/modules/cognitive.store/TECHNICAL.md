@@ -365,3 +365,9 @@ The bootstrap source-location obligation for `cognitive.store` is implemented by
 - `codex-rs/hepta-cognitive-store`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+## Bounded SQLite owner lineage follow-up
+
+The existing physical owner exposes `lane_c_lineage` as a read-only, scope-authorized full-ancestry observation for compaction. It preserves original revisions and binds physical head coverage, excluded-head eligibility metadata and the eligible source cut in one read transaction. Unverified, expired or future live heads exclude their whole chain; terminal tombstones preserve deletion evidence. Capacity failure rejects the cut. Whole and paged reads use metadata-only byte-length guards before TEXT projection and reject missing, stale or foreign-scope head pointers and citation sources. This creates no database, schema, writer or authority.
+
+The concrete API, source bindings, resource profile and remaining publication requirements are documented in [compact.engine stage contracts](../compact.engine/TECHNICAL.md#19-owner-lineage-and-authenticated-observation-stage). A fresh read revalidation is separate from the same-transaction source check required for future checkpoint publication. Source regression tests do not prove product execution or independent acceptance.
