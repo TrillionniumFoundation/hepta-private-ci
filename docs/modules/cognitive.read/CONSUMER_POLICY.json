@@ -3,32 +3,32 @@
   "consumers": [
     {
       "consumer": "compact.engine",
-      "expectedProductCallerState": "not_composed",
-      "minimumMappedProductCallers": 0,
-      "migrationClass": "registered_not_composed",
-      "adoptedReadBoundary": "none_registered_contract_only",
-      "finalUseResponsibility": "The compact consumer and the existing operation/effect owner must establish source currentness before any compacted result is used.",
-      "errorMappingRequirement": "Differentiate stale source, denied input, resource budget rejection and owner unavailability; registration alone is not a fallback.",
+      "expectedProductCallerState": "exact_owner_read_compaction_candidate_composed_product_qualification_pending",
+      "minimumMappedProductCallers": 1,
+      "migrationClass": "source_composed_product_qualification_pending",
+      "adoptedReadBoundary": "existing_sqlite_owner_exact_id_read_to_deny_all_compaction_candidate",
+      "finalUseResponsibility": "The existing SQLite owner reacquires the exact selected cut before candidate publication; checkpoint persistence and any later mutation remain with the existing compact owner.",
+      "errorMappingRequirement": "Differentiate missing or stale source rows, invalid retention metadata, construction-budget failure and owner unavailability; a candidate never grants checkpoint-write authority.",
       "requiredExecutionEvidence": [
-        "normal product caller",
-        "stale-source rejection",
-        "budget-failure mapping",
+        "normal SQLite owner product caller",
+        "complete-lineage exact-read binding",
+        "concurrent correction rejection before publication",
         "exact-head and fixed-merge execution"
       ]
     },
     {
       "consumer": "context.compiler",
-      "expectedProductCallerState": "legacy_v1_read_only_source_composed_verified_v2_not_composed",
+      "expectedProductCallerState": "legacy_v1_composed_revision_bound_v2_ingress_source_implemented_product_use_pending",
       "minimumMappedProductCallers": 1,
       "migrationClass": "legacy_v1_composed_v2_pending",
-      "adoptedReadBoundary": "legacy_v1_read_only_owner_adapter",
-      "finalUseResponsibility": "Compiler admission owns context binding; the existing provider/model-use owner must repeat final-use checks before physical send.",
-      "errorMappingRequirement": "Map changed source, denied context, invalid serialization and provider-boundary staleness without treating them as owner corruption.",
+      "adoptedReadBoundary": "legacy_v1_product_source_plus_revision_bound_v2_verified_ingress",
+      "finalUseResponsibility": "The V2 ingress verifies the complete revision-bound source set and delegates to existing compiler admission; the provider/model use owner must still bind and revalidate the compiled payload before physical send.",
+      "errorMappingRequirement": "Keep omitted or substituted source revisions, unverified or inactive events, compiler admission failure and provider-boundary staleness distinct from owner corruption.",
       "requiredExecutionEvidence": [
-        "legacy caller and V2 migration comparison",
-        "changed-source rejection",
-        "denied-context rejection",
-        "provider-bound final-use execution"
+        "legacy product caller and revision-bound V2 ingress comparison",
+        "omission source-substitution and role-escalation rejection",
+        "exact candidate-set and generation binding",
+        "named provider-bound V2 product use"
       ]
     },
     {
