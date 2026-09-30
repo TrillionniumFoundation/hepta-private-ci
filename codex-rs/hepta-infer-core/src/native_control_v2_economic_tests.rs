@@ -283,29 +283,24 @@ fn prepared_control(label: &str) -> (TestPaths, DurableInferenceControl, Authori
     control
         .native_started("request-1", "turn-1".to_string())
         .unwrap();
-    control
-        .settle_native_authorized(
-            "request-1",
-            &fixture.plan,
-            NOW,
-            NativeRunOutput {
-                thread_id: "thread-1".to_string(),
-                turn_id: "turn-1".to_string(),
-                model: "model-1".to_string(),
-                model_provider: "provider-1".to_string(),
-                status: NativeRunStatus::Indeterminate,
-                boundary_status: NativeBoundaryStatus::Indeterminate,
-                output: String::new(),
-                observed_output_tokens: None,
-                terminal_observed: false,
-                stop_reason: Some("awaiting signed terminal usage".to_string()),
-                owner_authority: NativeOwnerAuthority::Unverified,
-                codex_terminal_correlation_digest: None,
-            },
-            None,
-        )
-        .unwrap();
     (paths, control, fixture)
+}
+
+fn held_observation(owner_authority: NativeOwnerAuthority) -> NativeRunOutput {
+    NativeRunOutput {
+        thread_id: "thread-1".to_string(),
+        turn_id: "turn-1".to_string(),
+        model: "model-1".to_string(),
+        model_provider: "provider-1".to_string(),
+        status: NativeRunStatus::Indeterminate,
+        boundary_status: NativeBoundaryStatus::Indeterminate,
+        output: String::new(),
+        observed_output_tokens: None,
+        terminal_observed: false,
+        stop_reason: Some("awaiting signed terminal usage".to_string()),
+        owner_authority,
+        codex_terminal_correlation_digest: None,
+    }
 }
 
 fn verified_receipt(
@@ -313,6 +308,7 @@ fn verified_receipt(
     fixture: &AuthorityFixture,
     output_tokens: u64,
     usage_microunits: u64,
+    terminal_sequence: u64,
 ) -> VerifiedReconciliationReceipt {
     let dispatch_digest = native_dispatch_digest(
         control
@@ -335,7 +331,7 @@ fn verified_receipt(
         turn_id: "turn-1".to_string(),
         provider_id: "provider-1".to_string(),
         model_digest: fixture.plan.manifest().model_digest.clone(),
-        terminal_sequence: 1,
+        terminal_sequence,
         terminal_status: ReconciledTerminalStatus::Completed,
         output_digest: Some("b".repeat(64)),
         encrypted_output_reference: None,
@@ -357,50 +353,80 @@ fn verified_receipt(
 }
 
 #[test]
-fn signed_usage_cannot_exceed_durable_quota_and_exact_ceiling_is_idempotent() {
+fn signed_quota_overrun_preserves_terminal_usage_and_denies_success() {
     let (_paths, mut control, fixture) = prepared_control("output-overage");
     let over_output = verified_receipt(
         &control,
         &fixture,
         MAXIMUM_OUTPUT_TOKENS + 1,
         MAXIMUM_COST_MICROUNITS,
+        1,
     );
-    assert!(matches!(
-        control.reconcile_native("request-1", &fixture.plan, NOW, &over_output),
-        Err(Error::AssignmentMismatch)
-    ));
+    let released = control
+        .reconcile_native("request-1", &fixture.plan, NOW, &over_output)
+        .unwrap();
+    assert_eq!(released.state, NativeReservationState::Released);
+    let observed = released.observation.as_ref().unwrap();
     assert_eq!(
-        control.native_record("request-1").unwrap().state,
-        NativeReservationState::Indeterminate
+        observed.observed_output_tokens,
+        Some(MAXIMUM_OUTPUT_TOKENS + 1)
+    );
+    assert_eq!(observed.boundary_status, NativeBoundaryStatus::Quarantined);
+    assert!(!observed.succeeded());
+    assert_eq!(
+        control
+            .reconcile_native("request-1", &fixture.plan, NOW, &over_output)
+            .unwrap(),
+        released
     );
 
-    let (_paths, mut control, fixture) = prepared_control("cost-overage");
+    let (paths, mut control, fixture) = prepared_control("cost-overage");
     let over_cost = verified_receipt(
         &control,
         &fixture,
         MAXIMUM_OUTPUT_TOKENS,
         MAXIMUM_COST_MICROUNITS + 1,
+        1,
     );
-    assert!(matches!(
-        control.reconcile_native("request-1", &fixture.plan, NOW, &over_cost),
-        Err(Error::AssignmentMismatch)
-    ));
+    let released = control
+        .reconcile_native("request-1", &fixture.plan, NOW, &over_cost)
+        .unwrap();
+    assert_eq!(released.state, NativeReservationState::Released);
     assert_eq!(
-        control.native_record("request-1").unwrap().state,
-        NativeReservationState::Indeterminate
+        released.reconciliation.as_ref().unwrap().usage_microunits,
+        Some(MAXIMUM_COST_MICROUNITS + 1)
     );
+    assert_eq!(
+        released.observation.as_ref().unwrap().boundary_status,
+        NativeBoundaryStatus::Quarantined
+    );
+    assert!(!released.observation.as_ref().unwrap().succeeded());
+    drop(control);
+    let reopened = DurableInferenceControl::open(&paths.journal, 8).unwrap();
+    assert_eq!(reopened.native_record("request-1"), Some(&released));
 
     let (_paths, mut control, fixture) = prepared_control("exact-ceiling");
+    control
+        .settle_native_authorized(
+            "request-1",
+            &fixture.plan,
+            NOW,
+            held_observation(NativeOwnerAuthority::ObservedReady),
+            None,
+        )
+        .unwrap();
     let exact = verified_receipt(
         &control,
         &fixture,
         MAXIMUM_OUTPUT_TOKENS,
         MAXIMUM_COST_MICROUNITS,
+        1,
     );
     let settled = control
         .reconcile_native("request-1", &fixture.plan, NOW, &exact)
         .unwrap();
     assert_eq!(settled.state, NativeReservationState::Released);
+    assert!(settled.observation.as_ref().unwrap().succeeded());
     assert_eq!(
         settled.reconciliation.as_ref().unwrap().usage_microunits,
         Some(MAXIMUM_COST_MICROUNITS)
@@ -411,4 +437,135 @@ fn signed_usage_cannot_exceed_durable_quota_and_exact_ceiling_is_idempotent() {
             .unwrap(),
         settled
     );
+    let late_overrun = verified_receipt(
+        &control,
+        &fixture,
+        MAXIMUM_OUTPUT_TOKENS + 1,
+        MAXIMUM_COST_MICROUNITS + 1,
+        2,
+    );
+    let quarantined = control
+        .reconcile_native("request-1", &fixture.plan, NOW, &late_overrun)
+        .unwrap();
+    assert_eq!(quarantined.state, NativeReservationState::Released);
+    assert_eq!(
+        quarantined.observation.as_ref().unwrap().boundary_status,
+        NativeBoundaryStatus::Quarantined
+    );
+    assert_eq!(
+        quarantined
+            .reconciliation
+            .as_ref()
+            .unwrap()
+            .usage_microunits,
+        Some(MAXIMUM_COST_MICROUNITS + 1)
+    );
+    assert!(!quarantined.observation.as_ref().unwrap().succeeded());
+    let regression = verified_receipt(
+        &control,
+        &fixture,
+        MAXIMUM_OUTPUT_TOKENS + 1,
+        MAXIMUM_COST_MICROUNITS,
+        3,
+    );
+    assert_eq!(
+        control.reconcile_native("request-1", &fixture.plan, NOW, &regression),
+        Err(Error::Conflict)
+    );
+}
+
+#[test]
+fn host_observed_overrun_releases_slot_and_preserves_denial_reason() {
+    let (paths, mut control, fixture) = prepared_control("host-overrun");
+    let mut output = held_observation(NativeOwnerAuthority::Unverified);
+    output.status = NativeRunStatus::Completed;
+    output.boundary_status = NativeBoundaryStatus::Succeeded;
+    output.terminal_observed = true;
+    output.owner_authority = NativeOwnerAuthority::ObservedReady;
+    output.codex_terminal_correlation_digest = Some("d".repeat(64));
+    output.observed_output_tokens = Some(MAXIMUM_OUTPUT_TOKENS + 1);
+    let released = control
+        .settle_native_authorized("request-1", &fixture.plan, NOW, output, None)
+        .unwrap();
+    assert_eq!(released.state, NativeReservationState::Released);
+    let observed = released.observation.as_ref().unwrap();
+    assert_eq!(observed.boundary_status, NativeBoundaryStatus::Quarantined);
+    assert!(
+        observed
+            .stop_reason
+            .as_deref()
+            .unwrap()
+            .starts_with("awaiting signed terminal usage")
+    );
+    assert!(!observed.succeeded());
+    control
+        .reserve_native(
+            NativeRequest {
+                request_id: "request-2".into(),
+                ..released.request.clone()
+            },
+            1,
+        )
+        .unwrap();
+    drop(control);
+    let reopened = DurableInferenceControl::open(&paths.journal, 8).unwrap();
+    assert_eq!(reopened.native_record("request-1"), Some(&released));
+}
+
+#[test]
+fn signed_terminal_preserves_prior_owner_authority_without_inventing_readiness() {
+    for (label, authority) in [
+        ("no-authority", None),
+        (
+            "unverified-authority",
+            Some(NativeOwnerAuthority::Unverified),
+        ),
+        (
+            "observed-ready-authority",
+            Some(NativeOwnerAuthority::ObservedReady),
+        ),
+        (
+            "lost-authority",
+            Some(NativeOwnerAuthority::Lost {
+                reason: "owner generation fenced".to_string(),
+            }),
+        ),
+    ] {
+        let (paths, mut control, fixture) = prepared_control(label);
+        if let Some(authority) = &authority {
+            control
+                .settle_native_authorized(
+                    "request-1",
+                    &fixture.plan,
+                    NOW,
+                    held_observation(authority.clone()),
+                    None,
+                )
+                .unwrap();
+        }
+        let receipt = verified_receipt(
+            &control,
+            &fixture,
+            MAXIMUM_OUTPUT_TOKENS,
+            MAXIMUM_COST_MICROUNITS,
+            1,
+        );
+        let released = control
+            .reconcile_native("request-1", &fixture.plan, NOW, &receipt)
+            .unwrap();
+        assert_eq!(released.state, NativeReservationState::Released);
+        let observed = released.observation.as_ref().unwrap();
+        let expected_authority = authority.unwrap_or(NativeOwnerAuthority::Unverified);
+        assert_eq!(observed.owner_authority, expected_authority);
+        assert_eq!(
+            observed.succeeded(),
+            expected_authority == NativeOwnerAuthority::ObservedReady
+        );
+        if matches!(expected_authority, NativeOwnerAuthority::Lost { .. }) {
+            assert_eq!(observed.boundary_status, NativeBoundaryStatus::Quarantined);
+        }
+        drop(control);
+        let reopened = DurableInferenceControl::open(&paths.journal, 8).unwrap();
+        assert_eq!(reopened.native_record("request-1"), Some(&released));
+    }
 }
