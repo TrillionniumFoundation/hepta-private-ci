@@ -1,9 +1,11 @@
 name: channel.matrix exact candidate
 
 on:
+  # Pull requests qualify the immutable candidate head. After integration, a
+  # main push qualifies the real merged SHA rather than reusing PR evidence.
   push:
     branches:
-      - codex/channel-matrix-full-closure-20260927
+      - main
   pull_request:
     branches:
       - main
@@ -39,7 +41,9 @@ concurrency:
 
 env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-  REQUESTED_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+  # PRs bind the recorded base. A protected main push binds the commit that was
+  # main immediately before this integration. Manual runs resolve origin/main.
+  REQUESTED_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || '' }}
   PYTHONDONTWRITEBYTECODE: '1'
   CARGO_INCREMENTAL: '0'
   CARGO_BUILD_JOBS: '2'
