@@ -537,7 +537,6 @@ impl AppServerModelDriver {
         // From here on, a missing acknowledgement is reconcile-only. Recovery
         // cannot recreate either the local abort proof or the linear send permit.
         drop(pre_effect_abort);
-        thread_guard.effect_entered();
         let (attempt, send_permit) = attempt.enter_effect_with_permit();
         let app_server_session_id = started.thread.session_id.clone();
         let response = timeout(
