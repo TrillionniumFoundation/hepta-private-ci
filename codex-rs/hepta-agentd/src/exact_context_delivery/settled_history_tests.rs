@@ -4,7 +4,10 @@ use super::*;
 
 fn state_with_attempt(index: usize) -> StoredExactDeliveryState {
     let attempt = format!("attempt-{index}");
-    let mut state = StoredExactDeliveryState::default();
+    let mut state = StoredExactDeliveryState {
+        schema: EXACT_DELIVERY_SCHEMA,
+        ..StoredExactDeliveryState::default()
+    };
     state.pre_sends.insert(
         attempt.clone(),
         stored_pre_send("thread", &format!("turn-{index}"), &attempt),
@@ -38,7 +41,10 @@ fn final_settlement_releases_raw_recovery_and_provider_material() {
 
 #[test]
 fn recent_history_rolls_into_a_versioned_fail_closed_checkpoint() {
-    let mut state = StoredExactDeliveryState::default();
+    let mut state = StoredExactDeliveryState {
+        schema: EXACT_DELIVERY_SCHEMA,
+        ..StoredExactDeliveryState::default()
+    };
     for index in 0..=settled_history::MAX_RECENT_SETTLED_ATTEMPTS {
         let attempt = format!("attempt-{index}");
         state.pre_sends.insert(
@@ -78,7 +84,10 @@ fn checkpoint_and_recent_tampering_are_rejected() {
         Err(ExactContextDeliveryError::CorruptState)
     );
 
-    let mut checkpointed = StoredExactDeliveryState::default();
+    let mut checkpointed = StoredExactDeliveryState {
+        schema: EXACT_DELIVERY_SCHEMA,
+        ..StoredExactDeliveryState::default()
+    };
     for index in 0..=settled_history::MAX_RECENT_SETTLED_ATTEMPTS {
         let attempt = format!("checkpoint-{index}");
         checkpointed.pre_sends.insert(
@@ -112,7 +121,10 @@ fn schema_three_final_history_migrates_without_recovery_authority() {
 
 #[test]
 fn unresolved_and_indeterminate_attempts_never_enter_settlement_history() {
-    let mut state = StoredExactDeliveryState::default();
+    let mut state = StoredExactDeliveryState {
+        schema: EXACT_DELIVERY_SCHEMA,
+        ..StoredExactDeliveryState::default()
+    };
     state.pre_sends.insert(
         "attempt".into(),
         stored_pre_send("thread", "turn", "attempt"),

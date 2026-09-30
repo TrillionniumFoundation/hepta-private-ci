@@ -60,6 +60,9 @@ use serde::Serialize;
 use crate::exact_context_delivery::AgentdExactContextDeliveryOwner;
 use crate::exact_context_delivery::ExactContextDeliveryError;
 use crate::exact_context_delivery::metrics::Phase;
+use crate::ContextSecurityCapabilitiesV3;
+use crate::ContextSecurityRuntimeV3;
+use crate::ExternalContextSecurityErrorV3;
 
 pub const AGENTD_PROMPT_REGISTRY_MAX_RECORDS: usize = 16_384;
 const MAX_STAGED_TURNS: usize = 256;
@@ -611,6 +614,7 @@ pub enum AgentdPromptPipelineError {
     Compilation(String),
     Stage(AgentdPromptRuntimeError),
     ExactStage(ExactContextDeliveryError),
+    ExternalSecurity(ExternalContextSecurityErrorV3),
 }
 
 impl fmt::Display for AgentdPromptPipelineError {
@@ -638,6 +642,7 @@ pub struct AgentdPromptPipelineOwner {
     registry: Arc<Mutex<DurablePromptRegistry>>,
     runtime: Arc<AgentdPromptRuntimeOwner>,
     exact: Arc<AgentdExactContextDeliveryOwner>,
+    security: Arc<ContextSecurityRuntimeV3>,
 }
 
 impl fmt::Debug for AgentdPromptPipelineOwner {
@@ -661,19 +666,39 @@ impl AgentdPromptPipelineOwner {
         let registry = Arc::new(Mutex::new(registry));
         let runtime = AgentdPromptRuntimeOwner::open_state_dir(runtime_directory)
             .map_err(AgentdPromptPipelineError::RuntimeOpen)?;
+        let security = Arc::new(ContextSecurityRuntimeV3::new());
         let exact_directory = runtime_directory.join("context-delivery-v2");
-        let exact = AgentdExactContextDeliveryOwner::open(&exact_directory, Arc::clone(&registry))
-            .map_err(AgentdPromptPipelineError::ExactOpen)?;
+        let exact = AgentdExactContextDeliveryOwner::open_product(
+            &exact_directory,
+            Arc::clone(&registry),
+            Arc::clone(&security),
+        )
+        .map_err(AgentdPromptPipelineError::ExactOpen)?;
         Ok(Self {
             registry,
             runtime: Arc::new(runtime),
             exact: Arc::new(exact),
+            security,
         })
     }
 
     #[must_use]
     pub fn runtime_owner(&self) -> Arc<AgentdPromptRuntimeOwner> {
         Arc::clone(&self.runtime)
+    }
+
+    pub fn attach_context_security_capabilities(
+        &self,
+        capabilities: Arc<ContextSecurityCapabilitiesV3>,
+    ) -> Result<(), AgentdPromptPipelineError> {
+        self.security
+            .attach(capabilities)
+            .map_err(AgentdPromptPipelineError::ExternalSecurity)
+    }
+
+    #[must_use]
+    pub fn context_security_attached(&self) -> bool {
+        self.security.is_attached()
     }
 
     pub fn host(&self) -> Result<PromptRuntimeHost, AgentdPromptPipelineError> {

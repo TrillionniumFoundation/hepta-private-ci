@@ -1,7 +1,7 @@
 # context.compiler current product path
 <!-- GENERATED CURRENT STATE: edit CURRENT_STATE.json; detailed design is retained separately. -->
 
-State SHA-256: `e44ec8dfcc2e8a9102ae3fee0b5b428f8885044018be59f0810ee488c836a0d2`. Source anchor: `cd07ed1ca09bef0538955ce44b9a60d8bac2dba9`.
+State SHA-256: `379c3db3511f983c18b52a597aa6ecdcfa6dfc1c30ef1cb013df6025b2337cbc`. Source anchor: `c2d044272bcf106f6fd9e5aa40656cdc7069a702`.
 The source anchor is provenance, not the final tested head. Only external execution receipts bind a final source/merge object.
 
 ## 1. Current implementation and evidence state
@@ -49,6 +49,12 @@ The source anchor is provenance, not the final tested head. Only external execut
 - Consumer execution rows distinguish actual source callsites from absent authenticated ingress and absent external-security consumption. Receipt projection records native results separately from unverified authenticated product E2E, independent acceptance, activation and release.
 - Exact-attempt observer terminal binding was already implemented in ext/hepta-prompt/src/exact_body.rs before this follow-up; it is retained rather than repeatedly listed as missing source.
 - Live attempt completion measures final-request observation through durable final persistence, including the intervening transport interval. Recovered reconciliation is a separate attempted phase and does not invent pre-crash elapsed time. Neither is a full authenticated user-turn SLO.
+- Durable schema 4 atomically replaces each final raw pre-send, provider receipt and nonfinal-observation set with a bounded deny-all settlement tombstone in the same persisted transition. Indeterminate and unresolved attempts retain their complete recovery material and still block blind replay.
+- The newest 1024 settlement tombstones remain individually verifiable. Older final records advance a versioned digest chain and fixed fail-closed attempt/turn membership filters; filter collisions may deny fresh work but never authorize replay or erase an unresolved attempt.
+- The existing exact-delivery store now binds its root device/inode/owner, requires private directory/file modes and single-link regular files, uses no-follow/create-new file opens, rejects stale temporary files, and permanently fences the owner after root replacement or an uncertain post-rename identity check.
+- The production exact-delivery owner now shares the one-time ContextSecurityRuntimeV3 attached to AgentdPromptPipelineOwner and fails before tokenizer execution when the complete external capability set is absent. Owner-local qualification fixtures use an explicit cfg(test)-only constructor; no process-local production fallback exists.
+- Ten additional named native regressions cover settlement compaction/checkpoint tamper, schema-3 migration, unresolved retention, second-writer denial, symlink/hard-link/mode/root replacement, and the production external-security presence gate. Their definitions are source facts until exact source/merge execution succeeds.
+- Consumer execution mapping now links settlement and storage definitions to their actual exact-delivery owner callsites and distinguishes the composed external-security presence gate from the still-uncomposed lease, journal, generation, immutable-tokenizer and independent-terminal effect capabilities.
 
 ## 3. Current product call path
 
@@ -84,17 +90,18 @@ Stage publication uses exact-state -> runtime-state lock order, with no await or
 - Provision and independently qualify the real provider/model tokenizer, immutable executable/interpreter/runtime, vocabulary and normalization. Hash pins detect observed artifact drift but do not attest semantic token accuracy or exclude a privileged replace-and-restore adversary.
 - Integrate transport-owner final-use/cancellation authority after the durable authorization linearization point; a revocation committed before authorization is rejected, while post-authorization cancellation remains a separate effect-owner contract.
 - Finish cross-holder raw-content redaction, remaining provider typed slots and provider/model-specific framing policies beyond the current developer-only profile.
-- Qualify durable filesystem ownership, rollback resistance, symlink/race resistance and safe retention/retirement beyond bounded JSON state.
+- Source-level no-follow, private-file, single-link and root-identity fencing is composed. Independently qualify selected-host ownership, power-loss behavior, external anti-rollback anchoring, backup restore, filesystem substitution races and retention capacity; local path checks are not target-host durability evidence.
 - Run pinned formatting, compilation, native regressions, product E2E, strict lint, dependency policy, exact-head and deterministic synthetic-merge qualification for the final committed source.
 - Measure named-host p50/p95/p99, allocation and peak memory, concurrent admission, cold/warm tokenizer, revocation contention and long-lived recovery/backlog capacity.
 - Obtain independent security acceptance and operator-controlled activation/release; repository source changes grant none of these authorities.
 - Qualify the independent provider evidence owner and its authenticated receipt acquisition; Agentd remains an evidence consumer and must not self-attest provider truth.
-- Qualify schema-3 storage on the selected host for ownership, rollback resistance, power-loss behavior, symlink/race resistance, retention and capacity; bounded JSON source semantics are not target-host durability evidence.
+- Qualify schema-4 settlement migration and compact-history storage on the selected host for power loss, rollback/restore, long-horizon capacity and operator recovery. The bounded local checkpoint is not an independently anchored external journal.
 - Run immutable source-head and deterministic synthetic-merge qualification over the final direct-source commit; pre-commit materialization tests do not transfer qualification to the generated successor commit.
-- Compose ContextSecurityCapabilitiesV3 into the existing actual exact-delivery owner: external lease/journal/generation, immutable tokenizer custody and independent terminal attestation remain defined interfaces rather than consumed runtime capabilities. The current local verifier binds intent and bytes but is not independent provider truth.
-- Long-lived history rollover is not implemented by raw-payload retirement. The 1024 runtime dispatch and 4096 exact pre-send limits, bounded whole-JSON persistence and replay cost remain. A versioned append-only journal/checkpoint/archive migration must retain every attempt tombstone, unresolved binding and independently anchored frontier; do not delete history or increase limits as a substitute.
-- Execute all seventeen lifecycle/capacity/metrics Rust regressions on the final source and merge candidates, including their named-output and bounded-profile validation. No local Rust toolchain was available for this follow-up.
+- The actual product owner now consumes the ContextSecurityRuntimeV3 presence gate and fails closed when capabilities are absent. It still must consume and independently qualify external lease/journal/generation operations, immutable-tokenizer custody and terminal attestation at their exact effect boundaries; attachment alone is not provider truth.
+- Bounded schema-4 source compaction/checkpointing is implemented without deleting unresolved work. Complete the externally append-only journal and independently anchored rollback frontier, plus versioned export/restore and selected-host long-horizon qualification; do not raise limits or treat a probabilistic fail-closed membership filter as an audit archive.
+- Execute all twenty-seven lifecycle/capacity/metrics/settlement/storage/security Rust regressions on the final source and merge candidates, including named-output and bounded-profile validation. No local Rust toolchain was available for this follow-up.
 - Connect public cleanup and raw-free diagnostics to authenticated turn lifecycle/operations consumers; a method definition or a direct owner fixture is not proof of ordinary App Server ingress, cross-host safety or production operations.
+- Execute cross-process and cross-host duplicate-attempt qualification against one real external lease authority, including identical and conflicting body/semantic keys, host death, settlement loss and restart reconciliation. Repository-local fixtures cannot establish distributed exactly-once denial.
 
 ## 6. Verification
 
@@ -123,7 +130,10 @@ The complete previous technical guide, implementation map, dossier and product-p
 | `runtime-headroom` | `codex-rs/hepta-agentd/src/prompt_runtime.rs::pending_completion_count` | `codex-rs/hepta-agentd/src/prompt_runtime.rs::commit_state` | `owner-lifecycle-regressions` | unverified |
 | `phase-observation` | `codex-rs/hepta-agentd/src/exact_context_delivery/metrics.rs::Metrics` | `codex-rs/hepta-agentd/src/exact_context_delivery.rs::observe_final_request` | `owner-metrics-regressions` | unverified |
 | `authenticated-app-server-ingress` | `codex-rs/hepta-agentd/src/prompt_runtime.rs::compile_and_stage_v3` | Not composed | `none` | unverified |
-| `external-security-consumption` | `codex-rs/hepta-agentd/src/context_security_runtime.rs::ContextSecurityCapabilitiesV3` | Not composed | `none` | unverified |
+| `settled-history-compaction` | `codex-rs/hepta-agentd/src/exact_context_delivery/settled_history.rs::settle_final_attempt` | `codex-rs/hepta-agentd/src/exact_context_delivery.rs::commit_terminal` | `owner-settlement-regressions` | unverified |
+| `store-path-hardening` | `codex-rs/hepta-agentd/src/exact_context_delivery.rs::private_directory_identity` | `codex-rs/hepta-agentd/src/exact_context_delivery.rs::ExactDeliveryStore` | `owner-storage-hardening-regressions` | unverified |
+| `external-security-presence-gate` | `codex-rs/hepta-agentd/src/context_security_runtime.rs::ContextSecurityRuntimeV3` | `codex-rs/hepta-agentd/src/exact_context_delivery.rs::require_external_security` | `owner-security-presence-regression` | unverified |
+| `external-security-effect-capabilities` | `codex-rs/hepta-agentd/src/context_security_runtime.rs::ContextSecurityCapabilitiesV3` | Not composed | `none` | unverified |
 
 These are reviewed source anchors, not compiler reachability or execution evidence. The exact-candidate receipt records each required native name and command/log identity; native fixture passes never qualify authenticated ingress, independent provider truth or a target host.
 

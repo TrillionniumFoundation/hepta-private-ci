@@ -62,8 +62,9 @@ async fn sequential_completed_turns_release_more_than_256_stages() {
         let state = fixture.owner.state.lock().expect("state");
         assert!(state.staged.is_empty());
         assert!(state.active.is_empty());
-        assert_eq!(state.durable.pre_sends.len(), index + 1);
-        assert_eq!(state.durable.terminals.len(), index + 1);
+        assert!(state.durable.pre_sends.is_empty());
+        assert!(state.durable.terminals.is_empty());
+        assert_eq!(state.durable.settled_attempts.len(), index + 1);
         elapsed_micros.push(u64::try_from(started.elapsed().as_micros()).expect("duration"));
     }
     let diagnostics = fixture.owner.diagnostics().expect("diagnostics");
@@ -255,6 +256,13 @@ async fn tool_continuation_and_unknown_terminal_keep_the_stage() {
         .expect("tool continuation");
     let state = fixture.owner.state.lock().expect("state");
     assert_eq!(state.staged.len(), 1);
-    assert_eq!(state.durable.observations.len(), 1);
-    assert_eq!(state.durable.terminals.len(), 1);
+    assert!(state.durable.observations.is_empty());
+    assert!(state.durable.terminals.is_empty());
+    let settled = state
+        .durable
+        .settled_attempts
+        .get("attempt-a")
+        .expect("settled tool-continuation attempt");
+    assert_eq!(settled.nonfinal_observation_count, 1);
+    assert_ne!(settled.nonfinal_observations_digest, [0; 32]);
 }

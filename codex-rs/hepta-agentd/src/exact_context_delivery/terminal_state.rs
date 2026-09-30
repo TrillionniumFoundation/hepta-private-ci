@@ -26,37 +26,50 @@ pub(super) fn migrate_state(
 ) -> Result<(), ExactContextDeliveryError> {
     match state.schema {
         EXACT_DELIVERY_SCHEMA => return Ok(()),
-        2 => {
-            state.schema = EXACT_DELIVERY_SCHEMA;
-            return Ok(());
+        3 => {}
+        2 => state.schema = 3,
+        1 if state.observations.is_empty() => {
+            let unresolved = state
+                .terminals
+                .iter()
+                .filter(|(_, observation)| observation.disposition == "Indeterminate")
+                .map(|(attempt, _)| attempt.clone())
+                .collect::<Vec<_>>();
+            for attempt in unresolved {
+                let observation = state
+                    .terminals
+                    .remove(&attempt)
+                    .ok_or(ExactContextDeliveryError::CorruptState)?;
+                if state
+                    .observations
+                    .insert(observation_key(&observation), observation)
+                    .is_some()
+                {
+                    return Err(ExactContextDeliveryError::CorruptState);
+                }
+            }
+            state.schema = 3;
         }
-        1 if state.observations.is_empty() => {}
         _ => return Err(ExactContextDeliveryError::CorruptState),
     }
-    let unresolved = state
+
+    // Schema 4 atomically replaces raw final history with bounded deny-all
+    // tombstones. Unresolved and Indeterminate attempts remain byte-for-byte
+    // recoverable and are never migrated into settled state.
+    let final_attempts = state
         .terminals
         .iter()
-        .filter(|(_, observation)| observation.disposition == "Indeterminate")
+        .filter(|(_, terminal)| terminal.is_final())
         .map(|(attempt, _)| attempt.clone())
         .collect::<Vec<_>>();
-    for attempt in unresolved {
-        let observation = state
-            .terminals
-            .remove(&attempt)
-            .ok_or(ExactContextDeliveryError::CorruptState)?;
-        if state
-            .observations
-            .insert(observation_key(&observation), observation)
-            .is_some()
-        {
-            return Err(ExactContextDeliveryError::CorruptState);
-        }
+    for attempt in final_attempts {
+        settled_history::settle_final_attempt(state, &attempt)?;
     }
     state.schema = EXACT_DELIVERY_SCHEMA;
     Ok(())
 }
 
-fn observation_key(observation: &StoredTerminal) -> String {
+pub(super) fn observation_key(observation: &StoredTerminal) -> String {
     // The receipt digest is semantic identity; local retry timestamps are not.
     let mut bytes = b"hepta.context-durable-observation.v2".to_vec();
     bytes.extend_from_slice(observation.attempt_id.as_bytes());
@@ -116,7 +129,7 @@ pub(super) fn apply_observation(
     Ok(true)
 }
 
-fn validate_observation(
+pub(super) fn validate_observation(
     pre_send: &StoredPreSend,
     observation: &StoredTerminal,
 ) -> Result<(), ExactContextDeliveryError> {
@@ -267,6 +280,7 @@ pub(super) fn validate(state: &StoredExactDeliveryState) -> Result<(), ExactCont
             return Err(ExactContextDeliveryError::CorruptState);
         }
     }
+    settled_history::validate(state)?;
     Ok(())
 }
 

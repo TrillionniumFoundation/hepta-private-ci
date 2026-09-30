@@ -339,8 +339,11 @@ impl Fixture {
         };
         let runtime_path = directory.path().join("runtime");
         let owner = Arc::new(
-            AgentdExactContextDeliveryOwner::open(&runtime_path, Arc::new(Mutex::new(registry)))
-                .expect("owner"),
+            AgentdExactContextDeliveryOwner::open_for_qualification(
+                &runtime_path,
+                Arc::new(Mutex::new(registry)),
+            )
+            .expect("owner"),
         );
         owner.stage("thread-a", "turn-a", compiled).expect("stage");
         let identity = FinalRequestTokenizerIdentityV2::new(
@@ -570,8 +573,11 @@ async fn crash_reopen_reconciles_indeterminate_then_final_without_redispatch() {
     let registry =
         DurablePromptRegistry::open_state_dir(&registry_path, 64).expect("reopen registry");
     let reopened = Arc::new(
-        AgentdExactContextDeliveryOwner::open(&runtime_path, Arc::new(Mutex::new(registry)))
-            .expect("reopen exact owner"),
+        AgentdExactContextDeliveryOwner::open_for_qualification(
+            &runtime_path,
+            Arc::new(Mutex::new(registry)),
+        )
+        .expect("reopen exact owner"),
     );
     let first_observed = current_unix_ms().expect("clock");
     reopened

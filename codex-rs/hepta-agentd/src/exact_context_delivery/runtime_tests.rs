@@ -251,3 +251,23 @@ fn tokenizer_artifact_mutation_is_rejected() {
         Err(ExactContextDeliveryError::TokenizerIdentity)
     );
 }
+
+#[test]
+fn product_owner_fails_closed_before_tokenizer_when_external_security_is_missing() {
+    let directory = tempfile::tempdir().expect("directory");
+    let registry_path = directory.path().join("registry");
+    let delivery_path = directory.path().join("delivery");
+    let registry = DurablePromptRegistry::open_state_dir(&registry_path, 64).expect("registry");
+    let security = Arc::new(ContextSecurityRuntimeV3::new());
+    let owner = AgentdExactContextDeliveryOwner::open_product(
+        &delivery_path,
+        Arc::new(Mutex::new(registry)),
+        security,
+    )
+    .expect("product owner");
+
+    assert_eq!(
+        owner.require_external_security(),
+        Err(ExactContextDeliveryError::SecurityCapabilitiesUnavailable)
+    );
+}

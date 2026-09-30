@@ -46,6 +46,7 @@
     "codex-rs/hepta-intelligence/src/prompt_product_v3.rs",
     "codex-rs/hepta-agentd/src/prompt_runtime.rs",
     "codex-rs/hepta-context-compiler/src/v2/recovery.rs",
+    "codex-rs/hepta-agentd/src/exact_context_delivery/settled_history.rs",
     "codex-rs/hepta-agentd/src/context_security_runtime.rs",
     "codex-rs/hepta-agentd/src/exact_context_delivery/capacity_tests.rs",
     "codex-rs/hepta-agentd/src/exact_context_delivery/framing_json.rs",
@@ -55,6 +56,8 @@
     "codex-rs/hepta-agentd/src/exact_context_delivery/metrics_tests.rs",
     "codex-rs/hepta-agentd/src/exact_context_delivery/registry_race_tests.rs",
     "codex-rs/hepta-agentd/src/exact_context_delivery/runtime_tests.rs",
+    "codex-rs/hepta-agentd/src/exact_context_delivery/settled_history_tests.rs",
+    "codex-rs/hepta-agentd/src/exact_context_delivery/storage_hardening_tests.rs",
     "codex-rs/hepta-agentd/src/exact_context_delivery/terminal_state.rs",
     "codex-rs/hepta-agentd/src/exact_context_delivery/tokenizer_io.rs",
     "codex-rs/hepta-agentd/src/prompt_runtime_lifecycle_tests.rs",
@@ -219,10 +222,29 @@
         "exact_context_delivery::capacity_tests::unknown_observations_cannot_release_the_final_reservation",
         "exact_context_delivery::capacity_tests::reserve_exhaustion_rejects_before_writing_and_does_not_poison",
         "exact_context_delivery::capacity_tests::oversized_terminal_cannot_exceed_its_reserved_record_bound"
+      ],
+      "owner-settlement-regressions": [
+        "exact_context_delivery::settled_history_tests::final_settlement_releases_raw_recovery_and_provider_material",
+        "exact_context_delivery::settled_history_tests::recent_history_rolls_into_a_versioned_fail_closed_checkpoint",
+        "exact_context_delivery::settled_history_tests::checkpoint_and_recent_tampering_are_rejected",
+        "exact_context_delivery::settled_history_tests::schema_three_final_history_migrates_without_recovery_authority",
+        "exact_context_delivery::settled_history_tests::unresolved_and_indeterminate_attempts_never_enter_settlement_history"
+      ],
+      "owner-storage-hardening-regressions": [
+        "exact_context_delivery::storage_hardening_tests::second_writer_is_rejected_by_the_existing_owner_lock",
+        "exact_context_delivery::storage_hardening_tests::state_and_next_symlinks_fail_closed_without_poisoning_unrelated_capacity",
+        "exact_context_delivery::storage_hardening_tests::permissive_or_hard_linked_state_files_are_rejected",
+        "exact_context_delivery::storage_hardening_tests::root_replacement_fences_the_owner_even_after_path_restoration"
+      ],
+      "owner-security-presence-regression": [
+        "exact_context_delivery::runtime_tests::product_owner_fails_closed_before_tokenizer_when_external_security_is_missing"
       ]
     },
     "lifecycleFollowupPythonTestsPassed": 61,
     "lifecycleFollowupPythonScope": "Local editing-source identity, state generation, source-navigation, named-log/profile parsing and consumer projection only; not Rust, authenticated E2E or target-host acceptance.",
+    "settlementStorageSecurityNativeRegressionsAdded": 10,
+    "settlementStorageSecurityNativeExecutedLocally": false,
+    "lifecycleSettlementNativeRegressionsAdded": 27,
     "runner": "scripts/context_compiler_execution.py"
   },
   "knownOpenItems": [
@@ -230,27 +252,28 @@
     "Provision and independently qualify the real provider/model tokenizer, immutable executable/interpreter/runtime, vocabulary and normalization. Hash pins detect observed artifact drift but do not attest semantic token accuracy or exclude a privileged replace-and-restore adversary.",
     "Integrate transport-owner final-use/cancellation authority after the durable authorization linearization point; a revocation committed before authorization is rejected, while post-authorization cancellation remains a separate effect-owner contract.",
     "Finish cross-holder raw-content redaction, remaining provider typed slots and provider/model-specific framing policies beyond the current developer-only profile.",
-    "Qualify durable filesystem ownership, rollback resistance, symlink/race resistance and safe retention/retirement beyond bounded JSON state.",
+    "Source-level no-follow, private-file, single-link and root-identity fencing is composed. Independently qualify selected-host ownership, power-loss behavior, external anti-rollback anchoring, backup restore, filesystem substitution races and retention capacity; local path checks are not target-host durability evidence.",
     "Run pinned formatting, compilation, native regressions, product E2E, strict lint, dependency policy, exact-head and deterministic synthetic-merge qualification for the final committed source.",
     "Measure named-host p50/p95/p99, allocation and peak memory, concurrent admission, cold/warm tokenizer, revocation contention and long-lived recovery/backlog capacity.",
     "Obtain independent security acceptance and operator-controlled activation/release; repository source changes grant none of these authorities.",
     "Qualify the independent provider evidence owner and its authenticated receipt acquisition; Agentd remains an evidence consumer and must not self-attest provider truth.",
-    "Qualify schema-3 storage on the selected host for ownership, rollback resistance, power-loss behavior, symlink/race resistance, retention and capacity; bounded JSON source semantics are not target-host durability evidence.",
+    "Qualify schema-4 settlement migration and compact-history storage on the selected host for power loss, rollback/restore, long-horizon capacity and operator recovery. The bounded local checkpoint is not an independently anchored external journal.",
     "Run immutable source-head and deterministic synthetic-merge qualification over the final direct-source commit; pre-commit materialization tests do not transfer qualification to the generated successor commit.",
-    "Compose ContextSecurityCapabilitiesV3 into the existing actual exact-delivery owner: external lease/journal/generation, immutable tokenizer custody and independent terminal attestation remain defined interfaces rather than consumed runtime capabilities. The current local verifier binds intent and bytes but is not independent provider truth.",
-    "Long-lived history rollover is not implemented by raw-payload retirement. The 1024 runtime dispatch and 4096 exact pre-send limits, bounded whole-JSON persistence and replay cost remain. A versioned append-only journal/checkpoint/archive migration must retain every attempt tombstone, unresolved binding and independently anchored frontier; do not delete history or increase limits as a substitute.",
-    "Execute all seventeen lifecycle/capacity/metrics Rust regressions on the final source and merge candidates, including their named-output and bounded-profile validation. No local Rust toolchain was available for this follow-up.",
-    "Connect public cleanup and raw-free diagnostics to authenticated turn lifecycle/operations consumers; a method definition or a direct owner fixture is not proof of ordinary App Server ingress, cross-host safety or production operations."
+    "The actual product owner now consumes the ContextSecurityRuntimeV3 presence gate and fails closed when capabilities are absent. It still must consume and independently qualify external lease/journal/generation operations, immutable-tokenizer custody and terminal attestation at their exact effect boundaries; attachment alone is not provider truth.",
+    "Bounded schema-4 source compaction/checkpointing is implemented without deleting unresolved work. Complete the externally append-only journal and independently anchored rollback frontier, plus versioned export/restore and selected-host long-horizon qualification; do not raise limits or treat a probabilistic fail-closed membership filter as an audit archive.",
+    "Execute all twenty-seven lifecycle/capacity/metrics/settlement/storage/security Rust regressions on the final source and merge candidates, including named-output and bounded-profile validation. No local Rust toolchain was available for this follow-up.",
+    "Connect public cleanup and raw-free diagnostics to authenticated turn lifecycle/operations consumers; a method definition or a direct owner fixture is not proof of ordinary App Server ingress, cross-host safety or production operations.",
+    "Execute cross-process and cross-host duplicate-attempt qualification against one real external lease authority, including identical and conflicting body/semantic keys, host death, settlement loss and restart reconciliation. Repository-local fixtures cannot establish distributed exactly-once denial."
   ],
   "generated": {
     "state": "docs/modules/context.compiler/CURRENT_STATE.json",
-    "stateSha256": "e44ec8dfcc2e8a9102ae3fee0b5b428f8885044018be59f0810ee488c836a0d2",
+    "stateSha256": "379c3db3511f983c18b52a597aa6ecdcfa6dfc1c30ef1cb013df6025b2337cbc",
     "generator": "scripts/generate_context_compiler_module_docs.py",
     "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
     "integrationBranch": "codex/context-compiler-v3-closure-20260928"
   },
-  "runtimeSourceAnchor": "cd07ed1ca09bef0538955ce44b9a60d8bac2dba9",
-  "runtimeSourceTree": "94040868000198d9d18cd589cc31e3c967e03f18",
+  "runtimeSourceAnchor": "c2d044272bcf106f6fd9e5aa40656cdc7069a702",
+  "runtimeSourceTree": "9f71fb4901b4b44c1dc9a17304b0994dc39abf63",
   "maturity": {
     "sourceExists": true,
     "compiledModuleReachability": "source_composed_pending_exact_head_execution",
@@ -309,6 +332,20 @@
       "moduleRoot": "codex-rs/hepta-context-compiler/src/v2.rs",
       "moduleDeclaration": "mod recovery;",
       "productCaller": "codex-rs/hepta-agentd/src/exact_context_delivery.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/exact_context_delivery/settled_history.rs",
+      "symbol": "settle_final_attempt",
+      "moduleRoot": "codex-rs/hepta-agentd/src/exact_context_delivery.rs",
+      "moduleDeclaration": "mod settled_history;",
+      "productCaller": "codex-rs/hepta-agentd/src/exact_context_delivery.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/context_security_runtime.rs",
+      "symbol": "ContextSecurityRuntimeV3",
+      "moduleRoot": "codex-rs/hepta-agentd/src/lib.rs",
+      "moduleDeclaration": "mod context_security_runtime;",
+      "productCaller": "codex-rs/hepta-agentd/src/prompt_runtime.rs"
     }
   ],
   "dormantSource": [
@@ -332,11 +369,11 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/exact_context_delivery.rs",
-      "blobSha": "2ec389b6d738a735ef18f5f378d88f10a13b248b"
+      "blobSha": "3011014e8b90341a2a52d5808a3d243c754eaf4f"
     },
     {
       "path": "codex-rs/hepta-agentd/src/exact_context_delivery/capacity_tests.rs",
-      "blobSha": "07678a90f653bd6b1594d941a5c70548367f9abd"
+      "blobSha": "34bf7f75272a362580475c11a3123c9522b64f3f"
     },
     {
       "path": "codex-rs/hepta-agentd/src/exact_context_delivery/framing_json.rs",
@@ -344,31 +381,43 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/exact_context_delivery/lifecycle.rs",
-      "blobSha": "a2a7fe61922b339ea5e9e8ae5f6628530bb6d94a"
+      "blobSha": "9c981025a83e246bc884edf75d808733c417d1c5"
     },
     {
       "path": "codex-rs/hepta-agentd/src/exact_context_delivery/lifecycle_tests.rs",
-      "blobSha": "c496d7f52044831f3ecedbeb4785c7baa60006f1"
+      "blobSha": "4339f96f299c25564ce40bc65890130e5d577337"
     },
     {
       "path": "codex-rs/hepta-agentd/src/exact_context_delivery/metrics.rs",
-      "blobSha": "b7d50c671bf790e525f6a3a025206a974562b6e8"
+      "blobSha": "d13972a5632006a255124b41489ca1d97170247e"
     },
     {
       "path": "codex-rs/hepta-agentd/src/exact_context_delivery/metrics_tests.rs",
-      "blobSha": "ba9cf70200cf081606e91218535b63ab8c590106"
+      "blobSha": "56d9255bde74bace59d6b68d181faff2694bfe8d"
     },
     {
       "path": "codex-rs/hepta-agentd/src/exact_context_delivery/registry_race_tests.rs",
-      "blobSha": "991a031ef98462e8aebd46f85d7c624333e8a1b3"
+      "blobSha": "104ea84ae9384434f23b35719e3843ba3434ff52"
     },
     {
       "path": "codex-rs/hepta-agentd/src/exact_context_delivery/runtime_tests.rs",
-      "blobSha": "498c570b16aee03f3d7263331e179063f2a3f89c"
+      "blobSha": "36216519a4edf5feb99c7b953ba83542ba5c64e4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/exact_context_delivery/settled_history.rs",
+      "blobSha": "71c49bf22eb00f7c61a13cf3cde8b2d1c5a82801"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/exact_context_delivery/settled_history_tests.rs",
+      "blobSha": "e72a235f790167928f707c70e9535784fc25900a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/exact_context_delivery/storage_hardening_tests.rs",
+      "blobSha": "405ee667ab28d602c26a54a382248382dc895119"
     },
     {
       "path": "codex-rs/hepta-agentd/src/exact_context_delivery/terminal_state.rs",
-      "blobSha": "76bfa6efd7e8acd535929bb1c92cf5e3bf1f1759"
+      "blobSha": "770716418164f48d9074fae4b0946c4c46152172"
     },
     {
       "path": "codex-rs/hepta-agentd/src/exact_context_delivery/tokenizer_io.rs",
@@ -376,11 +425,11 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
-      "blobSha": "04b28b77709a94a85c673309967ab5177016266f"
+      "blobSha": "ba8d9befd1631aff352eb74dd5d354e0f1cb9b05"
     },
     {
       "path": "codex-rs/hepta-agentd/src/prompt_runtime_lifecycle_tests.rs",
-      "blobSha": "fcf9de3f80b7b63feed13a7a92383653e137acb1"
+      "blobSha": "e4a5890b3e86bdcc406e3ac2b227cfa766e283a8"
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/v2/delivery_evidence.rs",
@@ -392,7 +441,7 @@
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/v2/recovery.rs",
-      "blobSha": "a36ff1cadfa01bd995992162417bed9d8d153613"
+      "blobSha": "fed0853640ff083382704f3e1a17a437b22d7cb7"
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/v2/redaction.rs",
@@ -416,7 +465,7 @@
     },
     {
       "path": "scripts/context_compiler_execution.py",
-      "blobSha": "d7686aed3a85031c215cf6e41fa0d9b9dac0157f"
+      "blobSha": "777e298f402bfa22d25e0c4b4d1c5566cc0ce4a3"
     },
     {
       "path": "scripts/context_compiler_named_evidence.py",
@@ -664,7 +713,117 @@
       "exactExecution": "CI_EXACT_HEAD"
     },
     {
-      "id": "external-security-consumption",
+      "id": "settled-history-compaction",
+      "definition": {
+        "path": "codex-rs/hepta-agentd/src/exact_context_delivery/settled_history.rs",
+        "symbol": "settle_final_attempt"
+      },
+      "consumer": {
+        "path": "codex-rs/hepta-agentd/src/exact_context_delivery.rs",
+        "symbol": "commit_terminal",
+        "call": "settled_history::settle_final_attempt"
+      },
+      "sourceState": "source_composed",
+      "nativeTests": [
+        "exact_context_delivery::settled_history_tests::final_settlement_releases_raw_recovery_and_provider_material",
+        "exact_context_delivery::settled_history_tests::recent_history_rolls_into_a_versioned_fail_closed_checkpoint",
+        "exact_context_delivery::settled_history_tests::checkpoint_and_recent_tampering_are_rejected",
+        "exact_context_delivery::settled_history_tests::schema_three_final_history_migrates_without_recovery_authority",
+        "exact_context_delivery::settled_history_tests::unresolved_and_indeterminate_attempts_never_enter_settlement_history"
+      ],
+      "testSources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/exact_context_delivery/settled_history_tests.rs",
+          "name": "exact_context_delivery::settled_history_tests::final_settlement_releases_raw_recovery_and_provider_material"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/exact_context_delivery/settled_history_tests.rs",
+          "name": "exact_context_delivery::settled_history_tests::recent_history_rolls_into_a_versioned_fail_closed_checkpoint"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/exact_context_delivery/settled_history_tests.rs",
+          "name": "exact_context_delivery::settled_history_tests::checkpoint_and_recent_tampering_are_rejected"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/exact_context_delivery/settled_history_tests.rs",
+          "name": "exact_context_delivery::settled_history_tests::schema_three_final_history_migrates_without_recovery_authority"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/exact_context_delivery/settled_history_tests.rs",
+          "name": "exact_context_delivery::settled_history_tests::unresolved_and_indeterminate_attempts_never_enter_settlement_history"
+        }
+      ],
+      "command": "owner-settlement-regressions",
+      "authenticatedProductE2E": "unverified",
+      "exactExecution": "CI_EXACT_HEAD"
+    },
+    {
+      "id": "store-path-hardening",
+      "definition": {
+        "path": "codex-rs/hepta-agentd/src/exact_context_delivery.rs",
+        "symbol": "private_directory_identity"
+      },
+      "consumer": {
+        "path": "codex-rs/hepta-agentd/src/exact_context_delivery.rs",
+        "symbol": "ExactDeliveryStore",
+        "call": "root_identity_matches()"
+      },
+      "sourceState": "source_composed",
+      "nativeTests": [
+        "exact_context_delivery::storage_hardening_tests::second_writer_is_rejected_by_the_existing_owner_lock",
+        "exact_context_delivery::storage_hardening_tests::state_and_next_symlinks_fail_closed_without_poisoning_unrelated_capacity",
+        "exact_context_delivery::storage_hardening_tests::permissive_or_hard_linked_state_files_are_rejected",
+        "exact_context_delivery::storage_hardening_tests::root_replacement_fences_the_owner_even_after_path_restoration"
+      ],
+      "testSources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/exact_context_delivery/storage_hardening_tests.rs",
+          "name": "exact_context_delivery::storage_hardening_tests::second_writer_is_rejected_by_the_existing_owner_lock"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/exact_context_delivery/storage_hardening_tests.rs",
+          "name": "exact_context_delivery::storage_hardening_tests::state_and_next_symlinks_fail_closed_without_poisoning_unrelated_capacity"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/exact_context_delivery/storage_hardening_tests.rs",
+          "name": "exact_context_delivery::storage_hardening_tests::permissive_or_hard_linked_state_files_are_rejected"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/exact_context_delivery/storage_hardening_tests.rs",
+          "name": "exact_context_delivery::storage_hardening_tests::root_replacement_fences_the_owner_even_after_path_restoration"
+        }
+      ],
+      "command": "owner-storage-hardening-regressions",
+      "authenticatedProductE2E": "unverified",
+      "exactExecution": "CI_EXACT_HEAD"
+    },
+    {
+      "id": "external-security-presence-gate",
+      "definition": {
+        "path": "codex-rs/hepta-agentd/src/context_security_runtime.rs",
+        "symbol": "ContextSecurityRuntimeV3"
+      },
+      "consumer": {
+        "path": "codex-rs/hepta-agentd/src/exact_context_delivery.rs",
+        "symbol": "require_external_security",
+        "call": ".capabilities()"
+      },
+      "sourceState": "source_composed",
+      "nativeTests": [
+        "exact_context_delivery::runtime_tests::product_owner_fails_closed_before_tokenizer_when_external_security_is_missing"
+      ],
+      "testSources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/exact_context_delivery/runtime_tests.rs",
+          "name": "exact_context_delivery::runtime_tests::product_owner_fails_closed_before_tokenizer_when_external_security_is_missing"
+        }
+      ],
+      "command": "owner-security-presence-regression",
+      "authenticatedProductE2E": "unverified",
+      "exactExecution": "CI_EXACT_HEAD"
+    },
+    {
+      "id": "external-security-effect-capabilities",
       "definition": {
         "path": "codex-rs/hepta-agentd/src/context_security_runtime.rs",
         "symbol": "ContextSecurityCapabilitiesV3"

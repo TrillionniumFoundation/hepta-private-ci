@@ -65,6 +65,7 @@ impl AgentdExactContextDeliveryOwner {
             .pre_sends
             .values()
             .any(|record| record.thread_id == thread_id && record.turn_id == turn_id)
+            || settled_history::has_seen_turn(&state.durable, thread_id, turn_id)
         {
             return Err(ExactContextDeliveryError::RecoveryRequired.into());
         }
@@ -135,6 +136,9 @@ impl AgentdExactContextDeliveryOwner {
             "pre_send_records": state.durable.pre_sends.len(),
             "final_records": state.durable.terminals.len(),
             "nonfinal_observations": state.durable.observations.len(),
+            "recent_settled_attempts": state.durable.settled_attempts.len(),
+            "checkpointed_settled_attempts": state.durable.settlement_checkpoint.archived_count,
+            "settlement_checkpoint_sequence": state.durable.settlement_checkpoint.last_sequence,
             "reserved_completion_bytes": completion_reserve(&state.durable)?,
             "phases": self.store.metrics.snapshot(),
         }))
@@ -149,26 +153,27 @@ pub(super) fn retire_completed_stage(state: &mut ExactRuntimeState, key: &ExactT
     {
         return;
     }
-    let ended = state.durable.pre_sends.iter().any(|(attempt, record)| {
-        record.thread_id == key.thread_id
-            && record.turn_id == key.turn_id
-            && state
-                .durable
-                .terminals
-                .get(attempt)
-                .is_some_and(|terminal| {
-                    terminal.disposition == "Rejected"
-                        || terminal.provider_receipt.as_ref().is_some_and(|receipt| {
-                            matches!(
-                                &receipt.terminal,
-                                ProviderTerminal::Completed {
-                                    end_turn: Some(true),
-                                    ..
-                                }
-                            )
-                        })
-                })
-    });
+    let ended = settled_history::ended_turn(&state.durable, &key.thread_id, &key.turn_id)
+        || state.durable.pre_sends.iter().any(|(attempt, record)| {
+            record.thread_id == key.thread_id
+                && record.turn_id == key.turn_id
+                && state
+                    .durable
+                    .terminals
+                    .get(attempt)
+                    .is_some_and(|terminal| {
+                        terminal.disposition == "Rejected"
+                            || terminal.provider_receipt.as_ref().is_some_and(|receipt| {
+                                matches!(
+                                    &receipt.terminal,
+                                    ProviderTerminal::Completed {
+                                        end_turn: Some(true),
+                                        ..
+                                    }
+                                )
+                            })
+                    })
+        });
     if ended {
         // Raw context dies here; proof, attempt and observation history stays.
         state.staged.remove(key);

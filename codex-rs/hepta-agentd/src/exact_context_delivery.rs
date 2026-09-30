@@ -50,6 +50,8 @@ use codex_hepta_intelligence::prepare_prompt_delivery_v3;
 use codex_hepta_prompt_registry::DurablePromptRegistry;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
+
+use crate::ContextSecurityRuntimeV3;
 use serde::Deserialize;
 use serde::Serialize;
 use sha2::Digest as _;
@@ -58,6 +60,7 @@ use tokio::process::Command;
 mod framing_json;
 mod lifecycle;
 pub(crate) mod metrics;
+mod settled_history;
 mod terminal_state;
 mod tokenizer_io;
 
@@ -73,8 +76,12 @@ mod capacity_tests;
 mod registry_race_tests;
 #[cfg(test)]
 mod runtime_tests;
+#[cfg(test)]
+mod settled_history_tests;
+#[cfg(all(test, unix))]
+mod storage_hardening_tests;
 
-const EXACT_DELIVERY_SCHEMA: u32 = 3;
+const EXACT_DELIVERY_SCHEMA: u32 = 4;
 const STATE_FILE: &str = "context-delivery-v2.json";
 const NEXT_FILE: &str = "context-delivery-v2.next";
 const LOCK_FILE: &str = "context-delivery-v2.lock";
@@ -132,19 +139,38 @@ struct ExactRuntimeState {
 
 pub(crate) struct AgentdExactContextDeliveryOwner {
     registry: Arc<Mutex<DurablePromptRegistry>>,
+    security: Option<Arc<ContextSecurityRuntimeV3>>,
     state: Mutex<ExactRuntimeState>,
     tokenizer: Mutex<Option<Arc<TokenizerRuntimeConfig>>>,
     store: ExactDeliveryStore,
 }
 
 impl AgentdExactContextDeliveryOwner {
-    pub(crate) fn open(
+    pub(crate) fn open_product(
         directory: &Path,
         registry: Arc<Mutex<DurablePromptRegistry>>,
+        security: Arc<ContextSecurityRuntimeV3>,
+    ) -> Result<Self, ExactContextDeliveryError> {
+        Self::open_inner(directory, registry, Some(security))
+    }
+
+    #[cfg(test)]
+    pub(crate) fn open_for_qualification(
+        directory: &Path,
+        registry: Arc<Mutex<DurablePromptRegistry>>,
+    ) -> Result<Self, ExactContextDeliveryError> {
+        Self::open_inner(directory, registry, None)
+    }
+
+    fn open_inner(
+        directory: &Path,
+        registry: Arc<Mutex<DurablePromptRegistry>>,
+        security: Option<Arc<ContextSecurityRuntimeV3>>,
     ) -> Result<Self, ExactContextDeliveryError> {
         let (store, durable) = ExactDeliveryStore::open(directory)?;
         Ok(Self {
             registry,
+            security,
             state: Mutex::new(ExactRuntimeState {
                 staged: BTreeMap::new(),
                 preparing: BTreeSet::new(),
@@ -156,12 +182,26 @@ impl AgentdExactContextDeliveryOwner {
         })
     }
 
+    fn require_external_security(&self) -> Result<(), ExactContextDeliveryError> {
+        let Some(runtime) = &self.security else {
+            // The only constructor without this runtime is cfg(test) and exists
+            // solely for owner-local protocol fixtures. Product composition has
+            // no process-local fallback.
+            return Ok(());
+        };
+        runtime
+            .capabilities()
+            .map(|_| ())
+            .map_err(|_| ExactContextDeliveryError::SecurityCapabilitiesUnavailable)
+    }
+
     pub(crate) async fn observe_final_request(
         self: Arc<Self>,
         request: PromptRuntimeFinalRequestV2,
     ) -> Result<(), ExactContextDeliveryError> {
         let started = Instant::now();
         let _request_time = self.measure(Phase::RequestPreparation);
+        self.require_external_security()?;
         self.store.ensure_available()?;
         request
             .attempt
@@ -413,6 +453,28 @@ impl AgentdExactContextDeliveryOwner {
                         "duplicate terminal observation differs from durable receipt",
                     ))
                 };
+            } else if let Some(existing) = state
+                .durable
+                .settled_attempts
+                .get(&terminal.attempt.attempt_id)
+            {
+                let observed_digest = if existing.observation_version == 2 {
+                    terminal_observation_digest_legacy(&terminal)?
+                } else {
+                    terminal_observation_digest
+                };
+                return if existing.terminal_observation_digest == observed_digest.into_array() {
+                    Ok(())
+                } else {
+                    Err(ExactContextDeliveryError::Conflict(
+                        "duplicate terminal observation differs from settled tombstone",
+                    ))
+                };
+            } else if settled_history::has_checkpointed_attempt(
+                &state.durable,
+                &terminal.attempt.attempt_id,
+            ) {
+                return Err(ExactContextDeliveryError::RecoveryRequired);
             } else if state
                 .durable
                 .has_unresolved_attempt(&terminal.attempt.attempt_id)
@@ -543,6 +605,7 @@ impl AgentdExactContextDeliveryOwner {
             .map_err(|_| ExactContextDeliveryError::ReopenRequired)?;
         self.store.ensure_available()?;
         if state.durable.pre_sends.contains_key(&attempt_id)
+            || settled_history::has_seen_attempt(&state.durable, &attempt_id)
             || state
                 .durable
                 .has_unresolved_for_turn(&stored.thread_id, &stored.turn_id)
@@ -573,6 +636,18 @@ impl AgentdExactContextDeliveryOwner {
             .lock()
             .map_err(|_| ExactContextDeliveryError::ReopenRequired)?;
         self.store.ensure_available()?;
+        if let Some(settled) = state.durable.settled_attempts.get(attempt_id) {
+            return if settled.matches_terminal(&stored) {
+                Ok(())
+            } else {
+                Err(ExactContextDeliveryError::Conflict(
+                    "settled terminal observation differs from durable tombstone",
+                ))
+            };
+        }
+        if settled_history::has_checkpointed_attempt(&state.durable, attempt_id) {
+            return Err(ExactContextDeliveryError::RecoveryRequired);
+        }
         let Some(pre_send) = state.durable.pre_sends.get(attempt_id) else {
             return Err(ExactContextDeliveryError::MissingPreSendEvidence);
         };
@@ -591,10 +666,13 @@ impl AgentdExactContextDeliveryOwner {
         if !apply_observation(&mut next, stored)? {
             return Ok(());
         }
+        if is_final {
+            settled_history::settle_final_attempt(&mut next, attempt_id)?;
+        }
         let _persistence_time = self.measure(Phase::TerminalPersistence);
         // Nonfinal observations cannot spend space reserved for final receipts.
-        // A final consumes its own bounded reservation. Old schema-3 histories
-        // without reserved headroom may still reconcile whenever bytes fit.
+        // A final atomically consumes its reservation and replaces raw provider
+        // and recovery material with one compact deny-all tombstone.
         let reserve = if is_final { 0 } else { completion_reserve(&next)? };
         self.store.persist_reserving(&next, reserve)?;
         state.durable = next;
@@ -1227,6 +1305,10 @@ struct StoredExactDeliveryState {
     terminals: BTreeMap<String, StoredTerminal>,
     #[serde(default)]
     observations: BTreeMap<String, StoredTerminal>,
+    #[serde(default)]
+    settled_attempts: BTreeMap<String, settled_history::SettledAttempt>,
+    #[serde(default)]
+    settlement_checkpoint: settled_history::SettlementCheckpoint,
 }
 
 impl StoredExactDeliveryState {
@@ -1361,10 +1443,20 @@ impl StoredTerminal {
     }
 }
 
+#[cfg(unix)]
+#[derive(Clone, Copy)]
+struct RootIdentity {
+    device: u64,
+    inode: u64,
+    owner: u32,
+}
+
 struct ExactDeliveryStore {
     root: PathBuf,
     metrics: metrics::Metrics,
     poisoned: AtomicBool,
+    #[cfg(unix)]
+    root_identity: RootIdentity,
     _lock: File,
 }
 
@@ -1374,25 +1466,27 @@ impl ExactDeliveryStore {
     ) -> Result<(Self, StoredExactDeliveryState), ExactContextDeliveryError> {
         let opened_at = Instant::now();
         prepare_directory(directory)?;
+        #[cfg(unix)]
+        let root_identity = private_directory_identity(directory)?;
+        reject_existing_next(directory)?;
         let lock_path = directory.join(LOCK_FILE);
-        let lock = OpenOptions::new()
-            .create(true)
-            .truncate(false)
-            .read(true)
-            .write(true)
-            .open(&lock_path)
-            .map_err(|_| ExactContextDeliveryError::Unavailable)?;
-        set_private_file_permissions(&lock_path)?;
+        #[cfg(unix)]
+        let owner = root_identity.owner;
+        #[cfg(not(unix))]
+        let owner = 0;
+        let lock = open_private_lock(&lock_path, owner)?;
         lock.try_lock()
             .map_err(|_| ExactContextDeliveryError::StateLocked)?;
         let store = Self {
             root: directory.to_path_buf(),
             metrics: metrics::Metrics::default(),
             poisoned: AtomicBool::new(false),
+            #[cfg(unix)]
+            root_identity,
             _lock: lock,
         };
         let path = directory.join(STATE_FILE);
-        if !path.exists() {
+        let Some(mut state_file) = open_existing_private_file(&path, owner)? else {
             store.metrics.record(Phase::StoreOpen, opened_at.elapsed());
             return Ok((
                 store,
@@ -1401,10 +1495,9 @@ impl ExactDeliveryStore {
                     ..StoredExactDeliveryState::default()
                 },
             ));
-        }
+        };
         let mut bytes = Vec::new();
-        File::open(&path)
-            .map_err(|_| ExactContextDeliveryError::Unavailable)?
+        state_file
             .take(MAX_DURABLE_STATE_BYTES + 1)
             .read_to_end(&mut bytes)
             .map_err(|_| ExactContextDeliveryError::Unavailable)?;
@@ -1421,6 +1514,32 @@ impl ExactDeliveryStore {
 
     fn ensure_available(&self) -> Result<(), ExactContextDeliveryError> {
         if self.poisoned.load(Ordering::Acquire) {
+            return Err(ExactContextDeliveryError::ReopenRequired);
+        }
+        if self.root_identity_matches().is_err() {
+            self.poisoned.store(true, Ordering::Release);
+            return Err(ExactContextDeliveryError::ReopenRequired);
+        }
+        Ok(())
+    }
+
+    #[cfg(unix)]
+    fn root_identity_matches(&self) -> Result<(), ExactContextDeliveryError> {
+        let observed = private_directory_identity(&self.root)?;
+        if observed.device != self.root_identity.device
+            || observed.inode != self.root_identity.inode
+            || observed.owner != self.root_identity.owner
+        {
+            return Err(ExactContextDeliveryError::ReopenRequired);
+        }
+        Ok(())
+    }
+
+    #[cfg(not(unix))]
+    fn root_identity_matches(&self) -> Result<(), ExactContextDeliveryError> {
+        let metadata = std::fs::symlink_metadata(&self.root)
+            .map_err(|_| ExactContextDeliveryError::ReopenRequired)?;
+        if metadata.file_type().is_symlink() || !metadata.is_dir() {
             return Err(ExactContextDeliveryError::ReopenRequired);
         }
         Ok(())
@@ -1458,7 +1577,10 @@ impl ExactDeliveryStore {
         let result = self.persist_inner(state, reserved_bytes, sync);
         if matches!(
             result,
-            Err(ExactContextDeliveryError::IndeterminateDurability)
+            Err(
+                ExactContextDeliveryError::IndeterminateDurability
+                    | ExactContextDeliveryError::ReopenRequired
+            )
         ) {
             self.poisoned.store(true, Ordering::Release);
         }
@@ -1483,55 +1605,235 @@ impl ExactDeliveryStore {
             return Err(ExactContextDeliveryError::Capacity);
         }
         drop(encoding_time);
-        let file_time = self.metrics.measure(Phase::StoreFileSync);
+
+        self.root_identity_matches()?;
+        let state_path = self.root.join(STATE_FILE);
+        validate_optional_private_file(&state_path, self.expected_owner())?;
         let next_path = self.root.join(NEXT_FILE);
-        let mut next = OpenOptions::new()
-            .create(true)
-            .truncate(true)
-            .write(true)
-            .open(&next_path)
-            .map_err(|_| ExactContextDeliveryError::Unavailable)?;
-        set_private_file_permissions(&next_path)?;
+        reject_existing_path(&next_path)?;
+
+        let file_time = self.metrics.measure(Phase::StoreFileSync);
+        let mut next = create_private_file(&next_path, self.expected_owner())?;
         next.write_all(&bytes)
             .and_then(|()| next.sync_all())
             .map_err(|_| ExactContextDeliveryError::Unavailable)?;
         drop(file_time);
-        let _directory_time = self.metrics.measure(Phase::StoreDirectorySync);
-        std::fs::rename(&next_path, self.root.join(STATE_FILE))
-            .map_err(|_| ExactContextDeliveryError::Unavailable)?;
-        sync(&self.root)
-    }
-}
 
-fn validate_stored_state(
-    state: &StoredExactDeliveryState,
-) -> Result<(), ExactContextDeliveryError> {
-    terminal_state::validate(state)
+        self.root_identity_matches()?;
+        validate_optional_private_file(&state_path, self.expected_owner())?;
+        std::fs::rename(&next_path, &state_path)
+            .map_err(|_| ExactContextDeliveryError::Unavailable)?;
+        if self.root_identity_matches().is_err()
+            || validate_required_private_file(&state_path, self.expected_owner()).is_err()
+        {
+            return Err(ExactContextDeliveryError::IndeterminateDurability);
+        }
+        let _directory_time = self.metrics.measure(Phase::StoreDirectorySync);
+        sync(&self.root)?;
+        if self.root_identity_matches().is_err() {
+            return Err(ExactContextDeliveryError::IndeterminateDurability);
+        }
+        Ok(())
+    }
+
+    #[cfg(unix)]
+    const fn expected_owner(&self) -> u32 {
+        self.root_identity.owner
+    }
+
+    #[cfg(not(unix))]
+    const fn expected_owner(&self) -> u32 {
+        0
+    }
 }
 
 fn prepare_directory(path: &Path) -> Result<(), ExactContextDeliveryError> {
-    std::fs::create_dir_all(path).map_err(|_| ExactContextDeliveryError::Unavailable)?;
-    let metadata =
-        std::fs::symlink_metadata(path).map_err(|_| ExactContextDeliveryError::Unavailable)?;
-    if metadata.file_type().is_symlink() || !metadata.is_dir() {
-        return Err(ExactContextDeliveryError::Unavailable);
+    let existed = match std::fs::symlink_metadata(path) {
+        Ok(metadata) => {
+            if metadata.file_type().is_symlink() || !metadata.is_dir() {
+                return Err(ExactContextDeliveryError::Unavailable);
+            }
+            true
+        }
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => false,
+        Err(_) => return Err(ExactContextDeliveryError::Unavailable),
+    };
+    if !existed {
+        std::fs::create_dir_all(path).map_err(|_| ExactContextDeliveryError::Unavailable)?;
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o700))
+                .map_err(|_| ExactContextDeliveryError::Unavailable)?;
+        }
     }
     #[cfg(unix)]
+    private_directory_identity(path)?;
+    #[cfg(not(unix))]
     {
-        use std::os::unix::fs::PermissionsExt;
-        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o700))
-            .map_err(|_| ExactContextDeliveryError::Unavailable)?;
+        let metadata =
+            std::fs::symlink_metadata(path).map_err(|_| ExactContextDeliveryError::Unavailable)?;
+        if metadata.file_type().is_symlink() || !metadata.is_dir() {
+            return Err(ExactContextDeliveryError::Unavailable);
+        }
     }
     Ok(())
 }
 
-fn set_private_file_permissions(path: &Path) -> Result<(), ExactContextDeliveryError> {
+#[cfg(unix)]
+fn private_directory_identity(path: &Path) -> Result<RootIdentity, ExactContextDeliveryError> {
+    use std::os::unix::fs::MetadataExt;
+
+    let metadata =
+        std::fs::symlink_metadata(path).map_err(|_| ExactContextDeliveryError::ReopenRequired)?;
+    if metadata.file_type().is_symlink()
+        || !metadata.is_dir()
+        || metadata.mode() & 0o777 != 0o700
+    {
+        return Err(ExactContextDeliveryError::ReopenRequired);
+    }
+    Ok(RootIdentity {
+        device: metadata.dev(),
+        inode: metadata.ino(),
+        owner: metadata.uid(),
+    })
+}
+
+fn reject_existing_next(directory: &Path) -> Result<(), ExactContextDeliveryError> {
+    reject_existing_path(&directory.join(NEXT_FILE))
+}
+
+fn reject_existing_path(path: &Path) -> Result<(), ExactContextDeliveryError> {
+    match std::fs::symlink_metadata(path) {
+        Ok(_) => Err(ExactContextDeliveryError::Unavailable),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(()),
+        Err(_) => Err(ExactContextDeliveryError::Unavailable),
+    }
+}
+
+fn open_private_lock(path: &Path, expected_owner: u32) -> Result<File, ExactContextDeliveryError> {
+    #[cfg(unix)]
+    let file = {
+        use std::os::unix::fs::OpenOptionsExt;
+        OpenOptions::new()
+            .create(true)
+            .truncate(false)
+            .read(true)
+            .write(true)
+            .mode(0o600)
+            .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC)
+            .open(path)
+            .map_err(|_| ExactContextDeliveryError::Unavailable)?
+    };
+    #[cfg(not(unix))]
+    let file = OpenOptions::new()
+        .create(true)
+        .truncate(false)
+        .read(true)
+        .write(true)
+        .open(path)
+        .map_err(|_| ExactContextDeliveryError::Unavailable)?;
+    validate_private_file_handle(&file, expected_owner)?;
+    Ok(file)
+}
+
+fn open_existing_private_file(
+    path: &Path,
+    expected_owner: u32,
+) -> Result<Option<File>, ExactContextDeliveryError> {
+    match std::fs::symlink_metadata(path) {
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
+        Err(_) => return Err(ExactContextDeliveryError::Unavailable),
+        Ok(metadata) if metadata.file_type().is_symlink() || !metadata.is_file() => {
+            return Err(ExactContextDeliveryError::Unavailable);
+        }
+        Ok(_) => {}
+    }
+    #[cfg(unix)]
+    let file = {
+        use std::os::unix::fs::OpenOptionsExt;
+        OpenOptions::new()
+            .read(true)
+            .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC)
+            .open(path)
+            .map_err(|_| ExactContextDeliveryError::Unavailable)?
+    };
+    #[cfg(not(unix))]
+    let file = OpenOptions::new()
+        .read(true)
+        .open(path)
+        .map_err(|_| ExactContextDeliveryError::Unavailable)?;
+    validate_private_file_handle(&file, expected_owner)?;
+    Ok(Some(file))
+}
+
+fn create_private_file(
+    path: &Path,
+    expected_owner: u32,
+) -> Result<File, ExactContextDeliveryError> {
+    #[cfg(unix)]
+    let file = {
+        use std::os::unix::fs::OpenOptionsExt;
+        OpenOptions::new()
+            .create_new(true)
+            .write(true)
+            .mode(0o600)
+            .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC)
+            .open(path)
+            .map_err(|_| ExactContextDeliveryError::Unavailable)?
+    };
+    #[cfg(not(unix))]
+    let file = OpenOptions::new()
+        .create_new(true)
+        .write(true)
+        .open(path)
+        .map_err(|_| ExactContextDeliveryError::Unavailable)?;
+    validate_private_file_handle(&file, expected_owner)?;
+    Ok(file)
+}
+
+fn validate_optional_private_file(
+    path: &Path,
+    expected_owner: u32,
+) -> Result<(), ExactContextDeliveryError> {
+    if let Some(file) = open_existing_private_file(path, expected_owner)? {
+        drop(file);
+    }
+    Ok(())
+}
+
+fn validate_required_private_file(
+    path: &Path,
+    expected_owner: u32,
+) -> Result<(), ExactContextDeliveryError> {
+    let file = open_existing_private_file(path, expected_owner)?
+        .ok_or(ExactContextDeliveryError::Unavailable)?;
+    drop(file);
+    Ok(())
+}
+
+fn validate_private_file_handle(
+    file: &File,
+    expected_owner: u32,
+) -> Result<(), ExactContextDeliveryError> {
+    let metadata = file
+        .metadata()
+        .map_err(|_| ExactContextDeliveryError::Unavailable)?;
+    if !metadata.is_file() {
+        return Err(ExactContextDeliveryError::Unavailable);
+    }
     #[cfg(unix)]
     {
-        use std::os::unix::fs::PermissionsExt;
-        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))
-            .map_err(|_| ExactContextDeliveryError::Unavailable)?;
+        use std::os::unix::fs::MetadataExt;
+        if metadata.mode() & 0o777 != 0o600
+            || metadata.nlink() != 1
+            || metadata.uid() != expected_owner
+        {
+            return Err(ExactContextDeliveryError::Unavailable);
+        }
     }
+    #[cfg(not(unix))]
+    let _ = expected_owner;
     Ok(())
 }
 
@@ -1564,6 +1866,7 @@ pub(crate) enum ExactContextDeliveryError {
     TokenizerUnavailable,
     TokenizerTimeout,
     TokenizerRejected,
+    SecurityCapabilitiesUnavailable,
     Domain(String),
 }
 
@@ -1591,6 +1894,9 @@ impl ExactContextDeliveryError {
             Self::TokenizerUnavailable => "context_delivery_v2_tokenizer_unavailable",
             Self::TokenizerTimeout => "context_delivery_v2_tokenizer_timeout",
             Self::TokenizerRejected => "context_delivery_v2_tokenizer_rejected",
+            Self::SecurityCapabilitiesUnavailable => {
+                "context_delivery_v3_external_security_unavailable"
+            }
             Self::Domain(_) => "context_delivery_v2_domain_rejected",
         }
     }
