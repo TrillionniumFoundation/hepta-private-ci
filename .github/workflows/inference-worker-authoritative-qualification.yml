@@ -22,7 +22,7 @@ env:
 
 jobs:
   materialize:
-    name: Materialize reviewed inference.worker source
+    name: Materialize ordinary inference.worker source
     runs-on: ubuntu-slim
     timeout-minutes: 20
     steps:
@@ -34,71 +34,54 @@ jobs:
           persist-credentials: true
           clean: true
 
-      - name: Bind exact input and target heads
+      - name: Bind immutable source and target
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           test -z "$(git status --porcelain --untracked-files=normal)"
-          remote_head="$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | awk '{print $1}')"
-          test "$remote_head" = "$EXPECTED_TARGET_SHA"
+          test "$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | awk '{print $1}')" = "$EXPECTED_TARGET_SHA"
 
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: "3.13"
 
-      - name: Apply reviewed runtime closure patch
+      - name: Materialize reviewed implementation
         shell: bash
         run: |
-          set -uo pipefail
-          python3 --version
-          set +e
-          python3 .github/materialization/inference-worker-runtime-closure/apply.py 2>&1 | tee "$RUNNER_TEMP/inference-worker-materializer.log"
-          status=${PIPESTATUS[0]}
-          set -e
-          {
-            echo '## inference.worker materializer'
-            echo
-            echo '```text'
-            cat "$RUNNER_TEMP/inference-worker-materializer.log"
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
-          test "$status" -eq 0
-
+          set -euo pipefail
+          python3 .github/materialization/inference-worker-runtime-closure/apply.py
           python3 - <<'PY'
           from pathlib import Path
+          import re
 
-          path = Path("codex-rs/hepta-infer-core/src/native_control_tests.rs")
-          text = path.read_text(encoding="utf-8")
-          replacements = {
-              '''    let event = Event::Observe {
+          tests_path = Path("codex-rs/hepta-infer-core/src/native_control_tests.rs")
+          tests = tests_path.read_text(encoding="utf-8")
+          for output_name in ("observed", "old_output"):
+              pattern = re.compile(
+                  rf'''let event = Event::Observe \{{\s*
+                  request_id:\s*"r1"\.to_string\(\),\s*
+                  output:\s*{output_name},\s*
+                  \}};''',
+                  re.MULTILINE,
+              )
+              replacement = f'''let event = Event::Observe {{
                   request_id: "r1".to_string(),
-                  output: observed,
-              };''': '''    let event = Event::Observe {
-                  request_id: "r1".to_string(),
-                  output: observed,
+                  output: {output_name},
                   observed_at_unix_ms: 0,
                   usage_units: None,
-              };''',
-              '''    let event = Event::Observe {
-                  request_id: "r1".to_string(),
-                  output: old_output,
-              };''': '''    let event = Event::Observe {
-                  request_id: "r1".to_string(),
-                  output: old_output,
-                  observed_at_unix_ms: 0,
-                  usage_units: None,
-              };''',
-          }
-          for old, new in replacements.items():
-              if text.count(old) != 1:
-                  raise SystemExit(f"expected one historical Observe fixture: {old!r}")
-              text = text.replace(old, new, 1)
-          anchor = '''    let mut json = serde_json::to_value(event).unwrap();
-              json["Observe"]["output"]'''
-          replacement = '''    let mut json = serde_json::to_value(event).unwrap();
-              json["Observe"]
+              }};'''
+              tests, count = pattern.subn(replacement, tests, count=1)
+              if count != 1:
+                  raise SystemExit(
+                      f"native_control_tests.rs: expected one {output_name} Observe fixture, found {count}"
+                  )
+
+          legacy = re.compile(
+              r'''(?m)^(    let mut json = serde_json::to_value\(event\)\.unwrap\(\);\n)(    json\["Observe"\]\["output"\])'''
+          )
+          legacy_replacement = r'''\1    json["Observe"]
                   .as_object_mut()
                   .unwrap()
                   .remove("observed_at_unix_ms");
@@ -106,48 +89,41 @@ jobs:
                   .as_object_mut()
                   .unwrap()
                   .remove("usage_units");
-              json["Observe"]["output"]'''
-          if text.count(anchor) != 1:
-              raise SystemExit("legacy Observe JSON anchor drifted")
-          path.write_text(text.replace(anchor, replacement, 1), encoding="utf-8")
+\2'''
+          tests, count = legacy.subn(legacy_replacement, tests, count=1)
+          if count != 1:
+              raise SystemExit(
+                  f"native_control_tests.rs: expected one legacy Observe JSON projection, found {count}"
+              )
+          tests_path.write_text(tests, encoding="utf-8")
 
-          path = Path("codex-rs/hepta-infer-core/src/native_control.rs")
-          text = path.read_text(encoding="utf-8")
-          old = '''        if record.observation.as_ref() == Some(&output)
-                  && usage_units.is_none_or(|usage| record.observed_usage_units == Some(usage))
-              {
-                  return Ok(record.clone());
-              }'''
-          new = '''        if record.observation.as_ref() == Some(&output)
-                  && usage_units.is_none_or(|usage| record.observed_usage_units == Some(usage))
-                  && record.last_observed_at_unix_ms == Some(observed_at_unix_ms)
-              {
-                  return Ok(record.clone());
-              }'''
-          if text.count(old) != 1:
-              raise SystemExit("observation idempotency anchor drifted")
-          path.write_text(text.replace(old, new, 1), encoding="utf-8")
+          native_path = Path("codex-rs/hepta-infer-core/src/native_control.rs")
+          native = native_path.read_text(encoding="utf-8")
+          condition = re.compile(
+              r'''(?m)(        if record\.observation\.as_ref\(\) == Some\(&output\)\n            && usage_units\.is_none_or\(\|usage\| record\.observed_usage_units == Some\(usage\)\))(\n        \{)'''
+          )
+          native, count = condition.subn(
+              r'''\1
+            && record.last_observed_at_unix_ms == Some(observed_at_unix_ms)\2''',
+              native,
+              count=1,
+          )
+          if count != 1:
+              raise SystemExit(
+                  f"native_control.rs: expected one observation idempotency condition, found {count}"
+              )
+          native_path.write_text(native, encoding="utf-8")
           PY
+          git diff --check
 
-      - name: Refresh derived documentation and validate patch shape
+      - name: Refresh generated documentation
         shell: bash
         run: |
           set -euo pipefail
           python3 scripts/hepta-module-docs.py refresh-derived
-          if command -v rustfmt >/dev/null 2>&1; then
-            rustfmt --edition 2024 \
-              codex-rs/hepta-infer-core/src/native_control.rs \
-              codex-rs/hepta-infer-core/src/native_control_tests.rs \
-              codex-rs/hepta-infer-worker-host/src/experimental_local.rs \
-              codex-rs/hepta-infer-worker-host/src/experimental_local/driver.rs \
-              codex-rs/hepta-infer-worker-host/src/experimental_local/durable.rs \
-              codex-rs/hepta-infer-worker-host/src/experimental_local_tests.rs \
-              codex-rs/hepta-infer-worker-host/src/native_recovery.rs \
-              codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs
-          fi
           git diff --check
 
-      - name: Install read-only authoritative qualification
+      - name: Install read-only qualification and remove materializers
         shell: bash
         run: |
           set -euo pipefail
@@ -158,16 +134,15 @@ jobs:
           rm -rf .github/materialization/inference-worker-stage2
           rm -f .github/workflows/inference-worker-authoritative-materialize.yml
           rm -f .github/workflows/inference-worker-qualification.yml
-          git diff --check
           grep -Fq 'contents: read' .github/workflows/inference-worker-authoritative-qualification.yml
           ! grep -Eq 'git push|contents: write|apply\.py' .github/workflows/inference-worker-authoritative-qualification.yml
+          git diff --check
 
       - name: Commit ordinary source to authoritative branch
         shell: bash
         run: |
           set -euo pipefail
-          remote_head="$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | awk '{print $1}')"
-          test "$remote_head" = "$EXPECTED_TARGET_SHA"
+          test "$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | awk '{print $1}')" = "$EXPECTED_TARGET_SHA"
           git config user.name hepta-inference-materializer
           git config user.email hepta-inference-materializer@users.noreply.github.com
           git add -A
