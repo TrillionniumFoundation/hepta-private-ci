@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Build deterministic, target-specific seed corpora for cognitive.types fuzzing.
 
-The corpus is derived only from checked-in qualification vectors.  It contains
-no network input and creates no product authority.  Every seed filename is its
+The corpus is derived only from checked-in qualification vectors. It contains
+no network input and creates no product authority. Every seed filename is its
 SHA-256, so duplicate bytes collapse naturally and campaign receipts can bind
 the exact corpus independently of directory order.
 """
@@ -121,6 +121,32 @@ def _clean_target_directory(path: Path) -> None:
     path.mkdir(parents=True, mode=0o755)
 
 
+def _corpus_identity(directory: Path) -> tuple[str, int, int, list[str]]:
+    """Use the same framing as the campaign receipt's directory digest."""
+    if directory.is_symlink() or not directory.is_dir():
+        raise ValueError(f"corpus target must be a real directory: {directory}")
+    entries = sorted(path for path in directory.iterdir() if path.is_file())
+    if any(path.is_symlink() for path in directory.iterdir()):
+        raise ValueError(f"{directory.name}: symlinked corpus entry forbidden")
+    if not entries:
+        raise ValueError(f"{directory.name}: at least one deterministic seed required")
+    corpus_hasher = hashlib.sha256()
+    total_bytes = 0
+    seed_sha256s: list[str] = []
+    for entry in entries:
+        data = entry.read_bytes()
+        digest = hashlib.sha256(data).hexdigest()
+        if entry.name != digest:
+            raise ValueError(f"{entry}: filename/digest mismatch")
+        corpus_hasher.update(entry.name.encode("utf-8"))
+        corpus_hasher.update(b"\0")
+        corpus_hasher.update(bytes.fromhex(digest))
+        corpus_hasher.update(len(data).to_bytes(8, "big"))
+        total_bytes += len(data)
+        seed_sha256s.append(entry.name)
+    return corpus_hasher.hexdigest(), len(entries), total_bytes, seed_sha256s
+
+
 def build(output: Path) -> dict[str, object]:
     if output.exists() and output.is_symlink():
         raise ValueError("output root may not be a symlink")
@@ -128,8 +154,6 @@ def build(output: Path) -> dict[str, object]:
     target_dirs = {target: output / target for target in TARGETS}
     for directory in target_dirs.values():
         _clean_target_directory(directory)
-
-    seeds: dict[str, list[str]] = {target: [] for target in TARGETS}
 
     bound_path = ROOT / "qualification/cognitive-types-v1/bound_vector.json"
     bound = _load_json(bound_path)
@@ -150,7 +174,7 @@ def build(output: Path) -> dict[str, object]:
         }
     )
     for target in _targets_for(contract):
-        seeds[target].append(_write_seed(target_dirs[target], valid_wire))
+        _write_seed(target_dirs[target], valid_wire)
 
     vector_paths = (
         ROOT / "qualification/cognitive-types-v1/negative-vectors.json",
@@ -164,7 +188,7 @@ def build(output: Path) -> dict[str, object]:
         for case in cases:
             vector_contract, wire = _checked_wire(case, vector_path)
             for target in _targets_for(vector_contract):
-                seeds[target].append(_write_seed(target_dirs[target], wire))
+                _write_seed(target_dirs[target], wire)
 
     # Grammar campaigns need malformed framing seeds in addition to semantic
     # negative vectors. These are constants, not generated mutations, so corpus
@@ -174,38 +198,24 @@ def build(output: Path) -> dict[str, object]:
         b"{",
         b"[]",
         b"null",
-        b"{\"contract\":\"ModalitySpanRefV1\"}",
-        b"{\"contract\":\"ModalitySpanRefV1\",\"contract\":\"ModalitySpanRefV1\"}",
-        b" {\"contract\":\"ModalitySpanRefV1\"}",
-        b"{\"schemaVersion\":1.0}",
-        b"{\"schemaVersion\":1e0}",
-        b"{\"payload\":\"\\ud800\"}",
+        b'{"contract":"ModalitySpanRefV1"}',
+        b'{"contract":"ModalitySpanRefV1","contract":"ModalitySpanRefV1"}',
+        b' {"contract":"ModalitySpanRefV1"}',
+        b'{"schemaVersion":1.0}',
+        b'{"schemaVersion":1e0}',
+        b'{"payload":"\\ud800"}',
     )
     for seed in grammar_constants:
-        seeds["canonical_json_grammar"].append(
-            _write_seed(target_dirs["canonical_json_grammar"], seed)
-        )
+        _write_seed(target_dirs["canonical_json_grammar"], seed)
 
     manifest_targets: dict[str, object] = {}
     for target in TARGETS:
-        directory = target_dirs[target]
-        entries = sorted(path for path in directory.iterdir() if path.is_file())
-        if any(path.is_symlink() for path in directory.iterdir()):
-            raise ValueError(f"{target}: symlinked corpus entry forbidden")
-        if not entries:
-            raise ValueError(f"{target}: at least one deterministic seed required")
-        corpus_hasher = hashlib.sha256()
-        for entry in entries:
-            data = entry.read_bytes()
-            digest = hashlib.sha256(data).hexdigest()
-            if entry.name != digest:
-                raise ValueError(f"{entry}: filename/digest mismatch")
-            corpus_hasher.update(bytes.fromhex(digest))
-            corpus_hasher.update(len(data).to_bytes(8, "big"))
+        digest, count, total_bytes, seed_sha256s = _corpus_identity(target_dirs[target])
         manifest_targets[target] = {
-            "seedCount": len(entries),
-            "corpusSha256": corpus_hasher.hexdigest(),
-            "seedSha256s": [entry.name for entry in entries],
+            "seedCount": count,
+            "corpusBytes": total_bytes,
+            "corpusSha256": digest,
+            "seedSha256s": seed_sha256s,
         }
 
     manifest: dict[str, object] = {
@@ -215,7 +225,7 @@ def build(output: Path) -> dict[str, object]:
         "productionAuthority": False,
         "activationAuthority": False,
     }
-    manifest_bytes = (_canonical_json(manifest) + b"\n")
+    manifest_bytes = _canonical_json(manifest) + b"\n"
     (output / "MANIFEST.json").write_bytes(manifest_bytes)
     return manifest
 
