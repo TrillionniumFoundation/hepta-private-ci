@@ -26,9 +26,10 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
-      - name: Run qualification, status, SLO, archive, source-refresh and feature-policy regressions
+      - name: Run policy, qualification, status, SLO, archive, source-refresh and feature regressions
         run: >-
           python3 -m unittest -v
+          scripts.tests.test_hepta_memory_retrieval_policy
           scripts.tests.test_hepta_memory_retrieval_qualification
           scripts.tests.test_hepta_memory_retrieval_status
           scripts.tests.test_hepta_memory_retrieval_workflow_policy
