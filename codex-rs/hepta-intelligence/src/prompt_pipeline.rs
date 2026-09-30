@@ -151,6 +151,7 @@ pub struct PreparedPromptDeliveryV1 {
     // compatibility DTO fields cannot manufacture a different valid delivery.
     source: PreparedPromptContextV1,
     admitted_exercise: PromptExerciseDecisionV1,
+    admitted_delivery_digest: Digest32,
     pub exercise: PromptExerciseDecisionV1,
     pub serialization: ContextSerializationReceiptV2,
     pub serialized_context: SerializedContextV2,
@@ -166,6 +167,7 @@ impl PreparedPromptDeliveryV1 {
     pub fn validate(&self) -> Result<(), PromptPipelineErrorV1> {
         ensure_exercisable(self.exercise.decision)?;
         if self.exercise != self.admitted_exercise
+            || self.compute_delivery_digest() != self.admitted_delivery_digest
             || self.materialization != self.source.materialization
             || self.serialization != *self.serialized_context.receipt()
             || self.serialized_payload != self.serialized_context.payload()
@@ -188,6 +190,22 @@ impl PreparedPromptDeliveryV1 {
             return Err(PromptPipelineErrorV1::SerializationProofDrift);
         }
         Ok(())
+    }
+
+    fn compute_delivery_digest(&self) -> Digest32 {
+        let mut bytes = b"hepta.prompt-pipeline.prepared-delivery.v1\0".to_vec();
+        for digest in [
+            self.source.compiled.receipt().receipt_digest(),
+            self.exercise.receipt_digest,
+            self.materialization.bundle_digest,
+            self.serialization.receipt_digest(),
+            self.attachment.attachment_digest(),
+            self.serialization_proof.proof_digest,
+            Digest32::of_bytes(&self.serialized_payload),
+        ] {
+            bytes.extend_from_slice(digest.as_array());
+        }
+        Digest32::of_bytes(&bytes)
     }
 
     #[must_use]
@@ -553,9 +571,10 @@ pub fn prepare_prompt_delivery_with_tokenizer_v1(
         attachment_id,
     )
     .map_err(|error| PromptPipelineErrorV1::ContextCompiler(format!("{error:?}")))?;
-    Ok(PreparedPromptDeliveryV1 {
+    let mut delivery = PreparedPromptDeliveryV1 {
         source: prepared.clone(),
         admitted_exercise: exercise.clone(),
+        admitted_delivery_digest: Digest32::ZERO,
         exercise,
         serialization,
         serialized_context,
@@ -563,7 +582,9 @@ pub fn prepare_prompt_delivery_with_tokenizer_v1(
         materialization,
         serialization_proof,
         serialized_payload,
-    })
+    };
+    delivery.admitted_delivery_digest = delivery.compute_delivery_digest();
+    Ok(delivery)
 }
 
 pub fn observe_prompt_delivery_v1(

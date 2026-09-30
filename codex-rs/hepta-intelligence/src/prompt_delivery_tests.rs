@@ -364,6 +364,45 @@ fn exercised_registry_payload_is_the_exact_context_attachment_input() {
         Err(PromptRegistryCompilationErrorV2::Integrity)
     ));
 
+    let other = compile_prompt_registry_with_tokenizer_v2(
+        &registry,
+        &selected.portfolio,
+        &selected.exercise_request,
+        PromptRegistryCompilationRequestV2 {
+            compilation_id: id("compilation:prompt:other"),
+            serialization_id: id("serialization:prompt:other"),
+            attachment_id: id("attachment:prompt:other"),
+            registry_model_tuple: tuple.clone(),
+            context_model_profile: output.model_profile.clone(),
+            now_unix_ms: 100,
+            token_budget: 256,
+            truncation_policy_digest: digest("truncation"),
+        },
+        &ByteTokenizer(tuple.tokenizer_digest),
+    )
+    .expect("independently valid compilation from the same registry source");
+    other.validate().expect("other compilation validates");
+    assert_eq!(other.compatible, output.compatible);
+    assert_eq!(
+        other.exercise_receipt_digest,
+        output.exercise_receipt_digest
+    );
+    let mut grafted = output.clone();
+    grafted.portfolio_receipt_digest = other.portfolio_receipt_digest;
+    grafted.compiled = other.compiled;
+    grafted.model_profile = other.model_profile;
+    grafted.selected_deliveries = other.selected_deliveries;
+    grafted.serialized_payload = other.serialized_payload;
+    grafted.serialization = other.serialization;
+    grafted.serialized_context = other.serialized_context;
+    grafted.attachment = other.attachment;
+    grafted.delivery_set_digest = grafted.compute_delivery_set_digest();
+    assert_ne!(grafted.delivery_set_digest, output.delivery_set_digest);
+    assert!(matches!(
+        grafted.validate(),
+        Err(PromptRegistryCompilationErrorV2::Integrity)
+    ));
+
     let factor_v1 = registry
         .registry()
         .expect("registry")

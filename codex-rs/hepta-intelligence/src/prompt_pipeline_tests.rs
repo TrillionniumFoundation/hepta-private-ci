@@ -141,6 +141,57 @@ fn exercised_portfolio_compiles_attaches_and_observes_exact_delivery() {
 }
 
 #[test]
+fn same_source_delivery_cannot_be_grafted_with_another_valid_serialization() {
+    let (_temp, registry, portfolio, exercise) = fixture();
+    let prepared = compile_exercised_prompt_context_v1(
+        &registry,
+        &portfolio,
+        compile_request(exercise.clone()),
+    )
+    .expect("compile");
+    let prepare = |serialization_id: &str, attachment_id: &str, payload: &[u8]| {
+        prepare_prompt_delivery_with_tokenizer_v1(
+            &registry,
+            &portfolio,
+            &prepared,
+            PromptDeliveryPrepareRequestV1 {
+                exercise: exercise.clone(),
+                serialization_id: id(serialization_id),
+                serialized_payload: payload.to_vec(),
+                attachment_id: id(attachment_id),
+            },
+            &ByteTokenizer(prepared.model_profile.tokenizer_digest),
+        )
+        .expect("prepare valid serialization")
+    };
+    let original = prepare(
+        "serialization:original",
+        "attachment:original",
+        b"prefix:a|payload:a|suffix:a",
+    );
+    let other = prepare(
+        "serialization:other",
+        "attachment:other",
+        b"prefix:b|payload:a|suffix:b",
+    );
+    original.validate().expect("original delivery validates");
+    other.validate().expect("other delivery validates");
+    assert_eq!(original.source, other.source);
+    assert_eq!(original.exercise, other.exercise);
+    assert_eq!(original.materialization, other.materialization);
+    let mut grafted = original.clone();
+    grafted.serialization = other.serialization;
+    grafted.serialized_context = other.serialized_context;
+    grafted.attachment = other.attachment;
+    grafted.serialization_proof = other.serialization_proof;
+    grafted.serialized_payload = other.serialized_payload;
+    assert_eq!(
+        grafted.validate(),
+        Err(PromptPipelineErrorV1::PayloadMaterializationDrift)
+    );
+}
+
+#[test]
 fn materialization_drift_after_compilation_blocks_attachment_preparation() {
     let (_temp, registry, portfolio, exercise) = fixture();
     let mut prepared = compile_exercised_prompt_context_v1(

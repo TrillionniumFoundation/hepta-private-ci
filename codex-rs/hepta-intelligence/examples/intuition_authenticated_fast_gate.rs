@@ -1,3 +1,6 @@
+// This benchmark uses frozen demonstration fixtures and fails on invalid inputs.
+#![allow(clippy::expect_used)]
+
 use std::time::Duration;
 use std::time::Instant;
 

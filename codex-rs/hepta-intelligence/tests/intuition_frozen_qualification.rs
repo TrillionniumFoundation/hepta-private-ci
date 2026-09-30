@@ -1,3 +1,6 @@
+// These assertions and fixture constructors intentionally fail on invalid data.
+#![allow(clippy::unwrap_used)]
+
 use codex_hepta_intelligence::IntuitionQualificationEvidenceV2;
 use codex_hepta_intelligence::decide_authenticated_intuition_v2;
 use codex_hepta_intuition::AssignmentCommitmentV1;

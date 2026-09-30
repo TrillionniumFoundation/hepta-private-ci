@@ -10,6 +10,7 @@ use codex_hepta_operations::AuthorizedDispatch;
 
 const IO_BUDGET: Duration = Duration::from_secs(30);
 const IO_HARD_TIMEOUT_GRACE: Duration = Duration::from_secs(30);
+#[cfg(test)]
 const HARD_TIMEOUT_EXIT_CODE: i32 = 70;
 
 fn spawn_learning_io_watchdog_v1<T, F>(

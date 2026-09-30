@@ -227,9 +227,7 @@ mod tests {
             let provider = mask & 2 != 0;
             let learning = mask & 4 != 0;
             let execution = mask & 8 != 0;
-            let expected = (!runner && !provider && !learning && !execution)
-                || (runner && provider && !learning && !execution)
-                || (runner && provider && learning && execution);
+            let expected = [0, 3, 15].contains(&mask);
             assert_eq!(
                 validate_runtime_profile_shape(runner, provider, learning, execution).is_ok(),
                 expected,

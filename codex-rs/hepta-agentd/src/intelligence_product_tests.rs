@@ -1004,3 +1004,7 @@ async fn aborted_owner_work_retains_its_budget_until_computation_finishes() {
 
 #[path = "intelligence_product_signed_tests.rs"]
 mod signed;
+
+#[cfg(feature = "qualification-legacy-learning-write")]
+#[path = "intelligence_product_qualification_integrity_tests.rs"]
+mod qualification_integrity;

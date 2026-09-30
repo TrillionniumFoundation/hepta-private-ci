@@ -1,7 +1,5 @@
 use std::sync::Barrier;
 
-use pretty_assertions::assert_eq;
-
 use super::*;
 
 #[derive(Debug, Eq, PartialEq)]
@@ -85,16 +83,15 @@ fn concurrent_request_and_watchdog_timeouts_are_counted_once() {
     let guard = telemetry.worker_started();
     let state = guard.state();
     let barrier = Arc::new(Barrier::new(3));
-    let observers = (0..2)
-        .map(|_| {
-            let state = Arc::clone(&state);
-            let barrier = Arc::clone(&barrier);
-            std::thread::spawn(move || {
-                barrier.wait();
-                state.mark_timed_out()
-            })
+    // Start both observers before the main thread joins the barrier.
+    let observers: [_; 2] = std::array::from_fn(|_| {
+        let state = Arc::clone(&state);
+        let barrier = Arc::clone(&barrier);
+        std::thread::spawn(move || {
+            barrier.wait();
+            state.mark_timed_out()
         })
-        .collect::<Vec<_>>();
+    });
     barrier.wait();
     let observed = observers
         .into_iter()

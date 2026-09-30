@@ -472,6 +472,9 @@ pub struct CanonicalTerminalReceiptV1 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+// Keep the v1 by-value API stable. This bounded, ephemeral receipt does not
+// justify allocating the ready outcome or breaking existing pattern matches.
+#[allow(clippy::large_enum_variant)]
 pub enum CanonicalRunOutcomeV1 {
     Ready(IntelligenceHostEnvelopeV1),
     Abstained(CanonicalTerminalReceiptV1),

@@ -53,6 +53,7 @@ pub struct PromptRegistryCompilationRequestV2 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PromptRegistryCompiledContextV2 {
+    admitted_delivery_set_digest: Digest32,
     admitted_exercise_receipt_digest: Digest32,
     admitted_compatible: CompatibleRealizationSetV2,
     pub compatible: CompatibleRealizationSetV2,
@@ -81,6 +82,7 @@ impl PromptRegistryCompiledContextV2 {
         if self.authority.grants_any()
             || self.compatible != self.admitted_compatible
             || self.delivery_set_digest.is_zero()
+            || self.delivery_set_digest != self.admitted_delivery_set_digest
             || self.exercise_receipt_digest.is_zero()
             || self.exercise_receipt_digest != self.admitted_exercise_receipt_digest
             || self.portfolio_receipt_digest.is_zero()
@@ -251,6 +253,7 @@ pub fn compile_prompt_registry_with_tokenizer_v2(
         )
         .map_err(PromptRegistryCompilationErrorV2::Registry)?;
     let mut output = PromptRegistryCompiledContextV2 {
+        admitted_delivery_set_digest: Digest32::ZERO,
         admitted_exercise_receipt_digest: delivery.exercise.receipt_digest,
         admitted_compatible: compatible.clone(),
         compatible,
@@ -267,6 +270,7 @@ pub fn compile_prompt_registry_with_tokenizer_v2(
         authority: AuthorityPosture::DENY_ALL,
     };
     output.delivery_set_digest = output.compute_delivery_set_digest();
+    output.admitted_delivery_set_digest = output.delivery_set_digest;
     output.validate()?;
     Ok(output)
 }

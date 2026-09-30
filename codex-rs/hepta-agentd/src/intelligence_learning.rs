@@ -293,7 +293,8 @@ pub struct AgentdIntelligenceLearningHostV1 {
     grants: Arc<dyn AgentdFinalUseGrantProvider>,
     writer: Arc<Mutex<LedgerWriter>>,
     io_slots: Arc<tokio::sync::Semaphore>,
-    reconciliation_cursor: tokio::sync::Mutex<Option<UnsettledOperationCursorV1>>,
+    reconciliation_gate: tokio::sync::Semaphore,
+    reconciliation_cursor: Mutex<Option<UnsettledOperationCursorV1>>,
 }
 
 impl AgentdIntelligenceLearningHostV1 {
@@ -324,7 +325,8 @@ impl AgentdIntelligenceLearningHostV1 {
             grants,
             writer: Arc::new(Mutex::new(writer)),
             io_slots: Arc::new(tokio::sync::Semaphore::new(4)),
-            reconciliation_cursor: tokio::sync::Mutex::new(None),
+            reconciliation_gate: tokio::sync::Semaphore::new(1),
+            reconciliation_cursor: Mutex::new(None),
         })
     }
 
@@ -476,12 +478,22 @@ impl AgentdIntelligenceLearningHostV1 {
         }
         // Serialize page ownership, not the daemon's run coordinator. Resetting
         // this scheduling cursor after a process restart cannot authorize work.
-        let mut cursor = self.reconciliation_cursor.lock().await;
+        let _page_ownership = self.reconciliation_gate.acquire().await.map_err(|_| {
+            AgentdIntelligenceLearningErrorV1::Invalid("reconciliation owner closed")
+        })?;
+        let cursor = self
+            .reconciliation_cursor
+            .lock()
+            .map_err(|_| AgentdIntelligenceLearningErrorV1::Poisoned)?
+            .clone();
         let page = self
             .operations
             .unsettled_operation_page_v1(&self.destination, cursor.as_ref(), limit)
             .await?;
-        *cursor = page.next_cursor;
+        *self
+            .reconciliation_cursor
+            .lock()
+            .map_err(|_| AgentdIntelligenceLearningErrorV1::Poisoned)? = page.next_cursor;
         let mut receipts = Vec::with_capacity(page.records.len());
         for record in page.records {
             let record = if record.intent.owner_generation == self.generation {

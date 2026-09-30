@@ -496,6 +496,12 @@ impl AgentdIntelligenceProductRunnerV1 {
                 prepared
                     .validate_integrity()
                     .map_err(AgentdIntelligenceProductError::Canonical)?;
+                // Projection and integrity verification remain part of the
+                // cognition budget, including prompt-delivery serialization.
+                if started.elapsed() >= budget || wall_clock_ms()? >= run_identity.deadline_ms {
+                    final_check.mark_timed_out();
+                    return Err(AgentdIntelligenceProductError::TimedOut);
+                }
                 self.telemetry.record_ready();
                 Ok(AgentdIntelligenceProductOutcomeV1::Ready(prepared))
             }
@@ -578,6 +584,9 @@ impl AgentdIntelligenceProductRunnerV1 {
         episode_id: StableId,
         policy_id: StableId,
     ) -> Result<AppendReceipt, AgentdIntelligenceLedgerError> {
+        prepared
+            .validate_integrity()
+            .map_err(AgentdIntelligenceLedgerError::Currentness)?;
         let AdvisoryDecisionV1::Selected {
             candidate_id,
             propensity,
@@ -619,6 +628,9 @@ impl AgentdIntelligenceProductRunnerV1 {
         finality: OutcomeFinality,
         support_digest: Digest32,
     ) -> Result<AppendReceipt, AgentdIntelligenceLedgerError> {
+        prepared
+            .validate_integrity()
+            .map_err(AgentdIntelligenceLedgerError::Currentness)?;
         if support_digest.is_zero() {
             return Err(AgentdIntelligenceLedgerError::InvalidOutcome);
         }

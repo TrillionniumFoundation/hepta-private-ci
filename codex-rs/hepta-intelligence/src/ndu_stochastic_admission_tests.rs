@@ -1,3 +1,6 @@
+// Fixture construction should fail immediately if its static inputs are invalid.
+#![allow(clippy::expect_used)]
+
 use std::fs::File;
 use std::path::PathBuf;
 

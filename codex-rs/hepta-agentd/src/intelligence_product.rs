@@ -391,6 +391,8 @@ impl PreparedAgentdIntelligenceRunV1 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+// Preserve the public v1 by-value outcome and its bounded prepared-object API.
+#[allow(clippy::large_enum_variant)]
 pub enum AgentdIntelligenceProductOutcomeV1 {
     Ready(PreparedAgentdIntelligenceRunV1),
     Abstained,
@@ -528,6 +530,8 @@ pub struct PendingIntelligenceLedgerAppendV1 {
 }
 
 #[derive(Debug)]
+// Pending append evidence is bounded and intentionally retained by the v1 API.
+#[allow(clippy::large_enum_variant)]
 pub enum AgentdIntelligenceLedgerError {
     Currentness(CanonicalIntelligenceError),
     Ledger(DurableLedgerError),

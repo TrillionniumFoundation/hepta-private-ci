@@ -1,3 +1,6 @@
+// Fixture construction should fail immediately if its static inputs are invalid.
+#![allow(clippy::unwrap_used)]
+
 use codex_hepta_intelligence::*;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
@@ -283,12 +286,9 @@ fn final_gate_rejects_positive_propensity_substitution() {
 #[test]
 fn independent_context_boundary_rehashes_mutable_advisory_semantics() {
     let request = request();
-    let outcome = prepare_intelligence_run(
-        request.clone(),
-        &mut Ports::selected("candidate.a", 1),
-        &mut Oracle,
-    )
-    .unwrap();
+    let outcome =
+        prepare_intelligence_run(request, &mut Ports::selected("candidate.a", 1), &mut Oracle)
+            .unwrap();
     let CanonicalRunOutcomeV1::Ready(envelope) = outcome else {
         panic!("fixture must select a candidate");
     };
