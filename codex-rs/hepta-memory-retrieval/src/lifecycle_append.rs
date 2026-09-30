@@ -51,10 +51,27 @@ impl StdError for DurableDecisionTransitionErrorV1 {}
 #[derive(Debug)]
 pub enum DurableDecisionAppendErrorV1<E> {
     Transition(DurableDecisionTransitionErrorV1),
+    /// The initial exact-identity read failed before any mutation was attempted.
     Port(E),
+    /// A mutating call or its confirmation could not prove the exact record.
+    /// Callers must reconcile the exact execution identity; blind retry is not
+    /// safe because the durable effect may already have occurred.
+    CommitOutcomeUnknown {
+        append_error: Option<E>,
+        reconciliation_error: Option<E>,
+        observed_frontier: Option<u64>,
+        observed_phase: Option<RetrievalLifecyclePhaseV1>,
+    },
     CommittedFrontierMismatch {
         expected: u64,
         actual: u64,
+    },
+    /// The port reported success and the expected frontier, but the required
+    /// exact-identity readback did not return the exact candidate record.
+    CommittedRecordMismatch {
+        expected_frontier: u64,
+        actual_frontier: Option<u64>,
+        actual_phase: Option<RetrievalLifecyclePhaseV1>,
     },
 }
 
@@ -64,10 +81,38 @@ impl<E: fmt::Display> fmt::Display for DurableDecisionAppendErrorV1<E> {
             Self::Transition(error) => {
                 write!(formatter, "durable lifecycle transition refused: {error}")
             }
-            Self::Port(error) => write!(formatter, "durable lifecycle port failed: {error}"),
+            Self::Port(error) => {
+                write!(formatter, "durable lifecycle port failed before mutation: {error}")
+            }
+            Self::CommitOutcomeUnknown {
+                append_error,
+                reconciliation_error,
+                observed_frontier,
+                observed_phase,
+            } => {
+                write!(
+                    formatter,
+                    "durable lifecycle commit outcome is unknown; observed frontier {observed_frontier:?}, phase {observed_phase:?}",
+                )?;
+                if let Some(error) = append_error {
+                    write!(formatter, "; append error: {error}")?;
+                }
+                if let Some(error) = reconciliation_error {
+                    write!(formatter, "; reconciliation error: {error}")?;
+                }
+                Ok(())
+            }
             Self::CommittedFrontierMismatch { expected, actual } => write!(
                 formatter,
                 "durable lifecycle port committed frontier {actual}, expected {expected}",
+            ),
+            Self::CommittedRecordMismatch {
+                expected_frontier,
+                actual_frontier,
+                actual_phase,
+            } => write!(
+                formatter,
+                "durable lifecycle exact readback mismatch: expected frontier {expected_frontier}, observed frontier {actual_frontier:?}, phase {actual_phase:?}",
             ),
         }
     }
@@ -78,7 +123,20 @@ impl<E: StdError + 'static> StdError for DurableDecisionAppendErrorV1<E> {
         match self {
             Self::Transition(error) => Some(error),
             Self::Port(error) => Some(error),
-            Self::CommittedFrontierMismatch { .. } => None,
+            Self::CommitOutcomeUnknown {
+                append_error,
+                reconciliation_error,
+                ..
+            } => append_error
+                .as_ref()
+                .map(|error| error as &(dyn StdError + 'static))
+                .or_else(|| {
+                    reconciliation_error
+                        .as_ref()
+                        .map(|error| error as &(dyn StdError + 'static))
+                }),
+            Self::CommittedFrontierMismatch { .. }
+            | Self::CommittedRecordMismatch { .. } => None,
         }
     }
 }
@@ -146,8 +204,13 @@ pub fn validate_durable_decision_append_v1(
 /// the port's quarantine operation; all other phases use compare-and-append.
 /// An exact record already returned by `load_latest` is acknowledged as an
 /// idempotent committed replay without calling the mutating port operation.
-/// A port error is an uncertain commit result and must be reconciled by loading
-/// the exact execution identity before any retry.
+///
+/// Every attempted mutation is reconciled through an exact-identity read. A
+/// mutating port error succeeds only when that read proves the exact candidate
+/// record, covering acknowledgement loss without a second write. A successful
+/// port return is also confirmed byte-for-byte at the typed-record level. Any
+/// result that cannot prove the exact record is typed as commit-outcome unknown
+/// or committed-record mismatch and must never trigger a blind retry.
 pub fn append_durable_decision_checked_v1<P: DurableDecisionPortV1>(
     port: &mut P,
     expected_frontier: u64,
@@ -165,7 +228,7 @@ pub fn append_durable_decision_checked_v1<P: DurableDecisionPortV1>(
     validate_durable_decision_append_v1(latest.as_ref(), expected_frontier, next, quarantine)
         .map_err(DurableDecisionAppendErrorV1::Transition)?;
 
-    let committed = match quarantine {
+    let append = match quarantine {
         Some(outcome) => port.quarantine_unknown_outcome(
             expected_frontier,
             outcome,
@@ -173,16 +236,69 @@ pub fn append_durable_decision_checked_v1<P: DurableDecisionPortV1>(
             &next.payload_digest,
         ),
         None => port.compare_and_append(expected_frontier, next),
-    }
-    .map_err(DurableDecisionAppendErrorV1::Port)?;
+    };
 
-    if committed != next.frontier {
+    let committed_frontier = match append {
+        Ok(frontier) => frontier,
+        Err(append_error) => {
+            return match port.load_latest(&next.identity) {
+                Ok(Some(committed)) if &committed == next => Ok(next.frontier),
+                Ok(observed) => {
+                    let (observed_frontier, observed_phase) = observed_identity(&observed);
+                    Err(DurableDecisionAppendErrorV1::CommitOutcomeUnknown {
+                        append_error: Some(append_error),
+                        reconciliation_error: None,
+                        observed_frontier,
+                        observed_phase,
+                    })
+                }
+                Err(reconciliation_error) => {
+                    Err(DurableDecisionAppendErrorV1::CommitOutcomeUnknown {
+                        append_error: Some(append_error),
+                        reconciliation_error: Some(reconciliation_error),
+                        observed_frontier: None,
+                        observed_phase: None,
+                    })
+                }
+            };
+        }
+    };
+
+    if committed_frontier != next.frontier {
         return Err(DurableDecisionAppendErrorV1::CommittedFrontierMismatch {
             expected: next.frontier,
-            actual: committed,
+            actual: committed_frontier,
         });
     }
-    Ok(committed)
+
+    let observed = match port.load_latest(&next.identity) {
+        Ok(observed) => observed,
+        Err(reconciliation_error) => {
+            return Err(DurableDecisionAppendErrorV1::CommitOutcomeUnknown {
+                append_error: None,
+                reconciliation_error: Some(reconciliation_error),
+                observed_frontier: None,
+                observed_phase: None,
+            });
+        }
+    };
+    if observed.as_ref() != Some(next) {
+        let (actual_frontier, actual_phase) = observed_identity(&observed);
+        return Err(DurableDecisionAppendErrorV1::CommittedRecordMismatch {
+            expected_frontier: next.frontier,
+            actual_frontier,
+            actual_phase,
+        });
+    }
+    Ok(committed_frontier)
+}
+
+fn observed_identity(
+    observed: &Option<DurableDecisionRecordV1>,
+) -> (Option<u64>, Option<RetrievalLifecyclePhaseV1>) {
+    observed
+        .as_ref()
+        .map_or((None, None), |record| (Some(record.frontier), Some(record.phase)))
 }
 
 fn validate_record_and_quarantine(
