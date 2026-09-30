@@ -127,7 +127,13 @@ pub(crate) enum NativeCleanupStoreError {
 
 impl fmt::Display for NativeCleanupStoreError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(formatter, "{self:?}")
+        match self {
+            Self::Invalid(message) => write!(formatter, "Invalid({message:?})"),
+            Self::Conflict(message) => write!(formatter, "Conflict({message:?})"),
+            Self::Capacity => write!(formatter, "Capacity"),
+            Self::Unavailable(message) => write!(formatter, "Unavailable({message:?})"),
+            Self::Corrupt(message) => write!(formatter, "Corrupt({message:?})"),
+        }
     }
 }
 

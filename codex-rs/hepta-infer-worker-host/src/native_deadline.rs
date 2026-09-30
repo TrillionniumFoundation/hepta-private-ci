@@ -14,10 +14,6 @@ pub(crate) struct NativeDeadline {
 }
 
 impl NativeDeadline {
-    pub(crate) fn new(wall_at_anchor_ms: u64, budget: Duration) -> Result<Self> {
-        Self::from_budget(wall_at_anchor_ms, budget)
-    }
-
     pub(crate) fn from_budget(wall_at_anchor_ms: u64, budget: Duration) -> Result<Self> {
         if budget.is_zero() {
             return Err("native deadline budget must be positive".into());

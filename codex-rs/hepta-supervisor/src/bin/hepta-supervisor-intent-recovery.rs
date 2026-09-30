@@ -10,7 +10,6 @@ use anyhow::Result;
 use anyhow::bail;
 use anyhow::ensure;
 use codex_hepta_contracts::AgentId;
-use codex_hepta_supervisor::SignedIntentStatus;
 use codex_hepta_supervisor::SupervisordClient;
 use codex_hepta_supervisor::SupervisordMethod;
 use codex_hepta_supervisor::SupervisordMutationAccepted;
