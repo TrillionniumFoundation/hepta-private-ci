@@ -100,6 +100,8 @@ pub use resource::MAX_KNOWLEDGE_JSON_BYTES_V2;
 pub use resource::MAX_KNOWLEDGE_JSON_DEPTH_V2;
 pub use resource::MAX_KNOWLEDGE_JSON_ELEMENTS_V2;
 pub use resource::MAX_KNOWLEDGE_QUERY_OUTPUT_BYTES_V2;
+pub(crate) use resource::measure_query_edge_bytes_v2;
+pub(crate) use resource::measure_query_result_base_bytes_v2;
 pub use resource::measure_generation_v2;
 pub use resource::measure_projection_input_v2;
 pub use resource::measure_query_result_bytes_v2;
