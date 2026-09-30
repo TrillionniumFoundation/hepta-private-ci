@@ -33,7 +33,10 @@ def require_tokens(path: str, tokens: list[str]) -> None:
 def verify_source() -> None:
     manifest = read("codex-rs/hepta-bellman-operator/Cargo.toml")
     require('path = "src/authoritative_lib.rs"' in manifest, "authoritative crate root")
-    require(re.search(r"(?m)^default\s*=\s*\[\]$", manifest) is not None, "default feature set must remain empty")
+    require(
+        re.search(r"(?m)^default\s*=\s*\[\]$", manifest) is not None,
+        "default feature set must remain empty",
+    )
     require('qualification-unverified-input = []' in manifest, "compatibility feature missing")
 
     require_tokens(
@@ -108,6 +111,9 @@ def verify_source() -> None:
             "mutation_profile_digest_covers_runtime_and_error_budget",
             "mutation_cancelled_work_is_rejected_before_fit",
             "authoritative_performance_matrix_v1",
+            "process_resident_bytes",
+            "p99ResidentDeltaBytes",
+            "p99EstimatedBytes",
             "1_000_usize, 4_000, 8_000, 16_000",
             "100_000_usize, 500_000, 1_000_000",
         ],
@@ -121,6 +127,9 @@ def verify_source() -> None:
         "IndependentFutureWindowSuperiority",
         "CandidateRevoked",
         "ShadowCompleted",
+        "LoadAfterDeadline",
+        "CurrentnessClockRegression",
+        "valid_window",
         "rollback",
     ):
         require(token in coordinator, f"shadow coordinator missing {token!r}")
@@ -130,6 +139,26 @@ def verify_source() -> None:
         "codex-rs/hepta-agentd/src/lib.rs",
         ["pub mod learning_operator_coordinator;"],
     )
+
+    ranker_admission = read("codex-rs/hepta-agentd/src/cognitive_ranker_admission.rs")
+    for token in (
+        "pub struct RankerAdmissionSnapshotV2",
+        "pub(crate) learning_verifier",
+        "pub(crate) artifact_trust_digest",
+        "pub(crate) runtime_profile_digest",
+        "pub(crate) now_unix_micros",
+        "impl RankerAdmissionSnapshotV2",
+        "pub fn new(",
+        "ranker admission requires current nonzero trust",
+    ):
+        require(token in ranker_admission, f"opaque ranker admission missing {token!r}")
+    for public_field in (
+        "pub learning_verifier:",
+        "pub artifact_trust_digest:",
+        "pub runtime_profile_digest:",
+        "pub now_unix_micros:",
+    ):
+        require(public_field not in ranker_admission, f"ranker admission leaks {public_field!r}")
 
     compatibility = json.loads(read("docs/modules/learning.operator/SCHEMA_COMPATIBILITY.json"))
     require(
@@ -183,9 +212,33 @@ def verify_source() -> None:
     ):
         require((ROOT / path).is_file(), f"qualification component absent: {path}")
     workflow = read(".github/workflows/learning-operator-authoritative.yml")
+    require("workflow_call:" in workflow, "authoritative workflow must be reusable")
     require("contents: read" in workflow, "authoritative workflow must be read-only")
-    require("paths:" not in workflow and "paths-ignore:" not in workflow, "authoritative workflow cannot path-skip")
+    require(
+        "paths:" not in workflow and "paths-ignore:" not in workflow,
+        "authoritative workflow cannot path-skip",
+    )
     require("qualification-result" in workflow, "stable final qualification check name")
+
+    authoritative = read("scripts/hepta-learning-operator-authoritative.sh")
+    for token in (
+        "distinct_process_load_changes_prediction_and_rolls_back_without_retraining",
+        "evaluated_load_uses_real_owner_training_selection_revocation_and_rollback",
+        "fresh-process-load",
+        "product-shadow-e2e",
+        "time and memory qualification matrix",
+    ):
+        require(token in authoritative, f"authoritative qualification missing {token!r}")
+
+    blocking = read(".github/workflows/blocking-ci.yml")
+    for token in (
+        "learning-operator-authoritative:",
+        "uses: ./.github/workflows/learning-operator-authoritative.yml",
+        "needs.scope.outputs.learning",
+        "- learning-operator-authoritative",
+        "allowed.append(\"learning-operator-authoritative\")",
+    ):
+        require(token in blocking, f"protected CI fan-in missing {token!r}")
 
     for path in (
         "docs/modules/learning.operator/ADMISSION_CONTRACT.md",
