@@ -57,6 +57,9 @@ use crate::local_lease_outbox::legacy_dispatch_operation_digest;
 use crate::operation_claims;
 use crate::operation_claims::DurableDispatchClaim;
 
+#[path = "production_reconciliation.rs"]
+mod reconciliation;
+
 /// Schema version of the externally-authorized H4 writer boundary.
 pub const PRODUCTION_DURABLE_WRITER_SCHEMA_VERSION: u32 = 1;
 /// Stable provenance namespace for production writer receipts.
@@ -393,6 +396,7 @@ pub struct ProductionDurableWriter {
     lease: LocalLeaseOutbox,
     lease_id: Arc<str>,
     live_verifier: Option<Arc<dyn ProductionAuthorityVerifier>>,
+    reconciliation_progress: Arc<reconciliation::ReconciliationProgress>,
     // Retain the OS-level lock for the lifetime of the writer.  SQLite's
     // transaction lock serializes individual mutations, but it does not
     // establish the H4 single-writer boundary: two processes could otherwise
@@ -611,6 +615,7 @@ impl ProductionDurableWriter {
             lease,
             lease_id: Arc::from(lease_id),
             live_verifier: None,
+            reconciliation_progress: Arc::default(),
             _writer_lock: writer_lock,
         })
     }
@@ -639,6 +644,23 @@ impl ProductionDurableWriter {
             return Err(ProductionWriterError::LiveVerifierRequired);
         }
         self.verify_authority().await
+    }
+
+    // Composite mutations call this after acquiring the SQLite write lock and
+    // immediately before commit. Checking only before BEGIN IMMEDIATE permits
+    // a grant revoked while the transaction waits for that lock to write.
+    // This check deliberately uses no pool connection while a caller-owned
+    // transaction holds the write lock.
+    fn verify_retained_authority(&self) -> Result<(), ProductionWriterError> {
+        let verifier = self
+            .live_verifier
+            .as_ref()
+            .ok_or(ProductionWriterError::LiveVerifierRequired)?;
+        verifier
+            .verify(&self.authority, self.store.owner_agent_id())
+            .map_err(ProductionWriterError::AuthorityRejected)?;
+        self.authority
+            .validate_for_agent(self.store.owner_agent_id())
     }
 
     /// Mint the only production cognitive mutation capability. A legacy writer
@@ -887,7 +909,8 @@ impl ProductionDurableWriter {
 
     /// Discover and reconcile a bounded batch of operations whose latest
     /// durable source state is indeterminate. Discovery is destination-scoped
-    /// and reconciliation calls only the target observer, never dispatch.
+    /// and rotates past unavailable observations within this writer's lifetime.
+    /// Reconciliation calls only the target observer, never dispatch.
     pub async fn reconcile_target_batch<T>(
         &self,
         target: &T,
@@ -896,62 +919,7 @@ impl ProductionDurableWriter {
     where
         T: FinalUseProductionOutboxTarget + ?Sized,
     {
-        self.verify_authority().await?;
-        if !(1..=256).contains(&limit) {
-            return Err(ProductionWriterError::Invalid(
-                "reconcile batch limit must be 1..=256".to_string(),
-            ));
-        }
-        let operation_ids = sqlx::query_scalar::<_, String>(
-            "SELECT o.operation_id
-             FROM cognitive_operation_ledger o
-             WHERE o.lease_id = ? AND o.destination_id = ?
-               AND (
-                   SELECT e.event_kind
-                   FROM cognitive_local_events e
-                   WHERE e.lease_id = o.lease_id
-                     AND e.occurrence_key = o.operation_id
-                   ORDER BY e.event_sequence DESC
-                   LIMIT 1
-               ) IN ('indeterminate', 'reconcile_still_indeterminate')
-             ORDER BY o.prepared_at_unix_seconds, o.operation_id
-             LIMIT ?",
-        )
-        .bind(self.lease_id())
-        .bind(target.destination_id())
-        .bind(i64::try_from(limit).map_err(|_| {
-            ProductionWriterError::Invalid("reconcile batch limit overflow".to_string())
-        })?)
-        .fetch_all(&self.store.pool)
-        .await
-        .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
-
-        let mut reconciled = 0_usize;
-        for operation_id in operation_ids {
-            let request = self
-                .reconciliation_request(&operation_id, target.destination_id())
-                .await?;
-            match target.observe_terminal(&request).await {
-                ProductionTerminalObservation::Applied { .. } => {
-                    self.reconcile(&operation_id, LocalReconcileOutcome::Committed)
-                        .await?;
-                    reconciled += 1;
-                }
-                ProductionTerminalObservation::NotApplied { .. }
-                | ProductionTerminalObservation::Quarantined { .. } => {
-                    self.reconcile(&operation_id, LocalReconcileOutcome::Rejected)
-                        .await?;
-                    reconciled += 1;
-                }
-                ProductionTerminalObservation::Indeterminate { .. } => {
-                    self.reconcile(&operation_id, LocalReconcileOutcome::StillIndeterminate)
-                        .await?;
-                    reconciled += 1;
-                }
-                ProductionTerminalObservation::Unavailable { .. } => {}
-            }
-        }
-        Ok(reconciled)
+        self.reconcile_target_round_robin(target, limit).await
     }
 
     async fn reconciliation_request(
@@ -1739,6 +1707,7 @@ impl ProductionCognitiveMutationCapability {
         transaction: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
         prepared: &PreparedProductionCognitiveMutation,
     ) -> Result<QueuedReceipt, ProductionCognitiveMutationError> {
+        self.writer.verify_retained_authority()?;
         let admission = self
             .writer
             .lease
@@ -1808,6 +1777,10 @@ impl ProductionCognitiveMutationCapability {
             external_effect: false,
         };
         receipt.receipt_sha256 = receipt.compute_receipt_sha256();
+        // The semantic write, source/facts/projection, and provenance markers
+        // are still uncommitted. A revocation during any awaited write must
+        // roll all of them back rather than publish a stale authority receipt.
+        self.writer.verify_retained_authority()?;
         Ok(receipt)
     }
 }
@@ -2448,6 +2421,10 @@ fn now_unix_seconds() -> Result<u64, ProductionWriterError> {
         .map(|duration| duration.as_secs())
         .map_err(|error| ProductionWriterError::Invalid(format!("system clock failed: {error}")))
 }
+
+#[cfg(test)]
+#[path = "production_writer_authority_tests.rs"]
+mod authority_tests;
 
 #[cfg(test)]
 mod tests {
