@@ -54,6 +54,9 @@ use crate::protocol::LEGACY_UNRESOLVED_MODEL_VERSION;
 #[path = "durable_payloads.rs"]
 mod payloads;
 
+#[path = "durable_lifecycle_validation.rs"]
+mod lifecycle_validation;
+
 const STORE_SCHEMA: u32 = 2;
 const MAX_STATE_BYTES: u64 = 32 * 1024 * 1024;
 const LEGACY_CONTEXT_PROFILE_DOMAIN: &[u8] = b"hepta.prompt-registry.legacy-context-profile.v1";
@@ -80,16 +83,20 @@ impl DurablePromptRegistry {
         directory: &Path,
         maximum_records: usize,
     ) -> Result<Self, DurableRegistryError> {
+        // Configuration rejection must not create an owner marker and make a
+        // previously unused state directory look like lost committed state.
+        let empty_registry =
+            PromptRegistry::new(maximum_records).map_err(DurableRegistryError::Core)?;
         let (mut store, stored) = Store::open(directory)?;
         let registry = match stored {
             Some(StoredAny::V2(stored)) => restore_v2(stored, maximum_records)?,
             Some(StoredAny::V1(stored)) => migrate_v1(stored, maximum_records)?,
-            None => PromptRegistry::new(maximum_records).map_err(DurableRegistryError::Core)?,
+            None => empty_registry,
         };
         if store.payloads.is_initialized() {
             store.payloads.discard_unselected_tail(&store.root)?;
         } else {
-            store.persist(&registry)?;
+            store = store.initialize(&registry)?;
         }
         Ok(Self {
             registry,
@@ -662,6 +669,16 @@ fn restore_v2(
     if stored.maximum_records != configured_maximum {
         return Err(DurableRegistryError::ConfigurationMismatch);
     }
+    if stored.factors.len().saturating_add(stored.realizations.len()) > configured_maximum {
+        return Err(DurableRegistryError::CapacityExceeded);
+    }
+    if stored.bindings.len() > stored.realizations.len()
+        || stored.payloads.len() > stored.realizations.len()
+        || stored.supersessions.len() > stored.realizations.len()
+        || stored.lifecycle_events.len() > stored.factors.len().saturating_mul(4)
+    {
+        return Err(DurableRegistryError::Corrupt);
+    }
     let mut factors = BTreeMap::new();
     for stored_factor in stored.factors {
         let factor = decode_factor(stored_factor)?;
@@ -897,6 +914,7 @@ fn validate_restored(registry: &PromptRegistry) -> Result<(), DurableRegistryErr
     let mut last_event_revision = 0_u64;
     let mut last_native_revision = 0_u64;
     let mut latest_revocation_revision = 0_u64;
+    let mut admission_grants = BTreeSet::new();
     for event in &registry.lifecycle_events {
         let event_revision = event.revision.get();
         if event_revision > registry.revision.get()
@@ -904,6 +922,22 @@ fn validate_restored(registry: &PromptRegistry) -> Result<(), DurableRegistryErr
             || event.event_digest != event.compute_digest()
             || !registry.factors.contains_key(&event.factor_id)
         {
+            return Err(DurableRegistryError::Corrupt);
+        }
+        lifecycle_validation::validate_event(
+            event,
+            &registry.factors[&event.factor_id],
+        )?;
+        if let Some(grant_id) = &event.admission_grant_id
+            && !admission_grants.insert(grant_id.clone())
+        {
+            return Err(DurableRegistryError::Corrupt);
+        }
+        if event.kind == LifecycleEventKind::Imported {
+            if last_native_revision != 0 {
+                return Err(DurableRegistryError::Corrupt);
+            }
+        } else if event_revision <= last_event_revision || event_revision <= 1 {
             return Err(DurableRegistryError::Corrupt);
         }
         last_event_revision = event_revision;
@@ -975,7 +1009,8 @@ fn validate_restored(registry: &PromptRegistry) -> Result<(), DurableRegistryErr
         return Err(DurableRegistryError::Corrupt);
     }
     for (factor_id, factor) in &registry.factors {
-        if replayed.get(factor_id) != Some(&factor.lifecycle)
+        if factor.content_digest.is_zero()
+            || replayed.get(factor_id) != Some(&factor.lifecycle)
             || (factor.source == FactorSource::ExternalUntrusted
                 && factor.lifecycle == Lifecycle::Admitted)
         {
@@ -1012,6 +1047,8 @@ fn validate_restored(registry: &PromptRegistry) -> Result<(), DurableRegistryErr
                 || factor.lifecycle != Lifecycle::Admitted
                 || !active_profiles.insert((
                     binding.factor_id.clone(),
+                    binding.model_id.clone(),
+                    binding.model_version.clone(),
                     binding.model_digest,
                     binding.tokenizer_digest,
                     binding.template_digest,
@@ -1055,15 +1092,22 @@ fn validate_restored(registry: &PromptRegistry) -> Result<(), DurableRegistryErr
             return Err(DurableRegistryError::Corrupt);
         }
     }
+    // Each suffix is proven once. Rewalking every historical successor would
+    // make a valid long supersession lineage quadratic during owner restart.
+    let mut validated = BTreeSet::new();
     for start in registry.realization_supersessions.keys() {
         let mut visited = BTreeSet::new();
         let mut current = start;
         while let Some(predecessor) = registry.realization_supersessions.get(current) {
+            if validated.contains(current) {
+                break;
+            }
             if !visited.insert(current.clone()) {
                 return Err(DurableRegistryError::Corrupt);
             }
             current = predecessor;
         }
+        validated.extend(visited);
     }
     Ok(())
 }
@@ -1229,9 +1273,15 @@ enum StoredAny {
     V2(StoredV2),
 }
 
+#[derive(Deserialize)]
+struct StoredSchema {
+    schema: u32,
+}
+
 struct Store {
     root: File,
     _lock: File,
+    new_owner_marker: bool,
     payloads: payloads::PayloadState,
     #[cfg(test)]
     fail_directory_sync_after_rename_once: Cell<bool>,
@@ -1242,13 +1292,37 @@ struct Store {
 impl Store {
     fn open(directory: &Path) -> Result<(Self, Option<StoredAny>), DurableRegistryError> {
         let root = prepare_directory(directory)?;
-        let initialized = entry_exists(&root, "registry.lock")?;
-        let lock = open_private(&root, "registry.lock", Access::Create)?;
+        // Serialize bootstrap before a marker exists. Otherwise another opener
+        // could acquire the new marker between its creation and file locking,
+        // strand the creator, and leave an apparently initialized empty store.
+        // The descriptor retains this lock for the owner's complete lifetime.
+        root.try_lock()
+            .map_err(|_| DurableRegistryError::StateLocked)?;
+        let (lock, new_owner_marker) = match open_private(&root, "registry.lock", Access::CreateNew) {
+            Ok(lock) => (lock, true),
+            Err(error) => {
+                if !entry_exists(&root, "registry.lock")? {
+                    return Err(error);
+                }
+                (open_private(&root, "registry.lock", Access::Create)?, false)
+            }
+        };
         lock.try_lock()
             .map_err(|_| DurableRegistryError::StateLocked)?;
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::MetadataExt;
+
+            // A contender can have opened the bootstrap lock before its owner
+            // cleaned it up. It must not serve through that obsolete inode.
+            if lock.metadata().map_err(map_precommit_io)?.nlink() != 1 {
+                return Err(DurableRegistryError::StateLocked);
+            }
+        }
         let mut store = Self {
             root,
             _lock: lock,
+            new_owner_marker,
             payloads: payloads::PayloadState::default(),
             #[cfg(test)]
             fail_directory_sync_after_rename_once: Cell::new(false),
@@ -1257,11 +1331,12 @@ impl Store {
         };
         let has_state = entry_exists(&store.root, "registry.json")?;
         if !has_state {
-            if initialized {
+            if !store.new_owner_marker {
                 return Err(DurableRegistryError::Corrupt);
             }
             return Ok((store, None));
         }
+        store.new_owner_marker = false;
         let mut bytes = Vec::new();
         open_private(&store.root, "registry.json", Access::Read)?
             .take(MAX_STATE_BYTES + 1)
@@ -1270,22 +1345,21 @@ impl Store {
         if u64::try_from(bytes.len()).unwrap_or(u64::MAX) > MAX_STATE_BYTES {
             return Err(DurableRegistryError::Corrupt);
         }
-        let value: serde_json::Value =
+        // Probe only the header without materializing an untrusted JSON tree.
+        // Decode the selected schema directly from bytes so duplicate members
+        // at every typed record level are rejected rather than overwritten.
+        let header: StoredSchema =
             serde_json::from_slice(&bytes).map_err(|_| DurableRegistryError::Corrupt)?;
-        let schema = value
-            .get("schema")
-            .and_then(serde_json::Value::as_u64)
-            .ok_or(DurableRegistryError::Corrupt)?;
-        let stored = match schema {
+        let stored = match header.schema {
             1 => StoredAny::V1(
-                serde_json::from_value(value).map_err(|_| DurableRegistryError::Corrupt)?,
+                serde_json::from_slice(&bytes).map_err(|_| DurableRegistryError::Corrupt)?,
             ),
             2 => StoredAny::V2(
-                serde_json::from_value(value).map_err(|_| DurableRegistryError::Corrupt)?,
+                serde_json::from_slice(&bytes).map_err(|_| DurableRegistryError::Corrupt)?,
             ),
             3 => {
                 let manifest =
-                    serde_json::from_value(value).map_err(|_| DurableRegistryError::Corrupt)?;
+                    serde_json::from_slice(&bytes).map_err(|_| DurableRegistryError::Corrupt)?;
                 let (payloads, state) = payloads::PayloadState::hydrate(&store.root, manifest)?;
                 store.payloads = payloads;
                 StoredAny::V2(state)
@@ -1295,7 +1369,45 @@ impl Store {
         Ok((store, Some(stored)))
     }
 
+    /// Consuming the bootstrap owner prevents any use of an unlinked lock after
+    /// cleanup. Only a marker created by this opener, with no selected state,
+    /// may be removed after a provably pre-rename publication failure.
+    fn initialize(mut self, registry: &PromptRegistry) -> Result<Self, DurableRegistryError> {
+        match self.persist(registry) {
+            Ok(()) => {
+                self.new_owner_marker = false;
+                Ok(self)
+            }
+            Err(error) => {
+                if self.new_owner_marker
+                    && !matches!(error, DurableRegistryError::IndeterminateDurability)
+                {
+                    if entry_exists(&self.root, "registry.json")? {
+                        return Err(DurableRegistryError::Corrupt);
+                    }
+                    #[cfg(unix)]
+                    let cleanup = rustix::fs::unlinkat(
+                        &self.root,
+                        "registry.lock",
+                        rustix::fs::AtFlags::empty(),
+                    )
+                    .map_err(|_| DurableRegistryError::Unavailable)
+                    .and_then(|()| self.root.sync_all().map_err(map_precommit_io));
+                    #[cfg(not(unix))]
+                    let cleanup = Err(DurableRegistryError::UnsafeStateDirectory);
+                    cleanup?;
+                }
+                Err(error)
+            }
+        }
+    }
+
     fn persist(&mut self, registry: &PromptRegistry) -> Result<(), DurableRegistryError> {
+        // Relations have no durable governed write port or storage schema yet.
+        // Publishing their digest without their records would fail every reopen.
+        if !registry.relations.is_empty() {
+            return Err(DurableRegistryError::Corrupt);
+        }
         let successor = self.payloads.successor(registry)?;
         let bytes = serde_json::to_vec(&payloads::StoredV3 {
             schema: 3,
@@ -1336,6 +1448,7 @@ impl Store {
 enum Access {
     Read,
     Create,
+    CreateNew,
 }
 
 #[cfg(unix)]
@@ -1343,11 +1456,11 @@ fn prepare_directory(root: &Path) -> Result<File, DurableRegistryError> {
     use std::os::unix::fs::DirBuilderExt;
     use std::os::unix::fs::MetadataExt;
 
-    if let Err(error) = std::fs::DirBuilder::new().mode(0o700).create(root)
-        && error.kind() != std::io::ErrorKind::AlreadyExists
-    {
-        return Err(DurableRegistryError::Unavailable);
-    }
+    let created = match std::fs::DirBuilder::new().mode(0o700).create(root) {
+        Ok(()) => true,
+        Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => false,
+        Err(_) => return Err(DurableRegistryError::Unavailable),
+    };
     let directory: File = rustix::fs::open(
         root,
         rustix::fs::OFlags::RDONLY
@@ -1367,6 +1480,17 @@ fn prepare_directory(root: &Path) -> Result<File, DurableRegistryError> {
     {
         return Err(DurableRegistryError::UnsafeStateDirectory);
     }
+    if created {
+        // Syncing files and the owner directory cannot make a new directory's
+        // name durable in its parent. Fence that first-publication boundary too.
+        let parent = root
+            .parent()
+            .filter(|parent| !parent.as_os_str().is_empty())
+            .unwrap_or_else(|| Path::new("."));
+        File::open(parent)
+            .and_then(|parent| parent.sync_all())
+            .map_err(map_precommit_io)?;
+    }
     Ok(directory)
 }
 
@@ -1381,7 +1505,11 @@ fn open_private(
     let flags = match access {
         Access::Read => rustix::fs::OFlags::RDONLY,
         Access::Create => rustix::fs::OFlags::RDWR | rustix::fs::OFlags::CREATE,
+        Access::CreateNew => {
+            rustix::fs::OFlags::RDWR | rustix::fs::OFlags::CREATE | rustix::fs::OFlags::EXCL
+        }
     } | rustix::fs::OFlags::NOFOLLOW
+        | rustix::fs::OFlags::NONBLOCK
         | rustix::fs::OFlags::CLOEXEC;
     let file: File = rustix::fs::openat(
         directory,
@@ -2811,3 +2939,7 @@ mod tests {
 #[cfg(all(test, unix))]
 #[path = "durable_payloads_tests.rs"]
 mod payload_tests;
+
+#[cfg(all(test, unix))]
+#[path = "durable_restore_tests.rs"]
+mod restore_tests;
