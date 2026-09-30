@@ -1,7 +1,10 @@
 use std::time::Duration;
 
 use super::DispatchClock;
+use super::MAX_WALL_CLOCK_DISCONTINUITY_MS;
 use super::OutboxDispatchError;
+use super::WallClockDiscontinuity;
+use super::classify_wall_discontinuity;
 
 #[tokio::test]
 async fn elapsed_work_advances_observation_time() {
@@ -34,4 +37,34 @@ async fn durable_time_overflow_is_rejected() {
     let clock = DispatchClock::new(i64::MAX as u64);
     tokio::time::sleep(Duration::from_millis(2)).await;
     assert_eq!(clock.now_ms(), Err(OutboxDispatchError::Invalid));
+}
+
+#[test]
+fn bounded_wall_corrections_are_not_incidents() {
+    assert_eq!(
+        classify_wall_discontinuity(10_000, 10_000 + MAX_WALL_CLOCK_DISCONTINUITY_MS),
+        WallClockDiscontinuity::Stable
+    );
+    assert_eq!(
+        classify_wall_discontinuity(10_000, 10_000 - MAX_WALL_CLOCK_DISCONTINUITY_MS),
+        WallClockDiscontinuity::Stable
+    );
+}
+
+#[test]
+fn forward_jump_is_a_closed_sender_boundary() {
+    let divergence = MAX_WALL_CLOCK_DISCONTINUITY_MS + 1;
+    assert_eq!(
+        classify_wall_discontinuity(10_000, 10_000 + divergence),
+        WallClockDiscontinuity::Forward(divergence)
+    );
+}
+
+#[test]
+fn rollback_is_classified_without_reopening_monotonic_time() {
+    let divergence = MAX_WALL_CLOCK_DISCONTINUITY_MS + 1;
+    assert_eq!(
+        classify_wall_discontinuity(10_000, 10_000 - divergence),
+        WallClockDiscontinuity::Backward(divergence)
+    );
 }
