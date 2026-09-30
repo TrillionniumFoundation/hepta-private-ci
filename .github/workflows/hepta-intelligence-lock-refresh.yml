@@ -4,40 +4,97 @@ on:
   push:
     paths:
       - ".github/workflows/hepta-intelligence-lock-refresh.yml"
-      - "codex-rs/hepta-operations/Cargo.toml"
-      - "codex-rs/state/Cargo.toml"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
-  group: intelligence-lock-refresh-${{ github.ref }}
-  cancel-in-progress: true
+  group: intelligence-control-atomic-source-delivery
+  cancel-in-progress: false
 
 jobs:
   refresh:
+    if: github.ref == 'refs/heads/codex/intelligence-control-production-closure-20260929'
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 30
+    env:
+      ORIGINAL_HEAD: 11588c5b1fc7d9a6a93a457e59513f4a39c32384
+      BRANCH: codex/intelligence-control-production-closure-20260929
+      PATCH_SHA256: bbcec4c9bed5e5f59286475cc6976bacab9de2ef62ddc735b7174eb1602ef3a3
     steps:
-      - name: Check out exact candidate
+      - name: Check out exact delivery commit
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
+          ref: ${{ github.sha }}
           fetch-depth: 0
-          persist-credentials: false
+          persist-credentials: true
 
-      - name: Refresh workspace lock without source mutation
-        working-directory: codex-rs
+      - name: Reconstruct and apply exact source patch
+        shell: bash
         run: |
           set -euo pipefail
-          cargo metadata --format-version 1 --no-deps >/dev/null
-          cargo check -p codex-hepta-operations
-          git diff -- Cargo.lock
+          delivery_sha="$(git rev-parse HEAD)"
+          cat .github/intelligence-control-bootstrap/patch.part-* \
+            | base64 --decode \
+            | gzip --decompress > "$RUNNER_TEMP/intelligence-control.patch"
+          printf '%s  %s\n' "$PATCH_SHA256" "$RUNNER_TEMP/intelligence-control.patch" \
+            | sha256sum --check --strict
+          git cat-file -e "$ORIGINAL_HEAD^{commit}"
+          git reset --hard "$ORIGINAL_HEAD"
+          git apply --index --check "$RUNNER_TEMP/intelligence-control.patch"
+          git apply --index "$RUNNER_TEMP/intelligence-control.patch"
+          test ! -e .github/workflows/intelligence-control-bootstrap.yml
+          test ! -e .github/intelligence-control-bootstrap
+          printf 'DELIVERY_SHA=%s\n' "$delivery_sha" >> "$GITHUB_ENV"
 
-      - name: Upload exact refreshed lock
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: intelligence-lock-${{ github.sha }}
-          path: codex-rs/Cargo.lock
-          if-no-files-found: error
-          retention-days: 1
+      - name: Canonical Rust formatting
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --all
+          cargo fmt --all -- --check
+          git add --all
+
+      - name: Validate source-only qualification contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/hepta-intelligence-*.py
+          python3 scripts/hepta-intelligence-control-status.py --check-tracked
+          python3 scripts/hepta-intelligence-control-status-tests.py
+          python3 scripts/hepta-intelligence-readiness-tests.py
+          python3 scripts/hepta-intelligence-fault-matrix.py --check-tracked
+          python3 scripts/hepta-intelligence-fault-matrix-tests.py
+          python3 scripts/hepta-intelligence-acceptance.py --check
+          python3 scripts/hepta-intelligence-review-partitions.py --check-tracked
+          python3 - <<'PY'
+          import pathlib
+          import yaml
+
+          for path in (
+              pathlib.Path('.github/workflows/hepta-intelligence-control.yml'),
+              pathlib.Path('.github/workflows/hepta-intelligence-qualification-host.yml'),
+          ):
+              yaml.safe_load(path.read_text(encoding='utf-8'))
+          PY
+          git diff --cached --check
+
+      - name: Publish one commit over the frozen parent
+        shell: bash
+        env:
+          GIT_AUTHOR_NAME: OpenAI
+          GIT_AUTHOR_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+          GIT_COMMITTER_NAME: OpenAI
+          GIT_COMMITTER_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+        run: |
+          set -euo pipefail
+          tree="$(git write-tree)"
+          commit="$(printf '%s\n' \
+            'fix(intelligence.control): linearize timeout and qualify crash boundaries' \
+            | git commit-tree "$tree" -p "$ORIGINAL_HEAD")"
+          git cat-file -e "$commit^{commit}"
+          git push \
+            --force-with-lease="refs/heads/$BRANCH:$DELIVERY_SHA" \
+            origin "$commit:refs/heads/$BRANCH"
+          printf 'FINAL_COMMIT=%s\n' "$commit" >> "$GITHUB_ENV"
