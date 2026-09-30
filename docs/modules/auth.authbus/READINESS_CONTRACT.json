@@ -1,0 +1,72 @@
+{
+  "failurePolicy": {
+    "cancelled": "fail_closed",
+    "crossAttempt": "reject",
+    "crossCandidate": "reject",
+    "failed": "fail_closed",
+    "missing": "fail_closed",
+    "pending": "fail_closed",
+    "queued": "fail_closed",
+    "skipped": "fail_closed"
+  },
+  "identityRules": {
+    "artifactDigestsRequired": true,
+    "baseEqualsSyntheticMergeFirstParent": true,
+    "externalEvidenceNamesCandidateOrFinalMerge": true,
+    "githubMergeEqualsVerifiedSyntheticMerge": true,
+    "sourceAndMergeSameWorkflowAttempt": true,
+    "sourceHeadEqualsSyntheticMergeSecondParent": true,
+    "targetIdentityMatchesAcrossFaultAndPerformanceEvidence": true
+  },
+  "maximumDecision": "approved_for_canary",
+  "module": "auth.authbus",
+  "requiredFields": [
+    "source_head_sha",
+    "base_sha",
+    "deterministic_merge_sha",
+    "github_merge_sha",
+    "final_merge_sha",
+    "workflow_run_id",
+    "attempt_id",
+    "runner_image",
+    "rust_toolchain",
+    "target_triple",
+    "Cargo.lock_hash",
+    "migration_hash",
+    "source_tree_hash",
+    "documentation_hash",
+    "test_set_hash",
+    "qualification_profile_hash",
+    "artifact_hashes",
+    "target_host_identity"
+  ],
+  "requiredLanes": [
+    "source_head",
+    "deterministic_merge",
+    "github_merge",
+    "final_merge",
+    "target_host",
+    "performance",
+    "kms_hsm",
+    "backup_restore",
+    "dual_owner_mount",
+    "security_signature",
+    "operator_signature"
+  ],
+  "schema": "hepta.authbus.readiness-contract.v1",
+  "sourceOfTruth": {
+    "aggregation": "scripts/authbus-readiness-manifest.py",
+    "binding": "scripts/authbus-evidence-projection.py",
+    "committedBoundArtifacts": false,
+    "committedCandidateIdentity": false,
+    "crossRunAggregation": false,
+    "static": "docs/modules/auth.authbus/IMPLEMENTATION_MAP.json"
+  },
+  "staticDecision": {
+    "approvedForCanary": false,
+    "mergeReady": false,
+    "productionActivated": false,
+    "productionQualified": false,
+    "release": false
+  }
+}
