@@ -1,0 +1,136 @@
+name: Prompt registry governed-surface author v6
+
+on:
+  push:
+    branches: [ops/prompt-registry-full-closeout-author-20260929]
+    paths:
+      - .github/workflows/prompt-registry-full-closeout-author-v6.yml
+      - .github/scripts/prompt_registry_close_public_surface.py
+
+permissions:
+  contents: write
+
+jobs:
+  author:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    env:
+      TARGET_BRANCH: codex/prompt-registry-full-closeout-20260929
+      EXPECTED_HEAD: 8825996f927ca1cb3e1271ffcce0261ce25b398e
+      CARGO_INCREMENTAL: '0'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.TARGET_BRANCH }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Bind exact predecessor
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test -z "$(git status --porcelain)"
+
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+
+      - name: Prepare native dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+
+      - name: Resolve existing checksum-verified inputs
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+
+      - name: Apply governed public surface closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          author=.github/scripts/_prompt_registry_close_public_surface.py
+          curl --fail --silent --show-error \
+            -H "Authorization: Bearer ${{ github.token }}" \
+            -H "Accept: application/vnd.github.raw+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/contents/.github/scripts/prompt_registry_close_public_surface.py?ref=${GITHUB_SHA}" \
+            -o "$author"
+          python3 "$author"
+          rm -f "$author"
+          (cd codex-rs && cargo fmt --all)
+          git diff --check
+          ! grep -R -n --include='*.rs' \
+            'pub fn register_factor(' codex-rs/hepta-prompt-registry/src/durable.rs
+          ! grep -R -n --include='*.rs' \
+            'pub fn register_factor_relation(' codex-rs/hepta-prompt-registry/src/durable.rs
+          ! grep -R -n \
+            'pub use prompt_runtime::AgentdPromptRuntimeOwner' codex-rs/hepta-agentd/src/lib.rs
+
+      - name: Test governed registry and Agentd composition
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo fmt --all -- --check
+          cargo test --locked -p codex-hepta-prompt-registry
+          cargo test --locked -p codex-hepta-agentd prompt_runtime --lib
+          cargo check --locked -p codex-hepta-agentd --all-targets
+          cargo clippy --locked -p codex-hepta-prompt-registry -p codex-hepta-agentd \
+            --all-targets --no-deps -- -D warnings
+
+      - name: Commit source closure
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git config commit.gpgsign false
+          git add -A
+          git diff --cached --check
+          git -c commit.gpgsign=false commit --no-verify \
+            -m 'prompt.registry: close raw mutation and runtime host capability bypasses'
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "tree=$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
+
+      - name: Generate exact implementation truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-prompt-registry-map.py --write
+          git diff --check
+          git add docs/modules/prompt.registry/IMPLEMENTATION_MAP.json \
+                  docs/modules/prompt.registry/QUALIFICATION_STATUS.md
+          git diff --cached --check
+          git -c commit.gpgsign=false commit --no-verify \
+            -m 'docs(prompt.registry): bind governed public capability surface'
+          python3 scripts/hepta-prompt-registry-map.py --check
+
+      - name: Push exact candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git push origin "HEAD:$TARGET_BRANCH"
+          printf 'predecessor=%s\nsource=%s\nsource_tree=%s\ncandidate=%s\ncandidate_tree=%s\n' \
+            "$EXPECTED_HEAD" \
+            '${{ steps.source.outputs.sha }}' \
+            '${{ steps.source.outputs.tree }}' \
+            "$(git rev-parse HEAD)" \
+            "$(git rev-parse HEAD^{tree})" \
+            | tee "$RUNNER_TEMP/prompt-registry-v6.txt"
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-registry-governed-surface-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/prompt-registry-v6.txt
+          if-no-files-found: error
+          retention-days: 30
