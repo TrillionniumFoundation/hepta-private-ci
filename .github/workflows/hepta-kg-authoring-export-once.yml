@@ -22,7 +22,7 @@ env:
 
 jobs:
   close:
-    name: Validate and commit ordinary source once
+    name: Validate, bind and commit ordinary source once
     runs-on: ubuntu-24.04
     timeout-minutes: 180
     steps:
@@ -89,28 +89,61 @@ jobs:
           cargo clippy --locked -p codex-hepta-kg -p codex-hepta-memory \
             --no-deps --all-targets -- -D warnings
 
-      - name: Prove bounded ordinary-source change
-        shell: bash
-        run: |
-          set -euo pipefail
-          git diff --check
-          test -n "$(git status --porcelain --untracked-files=no)"
-          if git diff --name-only | grep -E '(^|/)(.*\.patch\.(gz\.)?b64|.*\.patch$)' ; then
-            echo "encoded or tracked patch payload is not an authoring result" >&2
-            exit 1
-          fi
-          git diff --name-only
-
-      - name: Commit exact result and remove authoring seam
+      - name: Commit exact ordinary source and remove authoring seam
         shell: bash
         run: |
           set -euo pipefail
           git fetch origin work/kg-abc-evidence-hardening-20260928
           test "$(git rev-parse FETCH_HEAD)" = "$GITHUB_SHA"
+          git diff --check
+          if git diff --name-only | grep -E '(^|/)(.*\.patch\.(gz\.)?b64|.*\.patch$)' ; then
+            echo "encoded or tracked patch payload is not an authoring result" >&2
+            exit 1
+          fi
           rm -f .github/workflows/hepta-kg-authoring-export-once.yml
           rm -f scripts/test_hepta_kg_authoring_export_once.py
           git add -A
           git diff --cached --check
           test -n "$(git diff --cached --name-only)"
+          git diff --cached --name-only
           git commit -s -m "fix(knowledge.graph): close source formatting and query exports"
+          printf 'source_commit=%s\nsource_tree=%s\n' \
+            "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})" \
+            | tee "$RUNNER_TEMP/kg-source-identity.txt"
+
+      - name: Regenerate exact source metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py migrate --module knowledge.graph
+          python3 scripts/hepta_kg_documentation_sync.py --apply
+          python3 scripts/hepta_kg_status.py --apply
+          git add \
+            docs/modules/knowledge.graph \
+            qualification/knowledge-graph \
+            qualification/module-execution-dossiers/detail/knowledge.graph.md
+          git diff --cached --check
+          if ! git diff --cached --quiet; then
+            git commit -s -m "docs(knowledge.graph): bind exact source observation"
+          fi
+
+      - name: Verify final immutable metadata head
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_kg_status.py --check
+          python3 scripts/hepta_kg_documentation_sync.py --check
+          python3 scripts/hepta_knowledge_graph_map_verify.py \
+            --expected-sha "$(git rev-parse HEAD)" \
+            --expected-tree "$(git rev-parse HEAD^{tree})"
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Push exact fast-forward result
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin work/kg-abc-evidence-hardening-20260928
+          test "$(git rev-parse FETCH_HEAD)" = "$GITHUB_SHA"
           git push origin HEAD:work/kg-abc-evidence-hardening-20260928
