@@ -6,6 +6,33 @@ and completes the selected-host recovery and capacity rules in
 [`RECOVERY_CONTRACT.md`](RECOVERY_CONTRACT.md); it does not weaken any existing
 holdout, archive, publication, authority or external-evidence requirement.
 
+## Selected-host final-use activation
+
+Every public selected-host qualification and selected-host archive-recovery
+entrypoint accepts `ActivatedLearningTrustV1`, not a caller-constructed bare
+`LearningEvidenceVerifierV1`. The activation must have been produced by
+`learning.ledger::activate_learning_trust` from a pinned root and an exact
+root-signed immutable distribution.
+
+Immediately before the selected-host archive or publication boundary,
+`learning.eval` validates the host-sampled time against the activation's
+`effective_at` and signed distribution `expires_at`, and rejects zero or invalid
+root, distribution, scope, objective, trust or authority-epoch identity. This
+check occurs before creating or opening the selected-host publication adapter.
+The selected-host path then passes only the verifier contained in that admitted
+activation to the internal V2/V3 verification primitive.
+
+An activation object is not a permanently live capability. The owner must refresh
+root/distribution state to observe a later revocation or an independently
+authorized root-rotation ceremony. A previously activated distribution that has
+expired at final use is rejected even if its embedded evidence signatures would
+otherwise remain structurally valid.
+
+Owner-local generic evaluator helpers may still receive an already host-owned
+verifier beneath the selected-host adapter. Their existence does not permit a
+selected-host caller to bypass root activation, and it does not authenticate a
+real deployment host.
+
 ## Per-attempt current trust at recovery use
 
 A persistent recovery page must not receive one bare
@@ -18,7 +45,7 @@ scope, generation and authority-epoch checks owned by `learning.ledger`.
 Within one page, `learning.eval` enforces all of the following:
 
 - host time is monotonic;
-- the activated distribution is effective at the sampled time;
+- the activated distribution is effective and not expired at the sampled time;
 - root identity remains exact;
 - distribution generation, effective time and authority epoch do not regress;
 - one generation cannot silently change distribution digest;
@@ -75,7 +102,8 @@ The source regressions exercise:
 - plan-identity conflict and missing-consumption rejection without poisoning;
 - accepted-but-unacknowledged anchor CAS with mandatory reopen;
 - every legal lifecycle prefix followed by one process restart;
-- exact replay, reservation conservation and monotonic anchor advancement.
+- exact replay, reservation conservation and monotonic anchor advancement;
+- root-signed selected-host activation, signer revocation and distribution expiry.
 
 These tests establish repository source behavior only. The selected host still
 must qualify the independent anchor authority and the durability/failure domains
