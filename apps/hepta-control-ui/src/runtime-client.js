@@ -153,6 +153,9 @@ export class RuntimeClient {
       );
     }
 
+    if (this.#ledger.setIdentity(normalized.identityId)) {
+      this.#recoveryScheduler = new RecoveryScheduler(this.#clock);
+    }
     this.#session = normalized;
     this.#snapshot = null;
     this.#lastSnapshot = null;

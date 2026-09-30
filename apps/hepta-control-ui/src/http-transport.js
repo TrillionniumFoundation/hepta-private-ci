@@ -3,7 +3,9 @@ import {
   assertSafeInteger,
   assertSha256,
   assertStableIdentifier,
+  canonicalJson,
 } from "./canonical.js";
+import { assertPlainObject } from "./runtime-contract.js";
 import {
   UI_CONTROL_ERROR_CODES,
   UiControlError,
@@ -13,11 +15,22 @@ import {
 
 const encoder = new TextEncoder();
 const MAX_RESPONSE_BYTES = 1024 * 1024;
+const MAX_REQUEST_BYTES = 64 * 1024;
 const JSON_CONTENT_TYPE = /^application\/(?:[a-z0-9.+-]+\+)?json(?:\s*;|$)/iu;
 const SAFE_BACKEND_CODE = /^[A-Za-z0-9._:-]{1,128}$/u;
 
 function invalid(message, details) {
   return uiControlError(UI_CONTROL_ERROR_CODES.INVALID_INPUT, message, { details });
+}
+
+function preparationFailure(cause) {
+  const error = asUiControlError(cause, UI_CONTROL_ERROR_CODES.INVALID_INPUT,
+    "ui.control request preparation failed before dispatch");
+  return uiControlError(error.code, error.message, {
+    retryable: error.retryable,
+    details: { ...error.details, requestDispatched: false },
+    cause,
+  });
 }
 
 function anySignal(signals) {
@@ -258,11 +271,20 @@ export class SameOriginHttpTransport {
   }
 
   async request(method, input, { signal } = {}) {
-    assertCanonicalText(method, "method", { maxBytes: 64 });
+    try {
+      assertCanonicalText(method, "method", { maxBytes: 64 });
+      assertPlainObject(input, "mutation envelope");
+      if (input.method !== undefined && input.method !== method) {
+        throw invalid("mutation envelope cannot replace its transport method");
+      }
+      input = Object.freeze({ ...input });
+    } catch (cause) {
+      throw preparationFailure(cause);
+    }
     try {
       return await this.#fetchJson("operations", {
         method: "POST",
-        body: { method, ...input },
+        body: { ...input, method },
         signal,
         mutation: true,
         requestId: input.operationId,
@@ -374,40 +396,39 @@ export class SameOriginHttpTransport {
       requestId = globalThis.crypto.randomUUID(),
     },
   ) {
-    const url = new URL(path, this.#baseUrl);
-    if (url.origin !== this.#origin || !url.href.startsWith(this.#baseUrl.href)) {
-      throw invalid("transport path escaped the same-origin API base", { path });
-    }
-    let csrfToken = null;
-    if (csrf) {
-      const providedToken = this.#csrfTokenProvider();
-      if (typeof providedToken !== "string" || providedToken.length === 0) {
-        throw uiControlError(
-          UI_CONTROL_ERROR_CODES.PERMISSION_DENIED,
-          "POST request requires a CSRF token",
-          { details: { requestDispatched: false } },
-        );
-      }
-      csrfToken = assertCanonicalText(providedToken, "CSRF token", { maxBytes: 512 });
-    }
-    if (signal?.aborted) {
-      throw uiControlError(UI_CONTROL_ERROR_CODES.ABORTED, "request was aborted before dispatch", {
-        retryable: true,
-        details: { requestDispatched: false },
-      });
-    }
-
+    let url;
     let serializedBody;
-    if (body !== undefined) {
-      try {
-        serializedBody = JSON.stringify(body);
-      } catch (cause) {
-        throw uiControlError(
-          UI_CONTROL_ERROR_CODES.INVALID_INPUT,
-          "request body is not JSON serializable",
-          { details: { requestDispatched: false }, cause },
-        );
+    let requestHeader;
+    let csrfToken = null;
+    try {
+      url = new URL(path, this.#baseUrl);
+      if (url.origin !== this.#origin || !url.href.startsWith(this.#baseUrl.href)) {
+        throw invalid("transport path escaped the same-origin API base", { path });
       }
+      if (csrf) {
+        const providedToken = this.#csrfTokenProvider();
+        if (typeof providedToken !== "string" || providedToken.length === 0) {
+          throw uiControlError(
+            UI_CONTROL_ERROR_CODES.PERMISSION_DENIED,
+            "POST request requires a CSRF token",
+            { details: { requestDispatched: false } },
+          );
+        }
+        csrfToken = assertCanonicalText(providedToken, "CSRF token", { maxBytes: 512 });
+      }
+      if (signal?.aborted) {
+        throw uiControlError(UI_CONTROL_ERROR_CODES.ABORTED, "request was aborted before dispatch", {
+          retryable: true,
+          details: { requestDispatched: false },
+        });
+      }
+
+      if (body !== undefined) {
+        serializedBody = canonicalJson(body, { maxEncodedBytes: MAX_REQUEST_BYTES });
+      }
+      requestHeader = assertStableIdentifier(requestId, "requestId", { maxBytes: 192 });
+    } catch (cause) {
+      throw preparationFailure(cause);
     }
 
     const timeout = new AbortController();
@@ -428,9 +449,7 @@ export class SameOriginHttpTransport {
         headers: {
           accept: "application/json",
           ...(serializedBody === undefined ? {} : { "content-type": "application/json" }),
-          "x-hepta-request-id": assertStableIdentifier(requestId, "requestId", {
-            maxBytes: 192,
-          }),
+          "x-hepta-request-id": requestHeader,
           ...(csrfToken ? { "x-hepta-csrf-token": csrfToken } : {}),
         },
         body: serializedBody,
@@ -439,6 +458,8 @@ export class SameOriginHttpTransport {
       validateResponseHeaders(response);
       text = await readResponseText(response, combinedSignal);
     } catch (cause) {
+      // Header/decoder rejection must stop an unread or unfinished body too.
+      if (response?.body) void response.body.cancel(cause).catch(() => {});
       if (combinedSignal?.aborted) {
         const code = mutation
           ? UI_CONTROL_ERROR_CODES.AMBIGUOUS_SUBMISSION

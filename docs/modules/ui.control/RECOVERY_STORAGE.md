@@ -17,6 +17,8 @@ The directory contains only sorted operation IDs and local maintenance states. I
 
 The default scope capacity remains 1,024 records, with a hard configurable maximum of 4,096. Each operation record remains bounded to 8,192 bytes. The directory is bounded to 1 MiB. These are resource limits, not evidence that a runtime operation is accepted or complete.
 
+The live client's pending and completed projections, recovery exports and lookups use the authenticated identity too. Switching to another identity retains the original in-memory records but excludes them from the new identity's view and automatic recovery. Returning to the original identity restores their visibility, including acknowledgements that arrived during the switch. The total pending capacity applies across retained identity scopes; changing identity cannot allocate another capacity allowance. Scoped imports must happen after authentication, except that an initial pre-connect import binds to the first authenticated identity. No identity is added to the wire protocol or used as backend authorization evidence.
+
 ## Directory states
 
 | State | Meaning | Recovery rule |

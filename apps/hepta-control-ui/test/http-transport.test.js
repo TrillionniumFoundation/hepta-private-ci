@@ -245,3 +245,66 @@ test("successful responses require an explicit JSON media type", async () => {
     error => error instanceof UiControlError && error.code === UI_CONTROL_ERROR_CODES.TRANSPORT,
   );
 });
+
+test("invalid pre-dispatch CSRF has a definite unsent outcome", async () => {
+  let calls = 0;
+  const transport = new SameOriginHttpTransport({ origin: "https://control.example",
+    csrfTokenProvider: () => "csrf\ninvalid", fetchImpl: async () => { calls += 1; return response({}); } });
+  await assert.rejects(transport.request("runtime/stop", { operationId: "unsent-operation" }),
+    error => error.code === UI_CONTROL_ERROR_CODES.INVALID_INPUT && error.details.requestDispatched === false);
+  assert.equal(calls, 0);
+});
+
+test("request serialization rejects accessors and toJSON without running them", async () => {
+  let effects = 0;
+  const transport = new SameOriginHttpTransport({ origin: "https://control.example",
+    csrfTokenProvider: () => "csrf-token", fetchImpl: async () => { effects += 1; return response({}); } });
+  for (const body of [{ get client() { effects += 1; return "unsafe"; } },
+    { toJSON() { effects += 1; return {}; } }]) {
+    await assert.rejects(transport.connect(body), error =>
+      error.code === UI_CONTROL_ERROR_CODES.INVALID_INPUT && error.details.requestDispatched === false);
+  }
+  assert.equal(effects, 0);
+});
+
+test("an oversized request is rejected before network dispatch", async () => {
+  let calls = 0;
+  const transport = new SameOriginHttpTransport({ origin: "https://control.example",
+    csrfTokenProvider: () => "csrf-token", fetchImpl: async () => { calls += 1; return response({}); } });
+  await assert.rejects(transport.connect({ padding: "x".repeat(64 * 1024) }), error =>
+    error.code === UI_CONTROL_ERROR_CODES.INVALID_INPUT && error.details.requestDispatched === false);
+  assert.equal(calls, 0);
+});
+
+test("mutation envelope validation cannot invoke accessors or overwrite its method", async () => {
+  let effects = 0;
+  const transport = new SameOriginHttpTransport({ origin: "https://control.example",
+    csrfTokenProvider: () => "csrf-token", fetchImpl: async () => { effects += 1; return response({}); } });
+  for (const body of [{ operationId: "method-operation", method: "runtime/start" },
+    { get operationId() { effects += 1; return "getter-operation"; } }]) {
+    await assert.rejects(transport.request("runtime/stop", body), error =>
+      error.code === UI_CONTROL_ERROR_CODES.INVALID_INPUT && error.details.requestDispatched === false);
+  }
+  assert.equal(effects, 0);
+});
+
+test("header rejection cancels the unread response stream", async () => {
+  let cancelled = false;
+  const transport = new SameOriginHttpTransport({ origin: "https://control.example",
+    csrfTokenProvider: () => "csrf-token", fetchImpl: async () => new Response(new ReadableStream({
+      pull() { return new Promise(() => {}); }, cancel() { cancelled = true; },
+    }), { headers: { "content-type": "text/plain" } }) });
+  await assert.rejects(transport.connect({}), { code: UI_CONTROL_ERROR_CODES.TRANSPORT });
+  assert.equal(cancelled, true);
+});
+
+test("UTF-8 rejection cancels the unfinished response stream", async () => {
+  let cancelled = false;
+  const transport = new SameOriginHttpTransport({ origin: "https://control.example",
+    csrfTokenProvider: () => "csrf-token", fetchImpl: async () => new Response(new ReadableStream({
+      start(controller) { controller.enqueue(new Uint8Array([0xff])); },
+      pull() { return new Promise(() => {}); }, cancel() { cancelled = true; },
+    }), { headers: { "content-type": "application/json" } }) });
+  await assert.rejects(transport.connect({}), { code: UI_CONTROL_ERROR_CODES.TRANSPORT });
+  assert.equal(cancelled, true);
+});

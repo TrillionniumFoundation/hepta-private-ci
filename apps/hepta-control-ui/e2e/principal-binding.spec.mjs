@@ -109,3 +109,55 @@ test("fixture ledger binds one operation identity to one admitted session", asyn
 
   await other.close();
 });
+
+test("one live client isolates recovery when the console changes principal", async ({ page, request }) => {
+  // Recreate the actual console over one retained client, without also starting
+  // the default bootstrap's separate controller over the same DOM.
+  await page.route("**/main.js", route => route.fulfill({
+    contentType: "text/javascript", body: "export {};",
+  }));
+  await bindTabSession(page, { identityId: "operator-first", sessionId: "session-first" });
+  await page.goto("/");
+  await page.evaluate(async () => {
+    const { RuntimeClient, SameOriginHttpTransport, SessionProvider, createControlConsole } =
+      await import("/src/index.js");
+    const transport = new SameOriginHttpTransport({
+      csrfTokenProvider: () => document.querySelector('meta[name="csrf-token"]').content,
+    });
+    const client = new RuntimeClient({ transport });
+    globalThis.principalClient = client;
+    globalThis.openPrincipalConsole = async () => {
+      const sessionProvider = new SessionProvider({ client, endpointManifest: {} });
+      const app = createControlConsole({ client, sessionProvider,
+        recoveryEndpoint: new URL("/api/ui-control/v1/", location.origin).href,
+        pollIntervalMs: 60_000 });
+      globalThis.principalConsole = app;
+      await app.start();
+    };
+    await globalThis.openPrincipalConsole();
+  });
+  await submit(page, "Preserve this operation under its original principal.");
+  await expect(page.locator("#pending-list")).toContainText("pending");
+  const original = await (await request.get("/__test__/state")).json();
+  expect(original.requestCount).toBe(1);
+
+  for (const binding of [
+    { identityId: "operator-second", sessionId: "session-second" },
+    { identityId: "operator-first", sessionId: "session-first" },
+  ]) {
+    await page.evaluate(() => globalThis.principalConsole.destroy());
+    for (const path of ["session/connect", "session/refresh", "view"]) {
+      await page.unroute(`**/api/ui-control/v1/${path}`);
+    }
+    await bindTabSession(page, binding);
+    await page.evaluate(() => globalThis.openPrincipalConsole());
+    await expect(page.locator("#identity-state")).toHaveText(binding.identityId);
+    await expect(page.getByText("Connected", { exact: true })).toBeVisible();
+    const pendingCount = await page.evaluate(() => globalThis.principalClient.readView().pendingCount);
+    expect(pendingCount).toBe(binding.identityId === "operator-first" ? 1 : 0);
+    expect(await page.evaluate(() => Object.keys(localStorage)
+      .filter(key => key.startsWith("hepta.ui-control.scoped-recovery.v2:")).length)).toBe(1);
+    expect((await (await request.get("/__test__/state")).json()).requestCount).toBe(1);
+  }
+  await page.evaluate(() => globalThis.principalConsole.destroy());
+});

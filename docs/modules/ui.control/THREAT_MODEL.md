@@ -37,11 +37,13 @@
 | Cross-site scripting | No `innerHTML`, `outerHTML`, `insertAdjacentHTML`, `document.write`, `eval`, or inline executable script; use `textContent`; strict CSP. |
 | Clickjacking | `frame-ancestors 'none'` and `X-Frame-Options: DENY`. |
 | Identity substitution during refresh | Require the refreshed session ID and authenticated identity to match the active session; fail closed on identity drift. |
+| Previous-identity recovery after login switch | Filter pending/completed projections, exports and lookup by the current authenticated identity; retain original records and apply one total pending-capacity bound. |
 | Hidden permission change or revision rollback | Reject permission revision regression and reject permission-set drift at an unchanged permission revision. |
 | Refresh/close/revoke race | Fence in-flight refresh against the active session object; clear local authority before transport cleanup so a failed close or revoke cannot preserve control access. |
 | Snapshot equivocation | Same generation/revision with a different semantic digest is `UI_CONTROL_SNAPSHOT_DRIFT`. |
 | Prototype pollution / hostile JSON | Plain objects only, forbidden prototype keys, bounded depth/entries/bytes, safe integers, NFC text, control/bidi-invisible rejection. |
-| Response amplification or slow body | One-megabyte response bound and timeout coverage across both response headers and body consumption. |
+| Request serialization side effects or amplification | Validate plain JSON without executing getters or `toJSON`, enforce a 64 KiB encoded request ceiling, and reject mutation-method substitution before dispatch. |
+| Response amplification or slow body | One-megabyte response bound and timeout coverage across both response headers and body consumption; cancel unread or unfinished bodies when validation rejects them. |
 | Credential or token persistence | Credentials stay in HttpOnly cookies; the CSRF token may exist only in the protected live bootstrap and in-memory transport provider, and is never exported to recovery or browser persistence. |
 | DOM scraping or shoulder-surfing of correlation material | Render session, operation, audit-trace, snapshot, semantic, and outcome identifiers in a deterministic redacted form by default. Keep full values in authority-free client state and transport objects rather than DOM text, attributes, or live-region messages. The authenticated operator identity remains visible so the operator can detect account confusion. |
 | Unexpected exception reflection | Render raw messages only from the bounded typed error taxonomy. Replace unknown exception messages with a generic operator-safe failure while retaining the original cause outside the DOM. |

@@ -66,6 +66,8 @@ The transition validator enforces:
 1. Same generation and revision with a different semantic digest is snapshot drift and is rejected.
 1. Session identity cannot change during refresh; permission revision cannot regress or conceal permission drift.
 1. Revoke, close, and stopped refresh paths remove local control authority even when transport cleanup fails.
+1. Retained in-memory operations, completed history, exports and lookups are scoped to the authenticated identity; switching identities preserves original records and does not bypass the total pending capacity.
+1. HTTP request bodies are validated bounded canonical JSON of at most 64 KiB; pre-dispatch failures declare requestDispatched=false, and rejected response bodies are cancelled.
 1. Local recovery storage failure is visible but cannot wedge or authorize a control request.
 1. Session, operation, audit-trace, snapshot, semantic, and outcome correlation identifiers are rendered only in deterministic redacted form; full values remain outside DOM text and attributes.
 1. Control actions are disabled while the displayed view is stale or the session lacks the required permission.
@@ -128,7 +130,7 @@ Canonicalization accepts only bounded plain JSON values, safe integers, NFC stri
 
 The client requires an authenticated session with an exact protocol version, expiry, permission revision, connection generation, stable identity, and explicit permissions. Session refresh may increase permission revision or connection generation; a changed connection generation invalidates the displayed snapshot. Revocation and expiry disable control operations.
 
-`SameOriginHttpTransport` enforces same-origin API paths, credentials-included requests, no-store caching, redirect rejection, bounded JSON responses, request IDs, CSRF on mutations, timeout/abort typing, and no automatic mutation retries. A network error after dispatch is ambiguous, not failed.
+`SameOriginHttpTransport` enforces same-origin API paths, credentials-included requests, no-store caching, redirect rejection, 64 KiB canonical JSON requests, one-megabyte JSON responses, explicit pre-dispatch failure classification, request IDs, CSRF on mutations, timeout/abort typing, and no automatic mutation retries. A network error after dispatch is ambiguous, not failed.
 
 ## 8. Browser interaction and accessibility
 

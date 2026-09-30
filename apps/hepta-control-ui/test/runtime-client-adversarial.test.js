@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { RuntimeClient, UI_CONTROL_ERROR_CODES as C } from "../src/index.js";
+import { RuntimeClient, SameOriginHttpTransport, UI_CONTROL_ERROR_CODES as C } from "../src/index.js";
 import { createTransport, deferred, session, snapshot, DIGEST_C } from "./helpers.js";
 
 const input = () => ({ operationId: "audit-operation", action: "request_reconcile",
@@ -310,5 +310,117 @@ test("a rejection outcome stays immutable while recovery cleanup awaits", async 
     acknowledgement.accepted = true;
   } }));
   await assert.rejects(client.submitRequest(input()), error => error.code === C.BACKEND_REJECTED);
+  assert.equal(client.readView().pendingCount, 0);
+});
+
+async function switchIdentity(client, transport, identityId) {
+  await client.close();
+  transport.state.session = session({ identityId, sessionId: `session-${identityId}` });
+  transport.state.snapshot = snapshot({ sessionId: `session-${identityId}` });
+  await client.connect({});
+  await client.refreshView();
+}
+
+test("another principal cannot view, export or automatically query retained operations", async () => {
+  const { client, transport } = await ready();
+  const admitted = await client.submitRequest(input());
+  await switchIdentity(client, transport, "operator-2");
+  assert.equal(client.readView().pendingCount, 0);
+  assert.equal(client.exportRecoveryState().operations.length, 0);
+  assert.deepEqual(await client.recoverPending(), []);
+  await assert.rejects(client.recoverOperation(admitted.operationId), { code: C.INVALID_INPUT });
+  assert.equal(transport.state.lookupCount, 0);
+  await switchIdentity(client, transport, "operator-1");
+  assert.equal(client.readView().pending[0].auditTraceId, admitted.auditTraceId);
+  assert.equal((await client.recoverOperation(admitted.operationId)).state, "pending");
+});
+
+test("completed history stays scoped when the authenticated principal changes", async () => {
+  const { client, transport } = await ready();
+  const admitted = await client.submitRequest(input());
+  const terminal = { operationId: admitted.operationId, semanticDigest: admitted.semanticDigest,
+    status: "succeeded", terminalObserved: true, auditTraceId: admitted.auditTraceId };
+  client.reconcile(terminal);
+  await switchIdentity(client, transport, "operator-2");
+  assert.equal(client.readView().completedCount, 0);
+  assert.throws(() => client.reconcile(terminal), { code: C.INVALID_INPUT });
+  await switchIdentity(client, transport, "operator-1");
+  assert.equal(client.readView().completed[0].terminalStatus, "succeeded");
+});
+
+test("a late acknowledgement remains with its original principal after a switch", async () => {
+  const dispatched = deferred();
+  const released = deferred();
+  const { client, transport } = await ready({ async request(method, request) {
+    dispatched.resolve();
+    await released.promise;
+    return { accepted: true, operationId: request.operationId, semanticDigest: request.semanticDigest,
+      status: "accepted", auditTraceId: "audit-original-principal" };
+  } });
+  const submitting = client.submitRequest(input());
+  await dispatched.promise;
+  try {
+    await switchIdentity(client, transport, "operator-2");
+    client.restoreRecoveryState({ schema: "hepta.ui-control.recovery-state.v1", operations: [] });
+  } finally { released.resolve(); await submitting; }
+  assert.equal(client.readView().pendingCount, 0);
+  await switchIdentity(client, transport, "operator-1");
+  assert.equal(client.readView().pending[0].auditTraceId, "audit-original-principal");
+});
+
+test("principal switching cannot bypass the shared pending capacity", async () => {
+  const { client, transport } = await ready({}, { maxPending: 1 });
+  await client.submitRequest(input());
+  await switchIdentity(client, transport, "operator-2");
+  assert.equal(client.readView().pendingCount, 0);
+  await assert.rejects(client.submitRequest({ ...input(), operationId: "other-principal-operation" }),
+    { code: C.PENDING_LIMIT });
+  assert.equal(transport.state.requestCount, 1);
+  await switchIdentity(client, transport, "operator-1");
+  assert.equal(client.readView().pendingCount, 1);
+});
+
+test("a reused session envelope cannot expose another principal's duplicate reservation", async () => {
+  const { client, transport } = await ready();
+  await client.submitRequest(input());
+  await client.close();
+  transport.state.session = session({ identityId: "operator-2" });
+  await client.connect({});
+  await client.refreshView();
+  await assert.rejects(client.submitRequest(input()), { code: C.OPERATION_CONFLICT });
+  assert.equal(client.readView().pendingCount, 0);
+  assert.equal(transport.state.requestCount, 1);
+});
+
+test("an import cannot reassign a retained operation to another principal", async () => {
+  const { client, transport } = await ready();
+  await client.submitRequest(input());
+  const originalScope = client.exportRecoveryState();
+  await switchIdentity(client, transport, "operator-2");
+  assert.throws(() => client.restoreRecoveryState(originalScope), { code: C.OPERATION_CONFLICT });
+  assert.equal(client.readView().pendingCount, 0);
+  await switchIdentity(client, transport, "operator-1");
+  assert.deepEqual(client.exportRecoveryState(), originalScope);
+});
+
+test("actual HTTP preflight failure retires only the unsent recovery reservation", async () => {
+  let csrf = "csrf-valid";
+  let sent = 0;
+  let discarded = 0;
+  const transport = new SameOriginHttpTransport({ origin: "https://control.example",
+    csrfTokenProvider: () => csrf, fetchImpl: async url => {
+      const path = new URL(url).pathname;
+      if (path.endsWith("/operations")) sent += 1;
+      return new Response(JSON.stringify(path.endsWith("/session/connect") ? session() : snapshot()),
+        { headers: { "content-type": "application/json" } });
+    } });
+  const client = new RuntimeClient({ transport });
+  await client.connect({});
+  await client.refreshView();
+  client.setRecoveryPersistence(async () => ({ discardRejected() { discarded += 1; } }));
+  csrf = "csrf\ninvalid";
+  await assert.rejects(client.submitRequest(input()), { code: C.INVALID_INPUT });
+  assert.equal(sent, 0);
+  assert.equal(discarded, 1);
   assert.equal(client.readView().pendingCount, 0);
 });

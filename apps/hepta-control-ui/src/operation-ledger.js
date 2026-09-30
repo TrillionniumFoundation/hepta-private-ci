@@ -36,15 +36,31 @@ export class OperationLedger {
   #completed = new Map();
   #maxPending;
   #clock;
+  #identityId = null;
 
   constructor({ maxPending, clock }) {
     this.#maxPending = assertSafeInteger(maxPending, "maxPending", { min: 1, max: 4096 });
     this.#clock = clock;
   }
 
+  setIdentity(identityId) {
+    assertStableIdentifier(identityId, "identityId");
+    if (identityId === this.#identityId) return false;
+    // Pre-connect imports belong to the first authenticated recovery scope.
+    // Later identity switches retain every record under its original owner.
+    if (this.#identityId === null) {
+      for (const entry of [...this.#pending.values(), ...this.#completed.values()]) {
+        entry.identityId = identityId;
+      }
+    }
+    this.#identityId = identityId;
+    return true;
+  }
+
   views() {
     return Object.freeze(
       [...this.#pending.values()]
+        .filter(entry => entry.identityId === this.#identityId)
         .map(publicOperation)
         .sort((left, right) => compareAscii(left.operationId, right.operationId)),
     );
@@ -53,6 +69,7 @@ export class OperationLedger {
   completedViews() {
     return Object.freeze(
       [...this.#completed.values()]
+        .filter(entry => entry.identityId === this.#identityId)
         .map(publicOperation)
         .sort((left, right) =>
           right.updatedAt - left.updatedAt || compareAscii(left.operationId, right.operationId),
@@ -61,6 +78,7 @@ export class OperationLedger {
   }
 
   async submit(request, signal, dispatch) {
+    request = { ...request, identityId: this.#identityId };
     const completed = this.#completed.get(request.operationId);
     if (completed) {
       this.#assertMatching(completed, request, "completed");
@@ -141,11 +159,13 @@ export class OperationLedger {
   }
 
   find(operationId) {
-    return this.#pending.get(operationId) ?? null;
+    const entry = this.#pending.get(operationId);
+    return entry?.identityId === this.#identityId ? entry : null;
   }
 
   findCompleted(operationId) {
-    return this.#completed.get(operationId) ?? null;
+    const entry = this.#completed.get(operationId);
+    return entry?.identityId === this.#identityId ? entry : null;
   }
 
   markMissing(entry) {
@@ -206,9 +226,9 @@ export class OperationLedger {
       ? null
       : assertSha256(observation.outcomeDigest, "outcomeDigest", { allowZero: true });
 
-    const entry = this.#pending.get(operationId);
+    const entry = this.find(operationId);
     if (!entry) {
-      const completed = this.#completed.get(operationId);
+      const completed = this.findCompleted(operationId);
       if (!completed) {
         throw invalid("terminal observation references an unknown operation", { operationId });
       }
@@ -250,6 +270,7 @@ export class OperationLedger {
       schema: "hepta.ui-control.recovery-state.v1",
       operations: Object.freeze(
         [...this.#pending.values()]
+          .filter(entry => entry.identityId === this.#identityId)
           .map(entry => Object.freeze({
             protocolVersion: entry.protocolVersion,
             method: entry.method,
@@ -299,6 +320,7 @@ export class OperationLedger {
         throw invalid("recovery state contains a duplicate operation id", { operationId });
       }
       const entry = {
+        identityId: this.#identityId,
         protocolVersion: assertCanonicalText(operation.protocolVersion, "protocolVersion", {
           maxBytes: 128,
         }),
@@ -348,7 +370,7 @@ export class OperationLedger {
   }
 
   #assertMatching(entry, request, disposition) {
-    if (!operationMatches(entry, request)) {
+    if (entry.identityId !== request.identityId || !operationMatches(entry, request)) {
       throw uiControlError(
         UI_CONTROL_ERROR_CODES.OPERATION_CONFLICT,
         `operation id is already ${disposition} with different semantics`,

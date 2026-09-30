@@ -131,6 +131,8 @@
     "Same generation and revision with a different semantic digest is snapshot drift and is rejected.",
     "Session identity cannot change during refresh; permission revision cannot regress or conceal permission drift.",
     "Revoke, close, and stopped refresh paths remove local control authority even when transport cleanup fails.",
+    "Retained in-memory operations, completed history, exports and lookups are scoped to the authenticated identity; switching identities preserves original records and does not bypass the total pending capacity.",
+    "HTTP request bodies are validated bounded canonical JSON of at most 64 KiB; pre-dispatch failures declare requestDispatched=false, and rejected response bodies are cancelled.",
     "Local recovery storage failure is visible but cannot wedge or authorize a control request.",
     "Session, operation, audit-trace, snapshot, semantic, and outcome correlation identifiers are rendered only in deterministic redacted form; full values remain outside DOM text and attributes.",
     "Control actions are disabled while the displayed view is stale or the session lacks the required permission.",
