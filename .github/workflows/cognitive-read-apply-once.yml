@@ -20,7 +20,7 @@ jobs:
     timeout-minutes: 180
     env:
       EXPECTED_BASE: 04086c75a48130421196391b6b3e4cc9932b2ed9
-      EXPECTED_TRIGGER_PARENT: 962aa5f0f817b95c9361f8a0d1b76318db320d27
+      EXPECTED_TRIGGER_PARENT: 94862becb338db8c847ae6b31da04a235f254f7c
       SOURCE_BRANCH: work/cognitive-read-production-convergence-20260927
     steps:
       - name: Check out the exact one-time authoring trigger
@@ -39,8 +39,7 @@ jobs:
           actual="$(git diff --name-only "$EXPECTED_BASE" HEAD | sort)"
           expected="$(printf '%s\n' \
             .github/workflows/cognitive-read-apply-once.yml \
-            scripts/apply-cognitive-read-qualification-governance.py \
-            scripts/prepare-cognitive-read-durable-handoff.py | sort)"
+            scripts/apply-cognitive-read-qualification-governance.py | sort)"
           test "$actual" = "$expected"
           test -z "$(git status --porcelain)"
 
