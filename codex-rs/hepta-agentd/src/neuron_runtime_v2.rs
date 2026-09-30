@@ -64,3 +64,7 @@ include!("neuron_runtime_v2_modules.rs");
 include!("neuron_runtime_v2_product.rs");
 #[path = "neuron_runtime_v2_decision_cell.rs"]
 mod decision_cell;
+
+#[cfg(test)]
+#[path = "neuron_runtime_v2_error_action_tests.rs"]
+mod error_action_tests;
