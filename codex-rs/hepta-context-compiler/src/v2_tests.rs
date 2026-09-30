@@ -1427,3 +1427,136 @@ fn tokenizer_generation_secret_and_profile_drift_fail_closed() {
         Err(ContextCompilerV2Error::ModelProfileMismatch)
     );
 }
+
+#[test]
+fn empty_context_attachment_still_requires_request_snapshot_domains() {
+    let compiled = compile_v2(request(Vec::new(), 100)).expect("empty compilation");
+    let serialization = record_serialization(
+        &compiled,
+        &profile(),
+        id("serialization:empty"),
+        Vec::new(),
+        &FramingSerializer { overhead: 1 },
+        &ByteTokenizer,
+    )
+    .expect("framing-only serialization");
+    for (scope, domain) in [
+        (digest("other-scope"), digest("authority-domain")),
+        (digest("scope"), digest("other-domain")),
+    ] {
+        let raw = ContextAdmissionSnapshotV2::new(
+            id("snapshot:foreign"),
+            scope,
+            domain,
+            20,
+            1,
+            Vec::new(),
+            true,
+            None,
+        )
+        .expect("snapshot shape");
+        let snapshot = verify_admission_snapshot_v2(raw, &verifier()).expect("verified snapshot");
+        assert_eq!(
+            build_attachment(
+                &compiled,
+                &serialization,
+                &profile(),
+                &snapshot,
+                id("attachment:empty")
+            ),
+            Err(ContextCompilerV2Error::SnapshotDomainMismatch),
+        );
+    }
+}
+
+#[test]
+fn delivery_preparation_preserves_attachment_cumulative_revocation_frontier() {
+    let initial = verified_snapshot("snapshot:initial", 10, 1, Vec::new());
+    let (trusted, realized) = candidate(
+        "item:trusted",
+        ContextRoleV2::TrustedInstruction,
+        20,
+        FixedQ32::ONE,
+        &initial,
+    );
+    let compiled = compile_v2(request(vec![trusted], 100)).expect("compilation");
+    let serialization = record_serialization(
+        &compiled,
+        &profile(),
+        id("serialization:frontier"),
+        vec![realized],
+        &FramingSerializer { overhead: 0 },
+        &ByteTokenizer,
+    )
+    .expect("serialization");
+    let attachment_snapshot =
+        verified_snapshot("snapshot:attachment", 20, 2, vec![id("admission:other")]);
+    let attachment = build_attachment(
+        &compiled,
+        &serialization,
+        &profile(),
+        &attachment_snapshot,
+        id("attachment:frontier"),
+    )
+    .expect("attachment");
+    for (epoch, revoked, expected) in [
+        (
+            2,
+            Vec::new(),
+            ContextCompilerV2Error::RevocationFrontierMismatch,
+        ),
+        (
+            2,
+            vec![id("admission:other"), id("admission:new")],
+            ContextCompilerV2Error::RevocationFrontierMismatch,
+        ),
+        (
+            3,
+            Vec::new(),
+            ContextCompilerV2Error::RevocationResurrection("admission:other".to_string()),
+        ),
+    ] {
+        let current = verified_snapshot("snapshot:fork", 30, epoch, revoked);
+        assert_eq!(
+            prepare_delivery_v2(
+                &compiled,
+                &serialization,
+                &attachment,
+                &profile(),
+                &current,
+                id("preparation:fork")
+            ),
+            Err(expected),
+        );
+    }
+    // Refreshing time and advancing through more than one verified successor are valid.
+    let refreshed = verified_successor_snapshot(
+        "snapshot:refresh",
+        30,
+        2,
+        vec![id("admission:other")],
+        &attachment_snapshot,
+    )
+    .expect("same frontier refresh");
+    let next = verified_successor_snapshot(
+        "snapshot:next",
+        40,
+        3,
+        vec![id("admission:other"), id("admission:new")],
+        &refreshed,
+    )
+    .expect("cumulative successor");
+    for snapshot in [refreshed, next] {
+        assert!(
+            prepare_delivery_v2(
+                &compiled,
+                &serialization,
+                &attachment,
+                &profile(),
+                &snapshot,
+                id("preparation:valid"),
+            )
+            .is_ok()
+        );
+    }
+}
