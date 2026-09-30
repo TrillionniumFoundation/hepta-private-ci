@@ -63,11 +63,6 @@ pub use durable::ProductionCognitiveMutationReceiptV1;
 pub use durable::ProductionDispatchFuture;
 pub use durable::ProductionDispatchReceipt;
 pub use durable::ProductionDispatchRequest;
-#[cfg(any(
-    feature = "agentd-production-host",
-    feature = "qualification-cognitive-write"
-))]
-pub use durable::ProductionDurableWriter;
 pub use durable::ProductionFinalUseOutboxDispatcher;
 pub use durable::ProductionOutboxTarget;
 pub use durable::ProductionQueuedReceipt;
@@ -77,6 +72,118 @@ pub use durable::QualificationDurableCognitiveStore;
 pub use durable::RecoveredCognitiveReadOnly;
 pub use durable::SourceDraft;
 pub use durable::StableMemoryId;
+
+#[cfg(any(
+    feature = "agentd-production-host",
+    feature = "qualification-cognitive-write"
+))]
+mod production_writer_facade {
+    use std::ops::Deref;
+    use std::sync::Arc;
+
+    use codex_hepta_memory::CognitiveStore;
+    use codex_hepta_memory::ProductionAuthorityLease;
+    use codex_hepta_memory::ProductionAuthorityVerifier;
+    use codex_hepta_memory::ProductionCognitiveMutationCapability;
+    use codex_hepta_memory::ProductionWriterError;
+
+    /// Canonical product-facing durable writer.
+    ///
+    /// The physical implementation remains `codex_hepta_memory::ProductionDurableWriter`.
+    /// This wrapper adds one ownership invariant at the semantic façade: failed writer
+    /// admission synchronously closes the recovered SQLx pool before the recovery fence
+    /// can be released. That prevents a failed authority/lease handoff from leaving
+    /// unfenced database connections alive behind a returned error.
+    #[derive(Clone, Debug)]
+    pub struct ProductionDurableWriter {
+        inner: Arc<codex_hepta_memory::ProductionDurableWriter>,
+    }
+
+    impl ProductionDurableWriter {
+        pub async fn open<V>(
+            store: CognitiveStore,
+            authority: ProductionAuthorityLease,
+            verifier: &V,
+            lease_id: impl Into<String>,
+            generation: u64,
+        ) -> Result<Self, ProductionWriterError>
+        where
+            V: ProductionAuthorityVerifier + ?Sized,
+        {
+            let handoff = store.clone();
+            match codex_hepta_memory::ProductionDurableWriter::open(
+                store,
+                authority,
+                verifier,
+                lease_id,
+                generation,
+            )
+            .await
+            {
+                Ok(writer) => Ok(Self {
+                    inner: Arc::new(writer),
+                }),
+                Err(error) => Err(close_failed_admission(handoff, error).await),
+            }
+        }
+
+        pub async fn open_with_live_verifier(
+            store: CognitiveStore,
+            authority: ProductionAuthorityLease,
+            verifier: Arc<dyn ProductionAuthorityVerifier>,
+            lease_id: impl Into<String>,
+            generation: u64,
+        ) -> Result<Self, ProductionWriterError> {
+            let handoff = store.clone();
+            match codex_hepta_memory::ProductionDurableWriter::open_with_live_verifier(
+                store,
+                authority,
+                verifier,
+                lease_id,
+                generation,
+            )
+            .await
+            {
+                Ok(writer) => Ok(Self {
+                    inner: Arc::new(writer),
+                }),
+                Err(error) => Err(close_failed_admission(handoff, error).await),
+            }
+        }
+
+        pub fn cognitive_mutation_capability(
+            self: &Arc<Self>,
+        ) -> Result<ProductionCognitiveMutationCapability, ProductionWriterError> {
+            self.inner.cognitive_mutation_capability()
+        }
+    }
+
+    impl Deref for ProductionDurableWriter {
+        type Target = codex_hepta_memory::ProductionDurableWriter;
+
+        fn deref(&self) -> &Self::Target {
+            self.inner.as_ref()
+        }
+    }
+
+    async fn close_failed_admission(
+        handoff: CognitiveStore,
+        admission_error: ProductionWriterError,
+    ) -> ProductionWriterError {
+        match handoff.close_for_recovery_handoff().await {
+            Ok(()) => admission_error,
+            Err(close_error) => ProductionWriterError::Durability(format!(
+                "production writer admission failed ({admission_error}); recovered store close failed before fence release: {close_error}"
+            )),
+        }
+    }
+}
+
+#[cfg(any(
+    feature = "agentd-production-host",
+    feature = "qualification-cognitive-write"
+))]
+pub use production_writer_facade::ProductionDurableWriter;
 
 pub use v2::AdmittedCognitiveStoreV2;
 pub use v2::CanonicalDurableMemoryEventBindingV1;
@@ -98,6 +205,14 @@ pub use v2::StoreIntentImageEntryV2;
 pub use v2::StoreSnapshotPageV2;
 pub use v2::StoreSnapshotV2;
 pub use v2::bind_canonical_event_to_durable_receipt;
+
+/// Unambiguous name for the in-memory semantic/qualification model.
+///
+/// The physical production owner remains `codex_hepta_memory::CognitiveStore`.
+pub type InMemoryCognitiveModel = CognitiveStore;
+
+/// Capability-oriented name for the bounded durable read surface.
+pub type DurableCognitiveReadCapability = DurableCognitiveReadStore;
 
 const MAX_RECORDS: usize = 16_384;
 
