@@ -53,19 +53,28 @@ writes to GitHub source refs. Automatic cancellation is disabled so a newer run
 cannot silently detach an admitted measurement. Manual cancellation is still a
 failed, incomplete run.
 
-## 3. Trusted control checkout and non-executed candidate checkout
+Every run attempt creates a fresh private evidence directory whose path includes
+the immutable workflow run and attempt identities. The job fails if that path
+already exists and creates it with mode `0700`, so stale files from an earlier
+attempt cannot be silently reused as current evidence.
 
-The workflow uses two exact checkouts:
+## 3. Trusted control checkout and metadata-only candidate identity
 
-1. `control` is the exact `main` commit that supplied the dispatched workflow;
-2. `subject` is the requested candidate commit and is used only to obtain its
-   immutable commit/tree identity.
+The workflow materializes one exact checkout: `control`, the exact `main` commit
+that supplied the dispatched workflow. It never checks out, fetches, or
+materializes candidate repository bytes on the privileged target runner.
+
+The requested `candidate_sha` is treated only as an identity subject. Using the
+job's read-only GitHub token and the trusted repository/API context, the workflow
+requests `/git/commits/{candidate_sha}`, limits the response size, requires the
+response commit to equal the exact requested SHA, and accepts only one exact
+40-character tree identity. A missing, redirected, malformed, oversized, or
+mismatched response fails closed.
 
 Only the collector and hot-path evaluator under
-`control/qualification/kernel-authority` are executed. No script, action, build
-hook, or binary from `subject` is run on the privileged runner. This prevents an
-arbitrary candidate from replacing the evidence parser or executing repository
-code merely by being selected for measurement.
+`control/qualification/kernel-authority` are executed. Candidate selection
+therefore cannot replace the evidence parser, seed a checkout hook, populate a
+shared worktree/cache, or execute repository code on the protected host.
 
 The host-owned driver is separately installed and content-addressed. It is
 responsible for selecting and exercising the already provisioned candidate
@@ -151,7 +160,7 @@ runtime store with the qualification-only WAL/checkpoint model.
 
 ## 6. Dispatch procedure
 
-1. Freeze the exact candidate commit and obtain its tree identity.
+1. Freeze the exact candidate commit and obtain its tree identity independently.
 2. Provision the selected target runner, candidate runtime, and reviewed driver.
 3. Review a candidate/profile-specific hot-path policy independently of the
    driver implementation.
@@ -164,8 +173,9 @@ runtime store with the qualification-only WAL/checkpoint model.
    - `policy_sha256`.
 6. Complete protected-environment approval using a reviewer independent of the
    driver/operator where practical.
-7. Confirm control, candidate, collector, evaluator, policy, and driver
-   identities in the artifact.
+7. Confirm control, candidate metadata, collector, evaluator, policy, and driver
+   identities in the artifact; confirm that only the control checkout was
+   materialized on the protected runner.
 8. Review all 55 measurement rows, eight fault rows, 25 diagnostics, the reserve
    observation, hot-path decision, per-invocation logs, and artifact hashes.
 9. Re-run the collector validation and hot-path evaluator from a separate
@@ -173,8 +183,9 @@ runtime store with the qualification-only WAL/checkpoint model.
 10. Keep the result separate from source-head and deterministic-merge receipts.
 
 A cancelled, timed-out, skipped, partially uploaded, mixed-host, missing-row, or
-policy-failing run is not success. Re-running creates a new run identity; it must
-not overwrite or reinterpret an older artifact.
+policy-failing run is not success. Re-running creates a new run identity and a
+new private evidence root; it must not overwrite or reinterpret an older
+artifact.
 
 ## 7. Acceptance separation
 

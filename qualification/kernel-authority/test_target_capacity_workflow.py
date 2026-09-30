@@ -28,7 +28,8 @@ class TargetCapacityWorkflowTest(unittest.TestCase):
         )
         self.assertIn("timeout-minutes: 360", self.workflow)
         self.assertIn("cancel-in-progress: false", self.workflow)
-        self.assertEqual(self.workflow.count("persist-credentials: false"), 2)
+        self.assertEqual(self.workflow.count("uses: actions/checkout@"), 1)
+        self.assertEqual(self.workflow.count("persist-credentials: false"), 1)
 
     def test_control_checkout_must_still_be_current_main(self) -> None:
         self.assertIn(
@@ -42,16 +43,33 @@ class TargetCapacityWorkflowTest(unittest.TestCase):
             self.workflow,
         )
         self.assertIn(
-            "Pin current main control, candidate, collector, policy, and driver identities",
+            "Pin current main control, candidate metadata, collector, policy, and driver identities",
             self.workflow,
         )
 
-    def test_candidate_checkout_is_identity_only(self) -> None:
+    def test_candidate_identity_is_metadata_only(self) -> None:
         self.assertIn("path: control", self.workflow)
-        self.assertIn("path: subject", self.workflow)
+        for forbidden in (
+            "Checkout candidate",
+            "path: subject",
+            "GITHUB_WORKSPACE/subject",
+            "ref: ${{ inputs.candidate_sha }}",
+            'git -C "$subject"',
+        ):
+            self.assertNotIn(forbidden, self.workflow)
+        for required in (
+            "GITHUB_API_URL: ${{ github.api_url }}",
+            "GITHUB_REPOSITORY: ${{ github.repository }}",
+            "GITHUB_TOKEN: ${{ github.token }}",
+            "/git/commits/{candidate_sha}",
+            'payload.get("sha") != candidate_sha',
+            "candidate identity response did not contain an exact tree",
+            "candidate identity response exceeded one MiB",
+        ):
+            self.assertIn(required, self.workflow)
         self.assertIn(
-            "Checkout candidate as a non-executed identity subject",
-            self.workflow,
+            "never checks out, fetches, or materializes candidate repository bytes",
+            " ".join(self.runbook.split()),
         )
         trusted_collector = (
             'python3 "$GITHUB_WORKSPACE/control/qualification/'
@@ -63,8 +81,16 @@ class TargetCapacityWorkflowTest(unittest.TestCase):
         )
         self.assertEqual(self.workflow.count(trusted_collector), 3)
         self.assertEqual(self.workflow.count(trusted_gate), 1)
-        self.assertNotIn("subject/qualification/kernel-authority", self.workflow)
-        self.assertIn("No script, action, build hook, or binary from `subject`", " ".join(self.runbook.split()))
+
+    def test_fresh_private_evidence_root_is_required(self) -> None:
+        self.assertIn(
+            "kernel-authority-target-capacity-${{ github.run_id }}-${{ github.run_attempt }}",
+            self.workflow,
+        )
+        self.assertIn('test ! -e "$EVIDENCE_ROOT"', self.workflow)
+        self.assertIn('mkdir -m 0700 "$EVIDENCE_ROOT"', self.workflow)
+        self.assertIn("fresh private evidence directory", self.runbook)
+        self.assertIn("cannot be silently reused", self.runbook)
 
     def test_driver_and_policy_are_fixed_and_content_addressed(self) -> None:
         self.assertIn(
@@ -102,10 +128,7 @@ class TargetCapacityWorkflowTest(unittest.TestCase):
         self.assertLess(collect, validate)
         self.assertLess(validate, gate)
         self.assertLess(gate, envelope)
-        self.assertIn(
-            'test "$(git -C "$subject" rev-parse HEAD)" = "$CANDIDATE_SHA"',
-            self.workflow,
-        )
+        self.assertIn('[[ "$candidate_tree" =~ ^[0-9a-f]{40}$ ]]', self.workflow)
         self.assertIn("55 measurement rows", self.workflow)
         self.assertIn("eight fault rows", self.workflow)
         self.assertIn("25 diagnostics", self.workflow)
