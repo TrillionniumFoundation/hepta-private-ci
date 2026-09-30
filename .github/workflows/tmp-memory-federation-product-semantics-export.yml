@@ -14,22 +14,23 @@ concurrency:
 
 jobs:
   export:
-    runs-on: macos-15
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - name: Check out exact source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          fetch-depth: 1
+          fetch-depth: 2
           persist-credentials: false
-      - name: Archive parent tracked source
+      - name: Archive frozen product source
         shell: bash
         run: |
           set -euo pipefail
-          SOURCE_SHA="$(git rev-parse HEAD^)"
+          SOURCE_SHA="ecb502a7a1435d84441a74cb8c3159e76f9b8a69"
+          test "$(git rev-parse HEAD^)" = "$SOURCE_SHA"
           git archive --format=tar.gz --output="$RUNNER_TEMP/hepta-private-ci-${SOURCE_SHA}.tar.gz" "$SOURCE_SHA"
           printf '%s\n' "$SOURCE_SHA" > "$RUNNER_TEMP/source-sha.txt"
-      - name: Upload exact parent source
+      - name: Upload exact frozen source
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: memory-federation-product-semantics-source-export-${{ github.run_id }}
