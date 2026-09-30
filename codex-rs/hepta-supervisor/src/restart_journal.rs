@@ -1,6 +1,4 @@
-use std::fs::OpenOptions;
 use std::io::ErrorKind;
-use std::io::Write;
 use std::path::Path;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
@@ -277,21 +275,12 @@ fn write_record(run_root: &Path, mut record: RestartRecord) -> Result<(), Superv
             "restart record exceeds bound".to_string(),
         ));
     }
-    let mut options = OpenOptions::new();
-    options.write(true).create_new(true);
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::OpenOptionsExt;
-        options.mode(0o600);
-    }
-    let mut file = options.open(&temp_path)?;
-    file.write_all(&bytes)?;
-    file.sync_all()?;
-    drop(file);
-    if let Err(error) = crate::durable_publish::publish(&temp_path, &final_path) {
-        let _ = std::fs::remove_file(&temp_path);
-        return Err(error.into());
-    }
+    crate::durable_publish::write_atomic(
+        &temp_path,
+        &final_path,
+        &bytes,
+        "restart_journal",
+    )?;
     Ok(())
 }
 
