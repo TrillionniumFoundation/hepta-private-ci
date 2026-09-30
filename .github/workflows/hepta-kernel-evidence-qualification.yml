@@ -59,7 +59,7 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$records/agentd-product-test.json" --             bash -lc 'cd codex-rs && cargo test -p codex-hepta-agentd --test kernel_evidence_product'
           python3 scripts/hepta_ci_exec.py --output "$records/lane-a-truth.json" --             python3 scripts/verify_lane_a_foundation.py verify
           python3 scripts/hepta_ci_exec.py --output "$records/docs.json" --             python3 scripts/hepta-docs.py verify
-          python3 scripts/hepta_ci_exec.py --output "$records/implementation-maps.json" --             python3 scripts/hepta-implementation-maps.py verify
+          python3 scripts/hepta_ci_exec.py --output "$records/implementation-maps.json" --             python3 scripts/hepta-implementation-maps.py verify --profile development
           python3 - <<'PY' > "$records/candidate.json"
           import json, subprocess
           def git(*args):
@@ -126,7 +126,7 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$records/agentd-product-test.json" --             bash -lc 'cd codex-rs && cargo test -p codex-hepta-agentd --test kernel_evidence_product'
           python3 scripts/hepta_ci_exec.py --output "$records/lane-a-truth.json" --             python3 scripts/verify_lane_a_foundation.py verify
           python3 scripts/hepta_ci_exec.py --output "$records/docs.json" --             python3 scripts/hepta-docs.py verify
-          python3 scripts/hepta_ci_exec.py --output "$records/implementation-maps.json" --             python3 scripts/hepta-implementation-maps.py verify
+          python3 scripts/hepta_ci_exec.py --output "$records/implementation-maps.json" --             python3 scripts/hepta-implementation-maps.py verify --profile development
           python3 - <<'PY' > "$records/candidate.json"
           import json, subprocess
           def git(*args):
