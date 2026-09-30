@@ -1,0 +1,135 @@
+name: prompt.registry one-shot canonical closeout
+
+on:
+  push:
+    branches:
+      - codex/prompt-registry-source-snapshot-20260930
+    paths:
+      - 'maintenance/prompt_registry_closeout_*.py'
+      - '.github/workflows/prompt-registry-one-shot-closeout.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: prompt-registry-one-shot-closeout
+  cancel-in-progress: false
+
+jobs:
+  closeout:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 120
+    env:
+      TARGET_BRANCH: codex/prompt-registry-full-closeout-20260929
+      EXPECTED_HEAD: 87f3d1d99029a357d1babeeeaa09c6d97364dce0
+      CARGO_INCREMENTAL: '0'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Checkout one-shot maintenance driver
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          path: driver
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Checkout canonical PR branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.TARGET_BRANCH }}
+          path: work
+          fetch-depth: 0
+          persist-credentials: true
+          token: ${{ github.token }}
+      - name: Freeze expected candidate identity
+        working-directory: work
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          git config user.name 'Prompt registry closeout'
+          git config user.email 'prompt-registry-closeout@users.noreply.github.com'
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+      - name: Apply repository-owned closeout patches
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 driver/maintenance/prompt_registry_closeout_rust.py work
+          python3 driver/maintenance/prompt_registry_closeout_evidence.py work
+          python3 driver/maintenance/prompt_registry_closeout_docs.py work
+          python3 driver/maintenance/prompt_registry_closeout_compat.py work
+          chmod +x work/scripts/hepta-prompt-registry-*.py
+      - name: Format and validate Python evidence code
+        shell: bash
+        working-directory: work
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-prompt-registry --package codex-hepta-prompt-extension
+          python3 -m py_compile \
+            scripts/hepta-prompt-registry-map.py \
+            scripts/hepta-prompt-registry-live-map.py \
+            scripts/hepta-prompt-registry-qualify.py \
+            scripts/hepta-prompt-registry-aggregate.py \
+            scripts/hepta-prompt-registry-harness-tests.py \
+            scripts/hepta-prompt-registry-accept.py \
+            scripts/hepta-prompt-registry-fault-matrix.py \
+            scripts/hepta-prompt-registry-soak.py
+          python3 scripts/hepta-prompt-registry-harness-tests.py
+          python3 scripts/hepta-prompt-registry-live-map.py --output "$RUNNER_TEMP/live-public-api-map.json"
+      - name: Test changed Rust boundaries
+        working-directory: work/codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-prompt-registry -- --test-threads=1
+          cargo test --locked -p codex-hepta-prompt-extension -- --test-threads=1
+          cargo clippy --locked -p codex-hepta-prompt-registry -p codex-hepta-prompt-extension --all-targets --no-deps -- -D warnings
+      - name: Commit frozen source and documentation
+        working-directory: work
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$(git status --porcelain=v1 --untracked-files=all)"
+          git add \
+            codex-rs/hepta-prompt-registry \
+            codex-rs/ext/hepta-prompt \
+            scripts/hepta-prompt-registry-*.py \
+            docs/modules/prompt.registry \
+            .github/workflows/hepta-prompt-registry-qualification.yml \
+            .github/workflows/hepta-prompt-registry-operational-qualification.yml
+          git diff --cached --check
+          git commit -m 'feat(prompt.registry): close output fencing and candidate evidence'
+      - name: Generate map and status from frozen source commit
+        working-directory: work
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-prompt-registry-map.py --write
+          git add docs/modules/prompt.registry/IMPLEMENTATION_MAP.json docs/modules/prompt.registry/QUALIFICATION_STATUS.md
+          git diff --cached --check
+          git commit -m 'docs(prompt.registry): bind implementation map to frozen source'
+          python3 scripts/hepta-prompt-registry-map.py --check
+          python3 scripts/hepta-prompt-registry-harness-tests.py
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-prompt-registry --package codex-hepta-prompt-extension -- --check
+          test -z "$(git status --porcelain=v1 --untracked-files=no)"
+      - name: Push the two ordinary source commits to the canonical branch
+        working-directory: work
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD~2)" = "$EXPECTED_HEAD"
+          git push origin "HEAD:$TARGET_BRANCH"
+      - name: Retain one-shot validation evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-registry-one-shot-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/live-public-api-map.json
+          if-no-files-found: warn
+          retention-days: 7
