@@ -1,9 +1,11 @@
 //! Shared absolute resource budget and cooperative cancellation for bounded
 //! operator construction.
 //!
-//! A work-control scope is thread-local and nest-safe. Existing synchronous
-//! fitters therefore inherit cancellation checks through the common work meter
-//! without accepting ambient global state or changing artifact identities.
+//! `FitContextV1` is the explicit cloneable propagation object for worker
+//! threads and blocking pools. Installing the same context in each worker shares
+//! one monotonic cancellation token and one elapsed-time origin. The legacy
+//! `with_work_control_v1` helper remains for synchronous callers and creates a
+//! fresh context for that one call; it is not cross-thread propagation.
 
 use std::cell::RefCell;
 use std::error::Error as StdError;
@@ -50,34 +52,87 @@ impl WorkControlV1 {
     pub fn is_cancelled(&self) -> bool {
         self.cancelled.load(Ordering::Acquire)
     }
+
+    /// Create an explicit context before dispatching work. Clone and install the
+    /// returned value in every worker that participates in the same fit.
+    #[must_use]
+    pub fn fit_context(&self) -> FitContextV1 {
+        FitContextV1::new(self.clone())
+    }
+}
+
+/// Explicit propagation proof for one bounded fit.
+///
+/// Clones share cancellation and the same monotonic start instant. A caller
+/// moving work to another thread must move a clone and invoke
+/// `with_fit_context_v1` there; thread-local state is never assumed to follow a
+/// task automatically.
+#[derive(Clone, Debug)]
+pub struct FitContextV1 {
+    control: WorkControlV1,
+    started: Instant,
+}
+
+impl FitContextV1 {
+    #[must_use]
+    pub fn new(control: WorkControlV1) -> Self {
+        Self {
+            control,
+            started: Instant::now(),
+        }
+    }
+
+    #[must_use]
+    pub fn control(&self) -> &WorkControlV1 {
+        &self.control
+    }
+
+    #[must_use]
+    pub fn elapsed_micros(&self) -> u64 {
+        u64::try_from(self.started.elapsed().as_micros()).unwrap_or(u64::MAX)
+    }
+
+    pub fn run<T>(&self, operation: impl FnOnce() -> T) -> T {
+        with_fit_context_v1(self, operation)
+    }
 }
 
 thread_local! {
-    static ACTIVE_WORK_CONTROL: RefCell<Option<WorkControlV1>> = RefCell::new(None);
+    static ACTIVE_FIT_CONTEXT: RefCell<Option<FitContextV1>> = const { RefCell::new(None) };
 }
 
-struct WorkControlScope {
-    previous: Option<WorkControlV1>,
+struct FitContextScope {
+    previous: Option<FitContextV1>,
 }
 
-impl Drop for WorkControlScope {
+impl Drop for FitContextScope {
     fn drop(&mut self) {
         let previous = self.previous.take();
-        ACTIVE_WORK_CONTROL.with(|slot| {
+        ACTIVE_FIT_CONTEXT.with(|slot| {
             let _ = slot.replace(previous);
         });
     }
 }
 
-/// Execute one synchronous bounded operation under a cooperative cancellation
-/// capability. Nested scopes restore the previous capability even on unwind.
+/// Install an explicit context around one synchronous portion of a fit.
+/// Nested scopes restore the previous context even on unwind.
+pub fn with_fit_context_v1<T>(context: &FitContextV1, operation: impl FnOnce() -> T) -> T {
+    let previous = ACTIVE_FIT_CONTEXT.with(|slot| slot.replace(Some(context.clone())));
+    let _scope = FitContextScope { previous };
+    operation()
+}
+
+/// Compatibility helper for existing synchronous fitters.
+///
+/// This creates a new elapsed-time origin at the call boundary. Parallel or
+/// deferred callers must instead construct one `FitContextV1` before dispatch
+/// and explicitly install a clone in every worker.
 pub fn with_work_control_v1<T>(
     control: &WorkControlV1,
     operation: impl FnOnce() -> T,
 ) -> T {
-    let previous = ACTIVE_WORK_CONTROL.with(|slot| slot.replace(Some(control.clone())));
-    let _scope = WorkControlScope { previous };
-    operation()
+    let context = control.fit_context();
+    with_fit_context_v1(&context, operation)
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -135,19 +190,23 @@ impl OperatorWorkMeter {
         {
             return Err(OperatorWorkErrorV1::InvalidBudget);
         }
-        let control = ACTIVE_WORK_CONTROL
-            .with(|slot| slot.borrow().clone())
-            .unwrap_or_default();
+        let active = ACTIVE_FIT_CONTEXT.with(|slot| slot.borrow().clone());
+        let (control, started) = active.map_or_else(
+            || (WorkControlV1::default(), Instant::now()),
+            |context| (context.control, context.started),
+        );
         if control.is_cancelled() {
             return Err(OperatorWorkErrorV1::Cancelled);
         }
-        Ok(Self {
+        let meter = Self {
             budget,
             control,
-            started: Instant::now(),
+            started,
             operations: 0,
             estimated_bytes: 0,
-        })
+        };
+        meter.checkpoint()?;
+        Ok(meter)
     }
 
     pub(crate) fn preflight_operations(
@@ -240,4 +299,75 @@ pub(crate) fn sort_work(items: usize) -> Result<u64, OperatorWorkErrorV1> {
     let n = checked_u64(items)?;
     let levels = u64::from(usize::BITS - (items - 1).leading_zeros());
     checked_mul(n, levels)
+}
+
+#[cfg(test)]
+mod tests {
+    use std::thread;
+    use std::time::Duration;
+
+    use super::*;
+
+    fn budget(max_elapsed_micros: u64) -> OperatorResourceBudgetV1 {
+        OperatorResourceBudgetV1 {
+            max_operations: 1_000,
+            max_estimated_bytes: 1_024,
+            max_elapsed_micros,
+        }
+    }
+
+    #[test]
+    fn explicit_context_propagates_cancellation_to_worker_thread() {
+        let control = WorkControlV1::new();
+        let context = control.fit_context();
+        let worker_context = context.clone();
+        control.cancel();
+        let rejected = thread::spawn(move || {
+            worker_context.run(|| {
+                matches!(
+                    OperatorWorkMeter::new(budget(1_000_000)),
+                    Err(OperatorWorkErrorV1::Cancelled)
+                )
+            })
+        })
+        .join()
+        .unwrap();
+        assert!(rejected);
+    }
+
+    #[test]
+    fn explicit_context_preserves_one_deadline_across_dispatch_delay() {
+        let context = WorkControlV1::new().fit_context();
+        thread::sleep(Duration::from_millis(10));
+        let worker_context = context.clone();
+        let expired = thread::spawn(move || {
+            worker_context.run(|| {
+                matches!(
+                    OperatorWorkMeter::new(budget(1_000)),
+                    Err(OperatorWorkErrorV1::DeadlineExceeded { .. })
+                )
+            })
+        })
+        .join()
+        .unwrap();
+        assert!(expired);
+    }
+
+    #[test]
+    fn nested_context_restores_outer_cancellation_domain() {
+        let outer_control = WorkControlV1::new();
+        let inner_control = WorkControlV1::new();
+        let outer = outer_control.fit_context();
+        let inner = inner_control.fit_context();
+        outer.run(|| {
+            inner.run(|| {
+                inner_control.cancel();
+                assert!(matches!(
+                    OperatorWorkMeter::new(budget(1_000_000)),
+                    Err(OperatorWorkErrorV1::Cancelled)
+                ));
+            });
+            assert!(OperatorWorkMeter::new(budget(1_000_000)).is_ok());
+        });
+    }
 }
