@@ -115,6 +115,7 @@ Produced contracts:
 - `LocalModelRuntimeReceiptV1`
 - `ModulePort::neuron.runtime::intelligence.control`
 - `ModulePort::neuron.runtime::intuition.policy`
+- `NeuronCheckpointV1`
 - `NeuronSignalReceiptV1`
 
 Consumed contracts:
@@ -124,16 +125,21 @@ Consumed contracts:
 - `DomainRead::inference_reservationV1`
 - `DomainRead::learning_artifact_registryV1`
 - `DomainRead::operator_sensor_core_registryV1`
+- `GoldenFixtureManifestV1`
 - `ModulePort::cognitive.read::neuron.runtime`
 - `ModulePort::inference.control::neuron.runtime`
 - `ModulePort::learning.artifacts::neuron.runtime`
 - `ModulePort::platform.types::neuron.runtime`
+- `RandomStreamManifestV1`
 - `RunStartSnapshotV1`
 
 Critical protocol schemas:
 
+- `GoldenFixtureManifestV1`
 - `LocalModelRuntimeReceiptV1`
+- `NeuronCheckpointV1`
 - `NeuronSignalReceiptV1`
+- `RandomStreamManifestV1`
 - `RunStartSnapshotV1`
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
@@ -145,15 +151,18 @@ Rust types and canonical JSON represent identical semantics. Tests cover round t
 Owned authoritative or rebuildable domains:
 
 - `eligibility_trace_checkpoint`
+- `neuron_checkpoint_v1`
 - `neuron_state_checkpoint`
 
 Read-only data dependencies:
 
+- `golden_fixture_manifest_v1`
 - `inference_receipt`
 - `inference_request`
 - `inference_reservation`
 - `learning_artifact_registry`
 - `operator_sensor_core_registry`
+- `random_stream_manifest_v1`
 
 For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
 
@@ -165,9 +174,29 @@ Projection domains rebuild from declared sources and publish complete generation
 
 The current owner source is `NeuronRuntime` in [codex-rs/hepta-neuron/src/runtime.rs](../../../codex-rs/hepta-neuron/src/runtime.rs). One tick verifies the canonical owner input, obtains an exact inference-control feature receipt through `InferenceControlModelPort`, computes the deterministic sparse successor, commits the journal before publication, evaluates calibrated/OOD/resource disposition, and advances an independently retained `AnchorWitnessStore`. Journal and witness uncertainty are fail-closed and poison the affected handle instead of fabricating acknowledgement. [codex-rs/hepta-agentd/src/neuron_runtime.rs](../../../codex-rs/hepta-agentd/src/neuron_runtime.rs) now provides the compiled Agentd-owned long-lived source boundary and [codex-rs/hepta-intelligence/src/neuron_runtime.rs](../../../codex-rs/hepta-intelligence/src/neuron_runtime.rs) remains a typed caller. The Agentd daemon startup/run-lifecycle owner is still composed on the separate `runtime.agentd` convergence line; source presence here is not daemon activation or product-execution evidence.
 
+The V1 durability boundary is narrower than full owner-output durability.
+`SparseJournal` stores the numerical tick and deterministic checkpoint/signal
+digests and can reproduce its exact sparse receipt. It does not persist the full
+`NeuronRuntimeOutputV1`, including model execution evidence, calibration/resource
+disposition and observed measurements. Only a pending witness retry on the same
+live runtime handle retains and returns that exact full output. A retry after
+successful acknowledgement or reopen is rejected at the owner boundary rather
+than re-inferred or given manufactured historical measurements. Full owner
+idempotency therefore remains a production blocker.
+
+The native V1 journal binds `SparseConfig`, scope and objective, but not the full
+owner model tuple, calibration profile and resource envelope. Reopen validation
+of a supplied owner config cannot substitute for their persistent identity.
+Closing both gaps requires an explicitly versioned owner journal transaction
+that binds the complete owner-config digest and persists the exact owner output
+before witness acknowledgement, with migration and crash/retry/reopen tests.
+Existing V1 journal bytes must retain their meaning.
+
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
 ## 8. Failure semantics, recovery and rollback
+
+`AgentdNeuronOwner` admits subsequent ticks only through its inference-control adapter and exposes explicit segment lifecycle methods instead of a mutable runtime escape. Its constructor still receives an already constructed runtime; it does not authenticate that runtime's earlier model provenance, enroll stores, select artifacts or activate a daemon. `IndependentModulatorV1` currently has no production construction port, so the native plasticity accumulator is a tested mechanism pending the learning owner's authenticated observation adapter.
 
 Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/neuron.runtime.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/neuron.runtime.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
 
