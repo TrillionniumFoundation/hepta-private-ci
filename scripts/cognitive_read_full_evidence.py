@@ -228,6 +228,14 @@ def gate_status(evidence: Path, label: str) -> bool:
 def emit(root: Path, evidence: Path, candidate: str, kind: str, output: Path) -> bool:
     passed = _original_emit(root, evidence, candidate, kind, output)
     receipt = json.loads(output.read_text())
+    receipt["source_inputs"] = {
+        "cargo_lock": {
+            "path": "codex-rs/Cargo.lock",
+            "sha256": base.digest(root / "codex-rs/Cargo.lock"),
+        },
+        "toolchain": (evidence / "toolchain.txt").read_text().splitlines(),
+        "nextest": (evidence / "test-runner.log").read_text(errors="replace").splitlines(),
+    }
     policy_path = root / "docs/modules/cognitive.read/CONSUMER_EXECUTION.json"
     policy = json.loads(policy_path.read_text())
     consumers = []
