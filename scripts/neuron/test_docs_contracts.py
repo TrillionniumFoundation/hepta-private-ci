@@ -74,8 +74,9 @@ class NeuronDocumentationContractTests(unittest.TestCase):
         source = (
             ROOT / "codex-rs/hepta-agentd/src/neuron_runtime_v2_errors.rs"
         ).read_text(encoding="utf-8")
-        runbook = (DOCS / "V2_RUNBOOK.md").read_text(encoding="utf-8")
-        control = (DOCS / "V2_CONTROL_PLANE.md").read_text(encoding="utf-8")
+        generated_actions = (DOCS / "ERROR_ACTIONS.generated.md").read_text(
+            encoding="utf-8"
+        )
         for code in (
             "owner_busy",
             "owner_poisoned",
@@ -88,7 +89,7 @@ class NeuronDocumentationContractTests(unittest.TestCase):
             "unknown_generation",
         ):
             self.assertIn(f'"{code}"', source)
-            self.assertTrue(code in runbook or code in control, f"undocumented code: {code}")
+            self.assertIn(f"`{code}`", generated_actions)
         for method in (
             "retry_class",
             "operator_action",
