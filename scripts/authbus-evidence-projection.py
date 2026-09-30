@@ -29,6 +29,7 @@ ACTIVATION = ROOT / "docs/modules/auth.authbus/ACTIVATION_DECISION.md"
 SECURITY_REVIEW = ROOT / "docs/modules/auth.authbus/SECURITY_REVIEW.md"
 VERIFICATION_MATRIX = ROOT / "docs/modules/auth.authbus/VERIFICATION_MATRIX.md"
 SLO = ROOT / "docs/modules/auth.authbus/SLO.md"
+PERFORMANCE_CONTRACT = ROOT / "docs/modules/auth.authbus/PERFORMANCE_QUALIFICATION.json"
 
 REQUIRED_FAULTS = {
     "sqlite-before-commit-sigkill",
@@ -59,6 +60,7 @@ DOCS = [
     SECURITY_REVIEW,
     VERIFICATION_MATRIX,
     SLO,
+    PERFORMANCE_CONTRACT,
 ]
 
 
@@ -128,7 +130,7 @@ def validate_map(mapping: dict[str, Any]) -> None:
         raise ValueError("source map must not claim activation or release")
 
     operations = mapping.get("operations")
-    if not isinstance(operations, list) or len(operations) < 19:
+    if not isinstance(operations, list) or len(operations) < 20:
         raise ValueError("implementation map is missing AuthBus operations")
     operation_names: set[str] = set()
     for index, row in enumerate(operations):
@@ -256,6 +258,45 @@ def validate_crash_matrix() -> dict[str, Any]:
     }
 
 
+def validate_performance_contract() -> dict[str, Any]:
+    contract = load_json(PERFORMANCE_CONTRACT)
+    if contract.get("schema") != "hepta.authbus.performance-contract.v1":
+        raise ValueError("performance qualification contract schema mismatch")
+    stages = contract.get("requiredStages")
+    required_stages = {
+        "signatureVerification",
+        "authorityValidation",
+        "mutationGateWait",
+        "sqliteTransaction",
+        "frontierUpdate",
+        "checkpointPublication",
+        "reconciliation",
+        "productAcknowledgement",
+        "endToEnd",
+    }
+    if not isinstance(stages, list) or set(stages) != required_stages:
+        raise ValueError("performance contract stage set is incomplete")
+    cases = contract.get("caseContracts")
+    if not isinstance(cases, list):
+        raise ValueError("performance contract has no case matrix")
+    ids = {
+        str(row.get("id"))
+        for row in cases
+        if isinstance(row, dict) and isinstance(row.get("id"), str)
+    }
+    required_ids = set(contract.get("requiredCaseIds", []))
+    if ids != required_ids or len(ids) < 16:
+        raise ValueError("performance contract required-case matrix drift")
+    if contract.get("minimumSamplesPerCase", 0) < 200:
+        raise ValueError("performance contract minimum sample count is too small")
+    return {
+        "schema": contract["schema"],
+        "caseCount": len(ids),
+        "requiredStages": sorted(required_stages),
+        "contractSha256": sha256(PERFORMANCE_CONTRACT),
+    }
+
+
 def candidate_identity(kind: str, expected_commit: str | None) -> dict[str, Any]:
     commit = run("git", "rev-parse", "HEAD")
     tree = run("git", "rev-parse", "HEAD^{tree}")
@@ -295,6 +336,7 @@ def main() -> None:
         validate_map(mapping)
         product = validate_product_contract(mapping)
         crash = validate_crash_matrix()
+        performance = validate_performance_contract()
         candidate = candidate_identity(args.candidate_kind, args.expected_commit)
     except (KeyError, TypeError, ValueError) as error:
         raise SystemExit(f"AuthBus evidence projection failed: {error}") from error
@@ -323,6 +365,7 @@ def main() -> None:
     bound_map["documentDigest"] = aggregate(document_entries)
     bound_map["productCallerProjection"] = product
     bound_map["crashConsistencyProjection"] = crash
+    bound_map["performanceQualificationProjection"] = performance
 
     current_projection = {
         "schema": "hepta.authbus.current-implementation-projection.v2",
@@ -352,6 +395,7 @@ def main() -> None:
         },
         "productCallerContract": product,
         "crashConsistencyMatrix": crash,
+        "performanceQualification": performance,
         "targetHostEvidenceRequired": True,
         "independentSecurityAcceptance": False,
         "activation": False,
