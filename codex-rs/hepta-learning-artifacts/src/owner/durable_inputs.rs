@@ -1,7 +1,6 @@
 //! Validate actual immutable objects before advancing a recovered publication.
 
-use std::fs::File;
-use std::path::Path;
+ use std::path::Path;
 
 use super::LearningArtifactOwnerServiceError;
 use super::LearningArtifactPublishRequestV1;
@@ -11,6 +10,7 @@ use crate::ArtifactPublicationPhaseV1;
 use crate::ArtifactRegistry;
 use crate::RegistryHeadRequirementV1;
 use crate::read_candidate_payload;
+use crate::storage::open_existing_beneath_trusted_root;
 use crate::read_registry_head_witness;
 use crate::read_registry_snapshot;
 
@@ -24,12 +24,12 @@ pub(super) fn verify_durable_inputs(
         return Ok(());
     }
     let manifest = &request.admission.validated_manifest.manifest;
-    let payload = root.join("payloads").join(format!(
+    let payload = Path::new("payloads").join(format!(
         "{}-{}.bin",
         manifest.artifact_id, manifest.bytes_digest
     ));
     read_candidate_payload(
-        File::open(payload).map_err(ArtifactOwnerHostError::from)?,
+        open_existing_beneath_trusted_root(root, payload).map_err(ArtifactOwnerHostError::from)?,
         staged,
         &manifest.artifact_id,
     )
@@ -40,12 +40,12 @@ pub(super) fn verify_durable_inputs(
     let receipt = checkpoint
         .registry_receipt
         .ok_or(LearningArtifactOwnerServiceError::CheckpointShape)?;
-    let path = root.join("registries").join(format!(
+    let path = Path::new("registries").join(format!(
         "{}-{}.snapshot",
         receipt.head_digest, receipt.file_digest
     ));
     let reopened = read_registry_snapshot(
-        File::open(path).map_err(ArtifactOwnerHostError::from)?,
+        open_existing_beneath_trusted_root(root, path).map_err(ArtifactOwnerHostError::from)?,
         receipt,
     )
     .map_err(ArtifactOwnerHostError::from)?;
@@ -59,7 +59,7 @@ pub(super) fn verify_durable_inputs(
         .witness_receipt
         .ok_or(LearningArtifactOwnerServiceError::CheckpointShape)?;
     let witness = &request.signed_current_head.witness;
-    let path = root.join("witnesses").join(format!(
+    let path = Path::new("witnesses").join(format!(
         "{}-{}.witness",
         witness.generation.get(),
         receipt.witness_digest
@@ -72,7 +72,7 @@ pub(super) fn verify_durable_inputs(
         now: request.now,
     };
     let reopened = read_registry_head_witness(
-        File::open(path).map_err(ArtifactOwnerHostError::from)?,
+        open_existing_beneath_trusted_root(root, path).map_err(ArtifactOwnerHostError::from)?,
         receipt,
         &requirement,
     )
