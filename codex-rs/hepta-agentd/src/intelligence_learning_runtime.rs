@@ -5,6 +5,8 @@
 //! Generation fencing and exact destination reconciliation remain mandatory.
 
 use std::sync::Arc;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
 use std::time::Duration;
 
 use tokio_util::sync::CancellationToken;
@@ -20,10 +22,78 @@ const MAX_RECONCILE_BATCH: u32 = 256;
 const NOT_READY_POLL: Duration = Duration::from_millis(50);
 const TRANSIENT_BACKOFF: Duration = Duration::from_secs(1);
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct AgentdIntelligenceLearningRuntimeMetricsSnapshotV1 {
+    pub reconcile_attempts: u64,
+    pub reconcile_failures: u64,
+    pub dispatch_attempts: u64,
+    pub dispatch_failures: u64,
+    pub unknown_committed_operations: u64,
+    pub oldest_unsettled_append_age_ms: u64,
+}
+
+#[derive(Default)]
+pub struct AgentdIntelligenceLearningRuntimeMetricsV1 {
+    reconcile_attempts: AtomicU64,
+    reconcile_failures: AtomicU64,
+    dispatch_attempts: AtomicU64,
+    dispatch_failures: AtomicU64,
+}
+
+impl AgentdIntelligenceLearningRuntimeMetricsV1 {
+    #[must_use]
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    pub async fn snapshot(
+        &self,
+        host: &AgentdIntelligenceLearningHostV1,
+    ) -> Result<AgentdIntelligenceLearningRuntimeMetricsSnapshotV1, AgentdIntelligenceLearningErrorV1>
+    {
+        let backlog = host.backlog_metrics().await?;
+        Ok(AgentdIntelligenceLearningRuntimeMetricsSnapshotV1 {
+            reconcile_attempts: self.reconcile_attempts.load(Ordering::Acquire),
+            reconcile_failures: self.reconcile_failures.load(Ordering::Acquire),
+            dispatch_attempts: self.dispatch_attempts.load(Ordering::Acquire),
+            dispatch_failures: self.dispatch_failures.load(Ordering::Acquire),
+            unknown_committed_operations: backlog.indeterminate_operations,
+            oldest_unsettled_append_age_ms: backlog.oldest_active_outbox_age_ms,
+        })
+    }
+
+    fn record_reconcile_attempt(&self) {
+        saturating_increment(&self.reconcile_attempts);
+    }
+
+    fn record_reconcile_failure(&self) {
+        saturating_increment(&self.reconcile_failures);
+    }
+
+    fn record_dispatch_attempt(&self) {
+        saturating_increment(&self.dispatch_attempts);
+    }
+
+    fn record_dispatch_failure(&self) {
+        saturating_increment(&self.dispatch_failures);
+    }
+
+    #[cfg(test)]
+    fn counters(&self) -> (u64, u64, u64, u64) {
+        (
+            self.reconcile_attempts.load(Ordering::Acquire),
+            self.reconcile_failures.load(Ordering::Acquire),
+            self.dispatch_attempts.load(Ordering::Acquire),
+            self.dispatch_failures.load(Ordering::Acquire),
+        )
+    }
+}
+
 pub struct AgentdIntelligenceLearningRuntimeConfigV1 {
     host: Arc<AgentdIntelligenceLearningHostV1>,
     interval: Duration,
     max_batch: u32,
+    metrics: Arc<AgentdIntelligenceLearningRuntimeMetricsV1>,
 }
 
 impl AgentdIntelligenceLearningRuntimeConfigV1 {
@@ -37,6 +107,7 @@ impl AgentdIntelligenceLearningRuntimeConfigV1 {
             host,
             interval,
             max_batch,
+            metrics: Arc::new(AgentdIntelligenceLearningRuntimeMetricsV1::new()),
         })
     }
 
@@ -45,8 +116,20 @@ impl AgentdIntelligenceLearningRuntimeConfigV1 {
         self.host.owner_generation().get()
     }
 
-    pub(crate) fn into_parts(self) -> (Arc<AgentdIntelligenceLearningHostV1>, Duration, u32) {
-        (self.host, self.interval, self.max_batch)
+    #[must_use]
+    pub fn metrics(&self) -> Arc<AgentdIntelligenceLearningRuntimeMetricsV1> {
+        Arc::clone(&self.metrics)
+    }
+
+    pub(crate) fn into_parts(
+        self,
+    ) -> (
+        Arc<AgentdIntelligenceLearningHostV1>,
+        Duration,
+        u32,
+        Arc<AgentdIntelligenceLearningRuntimeMetricsV1>,
+    ) {
+        (self.host, self.interval, self.max_batch, self.metrics)
     }
 }
 
@@ -89,6 +172,7 @@ pub(crate) async fn run_intelligence_learning_runtime_v1(
     state: Arc<AgentdState>,
     interval: Duration,
     max_batch: u32,
+    metrics: Arc<AgentdIntelligenceLearningRuntimeMetricsV1>,
     cancellation: CancellationToken,
 ) -> Result<(), AgentdError> {
     validate_runtime_policy(interval, max_batch)?;
@@ -110,13 +194,20 @@ pub(crate) async fn run_intelligence_learning_runtime_v1(
         recovery_turn = !recovery_turn;
         let mut transient_failure = false;
         if recovery_budget > 0 {
+            metrics.record_reconcile_attempt();
             match host.reconcile_unsettled(recovery_budget).await {
                 Ok(receipts) => {
                     let visited = u32::try_from(receipts.len()).unwrap_or(recovery_budget);
                     dispatch_budget += recovery_budget.saturating_sub(visited);
                 }
-                Err(error) if error.is_transient() => transient_failure = true,
-                Err(error) => return Err(learning_error(error)),
+                Err(error) if error.is_transient() => {
+                    metrics.record_reconcile_failure();
+                    transient_failure = true;
+                }
+                Err(error) => {
+                    metrics.record_reconcile_failure();
+                    return Err(learning_error(error));
+                }
             }
         }
         while dispatch_budget > 0 {
@@ -125,16 +216,21 @@ pub(crate) async fn run_intelligence_learning_runtime_v1(
             }
             require_generation(&state, owner_generation)?;
             dispatch_budget -= 1;
+            metrics.record_dispatch_attempt();
             match host.dispatch_next().await {
                 Ok(Some(_)) => {}
                 Ok(None) => break,
                 Err(error) if error.is_transient() => {
                     // The operation retains its original identity. Only the
                     // owner's proved pre-dispatch deferral can requeue it.
+                    metrics.record_dispatch_failure();
                     transient_failure = true;
                     break;
                 }
-                Err(error) => return Err(learning_error(error)),
+                Err(error) => {
+                    metrics.record_dispatch_failure();
+                    return Err(learning_error(error));
+                }
             }
         }
         require_generation(&state, owner_generation)?;
@@ -154,6 +250,17 @@ fn learning_error(error: AgentdIntelligenceLearningErrorV1) -> AgentdError {
     AgentdError::Protocol(format!(
         "intelligence learning reconciliation failed: {error}"
     ))
+}
+
+fn saturating_increment(value: &AtomicU64) {
+    let mut current = value.load(Ordering::Acquire);
+    loop {
+        let next = current.saturating_add(1);
+        match value.compare_exchange_weak(current, next, Ordering::AcqRel, Ordering::Acquire) {
+            Ok(_) => return,
+            Err(observed) => current = observed,
+        }
+    }
 }
 
 #[cfg(test)]
@@ -193,5 +300,15 @@ mod tests {
             dispatched += dispatch;
         }
         assert_eq!((recovered, dispatched), (5, 5));
+    }
+
+    #[test]
+    fn learning_runtime_metrics_keep_attempts_and_failures_separate() {
+        let metrics = AgentdIntelligenceLearningRuntimeMetricsV1::new();
+        metrics.record_reconcile_attempt();
+        metrics.record_reconcile_attempt();
+        metrics.record_reconcile_failure();
+        metrics.record_dispatch_attempt();
+        assert_eq!(metrics.counters(), (2, 1, 1, 0));
     }
 }
