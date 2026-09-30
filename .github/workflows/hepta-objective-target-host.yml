@@ -40,42 +40,52 @@ env:
   CARGO_PROFILE_RELEASE_DEBUG: "0"
 
 jobs:
-  target-host:
-    runs-on: [self-hosted, objective-target-host]
+  measure-candidate:
+    runs-on: [self-hosted, objective-target-host, ephemeral]
     environment: objective-target-host-qualification
     timeout-minutes: 180
     steps:
-      - name: Check out exact candidate
+      - name: Require protected-main workflow definition
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/main"
+          test "$GITHUB_SHA" = "$GITHUB_WORKFLOW_SHA"
+
+      - name: Check out exact candidate into isolated workspace
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ inputs.candidate_sha }}
           fetch-depth: 0
           persist-credentials: false
+          path: candidate
 
-      - name: Bind exact source and repository declarations
+      - name: Bind candidate and ephemeral runner
+        id: bind
         shell: bash
         env:
           CANDIDATE_SHA: ${{ inputs.candidate_sha }}
         run: |
           set -euo pipefail
           test "${#CANDIDATE_SHA}" = 40
-          test "$(git rev-parse HEAD)" = "${CANDIDATE_SHA}"
-          CANDIDATE_TREE="$(git rev-parse HEAD^{tree})"
-          test -z "$(git status --porcelain)"
-          python3 scripts/hepta-implementation-maps.py verify \
-            --module objective.compiler \
-            --expected-sha "${CANDIDATE_SHA}" \
-            --expected-tree "${CANDIDATE_TREE}"
-          python3 scripts/hepta-objective-current-state.py verify
-          python3 scripts/hepta-objective-release-gate.py verify-source
-          rustc --version
-          cargo --version
+          test "$(git -C candidate rev-parse HEAD)" = "$CANDIDATE_SHA"
+          test -z "$(git -C candidate status --porcelain)"
+          test "${RUNNER_ENVIRONMENT}" = "self-hosted"
+          CANDIDATE_TREE="$(git -C candidate rev-parse HEAD^{tree})"
+          printf 'candidate_tree=%s\n' "$CANDIDATE_TREE" >> "$GITHUB_OUTPUT"
           printf 'CANDIDATE_SHA=%s\nCANDIDATE_TREE=%s\n' \
-            "${CANDIDATE_SHA}" "${CANDIDATE_TREE}" >> "${GITHUB_ENV}"
+            "$CANDIDATE_SHA" "$CANDIDATE_TREE" >> "$GITHUB_ENV"
+          mkdir -p \
+            "$RUNNER_TEMP/objective-target-host" \
+            "$RUNNER_TEMP/objective-cargo-home" \
+            "$RUNNER_TEMP/objective-target"
 
-      - name: Measure worst-case and product paths
+      - name: Run candidate measurement without reusable credentials or caches
+        working-directory: candidate
         shell: bash
         env:
+          CARGO_HOME: ${{ runner.temp }}/objective-cargo-home
+          CARGO_TARGET_DIR: ${{ runner.temp }}/objective-target
           HOST_PROFILE_ID: ${{ inputs.host_profile_id }}
           ORDINARY_SAMPLES: ${{ inputs.ordinary_samples }}
           CONFLICT_SAMPLES: ${{ inputs.conflict_samples }}
@@ -83,22 +93,106 @@ jobs:
           EXECUTION_SAMPLES: ${{ inputs.execution_samples }}
         run: |
           set -euo pipefail
-          mkdir -p "${RUNNER_TEMP}/objective-target-host"
+          python3 scripts/hepta-implementation-maps.py verify \
+            --module objective.compiler \
+            --expected-sha "$CANDIDATE_SHA" \
+            --expected-tree "$CANDIDATE_TREE"
+          python3 scripts/hepta-objective-current-state.py verify
+          python3 scripts/hepta-objective-spec-consistency.py verify
+          python3 scripts/hepta-objective-release-gate.py verify-source
+          rustc --version | tee "$RUNNER_TEMP/objective-target-host/rustc.txt"
+          cargo --version | tee "$RUNNER_TEMP/objective-target-host/cargo.txt"
           python3 scripts/hepta-objective-target-measure.py \
-            --expected-sha "${CANDIDATE_SHA}" \
-            --host-profile-id "${HOST_PROFILE_ID}" \
-            --ordinary-samples "${ORDINARY_SAMPLES}" \
-            --conflict-samples "${CONFLICT_SAMPLES}" \
-            --product-samples "${PRODUCT_SAMPLES}" \
-            --execution-samples "${EXECUTION_SAMPLES}" \
-            --output "${RUNNER_TEMP}/objective-target-host/evidence.json"
-          test "$(git rev-parse HEAD)" = "${CANDIDATE_SHA}"
-          test "$(git rev-parse HEAD^{tree})" = "${CANDIDATE_TREE}"
+            --expected-sha "$CANDIDATE_SHA" \
+            --host-profile-id "$HOST_PROFILE_ID" \
+            --ordinary-samples "$ORDINARY_SAMPLES" \
+            --conflict-samples "$CONFLICT_SAMPLES" \
+            --product-samples "$PRODUCT_SAMPLES" \
+            --execution-samples "$EXECUTION_SAMPLES" \
+            --output "$RUNNER_TEMP/objective-target-host/evidence.json"
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$CANDIDATE_TREE"
           test -z "$(git status --porcelain)"
+          printf '%s\n' "$GITHUB_WORKFLOW_SHA" > \
+            "$RUNNER_TEMP/objective-target-host/trusted-workflow-sha.txt"
 
-      - name: Produce measurement envelope and unsigned acceptance template
+      - name: Retain untrusted raw target observations
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: objective-target-raw-${{ inputs.candidate_sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/objective-target-host
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Destroy job-local candidate caches
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf \
+            "$RUNNER_TEMP/objective-cargo-home" \
+            "$RUNNER_TEMP/objective-target" \
+            "$GITHUB_WORKSPACE/candidate"
+
+  verify-measurement:
+    needs: measure-candidate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Require protected-main workflow definition
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/main"
+          test "$GITHUB_SHA" = "$GITHUB_WORKFLOW_SHA"
+
+      - name: Check out trusted control plane
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+          path: trusted-control
+
+      - name: Check out candidate as read-only data
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ inputs.candidate_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+          path: candidate
+
+      - name: Download raw measurement artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: objective-target-raw-${{ inputs.candidate_sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/objective-target-raw
+
+      - name: Verify measurement using trusted-control code
         shell: bash
         env:
+          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+          HOST_PROFILE_ID: ${{ inputs.host_profile_id }}
+        run: |
+          set -euo pipefail
+          test "$(git -C trusted-control rev-parse HEAD)" = "$GITHUB_WORKFLOW_SHA"
+          git -C trusted-control merge-base --is-ancestor "$GITHUB_WORKFLOW_SHA" origin/main
+          test "$(git -C candidate rev-parse HEAD)" = "$CANDIDATE_SHA"
+          CANDIDATE_TREE="$(git -C candidate rev-parse HEAD^{tree})"
+          printf 'CANDIDATE_TREE=%s\n' "$CANDIDATE_TREE" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/objective-target-verified"
+          python3 trusted-control/scripts/hepta-objective-evidence-project.py \
+            --source-commit "$CANDIDATE_SHA" \
+            --source-tree "$CANDIDATE_TREE" \
+            --current-state candidate/docs/modules/objective.compiler/CURRENT_STATE.json \
+            --target-measurement "$RUNNER_TEMP/objective-target-raw/evidence.json" \
+            --output "$RUNNER_TEMP/objective-target-verified/evidence-projection.json"
+
+      - name: Produce trusted measurement envelope and unsigned acceptance template
+        shell: bash
+        env:
+          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
           HOST_PROFILE_ID: ${{ inputs.host_profile_id }}
         run: |
           set -euo pipefail
@@ -108,8 +202,9 @@ jobs:
           import os
           from pathlib import Path
 
-          root = Path(os.environ["RUNNER_TEMP"]) / "objective-target-host"
-          evidence_path = root / "evidence.json"
+          raw = Path(os.environ["RUNNER_TEMP"]) / "objective-target-raw"
+          out = Path(os.environ["RUNNER_TEMP"]) / "objective-target-verified"
+          evidence_path = raw / "evidence.json"
           evidence_bytes = evidence_path.read_bytes()
           evidence = json.loads(evidence_bytes)
           digest = hashlib.sha256(evidence_bytes).hexdigest()
@@ -120,17 +215,18 @@ jobs:
           if evidence["hostProfileId"] != os.environ["HOST_PROFILE_ID"]:
               raise SystemExit("target-host evidence profile mismatch")
           envelope = {
-              "schema": "hepta.objective-target-host-envelope.v1",
-              "schemaVersion": 1,
+              "schema": "hepta.objective-target-host-envelope.v2",
+              "schemaVersion": 2,
               "module": "objective.compiler",
               "candidateCommit": os.environ["CANDIDATE_SHA"],
               "candidateTree": os.environ["CANDIDATE_TREE"],
+              "trustedControlCommit": os.environ["GITHUB_WORKFLOW_SHA"],
               "hostProfileId": os.environ["HOST_PROFILE_ID"],
               "workflowRunId": int(os.environ["GITHUB_RUN_ID"]),
               "workflowRunAttempt": int(os.environ["GITHUB_RUN_ATTEMPT"]),
-              "runnerName": os.environ["RUNNER_NAME"],
-              "runnerEnvironment": os.environ["RUNNER_ENVIRONMENT"],
               "measurementDigest": digest,
+              "candidateVerifierAuthoritative": False,
+              "ephemeralRunnerRequired": True,
               "storageQualificationProved": False,
               "resourceBudgetsAccepted": False,
               "activationGranted": False,
@@ -159,23 +255,27 @@ jobs:
               },
               "receiptDigest": "COMPUTE_ONLY_AFTER_EXTERNAL_ACCEPTANCE",
           }
-          (root / "measurement-envelope.json").write_text(
+          (out / "measurement-envelope.json").write_text(
               json.dumps(envelope, sort_keys=True, indent=2) + "\n",
               encoding="utf-8",
           )
-          (root / "target-host-receipt-template.json").write_text(
+          (out / "target-host-receipt-template.json").write_text(
               json.dumps(template, sort_keys=True, indent=2) + "\n",
               encoding="utf-8",
           )
-          (root / "SHA256SUMS").write_text(
+          (out / "SHA256SUMS").write_text(
               f"{digest}  evidence.json\n", encoding="utf-8"
           )
           PY
+          cp "$RUNNER_TEMP/objective-target-raw/evidence.json" \
+            "$RUNNER_TEMP/objective-target-verified/evidence.json"
+          test -z "$(git -C trusted-control status --porcelain)"
+          test -z "$(git -C candidate status --porcelain)"
 
-      - name: Retain exact target-host evidence
+      - name: Retain trusted target-host evidence
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: objective-target-host-${{ inputs.candidate_sha }}-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/objective-target-host
+          path: ${{ runner.temp }}/objective-target-verified
           if-no-files-found: error
           retention-days: 90
