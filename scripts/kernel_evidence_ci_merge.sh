@@ -34,10 +34,12 @@ export GIT_AUTHOR_DATE='2000-01-01T00:00:00Z'
 export GIT_COMMITTER_DATE="$GIT_AUTHOR_DATE"
 merge_sha="$(printf 'Synthetic kernel evidence readiness merge for PR %s\n' "${PR_NUMBER:-0}" | git commit-tree "$merge_tree" -p "$BASE_SHA" -p "$SOURCE_SHA")"
 [[ "$merge_sha" =~ ^[0-9a-f]{40}$ ]]
-printf 'MERGE_SHA=%s\nMERGE_TREE=%s\n' "$merge_sha" "$merge_tree" >>"$GITHUB_ENV"
-printf 'merge_sha=%s\nmerge_tree=%s\n' "$merge_sha" "$merge_tree" >>"$construction_log"
+export MERGE_SHA="$merge_sha"
+export MERGE_TREE="$merge_tree"
+printf 'MERGE_SHA=%s\nMERGE_TREE=%s\n' "$MERGE_SHA" "$MERGE_TREE" >>"$GITHUB_ENV"
+printf 'merge_sha=%s\nmerge_tree=%s\n' "$MERGE_SHA" "$MERGE_TREE" >>"$construction_log"
 
-git checkout --detach "$merge_sha" >>"$construction_log" 2>&1
+git checkout --detach "$MERGE_SHA" >>"$construction_log" 2>&1
 command='set -euo pipefail; test "$(git rev-parse HEAD)" = "$MERGE_SHA"; test "$(git rev-parse HEAD^{tree})" = "$MERGE_TREE"; cd codex-rs; cargo test --locked -p codex-hepta-evidence; cargo test --locked -p codex-hepta-agentd --lib --test kernel_evidence_product --test kernel_evidence_profile --test kernel_evidence_paging_product --test kernel_evidence_publication_cli'
 started="$(date +%s%3N)"
 set +e
@@ -52,8 +54,8 @@ python3 scripts/kernel_evidence_qualification_receipt.py \
   --source-head-sha "$SOURCE_SHA" \
   --source-head-tree "$SOURCE_TREE" \
   --base-sha "$BASE_SHA" \
-  --deterministic-merge-sha "$merge_sha" \
-  --tested-object-sha "$merge_sha" \
+  --deterministic-merge-sha "$MERGE_SHA" \
+  --tested-object-sha "$MERGE_SHA" \
   --workflow-sha "$WORKFLOW_SHA" \
   --workflow-run-id "$GITHUB_RUN_ID" \
   --workflow-run-attempt "$GITHUB_RUN_ATTEMPT" \
